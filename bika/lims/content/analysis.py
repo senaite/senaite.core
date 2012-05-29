@@ -164,6 +164,30 @@ class Analysis(BaseContent):
             return ""
         if s: return s.Title()
 
+    def updateDueDate(self):
+        # set the max hours allowed
+
+        service = self.getService()
+        maxtime = service.getMaxTimeAllowed()
+        if not maxtime:
+            maxtime = {'days':0, 'hours':0, 'minutes':0}
+        self.setMaxTimeAllowed(maxtime)
+        # set the due date
+        # default to old calc in case no calendars
+        max_days = float(maxtime.get('days', 0)) + \
+                 (
+                     (float(maxtime.get('hours', 0)) * 3600 + \
+                      float(maxtime.get('minutes', 0)) * 60)
+                     / 86400
+                 )
+        part = self.getSamplePartition()
+        starttime = part.getDateReceived()
+        if starttime:
+            duetime = starttime + max_days
+        else:
+            duetime = ''
+        self.setDueDate(duetime)
+
     def getUncertainty(self, result = None):
         """ Calls self.Service.getUncertainty with either the provided
             result value or self.Result

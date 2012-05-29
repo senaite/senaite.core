@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 msgid ""
 msgstr ""
@@ -2433,7 +2433,10 @@ msgid "Select analyst"
 msgstr "Select analyst"
 
 #: ../content/analysisservice.py:509
-msgid "Select any combination of these fields to configure how the LIMS will create sample partitions for new ARs. Adding only a few very general rules will cause the empty fields to be set to computed, empty or default values. Values set above take precendence over those set in this table."
+msgid ""
+"Please specify preservations that differ from the "
+"analysis service's default preservation per sample "
+"type here."
 msgstr ""
 
 #: ../content/analysisrequest.py:109
@@ -2519,11 +2522,11 @@ msgid "Service keyword ${keyword} not found"
 msgstr "Service keyword ${keyword} not found"
 
 #: ../content/analysisservice.py:502
-msgid "Service partition will always be stored in one of the selected containers"
+msgid "Select the default container to be used for this analysis service. If the container to be used depends on the sample type and preservation combination, specify the container in the sample type table below."
 msgstr ""
 
 #: ../content/analysisservice.py:488
-msgid "Service partition will always require one of the selected preservation methods"
+msgid "Select a default preservation for this this analysis service. If the preservation depends on the sample type combination, specify a preservation per sample type in the table below."
 msgstr ""
 
 #: ../browser/worksheet.py:949
@@ -2850,11 +2853,11 @@ msgid "This service does not require a separate partition"
 msgstr ""
 
 #: ../browser/templates/analysisservice_popup.pt:219
-msgid "This service requires a separate partition"
+msgid "This service requires a separate container."
 msgstr ""
 
 #: ../content/analysisservice.py:474
-msgid "This service will always be assigned it's own separate sample partition."
+msgid "Check this box to ensure a separate sample container is used for this analysis service."
 msgstr ""
 
 #: ../content/laboratory.py:26

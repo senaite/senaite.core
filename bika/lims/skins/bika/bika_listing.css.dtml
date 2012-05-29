@@ -330,33 +330,30 @@ tfoot td.batching a {
   padding:1px 2px 1px 2px;
 }
 
-.workflow_action_button {
+.action_button {
   border-radius: &dtml-buttonBorderRadius; !important;
   background: &dtml-buttonSelectedBackgroundColor; !important;
   color: &dtml-buttonSelectedTextColor; !important;
   border:1px solid &dtml-buttonSelectedBorderColor; !important;
   padding:1px 2px 1px 2px;
 }
-
-.workflow_action_button:hover {
+.action_button:hover {
   background: &dtml-buttonHoverBackgroundColor; !important;
   border:1px solid &dtml-buttonHoverBorderColor; !important;
 }
-
-.workflow_action_button:active {
+.action_button:active {
   background: &dtml-buttonClickBackgroundColor; !important;
   color: &dtml-buttonClickTextColor; !important;
   border:1px solid &dtml-buttonClickBorderColor; !important;
 }
-
-.workflow_action_button.disabled {
+.action_button.disabled {
   border-radius: &dtml-buttonBorderRadius; !important;
   background: &dtml-buttonSelectedBackgroundColor; !important;
   color:#bbb !important;
   border:1px solid &dtml-buttonSelectedBorderColor; !important;
   padding:1px 2px 1px 2px;
 }
-.workflow_action_button.disabled:active {
+.action_button.disabled:active {
   border-radius: &dtml-buttonBorderRadius; !important;
   background: &dtml-buttonSelectedBackgroundColor; !important;
   color:#bbb !important;

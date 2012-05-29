@@ -51,9 +51,7 @@ class MethodsView(BikaListingView):
 
     def __call__(self):
         mtool = getToolByName(self.context, 'portal_membership')
-        ## Add action is not permitted in /methods folder
-        if mtool.checkPermission(AddMethod, self.context) \
-           and not self.view_url.endswith("/methods"):
+        if mtool.checkPermission(AddMethod, self.context):
             self.context_actions[_('Add')] = {
                 'url': 'createObject?type_name=Method',
                 'icon': '++resource++bika.lims.images/add.png'

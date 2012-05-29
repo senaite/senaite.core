@@ -51,15 +51,6 @@
 
 	<span tal:replace="structure view/header_table"/>
 
-	<h3 style="margin-top:2em;">
-		<img
-			i18n:attributes="title"
-			title="Partitions"
-			src="++resource++bika.lims.images/samplepartition.png"/>
-		<span i18n:translate="">Sample Partitions</span>
-	</h3>
-	<tal:parts replace="structure view/parts"/>
-
     <form
         id="analysisrequest_edit_form"
         name="analysisrequest_edit_form"

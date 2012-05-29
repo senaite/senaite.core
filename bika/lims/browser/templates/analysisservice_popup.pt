@@ -218,7 +218,7 @@
 			<p>
 				<span
 					tal:condition="view/service/getSeparate"
-					i18n:translate="">This service requires a separate partition</span>
+					i18n:translate="">This service requires a separate container."span>
 				<span
 					tal:condition="not:view/service/getSeparate"
 					i18n:translate="">This service does not require a separate partition</span>

@@ -53,7 +53,8 @@
         <tal:comment replace="nothing"> A slot where you can insert CSS in the header from a template </tal:comment>
         <metal:styleslot define-slot="style_slot" />
 
-        <script type="text/javascript" src="++resource++bika.lims.js/analysisrequest_select_cc.js"></script>
+        <script type="text/javascript" src="++resource++bika.lims.js/ar_select_sample.js"></script>
+        <script type="text/javascript" src="++resource++bika.lims.js/bika_listing.js"></script>
 
         <tal:comment replace="nothing"> This is deprecated, please use style_slot instead. </tal:comment>
         <metal:cssslot define-slot="css_slot" />
@@ -99,18 +100,17 @@
 
                         <metal:main define-macro="main">
                             <div tal:replace="structure provider:plone.abovecontenttitle" />
-								  <h1 class="documentFirstHeading">
-								  <img tal:attributes="src view/icon"/>
-								  <span tal:content="view/title"/>
-								  </h1>
+								<h1 class="documentFirstHeading">
+								<img tal:attributes="src view/icon"/>
+								<span tal:content="view/title"/>
+								</h1>
 								<div class="documentDescription"
 									tal:content="view/description"
 									tal:condition="view/description"/>
 
                             <div id="content-core">
-                                <metal:text define-slot="content-core">
-                                  <div tal:content="structure view/contents_table"/>
-                                </metal:text>
+								<div id="folderlisting-main-table"
+									tal:content="structure view/contents_table"/>
                             </div>
                         </metal:main>
 

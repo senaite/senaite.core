@@ -30,7 +30,10 @@ def ObjectInitializedEventHandler(instance, event):
     if ar_state not in ('sample_registered', 'sampled',
                         'to_be_sampled', 'to_be_preserved',
                         'sample_due'):
-        wf.doActionFor(instance, 'receive')
+        try:
+            wf.doActionFor(instance, 'receive')
+        except WorkflowException:
+            pass
 
     # Note: AR adds itself to the skiplist so we have to take it off again
     #       to allow possible promotions if other analyses are deleted.
@@ -206,25 +209,7 @@ def AfterTransitionEventHandler(instance, event):
 
 
     elif action_id == "receive":
-        # set the max hours allowed
-        service = instance.getService()
-        maxtime = service.getMaxTimeAllowed()
-
-        if not maxtime:
-            maxtime = {'days':0, 'hours':0, 'minutes':0}
-        instance.setMaxTimeAllowed(maxtime)
-        # set the due date
-        starttime = part.getDateReceived()
-        # default to old calc in case no calendars
-        # still need a due time for selection to ws
-        max_days = float(maxtime.get('days', 0)) + \
-                 (
-                     (float(maxtime.get('hours', 0)) * 3600 + \
-                      float(maxtime.get('minutes', 0)) * 60)
-                     / 86400
-                 )
-        duetime = starttime + max_days
-        instance.setDueDate(duetime)
+        instance.updateDueDate()
         instance.reindexObject()
 
     elif action_id == "submit":

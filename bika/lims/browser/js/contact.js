@@ -1,4 +1,4 @@
-jQuery( function($) {
+(function( $ ) {
 $(document).ready(function(){
 
 	jarn.i18n.loadCatalog('bika');
@@ -37,5 +37,5 @@ $(document).ready(function(){
 		}
 	});
 
-	});
 });
+}(jQuery));

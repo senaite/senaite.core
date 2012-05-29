@@ -26,6 +26,7 @@ from bika.lims.permissions import ViewResults
 from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
 from bika.lims.utils import TimeOrDate
+from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import pretty_user_name_or_id
 from bika.lims.subscribers import skip
 from bika.lims.subscribers import doActionFor
@@ -65,29 +66,63 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             else:
                 item_data = json.loads(form['item_data'])
 
-        ## Analyses added or removed
-        if action == "save_button":
+        ## Manage Analyses: save Analyses
+        if action == "save_analyses_button":
             ar = self.context
             sample = ar.getSample()
 
-            # Read all service selections
             objects = WorkflowAction._get_selected_items(self)
+            if not objects:
+                message = self.context.translate(
+                    _("No analyses have been selected"))
+                self.context.plone_utils.addPortalMessage(message, 'info')
+                self.destination_url = self.context.absolute_url() + "/analyses"
+                self.request.response.redirect(self.destination_url)
+                return
 
-            # Read partition/container/preservation selections for selections
+            new = ar.setAnalyses(objects.keys(), prices = form['Price'][0])
 
-            # Send the full list to setAnalyses which will add/remove analyses
-            # as necessary.
-            new_analyses = ar.setAnalyses(objects.keys(),
-                                          prices = form['Price'][0])
+            ## Partitions
+            nr_existing = len(sample.objectIds())
+            nr_parts = len(form['PartTitle'][0])
+            # add missing parts
+            if nr_parts > nr_existing:
+                for i in range(nr_parts - nr_existing):
+                    _id = sample.invokeFactory('SamplePartition', id = 'tmp')
+                    part = sample[_id]
+                    part.setDateReceived = DateTime()
+                    part.processForm()
+            # remove excess parts
+            if nr_existing > nr_parts:
+                for i in range(nr_existing - nr_parts):
+                    part = sample['part-%s'%(nr_existing - i)]
+                    for a in part.getBackReferences("AnalysisSamplePartition"):
+                        a.setSamplePartition(None)
+                    sample.manage_delObjects(['part-%s'%(nr_existing - i),])
+            # modify part container/preservation
+            for part_uid, part_id in form['PartTitle'][0].items():
+                part = sample[part_id]
+                part.edit(
+                    Container = form['getContainer'][0][part_uid],
+                    Preservation = form['getPreservation'][0][part_uid],
+                )
+                part.reindexObject()
 
-            first_part = sample.objectValues("SamplePartition")[0]
-            for a in new_analyses:
-                a.setSamplePartition(first_part)
-            if new_analyses:
-                message = self.context.translate(PMF("Changes saved."))
-            else:
-                message = self.context.translate(_("No changes made."))
+            # link analyses and partitions
+            for service_uid, service in objects.items():
+                part_id = form['Partition'][0][service_uid]
+                part = sample[part_id]
+                analysis = ar[service.getKeyword()]
+                analysis.setSamplePartition(part)
+                analysis.reindexObject()
 
+            if new:
+                ar_state = workflow.getInfoFor(ar, 'review_state')
+                for analysis in new:
+                    analysis.updateDueDate()
+                    changeWorkflowState(analysis, ar_state)
+
+            message = self.context.translate(PMF("Changes saved."))
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.context.absolute_url()
             self.request.response.redirect(self.destination_url)
@@ -516,11 +551,6 @@ class AnalysisRequestViewView(BrowserView):
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 
-        ## Create Partitions View for this ARs sample
-        p = SamplePartitionsView(self.context.getSample(), self.request)
-        p.show_column_toggles = False
-        self.parts = p.contents_table()
-
         ## Create Field and Lab Analyses tables
         self.tables = {}
         for poc in POINTS_OF_CAPTURE:
@@ -720,7 +750,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
     """ The main AR Add form
     """
     implements(IViewView)
-    template = ViewPageTemplateFile("templates/analysisrequest_edit.pt")
+    template = ViewPageTemplateFile("templates/ar_add.pt")
 
     def __init__(self, context, request):
         AnalysisRequestViewView.__init__(self, context, request)
@@ -819,6 +849,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
+        self.table_only = True
         self.show_select_all_checkbox = False
         self.pagesize = 1000
         analyses = self.context.getAnalyses()
@@ -833,17 +864,8 @@ class AnalysisRequestAnalysesView(BikaListingView):
                       'sortable': False,},
             'Price': {'title': _('Price'),
                       'sortable': False,},
-##            'Keyword': {'title': _('Keyword'),
-##                        'index': 'getKeyword',
-##                        'sortable': False,},
-##            'Method': {'title': _('Method'),
-##                       'sortable': False,},
             'Partition': {'title': _('Partition'),
                           'sortable': False,},
-            'Container': {'title': _('Container'),
-                          'sortable': False,},
-            'Preservation': {'title': _('Preservation'),
-                             'sortable': False,},
         }
 
         self.review_states = [
@@ -852,43 +874,52 @@ class AnalysisRequestAnalysesView(BikaListingView):
              'contentFilter':{},
              'columns': ['Title',
                          'Price',
-##                         'Keyword',
-##                         'Method',
                          'Partition',
-                         'Container',
-                         'Preservation'
                          ],
              'transitions': [{'id':'empty'}, ], # none
-             'custom_actions':[{'id': 'save_button', 'title': _('Save')}, ]
+             'custom_actions':[{'id': 'save_analyses_button', 'title': _('Save')}, ]
              },
         ]
+
+        ## Create Partitions View for this ARs sample
+        sample = self.context.getSample()
+        p = SamplePartitionsView(sample, self.request)
+        p.allow_edit = True
+        p.show_column_toggles = False
+        p.show_select_column = False
+        p.setoddeven = False
+        p.table_only = True
+        p.review_states[0]['transitions'] = [{'id':'empty'}] # none
+        p.review_states[0]['columns'] = ['PartTitle',
+                                         'getContainer',
+                                         'getPreservation']
+##                                         'getSampler',
+##                                         'getDateSampled',
+##                                         'getPreserver',
+##                                         'getDatePreserved',
+##                                         'getDisposalDate',
+##                                         'state_title']
+        self.parts = p.contents_table()
 
     def folderitems(self):
         self.categories = []
 
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        wf = getToolByName(self.context, 'portal_workflow')
         mtool = getToolByName(self.context, 'portal_membership')
         member = mtool.getAuthenticatedMember()
         roles = member.getRoles()
         self.allow_edit = 'LabManager' in roles or 'Manager' in roles
         items = BikaListingView.folderitems(self)
         sample = self.context.getSample()
-
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        analyses = self.context.getAnalyses(full_objects = True)
+        review_states = dict(
+            [(a.getService().getKeyword(), wf.getInfoFor(a, 'review_state'))
+             for a in analyses])
 
         partitions = [{'ResultValue':o.Title(), 'ResultText':o.Title()}
                       for o in
                       self.context.getSample().objectValues('SamplePartition')]
-        partitions.append({'ResultValue':len(partitions),
-                           'ResultText':self.context.translate(_("New"))})
-
-        containers = [({'ResultValue':o.UID,
-                        'ResultText':o.title})
-                      for o in bsc(portal_type="Container",
-                                   inactive_state="active")]
-        preservations = [({'ResultValue':o.UID,
-                           'ResultText':o.title})
-                         for o in bsc(portal_type="Preservation",
-                                      inactive_state="active")]
 
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
@@ -903,12 +934,17 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
             items[x]['class']['Title'] = 'service_title'
 
+            # js checks in row_data if an analysis may be removed.
+            row_data = {}
+            keyword = obj.getKeyword()
+            if keyword in review_states.keys() \
+               and review_states[keyword] not in ['sample_due',
+                                                  'sample_received']:
+                row_data['disabled'] = True
+            items[x]['row_data'] = json.dumps(row_data)
+
             calculation = obj.getCalculation()
             items[x]['Calculation'] = calculation and calculation.Title()
-
-##            method = obj.getMethod()
-##            items[x]['Method'] = method and method.Title() or ''
-##            items[x]['Keyword'] = obj.getKeyword()
 
             locale = locales.getLocale('en')
             currency = self.context.bika_setup.getCurrency()
@@ -916,31 +952,20 @@ class AnalysisRequestAnalysesView(BikaListingView):
             items[x]['before']['Price'] = symbol
             items[x]['Price'] = obj.getPrice()
             items[x]['class']['Price'] = 'nowrap'
-            items[x]['allow_edit'] = ['Price', 'Partition', 'Container', 'Preservation']
+            items[x]['allow_edit'] = ['Price', 'Partition']
             if not items[x]['selected']:
-                items[x]['edit_condition'] = {'Container':False,
-                                              'Preservation':False,
-                                              'Partition':False}
+                items[x]['edit_condition'] = {'Partition':False,
+                                              'Price':False}
 
             items[x]['required'].append('Partition')
             items[x]['choices']['Partition'] = partitions
-            items[x]['choices']['Container'] = containers
-            items[x]['choices']['Preservation'] = preservations
 
             if obj.UID() in self.analyses:
                 part = self.analyses[obj.UID()].getSamplePartition()
                 part = part and part or obj
                 items[x]['Partition'] = part.Title()
-                container = part.getContainer()
-                items[x]['Container'] = \
-                    container and container.UID() or ''
-                preservation = part.getPreservation()
-                items[x]['Preservation'] = \
-                    preservation and preservation.UID() or ''
             else:
                 items[x]['Partition'] = ''
-                items[x]['Container'] = ''
-                items[x]['Preservation'] = ''
 
             after_icons = ''
             if obj.getAccredited():
@@ -1010,7 +1035,7 @@ class AnalysisRequestResultsNotRequestedView(AnalysisRequestManageResultsView):
 
 class AnalysisRequestSelectCCView(BikaListingView):
 
-    template = ViewPageTemplateFile("templates/analysisrequest_select_cc.pt")
+    template = ViewPageTemplateFile("templates/ar_select_cc.pt")
 
     def __init__(self, context, request):
         super(AnalysisRequestSelectCCView, self).__init__(context, request)
@@ -1077,7 +1102,7 @@ class AnalysisRequestSelectCCView(BikaListingView):
 
 class AnalysisRequestSelectSampleView(BikaListingView):
 
-    template = ViewPageTemplateFile("templates/analysisrequest_select_sample.pt")
+    template = ViewPageTemplateFile("templates/ar_select_sample.pt")
 
     def __init__(self, context, request):
         super(AnalysisRequestSelectSampleView, self).__init__(context, request)

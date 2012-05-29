@@ -33,6 +33,7 @@ class SamplePartitionsView(BikaListingView):
         self.contentFilter['path'] = {"query": "/".join(context.getPhysicalPath()),
                                       "level" : 0 }
         self.context_actions = {}
+        self.allow_edit = False
         self.title = _("Sample Partitions")
         self.icon = "++resource++bika.lims.images/samplepartition_big.png"
         self.description = ""
@@ -43,8 +44,8 @@ class SamplePartitionsView(BikaListingView):
         self.form_id = "partitions"
 
         self.columns = {
-            'Title': {'title': _('Partition'),
-                      'sortable':False},
+            'PartTitle': {'title': _('Partition'),
+                          'sortable':False},
             'getContainer': {'title': _('Container'),
                              'sortable':False},
             'getPreservation': {'title': _('Preservation'),
@@ -71,7 +72,7 @@ class SamplePartitionsView(BikaListingView):
             {'id':'default',
              'title': _('All'),
              'contentFilter':{},
-             'columns': ['Title',
+             'columns': ['PartTitle',
                          'getContainer',
                          'getPreservation',
                          'getSampler',
@@ -92,16 +93,29 @@ class SamplePartitionsView(BikaListingView):
         props = getToolByName(self.context, 'portal_properties').bika_properties
         datepicker_format = props.getProperty('datepicker_format')
 
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+
+        containers = [({'ResultValue':o.UID,
+                        'ResultText':o.title})
+                      for o in bsc(portal_type="Container",
+                                   inactive_state="active")]
+        preservations = [({'ResultValue':o.UID,
+                           'ResultText':o.title})
+                         for o in bsc(portal_type="Preservation",
+                                      inactive_state="active")]
+
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
 
+            items[x]['PartTitle'] = obj.getId()
+
             container = obj.getContainer()
-            items[x]['getContainer'] = container and container.Title() or ''
+            items[x]['getContainer'] = container and container.UID() or ''
 
             preservation = obj.getPreservation()
             items[x]['getPreservation'] = \
-                preservation and preservation.Title() or ''
+                preservation and preservation.UID() or ''
 
             sampler = obj.getSampler().strip()
             items[x]['getSampler'] = \
@@ -109,6 +123,10 @@ class SamplePartitionsView(BikaListingView):
             datesampled = obj.getDateSampled()
             items[x]['getDateSampled'] = \
                 datesampled and TimeOrDate(self.context, datesampled) or ''
+
+            items[x]['allow_edit'] = ['getContainer', 'getPreservation']
+            items[x]['choices']['getPreservation'] = preservations
+            items[x]['choices']['getContainer'] = containers
 
             preserver = obj.getPreserver().strip()
             items[x]['getPreserver'] = \
