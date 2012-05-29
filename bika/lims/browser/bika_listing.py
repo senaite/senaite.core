@@ -359,7 +359,8 @@ class BikaListingView(BrowserView):
                 if idx.meta_type in('ZCTextIndex', 'FieldIndex'):
                     self.And.append(MatchRegexp(index, value))
                 elif idx.meta_type == 'DateIndex':
-                    import pdb;pdb.set_trace()
+                    logger.error("Unhandled DateIndex search on '%s'"%index)
+                    continue
                 else:
                     self.Or.append(Generic(index, value))
 

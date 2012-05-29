@@ -176,7 +176,7 @@ class SamplePartitionsView(BikaListingView):
                 username = getAuthenticatedMember().getUserName()
                 users = [({'ResultValue': u, 'ResultText': samplers.getValue(u)})
                          for u in samplers]
-                items[x]['choices'] = {'getSampler': users}
+                items[x]['choices']['getSampler'] = users
                 items[x]['getSampler'] = sampler and sampler or \
                     (username in samplers.keys() and username) or ''
                 items[x]['getDateSampled'] = items[x]['getDateSampled'] \
@@ -194,7 +194,7 @@ class SamplePartitionsView(BikaListingView):
                 username = getAuthenticatedMember().getUserName()
                 users = [({'ResultValue': u, 'ResultText': preservers.getValue(u)})
                          for u in preservers]
-                items[x]['choices'] = {'getPreserver': users}
+                items[x]['choices']['getPreserver'] = users
                 items[x]['getPreserver'] = preserver and preserver or \
                     (username in preservers.keys() and username) or ''
                 items[x]['getDatePreserved'] = items[x]['getDatePreserved'] \
@@ -205,7 +205,7 @@ class SamplePartitionsView(BikaListingView):
         return items
 
 class createSamplePartition(BrowserView):
-    """create a new Sample Partition
+    """create a new Sample Partition without an edit form
     """
     def __call__(self):
         wf = getToolByName(self.context, 'portal_workflow')

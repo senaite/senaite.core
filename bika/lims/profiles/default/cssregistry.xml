@@ -7,7 +7,7 @@
     'Sample', 'AnalysisCategory', 'ARProfile', 'ARTemplate', 'AnalysisService',
     'AnalysisSpec', 'Attachment', 'Calculation', 'Instrument', 'LabContact',
     'Laboratory', 'Method', 'Department', 'ReferenceDefinition',
-    'ReferenceManufacturer', 'Reports', 'SampleType', 'SamplePoint',
+    'ReferenceManufacturer', 'ReportFolder', 'SampleType', 'SamplePoint',
     'WorksheetTemplate', 'LabProduct', 'ReferenceSupplier', 'ReferenceSample',
     'Preservation']"
     media="screen"

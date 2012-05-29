@@ -7,26 +7,17 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
+from Products.ATExtensions.field.records import RecordsField
 from Products.CMFCore.utils import getToolByName
 from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
+from bika.lims.browser.widgets import ARTemplatePartitionsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from zope.interface import Interface, implements
 import sys
 
 schema = BikaSchema.copy() + Schema((
-    ReferenceField('ARProfile',
-        required = 1,
-        multiValued = 0,
-        allowed_types = ('ARProfile',),
-        vocabulary = 'ARProfiles',
-        relationship = 'ARTemplateARProfile',
-        widget = ReferenceWidget(
-            checkbox_bound = 1,
-            label = _("Analysis Profile"),
-            description = _("The AR Profile selection for this template"),
-        ),
-    ),
     ## SamplePoint and SampleType references are managed with
     ## accessors and mutators below to get/set a string value
     ## (the Title of the object), but still store a normal Reference.
@@ -55,6 +46,18 @@ schema = BikaSchema.copy() + Schema((
             label = _("Sample Type"),
         ),
     ),
+    ReferenceField('ARProfile',
+        required = 0,
+        multiValued = 0,
+        allowed_types = ('ARProfile',),
+        vocabulary = 'ARProfiles',
+        relationship = 'ARTemplateARProfile',
+        widget = ReferenceWidget(
+            checkbox_bound = 1,
+            label = _("Analysis Profile"),
+            description = _("The AR Profile selection for this template"),
+        ),
+    ),
     BooleanField('ReportDryMatter',
         default = False,
         widget = BooleanWidget(
@@ -73,11 +76,48 @@ schema = BikaSchema.copy() + Schema((
             append_only = True,
         ),
     ),
+    RecordsField('Partitions',
+        schemata = 'Sample Partitions',
+        required = 0,
+        type = 'artemplate_parts',
+        subfields = ('part_id', 'container_uid', 'preservation_uid'),
+        required_subfields = ('part_id'),
+        subfield_labels = {'part_id': _('Partition'),
+                           'container_uid': _('Container'),
+                           'preservation_uid': _('Preservation')},
+        default = [{'part_id':'part-1',
+                    'container_uid':'',
+                    'preservation_uid':''}],
+        widget = ARTemplatePartitionsWidget(
+            label = _("Sample Partitions"),
+            description = _("XXX@Lemoene 1"),
+        )
+    ),
+    RecordsField('Analyses',
+        schemata = 'Analyses',
+        required = 0,
+        type = 'artemplate_analyses',
+        subfields = ('service_uid', 'part_id'),
+        required_subfields = ('pos', 'type'),
+        subfield_labels = {'pos': _('Position'),
+                           'type': _('Analysis Type'),
+                           'blank_ref': _('Reference'),
+                           'control_ref': _('Reference'),
+                           'dup': _('Duplicate Of')},
+        default = [],
+        widget = BikaRecordsWidget(
+            label = _("Analyses"),
+            description = _("XXX@lemoene 2"),
+        )
+    ),
 ),
 )
-schema['title'].widget.visible = True
+
 schema['description'].widget.visible = True
-IdField = schema['id']
+schema['title'].widget.visible = True
+schema['title'].validators = ('uniquefieldvalidator','isUnixLikeName',)
+# Update the validation layer after change the validator in runtime
+schema['title']._validationLayer()
 
 class ARTemplate(BaseContent):
     security = ClassSecurityInfo()

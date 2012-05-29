@@ -153,17 +153,19 @@ class BikaGenerator:
 
         # Root permissions
         mp = portal.manage_permission
+        mp(AddSamplePartition, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
 
-        mp(permissions.AddPortalContent, ['Manager', 'Owner', 'LabManager'], 1)
-        mp(AddClientFolder, ['Manager'], 1)
-        mp(AddClient, ['Manager', 'Owner', 'LabManager'], 1)
-        mp(AddAnalysisRequest, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
-        mp(AddSample, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
-        mp(AddAnalysis, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
         mp(AddARProfile, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddARTemplate, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
+        mp(AddAnalysis, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
+        mp(AddAnalysisRequest, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
+        mp(AddClient, ['Manager', 'Owner', 'LabManager'], 1)
+        mp(AddClientFolder, ['Manager'], 1)
         mp(AddMethod, ['Manager', 'LabManager'], 1)
+        mp(AddSample, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
+        mp(AddSamplePartition, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
 
+        mp(permissions.AddPortalContent, ['Manager', 'Owner', 'LabManager'], 1)
         mp(permissions.ListFolderContents, ['Manager', 'Owner'], 1)
         mp(permissions.FTPAccess, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 1)

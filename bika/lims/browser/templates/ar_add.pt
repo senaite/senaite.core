@@ -522,26 +522,6 @@
         </td>
     </tal:block>
 </tr>
-<tr tal:condition="python:checkPermission('BIKA: Add ARProfile', context)">
-    <th style="vertical-align:middle;" i18n:translate="">Save</th>
-    <th colspan="2">
-    <select id="ARProfileType" name="ARProfileType">
-        <option value="ARProfile" i18n:translate="">AR Profile</option>
-        <option value="ARTemplate" i18n:translate="">AR Template</option>
-    </select>
-    </th>
-    <tal:save repeat="column python:range(view.col_count)">
-        <td class="topborder">
-            <input type="text" size="10"
-                tal:define="
-                    input_name string:ar.${column}.profileTitle"
-                tal:attributes="
-                    id input_name;
-                    name string:${input_name}:ignore_empty:record;"/>
-        </td>
-    </tal:save>
-</tr>
-
 </tfoot>
 </table>
 

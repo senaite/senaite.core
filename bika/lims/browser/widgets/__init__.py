@@ -6,4 +6,5 @@ from serviceswidget import ServicesWidget
 from specwidget import SpecWidget
 from worksheettemplatelayoutwidget import WorksheetTemplateLayoutWidget
 from coordinatewidget import CoordinateWidget
-
+from artemplatepartitionswidget import ARTemplatePartitionsWidget
+#from artemplate_analyseswidget import ARTemplateAnalysesWidget
