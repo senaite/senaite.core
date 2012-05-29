@@ -61,12 +61,12 @@ class SamplePartitionsView(BikaListingView):
             'getDatePreserved': {'title': _('Date Preserved'),
                                  'input_class': 'datepicker_nofuture',
                                  'input_width': '10',
-                                 'sortable':False},
-            'getDisposalDate': {'title': _('Disposal Date'),
-                                'sortable':False},
-            'state_title': {'title': _('State'),
-                            'sortable':False},
+                                 'sortable':False}
         }
+        if not self.context.absolute_url().endswith('partitions'):
+            self.columns['getDisposalDate'] = {'title': _('Disposal Date'),
+                                               'sortable':False}
+        self.columns['state_title'] = {'title': _('State'), 'sortable':False}
 
         self.review_states = [
             {'id':'default',
@@ -79,7 +79,6 @@ class SamplePartitionsView(BikaListingView):
                          'getDateSampled',
                          'getPreserver',
                          'getDatePreserved',
-                         'getDisposalDate',
                          'state_title'],
              'transitions': [{'id': 'sampled'},
                              {'id': 'preserved'},
@@ -90,6 +89,9 @@ class SamplePartitionsView(BikaListingView):
                                 'title': _('Save')}, ],
             },
         ]
+        if not self.context.absolute_url().endswith('partitions'):
+            self.columns['getDisposalDate'] = {'title': _('Disposal Date'),
+                                               'sortable':False}
 
     def __call__(self):
         mtool = getToolByName(self.context, 'portal_membership')

@@ -41,7 +41,7 @@ In the tradition of <i>Chief </i>Inkosi Bika LIMS 2 using a  title for a release
 <p style="text-align: center; "><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview/bikas-web-based-workflow"><img class="image-inline" src="workflow-diagram.png" /></a></p>
 <p style="text-align: center; "><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview/bikas-web-based-workflow">Web based workflow</a></p>
 <p align="left"><img alt="Accredited lab analyses" src="++resource++bika.lims.images/warning.png" /> <b>Sampling workflow is [on]</b></p>
-<p align="left">I production, labs will set sampling workflow maybe once  during the system life cycle. To prevent confusion if users randomly  toggle this setting, it cannot be switched off in the demo</p>
+<p align="left">In production, labs will set sampling workflow very rarely during the system life cycle. By default, the sampling workflow is enabled.</p>
 <div align="left"></div>
 <div align="left"></div>
 </td>
