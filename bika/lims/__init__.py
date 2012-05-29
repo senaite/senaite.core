@@ -75,7 +75,8 @@ def initialize(context):
     from content.referencesamplesfolder import ReferenceSamplesFolder
     from content.referencesupplier import ReferenceSupplier
     from content.rejectanalysis import RejectAnalysis
-    from content.reports import Reports
+    from content.report import Report
+    from content.reportfolder import ReportFolder
     from content.sample import Sample
     from content.samplepartition import SamplePartition
     from content.samplepoint import SamplePoint

@@ -28,8 +28,8 @@ class IDuplicateAnalysis(Interface):
 class IReferenceAnalysis(Interface):
     """Reference Analyses """
 
-class IReports(Interface):
-    """Reports"""
+class IReportFolder(Interface):
+    """Report folder"""
 
 class ISample(Interface):
     """Sample"""

@@ -38,6 +38,7 @@ class BikaCatalog(CatalogTool):
     AnalysisRequest
     Sample
     SamplePartition
+    Report
     """
     implements(IBikaCatalog)
 
@@ -67,6 +68,7 @@ class BikaCatalog(CatalogTool):
                                                  'Sample',
                                                  'SamplePartition',
                                                  'ReferenceSample',
+                                                 'Report',
                                                  'Worksheet',
                                                  ),
                                 search_sub = True,

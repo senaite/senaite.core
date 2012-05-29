@@ -1,19 +1,21 @@
 <?xml version="1.0"?>
-<object name="Reports"
+<object name="ReportFolder"
         meta_type="Factory-based Type Information with dynamic views"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
         i18n:domain="plone">
  <property name="title" i18n:translate="">Reports</property>
  <property name="description"></property>
  <property name="content_icon">++resource++bika.lims.images/report.png</property>
- <property name="content_meta_type">Reports</property>
+ <property name="content_meta_type">ReportFolder</property>
  <property name="product">bika.lims</property>
- <property name="factory">addReports</property>
+ <property name="factory">addReportFolder</property>
  <property name="add_view_expr"></property>
  <property name="link_target"></property>
  <property name="global_allow">False</property>
  <property name="filter_content_types">False</property>
- <property name="allowed_content_types"/>
+ <property name="allowed_content_types">
+  <element value="Report"/>
+ </property>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
 
@@ -38,7 +40,7 @@
          url_expr="string:${object_url}/reports_qualitycontrol"
          i18n:attributes="title"
          visible="True">
-  <permission value="Modify portal contentView"/>
+  <permission value="Modify portal content"/>
  </action>
 
  <action title="Administration"
@@ -51,4 +53,13 @@
   <permission value="Modify portal content"/>
  </action>
 
+ <action title="History"
+         action_id="history"
+         category="object"
+         condition_expr=""
+         url_expr="string:${object_url}/reports_history"
+         i18n:attributes="title"
+         visible="True">
+  <permission value="View"/>
+ </action>
 </object>

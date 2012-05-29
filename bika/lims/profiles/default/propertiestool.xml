@@ -67,7 +67,8 @@
     <element value="ReferenceSample"/>
     <element value="ReferenceSupplier"/>
     <element value="RejectAnalysis"/>
-    <element value="Reports"/>
+    <element value="Report"/>
+    <element value="ReportFolder"/>
     <element value="Sample"/>
     <element value="SamplePartition"/>
     <element value="SamplePoint"/>

@@ -165,7 +165,12 @@
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
 
-  <type type_id="Reports"/>
+  <type type_id="Report">
+   <bound-workflow workflow_id="bika_one_state_workflow"/>
+  </type>
+
+  <type type_id="ReportFolder"/>
+
   <type type_id="SupplyOrder">
    <bound-workflow workflow_id="bika_order_workflow"/>
    <bound-workflow workflow_id="bika_inactive_workflow"/>

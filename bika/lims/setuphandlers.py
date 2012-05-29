@@ -262,13 +262,13 @@ class BikaGenerator:
 
         # /reports folder permissions
         mp = portal.reports.manage_permission
-        mp(permissions.ListFolderContents, ['Manager', 'Member', ], 0)
-        mp(permissions.View, ['Manager', 'Member', ], 0)
-        mp(permissions.AddPortalContent, ['Manager', 'Member', ], 0)
-        mp('Access contents information', ['Manager', 'Member',], 0)
-        mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
-        mp('ATContentTypes: Add Image', ['Manager', 'Member',], 0)
-        mp('ATContentTypes: Add File', ['Manager', 'Member',], 0)
+        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk' ], 0)
+        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member'], 0)
+        mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Owner'], 0)
+        mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Member'], 0)
+
+        mp('ATContentTypes: Add Image', ['Manager', 'Labmanager', 'LabClerk', 'Member',], 0)
+        mp('ATContentTypes: Add File', ['Manager', 'Labmanager', 'LabClerk', 'Member',], 0)
         portal.reports.reindexObject()
 
         # /invoices folder permissions
@@ -406,6 +406,8 @@ class BikaGenerator:
         at.setCatalogsByType('Sample', ['bika_catalog', ])
         at.setCatalogsByType('SamplePartition', ['bika_catalog', ])
         at.setCatalogsByType('ReferenceSample', ['bika_catalog', ])
+        at.setCatalogsByType('Report', ['bika_catalog', ])
+        at.setCatalogsByType('Worksheet', ['bika_catalog', ])
 
         # create lexicon
         wordSplitter = Empty()

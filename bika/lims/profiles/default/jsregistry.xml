@@ -276,7 +276,7 @@
               conditionalcomment=""
               cookable="True"
               enabled="on"
-              expression="python:here.portal_type in ['Reports',]"
+              expression="python:here.portal_type in ['ReportFolder',]"
               id="++resource++bika.lims.js/reports.js"
               inline="False"
               insert-after="*"/>

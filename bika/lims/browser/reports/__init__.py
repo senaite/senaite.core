@@ -9,10 +9,10 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.client import ClientSamplesView
+from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import TimeOrDate
 from bika.lims.utils import pretty_user_name_or_id, pretty_user_email, logged_in_client
-from bika.lims.interfaces import IReports
+from bika.lims.interfaces import IReportFolder
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 import xhtml2pdf.pisa as pisa
@@ -23,7 +23,7 @@ from cStringIO import StringIO
 import sys
 
 class ProductivityView(BrowserView):
-    """ Sample View form
+    """ Productivity View form
     """
     implements(IViewView)
     template = ViewPageTemplateFile("reports_productivity.pt")
@@ -37,7 +37,7 @@ class ProductivityView(BrowserView):
         return self.template()
 
 class QualityControlView(BrowserView):
-    """ Sample View form
+    """ QC View form
     """
     implements(IViewView)
     template = ViewPageTemplateFile("reports_qualitycontrol.pt")
@@ -51,7 +51,7 @@ class QualityControlView(BrowserView):
         return self.template()
 
 class AdministrationView(BrowserView):
-    """ Sample View form
+    """ Administration View form
     """
     implements(IViewView)
     template = ViewPageTemplateFile("reports_administration.pt")
@@ -63,6 +63,107 @@ class AdministrationView(BrowserView):
 
     def __call__(self):
         return self.template()
+
+class ReportHistoryView(BikaListingView):
+    """ Report history form
+    """
+    implements(IViewView)
+
+    def __init__(self, context, request):
+        super(ReportHistoryView, self).__init__(context, request)
+        
+        self.catalog = "bika_catalog"
+        # this will be reset in the call to filter on own reports
+        self.contentFilter = {'portal_type': 'Report',
+                              'sort_order': 'reverse'}
+        self.context_actions = {}
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = True
+        self.pagesize = 50
+
+        self.icon = "++resource++bika.lims.images/report_big.png"
+        self.title = _("Reports")
+        self.description = ""
+
+        # this is set up in call where member is authenticated
+        self.columns = {}
+        self.review_states = []
+
+
+    def __call__(self):
+        this_client = logged_in_client(self.context)
+        if this_client:
+            self.contentFilter = {
+                'portal_type': 'Report',
+                'getClientUID': this_client.UID(),
+                'sort_order': 'reverse'}
+            self.columns = {
+                'ReportType': {'title': _('Report Type')},
+                'FileSize': {'title': _('Size')},
+                'Created': {'title': _('Created')},
+                'By': {'title': _('By')}, }
+            self.review_states = [
+                {'id':'default',
+                 'title': 'All',
+                 'contentFilter':{},
+                 'columns': ['ReportType',
+                             'FileSize',
+                             'Created',
+                             'By']},
+            ]
+        else:
+            self.contentFilter = {
+                'portal_type': 'Report',
+                'sort_order': 'reverse'}
+
+            self.columns = {
+                'ClientName': {'title': _('Client')},
+                'ReportType': {'title': _('Report Type')},
+                'FileSize': {'title': _('Size')},
+                'Created': {'title': _('Created')},
+                'By': {'title': _('By')},
+            }
+            self.review_states = [
+                {'id':'default',
+                 'title': 'All',
+                 'contentFilter':{},
+                 'columns': ['ClientName',
+                             'ReportType',
+                             'FileSize',
+                             'Created',
+                             'By']},
+            ]
+
+        return super(ReportHistoryView, self).__call__()
+
+    def lookupMime(self, name):
+        mimetool = getToolByName(self, 'mimetypes_registry')
+        mimetypes = mimetool.lookup(name)
+        if len(mimetypes):
+            return mimetypes[0].name()
+        else:
+            return name
+
+    def folderitems(self):
+        items = BikaListingView.folderitems(self)
+        for x in range(len(items)):
+            if not items[x].has_key('obj'): continue
+            obj = items[x]['obj']
+            obj_url = obj.absolute_url()
+            file = obj.getReportFile()
+            icon = file.getBestIcon()
+
+            items[x]['ClientName'] = \
+                obj.getClient() and obj.getClient().Title() or ''
+            items[x]['FileSize'] = '%sKb' % (file.get_size() / 1024)
+            items[x]['Created'] = TimeOrDate(self.context, obj.created())
+            items[x]['By'] = pretty_user_name_or_id(self.context, obj.Creator())
+
+            items[x]['replace']['ReportType'] = \
+                 "<a href='%s/at_download/ReportFile'>%s</a>" % \
+                 (obj_url, items[x]['ReportType'])
+        return items
 
 class SubmitForm(BrowserView):
     """ Redirect to specific report
@@ -88,24 +189,33 @@ class SubmitForm(BrowserView):
         else:
             self.client_title = None
             self.client_address = None
+
+        if client:
+            clientuid = client.UID()
+        else:
+            clientuid = None
         username = self.context.portal_membership.getAuthenticatedMember().getUserName()
         self.reporter = pretty_user_name_or_id(self.context, username)
         self.reporter_email = pretty_user_email(self.context, username)
         report_id =  self.request.form['report_id']
+        reporttype = ''
         if report_id == 'analysesperservice':
+            reporttype = 'Analyses per service'
             self.reportout = AnalysesPerService(self.context, self.request)()
         elif report_id == 'analysespersampletype':
+            reporttype = 'Analyses per sampletype'
             self.reportout = AnalysesPerSampleType(self.context, self.request)()
         elif report_id == 'analysesperclient':
+            reporttype = 'Analyses per client'
             self.reportout = AnalysesPerClient(self.context, self.request)()
         elif report_id == 'analysestats':
+            reporttype = 'Analyses_tats'
             self.reportout = AnalysesTats(self.context, self.request)()
         elif report_id == 'analysesattachments':
+            reporttype = 'Analyses attachments'
             self.reportout = AnalysesAttachments(self.context, self.request)()
         else:
             self.reportout = "no report to out"
-
-
 
         # this is the good part
         ramdisk = StringIO()
@@ -113,19 +223,24 @@ class SubmitForm(BrowserView):
         result = ramdisk.getvalue()
         ramdisk.close()
 
+        # write pdf to report object
+        reportid = self.aq_parent.generateUniqueId('Report')
+        self.aq_parent.invokeFactory(id = reportid, type_name = "Report")
+        report = self.aq_parent._getOb(reportid)
+        report.edit(
+            title = reporttype,
+            ReportFile = result,
+            ReportType = reporttype,
+            Client = clientuid,
+            )
+        report.processForm()
+        report.reindexObject()
+
+
         if not pdf.err:
-            #stream file to browser
             setheader = self.request.RESPONSE.setHeader
-            #setheader('Content-Length',len(result))
             setheader('Content-Type', 'application/pdf')
-            #setheader('Content-Disposition', 'inline; filename=%s' % filename)
-            #self.request.RESPONSE.write(result)
-            thisid = self.context.invokeFactory("File",id="tmp")
-            thisfile = self.context[thisid]
-            from bika.lims.idserver import renameAfterCreation
-            renameAfterCreation(thisfile)
-            thisfile.setFile(result)
-            self.request.RESPONSE.redirect(thisfile.absolute_url())
+            self.request.RESPONSE.write(result)
 
         pisa.showLogging()
 

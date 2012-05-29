@@ -61,7 +61,8 @@
  <object name="ReferenceSupplier" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceSuppliers" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="RejectAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="Reports" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="ReportFolder" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Report" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Sample" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SamplePartition" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SamplePoint" meta_type="Factory-based Type Information with dynamic views"/>

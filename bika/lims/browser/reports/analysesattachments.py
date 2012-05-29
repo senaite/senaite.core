@@ -6,7 +6,6 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.client import ClientSamplesView
 from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client
-from bika.lims.interfaces import IReports
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements

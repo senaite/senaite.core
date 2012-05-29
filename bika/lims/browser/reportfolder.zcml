@@ -6,7 +6,7 @@
 
     <!-- main site/reports view -->
     <browser:page
-      for="bika.lims.interfaces.IReports"
+      for="bika.lims.interfaces.IReportFolder"
       name="reports_productivity"
       class="bika.lims.browser.reports.ProductivityView"
       permission="zope2.View"
@@ -14,7 +14,7 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IReports"
+      for="bika.lims.interfaces.IReportFolder"
       name="reports_qualitycontrol"
       class="bika.lims.browser.reports.QualityControlView"
       permission="zope2.View"
@@ -22,14 +22,21 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IReports"
+      for="bika.lims.interfaces.IReportFolder"
       name="reports_administration"
       class="bika.lims.browser.reports.AdministrationView"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
     <browser:page
-      for="bika.lims.interfaces.IReports"
+      for="bika.lims.interfaces.IReportFolder"
+      name="reports_history"
+      class="bika.lims.browser.reports.ReportHistoryView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+    <browser:page
+      for="bika.lims.interfaces.IReportFolder"
       name="reports"
       class="bika.lims.browser.reports.SubmitForm"
       permission="zope2.View"

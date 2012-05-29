@@ -6,7 +6,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.client import ClientSamplesView
 from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client
-from bika.lims.interfaces import IReports
+from bika.lims.interfaces import IReportFolder
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
@@ -31,8 +31,9 @@ class AnalysesPerClient(BrowserView):
         parm_lines = {}
         parms = []
         headings = {}
-        is_client = self.context.member_is_client()
-        if is_client:
+        this_client = self.context.logged_in_client()
+
+        if this_client:
             headings['header'] = _("Analysis requests and analyses")
             headings['subheader'] = _("Number of Analysis requests and analyses")
         else:
@@ -100,8 +101,7 @@ class AnalysesPerClient(BrowserView):
 
         datalines = []
 
-        if is_client:
-            this_client = logged_in_client(self.context)
+        if this_client:
             c_proxies = pc(portal_type="Client",
                            UID=this_client.UID())
         else:
@@ -131,7 +131,7 @@ class AnalysesPerClient(BrowserView):
 
         # footer data
         footlines = []
-        if not is_client:
+        if not this_client:
             footline = []
             footitem = {'value': _('Total'),
                         'class': 'total_label'} 
