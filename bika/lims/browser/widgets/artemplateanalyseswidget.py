@@ -7,6 +7,7 @@ from Products.Five.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from zope.i18n.locales import locales
+from operator import itemgetter
 import json
 
 class ARTemplateAnalysesView(BikaListingView):
@@ -51,8 +52,6 @@ class ARTemplateAnalysesView(BikaListingView):
                          'Partition',
                          ],
              'transitions': [{'id':'empty'}, ], # none
-             'custom_actions':[{'id': 'save_analyses_button',
-                                'title': _('Save')}, ],
              },
         ]
 
@@ -70,8 +69,12 @@ class ARTemplateAnalysesView(BikaListingView):
         self.allow_edit = 'LabManager' in roles or 'Manager' in roles
 
         items = BikaListingView.folderitems(self)
-        analyses = self.fieldvalue
-        partitions = [{'ResultValue':'part-1', 'ResultText':'part-1'}]
+
+        part_ids = ['part-1']
+        for s in self.fieldvalue:
+            if s['partition'] not in part_ids:
+                part_ids.append(s['partition'])
+        partitions = [{'ResultValue':p, 'ResultText':p} for p in part_ids]
 
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
@@ -82,16 +85,12 @@ class ARTemplateAnalysesView(BikaListingView):
             if cat not in self.categories:
                 self.categories.append(cat)
 
-            analyses = dict([(x['service_uid'], x)
-                             for x in self.fieldvalue])
+            analyses = dict([(a['service_uid'], a)
+                             for a in self.fieldvalue])
 
             items[x]['selected'] = items[x]['uid'] in analyses.keys()
 
             items[x]['class']['Title'] = 'service_title'
-
-            # js checks in row_data if an analysis may be removed.
-            row_data = {}
-            items[x]['row_data'] = json.dumps(row_data)
 
             calculation = obj.getCalculation()
             items[x]['Calculation'] = calculation and calculation.Title()
@@ -99,13 +98,11 @@ class ARTemplateAnalysesView(BikaListingView):
             locale = locales.getLocale('en')
             currency = self.context.bika_setup.getCurrency()
             symbol = locale.numbers.currencies[currency].symbol
-            items[x]['before']['Price'] = symbol
-            items[x]['Price'] = obj.getPrice()
+            items[x]['Price'] = "%s %s" % (symbol, obj.getPrice())
             items[x]['class']['Price'] = 'nowrap'
-            items[x]['allow_edit'] = ['Price', 'Partition']
+            items[x]['allow_edit'] = ['Partition']
             if not items[x]['selected']:
-                items[x]['edit_condition'] = {'Partition':False,
-                                              'Price':False}
+                items[x]['edit_condition'] = {'Partition':False}
 
             items[x]['required'].append('Partition')
             items[x]['choices']['Partition'] = partitions
@@ -138,6 +135,7 @@ class ARTemplateAnalysesView(BikaListingView):
                               _('Attachment not permitted'))
             if after_icons:
                 items[x]['after']['Title'] = after_icons
+        self.categories.sort()
         return items
 
 class ARTemplateAnalysesWidget(TypesWidget):
@@ -151,59 +149,25 @@ class ARTemplateAnalysesWidget(TypesWidget):
     security = ClassSecurityInfo()
 
     security.declarePublic('process_form')
-    def process_form(self, instance, field, form, empty_marker = None, emptyReturnsMarker = False):
+    def process_form(self, instance, field, form, empty_marker = None,
+                     emptyReturnsMarker = False):
         """ Return a list of dictionaries fit for ARTemplate/Analyses field
             consumption.
         """
-        value = []
-        if 'service' in form:
-            for uid, service in form['service'][0].items():
-                try:
-                    float(form['result'][0][uid])
-                    float(form['min'][0][uid])
-                    float(form['max'][0][uid])
-                except:
-                    continue
-                value.append({'uid':uid,
-                              'result':form['result'][0][uid],
-                              'min':form['min'][0][uid],
-                              'max':form['max'][0][uid]})
-        return value, {}
-#XXX
-        if action == "save_analyses_button":
-            ar = self.context
-            sample = ar.getSample()
+        bsc = getToolByName(instance, 'bika_setup_catalog')
+        value = empty_marker
+        service_uids = form.get('uids', None)
+        Partitions = form.get('Partition', None)
 
-            objects = WorkflowAction._get_selected_items(self)
-            if not objects:
-                message = self.context.translate(
-                    _("No analyses have been selected"))
-                self.context.plone_utils.addPortalMessage(message, 'info')
-                self.destination_url = self.context.absolute_url() + "/analyses"
-                self.request.response.redirect(self.destination_url)
-                return
-
-            new = ar.setAnalyses(objects.keys(), prices = form['Price'][0])
-
-            # link analyses and partitions
-            for service_uid, service in objects.items():
-                part_id = form['Partition'][0][service_uid]
-                part = sample[part_id]
-                analysis = ar[service.getKeyword()]
-                analysis.setSamplePartition(part)
-                analysis.reindexObject()
-
-            if new:
-                ar_state = workflow.getInfoFor(ar, 'review_state')
-                for analysis in new:
-                    analysis.updateDueDate()
-                    changeWorkflowState(analysis, ar_state)
-
-            message = self.context.translate(PMF("Changes saved."))
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            self.destination_url = self.context.absolute_url()
-            self.request.response.redirect(self.destination_url)
-            return
+        if Partitions and service_uids:
+            Partitions = Partitions[0]
+            for service_uid in service_uids:
+                if service_uid in Partitions.keys() \
+                   and Partitions[service_uid] != '':
+                    value.append({'service_uid':service_uid,
+                                  'partition':Partitions[service_uid]})
+        if value:
+            return value, {}
 
     security.declarePublic('Analyses')
     def Analyses(self, field, allow_edit = False):
@@ -215,6 +179,21 @@ class ARTemplateAnalysesWidget(TypesWidget):
                                       fieldvalue = fieldvalue,
                                       allow_edit = allow_edit)
         return view.contents_table(table_only = True)
+
+    security.declarePublic('ARProfiles')
+    def ARProfiles(self):
+        """generate the ARProfiles hidden field value
+        contains service details for each ARProfile
+        """
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = {}
+        for p in bsc(portal_type='ARProfile',
+                      inactive_state='active',
+                      sort_on = 'sortable_title'):
+            p = p.getObject()
+            service_uids = [x.UID() for x in p.getService()]
+            items[p.UID()] = service_uids
+        return json.dumps(items)
 
 registerWidget(ARTemplateAnalysesWidget,
                title = 'AR Template Analyses Layout',

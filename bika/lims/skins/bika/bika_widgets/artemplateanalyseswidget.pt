@@ -16,8 +16,17 @@
 <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
 
     <metal:body_macro fill-slot="widget_body">
+		<span
+			style="display:none;"
+			id='ARProfiles'
+			tal:attributes="value python:widget.ARProfiles()">
+		</span>
 		<div id="folderlisting-main-table">
-			<span id="analyses" tal:content="structure python:widget.Analyses(field, allow_edit=True)"></span>
+			<span
+				id="analyses"
+				tal:content="
+					structure python:widget.Analyses(field, allow_edit=True)">
+			</span>
 		</div>
     </metal:body_macro>
 

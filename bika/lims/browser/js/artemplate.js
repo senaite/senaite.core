@@ -22,9 +22,6 @@ function autocomplete_sampletype(request,callback){
 	);
 }
 
-function setARProfile(){
-	alert("artemplate.js setARProfile " + $(this).val());
-}
 
 $(document).ready(function(){
 
@@ -32,7 +29,6 @@ $(document).ready(function(){
 
 	$("#SampleType").autocomplete({ minLength: 0, source: autocomplete_sampletype});
 	$("#SamplePoint").autocomplete({ minLength: 0, source: autocomplete_samplepoint});
-	$("#ARProfile\\:list").change(setARProfile);
 
 });
 }(jQuery));

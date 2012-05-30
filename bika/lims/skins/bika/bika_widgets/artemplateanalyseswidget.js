@@ -2,10 +2,28 @@
 // ../../../browser/widgets/artemplateanalyseswidget.py
 
 // Most of this code is shared in ../../../browser/js/ar_analyses.pt
-// There are a few differences, because this widget holds a Dictionary,
+// There are a few differences, because this widget holds a dictionary,
 // where the AR form reads and writes ARAnalysesField.
+// Also note, the form_id is different, so checkboxes are called
+// analyses_cb_* here, an list_cb_* there.
 
 (function( $ ) {
+
+////////////////////////////////////////
+function expand_cat(service_uid){
+	cat = $("[name=Partition."+service_uid+":records]").parents('tr').attr('cat');
+	th = $('th[cat='+cat+']');
+	if ($(th).hasClass('collapsed')){
+		table = $(th).parents('.bika-listing-table');
+		// show sub TR rows
+		$(table)
+			.children('tbody')
+			.children('tr[cat='+cat+']')
+			.toggle(true);
+		$(th).removeClass('collapsed').addClass('expanded');
+	}
+}
+
 ////////////////////////////////////////
 function check_service(service_uid){
 	// Add partition dropdown
@@ -23,6 +41,7 @@ function check_service(service_uid){
 	$(element).after(select);
 	// remove hidden field
 	$(element).remove();
+	expand_cat(service_uid);
 }
 
 ////////////////////////////////////////
@@ -71,7 +90,7 @@ function calcdependencies(elements, auto_yes) {
 				$.each(servicedata, function(i, serviceuid_servicetitle){
 					service = serviceuid_servicetitle.split("_");
 					// if the service is already checked, skip it.
-					if (! $('#list_cb_'+service[0]).attr("checked") ){
+					if (! $('#analyses_cb_'+service[0]).attr("checked") ){
 						// this one is for the current category
 						services.push(service[0]);
 						// and this one decides if the confirmation box gets shown at all.
@@ -96,9 +115,10 @@ function calcdependencies(elements, auto_yes) {
 				function add_Yes(){
 					$.each(dep_args, function(i,args){
 						$.each(args[2], function(x,serviceUID){
-							if(! $('#list_cb_'+serviceUID).attr("checked") ){
+							if(! $('#analyses_cb_'+serviceUID).attr("checked") ){
 								check_service(serviceUID);
-								$('#list_cb_'+serviceUID).attr("checked", true);
+								$('#analyses_cb_'+serviceUID).attr("checked", true);
+								expand_cat(serviceUID);
 							}
 						});
 					});
@@ -139,7 +159,7 @@ function calcdependencies(elements, auto_yes) {
 		}
 		if (s_uids.length > 0){
 			$.each(s_uids, function(i, serviceUID){
-				cb = $('#list_cb_' + serviceUID);
+				cb = $('#analyses_cb_' + serviceUID);
 				if (cb.attr("checked")){
 					affected_services.push(serviceUID);
 					affected_titles.push(cb.attr('item_title'));
@@ -160,7 +180,7 @@ function calcdependencies(elements, auto_yes) {
 										 buttons:{
 					yes: function(){
 						$.each(affected_services, function(i,serviceUID){
-							se = $('#list_cb_'+serviceUID);
+							se = $('#analyses_cb_'+serviceUID);
 							uncheck_service(serviceUID);
 							$(se).attr('checked', false);
 						});
@@ -182,31 +202,249 @@ function calcdependencies(elements, auto_yes) {
 	}
 }
 
-function portalMessage(message){
-	str = "<dl class='portalMessage error'>"+
-		"<dt>Error</dt>"+
-		"<dd><ul>" + message +
-		"</ul></dd></dl>";
-	$('.portalMessage').remove();
-	$(str).appendTo('#viewlet-above-content');
+//////////////////////////////////////
+function addPart(){
+	highest_part = '';
+	from_tr = '';
+	$.each($('#partitions td.part_id'), function(i,v){
+		partid = $($(v).children()[1]).text();
+		if (partid > highest_part){
+			from_tr = $(v).parent();
+			highest_part = partid;
+		}
+	});
+	highest_part = highest_part.split("-")[1];
+	next_part = parseInt(highest_part,10) + 1;
+
+	// copy and re-format new partition table row
+	part_trs = $("#partitions tbody tr")[0];
+	uid	= $(from_tr).attr('uid');
+	to_tr = $(from_tr).clone();
+	$(to_tr).attr('id', 'folder-contents-item-part-'+next_part);
+	$(to_tr).attr('uid', 'part-'+next_part);
+	$(to_tr).find("#"+uid+"_row_data").attr('id', "part-"+next_part+"_row_data").attr('name', "row_data."+next_part+":records");
+	$(to_tr).find("#"+uid).attr('id', 'part-'+next_part);
+	$(to_tr).find("input[value='"+uid+"']").attr('value', 'part-'+next_part);
+	$(to_tr).find("[uid='"+uid+"']").attr('uid', 'part-'+next_part);
+	$(to_tr).find("span[uid='"+uid+"']").attr('uid', 'part-'+next_part);
+	$(to_tr).find("input[name^='part_id']").attr('name', "part_id.part-"+next_part+":records").attr('value', 'part-'+next_part);
+	$(to_tr).find("select[field='container_uid']").attr('name', "container_uid.part-"+next_part+":records");
+	$(to_tr).find("select[field='preservation_uid']").attr('name', "preservation_uid.part-"+next_part+":records");
+	$($($(to_tr).children('td')[0]).children()[1]).empty().append('part-'+next_part);
+	$($("#partitions tbody")[0]).append($(to_tr));
+
+	// add this part to Partition selectorsin Analyses tab
+	$.each($('select[name^="Partition\\."]'), function(i,v){
+		$(v).append($("<option value='part-"+next_part+"'>part-"+next_part+"</option>"));
+	});
+}
+
+////////////////////////////////////////
+function calculate_parts(){
+
+	// get SampleType
+	st_title = $("#SampleType").val();
+	st_uid = window.bsc.data.st_uids[st_title];
+	if (st_uid != undefined && st_uid != null){
+		st_uid = st_uid['uid'];
+	} else {
+		st_uid = '';
+	}
+
+	// get selected services
+	selected = $('[name$="\\.Analyses"]').filter(':checked');
+	service_uids = []
+	for(i=0;i<selected.length;i++){
+		service_uids.push($(selected[i]).attr('uid'));
+	}
+
+
+	// loop through each selected service, assigning or creating
+	// partitions as we go.
+	parts = [];
+	for(i=0;i<service_uids.length;i++){
+		service_uid = service_uids[i];
+
+		// part_setup is filled with defaults here, if it is not
+		// already defined
+		z = window.bsc.data.services[service_uid];
+		if(z == undefined || z == null) {
+			window.bsc.data.services[service_uid] = {
+				'Separate': false,
+				'Container': [],
+				'Preservation': [],
+				'PartitionSetup': ''
+			}
+		}
+
+		// set service default partition setup field values
+		separate = window.bsc.data.services[service_uid]['Separate'];
+		container = window.bsc.data.services[service_uid]['Container'];
+		preservation = window.bsc.data.services[service_uid]['Preservation'];
+		// discover if a more specific part_setup exists for this
+		// sample_type and service_uid
+		part_setup = '';
+		$.each(window.bsc.data.services[service_uid]['PartitionSetup'],
+			function(x, ps){
+				if(ps['sampletype'] == st_uid){
+					part_setup = ps;
+					return false;
+				}
+			}
+		);
+		// if it does, we use it instead of defaults.
+		if (part_setup != '') {
+			separate = part_setup['separate'];
+			container = part_setup['container'];
+			preservation = part_setup['preservation'];
+		}
+
+		if (separate) {
+			// create a separate partition for this analysis.
+			// partition container and preservation remain plural.
+			part = {'services': [service_uid],
+					'separate': true,
+					'container': container,
+					'preservation': preservation};
+			parts.push(part);
+
+		} else {
+
+			// So now we either need to find an existing partition
+			// which permits us to add this analysis to it, or
+			// create a new one.
+			found_part = '';
+
+			for(x=0; x<parts.length;x++){
+				part = parts[x];
+				// make sure this partition isn't flagged as separate
+				if (part['separate']) {
+					continue;
+				}
+				// if no container info is provided by either the
+				// partition OR the service, this partition is available
+				var c_intersection = [];
+				if (part['container'].length > 0 || container.length > 0) {
+					// check our containers against this partition's
+					c_intersection = $.grep(container, function(c, y){
+						if(part['container'].indexOf(c) > -1){
+							return true;
+						} else {
+							return false;
+						}
+					});
+					if (c_intersection.length == 0){
+						// no match
+						continue;
+					}
+				}
+				// if no preservation info is provided by either the
+				// partition OR the service, this partition is available
+				var p_intersection = [];
+				if (part['preservation'].length > 0 || preservation.length > 0) {
+					// check our preservation against this partition's
+					p_intersection = $.grep(preservation, function(p, y){
+						if(part['preservation'].indexOf(p) > -1){
+							return true;
+						} else {
+							return false;
+						}
+					});
+					if (p_intersection.length == 0){
+						// no match
+						continue;
+					}
+				}
+
+				// other conditions
+
+				// all the conditions passed:
+				found_part = x;
+				parts[x]['services'].push(service_uid);
+				parts[x]['container'] = c_intersection;
+				parts[x]['preservation'] = p_intersection;
+				break;
+			}
+
+			if (found_part === ''){
+				// No home found - make a new part for this analysis
+				part = {'services': [service_uid],
+						'separate': false,
+						'container': container,
+						'preservation': preservation};
+				parts.push(part);
+			}
+		}
+	}
+	return parts;
+}
+
+////////////////////////////////////////
+function setARProfile(){
+	// get profile services list
+	arprofiles = $.parseJSON($("#ARProfiles").attr('value'));
+	// clear existing selection
+	$('input[id^=analyses_cb_]').filter(":checked").attr("checked", false);
+	$.each($("select[name^=Partition]"), function(i,element){
+		$(element).after(
+			"<input type='hidden' name='"+$(element).attr('name')+"' value=''/>"
+		);
+		$(element).remove();
+	});
+
+	// select individual services
+	profile_uid = $(this).val();
+	service_uids = arprofiles[profile_uid];
+	if (service_uids != undefined && service_uids != null) {
+		$.each(service_uids, function(i,service_uid){
+			check_service(service_uid);
+			$('input[id^=analyses_cb_'+service_uid+']').attr("checked", true);
+		});
+	}
+	// calculate automatic partitions
+	parts = calculate_parts();
+	// reset partition table
+	$.each($('#partitions td.part_id'), function(i,v){
+		partid = $($(v).children()[1]).text();
+		if (partid != 'part-1'){
+			// remove part TR from partition table
+			$("tr[uid="+partid+"]").remove();
+			// remove part from Partition selectors
+			$.each($('select[name^="Partition\\."]'), function(i,v){
+				$(v).find("option[value='"+partid+"']").remove();
+			});
+		}
+	});
+	nr_parts = parts.length;
+	for(i=1;i<parts.length;i++){
+		addPart();
+	}
+	// Set new part numbers
+	$.each(parts, function(p,part){
+		$.each(part['services'], function(s,service_uid){
+			partnr = p+1;
+			$("[name=Partition."+service_uid+":records]").val('part-'+partnr);
+		});
+	});
+}
+
+////////////////////////////////////////
+function click_uid_checkbox(){
+	calcdependencies([this]);
+	service_uid = $(this).val();
+	if ($(this).attr("checked")){
+		check_service(service_uid);
+	} else {
+		uncheck_service(service_uid);
+	}
 }
 
 $(document).ready(function(){
 	_ = window.jsi18n;
 
-	////////////////////////////////////////
-	// checkboxes in services list
-	$("[name='uids:list']").live('click', function(){
-		calcdependencies([this]);
+	$("[name='uids:list']").live('click', click_uid_checkbox);
 
-		service_uid = $(this).val();
-		if ($(this).attr("checked")){
-			check_service(service_uid);
-		}
-		else {
-			uncheck_service(service_uid);
-		}
-	});
+	$("#ARProfile\\:list").change(setARProfile);
 
 });
 }(jQuery));
