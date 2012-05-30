@@ -22,18 +22,6 @@ schema = BikaSchema.copy() + Schema((
     ## accessors and mutators below to get/set a string value
     ## (the Title of the object), but still store a normal Reference.
     ## Form autocomplete widgets can then work with the Titles.
-    ReferenceField('SamplePoint',
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('SamplePoint',),
-        relationship = 'ARTemplateSamplePoint',
-        referenceClass = HoldingReference,
-        accessor = 'getSamplePoint',
-        edit_accessor = 'getSamplePoint',
-        mutator = 'setSamplePoint',
-        widget = StringWidget(
-            label = _("Sample Point"),
-        ),
-    ),
     ReferenceField('SampleType',
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('SampleType',),
@@ -44,6 +32,18 @@ schema = BikaSchema.copy() + Schema((
         mutator = 'setSampleType',
         widget = StringWidget(
             label = _("Sample Type"),
+        ),
+    ),
+    ReferenceField('SamplePoint',
+        vocabulary_display_path_bound = sys.maxint,
+        allowed_types = ('SamplePoint',),
+        relationship = 'ARTemplateSamplePoint',
+        referenceClass = HoldingReference,
+        accessor = 'getSamplePoint',
+        edit_accessor = 'getSamplePoint',
+        mutator = 'setSamplePoint',
+        widget = StringWidget(
+            label = _("Sample Point"),
         ),
     ),
     ReferenceField('ARProfile',
