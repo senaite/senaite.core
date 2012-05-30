@@ -12,6 +12,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.browser.widgets import ARTemplatePartitionsWidget
+from bika.lims.browser.widgets import ARTemplateAnalysesWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from zope.interface import Interface, implements
@@ -81,7 +82,6 @@ schema = BikaSchema.copy() + Schema((
         required = 0,
         type = 'artemplate_parts',
         subfields = ('part_id', 'container_uid', 'preservation_uid'),
-        required_subfields = ('part_id'),
         subfield_labels = {'part_id': _('Partition'),
                            'container_uid': _('Container'),
                            'preservation_uid': _('Preservation')},
@@ -97,15 +97,12 @@ schema = BikaSchema.copy() + Schema((
         schemata = 'Analyses',
         required = 0,
         type = 'artemplate_analyses',
-        subfields = ('service_uid', 'part_id'),
-        required_subfields = ('pos', 'type'),
-        subfield_labels = {'pos': _('Position'),
-                           'type': _('Analysis Type'),
-                           'blank_ref': _('Reference'),
-                           'control_ref': _('Reference'),
-                           'dup': _('Duplicate Of')},
+        subfields = ('service_uid', 'price', 'partition'),
+        subfield_labels = {'service_uid': _('Title'),
+                           'price': _('Price'),
+                           'partition': _('Partition')},
         default = [],
-        widget = BikaRecordsWidget(
+        widget = ARTemplateAnalysesWidget(
             label = _("Analyses"),
             description = _("XXX@lemoene 2"),
         )
