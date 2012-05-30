@@ -115,7 +115,7 @@ schema = BikaSchema.copy() + Schema((
 
 schema['description'].widget.visible = True
 schema['title'].widget.visible = True
-schema['title'].validators = ('uniquefieldvalidator','isUnixLikeName',)
+schema['title'].validators = ('uniquefieldvalidator',)
 # Update the validation layer after change the validator in runtime
 schema['title']._validationLayer()
 
