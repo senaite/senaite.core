@@ -233,12 +233,11 @@ class SampleAnalysesView(AnalysesView):
         self.show_workflow_action_buttons = False
         for k,v in kwargs.items():
             self.contentFilter[k] = v
-        if kwargs.get('getPointOfCapture', '') == 'lab':
-            self.columns['Request'] = {'title': _("Request"),
-                                       'sortable':False}
-            # Add Request column
-            pos = self.review_states[0]['columns'].index('Service') + 1
-            self.review_states[0]['columns'].insert(pos, 'Request')
+        self.columns['Request'] = {'title': _("Request"),
+                                   'sortable':False}
+        # Add Request column
+        pos = self.review_states[0]['columns'].index('Service') + 1
+        self.review_states[0]['columns'].insert(pos, 'Request')
 
     def folderitems(self):
         self.contentsMethod = self.context.getAnalyses
