@@ -36,7 +36,7 @@
       for="bika.lims.interfaces.ISample"
       name="base_view"
       class="bika.lims.browser.sample.SampleView"
-      permission="zope2.View"
+      permission="bika.lims.ManageSamples"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

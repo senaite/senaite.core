@@ -29,9 +29,12 @@ class ARTemplatePartitionsView(BikaListingView):
         self.form_id = "partitions"
 
         self.columns = {
-            'part_id': {'title': _('Partition')},
-            'container_uid': {'title': _('Container')},
-            'preservation_uid': {'title': _('Preservation')},
+            'part_id': {'title': _('Partition'),
+                        'sortable': False,},
+            'container_uid': {'title': _('Container'),
+                              'sortable': False,},
+            'preservation_uid': {'title': _('Preservation'),
+                                 'sortable': False,},
         }
         self.review_states = [
             {'id':'default',

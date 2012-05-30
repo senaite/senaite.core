@@ -462,7 +462,7 @@ schema = BikaSchema.copy() + Schema((
             label = _("Result Options"),
             description = _("Please list all options for the analysis result if you want to restrict "
                             "it to specific options only, e.g. 'Positive', 'Negative' and "
-                            "'Indeterminable'.  The option's result value must be a number."),
+                            "'Indeterminable'.  The option's result value must be a number"),
         ),
     ),
     BooleanField('Separate',
@@ -471,7 +471,7 @@ schema = BikaSchema.copy() + Schema((
         required = 0,
         widget = BooleanWidget(
             label = _('Separate Container'),
-            description = _("Check this box to ensure a separate sample container is used for this analysis service."),
+            description = _("Check this box to ensure a separate sample container is used for this analysis service"),
         ),
     ),
     ReferenceField('Preservation',
@@ -485,7 +485,7 @@ schema = BikaSchema.copy() + Schema((
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = _('Default Preservation'),
-            description = _("Select a default preservation for this this analysis service. If the preservation depends on the sample type combination, specify a preservation per sample type in the table below."),
+            description = _("Select a default preservation for this this analysis service. If the preservation depends on the sample type combination, specify a preservation per sample type in the table below"),
         ),
     ),
     ReferenceField('Container',
@@ -499,7 +499,7 @@ schema = BikaSchema.copy() + Schema((
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = _('Default Container'),
-            description = _("Select the default container to be used for this analysis service. If the container to be used depends on the sample type and preservation combination, specify the container in the sample type table below."),
+            description = _("Select the default container to be used for this analysis service. If the container to be used depends on the sample type and preservation combination, specify the container in the sample type table below"),
         ),
     ),
     PartitionSetupField('PartitionSetup',

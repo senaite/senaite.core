@@ -95,26 +95,8 @@ class ajax_SampleTypes(BrowserView):
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-
         term = self.request.get('term', '').lower()
-
         items = bsc(portal_type = "SampleType", sort_on='sortable_title')
-
-        if term and len(term) < 3:
-            # Items that start with A or AA
-            items = [s.getObject()
-                     for s in items
-                     if s.Title.lower().startswith(term)]
-            if not items:
-                # or, items that contain A or AA
-                items = [s.getObject()
-                         for s in items
-                         if s.Title.lower().find(term) > -1]
-        else:
-            # or, items that contain term.
-            items = [s.getObject()
-                     for s in items
-                     if s.Title.lower().find(term) > -1]
 
         samplepoint = self.request.get('samplepoint', '')
         if samplepoint and len(samplepoint) > 1:
@@ -122,9 +104,25 @@ class ajax_SampleTypes(BrowserView):
             if not sp:
                 return json.dumps([])
             sp = sp[0].getObject()
-            new = [s for s in items if s in sp.getSampleTypes()]
-            if new:
-                items = new
+            items = sp.getSampleTypes()
+        else:
+            if term and len(term) < 3:
+                # Items that start with A or AA
+                items = [s.getObject()
+                         for s in items
+                         if s.Title.lower().startswith(term)]
+                if not items:
+                    # or, items that contain A or AA
+                    items = [s.getObject()
+                             for s in items
+                             if s.Title.lower().find(term) > -1]
+            else:
+                # or, items that contain term.
+                items = [s.getObject()
+                         for s in items
+                         if s.Title.lower().find(term) > -1]
 
-        items = [s.Title() for s in items]
+
+        items = [callable(s.Title) and s.Title() or s.Title
+                 for s in items]
         return json.dumps(items)
