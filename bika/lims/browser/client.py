@@ -349,7 +349,13 @@ class ClientARProfilesView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientARProfilesView, self).__init__(context, request)
-        wf = getToolByName(context, 'portal_workflow')
+        self.catalog = "bika_setup_catalog"
+        self.contentFilter = {
+            'portal_type': 'ARProfile',
+            'path': {
+                "query": "/".join(self.context.getPhysicalPath()),
+                "level" : 0 },
+        }
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
@@ -369,6 +375,16 @@ class ClientARProfilesView(BikaListingView):
         }
         self.review_states = [
             {'id':'default',
+             'title': _('Active'),
+             'contentFilter': {'inactive_state': 'active'},
+             'transitions': [{'id':'deactivate'}, ],
+             'columns': ['title', 'Description', 'getProfileKey']},
+            {'id':'inactive',
+             'title': _('Dormant'),
+             'contentFilter': {'inactive_state': 'inactive'},
+             'transitions': [{'id':'activate'}, ],
+             'columns': ['title', 'Description', 'getProfileKey']},
+            {'id':'all',
              'title': _('All'),
              'contentFilter':{},
              'columns': ['title', 'Description', 'getProfileKey']},
@@ -383,20 +399,7 @@ class ClientARProfilesView(BikaListingView):
                  'icon': '++resource++bika.lims.images/add.png'}
         return super(ClientARProfilesView, self).__call__()
 
-    def getProfiles(self, contentFilter={}):
-        istate = contentFilter.get("inactive_state", None)
-        if istate == 'active':
-            profiles = [p for p in self.context.objectValues("ARProfile")
-                        if isActive(p)]
-        elif istate == 'inactive':
-            profiles = [p for p in self.context.objectValues("ARProfile")
-                        if not isActive(p)]
-        else:
-            profiles = [p for p in self.context.objectValues("ARProfile")]
-        return profiles
-
     def folderitems(self):
-        self.contentsMethod = self.getProfiles
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
@@ -412,7 +415,13 @@ class ClientARTemplatesView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientARTemplatesView, self).__init__(context, request)
-        wf = getToolByName(context, 'portal_workflow')
+        self.catalog = "bika_setup_catalog"
+        self.contentFilter = {
+            'portal_type': 'ARTemplate',
+            'path': {
+                "query": "/".join(self.context.getPhysicalPath()),
+                "level" : 0 },
+        }
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
@@ -430,6 +439,16 @@ class ClientARTemplatesView(BikaListingView):
         }
         self.review_states = [
             {'id':'default',
+             'title': _('Active'),
+             'contentFilter': {'inactive_state': 'active'},
+             'transitions': [{'id':'deactivate'}, ],
+             'columns': ['title', 'Description']},
+            {'id':'inactive',
+             'title': _('Dormant'),
+             'contentFilter': {'inactive_state': 'inactive'},
+             'transitions': [{'id':'activate'}, ],
+             'columns': ['title', 'Description']},
+            {'id':'all',
              'title': _('All'),
              'contentFilter':{},
              'columns': ['title', 'Description']},
@@ -444,20 +463,7 @@ class ClientARTemplatesView(BikaListingView):
                  'icon': '++resource++bika.lims.images/add.png'}
         return super(ClientARTemplatesView, self).__call__()
 
-    def getTemplates(self, contentFilter={}):
-        istate = contentFilter.get("inactive_state", None)
-        if istate == 'active':
-            templates = [p for p in self.context.objectValues("ARTemplate")
-                        if isActive(p)]
-        elif istate == 'inactive':
-            templates = [p for p in self.context.objectValues("ARTemplate")
-                        if not isActive(p)]
-        else:
-            templates = [p for p in self.context.objectValues("ARTemplate")]
-        return templates
-
     def folderitems(self):
-        self.contentsMethod = self.getTemplates
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
@@ -473,7 +479,6 @@ class ClientAnalysisSpecsView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientAnalysisSpecsView, self).__init__(context, request)
-
         self.catalog = 'bika_setup_catalog'
         self.contentFilter = {
             'portal_type': 'AnalysisSpec',
@@ -499,10 +504,19 @@ class ClientAnalysisSpecsView(BikaListingView):
         }
         self.review_states = [
             {'id':'default',
+             'title': _('Active'),
+             'contentFilter': {'inactive_state': 'active'},
+             'transitions': [{'id':'deactivate'}, ],
+             'columns': ['SampleType']},
+            {'id':'inactive',
+             'title': _('Dormant'),
+             'contentFilter': {'inactive_state': 'inactive'},
+             'transitions': [{'id':'activate'}, ],
+             'columns': ['SampleType']},
+            {'id':'all',
              'title': _('All'),
              'contentFilter':{},
-             'columns': ['SampleType'],
-             },
+             'columns': ['SampleType']},
         ]
 
     def __call__(self):
