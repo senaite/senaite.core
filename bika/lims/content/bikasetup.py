@@ -250,11 +250,13 @@ schema = BikaFolderSchema.copy() + Schema((
 #        fixedSize=8,
         widget=RecordsWidget(
             label = _("Prefixes"),
-            description = _("Define the prefixes for the unique sequential IDs the system issues "
-                            "for objects such as samples and analysis requests. In the 'Padding' "
-                            "field, indicate with how many leading zeros the numbers must be padded. "
-                            "E.g. a prefix of AR with padding of 4 for analysis requests, will see "
-                            "them numbered from AR0001 to AR9999."),
+            description = _("Define the prefixes for the unique sequential IDs the system issues for "
+                            "objects. In the 'Padding' field, indicate with how many leading zeros the "
+                            "numbers must be padded. E.g. a prefix of WS for worksheets with padding of "
+                            "4, will see them numbered from WS-0001 to WS-9999. NB: Note that samples "
+                            "and analysis requests are prefixed with sample type abbreviations and are "
+                            "not configured in this table - their padding can be set in the specified "
+                            "fields below"),
             allowDelete=False,
         )
     ),
@@ -263,7 +265,7 @@ schema = BikaFolderSchema.copy() + Schema((
         default = False,
         widget = BooleanWidget(
             label = _("Include year in ID prefix"),
-            description = _("Adds a two-digit year after the ID prefix.")
+            description = _("Adds a two-digit year after the ID prefix")
         ),
     ),
     IntegerField('SampleIDPadding',
@@ -290,7 +292,7 @@ schema = BikaFolderSchema.copy() + Schema((
         widget = BooleanWidget(
             label = _("Use external ID server"),
             description = _("Check this if you want to use a separate ID server. "
-                            "Prefixes are configurable separately in each Bika site.")
+                            "Prefixes are configurable separately in each Bika site")
         ),
     ),
     StringField('IDServerURL',
