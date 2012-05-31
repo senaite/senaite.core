@@ -646,10 +646,13 @@ $(document).ready(function(){
 	});
 	function set_sp(e){
 		col = e.id.split("_")[1];
-		sp = bsc.data.sp_uids[$(e).val()];
-		if (sp != undefined && sp != null){
-			$("#ar_"+col+"+Composite").attr("checked", sp['composite']);
-		}
+//		sp = window.bsc.data.sp_uids[$(e).val()];
+//		if (sp != undefined && sp != null){
+//			$("#ar_"+col+"_Composite").attr("checked", sp['composite']);
+//			if (sp['sampletypes'].length == 1){
+//				$("#ar_"+col+"_SampleType").val(sp['sampletypes'][0]);
+//			}
+//		}
 	}
 	$(".samplepoint").change(function(){
 		set_sp(this);
@@ -657,6 +660,19 @@ $(document).ready(function(){
 	$(".samplepoint").blur(function(){
 		set_sp(this);
 	});
+
+//	function set_st(e){
+//		col = e.id.split("_")[1];
+//		st = window.bsc.data.st_uids[$(e).val()];
+//		if (st != undefined && st != null){
+//			if (st['samplepoints'].length == 1){
+//				$("#ar_"+col+"_SamplePoint").val(st['samplepoints'][0]);
+//			}
+//		}
+//	}
+//	$(".sampletype").blur(function(){
+//		set_st(this);
+//	});
 
 	// changing sampletype sets partition numbers.
 	// it's done funny, because autocomplete didn't like .change()
