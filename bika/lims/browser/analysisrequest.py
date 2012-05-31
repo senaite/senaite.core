@@ -931,7 +931,8 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
         partitions = [{'ResultValue':o.Title(), 'ResultText':o.Title()}
                       for o in
-                      self.context.getSample().objectValues('SamplePartition')]
+                      self.context.getSample().objectValues('SamplePartition')
+                      if wf.getInfoFor(o, 'cancellation_state', 'active') == 'active']
 
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue

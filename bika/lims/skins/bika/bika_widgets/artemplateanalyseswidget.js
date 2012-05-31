@@ -437,6 +437,7 @@ function click_uid_checkbox(){
 	} else {
 		uncheck_service(service_uid);
 	}
+	$("#ARProfile\\:list").val('');
 }
 
 $(document).ready(function(){

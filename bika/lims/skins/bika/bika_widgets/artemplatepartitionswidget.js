@@ -35,7 +35,7 @@ function addPart(event){
 	$($($(to_tr).children('td')[0]).children()[1]).empty().append('part-'+next_part);
 	$($("#partitions tbody")[0]).append($(to_tr));
 
-	// add this part to Partition selectorsin Analyses tab
+	// add this part to Partition selectors in Analyses tab
 	$.each($('select[name^="Partition\\."]'), function(i,v){
 		$(v).append($("<option value='part-"+next_part+"'>part-"+next_part+"</option>"));
 	});
