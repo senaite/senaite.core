@@ -31,7 +31,7 @@
 		<img
 			i18n:attributes="title"
 			title="Partitions"
-			src="++resource++bika.lims.images/samplepartition.png"/>
+			tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/samplepartition.png"/>
 		<span i18n:translate="">Sample Partitions</span>
 	</h3>
 	<tal:parts tal:condition="view/parts"
@@ -46,7 +46,7 @@
             <img
 				title="range"
 				i18n:attributes="title"
-                tal:attributes="src string:++resource++bika.lims.images/analysisspec.png"/>
+                tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/analysisspec.png"/>
             <span i18n:translate="">Range Specification</span>
             <a class="specification" id="lab" value="lab"
                 href=""
@@ -70,7 +70,7 @@
 			<img
 				i18n:attributes="title"
 				title="Analyses"
-				src="++resource++bika.lims.images/analysisservice.png"/>
+				tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/analysisservice.png"/>
 			<span tal:content="python: table[0]"/>
 		</h3>
         <span tal:replace="structure python: table[1]"/>
