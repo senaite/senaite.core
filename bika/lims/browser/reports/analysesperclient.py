@@ -31,7 +31,7 @@ class AnalysesPerClient(BrowserView):
         parm_lines = {}
         parms = []
         headings = {}
-        this_client = self.context.logged_in_client()
+        this_client = logged_in_client(self.context)
 
         if this_client:
             headings['header'] = _("Analysis requests and analyses")

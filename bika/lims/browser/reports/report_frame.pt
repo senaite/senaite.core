@@ -45,11 +45,11 @@
     <span  tal:define="printdate view/date" 
            tal:content="python:plone_view.toLocalizedTime(printdate, long_format=1)"/>
 
+    <br/>
     <tal:reporter tal:condition="view/reporter">
         <span i18n:translate="">Created by:</span>
         <span tal:content="view/reporter"/>
         <tal:email tal:condition="view/reporter_email">
-            <br/>
             <a tal:define="email view/reporter_email"
                tal:content="email"
                tal:attributes="href string:mailto:${email}"/>

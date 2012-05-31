@@ -118,7 +118,7 @@ class ReportHistoryView(BikaListingView):
                 'sort_order': 'reverse'}
 
             self.columns = {
-                'ClientName': {'title': _('Client')},
+                'Client': {'title': _('Client')},
                 'ReportType': {'title': _('Report Type')},
                 'FileSize': {'title': _('Size')},
                 'Created': {'title': _('Created')},
@@ -128,7 +128,7 @@ class ReportHistoryView(BikaListingView):
                 {'id':'default',
                  'title': 'All',
                  'contentFilter':{},
-                 'columns': ['ClientName',
+                 'columns': ['Client',
                              'ReportType',
                              'FileSize',
                              'Created',
@@ -154,8 +154,11 @@ class ReportHistoryView(BikaListingView):
             file = obj.getReportFile()
             icon = file.getBestIcon()
 
-            items[x]['ClientName'] = \
-                obj.getClient() and obj.getClient().Title() or ''
+            items[x]['Client'] = ''
+            client = obj.getClient()
+            if client:
+                items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
+                    (client.absolute_url(), client.Title())
             items[x]['FileSize'] = '%sKb' % (file.get_size() / 1024)
             items[x]['Created'] = TimeOrDate(self.context, obj.created())
             items[x]['By'] = pretty_user_name_or_id(self.context, obj.Creator())
