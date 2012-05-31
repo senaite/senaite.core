@@ -20,7 +20,6 @@
 </head>
 <body
     tal:define="
-        portal context/@@plone_portal_state/portal;
         report_content view/report_content;
         report_format python:report_content.has_key('formats')
                 and report_content['formats'] or [];
@@ -93,7 +92,7 @@
             colspan colspan">
         <tal:img tal:condition="img_before">
             <img src="" 
-                tal:attributes="src string:${portal/absolute_url}/${img_before}" />
+                tal:attributes="src string:${portal_url}/${img_before}" />
             &nbsp
         </tal:img>
         <span tal:content="python:line[i]['value']"/> 
