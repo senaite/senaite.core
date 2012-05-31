@@ -396,6 +396,9 @@ class AnalysisRequestViewView(BrowserView):
         self.icon = "++resource++bika.lims.images/analysisrequest_big.png"
         self.TimeOrDate = TimeOrDate
 
+        self.portal = getToolByName(context, 'portal_url').getPortalObject()
+        self.portal_url = self.portal.absolute_url()
+
     def __call__(self):
         form = self.request.form
         ar = self.context
@@ -979,19 +982,28 @@ class AnalysisRequestAnalysesView(BikaListingView):
             after_icons = ''
             if obj.getAccredited():
                 after_icons += "<img\
-                src='++resource++bika.lims.images/accredited.png'\
-                title='%s'>"%(_("Accredited"))
+                src='%s/++resource++bika.lims.images/accredited.png'\
+                title='%s'>"%(self.portal_url,
+                              self.context.translate(
+                                  _("Accredited")))
             if obj.getReportDryMatter():
-                after_icons += "<img src='++resource++bika.lims.images/dry.png'\
-                title='%s'>"%(_("Can be reported as dry matter"))
+                after_icons += "<img\
+                src='%s/++resource++bika.lims.images/dry.png'\
+                title='%s'>"%(self.portal_url,
+                              self.context.translate(
+                                  _("Can be reported as dry matter")))
             if obj.getAttachmentOption() == 'r':
                 after_icons += "<img\
-                src='++resource++bika.lims.images/attach_reqd.png'\
-                title='%s'>"%(_("Attachment required"))
+                src='%s/++resource++bika.lims.images/attach_reqd.png'\
+                title='%s'>"%(self.portal_url,
+                              self.context.translate(
+                              _("Attachment required")))
             if obj.getAttachmentOption() == 'n':
                 after_icons += "<img\
-                src='++resource++bika.lims.images/attach_no.png'\
-                title='%s'>"%(_('Attachment not permitted'))
+                src='%s/++resource++bika.lims.images/attach_no.png'\
+                title='%s'>"%(self.portal_url,
+                              self.context.translate(
+                                  _('Attachment not permitted')))
             if after_icons:
                 items[x]['after']['Title'] = after_icons
 
@@ -1204,8 +1216,9 @@ class AnalysisRequestSelectSampleView(BikaListingView):
             items[x]['SampleID'] = obj.getSampleID()
             if obj.getSampleType().getHazardous():
                 items[x]['after']['SampleID'] = \
-                     "<img src='++resource++bika.lims.images/hazardous.png' title='%s'>"%\
-                     self.context.translate(_("Hazardous"))
+                     "<img src='%s/++resource++bika.lims.images/hazardous.png'\
+                     title='%s'>"%(self.portal_url,
+                                   self.context.translate(_("Hazardous")))
             items[x]['SampleTypeTitle'] = obj.getSampleTypeTitle()
             items[x]['SamplePointTitle'] = obj.getSamplePointTitle()
             items[x]['row_data'] = json.dumps({
@@ -2056,8 +2069,9 @@ class AnalysisRequestsView(BikaListingView):
                         'getDatePublished',
                         'state_title']},
             {'id':'assigned',
-             'title': "<img title='%s' src='++resource++bika.lims.images/assigned.png'/>" %
-                        self.context.translate(_("Assigned")),
+             'title': "<img title='%s'\
+                       src='%s/++resource++bika.lims.images/assigned.png'/>" % (
+                       self.context.translate(_("Assigned")), self.portal_url),
              'contentFilter': {'worksheetanalysis_review_state': 'assigned',
                                'review_state': ('sample_received', 'to_be_verified',
                                                 'attachment_due', 'verified',
@@ -2088,8 +2102,9 @@ class AnalysisRequestsView(BikaListingView):
                         'getDateReceived',
                         'state_title']},
             {'id':'unassigned',
-             'title': "<img title='%s' src='++resource++bika.lims.images/unassigned.png'/>" %
-                        self.context.translate(_("Unassigned")),
+             'title': "<img title='%s'\
+                       src='%s/++resource++bika.lims.images/unassigned.png'/>" % (
+                       self.context.translate(_("Unassigned")), self.portal_url),
              'contentFilter': {'worksheetanalysis_review_state': 'unassigned',
                                'review_state': ('sample_received', 'to_be_verified',
                                                 'attachment_due', 'verified',
@@ -2159,20 +2174,20 @@ class AnalysisRequestsView(BikaListingView):
             after_icons = ""
             state = workflow.getInfoFor(obj, 'worksheetanalysis_review_state')
             if state == 'assigned':
-                after_icons += "<img src='++resource++bika.lims.images/worksheet.png' title='%s'/>" % \
-                    self.context.translate(_("All analyses assigned"))
+                after_icons += "<img src='%s/++resource++bika.lims.images/worksheet.png' title='%s'/>" % \
+                    (self.portal_url, self.context.translate(_("All analyses assigned")))
             if obj.getLate():
-                after_icons += "<img src='++resource++bika.lims.images/late.png' title='%s'>" % \
-                    self.context.translate(_("Late Analyses"))
+                after_icons += "<img src='%s/++resource++bika.lims.images/late.png' title='%s'>" % \
+                    (self.portal_url, self.context.translate(_("Late Analyses")))
             if samplingdate > DateTime():
-                after_icons += "<img src='++resource++bika.lims.images/calendar.png' title='%s'>" % \
-                    self.context.translate(_("Future dated sample"))
+                after_icons += "<img src='%s/++resource++bika.lims.images/calendar.png' title='%s'>" % \
+                    (self.portal_url, self.context.translate(_("Future dated sample")))
             if obj.getInvoiceExclude():
-                after_icons += "<img src='++resource++bika.lims.images/invoice_exclude.png' title='%s'>" % \
-                    self.context.translate(_("Exclude from invoice"))
+                after_icons += "<img src='%s/++resource++bika.lims.images/invoice_exclude.png' title='%s'>" % \
+                    (self.portal_url, self.context.translate(_("Exclude from invoice")))
             if sample.getSampleType().getHazardous():
-                after_icons += "<img src='++resource++bika.lims.images/hazardous.png' title='%s'>" % \
-                    self.context.translate(_("Hazardous"))
+                after_icons += "<img src='%s/++resource++bika.lims.images/hazardous.png' title='%s'>" % \
+                    (self.portal_url, self.context.translate(_("Hazardous")))
             if after_icons:
                 items[x]['after']['getRequestID'] = after_icons
 

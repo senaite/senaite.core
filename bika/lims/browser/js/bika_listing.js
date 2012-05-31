@@ -280,7 +280,7 @@ $(document).ready(function(){
 	$('th[id^="foldercontents-"]').live('contextmenu', function(event){
 		event.preventDefault();
 		form_id = $(this).parents("form").attr("id");
-		base_url = window.location.href;
+		portal_url = window.portal_url;
 		toggle_cols = $("#" + form_id + "_toggle_cols").val();
 		if (toggle_cols == ""
 		    || toggle_cols == undefined
@@ -310,7 +310,7 @@ $(document).ready(function(){
 			if(enabled.length > 0){
 				txt = txt + "<tr class='enabled' col_id='"+col_id+"' form_id='"+form_id+"'>";
 				txt = txt + "<td>";
-	            txt = txt + "<img style='height:1em;' src='"+base_url+"/++resource++bika.lims.images/ok.png'/>";
+	            txt = txt + "<img style='height:1em;' src='"+portal_url+"/++resource++bika.lims.images/ok.png'/>";
 				txt = txt + "</td>";
 				txt = txt + "<td>"+col_title+"</td></tr>";
 			} else {

@@ -241,6 +241,9 @@ class BikaListingView(BrowserView):
             if not 'path' in self.contentFilter:
                 self.contentFilter = {'path': {"query": path, "level" : 0 }}
 
+        self.portal = getToolByName(context, 'portal_url').getPortalObject()
+        self.portal_url = self.portal.absolute_url()
+
         self.base_url = context.absolute_url()
         self.view_url = self.base_url
 
