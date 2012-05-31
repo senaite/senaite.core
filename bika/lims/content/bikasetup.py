@@ -152,9 +152,9 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata = "Analyses",
         default = False,
         widget = BooleanWidget(
-            label = _("Categorise Analysis Services"),
-            description = _("If there are many analysis services, the control "
-                            "panel view can group services by category")
+            label = _("Categorise analysis services setup list"),
+            description = _("Group analysis services by category in the LIMS set-up, "
+                            "helpful when the list is long")
         ),
     ),
     ReferenceField('DryMatterService',
@@ -219,11 +219,10 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary = LABEL_AUTO_OPTIONS,
         widget = SelectionWidget(
             format = 'select',
-            label = _("Automatic AR label printing"),
+            label = _("Automatic label printing"),
             description = _("Select 'Register' if you want labels to be automatically printed when "
-                            "new ARs are created.  Select 'Receive' to print labels when the 'Receive' "
-                            "transition is invoked on ARs or Samples.  Select None to disable automatic "
-                            "printing"),
+                            "new ARs or sample records are created. Select 'Receive' to print labels "
+                            "when ARs or Samples are received. Select 'None' to disable automatic printing"),
         )
     ),
     LinesField('AutoLabelSize',
@@ -231,8 +230,8 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary = LABEL_AUTO_SIZES,
         widget = SelectionWidget(
             format = 'select',
-            label = _("Automatic AR label sizes"),
-            description = _("Select the size label to print if Automatic label printing is enabled."),
+            label = _("Label sizes"),
+            description = _("Select the which label to print when automatic label printing is enabled"),
         )
     ),
     PrefixesField('Prefixes',
