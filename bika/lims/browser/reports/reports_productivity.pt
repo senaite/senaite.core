@@ -125,7 +125,7 @@
         class="searchButton"
         type="submit"
         name="submit"
-        value="Search"
+        value="Report"
         i18n:attributes="value"
         />
 </form>
@@ -156,7 +156,7 @@
         class="searchButton"
         type="submit"
         name="submit"
-        value="Search"
+        value="Report"
         i18n:attributes="value"
         />
 </form>
@@ -186,7 +186,7 @@
         class="searchButton"
         type="submit"
         name="submit"
-        value="Search"
+        value="Report"
         i18n:attributes="value"
         />
 </form>
@@ -214,7 +214,7 @@
         class="searchButton"
         type="submit"
         name="submit"
-        value="Search"
+        value="Report"
         i18n:attributes="value"
         />
 </form>
@@ -240,7 +240,7 @@
         class="searchButton"
         type="submit"
         name="submit"
-        value="Search"
+        value="Report"
         i18n:attributes="value"
         />
 </form>
