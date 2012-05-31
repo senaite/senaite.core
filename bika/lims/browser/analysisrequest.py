@@ -951,7 +951,10 @@ class AnalysisRequestAnalysesView(BikaListingView):
             keyword = obj.getKeyword()
             if keyword in review_states.keys() \
                and review_states[keyword] not in ['sample_due',
-                                                  'sample_received']:
+                                                  'to_be_sampled',
+                                                  'to_be_preserved',
+                                                  'sample_received',
+                                                  ]:
                 row_data['disabled'] = True
             items[x]['row_data'] = json.dumps(row_data)
 

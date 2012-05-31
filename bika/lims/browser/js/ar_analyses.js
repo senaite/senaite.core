@@ -214,14 +214,25 @@ $(document).ready(function(){
 		uid = $(cb).val();
 		row_data = $.parseJSON($('#'+uid+'_row_data').val());
 		if (row_data['disabled'] == true){
-			$(cb).attr('disabled', true);
-			// disabled checkboxes must be shadowed by hidden fields,
+			// disabled fields must be shadowed by hidden fields,
 			// or they don't appear in the submitted form.
+			$(cb).attr('disabled', true);
 			cbname = $(cb).attr('name');
 			cbid = $(cb).attr('id');
 			$(cb).removeAttr('name').removeAttr('id');
-			$(cb).after("<input type='hidden' name='"+cbname+"' "+
-			            "value='"+uid+"' id='"+cbid+"'/>");
+			$(cb).after("<input type='hidden' name='"+cbname+"' value='"+uid+"' id='"+cbid+"'/>");
+
+			el = $('[name=Price.'+uid+':records]');
+			elname = $(el).attr('name');
+			elval = $(el).val();
+			$(el).after("<input type='hidden' name='"+elname+"' value='"+elval+"'/>");
+			$(el).attr('disabled', true);
+
+			el = $('[name=Partition.'+uid+':records]');
+			elname = $(el).attr('name');
+			elval = $(el).val();
+			$(el).after("<input type='hidden' name='"+elname+"' value='"+elval+"'/>");
+			$(el).attr('disabled', true);
 		}
 	})
 
