@@ -32,7 +32,7 @@ function portalMessage(message){
 }
 
 function clickSaveButton(event){
-	selected_analyses = $('[name$="\\.Analyses"]').filter(':checked');
+	selected_analyses = $('[name^="uids\\:list"]').filter(':checked');
 	if(selected_analyses.length < 1){
 		portalMessage("No analyses have been selected");
 		window.scroll(0, 0);
