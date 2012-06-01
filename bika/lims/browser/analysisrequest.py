@@ -415,14 +415,17 @@ class AnalysisRequestViewView(BrowserView):
         st = sample.getSampleType()
 
         contact = self.context.getContact()
-        ccs = ["<a href='%s'>%s</a>"%(contact.absolute_url(), contact.Title()),]
+        contacts = []
         for cc in self.context.getCCContact():
-            ccs.append("<a href='%s'>%s</a>"%(cc.absolute_url(), cc.Title()),)
+            contacts.append(cc)
+        cc_uids = [c.UID() for c in contacts]
+        cc_titles = [c.Title() for c in contacts]
         emails = self.context.getCCEmails()
         if type(emails) == str:
-            emails = [emails,]
+            emails = emails and [emails,] or []
+        cc_emails = ""
         for cc in emails:
-            ccs.append("<a href='mailto:%s'>%s</a>"%(cc, cc))
+            cc_emails.append("<a href='mailto:%s'>%s</a>"%(cc, cc))
 
         # Some sample fields are editable here
         if workflow.getInfoFor(sample, 'cancellation_state') == "cancelled":
@@ -448,9 +451,15 @@ class AnalysisRequestViewView(BrowserView):
              'type': 'text'},
             {'id': 'Contact',
              'title': "<a href='#' id='open_cc_browser'>%s</a>" % \
-                      self.context.translate(_('Contact Person')),
+                      (self.context.translate(_('Contact Person'))),
              'allow_edit': False,
-             'value': "; ".join(ccs),
+             'value': "<input name='cc_uids' type='hidden' id='cc_uids' value='%s'/>\
+                       <span name='primary_contact' id='primary_contact' value='%s'>%s</span>;\
+                       <span name='cc_titles' id='cc_titles' value='%s'>%s</span>\
+                       <span name='cc_emails' id='cc_emails' value='%s'>%s</span>"\
+                       %(",".join(cc_uids),
+                         contact.UID(), contact.Title(), "; ".join(cc_titles),"; ".join(cc_titles),
+                         "; ".join(cc_emails),"; ".join(cc_emails)),
              'condition':True,
              'type': 'text'},
             {'id': 'ClientReference',
@@ -530,7 +539,9 @@ class AnalysisRequestViewView(BrowserView):
         ## handle_header table submit
         if 'save_button' in form:
             message = None
-            values = {}
+            values = {
+                'CCContact':form.get('cc_uids','').split(",")
+            }
             for row in [r for r in self.header_rows if r['allow_edit']]:
                 value = form.get(row['id'], '')
 

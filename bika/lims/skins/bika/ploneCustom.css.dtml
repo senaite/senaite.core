@@ -402,6 +402,11 @@ table.analysisrequest.add td.ar_column {
 	background:transparent;
 	border:none;
 }
+#cc_emails {
+	width:100%;
+	background:transparent;
+	border:none;
+}
 
 table.analysisrequest .pointofcapture th {
 	padding-top:5px;

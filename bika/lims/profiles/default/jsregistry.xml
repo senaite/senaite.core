@@ -215,7 +215,18 @@
               inline="False"
               insert-after="*"/>
 
-  <javascript authenticated="False"
+<javascript authenticated="False"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression="python:here.portal_type in ['AnalysisRequest', ]"
+              id="++resource++bika.lims.js/ar.js"
+              inline="False"
+              insert-after="*"/>
+
+<javascript authenticated="False"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
