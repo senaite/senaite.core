@@ -5,6 +5,7 @@ from analysesperclient import AnalysesPerClient
 from analysestats import AnalysesTats
 from analysesoutofrange import AnalysesOutOfRange
 from analysesrepeated import AnalysesRepeated
+from arsnotinvoiced import ARsNotInvoiced
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
@@ -225,6 +226,9 @@ class SubmitForm(BrowserView):
         elif report_id == 'analysesrepeated':
             reporttype = 'Analyses repeated'
             self.reportout = AnalysesRepeated(self.context, self.request)()
+        elif report_id == 'arsnotinvoiced':
+            reporttype = 'ARs not invoiced'
+            self.reportout = ARsNotInvoiced(self.context, self.request)()
         else:
             self.reportout = "no report to out"
 
