@@ -1,17 +1,18 @@
 from AccessControl import getSecurityManager
+from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.client import ClientSamplesView
-from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client
+from bika.lims.utils import formatDateQuery, formatDateParms, TimeOrDate
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 import json
 import plone
 
-class AnalysesOutOfRange(BrowserView):
+class AnalysesRepeated(BrowserView):
     implements(IViewView)
     template = ViewPageTemplateFile("report_out.pt")
 
@@ -19,33 +20,19 @@ class AnalysesOutOfRange(BrowserView):
         BrowserView.__init__(self, context, request)
 
     def __call__(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
         bac = getToolByName(self.context, 'bika_analysis_catalog')
         self.report_content = {}
         parm_lines = {}
         parms = []
         headings = {}
-        headings['header'] = _("Analyses out of range")
-        headings['subheader'] = _("Analyses results out of client or lab specified range")
+        headings['header'] = _("Analyses retested")
+        headings['subheader'] = _("Analyses which have been retested")
 
         count_all = 0
 
         query = {'portal_type': 'Analysis',
+                 'getRetested': True,
                  'sort_order': 'reverse'}
-
-        if self.request.form.has_key('spec'):
-            spec = self.request.form['spec']
-        else:
-            spec = 'lab'
-        if spec == 'lab':
-            lab_spec = True
-        else:
-            lab_spec = False
-
-        parms.append(
-            { 'title': _('Range spec'),
-             'value': spec,
-             'type': 'text'})
 
         date_query = formatDateQuery(self.context, 'c_DateReceived')
         if date_query:
@@ -95,16 +82,14 @@ class AnalysesOutOfRange(BrowserView):
 
 
         # and now lets do the actual report lines
-        formats = {'columns': 10,
+        formats = {'columns': 8,
                    'col_heads': [ _('Client'), \
                                   _('Request'), \
                                   _('Sample type'), \
                                   _('Sample point'), \
                                   _('Category'), \
                                   _('Analysis'), \
-                                  _('Result'), \
-                                  _('Min'), \
-                                  _('Max'), \
+                                  _('Received'), \
                                   _('Status'), \
                                   ],
                    'class': '',
@@ -116,58 +101,9 @@ class AnalysesOutOfRange(BrowserView):
         samplepoints = {}
         categories = {}
         services = {}
-        specs = {}
         
-        if lab_spec:
-            owner_uid = self.context.bika_setup.bika_analysisspecs.UID()
-            
         for a_proxy in bac(query):
             analysis = a_proxy.getObject()
-            if analysis.getResult():
-                try:
-                    result = float(analysis.getResult())
-                except:
-                    continue
-            else:
-                continue
-       
-            sampletypeuid = analysis.getSampleTypeUID()
-
-            # determine which specs to use, and load if not yet found
-            if not lab_spec:
-                owner_uid = analysis.getClientUID()
-            if not specs.has_key(owner_uid):
-                specs[owner_uid] = {}
-            if not specs[owner_uid].has_key(sampletypeuid):
-                proxies = bsc(portal_type = 'AnalysisSpec',
-                              getSampleTypeUID = sampletypeuid,
-                              getClientUID = owner_uid)
-                if len(proxies) == 0:
-                    continue
-                spec_object = proxies[0].getObject()
-                specs[owner_uid][sampletypeuid] = spec_object.getResultsRangeDict()
-            spec = specs[owner_uid][sampletypeuid]
-
-            keyword = analysis.getKeyword()
-            if spec.has_key(keyword):
-                spec_min = float(spec[keyword]['min'])
-                spec_max = float(spec[keyword]['max'])
-                if spec_min <= result <= spec_max:
-                    continue
-            else:
-                continue
-
-            # check if in shoulder: out of range, but in acceptable 
-            #     error percentage
-            shoulder = False
-            error_amount = (result / 100) * float(spec[keyword]['error'])
-            error_min = result - error_amount
-            error_max = result + error_amount
-            if ((result < spec_min) and (error_max >= spec_min)) or \
-               ((result > spec_max) and (error_min <= spec_max)):
-                shoulder = True
-
-
 
             dataline = []
 
@@ -189,18 +125,7 @@ class AnalysesOutOfRange(BrowserView):
             dataitem = {'value': analysis.getServiceTitle()}
             dataline.append(dataitem)
 
-            if shoulder:
-                dataitem = {'value': analysis.getResult(),
-                            'img_after': '++resource++bika.lims.images/exclamation.png'}
-            else:
-                dataitem = {'value': analysis.getResult()}
-
-            dataline.append(dataitem)
-
-            dataitem = {'value': spec[keyword]['min']}
-            dataline.append(dataitem)
-
-            dataitem = {'value': spec[keyword]['max']}
+            dataitem = {'value': TimeOrDate(self.context, analysis.getDateReceived())}
             dataline.append(dataitem)
 
             state = wf_tool.getInfoFor(analysis, 'review_state', '')
@@ -217,32 +142,21 @@ class AnalysesOutOfRange(BrowserView):
         # table footer data
         footlines = []
         footline = []
-        footitem = {'value': _('Number of analyses out of range for period'),
-                    'colspan': 9,
+        footitem = {'value': _('Number of analyses retested for period'),
+                    'colspan': 7,
                     'class': 'total_label'} 
         footline.append(footitem)
         footitem = {'value': count_all} 
         footline.append(footitem)
         footlines.append(footline)
 
-        # report footer data
-        footnotes = []
-        footline = []
-        footitem = {'value': _('Analysis result within error range'),
-                    'img_before': '++resource++bika.lims.images/exclamation.png'
-                   }
-        footline.append(footitem)
-        footnotes.append(footline)
-
-        
 
         self.report_content = {
                 'headings': headings,
                 'parms': parms,
                 'formats': formats,
                 'datalines': datalines,
-                'footings': footlines,
-                'footnotes': footnotes}
+                'footings': footlines}
 
 
         return self.template()

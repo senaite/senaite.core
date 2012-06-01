@@ -118,13 +118,26 @@
 <fieldset>
 
 <legend i18n:translate="">Selection criteria</legend>
+<tal:received
+    tal:define="date_id string:DateReceived;
+                date_label string:Received">
+<metal:date use-macro="context/selection_macros/macros/date"/>
+</tal:received>
 
-<br/>
-<br/>
-<br/>
-<b> Under construction </b>
+<metal:date use-macro="context/selection_macros/macros/review_state"/>
+
+<metal:date use-macro="context/selection_macros/macros/cancellation_state"/>
+
+<metal:date use-macro="context/selection_macros/macros/ws_review_state"/>
 
 </fieldset>
+    <input tabindex=""
+        class="searchButton"
+        type="submit"
+        name="submit"
+        value="Report"
+        i18n:attributes="value"
+        />
 </form>
 </div>
 

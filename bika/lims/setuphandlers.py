@@ -375,6 +375,7 @@ class BikaGenerator:
         addIndex(bac, 'getDateReceived', 'DateIndex')
         addIndex(bac, 'getResultCaptureDate', 'DateIndex')
         addIndex(bac, 'getSampleTypeUID', 'FieldIndex')
+        addIndex(bac, 'getRetested', 'FieldIndex')
 
         addColumn(bac, 'path')
         addColumn(bac, 'UID')
