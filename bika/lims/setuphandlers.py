@@ -200,7 +200,7 @@ class BikaGenerator:
         mp(RejectWorksheet, ['Manager', 'LabManager', 'Verifier'], 1)
         mp(Retract, ['Manager', 'LabManager', 'Verifier'], 1)
         mp(Verify, ['Manager', 'LabManager', 'Verifier'], 1)
-        mp(Publish, ['Manager', 'LabManager', 'Publisher'], 1)
+        mp(PublishAR, ['Manager', 'LabManager', 'Publisher'], 1)
         mp(EditSample, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler'], 1)
         mp(EditAR, ['Manager', 'LabManager', 'LabClerk', 'Sampler'], 1)
         mp(EditWorksheet, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
@@ -475,6 +475,7 @@ class BikaGenerator:
         addIndex(bc, 'getSampler', 'FieldIndex')
         addIndex(bc, 'getWorksheetTemplateTitle', 'FieldIndex')
         addIndex(bc, 'getAnalyst', 'FieldIndex')
+        addIndex(bc, 'getInvoiced', 'FieldIndex')
 
         addColumn(bc, 'path')
         addColumn(bc, 'UID')

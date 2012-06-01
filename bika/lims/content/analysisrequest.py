@@ -205,6 +205,13 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
+    ComputedField('Invoiced',
+        expression = 'here.getInvoice() and True or False',
+        default = False,
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
 )
 )
 
@@ -224,12 +231,6 @@ class AnalysisRequest(BaseFolder):
     def _getCatalogTool(self):
         from bika.lims.catalog import getCatalog
         return getCatalog(self)
-
-    def hasBeenInvoiced(self):
-        if self.getInvoice():
-            return True
-        else:
-            return False
 
     def Title(self):
         """ Return the Request ID as title """

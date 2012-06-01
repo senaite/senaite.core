@@ -180,7 +180,7 @@ class InvoiceBatch(BaseFolder):
         for rs in (ars, orders):
             for p in rs:
                 obj = p.getObject()
-                if obj.hasBeenInvoiced():
+                if obj.Invoiced():
                     continue
                 client_uid = obj.aq_parent.UID()
                 l = clients.get(client_uid, [])

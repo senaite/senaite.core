@@ -9,7 +9,6 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import interfaces
 from bika.lims import logger
 from bika.lims.config import POINTS_OF_CAPTURE
-from bika.lims.config import Publish
 from email.Utils import formataddr
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from reportlab.graphics.barcode import getCodes, getCodeNames, createBarcodeDrawing
