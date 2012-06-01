@@ -133,9 +133,15 @@ class HistoryAwareReferenceField(ReferenceField):
                 if mtool.checkPermission(
                     'CMFEditions: Access previous versions', instance):
                     version_id = instance.reference_versions[uid]
-                    o = pr.retrieve(r, selector=version_id).object
+                    try:
+                        o = pr.retrieve(r, selector=version_id).object
+                    except:
+                        logger.error("Permission denied (%s --> %s) "
+                                    "(CMFEditions: Access previous versions)" %
+                                    (instance,r))
+                        o = r
                 else:
-                    logger.warn("Permission denied (%s --> %s) "
+                    logger.error("Permission denied (%s --> %s) "
                                 "(CMFEditions: Access previous versions)" %
                                 (instance,r))
                     o = r
