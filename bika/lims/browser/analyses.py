@@ -36,6 +36,9 @@ class AnalysesView(BikaListingView):
         self.pagesize = 1000
         self.form_id = 'analyses_form'
 
+        self.portal = getToolByName(context, 'portal_url').getPortalObject()
+        self.portal_url = self.portal.absolute_url()
+
         request.set('disable_plone.rightcolumn', 1);
 
         # each editable item needs it's own allow_edit
@@ -59,9 +62,8 @@ class AnalysesView(BikaListingView):
                          'sortable': False},
             'Uncertainty': {'title': _('+-'),
                             'sortable': False},
-            'retested': {'title': "<img title='%s' "\
-                         "src='++resource++bika.lims.images/retested.png' />" % \
-                         context.translate(_('Retested')),
+            'retested': {'title': "<img title='%s' src='%s/++resource++bika.lims.images/retested.png'/>"%\
+                         (context.translate(_('Retested')), self.portal_url),
                          'type':'boolean',
                          'sortable': False},
             'Attachments': {'title': _('Attachments'),
@@ -96,7 +98,6 @@ class AnalysesView(BikaListingView):
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         workflow = getToolByName(self.context, 'portal_workflow')
-        portal = getToolByName(self.context, 'portal_url').getPortalObject()
         mtool = getToolByName(self.context, 'portal_membership')
         checkPermission = mtool.checkPermission
         if not self.allow_edit:
@@ -275,14 +276,14 @@ class AnalysesView(BikaListingView):
                                 items[i]['after']['Result'] = \
                                     '<img width="16" height="16" title="%s"' % Indet + \
                                     'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
-                                    (portal.absolute_url())
+                                    (self.portal_url)
                             else:
                                 # result being un-floatable, is an error.
                                 msg = self.context.translate(_("Invalid result"))
                                 items[i]['after']['Result'] = \
                                     '<img width="16" height="16" title="%s"' % msg + \
                                     'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
-                                    (portal.absolute_url())
+                                    (self.portal_url)
                 items[i]['Uncertainty'] = obj.getUncertainty(result)
 
                 attachments = ""
@@ -291,7 +292,7 @@ class AnalysesView(BikaListingView):
                         af = attachment.getAttachmentFile()
                         icon = af.getBestIcon()
                         attachments += "<span class='attachment' attachment_uid='%s'>" % (attachment.UID())
-                        if icon: attachments += "<img src='%s/%s'/>" % (portal.absolute_url(), icon)
+                        if icon: attachments += "<img src='%s/%s'/>" % (self.portal_url, icon)
                         attachments += '<a href="%s/at_download/AttachmentFile"/>%s</a>' % (attachment.absolute_url(), af.filename)
                         attachments += "<img class='deleteAttachmentButton' attachment_uid='%s' src='%s'/>" % (attachment.UID(), "++resource++bika.lims.images/delete.png")
                         attachments += "</br></span>"
@@ -309,7 +310,7 @@ class AnalysesView(BikaListingView):
                 items[i]['before']['Result'] = \
                     '<img width="16" height="16" ' + \
                     'src="%s/++resource++bika.lims.images/to_follow.png"/>' % \
-                    (portal.absolute_url())
+                    (self.portal_url)
 
             # Add this analysis' interim fields to the interim_columns list
             for f in self.interim_fields[obj.UID()]:
@@ -327,11 +328,11 @@ class AnalysesView(BikaListingView):
                     DueDate = TimeOrDate(self.context, item['DueDate'], long_format = 0)
                     if self.context.portal_type == 'AnalysisRequest':
                         items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
-                            (DueDate, portal.absolute_url(),
+                            (DueDate, self.portal_url,
                              self.context.translate(_("Due Date")) + ": %s"%DueDate)
                     else:
                         items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
-                            (DueDate, portal.absolute_url(),
+                            (DueDate, self.portal_url,
                              self.context.translate(_("Late Analysis")))
                 else:
                     items[i]['replace']['DueDate'] = TimeOrDate(self.context, item['DueDate'])

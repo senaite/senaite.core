@@ -6,10 +6,9 @@
 	i18n:domain="bika">
 
 <head>
-    <metal:block fill-slot="javascript_head_slot"
-        tal:define="portal context/@@plone_portal_state/portal;">
+    <metal:block fill-slot="javascript_head_slot">
     <script type="text/javascript"
-        tal:attributes="src python:portal.absolute_url() + '/++resource++bika.lims.js/ar_analyses.js'"></script>
+        tal:attributes="src string:${view/portal_url}/++resource++bika.lims.js/ar_analyses.js"></script>
     </metal:block>
 </head>
 
@@ -56,7 +55,7 @@
 	<img
 		i18n:attributes="title"
 		title="Partitions"
-		src="++resource++bika.lims.images/samplepartition.png"/>
+		tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/samplepartition.png"/>
 	<span i18n:translate="">Sample Partitions</span>
 	<tal:add_actions repeat="add_item python:view.context_actions.keys()">
 		<a tal:attributes="
@@ -95,7 +94,7 @@
 		<img
 			i18n:attributes="title"
 			title="Analyses"
-			src="++resource++bika.lims.images/analysisservice.png"/>
+			tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/analysisservice.png"/>
 		<span i18n:translate="">Analyses</span>
 	</h3>
 

@@ -152,9 +152,9 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata = "Analyses",
         default = False,
         widget = BooleanWidget(
-            label = _("Categorise Analysis Services"),
-            description = _("If there are many analysis services, the control "
-                            "panel view can group services by category")
+            label = _("Categorise analysis services setup list"),
+            description = _("Group analysis services by category in the LIMS set-up, "
+                            "helpful when the list is long")
         ),
     ),
     ReferenceField('DryMatterService',
@@ -219,11 +219,10 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary = LABEL_AUTO_OPTIONS,
         widget = SelectionWidget(
             format = 'select',
-            label = _("Automatic AR label printing"),
+            label = _("Automatic label printing"),
             description = _("Select 'Register' if you want labels to be automatically printed when "
-                            "new ARs are created.  Select 'Receive' to print labels when the 'Receive' "
-                            "transition is invoked on ARs or Samples.  Select None to disable automatic "
-                            "printing"),
+                            "new ARs or sample records are created. Select 'Receive' to print labels "
+                            "when ARs or Samples are received. Select 'None' to disable automatic printing"),
         )
     ),
     LinesField('AutoLabelSize',
@@ -231,8 +230,8 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary = LABEL_AUTO_SIZES,
         widget = SelectionWidget(
             format = 'select',
-            label = _("Automatic AR label sizes"),
-            description = _("Select the size label to print if Automatic label printing is enabled."),
+            label = _("Label sizes"),
+            description = _("Select the which label to print when automatic label printing is enabled"),
         )
     ),
     PrefixesField('Prefixes',
@@ -250,11 +249,13 @@ schema = BikaFolderSchema.copy() + Schema((
 #        fixedSize=8,
         widget=RecordsWidget(
             label = _("Prefixes"),
-            description = _("Define the prefixes for the unique sequential IDs the system issues "
-                            "for objects such as samples and analysis requests. In the 'Padding' "
-                            "field, indicate with how many leading zeros the numbers must be padded. "
-                            "E.g. a prefix of AR with padding of 4 for analysis requests, will see "
-                            "them numbered from AR0001 to AR9999."),
+            description = _("Define the prefixes for the unique sequential IDs the system issues for "
+                            "objects. In the 'Padding' field, indicate with how many leading zeros the "
+                            "numbers must be padded. E.g. a prefix of WS for worksheets with padding of "
+                            "4, will see them numbered from WS-0001 to WS-9999. NB: Note that samples "
+                            "and analysis requests are prefixed with sample type abbreviations and are "
+                            "not configured in this table - their padding can be set in the specified "
+                            "fields below"),
             allowDelete=False,
         )
     ),
@@ -263,7 +264,7 @@ schema = BikaFolderSchema.copy() + Schema((
         default = False,
         widget = BooleanWidget(
             label = _("Include year in ID prefix"),
-            description = _("Adds a two-digit year after the ID prefix.")
+            description = _("Adds a two-digit year after the ID prefix")
         ),
     ),
     IntegerField('SampleIDPadding',
@@ -290,7 +291,7 @@ schema = BikaFolderSchema.copy() + Schema((
         widget = BooleanWidget(
             label = _("Use external ID server"),
             description = _("Check this if you want to use a separate ID server. "
-                            "Prefixes are configurable separately in each Bika site.")
+                            "Prefixes are configurable separately in each Bika site")
         ),
     ),
     StringField('IDServerURL',

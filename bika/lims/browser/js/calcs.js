@@ -60,7 +60,8 @@ $(document).ready(function(){
 					$("span[uid='"+lert.uid+"']")
 					  .filter("span[field='"+lert.field+"']")
 					  .empty()
-					  .append("<img src='++resource++bika.lims.images/"	+
+					  .append("<img src='"+
+					    window.portal_url+"/++resource++bika.lims.images/" +
 						lert.icon +".png' title='"+
 						lert.msg+"' uid='"+
 						lert.uid+"' icon='"+
@@ -151,7 +152,8 @@ $(document).ready(function(){
 								", error" + re_spec['error'] + "%";
 					$("span[uid='"+uid+"']")
 					  .filter("span[field='Result']")
-					  .append("<img src='++resource++bika.lims.images/warning.png' uid='"+
+					  .append("<img src='"+
+						window.portal_url+"/++resource++bika.lims.images/warning.png' uid='"+
 					  uid+"' icon='warning' title='Result out of range ("+range_str+")'/>");
 					continue;
 				}
@@ -163,7 +165,8 @@ $(document).ready(function(){
 				range_str = "min: " + spec_min + ", max: " + spec_max;
 				$("span[uid='"+uid+"']")
 				  .filter("span[field='Result']")
-				  .append("<img src='++resource++bika.lims.images/exclamation.png' uid='"+
+				  .append("<img src='"+
+					window.portal_url+"/++resource++bika.lims.images/exclamation.png' uid='"+
 				  uid+"' icon='exclamation' title='Result out of range ("+range_str+")'/>");
 			}
 		}

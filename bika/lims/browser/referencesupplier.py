@@ -111,9 +111,17 @@ class ReferenceSamplesView(BikaListingView):
 
             after_icons = ''
             if obj.getBlank():
-                after_icons += "<img src='++resource++bika.lims.images/blank.png' title='Blank'>"
+                after_icons += "<img\
+                src='%s/++resource++bika.lims.images/blank.png' \
+                title='%s'>" % (self.portal_url,
+                                self.context.translate(
+                                    _('Blank')))
             if obj.getHazardous():
-                after_icons += "<img src='++resource++bika.lims.images/hazardous.png' title='Hazardous'>"
+                after_icons += "<img\
+                src='%s/++resource++bika.lims.images/hazardous.png' \
+                title='%s'>" % (self.portal_url,
+                                self.context.translate(
+                                _('Hazardous')))
             items[x]['replace']['ID'] = "<a href='%s/base_view'>%s</a>&nbsp;%s" % \
                  (items[x]['url'], items[x]['ID'], after_icons)
 

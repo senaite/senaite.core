@@ -455,6 +455,7 @@ class bsc_browserdata(BrowserView):
             s = s.getObject()
             data['st_uids'][s.Title()] = {
                 'uid':s.UID(),
+                'samplepoints': [s.Title() for s in s.getSamplePoints()]
             }
 
         data['sp_uids'] = {}
@@ -464,6 +465,7 @@ class bsc_browserdata(BrowserView):
             data['sp_uids'][s.Title()] = {
                 'uid':s.UID(),
                 'composite':s.getComposite(),
+                'sampletypes': [s.Title() for s in s.getSampleTypes()]
             }
 
         data['containers'] = {}

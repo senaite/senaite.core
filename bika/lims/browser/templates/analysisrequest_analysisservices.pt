@@ -22,10 +22,10 @@
 				tal:condition="python:service_obj.getUnit()">(<span tal:replace="python:service_obj.getUnit()">mg/l</span>)</em>
 			<img
 				tal:condition="python:context.bika_setup.laboratory.getLaboratoryAccredited() and service_obj.getAccredited()"
-				src="++resource++bika.lims.images/accredited.png"/>
+				tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/accredited.png"/>
 			<img
 				tal:condition="python:service_obj.getReportDryMatter()"
-				src="++resource++bika.lims.images/dry.png"/>
+				tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/dry.png"/>
 		</td>
 		<td
 			style="white-space:nowrap;"
@@ -54,7 +54,7 @@
 				tal:condition="python:col_count > 1"
 				tal:attributes="
 					id string:${service/UID};
-					src string:++resource++bika.lims.images/copy.png"/>
+					src string:${view/portal_url}/++resource++bika.lims.images/copy.png"/>
 		</td>
 		<tal:i define="serviceUID service/UID;serviceTitle service/title">
 			<tal:i repeat="column python:range(int(view.request['col_count']))">

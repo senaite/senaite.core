@@ -96,8 +96,9 @@ class ajax_SampleTypes(BrowserView):
         plone.protect.CheckAuthenticator(self.request)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         term = self.request.get('term', '').lower()
-        items = bsc(portal_type = "SampleType", sort_on='sortable_title')
-
+        items = []
+        if not term:
+            return items
         samplepoint = self.request.get('samplepoint', '')
         if samplepoint and len(samplepoint) > 1:
             sp = bsc(portal_type="SamplePoint",Title=samplepoint)
@@ -105,7 +106,8 @@ class ajax_SampleTypes(BrowserView):
                 return json.dumps([])
             sp = sp[0].getObject()
             items = sp.getSampleTypes()
-        else:
+        if not items:
+            items = bsc(portal_type = "SampleType", sort_on='sortable_title')
             if term and len(term) < 3:
                 # Items that start with A or AA
                 items = [s.getObject()
@@ -121,7 +123,6 @@ class ajax_SampleTypes(BrowserView):
                 items = [s.getObject()
                          for s in items
                          if s.Title.lower().find(term) > -1]
-
 
         items = [callable(s.Title) and s.Title() or s.Title
                  for s in items]

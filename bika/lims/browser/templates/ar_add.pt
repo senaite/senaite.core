@@ -300,6 +300,24 @@
             </td>
         </tal:block>
     </tr>
+    <!-- Sample Point -->
+    <tr tal:define="field_name string:SamplePoint">
+        <th colspan="2"><span id="" i18n:translate="">Sample Point</span></th>
+        <td>
+            <img class="copyButton"
+                tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
+        </td>
+        <tal:block repeat="column python:range(view.col_count)">
+            <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
+                input_id string:ar_${column}_${field_name}">
+            <input size="10" type='text' class="samplepoint" value=""
+                tal:attributes="
+                    id input_id;name input_name;
+                    column column;
+                    tabindex python:column*100+tabindex.next();"/>
+            </td>
+        </tal:block>
+    </tr>
     <!-- Sample Type -->
     <tr tal:define="field_name string:SampleType">
         <th colspan="2">
@@ -317,24 +335,6 @@
             <input size="10" type='text' class='sampletype' value=""
                 tal:attributes="
                     id input_id;name input_name;
-                    tabindex python:column*100+tabindex.next();"/>
-            </td>
-        </tal:block>
-    </tr>
-    <!-- Sample Point -->
-    <tr tal:define="field_name string:SamplePoint">
-        <th colspan="2"><span id="" i18n:translate="">Sample Point</span></th>
-        <td>
-            <img class="copyButton"
-                tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
-        </td>
-        <tal:block repeat="column python:range(view.col_count)">
-            <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                input_id string:ar_${column}_${field_name}">
-            <input size="10" type='text' class="samplepoint" value=""
-                tal:attributes="
-                    id input_id;name input_name;
-                    column column;
                     tabindex python:column*100+tabindex.next();"/>
             </td>
         </tal:block>
@@ -418,7 +418,7 @@
             <tr>
                 <th tal:attributes="colspan python:view.col_count + 3">
                     <img title="analyses"
-                        tal:attributes="src string:++resource++bika.lims.images/analysisservice.png"/>
+                        tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/analysisservice.png"/>
                 <span tal:content="python:POINTS_OF_CAPTURE.getValue(poc)"/>
                 </th>
             </tr>

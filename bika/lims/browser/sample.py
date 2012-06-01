@@ -217,7 +217,7 @@ class createSamplePartition(BrowserView):
         part.processForm()
         SamplingWorkflowEnabled = part.bika_setup.getSamplingWorkflowEnabled()
         ## We force the object to have the same state as the parent
-        sample_state = wf.getInfoFor(sample, 'review_state')
+        sample_state = wf.getInfoFor(self.context, 'review_state')
         changeWorkflowState(part, sample_state)
         self.request.RESPONSE.redirect(self.context.absolute_url() +
                                        "/partitions")
@@ -748,12 +748,14 @@ class SamplesView(BikaListingView):
             after_icons = ''
             if obj.getSampleType().getHazardous():
                 after_icons += "<img title='%s' " \
-                    "src='++resource++bika.lims.images/hazardous.png'>" % \
-                    self.context.translate(_("Hazardous"))
+                    "src='%s/++resource++bika.lims.images/hazardous.png'>" % \
+                    (self.context.translate(_("Hazardous")),
+                     self.portal_url)
             if obj.getSamplingDate() > DateTime():
                 after_icons += "<img title='%s' " \
-                    "src='++resource++bika.lims.images/calendar.png' >" % \
-                    self.context.translate(_("Future dated sample"))
+                    "src='%s/++resource++bika.lims.images/calendar.png' >" % \
+                    (self.context.translate(_("Future dated sample")),
+                     self.portal_url)
             if after_icons:
                 items[x]['after']['getSampleID'] = after_icons
 

@@ -6,6 +6,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
+from operator import itemgetter
 import json
 
 class ARTemplatePartitionsView(BikaListingView):
@@ -85,6 +86,7 @@ class ARTemplatePartitionsView(BikaListingView):
             }
 
             items.append(item)
+        items = sorted(items, key = itemgetter('part_id'))
         return items
 
 class ARTemplatePartitionsWidget(TypesWidget):
@@ -98,7 +100,8 @@ class ARTemplatePartitionsWidget(TypesWidget):
     security = ClassSecurityInfo()
 
     security.declarePublic('process_form')
-    def process_form(self, instance, field, form, empty_marker = None, emptyReturnsMarker = False):
+    def process_form(self, instance, field, form, empty_marker = None,
+                     emptyReturnsMarker = False):
         """ Return a list of dictionaries fit for ARTemplate/Partitions field
             consumption.
         """
