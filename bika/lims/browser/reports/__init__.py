@@ -3,6 +3,7 @@ from analysespersampletype import AnalysesPerSampleType
 from analysesattachments import AnalysesAttachments
 from analysesperclient import AnalysesPerClient
 from analysestats import AnalysesTats
+from analysesoutofrange import AnalysesOutOfRange
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
@@ -217,6 +218,9 @@ class SubmitForm(BrowserView):
         elif report_id == 'analysesattachments':
             reporttype = 'Analyses attachments'
             self.reportout = AnalysesAttachments(self.context, self.request)()
+        elif report_id == 'analysesoutofrange':
+            reporttype = 'Analyses out of range'
+            self.reportout = AnalysesOutOfRange(self.context, self.request)()
         else:
             self.reportout = "no report to out"
 

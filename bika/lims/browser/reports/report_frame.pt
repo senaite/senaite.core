@@ -3,12 +3,13 @@
 	xmlns:metal="http://xml.zope.org/namespaces/metal"
 	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
     i18n:domain="bika"
-    tal:define="plone_view context/@@plone">
+    tal:define="plone_view context/@@plone;
+                portal_url nocall:context/portal_url">
 <body>
 <table>
     <tr>
         <td class="left">
-            <img tal:attributes="src string:${context/absolute_url}/logo.png"/>
+            <img tal:attributes="src string:${portal_url}/logo.png"/>
             <br/>
             <span tal:content="view/client_title | nothing"/>
             <tal:address tal:repeat="line view/client_address">
