@@ -449,38 +449,38 @@ class bsc_browserdata(BrowserView):
         ## SamplePoint and SampleType autocomplete lookups need a reference
         ## to resolve Title->UID
         data['st_uids'] = {}
-        for s in bsc(portal_type = 'SampleType',
+        for st_proxy in bsc(portal_type = 'SampleType',
                         inactive_review_state = 'active'):
-            s = s.getObject()
-            data['st_uids'][s.Title()] = {
-                'uid':s.UID(),
-                'samplepoints': [s.Title() for s in s.getSamplePoints()]
+            st = st_proxy.getObject()
+            data['st_uids'][st.Title()] = {
+                'uid':st.UID(),
+                'samplepoints': [sp.Title() for sp in st.getSamplePoints()]
             }
 
         data['sp_uids'] = {}
-        for s in bsc(portal_type = 'SamplePoint',
+        for sp_proxy in bsc(portal_type = 'SamplePoint',
                         inactive_review_state = 'active'):
-            s = s.getObject()
-            data['sp_uids'][s.Title()] = {
-                'uid':s.UID(),
-                'composite':s.getComposite(),
-                'sampletypes': [s.Title() for s in s.getSampleTypes()]
+            sp = sp_proxy.getObject()
+            data['sp_uids'][sp.Title()] = {
+                'uid':sp.UID(),
+                'composite':sp.getComposite(),
+                'sampletypes': [st.Title() for st in sp.getSampleTypes()]
             }
 
         data['containers'] = {}
-        for s in bsc(portal_type = 'Container'):
-            s = s.getObject()
-            data['containers'][s.UID()] = {
-                'title':s.Title(),
-                'uid':s.UID(),
+        for c_proxy in bsc(portal_type = 'Container'):
+            c = c_proxy.getObject()
+            data['containers'][c.UID()] = {
+                'title':c.Title(),
+                'uid':c.UID(),
             }
 
         data['preservations'] = {}
-        for s in bsc(portal_type = 'Preservation'):
-            s = s.getObject()
-            data['preservations'][s.UID()] = {
-                'title':s.Title(),
-                'uid':s.UID(),
+        for p_proxy in bsc(portal_type = 'Preservation'):
+            p = p_proxy.getObject()
+            data['preservations'][p.UID()] = {
+                'title':p.Title(),
+                'uid':p.UID(),
             }
 
         return json.dumps(data)
