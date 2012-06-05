@@ -37,10 +37,11 @@ class AnalysisServicesWorkflowAction(WorkflowAction):
             created = []
             for service in selected_services.values():
                 _id = folder.invokeFactory('AnalysisService', id = 'tmp')
-                dup = folder[_id]
-                dup.setTitle('%s (copy)' % service.Title())
-                _id = renameAfterCreation(dup)
-                dup.edit(
+                folder[_id].setTitle('%s (copy)' % service.Title())
+                _id = renameAfterCreation(folder[_id])
+                folder[_id].unmarkCreationFlag()
+
+                folder[_id].edit(
                     description = service.Description(),
                     PointOfCapture = service.getPointOfCapture(),
                     ReportDryMatter = service.getReportDryMatter(),
@@ -59,19 +60,21 @@ class AnalysisServicesWorkflowAction(WorkflowAction):
                     Uncertainties = service.getUncertainties(),
                     ResultOptions = service.getResultOptions()
                 )
+                folder[_id].reindexObject()
                 created.append(_id)
 
             if len(created) > 1:
                 message = self.context.translate(
                     _('Services ${services} were successfully created.',
                       mapping = {'services': ', '.join(created)}))
-                self.destination_url = self.request.get_header("referer",
-                                                               self.context.absolute_url())
+                self.destination_url = \
+                    self.request.get_header("referer",
+                                            self.context.absolute_url())
             else:
                 message = self.context.translate(
                     _('Analysis request ${service} was successfully created.',
                     mapping = {'service': ', '.join(created)}))
-                self.destination_url = dup.absolute_url() + "/base_edit"
+                self.destination_url = folder[_id].absolute_url() + "/base_edit"
 
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.response.redirect(self.destination_url)
