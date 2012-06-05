@@ -100,11 +100,5 @@
       handler="bika.lims.subscribers.calculation.AfterTransitionEventHandler"
     />
 
-    <!-- Apply version control to IHistoryAware objects -->
-    <subscriber
-      for="Products.ATContentTypes.interfaces.IHistoryAware
-           Products.Archetypes.interfaces.IObjectInitializedEvent"
-      handler="bika.lims.subscribers.objectinitialized.applyVersionControl"
-    />
 
 </configure>
