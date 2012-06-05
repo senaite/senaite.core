@@ -836,6 +836,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
 
     def listTemplates(self):
         ## parameters for all ARTemplates
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
         templates = {}
         client = self.context.portal_type == 'AnalysisRequest' \
             and self.context.aq_parent or self.context
@@ -854,6 +855,12 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                     'ARProfile':profile and profile.UID() or '',
                     'SamplePoint':sp_title,
                     'SampleType':st_title,
+                    'Partitions':template.getPartitions(),
+                    'Analyses':[{'service_poc':bsc(UID=x['service_uid'])[0].getObject().getPointOfCapture(),
+                                 'category_uid':bsc(UID=x['service_uid'])[0].getObject().getCategoryUID(),
+                                 'partition':x['partition'],
+                                 'service_uid':x['service_uid']} 
+                                for x in template.getAnalyses()],
                     'ReportDryMatter':template.getReportDryMatter(),
                 }
                 templates[template.UID()] = t_dict
@@ -1636,7 +1643,7 @@ class ajaxAnalysisRequestSubmit():
         # The actual submission
         for column in columns:
             if form_parts:
-                parts = form_parts[column]
+                parts = form_parts[str(column)]
             else:
                 parts = []
             formkey = "ar.%s" % column
