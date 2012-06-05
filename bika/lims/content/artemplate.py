@@ -78,7 +78,9 @@ schema = BikaSchema.copy() + Schema((
                     'preservation_uid':''}],
         widget = ARTemplatePartitionsWidget(
             label = _("Sample Partitions"),
-            description = _("XXX@Lemoene 1"),
+            description = _("Configure the sample partitions and preservations "
+                            "for this template. Assign analyses to the different "
+                            "partitions on the template's Analyses tab"),
         )
     ),
     ReferenceField('ARProfile',
@@ -104,7 +106,7 @@ schema = BikaSchema.copy() + Schema((
         default = [],
         widget = ARTemplateAnalysesWidget(
             label = _("Analyses"),
-            description = _("XXX@lemoene 2"),
+            description = _("Select analyses to include in this template"),
         )
     ),
 ),
