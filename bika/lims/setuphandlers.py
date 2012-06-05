@@ -172,7 +172,7 @@ class BikaGenerator:
 
         mp(ApplyVersionControl, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
         mp(SaveNewVersion, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
-        mp(AccessPreviousVersions, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], )
+        mp(AccessPreviousVersions, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
 
         mp(ManageBika, ['Manager', 'LabManager'], 1)
         mp(ManageClients, ['Manager', 'LabManager', 'LabClerk'], 1)
@@ -289,6 +289,11 @@ class BikaGenerator:
         mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
         mp(permissions.View, ['Manager', 'LabManager'], 0)
         portal.pricelists.reindexObject()
+
+        mp = portal.bika_setup.manage_permission
+        mp(ApplyVersionControl, ['Manager', 'LabManager', 'Member'], 1)
+        mp(SaveNewVersion, ['Manager', 'LabManager', 'Member'], 1)
+        mp(AccessPreviousVersions, ['Manager', 'LabManager', 'Member'], 1)
 
     def setupVersioning(self, portal):
         portal_repository = getToolByName(portal, 'portal_repository')
