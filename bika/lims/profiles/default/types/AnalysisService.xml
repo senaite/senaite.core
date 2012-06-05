@@ -39,18 +39,18 @@
          url_expr="string:${object_url}/edit"
          i18n:attributes="title"
          i18n:domain="plone"
-         visible="False">
+         visible="True">
     <permission value="Modify portal content"/>
  </action>
 
-<!-- <action title="Log"-->
-<!--         action_id="log"-->
-<!--         category="object"-->
-<!--         condition_expr=""-->
-<!--         url_expr="string:${object_url}/log"-->
-<!--         i18n:attributes="title"-->
-<!--         visible="True">-->
-<!--    <permission value="View"/>-->
-<!-- </action>-->
+ <action title="Log"
+         action_id="log"
+         category="object"
+         condition_expr=""
+         url_expr="string:${object_url}/log"
+         i18n:attributes="title"
+         visible="True">
+    <permission value="View"/>
+ </action>
 
 </object>
