@@ -64,6 +64,7 @@ for x in `find . -name plone.po`; do
 done
 
 find . -name *backup.po -delete
+find . -name *backup.mo -delete
 
 echo Push transifex
 #tx push -s -t

@@ -45,11 +45,11 @@
              trigger="USER"
              before_script=""
              after_script=""
-             i18n:attributes="title">
+             i18n:attributes="title dispatch_transition_title">
   <description i18n:translate=""></description>
   <action url=""
           category="workflow"
-          i18n:translate="">Dispatch</action>
+          i18n:translate="dispatch_transition_title">Dispatch order</action>
   <guard>c
    <guard-permission>BIKA: Dispatch Order</guard-permission>
   </guard>

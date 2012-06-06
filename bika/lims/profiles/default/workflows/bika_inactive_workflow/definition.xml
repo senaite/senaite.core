@@ -43,12 +43,12 @@
              trigger="USER"
              before_script=""
              after_script=""
-             i18n:attributes="title">
+             i18n:attributes="title activate_transition_title">
   <description i18n:translate=""></description>
   <action url="workflow_action?workflow_action=activate"
           category=""
           icon=""
-          i18n:translate="">Activate</action>
+          i18n:translate="activate_transition_title">Activate</action>
   <guard>
   </guard>
  </transition>
@@ -59,13 +59,13 @@
              trigger="USER"
              before_script=""
              after_script=""
-             i18n:attributes="title">
+             i18n:attributes="title deactivate_transition_title">
   <description i18n:translate=""></description>
   <description>Flag item as inactive.</description>
   <action url="workflow_action?workflow_action=deactivate"
           category=""
           icon=""
-          i18n:translate="">Deactivate</action>
+          i18n:translate="deactivate_transition_title">Deactivate</action>
   <guard>
   </guard>
  </transition>

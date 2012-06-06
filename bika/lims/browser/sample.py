@@ -80,8 +80,8 @@ class SamplePartitionsView(BikaListingView):
                          'getPreserver',
                          'getDatePreserved',
                          'state_title'],
-             'transitions': [{'id': 'sampled'},
-                             {'id': 'preserved'},
+             'transitions': [{'id': 'sample'},
+                             {'id': 'preserve'},
                              {'id': 'receive'},
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
@@ -808,15 +808,15 @@ class SamplesView(BikaListingView):
                 if 'getSampler' not in toggle_cols \
                    or 'getDateSampled' not in toggle_cols:
                     if 'hide_transitions' in state:
-                        state['hide_transitions'].append('sampled')
+                        state['hide_transitions'].append('sample')
                     else:
-                        state['hide_transitions'] = ['sampled',]
+                        state['hide_transitions'] = ['sample',]
                 if 'getPreserver' not in toggle_cols \
                    or 'getDatePreserved' not in toggle_cols:
                     if 'hide_transitions' in state:
-                        state['hide_transitions'].append('preserved')
+                        state['hide_transitions'].append('preserve')
                     else:
-                        state['hide_transitions'] = ['preserved',]
+                        state['hide_transitions'] = ['preserve',]
             new_states.append(state)
         self.review_states = new_states
 

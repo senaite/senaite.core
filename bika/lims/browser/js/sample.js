@@ -4,12 +4,12 @@ $(document).ready(function(){
 	_ = window.jsi18n;
 
 	// If any required fields are missing, then we hide the Plone UI
-	// transitions for Sampled and Preserved, and use our own buttons instead
+	// transitions for Sample and Preserve, and use our own buttons instead
 	// (Save)
 	if ($("#DateSampled").val() == "" || $("#Sampler").val() == "") {
-		$("#workflow-transition-sampled").parent().toggle(false);
+		$("#workflow-transition-sample").parent().toggle(false);
 	}
-	$("#workflow-transition-preserved").parent().toggle(false);
+	$("#workflow-transition-preserve").parent().toggle(false);
 
 	function autocomplete_sampletype(request,callback){
 		$.getJSON('ajax_sampletypes',

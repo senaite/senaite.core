@@ -67,7 +67,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                 self.request.response.redirect(self.destination_url)
                 return
 
-        if action == "sampled":
+        if action == "sample":
             objects = AnalysisRequestWorkflowAction._get_selected_items(self)
             transitioned = {'to_be_preserved':[], 'sample_due':[]}
             for obj_uid, obj in objects.items():
@@ -102,10 +102,10 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
 
                 # transition the object if both values are present
                 if Sampler and DateSampled:
-                    workflow.doActionFor(sample, 'sampled')
+                    workflow.doActionFor(sample, action)
                     new_state = workflow.getInfoFor(sample, 'review_state')
                     transitioned[new_state].append(sample.Title())
-                doActionFor(ar, 'sampled')
+                doActionFor(ar, action)
 
             message = None
             for state in transitioned:
@@ -136,7 +136,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                                    self.context.absolute_url())
             self.request.response.redirect(self.destination_url)
 
-        elif action == "preserved":
+        elif action == "preserve":
             objects = AnalysisRequestWorkflowAction._get_selected_items(self)
             transitioned = {}
             not_transitioned = []
@@ -173,7 +173,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                 for sp in sample.objectValues("SamplePartition"):
                     if workflow.getInfoFor(sp, 'review_state') == 'to_be_preserved':
                         if Preserver and DatePreserved:
-                            doActionFor(sp, 'preserved')
+                            doActionFor(sp, action)
                             transitioned[sp.aq_parent.Title()] = sp.Title()
                         else:
                             not_transitioned.append(sp)
@@ -190,7 +190,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
 
             # And then the sample itself
             if Preserver and DatePreserved and not not_transitioned:
-                doActionFor(sample, 'preserved')
+                doActionFor(sample, action)
                 #message = _('${item} is waiting to be received.',
                 #            mapping = {'item': sample.Title()})
                 #message = self.context.translate(message)

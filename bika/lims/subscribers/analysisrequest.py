@@ -26,7 +26,7 @@ def AfterTransitionEventHandler(instance, event):
         # Don't cascade. Shouldn't be attaching ARs for now (if ever).
         return
 
-    elif action_id == "sampled":
+    elif action_id == "sample":
         # transition our sample
         sample = instance.getSample()
         if not skip(sample, action_id, peek=True):
@@ -38,7 +38,7 @@ def AfterTransitionEventHandler(instance, event):
     elif action_id == "sample_due":
         pass
 
-    elif action_id == "preserved":
+    elif action_id == "preserve":
         # transition our sample
         sample = instance.getSample()
         if not skip(sample, action_id, peek=True):

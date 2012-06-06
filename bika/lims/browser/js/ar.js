@@ -14,5 +14,13 @@ $(document).ready(function(){
 
 	$('#open_cc_browser').click(openCCBrowser);
 
+	// If any required fields are missing, then we hide the Plone UI
+	// transitions for Sample and Preserve, and use our own buttons instead
+	// (Save)
+	if ($("#DateSampled").val() == "" || $("#Sampler").val() == "") {
+		$("#workflow-transition-sample").parent().toggle(false);
+	}
+	$("#workflow-transition-preserve").parent().toggle(false);
+
 });
 }(jQuery));

@@ -145,7 +145,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         ## Partition Preservation
         # the partition table shown in AR and Sample views sends it's
         # action button submits here.
-        elif action == "preserved":
+        elif action == "preserve":
             objects = WorkflowAction._get_selected_items(self)
             transitioned = []
             for obj_uid, obj in objects.items():
@@ -168,7 +168,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
                 # transition the object if both values are present
                 if Preserver and DatePreserved:
-                    workflow.doActionFor(part, 'preserved')
+                    workflow.doActionFor(part, action)
                     transitioned.append(part.id)
 
                 part.reindexObject()
@@ -193,7 +193,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                                    self.context.absolute_url())
             self.request.response.redirect(self.destination_url)
 
-        elif action == "sampled":
+        elif action == "sample":
             objects = WorkflowAction._get_selected_items(self)
             transitioned = {'to_be_preserved':[], 'sample_due':[]}
             for obj_uid, obj in objects.items():
@@ -217,7 +217,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
                 # transition the object if both values are present
                 if Sampler and DateSampled:
-                    workflow.doActionFor(part, 'sampled')
+                    workflow.doActionFor(part, action)
                     new_state = workflow.getInfoFor(part, 'review_state')
                     transitioned[new_state].append(part.id)
 
@@ -859,7 +859,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                     'Analyses':[{'service_poc':bsc(UID=x['service_uid'])[0].getObject().getPointOfCapture(),
                                  'category_uid':bsc(UID=x['service_uid'])[0].getObject().getCategoryUID(),
                                  'partition':x['partition'],
-                                 'service_uid':x['service_uid']} 
+                                 'service_uid':x['service_uid']}
                                 for x in template.getAnalyses()],
                     'ReportDryMatter':template.getReportDryMatter(),
                 }
@@ -1919,8 +1919,8 @@ class AnalysisRequestsView(BikaListingView):
              'contentFilter':{'cancellation_state':'active',
                               'sort_on':'created',
                               'sort_order': 'reverse'},
-             'transitions': [{'id':'sampled'},
-                             {'id':'preserved'},
+             'transitions': [{'id':'sample'},
+                             {'id':'preserve'},
                              {'id':'receive'},
                              {'id':'retract'},
                              {'id':'verify'},
@@ -1953,8 +1953,8 @@ class AnalysisRequestsView(BikaListingView):
                                                 'sample_due'),
                                'sort_on':'created',
                                'sort_order': 'reverse'},
-             'transitions': [{'id':'sampled'},
-                             {'id':'preserved'},
+             'transitions': [{'id':'sample'},
+                             {'id':'preserve'},
                              {'id':'receive'},
                              {'id':'cancel'},
                              {'id':'reinstate'}],
@@ -2256,7 +2256,6 @@ class AnalysisRequestsView(BikaListingView):
                 items[x]['getSampler'] = Sampler
 
             # These don't exist on ARs
-            # the columns exist just to set "preserved" from lists.
             # XXX This should be a list of preservers...
             items[x]['getPreserver'] = ''
             items[x]['getDatePreserved'] = ''
@@ -2287,15 +2286,15 @@ class AnalysisRequestsView(BikaListingView):
                 if 'getSampler' not in toggle_cols \
                    or 'getDateSampled' not in toggle_cols:
                     if 'hide_transitions' in state:
-                        state['hide_transitions'].append('sampled')
+                        state['hide_transitions'].append('sample')
                     else:
-                        state['hide_transitions'] = ['sampled',]
+                        state['hide_transitions'] = ['sample',]
                 if 'getPreserver' not in toggle_cols \
                    or 'getDatePreserved' not in toggle_cols:
                     if 'hide_transitions' in state:
-                        state['hide_transitions'].append('preserved')
+                        state['hide_transitions'].append('preserve')
                     else:
-                        state['hide_transitions'] = ['preserved',]
+                        state['hide_transitions'] = ['preserve',]
             new_states.append(state)
         self.review_states = new_states
 

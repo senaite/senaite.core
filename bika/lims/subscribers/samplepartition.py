@@ -22,7 +22,7 @@ def AfterTransitionEventHandler(instance, event):
     sample = instance.aq_parent
     sample_state = workflow.getInfoFor(sample, 'review_state')
 
-    if action_id == "sampled":
+    if action_id == "sample":
         # Transition our analyses
         analyses = instance.getBackReferences('AnalysisSamplePartition')
         for analysis in analyses:
@@ -78,7 +78,7 @@ def AfterTransitionEventHandler(instance, event):
                 for ar in sample.getAnalysisRequests():
                     doActionFor(ar, action_id)
 
-    elif action_id == "preserved":
+    elif action_id == "preserve":
         # Transition our analyses
         analyses = instance.getBackReferences('AnalysisSamplePartition')
         if analyses:

@@ -743,5 +743,5 @@ class BikaListingTable(tableview.Table):
 
         for a,action in enumerate(actions):
             actions[a]['title'] = \
-                self.bika_listing.translate(PMF(actions[a]['title']))
+                self.bika_listing.translate(PMF(actions[a]['id'] + "_transition_title"))
         return actions
