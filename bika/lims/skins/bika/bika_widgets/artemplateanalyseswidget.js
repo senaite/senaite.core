@@ -203,7 +203,17 @@ function calcdependencies(elements, auto_yes) {
 }
 
 //////////////////////////////////////
-function addPart(){
+function addPart(container,preservation){
+	if(container == null || container == undefined){
+		container = '';
+	} else {
+		container = container[0];
+	}
+	if(preservation == null || preservation == undefined){
+		preservation = '';
+	} else {
+		preservation = preservation[0];
+	}
 	highest_part = '';
 	from_tr = '';
 	$.each($('#partitions td.part_id'), function(i,v){
@@ -217,7 +227,6 @@ function addPart(){
 	next_part = parseInt(highest_part,10) + 1;
 
 	// copy and re-format new partition table row
-	part_trs = $("#partitions tbody tr")[0];
 	uid	= $(from_tr).attr('uid');
 	to_tr = $(from_tr).clone();
 	$(to_tr).attr('id', 'folder-contents-item-part-'+next_part);
@@ -231,9 +240,13 @@ function addPart(){
 	$(to_tr).find("select[field='container_uid']").attr('name', "container_uid.part-"+next_part+":records");
 	$(to_tr).find("select[field='preservation_uid']").attr('name', "preservation_uid.part-"+next_part+":records");
 	$($($(to_tr).children('td')[0]).children()[1]).empty().append('part-'+next_part);
+
+	// set part and container values
+	$(to_tr).find("select[field='container_uid']").val(container);
+	$(to_tr).find("select[field='preservation_uid']").val(preservation);
 	$($("#partitions tbody")[0]).append($(to_tr));
 
-	// add this part to Partition selectorsin Analyses tab
+	// add this part to Partition selectors in Analyses tab
 	$.each($('select[name^="Partition\\."]'), function(i,v){
 		$(v).append($("<option value='part-"+next_part+"'>part-"+next_part+"</option>"));
 	});
@@ -252,12 +265,11 @@ function calculate_parts(){
 	}
 
 	// get selected services
-	selected = $('[name$="\\.Analyses"]').filter(':checked');
+	selected = $('[name$="uids\\:list"]').filter(':checked');
 	service_uids = []
 	for(i=0;i<selected.length;i++){
-		service_uids.push($(selected[i]).attr('uid'));
+		service_uids.push($(selected[i]).attr('value'));
 	}
-
 
 	// loop through each selected service, assigning or creating
 	// partitions as we go.
@@ -415,9 +427,18 @@ function setARProfile(){
 			});
 		}
 	});
+
+	// set container and preservation of first part
+	first_tr = $('#partitions td.part_id')[0];
+	container = parts[0]['container'];
+	container = parts[0]['preservation'];
+	$(first_tr).find("select[field='container_uid']").val(container);
+	$(first_tr).find("select[field='preservation_uid']").val(preservation);
+
 	nr_parts = parts.length;
 	for(i=1;i<parts.length;i++){
-		addPart();
+		part = parts[i];
+		addPart(part['container'], part['preservation']);
 	}
 	// Set new part numbers
 	$.each(parts, function(p,part){
