@@ -128,7 +128,7 @@ class ajaxServicePopup(BrowserView):
                     preservations = [c for c in ps['preservation']]
                 self.partsetup[i]['preservation'] = ", ".join(preservations)
             else:
-                self.partsetup[i]['container'] = ''
+                self.partsetup[i]['preservation'] = ''
 
         return self.template()
 

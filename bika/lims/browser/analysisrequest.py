@@ -1848,6 +1848,7 @@ class AnalysisRequestsView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
+        self.form_id = "analysisrequests"
 
         self.icon = "++resource++bika.lims.images/analysisrequest_big.png"
         self.title = _("Analysis Requests")
