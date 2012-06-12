@@ -84,6 +84,20 @@ $(document).ready(function(){
 		.focus();
 	});
 
+	$('input.datepicker_2months').live('click', function() {
+		$(this).datepicker({
+			showOn:'focus',
+			showAnim:'',
+			dateFormat:'dd M yy',
+			changeMonth:true,
+			changeYear:true,
+			maxDate: '+0d',
+			numberOfMonths: 2 
+		})
+		.click(function(){$(this).attr('value', '');})
+		.focus();
+	});
+
 	// Analysis Service popup trigger
 	$(".service_title").live('click', function(){
 		var dialog = $('<div></div>');

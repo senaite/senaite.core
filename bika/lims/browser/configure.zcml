@@ -13,6 +13,7 @@
   <include file="contact.zcml"/>
   <include file="late_analyses.zcml"/>
   <include file="menu.zcml"/>
+  <include file="queries.zcml"/>
   <include file="remarks.zcml"/>
   <include file="referencesample.zcml"/>
   <include file="referencesupplier.zcml"/>

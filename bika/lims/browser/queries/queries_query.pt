@@ -1,0 +1,186 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:tal="http://xml.zope.org/namespaces/tal"
+	xmlns:metal="http://xml.zope.org/namespaces/metal"
+	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+	metal:use-macro="here/main_template/macros/master"
+	i18n:domain="bika">
+<body>
+
+<metal:content-title fill-slot="content-title">
+<h1 i18n:translate="">Queries</h1>
+</metal:content-title>
+
+<metal:content-description fill-slot="content-description">
+</metal:content-description>
+
+<metal:content-core fill-slot="content-core">
+
+<br/>
+<br/>
+<div>
+<table>
+<tr>
+<td VALIGN="top">
+<fieldset>
+
+<legend i18n:translate="">Query</legend>
+<p>
+<a href="#"
+    id="analysisrequests_selector"
+    i18n:translate=""
+>Analysis requests</a>
+<br/>
+<span i18n:translate="">
+     Query analysis requests on various criteria
+</span>
+</p>
+
+<p>
+<a  href="#"
+    id="orders_selector"
+    i18n:translate=""
+>Orders</a>
+<br/>
+<span i18n:translate="">
+    Query orders on client, order data, product and status
+</span>
+</p>
+
+<p>
+<a href="#"
+    id="invoices_selector"
+    i18n:translate=""
+>Invoices</a>
+<br/>
+<span i18n:translate="">
+    Query invoices on client, invoice date and description
+</span>
+</p>
+
+</fieldset>
+
+</td>
+<td VALIGN="top">
+
+<div id="analysisrequests" style="display:none" class="criteria">
+<form action="submit_query" method="post" name="analysisrequests">
+<input type="hidden" name="query_id" value="analysisrequests" />
+<fieldset>
+
+<legend i18n:translate="">Selection criteria</legend>
+
+<metal:block use-macro="context/selection_macros/macros/client"/>
+
+<metal:block use-macro="context/selection_macros/macros/contact"/>
+<metal:block use-macro="context/selection_macros/macros/profiles"/>
+
+<div class="field">
+    <label i18n:translate="">Request ID</label><br/>
+    <input name="RequestID:ignore_empty" id="RequestID">
+</div>
+
+<div class="field">
+    <label i18n:translate="">Client Order ID</label><br/>
+    <input name="ClientOrderNumber:ignore_empty" id="ClientOrderNumber">
+</div>
+
+<div class="field">
+    <label i18n:translate="">Client Reference</label><br/>
+    <input name="ClientReference:ignore_empty" id="ClientReference">
+</div>
+
+<div class="field">
+    <label i18n:translate="">Client Sample ID</label><br/>
+    <input name="ClientSampleID:ignore_empty" id="ClientSampleID">
+</div>
+
+<metal:block use-macro="context/selection_macros/macros/sampletype"/>
+<metal:block use-macro="context/selection_macros/macros/samplepoint"/>
+
+<tal:sampled
+    tal:define="date_id string:DateSampled;
+                date_label string:Sampled">
+<metal:date use-macro="context/selection_macros/macros/date"/>
+</tal:sampled>
+
+<tal:requested
+    tal:define="date_id string:DateRequested;
+                date_label string:Requested">
+<metal:date use-macro="context/selection_macros/macros/date"/>
+</tal:requested>
+
+<tal:received
+    tal:define="date_id string:DateReceived;
+                date_label string:Received">
+<metal:date use-macro="context/selection_macros/macros/date"/>
+</tal:received>
+
+<tal:published
+    tal:define="date_id string:DatePublished;
+                date_label string:Published">
+<metal:date use-macro="context/selection_macros/macros/date"/>
+</tal:published>
+
+<metal:block use-macro="context/selection_macros/macros/category"/>
+
+<metal:block use-macro="context/selection_macros/macros/analysisservice"/>
+
+<metal:block use-macro="context/selection_macros/macros/submittedby"/>
+
+<metal:date use-macro="context/selection_macros/macros/review_state"/>
+
+<metal:date use-macro="context/selection_macros/macros/cancellation_state"/>
+
+<metal:date use-macro="context/selection_macros/macros/ws_review_state"/>
+</fieldset>
+    <input tabindex=""
+        class="searchButton"
+        type="submit"
+        name="submit"
+        value="Query"
+        i18n:attributes="value"
+        />
+</form>
+</div>
+
+<div id="orders" style="display:none" class="criteria">
+<form action="submit_query" method="post" name="orders">
+<input type="hidden" name="query_id" value="orders" />
+<fieldset>
+
+<legend i18n:translate="">Selection criteria</legend>
+
+<br/>
+<br/>
+<br/>
+<b> Under construction </b>
+</form>
+</div>
+
+
+<div id="invoices" style="display:none" class="criteria">
+<form action="submit_query" method="post" name="invoices">
+<input type="hidden" name="query_id" value="invoices" />
+<fieldset>
+
+<legend i18n:translate="">Selection criteria</legend>
+
+<br/>
+<br/>
+<br/>
+<b> Under construction </b>
+</form>
+</div>
+
+</td>
+</tr>
+
+
+</table>
+
+
+</div>
+</metal:content-core>
+
+	</body>
+</html>

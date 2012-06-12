@@ -25,6 +25,9 @@ class IAnalysis(Interface):
 class IDuplicateAnalysis(Interface):
     """DuplicateAnalysis"""
 
+class IQueries(Interface):
+    """Query interface """
+
 class IReferenceAnalysis(Interface):
     """Reference Analyses """
 
