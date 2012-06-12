@@ -66,7 +66,7 @@ class ProfilesView(BikaListingView):
                         if not isActive(p)]
         else:
             profiles = [p for p in self.context.objectValues("ARProfile")]
-        profiles.sort(lambda a,b:cmp(a.Title(), b.Title()))
+        profiles.sort(lambda a,b:cmp(a.Title().lower(), b.Title().lower()))
         return profiles
 
     def folderitems(self):

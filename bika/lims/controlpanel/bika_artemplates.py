@@ -63,7 +63,7 @@ class TemplatesView(BikaListingView):
                         if not isActive(p)]
         else:
             templates = [p for p in self.context.objectValues("ARTemplate")]
-        templates.sort(lambda a,b:cmp(a.Title(), b.Title()))
+        templates.sort(lambda a,b:cmp(a.Title().lower(), b.Title().lower()))
         return templates
 
     def folderitems(self):
