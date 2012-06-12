@@ -8,6 +8,26 @@ from bika.lims.content.bikaschema import BikaSchema
 import sys
 
 schema = BikaSchema.copy() + Schema((
+    ReferenceField('ContainerType',
+        required = 0,
+        vocabulary_display_path_bound = sys.maxint,
+        allowed_types = ('ContainerType',),
+        vocabulary = 'getContainerTypes',
+        relationship = 'ContainerContainerType',
+        referenceClass = HoldingReference,
+        widget = ReferenceWidget(
+            checkbox_bound = 1,
+            label = _("Container Type"),
+        ),
+    ),
+    StringField('Capacity',
+        required = 0,
+        default = "0 ml",
+        widget = StringWidget(
+            label = _("Capacity"),
+            description = _("Maximum possible size or volume of samples."),
+        ),
+    ),
     BooleanField('PrePreserved',
         default = False,
         widget = BooleanWidget(
@@ -29,26 +49,6 @@ schema = BikaSchema.copy() + Schema((
             label = _("Preservation"),
             description = _("If this container is pre-preserved, then the preservation "
                             "method could be selected here."),
-        ),
-    ),
-    StringField('Capacity',
-        required = 0,
-        default = "0 ml",
-        widget = StringWidget(
-            label = _("Capacity"),
-            description = _("Maximum possible size or volume of samples."),
-        ),
-    ),
-    ReferenceField('ContainerType',
-        required = 0,
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('ContainerType',),
-        vocabulary = 'getContainerTypes',
-        relationship = 'ContainerContainerType',
-        referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            checkbox_bound = 1,
-            label = _("Container Type"),
         ),
     ),
 ))
