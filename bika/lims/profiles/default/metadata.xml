@@ -7,5 +7,6 @@
     <dependency>profile-Products.CMFEditions:CMFEditions</dependency>
     <dependency>profile-plone.app.iterate:plone.app.iterate</dependency>
     <dependency>profile-Products.TinyMCE:TinyMCE</dependency>
+    <dependency>profile-collective.js.jqueryui:default</dependency>
   </dependencies>
 </metadata>

@@ -3,13 +3,7 @@
 
 <stylesheet
     id="++resource++bika.lims.css/hide_contentmenu.css"
-    expression="python:here.portal_type in ['Client', 'AnalysisRequest', 'Worksheet',
-    'Sample', 'AnalysisCategory', 'ARProfile', 'ARTemplate', 'AnalysisService',
-    'AnalysisSpec', 'Attachment', 'Calculation', 'Instrument', 'LabContact',
-    'Laboratory', 'Method', 'Department', 'ReferenceDefinition',
-    'ReferenceManufacturer', 'ReportFolder', 'SampleType', 'SamplePoint',
-    'WorksheetTemplate', 'LabProduct', 'ReferenceSupplier', 'ReferenceSample',
-    'Preservation']"
+    expression="python:here.portal_type in ['Client', 'AnalysisRequest', 'Worksheet', 'Sample', 'AnalysisCategory', 'ARProfile', 'ARTemplate', 'AnalysisService', 'AnalysisSpec', 'Attachment', 'Calculation', 'Instrument', 'LabContact', 'Laboratory', 'Method', 'Department', 'ReferenceDefinition', 'ReferenceManufacturer', 'ReportFolder', 'SampleType', 'SamplePoint', 'WorksheetTemplate', 'LabProduct', 'ReferenceSupplier', 'ReferenceSample', 'Preservation']"
     media="screen"
     rel="stylesheet"
     rendering="link"
@@ -22,13 +16,6 @@
     rel="stylesheet"
     rendering="link"
     insert-before="*"/>
-
-<stylesheet
-    id="++resource++bika.lims.css/jquery-ui.css"
-    media="screen"
-    rel="stylesheet"
-    rendering="import"
-    insert-after="*"/>
 
 <stylesheet
     id="bika_listing.css"
