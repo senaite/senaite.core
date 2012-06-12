@@ -474,6 +474,7 @@ class bsc_browserdata(BrowserView):
             data['containers'][c.UID()] = {
                 'title':c.Title(),
                 'uid':c.UID(),
+                'containertype': c.getContainerType().UID(),
                 'prepreserved':c.getPrePreserved(),
                 'preservation':pres and pres.UID() or '',
             }

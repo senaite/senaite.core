@@ -5,7 +5,7 @@
 // There are a few differences, because this widget holds a dictionary,
 // where the AR form reads and writes ARAnalysesField.
 // Also note, the form_id is different, so checkboxes are called
-// analyses_cb_* here, an list_cb_* there.
+// analyses_cb_* here, an list_cb_* there, ar_x_Analyses there, uids:list here.
 
 (function( $ ) {
 
@@ -429,12 +429,43 @@ function setARProfile(){
 	});
 
 	// set container and preservation of first part
-	first_tr = $('#partitions td.part_id')[0];
-	container = parts[0]['container'];
-	container = parts[0]['preservation'];
-	$(first_tr).find("select[field='container_uid']").val(container);
-	$(first_tr).find("select[field='preservation_uid']").val(preservation);
+	if (parts.length > 0){
+		first_tr = $($('#partitions td.part_id')[0]).parent();
+		if(parts[0]['container'] != undefined
+		   && parts[0]['container'] != null){
+			container = parts[0]['container'][0];
 
+			// if container is defined, but not in bsc, then it's a container type.
+			// XXX resolving partition container type->container: what are the rules?
+			if (!(container in window.bsc.data['containers'])){
+				for(c in window.bsc.data['containers']){
+					c_obj = window.bsc.data['containers'][c];
+					if(c_obj['containertype'] == container){
+						container = c_obj['uid'];
+						break
+					}
+				}
+			}
+			if (!(container in window.bsc.data['containers'])){
+				// no match
+				console.log("Bad container or container type: " + container);
+				container = '';
+			}
+		} else {
+			container = '';
+		}
+		$(first_tr).find("select[field='container_uid']").val(container);
+
+		if(parts[0]['preservation'] != undefined
+		    && parts[0]['preservation'] != null){
+			preservation = parts[0]['preservation'][0];
+		} else {
+			preservation = '';
+		}
+		$(first_tr).find("select[field='preservation_uid']").val(preservation);
+	}
+
+	// set container and preservation of part-2 and up
 	nr_parts = parts.length;
 	for(i=1;i<parts.length;i++){
 		part = parts[i];
