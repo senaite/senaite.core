@@ -47,6 +47,16 @@
 </p>
 
 <p>
+<a  href="#"
+    id="resultspersamplepoint_selector"
+    i18n:translate=""
+>Results per sample point</a>
+<br/>
+<span i18n:translate=""> Results per samplepoint and analysis service
+</span>
+</p>
+
+<p>
 <a href="#"
     id="standardanalysisqc_selector"
     i18n:translate=""
@@ -141,6 +151,44 @@
 </form>
 </div>
 
+<div id="resultspersamplepoint" style="display:none" class="criteria">
+<form action="reports" method="post" name="resultspersamplepoint">
+<input type="hidden" name="report_id" value="resultspersamplepoint" />
+<fieldset>
+
+<legend i18n:translate="">Selection criteria</legend>
+
+<tal:samplepoint tal:define="nullable python:0">
+<metal:block use-macro="context/selection_macros/macros/samplepoint"/>
+</tal:samplepoint>
+
+<tal:analysisservice 
+    tal:define="multiselect python:1;
+                nullable python:0">
+<metal:block use-macro="context/selection_macros/macros/analysisservice"/>
+</tal:analysisservice>
+
+
+<tal:received
+    tal:define="date_id string:DateAnalysisPublished;
+                date_label string:Published">
+<metal:date use-macro="context/selection_macros/macros/date"/>
+</tal:received>
+
+<metal:block use-macro="context/selection_macros/macros/cancellation_state"/>
+
+<metal:block use-macro="context/selection_macros/macros/ws_review_state"/>
+
+</fieldset>
+    <input tabindex=""
+        class="searchButton"
+        type="submit"
+        name="submit"
+        value="Report"
+        i18n:attributes="value"
+        />
+</form>
+</div>
 
 <div id="standardanalysisqc" style="display:none" class="criteria">
 <form action="reports" method="post" name="standardanalysisqc">

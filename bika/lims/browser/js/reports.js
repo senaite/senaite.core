@@ -39,6 +39,11 @@ $(document).ready(function(){
 		event.preventDefault();
 		$("#analysesrepeated").toggle(true);
 	});
+	$("#resultspersamplepoint_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#resultspersamplepoint").toggle(true);
+	});
 	$("#standardanalysisqc_selector").click(function(event){
 		$(".criteria").toggle(false);
 		event.preventDefault();
