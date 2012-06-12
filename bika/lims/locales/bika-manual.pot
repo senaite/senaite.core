@@ -58,3 +58,6 @@ msgstr ""
 
 msgid "Type"
 msgstr ""
+
+msgid "save_analyses_button_transition_title"
+msgstr "Save analyses"

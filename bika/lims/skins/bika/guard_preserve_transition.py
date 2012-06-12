@@ -1,4 +1,4 @@
-## Script (Python) "guard_preserved_transition"
+## Script (Python) "guard_preserve_transition"
 ##bind container=container
 ##bind context=context
 ##bind namespace=

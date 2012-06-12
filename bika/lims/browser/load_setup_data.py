@@ -190,8 +190,9 @@ class LoadSetupData(BrowserView):
             _id = folder.invokeFactory('Preservation', id = 'tmp')
             obj = folder[_id]
             containertypes = []
-            for ct in row['ContainerType'].split(","):
-                containertypes.append(self.containertypes[ct.strip()])
+            if row['ContainerType']:
+                for ct in row['ContainerType'].split(","):
+                    containertypes.append(self.containertypes[ct.strip()])
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
                      RetentionPeriod = row['RetentionPeriod'] and eval(row['RetentionPeriod']) or {},
@@ -236,8 +237,8 @@ class LoadSetupData(BrowserView):
 ##        self.request.response.write("<input type='hidden' id='load_section' value='Lab Information' max='1'/>")
 ##        self.request.response.flush()
 
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value 
-                for col_nr in range(nr_cols + 1)] 
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value
+                for col_nr in range(nr_cols + 1)]
                         for row_nr in range(nr_rows)]
 
         lab_info = {}
@@ -995,9 +996,18 @@ class LoadSetupData(BrowserView):
             service = self.services[row['Analysis Service']]
             sampletype = self.sampletypes[row['Sample Type']]
             ps = service.getPartitionSetup()
-            ps.append({'service': service.UID(),
-                       'sampletype': sampletype.UID(),
-                       'container':self.containers[row['Container']].UID(),
-                       'preservation':self.preservations[row['Preservation']].UID(),
+            containers = []
+            if row['Container']:
+                for c in row['Container'].split(","):
+                    c = c.strip()
+                    containers.append(self.containers[c].UID())
+            preservations = []
+            if row['Preservation']:
+                for p in row['Preservation'].split(","):
+                    p = p.strip()
+                    preservations.append(self.preservations[p].UID())
+            ps.append({'sampletype': sampletype.UID(),
+                       'container':containers,
+                       'preservation':preservations,
                        'separate':row['Separate']})
             service.setPartitionSetup(ps)

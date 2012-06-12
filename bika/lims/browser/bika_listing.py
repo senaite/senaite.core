@@ -271,7 +271,7 @@ class BikaListingView(BrowserView):
         selected_state = self.request.get("%s_review_state"%form_id, '')
         if not selected_state:
             # then check cookie
-            selected_state = cookie.get(cookie_key, '')
+            selected_state = cookie.get(cookie_key, 'default')
         # get review_state id=selected_state
         states = [r for r in self.review_states if r['id'] == selected_state]
         review_state = states and states[0] or self.review_states[0]

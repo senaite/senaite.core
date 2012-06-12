@@ -502,6 +502,7 @@ class SamplesView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = True
         self.allow_edit = True
+        self.form_id = "samples"
 
         if self.view_url.find("/samples") > -1:
             self.request.set('disable_border', 1)

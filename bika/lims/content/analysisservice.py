@@ -25,12 +25,25 @@ def getContainers(instance,
                   preservation=None,
                   minvol=None,
                   allow_blank=True,
-                  container_type_entries=False):
+                  show_container_types=True,
+                  show_containers=True):
 
     """ Containers vocabulary
 
-    This is a separate class so that it can be called from ajax to
-    filter the container list.
+    This is a separate class so that it can be called from ajax to filter
+    the container list, as well as being used as the AT field vocabulary.
+
+    instance: service object.
+    preservation: uid or list of uids.  container types are filtered with this.
+    minvol: containers of lesser capacity are not returned.
+    allow_blank: include blank / "Any" entry in result.
+
+    show_container_types: show container type list subheading entries.
+    show_containers: show container items
+
+    Returns a list of lists: [[uid, object_title],]
+
+    Objects in result can be containers, container types, or both.
 
     >>> bsc = self.portal.bika_setup_catalog
 
@@ -46,45 +59,39 @@ def getContainers(instance,
 
     """
     bsc = getToolByName(instance, 'bika_setup_catalog')
-    if allow_blank:
-        items = [['','']]
-    else:
-        items = []
 
     if not type(preservation) in (list, tuple):
         preservation = [preservation,]
+
     pres_c_types = []
     for pres in preservation:
         if pres:
             for pres_ct in pres.getContainerType():
                 if pres_ct not in pres_c_types:
                     pres_c_types.append(pres_ct)
-
     containers = {}
     containers_notype = []
     ctype_to_uid = {}
-    all_ctypes = [ct.title for ct in bsc(portal_type='ContainerType',
-                                         sort_on='sortable_title')]
     for container in bsc(portal_type='Container', sort_on='sortable_title'):
         container = container.getObject()
         if minvol:
+            # verify container volume is large enough.
+            # all other containers are considered valid.
+            # container volume 0 == unlimited.
+            cvol = container.getCapacity()
             try:
-                # If the units match, verify container is large enough.
-                # all other containers are considered valid
-                cvol = container.getCapacity()
                 cvol = cvol.split(" ")
                 cvol = mg(float(cvol[0]), " ".join(cvol[1:]).strip())
                 if cvol.out_unit == minvol.out_unit and cvol.val < minvol.val:
                     continue
             except MagnitudeError:
+                # if there's a unit conversion error, allow the container
+                # to be displayed.
                 pass
-
         # This is to sort the container dropdown contents by type
         ctype = container.getContainerType()
         if ctype:
-            if ctype.Title() in all_ctypes:
-                all_ctypes.remove(ctype.Title())
-            # and discard those containers that don't match the preservation
+            # discard those containers that don't match the preservation
             # requirement
             if pres_c_types and ctype not in pres_c_types:
                 continue
@@ -99,15 +106,20 @@ def getContainers(instance,
 
     cat_str = instance.translate(_('Container Type'))
 
+    # UI allows to just select no entries.  special blank entry not needed.
+    items = allow_blank and [['', _('Any')]] or []
+    items = []
     for ctype in containers.keys():
-        if container_type_entries:
+        if show_container_types:
             items.append([ctype_to_uid[ctype], "%s: %s"%(cat_str, ctype) ])
-        for container in containers[ctype]:
-            items.append(container)
+        if show_containers:
+            for container in containers[ctype]:
+                items.append(container)
 
-    # all remaining containers
-    for container in containers_notype:
-        items.append(list(container))
+    if show_containers:
+        # all remaining containers
+        for container in containers_notype:
+            items.append(list(container))
 
     items = tuple(items)
     return items
@@ -117,23 +129,24 @@ class PartitionSetupField(RecordsField):
     _properties.update({
         'subfields': (
             'sampletype',
+            'separate',
             'preservation',
             'container',
-            'separate',
             'vol',
             #'retentionperiod',
             ),
         'subfield_labels': {
             'sampletype':_('Sample Type'),
+            'separate':_('Separate Container'),
             'preservation':_('Preservation'),
             'container':_('Container'),
-            'separate':_('Separate Container'),
             'vol':_('Required Volume'),
             #'retentionperiod': _('Retention Period'),
             },
         'subfield_types': {
             'separate':'boolean',
             'vol':'int',
+            'preservation':'sampletype',
             'container':'selection',
             'preservation':'selection',
             },
@@ -144,9 +157,9 @@ class PartitionSetupField(RecordsField):
             },
         'subfield_sizes': {
             'sampletype': 1,
+            'preservation':7,
             'vol':5,
-            'container': 5,
-            'preservation':5,
+            'container': 7,
             #'retentionperiod':10,
         }
     })
@@ -176,14 +189,14 @@ class PartitionSetupField(RecordsField):
                  bsc(portal_type='Preservation',
                      inactive_state='active',
                      sort_on = 'sortable_title')]
+        # UI allows to just select no entries.  special blank entry not needed.
         items = [['',_('Any')]] + list(items)
         return DisplayList(items)
 
     security.declarePublic('Containers')
     def Containers(self, instance=None):
         instance = instance or self
-        items = getContainers(instance, allow_blank=False)
-        items = [['',_('Any')]] + list(items)
+        items = getContainers(instance, allow_blank=True)
         return DisplayList(items)
 
 registerField(PartitionSetupField, title = "", description = "")
@@ -458,6 +471,9 @@ schema = BikaSchema.copy() + Schema((
         subfield_labels = {'ResultValue': _('Result Value'),
                            'ResultText': _('Display Value'),},
         subfield_validators = {'ResultValue': 'resultoptionsvalidator'},
+        subfield_sizes = {'ResultValue': 5,
+                           'ResultText': 25,
+                           },
         widget = RecordsWidget(
             label = _("Result Options"),
             description = _("Please list all options for the analysis result if you want to restrict "
@@ -471,7 +487,8 @@ schema = BikaSchema.copy() + Schema((
         required = 0,
         widget = BooleanWidget(
             label = _('Separate Container'),
-            description = _("Check this box to ensure a separate sample container is used for this analysis service"),
+            description = _("Check this box to ensure a separate sample "
+                            "container is used for this analysis service"),
         ),
     ),
     ReferenceField('Preservation',
@@ -484,13 +501,17 @@ schema = BikaSchema.copy() + Schema((
         multiValued=1,
         widget = ReferenceWidget(
             checkbox_bound = 1,
+            size=7,
             label = _('Default Preservation'),
-            description = _("Select a default preservation for this this analysis service. If the preservation depends on the sample type combination, specify a preservation per sample type in the table below"),
+            description = _("Select a default preservation for this this "
+                            "analysis service. If the preservation depends on "
+                            "the sample type combination, specify a preservation "
+                            "per sample type in the table below"),
         ),
     ),
     ReferenceField('Container',
         schemata = 'Container and Preservation',
-        allowed_types=('Container',),
+        allowed_types=('Container','ContainerType'),
         relationship='AnalysisServiceContainer',
         referenceClass=HoldingReference,
         vocabulary = 'getContainers',
@@ -498,8 +519,13 @@ schema = BikaSchema.copy() + Schema((
         multiValued=1,
         widget = ReferenceWidget(
             checkbox_bound = 1,
+            size=7,
             label = _('Default Container'),
-            description = _("Select the default container to be used for this analysis service. If the container to be used depends on the sample type and preservation combination, specify the container in the sample type table below"),
+            description = _("Select the default container to be used for this "
+                            "analysis service. If the container to be used "
+                            "depends on the sample type and preservation "
+                            "combination, specify the container in the sample "
+                            "type table below"),
         ),
     ),
     PartitionSetupField('PartitionSetup',
@@ -679,13 +705,16 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
 
     security.declarePublic('getContainers')
     def getContainers(self, instance=None):
-        # On first render, the containers must be limited according to
-        # self.Preservation(). After that, the JS takes care of it with
-        # getContainers above.
+        # On first render, the containers must be filtered
         instance = instance or self
-        return DisplayList(getContainers(instance,
-                                         preservation=self.getPreservation(),
-                                         allow_blank=False))
+        preservation = self.getPreservation()
+        separate = self.getSeparate()
+        containers = getContainers(instance,
+                                    preservation=preservation,
+                                    allow_blank=True,
+                                    show_container_types=True,
+                                    show_containers=True)
+        return DisplayList(containers)
 
     def getPreservations(self):
         bsc = getToolByName(self, 'bika_setup_catalog')

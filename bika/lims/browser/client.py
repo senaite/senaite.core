@@ -296,6 +296,7 @@ class ClientARImportsView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 50
+        self.form_id = "arimports"
 
         self.icon = "++resource++bika.lims.images/arimport_big.png"
         self.title = _("Analysis Request Imports")
@@ -360,6 +361,7 @@ class ClientARProfilesView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 50
+        self.form_id = "arprofiles"
 
         self.icon = "++resource++bika.lims.images/arprofile_big.png"
         self.title = _("AR Profiles")
@@ -426,7 +428,7 @@ class ClientARTemplatesView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 50
-
+        self.form_id = "artemplates"
         self.icon = "++resource++bika.lims.images/artemplate_big.png"
         self.title = _("AR Templates")
         self.description = ""
@@ -494,6 +496,7 @@ class ClientAnalysisSpecsView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 50
+        self.form_id = "analysisspecs"
 
         self.icon = "++resource++bika.lims.images/analysisspec_big.png"
         self.title = _("Analysis Specifications")
@@ -593,6 +596,7 @@ class ClientAttachmentsView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 50
+        self.form_id = "attachments"
 
         self.icon = "++resource++bika.lims.images/attachment_big.png"
         self.title = _("Attachments")
@@ -666,6 +670,7 @@ class ClientOrdersView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 25
+        self.form_id = "orders"
 
         self.icon = "++resource++bika.lims.images/order_big.png"
         self.title = _("Orders")
@@ -732,6 +737,7 @@ class ClientContactsView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 50
+        self.form_id = "contacts"
 
         self.icon = "++resource++bika.lims.images/client_contact_big.png"
         self.title = _("Contacts")

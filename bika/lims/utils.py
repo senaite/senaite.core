@@ -470,9 +470,13 @@ class bsc_browserdata(BrowserView):
         data['containers'] = {}
         for c_proxy in bsc(portal_type = 'Container'):
             c = c_proxy.getObject()
+            pres = c.getPreservation()
             data['containers'][c.UID()] = {
                 'title':c.Title(),
                 'uid':c.UID(),
+                'containertype': c.getContainerType().UID(),
+                'prepreserved':c.getPrePreserved(),
+                'preservation':pres and pres.UID() or '',
             }
 
         data['preservations'] = {}
@@ -481,6 +485,7 @@ class bsc_browserdata(BrowserView):
             data['preservations'][p.UID()] = {
                 'title':p.Title(),
                 'uid':p.UID(),
+                'container_types': [p.UID() for p in p.getContainerType()],
             }
 
         return json.dumps(data)

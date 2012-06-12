@@ -1,5 +1,6 @@
 // ./artemplatepartitionswidget.pt
 // ../../../browser/widgets/artemplatepartitionswidget.py
+// Some of the widget field are handled in ./analysisservice.js
 (function( $ ) {
 
 //////////////////////////////////////
