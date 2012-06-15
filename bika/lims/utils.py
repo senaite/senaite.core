@@ -14,6 +14,7 @@ from plone.i18n.normalizer.interfaces import IIDNormalizer
 from reportlab.graphics.barcode import getCodes, getCodeNames, createBarcodeDrawing
 from zope.component import getUtility
 from zope.interface import providedBy
+from magnitude import mg, MagnitudeError
 import copy,re,urllib
 import json
 import plone.protect
@@ -423,6 +424,22 @@ class bsc_browserdata(BrowserView):
                 if partsetup[x].has_key('preservation') \
                    and type(partsetup[x]['preservation']) == str:
                     partsetup[x]['preservation'] = [partsetup[x]['preservation'],]
+                minvol = partsetup[x].get('vol', '0 g')
+                try:
+                    mgminvol = minvol.split(' ', 1)
+                    mgminvol = mg(float(mgminvol[0]), mgminvol[1])
+                except MagnitudeError:
+                    mgminvol = mg(0, 'ml')
+                try:
+                    mgminvol = str(mgminvol.ounit('ml'))
+                except MagnitudeError:
+                    pass
+                try:
+                    mgminvol = str(mgminvol.ounit('g'))
+                except MagnitudeError:
+                    pass
+                partsetup[x]['vol'] = str(mgminvol)
+                print partsetup
 
             ## If no dependents, backrefs or partition setup exists
             ## nothing is stored for this service
@@ -454,6 +471,7 @@ class bsc_browserdata(BrowserView):
             st = st_proxy.getObject()
             data['st_uids'][st.Title()] = {
                 'uid':st.UID(),
+                'minvol': st.getJSMinimumVolume(),
                 'samplepoints': [sp.Title() for sp in st.getSamplePoints()]
             }
 
@@ -474,9 +492,10 @@ class bsc_browserdata(BrowserView):
             data['containers'][c.UID()] = {
                 'title':c.Title(),
                 'uid':c.UID(),
-                'containertype': c.getContainerType().UID(),
+                'containertype': c.getContainerType() and c.getContainerType().UID() or '',
                 'prepreserved':c.getPrePreserved(),
                 'preservation':pres and pres.UID() or '',
+                'capacity':c.getJSCapacity(),
             }
 
         data['preservations'] = {}
@@ -485,7 +504,6 @@ class bsc_browserdata(BrowserView):
             data['preservations'][p.UID()] = {
                 'title':p.Title(),
                 'uid':p.UID(),
-                'container_types': [p.UID() for p in p.getContainerType()],
             }
 
         return json.dumps(data)

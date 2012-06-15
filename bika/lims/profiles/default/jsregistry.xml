@@ -169,7 +169,7 @@
               expression=""
               id="++resource++bika.lims.js/utils.js"
               inline="False"
-              insert-after="++resource++jsi18n.js"/>
+              insert-after="++resource++bika.lims.js/jquery.json.js"/>
 
   <javascript authenticated="False"
               cacheable="True"

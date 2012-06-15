@@ -92,7 +92,7 @@ $(document).ready(function(){
 			changeMonth:true,
 			changeYear:true,
 			maxDate: '+0d',
-			numberOfMonths: 2 
+			numberOfMonths: 2
 		})
 		.click(function(){$(this).attr('value', '');})
 		.focus();
@@ -139,6 +139,9 @@ $(document).ready(function(){
 			event.preventDefault();
 		}
 	});
+
+	// Archetypes :int inputs get numeric class
+	$("input[name*='\\:int']").addClass('numeric');
 
 });
 }(jQuery));

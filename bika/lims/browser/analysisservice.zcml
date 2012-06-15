@@ -11,13 +11,7 @@
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
-    <browser:page
-      for="bika.lims.interfaces.IAnalysisService"
-      name="getUpdatedPreservations"
-      class="bika.lims.browser.analysisservice.ajaxGetPreservations"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
+
 
     <browser:page
       for="*"

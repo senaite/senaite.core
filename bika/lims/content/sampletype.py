@@ -10,7 +10,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.fields import DurationField
 from bika.lims.content.bikaschema import BikaSchema
-from magnitude import mg
+from magnitude import mg, MagnitudeError
 from zope.interface import implements
 import json
 import plone
@@ -38,11 +38,11 @@ schema = BikaSchema.copy() + Schema((
             label = _('Sample Type Prefix'),
         ),
     ),
-    StringField('Unit',
+    StringField('MinimumVolume',
         required = 1,
         widget = StringWidget(
-            label = _("Unit"),
-            description = _("Sample volume is specified in this unit."),
+            label = _("Minimum Volume"),
+            description = _("The minimum sample volume required for analysis eg. '10 ml' or '1 kg'."),
         ),
     ),
     ReferenceField('SamplePoints',
@@ -74,13 +74,30 @@ class SampleType(BaseContent, HistoryAwareMixin):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
+    def getJSMinimumVolume(self, **kw):
+        """Try convert the MinimumVolume to 'ml' or 'g' so that JS has an
+        easier time working with it.  If conversion fails, return raw value.
+        """
+        default = self.Schema()['MinimumVolume'].get(self)
+        try:
+            mgdefault = default.split(' ', 1)
+            mgdefault = mg(float(mgdefault[0]), mgdefault[1])
+        except MagnitudeError:
+            return default
+        try:
+            return str(mgdefault.ounit('ml'))
+        except MagnitudeError:
+            pass
+        try:
+            return str(mgdefault.ounit('g'))
+        except MagnitudeError:
+            pass
+        return str(default)
+
     def getDefaultLifetime(self):
         """ get the default retention period """
         settings = getToolByName(self, 'bika_setup')
         return settings.getDefaultSampleLifetime()
-
-    def getUnits(self):
-        return getUnits(self)
 
     def SamplePointsVocabulary(self):
         from bika.lims.content.samplepoint import SamplePoints

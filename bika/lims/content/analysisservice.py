@@ -12,17 +12,19 @@ from Products.validation.validators.RegexValidator import RegexValidator
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import HistoryAwareReferenceField
-from bika.lims.browser.widgets import ServicesWidget, RecordsWidget, DurationWidget
+from bika.lims.browser.widgets import DurationWidget
+from bika.lims.browser.widgets import PartitionSetupWidget
+from bika.lims.browser.widgets import RecordsWidget
+from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.config import ATTACHMENT_OPTIONS, PROJECTNAME, SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisService
 from magnitude import mg, MagnitudeError
-from zope.interface import implements
 from zope import i18n
+from zope.interface import implements
 import sys
 
 def getContainers(instance,
-                  preservation=None,
                   minvol=None,
                   allow_blank=True,
                   show_container_types=True,
@@ -33,16 +35,7 @@ def getContainers(instance,
     This is a separate class so that it can be called from ajax to filter
     the container list, as well as being used as the AT field vocabulary.
 
-    instance: service object.
-    preservation: uid or list of uids.  container types are filtered with this.
-    minvol: containers of lesser capacity are not returned.
-    allow_blank: include blank / "Any" entry in result.
-
-    show_container_types: show container type list subheading entries.
-    show_containers: show container items
-
-    Returns a list of lists: [[uid, object_title],]
-
+    Returns a tuple of tuples: ((object_uid, object_title), ())
     Objects in result can be containers, container types, or both.
 
     >>> bsc = self.portal.bika_setup_catalog
@@ -58,68 +51,48 @@ def getContainers(instance,
     False
 
     """
+
     bsc = getToolByName(instance, 'bika_setup_catalog')
 
-    if not type(preservation) in (list, tuple):
-        preservation = [preservation,]
+    items = allow_blank and [['', _('Any')]] or []
 
-    pres_c_types = []
-    for pres in preservation:
-        if pres:
-            for pres_ct in pres.getContainerType():
-                if pres_ct not in pres_c_types:
-                    pres_c_types.append(pres_ct)
-    containers = {}
-    containers_notype = []
-    ctype_to_uid = {}
+    containers = []
     for container in bsc(portal_type='Container', sort_on='sortable_title'):
         container = container.getObject()
-        if minvol:
-            # verify container volume is large enough.
-            # all other containers are considered valid.
-            # container volume 0 == unlimited.
-            cvol = container.getCapacity()
+
+        # verify container capacity is large enough for required sample volume.
+        if minvol is not None:
+            capacity = container.getCapacity()
             try:
-                cvol = cvol.split(" ")
-                cvol = mg(float(cvol[0]), " ".join(cvol[1:]).strip())
-                if cvol.out_unit == minvol.out_unit and cvol.val < minvol.val:
+                capacity = capacity.split(' ', 1)
+                capacity = mg(float(capacity[0]), capacity[1])
+                if capacity < minvol:
                     continue
             except MagnitudeError:
                 # if there's a unit conversion error, allow the container
                 # to be displayed.
                 pass
-        # This is to sort the container dropdown contents by type
-        ctype = container.getContainerType()
-        if ctype:
-            # discard those containers that don't match the preservation
-            # requirement
-            if pres_c_types and ctype not in pres_c_types:
-                continue
-            if ctype.Title() in containers:
-                containers[ctype.Title()].append((container.UID(), container.Title()))
-            else:
-                containers[ctype.Title()] = [(container.UID(), container.Title()),]
-                ctype_to_uid[ctype.Title()] = ctype.UID()
-        else:
-            if not pres_c_types:
-                containers_notype.append((container.UID(), container.Title()))
 
-    cat_str = instance.translate(_('Container Type'))
-
-    # UI allows to just select no entries.  special blank entry not needed.
-    items = allow_blank and [['', _('Any')]] or []
-    items = []
-    for ctype in containers.keys():
-        if show_container_types:
-            items.append([ctype_to_uid[ctype], "%s: %s"%(cat_str, ctype) ])
-        if show_containers:
-            for container in containers[ctype]:
-                items.append(container)
+        containers.append(container)
 
     if show_containers:
-        # all remaining containers
-        for container in containers_notype:
-            items.append(list(container))
+        # containers with no containertype first
+        for container in containers:
+            if not container.getContainerType():
+                items.append((container.UID(), container.Title()))
+
+    cat_str = instance.translate(_('Container Type'))
+    containertypes = [c.getContainerType() for c in containers]
+    containertypes = dict([(ct.UID(), ct.Title())
+                           for ct in containertypes if ct])
+    for ctype_uid, ctype_title in containertypes.items():
+        if show_container_types:
+            items.append((ctype_uid, "%s: %s"%(cat_str, ctype_title)))
+        if show_containers:
+            for container in containers:
+                ctype = container.getContainerType()
+                if ctype and ctype.UID() == ctype_uid:
+                    items.append((container.UID(), container.Title()))
 
     items = tuple(items)
     return items
@@ -145,7 +118,7 @@ class PartitionSetupField(RecordsField):
             },
         'subfield_types': {
             'separate':'boolean',
-            'vol':'int',
+            'vol':'string',
             'preservation':'sampletype',
             'container':'selection',
             'preservation':'selection',
@@ -157,9 +130,9 @@ class PartitionSetupField(RecordsField):
             },
         'subfield_sizes': {
             'sampletype': 1,
-            'preservation':7,
+            'preservation':6,
             'vol':5,
-            'container': 7,
+            'container': 6,
             #'retentionperiod':10,
         }
     })
@@ -175,8 +148,6 @@ class PartitionSetupField(RecordsField):
                       sort_on = 'sortable_title'):
             st = st.getObject()
             title = st.Title()
-            if st.getUnit():
-                title += " %s"%(st.getUnit())
             items.append((st.UID(), title))
         items = [['','']] + list(items)
         return DisplayList(items)
@@ -189,7 +160,6 @@ class PartitionSetupField(RecordsField):
                  bsc(portal_type='Preservation',
                      inactive_state='active',
                      sort_on = 'sortable_title')]
-        # UI allows to just select no entries.  special blank entry not needed.
         items = [['',_('Any')]] + list(items)
         return DisplayList(items)
 
@@ -501,7 +471,6 @@ schema = BikaSchema.copy() + Schema((
         multiValued=1,
         widget = ReferenceWidget(
             checkbox_bound = 1,
-            size=7,
             label = _('Default Preservation'),
             description = _("Select a default preservation for this this "
                             "analysis service. If the preservation depends on "
@@ -519,7 +488,6 @@ schema = BikaSchema.copy() + Schema((
         multiValued=1,
         widget = ReferenceWidget(
             checkbox_bound = 1,
-            size=7,
             label = _('Default Container'),
             description = _("Select the default container to be used for this "
                             "analysis service. If the container to be used "
@@ -530,7 +498,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     PartitionSetupField('PartitionSetup',
         schemata = 'Container and Preservation',
-        widget = RecordsWidget(
+        widget = PartitionSetupWidget(
             label = PMF("Preservation per sample type"),
             description = _("Please specify preservations that differ from the "
                             "analysis service's default preservation per sample "
@@ -707,13 +675,11 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
     def getContainers(self, instance=None):
         # On first render, the containers must be filtered
         instance = instance or self
-        preservation = self.getPreservation()
         separate = self.getSeparate()
         containers = getContainers(instance,
-                                    preservation=preservation,
-                                    allow_blank=True,
-                                    show_container_types=True,
-                                    show_containers=True)
+                                   allow_blank=True,
+                                   show_container_types=not separate,
+                                   show_containers=separate)
         return DisplayList(containers)
 
     def getPreservations(self):
@@ -724,8 +690,4 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
-##    def getMethod(self, **kw):
-##        item = self.Schema()['Method'].get(self)
-##        return item
-##
 registerType(AnalysisService, PROJECTNAME)

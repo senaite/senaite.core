@@ -540,7 +540,7 @@ class LoadSetupData(BrowserView):
                      description = unicode(row['description']),
                      RetentionPeriod = row['RetentionPeriod'] and eval(row['RetentionPeriod']) or {},
                      Prefix = unicode(row['Prefix']),
-                     Unit = unicode(row['Unit']),
+                     MinimumVolume = unicode(row['MinimumVolume']),
                      Hazardouus = row['Hazardous'] and True or False)
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)

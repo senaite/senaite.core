@@ -5,7 +5,9 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from magnitude import mg, MagnitudeError
 import sys
+
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('ContainerType',
@@ -64,6 +66,26 @@ class Container(BaseContent):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
+
+    def getJSCapacity(self, **kw):
+        """Try convert the Capacity to 'ml' or 'g' so that JS has an
+        easier time working with it.  If conversion fails, return raw value.
+        """
+        default = self.Schema()['Capacity'].get(self)
+        try:
+            mgdefault = default.split(' ', 1)
+            mgdefault = mg(float(mgdefault[0]), mgdefault[1])
+        except MagnitudeError:
+            return default
+        try:
+            return str(mgdefault.ounit('ml'))
+        except MagnitudeError:
+            pass
+        try:
+            return str(mgdefault.ounit('g'))
+        except MagnitudeError:
+            pass
+        return str(default)
 
     def getContainerTypes(self):
         bsc = getToolByName(self, 'bika_setup_catalog')

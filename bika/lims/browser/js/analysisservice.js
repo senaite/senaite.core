@@ -8,16 +8,15 @@ function updateContainers(target,requestdata){
 		success: function(data,textStatus,$XHR){
 			// keep the current selection if possible
 			option = $(target).val();
-			if (option != null && option != undefined){
-				$(target).empty();
-				$.each(data, function(i,v){
-					if($.inArray(v[0], option) > -1) {
-						$(target).append("<option value='"+v[0]+"' selected='selected'>"+v[1]+"</option>");
-					} else {
-						$(target).append("<option value='"+v[0]+"'>"+v[1]+"</option>");
-					}
-				});
-			}
+			if (option == null || option == undefined){ option = []; }
+			$(target).empty();
+			$.each(data, function(i,v){
+				if($.inArray(v[0], option) > -1) {
+					$(target).append("<option value='"+v[0]+"' selected='selected'>"+v[1]+"</option>");
+				} else {
+					$(target).append("<option value='"+v[0]+"'>"+v[1]+"</option>");
+				}
+			});
 		},
 		dataType: "json"
 	});
@@ -27,76 +26,105 @@ $(document).ready(function(){
 
 	_ = window.jsi18n;
 
-	// Setting default preservation or default required volume
-	// causes default containers to be filtered
-	$("[name='Preservation\\:list'], #RequiredVolume").change(function(){
-		requestdata = {
-			'pres_uid': $.toJSON($("[name='Preservation\\:list']").val()),
-			'allow_blank':true,
-			'_authenticator': $('input[name="_authenticator"]').val()
+	// service defaults
+	// update defalt Containers
+	$("#RequiredVolume, #Separate").change(function(){
+		separate = $("#Separate").attr('checked');
+		if(!separate){
+			$("[name='Preservation\\:list']").removeAttr('disabled');
 		}
+		requestdata = {
+			'allow_blank':true,
+			'show_container_types':!separate,
+			'show_containers':separate,
+			'_authenticator': $('input[name="_authenticator"]').val()}
 		updateContainers("#Container\\:list", requestdata);
 	});
 
-	// When changing preservation, sampletype, or required volume fields,
-	// in any PartitionSetup field row, causes thes row's
-	// containers to be filtered
-    $("[name^='PartitionSetup.preservation'],[name^='PartitionSetup.sampletype'], [name^='PartitionSetup.vol']").change(function(){
-		target = $(this).parents("tr").find("[name^='PartitionSetup.container']");
+	// partition table -> separate checkboxes
+	// partition table -> minvol field
+	// update row's containers
+	$("[name^='PartitionSetup.separate'],[name^='PartitionSetup.vol']").change(function(){
+		separate = $(this).parents("tr").find("[name^='PartitionSetup.separate']").attr("checked");
+		if (!separate){
+			$(this).parents("tr").find("[name^='PartitionSetup.preservation']").removeAttr('disabled');
+		}
 		minvol = $(this).parents("tr").find("[name^='PartitionSetup.vol']").val();
+		target = $(this).parents("tr").find("[name^='PartitionSetup.container']");
 		requestdata = {
-			'minvol': minvol,
 			'allow_blank':true,
-			'_authenticator': $('input[name="_authenticator"]').val()
-		}
-		pres_uid = $(this).parents("tr").find("[name^='PartitionSetup.preservation']").val();
-		if (pres_uid != null && pres_uid != undefined){
-			requestdata['pres_uid'] = $.toJSON(pres_uid);
-			requestdata['pres_uid'] = $.toJSON(pres_uid);
-		}
-		st_uid = $(this).parents("tr").find("[name^='PartitionSetup.sampletype']").val();
-		if (st_uid != null && st_uid != undefined){
-			requestdata['st_uid'] = st_uid;
-		}
+			'minvol':minvol,
+			'show_container_types':!separate,
+			'show_containers':separate,
+			'_authenticator': $('input[name="_authenticator"]').val()}
 		updateContainers(target, requestdata);
-    });
+	});
+
+	// copy sampletype MinimumVolume to minvol when selecting sampletype
+	$("[name^='PartitionSetup.sampletype']").change(function(){
+		// get volume from bsc
+		option = $(this).children().filter(":selected");
+		if(!option || $(option).val() == '' || option.length == 0){
+			return;
+		}
+		option = option[0];
+		title = $(option).text();
+		minvol = window.bsc.data['st_uids'][title]['minvol'];
+		// put value in minvol field
+		target = $(this).parents("tr").find("[name^='PartitionSetup.vol']");
+		$(target).val(minvol);
+		// trigger change on containers, in case SampleType volume rendered
+		// the selected container too small and removed it from the list
+		$(this).parents("tr").find("[name^='PartitionSetup.container']").change();
+
+	});
 
 	// Selecting a pre-preserved container will filter and disable the
 	// Preservations list.
 	$("[name^='Container'],[name^='PartitionSetup.container']").change(function(){
 		if ($(this).attr('name').search("Container") == 0){
 			target = "[name='Preservation\\:list']";
+			separate = $('#Separate').attr("checked");
+			if (!separate){
+				$(target).removeAttr('disabled');
+				return;
+			}
 		} else {
+			separate = $(this).parents("tr").find("[name^='PartitionSetup.separate']").attr("checked");
 			target = $(this).parents("tr").find("[name^='PartitionSetup.preservation']");
-		}
-		preservations = window.bsc.data['preservations'];
-		containers = window.bsc.data['containers'];
-		selection = $(this).val();
-		if(selection == null || selection == undefined){
-			return;
-		}
-		prepreserved = [];
-		// foreach selected container
-		for(c=0;c<selection.length;c++){
-			container = containers[selection[c]];
-			if(container!=null
-			   && container!=undefined
-			   && container.prepreserved){
-				prepreserved.push(container.preservation);
+			if(!separate){
+				$(target).removeAttr('disabled');
+				return;
 			}
 		}
-		if(prepreserved.length > 0){
-			$(target).attr('disabled', true);
+		preservations = window.bsc.data.preservations;
+		containers = window.bsc.data.containers;
+		selection = $(this).val();
+		if(selection == null || selection == undefined || selection.length == 0) {
+			$(target).removeAttr('disabled');
+			return;
+		}
+		// Only allow first container to be selected.
+		selection = selection[0];
+		$(this).val(selection);
+
+		container = containers[selection];
+		if(container!=null
+		   && container!=undefined
+		   && container.prepreserved
+		   && container.preservation){
+				$(target).val(container.preservation);
+				$(target).attr('disabled', true);
 		} else {
 			$(target).removeAttr('disabled');
 		}
 	});
 
-	// Refresh on first load
-	$("[name^='PartitionSetup.sampletype']").change();
-	$("[name^='PartitionSetup.container']").change();
-	console.log($("[name^='Container']").val());
+
+	// update on first load
+	$("[name^='PartitionSetup.separate']").change();
 	$("[name^='Container']").change();
+	$("[name^='PartitionSetup.container']").change();
 
 
 });

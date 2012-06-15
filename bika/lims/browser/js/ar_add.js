@@ -427,6 +427,11 @@ function calcdependencies(elements, auto_yes) {
 
 function calculate_parts(column){
 
+//	function pd(str){
+//		console.log(str);
+//	}
+//	pd("===================================");
+
 	// ARTemplate columns are not calculated
 	if ($("#ar_"+column+"_ARTemplate").val() != ''){
 		return;
@@ -434,12 +439,19 @@ function calculate_parts(column){
 
 	// gather up SampleType UID
 	var st_title = $("#ar_"+column+"_SampleType").val();
-	st_uid = window.bsc.data.st_uids[st_title];
-	if (st_uid != undefined && st_uid != null){
-		st_uid = st_uid['uid'];
+	sampletype = window.bsc.data.st_uids[st_title];
+	if (sampletype != undefined && sampletype != null){
+		st_uid = sampletype['uid'];
+		st_minvol = sampletype['minvol'].split(" ")[0];
+		if(st_minvol.length == 0){
+			st_minvol = 0;
+		} else {
+			st_minvol = parseFloat(st_minvol, 10);
+		}
 	} else {
 		st_uid = '';
 	}
+//	pd("Sampletype: "+st_uid);
 
 	// gather up selected service uids
 	var checked = $('[name^="ar\\.'+column+'\\.Analyses"]').filter(':checked');
@@ -450,8 +462,18 @@ function calculate_parts(column){
 		service_uids.push(uid);
 	}
 
-	// remove all and skip everything if no selected services in this column
+	// skip everything if no selected services in this column
 	if (service_uids.length == 0){
+		// all unchecked services have their part numbers removed
+		ep = $("[class^='partnr_']").filter("[column="+column+"]").not(":empty");
+		for(i=0;i<ep.length;i++){
+			em = ep[i];
+			uid = $(ep[0]).attr('class').split("_")[1]
+			cb = $("#"+uid);
+			if ( ! $(cb).attr('checked') ){
+				$(em).empty();
+			}
+		}
 		return;
 	}
 
@@ -459,8 +481,12 @@ function calculate_parts(column){
 
 	// loop through each selected service, assigning or creating
 	// partitions as we go.
-	for(i=0;i<service_uids.length;i++){
-		service_uid = service_uids[i];
+//	pd(service_uids);
+	for(si=0;si<service_uids.length;si++){
+		service_uid = service_uids[si];
+//		pd("-----");
+//		pd("service_uid: "+ service_uid);
+
 		service_data = window.bsc.data.services[service_uid];
 		if (service_data == undefined || service_data == null){
 			service_data = {'Separate':false,
@@ -469,6 +495,7 @@ function calculate_parts(column){
 							'PartitionSetup':[],
 							'backrefs':[],
 							'deps':{}}
+//			pd("service_data undefined, create new: "+service_data.toSource());
 		}
 
 		// discover if a specific part_setup exists for this
@@ -483,15 +510,19 @@ function calculate_parts(column){
 			}
 		);
 		if (part_setup != '') {
+//			pd("part_setup found: "+part_setup.toSource());
 			// if it does, we use it instead of defaults.
 			separate = part_setup['separate'];
 			container = part_setup['container'];
 			preservation = part_setup['preservation'];
+			minvol = parseFloat(part_setup['vol'].split(" ")[0]);
 		} else {
+//			pd("part_setup not found, using service_data " + service_data.toSource());
 			// Otherwise grab service/sampletype defaults
 			separate = service_data['Separate'];
 			container = service_data['Container'];
 			preservation = service_data['Preservation'];
+			minvol = st_minvol;
 		}
 
 		if (separate) {
@@ -500,7 +531,10 @@ function calculate_parts(column){
 			part = {'services': [service_uid],
 					'separate': true,
 					'container': container,
-					'preservation': preservation};
+					'preservation': preservation,
+					'volume': minvol
+					};
+//			pd("partition must be separate.  created part: " + part.toSource())
 			parts.push(part);
 
 		} else {
@@ -508,65 +542,107 @@ function calculate_parts(column){
 			// So now we either need to find an existing partition
 			// which permits us to add this analysis to it, or
 			// create a new one.
+//			pd("searching for a partition")
 			found_part = '';
+
+			// convert container types to containers
+			new_container = [];
+			for(ci=0;ci<container.length;ci++){
+				cc = window.bsc.data.containers[container[ci]];
+				if(cc == undefined || cc == null){
+					// cc is a container type.  add matching containers
+					$.each(window.bsc.data.containers, function(ii,vv){
+						if(container[ci] == vv['containertype']){
+							new_container.push(vv['uid']);
+						}
+					});
+				} else {
+					new_container.push(cc['uid']);
+				}
+			}
+			container = new_container;
 
 			for(x=0; x<parts.length;x++){
 				part = parts[x];
+
 				// make sure this partition isn't flagged as separate
 				if (part['separate']) {
 					continue;
 				}
+
 				// if no container info is provided by either the
 				// partition OR the service, this partition is available
 				var c_intersection = [];
 				if (part['container'].length > 0 || container.length > 0) {
 					// check our containers against this partition's
 					c_intersection = $.grep(container, function(c, y){
-						if(part['container'].indexOf(c) > -1){
-							return true;
-						} else {
-							return false;
-						}
+						return part['container'].indexOf(c) > -1;
 					});
 					if (c_intersection.length == 0){
+//						pd("No match intersecting containers " + container + " -AND- " + part['container']);
 						// no match
 						continue;
 					}
-				}
+				} // else { pd("Not intersecting containers"); }
+
 				// if no preservation info is provided by either the
 				// partition OR the service, this partition is available
 				var p_intersection = [];
 				if (part['preservation'].length > 0 || preservation.length > 0) {
 					// check our preservation against this partition's
 					p_intersection = $.grep(preservation, function(p, y){
-						if(part['preservation'].indexOf(p) > -1){
-							return true;
-						} else {
-							return false;
-						}
+						return part['preservation'].indexOf(p) > -1;
 					});
 					if (p_intersection.length == 0){
+//						pd("No match intersecting preservations " + preservation + " -AND- " + part['preservation']);
 						// no match
 						continue;
 					}
-				}
+				} // else { pd("Not intersecting preservations"); }
 
 				// other conditions
 
+				// filter containers on capacity.
+				if (part_setup != ''){
+					newvol = parts[x]['volume'] + minvol;
+					if (c_intersection.length > 0) {
+						cc_intersection = $.grep(c_intersection, function(c, y){
+							cc = window.bsc.data.containers[c];
+							cc_cap = parseFloat(cc['capacity'].split(" ")[0]);
+							return cc_cap > newvol;
+						});
+						if (cc_intersection.length == 0){
+	//						console.log("No large enough container for " + newvol);
+							// no match
+							continue;
+						}
+						c_intersection = cc_intersection;
+						parts[x]['volume'] = newvol;
+					} else {
+	//				    console.log("Not intersecting container volumes");
+					}
+				}
+
 				// all the conditions passed:
 				found_part = x;
+//				pd("Found a partition: " + x + ", " + parts[x].toSource());
 				parts[x]['services'].push(service_uid);
 				parts[x]['container'] = c_intersection;
 				parts[x]['preservation'] = p_intersection;
+//				pd("Modified partition: " + x + ", " + parts[x].toSource());
 				break;
 			}
 
 			if (found_part === ''){
 				// No home found - make a new part for this analysis
-				parts.push({'services': [service_uid],
-							'separate': false,
-							'container': container,
-							'preservation': preservation});
+				part = {'services': [service_uid],
+						'separate': false,
+						'container': container,
+						'preservation': preservation,
+						'volume': minvol
+						};
+//				pd("No partition found, created new:" + part.toSource());
+				parts.push(part);
 			}
 		}
 	}

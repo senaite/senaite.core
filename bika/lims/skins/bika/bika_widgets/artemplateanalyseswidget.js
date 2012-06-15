@@ -271,32 +271,28 @@ function calculate_parts(){
 		service_uids.push($(selected[i]).attr('value'));
 	}
 
+	///////////////////////////////////////////////////////////////////////////
+	parts = [];
+
 	// loop through each selected service, assigning or creating
 	// partitions as we go.
-	parts = [];
 	for(i=0;i<service_uids.length;i++){
 		service_uid = service_uids[i];
 
-		// part_setup is filled with defaults here, if it is not
-		// already defined
-		z = window.bsc.data.services[service_uid];
-		if(z == undefined || z == null) {
-			window.bsc.data.services[service_uid] = {
-				'Separate': false,
-				'Container': [],
-				'Preservation': [],
-				'PartitionSetup': ''
-			}
+		service_data = window.bsc.data.services[service_uid];
+		if (service_data == undefined || service_data == null){
+			service_data = {'Separate':false,
+			                'Container':[],
+							'Preservation':[],
+							'PartitionSetup':[],
+							'backrefs':[],
+							'deps':{}}
 		}
 
-		// set service default partition setup field values
-		separate = window.bsc.data.services[service_uid]['Separate'];
-		container = window.bsc.data.services[service_uid]['Container'];
-		preservation = window.bsc.data.services[service_uid]['Preservation'];
-		// discover if a more specific part_setup exists for this
+		// discover if a specific part_setup exists for this
 		// sample_type and service_uid
 		part_setup = '';
-		$.each(window.bsc.data.services[service_uid]['PartitionSetup'],
+		$.each(service_data['PartitionSetup'],
 			function(x, ps){
 				if(ps['sampletype'] == st_uid){
 					part_setup = ps;
@@ -304,11 +300,16 @@ function calculate_parts(){
 				}
 			}
 		);
-		// if it does, we use it instead of defaults.
 		if (part_setup != '') {
+			// if it does, we use it instead of defaults.
 			separate = part_setup['separate'];
 			container = part_setup['container'];
 			preservation = part_setup['preservation'];
+		} else {
+			// Otherwise grab service/sampletype defaults
+			separate = service_data['Separate'];
+			container = service_data['Container'];
+			preservation = service_data['Preservation'];
 		}
 
 		if (separate) {
@@ -317,7 +318,9 @@ function calculate_parts(){
 			part = {'services': [service_uid],
 					'separate': true,
 					'container': container,
-					'preservation': preservation};
+					'preservation': preservation,
+					'volume': 0
+					};
 			parts.push(part);
 
 		} else {
@@ -333,6 +336,7 @@ function calculate_parts(){
 				if (part['separate']) {
 					continue;
 				}
+
 				// if no container info is provided by either the
 				// partition OR the service, this partition is available
 				var c_intersection = [];
@@ -350,6 +354,7 @@ function calculate_parts(){
 						continue;
 					}
 				}
+
 				// if no preservation info is provided by either the
 				// partition OR the service, this partition is available
 				var p_intersection = [];
@@ -368,7 +373,9 @@ function calculate_parts(){
 					}
 				}
 
-				// other conditions
+				// check container capacity against required sample volume
+
+
 
 				// all the conditions passed:
 				found_part = x;
@@ -383,11 +390,14 @@ function calculate_parts(){
 				part = {'services': [service_uid],
 						'separate': false,
 						'container': container,
-						'preservation': preservation};
+						'preservation': preservation,
+						'volume': 0
+						};
 				parts.push(part);
 			}
 		}
 	}
+	///////////////////////////////////////////////////////////////////////////
 	return parts;
 }
 
@@ -448,7 +458,6 @@ function setARProfile(){
 			}
 			if (!(container in window.bsc.data['containers'])){
 				// no match
-				console.log("Bad container or container type: " + container);
 				container = '';
 			}
 		} else {

@@ -14,38 +14,27 @@ import re
 class ajaxGetContainers(BrowserView):
     """ajax Preservation/Container widget filter
     request values:
-    - pres_uid: preservation select value
     - allow_blank: print blank value in return
     - show_container_types
     - show_containers
-    - minvol: just a number.  filters containers.
+    - minvol: magnitude (string).
     """
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         uc = getToolByName(self, 'uid_catalog')
-        st_uid = self.request.get('st_uid', [])
-        st = st_uid and uc(UID=st_uid)[0].getObject() or None
+
         allow_blank = self.request.get('allow_blank', False) == 'true'
         show_container_types = json.loads(self.request.get('show_container_types', 'true'))
         show_containers = json.loads(self.request.get('show_containers', 'true'))
-        pres_uid = json.loads(self.request.get('pres_uid', '[]'))
+        minvol = self.request.get("minvol", "0")
         try:
-            minvol = int(self.request.get('minvol', '0'))
-            #minvol = mg(float(minvol[0]), " ".join(minvol[1:]))
+            minvol =  minvol.split()
+            minvol = mg(float(minvol[0]), " ".join(minvol[1:]))
         except:
-            minvol = 0
-            #minvol = mg(0)
-
-        if not type(pres_uid) in (list, tuple):
-            pres_uid = [pres_uid,]
-        try:
-            preservations = [p and uc(UID=p)[0].getObject() or '' for p in pres_uid]
-        except:
-            pass
+            minvol = mg(0)
 
         containers = getContainers(
             self.context,
-            preservation = preservations and preservations or [],
             minvol = minvol,
             allow_blank = allow_blank,
             show_containers=show_containers,
@@ -66,7 +55,9 @@ class ajaxGetPreservations(BrowserView):
             container = container[0].getObject()
             if container.getPrePreserved():
                 preservation = container.getPreservation()
-                return preservation.UID()
+                if preservation:
+                    return preservation.UID()
+        return ''
 
 class ajaxServicePopup(BrowserView):
 

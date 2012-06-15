@@ -10,6 +10,7 @@ import Products.PloneTestCase.setup
 import bika.lims
 import os
 import plone.app.iterate
+import collective.js.jqueryui
 import sys
 
 class BikaLimsLayer(PloneSandboxLayer):
@@ -20,6 +21,7 @@ class BikaLimsLayer(PloneSandboxLayer):
         # Load ZCML
         self.loadZCML(package=Products.ATExtensions)
         self.loadZCML(package=plone.app.iterate)
+        self.loadZCML(package=collective.js.jqueryui)
         self.loadZCML(package=bika.lims)
         # Required by Products.CMFPlone:plone-content
         z2.installProduct(app, 'Products.PythonScripts')
@@ -37,11 +39,12 @@ class BikaLimsLayer(PloneSandboxLayer):
         portal.setupCurrentSkin(request)
         Products.PloneTestCase.setup._placefulSetUp(portal)
 
-        # Installs all the Plone stuff. Workflows etc.
         self.applyProfile(portal, 'Products.CMFPlone:plone')
-        # Install portal content. Including the Members folder!
         self.applyProfile(portal, 'Products.CMFPlone:plone-content')
+        self.applyProfile(portal, 'Products.CMFPlone:dependencies')
+        self.applyProfile(portal, 'Products.CMFPlone:testfixture')
         self.applyProfile(portal, 'plone.app.iterate:plone.app.iterate')
+        self.applyProfile(portal, 'collective.js.jqueryui:default')
         self.applyProfile(portal, 'bika.lims:default')
 
         request.form['submitted'] = 1
@@ -49,8 +52,6 @@ class BikaLimsLayer(PloneSandboxLayer):
 
         lsd = LoadSetupData(portal, request)
         lsd()
-
-
 
 BIKA_FIXTURE = BikaLimsLayer()
 BIKA_INTEGRATION_TESTING = IntegrationTesting(bases=(BIKA_FIXTURE,), name="BikaLimsLayer:Integration")
