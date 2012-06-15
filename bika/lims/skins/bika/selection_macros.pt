@@ -263,6 +263,23 @@
 </div>
 </div>
 
+<div metal:define-macro="spec">
+<div class="field">
+    <label i18n:translate="label_specification"
+        >Specification</label><br/>
+<tal:specs tal:define="specs python:['client', 'lab']">
+    <tal:x repeat="spec specs">
+    <input class="noborder" type="radio" name="spec" value="client"
+        tal:attributes="value spec;
+            checked python:request.get('spec', 'client') == spec and 'checked' or None"/>
+    <span tal:content="spec" i18n:translate="">Client</span>
+    </tal:x>
+</tal:specs>
+</div>
+</div>
+
+
+
 <div metal:define-macro="review_state"
         tal:define="review_states here/analysis_workflow_states">
 <div class="field">

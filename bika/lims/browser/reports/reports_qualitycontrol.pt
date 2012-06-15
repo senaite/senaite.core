@@ -87,18 +87,9 @@
 <fieldset>
 
 <legend i18n:translate="">Selection criteria</legend>
-<div class="field">
-    <label i18n:translate="label_specification"
-        >Specification</label><br/>
-<div tal:define="specs python:['client', 'lab']">
-    <tal:x repeat="spec specs">
-    <input class="noborder" type="radio" name="spec" value="client"
-        tal:attributes="value spec;
-            checked python:request.get('spec', 'client') == spec and 'checked' or None"/>
-    <span tal:content="spec" i18n:translate="">Client</span>
-    </tal:x>
-</div>
-</div>
+
+<metal:date use-macro="context/selection_macros/macros/spec"/>
+
 <tal:received
     tal:define="date_id string:DateReceived;
                 date_label string:Received">
@@ -158,9 +149,15 @@
 
 <legend i18n:translate="">Selection criteria</legend>
 
+<metal:date use-macro="context/selection_macros/macros/spec"/>
+
 <tal:samplepoint tal:define="nullable python:0">
 <metal:block use-macro="context/selection_macros/macros/samplepoint"/>
 </tal:samplepoint>
+
+<tal:sampletype tal:define="nullable python:0">
+<metal:block use-macro="context/selection_macros/macros/sampletype"/>
+</tal:sampletype>
 
 <tal:analysisservice 
     tal:define="multiselect python:1;
