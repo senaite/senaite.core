@@ -68,7 +68,11 @@
 <fieldset>
 
 <legend i18n:translate="">Selection criteria</legend>
-
+<br/>
+<br/>
+<br/>
+<b> Under construction </b>
+<!--
 <metal:block use-macro="context/selection_macros/macros/client"/>
 
 <metal:block use-macro="context/selection_macros/macros/contact"/>
@@ -140,6 +144,7 @@
         value="Query"
         i18n:attributes="value"
         />
+-->
 </form>
 </div>
 
