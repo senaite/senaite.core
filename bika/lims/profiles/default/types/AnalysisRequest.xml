@@ -22,7 +22,7 @@
 
  <alias from="(Default)" to="base_view"/>
 
- <action title="Edit"
+ <action title="View"
          action_id="view"
          category="object"
          condition_expr=""

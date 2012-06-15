@@ -579,6 +579,11 @@ class AnalysisRequestViewView(BrowserView):
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 
+        ## Create Partitions View for this ARs sample
+        p = SamplePartitionsView(self.context.getSample(), self.request)
+        p.show_column_toggles = False
+        self.parts = p.contents_table()
+
         ## Create Field and Lab Analyses tables
         self.tables = {}
         for poc in POINTS_OF_CAPTURE:
