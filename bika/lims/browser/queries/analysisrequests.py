@@ -13,7 +13,6 @@ from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 import json
 import plone
-import pdb
 
 class QueryAnalysisRequests(BrowserView):
     implements(IViewView)
@@ -305,7 +304,6 @@ class QueryAnalysisRequests(BrowserView):
         verifiedby_label =  [{'value': _("Verified by"),
                               'class': 'header',}]
         i = 0
-        pdb.set_trace()
         for arp in bc(query):
             ar = arp.getObject()
             clientoid.append({'value': ar.getClientOrderNumber()})
