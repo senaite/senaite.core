@@ -492,7 +492,7 @@
  </transition>
 
  <transition transition_id="attach"
-             title="Attach"
+             title="Add attachment"
              new_state="to_be_verified"
              trigger="USER"
              before_script=""

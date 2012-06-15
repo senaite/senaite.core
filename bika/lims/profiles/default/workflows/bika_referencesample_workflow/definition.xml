@@ -79,7 +79,7 @@
   <action url="workflow_action?workflow_action=expire"
           category="workflow"
           icon=""
-          i18n:translate="expire_transition_title">Expire Reference</action>
+          i18n:translate="expire_transition_title">Expire</action>
   <guard>
    <guard-permission>BIKA: Manage Reference</guard-permission>
   </guard>
@@ -95,7 +95,7 @@
   <action url="workflow_action?workflow_action=dispose"
           category="workflow"
           icon=""
-          i18n:translate="dispose_transition_title">Dispose of Reference</action>
+          i18n:translate="dispose_transition_title">Dispose</action>
   <guard>
    <guard-permission>BIKA: Manage Reference</guard-permission>
   </guard>

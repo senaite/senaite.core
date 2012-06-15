@@ -44,11 +44,11 @@
              trigger="USER"
              before_script=""
              after_script=""
-             i18n:attributes="title submit_transition_title">
+             i18n:attributes="title submit_arimport_transition_title">
   <description i18n:translate=""></description>
   <action url=""
           category="workflow"
-          i18n:translate="submit_transition_title">Submit</action>
+          i18n:translate="submit_arimport_transition_title">Submit ARImport</action>
   <guard>
    <guard-permission>BIKA: Manage ARImport</guard-permission>
    <guard-expression></guard-expression>

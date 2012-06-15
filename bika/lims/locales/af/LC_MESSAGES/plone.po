@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-06-06 12:01+0000\n"
+"POT-Creation-Date: 2012-06-15 08:35+0000\n"
 "PO-Revision-Date: 2012-05-11 14:41+0000\n"
 "Last-Translator: lemoene Smit <admin@bikalabs.com>\n"
 "Language-Team: Bika <bikasupport@bikalabs.com>\n"
@@ -427,6 +427,10 @@ msgstr ""
 msgid "Queries"
 msgstr ""
 
+#: ../profiles/default/actions.xml
+msgid "Query"
+msgstr ""
+
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "Received"
@@ -659,10 +663,11 @@ msgstr "Activate"
 msgid "assign_transition_title"
 msgstr "Assign"
 
-#. Default: "Attach"
+#. Default: "Add attachment"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+#, fuzzy
 msgid "attach_transition_title"
 msgstr "Attach"
 
@@ -835,6 +840,11 @@ msgstr "Republish"
 msgid "retract_transition_title"
 msgstr "Retract"
 
+#. Default: "Retract worksheet"
+#: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
+msgid "retract_worksheet_transition_title"
+msgstr ""
+
 #. Default: "Sample"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
@@ -842,10 +852,23 @@ msgstr "Retract"
 msgid "sample_transition_title"
 msgstr "Sample"
 
+#. Default: "Save analyses"
+msgid "save_analyses_button_transition_title"
+msgstr "Save"
+
+#. Default: "Save partitions"
+msgid "save_partitions_button_transition_title"
+msgstr "Save"
+
+#. Default: "Submit ARImport"
+#: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
+msgid "submit_arimport_transition_title"
+msgstr ""
+
 #. Default: "Submit for verification"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
-#: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
 msgid "submit_transition_title"
 msgstr "Submit for verification"
 

@@ -88,12 +88,12 @@
              trigger="USER"
              before_script=""
              after_script=""
-             i18n:attributes="title retract_transition_title">
+             i18n:attributes="title retract_worksheet_transition_title">
   <description i18n:translate=""></description>
   <action url="workflow_action?workflow_action=retract"
           category="workflow"
           icon=""
-          i18n:translate="retract_transition_title">Retract worksheet</action>
+          i18n:translate="retract_worksheet_transition_title">Retract worksheet</action>
   <guard>
    <guard-expression>python:here.guard_retract_transition()</guard-expression>
   </guard>
