@@ -149,8 +149,6 @@
 
 <legend i18n:translate="">Selection criteria</legend>
 
-<metal:date use-macro="context/selection_macros/macros/spec"/>
-
 <tal:samplepoint tal:define="nullable python:0">
 <metal:block use-macro="context/selection_macros/macros/samplepoint"/>
 </tal:samplepoint>
