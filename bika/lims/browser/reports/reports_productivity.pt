@@ -79,6 +79,16 @@
 </span>
 </p>
 
+<p tal:condition="not:here/member_is_client">
+<a href="#"
+    id="tats_overtime_selector"
+    i18n:translate=""
+>Analysis turnaround time over time</a>
+<br/>
+<span i18n:translate="">The turnaround times of analyses plotted over time
+</span>
+</p>
+
 <p>
 <a href="#"
     id="attachments_selector"
@@ -220,6 +230,36 @@
 </form>
 </div>
 
+<div id="tats_overtime" style="display:none" class="criteria">
+<form action="reports" method="post" name="analysestats_overtime">
+<input type="hidden" name="report_id" value="analysestats_overtime" />
+<fieldset>
+
+<legend i18n:translate="">Selection criteria</legend>
+<metal:block use-macro="context/selection_macros/macros/analysisservice"/>
+
+<metal:block use-macro="context/selection_macros/macros/analyst"/>
+
+<metal:block use-macro="context/selection_macros/macros/instrument"/>
+
+<metal:block use-macro="context/selection_macros/macros/period"/>
+
+<tal:received
+    tal:define="date_id string:tats_DateReceived;
+                date_label string:Received">
+<metal:date use-macro="context/selection_macros/macros/date"/>
+</tal:received>
+
+</fieldset>
+    <input tabindex=""
+        class="searchButton"
+        type="submit"
+        name="submit"
+        value="Report"
+        i18n:attributes="value"
+        />
+</form>
+</div>
 
 <div id="attachments" style="display:none" class="criteria">
 <form action="reports" method="post" name="analysestotals">

@@ -24,6 +24,11 @@ $(document).ready(function(){
 		event.preventDefault();
 		$("#tats").toggle(true);
 	});
+	$("#tats_overtime_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#tats_overtime").toggle(true);
+	});
 	$("#attachments_selector").click(function(event){
 		$(".criteria").toggle(false);
 		event.preventDefault();
