@@ -427,10 +427,7 @@ function calcdependencies(elements, auto_yes) {
 
 function calculate_parts(column){
 
-//	function pd(str){
-//		console.log(str);
-//	}
-//	pd("===================================");
+//	console.log("===================================");
 
 	// ARTemplate columns are not calculated
 	if ($("#ar_"+column+"_ARTemplate").val() != ''){
@@ -449,9 +446,19 @@ function calculate_parts(column){
 			st_minvol = parseFloat(st_minvol, 10);
 		}
 	} else {
-		st_uid = '';
+		// all unchecked services have their part numbers removed
+		ep = $("[class^='partnr_']").filter("[column="+column+"]").not(":empty");
+		for(i=0;i<ep.length;i++){
+			em = ep[i];
+			uid = $(ep[0]).attr('class').split("_")[1]
+			cb = $("#"+uid);
+			if ( ! $(cb).attr('checked') ){
+				$(em).empty();
+			}
+		}
+		return;
 	}
-//	pd("Sampletype: "+st_uid);
+//	console.log("Sampletype: "+st_uid);
 
 	// gather up selected service uids
 	var checked = $('[name^="ar\\.'+column+'\\.Analyses"]').filter(':checked');
@@ -481,11 +488,11 @@ function calculate_parts(column){
 
 	// loop through each selected service, assigning or creating
 	// partitions as we go.
-//	pd(service_uids);
+//	console.log(service_uids);
 	for(si=0;si<service_uids.length;si++){
 		service_uid = service_uids[si];
-//		pd("-----");
-//		pd("service_uid: "+ service_uid);
+//		console.log("-----");
+//		console.log("service_uid: "+ service_uid);
 
 		service_data = window.bsc.data.services[service_uid];
 		if (service_data == undefined || service_data == null){
@@ -495,7 +502,7 @@ function calculate_parts(column){
 							'PartitionSetup':[],
 							'backrefs':[],
 							'deps':{}}
-//			pd("service_data undefined, create new: "+service_data.toSource());
+//			console.log("service_data undefined, create new: "+service_data.toSource());
 		}
 
 		// discover if a specific part_setup exists for this
@@ -510,14 +517,14 @@ function calculate_parts(column){
 			}
 		);
 		if (part_setup != '') {
-//			pd("part_setup found: "+part_setup.toSource());
+//			console.log("part_setup found: "+part_setup.toSource());
 			// if it does, we use it instead of defaults.
 			separate = part_setup['separate'];
 			container = part_setup['container'];
 			preservation = part_setup['preservation'];
 			minvol = parseFloat(part_setup['vol'].split(" ")[0]);
 		} else {
-//			pd("part_setup not found, using service_data " + service_data.toSource());
+//			console.log("part_setup not found, using service_data " + service_data.toSource());
 			// Otherwise grab service/sampletype defaults
 			separate = service_data['Separate'];
 			container = service_data['Container'];
@@ -534,7 +541,7 @@ function calculate_parts(column){
 					'preservation': preservation,
 					'volume': minvol
 					};
-//			pd("partition must be separate.  created part: " + part.toSource())
+//			console.log("partition must be separate.  created part: " + part.toSource())
 			parts.push(part);
 
 		} else {
@@ -542,7 +549,7 @@ function calculate_parts(column){
 			// So now we either need to find an existing partition
 			// which permits us to add this analysis to it, or
 			// create a new one.
-//			pd("searching for a partition")
+//			console.log("searching for a partition")
 			found_part = '';
 
 			// convert container types to containers
@@ -579,11 +586,13 @@ function calculate_parts(column){
 						return part['container'].indexOf(c) > -1;
 					});
 					if (c_intersection.length == 0){
-//						pd("No match intersecting containers " + container + " -AND- " + part['container']);
+//						console.log("No match intersecting containers " + container + " -AND- " + part['container']);
 						// no match
 						continue;
 					}
-				} // else { pd("Not intersecting containers"); }
+				} else {
+//				    console.log("Not intersecting containers");
+				}
 
 				// if no preservation info is provided by either the
 				// partition OR the service, this partition is available
@@ -594,13 +603,14 @@ function calculate_parts(column){
 						return part['preservation'].indexOf(p) > -1;
 					});
 					if (p_intersection.length == 0){
-//						pd("No match intersecting preservations " + preservation + " -AND- " + part['preservation']);
+						console.log("No match intersecting preservations " + preservation + " -AND- " + part['preservation']);
 						// no match
 						continue;
 					}
-				} // else { pd("Not intersecting preservations"); }
+				} else {
+//				    console.log("Not intersecting preservations");
+				}
 
-				// other conditions
 
 				// filter containers on capacity.
 				if (part_setup != ''){
@@ -625,11 +635,11 @@ function calculate_parts(column){
 
 				// all the conditions passed:
 				found_part = x;
-//				pd("Found a partition: " + x + ", " + parts[x].toSource());
+//				console.log("Found a partition: " + x + ", " + parts[x].toSource());
 				parts[x]['services'].push(service_uid);
 				parts[x]['container'] = c_intersection;
 				parts[x]['preservation'] = p_intersection;
-//				pd("Modified partition: " + x + ", " + parts[x].toSource());
+//				console.log("Modified partition: " + x + ", " + parts[x].toSource());
 				break;
 			}
 
@@ -641,7 +651,7 @@ function calculate_parts(column){
 						'preservation': preservation,
 						'volume': minvol
 						};
-//				pd("No partition found, created new:" + part.toSource());
+//				console.log("No partition found, created new:" + part.toSource());
 				parts.push(part);
 			}
 		}
@@ -858,11 +868,11 @@ function setupAutoCompleters(){
 		});
 	}
 
-  	function set_st(e){
-  		col = e.id.split("_")[1];
+	function set_st(e){
+		col = e.id.split("_")[1];
 		unsetARTemplate(col);
-  		st = window.bsc.data.st_uids[$(e).val()];
-  		if (st != undefined && st != null){
+		st = window.bsc.data.st_uids[$(e).val()];
+		if (st != undefined && st != null){
 			if (st['samplepoints'].length == 1){
 					$("#ar_"+col+"_SamplePoint").val(st['samplepoints'][0]);
 			}
@@ -871,13 +881,13 @@ function setupAutoCompleters(){
 	function set_sp(e){
 		col = e.id.split("_")[1];
 		unsetARTemplate(col);
-  		sp = window.bsc.data.sp_uids[$(e).val()];
-  		if (sp != undefined && sp != null){
-  			$("#ar_"+col+"_Composite").attr("checked", sp['composite']);
-  			if (sp['sampletypes'].length == 1){
-  				$("#ar_"+col+"_SampleType").val(sp['sampletypes'][0]);
-  			}
-  		}
+		sp = window.bsc.data.sp_uids[$(e).val()];
+		if (sp != undefined && sp != null){
+			$("#ar_"+col+"_Composite").attr("checked", sp['composite']);
+			if (sp['sampletypes'].length == 1){
+				$("#ar_"+col+"_SampleType").val(sp['sampletypes'][0]);
+			}
+		}
 	}
 
 	$(".sampletype").focus(function(){
@@ -891,11 +901,27 @@ function setupAutoCompleters(){
 	});
   	$(".sampletype").blur(function(){
 		//console.log('st blur ' + $(this).val());
-  		set_st(this);
-		if ($(this).val() != $(window._ac_focus).val()){
-			calculate_parts();
+		column = this.id.split("_")[1];
+		st_title = $("#ar_"+column+"_SampleType").val();
+		st_uid = window.bsc.data.st_uids[st_title];
+		if (st_uid != undefined && st_uid != null){
+			calculate_parts(column);
+			set_st(this);
+		} else {
+			// all unchecked services have their part numbers removed
+			ep = $("[class^='partnr_']").filter("[column="+column+"]").not(":empty");
+			for(i=0;i<ep.length;i++){
+				em = ep[i];
+				uid = $(ep[0]).attr('class').split("_")[1]
+				cb = $("#"+uid);
+				if ( ! $(cb).attr('checked') ){
+					$(em).empty();
+				}
+			}
+			$(this).val('');
+			return;
 		}
-  	});
+	});
 
 	$(".samplepoint").focus(function(){
 		//console.log('sp focus ' + $(this).val());
@@ -980,7 +1006,7 @@ $(document).ready(function(){
 			beforeSubmit: function(formData, jqForm, options) {
 				$("input[class~='context']").attr('disabled',true);
 			},
-			success: function(responseText, statusText, xhr, $form)  {
+			success: function(responseText, statusText, xhr, $form) {
 				if(responseText['success'] != undefined){
 					if(responseText['labels'] != undefined){
 						destination = window.location.href.replace("/ar_add","");

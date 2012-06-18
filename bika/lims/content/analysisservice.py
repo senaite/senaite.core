@@ -131,7 +131,7 @@ class PartitionSetupField(RecordsField):
         'subfield_sizes': {
             'sampletype': 1,
             'preservation':6,
-            'vol':5,
+            'vol':8,
             'container': 6,
             #'retentionperiod':10,
         }
