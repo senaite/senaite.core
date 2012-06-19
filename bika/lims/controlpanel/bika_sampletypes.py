@@ -43,6 +43,12 @@ class SampleTypesView(BikaListingView):
             'Description': {'title': _('Description'),
                             'index': 'description',
                             'toggle': True},
+            'getHazardous': {'title': _('Hazardous'),
+                             'toggle': True},
+            'getPrefix': {'title': _('Prefix'),
+                          'toggle': True},
+            'getMinimumVolume': {'title': _('Minimum Volume'),
+                                 'toggle': True},
         }
 
         self.review_states = [
@@ -50,16 +56,16 @@ class SampleTypesView(BikaListingView):
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
-             'columns': ['Title', 'Description']},
+             'columns': ['Title', 'Description', 'getHazardous', 'getPrefix', 'getMinimumVolume']},
             {'id':'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': [{'id':'activate'}, ],
-             'columns': ['Title', 'Description']},
+             'columns': ['Title', 'Description', 'getHazardous', 'getPrefix', 'getMinimumVolume']},
             {'id':'all',
              'title': _('All'),
              'contentFilter':{},
-             'columns': ['Title', 'Description']},
+             'columns': ['Title', 'Description', 'getHazardous', 'getPrefix', 'getMinimumVolume']},
         ]
 
     def folderitems(self):

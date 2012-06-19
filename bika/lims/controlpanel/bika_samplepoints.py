@@ -43,6 +43,10 @@ class SamplePointsView(BikaListingView):
             'Description': {'title': _('Description'),
                             'index': 'description',
                             'toggle': True},
+            'getComposite': {'title': _('Composite'),
+                             'toggle': True},
+            'SampleTypes': {'title': _('Sample Types'),
+                            'toggle': True},
         }
 
         self.review_states = [
@@ -50,16 +54,16 @@ class SamplePointsView(BikaListingView):
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
-             'columns': ['Title', 'Description']},
+             'columns': ['Title', 'Description', 'getComposite', 'SampleTypes']},
             {'id':'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': [{'id':'activate'}, ],
-             'columns': ['Title', 'Description']},
+             'columns': ['Title', 'Description', 'getComposite', 'SampleTypes']},
             {'id':'all',
              'title': _('All'),
              'contentFilter':{},
-             'columns': ['Title', 'Description']},
+             'columns': ['Title', 'Description', 'getComposite', 'SampleTypes']},
         ]
 
     def folderitems(self):
@@ -70,6 +74,7 @@ class SamplePointsView(BikaListingView):
             items[x]['Description'] = obj.Description()
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
+            items[x]['SampleTypes'] = ",".join([st.Title() for st in obj.getSampleTypes()])
         return items
 
 schema = ATFolderSchema.copy()

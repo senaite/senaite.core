@@ -439,7 +439,6 @@ class bsc_browserdata(BrowserView):
                 except MagnitudeError:
                     pass
                 partsetup[x]['vol'] = str(mgminvol)
-                print partsetup
 
             ## If no dependents, backrefs or partition setup exists
             ## nothing is stored for this service
