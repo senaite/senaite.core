@@ -603,7 +603,7 @@ function calculate_parts(column){
 						return part['preservation'].indexOf(p) > -1;
 					});
 					if (p_intersection.length == 0){
-						console.log("No match intersecting preservations " + preservation + " -AND- " + part['preservation']);
+//						console.log("No match intersecting preservations " + preservation + " -AND- " + part['preservation']);
 						// no match
 						continue;
 					}

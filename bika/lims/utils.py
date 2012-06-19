@@ -428,7 +428,7 @@ class bsc_browserdata(BrowserView):
                 try:
                     mgminvol = minvol.split(' ', 1)
                     mgminvol = mg(float(mgminvol[0]), mgminvol[1])
-                except MagnitudeError:
+                except:
                     mgminvol = mg(0, 'ml')
                 try:
                     mgminvol = str(mgminvol.ounit('ml'))
