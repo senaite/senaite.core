@@ -25,6 +25,9 @@
 .testgreen {
     color: Black}
 
+.out_of_range {
+    color: Red
+}
 .number {
     text-align: right
 }

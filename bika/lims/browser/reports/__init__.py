@@ -3,6 +3,7 @@ from analysespersampletype import AnalysesPerSampleType
 from analysesattachments import AnalysesAttachments
 from analysesperclient import AnalysesPerClient
 from analysestats import AnalysesTats
+from analysestats_overtime import AnalysesTatsOverTime
 from analysesoutofrange import AnalysesOutOfRange
 from analysesrepeated import AnalysesRepeated
 from arsnotinvoiced import ARsNotInvoiced
@@ -15,7 +16,8 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import TimeOrDate
-from bika.lims.utils import pretty_user_name_or_id, pretty_user_email, logged_in_client
+from bika.lims.utils import pretty_user_name_or_id, pretty_user_email,\
+     logged_in_client, getUsers
 from bika.lims.interfaces import IReportFolder
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -36,6 +38,7 @@ class ProductivityView(BrowserView):
         BrowserView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/report_big.png"
         self.TimeOrDate = TimeOrDate
+        self.getAnalysts = getUsers(context, ['Manager', 'LabManager', 'Analyst'])
 
     def __call__(self):
         return self.template()
@@ -216,8 +219,11 @@ class SubmitForm(BrowserView):
             reporttype = 'Analyses per client'
             self.reportout = AnalysesPerClient(self.context, self.request)()
         elif report_id == 'analysestats':
-            reporttype = 'Analyses_tats'
+            reporttype = 'Analyses TATs'
             self.reportout = AnalysesTats(self.context, self.request)()
+        elif report_id == 'analysestats_overtime':
+            reporttype = 'Analyses TATs over time'
+            self.reportout = AnalysesTatsOverTime(self.context, self.request)()
         elif report_id == 'analysesattachments':
             reporttype = 'Analyses attachments'
             self.reportout = AnalysesAttachments(self.context, self.request)()
