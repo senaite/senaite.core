@@ -84,3 +84,6 @@ msgstr "Save analyses"
 
 msgid "save_partitions_button_transition_title"
 msgstr "Save partitions"
+
+msgid "save_selection_button_transition_title"
+msgstr "Save selection"

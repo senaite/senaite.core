@@ -484,6 +484,7 @@ function calculate_parts(column){
 		return;
 	}
 
+	///////////////////////////////////////////////////////////////////////////
 	parts = [];
 
 	// loop through each selected service, assigning or creating
@@ -656,6 +657,7 @@ function calculate_parts(column){
 			}
 		}
 	}
+	///////////////////////////////////////////////////////////////////////////
 
 	// Set new part numbers in hidden form field
 	formparts = $.parseJSON($("#parts").val());

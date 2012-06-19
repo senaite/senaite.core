@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-06-15 08:35+0000\n"
+"POT-Creation-Date: 2012-06-20 09:26+0000\n"
 "PO-Revision-Date: 2012-05-11 14:41+0000\n"
 "Last-Translator: lemoene Smit <admin@bikalabs.com>\n"
 "Language-Team: Bika <bikasupport@bikalabs.com>\n"
@@ -85,11 +85,11 @@ msgid "Analysis Request"
 msgstr ""
 
 #: ../profiles/default/controlpanel.xml
-msgid "Analysis Request Profiles"
+msgid "Analysis Profiles"
 msgstr "Ontledingsversoek profiele"
 
 #: ../profiles/default/controlpanel.xml
-msgid "Analysis Request Templates"
+msgid "AR Templates"
 msgstr ""
 
 #: ../profiles/default/actions.xml
@@ -859,6 +859,10 @@ msgstr "Save"
 #. Default: "Save partitions"
 msgid "save_partitions_button_transition_title"
 msgstr "Save"
+
+#. Default: "Save selection"
+msgid "save_selection_button_transition_title"
+msgstr "Save selection"
 
 #. Default: "Submit ARImport"
 #: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
