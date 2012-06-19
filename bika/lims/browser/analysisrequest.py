@@ -1875,7 +1875,7 @@ class AnalysisRequestsView(BikaListingView):
                                      'index': 'Creator',
                                      'toggle': False},
             'Created': {'title': PMF('Date Created'),
-                        'index': 'Created',
+                        'index': 'created',
                         'toggle': False},
             'getSample': {'title': _("Sample"),
                           'toggle': False,},
