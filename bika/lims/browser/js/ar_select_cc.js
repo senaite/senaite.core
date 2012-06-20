@@ -10,7 +10,7 @@ $(document).ready(function(){
 	});
 
 	// return selected references from the CC popup window back into the widget
-	$('[transition=save]').click(function(){
+	$('[transition=save_selection_button]').click(function(){
 		uids = [];
 		titles = [];
 		$.each($("[name='uids:list']").filter(":checked"), function(i, e){

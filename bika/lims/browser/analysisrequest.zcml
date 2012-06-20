@@ -82,14 +82,6 @@
 
     <browser:page
       for="*"
-      name="ar_formdata"
-      class="bika.lims.browser.analysisrequest.ar_formdata"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="*"
       name="analysisrequest_submit"
       class="bika.lims.browser.analysisrequest.ajaxAnalysisRequestSubmit"
       permission="zope.Public"

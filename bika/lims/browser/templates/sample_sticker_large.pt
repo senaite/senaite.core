@@ -18,15 +18,18 @@
         table {
             border-collapse:collapse;
             margin: 1px 1px 1px 1px;
-            font-size: 5pt;
-            height:1cm;
-            width:7cm;
+            font-size: 6pt
+        }
+        th {
+            text-align: left;
+            text-transform: none;
+            border: 1pt solid black
         }
         td {
-            border: none;
+            border: 1pt solid black
         }
         @media print {
-            .noPrint {display:none !important;}
+        .noPrint {display:none !important;}
         }
     </style>
 </head>
@@ -39,6 +42,9 @@
     portal_url   nocall:context/portal_url;
     partnr       python:part.getId().split('-')[1];
     sample       python:part.aq_parent;
+    CSID         python:sample.getClientSampleID();
+    Order        python:sample.getAnalysisRequests()[0].getClientOrderNumber();
+    Hazardous    python:sample.getSampleType().getHazardous();
     SampleType   python:sample.getSampleType().Title();
     Sampler      python:sample.getSampler();
     SampleID     python:sample.getId();
@@ -48,36 +54,83 @@
     Container    python:part.getContainer() and part.getContainer().Title() or '';
     SamplingDate python:sample.getSamplingDate() and sample.getSamplingDate().Date();
     DateSampled  python:sample.getDateSampled() and sample.getDateSampled().Date();
+    Composite    python:sample.getComposite();
     barcode_str  string:${SampleID}${partnr};
     analyses     python:part.getBackReferences('AnalysisSamplePartition');
     field_analyses python:[analysis for analysis in analyses if analysis.getService().getPointOfCapture()=='field'];
+
+    deviation    python:None;
     ">
+<thead>
+
 <tr>
-    <td>
-        <strong tal:content="string:${SampleID}/${partnr}"/>
-        <img tal:condition="python:sample.getSampleType().getHazardous()"
-             tal:attributes="src string:${portal_url}/++resource++bika.lims.images/hazardous.png"/>
-    </td>
-    <td class='barcode' colspan="2">
-        <div tal:attributes="id string:barcode_${barcode_str}"></div>
+<th i18n:translate="">Sample ID</th>
+<td><strong tal:content="string:${SampleID}/${partnr}"/></td>
+<th i18n:translate="">Hazardous</th>
+<td tal:content="Hazardous"/>
+</tr>
+
+<tr>
+<th i18n:translate="">Sampling Date</th>
+<td tal:content="SamplingDate"/>
+<th i18n:translate="">Sampler</th>
+<td tal:content="Sampler"/>
+</tr>
+
+<tr>
+<th i18n:translate="">CSID</th>
+<td tal:content="CSID"/>
+<th i18n:translate="">Order</th>
+<td tal:content="Order"/>
+</tr>
+
+<tr>
+<th i18n:translate="">Deviation</th>
+<td tal:content="deviation/Title|nothing"/>
+<th i18n:translate="">Composite</th>
+<td class="left" tal:content="Composite"/>
+</tr>
+
+<tr>
+<th i18n:translate="">Container</th>
+<td tal:content="Container"/>
+<th i18n:translate="">Preservation</th>
+<td tal:content="Preservation"/>
+</tr>
+
+<tr>
+<th i18n:translate="">Sample Type</th>
+<td colspan='3' tal:content="SampleType"/>
+</tr>
+
+<tr>
+<th i18n:translate="">Sample Point</th>
+<td colspan='3' tal:content="SamplePoint"/>
+</tr>
+
+<tr tal:condition="python:field_analyses">
+<th colspan="4" i18n:translate="">Field Analyses</th>
+</tr>
+
+<tal:block repeat="analysis python:field_analyses">
+   <tr>
+      <td colspan="4" tal:content="python:analysis.getService().Title()"/>
+   </tr>
+</tal:block>
+
+<tr>
+    <td class='barcode' colspan="4">
+        <div tal:attributes="id string:barcode_${barcode_str}">
+        </div>
     </td>
 </tr>
 
 <script
     type='text/javascript'
-    tal:content="python:'$(\'#barcode_%s\').barcode(\'%s\', \'code39\', {\'barHeight\':15, addQuietZone:false, showHRI: false })'%(barcode_str,barcode_str)">
+    tal:content="python:'$(\'#barcode_%s\').barcode(\'%s\', \'code39\', {\'barHeight\':15, addQuietZone:true, showHRI: false })'%(barcode_str,barcode_str)">
 </script>
 
-<tr>
-    <td tal:content="SampleType"/>
-    <td tal:content="Preservation"/>
-    <td tal:content="SamplePoint"/>
-</tr>
-
-<tr>
-    <td tal:content="SamplingDate"/>
-    <td tal:content="Sampler" colspan="2"/>
-</tr>
+</thead>
 
 </table>
 <p style="page-break-after: always"/>

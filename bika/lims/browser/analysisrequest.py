@@ -423,9 +423,11 @@ class AnalysisRequestViewView(BrowserView):
         emails = self.context.getCCEmails()
         if type(emails) == str:
             emails = emails and [emails,] or []
-        cc_emails = ""
+        cc_emails = []
+        cc_hrefs = []
         for cc in emails:
-            cc_emails.append("<a href='mailto:%s'>%s</a>"%(cc, cc))
+            cc_emails.append(cc)
+            cc_hrefs.append("<a href='mailto:%s'>%s</a>"%(cc, cc))
 
         # Some sample fields are editable here
         if workflow.getInfoFor(sample, 'cancellation_state') == "cancelled":
@@ -459,7 +461,7 @@ class AnalysisRequestViewView(BrowserView):
                        <span name='cc_emails' id='cc_emails' value='%s'>%s</span>"\
                        %(",".join(cc_uids),
                          contact.UID(), contact.Title(), "; ".join(cc_titles),"; ".join(cc_titles),
-                         "; ".join(cc_emails),"; ".join(cc_emails)),
+                         "; ".join(cc_emails),"; ".join(cc_hrefs)),
              'condition':True,
              'type': 'text'},
             {'id': 'ClientReference',
@@ -1104,6 +1106,7 @@ class AnalysisRequestSelectCCView(BikaListingView):
         self.show_workflow_action_buttons = True
         self.show_select_column = True
         self.pagesize = 25
+        self.form_id = "select_cc"
 
         request.set('disable_border', 1)
 
@@ -1123,7 +1126,7 @@ class AnalysisRequestSelectCCView(BikaListingView):
                          'BusinessPhone',
                          'MobilePhone'],
              'transitions': [{'id':'empty'}, ], # none
-             'custom_actions':[{'id': 'save', 'title': 'Save'}, ]
+             'custom_actions':[{'id': 'save_selection_button', 'title': 'Save selection'}, ] # do not translate this title.
              }
         ]
 
@@ -1172,6 +1175,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = False
         self.show_workflow_action_buttons = False
+        self.form_id = "select_sample"
 
         self.pagesize = 25
 
@@ -1309,217 +1313,6 @@ class ajaxExpandCategory(BikaListingView):
                        getPointOfCapture = poc,
                        getCategoryUID = CategoryUID)
         return services
-
-
-class ar_formdata(BrowserView):
-    """Returns a JSON dictionary containing all the things the AR edit
-    form might need.  This is just slightly better than encoding them
-    in big comma-separated values in hidden form fields.  Lots of AJAX
-    is not the answer though - the form needs to be quite responsive.
-    """
-    def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        rc = getToolByName(self.context, REFERENCE_CATALOG)
-
-        formdata = {
-            'profiles':{},    # AR profiles
-            'templates':{},   # AR templates
-            'contact_ccs':{}, # default cc selections for all client contacts
-            'categories':{},  # all services keyed by POC and category
-            'services':{},    # info from all services, keyed by service uid
-            'field_analyses':[], # list of field analysis UIDs
-        }
-
-        ## List of selected services for each ARProfile
-        ## We store Title=Title and key=poc_categoryUID, val=[uid, uid, uid] in
-        ## data[profiles][profileUID][services] for all services in each profile
-        for context in (self.context, self.context.bika_setup.bika_arprofiles):
-            profiles = [p for p in context.objectValues("ARProfile")
-                        if isActive(p)]
-            for profile in profiles:
-                services = {}
-                for service \
-                    in bsc(portal_type = "AnalysisService",
-                           inactive_state = "active",
-                           UID = [u.UID() for u in profile.getService()]):
-                    catUID = service.getCategoryUID
-                    poc = service.getPointOfCapture
-                    key = "%s_%s" % (poc, catUID)
-                    try:
-                        services[key].append(service.UID)
-                    except:
-                        services[key] = [service.UID, ]
-
-                title = context == self.context.bika_setup.bika_arprofiles \
-                    and self.context.translate(_('Lab')) + ": " + profile.Title() \
-                    or profile.Title()
-
-                p_dict = {
-                    'UID':profile.UID(),
-                    'Title':title,
-                    'Services':services,
-                }
-                formdata['profiles'][profile.UID()] = p_dict
-
-        ## parameters for all ARTemplates
-        for context in (self.context, self.context.bika_setup.bika_arprofiles):
-            templates = [t for t in context.objectValues("ARTemplate")
-                         if isActive(t)]
-            for template in templates:
-                title = context == self.context.bika_setup.bika_arprofiles \
-                    and self.context.translate(_('Lab')) + ": " + template.Title() \
-                    or template.Title()
-                sp_title = template.getSamplePoint()
-                st_title = template.getSampleType()
-                profile = template.getARProfile()
-                t_dict = {
-                    'UID':template.UID(),
-                    'Title':template.Title(),
-                    'ARProfile':profile and profile.UID() or '',
-                    'SamplePoint':sp_title,
-                    'SampleType':st_title,
-                    'ReportDryMatter':template.getReportDryMatter(),
-                }
-                formdata['templates'][template.UID()] = t_dict
-
-        # Store the default CCs for each client contact in form data.
-        for contact in self.context.objectValues("Contact"):
-            cc_uids = []
-            cc_titles = []
-            for cc in contact.getCCContact():
-                cc_uids.append(cc.UID())
-                cc_titles.append(cc.Title())
-            c_dict = {
-                'UID':contact.UID(),
-                'Title':contact.Title(),
-                'cc_uids':','.join(cc_uids),
-                'cc_titles':','.join(cc_titles),
-            }
-            formdata['contact_ccs'][contact.UID()] = c_dict
-
-        uc = getToolByName(self.context, 'uid_catalog')
-
-        ## Loop ALL SERVICES
-        for service in bsc(portal_type = "AnalysisService",
-                           inactive_state = "active"):
-            service = service.getObject()
-            uid = service.UID()
-
-            # Store categories: formdata['categories'][poc_catUID]: [uid, uid]
-            catUID = service.getCategoryUID()
-            poc = service.getPointOfCapture()
-            key = "%s_%s" % (poc, catUID)
-            try:
-                formdata['categories'][key].append(uid)
-            except:
-                formdata['categories'][key] = [uid, ]
-
-            # store field analyses so that the JS knows not to assign
-            # partitions to these.
-            poc = service.getPointOfCapture()
-            if poc == 'field':
-                formdata['field_analyses'].append(uid)
-
-            ## Get dependants
-            ## (this service's Calculation backrefs' dependencies)
-            backrefs = []
-            # this function follows all backreferences so we need skip to
-            # avoid recursion. It should maybe be modified to be more smart...
-            skip = []
-
-            def walk(items):
-                for item in items:
-                    if item.portal_type == 'AnalysisService'\
-                       and item.UID() != service.UID():
-                        backrefs.append(item)
-                    if item not in skip:
-                        skip.append(item)
-                        walk(item.getBackReferences())
-            walk([service, ])
-
-            ## Get dependencies
-            ## (services we depend on)
-            deps = {}
-            calc = service.getCalculation()
-            if calc:
-                deps = calc.getCalculationDependencies()
-                def walk(deps):
-                    for service_uid, service_deps in deps.items():
-                        if service_uid == uid:
-                            # We can't be our own dep.
-                            continue
-                        service = rc.lookupObject(service_uid)
-                        category = service.getCategory()
-                        cat = '%s_%s' % (category.UID(), category.Title())
-                        poc = '%s_%s' % (
-                            service.getPointOfCapture(),
-                            POINTS_OF_CAPTURE.getValue(
-                                service.getPointOfCapture())
-                        )
-                        srv = '%s_%s' % (service.UID(), service.Title())
-                        if not deps.has_key(poc): deps[poc] = {}
-                        if not deps[poc].has_key(cat): deps[poc][cat] = []
-                        deps[poc][cat].append(srv)
-                        if service_deps:
-                            walk(service_deps)
-                walk(deps)
-
-            # Get partition setup records for this service
-            separate = service.getSeparate()
-            containers = service.getContainer()
-            preservations = service.getPreservation()
-            partsetup = service.getPartitionSetup()
-
-            # Single values become lists here
-            for x in range(len(partsetup)):
-                if partsetup[x].has_key('container') \
-                   and type(partsetup[x]['container']) == str:
-                    partsetup[x]['container'] = [partsetup[x]['container'],]
-                if partsetup[x].has_key('preservation') \
-                   and type(partsetup[x]['preservation']) == str:
-                    partsetup[x]['preservation'] = [partsetup[x]['preservation'],]
-
-            # If no dependents, backrefs or partition setup exists
-            # nothing is stored for this service
-            if not (backrefs or deps or separate or
-                    containers or preservations or partsetup):
-                continue
-
-            # store info for this service
-            formdata['services'][uid] = {
-                'backrefs':[s.UID() for s in backrefs],
-                'deps':deps,
-            }
-
-            formdata['services'][uid]['Separate'] = separate
-            formdata['services'][uid]['Container'] = \
-                [container.UID() for container in containers]
-            formdata['services'][uid]['Preservation'] = \
-                [pres.UID() for pres in preservations]
-            formdata['services'][uid]['PartitionSetup'] = \
-                partsetup
-
-        ## SamplePoint and SampleType autocomplete lookups need a reference
-        ## to resolve Title->UID
-        formdata['st_uids'] = {}
-        for s in bsc(portal_type = 'SampleType',
-                        inactive_review_state = 'active'):
-            s = s.getObject()
-            formdata['st_uids'][s.Title()] = {
-                'uid':s.UID(),
-            }
-
-        formdata['sp_uids'] = {}
-        for s in bsc(portal_type = 'SamplePoint',
-                        inactive_review_state = 'active'):
-            s = s.getObject()
-            formdata['sp_uids'][s.Title()] = {
-                'uid':s.UID(),
-                'composite':s.getComposite(),
-            }
-
-        return json.dumps(formdata)
 
 class ajaxAnalysisRequestSubmit():
 
