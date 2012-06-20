@@ -86,11 +86,11 @@ class SampleType(BaseContent, HistoryAwareMixin):
             mgdefault = mg(0, 'ml')
         try:
             return str(mgdefault.ounit('ml'))
-        except MagnitudeError:
+        except:
             pass
         try:
             return str(mgdefault.ounit('g'))
-        except MagnitudeError:
+        except:
             pass
         return str(default)
 

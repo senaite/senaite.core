@@ -413,6 +413,10 @@ class bika_browserdata(BrowserView):
             ## Get partition setup records for this service
             separate = service.getSeparate()
             containers = service.getContainer()
+            containers.sort(lambda a,b:cmp(
+                int(a.getJSCapacity() and a.getJSCapacity().split(" ")[0] or '0'),
+                int(b.getJSCapacity() and b.getJSCapacity().split(" ")[0] or '0')
+            ))
             preservations = service.getPreservation()
             partsetup = service.getPartitionSetup()
 
@@ -432,11 +436,11 @@ class bika_browserdata(BrowserView):
                     mgminvol = mg(0, 'ml')
                 try:
                     mgminvol = str(mgminvol.ounit('ml'))
-                except MagnitudeError:
+                except:
                     pass
                 try:
                     mgminvol = str(mgminvol.ounit('g'))
-                except MagnitudeError:
+                except:
                     pass
                 partsetup[x]['vol'] = str(mgminvol)
 

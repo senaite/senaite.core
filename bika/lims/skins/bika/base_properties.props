@@ -4,7 +4,7 @@ plone_skin:string=Plone Default
 logoName:string=logo.png
 
 fontFamily:string="Helvetica Neue",Arial,FreeSans,sans-serif
-fontBaseSize:string=100%
+fontBaseSize:string=80%
 fontColor:string=Black
 fontSmallSize:string=95%
 fontSmallerSize:string=85%

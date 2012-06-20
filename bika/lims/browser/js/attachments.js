@@ -49,10 +49,10 @@ $(document).ready(function(){
 	// Dropdown grid of Analyses in attachment forms
 	$( "#Analysis" ).combogrid({
 		colModel: [{'columnName':'analysis_uid','hidden':true},
-		           {'columnName':'slot','width':'10','label':_('Slot')},
-		           {'columnName':'service','width':'35','label':_('Service')},
-		           {'columnName':'parent','width':'35','label':_('Parent')},
-		           {'columnName':'type','width':'20','label':_('Type')}],
+		           {'columnName':'slot','width':'10','label':window.jsi18n_bika('Slot')},
+		           {'columnName':'service','width':'35','label':window.jsi18n_bika('Service')},
+		           {'columnName':'parent','width':'35','label':window.jsi18n_bika('Parent')},
+		           {'columnName':'type','width':'20','label':window.jsi18n_bika('Type')}],
 		url: window.location.href.replace("/manage_results","") + "/attachAnalyses?_authenticator=" + $('input[name="_authenticator"]').val(),
 		select: function( event, ui ) {
 			$( "#Analysis" ).val(ui.item.service + " (slot "+ui.item.slot+")");

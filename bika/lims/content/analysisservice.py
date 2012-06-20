@@ -68,7 +68,7 @@ def getContainers(instance,
                 capacity = mg(float(capacity[0]), capacity[1])
                 if capacity < minvol:
                     continue
-            except MagnitudeError:
+            except:
                 # if there's a unit conversion error, allow the container
                 # to be displayed.
                 pass

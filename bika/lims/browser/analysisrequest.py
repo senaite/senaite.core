@@ -27,6 +27,7 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.i18n.locales import locales
 from zope.interface import implements, alsoProvides
+from magnitude import mg
 import App
 import json
 import plone
@@ -232,6 +233,15 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                                    self.context.absolute_url())
             self.request.response.redirect(self.destination_url)
             return
+
+        elif action == "receive":
+            # default bika_listing.py/WorkflowAction, but then
+            # print automatic labels.
+            if 'receive' in self.context.bika_setup.getAutoPrintLabels():
+                size = self.context.bika_setup.getAutoLabelSize()
+                q = "/sticker?size=%s&items=%s" % (size, self.context.getId())
+                self.destination_url = self.context.absolute_url() + q
+            WorkflowAction.__call__(self)
 
         ## submit
         elif action == 'submit' and self.request.form.has_key("Result"):
@@ -1528,9 +1538,21 @@ class ajaxAnalysisRequestSubmit():
             for p in parts:
                 _id = sample.invokeFactory('SamplePartition', id = 'tmp')
                 part = sample[_id]
-                container = p['container'] \
-                    and type(p['container']) in (tuple, list) \
-                    and p['container'][0] or p['container']
+                # Sort available containers by capacity and select the
+                # smallest one possible.
+                containers = [_p.getObject() for _p in bsc(UID=p['container'])]
+                if containers:
+                    containers.sort(lambda a,b:cmp(
+                        a.getCapacity() \
+                        and mg(float(a.getCapacity().split(" ", 1)[0]), a.getCapacity().split(" ", 1)[1]) \
+                        or mg(0, 'ml'),
+                        b.getCapacity() \
+                        and mg(float(b.getCapacity().split(" ", 1)[0]), b.getCapacity().split(" ", 1)[1]) \
+                        or mg(0, 'ml')
+                    ))
+                    container = containers[0]
+                else:
+                    container = None
                 part.edit(
                     Container = container,
                     Preservation = p['preservation'],
@@ -1639,6 +1661,8 @@ class AnalysisRequestsView(BikaListingView):
 
     def __init__(self, context, request):
         super(AnalysisRequestsView, self).__init__(context, request)
+
+        request.set('disable_plone.rightcolumn', 1)
 
         self.catalog = "bika_catalog"
         self.contentFilter = {'portal_type':'AnalysisRequest',

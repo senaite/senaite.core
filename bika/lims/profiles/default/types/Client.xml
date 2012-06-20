@@ -87,7 +87,7 @@
   <permission value="BIKA: Manage ARImport"/>
  </action>
 
- <action title="Profiles"
+ <action title="Analysis Profiles"
          action_id="profiles"
          category="object"
          condition_expr=""
@@ -99,7 +99,7 @@
   <permission value="BIKA: Manage Clients"/>
  </action>
 
- <action title="Templates"
+ <action title="AR Templates"
          action_id="templates"
          category="object"
          condition_expr=""

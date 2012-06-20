@@ -214,7 +214,7 @@ schema = BikaFolderSchema.copy() + Schema((
                             "in the sample types setup"),
         )
     ),
-    LinesField('AutoPrintLabels',
+    StringField('AutoPrintLabels',
         schemata = "Labels",
         vocabulary = LABEL_AUTO_OPTIONS,
         widget = SelectionWidget(
@@ -225,7 +225,7 @@ schema = BikaFolderSchema.copy() + Schema((
                             "when ARs or Samples are received. Select 'None' to disable automatic printing"),
         )
     ),
-    LinesField('AutoLabelSize',
+    StringField('AutoLabelSize',
         schemata = "Labels",
         vocabulary = LABEL_AUTO_SIZES,
         widget = SelectionWidget(

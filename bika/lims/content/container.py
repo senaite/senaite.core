@@ -8,7 +8,6 @@ from bika.lims.content.bikaschema import BikaSchema
 from magnitude import mg, MagnitudeError
 import sys
 
-
 schema = BikaSchema.copy() + Schema((
     ReferenceField('ContainerType',
         required = 0,
@@ -79,11 +78,11 @@ class Container(BaseContent):
             mgdefault = mg(0, 'ml')
         try:
             return str(mgdefault.ounit('ml'))
-        except MagnitudeError:
+        except:
             pass
         try:
             return str(mgdefault.ounit('g'))
-        except MagnitudeError:
+        except:
             pass
         return str(default)
 

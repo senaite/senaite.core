@@ -5,6 +5,190 @@ window.jsi18n_bika = jarn.i18n.MessageFactory('bika');
 jarn.i18n.loadCatalog('plone');
 window.jsi18n_plone = jarn.i18n.MessageFactory('plone');
 
+function portalMessage(message) {
+	str = "<dl class='portalMessage error'>"+
+		"<dt>"+window.jsi18n_bika('Error')+"</dt>"+
+		"<dd><ul>" + window.jsi18n_bika(message) +
+		"</ul></dd></dl>";
+	$('.portalMessage').remove();
+	$(str).appendTo('#viewlet-above-content');
+}
+
+function calculate_partitions(service_uids, st_uid, st_minvol){
+	parts = [];
+
+	// loop through each selected service, assigning or creating
+	// partitions as we go.
+//	console.log(service_uids);
+	for(si=0;si<service_uids.length;si++){
+		service_uid = service_uids[si];
+//		console.log("-----");
+//		console.log("service_uid: "+ service_uid);
+
+		service_data = window.bika_utils.data.services[service_uid];
+		if (service_data == undefined || service_data == null){
+			service_data = {'Separate':false,
+			                'Container':[],
+							'Preservation':[],
+							'PartitionSetup':[],
+							'backrefs':[],
+							'deps':{}}
+//			console.log("service_data undefined, create new: "+service_data.toSource());
+		}
+
+		// discover if a specific part_setup exists for this
+		// sample_type and service_uid
+		part_setup = '';
+		$.each(service_data['PartitionSetup'],
+			function(x, ps){
+				if(ps['sampletype'] == st_uid){
+					part_setup = ps;
+					return false;
+				}
+			}
+		);
+		if (part_setup != '') {
+//			console.log("part_setup found: "+part_setup.toSource());
+			// if it does, we use it instead of defaults.
+			separate = part_setup['separate'];
+			container = part_setup['container'];
+			preservation = part_setup['preservation'];
+			minvol = parseFloat(part_setup['vol'].split(" ")[0]);
+		} else {
+//			console.log("part_setup not found, using service_data " + service_data.toSource());
+			// Otherwise grab service/sampletype defaults
+			separate = service_data['Separate'];
+			container = service_data['Container'];
+			preservation = service_data['Preservation'];
+			minvol = st_minvol;
+		}
+
+		if (separate) {
+			// create a separate partition for this analysis.
+			// partition container and preservation remain plural.
+			part = {'services': [service_uid],
+					'separate': true,
+					'container': container,
+					'preservation': preservation,
+					'volume': minvol
+					};
+//			console.log("partition must be separate.  created part: " + part.toSource())
+			parts.push(part);
+
+		} else {
+
+			// So now we either need to find an existing partition
+			// which permits us to add this analysis to it, or
+			// create a new one.
+//			console.log("searching for a partition")
+			found_part = '';
+
+			// convert container types to containers
+			new_container = [];
+			for(ci=0;ci<container.length;ci++){
+				cc = window.bika_utils.data.containers[container[ci]];
+				if(cc == undefined || cc == null){
+					// cc is a container type.  add matching containers
+					$.each(window.bika_utils.data.containers, function(ii,vv){
+						if(container[ci] == vv['containertype']){
+							new_container.push(vv['uid']);
+						}
+					});
+				} else {
+					new_container.push(cc['uid']);
+				}
+			}
+			container = new_container;
+
+			for(x=0; x<parts.length;x++){
+				part = parts[x];
+
+				// make sure this partition isn't flagged as separate
+				if (part['separate']) {
+					continue;
+				}
+
+				// if no container info is provided by either the
+				// partition OR the service, this partition is available
+				var c_intersection = [];
+				if (part['container'].length > 0 || container.length > 0) {
+					// check our containers against this partition's
+					c_intersection = $.grep(container, function(c, y){
+						return part['container'].indexOf(c) > -1;
+					});
+					if (c_intersection.length == 0){
+//						console.log("No match intersecting containers " + container + " -AND- " + part['container']);
+						// no match
+						continue;
+					}
+				} else {
+//				    console.log("Not intersecting containers");
+				}
+
+				// if no preservation info is provided by either the
+				// partition OR the service, this partition is available
+				var p_intersection = [];
+				if (part['preservation'].length > 0 || preservation.length > 0) {
+					// check our preservation against this partition's
+					p_intersection = $.grep(preservation, function(p, y){
+						return part['preservation'].indexOf(p) > -1;
+					});
+					if (p_intersection.length == 0){
+//						console.log("No match intersecting preservations " + preservation + " -AND- " + part['preservation']);
+						// no match
+						continue;
+					}
+				} else {
+//				    console.log("Not intersecting preservations");
+				}
+
+				// filter containers on capacity.
+				if (part_setup != ''){
+					newvol = parts[x]['volume'] + minvol;
+					if (c_intersection.length > 0) {
+						cc_intersection = $.grep(c_intersection, function(c, y){
+							cc = window.bika_utils.data.containers[c];
+							cc_cap = parseFloat(cc['capacity'].split(" ")[0]);
+							return cc_cap > newvol;
+						});
+						if (cc_intersection.length == 0){
+	//						console.log("No large enough container for " + newvol);
+							// no match
+							continue;
+						}
+						c_intersection = cc_intersection;
+						parts[x]['volume'] = newvol;
+					} else {
+	//				    console.log("Not intersecting container volumes");
+					}
+				}
+
+				// all the conditions passed:
+				found_part = x;
+//				console.log("Found a partition: " + x + ", " + parts[x].toSource());
+				parts[x]['services'].push(service_uid);
+				parts[x]['container'] = c_intersection;
+				parts[x]['preservation'] = p_intersection;
+//				console.log("Modified partition: " + x + ", " + parts[x].toSource());
+				break;
+			}
+
+			if (found_part === ''){
+				// No home found - make a new part for this analysis
+				part = {'services': [service_uid],
+						'separate': false,
+						'container': container,
+						'preservation': preservation,
+						'volume': minvol
+						};
+//				console.log("No partition found, created new:" + part.toSource());
+				parts.push(part);
+			}
+		}
+	}
+	return parts;
+}
+
 var bika_utils = bika_utils || {
 
 	init: function () {
@@ -23,19 +207,16 @@ var bika_utils = bika_utils || {
 					bika_utils.data = data;
 				});
 			} else {
-				bika_utils.data = $.parseJSON(bika_utils.storage['bika_browserdata']);
+				data = $.parseJSON(bika_utils.storage['bika_browserdata']);
+				bika_utils.data = data
 			}
 		});
 	},
 
-	portalMessage: function(message) {
-		str = "<dl class='portalMessage error'>"+
-			"<dt>"+window.jsi18n_bika('Error')+"</dt>"+
-			"<dd><ul>" + window.jsi18n_bika(message) +
-			"</ul></dd></dl>";
-		$('.portalMessage').remove();
-		$(str).appendTo('#viewlet-above-content');
-	}
+	portalMessage: portalMessage,
+
+	calculate_partitions: calculate_partitions
+
 }
 
 bika_utils.init();

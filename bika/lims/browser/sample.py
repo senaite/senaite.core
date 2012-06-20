@@ -528,6 +528,9 @@ class SamplesView(BikaListingView):
 
     def __init__(self, context, request):
         super(SamplesView, self).__init__(context, request)
+
+        request.set('disable_plone.rightcolumn', 1)
+
         self.catalog = 'bika_catalog'
         self.contentFilter = {'portal_type': 'Sample',
                               'sort_on':'created',
