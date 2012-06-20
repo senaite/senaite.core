@@ -1,7 +1,8 @@
 (function( $ ) {
 $(document).ready(function(){
 
-	_ = window.jsi18n;
+	_ = window.jsi18n_bika;
+	PMF = window.jsi18n_plone;
 
 	function setoddeven(){
 		// set alternating odd and even classes if table has setoddeven class
@@ -12,15 +13,6 @@ $(document).ready(function(){
 				$(tr).addClass('odd');
 			}
 		});
-	}
-
-	function portalMessage(message){
-		str = "<dl class='portalMessage error'>"+
-			"<dt>"+_("error")+"</dt>"+
-			"<dd><ul>" + message +
-			"</ul></dd></dl>";
-		$('.portalMessage').remove();
-		$(str).appendTo('#viewlet-above-content');
 	}
 
 	setoddeven();

@@ -1,7 +1,8 @@
 jQuery( function($) {
 $(document).ready(function(){
 
-	_ = window.jsi18n;
+	_ = window.jsi18n_bika;
+	PMF = window.jsi18n_plone;
 
 	$("#analysestotals_selector").click(function(event){
 		$(".criteria").toggle(false);

@@ -15,7 +15,7 @@ workflow = context.portal_workflow
 if workflow.getInfoFor(context, 'cancellation_state', "active") == "cancelled":
     return False
 
-# A sample can't be "preserved" until all it's partitions are sample_due
+# A sample can't be preserved until all it's partitions are sample_due
 # ie, sampling and/or preservation completed.
 ## Now we permit this, and do it manually in the ClientWorkflowAction handler
 ##if [sp for sp in context.objectValues("SamplePartition")

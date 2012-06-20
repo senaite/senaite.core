@@ -10,7 +10,7 @@ function autocomplete_samplepoint(request,callback){
 		}
 	);
 	function set_sp(e){
-  		sp = window.bsc.data.sp_uids[$(e).val()];
+  		sp = window.bika_utils.data.sp_uids[$(e).val()];
   		if (sp != undefined && sp != null){
   			if (sp['sampletypes'].length == 1){
   				$("#SampleType").val(sp['sampletypes'][0]);
@@ -26,7 +26,7 @@ function autocomplete_samplepoint(request,callback){
 	});
 	$("#SamplePoint").blur(function(){
 		set_sp(this);
-	});    
+	});
 }
 
 function autocomplete_sampletype(request,callback){
@@ -40,7 +40,7 @@ function autocomplete_sampletype(request,callback){
 	);
 
   	function set_st(e){
-  		st = window.bsc.data.st_uids[$(e).val()];
+  		st = window.bika_utils.data.st_uids[$(e).val()];
   		if (st != undefined && st != null){
 			if (st['samplepoints'].length == 1){
 					$("#SamplePoint").val(st['samplepoints'][0]);
@@ -60,19 +60,10 @@ function autocomplete_sampletype(request,callback){
   	});
 }
 
-function portalMessage(message){
-	str = "<dl class='portalMessage error'>"+
-		"<dt>"+window.jsi18n("Error")+"</dt>"+
-		"<dd><ul>" + window.jsi18n(message) +
-		"</ul></dd></dl>";
-	$('.portalMessage').remove();
-	$(str).appendTo('#viewlet-above-content');
-}
-
 function clickSaveButton(event){
 	selected_analyses = $('[name^="uids\\:list"]').filter(':checked');
 	if(selected_analyses.length < 1){
-		portalMessage("No analyses have been selected");
+		window.bika_utils.portalMessage("No analyses have been selected");
 		window.scroll(0, 0);
 		return false;
 	}
@@ -80,7 +71,8 @@ function clickSaveButton(event){
 
 $(document).ready(function(){
 
-	_ = window.jsi18n;
+	_ = window.jsi18n_bika;
+	PMF = window.jsi18n_plone;
 
 	$("#SampleType").autocomplete({ minLength: 0, source: autocomplete_sampletype});
 	$("#SamplePoint").autocomplete({ minLength: 0, source: autocomplete_samplepoint});

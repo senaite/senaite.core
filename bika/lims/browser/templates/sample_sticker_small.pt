@@ -18,9 +18,7 @@
         table {
             border-collapse:collapse;
             margin: 1px 1px 1px 1px;
-            font-size: 5pt;
-            height:1cm;
-            width:7cm;
+            font-size: 6pt;
         }
         td {
             border: none;
@@ -65,18 +63,19 @@
 
 <script
     type='text/javascript'
-    tal:content="python:'$(\'#barcode_%s\').barcode(\'%s\', \'code39\', {\'barHeight\':15, addQuietZone:false, showHRI: false })'%(barcode_str,barcode_str)">
+    tal:content="python:'$(\'#barcode_%s\').barcode(\'%s\', \'code39\', {\'barHeight\':12, addQuietZone:true, showHRI: false })'%(barcode_str,barcode_str)">
 </script>
 
 <tr>
     <td tal:content="SampleType"/>
-    <td tal:content="Preservation"/>
+    <td style="text-align:center" tal:content="Preservation"/>
     <td tal:content="SamplePoint"/>
 </tr>
 
 <tr>
-    <td tal:content="SamplingDate"/>
-    <td tal:content="Sampler" colspan="2"/>
+    <td i18n:translate="">Sampling Date</td>
+    <td style="text-align:center" tal:content="SamplingDate"/>
+    <td tal:content="Sampler"/>
 </tr>
 
 </table>

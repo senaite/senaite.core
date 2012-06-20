@@ -61,10 +61,10 @@ function calcdependencies(elements, auto_yes) {
 	if(auto_yes == undefined){ auto_yes = false ; }
 
 	service_uid = $(element).attr('id').split("_cb_")[1];
-	service_data = window.bsc.data.services[service_uid];
+	service_data = window.bika_utils.data.services[service_uid];
 
 	if (service_data == undefined || service_data == null){
-		// if service_uid is not in bsc.services, there are no deps.
+		// if service_uid is not in bika_utils.data.services, there are no deps.
 		return;
 	}
 	var deps = service_data['deps'];
@@ -257,12 +257,19 @@ function calculate_parts(){
 
 	// get SampleType
 	st_title = $("#SampleType").val();
-	st_uid = window.bsc.data.st_uids[st_title];
+	st_uid = window.bika_utils.data.st_uids[st_title];
 	if (st_uid != undefined && st_uid != null){
-		st_uid = st_uid['uid'];
+		st_minvol = sampletype['minvol'].split(" ")[0];
+		if(st_minvol.length == 0){
+			st_minvol = 0;
+		} else {
+			st_minvol = parseFloat(st_minvol, 10);
+		}
 	} else {
 		st_uid = '';
+		st_minvol = 0;
 	}
+
 
 	// get selected services
 	selected = $('[name$="uids\\:list"]').filter(':checked');
@@ -282,7 +289,7 @@ function calculate_parts(){
 //		console.log("-----");
 //		console.log("service_uid: "+ service_uid);
 
-		service_data = window.bsc.data.services[service_uid];
+		service_data = window.bika_utils.data.services[service_uid];
 		if (service_data == undefined || service_data == null){
 			service_data = {'Separate':false,
 			                'Container':[],
@@ -343,10 +350,10 @@ function calculate_parts(){
 			// convert container types to containers
 			new_container = [];
 			for(ci=0;ci<container.length;ci++){
-				cc = window.bsc.data.containers[container[ci]];
+				cc = window.bika_utils.data.containers[container[ci]];
 				if(cc == undefined || cc == null){
 					// cc is a container type.  add matching containers
-					$.each(window.bsc.data.containers, function(ii,vv){
+					$.each(window.bika_utils.data.containers, function(ii,vv){
 						if(container[ci] == vv['containertype']){
 							new_container.push(vv['uid']);
 						}
@@ -405,7 +412,7 @@ function calculate_parts(){
 					newvol = parts[x]['volume'] + minvol;
 					if (c_intersection.length > 0) {
 						cc_intersection = $.grep(c_intersection, function(c, y){
-							cc = window.bsc.data.containers[c];
+							cc = window.bika_utils.data.containers[c];
 							cc_cap = parseFloat(cc['capacity'].split(" ")[0]);
 							return cc_cap > newvol;
 						});
@@ -492,18 +499,18 @@ function setARProfile(){
 		   && parts[0]['container'] != null){
 			container = parts[0]['container'][0];
 
-			// if container is defined, but not in bsc, then it's a container type.
-			// XXX resolving partition container type->container: what are the rules?
-			if (!(container in window.bsc.data['containers'])){
-				for(c in window.bsc.data['containers']){
-					c_obj = window.bsc.data['containers'][c];
+			// if container is defined, but not in bika_utils.data, then it's
+			// a container type.
+			if (!(container in window.bika_utils.data['containers'])){
+				for(c in window.bika_utils.data['containers']){
+					c_obj = window.bika_utils.data['containers'][c];
 					if(c_obj['containertype'] == container){
 						container = c_obj['uid'];
 						break
 					}
 				}
 			}
-			if (!(container in window.bsc.data['containers'])){
+			if (!(container in window.bika_utils.data['containers'])){
 				// no match
 				container = '';
 			}
@@ -549,7 +556,8 @@ function click_uid_checkbox(){
 }
 
 $(document).ready(function(){
-	_ = window.jsi18n;
+	_ = window.jsi18n_bika;
+	PMF = window.jsi18n_plone;
 
 	$("[name='uids:list']").live('click', click_uid_checkbox);
 

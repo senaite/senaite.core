@@ -334,14 +334,14 @@ def changeWorkflowState(content, state_id, acquire_permissions=False,
     content.reindexObject(idxs=['allowedRolesAndUsers', 'review_state'])
     return
 
-class bsc_counter(BrowserView):
+class bika_bsc_counter(BrowserView):
     def __call__(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         return bsc.getCounter()
 
-class bsc_browserdata(BrowserView):
+class bika_browserdata(BrowserView):
     """Returns information about services from bika_setup_catalog.
-    This view is called from ./js/bika.js and it's output is cached
+    This view is called from ./js/utils.js and it's output is cached
     in browser localStorage.
     """
     def __call__(self):

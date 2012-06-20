@@ -1,33 +1,45 @@
 (function( $ ) {
 
-var bsc = bsc || {
+jarn.i18n.loadCatalog('bika');
+window.jsi18n_bika = jarn.i18n.MessageFactory('bika');
+jarn.i18n.loadCatalog('plone');
+window.jsi18n_plone = jarn.i18n.MessageFactory('plone');
+
+var bika_utils = bika_utils || {
+
 	init: function () {
 		if ('localStorage' in window && window.localStorage !== null) {
-			bsc.storage = localStorage;
+			bika_utils.storage = localStorage;
 		} else {
-			bsc.storage = {};
+			bika_utils.storage = {};
 		}
 		t = new Date().getTime();
-		stored_counter = bsc.storage['bsc_counter'];
-		$.getJSON(portal_url+'/bsc_counter?'+t, function(counter) {
+		stored_counter = bika_utils.storage['bika_bsc_counter'];
+		$.getJSON(portal_url+'/bika_bsc_counter?'+t, function(counter) {
 			if (counter != stored_counter){
-				$.getJSON(portal_url+'/bsc_browserdata?'+t, function(data){
-					bsc.storage['bsc_counter'] = counter;
-					bsc.storage['bsc_browserdata'] = $.toJSON(data);
-					bsc.data = data;
+				$.getJSON(portal_url+'/bika_browserdata?'+t, function(data){
+					bika_utils.storage['bika_bsc_counter'] = counter;
+					bika_utils.storage['bika_browserdata'] = $.toJSON(data);
+					bika_utils.data = data;
 				});
 			} else {
-				bsc.data = $.parseJSON(bsc.storage['bsc_browserdata']);
+				bika_utils.data = $.parseJSON(bika_utils.storage['bika_browserdata']);
 			}
 		});
-	}
-};
-bsc.init();
-window.bsc = bsc;
+	},
 
-jarn.i18n.loadCatalog('bika');
-jarn.i18n.setTTL(3600000); // 1 hour refresh
-window.jsi18n = jarn.i18n.MessageFactory('bika');
+	portalMessage: function(message) {
+		str = "<dl class='portalMessage error'>"+
+			"<dt>"+window.jsi18n_bika('Error')+"</dt>"+
+			"<dd><ul>" + window.jsi18n_bika(message) +
+			"</ul></dd></dl>";
+		$('.portalMessage').remove();
+		$(str).appendTo('#viewlet-above-content');
+	}
+}
+
+bika_utils.init();
+window.bika_utils = bika_utils;
 
 function enableAddAttachment(this_field) {
 	// XX move this to worksheet or AR or wherever it actually belongs
@@ -56,7 +68,8 @@ function enableAddAttachment(this_field) {
 
 $(document).ready(function(){
 
-	_ = window.jsi18n;
+	_ = window.jsi18n_bika;
+	PMF = window.jsi18n_plone;
 
 	$('input.datepicker').live('click', function() {
 		$(this).datepicker({

@@ -53,19 +53,19 @@
     />
 
   <!-- Some data from bika_setup_catalog gets cached temporarily in the browser.
-       bsc_counter checks if the catalog has been updated. if so,
-       bsc_browserdata returns the required data to the browser. -->
+       bika_bsc_counter checks if the catalog has been updated. if so,
+       bika_browserdata returns the required data to the browser. -->
   <browser:page
       for="*"
-      name="bsc_counter"
-      class="bika.lims.utils.bsc_counter"
+      name="bika_bsc_counter"
+      class="bika.lims.utils.bika_bsc_counter"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
   <browser:page
       for="*"
-      name="bsc_browserdata"
-      class="bika.lims.utils.bsc_browserdata"
+      name="bika_browserdata"
+      class="bika.lims.utils.bika_browserdata"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

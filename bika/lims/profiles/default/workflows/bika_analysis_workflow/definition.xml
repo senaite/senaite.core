@@ -46,7 +46,7 @@
 </state>
 
 <state state_id="to_be_preserved" title="To Be Preserved" i18n:attributes="title">
-    <exit-transition transition_id="preserved"/>
+    <exit-transition transition_id="preserve"/>
     <permission-map name="BIKA: Edit Results" acquired="False">
     </permission-map>
     <permission-map name="BIKA: Edit Field Results" acquired="False">

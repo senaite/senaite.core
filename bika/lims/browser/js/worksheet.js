@@ -1,16 +1,8 @@
 (function( $ ) {
 $(document).ready(function(){
 
-	_ = window.jsi18n;
-
-	function portalMessage(message){
-		str = "<dl class='portalMessage error'>"+
-			"<dt>"+_("error")+"</dt>"+
-			"<dd><ul>" + message +
-			"</ul></dd></dl>";
-		$('.portalMessage').remove();
-		$(str).appendTo('#viewlet-above-content');
-	}
+	_ = window.jsi18n_bika;
+	PMF = window.jsi18n_plone;
 
 	// selecting a template might pre-select the instrument
 	$(".template").change(function(){

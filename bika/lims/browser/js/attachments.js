@@ -1,7 +1,8 @@
 (function( $ ) {
 $(document).ready(function(){
 
-	_ = window.jsi18n;
+	_ = window.jsi18n_bika;
+	PMF = window.jsi18n_plone;
 
 	// Worksheets need to check these before enabling Add button
     $("#AttachFile,#Service,#Analysis").change(function(event){

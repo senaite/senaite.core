@@ -1,7 +1,8 @@
 (function( $ ) {
 $(document).ready(function(){
 
-	_ = window.jsi18n;
+	_ = window.jsi18n_bika;
+	PMF = window.jsi18n_plone;
 
 	// Confirm before resetting client specs to default lab specs
     $("a[href*=set_to_lab_defaults]").click(function(event){

@@ -24,7 +24,8 @@ function updateContainers(target,requestdata){
 
 $(document).ready(function(){
 
-	_ = window.jsi18n;
+	_ = window.jsi18n_bika;
+	PMF = window.jsi18n_plone;
 
 	// service defaults
 	// update defalt Containers
@@ -62,14 +63,14 @@ $(document).ready(function(){
 
 	// copy sampletype MinimumVolume to minvol when selecting sampletype
 	$("[name^='PartitionSetup.sampletype']").change(function(){
-		// get volume from bsc
+		// get sampletype volume from bika_utils
 		option = $(this).children().filter(":selected");
 		if(!option || $(option).val() == '' || option.length == 0){
 			return;
 		}
 		option = option[0];
 		title = $(option).text();
-		minvol = window.bsc.data['st_uids'][title]['minvol'];
+		minvol = window.bika_utils.data['st_uids'][title]['minvol'];
 		// put value in minvol field
 		target = $(this).parents("tr").find("[name^='PartitionSetup.vol']");
 		$(target).val(minvol);
@@ -97,8 +98,8 @@ $(document).ready(function(){
 				return;
 			}
 		}
-		preservations = window.bsc.data.preservations;
-		containers = window.bsc.data.containers;
+		preservations = window.bika_utils.data.preservations;
+		containers = window.bika_utils.data.containers;
 		selection = $(this).val();
 		if(selection == null || selection == undefined || selection.length == 0) {
 			$(target).removeAttr('disabled');

@@ -56,10 +56,10 @@ function calcdependencies(elements, auto_yes) {
 	if(auto_yes == undefined){ auto_yes = false ; }
 
 	service_uid = $(element).attr('id').split("_cb_")[1];
-	service_data = window.bsc.data.services[service_uid];
+	service_data = window.bika_utils.data.services[service_uid];
 
 	if (service_data == undefined || service_data == null){
-		// if service_uid is not in bsc.services, there are no deps.
+		// if service_uid is not in bika_utils.data.services, there are no deps.
 		return;
 	}
 	var deps = service_data['deps'];
@@ -196,17 +196,9 @@ function calcdependencies(elements, auto_yes) {
 	}
 }
 
-function portalMessage(message){
-	str = "<dl class='portalMessage error'>"+
-		"<dt>Error</dt>"+
-		"<dd><ul>" + message +
-		"</ul></dd></dl>";
-	$('.portalMessage').remove();
-	$(str).appendTo('#viewlet-above-content');
-}
-
 $(document).ready(function(){
-	_ = window.jsi18n;
+	_ = window.jsi18n_bika;
+	PMF = window.jsi18n_plone;
 
 	////////////////////////////////////////
 	// disable checkboxes for eg verified analyses.

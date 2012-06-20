@@ -1,14 +1,5 @@
 (function( $ ) {
 
-function portalMessage(message){
-	str = "<dl class='portalMessage error'>"+
-		"<dt>"+window.jsi18n('Error')+"</dt>"+
-		"<dd><ul>" + window.jsi18n(message) +
-		"</ul></dd></dl>";
-	$('.portalMessage').remove();
-	$(str).appendTo('#viewlet-above-content');
-}
-
 function recalc_prices(column){
 	if(column){
 		// recalculate just this column
@@ -244,9 +235,9 @@ function calcdependencies(elements, auto_yes) {
 	}
 
 	service_uid = $(element).attr('id');
-	service_data = window.bsc.data.services[service_uid];
+	service_data = window.bika_utils.data.services[service_uid];
 	if (service_data == undefined || service_data == null){
-		// if service_uid is not in bsc.services, there are no deps.
+		// if service_uid is not in bika_utils.data.services, there are no deps.
 		return;
 	}
 	deps = service_data['deps'];
@@ -436,7 +427,7 @@ function calculate_parts(column){
 
 	// gather up SampleType UID
 	var st_title = $("#ar_"+column+"_SampleType").val();
-	sampletype = window.bsc.data.st_uids[st_title];
+	sampletype = window.bika_utils.data.st_uids[st_title];
 	if (sampletype != undefined && sampletype != null){
 		st_uid = sampletype['uid'];
 		st_minvol = sampletype['minvol'].split(" ")[0];
@@ -495,7 +486,7 @@ function calculate_parts(column){
 //		console.log("-----");
 //		console.log("service_uid: "+ service_uid);
 
-		service_data = window.bsc.data.services[service_uid];
+		service_data = window.bika_utils.data.services[service_uid];
 		if (service_data == undefined || service_data == null){
 			service_data = {'Separate':false,
 			                'Container':[],
@@ -556,10 +547,10 @@ function calculate_parts(column){
 			// convert container types to containers
 			new_container = [];
 			for(ci=0;ci<container.length;ci++){
-				cc = window.bsc.data.containers[container[ci]];
+				cc = window.bika_utils.data.containers[container[ci]];
 				if(cc == undefined || cc == null){
 					// cc is a container type.  add matching containers
-					$.each(window.bsc.data.containers, function(ii,vv){
+					$.each(window.bika_utils.data.containers, function(ii,vv){
 						if(container[ci] == vv['containertype']){
 							new_container.push(vv['uid']);
 						}
@@ -618,7 +609,7 @@ function calculate_parts(column){
 					newvol = parts[x]['volume'] + minvol;
 					if (c_intersection.length > 0) {
 						cc_intersection = $.grep(c_intersection, function(c, y){
-							cc = window.bsc.data.containers[c];
+							cc = window.bika_utils.data.containers[c];
 							cc_cap = parseFloat(cc['capacity'].split(" ")[0]);
 							return cc_cap > newvol;
 						});
@@ -672,6 +663,19 @@ function calculate_parts(column){
 		});
 	});
 
+}
+
+function uncheck_partnrs(column){
+	// all unchecked services have their part numbers removed
+	ep = $("[class^='partnr_']").filter("[column="+column+"]").not(":empty");
+	for(i=0;i<ep.length;i++){
+		em = ep[i];
+		uid = $(ep[0]).attr('class').split("_")[1]
+		cb = $("#"+uid);
+		if ( ! $(cb).attr('checked') ){
+			$(em).empty();
+		}
+	}
 }
 
 function unsetARTemplate(column){
@@ -872,24 +876,40 @@ function setupAutoCompleters(){
 
 	function set_st(e){
 		col = e.id.split("_")[1];
-		unsetARTemplate(col);
-		st = window.bsc.data.st_uids[$(e).val()];
-		if (st != undefined && st != null){
-			if (st['samplepoints'].length == 1){
+		st_uids = window.bika_utils.data.st_uids;
+		match = false;
+		$.each(st_uids, function(title, obj){
+			if (match != false) { return; }
+			if (title.toLowerCase() == $(e).val().toLowerCase()){
+				$(e).val(title);
+				unsetARTemplate(col);
+				st = window.bika_utils.data.st_uids[title];
+				if (st['samplepoints'].length == 1) {
 					$("#ar_"+col+"_SamplePoint").val(st['samplepoints'][0]);
+				}
+				match = true;
 			}
-		}
+		});
 	}
+
 	function set_sp(e){
 		col = e.id.split("_")[1];
-		unsetARTemplate(col);
-		sp = window.bsc.data.sp_uids[$(e).val()];
-		if (sp != undefined && sp != null){
-			$("#ar_"+col+"_Composite").attr("checked", sp['composite']);
-			if (sp['sampletypes'].length == 1){
-				$("#ar_"+col+"_SampleType").val(sp['sampletypes'][0]);
+		sp_uids = window.bika_utils.data.sp_uids;
+		match = false;
+		$.each(sp_uids, function(title, obj){
+			if (match != false) { return; }
+			if (title.toLowerCase() == $(e).val().toLowerCase()){
+				$(e).val(title);
+				unsetARTemplate(col);
+				sp = window.bika_utils.data.sp_uids[title];
+				if (sp['sampletypes'].length == 1) {
+					$("#ar_"+col+"_SampleType").val(sp['sampletypes'][0]);
+					calculate_parts(col);
+				}
+				$("#ar_"+col+"_Composite").attr("checked", sp['composite']);
+				match = true;
 			}
-		}
+		});
 	}
 
 	$(".sampletype").focus(function(){
@@ -905,21 +925,11 @@ function setupAutoCompleters(){
 		//console.log('st blur ' + $(this).val());
 		column = this.id.split("_")[1];
 		st_title = $("#ar_"+column+"_SampleType").val();
-		st_uid = window.bsc.data.st_uids[st_title];
+		st_uid = window.bika_utils.data.st_uids[st_title];
 		if (st_uid != undefined && st_uid != null){
-			calculate_parts(column);
 			set_st(this);
 		} else {
-			// all unchecked services have their part numbers removed
-			ep = $("[class^='partnr_']").filter("[column="+column+"]").not(":empty");
-			for(i=0;i<ep.length;i++){
-				em = ep[i];
-				uid = $(ep[0]).attr('class').split("_")[1]
-				cb = $("#"+uid);
-				if ( ! $(cb).attr('checked') ){
-					$(em).empty();
-				}
-			}
+			uncheck_partnrs(column);
 			$(this).val('');
 			return;
 		}
@@ -953,7 +963,8 @@ function clickAnalysisCategory(){
 
 $(document).ready(function(){
 
-	_ = window.jsi18n;
+	_ = window.jsi18n_bika;
+	PMF = window.jsi18n_plone;
 
 	// Sampling Date field is readonly to prevent invalid data entry, so
 	// clicking SamplingDate field clears existing values.
@@ -1038,13 +1049,13 @@ $(document).ready(function(){
 						}
 						msg = msg + e + responseText['errors'][error] + "<br/>";
 					};
-					portalMessage(msg);
+					window.bika_utils.portalMessage(msg);
 					window.scroll(0,0);
 					$("input[class~='context']").removeAttr('disabled');
 				}
 			},
 			error: function(XMLHttpRequest, statusText, errorThrown) {
-				portalMessage(statusText);
+				window.bika_utils.portalMessage(statusText);
 				window.scroll(0,0);
 				$("input[class~='context']").removeAttr('disabled');
 			},

@@ -6,20 +6,21 @@ from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import EditSample
 from bika.lims import PMF
-from bika.lims.utils import changeWorkflowState
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.permissions import *
 from bika.lims.utils import TimeOrDate
+from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
 from bika.lims.utils import pretty_user_name_or_id
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
-import plone
 import json
+import plone
+import urllib
 
 class SamplePartitionsView(BikaListingView):
     def __init__(self, context, request):
@@ -50,12 +51,12 @@ class SamplePartitionsView(BikaListingView):
                              'sortable':False},
             'getPreservation': {'title': _('Preservation'),
                                 'sortable':False},
-            'getSampler': {'title': _('Sampler'),
-                           'sortable':False},
-            'getDateSampled': {'title': _('Date Sampled'),
-                               'input_class': 'datepicker_nofuture',
-                               'input_width': '10',
-                               'sortable':False},
+##            'getSampler': {'title': _('Sampler'),
+##                           'sortable':False},
+##            'getDateSampled': {'title': _('Date Sampled'),
+##                               'input_class': 'datepicker_nofuture',
+##                               'input_width': '10',
+##                               'sortable':False},
             'getPreserver': {'title': _('Preserver'),
                              'sortable':False},
             'getDatePreserved': {'title': _('Date Preserved'),
@@ -75,12 +76,12 @@ class SamplePartitionsView(BikaListingView):
              'columns': ['PartTitle',
                          'getContainer',
                          'getPreservation',
-                         'getSampler',
-                         'getDateSampled',
+##                         'getSampler',
+##                         'getDateSampled',
                          'getPreserver',
                          'getDatePreserved',
                          'state_title'],
-             'transitions': [{'id': 'sample'},
+             'transitions': [ #{'id': 'sample'},
                              {'id': 'preserve'},
                              {'id': 'receive'},
                              {'id': 'cancel'},
@@ -142,12 +143,12 @@ class SamplePartitionsView(BikaListingView):
             else:
                 items[x]['getPreservation'] = preservation and preservation.Title() or ''
 
-            sampler = obj.getSampler().strip()
-            items[x]['getSampler'] = \
-                sampler and pretty_user_name_or_id(self.context, sampler) or ''
-            datesampled = obj.getDateSampled()
-            items[x]['getDateSampled'] = \
-                datesampled and TimeOrDate(self.context, datesampled) or ''
+##            sampler = obj.getSampler().strip()
+##            items[x]['getSampler'] = \
+##                sampler and pretty_user_name_or_id(self.context, sampler) or ''
+##            datesampled = obj.getDateSampled()
+##            items[x]['getDateSampled'] = \
+##                datesampled and TimeOrDate(self.context, datesampled) or ''
 
             preserver = obj.getPreserver().strip()
             items[x]['getPreserver'] = \
@@ -168,23 +169,23 @@ class SamplePartitionsView(BikaListingView):
             items[x]['choices']['getContainer'] = containers
 
             # inline edits for Sampler and Date Sampled
-            checkPermission = self.context.portal_membership.checkPermission
-            if checkPermission(SampleSample, obj) \
-                and not samplingdate > DateTime():
-                items[x]['required'] += ['getSampler', 'getDateSampled']
-                items[x]['allow_edit'] += ['getSampler', 'getDateSampled']
-                samplers = getUsers(obj, ['Sampler', 'LabManager', 'Manager'])
-                getAuthenticatedMember = obj.portal_membership.getAuthenticatedMember
-                username = getAuthenticatedMember().getUserName()
-                users = [({'ResultValue': u, 'ResultText': samplers.getValue(u)})
-                         for u in samplers]
-                items[x]['choices']['getSampler'] = users
-                items[x]['getSampler'] = sampler and sampler or \
-                    (username in samplers.keys() and username) or ''
-                items[x]['getDateSampled'] = items[x]['getDateSampled'] \
-                    or DateTime().strftime(datepicker_format)
-                items[x]['class']['getSampler'] = 'provisional'
-                items[x]['class']['getDateSampled'] = 'provisional'
+##            checkPermission = self.context.portal_membership.checkPermission
+##            if checkPermission(SampleSample, obj) \
+##                and not samplingdate > DateTime():
+##                items[x]['required'] += ['getSampler', 'getDateSampled']
+##                items[x]['allow_edit'] += ['getSampler', 'getDateSampled']
+##                samplers = getUsers(obj, ['Sampler', 'LabManager', 'Manager'])
+##                getAuthenticatedMember = obj.portal_membership.getAuthenticatedMember
+##                username = getAuthenticatedMember().getUserName()
+##                users = [({'ResultValue': u, 'ResultText': samplers.getValue(u)})
+##                         for u in samplers]
+##                items[x]['choices']['getSampler'] = users
+##                items[x]['getSampler'] = sampler and sampler or \
+##                    (username in samplers.keys() and username) or ''
+##                items[x]['getDateSampled'] = items[x]['getDateSampled'] \
+##                    or DateTime().strftime(datepicker_format)
+##                items[x]['class']['getSampler'] = 'provisional'
+##                items[x]['class']['getDateSampled'] = 'provisional'
 
             # inline edits for Preserver and Date Preserved
             checkPermission = self.context.portal_membership.checkPermission
@@ -290,6 +291,7 @@ class SampleEdit(BrowserView):
         ars = self.context.getAnalysisRequests()
         props = getToolByName(self.context, 'portal_properties').bika_properties
         datepicker_format = props.getProperty('datepicker_format')
+        sample = self.context
 
         ## Create header_table data rows
         ar_links = ", ".join(
@@ -303,6 +305,10 @@ class SampleEdit(BrowserView):
             edit_states = ['to_be_sampled', 'to_be_preserved', 'sample_due']
             allow_sample_edit = checkPermission(ManageSamples, self.context) \
                 and workflow.getInfoFor(self.context, 'review_state') in edit_states
+
+        SamplingWorkflowEnabled =\
+            self.context.bika_setup.getSamplingWorkflowEnabled()
+        samplers = getUsers(sample, ['Sampler', 'LabManager', 'Manager'])
 
         self.header_columns = 3
         self.header_rows = [
@@ -364,6 +370,24 @@ class SampleEdit(BrowserView):
              'condition':True,
              'class': 'datepicker',
              'type': 'text'},
+            {'id': 'DateSampled',
+             'title': _('Date Sampled'),
+             'allow_edit': self.allow_edit and allow_sample_edit,
+             'value': sample.getDateSampled() and sample.getDateSampled().strftime(datepicker_format) or '',
+             'formatted_value': sample.getDateSampled() and TimeOrDate(self.context, sample.getDateSampled()) or '',
+             'condition':SamplingWorkflowEnabled,
+             'class': 'datepicker',
+             'type': 'text',
+             'required': True},
+            {'id': 'Sampler',
+             'title': _('Sampler'),
+             'allow_edit': self.allow_edit and allow_sample_edit,
+             'value': sample.getSampler(),
+             'formatted_value': sample.getSampler(),
+             'condition':SamplingWorkflowEnabled,
+             'vocabulary': samplers,
+             'type': 'choices',
+             'required': True},
             {'id': 'DateReceived',
              'title': _('Date Received'),
              'allow_edit': False,
@@ -399,15 +423,19 @@ class SampleEdit(BrowserView):
             self.header_buttons = []
 
         ## handle_header table submit
-        if 'save_button' in form:
+        if form.get('header_submitted', None):
+            plone.protect.CheckAuthenticator(form)
             message = None
             values = {}
             for row in [r for r in self.header_rows if r['allow_edit']]:
-                value = form.get(row['id'], '')
+                value = urllib.unquote_plus(form.get(row['id'], ''))
 
                 if row['id'] == 'SampleType':
                     if not value:
-                        message = _('Sample Type is required')
+                        message = PMF(
+                            u'error_required',
+                            default=u'${name} is required, please correct.',
+                            mapping={'name': _('Sample Type')})
                         break
                     if not bsc(portal_type = 'SampleType', title = value):
                         message = _("${sampletype} is not a valid sample type",
@@ -423,9 +451,10 @@ class SampleEdit(BrowserView):
 
                 values[row['id']] = value
 
-            # boolean - checkboxes are present, or not present in form.
+            # boolean - checkboxes are 'true' or 'false in form.
             for row in [r for r in self.header_rows if r.get('type', '') == 'boolean']:
-                values[row['id']] = row['id'] in form
+                value = form.get(row['id'], 'false')
+                values[row['id']] = value == 'true' and True or False
 
             if not message:
                 self.context.edit(**values)
@@ -435,9 +464,18 @@ class SampleEdit(BrowserView):
                     ar.reindexObject()
                 message = PMF("Changes saved.")
 
+            # If this sample was "To Be Sampled", and the
+            # Sampler and DateSampled fields were completed,
+            # do the Sampled transition.
+            if workflow.getInfoFor(sample, "review_state") == "to_be_sampled" \
+               and form.get("Sampler", None) \
+               and form.get("DateSampled", None):
+                workflow.doActionFor(sample, "sample")
+                sample.reindexObject()
+
             self.context.plone_utils.addPortalMessage(message, 'info')
-            # we need to start the request again, to regenerate header
-            self.request.RESPONSE.redirect(self.context.absolute_url())
+            url = self.context.absolute_url().split("?")[0]
+            self.request.RESPONSE.redirect(url)
             return
 
         ## Create Sample Partitions table
@@ -777,7 +815,7 @@ class SamplesView(BikaListingView):
                 items[x]['getSampler'] = Sampler
 
             # These don't exist on samples
-            # the columns exist just to set "preserved" from lists.
+            # the columns exist just to set "preserve" transition from lists.
             # XXX This should be a list of preservers...
             items[x]['getPreserver'] = ''
             items[x]['getDatePreserved'] = ''
