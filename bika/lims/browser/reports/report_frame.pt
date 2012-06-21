@@ -3,46 +3,67 @@
 	xmlns:metal="http://xml.zope.org/namespaces/metal"
 	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
     i18n:domain="bika"
-    tal:define="plone_view context/@@plone">
+    tal:define="plone_view context/@@plone;
+                portal_url nocall:context/portal_url">
 <body>
 <table>
     <tr>
         <td class="left">
-        </td>
-        <td align="right">
-            <img tal:attributes="src string:${context/absolute_url}/logo.png"/>
+            <img tal:attributes="src string:${portal_url}/logo.png"/>
             <br/>
-            <h3 tal:content="view/lab_title | nothing"/>
-            <tal:address tal:repeat="line view/address">
+            <span tal:content="view/client_title | nothing"/>
+            <tal:address tal:repeat="line view/client_address">
                 <span tal:content="structure line "/>
                 <br/>
             </tal:address>
-            <br/>
+        </td>
+        <td align="right">
+            <h3 tal:content="view/lab_title | nothing"/>
+            <tal:address tal:repeat="line view/lab_address">
+                <span tal:content="structure line "/>
+                <br/>
+            </tal:address>
 
-            <span  tal:define="printdate view/date" 
-                tal:content="python:plone_view.toLocalizedTime(printdate, long_format=1)"/>
-            <tal:reporter tal:condition="view/reporter">
+            <tal:labemail tal:condition="view/lab_email">
+                <a tal:define="email view/lab_email"
+                   tal:content="email"
+                   tal:attributes="href string:mailto:${email}"/>
+            </tal:labemail>
+
+            <tal:laburl tal:condition="view/lab_url">
                 <br/>
-                <br/>
-                <span i18n:translate="">Created by:</span>
-                <span tal:content="view/reporter"/>
-                <tal:email tal:condition="view/reporter_email">
-                    <br/>
-                    <a tal:define="email view/reporter_email"
-                       tal:content="email"
-                       tal:attributes="href string:mailto:${email}"/>
-                </tal:email>
-            </tal:reporter>
+                <a tal:define="url view/lab_url"
+                   tal:content="url"
+                   tal:attributes="href string:url"/>
+            </tal:laburl>
 
         </td>
     </tr>
 </table>
+<div>
+    <span class="documentFirstHeading" tal:content="view/title | nothing"/>
 
-        <span class="documentFirstHeading" tal:content="view/title | nothing"/>
+    <span  tal:define="printdate view/date" 
+           tal:content="python:plone_view.toLocalizedTime(printdate, long_format=1)"/>
+
+    <br/>
+    <tal:reporter tal:condition="view/reporter">
+        <span i18n:translate="">Created by:</span>
+        <span tal:content="view/reporter"/>
+        <tal:email tal:condition="view/reporter_email">
+            <a tal:define="email view/reporter_email"
+               tal:content="email"
+               tal:attributes="href string:mailto:${email}"/>
+        </tal:email>
+    </tal:reporter>
+</div>
 
 <div tal:content="structure view/reportout"/>
 
-<span> This is the footer stuff at the bottom of the frame</span>
+<div align="right" id="footerContent">
+        <span>Page:</span>
+        <pdf:pagenumber/>
+</div>
 </body>
 
 </html>

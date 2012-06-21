@@ -25,11 +25,14 @@ class IAnalysis(Interface):
 class IDuplicateAnalysis(Interface):
     """DuplicateAnalysis"""
 
+class IQueries(Interface):
+    """Query interface """
+
 class IReferenceAnalysis(Interface):
     """Reference Analyses """
 
-class IReports(Interface):
-    """Reports"""
+class IReportFolder(Interface):
+    """Report folder"""
 
 class ISample(Interface):
     """Sample"""
@@ -125,5 +128,7 @@ class IReferenceDefinitions(Interface):
 class IWorksheetTemplates(Interface):
     ""
 
+class IBikaCatalog(Interface):
+   ""
 class IBikaSetupCatalog(Interface):
    ""

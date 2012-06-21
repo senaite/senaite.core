@@ -9,7 +9,8 @@
 	top:-0.5em;
     margin-right: .5em;
     font-size: 50%;
-    border:1px solid #eee !important;
+    /* border:1px solid #eee !important; */
+    border:none
     vertical-align: middle;
 	font-weight:normal;
 	letter-spacing: 0;
@@ -17,7 +18,7 @@
 	padding: 5px 2px 3px 22px;
 }
 .context_action_link:hover {
-	background-color:#eee !important;
+	/* background-color:#eee !important; */
 }
 
 .context_action_dropdown {
@@ -330,33 +331,30 @@ tfoot td.batching a {
   padding:1px 2px 1px 2px;
 }
 
-.workflow_action_button {
+.action_button {
   border-radius: &dtml-buttonBorderRadius; !important;
   background: &dtml-buttonSelectedBackgroundColor; !important;
   color: &dtml-buttonSelectedTextColor; !important;
   border:1px solid &dtml-buttonSelectedBorderColor; !important;
   padding:1px 2px 1px 2px;
 }
-
-.workflow_action_button:hover {
+.action_button:hover {
   background: &dtml-buttonHoverBackgroundColor; !important;
   border:1px solid &dtml-buttonHoverBorderColor; !important;
 }
-
-.workflow_action_button:active {
+.action_button:active {
   background: &dtml-buttonClickBackgroundColor; !important;
   color: &dtml-buttonClickTextColor; !important;
   border:1px solid &dtml-buttonClickBorderColor; !important;
 }
-
-.workflow_action_button.disabled {
+.action_button.disabled {
   border-radius: &dtml-buttonBorderRadius; !important;
   background: &dtml-buttonSelectedBackgroundColor; !important;
   color:#bbb !important;
   border:1px solid &dtml-buttonSelectedBorderColor; !important;
   padding:1px 2px 1px 2px;
 }
-.workflow_action_button.disabled:active {
+.action_button.disabled:active {
   border-radius: &dtml-buttonBorderRadius; !important;
   background: &dtml-buttonSelectedBackgroundColor; !important;
   color:#bbb !important;

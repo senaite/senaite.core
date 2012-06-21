@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             i18n:domain="bika"
+             i18n:domain="plone"
              workflow_id="bika_one_state_workflow"
              title="Bika Single State Workflow"
              state_variable="cancellation_state"

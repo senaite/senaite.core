@@ -88,8 +88,7 @@ ADDRESS_TYPES = DisplayList((
     ('shipping', _('Shipping address')),
     ))
 
-english = locales.getLocale('en')
-currencies = english.numbers.currencies.values()
+currencies = locales.getLocale('en').numbers.currencies.values()
 currencies.sort(lambda x,y:cmp(x.displayName, y.displayName))
 
 CURRENCIES = DisplayList(

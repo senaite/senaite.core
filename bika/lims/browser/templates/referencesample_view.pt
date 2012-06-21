@@ -26,7 +26,7 @@
                 <img tal:condition="context/getHazardous"
                     title="Hazardous"
                     i18n:attributes="title"
-                    tal:attributes="src string:++resource++bika.lims.images/hazardous_big.png"/>
+                    tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/hazardous_big.png"/>
             </td>
         </tr>
     </table>
@@ -122,14 +122,14 @@
     <form action="workflow_action">
         <input
             tal:condition="python:inactive_state == 'active'"
-            class="context workflow_action_button"
+            class="context workflow_action_button action_button"
             type="submit"
             value="deactivate"
             i18n:attributes="value"
             name="workflow_action"/>
         <input
             tal:condition="python:inactive_state == 'inactive'"
-            class="context workflow_action_button"
+            class="context workflow_action_button action_button"
             type="submit"
             value="activate"
             i18n:attributes="value"
@@ -140,6 +140,7 @@
 	<tal:remarks define="
 		field python:context.Schema()['Remarks'];
 		errors python:{};">
+		<p style="margin-top:2em;"/>
 		 <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
 	</tal:remarks>
 

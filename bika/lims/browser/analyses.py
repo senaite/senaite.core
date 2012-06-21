@@ -21,11 +21,13 @@ import plone
 class AnalysesView(BikaListingView):
     """ Displays a list of Analyses in a table.
         All InterimFields from all analyses are added to self.columns[].
-        Keyword arguments are passed directly to portal_catalog.
+        Keyword arguments are passed directly to bika_analysis_catalog.
     """
     def __init__(self, context, request, **kwargs):
+        self.catalog = "bika_analysis_catalog"
         self.contentFilter = dict(kwargs)
         self.contentFilter['portal_type'] = 'Analysis'
+        self.contentFilter['sort_on'] = 'sortable_title'
         self.context_actions = {}
         self.setoddeven = True
         self.show_sort_column = False
@@ -35,8 +37,8 @@ class AnalysesView(BikaListingView):
         self.pagesize = 1000
         self.form_id = 'analyses_form'
 
-        pc = getToolByName(context, 'portal_catalog')
-        self.contentsMethod = pc
+        self.portal = getToolByName(context, 'portal_url').getPortalObject()
+        self.portal_url = self.portal.absolute_url()
 
         request.set('disable_plone.rightcolumn', 1);
 
@@ -61,20 +63,24 @@ class AnalysesView(BikaListingView):
                          'sortable': False},
             'Uncertainty': {'title': _('+-'),
                             'sortable': False},
-            'retested': {'title': "<img src='++resource++bika.lims.images/retested.png' title='%s'/>" % _('Retested'),
+            'retested': {'title': "<img title='%s' src='%s/++resource++bika.lims.images/retested.png'/>"%\
+                         (context.translate(_('Retested')), self.portal_url),
                          'type':'boolean',
                          'sortable': False},
             'Attachments': {'title': _('Attachments'),
                             'sortable': False},
             'CaptureDate': {'title': _('Captured'),
-                            'sortable': False},
+                            'index': 'getResultCaptureDate',
+                            'sortable':False},
             'DueDate': {'title': _('Due Date'),
-                        'sortable': False},
+                        'index': 'getDueDate',
+                        'sortable':False},
         }
 
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'columns':['Service',
                         'Partition',
                         'Method',
@@ -93,8 +99,6 @@ class AnalysesView(BikaListingView):
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         workflow = getToolByName(self.context, 'portal_workflow')
-        portal = getToolByName(self.context, 'portal_url').getPortalObject()
-        translate = self.context.translation_service.translate
         mtool = getToolByName(self.context, 'portal_membership')
         checkPermission = mtool.checkPermission
         if not self.allow_edit:
@@ -130,6 +134,7 @@ class AnalysesView(BikaListingView):
                 and obj.getInterimFields() or []
             self.interim_fields[obj.UID()] = interim_fields
 
+            items[i]['Service'] = service.Title()
             items[i]['Keyword'] = keyword
             items[i]['Unit'] = unit and unit or ''
             items[i]['Result'] = ''
@@ -139,7 +144,10 @@ class AnalysesView(BikaListingView):
             items[i]['retested'] = obj.getRetested()
             items[i]['class']['retested'] = 'center'
             items[i]['calculation'] = calculation and True or False
-            items[i]['Partition'] = obj.getSamplePartition().Title()
+            try:
+                items[i]['Partition'] = obj.getSamplePartition().Title()
+            except AttributeError:
+                items[i]['Partition'] = ''
             if obj.portal_type == "ReferenceAnalysis":
                 items[i]['DueDate'] = ''
                 items[i]['CaptureDate'] = ''
@@ -262,21 +270,21 @@ class AnalysesView(BikaListingView):
                                 str("%%.%sf" % precision) % float(result) or result
                         except:
                             items[i]['formatted_result'] = result
-                            indet = translate(_('Indet'))
+                            indet = self.context.translate(_('Indet'))
                             if result == indet:
                                 # 'Indeterminate' results flag a specific error
-                                Indet = translate(_("Indeterminate result"))
+                                Indet = self.context.translate(_("Indeterminate result"))
                                 items[i]['after']['Result'] = \
                                     '<img width="16" height="16" title="%s"' % Indet + \
                                     'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
-                                    (portal.absolute_url())
+                                    (self.portal_url)
                             else:
                                 # result being un-floatable, is an error.
-                                msg = translate(_("Invalid result"))
+                                msg = self.context.translate(_("Invalid result"))
                                 items[i]['after']['Result'] = \
                                     '<img width="16" height="16" title="%s"' % msg + \
                                     'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
-                                    (portal.absolute_url())
+                                    (self.portal_url)
                 items[i]['Uncertainty'] = obj.getUncertainty(result)
 
                 attachments = ""
@@ -285,7 +293,7 @@ class AnalysesView(BikaListingView):
                         af = attachment.getAttachmentFile()
                         icon = af.getBestIcon()
                         attachments += "<span class='attachment' attachment_uid='%s'>" % (attachment.UID())
-                        if icon: attachments += "<img src='%s/%s'/>" % (portal.absolute_url(), icon)
+                        if icon: attachments += "<img src='%s/%s'/>" % (self.portal_url, icon)
                         attachments += '<a href="%s/at_download/AttachmentFile"/>%s</a>' % (attachment.absolute_url(), af.filename)
                         attachments += "<img class='deleteAttachmentButton' attachment_uid='%s' src='%s'/>" % (attachment.UID(), "++resource++bika.lims.images/delete.png")
                         attachments += "</br></span>"
@@ -303,7 +311,7 @@ class AnalysesView(BikaListingView):
                 items[i]['before']['Result'] = \
                     '<img width="16" height="16" ' + \
                     'src="%s/++resource++bika.lims.images/to_follow.png"/>' % \
-                    (portal.absolute_url())
+                    (self.portal_url)
 
             # Add this analysis' interim fields to the interim_columns list
             for f in self.interim_fields[obj.UID()]:
@@ -321,12 +329,12 @@ class AnalysesView(BikaListingView):
                     DueDate = TimeOrDate(self.context, item['DueDate'], long_format = 0)
                     if self.context.portal_type == 'AnalysisRequest':
                         items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
-                            (DueDate, portal.absolute_url(),
-                             translate(_("Due Date")) + ": %s"%DueDate)
+                            (DueDate, self.portal_url,
+                             self.context.translate(_("Due Date")) + ": %s"%DueDate)
                     else:
                         items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
-                            (DueDate, portal.absolute_url(),
-                             translate(_("Late Analysis")))
+                            (DueDate, self.portal_url,
+                             self.context.translate(_("Late Analysis")))
                 else:
                     items[i]['replace']['DueDate'] = TimeOrDate(self.context, item['DueDate'])
 
@@ -335,8 +343,10 @@ class AnalysesView(BikaListingView):
                workflow.getInfoFor(items[i]['obj'], 'worksheetanalysis_review_state') == 'assigned':
                 ws = items[i]['obj'].getBackReferences('WorksheetAnalysis')[0]
                 items[i]['after']['state_title'] = \
-                     "<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='Assigned: %s'/></a>" % \
-                     (ws.absolute_url(), ws.id)
+                     "<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='%s'/></a>" % \
+                     (ws.absolute_url(), self.context.translate(
+                         _("Assigned to: ${worksheet_id}",
+                           mapping={'worksheet_id':ws.id})))
 
         # the TAL requires values for all interim fields on all
         # items, so we set blank values in unused cells

@@ -150,8 +150,14 @@ h1, h2, h3, h4, h5, h6 {
       <td>
         <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/logo_email.png"/>
       </td>
-      <td tal:condition="accredited">
-        <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/accreditation_email.png"/>
+      <td tal:condition="accredited"
+          tal:define="logo python:context.bika_setup.laboratory.getAccreditationBodyLogo()">
+        <img
+            tal:condition="logo"
+            tal:attributes="src string:${portal/absolute_url}/bika_setup/laboratory/AccreditationBodyLogo"/>
+        <img
+            tal:condition="not: logo"
+            tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/AccreditationBodyLogo.png"/>
       </td>
     </tr>
   </table>

@@ -3,8 +3,6 @@ Bika LIMS
 
 Bika Laboratory Information Management System.
 
-* Installation: https://github.com/bikalabs/Bika-LIMS/tree/master/doc/INSTALL.md
-
 If you have questions, please post to one of our mailing lists:
 
 * Users: http://lists.sourceforge.net/lists/listinfo/bika-users

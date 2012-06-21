@@ -23,8 +23,7 @@ class SamplePointsView(BikaListingView):
 
     def __init__(self, context, request):
         super(SamplePointsView, self).__init__(context, request)
-        bsc = getToolByName(context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
+        self.catalog = 'bika_setup_catalog'
         self.contentFilter = {'portal_type': 'SamplePoint',
                               'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'):
@@ -44,22 +43,27 @@ class SamplePointsView(BikaListingView):
             'Description': {'title': _('Description'),
                             'index': 'description',
                             'toggle': True},
+            'getComposite': {'title': _('Composite'),
+                             'toggle': True},
+            'SampleTypes': {'title': _('Sample Types'),
+                            'toggle': True},
         }
 
         self.review_states = [
-            {'id':'all',
-             'title': _('All'),
-             'columns': ['Title', 'Description']},
-            {'id':'active',
+            {'id':'default',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
-             'columns': ['Title', 'Description']},
+             'columns': ['Title', 'Description', 'getComposite', 'SampleTypes']},
             {'id':'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': [{'id':'activate'}, ],
-             'columns': ['Title', 'Description']},
+             'columns': ['Title', 'Description', 'getComposite', 'SampleTypes']},
+            {'id':'all',
+             'title': _('All'),
+             'contentFilter':{},
+             'columns': ['Title', 'Description', 'getComposite', 'SampleTypes']},
         ]
 
     def folderitems(self):
@@ -70,6 +74,7 @@ class SamplePointsView(BikaListingView):
             items[x]['Description'] = obj.Description()
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
+            items[x]['SampleTypes'] = ",".join([st.Title() for st in obj.getSampleTypes()])
         return items
 
 schema = ATFolderSchema.copy()
@@ -95,37 +100,36 @@ class ajax_SamplePoints(BrowserView):
     """
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
-        bsc = getToolByName(self, 'bika_setup_catalog')
-
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
         term = self.request.get('term', '').lower()
-
-        items = bsc(portal_type = "SamplePoint", sort_on='sortable_title')
-
-        if term and len(term) < 3:
-            # Items that start with A or AA
-            items = [s.getObject()
-                     for s in items
-                     if s.Title.lower().startswith(term)]
-            if not items:
-                # or, items that contain A or AA
-                items = [s.getObject()
-                         for s in items
-                         if s.Title.lower().find(term) > -1]
-        else:
-            # or, items that contain term.
-            items = [s.getObject()
-                     for s in items
-                     if s.Title.lower().find(term) > -1]
-
+        items = []
+        if not term:
+            return items
         sampletype = self.request.get('sampletype', '')
         if sampletype and len(sampletype) > 1:
             st = bsc(portal_type="SampleType",Title=sampletype)
             if not st:
                 return json.dumps([])
             st = st[0].getObject()
-            new = [s for s in items if s in st.getSamplePoints()]
-            if new:
-                items = new
+            items = st.getSamplePoints()
+        if not items:
+            items = bsc(portal_type = "SamplePoint", sort_on='sortable_title')
+            if term and len(term) < 3:
+                # Items that start with A or AA
+                items = [s.getObject()
+                         for s in items
+                         if s.Title.lower().startswith(term)]
+                if not items:
+                    # or, items that contain A or AA
+                    items = [s.getObject()
+                             for s in items
+                             if s.Title.lower().find(term) > -1]
+            else:
+                # or, items that contain term.
+                items = [s.getObject()
+                         for s in items
+                         if s.Title.lower().find(term) > -1]
 
-        items = [s.Title() for s in items]
+        items = [callable(s.Title) and s.Title() or s.Title
+                 for s in items]
         return json.dumps(items)

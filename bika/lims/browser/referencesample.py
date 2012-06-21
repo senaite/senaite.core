@@ -46,6 +46,7 @@ class ReferenceAnalysesView(AnalysesView):
 
     def __init__(self, context, request):
         AnalysesView.__init__(self, context, request)
+        self.catalog = 'bika_analysis_catalog'
         self.contentFilter = {'portal_type':'ReferenceAnalysis',
                               'path': {'query':"/".join(self.context.getPhysicalPath()),
                                        'level':0}}
@@ -61,13 +62,16 @@ class ReferenceAnalysesView(AnalysesView):
             'Worksheet': {'title': _('Worksheet'), 'toggle':True},
             'Result': {'title': _('Result'), 'toggle':True},
             'Uncertainty': {'title': _('+-'), 'toggle':True},
-            'DueDate': {'title': _('Due Date'), 'toggle':True},
+            'DueDate': {'title': _('Due Date'),
+                        'index': 'getDueDate',
+                        'toggle':True},
             'retested': {'title': _('Retested'), 'type':'boolean', 'toggle':True},
             'state_title': {'title': _('State'), 'toggle':True},
         }
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'transitions': [],
              'columns':['id',
                         'Category',
@@ -81,7 +85,6 @@ class ReferenceAnalysesView(AnalysesView):
         ]
 
     def folderitems(self):
-        self.contentsMethod = getToolByName(self.context, 'portal_catalog')
         items = super(ReferenceAnalysesView, self).folderitems()
         for x in range(len(items)):
             if not items[x].has_key('obj'):
@@ -101,7 +104,6 @@ class ReferenceResultsView(BikaListingView):
     def __init__(self, context, request):
         super(ReferenceResultsView, self).__init__(context, request)
         bsc = getToolByName(context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
         self.title = _("Reference Results")
         self.description = _("Click on Analysis Categories (against shaded background) "
                              "to see Analysis Services in each category. Enter minimum "
@@ -127,8 +129,9 @@ class ReferenceResultsView(BikaListingView):
             'max': {'title': _('Max')},
         }
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'columns': ['Service',
                          'result',
                          'min',
@@ -178,6 +181,7 @@ class ReferenceSamplesView(BikaListingView):
         self.icon = "++resource++bika.lims.images/referencesample_big.png"
         self.title = _("Reference Samples")
         self.description = _("All reference samples in the system are displayed here.")
+        self.catalog = 'bika_catalog'
         self.contentFilter = {'portal_type': 'ReferenceSample',
                               'sort_on':'id',
                               'sort_order': 'reverse',
@@ -191,28 +195,39 @@ class ReferenceSamplesView(BikaListingView):
         request.set('disable_border', 1)
 
         self.columns = {
-            'ID': {'title': _('ID')},
-            'Title': {'title': _('Title'), 'toggle':True},
-            'Supplier': {'title': _('Supplier'), 'toggle':True},
-            'Definition': {'title': _('Reference Definition'), 'toggle':True},
-            'DateSampled': {'title': _('Date Sampled'), 'toggle':True},
-            'DateReceived': {'title': _('Date Received'), 'toggle':True},
-            'ExpiryDate': {'title': _('Expiry Date'), 'toggle':True},
-            'state_title': {'title': _('State'), 'toggle':True},
+            'ID': {
+                'title': _('ID'),
+                'index': 'sortable_title'},
+            'Title': {
+                'title': _('Title'),
+                'index': 'sortable_title',
+                'toggle':True},
+            'Supplier': {
+                'title': _('Supplier'),
+                'toggle':True},
+            'Definition': {
+                'title': _('Reference Definition'),
+                'toggle':True},
+            'DateSampled': {
+                'title': _('Date Sampled'),
+                'index': 'getDateSampled',
+                'toggle':True},
+            'DateReceived': {
+                'title': _('Date Received'),
+                'index': 'getDateReceived',
+                'toggle':True},
+            'ExpiryDate': {
+                'title': _('Expiry Date'),
+                'index': 'getExpiryDate',
+                'toggle':True},
+            'state_title': {
+                'title': _('State'),
+                'toggle':True},
         }
         self.review_states = [
-            {'id':'all',
-             'title': _('All'),
-             'columns': ['ID',
-                         'Title',
-                         'Supplier',
-                         'Definition',
-                         'DateSampled',
-                         'DateReceived',
-                         'ExpiryDate',
-                         'state_title']},
-            {'id':'current',
+            {'id':'default',
              'title': _('Current'),
+             'contentFilter':{'review_state':'current'},
              'columns': ['ID',
                          'Title',
                          'Supplier',
@@ -222,6 +237,7 @@ class ReferenceSamplesView(BikaListingView):
                          'ExpiryDate']},
             {'id':'expired',
              'title': _('Expired'),
+             'contentFilter':{'review_state':'expired'},
              'columns': ['ID',
                          'Title',
                          'Supplier',
@@ -231,6 +247,7 @@ class ReferenceSamplesView(BikaListingView):
                          'ExpiryDate']},
             {'id':'disposed',
              'title': _('Disposed'),
+             'contentFilter':{'review_state':'disposed'},
              'columns': ['ID',
                          'Title',
                          'Supplier',
@@ -238,6 +255,17 @@ class ReferenceSamplesView(BikaListingView):
                          'DateSampled',
                          'DateReceived',
                          'ExpiryDate']},
+            {'id':'all',
+             'title': _('All'),
+             'contentFilter':{},
+             'columns': ['ID',
+                         'Title',
+                         'Supplier',
+                         'Definition',
+                         'DateSampled',
+                         'DateReceived',
+                         'ExpiryDate',
+                         'state_title']},
         ]
 
     def folderitems(self):

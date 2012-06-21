@@ -21,8 +21,7 @@ class MethodsView(BikaListingView):
 
     def __init__(self, context, request):
         super(MethodsView, self).__init__(context, request)
-        bsc = getToolByName(context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
+        self.catalog = 'bika_setup_catalog'
         self.contentFilter = {'portal_type': 'Method',
                               'sort_on': 'sortable_title'}
         self.context_actions = {}
@@ -43,21 +42,24 @@ class MethodsView(BikaListingView):
         }
 
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'transitions':[{'id':'empty'},],
              'columns': ['Title', 'Description']},
         ]
 
-    def folderitems(self):
+    def __call__(self):
         mtool = getToolByName(self.context, 'portal_membership')
-        ## Add action is not permitted in /methods folder
-        if mtool.checkPermission(AddMethod, self.context) \
-           and not self.view_url.endswith("/methods"):
+        if mtool.checkPermission(AddMethod, self.context):
             self.context_actions[_('Add')] = {
                 'url': 'createObject?type_name=Method',
                 'icon': '++resource++bika.lims.images/add.png'
             }
+        return super(MethodsView, self).__call__()
+
+    def folderitems(self):
+        mtool = getToolByName(self.context, 'portal_membership')
         if mtool.checkPermission(ManageBika, self.context):
             del self.review_states[0]['transitions']
             self.show_select_column = True

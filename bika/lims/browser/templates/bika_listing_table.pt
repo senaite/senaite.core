@@ -1,18 +1,23 @@
 <form name="bika_listing_form" method="post" action="workflow_action"
+    i18n:domain="bika"
 	tal:attributes="id form_id"
 	tal:omit-tag="table_only"
 	tal:define="
 		form_id view/bika_listing/form_id;
-		table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;
+		table_only python:(hasattr(view, 'table_only') and view.table_only)
+		                  or (hasattr(view.bika_listing, 'table_only') and view.bika_listing.table_only)
+		                  or view.request.get('table_only','') == form_id;
 		global rowspan python:{};
 		global rowspan_max python:{};
 		global colspan python:1;
 		global colspan_max python:1;
 		nosortclass view/get_nosort_class;
 		portal context/@@plone_portal_state/portal;
-		review_state_id python:request.get(form_id+'_review_state', 'all');
+		review_state_id python:request.get(form_id+'_review_state', 'default');
 		review_state python:[t for t in view.bika_listing.review_states
-							 if t['id'] == review_state_id][0];
+							 if t['id'] == review_state_id];
+		review_state python:review_state and review_state[0]
+							or view.bika_listing.review_states[0];
 		toggle_cols python:dict([(col, view.bika_listing.columns[col])
 		                         for col in view.bika_listing.columns.keys()
 		                         if col in review_state['columns']]);
@@ -34,6 +39,8 @@
 <input type="hidden" tal:omit-tag="python:table_only" name="form_id" tal:attributes="value form_id"/>
 <input type="hidden" tal:omit-tag="python:table_only" name="view_url"
 	tal:attributes="value view/bika_listing/view_url"/>
+<input type="hidden" tal:omit-tag="python:table_only" name="portal_type"
+	tal:attributes="value view/context/portal_type"/>
 <input type="hidden" tal:omit-tag="python:table_only"
 	tal:attributes="
 		name python:form_id+'_sort_on';
@@ -110,7 +117,7 @@ Workflow review state selector
 						href view/view_url;
 						value state_id;
 						id state/id;
-						class python:request.get(form_id + '_review_state', 'all') == state_id
+						class python:request.get(form_id + '_review_state', 'default') == state_id
 									   and 'selected' or ''"
 					tal:content="structure state/title"/>
 				</tal:review_states>
@@ -208,13 +215,10 @@ Table data rows start here
 				keyword keyword;">
 
 		<tal:comment replace="nothing">***************
-		Individual items' row_data is stored on each row (where item_data goes
-		in default Plone listing view). It's just secondary samples that use
-		this atm, for transferring information about selected sample back to
-		the parent window.
+		Individual items' row_data is stored on each row.
+		This is used to pass information along to javascript.
 		********************************</tal:comment>
 		<input type="hidden" tal:attributes="
-			name string:row_data.${item/uid}:records;
 			id string:${item/uid}_row_data;
 			value item/row_data|nothing;"/>
 
@@ -294,7 +298,9 @@ Table cells for each column from in review_state's column list.
 	<td
 		tal:condition="python:rowspan[column] == rowspan_max[column] and colspan == colspan_max"
 		tal:define="
-			allow_edit python:column in item['allow_edit'];
+			allow_edit python:view.bika_listing.allow_edit
+			                  and column in item['allow_edit']
+							  and item.get('edit_condition', {}).get(column, True);
 			required python:'required' in item and column in item['required'] or False;
 			before python:column in item['before'] and
 				item['before'][column] or '';
@@ -455,7 +461,7 @@ Table cells for each column from in review_state's column list.
 	<tal:comment replace="nothing"><!-- choices --></tal:comment>
 	<span tal:omit-tag="python:True"
 		tal:condition="python:field_type == 'choices'">
-		<span tal:condition="allow_edit">
+		<span tal:condition="python: allow_edit">
 			<select class="listing_select_entry" style="font-size: 100%"
 				tal:condition="python:column in item['choices']"
 				tal:attributes="
@@ -476,18 +482,19 @@ Table cells for each column from in review_state's column list.
 			</select>
 		</span>
 		<span tal:omit-tag="python:True"
-			tal:condition="not:allow_edit">
+			tal:condition="python:not allow_edit">
+			<span>
+				<input
+					type="hidden"
+					tal:attributes="
+						uid string:${item/uid};
+						field python:column;
+						value python:item[column];
+						name string:${column}.${item/uid}:records"/>
+			</span>
 			<span
-				tal:content="python:item['formatted_result'] and item['formatted_result'] or item[column]"
+				tal:content="python:item.has_key('formatted_result') and item['formatted_result'] or item[column]"
 				tal:attributes="class string:${item/state_class} result"/>
-			<input
-				type="hidden"
-				tal:condition="not:allow_edit"
-				tal:attributes="
-					size input_width;
-					uid string:${item/uid};
-					field python:column;
-					value python:item[column];"/>
 		</span>
 	</span>
 
@@ -510,8 +517,8 @@ Table cells for each column from in review_state's column list.
 								  not item['result_in_range'][0]"
 			tal:attributes="
 				uid item/uid;
-				title python:'Result out of range (min: %(min)s, max: %(max)s)'%(item['result_in_range'][1]);"
-			src='++resource++bika.lims.images/exclamation.png'
+				title python:'Result out of range (min: %(min)s, max: %(max)s)'%(item['result_in_range'][1]);
+				src string:${portal/absolute_url}/++resource++bika.lims.images/exclamation.png;"
 			icon="exclamation"/>
 		<img
 			tal:condition="python:column == 'Result' and
@@ -519,9 +526,10 @@ Table cells for each column from in review_state's column list.
 									item['result_in_range'][0] == '1'"
 			tal:attributes="
 				uid item/uid;
-				title python:'Result out of range (min %(min)s, max %(max)s, error %(error)s%%)'%(item['result_in_range'][1]);"
-			src='++resource++bika.lims.images/warning.png'
-		icon="warning"/> <tal:comment replace="nothing"><!-- shoulder --></tal:comment>
+				title python:'Result out of range (min %(min)s, max %(max)s, error %(error)s%%)'%(item['result_in_range'][1]);
+				src string:${portal/absolute_url}/++resource++bika.lims.images/warning.png;"
+			icon="warning"/>
+	<tal:comment replace="nothing"><!-- shoulder --></tal:comment>
 	</span>
 	</span> <tal:comment replace="nothing"><!-- </span tal:condition="not:replace"> --></tal:comment>
 
@@ -532,7 +540,6 @@ Table cells for each column from in review_state's column list.
 	</td>
 	</tal:rowcolspan>
 	</tal:cell>
-
 
 	</tr>
 	</tal:items>
@@ -557,16 +564,14 @@ Workflow Actions
 					<input
 						type="hidden"
 						tal:attributes="name action/title;
-										value action/id;"
-						i18n:attributes="name"/>
+										value action/id;"/>
 					<input
-						class="context workflow_action_button allowMultiSubmit"
+						class="context workflow_action_button action_button allowMultiSubmit"
 						type="submit"
 						name="workflow_action_button"
 						tal:attributes="
 							transition action/id;
-							value action/title;"
-						i18n:attributes="value"/>
+							value action/title;"/>
 				</span>
 			</span>
 		</td>

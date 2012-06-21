@@ -12,6 +12,8 @@
 # If this guard returns True, the object will transition to to_be_preserved.
 # If the guard returns False, the object will be transitioned to sample_due.
 
+# Pre-preserved containers are short-circuited here.
+
 # Returning a value other than True or False will leave the context in
 # "sampled" state
 
@@ -30,7 +32,11 @@ if context.portal_type == 'Sample':
     preservation_required = False
     for part in parts:
         if part.getPreservation():
-            preservation_required = True
+            if part.getContainer() \
+               and part.getContainer().getPrePreserved():
+                preservation_required = False
+            else:
+                preservation_required = True
             break
     return preservation_required
 
@@ -50,7 +56,11 @@ elif context.portal_type == 'AnalysisRequest':
     preservation_required = False
     for part in sample.objectValues("SamplePartition"):
         if part.getPreservation():
-            preservation_required = True
+            if part.getContainer() \
+               and part.getContainer().getPrePreserved():
+                preservation_required = False
+            else:
+                preservation_required = True
             break
     return preservation_required
 
@@ -62,7 +72,11 @@ elif context.portal_type == 'SamplePartition':
         return None
 
     if context.getPreservation():
-        return True
+        if context.getContainer() \
+           and context.getContainer().getPrePreserved():
+            return False
+        else:
+            return True
     else:
         return False
 
@@ -72,7 +86,12 @@ elif context.portal_type == 'Analysis':
     if not part:
         # AR is being created - AR Add will transition us.
         return None
-    if context.getSamplePartition().getPreservation():
-        return True
+    part = context.getSamplePartition()
+    if part.getPreservation():
+        if part.getContainer() \
+           and part.getContainer().getPrePreserved():
+            return False
+        else:
+            return True
     else:
         return False

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             i18n:domain="bika"
+             i18n:domain="plone"
              workflow_id="bika_worksheetanalysis_workflow"
              title="Bika Worksheet Analysis Workflow"
              state_variable="worksheetanalysis_review_state"
@@ -21,12 +21,12 @@
              trigger="USER"
              before_script=""
              after_script=""
-             i18n:attributes="title">
+             i18n:attributes="title assign_transition_title">
   <description i18n:translate=""></description>
   <action url="workflow_action?workflow_action=assign"
           category="workflow"
           icon=""
-          i18n:translate="">Assign</action>
+          i18n:translate="assign_transition_title">Assign</action>
   <guard>
    <guard-expression>python:here.guard_assign_transition()</guard-expression>
   </guard>
@@ -38,12 +38,12 @@
              trigger="USER"
              before_script=""
              after_script=""
-             i18n:attributes="title">
+             i18n:attributes="title unassign_transition_title">
   <description i18n:translate=""></description>
   <action url="workflow_action?workflow_action=unassign"
           category="workflow"
           icon=""
-          i18n:translate="">Remove</action>
+          i18n:translate="unassign_transition_title">Remove</action>
   <guard>
    <guard-expression>python:here.guard_unassign_transition()</guard-expression>
   </guard>

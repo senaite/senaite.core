@@ -88,7 +88,7 @@
 		<!-- multi-select selection -->
 		<select tal:condition="python:size and size > 1 or False"
 			multiple="multiple"
-			tal:attributes="name string:${fieldName}.${key}:records:ignore_empty;
+			tal:attributes="name string:${fieldName}.${key}:records:list;
 						   id fieldName;
 						   tabindex tabindex/next|nothing;
 						   size size;"

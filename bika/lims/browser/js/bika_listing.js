@@ -1,7 +1,8 @@
-jQuery( function($) {
+(function( $ ) {
 $(document).ready(function(){
 
-	_ = window.jsi18n;
+	_ = window.jsi18n_bika;
+	PMF = window.jsi18n_plone;
 
 	function setoddeven(){
 		// set alternating odd and even classes if table has setoddeven class
@@ -12,15 +13,6 @@ $(document).ready(function(){
 				$(tr).addClass('odd');
 			}
 		});
-	}
-
-	function portalMessage(message){
-		str = "<dl class='portalMessage error'>"+
-			"<dt>"+_("error")+"</dt>"+
-			"<dd><ul>" + message +
-			"</ul></dd></dl>";
-		$('.portalMessage').remove();
-		$(str).appendTo('#viewlet-above-content');
 	}
 
 	setoddeven();
@@ -280,7 +272,7 @@ $(document).ready(function(){
 	$('th[id^="foldercontents-"]').live('contextmenu', function(event){
 		event.preventDefault();
 		form_id = $(this).parents("form").attr("id");
-		base_url = window.location.href;
+		portal_url = window.portal_url;
 		toggle_cols = $("#" + form_id + "_toggle_cols").val();
 		if (toggle_cols == ""
 		    || toggle_cols == undefined
@@ -310,7 +302,7 @@ $(document).ready(function(){
 			if(enabled.length > 0){
 				txt = txt + "<tr class='enabled' col_id='"+col_id+"' form_id='"+form_id+"'>";
 				txt = txt + "<td>";
-	            txt = txt + "<img style='height:1em;' src='"+base_url+"/++resource++bika.lims.images/ok.png'/>";
+	            txt = txt + "<img style='height:1em;' src='"+portal_url+"/++resource++bika.lims.images/ok.png'/>";
 				txt = txt + "</td>";
 				txt = txt + "<td>"+col_title+"</td></tr>";
 			} else {
@@ -347,7 +339,7 @@ $(document).ready(function(){
 
 		cookie = readCookie("toggle_cols");
 		cookie = $.parseJSON(cookie);
-		cookie_key = $(form[0].view_url).val() + "/" + form_id;
+		cookie_key = $(form[0].portal_type).val() + form_id;
 
 		if (cookie == null || cookie == undefined) {
 			cookie = {};
@@ -388,6 +380,7 @@ $(document).ready(function(){
 		stored_form_action = $(form).attr("action");
 		$(form).attr("action", window.location.href);
 		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
+		$(form).append("<input type='hidden' name='"+form_id+"_toggle_cols' value='"+$.toJSON(cookie)+"'>");
 		options = {
 			target: $(form).children(".bika-listing-table"),
 			replaceTarget: true,
@@ -399,9 +392,10 @@ $(document).ready(function(){
 		$(".tooltip").remove();
 		form.ajaxSubmit(options);
 		$('[name=table_only]').remove();
+		$('[name='+form_id+'_toggle_cols]').remove();
 		$(form).attr('action', stored_form_action);
 		return false;
 	});
 
 });
-});
+}(jQuery));

@@ -4,6 +4,14 @@
 	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
 	metal:use-macro="here/main_template/macros/master"
 	i18n:domain="bika">
+
+<head>
+    <metal:block fill-slot="javascript_head_slot">
+    <script type="text/javascript"
+        tal:attributes="src string:${view/portal_url}/++resource++bika.lims.js/ar_analyses.js"></script>
+    </metal:block>
+</head>
+
 <body
 	tal:define="
 		form_id view/form_id;
@@ -42,17 +50,65 @@
 </metal:content-description>
 
 <metal:content-core fill-slot="content-core">
-	<div id="folderlisting-main-table"
-		tal:content="structure view/contents_table"/>
+
+<h3 style="margin-top:1em;">
+	<img
+		i18n:attributes="title"
+		title="Partitions"
+		tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/samplepartition.png"/>
+	<span i18n:translate="">Sample Partitions</span>
+	<tal:add_actions repeat="add_item python:view.context_actions.keys()">
+		<a tal:attributes="
+			style python:'background: url(%s) 2px 50%% no-repeat'%(view.context_actions[add_item]['icon']);
+			href python:view.context_actions[add_item]['url'];
+			class python:'context_action_link %s' % (view.context_actions[add_item].get('class',''))">
+			<span tal:replace="python:add_item"/>
+		</a>
+	</tal:add_actions>
+</h3>
+
+<form id="list" action="workflow_action" method="post" name="bika_listing_form">
+	<input tal:replace="structure context/@@authenticator/authenticator"/>
+	<input type="hidden" value="1" name="submitted">
+	<input type="hidden" value="list" name="form_id">
+	<input type="hidden" tal:attributes="value view/view_url" name="view_url">
+	<input type="hidden" tal:attributes="value context/portal_type" name="portal_type">
+	<input type="hidden" value="id" name="list_sort_on">
+	<input type="hidden" value="ascending" name="list_sort_order">
+	<input type="hidden" value="default" name="list_review_state">
+	<input type="hidden" value="1000" name="list_pagesize">
+	<input type="hidden" value="1" name="list_pagenumber">
+	<input type="hidden" value="[]" name="specs">
+	<input id="item_data" type="hidden" value="[]" name="item_data">
 
 	<span style="display:none"
 		id="st_title"
-		tal:attributes="st_title python:context.getSample().getSampleType().Title()"/>
+		tal:attributes="st_title python:context.getSample().getSampleType().Title()">
+	</span>
+
+	<span id="partitions">
+		<tal:parts replace="structure view/parts"/>
+	</span>
+
+	<h3 style="margin-top:1em;">
+		<img
+			i18n:attributes="title"
+			title="Analyses"
+			tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/analysisservice.png"/>
+		<span i18n:translate="">Analyses</span>
+	</h3>
+
+	<div id="folderlisting-main-table"
+		tal:content="structure view/contents_table"/>
+
+	</form>
 
 	<tal:hasremarks tal:condition="python:hasattr(context, 'Remarks')">
+		<p style="margin-top:2em;"/>
 		<tal:remarks define="
 			field python:context.Schema()['Remarks'];
 			errors python:{};">
+		<p style="margin-top:2em;"/>
 			 <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
 		</tal:remarks>
 	</tal:hasremarks>

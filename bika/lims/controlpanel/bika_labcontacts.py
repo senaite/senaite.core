@@ -19,8 +19,7 @@ class LabContactsView(BikaListingView):
     implements(IFolderContentsView, IViewView)
     def __init__(self, context, request):
         super(LabContactsView, self).__init__(context, request)
-        bsc = getToolByName(context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
+        self.catalog = 'bika_setup_catalog'
         self.contentFilter = {'portal_type': 'LabContact',
                               'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'):
@@ -51,15 +50,7 @@ class LabContactsView(BikaListingView):
         }
 
         self.review_states = [
-            {'id':'all',
-             'title': _('All'),
-             'columns': ['Fullname',
-                         'Department',
-                         'BusinessPhone',
-                         'Fax',
-                         'MobilePhone',
-                         'EmailAddress']},
-            {'id':'active',
+            {'id':'default',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
@@ -73,6 +64,15 @@ class LabContactsView(BikaListingView):
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': [{'id':'activate'}, ],
+             'columns': ['Fullname',
+                         'Department',
+                         'BusinessPhone',
+                         'Fax',
+                         'MobilePhone',
+                         'EmailAddress']},
+            {'id':'all',
+             'title': _('All'),
+             'contentFilter':{},
              'columns': ['Fullname',
                          'Department',
                          'BusinessPhone',

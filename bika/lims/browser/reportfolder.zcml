@@ -1,0 +1,45 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="bika">
+
+    <!-- main site/reports view -->
+    <browser:page
+      for="bika.lims.interfaces.IReportFolder"
+      name="reports_productivity"
+      class="bika.lims.browser.reports.ProductivityView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IReportFolder"
+      name="reports_qualitycontrol"
+      class="bika.lims.browser.reports.QualityControlView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IReportFolder"
+      name="reports_administration"
+      class="bika.lims.browser.reports.AdministrationView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+    <browser:page
+      for="bika.lims.interfaces.IReportFolder"
+      name="reports_history"
+      class="bika.lims.browser.reports.ReportHistoryView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+    <browser:page
+      for="bika.lims.interfaces.IReportFolder"
+      name="reports"
+      class="bika.lims.browser.reports.SubmitForm"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+</configure>

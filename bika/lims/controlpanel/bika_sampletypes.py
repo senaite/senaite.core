@@ -23,8 +23,7 @@ class SampleTypesView(BikaListingView):
 
     def __init__(self, context, request):
         super(SampleTypesView, self).__init__(context, request)
-        bsc = getToolByName(context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
+        self.catalog = 'bika_setup_catalog'
         self.contentFilter = {'portal_type': 'SampleType',
                               'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'):
@@ -44,22 +43,29 @@ class SampleTypesView(BikaListingView):
             'Description': {'title': _('Description'),
                             'index': 'description',
                             'toggle': True},
+            'getHazardous': {'title': _('Hazardous'),
+                             'toggle': True},
+            'getPrefix': {'title': _('Prefix'),
+                          'toggle': True},
+            'getMinimumVolume': {'title': _('Minimum Volume'),
+                                 'toggle': True},
         }
 
         self.review_states = [
-            {'id':'all',
-             'title': _('All'),
-             'columns': ['Title', 'Description']},
-            {'id':'active',
+            {'id':'default',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
-             'columns': ['Title', 'Description']},
+             'columns': ['Title', 'Description', 'getHazardous', 'getPrefix', 'getMinimumVolume']},
             {'id':'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': [{'id':'activate'}, ],
-             'columns': ['Title', 'Description']},
+             'columns': ['Title', 'Description', 'getHazardous', 'getPrefix', 'getMinimumVolume']},
+            {'id':'all',
+             'title': _('All'),
+             'contentFilter':{},
+             'columns': ['Title', 'Description', 'getHazardous', 'getPrefix', 'getMinimumVolume']},
         ]
 
     def folderitems(self):
@@ -95,36 +101,35 @@ class ajax_SampleTypes(BrowserView):
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-
         term = self.request.get('term', '').lower()
-
-        items = bsc(portal_type = "SampleType", sort_on='sortable_title')
-
-        if term and len(term) < 3:
-            # Items that start with A or AA
-            items = [s.getObject()
-                     for s in items
-                     if s.Title.lower().startswith(term)]
-            if not items:
-                # or, items that contain A or AA
-                items = [s.getObject()
-                         for s in items
-                         if s.Title.lower().find(term) > -1]
-        else:
-            # or, items that contain term.
-            items = [s.getObject()
-                     for s in items
-                     if s.Title.lower().find(term) > -1]
-
+        items = []
+        if not term:
+            return items
         samplepoint = self.request.get('samplepoint', '')
         if samplepoint and len(samplepoint) > 1:
             sp = bsc(portal_type="SamplePoint",Title=samplepoint)
             if not sp:
                 return json.dumps([])
             sp = sp[0].getObject()
-            new = [s for s in items if s in sp.getSampleTypes()]
-            if new:
-                items = new
+            items = sp.getSampleTypes()
+        if not items:
+            items = bsc(portal_type = "SampleType", sort_on='sortable_title')
+            if term and len(term) < 3:
+                # Items that start with A or AA
+                items = [s.getObject()
+                         for s in items
+                         if s.Title.lower().startswith(term)]
+                if not items:
+                    # or, items that contain A or AA
+                    items = [s.getObject()
+                             for s in items
+                             if s.Title.lower().find(term) > -1]
+            else:
+                # or, items that contain term.
+                items = [s.getObject()
+                         for s in items
+                         if s.Title.lower().find(term) > -1]
 
-        items = [s.Title() for s in items]
+        items = [callable(s.Title) and s.Title() or s.Title
+                 for s in items]
         return json.dumps(items)

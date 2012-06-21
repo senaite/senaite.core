@@ -2,18 +2,19 @@ from AccessControl import ModuleSecurityInfo, allow_module
 from DateTime import DateTime
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
+from Products.ATContentTypes.utils import DT2dt,dt2DT
 from Products.CMFPlone.TranslationServiceTool import TranslationServiceTool
 from Products.Five.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
 from bika.lims import interfaces
 from bika.lims import logger
 from bika.lims.config import POINTS_OF_CAPTURE
-from bika.lims.config import Publish
 from email.Utils import formataddr
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from reportlab.graphics.barcode import getCodes, getCodeNames, createBarcodeDrawing
 from zope.component import getUtility
 from zope.interface import providedBy
+from magnitude import mg, MagnitudeError
 import copy,re,urllib
 import json
 import plone.protect
@@ -107,6 +108,24 @@ def formatDateParms(context, date_id):
 
     return date_parms
 
+def formatDuration(context, totminutes):
+    """ Format a time period in a usable manner: eg. 3h24m
+    """
+    mins = totminutes % 60
+    hours = (totminutes - mins) / 60
+
+    if mins:
+        mins_str = '%sm' % mins
+    else:
+        mins_str = ''
+
+    if hours:
+        hours_str = '%sh' % hours
+    else:
+        hours_str = ''
+
+    return '%s%s' % (hours_str, mins_str)
+
 def TimeOrDate(context, datetime, long_format = False, with_time = True):
     """ Return the Time date is today,
         otherwise return the Date.
@@ -115,18 +134,36 @@ def TimeOrDate(context, datetime, long_format = False, with_time = True):
     localTimeFormat = context.portal_properties.site_properties.getProperty('localTimeFormat')
     localTimeOnlyFormat = context.portal_properties.site_properties.getProperty('localTimeOnlyFormat')
 
+    formatter = context.REQUEST.locale.dates.getFormatter('dateTime', 'long')
+
     if hasattr(datetime, 'Date'):
         if (datetime.Date() > DateTime().Date()) or long_format:
             if with_time:
-                dt = datetime.asdatetime().strftime(localLongTimeFormat)
+                dt = formatter.format(DT2dt(DateTime(datetime)))
+                # cut off the timezone
+                matches = re.match(r"(.*)\s\+.*", dt).groups()
+                dt = matches and matches[0] or dt
+                ##dt = datetime.asdatetime().strftime(localLongTimeFormat)
             else:
-                dt = datetime.asdatetime().strftime(localTimeFormat)
+                dt = formatter.format(DT2dt(DateTime(datetime)))
+                # cut off the time
+                matches = re.match(r"(.*)\s\d+:.*", dt).groups()
+                dt = matches and matches[0] or dt
+                ##dt = datetime.asdatetime().strftime(localTimeFormat)
         elif (datetime.Date() < DateTime().Date()):
-            dt = datetime.asdatetime().strftime(localTimeFormat)
+            dt = formatter.format(DT2dt(DateTime(datetime)))
+            # cut off the time
+            matches = re.match(r"(.*)\s\d+:.*", dt).groups()
+            dt = matches and matches[0] or dt
+            ##dt = datetime.asdatetime().strftime(localTimeFormat)
         elif datetime.Date() == DateTime().Date():
             dt = datetime.asdatetime().strftime(localTimeOnlyFormat)
         else:
-            dt = datetime.asdatetime().strftime(localTimeFormat)
+            dt = formatter.format(DT2dt(DateTime(datetime)))
+            # cut off the time
+            matches = re.match(r"(.*)\s\d+:.*", dt).groups()
+            dt = matches and matches[0] or dt
+            ##dt = datetime.asdatetime().strftime(localTimeFormat)
         dt = dt.replace("PM", "pm").replace("AM", "am")
         if len(dt) > 10:
             dt = dt.replace("12:00 am", "")
@@ -135,6 +172,7 @@ def TimeOrDate(context, datetime, long_format = False, with_time = True):
     else:
         dt = datetime
     return dt
+
 
 # encode_header function copied from roundup's rfc2822 package.
 hqre = re.compile(r'^[A-z0-9!"#$%%&\'()*+,-./:;<=>?@\[\]^_`{|}~ ]+$')
@@ -229,6 +267,22 @@ def pretty_user_email(context, userid):
     else:
         return member.getProperty('email')
 
+def logged_in_client(context, member=None):
+    if not member:
+        membership_tool=getToolByName(context, 'portal_membership')
+        member = membership_tool.getAuthenticatedMember()
+
+    client = None
+    groups_tool=context.portal_groups
+    member_groups = [groups_tool.getGroupById(group.id).getGroupName()
+                 for group in groups_tool.getGroupsByUserId(member.id)]
+
+    if 'Clients' in member_groups:
+        for obj in context.clients.objectValues("Client"):
+            if member.id in obj.users_with_local_role('Owner'):
+                client = obj
+    return client
+
 def changeWorkflowState(content, state_id, acquire_permissions=False,
                         portal_workflow=None, **kw):
     """Change the workflow state of an object
@@ -280,14 +334,14 @@ def changeWorkflowState(content, state_id, acquire_permissions=False,
     content.reindexObject(idxs=['allowedRolesAndUsers', 'review_state'])
     return
 
-class bsc_counter(BrowserView):
+class bika_bsc_counter(BrowserView):
     def __call__(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         return bsc.getCounter()
 
-class bsc_browserdata(BrowserView):
+class bika_browserdata(BrowserView):
     """Returns information about services from bika_setup_catalog.
-    This view is called from ./js/bika.js and it's output is cached
+    This view is called from ./js/utils.js and it's output is cached
     in browser localStorage.
     """
     def __call__(self):
@@ -336,9 +390,9 @@ class bsc_browserdata(BrowserView):
             deps = {}
             calc = service.getCalculation()
             if calc:
-                deps = calc.getCalculationDependencies()
-                def walk(deps):
-                    for depserv_uid, depserv_deps in deps.items():
+                td = calc.getCalculationDependencies()
+                def walk(td):
+                    for depserv_uid, depserv_deps in td.items():
                         if depserv_uid == uid:
                             continue
                         depserv = services[depserv_uid]
@@ -350,14 +404,19 @@ class bsc_browserdata(BrowserView):
                         srv = '%s_%s' % (depserv.UID(), depserv.Title())
                         if not deps.has_key(poc): deps[poc] = {}
                         if not deps[poc].has_key(cat): deps[poc][cat] = []
-                        deps[poc][cat].append(srv)
+                        if not srv in deps[poc][cat]:
+                            deps[poc][cat].append(srv)
                         if depserv_deps:
                             walk(depserv_deps)
-                walk(deps)
+                walk(td)
 
             ## Get partition setup records for this service
             separate = service.getSeparate()
             containers = service.getContainer()
+            containers.sort(lambda a,b:cmp(
+                int(a.getJSCapacity() and a.getJSCapacity().split(" ")[0] or '0'),
+                int(b.getJSCapacity() and b.getJSCapacity().split(" ")[0] or '0')
+            ))
             preservations = service.getPreservation()
             partsetup = service.getPartitionSetup()
 
@@ -369,6 +428,21 @@ class bsc_browserdata(BrowserView):
                 if partsetup[x].has_key('preservation') \
                    and type(partsetup[x]['preservation']) == str:
                     partsetup[x]['preservation'] = [partsetup[x]['preservation'],]
+                minvol = partsetup[x].get('vol', '0 g')
+                try:
+                    mgminvol = minvol.split(' ', 1)
+                    mgminvol = mg(float(mgminvol[0]), mgminvol[1])
+                except:
+                    mgminvol = mg(0, 'ml')
+                try:
+                    mgminvol = str(mgminvol.ounit('ml'))
+                except:
+                    pass
+                try:
+                    mgminvol = str(mgminvol.ounit('g'))
+                except:
+                    pass
+                partsetup[x]['vol'] = str(mgminvol)
 
             ## If no dependents, backrefs or partition setup exists
             ## nothing is stored for this service
@@ -395,34 +469,44 @@ class bsc_browserdata(BrowserView):
         ## SamplePoint and SampleType autocomplete lookups need a reference
         ## to resolve Title->UID
         data['st_uids'] = {}
-        for s in bsc(portal_type = 'SampleType',
+        for st_proxy in bsc(portal_type = 'SampleType',
                         inactive_review_state = 'active'):
-            s = s.getObject()
-            data['st_uids'][s.Title()] = {
-                'uid':s.UID(),
+            st = st_proxy.getObject()
+            data['st_uids'][st.Title()] = {
+                'uid':st.UID(),
+                'minvol': st.getJSMinimumVolume(),
+                'samplepoints': [sp.Title() for sp in st.getSamplePoints()]
             }
 
         data['sp_uids'] = {}
-        for s in bsc(portal_type = 'SamplePoint',
+        for sp_proxy in bsc(portal_type = 'SamplePoint',
                         inactive_review_state = 'active'):
-            s = s.getObject()
-            data['sp_uids'][s.Title()] = {
-                'uid':s.UID(),
-                'composite':s.getComposite(),
+            sp = sp_proxy.getObject()
+            data['sp_uids'][sp.Title()] = {
+                'uid':sp.UID(),
+                'composite':sp.getComposite(),
+                'sampletypes': [st.Title() for st in sp.getSampleTypes()]
             }
 
         data['containers'] = {}
-        for s in bsc(portal_type = 'Container'):
-            s = s.getObject()
-            data['containers'][s.UID()] = {
-                'title':s.Title(),
+        for c_proxy in bsc(portal_type = 'Container'):
+            c = c_proxy.getObject()
+            pres = c.getPreservation()
+            data['containers'][c.UID()] = {
+                'title':c.Title(),
+                'uid':c.UID(),
+                'containertype': c.getContainerType() and c.getContainerType().UID() or '',
+                'prepreserved':c.getPrePreserved(),
+                'preservation':pres and pres.UID() or '',
+                'capacity':c.getJSCapacity(),
             }
 
         data['preservations'] = {}
-        for s in bsc(portal_type = 'Preservation'):
-            s = s.getObject()
-            data['preservations'][s.UID()] = {
-                'title':s.Title(),
+        for p_proxy in bsc(portal_type = 'Preservation'):
+            p = p_proxy.getObject()
+            data['preservations'][p.UID()] = {
+                'title':p.Title(),
+                'uid':p.UID(),
             }
 
         return json.dumps(data)

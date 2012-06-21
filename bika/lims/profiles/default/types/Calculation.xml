@@ -25,7 +25,7 @@
          action_id="view"
          category="object"
          condition_expr=""
-         url_expr="string:${object/aq_parent/absolute_url}"
+         url_expr="string:${object_url}"
          i18n:attributes="title"
          i18n:domain="plone"
          visible="False">
@@ -39,8 +39,17 @@
          url_expr="string:${object_url}/edit"
          i18n:attributes="title"
          i18n:domain="plone"
-         visible="False">
+         visible="True">
     <permission value="Modify portal content"/>
  </action>
 
+ <action title="Log"
+         action_id="log"
+         category="object"
+         condition_expr=""
+         url_expr="string:${object_url}/log"
+         i18n:attributes="title"
+         visible="True">
+    <permission value="View"/>
+ </action>
 </object>

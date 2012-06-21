@@ -12,6 +12,7 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+
     <browser:page
       for="*"
       name="analysisservice_popup"

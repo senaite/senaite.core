@@ -120,22 +120,28 @@ schema = BikaSchema.copy() + Schema((
         expression = 'context.aq_parent.getClientOrderNumber()',
     ),
     ComputedField('Keyword',
-        expression = 'context.getService() and context.getService().getKeyword() or ""',
+        expression = 'context.getService().getKeyword()',
     ),
     ComputedField('ServiceTitle',
-        expression = 'context.getService() and context.getService().Title() or ""',
+        expression = 'context.getService().Title()',
     ),
     ComputedField('ServiceUID',
-        expression = 'context.getService() and context.getService().UID() or ""',
+        expression = 'context.getService().UID()',
+    ),
+    ComputedField('SampleTypeUID',
+        expression = 'context.aq_parent.getSample().getSampleType().UID()',
+    ),
+    ComputedField('SamplePointUID',
+        expression = 'context.aq_parent.getSample().getSamplePoint().UID()',
     ),
     ComputedField('CategoryUID',
-        expression = 'context.getService() and context.getService().getCategoryUID() or ""',
+        expression = 'context.getService().getCategoryUID()',
     ),
     ComputedField('CategoryTitle',
-        expression = 'context.getService() and context.getService().getCategoryTitle() or ""',
+        expression = 'context.getService().getCategoryTitle()',
     ),
     ComputedField('PointOfCapture',
-        expression = 'context.getService() and context.getService().getPointOfCapture()',
+        expression = 'context.getService().getPointOfCapture()',
     ),
     ComputedField('DateReceived',
         expression = 'context.aq_parent.getDateReceived()',
@@ -160,6 +166,30 @@ class Analysis(BaseContent):
         except ArchivistRetrieveError:
             return ""
         if s: return s.Title()
+
+    def updateDueDate(self):
+        # set the max hours allowed
+
+        service = self.getService()
+        maxtime = service.getMaxTimeAllowed()
+        if not maxtime:
+            maxtime = {'days':0, 'hours':0, 'minutes':0}
+        self.setMaxTimeAllowed(maxtime)
+        # set the due date
+        # default to old calc in case no calendars
+        max_days = float(maxtime.get('days', 0)) + \
+                 (
+                     (float(maxtime.get('hours', 0)) * 3600 + \
+                      float(maxtime.get('minutes', 0)) * 60)
+                     / 86400
+                 )
+        part = self.getSamplePartition()
+        starttime = part.getDateReceived()
+        if starttime:
+            duetime = starttime + max_days
+        else:
+            duetime = ''
+        self.setDueDate(duetime)
 
     def getUncertainty(self, result = None):
         """ Calls self.Service.getUncertainty with either the provided

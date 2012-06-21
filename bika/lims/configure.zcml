@@ -41,6 +41,13 @@
       replacement="bika.lims.controlpanel.overview.categories"
       />
 
+  <monkey:patch
+      description="This chops translated strings (from plone domain) into navtree titles."
+      class="plone.app.portlets.portlets.navigation.Renderer"
+      original="createNavTree"
+      replacement="bika.lims.navtree.createNavTree"
+      />
+
   <!-- jquery redirects here when values are entered into 'document' context (barcodes) -->
   <browser:page
     for="*"

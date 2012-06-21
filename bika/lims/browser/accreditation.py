@@ -12,7 +12,7 @@ class AccreditationView(AnalysisServicesView):
                               'getAccredited':True,
                               'inactive_state':'active'}
         self.context_actions = {}
-        self.icon = "++resource++bika.lims.images/accreditation_big.png"
+        self.icon = "++resource++bika.lims.images/accredited_big.png"
         self.title = _("Accreditation")
 
         lab = context.bika_setup.laboratory
@@ -34,12 +34,12 @@ class AccreditationView(AnalysisServicesView):
                     "accreditation body in ${labcountry}. ",
                     mapping = self.mapping)
         else:
-            msg = _("The lab is not accredited, or accreditation has not been configured. ")
-        translate = context.translation_service.translate
-        self.description = translate(msg)
+            msg = _("The lab is not accredited, or accreditation has not "
+                    "been configured. ")
+        self.description = context.translate(msg)
         msg = _("All Accredited analysis services are listed here.")
         self.description = "%s<p><br/>%s</p>"%(self.description,
-                                               translate(msg))
+                                               context.translate(msg))
 
         self.show_select_column = False
         request.set('disable_border', 1)
@@ -58,8 +58,10 @@ class AccreditationView(AnalysisServicesView):
         }
 
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
+             'transitions': [{'id':'empty'}, ], # none
              'columns': ['Title',
                          'Keyword',
                          'Category',
@@ -75,6 +77,6 @@ class AccreditationView(AnalysisServicesView):
         """
         cats = []
         for item in items:
-            if item['category'] not in cats:
+            if 'category' in item and item['category'] not in cats:
                 cats.append(item['category'])
         return cats

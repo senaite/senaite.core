@@ -11,28 +11,30 @@ from Products.CMFCore.permissions import AddPortalContent
 
 # Add Permissions:
 # ----------------
-AddClientFolder = 'BIKA: Add ClientFolder'
-AddClient = 'BIKA: Add Client'
-AddAnalysisRequest = 'BIKA: Add Analysis Request'
-AddSample = 'BIKA: Add Sample'
 AddARProfile = 'BIKA: Add ARProfile'
 AddARTemplate = 'BIKA: Add ARTemplate'
-AddAnalysisSpec = 'BIKA: Add AnalysisSpec'
 AddAnalysis = 'BIKA: Add Analysis'
+AddAnalysisRequest = 'BIKA: Add Analysis Request'
+AddAnalysisSpec = 'BIKA: Add AnalysisSpec'
+AddClient = 'BIKA: Add Client'
+AddClientFolder = 'BIKA: Add ClientFolder'
 AddMethod = 'BIKA: Add Method'
+AddSample = 'BIKA: Add Sample'
+AddSamplePartition = 'BIKA: Add SamplePartition'
 
 # Default Archetypes Add Permission
 ADD_CONTENT_PERMISSION = AddPortalContent
 
 # Add Permissions for specific types, if required
 ADD_CONTENT_PERMISSIONS = {
-    'Client': AddClient,
-    'AnalysisRequest': AddAnalysisRequest,
-    'Sample': AddSample,
-    'ARProfile': AddARProfile,
     'ARAnalysisSpec': AddAnalysisSpec,
+    'ARProfile': AddARProfile,
     'Analysis': AddAnalysis,
+    'AnalysisRequest': AddAnalysisRequest,
+    'Client': AddClient,
     'Method': AddMethod,
+    'Sample': AddSample,
+    'SamplePartition': AddSamplePartition,
 }
 
 # Very Old permissions:
@@ -66,7 +68,7 @@ ImportAnalysis = 'BIKA: Import Analysis'
 Retract = "BIKA: Retract"
 Verify = 'BIKA: Verify'
 VerifyOwnResults = 'BIKA: Verify own results'
-Publish = 'BIKA: Publish'
+PublishAR = 'BIKA: Publish'
 EditSample = 'BIKA: Edit Sample'
 EditAR = 'BIKA: Edit AR'
 ResultsNotRequested = 'BIKA: Results not requested'

@@ -12,25 +12,31 @@ from Products.validation.validators.RegexValidator import RegexValidator
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import HistoryAwareReferenceField
-from bika.lims.browser.widgets import ServicesWidget, RecordsWidget, DurationWidget
+from bika.lims.browser.widgets import DurationWidget
+from bika.lims.browser.widgets import PartitionSetupWidget
+from bika.lims.browser.widgets import RecordsWidget
+from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.config import ATTACHMENT_OPTIONS, PROJECTNAME, SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisService
 from magnitude import mg, MagnitudeError
-from zope.interface import implements
 from zope import i18n
+from zope.interface import implements
 import sys
 
 def getContainers(instance,
-                  preservation=None,
                   minvol=None,
                   allow_blank=True,
-                  container_type_entries=False):
+                  show_container_types=True,
+                  show_containers=True):
 
     """ Containers vocabulary
 
-    This is a separate class so that it can be called from ajax to
-    filter the container list.
+    This is a separate class so that it can be called from ajax to filter
+    the container list, as well as being used as the AT field vocabulary.
+
+    Returns a tuple of tuples: ((object_uid, object_title), ())
+    Objects in result can be containers, container types, or both.
 
     >>> bsc = self.portal.bika_setup_catalog
 
@@ -45,70 +51,48 @@ def getContainers(instance,
     False
 
     """
+
     bsc = getToolByName(instance, 'bika_setup_catalog')
-    if allow_blank:
-        items = [['','']]
-    else:
-        items = []
 
-    if not type(preservation) in (list, tuple):
-        preservation = [preservation,]
-    pres_c_types = []
-    for pres in preservation:
-        if pres:
-            for pres_ct in pres.getContainerType():
-                if pres_ct not in pres_c_types:
-                    pres_c_types.append(pres_ct)
+    items = allow_blank and [['', _('Any')]] or []
 
-    containers = {}
-    containers_notype = []
-    ctype_to_uid = {}
-    all_ctypes = [ct.title for ct in bsc(portal_type='ContainerType',
-                                         sort_on='sortable_title')]
+    containers = []
     for container in bsc(portal_type='Container', sort_on='sortable_title'):
         container = container.getObject()
-        if minvol:
+
+        # verify container capacity is large enough for required sample volume.
+        if minvol is not None:
+            capacity = container.getCapacity()
             try:
-                # If the units match, verify container is large enough.
-                # all other containers are considered valid
-                cvol = container.getCapacity()
-                cvol = cvol.split(" ")
-                cvol = mg(float(cvol[0]), " ".join(cvol[1:]).strip())
-                if cvol.out_unit == minvol.out_unit and cvol.val < minvol.val:
+                capacity = capacity.split(' ', 1)
+                capacity = mg(float(capacity[0]), capacity[1])
+                if capacity < minvol:
                     continue
-            except MagnitudeError:
+            except:
+                # if there's a unit conversion error, allow the container
+                # to be displayed.
                 pass
 
-        # This is to sort the container dropdown contents by type
-        ctype = container.getContainerType()
-        if ctype:
-            if ctype.Title() in all_ctypes:
-                all_ctypes.remove(ctype.Title())
-            # and discard those containers that don't match the preservation
-            # requirement
-            if pres_c_types and ctype not in pres_c_types:
-                continue
-            if ctype.Title() in containers:
-                containers[ctype.Title()].append((container.UID(), container.Title()))
-            else:
-                containers[ctype.Title()] = [(container.UID(), container.Title()),]
-                ctype_to_uid[ctype.Title()] = ctype.UID()
-        else:
-            if not pres_c_types:
-                containers_notype.append((container.UID(), container.Title()))
+        containers.append(container)
 
-    translate = instance.translation_service.translate
-    cat_str = translate(_('Container Type'))
+    if show_containers:
+        # containers with no containertype first
+        for container in containers:
+            if not container.getContainerType():
+                items.append((container.UID(), container.Title()))
 
-    for ctype in containers.keys():
-        if container_type_entries:
-            items.append([ctype_to_uid[ctype], "%s: %s"%(cat_str, ctype) ])
-        for container in containers[ctype]:
-            items.append(container)
-
-    # all remaining containers
-    for container in containers_notype:
-        items.append(list(container))
+    cat_str = instance.translate(_('Container Type'))
+    containertypes = [c.getContainerType() for c in containers]
+    containertypes = dict([(ct.UID(), ct.Title())
+                           for ct in containertypes if ct])
+    for ctype_uid, ctype_title in containertypes.items():
+        if show_container_types:
+            items.append((ctype_uid, "%s: %s"%(cat_str, ctype_title)))
+        if show_containers:
+            for container in containers:
+                ctype = container.getContainerType()
+                if ctype and ctype.UID() == ctype_uid:
+                    items.append((container.UID(), container.Title()))
 
     items = tuple(items)
     return items
@@ -118,23 +102,24 @@ class PartitionSetupField(RecordsField):
     _properties.update({
         'subfields': (
             'sampletype',
+            'separate',
             'preservation',
             'container',
-            'separate',
             'vol',
             #'retentionperiod',
             ),
         'subfield_labels': {
             'sampletype':_('Sample Type'),
+            'separate':_('Separate Container'),
             'preservation':_('Preservation'),
             'container':_('Container'),
-            'separate':_('Separate Partition'),
             'vol':_('Required Volume'),
             #'retentionperiod': _('Retention Period'),
             },
         'subfield_types': {
             'separate':'boolean',
-            'vol':'int',
+            'vol':'string',
+            'preservation':'sampletype',
             'container':'selection',
             'preservation':'selection',
             },
@@ -145,9 +130,9 @@ class PartitionSetupField(RecordsField):
             },
         'subfield_sizes': {
             'sampletype': 1,
-            'vol':5,
-            'container': 5,
-            'preservation':5,
+            'preservation':6,
+            'vol':8,
+            'container': 6,
             #'retentionperiod':10,
         }
     })
@@ -163,8 +148,6 @@ class PartitionSetupField(RecordsField):
                       sort_on = 'sortable_title'):
             st = st.getObject()
             title = st.Title()
-            if st.getUnit():
-                title += " %s"%(st.getUnit())
             items.append((st.UID(), title))
         items = [['','']] + list(items)
         return DisplayList(items)
@@ -183,15 +166,14 @@ class PartitionSetupField(RecordsField):
     security.declarePublic('Containers')
     def Containers(self, instance=None):
         instance = instance or self
-        items = getContainers(instance, allow_blank=False)
-        items = [['',_('Any')]] + list(items)
+        items = getContainers(instance, allow_blank=True)
         return DisplayList(items)
 
 registerField(PartitionSetupField, title = "", description = "")
 
 schema = BikaSchema.copy() + Schema((
     StringField('Unit',
-        schemata = PMF("Description"),
+        schemata = "Description",
         widget = StringWidget(
             label = _("Unit"),
             description = _("The measurement units for this analysis service' results, "
@@ -199,14 +181,14 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     IntegerField('Precision',
-        schemata = PMF("Analysis"),
+        schemata = "Analysis",
         widget = IntegerWidget(
             label = _("Precision as number of decimals"),
             description = _("Define the number of decimals to be used for this result"),
         ),
     ),
     BooleanField('ReportDryMatter',
-        schemata = PMF("Analysis"),
+        schemata = "Analysis",
         default = False,
         widget = BooleanWidget(
             label = _("Report as Dry Matter"),
@@ -214,7 +196,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('AttachmentOption',
-        schemata = PMF("Analysis"),
+        schemata = "Analysis",
         default = 'p',
         vocabulary = ATTACHMENT_OPTIONS,
         widget = SelectionWidget(
@@ -225,7 +207,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('Keyword',
-        schemata = PMF("Description"),
+        schemata = "Description",
         required = 1,
         searchable = True,
         validators = ('servicekeywordvalidator'),
@@ -238,7 +220,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceField('Method',
-        schemata = PMF("Method"),
+        schemata = "Method",
         required = 0,
         searchable = True,
         vocabulary_display_path_bound = sys.maxint,
@@ -253,7 +235,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceField('Instrument',
-        schemata = PMF("Method"),
+        schemata = "Method",
         searchable = True,
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
@@ -274,7 +256,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     HistoryAwareReferenceField('Calculation',
-        schemata = PMF("Method"),
+        schemata = "Method",
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
         vocabulary = 'getCalculations',
@@ -303,7 +285,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     DurationField('MaxTimeAllowed',
-        schemata = PMF("Analysis"),
+        schemata = "Analysis",
         widget = DurationWidget(
             label = _("Maximum turn-around time"),
             description = _("Maximum time allowed for completion of the analysis. "
@@ -311,7 +293,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     FixedPointField('DuplicateVariation',
-        schemata = PMF("Method"),
+        schemata = "Method",
         widget = DecimalWidget(
             label = _("Duplicate Variation %"),
             description = _("When the results of duplicate analyses on worksheets, "
@@ -320,7 +302,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     BooleanField('Accredited',
-        schemata = PMF("Method"),
+        schemata = "Method",
         default = False,
         widget = BooleanWidget(
             label = _("Accredited"),
@@ -329,7 +311,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('PointOfCapture',
-        schemata = PMF("Description"),
+        schemata = "Description",
         required = 1,
         default = 'lab',
         vocabulary = SERVICE_POINT_OF_CAPTURE,
@@ -343,7 +325,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceField('Category',
-        schemata = PMF("Description"),
+        schemata = "Description",
         required = 1,
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('AnalysisCategory',),
@@ -357,7 +339,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     FixedPointField('Price',
-        schemata = PMF("Description"),
+        schemata = "Description",
         default = '0.00',
         widget = DecimalWidget(
             label = _("Price (excluding VAT)"),
@@ -365,7 +347,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     # read access permission
     FixedPointField('CorporatePrice',
-        schemata = PMF("Description"),
+        schemata = "Description",
         default = '0.00',
         widget = DecimalWidget(
             label = _("Bulk price (excluding VAT)"),
@@ -373,7 +355,7 @@ schema = BikaSchema.copy() + Schema((
                         ),
         ),
     ComputedField('VATAmount',
-        schemata = PMF("Description"),
+        schemata = "Description",
         expression = 'context.getVATAmount()',
         widget = ComputedWidget(
             label = _("VAT"),
@@ -381,7 +363,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('TotalPrice',
-        schemata = PMF("Description"),
+        schemata = "Description",
         expression = 'context.getTotalPrice()',
         widget = ComputedWidget(
             label = _("Total price"),
@@ -389,7 +371,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     FixedPointField('VAT',
-        schemata = PMF("Description"),
+        schemata = "Description",
         default_method = 'getDefaultVAT',
         widget = DecimalWidget(
             label = _("VAT %"),
@@ -409,7 +391,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceField('Department',
-        schemata = PMF("Description"),
+        schemata = "Description",
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('Department',),
@@ -430,7 +412,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     RecordsField('Uncertainties',
-        schemata = PMF("Uncertainties"),
+        schemata = "Uncertainties",
         type = 'uncertainties',
         subfields = ('intercept_min', 'intercept_max', 'errorvalue'),
         required_subfields = ('intercept_min', 'intercept_max', 'errorvalue'),
@@ -452,31 +434,35 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     RecordsField('ResultOptions',
-        schemata = PMF("Result Options"),
+        schemata = "Result Options",
         type = 'resultsoptions',
         subfields = ('ResultValue','ResultText'),
         required_subfields = ('ResultValue','ResultText'),
         subfield_labels = {'ResultValue': _('Result Value'),
                            'ResultText': _('Display Value'),},
         subfield_validators = {'ResultValue': 'resultoptionsvalidator'},
+        subfield_sizes = {'ResultValue': 5,
+                           'ResultText': 25,
+                           },
         widget = RecordsWidget(
             label = _("Result Options"),
             description = _("Please list all options for the analysis result if you want to restrict "
                             "it to specific options only, e.g. 'Positive', 'Negative' and "
-                            "'Indeterminable'.  The option's result value must be a number."),
+                            "'Indeterminable'.  The option's result value must be a number"),
         ),
     ),
     BooleanField('Separate',
-        schemata = PMF('Partition Setup'),
+        schemata = 'Container and Preservation',
         default = False,
         required = 0,
         widget = BooleanWidget(
-            label = _('Separate Partition'),
-            description = _("This service will always be assigned it's own separate sample partition."),
+            label = _('Separate Container'),
+            description = _("Check this box to ensure a separate sample "
+                            "container is used for this analysis service"),
         ),
     ),
     ReferenceField('Preservation',
-        schemata = PMF('Partition Setup'),
+        schemata = 'Container and Preservation',
         allowed_types=('Preservation',),
         relationship='AnalysisServicePreservation',
         referenceClass=HoldingReference,
@@ -485,13 +471,16 @@ schema = BikaSchema.copy() + Schema((
         multiValued=1,
         widget = ReferenceWidget(
             checkbox_bound = 1,
-            label = _('Preservation'),
-            description = _("Service partition will always require one of the selected preservation methods"),
+            label = _('Default Preservation'),
+            description = _("Select a default preservation for this this "
+                            "analysis service. If the preservation depends on "
+                            "the sample type combination, specify a preservation "
+                            "per sample type in the table below"),
         ),
     ),
     ReferenceField('Container',
-        schemata = PMF('Partition Setup'),
-        allowed_types=('Container',),
+        schemata = 'Container and Preservation',
+        allowed_types=('Container','ContainerType'),
         relationship='AnalysisServiceContainer',
         referenceClass=HoldingReference,
         vocabulary = 'getContainers',
@@ -499,29 +488,31 @@ schema = BikaSchema.copy() + Schema((
         multiValued=1,
         widget = ReferenceWidget(
             checkbox_bound = 1,
-            label = _('Container'),
-            description = _("Service partition will always be stored in one of the selected containers"),
+            label = _('Default Container'),
+            description = _("Select the default container to be used for this "
+                            "analysis service. If the container to be used "
+                            "depends on the sample type and preservation "
+                            "combination, specify the container in the sample "
+                            "type table below"),
         ),
     ),
     PartitionSetupField('PartitionSetup',
-        schemata = PMF('Partition Setup'),
-        widget = RecordsWidget(
-            label = PMF("Partition Setup"),
-            description = _("Select any combination of these fields to configure how "
-                            "the LIMS will create sample partitions for new ARs. "
-                            "Adding only a few very general rules will cause the empty "
-                            "fields to be set to computed, empty or default values. "
-                            "Values set above take precendence over those set in this table."),
+        schemata = 'Container and Preservation',
+        widget = PartitionSetupWidget(
+            label = PMF("Preservation per sample type"),
+            description = _("Please specify preservations that differ from the "
+                            "analysis service's default preservation per sample "
+                            "type here."),
         ),
     ),
 ))
 
 schema['id'].widget.visible = False
-schema['description'].schemata = PMF('Description')
+schema['description'].schemata = 'Description'
 schema['description'].widget.visible = True
 schema['title'].required = True
 schema['title'].widget.visible = True
-schema['title'].schemata = PMF('Description')
+schema['title'].schemata = 'Description'
 
 class AnalysisService(BaseContent, HistoryAwareMixin):
     security = ClassSecurityInfo()
@@ -682,13 +673,14 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
 
     security.declarePublic('getContainers')
     def getContainers(self, instance=None):
-        # On first render, the containers must be limited according to
-        # self.Preservation(). After that, the JS takes care of it with
-        # getContainers above.
+        # On first render, the containers must be filtered
         instance = instance or self
-        return DisplayList(getContainers(instance,
-                                         preservation=self.getPreservation(),
-                                         allow_blank=False))
+        separate = self.getSeparate()
+        containers = getContainers(instance,
+                                   allow_blank=True,
+                                   show_container_types=not separate,
+                                   show_containers=separate)
+        return DisplayList(containers)
 
     def getPreservations(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
@@ -698,8 +690,4 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
-##    def getMethod(self, **kw):
-##        item = self.Schema()['Method'].get(self)
-##        return item
-##
 registerType(AnalysisService, PROJECTNAME)

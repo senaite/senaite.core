@@ -49,7 +49,7 @@ LABEL_AUTO_SIZES = DisplayList((
 
 schema = BikaFolderSchema.copy() + Schema((
     IntegerField('PasswordLifetime',
-        schemata = PMF("Security"),
+        schemata = "Security",
         required = 1,
         default = 0,
         widget = IntegerWidget(
@@ -58,7 +58,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     IntegerField('AutoLogOff',
-        schemata = PMF("Security"),
+        schemata = "Security",
         required = 1,
         default = 0,
         widget = IntegerWidget(
@@ -68,7 +68,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     StringField('Currency',
-        schemata = PMF("Accounting"),
+        schemata = "Accounting",
         required = 1,
         vocabulary = CURRENCIES,
         default = 'ZAR',
@@ -79,7 +79,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     FixedPointField('MemberDiscount',
-        schemata = PMF("Accounting"),
+        schemata = "Accounting",
         default = '33.33',
         widget = DecimalWidget(
             label = _("Member discount %"),
@@ -89,7 +89,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     FixedPointField('VAT',
-        schemata = PMF("Accounting"),
+        schemata = "Accounting",
         default = '14.00',
         widget = DecimalWidget(
             label = _("VAT %"),
@@ -98,7 +98,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     IntegerField('MinimumResults',
-        schemata = PMF("Results Reports"),
+        schemata = "Results Reports",
         required = 1,
         default = 5,
         widget = IntegerWidget(
@@ -109,7 +109,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     IntegerField('BatchEmail',
-        schemata = PMF("Results Reports"),
+        schemata = "Results Reports",
         required = 1,
         default = 5,
         widget = IntegerWidget(
@@ -120,7 +120,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     IntegerField('BatchFax',
-        schemata = PMF("Results Reports"),
+        schemata = "Results Reports",
         required = 1,
         default = 4,
         widget = IntegerWidget(
@@ -131,7 +131,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     # XXX stringfield, chars to strip from cell number
     StringField('SMSGatewayAddress',
-        schemata = PMF("Results Reports"),
+        schemata = "Results Reports",
         required = 0,
         widget = StringWidget(
             label = _("SMS Gateway Email Address"),
@@ -141,7 +141,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     BooleanField('SamplingWorkflowEnabled',
-        schemata = PMF("Analyses"),
+        schemata = "Analyses",
         default = False,
         widget = BooleanWidget(
             label = _("Enable the Sampling workflow"),
@@ -149,16 +149,16 @@ schema = BikaFolderSchema.copy() + Schema((
         ),
     ),
     BooleanField('CategoriseAnalysisServices',
-        schemata = PMF("Analyses"),
+        schemata = "Analyses",
         default = False,
         widget = BooleanWidget(
-            label = _("Categorise Analysis Services"),
-            description = _("If there are many analysis services, the control "
-                            "panel view can group services by category")
+            label = _("Categorise analysis services setup list"),
+            description = _("Group analysis services by category in the LIMS set-up, "
+                            "helpful when the list is long")
         ),
     ),
     ReferenceField('DryMatterService',
-        schemata = PMF("Analyses"),
+        schemata = "Analyses",
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('AnalysisService',),
@@ -171,9 +171,10 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     LinesField('ARImportOption',
-        schemata = PMF("Analyses"),
+        schemata = "Analyses",
         vocabulary = ARIMPORT_OPTIONS,
         widget = MultiSelectionWidget(
+            visible = False,
             label = _("AR Import options"),
             description = _("'Classic' indicates importing analysis requests per sample and "
                             "analysis service selection. With 'Profiles', analysis profile keywords "
@@ -181,7 +182,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     StringField('ARAttachmentOption',
-        schemata = PMF("Analyses"),
+        schemata = "Analyses",
         default = 'p',
         vocabulary = ATTACHMENT_OPTIONS,
         widget = SelectionWidget(
@@ -192,7 +193,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     StringField('AnalysisAttachmentOption',
-        schemata = PMF("Analyses"),
+        schemata = "Analyses",
         default = 'p',
         vocabulary = ATTACHMENT_OPTIONS,
         widget = SelectionWidget(
@@ -203,7 +204,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     DurationField('DefaultSampleLifetime',
-        schemata = PMF("Analyses"),
+        schemata = "Analyses",
         required = 1,
         default = {"days":30, "hours":0, "minutes":0},
         widget = DurationWidget(
@@ -213,29 +214,28 @@ schema = BikaFolderSchema.copy() + Schema((
                             "in the sample types setup"),
         )
     ),
-    LinesField('AutoPrintLabels',
-        schemata = PMF("Labels"),
+    StringField('AutoPrintLabels',
+        schemata = "Labels",
         vocabulary = LABEL_AUTO_OPTIONS,
         widget = SelectionWidget(
             format = 'select',
-            label = _("Automatic AR label printing"),
+            label = _("Automatic label printing"),
             description = _("Select 'Register' if you want labels to be automatically printed when "
-                            "new ARs are created.  Select 'Receive' to print labels when the 'Receive' "
-                            "transition is invoked on ARs or Samples.  Select None to disable automatic "
-                            "printing"),
+                            "new ARs or sample records are created. Select 'Receive' to print labels "
+                            "when ARs or Samples are received. Select 'None' to disable automatic printing"),
         )
     ),
-    LinesField('AutoLabelSize',
-        schemata = PMF("Labels"),
+    StringField('AutoLabelSize',
+        schemata = "Labels",
         vocabulary = LABEL_AUTO_SIZES,
         widget = SelectionWidget(
             format = 'select',
-            label = _("Automatic AR label sizes"),
-            description = _("Select the size label to print if Automatic label printing is enabled."),
+            label = _("Label sizes"),
+            description = _("Select the which label to print when automatic label printing is enabled"),
         )
     ),
     PrefixesField('Prefixes',
-        schemata = PMF("ID Server"),
+        schemata = "ID Server",
         default = [{'portal_type': 'ARImport', 'prefix': 'B', 'padding': '3'},
                    {'portal_type': 'Client', 'prefix': 'client', 'padding': '0'},
                    {'portal_type': 'DuplicateAnalysis', 'prefix': 'DA', 'padding': '0'},
@@ -249,24 +249,26 @@ schema = BikaFolderSchema.copy() + Schema((
 #        fixedSize=8,
         widget=RecordsWidget(
             label = _("Prefixes"),
-            description = _("Define the prefixes for the unique sequential IDs the system issues "
-                            "for objects such as samples and analysis requests. In the 'Padding' "
-                            "field, indicate with how many leading zeros the numbers must be padded. "
-                            "E.g. a prefix of AR with padding of 4 for analysis requests, will see "
-                            "them numbered from AR0001 to AR9999."),
+            description = _("Define the prefixes for the unique sequential IDs the system issues for "
+                            "objects. In the 'Padding' field, indicate with how many leading zeros the "
+                            "numbers must be padded. E.g. a prefix of WS for worksheets with padding of "
+                            "4, will see them numbered from WS-0001 to WS-9999. NB: Note that samples "
+                            "and analysis requests are prefixed with sample type abbreviations and are "
+                            "not configured in this table - their padding can be set in the specified "
+                            "fields below"),
             allowDelete=False,
         )
     ),
     BooleanField('YearInPrefix',
-        schemata = PMF("ID Server"),
+        schemata = "ID Server",
         default = False,
         widget = BooleanWidget(
             label = _("Include year in ID prefix"),
-            description = _("Adds a two-digit year after the ID prefix.")
+            description = _("Adds a two-digit year after the ID prefix")
         ),
     ),
     IntegerField('SampleIDPadding',
-        schemata = PMF("ID Server"),
+        schemata = "ID Server",
         required = 1,
         default = 4,
         widget = IntegerWidget(
@@ -275,7 +277,7 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     IntegerField('ARIDPadding',
-        schemata = PMF("ID Server"),
+        schemata = "ID Server",
         required = 1,
         default = 2,
         widget = IntegerWidget(
@@ -284,16 +286,16 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     BooleanField('ExternalIDServer',
-        schemata = PMF("ID Server"),
+        schemata = "ID Server",
         default = False,
         widget = BooleanWidget(
             label = _("Use external ID server"),
             description = _("Check this if you want to use a separate ID server. "
-                            "Prefixes are configurable separately in each Bika site.")
+                            "Prefixes are configurable separately in each Bika site")
         ),
     ),
     StringField('IDServerURL',
-        schemata = PMF("ID Server"),
+        schemata = "ID Server",
         widget = StringWidget(
             label = _("ID Server URL"),
             description = _("The full URL: http://URL/path:port")

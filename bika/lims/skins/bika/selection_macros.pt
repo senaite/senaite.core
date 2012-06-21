@@ -20,7 +20,7 @@
 
         <tal:clients
             tal:repeat="client clients">
-        <option uvalue=""
+        <option value=""
             tal:define="client_uid python:client.getObject().UID()"
             tal:attributes="value client_uid;
                 selected python:request.get('getClientUID', '') == client_uid and 'selected' or ''"
@@ -29,7 +29,275 @@
         </tal:clients>
     </select>
 </div>
+</div>
 
+<div metal:define-macro="contact"
+        tal:define="clients python:here.portal_catalog(portal_type='Client',
+                sort_on='sortable_title');"
+        >
+<div class="field" tal:condition="not:here/member_is_client">
+    <label i18n:translate=""
+        >Contact</label><br/>
+    <select name="getClientUID:ignore_empty"
+            style=""
+            id="getClientUID"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+        <option value=""/>
+
+        <tal:clients
+            tal:repeat="client clients">
+        <option value=""
+            tal:define="client_uid python:client.getObject().UID()"
+            tal:attributes="value client_uid;
+                selected python:request.get('getClientUID', '') == client_uid and 'selected' or ''"
+            tal:content="client/Title"></option>
+
+        </tal:clients>
+    </select>
+</div>
+</div>
+
+<div metal:define-macro="profiles"
+        tal:define="clients python:here.portal_catalog(portal_type='Client',
+                sort_on='sortable_title');"
+        >
+<div class="field" tal:condition="not:here/member_is_client">
+    <label i18n:translate=""
+        >Profile</label><br/>
+    <select name="getClientUID:ignore_empty"
+            style=""
+            id="getClientUID"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+        <option value=""/>
+
+        <tal:clients
+            tal:repeat="client clients">
+        <option value=""
+            tal:define="client_uid python:client.getObject().UID()"
+            tal:attributes="value client_uid;
+                selected python:request.get('getClientUID', '') == client_uid and 'selected' or ''"
+            tal:content="client/Title"></option>
+
+        </tal:clients>
+    </select>
+</div>
+</div>
+
+<div metal:define-macro="sampletype"
+        tal:define="sampletypes python:here.bika_setup_catalog(
+                        portal_type='SampleType',
+                        sort_on='sortable_title');
+                    nullable nullable | python:1;"
+        >
+<div class="field" >
+    <label i18n:translate=""
+        >Sample type</label><br/>
+    <select name="getSampleTypeUID:ignore_empty"
+            style=""
+            id="getClientUID"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+        <option tal:condition="python:nullable" value=""/>
+
+        <tal:clients
+            tal:repeat="sampletype sampletypes">
+        <option value=""
+            tal:define="sampletype_uid python:sampletype.UID"
+            tal:attributes="value sampletype_uid;
+                selected python:request.get('getSampeTypeUID', '') == sampletype_uid and 'selected' or ''"
+            tal:content="sampletype/Title"></option>
+
+        </tal:clients>
+    </select>
+</div>
+</div>
+
+<div metal:define-macro="samplepoint"
+        tal:define="samplepoints python:here.bika_setup_catalog(
+                        portal_type='SamplePoint',
+                        sort_on='sortable_title');
+                    nullable nullable | python:1;"
+        >
+<div class="field">
+    <label i18n:translate=""
+        >Sample point</label><br/>
+    <select name="getSamplePointUID:ignore_empty"
+            style=""
+            id="getSamplePointUID"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+        <option tal:condition="python:nullable"
+                value=""/>
+
+        <tal:clients
+            tal:repeat="samplepoint samplepoints">
+        <option value=""
+            tal:define="samplepoint_uid python:samplepoint.UID"
+            tal:attributes="value samplepoint_uid;
+                selected python:request.get('getSamplePointUID', '') == samplepoint_uid and 'selected' or ''"
+            tal:content="samplepoint/Title"></option>
+
+        </tal:clients>
+    </select>
+</div>
+</div>
+
+<div metal:define-macro="category"
+        tal:define="categories python:here.bika_setup_catalog(
+                        portal_type='AnalysisCategory',
+                        sort_on='sortable_title');"
+        >
+<div class="field" >
+    <label i18n:translate=""
+        >Analysis category</label><br/>
+    <select name="getCategoryUID:ignore_empty"
+            style=""
+            id="getCategoryUID"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+        <option value=""/>
+
+        <tal:categories
+            tal:repeat="category categories">
+        <option value=""
+            tal:define="category_uid python:category.UID"
+            tal:attributes="value category_uid;
+                selected python:request.get('getCategoryUID', '') == category_uid and 'selected' or ''"
+            tal:content="category/Title"></option>
+
+        </tal:categories>
+    </select>
+</div>
+</div>
+
+<div metal:define-macro="analyst"
+        tal:define="analysts view/getAnalysts">
+<div class="field" >
+    <label i18n:translate=""
+        >Analyst</label><br/>
+    <select name="Analyst"
+            style=""
+            id="Analyst"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+        <tal:analysts
+            tal:repeat="analyst analysts">
+        <option value=""
+            tal:attributes="
+                value python:analyst;
+                selected python:request.get('getAnalyst', '')
+                                         == analyst and 'selected' or ''"
+            tal:content="python:analysts.getValue(analyst)"></option>
+
+        </tal:analysts>
+    </select>
+</div>
+</div>
+
+<div metal:define-macro="instrument"
+        tal:define="instruments python:here.bika_setup_catalog(
+                        portal_type='Instrument',
+                        sort_on='sortable_title');"
+        >
+<div class="field" >
+    <label i18n:translate=""
+        >Instrument</label><br/>
+    <select name="getInstrumentUID:ignore_empty"
+            style=""
+            id="getInstrumentUID"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+        <option value=""/>
+
+        <tal:instruments
+            tal:repeat="instrument instruments">
+        <option value=""
+            tal:define="instrument_uid python:instrument.UID"
+            tal:attributes="value instrument_uid;
+                selected python:request.get('getInstrumentUID', '') == instrument_uid and 'selected' or ''"
+            tal:content="instrument/Title"></option>
+
+        </tal:instruments>
+    </select>
+</div>
+</div>
+
+<div metal:define-macro="period"
+        tal:define="periods python:['Day', 'Week', 'Month' ]"
+        >
+<div class="field" >
+    <label i18n:translate=""
+        >Period</label><br/>
+    <select name="Period:ignore_empty"
+            style=""
+            id="Period"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+
+        <tal:periods
+            tal:repeat="period periods">
+        <option value=""
+            tal:attributes="
+                value python:period;
+                selected python:request.get('period', '') == period and 'selected' or ''"
+            tal:content="period"></option>
+
+        </tal:periods>
+    </select>
+</div>
+</div>
+
+<div metal:define-macro="analysisservice"
+        tal:define="services python:here.bika_setup_catalog(
+                        portal_type='AnalysisService',
+                        sort_on='sortable_title');
+                    nullable nullable | python: 1;
+                    multiselect multiselect | python: 0"
+        >
+<div class="field">
+    <label i18n:translate=""
+        >Analysis service</label><br/>
+    <select name="getServiceUID:ignore_empty"
+            multiple=""
+            style=""
+            id="getServiceUID"
+            tal:attributes="
+            style string:font-family:${here/base_properties/fontFamily};;font-size:100%;
+                multiple multiselect">
+
+        <option tal:condition="python:nullable"  value=""/>
+
+        <tal:services
+            tal:repeat="service services">
+        <option value=""
+            tal:define="service_uid python:service.UID"
+            tal:attributes="value service_uid;
+                selected python:request.get('getServiceUID', '') == service_uid and 'selected' or ''"
+            tal:content="service/Title"></option>
+
+        </tal:services>
+    </select>
+</div>
+</div>
+
+<div metal:define-macro="submittedby"
+        tal:define="clients python:here.portal_catalog(portal_type='Client',
+                sort_on='sortable_title');"
+        >
+<div class="field" tal:condition="not:here/member_is_client">
+    <label i18n:translate=""
+        >Submitted by</label><br/>
+    <select name="getClientUID:ignore_empty"
+            style=""
+            id="getClientUID"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+        <option value=""/>
+
+        <tal:clients
+            tal:repeat="client clients">
+        <option value=""
+            tal:define="client_uid python:client.getObject().UID()"
+            tal:attributes="value client_uid;
+                selected python:request.get('getClientUID', '') == client_uid and 'selected' or ''"
+            tal:content="client/Title"></option>
+
+        </tal:clients>
+    </select>
+</div>
 </div>
 
 <div metal:define-macro="date">
@@ -42,7 +310,7 @@
     <tal:date tal:define="
          input_id python:'%s_fromdate' %date_id;
          input_name input_id">
-        <input class='datepicker_nofuture' size="10" type='text' readonly="readonly"
+        <input class='datepicker_2months' size="10" type='text' readonly="readonly"
                 tal:attributes="
                     value python:'';
                     id input_id;
@@ -56,7 +324,7 @@
     <tal:date tal:define="
          input_id python:'%s_todate' %date_id;
          input_name input_id">
-        <input class='datepicker_nofuture' size="10" type='text' readonly="readonly"
+        <input class='datepicker_2months' size="10" type='text' readonly="readonly"
                 tal:attributes="
                     value python:'';
                     id input_id;
@@ -67,6 +335,23 @@
     </table>
 </div>
 </div>
+
+<div metal:define-macro="spec">
+<div class="field">
+    <label i18n:translate="label_specification"
+        >Specification</label><br/>
+<tal:specs tal:define="specs python:['client', 'lab']">
+    <tal:x repeat="spec specs">
+    <input class="noborder" type="radio" name="spec" value="client"
+        tal:attributes="value spec;
+            checked python:request.get('spec', 'client') == spec and 'checked' or None"/>
+    <span tal:content="spec" i18n:translate="">Client</span>
+    </tal:x>
+</tal:specs>
+</div>
+</div>
+
+
 
 <div metal:define-macro="review_state"
         tal:define="review_states here/analysis_workflow_states">

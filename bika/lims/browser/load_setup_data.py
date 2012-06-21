@@ -4,7 +4,9 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from bika.lims import PMF, logger
+from bika.lims import PMF
+from bika.lims import logger
+from bika.lims.idserver import renameAfterCreation
 from bika.lims.utils import sortable_title
 from cStringIO import StringIO
 from openpyxl.reader.excel import load_workbook
@@ -45,28 +47,33 @@ class LoadSetupData(BrowserView):
             return self.template()
 
         self.portal_catalog = getToolByName(self.context, 'portal_catalog')
+        self.bc = bsc = getToolByName(self.context, 'bika_catalog')
         self.bsc = bsc = getToolByName(self.context, 'bika_setup_catalog')
         self.reference_catalog = getToolByName(self.context, REFERENCE_CATALOG)
         self.portal_registration = getToolByName(self.context, 'portal_registration')
         self.portal_groups = getToolByName(self.context, 'portal_groups')
         self.portal_membership = getToolByName(self.context, 'portal_membership')
-        translate = self.context.translation_service.translate
         self.plone_utils = getToolByName(self.context, 'plone_utils')
         portal = getSite()
 
         file_name = 'xlsx' in form and form['xlsx'] or None
         if not file_name:
-            msg = translate(_("No file data submitted.  Please submit a valid Open XML Spreadsheet (.xlsx) file."))
+            msg = self.context.translate(
+                _("No file data submitted.  Please submit a valid Open "
+                  "XML Spreadsheet (.xlsx) file."))
             self.plone_utils.addPortalMessage(msg)
             return self.template()
 
         self.file_name = file_name
 
-        wb = load_workbook(filename = resource_filename("bika.lims", "setupdata/%s.xlsx"%file_name))
+        filename = resource_filename("bika.lims",
+                                     "setupdata/%s.xlsx"%file_name)
+        wb = load_workbook(filename = filename)
 
         sheets = {}
         for sheetname in wb.get_sheet_names():
             sheets[sheetname] = wb.get_sheet_by_name(sheetname)
+        self.load_lab_information(sheets['Lab Information'])
         self.load_lab_users(sheets['Lab Users'])
         self.load_lab_contacts(sheets['Lab Contacts'])
         self.load_lab_departments(sheets['Lab Departments'])
@@ -164,7 +171,8 @@ class LoadSetupData(BrowserView):
             obj = folder[_id]
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']))
-            obj.processForm()
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
             self.containertypes[unicode(row['title'])] = obj
 
 
@@ -182,14 +190,16 @@ class LoadSetupData(BrowserView):
             _id = folder.invokeFactory('Preservation', id = 'tmp')
             obj = folder[_id]
             containertypes = []
-            for ct in row['ContainerType'].split(","):
-                containertypes.append(self.containertypes[ct.strip()])
+            if row['ContainerType']:
+                for ct in row['ContainerType'].split(","):
+                    containertypes.append(self.containertypes[ct.strip()])
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
                      RetentionPeriod = row['RetentionPeriod'] and eval(row['RetentionPeriod']) or {},
                      ContainerType = containertypes
                      )
-            obj.processForm()
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
             self.preservations[unicode(row['title'])] = obj
 
 
@@ -214,9 +224,40 @@ class LoadSetupData(BrowserView):
                          and self.containertypes[row['ContainerType']] or None,
                      PrePreserved = row['PrePreserved'] and row['PrePreserved'] or False,
                      Preservation = P and self.preservations[P] or None)
-            obj.processForm()
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
             self.containers[unicode(row['title'])] = obj
 
+
+    def load_lab_information(self, sheet):
+        self.departments = {}
+        laboratory = self.context.bika_setup.laboratory
+        nr_rows = sheet.get_highest_row()
+        nr_cols = sheet.get_highest_column()
+##        self.request.response.write("<input type='hidden' id='load_section' value='Lab Information' max='1'/>")
+##        self.request.response.flush()
+
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value
+                for col_nr in range(nr_cols + 1)]
+                        for row_nr in range(nr_rows)]
+
+        lab_info = {}
+        for row in rows:
+            lab_info[row[2]] = row[1]
+
+        laboratory.edit(
+            Name = unicode(lab_info['Name']),
+            TaxNumber = unicode(lab_info['TaxNumber']),
+            Phone = unicode(lab_info['Phone']),
+            EmailAddress = unicode(lab_info['EmailAddress']),
+            LabURL = unicode(lab_info['LabURL']),
+            Confidence = unicode(lab_info['Confidence']),
+            LaboratoryAccredited = lab_info['LaboratoryAccredited'],
+            AccreditationBody = unicode(lab_info['AccreditationBody']),
+            AccreditationBodyLong = unicode(lab_info['AccreditationBodyLong']),
+            Accreditation = unicode(lab_info['Accreditation']),
+            AccreditationReference = unicode(lab_info['AccreditationReference']),
+            PhysicalAddress = unicode(lab_info['PhysicalAddress'])),
 
     def load_lab_users(self, sheet):
         portal_registration = getToolByName(self.context, 'portal_registration')
@@ -245,8 +286,7 @@ class LoadSetupData(BrowserView):
             for group_id in group_ids:
                 group = portal_groups.getGroupById(group_id)
                 if not group:
-                    translate = self.context.translation_service.translate
-                    message = translate(
+                    message = self.context.translate(
                         "message_invalid_group",
                         "bika",
                         {'group_id': group_id},
@@ -273,7 +313,8 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             _id = folder.invokeFactory('LabContact', id='tmp')
             obj = folder[_id]
-            obj.processForm()
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
             Fullname = unicode(row['Firstname']) + " " + unicode(row['Surname'])
             obj.edit(
                 title = Fullname,
@@ -318,7 +359,8 @@ class LoadSetupData(BrowserView):
                      description = unicode(row['description']),
                      Manager = manager.UID())
             self.departments[unicode(row['title'])] = obj
-            obj.processForm()
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
 
             # set importedlab contact's department references
             if hasattr(self, 'lab_contacts'):
@@ -346,7 +388,8 @@ class LoadSetupData(BrowserView):
                      EmailAddress = unicode(row['EmailAddress']),
                      Phone = unicode(row['Telephone']),
                      Fax = unicode(row['Fax']))
-            obj.processForm()
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
 
 
     def load_client_contacts(self, sheet):
@@ -410,7 +453,8 @@ class LoadSetupData(BrowserView):
                 group = self.context.portal_groups.getGroupById('Clients')
                 group.addMember(row['Username'])
 
-            contact.processForm()
+            contact.unmarkCreationFlag()
+            renameAfterCreation(contact)
 
     def fix_client_contact_ccs(self):
         for row in self.client_contacts:
@@ -445,7 +489,8 @@ class LoadSetupData(BrowserView):
                      CalibrationExpiryDate = unicode(row['CalibrationExpiryDate']),
                      DataInterface = row['DataInterface'])
             self.instruments[unicode(row['title'])] = obj
-            obj.processForm()
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
 
 
     def load_sample_points(self, sheet):
@@ -474,8 +519,8 @@ class LoadSetupData(BrowserView):
                      Latitude = latitude,
                      Longitude = longitude,
                      Elevation = unicode(row['Elevation']))
-            obj.processForm()
-
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
 
     def load_sample_types(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -495,9 +540,10 @@ class LoadSetupData(BrowserView):
                      description = unicode(row['description']),
                      RetentionPeriod = row['RetentionPeriod'] and eval(row['RetentionPeriod']) or {},
                      Prefix = unicode(row['Prefix']),
-                     Unit = unicode(row['Unit']),
+                     MinimumVolume = unicode(row['MinimumVolume']),
                      Hazardouus = row['Hazardous'] and True or False)
-            obj.processForm()
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
 
     def load_analysis_categories(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -515,8 +561,8 @@ class LoadSetupData(BrowserView):
                      description = unicode(row['description']),
                      Department = row['Department'] and self.departments[unicode(row['Department'])].UID() or None)
             self.cats[unicode(row['title'])] = obj
-            obj.processForm()
-
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
 
     def load_methods(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -546,7 +592,8 @@ class LoadSetupData(BrowserView):
                 file_data = open(path, "rb").read()
                 obj.setMethodDocument(file_data)
 
-            obj.processForm()
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
             self.methods[unicode(row['title'])] = obj
 
     def CreateServiceObjects(self, services):
@@ -595,7 +642,8 @@ class LoadSetupData(BrowserView):
                 obj.setCalculation(self.calcs[row['Calculation']])
             service_obj = obj
             self.services[row['Keyword']] = obj
-            obj.processForm()
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
 
     def load_analysis_services(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -671,7 +719,8 @@ class LoadSetupData(BrowserView):
                 obj.setInterimFields(obj.getInterimFields() + row['_interim'])
             calc_obj = obj
             self.calcs[row['title']] = obj
-            obj.processForm()
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
 
 
     def load_calculations(self, sheet):
@@ -711,7 +760,8 @@ class LoadSetupData(BrowserView):
                      description = unicode(row['description']),
                      Service = [s.UID for s in proxies],
                      ProfileKey = unicode(row['ProfileKey']))
-            obj.processForm()
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
 
 
     def load_reference_definitions(self, sheet):
@@ -732,7 +782,8 @@ class LoadSetupData(BrowserView):
                          description = unicode(row['description']),
                          Blank = row['Blank'] and True or False,
                          Hazardous = row['Hazardous'] and True or False)
-                obj.processForm()
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
                 self.definitions[unicode(row['title'])] = obj.UID()
             service = self.services[row['keyword']]
             try: result = int(row['result'])
@@ -767,8 +818,8 @@ class LoadSetupData(BrowserView):
                 SampleType = self.sampletypes[row['SampleType']]
                 obj.edit(SampleType = SampleType.UID(),
                          title = row['SampleType'])
-                obj.processForm()
-
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
             else:
                 ResultsRange.append({'keyword': row['keyword'],
                                      'min': str(row['min']),
@@ -792,7 +843,8 @@ class LoadSetupData(BrowserView):
                      EmailAddress = unicode(row['EmailAddress']),
                      Phone = unicode(row['Phone']),
                      Fax = unicode(row['Fax']))
-            obj.processForm()
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
 
 
     def load_reference_supplier_contacts(self, sheet):
@@ -813,7 +865,8 @@ class LoadSetupData(BrowserView):
             obj.edit(Firstname = unicode(row['Firstname']),
                      Surname = unicode(row['Surname']),
                      EmailAddress = unicode(row['EmailAddress']))
-            obj.processForm()
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
 
             if 'Username' in row and \
                'Password' in row:
@@ -844,7 +897,8 @@ class LoadSetupData(BrowserView):
             obj = folder[_id]
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']))
-            obj.processForm()
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
 
 
     def load_lab_products(self, sheet):
@@ -865,7 +919,8 @@ class LoadSetupData(BrowserView):
                      Volume = unicode(row['Volume']),
                      Unit = unicode(row['Unit'] and row['Unit'] or ''),
                      Price = "%02f" % float(row['Price']))
-            obj.processForm()
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
 
     def load_worksheet_templates(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -907,7 +962,8 @@ class LoadSetupData(BrowserView):
                                 'blank_ref':blank_ref,
                                 'dup':unicode(row['dup'])}])
             wst_obj = obj
-            obj.processForm()
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
 
     def load_reference_manufacturers(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -923,7 +979,8 @@ class LoadSetupData(BrowserView):
             obj = folder[_id]
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']))
-            obj.processForm()
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
 
     def load_partition_setup(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -939,9 +996,18 @@ class LoadSetupData(BrowserView):
             service = self.services[row['Analysis Service']]
             sampletype = self.sampletypes[row['Sample Type']]
             ps = service.getPartitionSetup()
-            ps.append({'service': service.UID(),
-                       'sampletype': sampletype.UID(),
-                       'container':self.containers[row['Container']].UID(),
-                       'preservation':self.preservations[row['Preservation']].UID(),
+            containers = []
+            if row['Container']:
+                for c in row['Container'].split(","):
+                    c = c.strip()
+                    containers.append(self.containers[c].UID())
+            preservations = []
+            if row['Preservation']:
+                for p in row['Preservation'].split(","):
+                    p = p.strip()
+                    preservations.append(self.preservations[p].UID())
+            ps.append({'sampletype': sampletype.UID(),
+                       'container':containers,
+                       'preservation':preservations,
                        'separate':row['Separate']})
             service.setPartitionSetup(ps)

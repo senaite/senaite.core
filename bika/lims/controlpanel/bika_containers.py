@@ -19,8 +19,7 @@ class ContainersView(BikaListingView):
 
     def __init__(self, context, request):
         super(ContainersView, self).__init__(context, request)
-        bsc = getToolByName(context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
+        self.catalog = 'bika_setup_catalog'
         self.contentFilter = {'portal_type': 'Container',
                               'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'):
@@ -48,9 +47,29 @@ class ContainersView(BikaListingView):
                              'toggle': True},
         }
 
-        self.review_states = [
+        self.review_states = [ # leave these titles and ids alone
+            {'id':'default',
+             'contentFilter': {'inactive_state':'active'},
+             'title': _('Active'),
+             'transitions': [{'id':'deactivate'}, ],
+             'columns': ['Title',
+                         'Description',
+                         'ContainerType',
+                         'Capacity',
+                         'Pre-preserved']},
+            {'id':'inactive',
+             'title': _('Dormant'),
+             'contentFilter': {'inactive_state': 'inactive'},
+             'transitions': [{'id':'activate'}, ],
+             'columns': ['Title',
+                         'Description',
+                         'ContainerType',
+                         'Capacity',
+                         'Pre-preserved']},
             {'id':'all',
              'title': _('All'),
+             'contentFilter':{},
+             'transitions': [],
              'columns': ['Title',
                          'Description',
                          'ContainerType',

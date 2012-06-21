@@ -1,16 +1,8 @@
-jQuery( function($) {
+(function( $ ) {
 $(document).ready(function(){
 
-	_ = window.jsi18n;
-
-	function portalMessage(message){
-		str = "<dl class='portalMessage error'>"+
-			"<dt>"+_("error")+"</dt>"+
-			"<dd><ul>" + message +
-			"</ul></dd></dl>";
-		$('.portalMessage').remove();
-		$(str).appendTo('#viewlet-above-content');
-	}
+	_ = window.jsi18n_bika;
+	PMF = window.jsi18n_plone;
 
 	// selecting a template might pre-select the instrument
 	$(".template").change(function(){
@@ -137,7 +129,7 @@ $(document).ready(function(){
 		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
 
 		// dropdowns are printed in ../templates/worksheet_add_analyses.pt
-		// We add list_<portal_catalog args>, which go
+		// We add list_<bika_analysis_catalog args>, which go
 		// into contentFilter in bika_listing.py
 		getCategoryTitle = $("[name=list_getCategoryTitle]").val();
 		Title = $("[name=list_Title]").val();
@@ -191,4 +183,4 @@ $(document).ready(function(){
 	});
 
 });
-});
+}(jQuery));

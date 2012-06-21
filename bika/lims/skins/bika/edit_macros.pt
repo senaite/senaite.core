@@ -11,7 +11,7 @@
         <h1
             tal:condition="python:context.checkCreationFlag()">
 			<img tal:attributes="src python:context.portal_url() + '/++resource++bika.lims.images/' + context.portal_type.lower() + '_big.png'"/>
-          <span i18n:translate="">
+          <span i18n:translate="heading_add_item">
 			Add
 			<span i18n:name="itemtype"
                 tal:define="fti python:context.portal_types.getTypeInfo(here)"
@@ -25,7 +25,7 @@
         <h1
             tal:condition="python: not context.checkCreationFlag()">
 			<img tal:attributes="src python:context.portal_url() + '/++resource++bika.lims.images/' + context.portal_type.lower() + '_big.png'"/>
-          <span i18n:translate="">
+          <span i18n:translate="heading_edit_item">
 			Edit
 			<span i18n:name="itemtype"
                 tal:define="fti python:context.portal_types.getTypeInfo(here)"

@@ -28,12 +28,12 @@ class BikaGenerator:
         alsoProvides(obj, IHaveNoBreadCrumbs)
 
         # remove undesired content objects
-##        del_ids = []
-##        for obj_id in ['Members', 'front-page', 'news', 'events']:
-##            if obj_id in portal.objectIds():
-##                del_ids.append(obj_id)
-##        if del_ids:
-##            portal.manage_delObjects(ids = del_ids)
+        del_ids = []
+        for obj_id in ['Members', 'news', 'events']:
+            if obj_id in portal.objectIds():
+                del_ids.append(obj_id)
+        if del_ids:
+            portal.manage_delObjects(ids = del_ids)
 
         # index objects - importing through GenericSetup doesn't
         for obj_id in ('clients',
@@ -62,6 +62,7 @@ class BikaGenerator:
                        'bika_instruments',
                        'bika_analysisspecs',
                        'bika_arprofiles',
+                       'bika_artemplates',
                        'bika_labcontacts',
                        'bika_labproducts',
                        'bika_samplepoints',
@@ -152,17 +153,17 @@ class BikaGenerator:
 
         # Root permissions
         mp = portal.manage_permission
-
-        mp(permissions.AddPortalContent, ['Manager', 'Owner', 'LabManager'], 1)
-        mp(AddClientFolder, ['Manager'], 1)
-        mp(AddClient, ['Manager', 'Owner', 'LabManager'], 1)
-        mp(AddAnalysisRequest, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
-        mp(AddSample, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
-        mp(AddAnalysis, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
         mp(AddARProfile, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddARTemplate, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
+        mp(AddAnalysis, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
+        mp(AddAnalysisRequest, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
+        mp(AddClient, ['Manager', 'Owner', 'LabManager'], 1)
+        mp(AddClientFolder, ['Manager'], 1)
         mp(AddMethod, ['Manager', 'LabManager'], 1)
+        mp(AddSample, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
+        mp(AddSamplePartition, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
 
+        mp(permissions.AddPortalContent, ['Manager', 'Owner', 'LabManager'], 1)
         mp(permissions.ListFolderContents, ['Manager', 'Owner'], 1)
         mp(permissions.FTPAccess, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 1)
@@ -171,7 +172,7 @@ class BikaGenerator:
 
         mp(ApplyVersionControl, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
         mp(SaveNewVersion, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
-        mp(AccessPreviousVersions, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], )
+        mp(AccessPreviousVersions, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
 
         mp(ManageBika, ['Manager', 'LabManager'], 1)
         mp(ManageClients, ['Manager', 'LabManager', 'LabClerk'], 1)
@@ -199,7 +200,7 @@ class BikaGenerator:
         mp(RejectWorksheet, ['Manager', 'LabManager', 'Verifier'], 1)
         mp(Retract, ['Manager', 'LabManager', 'Verifier'], 1)
         mp(Verify, ['Manager', 'LabManager', 'Verifier'], 1)
-        mp(Publish, ['Manager', 'LabManager', 'Publisher'], 1)
+        mp(PublishAR, ['Manager', 'LabManager', 'Publisher'], 1)
         mp(EditSample, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler'], 1)
         mp(EditAR, ['Manager', 'LabManager', 'LabClerk', 'Sampler'], 1)
         mp(EditWorksheet, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
@@ -217,6 +218,7 @@ class BikaGenerator:
         mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 0)
         mp(ManageClients, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
         mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
+        mp(AddAnalysisSpec, ['Manager', 'LabManager', 'Owner'], 0)
         portal.clients.reindexObject()
 
         # /worksheets folder permissions
@@ -261,13 +263,13 @@ class BikaGenerator:
 
         # /reports folder permissions
         mp = portal.reports.manage_permission
-        mp(permissions.ListFolderContents, ['Manager', 'Member', ], 0)
-        mp(permissions.View, ['Manager', 'Member', ], 0)
-        mp(permissions.AddPortalContent, ['Manager', 'Member', ], 0)
-        mp('Access contents information', ['Manager', 'Member',], 0)
-        mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
-        mp('ATContentTypes: Add Image', ['Manager', 'Member',], 0)
-        mp('ATContentTypes: Add File', ['Manager', 'Member',], 0)
+        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk' ], 0)
+        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member'], 0)
+        mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Owner'], 0)
+        mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Member'], 0)
+
+        mp('ATContentTypes: Add Image', ['Manager', 'Labmanager', 'LabClerk', 'Member',], 0)
+        mp('ATContentTypes: Add File', ['Manager', 'Labmanager', 'LabClerk', 'Member',], 0)
         portal.reports.reindexObject()
 
         # /invoices folder permissions
@@ -288,6 +290,11 @@ class BikaGenerator:
         mp(permissions.View, ['Manager', 'LabManager'], 0)
         portal.pricelists.reindexObject()
 
+        mp = portal.bika_setup.manage_permission
+        mp(ApplyVersionControl, ['Manager', 'LabManager', 'Member'], 1)
+        mp(SaveNewVersion, ['Manager', 'LabManager', 'Member'], 1)
+        mp(AccessPreviousVersions, ['Manager', 'LabManager', 'Member'], 1)
+
     def setupVersioning(self, portal):
         portal_repository = getToolByName(portal, 'portal_repository')
         versionable_types = list(portal_repository.getVersionableContentTypes())
@@ -301,14 +308,193 @@ class BikaGenerator:
         portal_repository.setVersionableContentTypes(versionable_types)
 
     def setupCatalogs(self, portal):
+        # an item should belong to only one catalog.
+        # that way looking it up means first looking up *the* catalog
+        # in which it is indexed, as well as making it cheaper to index.
+
+        def addIndex(cat,*args):
+            try:cat.addIndex(*args)
+            except:pass
+
+        def addColumn(cat,col):
+            try:cat.addColumn(col)
+            except:pass
+
+        bac = getToolByName(portal, 'bika_analysis_catalog', None)
+        if bac == None:
+            logger.warning('Could not find the bika_analysis_catalog tool.')
+            return
+
+        at = getToolByName(portal, 'archetype_tool')
+        at.setCatalogsByType('Analysis', ['bika_analysis_catalog', ])
+        at.setCatalogsByType('ReferenceAnalysis', ['bika_analysis_catalog', ])
+        at.setCatalogsByType('DuplicateAnalysis', ['bika_analysis_catalog', ])
+
+        # create lexicon
+        wordSplitter = Empty()
+        wordSplitter.group = 'Word Splitter'
+        wordSplitter.name = 'Unicode Whitespace splitter'
+        caseNormalizer = Empty()
+        caseNormalizer.group = 'Case Normalizer'
+        caseNormalizer.name = 'Unicode Case Normalizer'
+        stopWords = Empty()
+        stopWords.group = 'Stop Words'
+        stopWords.name = 'Remove listed and single char words'
+        elem = [wordSplitter, caseNormalizer, stopWords]
+        try:bac.manage_addProduct['ZCTextIndex'].manage_addLexicon('Lexicon', 'Lexicon', elem)
+        except:pass
+        zc_extras = Empty()
+        zc_extras.index_type = 'Okapi BM25 Rank'
+        zc_extras.lexicon_id = 'Lexicon'
+
+        addIndex(bac, 'path', 'ExtendedPathIndex', ('getPhysicalPath'))
+        addIndex(bac, 'allowedRolesAndUsers', 'KeywordIndex')
+        addIndex(bac, 'UID', 'FieldIndex')
+        addIndex(bac, 'Title', 'FieldIndex')
+        addIndex(bac, 'Description', 'ZCTextIndex', zc_extras)
+        addIndex(bac, 'id', 'FieldIndex')
+        addIndex(bac, 'Type', 'FieldIndex')
+        addIndex(bac, 'portal_type', 'FieldIndex')
+        addIndex(bac, 'created', 'DateIndex')
+        addIndex(bac, 'Creator', 'FieldIndex')
+        addIndex(bac, 'title', 'FieldIndex', 'Title')
+        addIndex(bac, 'sortable_title', 'FieldIndex')
+        addIndex(bac, 'description', 'FieldIndex', 'Description')
+        addIndex(bac, 'review_state', 'FieldIndex')
+        addIndex(bac, 'worksheetanalysis_review_state', 'FieldIndex')
+        addIndex(bac, 'cancellation_state', 'FieldIndex')
+
+        addIndex(bac, 'getDateAnalysisPublished', 'DateIndex')
+        addIndex(bac, 'getDueDate', 'DateIndex')
+
+        addIndex(bac, 'getClientUID', 'FieldIndex')
+        addIndex(bac, 'getAnalyst', 'FieldIndex')
+        addIndex(bac, 'getClientTitle', 'FieldIndex')
+        addIndex(bac, 'getRequestID', 'FieldIndex')
+        addIndex(bac, 'getClientOrderNumber', 'FieldIndex')
+        addIndex(bac, 'getKeyword', 'FieldIndex')
+        addIndex(bac, 'getServiceTitle', 'FieldIndex')
+        addIndex(bac, 'getServiceUID', 'FieldIndex')
+        addIndex(bac, 'getCategoryUID', 'FieldIndex')
+        addIndex(bac, 'getCategoryTitle', 'FieldIndex')
+        addIndex(bac, 'getPointOfCapture', 'FieldIndex')
+        addIndex(bac, 'getDateReceived', 'DateIndex')
+        addIndex(bac, 'getResultCaptureDate', 'DateIndex')
+        addIndex(bac, 'getSampleTypeUID', 'FieldIndex')
+        addIndex(bac, 'getSamplePointUID', 'FieldIndex')
+        addIndex(bac, 'getRetested', 'FieldIndex')
+
+        addColumn(bac, 'path')
+        addColumn(bac, 'UID')
+        addColumn(bac, 'id')
+        addColumn(bac, 'Type')
+        addColumn(bac, 'portal_type')
+        addColumn(bac, 'getObjPositionInParent')
+        addColumn(bac, 'Title')
+        addColumn(bac, 'Description')
+        addColumn(bac, 'title')
+        addColumn(bac, 'sortable_title')
+        addColumn(bac, 'description')
+        addColumn(bac, 'review_state')
+        addColumn(bac, 'cancellation_state')
+        addColumn(bac, 'getRequestID')
+
+        bc = getToolByName(portal, 'bika_catalog', None)
+        if bc == None:
+            logger.warning('Could not find the bika_catalog tool.')
+            return
+
         bsc = getToolByName(portal, 'bika_setup_catalog', None)
         if bsc == None:
             logger.warning('Could not find the setup catalog tool.')
             return
 
-        # an item should belong to only one catalog.
-        # that way looking it up means first looking up *the* catalog
-        # in which it is indexed, as well as making it cheaper to index.
+        at = getToolByName(portal, 'archetype_tool')
+        at.setCatalogsByType('AnalysisRequest', ['bika_catalog', ])
+        at.setCatalogsByType('Sample', ['bika_catalog', ])
+        at.setCatalogsByType('SamplePartition', ['bika_catalog', ])
+        at.setCatalogsByType('ReferenceSample', ['bika_catalog', ])
+        at.setCatalogsByType('Report', ['bika_catalog', ])
+        at.setCatalogsByType('Worksheet', ['bika_catalog', ])
+
+        # create lexicon
+        wordSplitter = Empty()
+        wordSplitter.group = 'Word Splitter'
+        wordSplitter.name = 'Unicode Whitespace splitter'
+        caseNormalizer = Empty()
+        caseNormalizer.group = 'Case Normalizer'
+        caseNormalizer.name = 'Unicode Case Normalizer'
+        stopWords = Empty()
+        stopWords.group = 'Stop Words'
+        stopWords.name = 'Remove listed and single char words'
+        elem = [wordSplitter, caseNormalizer, stopWords]
+        try:bc.manage_addProduct['ZCTextIndex'].manage_addLexicon('Lexicon', 'Lexicon', elem)
+        except:pass
+        zc_extras = Empty()
+        zc_extras.index_type = 'Okapi BM25 Rank'
+        zc_extras.lexicon_id = 'Lexicon'
+
+        addIndex(bc, 'path', 'ExtendedPathIndex', ('getPhysicalPath'))
+        addIndex(bc, 'allowedRolesAndUsers', 'KeywordIndex')
+        addIndex(bc, 'UID', 'FieldIndex')
+        addIndex(bc, 'SearchableText', 'ZCTextIndex', zc_extras)
+        addIndex(bc, 'Title', 'ZCTextIndex', zc_extras)
+        addIndex(bc, 'Description', 'ZCTextIndex', zc_extras)
+        addIndex(bc, 'id', 'FieldIndex')
+        addIndex(bc, 'getId', 'FieldIndex')
+        addIndex(bc, 'Type', 'FieldIndex')
+        addIndex(bc, 'portal_type', 'FieldIndex')
+        addIndex(bc, 'created', 'DateIndex')
+        addIndex(bc, 'Creator', 'FieldIndex')
+        addIndex(bc, 'getObjPositionInParent', 'GopipIndex')
+        addIndex(bc, 'title', 'FieldIndex', 'Title')
+        addIndex(bc, 'sortable_title', 'FieldIndex')
+        addIndex(bc, 'description', 'FieldIndex', 'Description')
+        addIndex(bc, 'review_state', 'FieldIndex')
+        addIndex(bc, 'inactive_state', 'FieldIndex')
+        addIndex(bc, 'worksheetanalysis_review_state', 'FieldIndex')
+        addIndex(bc, 'cancellation_state', 'FieldIndex')
+
+        addIndex(bc, 'getSampleID', 'FieldIndex')
+        addIndex(bc, 'getSampleUID', 'FieldIndex')
+        addIndex(bc, 'getRequestID', 'FieldIndex')
+        addIndex(bc, 'getClientReference', 'FieldIndex')
+        addIndex(bc, 'getClientOrderNumber', 'FieldIndex')
+        addIndex(bc, 'getClientSampleID', 'FieldIndex')
+        addIndex(bc, 'getServiceTitle', 'FieldIndex')
+        addIndex(bc, 'getSamplePointTitle', 'FieldIndex')
+        addIndex(bc, 'getSampleTypeTitle', 'FieldIndex')
+        addIndex(bc, 'getDueDate', 'DateIndex')
+        addIndex(bc, 'getSamplingDate', 'DateIndex')
+        addIndex(bc, 'getDateSampled', 'DateIndex')
+        addIndex(bc, 'getDateReceived', 'DateIndex')
+        addIndex(bc, 'getDatePublished', 'DateIndex')
+        addIndex(bc, 'getDateExpired', 'DateIndex')
+        addIndex(bc, 'getDisposalDate', 'DateIndex')
+        addIndex(bc, 'getDateDisposed', 'DateIndex')
+        addIndex(bc, 'getDateOpened', 'DateIndex')
+        addIndex(bc, 'getExpiryDate', 'DateIndex')
+        addIndex(bc, 'getClientUID', 'FieldIndex')
+        addIndex(bc, 'getSamplePointUID', 'FieldIndex')
+        addIndex(bc, 'getSampleTypeUID', 'FieldIndex')
+        addIndex(bc, 'getReferenceDefinitionUID', 'FieldIndex')
+        addIndex(bc, 'getPreserver', 'FieldIndex')
+        addIndex(bc, 'getSampler', 'FieldIndex')
+        addIndex(bc, 'getWorksheetTemplateTitle', 'FieldIndex')
+        addIndex(bc, 'getAnalyst', 'FieldIndex')
+        addIndex(bc, 'getInvoiced', 'FieldIndex')
+
+        addColumn(bc, 'path')
+        addColumn(bc, 'UID')
+        addColumn(bc, 'id')
+        addColumn(bc, 'Type')
+        addColumn(bc, 'portal_type')
+        addColumn(bc, 'Title')
+        addColumn(bc, 'Description')
+        addColumn(bc, 'sortable_title')
+        addColumn(bc, 'review_state')
+        addColumn(bc, 'inactive_state')
+        addColumn(bc, 'cancellation_state')
 
         at = getToolByName(portal, 'archetype_tool')
         at.setCatalogsByType('Department', ['bika_setup_catalog', ])
@@ -345,120 +531,122 @@ class BikaGenerator:
         stopWords.group = 'Stop Words'
         stopWords.name = 'Remove listed and single char words'
         elem = [wordSplitter, caseNormalizer, stopWords]
-        bsc.manage_addProduct['ZCTextIndex'].manage_addLexicon('Lexicon', 'Lexicon', elem)
+        try:bsc.manage_addProduct['ZCTextIndex'].manage_addLexicon('Lexicon', 'Lexicon', elem)
+        except:pass
         zc_extras = Empty()
         zc_extras.index_type = 'Okapi BM25 Rank'
         zc_extras.lexicon_id = 'Lexicon'
 
-        bsc.addIndex('path', 'ExtendedPathIndex', ('getPhysicalPath'))
-        bsc.addIndex('allowedRolesAndUsers', 'KeywordIndex')
-        bsc.addIndex('UID', 'FieldIndex')
-        bsc.addIndex('SearchableText', 'ZCTextIndex', zc_extras)
-        bsc.addIndex('Title', 'ZCTextIndex', zc_extras)
-        bsc.addIndex('Description', 'ZCTextIndex', zc_extras)
-        bsc.addIndex('id', 'FieldIndex')
-        bsc.addIndex('getId', 'FieldIndex')
-        bsc.addIndex('Type', 'FieldIndex')
-        bsc.addIndex('portal_type', 'FieldIndex')
-        bsc.addIndex('created', 'DateIndex')
-        bsc.addIndex('getObjPositionInParent', 'GopipIndex')
+        addIndex(bsc, 'path', 'ExtendedPathIndex', ('getPhysicalPath'))
+        addIndex(bsc, 'allowedRolesAndUsers', 'KeywordIndex')
+        addIndex(bsc, 'UID', 'FieldIndex')
+        addIndex(bsc, 'SearchableText', 'ZCTextIndex', zc_extras)
+        addIndex(bsc, 'Title', 'ZCTextIndex', zc_extras)
+        addIndex(bsc, 'Description', 'ZCTextIndex', zc_extras)
+        addIndex(bsc, 'id', 'FieldIndex')
+        addIndex(bsc, 'getId', 'FieldIndex')
+        addIndex(bsc, 'Type', 'FieldIndex')
+        addIndex(bsc, 'portal_type', 'FieldIndex')
+        addIndex(bsc, 'created', 'DateIndex')
+        addIndex(bsc, 'Creator', 'FieldIndex')
+        addIndex(bsc, 'getObjPositionInParent', 'GopipIndex')
 
-        bsc.addIndex('title', 'FieldIndex', 'Title')
-        bsc.addIndex('sortable_title', 'FieldIndex')
-        bsc.addIndex('description', 'FieldIndex', 'Description')
+        addIndex(bsc, 'title', 'FieldIndex', 'Title')
+        addIndex(bsc, 'sortable_title', 'FieldIndex')
+        addIndex(bsc, 'description', 'FieldIndex', 'Description')
 
-        bsc.addIndex('review_state', 'FieldIndex')
-        bsc.addIndex('inactive_state', 'FieldIndex')
-        bsc.addIndex('cancellation_state', 'FieldIndex')
+        addIndex(bsc, 'review_state', 'FieldIndex')
+        addIndex(bsc, 'inactive_state', 'FieldIndex')
+        addIndex(bsc, 'cancellation_state', 'FieldIndex')
 
-        bsc.addIndex('getAccredited', 'FieldIndex')
-        bsc.addIndex('getAnalyst', 'FieldIndex')
-        bsc.addIndex('getType', 'FieldIndex')
-        bsc.addIndex('getBlank', 'FieldIndex')
-        bsc.addIndex('getCalculationTitle', 'FieldIndex')
-        bsc.addIndex('getCalculationUID', 'FieldIndex')
-        bsc.addIndex('getCalibrationExpiryDate', 'FieldIndex')
-        bsc.addIndex('getCategoryTitle', 'FieldIndex')
-        bsc.addIndex('getCategoryUID', 'FieldIndex')
-        bsc.addIndex('getClientUID', 'FieldIndex')
-        bsc.addIndex('getDepartmentTitle', 'FieldIndex')
-        bsc.addIndex('getDuplicateVariation', 'FieldIndex')
-        bsc.addIndex('getFormula', 'FieldIndex')
-        bsc.addIndex('getFullname', 'FieldIndex')
-        bsc.addIndex('getHazardous', 'FieldIndex')
-        bsc.addIndex('getInstrumentTitle', 'FieldIndex')
-        bsc.addIndex('getKeyword', 'FieldIndex')
-        bsc.addIndex('getManagerName', 'FieldIndex')
-        bsc.addIndex('getManagerPhone', 'FieldIndex')
-        bsc.addIndex('getManagerEmail', 'FieldIndex')
-        bsc.addIndex('getMaxTimeAllowed', 'FieldIndex')
-        bsc.addIndex('getModel', 'FieldIndex')
-        bsc.addIndex('getName', 'FieldIndex')
-        bsc.addIndex('getPointOfCapture', 'FieldIndex')
-        bsc.addIndex('getPrice', 'FieldIndex')
-        bsc.addIndex('getSamplePointTitle', 'FieldIndex')
-        bsc.addIndex('getSampleTypeTitle', 'FieldIndex')
-        bsc.addIndex('getSamplePointUID', 'FieldIndex')
-        bsc.addIndex('getSampleTypeUID', 'FieldIndex')
-        bsc.addIndex('getServiceTitle', 'FieldIndex')
-        bsc.addIndex('getServiceUID', 'FieldIndex')
-        bsc.addIndex('getTotalPrice', 'FieldIndex')
-        bsc.addIndex('getUnit', 'FieldIndex')
-        bsc.addIndex('getVATAmount', 'FieldIndex')
-        bsc.addIndex('getVolume', 'FieldIndex')
+        addIndex(bsc, 'getAccredited', 'FieldIndex')
+        addIndex(bsc, 'getAnalyst', 'FieldIndex')
+        addIndex(bsc, 'getType', 'FieldIndex')
+        addIndex(bsc, 'getBlank', 'FieldIndex')
+        addIndex(bsc, 'getCalculationTitle', 'FieldIndex')
+        addIndex(bsc, 'getCalculationUID', 'FieldIndex')
+        addIndex(bsc, 'getCalibrationExpiryDate', 'FieldIndex')
+        addIndex(bsc, 'getCategoryTitle', 'FieldIndex')
+        addIndex(bsc, 'getCategoryUID', 'FieldIndex')
+        addIndex(bsc, 'getClientUID', 'FieldIndex')
+        addIndex(bsc, 'getDepartmentTitle', 'FieldIndex')
+        addIndex(bsc, 'getDuplicateVariation', 'FieldIndex')
+        addIndex(bsc, 'getFormula', 'FieldIndex')
+        addIndex(bsc, 'getFullname', 'FieldIndex')
+        addIndex(bsc, 'getHazardous', 'FieldIndex')
+        addIndex(bsc, 'getInstrumentTitle', 'FieldIndex')
+        addIndex(bsc, 'getKeyword', 'FieldIndex')
+        addIndex(bsc, 'getManagerName', 'FieldIndex')
+        addIndex(bsc, 'getManagerPhone', 'FieldIndex')
+        addIndex(bsc, 'getManagerEmail', 'FieldIndex')
+        addIndex(bsc, 'getMaxTimeAllowed', 'FieldIndex')
+        addIndex(bsc, 'getModel', 'FieldIndex')
+        addIndex(bsc, 'getName', 'FieldIndex')
+        addIndex(bsc, 'getPointOfCapture', 'FieldIndex')
+        addIndex(bsc, 'getPrice', 'FieldIndex')
+        addIndex(bsc, 'getSamplePointTitle', 'FieldIndex')
+        addIndex(bsc, 'getSampleTypeTitle', 'FieldIndex')
+        addIndex(bsc, 'getSamplePointUID', 'FieldIndex')
+        addIndex(bsc, 'getSampleTypeUID', 'FieldIndex')
+        addIndex(bsc, 'getServiceTitle', 'FieldIndex')
+        addIndex(bsc, 'getServiceUID', 'FieldIndex')
+        addIndex(bsc, 'getTotalPrice', 'FieldIndex')
+        addIndex(bsc, 'getUnit', 'FieldIndex')
+        addIndex(bsc, 'getVATAmount', 'FieldIndex')
+        addIndex(bsc, 'getVolume', 'FieldIndex')
 
-        bsc.addColumn('path')
-        bsc.addColumn('UID')
-        bsc.addColumn('id')
-        bsc.addColumn('getId')
-        bsc.addColumn('Type')
-        bsc.addColumn('portal_type')
-        bsc.addColumn('getObjPositionInParent')
+        addColumn(bsc, 'path')
+        addColumn(bsc, 'UID')
+        addColumn(bsc, 'id')
+        addColumn(bsc, 'getId')
+        addColumn(bsc, 'Type')
+        addColumn(bsc, 'portal_type')
+        addColumn(bsc, 'getObjPositionInParent')
 
-        bsc.addColumn('Title')
-        bsc.addColumn('Description')
-        bsc.addColumn('title')
-        bsc.addColumn('sortable_title')
-        bsc.addColumn('description')
+        addColumn(bsc, 'Title')
+        addColumn(bsc, 'Description')
+        addColumn(bsc, 'title')
+        addColumn(bsc, 'sortable_title')
+        addColumn(bsc, 'description')
 
-        bsc.addColumn('review_state')
-        bsc.addColumn('inactive_state')
-        bsc.addColumn('cancellation_state')
+        addColumn(bsc, 'review_state')
+        addColumn(bsc, 'inactive_state')
+        addColumn(bsc, 'cancellation_state')
 
-        bsc.addColumn('getAccredited')
-        bsc.addColumn('getType')
-        bsc.addColumn('getBlank')
-        bsc.addColumn('getCalculationTitle')
-        bsc.addColumn('getCalculationUID')
-        bsc.addColumn('getCalibrationExpiryDate')
-        bsc.addColumn('getCategoryTitle')
-        bsc.addColumn('getCategoryUID')
-        bsc.addColumn('getClientUID')
-        bsc.addColumn('getDepartmentTitle')
-        bsc.addColumn('getDuplicateVariation')
-        bsc.addColumn('getFormula')
-        bsc.addColumn('getFullname')
-        bsc.addColumn('getHazardous')
-        bsc.addColumn('getInstrumentTitle')
-        bsc.addColumn('getKeyword')
-        bsc.addColumn('getManagerName')
-        bsc.addColumn('getManagerPhone')
-        bsc.addColumn('getManagerEmail')
-        bsc.addColumn('getMaxTimeAllowed')
-        bsc.addColumn('getModel')
-        bsc.addColumn('getName')
-        bsc.addColumn('getPointOfCapture')
-        bsc.addColumn('getPrice')
-        bsc.addColumn('getSamplePointTitle')
-        bsc.addColumn('getSampleTypeTitle')
-        bsc.addColumn('getSamplePointUID')
-        bsc.addColumn('getSampleTypeUID')
-        bsc.addColumn('getServiceTitle')
-        bsc.addColumn('getServiceUID')
-        bsc.addColumn('getTotalPrice')
-        bsc.addColumn('getUnit')
-        bsc.addColumn('getVATAmount')
-        bsc.addColumn('getVolume')
+        addColumn(bsc, 'getAccredited')
+        addColumn(bsc, 'getType')
+        addColumn(bsc, 'getBlank')
+        addColumn(bsc, 'getCalculationTitle')
+        addColumn(bsc, 'getCalculationUID')
+        addColumn(bsc, 'getCalibrationExpiryDate')
+        addColumn(bsc, 'getCategoryTitle')
+        addColumn(bsc, 'getCategoryUID')
+        addColumn(bsc, 'getClientUID')
+        addColumn(bsc, 'getDepartmentTitle')
+        addColumn(bsc, 'getDuplicateVariation')
+        addColumn(bsc, 'getFormula')
+        addColumn(bsc, 'getFullname')
+        addColumn(bsc, 'getHazardous')
+        addColumn(bsc, 'getInstrumentTitle')
+        addColumn(bsc, 'getKeyword')
+        addColumn(bsc, 'getManagerName')
+        addColumn(bsc, 'getManagerPhone')
+        addColumn(bsc, 'getManagerEmail')
+        addColumn(bsc, 'getMaxTimeAllowed')
+        addColumn(bsc, 'getModel')
+        addColumn(bsc, 'getName')
+        addColumn(bsc, 'getPointOfCapture')
+        addColumn(bsc, 'getPrice')
+        addColumn(bsc, 'getSamplePointTitle')
+        addColumn(bsc, 'getSampleTypeTitle')
+        addColumn(bsc, 'getSamplePointUID')
+        addColumn(bsc, 'getSampleTypeUID')
+        addColumn(bsc, 'getServiceTitle')
+        addColumn(bsc, 'getServiceUID')
+        addColumn(bsc, 'getTotalPrice')
+        addColumn(bsc, 'getUnit')
+        addColumn(bsc, 'getVATAmount')
+        addColumn(bsc, 'getVolume')
 
 def setupVarious(context):
     """

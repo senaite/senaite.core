@@ -9,19 +9,21 @@ from zope.component import getMultiAdapter
 import plone
 
 class LateAnalysesView(BikaListingView):
-    """ Late analysees (click from portlet_late_analyses More... link)
+    """ Late analyses (click from portlet_late_analyses More... link)
     """
     def __init__(self, context, request):
         super(LateAnalysesView, self).__init__(context, request)
-        self.contentsMethod = getToolByName(self.context, 'portal_catalog')
-        self.contentFilter = {'portal_type':'Analysis',
-                              'getDueDate': {'query': [DateTime(),], 'range': 'max'},
-                              'review_state':['assigned',
-                                              'sample_received',
-                                              'to_be_verified',
-                                              'verified'],
-                              'cancellation_state': 'active',
-                              'sort_on':'getDateReceived'}
+        self.catalog = 'bika_analysis_catalog'
+        self.contentFilter = {
+            'portal_type':'Analysis',
+            'getDueDate': {'query': [DateTime(),], 'range': 'max'},
+            'review_state':['assigned',
+                            'sample_received',
+                            'to_be_verified',
+                            'verified'],
+            'cancellation_state': 'active',
+            'sort_on': 'getDateReceived'
+        }
         self.title = _("Late Analyses")
         self.description = ""
         self.context_actions = {}
@@ -34,17 +36,23 @@ class LateAnalysesView(BikaListingView):
 
         request.set('disable_border', 1)
 
-        self.columns = {'Analysis': {'title': _('Analysis')},
-                        'RequestID': {'title': _('Request ID')},
+        self.columns = {'Analysis': {'title': _('Analysis'),
+                                     'index': 'sortable_title'},
+                        'RequestID': {'title': _('Request ID'),
+                                      'index': 'getRequestID'},
                         'Client': {'title': _('Client')},
                         'Contact': {'title': _('Contact')},
-                        'DateReceived': {'title': _('Date Received')},
-                        'DueDate': {'title': _('Due Date')},
+                        'DateReceived': {'title': _('Date Received'),
+                                         'index': 'getDateReceived'},
+                        'DueDate': {'title': _('Due Date'),
+                                    'index': 'getDueDate'},
                         'Late': {'title': _('Late')},
                         }
 
         self.review_states = [
-            {'title': _('All'), 'id':'all',
+            {'id':'default',
+             'title': _('All'),
+             'contentFilter':{},
              'columns':['Analysis',
                         'RequestID',
                         'Client',

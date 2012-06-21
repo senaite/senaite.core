@@ -5,8 +5,8 @@ from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.client import ClientSamplesView
-from bika.lims.utils import formatDateQuery, formatDateParms
-from bika.lims.interfaces import IReports
+from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client
+from bika.lims.interfaces import IReportFolder
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
@@ -14,8 +14,6 @@ import json
 import plone
 
 class AnalysesPerService(BrowserView):
-    """ stuff
-    """
     implements(IViewView)
     template = ViewPageTemplateFile("report_out.pt")
 
@@ -26,7 +24,7 @@ class AnalysesPerService(BrowserView):
         # get all the data into datalines
         
         sc = getToolByName(self.context, 'bika_setup_catalog')
-        pc = getToolByName(self.context, 'portal_catalog')
+        bc = getToolByName(self.context, 'bika_analysis_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
         self.report_content = {}
         parm_lines = {}
@@ -43,7 +41,12 @@ class AnalysesPerService(BrowserView):
             client = rc.lookupObject(client_uid)
             client_title = client.Title()
         else:
-            client_title = 'Undefined'
+            client = logged_in_client(self.context)
+            if client:
+                client_title = client.Title()
+                query['getClientUID'] = client.UID()
+            else:
+                client_title = 'Undefined'
         parms.append(
             { 'title': _('Client'),
              'value': client_title,
@@ -109,30 +112,55 @@ class AnalysesPerService(BrowserView):
              'type': 'text'})
 
 
+        # and now lets do the actual report lines
+        formats = {'columns': 2,
+                   'col_heads': [ _('Analysis service'), _('Number of analyses')],
+                   'class': '',
+                  }
 
         datalines = []
         for cat in sc(portal_type="AnalysisCategory",
                         sort_on='sortable_title'):
-            service_data = []
+            dataline = [{'value': cat.Title, 
+                        'class': 'category',
+                        'colspan': 2},]
+            datalines.append(dataline)
             for service in sc(portal_type="AnalysisService",
                             getCategoryUID = cat.UID,
                             sort_on='sortable_title'):
                 query['getServiceUID'] = service.UID
-                analyses = pc(query)
+                analyses = bc(query)
                 count_analyses = len(analyses)
-                service_data.append([service.Title, count_analyses])
+
+                dataline = []
+                dataitem = {'value': service.Title}
+                dataline.append(dataitem)
+                dataitem = {'value': count_analyses }
+
+                dataline.append(dataitem)
+
+
+                datalines.append(dataline)
+
                 count_all += count_analyses
 
-            datalines.append([cat.Title, service_data])
-
-
+        # footer data
+        footlines = []
+        footline = []
+        footitem = {'value': _('Total'),
+                    'class': 'total_label'} 
+        footline.append(footitem)
+        footitem = {'value': count_all} 
+        footline.append(footitem)
+        footlines.append(footline)
         
 
         self.report_content = {
                 'headings': headings,
                 'parms': parms,
+                'formats': formats,
                 'datalines': datalines,
-                'total': count_all}
+                'footings': footlines}
 
 
         return self.template()

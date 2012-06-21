@@ -1,7 +1,8 @@
-jQuery( function($) {
+(function( $ ) {
 $(document).ready(function(){
 
-	_ = window.jsi18n;
+	_ = window.jsi18n_bika;
+	PMF = window.jsi18n_plone;
 
 	// a reference definition is selected from the dropdown
 	// (../../skins/bika/bika_widgets/referenceresultswidget.js)
@@ -44,4 +45,4 @@ $(document).ready(function(){
 	}
 
 });
-});
+}(jQuery));

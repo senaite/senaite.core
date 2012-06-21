@@ -1,4 +1,4 @@
-from AccessControl import ClassSecurityInfo
+from AccessControl import ClassSecurityInfo, Unauthorized
 from Products.ATExtensions.Extensions.utils import makeDisplayList
 from Products.ATExtensions.ateapi import RecordField, RecordsField
 from Products.Archetypes.Registry import registerField
@@ -8,8 +8,10 @@ from Products.validation import validation
 from Products.validation.validators.RegexValidator import RegexValidator
 import sys
 from Products.CMFEditions.Permissions import SaveNewVersion
+from Products.CMFEditions.Permissions import AccessPreviousVersions
 from Products.Archetypes.config import REFERENCE_CATALOG
 from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 
 class HistoryAwareReferenceField(ReferenceField):
     """ Version aware references.
@@ -27,8 +29,6 @@ class HistoryAwareReferenceField(ReferenceField):
     security.declarePrivate('set')
     def set(self, instance, value, **kwargs):
         """ Mutator. """
-
-        translate = instance.translation_service.translate
 
         rc = getToolByName(instance, REFERENCE_CATALOG)
         targetUIDs = [ref.targetUID for ref in
@@ -62,15 +62,19 @@ class HistoryAwareReferenceField(ReferenceField):
             if isinstance(v, basestring):
                 uids.append(v)
                 targets[v] = rc.lookupObject(v)
+            elif hasattr(v, 'UID'):
+                target_uid =  callable(v.UID) and v.UID() or v.UID
+                uids.append(target_uid)
+                targets[target_uid] = v
             else:
-                uids.append(v.UID())
-                targets[v.UID()] = v
+                logger.info("Target has no UID: %s/%s" % (v, value))
 
         sub = [t for t in targetUIDs if t not in uids]
         add = [v for v in uids if v and v not in targetUIDs]
 
         if canSaveNewVersion:
-            for uid in [t for t in list(targetUIDs) + list(uids) if t not in sub]:
+            newuids = [t for t in list(targetUIDs) + list(uids) if t not in sub]
+            for uid in newuids:
                 # update version_id of all existing references that aren't
                 # about to be removed anyway (contents of sub)
                 version_id = hasattr(targets[uid], 'version_id') and \
@@ -80,7 +84,8 @@ class HistoryAwareReferenceField(ReferenceField):
                     pr = getToolByName(instance, 'portal_repository')
                     if pr.isVersionable(targets[uid]):
                         pr.save(obj=targets[uid],
-                                comment=translate(_("Initial revision")))
+                                comment=instance.translate(
+                                    _("Initial revision")))
                 if not hasattr(instance, 'reference_versions'):
                     instance.reference_versions = {}
                 if not hasattr(targets[uid], 'version_id'):
@@ -103,7 +108,8 @@ class HistoryAwareReferenceField(ReferenceField):
             if not hasattr( aq_base(instance), 'at_ordered_refs'):
                 instance.at_ordered_refs = {}
 
-            instance.at_ordered_refs[self.relationship] = tuple( filter(None, uids) )
+            instance.at_ordered_refs[self.relationship] = \
+                tuple( filter(None, uids) )
 
         if self.callStorageOnSet:
             #if this option is set the reference fields's values get written
@@ -120,17 +126,28 @@ class HistoryAwareReferenceField(ReferenceField):
         except:
             pass
 
+        pm = getToolByName(instance, "portal_membership")
+        member = pm.getAuthenticatedMember()
+        canAccessPreviousVersions =\
+            pm.checkPermission(AccessPreviousVersions, instance)
+
         pr = getToolByName(instance, 'portal_repository')
+
         rd = {}
         for r in res:
             uid = r.UID()
             if hasattr(instance, 'reference_versions') and \
                hasattr(r, 'version_id') and \
                uid in instance.reference_versions and \
-               instance.reference_versions[uid] != r.version_id and\
+               instance.reference_versions[uid] != r.version_id and \
                r.version_id != None:
                 version_id = instance.reference_versions[uid]
-                o = pr.retrieve(r, selector=version_id).object
+                if canAccessPreviousVersions:
+                    o = pr.retrieve(r, selector=version_id).object
+                else:
+                    msg = "Permission 'CMFEditions: Access previous versions' denied (%s --> %s, version_id=%s) " % \
+                        (instance,r,version_id)
+                    raise Unauthorized(msg)
             else:
                 o = r
             rd[uid] = o
@@ -140,16 +157,16 @@ class HistoryAwareReferenceField(ReferenceField):
 
         if not self.multiValued:
             if len(rd) > 1:
-                log("%s references for non multivalued field %s of %s" % (len(rd),
-                                                                          self.getName(),
-                                                                          instance))
+                log("%s references for non multivalued field %s of %s" %
+                    (len(rd), self.getName(), instance))
             if not aslist:
                 if rd:
                     rd = [rd[uid] for uid in rd.keys()][0]
                 else:
                     rd = None
 
-        if not self.referencesSortable or not hasattr( aq_base(instance), 'at_ordered_refs'):
+        if not self.referencesSortable or not hasattr( aq_base(instance),
+                                                       'at_ordered_refs'):
             if isinstance(rd, dict):
                 return [rd[uid] for uid in rd.keys()]
             else:

@@ -11,35 +11,53 @@ import re
 
 ### AJAX methods for AnalysisService context
 
-# ajax Preservaition/Container widget filter
-# in preservationwidget rows,we get st_uid, pres_uid and minvol.
-# in Service Setup context, all we get is [pres_uid,]
-
 class ajaxGetContainers(BrowserView):
+    """ajax Preservation/Container widget filter
+    request values:
+    - allow_blank: print blank value in return
+    - show_container_types
+    - show_containers
+    - minvol: magnitude (string).
+    """
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         uc = getToolByName(self, 'uid_catalog')
-        st_uid = self.request.get('st_uid', [])
-        st = st_uid and uc(UID=st_uid)[0].getObject() or None
+
         allow_blank = self.request.get('allow_blank', False) == 'true'
-        pres_uid = json.loads(self.request.get('pres_uid', '[]'))
-        minvol = self.request.get('minvol', '').split(" ")
+        show_container_types = json.loads(self.request.get('show_container_types', 'true'))
+        show_containers = json.loads(self.request.get('show_containers', 'true'))
+        minvol = self.request.get("minvol", "0")
         try:
+            minvol =  minvol.split()
             minvol = mg(float(minvol[0]), " ".join(minvol[1:]))
         except:
             minvol = mg(0)
 
-        if not type(pres_uid) in (list, tuple):
-            pres_uid = [pres_uid,]
-        preservations = [p and uc(UID=p)[0].getObject() or '' for p in pres_uid]
-
-        containers = getContainers(self.context,
-                                   preservation = preservations and preservations or [],
-                                   minvol = minvol,
-                                   allow_blank = allow_blank)
+        containers = getContainers(
+            self.context,
+            minvol = minvol,
+            allow_blank = allow_blank,
+            show_containers=show_containers,
+            show_container_types=show_container_types,
+        )
 
         return json.dumps(containers)
 
+class ajaxGetPreservations(BrowserView):
+    """ajax Preservations - for pre-preserved containers
+    """
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        container_uid = self.request.get('container_uid', [])
+        container = bsc(UID=container_uid)
+        if container:
+            container = container[0].getObject()
+            if container.getPrePreserved():
+                preservation = container.getPreservation()
+                if preservation:
+                    return preservation.UID()
+        return ''
 
 class ajaxServicePopup(BrowserView):
 
@@ -83,8 +101,11 @@ class ajaxServicePopup(BrowserView):
 
             if ps.has_key('container'):
                 if type(ps['container']) == str:
-                    ps['container'] = [ps['container'],]
-                containers = [bsc(UID=c)[0].Title for c in ps['container']]
+                    self.partsetup[i]['container'] = [ps['container'],]
+                try:
+                    containers = [bsc(UID=c)[0].Title for c in ps['container']]
+                except IndexError:
+                    containers = [c for c in ps['container']]
                 self.partsetup[i]['container'] = ", ".join(containers)
             else:
                 self.partsetup[i]['container'] = ''
@@ -92,10 +113,13 @@ class ajaxServicePopup(BrowserView):
             if ps.has_key('preservation'):
                 if type(ps['preservation']) == str:
                     ps['preservation'] = [ps['preservation'],]
-                preservations = [bsc(UID=p)[0].Title for p in ps['preservation']]
+                try:
+                    preservations = [bsc(UID=c)[0].Title for c in ps['preservation']]
+                except IndexError:
+                    preservations = [c for c in ps['preservation']]
                 self.partsetup[i]['preservation'] = ", ".join(preservations)
             else:
-                self.partsetup[i]['container'] = ''
+                self.partsetup[i]['preservation'] = ''
 
         return self.template()
 

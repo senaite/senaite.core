@@ -59,14 +59,12 @@ class WorkflowSubMenuItem(WorkflowSubMenuItem):
         state = self.context_state.workflow_state()
         stateTitle = self._currentStateTitle()
 
-        translate = self.context.translation_service.translate
-
         if workflow.getInfoFor(self.context, 'cancellation_state', '') == 'cancelled':
-            title2 = translate(_('Cancelled'))
+            title2 = self.context.translate(_('Cancelled'))
             # cater for bika_one_state_workflow (always Active)
             if not stateTitle or \
                workflow.getInfoFor(self.context, 'review_state', '') == 'active':
-                stateTitle = translate(_('Cancelled'))
+                stateTitle = self.context.translate(_('Cancelled'))
             else:
                 stateTitle = "%s (%s)" % (stateTitle,_(title2))
             return {'id'         : 'plone-contentmenu-workflow',
@@ -74,12 +72,12 @@ class WorkflowSubMenuItem(WorkflowSubMenuItem):
                     'state'      : state,
                     'stateTitle' : stateTitle,}
         elif workflow.getInfoFor(self.context, 'inactive_state', '') == 'inactive':
-            title2 = translate(_('Dormant'))
+            title2 = self.context.translate(_('Dormant'))
             # cater for bika_one_state_workflow (always Active)
             if not stateTitle or \
                (workflow.getInfoFor(self.context, 'review_state', '') in \
                                                     ('active', 'current')):
-                stateTitle = translate(_('Dormant'))
+                stateTitle = self.context.translate(_('Dormant'))
             else:
                 stateTitle = "%s (%s)" % (stateTitle,_(title2))
             return {'id'         : 'plone-contentmenu-workflow',
@@ -107,7 +105,7 @@ class WorkflowSubMenuItem(WorkflowSubMenuItem):
 
         workflow = getToolByName(self.context, 'portal_workflow')
 
-        state = self.request.get('review_state', 'all')
+        state = self.request.get('review_state', 'default')
         review_state = [i for i in self.review_states if i['id'] == state][0]
 
         # get all transitions for all items.
@@ -143,7 +141,7 @@ class WorkflowSubMenuItem(WorkflowSubMenuItem):
 ##                state = wtool.getInfoFor(self.context, w.state_var, None)
 ##                if state in w.states:
 ##                    title = w.states[state].title or state
-##                    titles.append(translate(title, domain="plone", context=self.request))
+##                    titles.append(self.context.translate(title, domain="plone", context=self.request))
 ##        return u", ".join(titles)
 
 class WorkflowMenu(BrowserMenu):

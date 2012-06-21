@@ -5,9 +5,30 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from magnitude import mg, MagnitudeError
 import sys
 
 schema = BikaSchema.copy() + Schema((
+    ReferenceField('ContainerType',
+        required = 0,
+        vocabulary_display_path_bound = sys.maxint,
+        allowed_types = ('ContainerType',),
+        vocabulary = 'getContainerTypes',
+        relationship = 'ContainerContainerType',
+        referenceClass = HoldingReference,
+        widget = ReferenceWidget(
+            checkbox_bound = 1,
+            label = _("Container Type"),
+        ),
+    ),
+    StringField('Capacity',
+        required = 0,
+        default = "0 ml",
+        widget = StringWidget(
+            label = _("Capacity"),
+            description = _("Maximum possible size or volume of samples."),
+        ),
+    ),
     BooleanField('PrePreserved',
         default = False,
         widget = BooleanWidget(
@@ -31,26 +52,6 @@ schema = BikaSchema.copy() + Schema((
                             "method could be selected here."),
         ),
     ),
-    StringField('Capacity',
-        required = 0,
-        default = "0 ml",
-        widget = StringWidget(
-            label = _("Capacity"),
-            description = _("Maximum possible size or volume of samples."),
-        ),
-    ),
-    ReferenceField('ContainerType',
-        required = 0,
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('ContainerType',),
-        vocabulary = 'getContainerTypes',
-        relationship = 'ContainerContainerType',
-        referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            checkbox_bound = 1,
-            label = _("Container Type"),
-        ),
-    ),
 ))
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
@@ -64,6 +65,26 @@ class Container(BaseContent):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
+
+    def getJSCapacity(self, **kw):
+        """Try convert the Capacity to 'ml' or 'g' so that JS has an
+        easier time working with it.  If conversion fails, return raw value.
+        """
+        default = self.Schema()['Capacity'].get(self)
+        try:
+            mgdefault = default.split(' ', 1)
+            mgdefault = mg(float(mgdefault[0]), mgdefault[1])
+        except:
+            mgdefault = mg(0, 'ml')
+        try:
+            return str(mgdefault.ounit('ml'))
+        except:
+            pass
+        try:
+            return str(mgdefault.ounit('g'))
+        except:
+            pass
+        return str(default)
 
     def getContainerTypes(self):
         bsc = getToolByName(self, 'bika_setup_catalog')

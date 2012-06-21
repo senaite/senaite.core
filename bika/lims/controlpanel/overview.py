@@ -2,8 +2,8 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import PMF
 
 def categories(self):
-    """Monkey patch
-    see ../configure.zcml
+    """see ../configure.zcml
+    This adds the bika.lims category to controlpanel-overview.
     """
     return [
         {'id': 'Plone', 'title': PMF(u'Plone Configuration')},

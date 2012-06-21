@@ -9,15 +9,15 @@ from Products.CMFPlone.utils import base_hasattr
 from Products.CMFPlone.utils import safe_callable
 from Products.ZCatalog.ZCatalog import ZCatalog
 from bika.lims.interfaces import IBikaSetupCatalog
+from bika.lims.interfaces import IBikaCatalog
 from bika.lims.subscribers import skip
 from zope.component import getUtility
 from zope.interface import Interface, implements
 
 def getCatalog(instance, field = 'UID'):
     """ Return the catalog which indexes objects of instance's type.
-        If an object is indexed by more than one catalog, the first match
-        will be returned.
-
+    If an object is indexed by more than one catalog, the first match
+    will be returned.
     """
     uid = self.UID()
     if 'workflow_skiplist' in self.REQUEST \
@@ -32,6 +32,85 @@ def getCatalog(instance, field = 'UID'):
             and at.catalog_map[instance.portal_type][0] or 'portal_catalog'
         catalog = getToolByName(plone, catalog_name)
         return catalog
+
+class BikaCatalog(CatalogTool):
+    """ Catalog for various transactional types:
+    AnalysisRequest
+    Sample
+    SamplePartition
+    Report
+    """
+    implements(IBikaCatalog)
+
+    security = ClassSecurityInfo()
+    _properties = ({'id':'title', 'type': 'string', 'mode':'w'},)
+
+    title = 'Bika Catalog'
+    id = 'bika_catalog'
+    portal_type = meta_type = 'BikaCatalog'
+    plone_tool = 1
+
+    def __init__(self):
+        ZCatalog.__init__(self, self.id)
+
+    security.declareProtected(ManagePortal, 'clearFindAndRebuild')
+    def clearFindAndRebuild(self):
+        """
+        """
+
+        def indexObject(obj, path):
+            self.reindexObject(obj)
+
+        self.manage_catalogClear()
+        portal = getToolByName(self, 'portal_url').getPortalObject()
+        portal.ZopeFindAndApply(portal,
+                                obj_metatypes = ('AnalysisRequest',
+                                                 'Sample',
+                                                 'SamplePartition',
+                                                 'ReferenceSample',
+                                                 'Report',
+                                                 'Worksheet',
+                                                 ),
+                                search_sub = True,
+                                apply_func = indexObject)
+
+InitializeClass(BikaCatalog)
+
+class BikaAnalysisCatalog(CatalogTool):
+    """ Catalog for analysis types
+    """
+    implements(IBikaCatalog)
+
+    security = ClassSecurityInfo()
+    _properties = ({'id':'title', 'type': 'string', 'mode':'w'},)
+
+    title = 'Bika Analysis Catalog'
+    id = 'bika_analysis_catalog'
+    portal_type = meta_type = 'BikaCatalog'
+    plone_tool = 1
+
+    def __init__(self):
+        ZCatalog.__init__(self, self.id)
+
+    security.declareProtected(ManagePortal, 'clearFindAndRebuild')
+    def clearFindAndRebuild(self):
+        """
+        """
+
+        def indexObject(obj, path):
+            self.reindexObject(obj)
+
+        self.manage_catalogClear()
+        portal = getToolByName(self, 'portal_url').getPortalObject()
+        portal.ZopeFindAndApply(portal,
+                                obj_metatypes = ('Analysis',
+                                                 'ReferenceAnalysis',
+                                                 'DuplicateAnalysis',
+                                                 ),
+                                search_sub = True,
+                                apply_func = indexObject)
+
+InitializeClass(BikaAnalysisCatalog)
 
 class BikaSetupCatalog(CatalogTool):
     """ Catalog for all bika_setup objects
@@ -74,6 +153,7 @@ class BikaSetupCatalog(CatalogTool):
                                                  'AttachmentType',
                                                  'Calculation',
                                                  'ARProfile',
+                                                 'ARTemplate',
                                                  'LabContact',
                                                  'LabProduct',
                                                  'ReferenceManufacturer',

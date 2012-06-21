@@ -1,7 +1,8 @@
-jQuery( function($) {
+(function( $ ) {
 $(document).ready(function(){
 
-	_ = window.jsi18n;
+	_ = window.jsi18n_bika;
+	PMF = window.jsi18n_plone;
 
 	// if collection gets something worth submitting,
 	// it's sent to utils.barcode_entry here.
@@ -55,6 +56,4 @@ $(document).ready(function(){
 
 
 });
-});
-
-
+}(jQuery));

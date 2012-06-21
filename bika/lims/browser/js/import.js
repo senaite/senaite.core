@@ -1,7 +1,8 @@
-jQuery( function($) {
+(function( $ ) {
 $(document).ready(function(){
 
-	_ = window.jsi18n;
+	_ = window.jsi18n_bika;
+	PMF = window.jsi18n_plone;
 
 	function portalMessage(messages){
 		str = "<dl class='portalMessage error'>"+
@@ -27,7 +28,6 @@ $(document).ready(function(){
 				{'_authenticator': $('input[name="_authenticator"]').val(),
 				 'exim': $(this).val()
 				}
-			);
 		}
     });
 
@@ -61,4 +61,4 @@ $(document).ready(function(){
 	});
 
 });
-});
+}(jQuery));

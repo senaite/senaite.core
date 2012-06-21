@@ -21,7 +21,7 @@ def AfterTransitionEventHandler(instance, event):
     member = membership_tool.getAuthenticatedMember()
     parts = instance.objectValues('SamplePartition')
 
-    if action_id == "sampled":
+    if action_id == "sample":
         # This action can happen in the Sample UI.  So we transition all
         # instance partitions that are still 'to_be_sampled'
         tbs = [sp for sp in parts
@@ -50,7 +50,7 @@ def AfterTransitionEventHandler(instance, event):
             doActionFor(ar, action_id)
             ar.reindexObject()
 
-    elif action_id == "preserved":
+    elif action_id == "preserve":
         # This action can happen in the Sample UI.  So we transition all
         # instance partitions that are still 'to_be_preserved'
         tbs = [sp for sp in parts

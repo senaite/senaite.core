@@ -4,8 +4,6 @@
 	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
 	i18n:domain="bika">
 <head>
-<script type="text/javascript" tal:attributes="src python:context.absolute_url() + '/++resource++bika.lims.js/sample.js';">
-</script>
 </head>
 
 <body
@@ -19,7 +17,7 @@
 		portal context/@@plone_portal_state/portal;
 		global edit_enabled python:False;">
 
-	<form method="post">
+	<form method="post" name="header_form">
 	<input type="hidden" name="header_submitted" value="1" />
 	<span tal:replace="structure context/@@authenticator/authenticator"/>
 	<table class="header_table" cellpadding="0" cellspacing="0">
@@ -118,7 +116,7 @@
 		repeat="button view/header_buttons"
 		tal:condition="edit_enabled">
 		<input
-			class="context workflow_action_button allowMultiSubmit"
+			class="context workflow_action_button action_button allowMultiSubmit"
 			type="submit"
 			tal:attributes="
 				value button/title;

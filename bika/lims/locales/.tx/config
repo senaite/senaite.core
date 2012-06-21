@@ -12,3 +12,4 @@ file_filter = <lang>/LC_MESSAGES/plone.po
 host = https://www.transifex.net
 source_file = plone.pot
 source_lang = en
+

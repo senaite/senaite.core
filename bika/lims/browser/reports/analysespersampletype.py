@@ -5,8 +5,8 @@ from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.client import ClientSamplesView
-from bika.lims.utils import TimeOrDate
-from bika.lims.interfaces import IReports
+from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client
+from bika.lims.interfaces import IReportFolder
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
@@ -14,83 +14,134 @@ import json
 import plone
 
 class AnalysesPerSampleType(BrowserView):
-    """ stuff
-    """
     implements(IViewView)
-    template = ViewPageTemplateFile("analysespersampletype.pt")
+    template = ViewPageTemplateFile("report_out.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
-        self.TimeOrDate = TimeOrDate
 
     def __call__(self):
         # get all the data into datalines
-        
+
         sc = getToolByName(self.context, 'bika_setup_catalog')
-        pc = getToolByName(self.context, 'portal_catalog')
+        bac = getToolByName(self.context, 'bika_analysis_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
         self.report_content = {}
-        parms = {}
+        parm_lines = {}
+        parms = []
+        headings = {}
+        headings['header'] = _("Analyses per sample type")
+        headings['subheader'] = _("Number of analyses requested per sample type")
+
         count_all = 0
         query = {'portal_type': 'Analysis'}
         if self.request.form.has_key('getClientUID'):
             client_uid = self.request.form['getClientUID']
             query['getClientUID'] = client_uid
             client = rc.lookupObject(client_uid)
-            parms['client'] = client.Title()
+            client_title = client.Title()
         else:
-            parms['client'] = 'None'
+            client = logged_in_client(self.context)
+            if client:
+                client_title = client.Title()
+                query['getClientUID'] = client.UID()
+            else:
+                client_title = 'Undefined'
+        parms.append(
+            { 'title': _('Client'),
+             'value': client_title,
+             'type': 'text'})
 
         date_query = formatDateQuery(self.context, 'st_DateRequested')
         if date_query:
             query['created'] = date_query
-        parms['daterequested'] = date_query
+            requested = formatDateParms(self.context, 'st_DateRequested') 
+        else:
+            requested = 'Undefined'
+        parms.append(
+            { 'title': _('Requested'),
+             'value': requested,
+             'type': 'text'})
 
+        workflow = getToolByName(self.context, 'portal_workflow')
         if self.request.form.has_key('review_state'):
             query['review_state'] = self.request.form['review_state']
-            parms['review_state'] = self.request.form['review_state']
+            review_state = workflow.getTitleForStateOnType(
+                        self.request.form['review_state'], 'Analysis')
         else:
-            parms['review_state'] = None
+            review_state = 'Undefined'
+        parms.append(
+            { 'title': _('Status'),
+             'value': review_state,
+             'type': 'text'})
 
         if self.request.form.has_key('cancellation_state'):
             query['cancellation_state'] = self.request.form['cancellation_state']
-            parms['cancellation_state'] = self.request.form['cancellation_state']
+            cancellation_state = workflow.getTitleForStateOnType(
+                        self.request.form['cancellation_state'], 'Analysis')
         else:
-            parms['cancellation_state'] = None
-
+            cancellation_state = 'Undefined'
+        parms.append(
+            { 'title': _('Active'),
+             'value': cancellation_state,
+             'type': 'text'})
 
         if self.request.form.has_key('ws_review_state'):
             query['worksheetanalysis_review_state'] = self.request.form['ws_review_state']
-            parms['ws_review_state'] = self.request.form['ws_review_state']
+            ws_review_state = workflow.getTitleForStateOnType(
+                        self.request.form['ws_review_state'], 'Analysis')
         else:
-            parms['ws_review_state'] = None
+            ws_review_state = 'Undefined'
+        parms.append(
+            { 'title': _('Assigned to worksheet'),
+             'value': ws_review_state,
+             'type': 'text'})
 
 
+        # and now lets do the actual report lines
+        formats = {'columns': 2,
+                   'col_heads': [ _('Sample type'), _('Number of analyses')],
+                   'class': '',
+                  }
 
         datalines = []
-        for cat in sc(portal_type="AnalysisCategory",
+        for sampletype in sc(portal_type="SampleType",
                         sort_on='sortable_title'):
-            service_data = []
-            for service in sc(portal_type="AnalysisService",
-                            getCategoryUID = cat.UID,
-                            sort_on='sortable_title'):
-                query['getServiceUID'] = service.UID
-                analyses = pc(query)
-                count_analyses = len(analyses)
-                service_data.append([service.Title, count_analyses])
-                count_all += count_analyses
+            query['getSampleTypeUID'] = sampletype.UID
+            analyses = bac(query)
+            count_analyses = len(analyses)
 
-            datalines.append([cat.Title, service_data])
+            dataline = []
+            dataitem = {'value': sampletype.Title}
+            dataline.append(dataitem)
+            dataitem = {'value': count_analyses }
+
+            dataline.append(dataitem)
 
 
+            datalines.append(dataline)
+
+            count_all += count_analyses
+
+        # footer data
+        footlines = []
+        footline = []
+        footitem = {'value': _('Total'),
+                    'class': 'total_label'} 
+        footline.append(footitem)
+        footitem = {'value': count_all} 
+        footline.append(footitem)
+        footlines.append(footline)
         
 
         self.report_content = {
+                'headings': headings,
                 'parms': parms,
+                'formats': formats,
                 'datalines': datalines,
-                'total': count_all}
+                'footings': footlines}
 
 
         return self.template()
 
-    
+

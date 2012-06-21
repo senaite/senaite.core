@@ -11,7 +11,7 @@ from bika.lims import PMF, bikaMessageFactory as _
 
 schema = Organisation.schema.copy() + Schema((
     StringField('LabURL',
-        schemata = PMF('Address'),
+        schemata = 'Address',
         write_permission = ManageBika,
         widget = StringWidget(
             size = 60,
@@ -20,7 +20,7 @@ schema = Organisation.schema.copy() + Schema((
         ),
     ),
     IntegerField('Confidence',
-        schemata = PMF('Accreditation'),
+        schemata = 'Accreditation',
         widget = IntegerWidget(
             label = _("Confidence Level %"),
             description = _("This value is reported at the bottom of all published results"),
@@ -28,7 +28,7 @@ schema = Organisation.schema.copy() + Schema((
     ),
     BooleanField('LaboratoryAccredited',
         default = False,
-        schemata = PMF('Accreditation'),
+        schemata = 'Accreditation',
         write_permission = ManageBika,
         widget = BooleanWidget(
             label = _("Laboratory Accredited"),
@@ -36,7 +36,7 @@ schema = Organisation.schema.copy() + Schema((
         ),
     ),
     StringField('AccreditationBodyLong',
-        schemata = PMF('Accreditation'),
+        schemata = 'Accreditation',
         write_permission = ManageBika,
         widget = StringWidget(
             size = 60,
@@ -46,7 +46,7 @@ schema = Organisation.schema.copy() + Schema((
         ),
     ),
     StringField('AccreditationBody',
-        schemata = PMF('Accreditation'),
+        schemata = 'Accreditation',
         write_permission = ManageBika,
         widget = StringWidget(
             label = _("Accreditation Body Abbreviation"),
@@ -54,7 +54,7 @@ schema = Organisation.schema.copy() + Schema((
         ),
     ),
     StringField('AccreditationBodyURL',
-        schemata = PMF('Accreditation'),
+        schemata = 'Accreditation',
         write_permission = ManageBika,
         widget = StringWidget(
             label = _("Accreditation Body URL"),
@@ -62,7 +62,7 @@ schema = Organisation.schema.copy() + Schema((
         ),
     ),
     StringField('Accreditation',
-        schemata = PMF('Accreditation'),
+        schemata = 'Accreditation',
         write_permission = ManageBika,
         widget = StringWidget(
             label = _("Accreditation"),
@@ -70,7 +70,7 @@ schema = Organisation.schema.copy() + Schema((
         ),
     ),
     StringField('AccreditationReference',
-        schemata = PMF('Accreditation'),
+        schemata = 'Accreditation',
         write_permission = ManageBika,
         widget = StringWidget(
             label = _("Accreditation Reference"),
@@ -78,7 +78,7 @@ schema = Organisation.schema.copy() + Schema((
         ),
     ),
     ImageField('AccreditationBodyLogo',
-        schemata = PMF('Accreditation'),
+        schemata = 'Accreditation',
         widget = ImageWidget(
             label = _("Accreditation Logo"),
             description = _("Please upload the logo you are authorised to use on your "

@@ -1,4 +1,5 @@
 <html
+    i18n:domain="bika"
 	tal:define="portal_state context/@@plone_portal_state;
 				portal_url portal_state/portal_url;
 				locale portal_state/locale;
@@ -35,7 +36,8 @@
 
 </head>
 
-<body>
+<body
+  tal:define="currencies python:modules['zope.i18n.locales'].locales.getLocale('en').numbers.currencies;">
 
 <div class="service_popup">
 
@@ -49,7 +51,7 @@
 	<h5
 		tal:condition="python:context.bika_setup.laboratory.LaboratoryAccredited
 		                      and view.service.getAccredited()">
-		<img tal:attributes="src python:portal_url + '/++resource++bika.lims.images/accredited.png'"/>
+		<img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/accredited.png"/>
 		<span i18n:translate="">
 			Service is included in the
 			<span i18n:name="accreditation_body_abbrev">
@@ -60,7 +62,7 @@
 
 	<h5
 		tal:condition="view/service/getReportDryMatter">
-		<img tal:attributes="src python:portal_url + '/++resource++bika.lims.images/dry.png'"/>
+		<img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/dry.png"/>
 		<span i18n:translate="">
 			Can be reported as dry matter
 		</span>
@@ -71,7 +73,7 @@
 		condition="method">
 
 		<h5>
-			<img tal:attributes="src python:portal_url + '/++resource++bika.lims.images/method.png'"/>
+			<img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/method.png"/>
 			<span i18n:translate="">
 				Method:
 				<span i18n:name="method_name">
@@ -98,7 +100,7 @@
                 filesize python:file.getObjSize();
                 icon file/getBestIcon | nothing;">
 			<h5>
-				<img tal:attributes="src python:portal_url + '/++resource++bika.lims.images/attachment.png'"/>
+				<img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/attachment.png"/>
 				<span i18n:translate="">
 					Method Document
 				</span>
@@ -120,7 +122,7 @@
     <tal:nomethod
 		condition="not:view/service/getMethod">
 		<h5>
-			<img tal:attributes="src python:portal_url + '/++resource++bika.lims.images/method.png'"/>
+			<img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/method.png"/>
 			<span i18n:translate="">
 				Method: None
 			</span>
@@ -133,7 +135,7 @@
 		condition="calc">
 
 		<h5>
-			<img tal:attributes="src python:portal_url + '/++resource++bika.lims.images/calculation.png'"/>
+			<img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/calculation.png"/>
 			<span i18n:translate="">
 				Calculation:
 				<span i18n:name="calc_name">
@@ -147,7 +149,7 @@
 
         <div id="deps_list" tal:condition="deps">
 			<h5>
-				<img tal:attributes="src python:portal_url + '/++resource++bika.lims.images/dependencies.png'"/>
+				<img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/dependencies.png"/>
 				<span i18n:translate="">
 					Dependent Analyses
 				</span>
@@ -178,7 +180,7 @@
 							tal:content="m/Title"/>
 					</td>
 					<td>
-						<span tal:replace="python:locale.numbers.currencies[currency].symbol"/>
+						<span tal:replace="python:currencies[currency].symbol"/>
 						<span tal:replace="python:'%.02f'%dep.getTotalPrice()"/>
 					</td>
 				</tr>
@@ -191,7 +193,7 @@
     <tal:nocalc
 		condition="not:view/calc">
 		<h5>
-			<img tal:attributes="src python:portal_url + '/++resource++bika.lims.images/calculation.png'"/>
+			<img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/calculation.png"/>
 			<span i18n:translate="">
 				Calculation: None
 			</span>
@@ -206,7 +208,7 @@
 		condition="python:(partsetup or separate or container or preservation)">
 
 		<h5>
-			<img tal:attributes="src python:portal_url + '/++resource++bika.lims.images/samplepartition.png'"/>
+			<img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/samplepartition.png"/>
 			<span i18n:translate="">
 				Partition Setup
 			</span>
@@ -216,7 +218,7 @@
 			<p>
 				<span
 					tal:condition="view/service/getSeparate"
-					i18n:translate="">This service requires a separate partition</span>
+					i18n:translate="">This service requires a separate container.</span>
 				<span
 					tal:condition="not:view/service/getSeparate"
 					i18n:translate="">This service does not require a separate partition</span>
@@ -247,7 +249,7 @@
 			</p>
 
 			<h5>
-				<img tal:attributes="src python:portal_url + '/++resource++bika.lims.images/sampletype.png'"/>
+				<img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/sampletype.png"/>
 				<span i18n:translate="">
 					Sample Types
 				</span>

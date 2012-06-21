@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             i18n:domain="bika"
+             i18n:domain="plone"
              workflow_id="bika_referencesample_workflow"
              title="Bika Reference Sample Workflow"
              state_variable="review_state"
@@ -69,19 +69,33 @@
   </permission-map>
  </state>
 
- <transition transition_id="expire" title="Expire"
-             new_state="expired" trigger="USER"
-             before_script="" after_script="">
-  <action url="workflow_action?workflow_action=expire" category="workflow">Expire Reference</action>
+ <transition transition_id="expire"
+             title="Expire"
+             new_state="expired"
+             trigger="USER"
+             before_script=""
+             after_script=""
+             i18n:attributes="title expire_transition_title">
+  <action url="workflow_action?workflow_action=expire"
+          category="workflow"
+          icon=""
+          i18n:translate="expire_transition_title">Expire</action>
   <guard>
    <guard-permission>BIKA: Manage Reference</guard-permission>
   </guard>
  </transition>
 
- <transition transition_id="dispose" title="Dispose"
-             new_state="disposed" trigger="USER"
-             before_script="" after_script="">
-  <action url="workflow_action?workflow_action=dispose" category="workflow">Dispose of Reference</action>
+ <transition transition_id="dispose"
+             title="Dispose"
+             new_state="disposed"
+             trigger="USER"
+             before_script=""
+             after_script=""
+             i18n:attributes="title dispose_transition_title">
+  <action url="workflow_action?workflow_action=dispose"
+          category="workflow"
+          icon=""
+          i18n:translate="dispose_transition_title">Dispose</action>
   <guard>
    <guard-permission>BIKA: Manage Reference</guard-permission>
   </guard>

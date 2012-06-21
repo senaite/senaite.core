@@ -37,10 +37,11 @@ class AnalysisServicesWorkflowAction(WorkflowAction):
             created = []
             for service in selected_services.values():
                 _id = folder.invokeFactory('AnalysisService', id = 'tmp')
-                dup = folder[_id]
-                dup.setTitle('%s (copy)' % service.Title())
-                _id = renameAfterCreation(dup)
-                dup.edit(
+                folder[_id].setTitle('%s (copy)' % service.Title())
+                _id = renameAfterCreation(folder[_id])
+                folder[_id].unmarkCreationFlag()
+
+                folder[_id].edit(
                     description = service.Description(),
                     PointOfCapture = service.getPointOfCapture(),
                     ReportDryMatter = service.getReportDryMatter(),
@@ -59,19 +60,21 @@ class AnalysisServicesWorkflowAction(WorkflowAction):
                     Uncertainties = service.getUncertainties(),
                     ResultOptions = service.getResultOptions()
                 )
+                folder[_id].reindexObject()
                 created.append(_id)
 
             if len(created) > 1:
-                message = self.context.translation_service.translate(
+                message = self.context.translate(
                     _('Services ${services} were successfully created.',
                       mapping = {'services': ', '.join(created)}))
-                self.destination_url = self.request.get_header("referer",
-                                                               self.context.absolute_url())
+                self.destination_url = \
+                    self.request.get_header("referer",
+                                            self.context.absolute_url())
             else:
-                message = self.context.translation_service.translate(
+                message = self.context.translate(
                     _('Analysis request ${service} was successfully created.',
                     mapping = {'service': ', '.join(created)}))
-                self.destination_url = dup.absolute_url() + "/base_edit"
+                self.destination_url = folder[_id].absolute_url() + "/base_edit"
 
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.response.redirect(self.destination_url)
@@ -88,8 +91,7 @@ class AnalysisServicesView(BikaListingView):
         """
 
         super(AnalysisServicesView, self).__init__(context, request)
-        bsc = getToolByName(context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
+        self.catalog = 'bika_setup_catalog'
         self.contentFilter = {'portal_type': 'AnalysisService',
                               'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'):
@@ -124,24 +126,7 @@ class AnalysisServicesView(BikaListingView):
         }
 
         self.review_states = [
-            {'id':'all',
-             'title': _('All'),
-             'columns': ['Title',
-                         'Keyword',
-                         'Category',
-                         'Method',
-                         'Department',
-                         'Instrument',
-                         'Unit',
-                         'Price',
-                         'MaxTimeAllowed',
-                         'DuplicateVariation',
-                         'Calculation',
-                         ],
-             'custom_actions':[{'id': 'duplicate', 'title': _('Duplicate')}, ]
-             },
-
-            {'id':'active',
+            {'id':'default',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
@@ -166,6 +151,23 @@ class AnalysisServicesView(BikaListingView):
              'columns': ['Title',
                          'Category',
                          'Keyword',
+                         'Method',
+                         'Department',
+                         'Instrument',
+                         'Unit',
+                         'Price',
+                         'MaxTimeAllowed',
+                         'DuplicateVariation',
+                         'Calculation',
+                         ],
+             'custom_actions':[{'id': 'duplicate', 'title': _('Duplicate')}, ]
+             },
+            {'id':'all',
+             'title': _('All'),
+             'contentFilter':{},
+             'columns': ['Title',
+                         'Keyword',
+                         'Category',
                          'Method',
                          'Department',
                          'Instrument',

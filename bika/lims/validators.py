@@ -60,7 +60,7 @@ class ServiceKeywordValidator:
             return _("Validation failed: keyword contains invalid characters")
 
         # check the value against all AnalysisService keywords
-        # this has to be done from portal_catalog so we don't
+        # this has to be done from catalog so we don't
         # clash with ourself
         bsc = getToolByName(instance, 'bika_setup_catalog')
         services = bsc(portal_type='AnalysisService', getKeyword = value)

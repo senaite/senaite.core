@@ -8,6 +8,7 @@ class ReferenceSamplesView(BikaListingView):
         super(ReferenceSamplesView, self).__init__(context, request)
         self.icon = "++resource++bika.lims.images/referencesample_big.png"
         self.title = _("Reference Samples")
+        self.catalog = 'bika_catalog'
         self.contentFilter = {'portal_type': 'ReferenceSample',
                               'sort_on': 'id',
                               'sort_order': 'reverse',
@@ -27,15 +28,56 @@ class ReferenceSamplesView(BikaListingView):
             'Title': {'title': _('Title')},
             'Manufacturer': {'title': _('Manufacturer'), 'toggle':True},
             'Definition': {'title': _('Reference Definition'), 'toggle':True},
-            'DateSampled': {'title': _('Date Sampled'), 'toggle':True},
-            'DateReceived': {'title': _('Date Received'), 'toggle':True},
-            'DateOpened': {'title': _('Date Opened'), 'toggle':True},
-            'ExpiryDate': {'title': _('Expiry Date'), 'toggle':True},
+            'DateSampled': {'title': _('Date Sampled'),
+                            'index': 'getDateSampled',
+                            'toggle':True},
+            'DateReceived': {'title': _('Date Received'),
+                             'index': 'getDateReceived',
+                             'toggle':True},
+            'DateOpened': {'title': _('Date Opened'),
+                           'toggle':True},
+            'ExpiryDate': {'title': _('Expiry Date'),
+                           'index': 'getExpiryDate',
+                           'toggle':True},
             'state_title': {'title': _('State'), 'toggle':True},
         }
         self.review_states = [
+            {'id':'default',
+             'title': _('Current'),
+             'contentFilter':{'review_state':'current'},
+             'columns': ['ID',
+                         'Title',
+                         'Manufacturer',
+                         'Definition',
+                         'DateSampled',
+                         'DateReceived',
+                         'DateOpened',
+                         'ExpiryDate']},
+            {'id':'expired',
+             'title': _('Expired'),
+             'contentFilter':{'review_state':'expired'},
+             'columns': ['ID',
+                         'Title',
+                         'Manufacturer',
+                         'Definition',
+                         'DateSampled',
+                         'DateReceived',
+                         'DateOpened',
+                         'ExpiryDate']},
+            {'id':'disposed',
+             'title': _('Disposed'),
+             'contentFilter':{'review_state':'disposed'},
+             'columns': ['ID',
+                         'Title',
+                         'Manufacturer',
+                         'Definition',
+                         'DateSampled',
+                         'DateReceived',
+                         'DateOpened',
+                         'ExpiryDate']},
             {'id':'all',
              'title': _('All'),
+             'contentFilter':{},
              'columns': ['ID',
                          'Title',
                          'Manufacturer',
@@ -45,33 +87,6 @@ class ReferenceSamplesView(BikaListingView):
                          'DateOpened',
                          'ExpiryDate',
                          'state_title']},
-            {'title': _('Current'), 'id':'current',
-             'columns': ['ID',
-                         'Title',
-                         'Manufacturer',
-                         'Definition',
-                         'DateSampled',
-                         'DateReceived',
-                         'DateOpened',
-                         'ExpiryDate']},
-            {'title': _('Expired'), 'id':'expired',
-             'columns': ['ID',
-                         'Title',
-                         'Manufacturer',
-                         'Definition',
-                         'DateSampled',
-                         'DateReceived',
-                         'DateOpened',
-                         'ExpiryDate']},
-            {'title': _('Disposed'), 'id':'disposed',
-             'columns': ['ID',
-                         'Title',
-                         'Manufacturer',
-                         'Definition',
-                         'DateSampled',
-                         'DateReceived',
-                         'DateOpened',
-                         'ExpiryDate']},
         ]
 
 
@@ -96,9 +111,17 @@ class ReferenceSamplesView(BikaListingView):
 
             after_icons = ''
             if obj.getBlank():
-                after_icons += "<img src='++resource++bika.lims.images/blank.png' title='Blank'>"
+                after_icons += "<img\
+                src='%s/++resource++bika.lims.images/blank.png' \
+                title='%s'>" % (self.portal_url,
+                                self.context.translate(
+                                    _('Blank')))
             if obj.getHazardous():
-                after_icons += "<img src='++resource++bika.lims.images/hazardous.png' title='Hazardous'>"
+                after_icons += "<img\
+                src='%s/++resource++bika.lims.images/hazardous.png' \
+                title='%s'>" % (self.portal_url,
+                                self.context.translate(
+                                _('Hazardous')))
             items[x]['replace']['ID'] = "<a href='%s/base_view'>%s</a>&nbsp;%s" % \
                  (items[x]['url'], items[x]['ID'], after_icons)
 
@@ -106,38 +129,41 @@ class ReferenceSamplesView(BikaListingView):
 
 
 class ContactsView(BikaListingView):
-    contentFilter = {'portal_type': 'SupplierContact'}
-    context_actions = {_('Add'):
-                       {'url': 'createObject?type_name=SupplierContact',
-                        'icon': '++resource++bika.lims.images/add.png'}}
-    show_table_only = False
-    show_sort_column = False
-    show_select_row = False
-    show_select_column = True
-    pagesize = 25
-
-    columns = {
-           'getFullname': {'title': _('Full Name')},
-           'getEmailAddress': {'title': _('Email Address')},
-           'getBusinessPhone': {'title': _('Business Phone')},
-           'getMobilePhone': {'title': _('Mobile Phone')},
-           'getFax': {'title': _('Fax')},
-          }
-
-    review_states = [
-                {'id':'all',
-                 'title': _('All'),
-                 'columns': ['getFullname',
-                             'getEmailAddress',
-                             'getBusinessPhone',
-                             'getMobilePhone',
-                             'getFax']},
-                ]
 
     def __init__(self, context, request):
         super(ContactsView, self).__init__(context, request)
+        self.catalog = "portal_catalog"
+        self.contentFilter = {'portal_type': 'SupplierContact'}
+        self.context_actions = {_('Add'):
+            {'url': 'createObject?type_name=SupplierContact',
+             'icon': '++resource++bika.lims.images/add.png'}
+        }
+        self.show_table_only = False
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = True
+        self.pagesize = 25
         self.icon = "++resource++bika.lims.images/referencesupplier_contact_big.png"
         self.title = _("Contacts")
+
+        self.columns = {
+            'getFullname': {'title': _('Full Name')},
+            'getEmailAddress': {'title': _('Email Address')},
+            'getBusinessPhone': {'title': _('Business Phone')},
+            'getMobilePhone': {'title': _('Mobile Phone')},
+            'getFax': {'title': _('Fax')},
+        }
+
+        self.review_states = [
+            {'id':'default',
+             'title': _('All'),
+             'contentFilter':{},
+             'columns': ['getFullname',
+                         'getEmailAddress',
+                         'getBusinessPhone',
+                         'getMobilePhone',
+                         'getFax']},
+        ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)

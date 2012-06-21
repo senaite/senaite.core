@@ -34,7 +34,7 @@
 
     <browser:page
       for="bika.lims.interfaces.IClient"
-      name="analysisrequest_add"
+      name="ar_add"
       class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
       permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
@@ -82,14 +82,6 @@
 
     <browser:page
       for="*"
-      name="ar_formdata"
-      class="bika.lims.browser.analysisrequest.ar_formdata"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="*"
       name="analysisrequest_submit"
       class="bika.lims.browser.analysisrequest.ajaxAnalysisRequestSubmit"
       permission="zope.Public"
@@ -98,7 +90,7 @@
 
     <browser:page
       for="*"
-      name="analysisrequest_select_sample"
+      name="ar_select_sample"
       class="bika.lims.browser.analysisrequest.AnalysisRequestSelectSampleView"
       permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
@@ -106,7 +98,7 @@
 
     <browser:page
       for="*"
-      name="analysisrequest_select_cc"
+      name="ar_select_cc"
       class="bika.lims.browser.analysisrequest.AnalysisRequestSelectCCView"
       permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"

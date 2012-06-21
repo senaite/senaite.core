@@ -1,7 +1,8 @@
 jQuery( function($) {
 $(document).ready(function(){
 
-	_ = window.jsi18n;
+	_ = window.jsi18n_bika;
+	PMF = window.jsi18n_plone;
 
 	$("#analysestotals_selector").click(function(event){
 		$(".criteria").toggle(false);
@@ -24,6 +25,11 @@ $(document).ready(function(){
 		event.preventDefault();
 		$("#tats").toggle(true);
 	});
+	$("#tats_overtime_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#tats_overtime").toggle(true);
+	});
 	$("#attachments_selector").click(function(event){
 		$(".criteria").toggle(false);
 		event.preventDefault();
@@ -38,6 +44,11 @@ $(document).ready(function(){
 		$(".criteria").toggle(false);
 		event.preventDefault();
 		$("#analysesrepeated").toggle(true);
+	});
+	$("#resultspersamplepoint_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#resultspersamplepoint").toggle(true);
 	});
 	$("#standardanalysisqc_selector").click(function(event){
 		$(".criteria").toggle(false);

@@ -2,7 +2,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.permissions import View
 from AccessControl import getSecurityManager
 from bika.lims.permissions import AddClient
-from bika.lims.permissions import CancelAndReinstate
+from bika.lims.permissions import ManageClients
 from bika.lims.permissions import ManageAnalysisRequests
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims import bikaMessageFactory as _
@@ -18,9 +18,7 @@ class ClientFolderContentsView(BikaListingView):
 
     def __init__(self, context, request):
         super(ClientFolderContentsView, self).__init__(context, request)
-        self.contentFilter = {'portal_type': 'Client',
-                              'sort_on': 'sortable_title'}
-
+        self.contentFilter = {}
         self.icon = "++resource++bika.lims.images/client_big.png"
         self.title = _("Clients")
         self.description = ""
@@ -38,10 +36,30 @@ class ClientFolderContentsView(BikaListingView):
             'Fax': {'title': _('Fax')},
         }
 
-        self.review_states = [
+
+        self.review_states = [ # leave these titles and ids alone
+            {'id':'default',
+             'contentFilter': {'inactive_state':'active'},
+             'title': _('Active'),
+             'transitions': [{'id':'deactivate'}, ],
+             'columns':['title',
+                        'EmailAddress',
+                        'Phone',
+                        'Fax', ]
+             },
+            {'id':'inactive',
+             'title': _('Dormant'),
+             'contentFilter': {'inactive_state': 'inactive'},
+             'transitions': [{'id':'activate'}, ],
+             'columns':['title',
+                        'EmailAddress',
+                        'Phone',
+                        'Fax', ]
+             },
             {'id':'all',
              'title': _('All'),
-             'transitions': [{'id':'empty'}, ], # none
+             'contentFilter':{},
+             'transitions': [],
              'columns':['title',
                         'EmailAddress',
                         'Phone',
@@ -49,51 +67,34 @@ class ClientFolderContentsView(BikaListingView):
              },
         ]
 
-        mtool = getToolByName(self.context, 'portal_membership')
-        if mtool.checkPermission(CancelAndReinstate, self.context):
-            self.show_select_column = True
-            self.review_states[0]['transitions'] = [] # all
-            self.review_states.append(
-                {'id':'active',
-                 'title': _('Active'),
-                 'contentFilter': {'inactive_state': 'active'},
-                 'transitions': [{'id':'deactivate'}, ],
-                 'columns':['title',
-                            'EmailAddress',
-                            'Phone',
-                            'Fax', ]
-                 })
-            self.review_states.append(
-                {'id':'inactive',
-                 'title': _('Dormant'),
-                 'contentFilter': {'inactive_state': 'inactive'},
-                 'transitions': [{'id':'activate'}, ],
-                 'columns':['title',
-                            'EmailAddress',
-                            'Phone',
-                            'Fax', ]
-                 })
-
     def __call__(self):
         self.context_actions = {}
         mtool = getToolByName(self.context, 'portal_membership')
         if (mtool.checkPermission(AddClient, self.context)):
-            self.context_actions['Add'] = \
+            self.context_actions[_('Add')] = \
                 {'url': 'createObject?type_name=Client',
                  'icon': '++resource++bika.lims.images/add.png'}
+        if mtool.checkPermission(ManageClients, self.context):
+            self.show_select_column = True
         return super(ClientFolderContentsView, self).__call__()
 
     def getClientList(self, contentFilter):
 
         ## Only show clients to which we have Manage AR rights.
         ## (ritamo only sees Happy Hills).
-
         mtool = getToolByName(self.context, 'portal_membership')
+        wf = getToolByName(self.context, 'portal_workflow')
 
         clients = []
         for client in self.context.objectValues("Client"):
             if not mtool.checkPermission(ManageAnalysisRequests, client):
                 continue
+            if self.review_state != 'all':
+                state = wf.getInfoFor(client, 'inactive_state')
+                if self.review_state == 'default' and state != 'active':
+                    continue
+                if self.review_state == 'inactive' and state != 'inactive':
+                    continue
             clients.append(client)
         return clients
 

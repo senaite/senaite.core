@@ -22,7 +22,7 @@ class WorksheetTemplatesView(BikaListingView):
 
     def __init__(self, context, request):
         super(WorksheetTemplatesView, self).__init__(context, request)
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        self.catalog = 'bika_setup_catalog'
         self.contentFilter = {'portal_type': 'WorksheetTemplate',
                               'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'):
@@ -48,12 +48,7 @@ class WorksheetTemplatesView(BikaListingView):
         }
 
         self.review_states = [
-            {'id':'all',
-             'title': _('All'),
-             'columns': ['Title',
-                         'Description',
-                         'Instrument']},
-            {'id':'active',
+            {'id':'default',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
@@ -67,11 +62,15 @@ class WorksheetTemplatesView(BikaListingView):
              'columns': ['Title',
                          'Description',
                          'Instrument']},
+            {'id':'all',
+             'title': _('All'),
+             'contentFilter':{},
+             'columns': ['Title',
+                         'Description',
+                         'Instrument']},
         ]
 
     def folderitems(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        self.contentsMethod = bsc
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue

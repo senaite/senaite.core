@@ -7,7 +7,7 @@
 <body>
 
 <metal:content-title fill-slot="content-title">
-<h1>Administrative Reports </h1>
+<h1 i18n:translate="">Administrative Reports</h1>
 </metal:content-title>
 
 <metal:content-description fill-slot="content-description">
@@ -31,7 +31,7 @@
 >Analysis requests not invoiced</a>
 <br/>
 <span i18n:translate="">
-    Report the published analysis requests which have not been invoiced
+    Report of published analysis requests which have not been invoiced
 </span>
 </p>
 
@@ -44,19 +44,6 @@
 <fieldset>
 
 <legend i18n:translate="">Selection criteria</legend>
-<br/>
-<br/>
-<br/>
-<b> Under construction </b>
-<!--
-<metal:block use-macro="context/selection_macros/macros/client"/>
-
-<tal:created
-    tal:define="date_id string:DateRequested;
-                date_label string:Requested">
-<metal:date use-macro="context/selection_macros/macros/date"/>
-</tal:created>
-
 <tal:published
     tal:define="date_id string:DatePublished;
                 date_label string:Published">
@@ -67,21 +54,18 @@
 
 <metal:date use-macro="context/selection_macros/macros/cancellation_state"/>
 
-<metal:date use-macro="context/selection_macros/macros/ws_review_state"/>
 
--->
 </fieldset>
-<!--
     <input tabindex=""
         class="searchButton"
         type="submit"
         name="submit"
-        value="Search"
+        value="Report"
         i18n:attributes="value"
         />
--->
 </form>
 </div>
+
 
 </td>
 </tr>

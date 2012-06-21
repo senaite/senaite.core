@@ -1,12 +1,14 @@
 from setuptools import setup, find_packages
 import os
 
-version = '3.0a2.1'
+version = '3.0a3'
 
 setup(name='bika.lims',
       version=version,
       description="Bika LIMS",
-      long_description=open("README.md").read(),
+      long_description=open("README.md").read() + "\n" +
+                       open(os.path.join("docs", "installation.txt")).read() + "\n" +
+                       open(os.path.join("docs", "CHANGELOG.txt")).read(),
       # Get more strings from
       # http://pypi.python.org/pypi?:action=list_classifiers
       classifiers=[
@@ -30,6 +32,7 @@ setup(name='bika.lims',
           'Products.TinyMCE',
           'collective.subtractiveworkflow',
           'collective.indexing>=2.0a3',
+          'collective.js.jqueryui',
           'plone.app.z3cform',
           'openpyxl',
           'plone.app.iterate',

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             i18n:domain="bika"
+             i18n:domain="plone"
              workflow_id="bika_cancellation_workflow"
              title="Bika Cancellation Workflow"
              state_variable="cancellation_state"
@@ -23,12 +23,12 @@
              trigger="USER"
              before_script=""
              after_script=""
-             i18n:attributes="title">
+             i18n:attributes="title cancel_transition_title">
   <description i18n:translate=""></description>
   <action url="workflow_action?workflow_action=cancel"
           category=""
           icon=""
-          i18n:translate="">Cancel</action>
+          i18n:translate="cancel_transition_title">Cancel</action>
   <guard>
    <guard-permission>BIKA: Cancel and reinstate</guard-permission>
    <guard-expression>python:here.guard_cancel_transition()</guard-expression>
@@ -41,12 +41,12 @@
              trigger="USER"
              before_script=""
              after_script=""
-             i18n:attributes="title">
+             i18n:attributes="title reinstate_transition_title">
   <description i18n:translate=""></description>
   <action url="workflow_action?workflow_action=reinstate"
           category=""
           icon=""
-          i18n:translate="">Reinstate</action>
+          i18n:translate="reinstate_transition_title">Reinstate</action>
   <guard>
    <guard-permission>BIKA: Cancel and reinstate</guard-permission>
    <guard-expression>python:here.guard_reinstate_transition()</guard-expression>

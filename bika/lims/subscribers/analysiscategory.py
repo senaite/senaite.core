@@ -8,7 +8,6 @@ import transaction
 def AfterTransitionEventHandler(instance, event):
 
     wf = getToolByName(instance, 'portal_workflow')
-    pc = getToolByName(instance, 'portal_catalog')
     rc = getToolByName(instance, REFERENCE_CATALOG)
     pu = getToolByName(instance, 'plone_utils')
 

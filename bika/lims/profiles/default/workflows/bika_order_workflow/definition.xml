@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             i18n:domain="bika"
+             i18n:domain="plone"
              workflow_id="bika_order_workflow"
              title="Bika Order Workflow"
              state_variable="review_state"
@@ -45,11 +45,11 @@
              trigger="USER"
              before_script=""
              after_script=""
-             i18n:attributes="title">
+             i18n:attributes="title dispatch_transition_title">
   <description i18n:translate=""></description>
   <action url=""
           category="workflow"
-          i18n:translate="">Dispatch</action>
+          i18n:translate="dispatch_transition_title">Dispatch order</action>
   <guard>c
    <guard-permission>BIKA: Dispatch Order</guard-permission>
   </guard>

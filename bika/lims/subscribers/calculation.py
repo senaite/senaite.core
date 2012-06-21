@@ -12,11 +12,9 @@ def AfterTransitionEventHandler(instance, event):
         return
 
     wf = getToolByName(instance, 'portal_workflow')
-    pc = getToolByName(instance, 'portal_catalog')
     bsc = getToolByName(instance, 'bika_setup_catalog')
     rc = getToolByName(instance, REFERENCE_CATALOG)
     pu = getToolByName(instance, 'plone_utils')
-    ts = getToolByName(instance, 'translation_service')
 
     if event.transition.id == "activate":
         # A calculation cannot be re-activated if services it depends on
@@ -27,7 +25,7 @@ def AfterTransitionEventHandler(instance, event):
             if wf.getInfoFor(service, "inactive_state") == "inactive":
                 inactive_services.append(service.Title())
         if inactive_services:
-            message = ts.translate(
+            message = instance.translate(
                 "message_calculation_reactivate_deps_not_active",
                 "bika",
                 {'inactive_services': ", ".join(inactive_services)},
@@ -49,7 +47,7 @@ def AfterTransitionEventHandler(instance, event):
             if calc and calc.UID() == instance.UID():
                 calc_services.append(service.Title())
         if calc_services:
-            message = ts.translate(
+            message = instance.translate(
                 "message_calculation_deactivate_in_use",
                 "bika",
                 {'calc_services': ", ".join(calc_services)},

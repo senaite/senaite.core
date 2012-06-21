@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-             i18n:domain="bika"
+             i18n:domain="plone"
              workflow_id="bika_referenceanalysis_workflow"
              title="Bika Reference Analysis Workflow"
              state_variable="review_state"
@@ -96,12 +96,12 @@
 			 trigger="USER"
              before_script=""
 			 after_script=""
-             i18n:attributes="title">
+             i18n:attributes="title retract_transition_title">
   <description i18n:translate=""></description>
   <action url="workflow_action?workflow_action=retract"
           category="workflow"
 		  icon=""
-		  i18n:translate="">Retract</action>
+		  i18n:translate="retract_transition_title">Retract</action>
   <guard>
    <guard-permission>BIKA: Retract</guard-permission>
   </guard>
@@ -113,28 +113,28 @@
 			 trigger="USER"
              before_script=""
 			 after_script=""
-             i18n:attributes="title">
+             i18n:attributes="title submit_transition_title">
   <description i18n:translate=""></description>
   <action url="workflow_action?workflow_action=submit"
           category="workflow"
 		  icon=""
-		  i18n:translate="">Submit for verification</action>
+		  i18n:translate="submit_transition_title">Submit for verification</action>
   <guard>
   </guard>
  </transition>
 
  <transition transition_id="attach"
-			 title="Attach"
+			 title="Add attachment"
 			 new_state="to_be_verified"
 			 trigger="USER"
 			 before_script=""
 			 after_script=""
-             i18n:attributes="title">
+             i18n:attributes="title attach_transition_title">
   <description i18n:translate=""></description>
   <action url="workflow_action?workflow_action=submit"
           category="workflow"
 		  icon=""
-		  i18n:translate="">Add attachment</action>
+		  i18n:translate="attach_transition_title">Add attachment</action>
   <guard>
    <guard-expression>python:here.guard_attach_transition()</guard-expression>
   </guard>
@@ -146,12 +146,12 @@
 			 trigger="USER"
              before_script=""
 			 after_script=""
-             i18n:attributes="title">
+             i18n:attributes="title verify_transition_title">
   <description i18n:translate=""></description>
   <action url="workflow_action?workflow_action=verify"
           category="workflow"
 		  icon=""
-		  i18n:translate="">Verify</action>
+		  i18n:translate="verify_transition_title">Verify</action>
   <guard>
    <guard-permission>BIKA: Verify</guard-permission>
    <guard-expression>python:here.guard_verify_transition()</guard-expression>
@@ -164,12 +164,12 @@
 			 trigger="USER"
              before_script=""
 			 after_script=""
-			 i18n:attributes="title">
+			 i18n:attributes="title reject_transition_title">
   <description i18n:translate=""></description>
   <action url="workflow_action?workflow_action=reject"
           category="workflow"
 		  icon=""
-		  i18n:translate="">Reject</action>
+		  i18n:translate="reject_transition_title">Reject</action>
   <guard>
    <guard-permission>BIKA: Verify</guard-permission>
   </guard>
@@ -181,12 +181,12 @@
 			 trigger="USER"
              before_script=""
 			 after_script=""
-             i18n:attributes="title">
+             i18n:attributes="title assign_transition_title">
   <description i18n:translate=""></description>
   <action url="workflow_action?workflow_action=assign"
           category="workflow"
 		  icon=""
-		  i18n:translate="">Assign</action>
+		  i18n:translate="assign_transition_title">Assign</action>
   <guard>
   </guard>
  </transition>
@@ -197,12 +197,12 @@
 			 trigger="USER"
              before_script=""
 			 after_script=""
-             i18n:attributes="title">
+             i18n:attributes="title unassign_transition_title">
   <description i18n:translate=""></description>
   <action url="workflow_action?workflow_action=unassign"
           category="workflow"
 		  icon=""
-		  i18n:translate="">Remove</action>
+		  i18n:translate="unassign_transition_title">Remove</action>
   <guard>
   </guard>
  </transition>

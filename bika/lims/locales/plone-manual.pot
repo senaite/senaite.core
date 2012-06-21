@@ -19,12 +19,6 @@ msgstr "Accounting"
 msgid "label_schema_Address"
 msgstr "Address"
 
-msgid "label_schema_Analysis"
-msgstr "Analysis"
-
-msgid "label_schema_Analyses"
-msgstr "Analyses"
-
 msgid "label_schema_Bank details"
 msgstr "Bank details"
 
@@ -55,8 +49,8 @@ msgstr "Location"
 msgid "label_schema_Method"
 msgstr "Method"
 
-msgid "label_schema_Partition Setup"
-msgstr "Partition Setup"
+msgid "label_schema_Container and Preservation"
+msgstr "Container and Preservation"
 
 msgid "label_schema_Preferences"
 msgstr "Preferences"
@@ -78,3 +72,18 @@ msgstr "Security"
 
 msgid "label_schema_Uncertainties"
 msgstr "Uncertainties"
+
+msgid "label_schema_Sample Partitions"
+msgstr "Sample Partitions"
+
+msgid "label_schema_Analyses"
+msgstr "Analyses"
+
+msgid "save_analyses_button_transition_title"
+msgstr "Save analyses"
+
+msgid "save_partitions_button_transition_title"
+msgstr "Save partitions"
+
+msgid "save_selection_button_transition_title"
+msgstr "Save selection"

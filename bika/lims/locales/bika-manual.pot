@@ -14,12 +14,6 @@ msgstr ""
 msgid "Extension profile for the Bika LIMS"
 msgstr ""
 
-msgid "Yes"
-msgstr ""
-
-msgid "No"
-msgstr
-
 msgid "Default"
 msgstr ""
 
@@ -53,9 +47,6 @@ msgid ""
 "This will remove all existing client analysis specifications "
 "and create copies of all lab specifications. "
 "Are you sure you want to do this?"
-msgstr ""
-
-msgid "Save remarks"
 msgstr ""
 
 # ../browser/js/attachments.js

@@ -1,14 +1,14 @@
 from AccessControl import ClassSecurityInfo
 from Acquisition import aq_base, aq_inner
 from Products.Archetypes.Registry import registerWidget, registerPropertyType
-from bika.lims.browser.bika_listing import BikaListingView
 from Products.Archetypes.Widget import TypesWidget
-from bika.lims import bikaMessageFactory as _
 from Products.Archetypes.utils import shasattr
 from Products.CMFCore.utils import getToolByName
-
 from archetypes.referencebrowserwidget import utils
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import POINTS_OF_CAPTURE
+from bika.lims.permissions import ManageBika
 from types import StringType
 from zope.site.hooks import getSite
 
@@ -20,6 +20,7 @@ class ServicesView(BikaListingView):
         BikaListingView.__init__(self, context, request)
         self.selected = [o.UID() for o in getattr(field, field.accessor)()]
         self.context_actions = {}
+        self.catalog = "bika_setup_catalog"
         self.contentFilter = {'review_state': 'impossible_state'}
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url
@@ -38,8 +39,9 @@ class ServicesView(BikaListingView):
             'Calculation': {'title': _('Calculation')},
         }
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
+             'contentFilter':{},
              'transitions': [],
              'columns':['Service',
                         'Keyword',
@@ -49,11 +51,12 @@ class ServicesView(BikaListingView):
         ]
 
     def folderitems(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
         self.categories = []
-        services = bsc(portal_type = 'AnalysisService',
-                       inactive_state = 'active',
-                       sort_on = 'sortable_title')
+        checkPermission = self.context.portal_membership.checkPermission
+        catalog = getToolByName(self.context, self.catalog)
+        services = catalog(portal_type = 'AnalysisService',
+                           inactive_state = 'active',
+                           sort_on = 'sortable_title')
         items = []
         for service in services:
             service = service.getObject()
@@ -81,7 +84,7 @@ class ServicesView(BikaListingView):
                 'relative_url': service.absolute_url(),
                 'view_url': service.absolute_url(),
                 'Service': service_title,
-                'replace': {'Service':"<span class='service_title'>%s</span>" % service_title},
+                'replace': {},
                 'before': {},
                 'after': {},
                 'choices':{},
@@ -89,6 +92,12 @@ class ServicesView(BikaListingView):
                 'state_class': 'state-active',
                 'allow_edit': [],
             }
+            if checkPermission(ManageBika, service):
+                item['replace']['Service'] = "<a href='%s'>%s</a>" % \
+                    (service.absolute_url(), service_title)
+            else:
+                item['replace']['Service'] = "<span class='service_title'>%s</span>" % \
+                    service_title
             items.append(item)
 
 

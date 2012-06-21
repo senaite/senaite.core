@@ -43,7 +43,7 @@ class WorksheetFolderWorkflowAction(WorkflowAction):
                         changes = True
 
                 if changes:
-                    message = self.context.translation_service.translate(PMF('Changes saved.'))
+                    message = self.context.translate(PMF('Changes saved.'))
                     self.context.plone_utils.addPortalMessage(message, 'info')
 
             self.destination_url = self.request.get_header("referer",
@@ -58,6 +58,7 @@ class WorksheetFolderListingView(BikaListingView):
     template = ViewPageTemplateFile("templates/worksheetfolder.pt")
     def __init__(self, context, request):
         BikaListingView.__init__(self, context, request)
+        self.catalog = 'bika_catalog'
         self.contentFilter = {
             'portal_type': 'Worksheet',
             'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
@@ -85,7 +86,6 @@ class WorksheetFolderListingView(BikaListingView):
         self.analysts = getUsers(self, ['Manager', 'LabManager', 'Analyst'])
 
         bsc = getToolByName(context, 'bika_setup_catalog')
-
         templates = [t for t in bsc(portal_type = 'WorksheetTemplate',
                                     inactive_state = 'active')]
 
@@ -119,17 +119,20 @@ class WorksheetFolderListingView(BikaListingView):
             'SampleTypes': {'title': _('Sample Types'),
                             'sortable':False,
                             'toggle': False},
+            'Instrument': {'title': _('Instrument'),
+                            'sortable':False,
+                            'toggle': False},
             'QC': {'title': _('QC'),
                    'sortable':False,
                    'toggle': False},
-            'CreationDate': {'title': _('Creation Date'),
-                             'toggle': True},
-                             #'index': 'created'},
+            'CreationDate': {'title': PMF('Date Created'),
+                             'toggle': True,
+                             'index': 'created'},
             'state_title': {'title': _('State'),
                             'index': 'review_state'},
         }
         self.review_states = [
-            {'id':'all',
+            {'id':'default',
              'title': _('All'),
              'contentFilter': {'portal_type': 'Worksheet',
                                'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
@@ -143,6 +146,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Template',
                         'Services',
                         'SampleTypes',
+                        'Instrument',
                         'QC',
                         'CreationDate',
                         'state_title']},
@@ -162,6 +166,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Template',
                         'Services',
                         'SampleTypes',
+                        'Instrument',
                         'QC',
                         'CreationDate',
                         'state_title']},
@@ -177,6 +182,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Template',
                         'Services',
                         'SampleTypes',
+                        'Instrument',
                         'QC',
                         'CreationDate',
                         'state_title']},
@@ -194,6 +200,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Template',
                         'Services',
                         'SampleTypes',
+                        'Instrument',
                         'QC',
                         'CreationDate',
                         'state_title']},
@@ -209,6 +216,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Template',
                         'Services',
                         'SampleTypes',
+                        'Instrument',
                         'QC',
                         'CreationDate',
                         'state_title']},
@@ -241,6 +249,9 @@ class WorksheetFolderListingView(BikaListingView):
 
             items[x]['Analyst'] = analyst
 
+            instrument = obj.getInstrument()
+            items[x]['Instrument'] = instrument and instrument.Title() or ''
+
             items[x]['Title'] = obj.Title()
             wst = obj.getWorksheetTemplate()
             items[x]['Template'] = wst and wst.Title() or ''
@@ -248,9 +259,17 @@ class WorksheetFolderListingView(BikaListingView):
                 items[x]['replace']['Template'] = "<a href='%s'>%s</a>" % \
                     (wst.absolute_url(), wst.Title())
 
-            # this cannot be setup in contentFilter, because AuthenticatedMember
-            # is not available in __init__
-            if self.request.get("%s_review_state"%self.form_id, '') == 'mine':
+            # Only show "my" worksheets
+            # this cannot be setup in contentFilter,
+            # because AuthenticatedMember is not available in __init__
+            cookie = json.loads(self.request.get("review_state", '{}'))
+            cookie_key = "%s%s" % (self.context.portal_type, self.form_id)
+            # first check POST
+            selected_state = self.request.get("%s_review_state"%self.form_id, '')
+            if not selected_state:
+                # then check cookie
+                selected_state = cookie.get(cookie_key, '')
+            if selected_state == 'mine':
                 if member.getId() not in (analyst, creator):
                     continue
 
@@ -350,8 +369,8 @@ class WorksheetFolderListingView(BikaListingView):
 
         if can_reassign:
             for x in range(len(self.review_states)):
-                if self.review_states[x]['id'] in ['all', 'mine', 'open']:
-                    self.review_states[x]['custom_actions'] = [{'id': 'reassign', 'title': 'Reassign'}, ]
+                if self.review_states[x]['id'] in ['default', 'mine', 'open']:
+                    self.review_states[x]['custom_actions'] = [{'id': 'reassign', 'title': _('Reassign')}, ]
 
         return new_items
 
@@ -394,7 +413,7 @@ class AddWorksheetView(BrowserView):
         instrument = self.request.get('instrument', '')
 
         if not analyst:
-            message = self.context.translation_service.translate("Analyst must be specified.")
+            message = self.context.translate("Analyst must be specified.")
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
@@ -428,6 +447,6 @@ class AddWorksheetView(BrowserView):
         if ws.getLayout():
             self.request.RESPONSE.redirect(ws.absolute_url() + "/manage_results")
         else:
-            msg = self.context.translation_service.translate(_("No analyses were added"))
+            msg = self.context.translate(_("No analyses were added"))
             self.context.plone_utils.addPortalMessage(msg)
             self.request.RESPONSE.redirect(ws.absolute_url() + "/add_analyses")
