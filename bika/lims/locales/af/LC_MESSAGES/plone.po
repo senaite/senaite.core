@@ -29,6 +29,7 @@ msgid "AR Profiles"
 msgstr "OV profiele"
 
 #: ../profiles/default/types/ARTemplate.xml
+#: ../profiles/default/controlpanel.xml
 msgid "AR Template"
 msgstr ""
 
@@ -87,10 +88,6 @@ msgstr ""
 #: ../profiles/default/controlpanel.xml
 msgid "Analysis Profiles"
 msgstr "Ontledingsversoek profiele"
-
-#: ../profiles/default/controlpanel.xml
-msgid "AR Templates"
-msgstr ""
 
 #: ../profiles/default/actions.xml
 #: ../profiles/default/types/AnalysisRequestsFolder.xml

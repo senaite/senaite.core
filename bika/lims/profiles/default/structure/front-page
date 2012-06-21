@@ -1,6 +1,6 @@
 id: front-page
 title: Welcome to Gaob Bika LIMS 3
-description: This is 3.0a3 of 22 June 2012
+description: This is 3.0a3 of 21June 2012
 subject:
 relatedItems:
 location:
@@ -30,12 +30,15 @@ Content-Type: text/html
 <p>Please log issues and feature requests in the <a class="external-link" href="https://github.com/bikalabs/Bika-LIMS/issues">public issue tracker</a> <br /><br />IRC <a class="chatzilla-link" href="http://webchat.freenode.net?channels=bika" id="ch-url-anchor">irc://freenode/bika</a>, the #bika channel on irc.freenode.net</p>
 <h2 align="left" class="Subheading">Test data</h2>
 <p align="left">We created standardised spreadsheets to configure the LIMS with setup data of your choice. The demo is populated with data of uniform   nature for ease of testing. See <a class="internal-link" href="setup-data-in-this-installation">Setup data used to configure this installation</a></p>
-<h2 align="left" class="Subheading">Installer</h2>
-<p><a href="https://github.com/bikalabs/Bika-LIMS/blob/master/doc/INSTALL.md">https://github.com/bikalabs/Bika-LIMS/blob/master/doc/INSTALL.md</a></p>
+<h2 align="left" class="Subheading">Installation</h2>
 <p>Installation guides: <a href="http://www.bikalabs.com/helpcentre/manual/bika-installation-guides/bika-on-ubuntu-linux/installing-bika-lims-3"><span class="state-published">Linux</span></a> · <a href="http://www.bikalabs.com/helpcentre/manual/bika-installation-guides/bika-on-windows/installing-bika-lims-3-0"><span class="state-published">Windows</span></a></p>
 <h2 align="left" class="Subheading">Gaob?</h2>
-In the tradition of <i>Chief </i>Inkosi Bika LIMS 2 using a  title for a release, this edition is code-named<i> </i>Gaob Bika LIMS 3. Gaob, <i>King,</i> is taken from <a class="external-link" href="http://www.san.org.za/">Khoi San</a> Nama, language of <a class="external-link" href="http://www.independent.co.uk/news/science/worlds-most-ancient-race-traced-in-dna-study-1677113.html">the world's first  people</a> <a href="https://github.com/bikalabs/Bika-LIMS/blob/master/doc/INSTALL.md"></a>
-<h2 align="left" class="Subheading"></h2>
+<p>In the tradition of <i>Chief </i>Inkosi Bika LIMS 2 using a  title for a release, this edition is code-named<i> </i>Gaob Bika LIMS 3. Gaob, <i>King,</i> is taken from <a class="external-link" href="http://www.san.org.za/">Khoi San</a> Nama, language of <a class="external-link" href="http://www.independent.co.uk/news/science/worlds-most-ancient-race-traced-in-dna-study-1677113.html">the world's first  people</a></p>
+<h2 align="left" class="Subheading">Download</h2>
+<ul>
+<li><a href="https://github.com/bikalabs/Bika-LIMS">PyPI</a></li>
+<li><a href="https://github.com/bikalabs/Bika-LIMS">GitHub</a></li>
+</ul>
 </td>
 <td style="text-align: left; ">
 <p style="text-align: center; "><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview/bikas-web-based-workflow"><img class="image-inline" src="workflow-diagram.png" /></a></p>

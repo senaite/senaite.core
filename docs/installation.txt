@@ -10,8 +10,8 @@ The latest Unified Installer can be found at http://plone.org/products
 
 Plone 4 or newer is required.
 
-    $ tar xzf Plone-4.1.3-UnifiedInstaller.tgz
-    $ cd Plone-4.1.3-UnifiedInstaller
+    $ tar xzf Plone-4.1.5-UnifiedInstaller.tgz
+    $ cd Plone-4.1.5-UnifiedInstaller
     $ ./install.sh --target=Plone --libz=yes --password=admin standalone
 
 Visit http://plone.org/documentation/topic/Installation for more information about setting up Plone.

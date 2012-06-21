@@ -1,6 +1,26 @@
 3.0 dev
 =======
 
+2012-06-21
+----------
+
+#### Changes
+
+- Partitioning & Preservation automation
+- Reports
+- Sample point & types relations in UI
+- AR template enhancements
+- Sample and AR layout improvements
+- Labels
+- Configuration logs
+- Faster indexing
+- JavaScript optimisation
+- Better IE compatibility
+- Set-up worksheet improvements
+- Updated translations
+- Workflow tweaks
+- Tweaks to Icons, Views & Lists
+
 2012-04-23
 ----------
 
@@ -8,7 +28,6 @@
 
 - Optional sampling and preservation workflows and roles.
 - Sample partitioning.
-- Container & preservation automation.
 - AR templates - Sample point & Sample type restrictions.
 - Reports - framework only. 'Analysis per service' shows what is planned.
 - Improved i18n handling, and updated strings from Transifex.

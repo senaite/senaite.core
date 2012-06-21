@@ -33,6 +33,7 @@ msgid "AR Template"
 msgstr "Plantilla de solicitud de análisis"
 
 #: ../profiles/default/types/ARTemplates.xml
+#: ../profiles/default/controlpanel.xml
 msgid "AR Templates"
 msgstr "Plantillas de solicitud de análisis"
 
@@ -86,10 +87,6 @@ msgstr ""
 
 #: ../profiles/default/controlpanel.xml
 msgid "Analysis Profiles"
-msgstr ""
-
-#: ../profiles/default/controlpanel.xml
-msgid "AR Templates"
 msgstr ""
 
 #: ../profiles/default/actions.xml

@@ -29,6 +29,7 @@ msgid "AR Template"
 msgstr ""
 
 #: ../profiles/default/types/ARTemplates.xml
+#: ../profiles/default/controlpanel.xml
 msgid "AR Templates"
 msgstr ""
 
@@ -82,10 +83,6 @@ msgstr ""
 
 #: ../profiles/default/controlpanel.xml
 msgid "Analysis Profiles"
-msgstr ""
-
-#: ../profiles/default/controlpanel.xml
-msgid "AR Templates"
 msgstr ""
 
 #: ../profiles/default/actions.xml
