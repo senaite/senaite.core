@@ -208,7 +208,7 @@
 
     <!-- Sample -->
     <tr tal:define="field_name string:SampleID">
-        <th colspan="2"></th>
+        <th colspan="2" i18n:translate="">Secondary AR</th>
         <td class="center">&nbsp;</td>
         <tal:linksample repeat="column python:range(view.col_count)">
             <td class="center"
@@ -384,6 +384,28 @@
                 </tal:samplingdeviations>
             </select>
             </div>
+            </td>
+        </tal:block>
+    </tr>
+    <!-- Ad-Hoc -->
+    <tr tal:define="field_name string:AdHoc">
+        <th colspan="2" i18n:translate="">Ad-Hoc</th>
+        <td>
+            <img class="copyButton"
+                tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
+        </td>
+        <tal:block repeat="column python:range(view.col_count)">
+            <td class="cb"
+                tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
+                    input_id string:ar_${column}_${field_name}">
+            <input type="checkbox"
+                class="cb"
+                value="checked"
+                tal:attributes="
+                    column column;
+                    name input_name;
+                    id input_id;
+                    tabindex python:column*100+tabindex.next();"/>
             </td>
         </tal:block>
     </tr>

@@ -173,6 +173,12 @@ schema = BikaSchema.copy() + Schema((
             visible = {'edit':'hidden'},
         ),
     ),
+    BooleanField('AdHoc',
+        default=False,
+        widget=BooleanWidget(
+            label=_("Ad-Hoc"),
+        ),
+    ),
 ))
 
 schema['title'].required = False

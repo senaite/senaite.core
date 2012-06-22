@@ -56,6 +56,7 @@
     Deviation    python:sample.getSamplingDeviation() and sample.getSamplingDeviation().Title() or '';
     DateSampled  python:sample.getDateSampled() and sample.getDateSampled().Date();
     Composite    python:sample.getComposite();
+    AdHoc        python:sample.getAdHoc();
     barcode_str  string:${SampleID}${partnr};
     analyses     python:part.getBackReferences('AnalysisSamplePartition');
     field_analyses python:[analysis for analysis in analyses if analysis.getService().getPointOfCapture()=='field'];
