@@ -122,6 +122,12 @@ function copyButton(){
 		}
 		$("[id*=_ARProfile]").change();
 	}
+	else if ($(this).hasClass('SamplingDeviationCopyButton')){ // Sampling Deviation
+		first_val = $('#ar_0_SamplingDeviation').val();
+		for (col=1; col<parseInt($("#col_count").val()); col++) {
+			$("#ar_"+col+"_SamplingDeviation").val(first_val);
+		}
+	}
 	else if ($(this).parent().attr('class') == 'service'){ // Analysis Service checkbox
 		first_val = $('input[column="0"]').filter('#'+this.id).attr("checked");
 		affected_elements = [];

@@ -33,6 +33,7 @@
   <type portal_type="Sample"/>
   <type portal_type="SamplePoint"/>
   <type portal_type="SampleType"/>
+  <type portal_type="SamplingDeviation"/>
   <type portal_type="WorksheetTemplate"/>
  </factorytypes>
 </object>

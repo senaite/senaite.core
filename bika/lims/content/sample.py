@@ -104,6 +104,16 @@ schema = BikaSchema.copy() + Schema((
             visible = {'edit':'hidden'},
         ),
     ),
+    ReferenceField('SamplingDeviation',
+        vocabulary_display_path_bound = sys.maxint,
+        allowed_types = ('SamplingDeviation',),
+        relationship = 'SampleSamplingDeviation',
+        referenceClass = HoldingReference,
+        widget = ReferenceWidget(
+            checkbox_bound = 1,
+            label = _('Sampling Deviation'),
+        ),
+    ),
     DateTimeField('DateReceived',
         widget = DateTimeWidget(
             label = _("Date Received"),

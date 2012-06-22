@@ -147,13 +147,19 @@
                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
         </td>
         <tal:block repeat="column python:range(view.col_count)">
-            <td class="topborder ar_column" tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
+            <td class="topborder ar_column" style="padding-top:2px;"
+                tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
                 input_id string:ar_${column}_${field_name}">
+            <div style="width:100px; border:none;text-align:left;padding-left:2px;">
             <select tal:attributes="
                 class field_name;
                 column column;
                 id input_id;
-                name input_name;">
+                name input_name;"
+                style="width:96px; position:absolute; z-index:+1;"
+                onactivate="this.style.width='auto';"
+                onchange="this.blur();"
+                onblur="this.style.width='96px';">
                 <option value="" i18n:translate="">None</option>
                 <tal:template repeat="template view/artemplates">
                     <option
@@ -162,6 +168,7 @@
                             value python:template[1].UID();"></option>
                 </tal:template>
             </select>
+            </div>
             </td>
         </tal:block>
     </tr>
@@ -173,13 +180,19 @@
                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
         </td>
         <tal:block repeat="column python:range(view.col_count)">
-            <td class="topborder ar_column" tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
+            <td class="topborder ar_column" style="padding-top:2px;"
+                tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
                 input_id string:ar_${column}_${field_name}">
+            <div style="width:100px; border:none;text-align:left;padding-left:2px;">
             <select tal:attributes="
                 class field_name;
                 column column;
                 id input_id;
-                name input_name;">
+                name input_name;"
+                style="width:96px; position:absolute; z-index:+1;"
+                onactivate="this.style.width='auto';"
+                onchange="this.blur();"
+                onblur="this.style.width='96px';">
                 <option value="" i18n:translate="">None</option>
                 <tal:profile repeat="profile view/arprofiles">
                     <option
@@ -188,6 +201,7 @@
                             value python:profile[1].UID();"></option>
                 </tal:profile>
             </select>
+            </div>
             </td>
         </tal:block>
     </tr>
@@ -336,6 +350,40 @@
                 tal:attributes="
                     id input_id;name input_name;
                     tabindex python:column*100+tabindex.next();"/>
+            </td>
+        </tal:block>
+    </tr>
+    <!-- Sampling Deviation -->
+    <tr tal:define="field_name string:SamplingDeviation">
+        <th colspan="2" i18n:translate="">Sampling Deviation</th>
+        <td>
+            <img class="copyButton SamplingDeviationCopyButton"
+                tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
+        </td>
+        <tal:block repeat="column python:range(view.col_count)">
+            <td class="topborder ar_column" style="padding-top:2px;"
+                tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
+                input_id string:ar_${column}_${field_name}">
+            <div style="width:100px; border:none;text-align:left;padding-left:2px;">
+            <select
+                tal:attributes="
+                class field_name;
+                column column;
+                id input_id;
+                name input_name;"
+                style="width:96px; position:absolute; z-index:+1;"
+                onactivate="this.style.width='auto';"
+                onchange="this.blur();"
+                onblur="this.style.width='96px';">
+                <option value="" i18n:translate="">None</option>
+                <tal:samplingdeviations repeat="sd view/samplingdeviations">
+                    <option
+                        tal:content="python:sd[0]"
+                        tal:attributes="
+                            value python:sd[1].UID();"></option>
+                </tal:samplingdeviations>
+            </select>
+            </div>
             </td>
         </tal:block>
     </tr>

@@ -82,6 +82,7 @@ def initialize(context):
     from content.samplepoint import SamplePoint
     from content.samplesfolder import SamplesFolder
     from content.sampletype import SampleType
+    from content.samplingdeviation import SamplingDeviation
     from content.suppliercontact import SupplierContact
     from content.supplyorder import SupplyOrder
     from content.supplyorderitem import SupplyOrderItem
@@ -109,6 +110,7 @@ def initialize(context):
     from controlpanel.bika_referencesuppliers import ReferenceSuppliers
     from controlpanel.bika_samplepoints import SamplePoints
     from controlpanel.bika_sampletypes import SampleTypes
+    from controlpanel.bika_samplingdeviations import SamplingDeviations
     from controlpanel.bika_worksheettemplates import WorksheetTemplates
 
     content_types, constructors, ftis = process_types(

@@ -1,6 +1,7 @@
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -310,6 +311,11 @@ class SampleEdit(BrowserView):
             self.context.bika_setup.getSamplingWorkflowEnabled()
         samplers = getUsers(sample, ['Sampler', 'LabManager', 'Manager'])
 
+        samplingdeviations = DisplayList(
+            [(sd.UID, sd.title) for sd \
+             in bsc(portal_type = 'SamplingDeviation',
+                    inactive_review_state = 'active')])
+
         self.header_columns = 3
         self.header_rows = [
             {'id': 'ClientReference',
@@ -388,6 +394,14 @@ class SampleEdit(BrowserView):
              'vocabulary': samplers,
              'type': 'choices',
              'required': True},
+            {'id': 'SamplingDeviation',
+             'title': _('Sampling Deviation'),
+             'allow_edit': self.allow_edit and allow_sample_edit,
+             'value': sample.getSamplingDeviation() and sample.getSamplingDeviation().UID() or '',
+             'formatted_value': sample.getSamplingDeviation() and sample.getSamplingDeviation().Title() or '',
+             'condition':True,
+             'vocabulary': samplingdeviations,
+             'type': 'choices'},
             {'id': 'DateReceived',
              'title': _('Date Received'),
              'allow_edit': False,
