@@ -471,10 +471,10 @@ class SampleEdit(BrowserView):
 
                 values[row['id']] = value
 
-            # boolean - checkboxes are 'true' or 'false in form.
+            # boolean - checkboxes are 'true'/'on' or 'false'/missing in form.
             for row in [r for r in self.header_rows if r.get('type', '') == 'boolean']:
                 value = form.get(row['id'], 'false')
-                values[row['id']] = value == 'true' and True or False
+                values[row['id']] = value == 'true' and True or value == 'on' and True or False
 
             if not message:
                 self.context.edit(**values)
