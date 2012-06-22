@@ -219,7 +219,7 @@ schema = BikaSchema.copy() + Schema((
                             "defined results calculations"),
         ),
     ),
-    ReferenceField('Method',
+    HistoryAwareReferenceField('Method',
         schemata = "Method",
         required = 0,
         searchable = True,
