@@ -43,6 +43,12 @@ class ISamplePartition(Interface):
 class ISamplesFolder(Interface):
     """Samples Folder"""
 
+class ISamplingDeviation(Interface):
+    """Sampling Deviation"""
+
+class ISamplingDeviations(Interface):
+    """Sampling Deviations"""
+
 class IWorksheetFolder(Interface):
     """WorksheetFolder"""
 

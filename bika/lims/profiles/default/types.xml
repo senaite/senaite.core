@@ -70,6 +70,8 @@
  <object name="SamplesFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SampleType" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SampleTypes" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="SamplingDeviation" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="SamplingDeviations" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SupplierContact" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SupplyOrder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SupplyOrderItem" meta_type="Factory-based Type Information with dynamic views"/>

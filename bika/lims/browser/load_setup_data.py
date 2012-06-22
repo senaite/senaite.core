@@ -134,6 +134,7 @@ class LoadSetupData(BrowserView):
         self.load_reference_supplier_contacts(sheets['Reference Supplier Contacts'])
         self.load_attachment_types(sheets['Attachment Types'])
         self.load_lab_products(sheets['Lab Products'])
+        self.load_sampling_deviations(sheets['Sampling Deviations'])
         self.load_worksheet_templates(sheets['Worksheet Templates'])
         self.load_reference_manufacturers(sheets['Reference Manufacturers'])
 
@@ -143,18 +144,6 @@ class LoadSetupData(BrowserView):
         message = PMF("Changes saved.")
         self.plone_utils.addPortalMessage(message)
         self.request.RESPONSE.redirect(portal.absolute_url())
-
-    def load_images(self, filename):
-        #archive = ZipFile(filename, 'r', ZIP_DEFLATED)
-        #self.images = {}
-        #for zipinfo in archive.filelist:
-        #    if zipinfo.filename.lower().endswith('.xml'):
-        #        xml = XML(archive.read(zipinfo.filename))
-        #for xmlfile in archive/xl/drawings/*.xml:
-        #    drawing = xml.etree.ElementTree.XML(xmlfile.read())
-        #drawings = xml.etree.ElementTree.XML
-        pass
-
 
     def load_containertypes(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -542,6 +531,23 @@ class LoadSetupData(BrowserView):
                      Prefix = unicode(row['Prefix']),
                      MinimumVolume = unicode(row['MinimumVolume']),
                      Hazardouus = row['Hazardous'] and True or False)
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
+
+    def load_sampling_deviations(self, sheet):
+        nr_rows = sheet.get_highest_row()
+        nr_cols = sheet.get_highest_column()
+##        self.request.response.write("<input type='hidden' id='load_section' value='Sampling Deviations' max='%s'/>"%(nr_rows-3))
+##        self.request.response.flush()
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
+        fields = rows[1]
+        folder = self.context.bika_setup.bika_samplingdeviations
+        for row in rows[3:]:
+            row = dict(zip(fields, row))
+            _id = folder.invokeFactory('SamplingDeviation', id = 'tmp')
+            obj = folder[_id]
+            obj.edit(title = unicode(row['title']),
+                     description = unicode(row['description']))
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
 

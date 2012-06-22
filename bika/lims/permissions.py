@@ -21,6 +21,7 @@ AddClientFolder = 'BIKA: Add ClientFolder'
 AddMethod = 'BIKA: Add Method'
 AddSample = 'BIKA: Add Sample'
 AddSamplePartition = 'BIKA: Add SamplePartition'
+AddSamplingDeviation = 'BIKA: Add SamplingDeviation'
 
 # Default Archetypes Add Permission
 ADD_CONTENT_PERMISSION = AddPortalContent
@@ -35,6 +36,7 @@ ADD_CONTENT_PERMISSIONS = {
     'Method': AddMethod,
     'Sample': AddSample,
     'SamplePartition': AddSamplePartition,
+    'SamplingDeviation': AddSamplingDeviation,
 }
 
 # Very Old permissions:

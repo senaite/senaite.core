@@ -505,6 +505,7 @@ class BikaGenerator:
         at.setCatalogsByType('AnalysisSpec', ['bika_setup_catalog', ])
         at.setCatalogsByType('SampleType', ['bika_setup_catalog', ])
         at.setCatalogsByType('SamplePoint', ['bika_setup_catalog', ])
+        at.setCatalogsByType('SamplingDeviation', ['bika_setup_catalog', ])
         at.setCatalogsByType('Instrument', ['bika_setup_catalog', ])
         at.setCatalogsByType('Method', ['bika_setup_catalog', ])
         at.setCatalogsByType('AttachmentType', ['bika_setup_catalog', ])

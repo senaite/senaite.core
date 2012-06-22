@@ -18,4 +18,5 @@ bika_referencemanufacturers,ReferenceManufacturers
 bika_referencesuppliers,ReferenceSuppliers
 bika_samplepoints,SamplePoints
 bika_sampletypes,SampleTypes
+bika_samplingdeviations,SamplingDeviations
 bika_worksheettemplates,WorksheetTemplates

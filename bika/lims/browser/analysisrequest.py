@@ -23,11 +23,11 @@ from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
 from bika.lims.utils import pretty_user_name_or_id
+from magnitude import mg
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.i18n.locales import locales
 from zope.interface import implements, alsoProvides
-from magnitude import mg
 import App
 import json
 import plone
@@ -431,6 +431,11 @@ class AnalysisRequestViewView(BrowserView):
             self.context.bika_setup.getSamplingWorkflowEnabled()
         samplers = getUsers(sample, ['Sampler', 'LabManager', 'Manager'])
 
+        samplingdeviations = DisplayList(
+            [(sd.UID, sd.title) for sd \
+             in bsc(portal_type = 'SamplingDeviation',
+                    inactive_review_state = 'active')])
+
         self.header_columns = 3
         self.header_rows = [
             {'id': 'SampleID',
@@ -522,6 +527,14 @@ class AnalysisRequestViewView(BrowserView):
              'vocabulary': samplers,
              'type': 'choices',
              'required': True},
+            {'id': 'SamplingDeviation',
+             'title': _('Sampling Deviation'),
+             'allow_edit': allow_sample_edit,
+             'value': sample.getSamplingDeviation() and sample.getSamplingDeviation().UID() or '',
+             'formatted_value': sample.getSamplingDeviation() and sample.getSamplingDeviation().Title() or '',
+             'condition':True,
+             'vocabulary': samplingdeviations,
+             'type': 'choices'},
             {'id': 'DateReceived',
              'title': _('Date Received'),
              'allow_edit': False,
@@ -662,6 +675,14 @@ class AnalysisRequestViewView(BrowserView):
             if isActive(template):
                 templates.append((self.context.translate(_('Lab')) + ": " + template.Title(), template))
         return templates
+
+    def samplingdeviations(self):
+        """ SamplingDeviation vocabulary for AR Add
+        """
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        return [(sd.getObject().Title(), sd.getObject()) \
+                for sd in bsc(portal_type = 'SamplingDeviation',
+                              inactive_review_state = 'active')]
 
     def SelectedServices(self):
         """ return information about services currently selected in the
@@ -1509,6 +1530,7 @@ class ajaxAnalysisRequestSubmit():
                     SamplePoint = values.get('SamplePoint', ''),
                     SampleType = values['SampleType'],
                     SamplingDate = values['SamplingDate'],
+                    SamplingDeviation = values['SamplingDeviation'],
                     Composite = values.get('Composite',False),
                     SamplingWorkflowEnabled = SamplingWorkflowEnabled,
                 )
