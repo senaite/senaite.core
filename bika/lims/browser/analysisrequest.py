@@ -1311,6 +1311,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                 'SampleType': items[x]['SampleTypeTitle'],
                 'SamplePoint': items[x]['SamplePointTitle'],
                 'Composite': obj.getComposite(),
+                'SamplingDeviation': obj.getSamplingDeviation().UID(),
                 'field_analyses': self.FieldAnalyses(obj),
                 'column': self.request.get('column', None),
             })
