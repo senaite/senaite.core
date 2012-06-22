@@ -197,7 +197,7 @@ class ReferenceSamplesView(BikaListingView):
         self.columns = {
             'ID': {
                 'title': _('ID'),
-                'index': 'sortable_title'},
+                'index': 'id'},
             'Title': {
                 'title': _('Title'),
                 'index': 'sortable_title',
