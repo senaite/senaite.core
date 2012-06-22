@@ -548,6 +548,12 @@ class AnalysisRequestViewView(BrowserView):
              'value': sample.getComposite(),
              'condition':True,
              'type': 'boolean'},
+            {'id': 'AdHoc',
+             'title': _('Ad-Hoc'),
+             'allow_edit': allow_sample_edit,
+             'value': sample.getAdHoc(),
+             'condition':True,
+             'type': 'boolean'},
             {'id': 'InvoiceExclude',
              'title': _('Invoice Exclude'),
              'allow_edit': True,
@@ -1311,6 +1317,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                 'SampleType': items[x]['SampleTypeTitle'],
                 'SamplePoint': items[x]['SamplePointTitle'],
                 'Composite': obj.getComposite(),
+                'AdHoc': obj.getAdHoc(),
                 'SamplingDeviation': obj.getSamplingDeviation().UID(),
                 'field_analyses': self.FieldAnalyses(obj),
                 'column': self.request.get('column', None),
@@ -1511,15 +1518,9 @@ class ajaxAnalysisRequestSubmit():
 
             if values.has_key('SampleID'):
                 # Secondary AR
-                sample_id = values['SampleID']
-                sample_proxy = bc(portal_type = 'Sample',
-                                  cancellation_state = 'active',
-                                  id = sample_id)
-                assert len(sample_proxy) == 1
-                sample = sample_proxy[0].getObject()
-                composite = values.get('Composite', False)
-                sample.edit(Composite = composite)
-                sample.reindexObject()
+                sample = bc(portal_type = 'Sample',
+                            cancellation_state = 'active',
+                            id = values['SampleID'])[0].getObject()
             else:
                 # Primary AR
                 client = self.context
@@ -1532,7 +1533,8 @@ class ajaxAnalysisRequestSubmit():
                     SampleType = values['SampleType'],
                     SamplingDate = values['SamplingDate'],
                     SamplingDeviation = values['SamplingDeviation'],
-                    Composite = values.get('Composite',False),
+                    Composite = values.get('Composite', False),
+                    AdHoc = values.get('AdHoc', False),
                     SamplingWorkflowEnabled = SamplingWorkflowEnabled,
                 )
                 sample.processForm()
