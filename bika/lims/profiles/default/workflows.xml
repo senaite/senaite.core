@@ -231,6 +231,12 @@
    <bound-workflow workflow_id="bika_cancellation_workflow"/>
   </type>
 
+  <type type_id="SampleMatrices"/>
+  <type type_id="SampleMatrix">
+   <bound-workflow workflow_id="bika_one_state_workflow"/>
+   <bound-workflow workflow_id="bika_inactive_workflow"/>
+  </type>
+
   <type type_id="SamplePartition">
    <bound-workflow workflow_id="bika_sample_workflow"/>
    <bound-workflow workflow_id="bika_cancellation_workflow"/>

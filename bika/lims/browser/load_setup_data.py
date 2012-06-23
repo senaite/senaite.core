@@ -86,6 +86,7 @@ class LoadSetupData(BrowserView):
         self.fix_client_contact_ccs()
         self.instruments = {}
         self.load_instruments(sheets['Instruments'])
+        self.load_sample_matrices(sheets['Sample Matrices'])
         self.load_sample_points(sheets['Sample Points'])
         self.load_sample_types(sheets['Sample Types'])
         self.cats = {}
@@ -545,6 +546,23 @@ class LoadSetupData(BrowserView):
         for row in rows[3:]:
             row = dict(zip(fields, row))
             _id = folder.invokeFactory('SamplingDeviation', id = 'tmp')
+            obj = folder[_id]
+            obj.edit(title = unicode(row['title']),
+                     description = unicode(row['description']))
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
+
+    def load_sample_matrices(self, sheet):
+        nr_rows = sheet.get_highest_row()
+        nr_cols = sheet.get_highest_column()
+##        self.request.response.write("<input type='hidden' id='load_section' value='Sample Matrices' max='%s'/>"%(nr_rows-3))
+##        self.request.response.flush()
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
+        fields = rows[1]
+        folder = self.context.bika_setup.bika_samplematrices
+        for row in rows[3:]:
+            row = dict(zip(fields, row))
+            _id = folder.invokeFactory('SampleMatrix', id = 'tmp')
             obj = folder[_id]
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']))

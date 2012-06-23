@@ -69,6 +69,14 @@
     />
 
     <browser:page
+      for="bika.lims.interfaces.ISampleMatrices"
+      name="folder_view"
+      class=".bika_samplematrices.SampleMatricesView"
+      permission="bika.lims.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
       for="bika.lims.interfaces.ISamplePoints"
       name="folder_view"
       class=".bika_samplepoints.SamplePointsView"
