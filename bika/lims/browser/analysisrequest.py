@@ -696,6 +696,13 @@ class AnalysisRequestViewView(BrowserView):
                 for sd in bsc(portal_type = 'SamplingDeviation',
                               inactive_review_state = 'active')]
 
+    def containertypes(self):
+        """ DefaultContainerType vocabulary for AR Add
+        """
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        return [(o.getObject().Title(), o.getObject()) \
+                for o in bsc(portal_type = 'ContainerType')]
+
     def SelectedServices(self):
         """ return information about services currently selected in the
             context AR.
@@ -1555,20 +1562,33 @@ class ajaxAnalysisRequestSubmit():
 
             sample_uid = sample.UID()
 
-            # XXX Selecting a template sets the hidden 'parts' field to template values.
-            # XXX Selecting a profile will allow ar_add.js to fill in the parts field.
-            # XXX The result is the same once we are here.
+
+            # Selecting a template sets the hidden 'parts' field to template values.
+            # Selecting a profile will allow ar_add.js to fill in the parts field.
+            # The result is the same once we are here.
             if not parts:
                 parts = [{'services':[],
                          'container':[],
                          'preservation':'',
                          'separate':False}]
 
+            # Apply DefaultContainerType to partitions without a container
+            d_clist = []
+            D_UID = values.get("DefaultContainerType", None)
+            if D_UID:
+                d_clist = [c.UID for c in bsc(portal_type='Container')
+                           if c.getObject().getContainerType().UID() == D_UID]
+                for i in range(len(parts)):
+                    if not parts[i].get('container', []):
+                        parts[i]['container'] = d_clist
+
             # Create sample partitions
             parts_and_services = {}
-            for p in parts:
+            for _i in range(len(parts)):
+                p = parts[_i]
                 _id = sample.invokeFactory('SamplePartition', id = 'tmp')
                 part = sample[_id]
+                parts[_i]['object'] = part
                 # Sort available containers by capacity and select the
                 # smallest one possible.
                 containers = [_p.getObject() for _p in bsc(UID=p['container'])]
