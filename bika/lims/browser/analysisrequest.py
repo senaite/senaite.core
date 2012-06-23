@@ -1532,7 +1532,7 @@ class ajaxAnalysisRequestSubmit():
                     SamplePoint = values.get('SamplePoint', ''),
                     SampleType = values['SampleType'],
                     SamplingDate = values['SamplingDate'],
-                    SamplingDeviation = values['SamplingDeviation'],
+                    SamplingDeviation = values.get('SamplingDeviation', ''),
                     Composite = values.get('Composite', False),
                     AdHoc = values.get('AdHoc', False),
                     SamplingWorkflowEnabled = SamplingWorkflowEnabled,
