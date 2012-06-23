@@ -82,12 +82,15 @@ h1 span {
 }
 
 /* overwrite sunburst special display of description fields */
-/*#content .field textarea[name$=".description"],  */
-#archetypes-fieldname-description textarea#description {
-    font-style: normal;
-    color: &dtml-inputFontColor; !important;
+#content .field textarea[name$=".description"],
+#archetypes-fieldname-description,
+textarea#description,
+#content textarea {
+    color:#111111 !important;
+    font-family: Arial,FreeSans,sans-serif !important;
+    font-style: normal !important;
     font-size: &dtml-fontSmallSize; !important;
-    font-weight: normal;
+    font-weight: normal !important;
 }
 
 #content a:link {
