@@ -475,6 +475,7 @@ class bika_browserdata(BrowserView):
             data['st_uids'][st.Title()] = {
                 'uid':st.UID(),
                 'minvol': st.getJSMinimumVolume(),
+                'containertype': st.getContainerType() and st.getContainerType().UID() or '',
                 'samplepoints': [sp.Title() for sp in st.getSamplePoints()]
             }
 

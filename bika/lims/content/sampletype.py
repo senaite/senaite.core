@@ -57,6 +57,20 @@ schema = BikaSchema.copy() + Schema((
             description = _("The minimum sample volume required for analysis eg. '10 ml' or '1 kg'."),
         ),
     ),
+    ReferenceField('ContainerType',
+        required = 0,
+        allowed_types = ('ContainerType',),
+        vocabulary = 'ContainerTypesVocabulary',
+        relationship = 'SampleTypeContainerType',
+        widget = ReferenceWidget(
+            checkbox_bound = 1,
+            label = _("Default Container Type"),
+            description = _("The default container type. New sample partitions "
+                            "are automatically assigned a container of this "
+                            "type, unless it has been specified in more details "
+                            "per analysis service"),
+        ),
+    ),
     ReferenceField('SamplePoints',
         required = 0,
         multiValued = 1,
@@ -149,6 +163,10 @@ class SampleType(BaseContent, HistoryAwareMixin):
     def SampleMatricesVocabulary(self):
         from bika.lims.content.samplematrix import SampleMatrices
         return SampleMatrices(self, allow_blank=True)
+
+    def ContainerTypesVocabulary(self):
+        from bika.lims.content.containertype import ContainerTypes
+        return ContainerTypes(self, allow_blank=True)
 
 registerType(SampleType, PROJECTNAME)
 

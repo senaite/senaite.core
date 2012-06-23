@@ -160,7 +160,7 @@
                 onactivate="this.style.width='auto';"
                 onchange="this.blur();"
                 onblur="this.style.width='96px';">
-                <option value="" i18n:translate="">None</option>
+                <option value="" i18n:translate=""></option>
                 <tal:template repeat="template view/artemplates">
                     <option
                         tal:content="python:template[0]"
@@ -193,7 +193,7 @@
                 onactivate="this.style.width='auto';"
                 onchange="this.blur();"
                 onblur="this.style.width='96px';">
-                <option value="" i18n:translate="">None</option>
+                <option value="" i18n:translate=""></option>
                 <tal:profile repeat="profile view/arprofiles">
                     <option
                         tal:content="python:profile[0]"
@@ -375,13 +375,47 @@
                 onactivate="this.style.width='auto';"
                 onchange="this.blur();"
                 onblur="this.style.width='96px';">
-                <option value="" i18n:translate="">None</option>
+                <option value="" i18n:translate=""></option>
                 <tal:samplingdeviations repeat="sd view/samplingdeviations">
                     <option
                         tal:content="python:sd[0]"
                         tal:attributes="
                             value python:sd[1].UID();"></option>
                 </tal:samplingdeviations>
+            </select>
+            </div>
+            </td>
+        </tal:block>
+    </tr>
+    <!-- Default Container Type -->
+    <tr tal:define="field_name string:DefaultContainerType">
+        <th colspan="2" style="white-space:nowrap" i18n:translate="">Default Container Type</th>
+        <td>
+            <img class="copyButton DefaultContainerTypeCopyButton"
+                tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
+        </td>
+        <tal:block repeat="column python:range(view.col_count)">
+            <td class="topborder ar_column" style="padding-top:2px;"
+                tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
+                input_id string:ar_${column}_${field_name}">
+            <div style="width:100px; border:none;text-align:left;padding-left:2px;">
+            <select
+                tal:attributes="
+                class field_name;
+                column column;
+                id input_id;
+                name input_name;"
+                style="width:96px; position:absolute; z-index:+1;"
+                onactivate="this.style.width='auto';"
+                onchange="this.blur();"
+                onblur="this.style.width='96px';">
+                <option value="" i18n:translate=""></option>
+                <tal:containertypes repeat="o view/containertypes">
+                    <option
+                        tal:content="python:o[0]"
+                        tal:attributes="
+                            value python:o[1].UID();"></option>
+                </tal:containertypes>
             </select>
             </div>
             </td>

@@ -81,6 +81,7 @@ function deleteSampleButton(){
 	$("#ar_"+column+"_SamplingDeviation").val('').removeAttr("readonly");
 	$("#ar_"+column+"_Composite").attr('checked', false).removeAttr("disabled");
 	$("#ar_"+column+"_AdHoc").attr('checked', false).removeAttr("disabled");
+	$("#ar_"+column+"_DefaultContainerType").removeAttr("disabled");
 	$("#deleteSampleButton_" + column).toggle(false);
 	// uncheck and enable all visible service checkboxes
 	$("input[id*='_"+column+"_']").filter(".cb").removeAttr('disabled').attr('checked', false);
@@ -128,6 +129,12 @@ function copyButton(){
 		first_val = $('#ar_0_SamplingDeviation').val();
 		for (col=1; col<parseInt($("#col_count").val()); col++) {
 			$("#ar_"+col+"_SamplingDeviation").val(first_val);
+		}
+	}
+	else if ($(this).hasClass('DefaultContainerTypeCopyButton')){ // Default Container Type
+		first_val = $('#ar_0_DefaultContainerType').val();
+		for (col=1; col<parseInt($("#col_count").val()); col++) {
+			$("#ar_"+col+"_DefaultContainerType").val(first_val);
 		}
 	}
 	else if ($(this).parent().attr('class') == 'service'){ // Analysis Service checkbox
@@ -723,6 +730,10 @@ function setupAutoCompleters(){
 				st = window.bika_utils.data.st_uids[title];
 				if (st['samplepoints'].length == 1) {
 					$("#ar_"+col+"_SamplePoint").val(st['samplepoints'][0]);
+				}
+				ct = st['containertype'];
+				if (ct != undefined && ct != null && !$(e).hasAttr('disabled')) {
+					$("#ar_"+col+"_DefaultContainerType").val(ct);
 				}
 				match = true;
 			}

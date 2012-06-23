@@ -24,6 +24,7 @@ $(document).ready(function(){
 		window.opener.$("#ar_"+column+"_SamplingDeviation").val(row_data['SamplingDeviation']).attr('disabled', true);
 		window.opener.$("#ar_"+column+"_Composite").val(row_data['Composite']).attr('disabled', true);
 		window.opener.$("#ar_"+column+"_AdHoc").val(row_data['AdHoc']).attr('disabled', true);
+		window.opener.$("#ar_"+column+"_DefaultContainerType").val('').attr('disabled', true);
 
 		// handle samples that do have field analyses
 		// field_analyses is a dict of lists: { catuid: [serviceuid,serviceuid], ... }
