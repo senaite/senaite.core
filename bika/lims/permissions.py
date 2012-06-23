@@ -20,6 +20,7 @@ AddClient = 'BIKA: Add Client'
 AddClientFolder = 'BIKA: Add ClientFolder'
 AddMethod = 'BIKA: Add Method'
 AddSample = 'BIKA: Add Sample'
+AddSampleMatrix = 'BIKA: Add SampleMatrix'
 AddSamplePartition = 'BIKA: Add SamplePartition'
 AddSamplingDeviation = 'BIKA: Add SamplingDeviation'
 
@@ -35,6 +36,7 @@ ADD_CONTENT_PERMISSIONS = {
     'Client': AddClient,
     'Method': AddMethod,
     'Sample': AddSample,
+    'SampleMatrix': AddSampleMatrix,
     'SamplePartition': AddSamplePartition,
     'SamplingDeviation': AddSamplingDeviation,
 }

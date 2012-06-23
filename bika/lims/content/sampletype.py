@@ -14,6 +14,7 @@ from magnitude import mg, MagnitudeError
 from zope.interface import implements
 import json
 import plone
+import sys
 
 schema = BikaSchema.copy() + Schema((
     DurationField('RetentionPeriod',
@@ -30,6 +31,17 @@ schema = BikaSchema.copy() + Schema((
         widget = BooleanWidget(
             label = _("Hazardous"),
             description = _("Samples of this type should be treated as hazardous"),
+        ),
+    ),
+    ReferenceField('SampleMatrix',
+        required = 0,
+        allowed_types = ('SampleMatrix',),
+        vocabulary = 'SampleMatricesVocabulary',
+        relationship = 'SampleTypeSampleMatrix',
+        referenceClass = HoldingReference,
+        widget = ReferenceWidget(
+            checkbox_bound = 1,
+            label = _('Sample Matrix'),
         ),
     ),
     StringField('Prefix',
@@ -133,6 +145,10 @@ class SampleType(BaseContent, HistoryAwareMixin):
 
     def getSamplePoints(self, **kw):
         return self.Schema()['SamplePoints'].get(self)
+
+    def SampleMatricesVocabulary(self):
+        from bika.lims.content.samplematrix import SampleMatrices
+        return SampleMatrices(self, allow_blank=True)
 
 registerType(SampleType, PROJECTNAME)
 

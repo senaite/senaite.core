@@ -66,6 +66,15 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
+ <configlet title="Sample Matrices" action_id="bika_samplematrices"
+    appId="bika.lims" category="bika" condition_expr=""
+    icon_expr="string:++resource++bika.lims.images/samplematrix.png"
+    url_expr="string:$portal_url/bika_setup/bika_samplematrices"
+	visible="True"
+	i18n:attributes="title">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
  <configlet title="Sample Types" action_id="bika_sampletypes"
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/sampletype.png"
