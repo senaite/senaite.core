@@ -12,8 +12,9 @@ from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     TextField('Instructions',
-        default_content_type = 'text/plain',
-        allowable_content_types = ('text/plain',),
+        default_content_type = 'text/x-web-intelligent',
+        allowable_content_types = ('text/x-web-intelligent',),
+        default_output_type="text/html",
         widget = TextAreaWidget(
             label = _("Method Instructions",
                       "Instructions"),
