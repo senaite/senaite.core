@@ -85,6 +85,7 @@ function deleteSampleButton(){
 	$("#deleteSampleButton_" + column).toggle(false);
 	// uncheck and enable all visible service checkboxes
 	$("input[id*='_"+column+"_']").filter(".cb").removeAttr('disabled').attr('checked', false);
+	uncheck_partnrs(column);
 	recalc_prices();
 }
 
@@ -918,6 +919,7 @@ $(document).ready(function(){
 
 	// these go here so that popup windows can access them in our context
 	window.recalc_prices = recalc_prices;
+	window.calculate_parts = calculate_parts;
 	window.toggleCat = toggleCat;
 
 });

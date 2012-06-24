@@ -44,6 +44,7 @@ $(document).ready(function(){
 			}
 		});
 		window.opener.recalc_prices();
+		window.opener.calculate_parts(column);
 		window.close();
 	});
 
