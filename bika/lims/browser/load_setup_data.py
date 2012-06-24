@@ -138,6 +138,7 @@ class LoadSetupData(BrowserView):
         self.load_sampling_deviations(sheets['Sampling Deviations'])
         self.load_worksheet_templates(sheets['Worksheet Templates'])
         self.load_reference_manufacturers(sheets['Reference Manufacturers'])
+        self.load_bika_setup(sheets['Setup'])
 
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         bsc.clearFindAndRebuild()
@@ -145,6 +146,40 @@ class LoadSetupData(BrowserView):
         message = PMF("Changes saved.")
         self.plone_utils.addPortalMessage(message)
         self.request.RESPONSE.redirect(portal.absolute_url())
+
+    def load_bika_setup(self,sheet):
+        nr_rows = sheet.get_highest_row()
+##        self.request.response.write("<input type='hidden' id='load_section' value='BikaSetup' max='%s'/>"%(nr_rows))
+##        self.request.response.flush()
+        values = {}
+        for r in range(nr_rows):
+            values[sheet.cell(row=r, column=0).value] = \
+                sheet.cell(row=r, column=2).value
+        self.context.bika_setup.edit(
+            PasswordLifetime = int(values['PasswordLifetime']),
+            AutoLogOff = int(values['AutoLogOff']),
+            Currency = values['Currency'],
+            MemberDiscount = str(float(values['MemberDiscount'])),
+            VAT = str(float(values['VAT'])),
+            MinimumResults = int(values['MinimumResults']),
+            BatchEmail = int(values['BatchEmail']),
+            BatchFax = int(values['BatchFax']),
+            SMSGatewayAddress = values['SMSGatewayAddress'],
+            SamplingWorkflowEnabled = values['SamplingWorkflowEnabled'],
+            CategoriseAnalysisServices = values['CategoriseAnalysisServices'],
+            DryMatterService = self.services[values['DryMatterService']],
+            ARImportOption = values['ARImportOption'],
+            ARAttachmentOption = values['ARAttachmentOption'],
+            AnalysisAttachmentOption = values['AnalysisAttachmentOption'],
+            DefaultSampleLifetime = eval(values['DefaultSampleLifetime']),
+            AutoPrintLabels = values['AutoPrintLabels'],
+            AutoLabelSize = values['AutoLabelSize'],
+            YearInPrefix = values['YearInPrefix'],
+            SampleIDPadding = int(values['SampleIDPadding']),
+            ARIDPadding = int(values['ARIDPadding']),
+            ExternalIDServer = values['ExternalIDServer'],
+            IDServerURL = values['IDServerURL'],
+        )
 
     def load_containertypes(self, sheet):
         nr_rows = sheet.get_highest_row()
