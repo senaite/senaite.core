@@ -611,6 +611,10 @@ class SamplesView(BikaListingView):
             'getSamplePointTitle': {'title': _('Sample Point'),
                                     'index': 'getSamplePointTitle',
                                     'toggle': False},
+            'SamplingDeviation': {'title': _('Sampling Deviation'),
+                                  'toggle': False},
+            'AdHoc': {'title': _('Ad-Hoc'),
+                      'toggle': False},
             'getSamplingDate': {'title': _('Sampling Date'),
                                 'index':'getSamplingDate',
                                 'toggle': True},
@@ -647,6 +651,8 @@ class SamplesView(BikaListingView):
                          'getClientSampleID',
                          'getSampleTypeTitle',
                          'getSamplePointTitle',
+                         'SamplingDeviation',
+                         'AdHoc',
                          'getSamplingDate',
                          'getDateSampled',
                          'getSampler',
@@ -675,6 +681,8 @@ class SamplesView(BikaListingView):
                          'getPreserver',
                          'getSampleTypeTitle',
                          'getSamplePointTitle',
+                         'SamplingDeviation',
+                         'AdHoc',
                          'state_title']},
             {'id':'sample_received',
              'title': _('Received'),
@@ -690,6 +698,8 @@ class SamplesView(BikaListingView):
                          'getClientSampleID',
                          'getSampleTypeTitle',
                          'getSamplePointTitle',
+                         'SamplingDeviation',
+                         'AdHoc',
                          'getSamplingDate',
                          'getDateSampled',
                          'getSampler',
@@ -710,6 +720,8 @@ class SamplesView(BikaListingView):
                          'getClientSampleID',
                          'getSampleTypeTitle',
                          'getSamplePointTitle',
+                         'SamplingDeviation',
+                         'AdHoc',
                          'getSamplingDate',
                          'getDateSampled',
                          'getSampler',
@@ -730,6 +742,8 @@ class SamplesView(BikaListingView):
                          'getClientSampleID',
                          'getSampleTypeTitle',
                          'getSamplePointTitle',
+                         'SamplingDeviation',
+                         'AdHoc',
                          'getSamplingDate',
                          'getDateSampled',
                          'getSampler',
@@ -751,6 +765,8 @@ class SamplesView(BikaListingView):
                          'getClientSampleID',
                          'getSampleTypeTitle',
                          'getSamplePointTitle',
+                         'SamplingDeviation',
+                         'AdHoc',
                          'getSamplingDate',
                          'DateReceived',
                          'getDateSampled',
@@ -786,6 +802,11 @@ class SamplesView(BikaListingView):
 
             items[x]['DateReceived'] = TimeOrDate(self.context,
                                                   obj.getDateReceived())
+
+            deviation = obj.getSamplingDeviation()
+            items[x]['SamplingDeviation'] = deviation and deviation.Title() or ''
+
+            items[x]['AdHoc'] = obj.getAdHoc() and True or ''
 
             samplingdate = obj.getSamplingDate()
 

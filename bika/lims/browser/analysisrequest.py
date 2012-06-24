@@ -1799,6 +1799,10 @@ class AnalysisRequestsView(BikaListingView):
             'getSamplePointTitle': {'title': _('Sample Point'),
                                     'index': 'getSamplePointTitle',
                                     'toggle': False},
+            'SamplingDeviation': {'title': _('Sampling Deviation'),
+                                  'toggle': False},
+            'AdHoc': {'title': _('Ad-Hoc'),
+                      'toggle': False},
             'SamplingDate': {'title': _('Sampling Date'),
                              'index': 'getSamplingDate',
                              'toggle': True},
@@ -1851,6 +1855,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'SamplingDeviation',
+                        'AdHoc',
                         'SamplingDate',
                         'getDateSampled',
                         'getSampler',
@@ -1884,6 +1890,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getPreserver',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'SamplingDeviation',
+                        'AdHoc',
                         'state_title']},
            {'id':'sample_received',
              'title': _('Received'),
@@ -1903,6 +1911,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'SamplingDeviation',
+                        'AdHoc',
                         'getDateSampled',
                         'getSampler',
                         'getDatePreserved',
@@ -1928,6 +1938,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'SamplingDeviation',
+                        'AdHoc',
                         'getDateSampled',
                         'getSampler',
                         'getDatePreserved',
@@ -1949,6 +1961,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'SamplingDeviation',
+                        'AdHoc',
                         'getDateSampled',
                         'getSampler',
                         'getDatePreserved',
@@ -1969,6 +1983,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'SamplingDeviation',
+                        'AdHoc',
                         'getDateSampled',
                         'getSampler',
                         'getDatePreserved',
@@ -1995,6 +2011,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'SamplingDeviation',
+                        'AdHoc',
                         'getDateSampled',
                         'getSampler',
                         'getDatePreserved',
@@ -2029,6 +2047,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'SamplingDeviation',
+                        'AdHoc',
                         'getDateSampled',
                         'getSampler',
                         'getDatePreserved',
@@ -2063,6 +2083,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'SamplingDeviation',
+                        'AdHoc',
                         'SamplingDate',
                         'getDateSampled',
                         'getSampler',
@@ -2104,6 +2126,11 @@ class AnalysisRequestsView(BikaListingView):
 
             items[x]['getDateReceived'] = TimeOrDate(self.context, obj.getDateReceived())
             items[x]['getDatePublished'] =  TimeOrDate(self.context, obj.getDatePublished())
+
+            deviation = sample.getSamplingDeviation()
+            items[x]['SamplingDeviation'] = deviation and deviation.Title() or ''
+
+            items[x]['AdHoc'] = sample.getAdHoc() and True or ''
 
             after_icons = ""
             state = workflow.getInfoFor(obj, 'worksheetanalysis_review_state')
