@@ -339,7 +339,6 @@
           i18n:translate="preserve_transition_title">Preserve</action>
   <guard>
    <guard-permission>BIKA: Preserve Sample</guard-permission>
-   <guard-expression>python:here.guard_preserve_transition()</guard-expression>
   </guard>
  </transition>
 
