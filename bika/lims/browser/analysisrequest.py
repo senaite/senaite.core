@@ -1605,9 +1605,21 @@ class ajaxAnalysisRequestSubmit():
                     container = containers[0]
                 else:
                     container = None
+
+                # If container is pre-preserved, set the part's preservation,
+                # and flag the partition to be transitioned below.
+                if container \
+                   and container.getPrePreserved() \
+                   and container.getPreservation():
+                    preservation = container.getPreservation().UID()
+                    parts[_i]['prepreserved'] = True
+                else:
+                    preservation = p['preservation']
+                    parts[_i]['prepreserved'] = False
+
                 part.edit(
                     Container = container,
-                    Preservation = p['preservation'],
+                    Preservation = preservation,
                 )
                 part.processForm()
                 if SamplingWorkflowEnabled:
@@ -1679,9 +1691,18 @@ class ajaxAnalysisRequestSubmit():
                 doActionFor(sample, lowest_state)
                 doActionFor(ar, lowest_state)
 
+            # receive secondary AR
             if values.has_key('SampleID') and \
                wftool.getInfoFor(sample, 'review_state') != 'sample_due':
                 wftool.doActionFor(ar, 'receive')
+
+            # Transition pre-preserved partitions.
+            for p in parts:
+                if p['prepreserved']:
+                    part = p['object']
+                    state = wftool.getInfoFor(part, 'review_state')
+                    if state == 'to_be_preserved':
+                        wftool.doActionFor(part, 'preserve')
 
         if len(ARs) > 1:
             message = self.context.translate(
