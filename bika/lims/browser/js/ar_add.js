@@ -54,6 +54,7 @@ function changeReportDryMatter(){
 	column = $(this).attr('column');
 	if ($(this).attr("checked")){
 		// only play with service checkboxes when enabling dry matter
+		unsetARProfile(column);
 		jQuery.ajaxSetup({async:false});
 		toggleCat(poc, cat, $(this).attr("column"), selectedservices=[uid], force_expand=true);
 		jQuery.ajaxSetup({async:true});
@@ -551,6 +552,9 @@ function setARTemplate(){
 	template_data = $.parseJSON($("#template_data").val())[templateUID];
 	analyses = template_data['Analyses'];
 
+	// always remove DryMatter - the Template can put it back.
+	$("#ar_"+column+"_ReportDryMatter").attr("checked", false);
+
 	// set our template fields
 	// SampleType and SamplePoint are strings - the item's Title.
 	unsetAnalyses(column);
@@ -636,6 +640,9 @@ function setARProfile(column){
 
 	profile_data = $.parseJSON($("#profile_data").val())[profileUID];
 	profile_services = profile_data['Services'];
+
+	// always remove DryMatter - the Template can put it back.
+	$("#ar_"+column+"_ReportDryMatter").attr("checked", false);
 
 	$.each(profile_services, function(poc_categoryUID, selectedservices){
 		if( $("tbody[class*='expanded']").filter("#"+poc_categoryUID).length > 0 ){
@@ -864,7 +871,7 @@ $(document).ready(function(){
 
 	$(".deleteSampleButton").click(deleteSampleButton);
 
-	$(".ReportDryMatter").change(function(){changeReportDryMatter()});
+	$(".ReportDryMatter").change(changeReportDryMatter);
 
 	// AR Add/Edit ajax form submits
 	ar_edit_form = $('#analysisrequest_edit_form');
