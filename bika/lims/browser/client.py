@@ -749,7 +749,6 @@ class ClientContactsView(BikaListingView):
             'getEmailAddress': {'title': _('Email Address')},
             'getBusinessPhone': {'title': _('Business Phone')},
             'getMobilePhone': {'title': _('Mobile Phone')},
-            'getFax': {'title': _('Fax')},
         }
         self.review_states = [
             {'id':'default',
@@ -759,8 +758,7 @@ class ClientContactsView(BikaListingView):
              'columns': ['getFullname',
                          'getEmailAddress',
                          'getBusinessPhone',
-                         'getMobilePhone',
-                         'getFax']},
+                         'getMobilePhone']},
             {'id':'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
@@ -768,16 +766,14 @@ class ClientContactsView(BikaListingView):
              'columns': ['getFullname',
                          'getEmailAddress',
                          'getBusinessPhone',
-                         'getMobilePhone',
-                         'getFax']},
+                         'getMobilePhone']},
             {'id':'all',
              'title': _('All'),
              'contentFilter':{},
              'columns': ['getFullname',
                          'getEmailAddress',
                          'getBusinessPhone',
-                         'getMobilePhone',
-                         'getFax']},
+                         'getMobilePhone']},
         ]
 
     def folderitems(self):

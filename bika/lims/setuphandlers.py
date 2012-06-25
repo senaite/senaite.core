@@ -40,6 +40,7 @@ class BikaGenerator:
                        'invoices',
                        'pricelists',
                        'bika_setup',
+                       'bika_methods',
                        'analysisrequests',
                        'referencesamples',
                        'samples',
@@ -65,6 +66,8 @@ class BikaGenerator:
                        'bika_artemplates',
                        'bika_labcontacts',
                        'bika_labproducts',
+                       'bika_samplematrices',
+                       'bika_samplingdeviations',
                        'bika_samplepoints',
                        'bika_sampletypes',
                        'bika_referencedefinitions',
@@ -74,9 +77,6 @@ class BikaGenerator:
             obj = bika_setup._getOb(obj_id)
             obj.unmarkCreationFlag()
             obj.reindexObject()
-        obj = portal._getOb('bika_methods')
-        obj.unmarkCreationFlag()
-        obj.reindexObject()
 
         lab = bika_setup.laboratory
         lab.edit(title = _('Laboratory'))
