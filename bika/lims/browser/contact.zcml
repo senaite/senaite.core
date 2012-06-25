@@ -6,7 +6,7 @@
 
     <browser:page
       for="*"
-      name="contact_login_details"
+      name="login_details"
       class="bika.lims.browser.contact.ContactLoginDetailsView"
       permission="bika.lims.ManageClients"
       layer="bika.lims.interfaces.IBikaLIMS"

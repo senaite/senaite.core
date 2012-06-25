@@ -49,7 +49,7 @@
          action_id="access"
          category="object"
          condition_expr=""
-         url_expr="string:${object_url}/contact_login_details"
+         url_expr="string:${object_url}/login_details"
          i18n:attributes="title"
          visible="True">
     <permission value="BIKA: Manage Clients"/>

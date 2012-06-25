@@ -9,7 +9,7 @@ import json
 class ContactLoginDetailsView(BrowserView):
     """ The contact login details edit
     """
-    template = ViewPageTemplateFile("templates/contact_login_details.pt")
+    template = ViewPageTemplateFile("templates/login_details.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
