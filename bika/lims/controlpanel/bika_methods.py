@@ -82,13 +82,6 @@ class MethodsView(BikaListingView):
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
 
-            # chop the description down to 120-ish chars...
-            descr = items[x]['Description'][:100].split(" ")
-            descr = " ".join(descr[:-1])
-            if len(items[x]['Description']) > 100:
-                descr += "..."
-            items[x]['Description'] = descr
-
         return items
 
 schema = ATFolderSchema.copy()
