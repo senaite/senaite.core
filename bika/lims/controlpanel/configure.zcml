@@ -125,14 +125,6 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IMethods"
-      name="folder_view"
-      class=".bika_methods.MethodsView"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.IAttachmentTypes"
       name="folder_view"
       class=".bika_attachmenttypes.AttachmentTypesView"
