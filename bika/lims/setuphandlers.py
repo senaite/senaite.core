@@ -40,7 +40,7 @@ class BikaGenerator:
                        'invoices',
                        'pricelists',
                        'bika_setup',
-                       'bika_methods',
+                       'methods',
                        'analysisrequests',
                        'referencesamples',
                        'samples',

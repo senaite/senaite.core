@@ -62,6 +62,7 @@ def initialize(context):
     from content.labproduct import LabProduct
     from content.logentry import LogEntry
     from content.method import Method
+    from content.methods import Methods
     from content.organisation import Organisation
     from content.person import Person
     from content.preservation import Preservation
@@ -104,7 +105,6 @@ def initialize(context):
     from controlpanel.bika_instruments import Instruments
     from controlpanel.bika_labcontacts import LabContacts
     from controlpanel.bika_labproducts import LabProducts
-    from controlpanel.bika_methods import Methods
     from controlpanel.bika_preservations import Preservations
     from controlpanel.bika_referencedefinitions import ReferenceDefinitions
     from controlpanel.bika_referencemanufacturers import ReferenceManufacturers
