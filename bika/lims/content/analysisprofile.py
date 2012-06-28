@@ -1,6 +1,6 @@
 """
     AnalysisRequests often use the same configurations.
-    ARProfile is used to save these common configurations (templates).
+    AnalysisProfile is used to save these common configurations (templates).
 """
 
 from AccessControl import ClassSecurityInfo
@@ -29,7 +29,7 @@ schema = BikaSchema.copy() + Schema((
         required = 1,
         multiValued = 1,
         allowed_types = ('AnalysisService',),
-        relationship = 'ARProfileAnalysisService',
+        relationship = 'AnalysisProfileAnalysisService',
         widget = ServicesWidget(
             label = _("Profile Analyses"),
             description = _("The analyses included in this profile, grouped per category"),
@@ -52,7 +52,7 @@ schema['title'].widget.visible = True
 schema['description'].widget.visible = True
 IdField = schema['id']
 
-class ARProfile(BaseContent):
+class AnalysisProfile(BaseContent):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
@@ -62,4 +62,4 @@ class ARProfile(BaseContent):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-registerType(ARProfile, PROJECTNAME)
+registerType(AnalysisProfile, PROJECTNAME)

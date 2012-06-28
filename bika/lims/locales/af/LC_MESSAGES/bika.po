@@ -141,8 +141,8 @@ msgid "AR Import options"
 msgstr "OV Invoeropsies"
 
 #: ../browser/client.py:367
-#: ../controlpanel/bika_arprofiles.py:25
-msgid "AR Profiles"
+#: ../controlpanel/bika_analysisprofiles.py:25
+msgid "Analysis Profiles"
 msgstr "OV profiele"
 
 #: ../browser/client.py:433
@@ -229,7 +229,7 @@ msgstr "Voeg Kontrole Verwysing By"
 msgid "Add Duplicate"
 msgstr "Voeg Duplikaat By"
 
-#: ../controlpanel/bika_arprofiles.py:26
+#: ../controlpanel/bika_analysisprofiles.py:26
 msgid "Add Profile"
 msgstr ""
 
@@ -1462,7 +1462,7 @@ msgstr "Ingevoer"
 
 #: ../controlpanel/bika_analysiscategories.py:52
 #: ../controlpanel/bika_analysisspecs.py:48
-#: ../controlpanel/bika_arprofiles.py:46
+#: ../controlpanel/bika_analysisprofiles.py:46
 msgid "Inactive"
 msgstr ""
 
@@ -2177,16 +2177,16 @@ msgstr ""
 msgid "Profile"
 msgstr "Profiel"
 
-#: ../content/arprofile.py:34
+#: ../content/analysisprofile.py:34
 msgid "Profile Analyses"
 msgstr "Profiel Ontledings"
 
 #: ../browser/client.py:375
-#: ../controlpanel/bika_arprofiles.py:35
+#: ../controlpanel/bika_analysisprofiles.py:35
 msgid "Profile Key"
 msgstr "Profiel Sleutel"
 
-#: ../content/arprofile.py:21
+#: ../content/analysisprofile.py:21
 msgid "Profile Keyword"
 msgstr "Profiel Sleutelwoord"
 
@@ -2878,7 +2878,7 @@ msgid "Test results are at a ${lab_confidence} % confidence level"
 msgstr "Toets resultate teen 'n ${lab_confidence}"
 
 #: ../content/artemplate.py:96
-msgid "The AR Profile selection for this template"
+msgid "The Analysis Profile selection for this template"
 msgstr ""
 
 #: ../content/analysisrequest.py:41
@@ -2901,7 +2901,7 @@ msgstr "Die laboratorium se web adres"
 msgid "The accreditation standard that applies, e.g. ISO 17025"
 msgstr "Die akkreditasie standaard van toepassing, bv. ISO 17025"
 
-#: ../content/arprofile.py:35
+#: ../content/analysisprofile.py:35
 msgid "The analyses included in this profile, grouped per category"
 msgstr ""
 
@@ -3020,7 +3020,7 @@ msgstr ""
 msgid "The price charged per analysis for clients who qualify for bulk discounts"
 msgstr "Die prys per ontleding vir kliënte wat vir volume afslag kwalifiseer"
 
-#: ../content/arprofile.py:22
+#: ../content/analysisprofile.py:22
 msgid "The profile's keyword is used to uniquely identify it in import files. It has to be unique, and it may not be the same as any Calculation Interim field ID."
 msgstr ""
 

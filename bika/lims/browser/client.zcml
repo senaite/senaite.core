@@ -39,8 +39,8 @@
 
     <browser:page
       for="bika.lims.interfaces.IClient"
-      name="arprofiles"
-      class="bika.lims.browser.client.ClientARProfilesView"
+      name="analysisprofiles"
+      class="bika.lims.browser.client.ClientAnalysisProfilesView"
       permission="cmf.ListFolderContents"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

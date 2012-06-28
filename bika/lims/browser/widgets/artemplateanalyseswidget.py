@@ -180,14 +180,14 @@ class ARTemplateAnalysesWidget(TypesWidget):
                                       allow_edit = allow_edit)
         return view.contents_table(table_only = True)
 
-    security.declarePublic('ARProfiles')
-    def ARProfiles(self):
-        """generate the ARProfiles hidden field value
-        contains service details for each ARProfile
+    security.declarePublic('AnalysisProfiles')
+    def AnalysisProfiles(self):
+        """generate the AnalysisProfiles hidden field value
+        contains service details for each AnalysisProfile
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = {}
-        for p in bsc(portal_type='ARProfile',
+        for p in bsc(portal_type='AnalysisProfile',
                       inactive_state='active',
                       sort_on = 'sortable_title'):
             p = p.getObject()

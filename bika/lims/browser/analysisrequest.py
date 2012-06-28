@@ -664,14 +664,14 @@ class AnalysisRequestViewView(BrowserView):
     def now(self):
         return DateTime()
 
-    def arprofiles(self):
-        """ Return applicable client and Lab ARProfile records
+    def analysisprofiles(self):
+        """ Return applicable client and Lab AnalysisProfile records
         """
         profiles = []
-        for profile in self.context.objectValues("ARProfile"):
+        for profile in self.context.objectValues("AnalysisProfile"):
             if isActive(profile):
                 profiles.append((profile.Title(), profile))
-        for profile in self.context.bika_setup.bika_arprofiles.objectValues("ARProfile"):
+        for profile in self.context.bika_setup.bika_analysisprofiles.objectValues("AnalysisProfile"):
             if isActive(profile):
                 profiles.append((self.context.translate(_('Lab')) + ": " + profile.Title(), profile))
         return profiles
@@ -757,8 +757,8 @@ class AnalysisRequestViewView(BrowserView):
         default_spec = ('Clients' in member_groups) and 'client' or 'lab'
         return default_spec
 
-    def getARProfileTitle(self):
-        """Grab the context's current ARProfile Title if any
+    def getAnalysisProfileTitle(self):
+        """Grab the context's current AnalysisProfile Title if any
         """
         return self.context.getProfile() and \
                self.context.getProfile().Title() or ''
@@ -876,12 +876,12 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         return json.dumps(ps)
 
     def listProfiles(self):
-        ## List of selected services for each ARProfile
+        ## List of selected services for each AnalysisProfile
         profiles = {}
         client = self.context.portal_type == 'AnalysisRequest' \
             and self.context.aq_parent or self.context
-        for context in (client, self.context.bika_setup.bika_arprofiles):
-            for profile in [p for p in context.objectValues("ARProfile")
+        for context in (client, self.context.bika_setup.bika_analysisprofiles):
+            for profile in [p for p in context.objectValues("AnalysisProfile")
                             if isActive(p)]:
                 slist = {}
                 profile_services = profile.getService()
@@ -895,7 +895,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                     else:
                         slist[key] = [p_service.UID(), ]
 
-                title = context == self.context.bika_setup.bika_arprofiles \
+                title = context == self.context.bika_setup.bika_analysisprofiles \
                     and self.context.translate(_('Lab')) + ": " + profile.Title() \
                     or profile.Title()
 
@@ -921,11 +921,11 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                     or template.Title()
                 sp_title = template.getSamplePoint()
                 st_title = template.getSampleType()
-                profile = template.getARProfile()
+                profile = template.getAnalysisProfile()
                 t_dict = {
                     'UID':template.UID(),
                     'Title':template.Title(),
-                    'ARProfile':profile and profile.UID() or '',
+                    'AnalysisProfile':profile and profile.UID() or '',
                     'SamplePoint':sp_title,
                     'SampleType':st_title,
                     'Partitions':template.getPartitions(),
@@ -1516,9 +1516,9 @@ class ajaxAnalysisRequestSubmit():
             formkey = "ar.%s" % column
             values = form[formkey].copy()
             profile = None
-            if (values.has_key('ARProfile')):
-                profileUID = values['ARProfile']
-                for proxy in bsc(portal_type = 'ARProfile',
+            if (values.has_key('AnalysisProfile')):
+                profileUID = values['AnalysisProfile']
+                for proxy in bsc(portal_type = 'AnalysisProfile',
                                  inactive_state = 'active',
                                  UID = profileUID):
                     profile = proxy.getObject()

@@ -154,7 +154,7 @@ class BikaSetupCatalog(CatalogTool):
                                                  'Method',
                                                  'AttachmentType',
                                                  'Calculation',
-                                                 'ARProfile',
+                                                 'AnalysisProfile',
                                                  'ARTemplate',
                                                  'LabContact',
                                                  'LabProduct',

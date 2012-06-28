@@ -67,11 +67,11 @@
         enctype="multipart/form-data">
 
 		<h3 style="margin-top:1em;">
-		<tal:profile tal:condition="view/getARProfileTitle">
+		<tal:profile tal:condition="view/getAnalysisProfileTitle">
 			<img title="profile"
-				tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/arprofile.png">
+				tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/analysisprofile.png">
 			<span i18n:translate="">Profile</span>:
-			<span tal:content="view/getARProfileTitle"/>
+			<span tal:content="view/getAnalysisProfileTitle"/>
 			&nbsp&nbsp&nbsp&nbsp
 		</tal:profile>
 

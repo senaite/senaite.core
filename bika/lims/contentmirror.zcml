@@ -21,7 +21,7 @@
 <!--<ore:mirror content="content.analysisspec.AnalysisSpec"/>-->
 <!--<ore:mirror content="content.arimport.ARImport"/>-->
 <!--<ore:mirror content="content.arimportitem.ARImportItem"/>-->
-<!--<ore:mirror content="content.arprofile.ARProfile"/>-->
+<!--<ore:mirror content="content.analysisprofile.AnalysisProfile"/>-->
 <!--<ore:mirror content="content.attachment.Attachment"/>-->
 <!--<ore:mirror content="content.attachmenttype.AttachmentType"/>-->
 <!--<ore:mirror content="content.bikaschema.BikaSchema"/>-->

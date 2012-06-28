@@ -420,7 +420,7 @@ table.analysisrequest .pointofcapture th {
 	font-size:1.1em;
 }
 
-.ARProfile,
+.AnalysisProfile,
 .ARTemplate {
   width: 95%;
 }

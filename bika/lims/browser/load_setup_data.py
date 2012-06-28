@@ -803,10 +803,10 @@ class LoadSetupData(BrowserView):
 ##        self.request.response.flush()
         rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
         fields = rows[1]
-        folder = self.context.bika_setup.bika_arprofiles
+        folder = self.context.bika_setup.bika_analysisprofiles
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            _id = folder.invokeFactory('ARProfile', id = 'tmp')
+            _id = folder.invokeFactory('AnalysisProfile', id = 'tmp')
             obj = folder[_id]
             services = [d.strip() for d in unicode(row['Service']).split(",")]
             proxies = self.bsc(portal_type="AnalysisService",

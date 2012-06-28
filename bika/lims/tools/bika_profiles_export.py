@@ -54,7 +54,7 @@ class bika_profiles_export(UniqueObject, SimpleItem):
             tool = getToolByName(self, REFERENCE_CATALOG)
             client = tool.lookupObject(client_uid)
 
-            for p in self.portal_catalog(portal_type = 'ARProfile',
+            for p in self.portal_catalog(portal_type = 'AnalysisProfile',
                                          getClientUID = client.UID(),
                                          sort_on = 'sortable_title'):
 
@@ -70,7 +70,7 @@ class bika_profiles_export(UniqueObject, SimpleItem):
                                      sort_on = 'sortable_title'):
                 client_title = c.Title
 
-                for p in self.portal_catalog(portal_type = 'ARProfile',
+                for p in self.portal_catalog(portal_type = 'AnalysisProfile',
                                              getClientUID = c.UID,
                                              sort_on = 'sortable_title'):
 
@@ -82,7 +82,7 @@ class bika_profiles_export(UniqueObject, SimpleItem):
 
         # get lab profiles
         if spec in ['lab', 'all', 'clientandlab']:
-            for p in self.portal_catalog(portal_type = 'ARProfile',
+            for p in self.portal_catalog(portal_type = 'AnalysisProfile',
                                      sort_on = 'sortable_title'):
                 profile = p.getObject()
 

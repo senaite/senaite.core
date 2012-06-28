@@ -165,10 +165,10 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
- <configlet title="Analysis Profiles" action_id="bika_arprofiles"
+ <configlet title="Analysis Profiles" action_id="bika_analysisprofiles"
     appId="bika.lims" category="bika" condition_expr=""
-    icon_expr="string:++resource++bika.lims.images/arprofile.png"
-    url_expr="string:$portal_url/bika_setup/bika_arprofiles"
+    icon_expr="string:++resource++bika.lims.images/analysisprofile.png"
+    url_expr="string:$portal_url/bika_setup/bika_analysisprofiles"
     visible="True"
 	i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>

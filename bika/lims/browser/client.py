@@ -11,7 +11,7 @@ from bika.lims.browser.analysisrequest import AnalysisRequestsView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.publish import Publish
 from bika.lims.browser.sample import SamplesView
-from bika.lims.permissions import AddARProfile
+from bika.lims.permissions import AddAnalysisProfile
 from bika.lims.permissions import AddARTemplate
 from bika.lims.permissions import AddAnalysisRequest
 from bika.lims.permissions import AddAnalysisSpec
@@ -343,16 +343,16 @@ class ClientARImportsView(BikaListingView):
 
         return items
 
-class ClientARProfilesView(BikaListingView):
+class ClientAnalysisProfilesView(BikaListingView):
     """This is displayed in the Profiles client action,
-       in the "AR Profiles" tab
+       in the "Analysis Profiles" tab
     """
 
     def __init__(self, context, request):
-        super(ClientARProfilesView, self).__init__(context, request)
+        super(ClientAnalysisProfilesView, self).__init__(context, request)
         self.catalog = "bika_setup_catalog"
         self.contentFilter = {
-            'portal_type': 'ARProfile',
+            'portal_type': 'AnalysisProfile',
             'path': {
                 "query": "/".join(self.context.getPhysicalPath()),
                 "level" : 0 },
@@ -361,10 +361,10 @@ class ClientARProfilesView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 50
-        self.form_id = "arprofiles"
+        self.form_id = "analysisprofiles"
 
-        self.icon = "++resource++bika.lims.images/arprofile_big.png"
-        self.title = _("AR Profiles")
+        self.icon = "++resource++bika.lims.images/analysisprofile_big.png"
+        self.title = _("Analysis Profiles")
         self.description = ""
 
         self.columns = {
@@ -395,11 +395,11 @@ class ClientARProfilesView(BikaListingView):
     def __call__(self):
         mtool = getToolByName(self.context, 'portal_membership')
         checkPermission = mtool.checkPermission
-        if checkPermission(AddARProfile, self.context):
+        if checkPermission(AddAnalysisProfile, self.context):
             self.context_actions[_('Add')] = \
-                {'url': 'createObject?type_name=ARProfile',
+                {'url': 'createObject?type_name=AnalysisProfile',
                  'icon': '++resource++bika.lims.images/add.png'}
-        return super(ClientARProfilesView, self).__call__()
+        return super(ClientAnalysisProfilesView, self).__call__()
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)

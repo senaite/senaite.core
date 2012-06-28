@@ -144,8 +144,8 @@ msgid "AR Import options"
 msgstr "Opciones de importación de solicitudes de análisis"
 
 #: ../browser/client.py:367
-#: ../controlpanel/bika_arprofiles.py:25
-msgid "AR Profiles"
+#: ../controlpanel/bika_analysisprofiles.py:25
+msgid "Analysis Profiles"
 msgstr "Perfiles de solicitud de análisis"
 
 #: ../browser/client.py:433
@@ -232,7 +232,7 @@ msgstr "Añadir control de referencia"
 msgid "Add Duplicate"
 msgstr "Añadir duplicado"
 
-#: ../controlpanel/bika_arprofiles.py:26
+#: ../controlpanel/bika_analysisprofiles.py:26
 msgid "Add Profile"
 msgstr "Añadir perfil"
 
@@ -1465,7 +1465,7 @@ msgstr "Importados"
 
 #: ../controlpanel/bika_analysiscategories.py:52
 #: ../controlpanel/bika_analysisspecs.py:48
-#: ../controlpanel/bika_arprofiles.py:46
+#: ../controlpanel/bika_analysisprofiles.py:46
 msgid "Inactive"
 msgstr ""
 
@@ -2180,16 +2180,16 @@ msgstr ""
 msgid "Profile"
 msgstr "Perfil"
 
-#: ../content/arprofile.py:34
+#: ../content/analysisprofile.py:34
 msgid "Profile Analyses"
 msgstr "Perfiles de análisis"
 
 #: ../browser/client.py:375
-#: ../controlpanel/bika_arprofiles.py:35
+#: ../controlpanel/bika_analysisprofiles.py:35
 msgid "Profile Key"
 msgstr "Identificador del perfil"
 
-#: ../content/arprofile.py:21
+#: ../content/analysisprofile.py:21
 msgid "Profile Keyword"
 msgstr "Clave identificativa del perfil"
 
@@ -2881,7 +2881,7 @@ msgid "Test results are at a ${lab_confidence} % confidence level"
 msgstr "Los resultados tienen un nivel de confidencia del ${lab_confidence} %"
 
 #: ../content/artemplate.py:96
-msgid "The AR Profile selection for this template"
+msgid "The Analysis Profile selection for this template"
 msgstr "Selección del perfil de solicitud de análisis para esta plantilla"
 
 #: ../content/analysisrequest.py:41
@@ -2904,7 +2904,7 @@ msgstr "Dirección web del laboratorio"
 msgid "The accreditation standard that applies, e.g. ISO 17025"
 msgstr "Normativa de la acreditación, p.ej. ISO 17025"
 
-#: ../content/arprofile.py:35
+#: ../content/analysisprofile.py:35
 msgid "The analyses included in this profile, grouped per category"
 msgstr "Análisis de este perfil, agrupados por categoría"
 
@@ -3023,7 +3023,7 @@ msgstr "Periodo de tiempo durante el que se pueden mantener las muestras en un e
 msgid "The price charged per analysis for clients who qualify for bulk discounts"
 msgstr "El precio por análisis que se aplicará a los clientes que tengan asignado el 'descuento por volumen'"
 
-#: ../content/arprofile.py:22
+#: ../content/analysisprofile.py:22
 msgid "The profile's keyword is used to uniquely identify it in import files. It has to be unique, and it may not be the same as any Calculation Interim field ID."
 msgstr "La palabra clave del perfil se utiliza para identificarlo inequívocamente en los ficheros de importación. Debe ser único y no puede ser igual a ninguno de los identificadores utilizados en los campos de entrada de cálculos."
 

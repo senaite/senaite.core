@@ -18,8 +18,8 @@
     <metal:body_macro fill-slot="widget_body">
 		<span
 			style="display:none;"
-			id='ARProfiles'
-			tal:attributes="value python:widget.ARProfiles()">
+			id='AnalysisProfiles'
+			tal:attributes="value python:widget.AnalysisProfiles()">
 		</span>
 		<div id="folderlisting-main-table">
 			<span
