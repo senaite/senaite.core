@@ -54,7 +54,7 @@ function changeReportDryMatter(){
 	column = $(this).attr('column');
 	if ($(this).attr("checked")){
 		// only play with service checkboxes when enabling dry matter
-		unsetARProfile(column);
+		unsetAnalysisProfile(column);
 		jQuery.ajaxSetup({async:false});
 		toggleCat(poc, cat, $(this).attr("column"), selectedservices=[uid], force_expand=true);
 		jQuery.ajaxSetup({async:true});
@@ -120,12 +120,12 @@ function copyButton(){
 		}
 		$("[id*=_ARTemplate]").change();
 	}
-	else if ($(this).hasClass('ARProfileCopyButton')){ // Profile selector
-		first_val = $('#ar_0_ARProfile').val();
+	else if ($(this).hasClass('AnalysisProfileCopyButton')){ // Profile selector
+		first_val = $('#ar_0_AnalysisProfile').val();
 		for (col=1; col<parseInt($("#col_count").val()); col++) {
-			$("#ar_"+col+"_ARProfile").val(first_val);
+			$("#ar_"+col+"_AnalysisProfile").val(first_val);
 		}
-		$("[id*=_ARProfile]").change();
+		$("[id*=_AnalysisProfile]").change();
 	}
 	else if ($(this).hasClass('SamplingDeviationCopyButton')){ // Sampling Deviation
 		first_val = $('#ar_0_SamplingDeviation').val();
@@ -529,9 +529,9 @@ function unsetARTemplate(column){
 	}
 }
 
-function unsetARProfile(column){
-	if($("#ar_"+column+"_ARProfile").val() != ""){
-		$("#ar_"+column+"_ARProfile").val("");
+function unsetAnalysisProfile(column){
+	if($("#ar_"+column+"_AnalysisProfile").val() != ""){
+		$("#ar_"+column+"_AnalysisProfile").val("");
 	}
 }
 
@@ -564,7 +564,7 @@ function setARTemplate(){
 	$('#ar_'+column+'_SamplePoint').val(sp);
 	dm = template_data['ReportDryMatter'];
 	$('#ar_'+column+'_ReportDryMatter').attr('checked', dm);
-	$('#ar_'+column+'_ARProfile').val(template_data['ARProfile']);
+	$('#ar_'+column+'_AnalysisProfile').val(template_data['AnalysisProfile']);
 
 	// Apply Template analyses/parts
 	parts = []; // #parts[column] will contain this dictionary
@@ -633,8 +633,8 @@ function setARTemplate(){
 	recalc_prices(column);
 }
 
-function setARProfile(column){
-	profileUID = $("#ar_"+column+"_ARProfile").val();
+function setAnalysisProfile(column){
+	profileUID = $("#ar_"+column+"_AnalysisProfile").val();
 	if(profileUID == "") return;
 	unsetAnalyses(column);
 
@@ -666,7 +666,7 @@ function setARProfile(column){
 function service_checkbox_change(){
 	var column = $(this).attr("column");
 	var element = $(this);
-	unsetARProfile(column);
+	unsetAnalysisProfile(column);
 	unsetARTemplate(column);
 
 	// Unselecting Dry Matter Service unsets 'Report Dry Matter'
@@ -851,10 +851,10 @@ $(document).ready(function(){
 
 	$("select[class='ARTemplate']").change(setARTemplate);
 
-	$("select[class='ARProfile']").change(function(){
+	$("select[class='AnalysisProfile']").change(function(){
 		column = $(this).attr("column");
 		unsetARTemplate(column);
-		setARProfile(column);
+		setAnalysisProfile(column);
 		calculate_parts(column);
 	});
 

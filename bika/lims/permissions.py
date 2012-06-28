@@ -11,7 +11,7 @@ from Products.CMFCore.permissions import AddPortalContent
 
 # Add Permissions:
 # ----------------
-AddARProfile = 'BIKA: Add ARProfile'
+AddAnalysisProfile = 'BIKA: Add AnalysisProfile'
 AddARTemplate = 'BIKA: Add ARTemplate'
 AddAnalysis = 'BIKA: Add Analysis'
 AddAnalysisRequest = 'BIKA: Add Analysis Request'
@@ -30,7 +30,7 @@ ADD_CONTENT_PERMISSION = AddPortalContent
 # Add Permissions for specific types, if required
 ADD_CONTENT_PERMISSIONS = {
     'ARAnalysisSpec': AddAnalysisSpec,
-    'ARProfile': AddARProfile,
+    'AnalysisProfile': AddAnalysisProfile,
     'Analysis': AddAnalysis,
     'AnalysisRequest': AddAnalysisRequest,
     'Client': AddClient,

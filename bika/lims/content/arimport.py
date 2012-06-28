@@ -363,7 +363,7 @@ class ARImport(BaseFolder):
                 if not profiles.has_key(profilekey):
                     profiles[profilekey] = []
                     # there is no profilekey index
-                    l_prox = self.bika_setup_catalog(portal_type = 'ARProfile',
+                    l_prox = self.bika_setup_catalog(portal_type = 'AnalysisProfile',
                                     getProfileKey = profilekey)
                     if l_prox:
                         p = l_prox[0].getObject()
@@ -371,7 +371,7 @@ class ARImport(BaseFolder):
                         this_profile = p
                     else:
                         # there is no profilekey index
-                        c_prox = self.bika_setup_catalog(portal_type = 'ARProfile',
+                        c_prox = self.bika_setup_catalog(portal_type = 'AnalysisProfile',
                                     getClientUID = client.UID(),
                                     getProfileKey = profilekey)
                         if c_prox:

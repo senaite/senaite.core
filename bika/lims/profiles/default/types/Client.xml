@@ -20,7 +20,7 @@
   <element value="Contact"/>
   <element value="SupplyOrder"/>
   <element value="ARImport"/>
-  <element value="ARProfile"/>
+  <element value="AnalysisProfile"/>
   <element value="ARTemplate"/>
   <element value="AnalysisSpec"/>
  </property>
@@ -91,9 +91,9 @@
          action_id="profiles"
          category="object"
          condition_expr=""
-         icon_expr="string:${portal_url}/images/arprofile.png"
+         icon_expr="string:${portal_url}/images/analysisprofile.png"
          link_target=""
-         url_expr="string:${object_url}/arprofiles"
+         url_expr="string:${object_url}/analysisprofiles"
          i18n:attributes="title"
          visible="True">
   <permission value="BIKA: Manage Clients"/>

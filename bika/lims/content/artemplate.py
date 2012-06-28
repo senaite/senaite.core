@@ -1,6 +1,6 @@
 """
     AnalysisRequests often use the same configurations.
-    ARTemplate includes all AR fields, including preset ARProfile
+    ARTemplate includes all AR fields, including preset AnalysisProfile
 """
 
 from AccessControl import ClassSecurityInfo
@@ -83,17 +83,17 @@ schema = BikaSchema.copy() + Schema((
                             "partitions on the template's Analyses tab"),
         )
     ),
-    ReferenceField('ARProfile',
+    ReferenceField('AnalysisProfile',
         schemata = 'Analyses',
         required = 0,
         multiValued = 0,
-        allowed_types = ('ARProfile',),
-        vocabulary = 'ARProfiles',
-        relationship = 'ARTemplateARProfile',
+        allowed_types = ('AnalysisProfile',),
+        vocabulary = 'AnalysisProfiles',
+        relationship = 'ARTemplateAnalysisProfile',
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = _("Analysis Profile"),
-            description = _("The AR Profile selection for this template"),
+            description = _("The Analysis Profile selection for this template"),
         ),
     ),
     RecordsField('Analyses',
@@ -128,12 +128,12 @@ class ARTemplate(BaseContent):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    security.declarePublic('ARProfiles')
-    def ARProfiles(self, instance=None):
+    security.declarePublic('AnalysisProfiles')
+    def AnalysisProfiles(self, instance=None):
         instance = instance or self
         bsc = getToolByName(instance, 'bika_setup_catalog')
         items = []
-        for p in bsc(portal_type='ARProfile',
+        for p in bsc(portal_type='AnalysisProfile',
                       inactive_state='active',
                       sort_on = 'sortable_title'):
             p = p.getObject()

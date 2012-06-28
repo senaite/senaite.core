@@ -53,7 +53,7 @@ def test_suite():
 ##    suite.addTests(doctest.DocTestSuite(analysisspec))
 ##    suite.addTests(doctest.DocTestSuite(ar))
 ##    suite.addTests(doctest.DocTestSuite(ar))
-##    suite.addTests(doctest.DocTestSuite(arprofile))
+##    suite.addTests(doctest.DocTestSuite(analysisprofile))
 ##    suite.addTests(doctest.DocTestSuite(artemplate))
 ##    suite.addTests(doctest.DocTestSuite(attachment))
 ##    suite.addTests(doctest.DocTestSuite(attachmenttype))

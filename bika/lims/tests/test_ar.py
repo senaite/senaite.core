@@ -36,7 +36,7 @@ class Tests(unittest.TestCase):
         for client in self.portal.clients.objectValues():
             contacts = [c for c in client.objectValues() if c.portal_type == 'Contact']
             for profile, count_ars in profiles.items():
-                profile = self.bsc(portal_type='ARProfile',
+                profile = self.bsc(portal_type='AnalysisProfile',
                                    Title=profile)[0].getObject()
                 profile_services = profile.getService()
 

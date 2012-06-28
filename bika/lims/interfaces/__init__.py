@@ -117,7 +117,7 @@ class IInstruments(Interface):
     ""
 class IAnalysisSpecs(Interface):
     ""
-class IARProfiles(Interface):
+class IAnalysisProfiles(Interface):
     ""
 class IARTemplates(Interface):
     ""

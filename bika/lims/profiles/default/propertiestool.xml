@@ -40,7 +40,7 @@
     <element value="AnalysisSpec"/>
     <element value="ARImport"/>
     <element value="ARImportItem"/>
-    <element value="ARProfile"/>
+    <element value="AnalysisProfile"/>
     <element value="ARTemplate"/>
     <element value="Attachment"/>
     <element value="AttachmentType"/>

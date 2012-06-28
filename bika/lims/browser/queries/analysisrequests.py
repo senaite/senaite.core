@@ -67,9 +67,9 @@ class QueryAnalysisRequests(BrowserView):
              'value': contact_name,
              'type': 'text'})
 
-        if self.request.form.has_key('getARProfileUID'):
-            profile_uid = self.request.form['getARProfileUID']
-            query['getARProfileUID'] = profile_uid
+        if self.request.form.has_key('getAnalysisProfileUID'):
+            profile_uid = self.request.form['getAnalysisProfileUID']
+            query['getAnalysisProfileUID'] = profile_uid
             profile = rc.lookupObject(profile_uid)
             profile_title = profile.Title()
         else:

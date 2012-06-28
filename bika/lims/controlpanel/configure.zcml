@@ -53,9 +53,9 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IARProfiles"
+      for="bika.lims.interfaces.IAnalysisProfiles"
       name="folder_view"
-      class=".bika_arprofiles.ProfilesView"
+      class=".bika_analysisprofiles.ProfilesView"
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

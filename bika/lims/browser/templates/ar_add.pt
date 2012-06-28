@@ -172,11 +172,11 @@
             </td>
         </tal:block>
     </tr>
-    <!-- AR Profile (only visible and useable for AR-Add-->
-    <tr tal:define="field_name string:ARProfile">
+    <!-- Analysis Profile (only visible and useable for AR-Add-->
+    <tr tal:define="field_name string:AnalysisProfile">
         <th colspan="2" style="white-space:nowrap" i18n:translate="">Profile</th>
         <td>
-            <img class="copyButton ARProfileCopyButton"
+            <img class="copyButton AnalysisProfileCopyButton"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
         </td>
         <tal:block repeat="column python:range(view.col_count)">
@@ -194,7 +194,7 @@
                 onchange="this.blur();"
                 onblur="this.style.width='96px';">
                 <option value="" i18n:translate=""></option>
-                <tal:profile repeat="profile view/arprofiles">
+                <tal:profile repeat="profile view/analysisprofiles">
                     <option
                         tal:content="python:profile[0]"
                         tal:attributes="

@@ -14,7 +14,7 @@
 
 # Add Permissions:
 # ----------------
-<permission id="bika.lims.permissions.AddARProfile" title="BIKA: Add ARProfile"/>
+<permission id="bika.lims.permissions.AddAnalysisProfile" title="BIKA: Add AnalysisProfile"/>
 <permission id="bika.lims.permissions.AddARTemplate" title="BIKA: Add ARTemplate"/>
 <permission id="bika.lims.permissions.AddAnalysis" title="BIKA: Add Analysis"/>
 <permission id="bika.lims.permissions.AddAnalysisRequest" title="BIKA: Add Analysis Request"/>

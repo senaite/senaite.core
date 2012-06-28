@@ -19,12 +19,12 @@ msgstr ""
 "Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
 "Language: de\n"
 
-#: ../profiles/default/types/ARProfile.xml
-msgid "AR Profile"
+#: ../profiles/default/types/AnalysisProfile.xml
+msgid "Analysis Profile"
 msgstr ""
 
-#: ../profiles/default/types/ARProfiles.xml
-msgid "AR Profiles"
+#: ../profiles/default/types/AnalysisProfiles.xml
+msgid "Analysis Profiles"
 msgstr ""
 
 #: ../profiles/default/types/ARTemplate.xml
@@ -321,7 +321,7 @@ msgstr ""
 msgid "Large Sticker"
 msgstr ""
 
-#: ../profiles/default/types/ARProfile.xml
+#: ../profiles/default/types/AnalysisProfile.xml
 #: ../profiles/default/types/AnalysisRequest.xml
 #: ../profiles/default/types/AnalysisService.xml
 msgid "Log"

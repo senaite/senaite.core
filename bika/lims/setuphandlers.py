@@ -62,7 +62,7 @@ class BikaGenerator:
                        'bika_preservations',
                        'bika_instruments',
                        'bika_analysisspecs',
-                       'bika_arprofiles',
+                       'bika_analysisprofiles',
                        'bika_artemplates',
                        'bika_labcontacts',
                        'bika_labproducts',
@@ -153,7 +153,7 @@ class BikaGenerator:
 
         # Root permissions
         mp = portal.manage_permission
-        mp(AddARProfile, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
+        mp(AddAnalysisProfile, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddARTemplate, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddAnalysis, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
         mp(AddAnalysisRequest, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
@@ -511,7 +511,7 @@ class BikaGenerator:
         at.setCatalogsByType('Method', ['bika_setup_catalog', ])
         at.setCatalogsByType('AttachmentType', ['bika_setup_catalog', ])
         at.setCatalogsByType('Calculation', ['bika_setup_catalog', ])
-        at.setCatalogsByType('ARProfile', ['bika_setup_catalog', ])
+        at.setCatalogsByType('AnalysisProfile', ['bika_setup_catalog', ])
         at.setCatalogsByType('ARTemplate', ['bika_setup_catalog', ])
         at.setCatalogsByType('LabProduct', ['bika_setup_catalog', ])
         at.setCatalogsByType('LabContact', ['bika_setup_catalog', ])
