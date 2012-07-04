@@ -1470,29 +1470,13 @@ class ajaxAnalysisRequestSubmit():
                         error(field, column, self.context.translate(msg))
 
                 elif field == "SampleType":
-                    valid = True
-                    try:
-                        if not bsc(portal_type = 'SampleType',
-                                   inactive_state = 'active',
-                                   Title = ar[field]):
-                            valid = False
-                    except:
-                        valid = False
-                    if not valid:
+                    if not bsc(portal_type = 'SampleType', title = ar[field]):
                         msg = _("${sampletype} is not a valid sample type",
                                 mapping={'sampletype':ar[field]})
                         error(field, column, self.context.translate(msg))
 
                 elif field == "SamplePoint":
-                    valid = True
-                    try:
-                        if not bsc(portal_type = 'SamplePoint',
-                                   inactive_state = 'active',
-                                   Title = ar[field]):
-                            valid = False
-                    except:
-                        valid = False
-                    if not valid:
+                    if not bsc(portal_type = 'SamplePoint', title = ar[field]):
                         msg = _("${samplepoint} is not a valid sample point",
                                 mapping={'samplepoint':ar[field]})
                         error(field, column, self.context.translate(msg))

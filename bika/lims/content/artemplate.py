@@ -100,7 +100,7 @@ schema = BikaSchema.copy() + Schema((
         schemata = 'Analyses',
         required = 0,
         type = 'artemplate_analyses',
-        subfields = ('service_uid', 'price', 'partition'),
+        subfields = ('service_uid', 'partition'),
         subfield_labels = {'service_uid': _('Title'),
                            'partition': _('Partition')},
         default = [],

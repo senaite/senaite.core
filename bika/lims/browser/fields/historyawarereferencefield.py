@@ -135,6 +135,8 @@ class HistoryAwareReferenceField(ReferenceField):
 
         rd = {}
         for r in res:
+            if r is None:
+                continue
             uid = r.UID()
             if hasattr(instance, 'reference_versions') and \
                hasattr(r, 'version_id') and \
@@ -142,12 +144,13 @@ class HistoryAwareReferenceField(ReferenceField):
                instance.reference_versions[uid] != r.version_id and \
                r.version_id != None:
                 version_id = instance.reference_versions[uid]
-                if canAccessPreviousVersions:
+                try:
                     o = pr.retrieve(r, selector=version_id).object
-                else:
-                    msg = "Permission 'CMFEditions: Access previous versions' denied (%s --> %s, version_id=%s) " % \
-                        (instance,r,version_id)
-                    raise Unauthorized(msg)
+                except Exception, msg:
+                    ##msg = "Retrieve failed (%s --> %s, version_id=%s) (%s) " % \
+                    ##    (instance,r,version_id, msg)
+                    ##logger.warn(msg)
+                    o = r
             else:
                 o = r
             rd[uid] = o

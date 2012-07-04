@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-06-20 09:26+0000\n"
+"POT-Creation-Date: 2012-07-08 20:00+0000\n"
 "PO-Revision-Date: 2012-05-11 14:41+0000\n"
 "Last-Translator: lemoene Smit <admin@bikalabs.com>\n"
 "Language-Team: Bika <bikasupport@bikalabs.com>\n"
@@ -20,20 +20,13 @@ msgstr ""
 "Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
 "Language: es\n"
 
-#: ../profiles/default/types/AnalysisProfile.xml
-msgid "Analysis Profile"
-msgstr "Perfil de solicitud de análisis"
-
-#: ../profiles/default/types/AnalysisProfiles.xml
-msgid "Analysis Profiles"
-msgstr "Perfiles de solicitud de análisis"
-
 #: ../profiles/default/types/ARTemplate.xml
 msgid "AR Template"
 msgstr "Plantilla de solicitud de análisis"
 
-#: ../profiles/default/types/ARTemplates.xml
 #: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/ARTemplates.xml
+#: ../profiles/default/types/Client.xml
 msgid "AR Templates"
 msgstr "Plantillas de solicitud de análisis"
 
@@ -81,12 +74,18 @@ msgstr "Categorías de análisis"
 msgid "Analysis Category"
 msgstr "Categoría del análisis"
 
-#: ../profiles/default/types/AnalysisRequest.xml
-msgid "Analysis Request"
-msgstr ""
+#: ../profiles/default/types/AnalysisProfile.xml
+msgid "Analysis Profile"
+msgstr "Perfil de solicitud de análisis"
 
 #: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/AnalysisProfiles.xml
+#: ../profiles/default/types/Client.xml
 msgid "Analysis Profiles"
+msgstr "Perfiles de solicitud de análisis"
+
+#: ../profiles/default/types/AnalysisRequest.xml
+msgid "Analysis Request"
 msgstr ""
 
 #: ../profiles/default/actions.xml
@@ -412,10 +411,6 @@ msgstr ""
 msgid "Productivity"
 msgstr ""
 
-#: ../profiles/default/types/Client.xml
-msgid "Profiles"
-msgstr "Perfiles"
-
 #: ../profiles/default/types/ReportFolder.xml
 msgid "Quality Control"
 msgstr ""
@@ -517,6 +512,15 @@ msgstr "Muestra"
 msgid "Sample Due"
 msgstr "Muestra pendiente"
 
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/SampleMatrices.xml
+msgid "Sample Matrices"
+msgstr ""
+
+#: ../profiles/default/types/SampleMatrix.xml
+msgid "Sample Matrix"
+msgstr ""
+
 #: ../profiles/default/types/SamplePartition.xml
 msgid "Sample Partition"
 msgstr ""
@@ -562,6 +566,15 @@ msgstr "Muestras"
 msgid "SamplesFolder"
 msgstr ""
 
+#: ../profiles/default/types/SamplingDeviation.xml
+msgid "Sampling Deviation"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/SamplingDeviations.xml
+msgid "Sampling Deviations"
+msgstr ""
+
 #: ../profiles/default/types/AnalysisRequest.xml
 #: ../profiles/default/types/Sample.xml
 #: ../profiles/default/types/SamplePartition.xml
@@ -582,10 +595,6 @@ msgstr ""
 
 #: ../profiles/default/types/SupplyOrder.xml
 msgid "Supply Order"
-msgstr ""
-
-#: ../profiles/default/types/Client.xml
-msgid "Templates"
 msgstr ""
 
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
@@ -688,6 +697,10 @@ msgstr ""
 msgid "dispose_transition_title"
 msgstr ""
 
+#. Default: "Duplicate"
+msgid "duplicate_transition_title"
+msgstr "Duplicate"
+
 #. Default: "Expire"
 #: ../profiles/default/workflows/bika_referencesample_workflow/definition.xml
 #: ../profiles/default/workflows/bika_sample_workflow/definition.xml
@@ -701,11 +714,11 @@ msgstr ""
 
 #. Default: "Accounting"
 msgid "label_schema_Accounting"
-msgstr "label_schema_Accounting"
+msgstr ""
 
 #. Default: "Address"
 msgid "label_schema_Address"
-msgstr "label_schema_Address"
+msgstr ""
 
 #. Default: "Analyses"
 msgid "label_schema_Analyses"
@@ -713,11 +726,11 @@ msgstr ""
 
 #. Default: "Bank details"
 msgid "label_schema_Bank details"
-msgstr "label_schema_Bank details"
+msgstr ""
 
 #. Default: "Calculation"
 msgid "label_schema_Calculation"
-msgstr "label_schema_Calculation"
+msgstr ""
 
 #. Default: "Container and Preservation"
 msgid "label_schema_Container and Preservation"
@@ -725,47 +738,47 @@ msgstr ""
 
 #. Default: "Dates"
 msgid "label_schema_Dates"
-msgstr "label_schema_Dates"
+msgstr ""
 
 #. Default: "Description"
 msgid "label_schema_Description"
-msgstr "label_schema_Description"
+msgstr ""
 
 #. Default: "Email Telephone Fax"
 msgid "label_schema_Email Telephone Fax"
-msgstr "label_schema_Email_Telephone Fax"
+msgstr ""
 
 #. Default: "ID Server"
 msgid "label_schema_ID Server"
-msgstr "label_schema_ID Server"
+msgstr ""
 
 #. Default: "Labels"
 msgid "label_schema_Labels"
-msgstr "label_schema_Labels"
+msgstr ""
 
 #. Default: "Layout"
 msgid "label_schema_Layout"
-msgstr "label_schema_Layout"
+msgstr ""
 
 #. Default: "Location"
 msgid "label_schema_Location"
-msgstr "label_schema_Location"
+msgstr ""
 
 #. Default: "Method"
 msgid "label_schema_Method"
-msgstr "label_schema_Method"
+msgstr ""
 
 #. Default: "Preferences"
 msgid "label_schema_Preferences"
-msgstr "label_schema_Preferences"
+msgstr ""
 
 #. Default: "Publication preference"
 msgid "label_schema_Publication preference"
-msgstr "label_schema_Publication preference"
+msgstr ""
 
 #. Default: "Reference Results"
 msgid "label_schema_Reference Results"
-msgstr "label_schema_Reference Results"
+msgstr ""
 
 #. Default: "Result Options"
 msgid "label_schema_Result Options"
@@ -804,6 +817,10 @@ msgstr ""
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "publish_transition_title"
 msgstr ""
+
+#. Default: "Reassign"
+msgid "reassign_transition_title"
+msgstr "Reassign"
 
 #. Default: "Receive sample"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml

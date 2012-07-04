@@ -1,35 +1,29 @@
-# this file is maintained manually.
-# contains bika translations from the plone domain.
+# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
+# SOME DESCRIPTIVE TITLE.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
-"Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-06-20 09:26+0000\n"
-"PO-Revision-Date: 2012-01-01 23:11+0000\n"
-"Last-Translator: Bika <bikasupport@bikalabs.com>\n"
-"Language-Team: Bika <bikasupport@bikalabs.com>\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2012-07-08 20:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
-"Domain: DOMAIN\n"
-
-#: ../profiles/default/types/AnalysisProfile.xml
-msgid "Analysis Profile"
-msgstr ""
-
-#: ../profiles/default/types/AnalysisProfiles.xml
-msgid "Analysis Profiles"
-msgstr ""
+"Domain: plone\n"
 
 #: ../profiles/default/types/ARTemplate.xml
 msgid "AR Template"
 msgstr ""
 
-#: ../profiles/default/types/ARTemplates.xml
 #: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/ARTemplates.xml
+#: ../profiles/default/types/Client.xml
 msgid "AR Templates"
 msgstr ""
 
@@ -77,12 +71,18 @@ msgstr ""
 msgid "Analysis Category"
 msgstr ""
 
-#: ../profiles/default/types/AnalysisRequest.xml
-msgid "Analysis Request"
+#: ../profiles/default/types/AnalysisProfile.xml
+msgid "Analysis Profile"
 msgstr ""
 
 #: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/AnalysisProfiles.xml
+#: ../profiles/default/types/Client.xml
 msgid "Analysis Profiles"
+msgstr ""
+
+#: ../profiles/default/types/AnalysisRequest.xml
+msgid "Analysis Request"
 msgstr ""
 
 #: ../profiles/default/actions.xml
@@ -408,10 +408,6 @@ msgstr ""
 msgid "Productivity"
 msgstr ""
 
-#: ../profiles/default/types/Client.xml
-msgid "Profiles"
-msgstr ""
-
 #: ../profiles/default/types/ReportFolder.xml
 msgid "Quality Control"
 msgstr ""
@@ -513,6 +509,15 @@ msgstr ""
 msgid "Sample Due"
 msgstr ""
 
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/SampleMatrices.xml
+msgid "Sample Matrices"
+msgstr ""
+
+#: ../profiles/default/types/SampleMatrix.xml
+msgid "Sample Matrix"
+msgstr ""
+
 #: ../profiles/default/types/SamplePartition.xml
 msgid "Sample Partition"
 msgstr ""
@@ -558,6 +563,15 @@ msgstr ""
 msgid "SamplesFolder"
 msgstr ""
 
+#: ../profiles/default/types/SamplingDeviation.xml
+msgid "Sampling Deviation"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/SamplingDeviations.xml
+msgid "Sampling Deviations"
+msgstr ""
+
 #: ../profiles/default/types/AnalysisRequest.xml
 #: ../profiles/default/types/Sample.xml
 #: ../profiles/default/types/SamplePartition.xml
@@ -578,10 +592,6 @@ msgstr ""
 
 #: ../profiles/default/types/SupplyOrder.xml
 msgid "Supply Order"
-msgstr ""
-
-#: ../profiles/default/types/Client.xml
-msgid "Templates"
 msgstr ""
 
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
@@ -682,6 +692,10 @@ msgstr ""
 #: ../profiles/default/workflows/bika_referencesample_workflow/definition.xml
 #: ../profiles/default/workflows/bika_sample_workflow/definition.xml
 msgid "dispose_transition_title"
+msgstr ""
+
+#. Default: "Duplicate"
+msgid "duplicate_transition_title"
 msgstr ""
 
 #. Default: "Expire"
@@ -801,6 +815,10 @@ msgstr ""
 msgid "publish_transition_title"
 msgstr ""
 
+#. Default: "Reassign"
+msgid "reassign_transition_title"
+msgstr ""
+
 #. Default: "Receive sample"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
@@ -854,7 +872,7 @@ msgstr ""
 
 #. Default: "Save selection"
 msgid "save_selection_button_transition_title"
-msgstr "Save selection"
+msgstr ""
 
 #. Default: "Submit ARImport"
 #: ../profiles/default/workflows/bika_arimport_workflow/definition.xml

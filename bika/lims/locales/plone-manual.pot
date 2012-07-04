@@ -87,3 +87,10 @@ msgstr "Save partitions"
 
 msgid "save_selection_button_transition_title"
 msgstr "Save selection"
+
+msgid "duplicate_transition_title"
+msgstr "Duplicate"
+
+msgid "reassign_transition_title"
+msgstr "Reassign"
+

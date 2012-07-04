@@ -13,6 +13,14 @@
     />
 
     <browser:page
+      for="bika.lims.interfaces.IAnalysisRequestsFolder"
+      name="sticker"
+      class="bika.lims.browser.stickers.Sticker"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
       for="bika.lims.interfaces.IClient"
       name="sticker"
       class="bika.lims.browser.stickers.Sticker"
