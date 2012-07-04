@@ -359,7 +359,6 @@ class bika_browserdata(BrowserView):
                                 inactive_state = "active")])
 
         for uid, service in services.items():
-
             ## Store categories
             ## data['categories'][poc_catUID]: [uid, uid]
             key = "%s_%s" % (service.getPointOfCapture(),
@@ -382,7 +381,8 @@ class bika_browserdata(BrowserView):
                         backrefs.append(item)
                     if item not in skip:
                         skip.append(item)
-                        walk(item.getBackReferences())
+                        brefs = item.getBackReferences('AnalysisServiceCalculation')
+                        walk(brefs)
             walk([service, ])
 
             ## Get dependencies

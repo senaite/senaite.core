@@ -596,9 +596,9 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
 
     def getAnalysisCategories(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('','')] + [(o.UID, o.Title) for o in
-                               bsc(portal_type='AnalysisCategory',
-                                   inactive_state = 'active')]
+        items = [(o.UID, o.Title) for o in
+                 bsc(portal_type='AnalysisCategory',
+                     inactive_state = 'active')]
         o = self.getCategory()
         if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))

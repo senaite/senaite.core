@@ -55,6 +55,3 @@ msgstr ""
 
 msgid "Parent"
 msgstr ""
-
-msgid "Type"
-msgstr ""

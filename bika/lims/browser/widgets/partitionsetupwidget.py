@@ -25,7 +25,7 @@ class PartitionSetupWidget(RecordsWidget):
         if not default:
             return default
         value = default[0]
-        kwargs = default[1]
+        kwargs = len(default) > 1 and default[1] or None
         newvalue = []
         for v in value:
             v = dict(v)

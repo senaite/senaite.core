@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-06-20 09:26+0000\n"
+"POT-Creation-Date: 2012-07-08 20:00+0000\n"
 "PO-Revision-Date: 2012-05-11 14:41+0000\n"
 "Last-Translator: lemoene Smit <admin@bikalabs.com>\n"
 "Language-Team: Bika <bikasupport@bikalabs.com>\n"
@@ -20,20 +20,13 @@ msgstr ""
 "Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
 "Language: af\n"
 
-#: ../profiles/default/types/AnalysisProfile.xml
-msgid "Analysis Profile"
-msgstr "OV profiel"
-
-#: ../profiles/default/types/AnalysisProfiles.xml
-msgid "Analysis Profiles"
-msgstr "OV profiele"
-
 #: ../profiles/default/types/ARTemplate.xml
-#: ../profiles/default/controlpanel.xml
 msgid "AR Template"
 msgstr ""
 
+#: ../profiles/default/controlpanel.xml
 #: ../profiles/default/types/ARTemplates.xml
+#: ../profiles/default/types/Client.xml
 msgid "AR Templates"
 msgstr ""
 
@@ -81,13 +74,19 @@ msgstr "Ontledings kategorieë"
 msgid "Analysis Category"
 msgstr "Ontledings kategorie"
 
+#: ../profiles/default/types/AnalysisProfile.xml
+msgid "Analysis Profile"
+msgstr "OV profiel"
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/AnalysisProfiles.xml
+#: ../profiles/default/types/Client.xml
+msgid "Analysis Profiles"
+msgstr "Ontledingsversoek profiele"
+
 #: ../profiles/default/types/AnalysisRequest.xml
 msgid "Analysis Request"
 msgstr ""
-
-#: ../profiles/default/controlpanel.xml
-msgid "Analysis Profiles"
-msgstr "Ontledingsversoek profiele"
 
 #: ../profiles/default/actions.xml
 #: ../profiles/default/types/AnalysisRequestsFolder.xml
@@ -412,10 +411,6 @@ msgstr ""
 msgid "Productivity"
 msgstr ""
 
-#: ../profiles/default/types/Client.xml
-msgid "Profiles"
-msgstr "Profiele"
-
 #: ../profiles/default/types/ReportFolder.xml
 msgid "Quality Control"
 msgstr ""
@@ -517,6 +512,15 @@ msgstr "Monster"
 msgid "Sample Due"
 msgstr "Monster Verwag"
 
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/SampleMatrices.xml
+msgid "Sample Matrices"
+msgstr ""
+
+#: ../profiles/default/types/SampleMatrix.xml
+msgid "Sample Matrix"
+msgstr ""
+
 #: ../profiles/default/types/SamplePartition.xml
 msgid "Sample Partition"
 msgstr ""
@@ -562,6 +566,15 @@ msgstr "Monsters"
 msgid "SamplesFolder"
 msgstr ""
 
+#: ../profiles/default/types/SamplingDeviation.xml
+msgid "Sampling Deviation"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/SamplingDeviations.xml
+msgid "Sampling Deviations"
+msgstr ""
+
 #: ../profiles/default/types/AnalysisRequest.xml
 #: ../profiles/default/types/Sample.xml
 #: ../profiles/default/types/SamplePartition.xml
@@ -582,10 +595,6 @@ msgstr ""
 
 #: ../profiles/default/types/SupplyOrder.xml
 msgid "Supply Order"
-msgstr ""
-
-#: ../profiles/default/types/Client.xml
-msgid "Templates"
 msgstr ""
 
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
@@ -688,6 +697,10 @@ msgstr "Dispatch order"
 #: ../profiles/default/workflows/bika_sample_workflow/definition.xml
 msgid "dispose_transition_title"
 msgstr "Dispose"
+
+#. Default: "Duplicate"
+msgid "duplicate_transition_title"
+msgstr "Duplicate"
 
 #. Default: "Expire"
 #: ../profiles/default/workflows/bika_referencesample_workflow/definition.xml
@@ -805,6 +818,10 @@ msgstr "Preserve"
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "publish_transition_title"
 msgstr "Publish"
+
+#. Default: "Reassign"
+msgid "reassign_transition_title"
+msgstr "Reassign"
 
 #. Default: "Receive sample"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
