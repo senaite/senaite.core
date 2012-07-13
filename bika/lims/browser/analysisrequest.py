@@ -922,6 +922,12 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                 sp_title = template.getSamplePoint()
                 st_title = template.getSampleType()
                 profile = template.getAnalysisProfile()
+                Analyses = [{
+                    'service_poc':bsc(UID=x['service_uid'])[0].getObject().getPointOfCapture(),
+                    'category_uid':bsc(UID=x['service_uid'])[0].getObject().getCategoryUID(),
+                    'partition':x['partition'],
+                    'service_uid':x['service_uid']}
+                            for x in template.getAnalyses()]
                 t_dict = {
                     'UID':template.UID(),
                     'Title':template.Title(),
@@ -929,11 +935,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                     'SamplePoint':sp_title,
                     'SampleType':st_title,
                     'Partitions':template.getPartitions(),
-                    'Analyses':[{'service_poc':bsc(UID=x['service_uid'])[0].getObject().getPointOfCapture(),
-                                 'category_uid':bsc(UID=x['service_uid'])[0].getObject().getCategoryUID(),
-                                 'partition':x['partition'],
-                                 'service_uid':x['service_uid']}
-                                for x in template.getAnalyses()],
+                    'Analyses':Analyses,
                     'ReportDryMatter':template.getReportDryMatter(),
                 }
                 templates[template.UID()] = t_dict
@@ -1546,7 +1548,6 @@ class ajaxAnalysisRequestSubmit():
                 sample.edit(SampleID = sample_id)
 
             sample_uid = sample.UID()
-
 
             # Selecting a template sets the hidden 'parts' field to template values.
             # Selecting a profile will allow ar_add.js to fill in the parts field.

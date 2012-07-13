@@ -569,17 +569,18 @@ function setARTemplate(){
 	// Apply Template analyses/parts
 	parts = []; // #parts[column] will contain this dictionary
 	for(pi=0;pi<template_data['Partitions'].length;pi++){
-		parts.push({});
-	}
-	for(pi=0;pi<template_data['Partitions'].length;pi++){
 		P = template_data['Partitions'][pi];
 		partnr = parseInt(P['part_id'].split("-")[1], 10);
 		cu = P['container_uid'];
 		if(cu.length > 1 && cu[0] != ""){ cu = [cu]; }
 		else { cu = []; }
 		pu = P['preservation_uid'];
-		if(pu.length > 1 && pu[0] != ""){ pu = [pu]; }
-		else { pu = []; }
+		if(pu != null && pu != undefined && pu.length > 1 && pu[0] != ""){
+			pu = [pu];
+		}
+		else {
+			pu = [];
+		}
 		parts[partnr-1] = {'container':cu,
 							'preservation':pu,
 							'services':[]}
