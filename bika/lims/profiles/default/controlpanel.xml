@@ -186,7 +186,7 @@
  <configlet title="Lab Products" action_id="bika_labproducts"
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/product.png"
-    url_expr="string:$portal_url/bika_setup/labproducts"
+    url_expr="string:$portal_url/bika_setup/bika_labproducts"
     visible="True"
 	i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
