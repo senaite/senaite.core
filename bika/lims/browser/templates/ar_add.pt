@@ -340,7 +340,7 @@
             <span class="fieldRequired">&nbsp;</span>
         </th>
         <td>
-            <img class="copyButton"
+            <img class="copyButton SampleTypeCopyButton"
                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
         </td>
         <tal:block repeat="column python:range(view.col_count)">
