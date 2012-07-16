@@ -27,7 +27,7 @@ $(document).ready(function(){
 				window.location.href.replace("/import", "/getImportTemplate"),
 				{'_authenticator': $('input[name="_authenticator"]').val(),
 				 'exim': $(this).val()
-				}
+				})
 		}
     });
 
