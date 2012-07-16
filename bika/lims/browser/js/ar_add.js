@@ -127,6 +127,13 @@ function copyButton(){
 		}
 		$("[id*=_AnalysisProfile]").change();
 	}
+	else if ($(this).hasClass('SampleTypeCopyButton')){ // SampleType - Must set partitions on copy
+		first_val = $('#ar_0_SampleType').val();
+		for (col=1; col<parseInt($("#col_count").val()); col++) {
+			$("#ar_"+col+"_SampleType").val(first_val);
+			$("#ar_"+col+"_SampleType").change();
+		}
+	}
 	else if ($(this).hasClass('SamplingDeviationCopyButton')){ // Sampling Deviation
 		first_val = $('#ar_0_SamplingDeviation').val();
 		for (col=1; col<parseInt($("#col_count").val()); col++) {
@@ -741,7 +748,9 @@ function setupAutoCompleters(){
 					$("#ar_"+col+"_SamplePoint").val(st['samplepoints'][0]);
 				}
 				ct = st['containertype'];
-				if (ct != undefined && ct != null && !$(e).hasAttr('disabled')) {
+				disabled = $(e).attr('disabled');
+				if (ct != undefined && ct != null
+				    && (disabled == null || disabled == undefined)) {
 					$("#ar_"+col+"_DefaultContainerType").val(ct);
 				}
 				match = true;
