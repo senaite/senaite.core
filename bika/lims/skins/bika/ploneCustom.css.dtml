@@ -82,7 +82,7 @@ h1 span {
 }
 
 /* overwrite sunburst special display of description fields */
-#content .field textarea[name$=".description"],
+#content .field textarea[name="description"],
 #archetypes-fieldname-description,
 textarea#description,
 #content textarea {
