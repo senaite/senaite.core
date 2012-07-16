@@ -62,29 +62,31 @@
 			</div>
 
 
-		<div class="field"
-			tal:condition="python:context.portal_membership.checkPermission('Add portal member', context)">
-				<label i18n:translate="">Password</label>
-				<span class="fieldRequired" title="Required"
-					i18n:attributes="title"
-					i18n:translate="">(Required)</span>
-				<div class="formHelp" i18n:translate="">
-					Minimum 5 characters.
+<!--			<tal:password condition="not:context/portal_properties/site_properties/validate_email|nothing">-->
+			<div class="field"
+				tal:condition="python:context.portal_membership.checkPermission('Add portal member', context)">
+					<label i18n:translate="">Password</label>
+					<span class="fieldRequired" title="Required"
+						i18n:attributes="title"
+						i18n:translate="">(Required)</span>
+					<div class="formHelp" i18n:translate="">
+						Minimum 5 characters.
+					</div>
+					<input type="password" name="password" size="10"/>
 				</div>
-				<input type="password" name="password" size="10"/>
-			</div>
 
-		<div class="field"
-			tal:condition="python:context.portal_membership.checkPermission('Add portal member', context)">
-				<label i18n:translate="">Confirm password</label>
-				<span class="fieldRequired" title="Required"
-					i18n:attributes="title"
-					i18n:translate="">(Required)</span>
-				<div class="formHelp" i18n:translate="">
-					Re-enter the password. Make sure the passwords are identical.
-				</div>
-				<input type="password" name="confirm" size="10"/>
+			<div class="field"
+				tal:condition="python:context.portal_membership.checkPermission('Add portal member', context)">
+					<label i18n:translate="">Confirm password</label>
+					<span class="fieldRequired" title="Required"
+						i18n:attributes="title"
+						i18n:translate="">(Required)</span>
+					<div class="formHelp" i18n:translate="">
+						Re-enter the password. Make sure the passwords are identical.
+					</div>
+					<input type="password" name="confirm" size="10"/>
 			</div>
+<!--			</tal:password>-->
 
 			<div class="field">
 				<label i18n:translate="">Email</label>
