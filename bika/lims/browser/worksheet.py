@@ -381,6 +381,14 @@ class WorksheetAnalysesView(AnalysesView):
                 pos_text += obj.getAnalysis().aq_parent.getSample().getSampleType().Title()
             pos_text += "</td></tr>"
 
+            # samplingdeviation
+            if obj.portal_type == 'Analysis':
+                deviation = obj.aq_parent.getSample().getSamplingDeviation()
+                if deviation:
+                    pos_text += "<tr><td>"
+                    pos_text += deviation.Title()
+                    pos_text += "</td></tr>"
+
 ##            # barcode
 ##            barcode = parent.id.replace("-", "")
 ##            if obj.portal_type == 'DuplicateAnalysis':
