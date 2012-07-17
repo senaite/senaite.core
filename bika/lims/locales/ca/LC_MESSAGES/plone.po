@@ -1,13 +1,14 @@
 # this file is maintained manually.
 # contains bika translations from the plone domain.
 # Translators:
+# <campbell@bikalabs.com>, 2012.
 # Jordi Puiggené <jordi.puiggene@gmail.com>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-07-08 20:00+0000\n"
-"PO-Revision-Date: 2012-05-11 14:41+0000\n"
-"Last-Translator: lemoene Smit <admin@bikalabs.com>\n"
+"POT-Creation-Date: 2012-07-17 10:58+0000\n"
+"PO-Revision-Date: 2012-07-08 18:08+0000\n"
+"Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
 "Language-Team: Bika <bikasupport@bikalabs.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -421,7 +422,7 @@ msgstr "Preguntes"
 
 #: ../profiles/default/actions.xml
 msgid "Query"
-msgstr ""
+msgstr "Consulta"
 
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
@@ -515,11 +516,11 @@ msgstr "Mostra pendent"
 #: ../profiles/default/controlpanel.xml
 #: ../profiles/default/types/SampleMatrices.xml
 msgid "Sample Matrices"
-msgstr ""
+msgstr "Sample Matrices"
 
 #: ../profiles/default/types/SampleMatrix.xml
 msgid "Sample Matrix"
-msgstr ""
+msgstr "Sample Matrix"
 
 #: ../profiles/default/types/SamplePartition.xml
 msgid "Sample Partition"
@@ -568,12 +569,12 @@ msgstr "SamplesFolder"
 
 #: ../profiles/default/types/SamplingDeviation.xml
 msgid "Sampling Deviation"
-msgstr ""
+msgstr "Sampling Deviation"
 
 #: ../profiles/default/controlpanel.xml
 #: ../profiles/default/types/SamplingDeviations.xml
 msgid "Sampling Deviations"
-msgstr ""
+msgstr "Sampling Deviations"
 
 #: ../profiles/default/types/AnalysisRequest.xml
 #: ../profiles/default/types/Sample.xml
@@ -673,14 +674,13 @@ msgstr "Assigna"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
-#, fuzzy
 msgid "attach_transition_title"
 msgstr "Afegeix un fitxer adjunt"
 
 #. Default: "Cancel"
 #: ../profiles/default/workflows/bika_cancellation_workflow/definition.xml
 msgid "cancel_transition_title"
-msgstr "Cancel·la"
+msgstr "Cancel"
 
 #. Default: "Deactivate"
 #: ../profiles/default/workflows/bika_inactive_workflow/definition.xml
@@ -715,19 +715,19 @@ msgstr "Importació"
 
 #. Default: "Accounting"
 msgid "label_schema_Accounting"
-msgstr ""
+msgstr "Accounting"
 
 #. Default: "Address"
 msgid "label_schema_Address"
-msgstr ""
+msgstr "Address"
 
 #. Default: "Analyses"
 msgid "label_schema_Analyses"
-msgstr ""
+msgstr "Anàlisis"
 
 #. Default: "Bank details"
 msgid "label_schema_Bank details"
-msgstr ""
+msgstr "Dades d'accés"
 
 #. Default: "Calculation"
 msgid "label_schema_Calculation"
@@ -735,11 +735,11 @@ msgstr "Càlcul"
 
 #. Default: "Container and Preservation"
 msgid "label_schema_Container and Preservation"
-msgstr "Setup"
+msgstr "Container and Preservation"
 
 #. Default: "Dates"
 msgid "label_schema_Dates"
-msgstr ""
+msgstr "Dates"
 
 #. Default: "Description"
 msgid "label_schema_Description"
@@ -747,23 +747,23 @@ msgstr "Descripció"
 
 #. Default: "Email Telephone Fax"
 msgid "label_schema_Email Telephone Fax"
-msgstr "Telephone Fax"
+msgstr "Email Telephone Fax"
 
 #. Default: "ID Server"
 msgid "label_schema_ID Server"
-msgstr "Server"
+msgstr "ID Server"
 
 #. Default: "Labels"
 msgid "label_schema_Labels"
-msgstr ""
+msgstr "Labels"
 
 #. Default: "Layout"
 msgid "label_schema_Layout"
-msgstr ""
+msgstr "Layout"
 
 #. Default: "Location"
 msgid "label_schema_Location"
-msgstr ""
+msgstr "Location"
 
 #. Default: "Method"
 msgid "label_schema_Method"
@@ -791,15 +791,15 @@ msgstr "Informes de resultats"
 
 #. Default: "Sample Partitions"
 msgid "label_schema_Sample Partitions"
-msgstr ""
+msgstr "Sample Partitions"
 
 #. Default: "Security"
 msgid "label_schema_Security"
-msgstr ""
+msgstr "Security"
 
 #. Default: "Uncertainties"
 msgid "label_schema_Uncertainties"
-msgstr ""
+msgstr "Uncertainties"
 
 #. Default: "Prepublish"
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
@@ -821,7 +821,7 @@ msgstr "Publish"
 
 #. Default: "Reassign"
 msgid "reassign_transition_title"
-msgstr "Reassign"
+msgstr "Reassigna"
 
 #. Default: "Receive sample"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
@@ -857,7 +857,7 @@ msgstr "Retira"
 #. Default: "Retract worksheet"
 #: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
 msgid "retract_worksheet_transition_title"
-msgstr ""
+msgstr "Retira"
 
 #. Default: "Sample"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
@@ -868,11 +868,11 @@ msgstr "Mostrejat"
 
 #. Default: "Save analyses"
 msgid "save_analyses_button_transition_title"
-msgstr "Guarda"
+msgstr "Save"
 
 #. Default: "Save partitions"
 msgid "save_partitions_button_transition_title"
-msgstr "Guarda"
+msgstr "Save"
 
 #. Default: "Save selection"
 msgid "save_selection_button_transition_title"
@@ -881,7 +881,7 @@ msgstr "Save selection"
 #. Default: "Submit ARImport"
 #: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
 msgid "submit_arimport_transition_title"
-msgstr ""
+msgstr "Tramet"
 
 #. Default: "Submit for verification"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml

@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-07-08 20:00+0000\n"
-"PO-Revision-Date: 2012-05-11 14:41+0000\n"
+"POT-Creation-Date: 2012-07-17 10:58+0000\n"
+"PO-Revision-Date: 2012-07-05 13:18+0000\n"
 "Last-Translator: lemoene Smit <admin@bikalabs.com>\n"
 "Language-Team: Bika <bikasupport@bikalabs.com>\n"
 "MIME-Version: 1.0\n"
@@ -127,7 +127,7 @@ msgstr "Aanhangsel"
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
 msgid "Attachment Outstanding"
-msgstr ""
+msgstr "Aanhangsel Uitstaande"
 
 #: ../profiles/default/types/AttachmentType.xml
 msgid "Attachment Type"
@@ -172,7 +172,7 @@ msgstr "Kliënte"
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
 msgid "Comments about the last transition"
-msgstr ""
+msgstr "Kommentaar op die laaste oorgang"
 
 #: ../profiles/default/types/Client.xml
 #: ../profiles/default/types/ReferenceSupplier.xml
@@ -257,7 +257,7 @@ msgstr ""
 
 #: ../profiles/default/workflows/bika_inactive_workflow/definition.xml
 msgid "Inactive"
-msgstr ""
+msgstr "Dormant"
 
 #: ../profiles/default/types/Instrument.xml
 msgid "Instrument"
@@ -355,7 +355,7 @@ msgstr "Metodes"
 
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 msgid "Not requested"
-msgstr ""
+msgstr "Nie versoek"
 
 #: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
 msgid "Open"
@@ -487,7 +487,7 @@ msgstr ""
 #: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
 msgid "Rejected"
-msgstr ""
+msgstr "Verworpe"
 
 #: ../profiles/default/actions.xml
 #: ../profiles/default/types/Report.xml
@@ -587,7 +587,7 @@ msgstr ""
 
 #: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
 msgid "Submitted"
-msgstr ""
+msgstr "Ingehandig"
 
 #: ../profiles/default/actions.xml
 msgid "Suppliers"
@@ -601,13 +601,13 @@ msgstr ""
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
 msgid "The last transition"
-msgstr ""
+msgstr "Die laaste oorgang"
 
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
 msgid "Time of the last transition"
-msgstr ""
+msgstr "Tyd  van die laaste oorgang"
 
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
@@ -673,9 +673,8 @@ msgstr "Assign"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
-#, fuzzy
 msgid "attach_transition_title"
-msgstr "Attach"
+msgstr ""
 
 #. Default: "Cancel"
 #: ../profiles/default/workflows/bika_cancellation_workflow/definition.xml
@@ -821,7 +820,7 @@ msgstr "Publish"
 
 #. Default: "Reassign"
 msgid "reassign_transition_title"
-msgstr "Reassign"
+msgstr ""
 
 #. Default: "Receive sample"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml

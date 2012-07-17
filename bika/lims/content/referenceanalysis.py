@@ -23,15 +23,6 @@ from zope.interface import implements
 #    pass
 
 schema = BikaSchema.copy() + Schema((
-    StringField('ReferenceAnalysisID',
-        required = 1,
-        searchable = True,
-        widget = StringWidget(
-            label = _("ReferenceAnalysis ID"),
-            description = _("The ID assigned to the reference analysis"),
-            visible = {'edit':'hidden'},
-        ),
-    ),
     StringField('ReferenceType',
         vocabulary = STD_TYPES,
         widget = SelectionWidget(

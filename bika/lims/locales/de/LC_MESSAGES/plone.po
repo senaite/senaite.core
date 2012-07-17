@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-07-08 20:00+0000\n"
-"PO-Revision-Date: 2012-05-11 14:41+0000\n"
+"POT-Creation-Date: 2012-07-17 10:58+0000\n"
+"PO-Revision-Date: 2012-07-05 13:18+0000\n"
 "Last-Translator: lemoene Smit <admin@bikalabs.com>\n"
 "Language-Team: Bika <bikasupport@bikalabs.com>\n"
 "MIME-Version: 1.0\n"
@@ -256,7 +256,7 @@ msgstr ""
 
 #: ../profiles/default/workflows/bika_inactive_workflow/definition.xml
 msgid "Inactive"
-msgstr ""
+msgstr "Inaktiv"
 
 #: ../profiles/default/types/Instrument.xml
 msgid "Instrument"
@@ -354,7 +354,7 @@ msgstr "Methoden"
 
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 msgid "Not requested"
-msgstr ""
+msgstr "Nicht angefordert"
 
 #: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
 msgid "Open"
@@ -362,7 +362,7 @@ msgstr "Öffnen"
 
 #: ../profiles/default/workflows/bika_order_workflow/definition.xml
 msgid "Order pending"
-msgstr ""
+msgstr "Unerledigte Bestellung"
 
 #: ../profiles/default/actions.xml
 #: ../profiles/default/types/Client.xml
@@ -486,7 +486,7 @@ msgstr ""
 #: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
 msgid "Rejected"
-msgstr ""
+msgstr "Abgelehnt"
 
 #: ../profiles/default/actions.xml
 #: ../profiles/default/types/Report.xml
@@ -586,7 +586,7 @@ msgstr ""
 
 #: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
 msgid "Submitted"
-msgstr ""
+msgstr "Eingereicht"
 
 #: ../profiles/default/actions.xml
 msgid "Suppliers"
@@ -672,9 +672,8 @@ msgstr "Assign"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
-#, fuzzy
 msgid "attach_transition_title"
-msgstr "Attach"
+msgstr ""
 
 #. Default: "Cancel"
 #: ../profiles/default/workflows/bika_cancellation_workflow/definition.xml
@@ -820,7 +819,7 @@ msgstr "Publish"
 
 #. Default: "Reassign"
 msgid "reassign_transition_title"
-msgstr "Reassign"
+msgstr ""
 
 #. Default: "Receive sample"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
