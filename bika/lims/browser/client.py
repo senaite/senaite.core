@@ -203,21 +203,13 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
         elif action in ('prepublish', 'publish', 'republish'):
             # We pass a list of AR objects to Publish.
             # it returns a list of AR IDs which were actually published.
+            objects = AnalysisRequestWorkflowAction._get_selected_items(self)
             ARs_to_publish = []
             transitioned = []
-            if 'paths' in form:
-                for path in form['paths']:
-                    item_id = path.split("/")[-1]
-                    item_path = path.replace("/" + item_id, '')
-                    ar = bc(id = item_id,
-                              path = {'query':item_path,
-                                      'depth':1})[0].getObject()
-                    # can't publish inactive items
-                    if not(
-                        'bika_inactive_workflow' in workflow.getChainFor(ar) and \
-                        workflow.getInfoFor(ar, 'inactive_state', '') == 'inactive'):
-                        ar.setDatePublished(DateTime())
-                        ARs_to_publish.append(ar)
+            for obj_uid, obj in objects.items():
+                if isActive(obj):
+                    obj.setDatePublished(DateTime())
+                    ARs_to_publish.append(obj)
 
                 transitioned = Publish(self.context,
                                        self.request,
