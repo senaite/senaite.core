@@ -43,7 +43,7 @@ class TemplatesView(BikaListingView):
                          'Description']},
             {'id':'inactive',
              'title': _('Inactive'),
-             'contentFilter': {'inactive_review_state':'active'},
+             'contentFilter': {'inactive_review_state':'inactive'},
              'columns': ['Title',
                          'Description']},
             {'id':'all',
