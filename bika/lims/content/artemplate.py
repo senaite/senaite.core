@@ -148,13 +148,13 @@ class ARTemplate(BaseContent):
         uid = None
         if value:
             bsc = getToolByName(self, 'bika_setup_catalog')
-            items = bsc(portal_type = 'SampleType', Title = value)
+            items = bsc(portal_type = 'SampleType', title = value)
             if not items:
                 msg = _("${sampletype} is not a valid sample type",
                         mapping={'sampletype':value})
-                self.context.plone_utils.addPortalMessage(msg, 'error')
+                self.plone_utils.addPortalMessage(msg, 'error')
                 self.destination_url = self.request.get_header("referer",
-                                       self.context.absolute_url())
+                                       self.absolute_url())
                 self.request.response.redirect(self.destination_url)
                 return False
             uid = items[0].UID
@@ -172,13 +172,13 @@ class ARTemplate(BaseContent):
         uid = None
         if value:
             bsc = getToolByName(self, 'bika_setup_catalog')
-            items = bsc(portal_type = 'SamplePoint', Title = value)
+            items = bsc(portal_type = 'SamplePoint', title = value)
             if not items:
                 msg = _("${samplepoint} is not a valid sample point",
                         mapping={'samplepoint':value})
-                self.context.plone_utils.addPortalMessage(msg, 'error')
+                self.plone_utils.addPortalMessage(msg, 'error')
                 self.destination_url = self.request.get_header("referer",
-                                       self.context.absolute_url())
+                                       self.absolute_url())
                 self.request.response.redirect(self.destination_url)
                 return False
             uid = items[0].UID
