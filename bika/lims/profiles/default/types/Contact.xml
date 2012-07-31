@@ -20,14 +20,20 @@
  <property name="default_view_fallback">False</property>
 
  <alias from="(Default)" to="base_edit"/>
- <alias from="view" to="base_edit"/>
- <alias from="edit" to="base_edit"/>
+ <alias from="view" to="edit"/>
+ <alias from="edit" to="edit"/>
 
  <action title="View"
          action_id="view"
          category="object"
          condition_expr=""
+<<<<<<< HEAD
          url_expr="string:${object_url}"
+||||||| merged common ancestors
+         url_expr="string:${object_url}/base_edit"
+=======
+         url_expr="string:${object_url}/view"
+>>>>>>> 40bd392ebef272954e5c40d4ff16bf91dd09ce6b
          i18n:attributes="title"
          i18n:domain="plone"
          visible="False">
