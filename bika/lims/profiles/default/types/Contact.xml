@@ -11,23 +11,23 @@
  <property name="factory">addContact</property>
  <property name="add_view_expr"></property>
  <property name="link_target"></property>
- <property name="immediate_view">base_edit</property>
  <property name="global_allow">False</property>
  <property name="filter_content_types">False</property>
  <property name="allowed_content_types">
   <element value="Address"/>
  </property>
  <property name="allow_discussion">False</property>
+ <property name="default_view_fallback">False</property>
 
  <alias from="(Default)" to="base_edit"/>
- <alias from="view" to="edit"/>
- <alias from="edit" to="edit"/>
+ <alias from="view" to="base_edit"/>
+ <alias from="edit" to="base_edit"/>
 
  <action title="View"
          action_id="view"
          category="object"
          condition_expr=""
-         url_expr="string:${object_url}/view"
+         url_expr="string:${object_url}"
          i18n:attributes="title"
          i18n:domain="plone"
          visible="False">

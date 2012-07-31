@@ -19,28 +19,21 @@ class ContactLoginDetailsView(BrowserView):
                 if field:
                     message = "%s: %s" % (field, message)
                 self.context.plone_utils.addPortalMessage(message, 'error')
-                url = self.request.get_header("referer",
-                                              self.context.absolute_url())
-                self.request.response.redirect(url)
+                return self.template()
 
             form = self.request.form
-
             contact = self.context
 
-            password = form['password']
-            username = form['username']
-            confirm = form['confirm']
-            email = form['email']
+            password = form.get('password', '')
+            username = form.get('username', '')
+            confirm = form.get('confirm', '')
+            email = form.get('email', '')
 
             if not username:
-                error('username',
-                      PMF("Input is required but not given."))
-                return
+                return error('username', PMF("Input is required but not given."))
 
             if not email:
-                error('email',
-                      PMF("Input is required but not given."))
-                return
+                return error('email', PMF("Input is required but not given."))
 
             reg_tool = self.context.portal_registration
             properties = self.context.portal_properties.site_properties
@@ -49,24 +42,16 @@ class ContactLoginDetailsView(BrowserView):
 ##                password = reg_tool.generatePassword()
 ##            else:
             if password!=confirm:
-                error('password',
-                      PMF("Passwords do not match."))
-                return
+                return error('password', PMF("Passwords do not match."))
 
             if not password:
-                error('password',
-                      PMF("Input is required but not given."))
-                return
+                return error('password', PMF("Input is required but not given."))
 
             if not confirm:
-                error('password',
-                      PMF("Passwords do not match."))
-                return
+                return error('password', PMF("Passwords do not match."))
 
             if len(password) < 5:
-                error('password',
-                      PMF("Passwords must contain at least 5 letters."))
-                return
+                return error('password', PMF("Passwords must contain at least 5 letters."))
 
             try:
                 reg_tool.addMember(username,
@@ -76,12 +61,10 @@ class ContactLoginDetailsView(BrowserView):
                                        'email': email,
                                        'fullname': username})
             except ValueError, msg:
-                error(None, msg)
-                return
+                return error(None, msg)
 
             contact.setUsername(username)
             contact.setEmailAddress(email)
-            contact.reindexObject()
 
             # If we're being created in a Client context, then give
             # the contact an Owner local role on client.
@@ -94,11 +77,22 @@ class ContactLoginDetailsView(BrowserView):
                 group=self.context.portal_groups.getGroupById('Clients')
                 group.addMember(username)
 
+            contact.reindexObject()
+
             if properties.validate_email or self.request.get('mail_me', 0):
-                reg_tool.registeredNotify(username)
+                try:
+                    reg_tool.registeredNotify(username)
+                except:
+                    import transaction
+                    transaction.abort()
+                    return error(
+                        None, PMF("SMTP server disconnected."))
+
+
 
             message = PMF("Member registered.")
             self.context.plone_utils.addPortalMessage(message, 'info')
+            return self.template()
         else:
             return self.template()
 
