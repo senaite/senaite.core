@@ -143,35 +143,17 @@ class HistoryAwareReferenceField(ReferenceField):
                uid in instance.reference_versions and \
                instance.reference_versions[uid] != r.version_id and \
                r.version_id != None:
+
                 version_id = instance.reference_versions[uid]
-<<<<<<< HEAD
-                # a simple permission check should do fine but sometimes when we 
+                # a simple permission check should do fine but sometimes when we
                 # DO have the permission, and Authentication Error is raised anyway
                 try:
-||||||| merged common ancestors
-                if canAccessPreviousVersions:
-=======
-                try:
->>>>>>> 40bd392ebef272954e5c40d4ff16bf91dd09ce6b
                     o = pr.retrieve(r, selector=version_id).object
-<<<<<<< HEAD
                 except Exception, msg:
                     msg = "History retrieve failed: %s can't get %s (version %s): %s" % \
                         (instance,r,version_id, msg)
                     logger.warn(msg)
                     o = r
-||||||| merged common ancestors
-                else:
-                    msg = "Permission 'CMFEditions: Access previous versions' denied (%s --> %s, version_id=%s) " % \
-                        (instance,r,version_id)
-                    raise Unauthorized(msg)
-=======
-                except Exception, msg:
-                    ##msg = "Retrieve failed (%s --> %s, version_id=%s) (%s) " % \
-                    ##    (instance,r,version_id, msg)
-                    ##logger.warn(msg)
-                    o = r
->>>>>>> 40bd392ebef272954e5c40d4ff16bf91dd09ce6b
             else:
                 o = r
             rd[uid] = o
