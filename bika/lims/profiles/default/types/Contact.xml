@@ -27,13 +27,7 @@
          action_id="view"
          category="object"
          condition_expr=""
-<<<<<<< HEAD
          url_expr="string:${object_url}"
-||||||| merged common ancestors
-         url_expr="string:${object_url}/base_edit"
-=======
-         url_expr="string:${object_url}/view"
->>>>>>> 40bd392ebef272954e5c40d4ff16bf91dd09ce6b
          i18n:attributes="title"
          i18n:domain="plone"
          visible="False">
