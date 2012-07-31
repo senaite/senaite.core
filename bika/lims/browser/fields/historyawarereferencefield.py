@@ -144,12 +144,14 @@ class HistoryAwareReferenceField(ReferenceField):
                instance.reference_versions[uid] != r.version_id and \
                r.version_id != None:
                 version_id = instance.reference_versions[uid]
+                # a simple permission check should do fine but sometimes when we 
+                # DO have the permission, and Authentication Error is raised anyway
                 try:
                     o = pr.retrieve(r, selector=version_id).object
                 except Exception, msg:
-                    ##msg = "Retrieve failed (%s --> %s, version_id=%s) (%s) " % \
-                    ##    (instance,r,version_id, msg)
-                    ##logger.warn(msg)
+                    msg = "History retrieve failed: %s can't get %s (version %s): %s" % \
+                        (instance,r,version_id, msg)
+                    logger.warn(msg)
                     o = r
             else:
                 o = r
