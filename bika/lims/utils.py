@@ -283,7 +283,7 @@ def logged_in_client(context, member=None):
                 client = obj
     return client
 
-def changeWorkflowState(content, state_id, acquire_permissions=False,
+def changeWorkflowState(content, wf_id, state_id, acquire_permissions=False,
                         portal_workflow=None, **kw):
     """Change the workflow state of an object
     @param content: Content obj which state will be changed
@@ -300,8 +300,13 @@ def changeWorkflowState(content, state_id, acquire_permissions=False,
         portal_workflow = getToolByName(content, 'portal_workflow')
 
     # Might raise IndexError if no workflow is associated to this type
-    wf_def = portal_workflow.getWorkflowsFor(content)[0]
-    wf_id= wf_def.getId()
+    found_wf = 0
+    for wf_def in portal_workflow.getWorkflowsFor(content):
+        if wf_id == wf_def.getId():
+            found_wf = 1
+            break
+    if not found_wf:
+        logger.error("%s: Cannot find workflow id %s" % (content, wf_id))
 
     wf_state = {
         'action': None,
