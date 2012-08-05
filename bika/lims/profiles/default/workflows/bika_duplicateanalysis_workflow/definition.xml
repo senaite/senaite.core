@@ -79,17 +79,6 @@
   </permission-map>
  </state>
 
- <state state_id="rejected" title="Rejected" i18n:attributes="title">
-  <permission-map name="BIKA: View Results" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>Analyst</permission-role>
-   <permission-role>LabClerk</permission-role>
-  </permission-map>
-  <permission-map name="BIKA: Edit Results" acquired="False">
-  </permission-map>
- </state>
-
  <transition transition_id="retract"
              title="Retract"
              new_state="assigned"
@@ -160,7 +149,7 @@
 
  <transition transition_id="reject"
              title="Reject"
-             new_state="rejected"
+             new_state=""
 			 trigger="USER"
              before_script=""
 			 after_script=""
@@ -171,7 +160,7 @@
 		  icon=""
 		  i18n:translate="reject_transition_title">Reject</action>
   <guard>
-   <guard-permission>BIKA: Verify</guard-permission>
+   <guard-permission>BIKA: Reject Worksheet</guard-permission>
   </guard>
  </transition>
 

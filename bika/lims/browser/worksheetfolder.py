@@ -65,7 +65,7 @@ class WorksheetFolderListingView(BikaListingView):
         self.catalog = 'bika_catalog'
         self.contentFilter = {
             'portal_type': 'Worksheet',
-            'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
+            'review_state':['open', 'to_be_verified', 'verified'],
             'sort_on':'id',
             'sort_order': 'reverse'}
         self.context_actions = {_('Add'):
@@ -140,7 +140,7 @@ class WorksheetFolderListingView(BikaListingView):
             {'id':'default',
              'title': _('All'),
              'contentFilter': {'portal_type': 'Worksheet',
-                               'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
+                               'review_state':['open', 'to_be_verified', 'verified'],
                                'sort_on':'id',
                                'sort_order': 'reverse'},
              'transitions':[{'id':'retract'},
@@ -160,7 +160,7 @@ class WorksheetFolderListingView(BikaListingView):
             {'id':'mine',
              'title': _('Mine'),
              'contentFilter': {'portal_type': 'Worksheet',
-                               'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
+                               'review_state':['open', 'to_be_verified', 'verified'],
                                'sort_on':'id',
                                'sort_order': 'reverse'},
              'transitions':[{'id':'retract'},
