@@ -89,7 +89,6 @@ def test_suite():
 ##    suite.addTests(doctest.DocTestSuite(referencesample))
 ##    suite.addTests(doctest.DocTestSuite(referencesamplesfolder))
 ##    suite.addTests(doctest.DocTestSuite(referencesupplier))
-##    suite.addTests(doctest.DocTestSuite(rejectanalysis))
 ##    suite.addTests(doctest.DocTestSuite(reports))
 ##    suite.addTests(doctest.DocTestSuite(sample))
 ##    suite.addTests(doctest.DocTestSuite(samplepartition))

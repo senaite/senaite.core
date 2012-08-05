@@ -224,7 +224,6 @@
   </type>
 
   <type type_id="ReferenceSuppliers"/>
-  <type type_id="RejectAnalysis"/>
 
   <type type_id="Sample">
    <bound-workflow workflow_id="bika_sample_workflow"/>
