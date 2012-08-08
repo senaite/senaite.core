@@ -109,7 +109,7 @@ class InterimFieldsValidator:
         fieldname = kwargs['field'].getName()
         request = kwargs.get('REQUEST', {})
         form = request.form
-        interim_fields = form.get(fieldname)
+        interim_fields = form.get(fieldname, [])
 
         ts = getToolByName(instance, 'translation_service').translate
         bsc = getToolByName(instance, 'bika_setup_catalog')
