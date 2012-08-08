@@ -402,3 +402,33 @@ class PrePreservationValidator:
             return ts(msg)
 
 validation.register(PrePreservationValidator())
+
+
+class StandardIDValidator:
+    """Matches against regular expression:
+       [^A-Za-z\w\d\-\_]
+    """
+
+    implements(IValidator)
+    name = "standard_id_validator"
+
+    def __call__(self, value, *args, **kwargs):
+
+        regex = r"[^A-Za-z\w\d\-\_]"
+
+        instance = kwargs['instance']
+        fieldname = kwargs['field'].getName()
+        request = kwargs.get('REQUEST', {})
+        form = request.get('form', {})
+
+        ts = getToolByName(instance, 'translation_service').translate
+
+        # check the value against all AnalysisService keywords
+        if re.findall(regex, value):
+            msg = _("Validation failed: keyword contains invalid "
+                    "characters")
+            return ts(msg)
+
+        return True
+
+validation.register(StandardIDValidator())

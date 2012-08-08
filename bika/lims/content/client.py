@@ -20,7 +20,9 @@ import sys
 
 schema = Organisation.schema.copy() + atapi.Schema((
     atapi.StringField('ClientID',
+        required = 1,
         searchable = True,
+        validators = ('uniquefieldvalidator', 'standard_id_validator'),
         widget = atapi.StringWidget(
             label = _("Client ID"),
         ),
@@ -85,6 +87,8 @@ schema = Organisation.schema.copy() + atapi.Schema((
 schema['AccountNumber'].write_permission = ManageClients
 schema['title'].widget.visible = False
 schema['description'].widget.visible = False
+
+schema.moveField('ClientID', after='Name')
 
 class Client(Organisation):
     implements(IClient)
