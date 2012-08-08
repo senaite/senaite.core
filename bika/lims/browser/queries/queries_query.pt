@@ -71,8 +71,6 @@
 <br/>
 <br/>
 <br/>
-<b> Under construction </b>
-<!--
 <metal:block use-macro="context/selection_macros/macros/client"/>
 
 <metal:block use-macro="context/selection_macros/macros/contact"/>
@@ -129,7 +127,7 @@
 
 <metal:block use-macro="context/selection_macros/macros/analysisservice"/>
 
-<metal:block use-macro="context/selection_macros/macros/submittedby"/>
+<metal:block use-macro="context/selection_macros/macros/analyst"/>
 
 <metal:date use-macro="context/selection_macros/macros/review_state"/>
 
@@ -144,7 +142,6 @@
         value="Query"
         i18n:attributes="value"
         />
--->
 </form>
 </div>
 

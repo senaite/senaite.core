@@ -9,7 +9,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import TimeOrDate
-from bika.lims.utils import pretty_user_name_or_id, pretty_user_email, logged_in_client
+from bika.lims.utils import pretty_user_name_or_id, pretty_user_email, logged_in_client, getUsers
 from bika.lims.interfaces import IQueries
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -29,6 +29,8 @@ class QueryView(BrowserView):
         BrowserView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/query_big.png"
         self.TimeOrDate = TimeOrDate
+        self.getAnalysts = getUsers(context, ['Manager', 'LabManager', 'Analyst'])
+
         request.set('disable_border', 1)
 
     def __call__(self):

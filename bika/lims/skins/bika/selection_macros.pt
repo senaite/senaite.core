@@ -12,9 +12,9 @@
 <div class="field" tal:condition="not:here/member_is_client">
     <label i18n:translate=""
         >Client</label><br/>
-    <select name="getClientUID:ignore_empty"
+    <select name="ClientUID:ignore_empty"
             style=""
-            id="getClientUID"
+            id="ClientUID"
             tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
         <option value=""/>
 
@@ -23,7 +23,7 @@
         <option value=""
             tal:define="client_uid python:client.getObject().UID()"
             tal:attributes="value client_uid;
-                selected python:request.get('getClientUID', '') == client_uid and 'selected' or ''"
+                selected python:request.get('ClientUID', '') == client_uid and 'selected' or ''"
             tal:content="client/Title"></option>
 
         </tal:clients>
@@ -32,53 +32,54 @@
 </div>
 
 <div metal:define-macro="contact"
-        tal:define="clients python:here.portal_catalog(portal_type='Client',
+        tal:define="contacts python:here.portal_catalog(portal_type='Contact',
                 sort_on='sortable_title');"
         >
 <div class="field" tal:condition="not:here/member_is_client">
     <label i18n:translate=""
         >Contact</label><br/>
-    <select name="getClientUID:ignore_empty"
+    <select name="ContactUID:ignore_empty"
             style=""
-            id="getClientUID"
+            id="ContactUID"
             tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
         <option value=""/>
 
-        <tal:clients
-            tal:repeat="client clients">
+        <tal:contacts
+            tal:repeat="contact contacts">
         <option value=""
-            tal:define="client_uid python:client.getObject().UID()"
-            tal:attributes="value client_uid;
-                selected python:request.get('getClientUID', '') == client_uid and 'selected' or ''"
-            tal:content="client/Title"></option>
+            tal:define="contact_uid python:contact.getObject().UID()"
+            tal:attributes="value contact_uid;
+                selected python:request.get('ContactUID', '') == contact_uid and 'selected' or ''"
+            tal:content="contact/Title"></option>
 
-        </tal:clients>
+        </tal:contacts>
     </select>
 </div>
 </div>
 
 <div metal:define-macro="profiles"
-        tal:define="clients python:here.portal_catalog(portal_type='Client',
-                sort_on='sortable_title');"
+        tal:define="profiles python:here.bika_setup_catalog(
+                        portal_type='AnalysisProfile',
+                        sort_on='sortable_title');"
         >
 <div class="field" tal:condition="not:here/member_is_client">
     <label i18n:translate=""
         >Profile</label><br/>
-    <select name="getClientUID:ignore_empty"
+    <select name="ProfileUID:ignore_empty"
             style=""
-            id="getClientUID"
+            id="ProfileUID"
             tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
         <option value=""/>
 
-        <tal:clients
-            tal:repeat="client clients">
+        <tal:profiles
+            tal:repeat="profile profiles">
         <option value=""
-            tal:define="client_uid python:client.getObject().UID()"
-            tal:attributes="value client_uid;
-                selected python:request.get('getClientUID', '') == client_uid and 'selected' or ''"
-            tal:content="client/Title"></option>
+            tal:define="profile_uid python:profile.getObject().UID()"
+            tal:attributes="value profile_uid;
+                selected python:request.get('ProfileUID', '') == profile_uid and 'selected' or ''"
+            tal:content="profile/Title"></option>
 
-        </tal:clients>
+        </tal:profiles>
     </select>
 </div>
 </div>
@@ -92,21 +93,21 @@
 <div class="field" >
     <label i18n:translate=""
         >Sample type</label><br/>
-    <select name="getSampleTypeUID:ignore_empty"
+    <select name="SampleTypeUID:ignore_empty"
             style=""
-            id="getClientUID"
+            id="SampleTypeUID"
             tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
         <option tal:condition="python:nullable" value=""/>
 
-        <tal:clients
+        <tal:sampletypes
             tal:repeat="sampletype sampletypes">
         <option value=""
             tal:define="sampletype_uid python:sampletype.UID"
             tal:attributes="value sampletype_uid;
-                selected python:request.get('getSampeTypeUID', '') == sampletype_uid and 'selected' or ''"
+                selected python:request.get('SampleTypeUID', '') == sampletype_uid and 'selected' or ''"
             tal:content="sampletype/Title"></option>
 
-        </tal:clients>
+        </tal:sampletypes>
     </select>
 </div>
 </div>
@@ -120,22 +121,22 @@
 <div class="field">
     <label i18n:translate=""
         >Sample point</label><br/>
-    <select name="getSamplePointUID:ignore_empty"
+    <select name="SamplePointUID:ignore_empty"
             style=""
-            id="getSamplePointUID"
+            id="SamplePointUID"
             tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
         <option tal:condition="python:nullable"
                 value=""/>
 
-        <tal:clients
+        <tal:samplepoints
             tal:repeat="samplepoint samplepoints">
         <option value=""
             tal:define="samplepoint_uid python:samplepoint.UID"
             tal:attributes="value samplepoint_uid;
-                selected python:request.get('getSamplePointUID', '') == samplepoint_uid and 'selected' or ''"
+                selected python:request.get('SamplePointUID', '') == samplepoint_uid and 'selected' or ''"
             tal:content="samplepoint/Title"></option>
 
-        </tal:clients>
+        </tal:samplepoints>
     </select>
 </div>
 </div>
@@ -148,9 +149,9 @@
 <div class="field" >
     <label i18n:translate=""
         >Analysis category</label><br/>
-    <select name="getCategoryUID:ignore_empty"
+    <select name="CategoryUID:ignore_empty"
             style=""
-            id="getCategoryUID"
+            id="CategoryUID"
             tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
         <option value=""/>
 
@@ -159,7 +160,7 @@
         <option value=""
             tal:define="category_uid python:category.UID"
             tal:attributes="value category_uid;
-                selected python:request.get('getCategoryUID', '') == category_uid and 'selected' or ''"
+                selected python:request.get('CategoryUID', '') == category_uid and 'selected' or ''"
             tal:content="category/Title"></option>
 
         </tal:categories>
@@ -172,7 +173,7 @@
 <div class="field" >
     <label i18n:translate=""
         >Analyst</label><br/>
-    <select name="Analyst"
+    <select name="Analyst:ignore_empty"
             style=""
             id="Analyst"
             tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
@@ -181,7 +182,7 @@
         <option value=""
             tal:attributes="
                 value python:analyst;
-                selected python:request.get('getAnalyst', '')
+                selected python:request.get('Analyst', '')
                                          == analyst and 'selected' or ''"
             tal:content="python:analysts.getValue(analyst)"></option>
 
@@ -251,10 +252,10 @@
 <div class="field">
     <label i18n:translate=""
         >Analysis service</label><br/>
-    <select name="getServiceUID:ignore_empty"
+    <select name="ServiceUID:ignore_empty"
             multiple=""
             style=""
-            id="getServiceUID"
+            id="ServiceUID"
             tal:attributes="
             style string:font-family:${here/base_properties/fontFamily};;font-size:100%;
                 multiple multiselect">
@@ -266,36 +267,10 @@
         <option value=""
             tal:define="service_uid python:service.UID"
             tal:attributes="value service_uid;
-                selected python:request.get('getServiceUID', '') == service_uid and 'selected' or ''"
+                selected python:request.get('ServiceUID', '') == service_uid and 'selected' or ''"
             tal:content="service/Title"></option>
 
         </tal:services>
-    </select>
-</div>
-</div>
-
-<div metal:define-macro="submittedby"
-        tal:define="clients python:here.portal_catalog(portal_type='Client',
-                sort_on='sortable_title');"
-        >
-<div class="field" tal:condition="not:here/member_is_client">
-    <label i18n:translate=""
-        >Submitted by</label><br/>
-    <select name="getClientUID:ignore_empty"
-            style=""
-            id="getClientUID"
-            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
-        <option value=""/>
-
-        <tal:clients
-            tal:repeat="client clients">
-        <option value=""
-            tal:define="client_uid python:client.getObject().UID()"
-            tal:attributes="value client_uid;
-                selected python:request.get('getClientUID', '') == client_uid and 'selected' or ''"
-            tal:content="client/Title"></option>
-
-        </tal:clients>
     </select>
 </div>
 </div>
