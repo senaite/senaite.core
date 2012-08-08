@@ -63,6 +63,7 @@ class LogView(BikaListingView):
 
         isVersionable = pr.isVersionable(aq_inner(self.context))
         review_history = wf.getInfoFor(self.context, 'review_history')
+        review_history = list(review_history)
         review_history.reverse()
         items = []
         for entry in review_history:
@@ -108,7 +109,7 @@ class LogView(BikaListingView):
         for entry in version_history:
             # this folderitems doesn't subclass from the bika_listing.py
             # so we create items from scratch
-            # disregard the first entry of version history, as it is 
+            # disregard the first entry of version history, as it is
             # represented by the first entry in review_history
             if not entry.get('version_id'):
                 continue

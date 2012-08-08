@@ -68,7 +68,7 @@ class ContactLoginDetailsView(BrowserView):
 
             # If we're being created in a Client context, then give
             # the contact an Owner local role on client.
-            if contact.aq_parent.por1tal_type == 'Client':
+            if contact.aq_parent.portal_type == 'Client':
                 contact.aq_parent.manage_setLocalRoles( username, ['Owner',] )
                 if hasattr(aq_base(contact.aq_parent), 'reindexObjectSecurity'):
                     contact.aq_parent.reindexObjectSecurity()

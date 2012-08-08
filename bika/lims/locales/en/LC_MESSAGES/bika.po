@@ -2494,7 +2494,7 @@ msgid "Sample"
 msgstr ""
 
 #: ../controlpanel/bika_containers.py:28
-msgid "Sample Containers"
+msgid "Containers"
 msgstr ""
 
 #: ../content/arimportitem.py:40

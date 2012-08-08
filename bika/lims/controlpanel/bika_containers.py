@@ -25,7 +25,7 @@ class ContainersView(BikaListingView):
         self.context_actions = {_('Add'):
                                 {'url': 'createObject?type_name=Container',
                                  'icon': '++resource++bika.lims.images/add.png'}}
-        self.title = _("Sample Containers")
+        self.title = _("Containers")
         self.icon = "++resource++bika.lims.images/container_big.png"
         self.description = ""
         self.show_sort_column = False

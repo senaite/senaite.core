@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # <cyrano30@epf.pl>, 2012.
 # <cyrano30@epf.pl>, 2012.
@@ -2501,7 +2501,7 @@ msgid "Sample"
 msgstr "Próbka"
 
 #: ../controlpanel/bika_containers.py:28
-msgid "Sample Containers"
+msgid "Containers"
 msgstr "Pojemniki na próbki"
 
 #: ../content/arimportitem.py:40

@@ -55,13 +55,17 @@ class WorksheetFolderWorkflowAction(WorkflowAction):
 
 
 class WorksheetFolderListingView(BikaListingView):
+
+    implements(IFolderContentsView)
+
     template = ViewPageTemplateFile("templates/worksheetfolder.pt")
+
     def __init__(self, context, request):
-        BikaListingView.__init__(self, context, request)
+        super(WorksheetFolderListingView, self).__init__(context, request)
         self.catalog = 'bika_catalog'
         self.contentFilter = {
             'portal_type': 'Worksheet',
-            'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
+            'review_state':['open', 'to_be_verified', 'verified'],
             'sort_on':'id',
             'sort_order': 'reverse'}
         self.context_actions = {_('Add'):
@@ -73,6 +77,7 @@ class WorksheetFolderListingView(BikaListingView):
         self.show_select_row = False
         self.show_select_all_checkbox = True
         self.show_select_column = True
+        self.pagesize = 25
 
         request.set('disable_border', 1)
 
@@ -135,7 +140,7 @@ class WorksheetFolderListingView(BikaListingView):
             {'id':'default',
              'title': _('All'),
              'contentFilter': {'portal_type': 'Worksheet',
-                               'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
+                               'review_state':['open', 'to_be_verified', 'verified'],
                                'sort_on':'id',
                                'sort_order': 'reverse'},
              'transitions':[{'id':'retract'},
@@ -155,7 +160,7 @@ class WorksheetFolderListingView(BikaListingView):
             {'id':'mine',
              'title': _('Mine'),
              'contentFilter': {'portal_type': 'Worksheet',
-                               'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
+                               'review_state':['open', 'to_be_verified', 'verified'],
                                'sort_on':'id',
                                'sort_order': 'reverse'},
              'transitions':[{'id':'retract'},
@@ -228,6 +233,25 @@ class WorksheetFolderListingView(BikaListingView):
         pm = getToolByName(self.context, "portal_membership")
 
         member = pm.getAuthenticatedMember()
+        # Only show "my" worksheets
+        # this cannot be setup in contentFilter,
+        # because AuthenticatedMember is not available in __init__
+        cookie = json.loads(self.request.get("review_state", '{}'))
+        cookie_key = "%s%s" % (self.context.portal_type, self.form_id)
+        # POST
+        selected_state = self.request.get("%s_review_state"%self.form_id, '')
+        if not selected_state:
+            # cookie
+            selected_state = cookie.get(cookie_key, '')
+        if selected_state == 'mine':
+            # modify contentFolter for current state
+            new_review_states = []
+            for state in self.review_states:
+                if state['id'] == 'mine':
+                    state['contentFilter']['getAnalyst'] = member.getId()
+                else:
+                    new_review_states.append(state)
+            self.review_states = new_review_states
 
         items = BikaListingView.folderitems(self)
         new_items = []
@@ -244,6 +268,8 @@ class WorksheetFolderListingView(BikaListingView):
 
             obj = items[x]['obj']
 
+            review_state = wf.getInfoFor(obj, 'review_state')
+
             analyst = obj.getAnalyst().strip()
             creator = obj.Creator().strip()
 
@@ -258,20 +284,6 @@ class WorksheetFolderListingView(BikaListingView):
             if wst:
                 items[x]['replace']['Template'] = "<a href='%s'>%s</a>" % \
                     (wst.absolute_url(), wst.Title())
-
-            # Only show "my" worksheets
-            # this cannot be setup in contentFilter,
-            # because AuthenticatedMember is not available in __init__
-            cookie = json.loads(self.request.get("review_state", '{}'))
-            cookie_key = "%s%s" % (self.context.portal_type, self.form_id)
-            # first check POST
-            selected_state = self.request.get("%s_review_state"%self.form_id, '')
-            if not selected_state:
-                # then check cookie
-                selected_state = cookie.get(cookie_key, '')
-            if selected_state == 'mine':
-                if member.getId() not in (analyst, creator):
-                    continue
 
             nr_analyses = len(obj.getAnalyses())
             if nr_analyses == '0':

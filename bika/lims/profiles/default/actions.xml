@@ -48,16 +48,6 @@
 			</property>
 			<property name="visible">False</property>
 		</object>
-		<object name="lims" meta_type="CMF Action" i18n:domain="plone">
-			<property name="title" i18n:translate="">LIMS</property>
-			<property name="description" i18n:translate=""/>
-			<property name="url_expr">string:$portal_url/redirect_to_client_home</property>
-			<property name="link_target"/>
-			<property name="icon_expr"/>
-			<property name="available_expr">python: member and here.member_is_client()</property>
-			<property name="permissions"/>
-			<property name="visible">True</property>
-		</object>
 		<object name="clients" meta_type="CMF Action" i18n:domain="plone">
 			<property name="title" i18n:translate="">Clients</property>
 			<property name="description" i18n:translate=""/>

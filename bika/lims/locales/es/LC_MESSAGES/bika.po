@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # Alfonso de la Guarda Reyes <alfonsodg@gmail.com>, 2012.
 # Jordi Puiggené <jordi.puiggene@gmail.com>, 2012.
@@ -2504,7 +2504,7 @@ msgid "Sample"
 msgstr "Muestra"
 
 #: ../controlpanel/bika_containers.py:28
-msgid "Sample Containers"
+msgid "Containers"
 msgstr "Contenedores de muestras"
 
 #: ../content/arimportitem.py:40

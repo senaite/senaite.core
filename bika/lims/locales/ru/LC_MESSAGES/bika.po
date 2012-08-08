@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # <nchrom@gmail.com>, 2012.
 # <nchrom@gmail.com>, 2012.
@@ -2501,7 +2501,7 @@ msgid "Sample"
 msgstr "Образец"
 
 #: ../controlpanel/bika_containers.py:28
-msgid "Sample Containers"
+msgid "Containers"
 msgstr "Контейнеры образца"
 
 #: ../content/arimportitem.py:40

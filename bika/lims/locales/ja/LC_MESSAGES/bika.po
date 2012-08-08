@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # <m2330880989@shibuya-center.com>, 2012.
 # <m2330880989@shibuya-center.com>, 2012.
@@ -2500,7 +2500,7 @@ msgid "Sample"
 msgstr ""
 
 #: ../controlpanel/bika_containers.py:28
-msgid "Sample Containers"
+msgid "Containers"
 msgstr ""
 
 #: ../content/arimportitem.py:40

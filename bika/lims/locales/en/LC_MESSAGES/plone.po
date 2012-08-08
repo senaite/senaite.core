@@ -478,16 +478,6 @@ msgstr "Reference Suppliers"
 msgid "Registered"
 msgstr ""
 
-#: ../profiles/default/types/RejectAnalysis.xml
-msgid "Reject Analysis"
-msgstr "Reject Analysis"
-
-#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
-#: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
-#: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
-msgid "Rejected"
-msgstr ""
-
 #: ../profiles/default/actions.xml
 #: ../profiles/default/types/Report.xml
 msgid "Report"

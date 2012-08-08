@@ -23,10 +23,11 @@ class ViewView(BrowserView):
         BrowserView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/referencesample_big.png"
         self.TimeOrDate = TimeOrDate
-        rc = getToolByName(context, REFERENCE_CATALOG)
 
+    def __call__(self):
+        rc = getToolByName(self.context, REFERENCE_CATALOG)
         self.results = {} # {category_title: listofdicts}
-        for r in context.getReferenceResults():
+        for r in self.context.getReferenceResults():
             service = rc.lookupObject(r['uid'])
             cat = service.getCategory().Title()
             if cat not in self.results:
@@ -35,8 +36,6 @@ class ViewView(BrowserView):
             self.results[cat].append(r)
         self.categories = self.results.keys()
         self.categories.sort()
-
-    def __call__(self):
         return self.template()
 
 class ReferenceAnalysesView(AnalysesView):

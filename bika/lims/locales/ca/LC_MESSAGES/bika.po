@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # Jordi Puiggené <jordi.puiggene@gmail.com>, 2012.
 msgid ""
@@ -2499,7 +2499,7 @@ msgid "Sample"
 msgstr "Mostra"
 
 #: ../controlpanel/bika_containers.py:28
-msgid "Sample Containers"
+msgid "Containers"
 msgstr "Contenidors de mostres"
 
 #: ../content/arimportitem.py:40
