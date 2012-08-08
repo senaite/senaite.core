@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # Inus Scheepers <inus@animatica.co.za>, 2012.
 # Tao Li <wintersun_li@yahoo.com>, 2012.
@@ -2504,7 +2504,7 @@ msgid "Sample"
 msgstr ""
 
 #: ../controlpanel/bika_containers.py:28
-msgid "Sample Containers"
+msgid "Containers"
 msgstr ""
 
 #: ../content/arimportitem.py:40

@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # Alberto De Boni <albertodeboni@gmail.com>, 2012.
 # <albertodeboni@gmail.com>, 2012.
@@ -2501,7 +2501,7 @@ msgid "Sample"
 msgstr "Campione"
 
 #: ../controlpanel/bika_containers.py:28
-msgid "Sample Containers"
+msgid "Containers"
 msgstr "Contenitori"
 
 #: ../content/arimportitem.py:40

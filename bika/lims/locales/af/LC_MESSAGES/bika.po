@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # Inus Scheepers <inus@animatica.co.za>, 2012.
 # Lemoene Smit <>, 2012.
@@ -2501,7 +2501,7 @@ msgid "Sample"
 msgstr "Monster"
 
 #: ../controlpanel/bika_containers.py:28
-msgid "Sample Containers"
+msgid "Containers"
 msgstr "Monster houers"
 
 #: ../content/arimportitem.py:40

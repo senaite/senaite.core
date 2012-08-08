@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # <>, 2012.
 # <>, 2012.
@@ -2505,7 +2505,7 @@ msgid "Sample"
 msgstr "Probe"
 
 #: ../controlpanel/bika_containers.py:28
-msgid "Sample Containers"
+msgid "Containers"
 msgstr "Probenbehälter"
 
 #: ../content/arimportitem.py:40
