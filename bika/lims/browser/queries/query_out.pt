@@ -20,18 +20,13 @@
 <body
     tal:define="
         query_content view/query_content;
-        query_format python:query_content.has_key('formats')
-                and query_content['formats'] or [];
-        query_parms python:query_content.has_key('parms')
-                and query_content['parms'] or [];
-        query_headers python:query_content.has_key('headings') 
-                and query_content['headings'] or {};
-        footlines python:query_content.has_key('footings')
-            and query_content['footings'] or [];
-        footnotes python:query_content.has_key('footnotes')
-            and query_content['footnotes'] or [];
-        datalines python:query_content.has_key('datalines')
-            and query_content['datalines'] or [];
+        batch view/batch;
+        query_format view/formats;
+        query_parms view/parms;
+        query_headers view/headings;
+        footlines view/footlines | nothing;
+        footnotes view/footnotes | nothing;
+        datalines view/datalines;
         ">
 
 <h2 tal:condition="python:query_headers.has_key('header')">
@@ -40,6 +35,7 @@
 <h3 tal:condition="python:query_headers.has_key('subheader')">
 <span tal:content="python:query_headers['subheader']"/>
 </h3>
+
 <div>
 <table
     class="bika-query-parms"
@@ -132,9 +128,9 @@
 </tr>
 </metal:block>
 </tfoot>
-
 </table>
 
+<div metal:use-macro="here/batch_macros/macros/navigation" />
 
 <tal:notes tal:repeat="note footnotes">
 <tal:note

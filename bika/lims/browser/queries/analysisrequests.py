@@ -6,9 +6,10 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.client import ClientSamplesView
 from bika.lims.utils import formatDateQuery, formatDateParms, \
-                logged_in_client, TimeOrDate
+                logged_in_client, TimeOrDate, pretty_user_name_or_id
 from bika.lims.interfaces import IQueries
 from plone.app.content.browser.interfaces import IFolderContentsView
+from Products.CMFPlone.PloneBatch import Batch
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 import json
@@ -24,22 +25,23 @@ class QueryAnalysisRequests(BrowserView):
     def __call__(self):
         # get all the data into datalines
         
+
         sc = getToolByName(self.context, 'bika_setup_catalog')
         bc = getToolByName(self.context, 'bika_catalog')
         bac = getToolByName(self.context, 'bika_analysis_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
         self.query_content = {}
         parm_lines = {}
-        parms = []
-        headings = {}
-        headings['header'] = _("Analysis Requests")
-        headings['subheader'] = _("Selected on the following criteria")
+        self.parms = []
+        self.headings = {}
+        self.headings['header'] = _("Analysis Requests")
+        self.headings['subheader'] = _("Selected on the following criteria")
 
         count_all = 0
         query = {'portal_type': 'AnalysisRequest'}
 
-        if self.request.form.has_key('getClientUID'):
-            client_uid = self.request.form['getClientUID']
+        if self.request.form.has_key('ClientUID'):
+            client_uid = self.request.form['ClientUID']
             query['getClientUID'] = client_uid
             client = rc.lookupObject(client_uid)
             client_title = client.Title()
@@ -50,31 +52,33 @@ class QueryAnalysisRequests(BrowserView):
                 query['getClientUID'] = client.UID()
             else:
                 client_title = 'Undefined'
-        parms.append(
+        self.parms.append(
             { 'title': _('Client'),
-             'value': client_title,
-             'type': 'text'})
+              'fieldid': 'ClientUID',
+              'value': client_title,
+              'type': 'text'})
 
-        if self.request.form.has_key('getContactUID'):
-            contact_uid = self.request.form['getContactUID']
+        if self.request.form.has_key('ContactUID'):
+            contact_uid = self.request.form['ContactUID']
             query['getContactUID'] = contact_uid
             contact = rc.lookupObject(contact_uid)
             contact_name = contact.getFullname()
         else:
             contact_name = 'Undefined'
-        parms.append(
+        self.parms.append(
             { 'title': _('Contact'),
-             'value': contact_name,
-             'type': 'text'})
+              'fieldid': 'ContactUID',
+              'value': contact_name,
+              'type': 'text'})
 
-        if self.request.form.has_key('getAnalysisProfileUID'):
-            profile_uid = self.request.form['getAnalysisProfileUID']
+        if self.request.form.has_key('ProfileUID'):
+            profile_uid = self.request.form['ProfileUID']
             query['getAnalysisProfileUID'] = profile_uid
             profile = rc.lookupObject(profile_uid)
             profile_title = profile.Title()
         else:
             profile_title = 'Undefined'
-        parms.append(
+        self.parms.append(
             { 'title': _('Profile'),
              'value': profile_title,
              'type': 'text'})
@@ -84,19 +88,19 @@ class QueryAnalysisRequests(BrowserView):
             query['getRequestID'] = request_id
         else:
             request_id = 'Undefined'
-        parms.append(
+        self.parms.append(
             { 'title': _('AR'),
              'value': request_id,
              'type': 'text'})
 
         if self.request.form.has_key('ClientOrderNumber'):
-            clientordernumber = self.request.form['ClientOrderNumber']
-            query['getClientOrderNumber'] = clientordernumber
+            clientoid = self.request.form['ClientOrderNumber']
+            query['getClientOrderNumber'] = clientoid
         else:
-            clientordernumber = 'Undefined'
-        parms.append(
+            clientoid = 'Undefined'
+        self.parms.append(
             { 'title': _('Client order number'),
-             'value': clientordernumber,
+             'value': clientoid,
              'type': 'text'})
 
         if self.request.form.has_key('ClientReference'):
@@ -104,7 +108,7 @@ class QueryAnalysisRequests(BrowserView):
             query['getClientReference'] = clientref
         else:
             clientref = 'Undefined'
-        parms.append(
+        self.parms.append(
             { 'title': _('Client reference'),
              'value': clientref,
              'type': 'text'})
@@ -114,7 +118,7 @@ class QueryAnalysisRequests(BrowserView):
             query['getClientSampleID'] = clientsid
         else:
             clientsid = 'Undefined'
-        parms.append(
+        self.parms.append(
             { 'title': _('Client sample ID'),
              'value': clientsid,
              'type': 'text'})
@@ -126,7 +130,7 @@ class QueryAnalysisRequests(BrowserView):
             st_title = st.Title()
         else:
             st_title = 'Undefined'
-        parms.append(
+        self.parms.append(
             { 'title': _('Sample type'),
              'value': st_title,
              'type': 'text'})
@@ -138,7 +142,7 @@ class QueryAnalysisRequests(BrowserView):
             sp_title = sp.Title()
         else:
             sp_title = 'Undefined'
-        parms.append(
+        self.parms.append(
             { 'title': _('Sample point'),
              'value': sp_title,
              'type': 'text'})
@@ -149,7 +153,7 @@ class QueryAnalysisRequests(BrowserView):
             sampled = formatDateParms(self.context, 'DateSampled') 
         else:
             sampled = 'Undefined'
-        parms.append(
+        self.parms.append(
             { 'title': _('Sampled'),
              'value': sampled,
              'type': 'text'})
@@ -160,7 +164,7 @@ class QueryAnalysisRequests(BrowserView):
             requested = formatDateParms(self.context, 'DateRequested') 
         else:
             requested = 'Undefined'
-        parms.append(
+        self.parms.append(
             { 'title': _('Requested'),
              'value': requested,
              'type': 'text'})
@@ -171,7 +175,7 @@ class QueryAnalysisRequests(BrowserView):
             received = formatDateParms(self.context, 'DateReceived') 
         else:
             received = 'Undefined'
-        parms.append(
+        self.parms.append(
             { 'title': _('Received'),
              'value': received,
              'type': 'text'})
@@ -182,7 +186,7 @@ class QueryAnalysisRequests(BrowserView):
             published = formatDateParms(self.context, 'DatePublished') 
         else:
             published = 'Undefined'
-        parms.append(
+        self.parms.append(
             { 'title': _('Published'),
              'value': published,
              'type': 'text'})
@@ -194,7 +198,7 @@ class QueryAnalysisRequests(BrowserView):
             category_title = category.Title()
         else:
             category_title = 'Undefined'
-        parms.append(
+        self.parms.append(
             { 'title': _('Category'),
              'value': category_title,
              'type': 'text'})
@@ -206,21 +210,20 @@ class QueryAnalysisRequests(BrowserView):
             service_title = service.Title()
         else:
             service_title = 'Undefined'
-        parms.append(
+        self.parms.append(
             { 'title': _('Analysis service'),
              'value': service_title,
              'type': 'text'})
 
-        if self.request.form.has_key('SubmittedByUID'):
-            submittedby_uid = self.request.form['SubmittedByUID']
-            query['getSubmittedByUID'] = submittedby_uid
-            submittedby = rc.lookupObject(submittedby_uid)
-            submittedby_name = submittedby.prettyNameOrTitle()
+        if self.request.form.has_key('Analyst'):
+            analyst = self.request.form['Analyst']
+            query['getAnalyst'] = analyst
+            analyst_name = pretty_user_name_or_id(self.context, analyst)
         else:
-            submittedby_name = 'Undefined'
-        parms.append(
-            { 'title': _('Submitted by'),
-             'value': submittedby_name,
+            analyst_name = 'Undefined'
+        self.parms.append(
+            { 'title': _('Analyst'),
+             'value': analyst_name,
              'type': 'text'})
 
         workflow = getToolByName(self.context, 'portal_workflow')
@@ -230,7 +233,7 @@ class QueryAnalysisRequests(BrowserView):
                         self.request.form['review_state'], 'Analysis')
         else:
             review_state = 'Undefined'
-        parms.append(
+        self.parms.append(
             { 'title': _('Status'),
              'value': review_state,
              'type': 'text'})
@@ -241,7 +244,8 @@ class QueryAnalysisRequests(BrowserView):
                         self.request.form['cancellation_state'], 'Analysis')
         else:
             cancellation_state = 'Undefined'
-        parms.append(
+
+        self.parms.append(
             { 'title': _('Active'),
              'value': cancellation_state,
              'type': 'text'})
@@ -254,21 +258,23 @@ class QueryAnalysisRequests(BrowserView):
                         self.request.form['ws_review_state'], 'Analysis')
         else:
             ws_review_state = 'Undefined'
-        parms.append(
+
+        self.parms.append(
             { 'title': _('Assigned to worksheet'),
              'value': ws_review_state,
              'type': 'text'})
 
 
         # and now lets do the actual query lines
-        formats = {'columns': 7,
+        self.formats = {'columns': 7,
                    'col_heads': [], 
                    'class': '',
                   }
 
-        columns = 6
+        self.columns = 6
+        header_items = 17
         
-        datalines = []
+        self.datalines = []
         clientoid_label =   [{'value': _("Client order ID"),
                               'class': 'header',}]
         clientref_label =   [{'value': _("Client reference"),
@@ -304,68 +310,89 @@ class QueryAnalysisRequests(BrowserView):
         verifiedby_label =  [{'value': _("Verified by"),
                               'class': 'header',}]
         i = 0
-        for arp in bc(query):
-            ar = arp.getObject()
-            clientoid.append({'value': ar.getClientOrderNumber()})
-            clientref.append({'value': ar.getClientReference()})
-            clientsid.append({'value': ar.getClientSampleID()})
-            client.append({'value': ar.aq_parent.Title()})
-            contact.append({'value': ar.getContact().Title()})
-            requestid.append({'value': ar.getRequestID()})
-            sampleid.append({'value': ar.getSample().getSampleID()})
-            profile.append({'value': ar.getProfile() and ar.getProfile().Title() or ' '})
-            sampletype.append({'value': ar.getSampleTypeTitle()})
-            samplepoint.append({'value': ar.getSamplePointTitle()})
-            sampled.append({'value': TimeOrDate(self.context, ar.getSample().getDateSampled())})
-            requested.append({'value': ' '})
-            #requested.append({'value': TimeOrDate(self.context, ar.created())})
-            received.append({'value': TimeOrDate(self.context, ar.getDateReceived())})
-            published.append({'value': TimeOrDate(self.context, ar.getDatePublished())})
-            status.append({'value': ' '})
-            #status.append({'value': ar.review_state()})
-            submittedby.append({'value': ' '})
-            #submittedby.append({'value': ar.getSubmittedBy().Title()})
-            verifiedby.append({'value': ' '})
-            #verifiedby.append({'value': ar.get_verifier().Title()})
-            if len(clientoid) > columns:
-                datalines.append(clientoid)
-                datalines.append(clientref)
-                datalines.append(clientsid)
-                datalines.append(client)
-                datalines.append(contact)
-                datalines.append(requestid)
-                datalines.append(sampleid)
-                datalines.append(profile)
-                datalines.append(sampletype)
-                datalines.append(samplepoint)
-                datalines.append(sampled)
-                datalines.append(requested)
-                datalines.append(received)
-                datalines.append(published)
-                datalines.append(status)
-                datalines.append(submittedby)
-                datalines.append(verifiedby)
-                     
+        clientoids = []
+        clientrefs = []
+        clientsids = []
+        clients = []
+        contacts = []
+        requestids = []
+        sampleids = []
+        profiles = []
+        sampletypes = []
+        samplepoints = []
+        sampleds = []
+        requesteds = []
+        receiveds = []
+        publisheds = []
+        statuses = []
+        submittedbys = []
+        verifiedbys = []
 
+        def loadlines(detail_lines):
+            for i in range(16):
+                self.datalines.append(detail_lines[i])
+
+        details = []
+        for i in range(header_items):
+            details.append([])
+
+        ars = bc(query)
+        self.url = self.request.URL
+        self.show_all = False
+        pagesize = 6
+        # check for pagenumber 
+        if self.request.form.has_key('b_start'):
+            batch_start = self.request.form['b_start']
+        else:
+            batch_start = 1
+        self.batch = Batch(ars, pagesize, batch_start)
+
+        for arp in self.batch:
+            ar = arp.getObject()
+            details[0].append({'value': ar.getClientOrderNumber()})
+            details[1].append({'value': ar.getClientReference()})
+            details[2].append({'value': ar.getClientSampleID()})
+            details[3].append({'value': ar.aq_parent.Title()})
+            details[4].append({'value': ar.getContact().Title()})
+            details[5].append({'value': ar.getRequestID()})
+            details[6].append({'value': ar.getSample().getSampleID()})
+            details[7].append({'value': ar.getProfile() and ar.getProfile().Title() or ' '})
+            details[8].append({'value': ar.getSampleTypeTitle()})
+            details[9].append({'value': ar.getSamplePointTitle()})
+            details[10].append({'value': TimeOrDate(self.context, ar.getSample().getDateSampled())})
+            details[11].append({'value': ' '})
+            #details[11].append({'value': TimeOrDate(self.context, ar.created())})
+            details[12].append({'value': TimeOrDate(self.context, ar.getDateReceived())})
+            details[13].append({'value': TimeOrDate(self.context, ar.getDatePublished())})
+            details[14].append({'value': ' '})
+            #details[14].append({'value': ar.review_state()})
+            details[15].append({'value': ' '})
+            #details[15].append({'value': ar.getSubmittedBy().Title()})
+            details[16].append({'value': ' '})
+            #details[16].append({'value': ar.get_verifier().Title()})
+
+
+            if len(details[0]) == self.columns:
+                loadlines(details)
+                details = []
+                for i in range(header_items):
+                    details.append([])
+
+        for i in range(header_items):
+            details.append([])
+
+        if len(details[0]) > 0:
+            loadlines(details)
         # footer data
-        footlines = []
+        self.footlines = []
         footline = []
         footitem = {'value': _('Total'),
                     'class': 'total_label'} 
         footline.append(footitem)
         footitem = {'value': count_all} 
         footline.append(footitem)
-        footlines.append(footline)
+        self.footlines.append(footline)
         
-
-        self.query_content = {
-                'headings': headings,
-                'parms': parms,
-                'formats': formats,
-                'datalines': datalines,
-                'footings': footlines}
-
-
         return self.template()
 
     
