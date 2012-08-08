@@ -30,6 +30,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     BooleanField('PrePreserved',
+        validators = ('container_prepreservation_validator'),
         default = False,
         widget = BooleanWidget(
             label = _("Pre-preserved"),

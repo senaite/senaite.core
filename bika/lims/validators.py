@@ -368,3 +368,37 @@ class RestrictedCategoriesValidator:
         return True
 
 validation.register(RestrictedCategoriesValidator())
+
+class PrePreservationValidator:
+    """ Validate PrePreserved Containers.
+        User must select a Preservation.
+    """
+    implements(IValidator)
+    name = "container_prepreservation_validator"
+
+    def __call__(self, value, *args, **kwargs):
+        # If not prepreserved, no validation required.
+        if not value:
+            return True
+
+        instance = kwargs['instance']
+        fieldname = kwargs['field'].getName()
+        request = kwargs.get('REQUEST', {})
+        form = request.form
+        preservation = form.get('Preservation')
+
+        if type(preservation) in (list,tuple):
+            preservation = preservation[0]
+
+        if preservation:
+            return True
+
+        ts = getToolByName(instance, 'translation_service').translate
+        bsc = getToolByName(instance, 'bika_setup_catalog')
+
+        if not preservation:
+            msg = _("Validation failed: PrePreserved containers "
+                    "must have a preservation selected.")
+            return ts(msg)
+
+validation.register(PrePreservationValidator())
