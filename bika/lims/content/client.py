@@ -39,6 +39,7 @@ schema = Organisation.schema.copy() + atapi.Schema((
         vocabulary = CLIENT_TYPES,
         widget = atapi.SelectionWidget(
             label = _("Client Type"),
+            visible = False,
         ),
     ),
     atapi.LinesField('EmailSubject',
