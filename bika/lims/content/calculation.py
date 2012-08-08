@@ -81,6 +81,21 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
+
+    def setInterimFields(self, value):
+        new_value = []
+
+        for x in range(len(value)):
+            row = dict(value[x])
+            keys = row.keys()
+            if 'value' not in keys:
+                row['value'] = 0
+            new_value.append(row)
+            print "setInterimFields: ", new_value
+
+        self.getField('InterimFields').set(self, new_value)
+
+
     def setFormula(self, Formula=None):
         """Set the Dependent Services from the text of the calculation Formula
         """
