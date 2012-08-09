@@ -98,6 +98,25 @@ class ajax_SamplePoints(BrowserView):
             If there aren't any, return items that contain them
 
     """
+
+    def filter_list(self, items, searchterm):
+        if searchterm and len(searchterm) < 3:
+            # Items that start with A or AA
+            items = [s.getObject()
+                     for s in items
+                     if s.Title.lower().startswith(searchterm)]
+            if not items:
+                # or, items that contain A or AA
+                items = [s.getObject()
+                         for s in items
+                         if s.Title.lower().find(searchterm) > -1]
+        else:
+            # or, items that contain searchterm.
+            items = [s.getObject()
+                     for s in items
+                     if s.Title.lower().find(searchterm) > -1]
+        return items
+
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
@@ -113,23 +132,25 @@ class ajax_SamplePoints(BrowserView):
             st = st[0].getObject()
             items = st.getSamplePoints()
         if not items:
-            items = bsc(portal_type = "SamplePoint", sort_on='sortable_title')
-            if term and len(term) < 3:
-                # Items that start with A or AA
-                items = [s.getObject()
-                         for s in items
-                         if s.Title.lower().startswith(term)]
-                if not items:
-                    # or, items that contain A or AA
-                    items = [s.getObject()
-                             for s in items
-                             if s.Title.lower().find(term) > -1]
-            else:
-                # or, items that contain term.
-                items = [s.getObject()
-                         for s in items
-                         if s.Title.lower().find(term) > -1]
 
-        items = [callable(s.Title) and s.Title() or s.Title
-                 for s in items]
-        return json.dumps(items)
+            # User (client) sample points
+            client_path = self.context.getPhysicalPath()
+            client_items = list(
+                bsc(portal_type = "SamplePoint",
+                    path = {"query": "/".join(client_path), "level" : 0 },
+                    sort_on='sortable_title'))
+
+            # Global (lab) sample points
+            lab_path = self.context.bika_setup.bika_samplepoints.getPhysicalPath()
+            lab_items = list(
+                bsc(portal_type = "SamplePoint",
+                    path = {"query": "/".join(lab_path), "level" : 0 },
+                    sort_on='sortable_title'))
+
+        client_items = [callable(s.Title) and s.Title() or s.Title
+                 for s in self.filter_list(client_items, term)]
+        lab_items = [callable(s.Title) and s.Title() or s.Title
+                 for s in self.filter_list(lab_items, term)]
+        lab_items = ["%s: %s" % (_("Lab"), i) for i in lab_items]
+
+        return json.dumps(client_items + lab_items)
