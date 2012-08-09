@@ -20,7 +20,7 @@ class RecordsWidget(ATRecordsWidget):
         """
 
         value = form.get(field.getName(), empty_marker)
-        print value
+
         if not value:
             return value, {}
         if value is empty_marker:
