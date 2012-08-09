@@ -1478,7 +1478,9 @@ class ajaxAnalysisRequestSubmit():
                         error(field, column, self.context.translate(msg))
 
                 elif field == "SamplePoint":
-                    if not bsc(portal_type = 'SamplePoint', title = ar[field]):
+                    # Strip "Lab: " from sample point titles
+                    sp_str = ar[field].replace("%s: " % _("Lab"), '')
+                    if not bsc(portal_type = 'SamplePoint', title = sp_str):
                         msg = _("${samplepoint} is not a valid sample point",
                                 mapping={'samplepoint':ar[field]})
                         error(field, column, self.context.translate(msg))

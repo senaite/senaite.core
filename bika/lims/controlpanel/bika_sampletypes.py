@@ -106,8 +106,10 @@ class ajax_SampleTypes(BrowserView):
         if not term:
             return items
         samplepoint = self.request.get('samplepoint', '')
+        # Strip "Lab: " from sample point titles
+        samplepoint = samplepoint.replace("%s: " % _("Lab"), '')
         if samplepoint and len(samplepoint) > 1:
-            sp = bsc(portal_type="SamplePoint",Title=samplepoint)
+            sp = bsc(portal_type="SamplePoint", title=samplepoint)
             if not sp:
                 return json.dumps([])
             sp = sp[0].getObject()

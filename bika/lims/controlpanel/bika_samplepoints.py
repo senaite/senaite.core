@@ -126,7 +126,7 @@ class ajax_SamplePoints(BrowserView):
             return items
         sampletype = self.request.get('sampletype', '')
         if sampletype and len(sampletype) > 1:
-            st = bsc(portal_type="SampleType",Title=sampletype)
+            st = bsc(portal_type="SampleType", title=sampletype)
             if not st:
                 return json.dumps([])
             st = st[0].getObject()
