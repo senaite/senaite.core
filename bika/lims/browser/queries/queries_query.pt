@@ -69,8 +69,6 @@
 
 <legend i18n:translate="">Selection criteria</legend>
 <br/>
-<br/>
-<br/>
 <metal:block use-macro="context/selection_macros/macros/client"/>
 
 <metal:block use-macro="context/selection_macros/macros/contact"/>

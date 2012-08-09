@@ -23,6 +23,7 @@
         batch view/batch;
         query_format view/formats;
         query_parms view/parms;
+        query_undefined view/parms_undefined;
         query_headers view/headings;
         footlines view/footlines | nothing;
         footnotes view/footnotes | nothing;
@@ -32,11 +33,12 @@
 <h2 tal:condition="python:query_headers.has_key('header')">
 <span tal:content="python:query_headers['header']"/>
 </h2>
-<h3 tal:condition="python:query_headers.has_key('subheader')">
-<span tal:content="python:query_headers['subheader']"/>
-</h3>
 
-<div>
+<!-- parameters specified -->
+<div tal:condition="query_parms">
+<h3 tal:condition="python:query_headers.has_key('head_parms')">
+    <span tal:content="python:query_headers['head_parms']"/>
+</h3>
 <table
     class="bika-query-parms"
     summary="Parameters"
@@ -45,6 +47,24 @@
     <tr>
         <td tal:content="python:line['title']"/>
         <td tal:content="python:line['value']"/>
+    </tr>
+</tal:parms>
+
+</table>
+</div>
+
+<!-- parameters undefined -->
+<div tal:condition="query_undefined">
+<h3 tal:condition="python:query_headers.has_key('head_undefined')">
+    <span tal:content="python:query_headers['head_undefined']"/> 
+</h3>
+<table
+    class="bika-query-undefined"
+    summary="Undefined"
+    cellpadding="0" cellspacing="0">
+<tal:parms tal:repeat="line query_undefined">
+    <tr>
+        <td colspan="2" tal:content="python:line['value']"/>
     </tr>
 </tal:parms>
 
