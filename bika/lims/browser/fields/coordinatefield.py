@@ -16,7 +16,7 @@ class CoordinateField(RecordField):
     _properties.update({
         'type' : 'angle',
         'subfields' : ('degrees', 'minutes', 'seconds', 'bearing'),
-        'required_subfields' : ('degrees', 'minutes', 'seconds', 'bearing'),
+##        'required_subfields' : ('degrees', 'minutes', 'seconds', 'bearing'),
         'subfield_labels':{'degrees':_('Degrees'),
                            'minutes':_('Minutes'),
                            'seconds':_('Seconds'),

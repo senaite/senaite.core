@@ -12,6 +12,24 @@ class RecordsWidget(ATRecordsWidget):
         'allowDelete': True,
     })
 
+    def process_form(self, instance, field, form, empty_marker=None,
+                     emptyReturnsMarker=False):
+        """
+        Basic impl for form processing in a widget plus allowing empty
+        values to be saved
+        """
+
+        value = form.get(field.getName(), empty_marker)
+
+        if not value:
+            return value, {}
+        if value is empty_marker:
+            return empty_marker
+        if emptyReturnsMarker and value == '':
+            return empty_marker
+
+        return value, {}
+
 registerWidget(RecordsWidget,
                title = 'RecordsWidget',
                description = (''),

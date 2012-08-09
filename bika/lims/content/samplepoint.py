@@ -124,13 +124,18 @@ class SamplePoint(BaseContent, HistoryAwareMixin):
 
 registerType(SamplePoint, PROJECTNAME)
 
-def SamplePoints(self, instance=None, allow_blank=True):
+def SamplePoints(self, instance=None, allow_blank=True, lab_only=True):
     instance = instance or self
     bsc = getToolByName(instance, 'bika_setup_catalog')
     items = []
-    for sp in bsc(portal_type='SamplePoint',
-                  inactive_state='active',
-                  sort_on = 'sortable_title'):
+    contentFilter = {
+        'portal_type'  : 'SamplePoint',
+        'inactive_state'  :'active',
+        'sort_on' : 'sortable_title'}
+    if lab_only:
+        lab_path = instance.bika_setup.bika_samplepoints.getPhysicalPath()
+        contentFilter['path'] = {"query": "/".join(lab_path), "level" : 0 }
+    for sp in bsc(contentFilter):
         items.append((sp.UID, sp.Title))
     items = allow_blank and [['','']] + list(items) or list(items)
     return DisplayList(items)

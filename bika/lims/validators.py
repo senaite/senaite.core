@@ -119,7 +119,16 @@ class InterimFieldsValidator:
         else:
             instance.REQUEST['validated'] = fieldname
 
-        if not re.match(r"^[A-Za-z][\w\d\-\_]+$", value):
+
+        for x in range(len(interim_fields)):
+            row = interim_fields[x]
+            keys = row.keys()
+            if 'title' not in keys:
+                return ts(_("Validation failed: title is required"))
+            if 'keyword' not in keys:
+                return ts(_("Validation failed: keyword is required"))
+
+        if not re.match(r"^[A-Za-z\w\d\-\_]+$", value):
             return _("Validation failed: keyword contains invalid characters")
 
         # keywords and titles used once only in the submitted form
@@ -402,3 +411,33 @@ class PrePreservationValidator:
             return ts(msg)
 
 validation.register(PrePreservationValidator())
+
+
+class StandardIDValidator:
+    """Matches against regular expression:
+       [^A-Za-z\w\d\-\_]
+    """
+
+    implements(IValidator)
+    name = "standard_id_validator"
+
+    def __call__(self, value, *args, **kwargs):
+
+        regex = r"[^A-Za-z\w\d\-\_]"
+
+        instance = kwargs['instance']
+        fieldname = kwargs['field'].getName()
+        request = kwargs.get('REQUEST', {})
+        form = request.get('form', {})
+
+        ts = getToolByName(instance, 'translation_service').translate
+
+        # check the value against all AnalysisService keywords
+        if re.findall(regex, value):
+            msg = _("Validation failed: keyword contains invalid "
+                    "characters")
+            return ts(msg)
+
+        return True
+
+validation.register(StandardIDValidator())
