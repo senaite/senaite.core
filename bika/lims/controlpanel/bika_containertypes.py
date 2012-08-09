@@ -42,24 +42,25 @@ class ContainerTypesView(BikaListingView):
         }
 
         self.review_states = [
-##            {'id':'default',
-##             'title': _('Active'),
-##             'contentFilter': {'inactive_state': 'active'},
-##             'transitions': [{'id':'deactivate'}, ],
-##             'columns': ['Title',
-##                         'Description']},
-##            {'id':'inactive',
-##             'title': _('Dormant'),
-##             'contentFilter': {'inactive_state': 'inactive'},
-##             'transitions': [{'id':'activate'}, ],
-##             'columns': ['Title',
-##                         'Description']},
+            {'id':'default',
+             'title': _('Active'),
+             'contentFilter': {'inactive_state': 'active'},
+             'transitions': [{'id':'deactivate'}, ],
+             'columns': ['Title',
+                         'Description']},
+            {'id':'inactive',
+             'title': _('Dormant'),
+             'contentFilter': {'inactive_state': 'inactive'},
+             'transitions': [{'id':'activate'}, ],
+             'columns': ['Title',
+                         'Description']},
             {'id':'all',
              'title': _('All'),
              'contentFilter':{},
              'columns': ['Title',
                          'Description']},
         ]
+        
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
