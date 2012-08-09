@@ -1528,10 +1528,12 @@ class ajaxAnalysisRequestSubmit():
                 client = self.context
                 _id = client.invokeFactory('Sample', id = 'tmp')
                 sample = client[_id]
+                # Strip "Lab: " from sample point title
+                sp_str = values.get('SamplePoint', '').replace("%s: " % _("Lab"), '')
                 sample.edit(
                     ClientReference = values.get('ClientReference', ''),
                     ClientSampleID = values.get('ClientSampleID', ''),
-                    SamplePoint = values.get('SamplePoint', ''),
+                    SamplePoint = sp_str,
                     SampleType = values['SampleType'],
                     SamplingDate = values['SamplingDate'],
                     SamplingDeviation = values.get('SamplingDeviation', ''),
