@@ -63,7 +63,7 @@
 <!-- The system configured 'Dry Matter Service' -->
 <tal:i define="dms python:context.bika_setup.getDryMatterService()">
     <input type="hidden" id="getDryMatterService" name="getDryMatterService"
-        tal:condition="dms"
+        tal:condition="nocall:dms"
         tal:attributes="
             poc python: dms.getPointOfCapture();
             cat python: dms.getCategoryUID();
