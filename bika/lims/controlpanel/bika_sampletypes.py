@@ -109,13 +109,17 @@ class ajax_SampleTypes(BrowserView):
         # Strip "Lab: " from sample point titles
         samplepoint = samplepoint.replace("%s: " % _("Lab"), '')
         if samplepoint and len(samplepoint) > 1:
-            sp = bsc(portal_type="SamplePoint", title=samplepoint)
+            sp = bsc(portal_type = "SamplePoint",
+                     inactive_state = 'active',
+                     title=samplepoint)
             if not sp:
                 return json.dumps([])
             sp = sp[0].getObject()
             items = sp.getSampleTypes()
         if not items:
-            items = bsc(portal_type = "SampleType", sort_on='sortable_title')
+            items = bsc(portal_type = "SampleType",
+                        inactive_state = 'active',
+                        sort_on='sortable_title')
             if term and len(term) < 3:
                 # Items that start with A or AA
                 items = [s.getObject()

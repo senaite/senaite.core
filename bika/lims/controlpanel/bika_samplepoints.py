@@ -126,7 +126,9 @@ class ajax_SamplePoints(BrowserView):
             return items
         sampletype = self.request.get('sampletype', '')
         if sampletype and len(sampletype) > 1:
-            st = bsc(portal_type="SampleType", title=sampletype)
+            st = bsc(portal_type = "SampleType",
+                     title = sampletype,
+                     inactive_state = 'active')
             if not st:
                 return json.dumps([])
             st = st[0].getObject()
@@ -143,6 +145,7 @@ class ajax_SamplePoints(BrowserView):
                 client_items = list(
                     bsc(portal_type = "SamplePoint",
                         path = {"query": "/".join(client_path), "level" : 0 },
+                        inactive_state = 'active',
                         sort_on='sortable_title'))
 
             # Global (lab) sample points
@@ -150,6 +153,7 @@ class ajax_SamplePoints(BrowserView):
             lab_items = list(
                 bsc(portal_type = "SamplePoint",
                     path = {"query": "/".join(lab_path), "level" : 0 },
+                    inactive_state = 'active',
                     sort_on='sortable_title'))
 
         client_items = [callable(s.Title) and s.Title() or s.Title
