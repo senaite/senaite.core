@@ -8,6 +8,7 @@ import DateTime
 import Products.ATExtensions
 import Products.PloneTestCase.setup
 import bika.lims
+import plone.app.collection
 import os
 import plone.app.iterate
 import collective.js.jqueryui
@@ -40,8 +41,8 @@ class BikaLimsLayer(PloneSandboxLayer):
         Products.PloneTestCase.setup._placefulSetUp(portal)
 
         self.applyProfile(portal, 'Products.CMFPlone:plone')
-        self.applyProfile(portal, 'Products.CMFPlone:plone-content')
         self.applyProfile(portal, 'Products.CMFPlone:dependencies')
+        self.applyProfile(portal, 'Products.CMFPlone:plone-content')
         self.applyProfile(portal, 'Products.CMFPlone:testfixture')
         self.applyProfile(portal, 'plone.app.iterate:plone.app.iterate')
         self.applyProfile(portal, 'collective.js.jqueryui:default')

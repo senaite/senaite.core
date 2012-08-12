@@ -54,6 +54,8 @@ class HistoryAwareReferenceField(ReferenceField):
         member = pm.getAuthenticatedMember()
         canSaveNewVersion = pm.checkPermission(SaveNewVersion, instance)
 
+        ts = getToolByName(instance, "translation_service").translate
+
         #convert objects to uids
         #convert uids to objects
         uids = []
@@ -84,8 +86,7 @@ class HistoryAwareReferenceField(ReferenceField):
                     pr = getToolByName(instance, 'portal_repository')
                     if pr.isVersionable(targets[uid]):
                         pr.save(obj=targets[uid],
-                                comment=instance.translate(
-                                    _("Initial revision")))
+                                comment=ts(_("Initial revision")))
                 if not hasattr(instance, 'reference_versions'):
                     instance.reference_versions = {}
                 if not hasattr(targets[uid], 'version_id'):
