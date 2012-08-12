@@ -16,7 +16,7 @@ from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser.fields import HistoryAwareReferenceField
-from bika.lims.browser.widgets import SpecWidget
+from bika.lims.browser.widgets import AnalysisSpecificationWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from types import ListType, TupleType
@@ -67,7 +67,7 @@ Schema((
                            'min': _('Min'),
                            'max': _('Max'),
                            'error': _('% Error')},
-        widget = SpecWidget(
+        widget = AnalysisSpecificationWidget(
             checkbox_bound = 1,
             label = _("Reference Results"),
             description = _("Click on Analysis Categories (against shaded background) "
