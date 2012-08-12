@@ -8,7 +8,6 @@ import DateTime
 import Products.ATExtensions
 import Products.PloneTestCase.setup
 import bika.lims
-import plone.app.collection
 import os
 import plone.app.iterate
 import collective.js.jqueryui

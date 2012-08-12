@@ -8,5 +8,6 @@
     <dependency>profile-plone.app.iterate:plone.app.iterate</dependency>
     <dependency>profile-Products.TinyMCE:TinyMCE</dependency>
     <dependency>profile-collective.js.jqueryui:default</dependency>
+    <dependency>profile-plone.app.collection:default</dependency>
   </dependencies>
 </metadata>
