@@ -7,13 +7,13 @@
 <body>
 
 <metal:view_macro define-macro="view">
-	<div id="folderlisting-main-table" tal:content="structure python:widget.AnalysisSpecificationResults(field, allow_edit=False)"/>
+	<div name="analysis-specs-div" id="folderlisting-main-table" tal:content="structure python:widget.AnalysisSpecificationResults(field, allow_edit=False)"/>
 </metal:view_macro>
 
 <metal:edit_macro define-macro="edit">
 <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
 <metal:body_macro fill-slot="widget_body">
-	<div id="folderlisting-main-table" tal:content="structure python:widget.AnalysisSpecificationResults(field, allow_edit=True)" />	
+	<div name="analysis-specs-div" id="folderlisting-main-table" tal:content="structure python:widget.AnalysisSpecificationResults(field, allow_edit=True)" />	
 </metal:body_macro>
 </metal:use>
 </metal:edit_macro>

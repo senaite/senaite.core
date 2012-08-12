@@ -58,7 +58,7 @@ schema = Schema((
 BikaSchema.copy() + \
 Schema((
     RecordsField('ResultsRange',
-        schemata = 'Reference Results',
+        schemata = 'Specifications',
         required = 1,
         type = 'analysisspec',
         subfields = ('keyword', 'min', 'max', 'error'),
@@ -69,7 +69,7 @@ Schema((
                            'error': _('% Error')},
         widget = AnalysisSpecificationWidget(
             checkbox_bound = 1,
-            label = _("Reference Results"),
+            label = _("Specifications"),
             description = _("Click on Analysis Categories (against shaded background) "
                             "to see Analysis Services in each category. Enter minimum "
                             "and maximum values to indicate a valid results range. "
