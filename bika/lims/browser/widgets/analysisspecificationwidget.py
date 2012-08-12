@@ -99,13 +99,17 @@ class AnalysisSpecificationView(BikaListingView):
                 src='%s/++resource++bika.lims.images/attach_no.png'\
                 title='%s'>"%(self.context.absolute_url(),
                               _('Attachment not permitted'))          
+                
+            # TRICK for AS keyword retrieval on form POST
+            after_icons += '<input type="hidden" name="keyword.%s:records"\
+            value="%s"></input>' % (service.UID(), service.getKeyword())
             
             state = workflow.getInfoFor(service, 'inactive_state', '')            
             
             item = {
                 'obj': service,
-                'id': service.id,
-                'uid': service.UID,
+                'id': service.getId(),
+                'uid': service.UID(),
                 'keyword': service.getKeyword(),
                 'title': service.Title(),
                 'category': cat,
@@ -149,16 +153,17 @@ class AnalysisSpecificationWidget(TypesWidget):
         """
         value = []
         if 'service' in form:
-            for keyword, service in form['service'][0].items():
+            for uid, keyword in form['keyword'][0].items():
                 try:
-                    float(form['min'][0][keyword])
-                    float(form['max'][0][keyword])
+                    float(form['min'][0][uid])
+                    float(form['max'][0][uid])
                 except:
                     continue
                 value.append({'keyword':keyword,
-                              'min':form['min'][0][keyword],
-                              'max':form['max'][0][keyword],
-                              'error':form['error'][0][keyword]})
+                              'uid':uid, 
+                              'min':form['min'][0][uid],
+                              'max':form['max'][0][uid],
+                              'error':form['error'][0][uid]})
         return value, {}    
 
     security.declarePublic('AnalysisSpecificationResults')
