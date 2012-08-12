@@ -134,11 +134,16 @@ class ajax_SamplePoints(BrowserView):
         if not items:
 
             # User (client) sample points
-            client_path = self.context.getPhysicalPath()
-            client_items = list(
-                bsc(portal_type = "SamplePoint",
-                    path = {"query": "/".join(client_path), "level" : 0 },
-                    sort_on='sortable_title'))
+            client_items = []
+            if self.context.portal_type in ('Client', 'AnalysisRequest'):
+                if self.context.portal_type == 'Client':
+                    client_path = self.context.getPhysicalPath()
+                else:
+                    client_path = self.context.aq_parent.getPhysicalPath()
+                client_items = list(
+                    bsc(portal_type = "SamplePoint",
+                        path = {"query": "/".join(client_path), "level" : 0 },
+                        sort_on='sortable_title'))
 
             # Global (lab) sample points
             lab_path = self.context.bika_setup.bika_samplepoints.getPhysicalPath()
