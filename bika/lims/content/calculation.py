@@ -91,7 +91,6 @@ class Calculation(BaseFolder, HistoryAwareMixin):
             if 'value' not in keys:
                 row['value'] = 0
             new_value.append(row)
-            print "setInterimFields: ", new_value
 
         self.getField('InterimFields').set(self, new_value)
 
