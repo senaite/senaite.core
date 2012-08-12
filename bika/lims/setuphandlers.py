@@ -671,4 +671,7 @@ def setupVarious(context):
         pass
     gen.setupCatalogs(site)
 
-
+    # Plone's jQuery gets clobbered when jsregistry is loaded.
+    setup = site.portal_setup
+    setup.runImportStepFromProfile('profile-plone.app.jquery:default', 'jsregistry')
+    setup.runImportStepFromProfile('profile-plone.app.jquerytools:default', 'jsregistry')
