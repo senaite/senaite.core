@@ -525,11 +525,22 @@ class LoadSetupData(BrowserView):
 ##        self.request.response.flush()
         rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
         fields = rows[1]
-        folder = self.context.bika_setup.bika_samplepoints
+        setup_folder = self.context.bika_setup.bika_samplepoints
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            _id = folder.invokeFactory('SamplePoint', id = 'tmp')
-            obj = folder[_id]
+
+            if row['_Client_Name']:
+                client_name = unicode(row['_Client_Name'])
+                client = self.portal_catalog(portal_type = "Client",
+                                             Title = client_name)
+                if len(client) == 0:
+                    raise IndexError("Client invalid: '%s'" % client_name)
+                folder = client[0].getObject()
+            else:
+                folder = setup_folder
+
+            _id = setup_folder.invokeFactory('SamplePoint', id = 'tmp')
+            obj = setup_folder[_id]
             latitude = {'degrees': row['lat deg'],
                         'minutes': row['lat min'],
                         'seconds': row['lat sec'],
