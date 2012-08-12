@@ -153,9 +153,7 @@ class ARTemplate(BaseContent):
                 msg = _("${sampletype} is not a valid sample type",
                         mapping={'sampletype':value})
                 self.plone_utils.addPortalMessage(msg, 'error')
-                self.destination_url = self.request.get_header("referer",
-                                       self.absolute_url())
-                self.request.response.redirect(self.destination_url)
+                self.REQUEST.response.redirect(self.absolute_url())
                 return False
             uid = items[0].UID
         return self.Schema()['SampleType'].set(self, uid)
@@ -177,9 +175,7 @@ class ARTemplate(BaseContent):
                 msg = _("${samplepoint} is not a valid sample point",
                         mapping={'samplepoint':value})
                 self.plone_utils.addPortalMessage(msg, 'error')
-                self.destination_url = self.request.get_header("referer",
-                                       self.absolute_url())
-                self.request.response.redirect(self.destination_url)
+                self.REQUEST.response.redirect(self.absolute_url())
                 return False
             uid = items[0].UID
         return self.Schema()['SamplePoint'].set(self, uid)
