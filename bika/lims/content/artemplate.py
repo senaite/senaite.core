@@ -169,6 +169,8 @@ class ARTemplate(BaseContent):
         """
         uid = None
         if value:
+            # Strip "Lab: " from sample point title
+            value = value.replace("%s: " % _("Lab"), '')
             bsc = getToolByName(self, 'bika_setup_catalog')
             items = bsc(portal_type = 'SamplePoint', title = value)
             if not items:
