@@ -48,10 +48,6 @@ class BikaLIMS(PloneSandboxLayer):
 
         self.applyProfile(portal, 'bika.lims:default')
 
-        # enable workflow for browser tests
-        self.workflow = portal.portal_workflow
-        self.workflow.setDefaultChain('simple_publication_workflow')
-
         self.request.form['submitted'] = 1
         self.request.form['xlsx'] = "test"
         lsd = LoadSetupData(portal, self.request)

@@ -14,6 +14,8 @@ class Tests(BikaTestCase):
         login(self.portal, TEST_USER_NAME)
         setRoles(self.portal, TEST_USER_ID, ['LabManager'])
 
+        self.workflow.setChainForPortalTypes('SamplePoint', ('bika_one_state_workflow', 'bika_inactive_workflow',))
+
         bsc = getToolByName(self.portal, 'bika_setup_catalog')
 
         lab_path = self.portal.bika_setup.bika_samplepoints
@@ -21,10 +23,10 @@ class Tests(BikaTestCase):
 
         # If a SampleType is specified, then the returned SamplePoints
         # will be filtered by the SamplePointSampleType relation:
-        sp = bsc(portal_type = "SamplePoint", title = "Borehole 12")
-        st = bsc(portal_type = "SampleType", title = "Water")
-        sp[0].getObject().setSampleTypes(st[0].UID)
-        st[0].getObject().setSamplePoints(sp[0].UID)
+        sp = bsc(portal_type = "SamplePoint", title = "Borehole 12")[0].getObject()
+        st = bsc(portal_type = "SampleType", title = "Water")[0].getObject()
+        sp.setSampleTypes(st.UID())
+        st.setSamplePoints(sp.UID())
 
         self.request['sampletype'] = 'Water'
         self.request['term'] = "b"
