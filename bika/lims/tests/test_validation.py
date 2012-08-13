@@ -1,18 +1,12 @@
 from Products.validation import validation
-from bika.lims.testing import BIKA_INTEGRATION_TESTING
+from Products.validation import validation as validationService
+from bika.lims.testing import BIKA_LIMS_INTEGRATION_TESTING
+from bika.lims.tests.base import BikaTestCase
 from plone.app.testing import *
 from plone.testing import z2
-from Products.validation import validation as validationService
-
 import unittest
 
-class Tests(unittest.TestCase):
-
-    layer = BIKA_INTEGRATION_TESTING
-
-    def setUp(self):
-        self.portal = self.layer['portal']
-        self.app = self.layer['app']
+class Tests(BikaTestCase):
 
     def test_UniqueFieldValidator(self):
         login(self.portal, TEST_USER_NAME)
@@ -222,5 +216,5 @@ class Tests(unittest.TestCase):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(Tests))
-    suite.layer = BIKA_INTEGRATION_TESTING
+    suite.layer = BIKA_LIMS_INTEGRATION_TESTING
     return suite

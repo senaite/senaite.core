@@ -88,14 +88,19 @@ schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(SamplePoints, PROJECTNAME)
 
 class ajax_SamplePoints(BrowserView):
-    """ autocomplete data source for sample points field
-        return JSON data [string,string]
-        if "sampletype" is in the request, it's expected to be a title string
-        The objects returned will be filtered by the sampletype's SamplePoints.
-        if no items are found, all items are returned.
+    """ The autocomplete data source for sample point selection widgets.
+        Returns a JSON list of sample point titles.
 
-        If term is a one or two letters, return items that begin with them
-            If there aren't any, return items that contain them
+        Request parameters:
+
+        - sampletype: if specified, it's expected to be the title
+          of a SamplePoint object.  Optionally, the string 'Lab: ' might be
+          prepended, to distinguish between Lab and Client objects.
+
+        - term: the string which will be searched against all SamplePoint
+          titles.
+
+        - _authenticator: The plone.protect authenticator.
 
     """
 
@@ -134,11 +139,12 @@ class ajax_SamplePoints(BrowserView):
             if not st:
                 return json.dumps([])
             st = st[0].getObject()
-            items = st.getSamplePoints()
+            items = [o.UID() for o in st.getSamplePoints()]
+
         if not items:
+            client_items = lab_items = []
 
             # User (client) sample points
-            client_items = []
             if self.context.portal_type in ('Client', 'AnalysisRequest'):
                 if self.context.portal_type == 'Client':
                     client_path = self.context.getPhysicalPath()
@@ -158,10 +164,12 @@ class ajax_SamplePoints(BrowserView):
                     inactive_state = 'active',
                     sort_on='sortable_title'))
 
-        client_items = [callable(s.Title) and s.Title() or s.Title
-                 for s in self.filter_list(client_items, term)]
-        lab_items = [callable(s.Title) and s.Title() or s.Title
-                 for s in self.filter_list(lab_items, term)]
-        lab_items = ["%s: %s" % (_("Lab"), i) for i in lab_items]
+            client_items = [callable(s.Title) and s.Title() or s.Title
+                     for s in self.filter_list(client_items, term)]
+            lab_items = [callable(s.Title) and s.Title() or s.Title
+                     for s in self.filter_list(lab_items, term)]
+            lab_items = ["%s: %s" % (_("Lab"), i) for i in lab_items]
 
-        return json.dumps(client_items + lab_items)
+            items = client_items + lab_items
+
+        return json.dumps(items)

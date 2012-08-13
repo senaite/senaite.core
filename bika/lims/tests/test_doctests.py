@@ -2,31 +2,20 @@ from Products.PloneTestCase import PloneTestCase
 from Products.validation import validation
 from Testing import ZopeTestCase as ztc
 from bika.lims import content,browser
-from bika.lims.testing import BIKA_INTEGRATION_TESTING
-from hashlib import sha1
+from bika.lims.testing import BIKA_LIMS_INTEGRATION_TESTING
 from plone.app.testing import *
-from plone.keyring.interfaces import IKeyManager
 from plone.testing import z2
-from zope.component import getUtility
 import doctest
-import hmac
 import json
-import plone.protect
 import unittest
 
 class TestCase(PloneTestCase.FunctionalTestCase):
 
-    layer = BIKA_INTEGRATION_TESTING
+    layer = BIKA_LIMS_INTEGRATION_TESTING
 
     def setUp(self):
         self.portal = self.layer['portal']
         self.app = self.layer['app']
-
-    def _authenticator(self, user):
-        manager = getUtility(IKeyManager)
-        secret=manager.secret()
-        auth=hmac.new(secret, user, sha1).hexdigest()
-        return auth
 
     def getBrowser(self, loggedIn=False, admin=False):
         """ instantiate and return a testbrowser for convenience """
@@ -101,5 +90,5 @@ def test_suite():
 ##    suite.addTests(doctest.DocTestSuite(worksheet))
 ##    suite.addTests(doctest.DocTestSuite(worksheetfolder))
 ##    suite.addTests(doctest.DocTestSuite(worksheettemplate))
-    suite.layer = BIKA_INTEGRATION_TESTING
+    suite.layer = BIKA_LIMS_INTEGRATION_TESTING
     return suite
