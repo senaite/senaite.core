@@ -18,6 +18,9 @@ class BikaTestCase(unittest.TestCase):
         self.app = self.layer['app']
         self.request = self.layer['request'] #makerequest(self.portal.aq_parent).REQUEST
 
+        # log all exceptions
+        self.portal.error_log._ignored_exceptions = ()
+
         # Add an authenticator fpr plone.protect
         provideUtility(KeyManager(), IKeyManager)
         auth = self.portal.restrictedTraverse('@@authenticator').authenticator()

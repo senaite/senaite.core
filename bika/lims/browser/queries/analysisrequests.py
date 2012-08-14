@@ -23,16 +23,16 @@ class QueryAnalysisRequests(BrowserView):
         BrowserView.__init__(self, context, request)
 
     def __call__(self):
-        self.datalines = [] 
+        self.datalines = []
         workflow = getToolByName(self, 'portal_workflow')
 
-        # check for batch size 
+        # check for batch size
         if self.request.form.has_key('size'):
             batch_size = self.request.form['size']
         else:
             batch_size = 6
 
-        # check for batch start 
+        # check for batch start
         if self.request.form.has_key('b_start'):
             batch_start = self.request.form['b_start']
         else:
@@ -177,7 +177,7 @@ class QueryAnalysisRequests(BrowserView):
         date_query = formatDateQuery(self.context, 'DateSampled')
         if date_query:
             query['created'] = date_query
-            sampled = formatDateParms(self.context, 'DateSampled') 
+            sampled = formatDateParms(self.context, 'DateSampled')
             self.parms.append(
                 { 'title': _('Sampled'),
                  'value': sampled,
@@ -189,7 +189,7 @@ class QueryAnalysisRequests(BrowserView):
         date_query = formatDateQuery(self.context, 'DateRequested')
         if date_query:
             query['created'] = date_query
-            requested = formatDateParms(self.context, 'DateRequested') 
+            requested = formatDateParms(self.context, 'DateRequested')
             self.parms.append(
                 { 'title': _('Requested'),
                  'value': requested,
@@ -201,7 +201,7 @@ class QueryAnalysisRequests(BrowserView):
         date_query = formatDateQuery(self.context, 'DateReceived')
         if date_query:
             query['created'] = date_query
-            received = formatDateParms(self.context, 'DateReceived') 
+            received = formatDateParms(self.context, 'DateReceived')
             self.parms.append(
                 { 'title': _('Received'),
                  'value': received,
@@ -213,7 +213,7 @@ class QueryAnalysisRequests(BrowserView):
         date_query = formatDateQuery(self.context, 'DatePublished')
         if date_query:
             query['getDatePublished'] = date_query
-            published = formatDateParms(self.context, 'DatePublished') 
+            published = formatDateParms(self.context, 'DatePublished')
             self.parms.append(
                 { 'title': _('Published'),
                  'value': published,
@@ -306,11 +306,11 @@ class QueryAnalysisRequests(BrowserView):
         self.columns = batch_size + 1
         # and now lets do the actual query lines
         self.formats = {'columns': self.columns,
-                   'col_heads': [], 
+                   'col_heads': [],
                    'class': '',
                   }
 
-        
+
         labels = ["Client order ID",
                   "Client reference",
                   "Client sample ID",
@@ -342,7 +342,6 @@ class QueryAnalysisRequests(BrowserView):
 
         self.batch = Batch(ars, batch_size, batch_start)
 
-        pdb.set_trace()
         analyses = []
         ar_ids = []
         analysis_dict = {}
@@ -408,12 +407,12 @@ class QueryAnalysisRequests(BrowserView):
         self.footlines = []
         footline = []
         footitem = {'value': _('Total'),
-                    'class': 'total_label'} 
+                    'class': 'total_label'}
         footline.append(footitem)
-        footitem = {'value': count_all} 
+        footitem = {'value': count_all}
         footline.append(footitem)
         self.footlines.append(footline)
-        
+
         return self.template()
 
-    
+
