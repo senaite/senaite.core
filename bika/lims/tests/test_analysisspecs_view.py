@@ -40,7 +40,8 @@ class Tests(BikaFunctionalTestCase):
         descriptioninit = self.browser.getControl(name='description').value
         serviceids = { '53' }#, '43', '44', '10' }
         for serviceid in serviceids:
-            sv = bsc(portal_type="AnalysisService", id=("analysisservice-%s" % serviceid))[0].getObject()
+            sv = bsc(portal_type="AnalysisService",
+                     id=("analysisservice-%s" % serviceid))[0].getObject()
             uid = sv.UID()
 
             minid = 'min.%s:records' % uid
