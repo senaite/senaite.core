@@ -4,13 +4,16 @@ from Products.validation import validation
 from Products.validation import validation as validationService
 from Testing.makerequest import makerequest
 from bika.lims.testing import BIKA_LIMS_INTEGRATION_TESTING
-from bika.lims.tests.base import BikaTestCase
+from bika.lims.testing import BIKA_LIMS_FIXTURE
+from bika.lims.tests.base import BikaIntegrationTestCase
 from plone.app.testing import *
 from plone.testing import z2
 import unittest,random
 import transaction
 
-class Tests(BikaTestCase):
+class Tests(BikaIntegrationTestCase):
+
+    defaultBases = (BIKA_LIMS_FIXTURE,)
 
     def test_AR(self):
         login(self.portal, TEST_USER_NAME)

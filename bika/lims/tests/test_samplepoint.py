@@ -2,13 +2,13 @@ from Products.CMFCore.utils import getToolByName
 from Products.validation import validation
 from bika.lims.controlpanel.bika_samplepoints import ajax_SamplePoints
 from bika.lims.testing import BIKA_LIMS_INTEGRATION_TESTING
-from bika.lims.tests.base import BikaTestCase
+from bika.lims.tests.base import BikaIntegrationTestCase
 from plone.app.testing import *
 import json
 import plone.protect
 import unittest
 
-class Tests(BikaTestCase):
+class Tests(BikaIntegrationTestCase):
 
     def test_ajax_vocabulary(self):
         login(self.portal, TEST_USER_NAME)

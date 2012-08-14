@@ -63,5 +63,5 @@ class BikaLIMS(PloneSandboxLayer):
         z2.uninstallProduct(app, 'bika.lims')
 
 BIKA_LIMS_FIXTURE = BikaLIMS()
-BIKA_LIMS_INTEGRATION_TESTING = IntegrationTesting(bases=(BIKA_LIMS_FIXTURE,), name="BikaLIMS")
-BIKA_LIMS_FUNCTIONAL_TESTING = FunctionalTesting(bases=(BIKA_LIMS_FIXTURE,z2.ZSERVER_FIXTURE), name="BikaLIMS")
+BIKA_LIMS_INTEGRATION_TESTING = IntegrationTesting(bases=(BIKA_LIMS_FIXTURE,), name="BikaLIMSIntegrationTesting")
+BIKA_LIMS_FUNCTIONAL_TESTING = FunctionalTesting(bases=(BIKA_LIMS_FIXTURE,), name="BikaLIMSFunctionalTesting")
