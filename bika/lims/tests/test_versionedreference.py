@@ -1,13 +1,13 @@
 from Products.CMFCore.utils import getToolByName
 from Products.validation import validation
-from bika.lims.tests.base import BikaTestCase
 from bika.lims.testing import BIKA_LIMS_INTEGRATION_TESTING
+from bika.lims.tests.base import BikaIntegrationTestCase
 from plone.app.testing import *
 from plone.testing import z2
 import json
 import unittest
 
-class Tests(BikaTestCase):
+class Tests(BikaIntegrationTestCase):
 
     def test_versionedreference(self):
         login(self.portal, TEST_USER_NAME)

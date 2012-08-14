@@ -2,17 +2,19 @@ from Products.CMFCore.utils import getToolByName
 from Products.validation import validation
 from bika.lims.controlpanel.bika_samplepoints import ajax_SamplePoints
 from bika.lims.testing import BIKA_LIMS_INTEGRATION_TESTING
-from bika.lims.tests.base import BikaTestCase
+from bika.lims.tests.base import BikaIntegrationTestCase
 from plone.app.testing import *
 import json
 import plone.protect
 import unittest
 
-class Tests(BikaTestCase):
+class Tests(BikaIntegrationTestCase):
 
     def test_ajax_vocabulary(self):
         login(self.portal, TEST_USER_NAME)
         setRoles(self.portal, TEST_USER_ID, ['LabManager'])
+
+        self.workflow.setChainForPortalTypes('SamplePoint', ('bika_one_state_workflow', 'bika_inactive_workflow',))
 
         bsc = getToolByName(self.portal, 'bika_setup_catalog')
 
@@ -21,10 +23,10 @@ class Tests(BikaTestCase):
 
         # If a SampleType is specified, then the returned SamplePoints
         # will be filtered by the SamplePointSampleType relation:
-        sp = bsc(portal_type = "SamplePoint", title = "Borehole 12")
-        st = bsc(portal_type = "SampleType", title = "Water")
-        sp[0].getObject().setSampleTypes(st[0].UID)
-        st[0].getObject().setSamplePoints(sp[0].UID)
+        sp = bsc(portal_type = "SamplePoint", title = "Borehole 12")[0].getObject()
+        st = bsc(portal_type = "SampleType", title = "Water")[0].getObject()
+        sp.setSampleTypes(st.UID())
+        st.setSamplePoints(sp.UID())
 
         self.request['sampletype'] = 'Water'
         self.request['term'] = "b"

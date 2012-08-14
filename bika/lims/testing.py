@@ -1,13 +1,14 @@
 from Products.CMFCore.utils import getToolByName
 from Testing.makerequest import makerequest
 from bika.lims.browser.load_setup_data import LoadSetupData
-from plone.app.testing import IntegrationTesting
+from plone.app.testing import IntegrationTesting, FunctionalTesting
 from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import login
 from plone.app.testing import setRoles
+from plone.testing import Layer
 from plone.testing import z2
 import Products.ATExtensions
 import Products.PloneTestCase.setup
@@ -48,10 +49,6 @@ class BikaLIMS(PloneSandboxLayer):
 
         self.applyProfile(portal, 'bika.lims:default')
 
-        # enable workflow for browser tests
-        self.workflow = portal.portal_workflow
-        self.workflow.setDefaultChain('simple_publication_workflow')
-
         self.request.form['submitted'] = 1
         self.request.form['xlsx'] = "test"
         lsd = LoadSetupData(portal, self.request)
@@ -62,4 +59,5 @@ class BikaLIMS(PloneSandboxLayer):
         z2.uninstallProduct(app, 'bika.lims')
 
 BIKA_LIMS_FIXTURE = BikaLIMS()
-BIKA_LIMS_INTEGRATION_TESTING = IntegrationTesting(bases=(BIKA_LIMS_FIXTURE,), name="BikaLIMS")
+BIKA_LIMS_INTEGRATION_TESTING = IntegrationTesting(bases=(BIKA_LIMS_FIXTURE,), name="BikaLIMSIntegrationTesting")
+BIKA_LIMS_FUNCTIONAL_TESTING = FunctionalTesting(bases=(BIKA_LIMS_FIXTURE,), name="BikaLIMSFunctionalTesting")

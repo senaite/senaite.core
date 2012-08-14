@@ -1,19 +1,27 @@
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
-from Products.validation import validation
-from Products.validation import validation as validationService
-from Testing.makerequest import makerequest
 from bika.lims.testing import BIKA_LIMS_INTEGRATION_TESTING
-from bika.lims.tests.base import BikaTestCase
+from bika.lims.testing import BIKA_LIMS_FIXTURE
+from bika.lims.tests.base import BikaIntegrationTestCase
 from plone.app.testing import *
-from plone.testing import z2
-import unittest,random
 import transaction
+import unittest,random
 
-class Tests(BikaTestCase):
+class Tests(BikaIntegrationTestCase):
+
+    defaultBases = (BIKA_LIMS_FIXTURE,)
 
     def test_AR(self):
+        """ Make three ARs and run them through various workflows.
+        """
+
         login(self.portal, TEST_USER_NAME)
+        setRoles(self.portal, TEST_USER_ID, ['LabManager'])
+
+        workflow = self.portal.portal_workflow
+        workflow.setChainForPortalTypes(('Analysis',), ('bika_analysis_workflow', 'bika_worksheetanalysis_workflow', 'bika_cancellation_workflow',))
+        workflow.setChainForPortalTypes(('AnalysisRequest',), ('bika_ar_workflow', 'bika_worksheetanalysis_workflow', 'bika_cancellation_workflow',))
+        workflow.setChainForPortalTypes(('SamplePartition','Sample'), ('bika_sample_workflow', 'bika_cancellation_workflow',))
 
         profiles = ['Digestible Energy', 'Micro-Bio check', 'Micro-Bio counts']
         sampletypes = [p.getObject() for p in self.bsc(portal_type="SampleType")]
@@ -59,10 +67,25 @@ class Tests(BikaTestCase):
                 service_uids.append(service.UID())
                 prices[service.UID()] = service.getPrice()
             ar.setAnalyses(service_uids, prices = prices)
-        #for ar in _ars:
-        #    self.workflow.doActionFor(ar, 'receive')
-        #    self.assertEqual(portal_workflow.getInfoFor(ar, 'review_state', ''),
-        #                     'sample_received')
+
+        wf = self.workflow
+
+        def check_state(ar, desired_state):
+            sample = ar.getSample()
+            self.assertEqual(wf.getInfoFor(sample, 'review_state'), desired_state)
+            part = sample.objectValues('SamplePartition')[0]
+            self.assertEqual(wf.getInfoFor(part, 'review_state'), desired_state)
+            analyses = ar.getAnalyses(full_objects=True)
+            for a in analyses:
+                self.assertEqual(wf.getInfoFor(a, 'review_state'), desired_state)
+
+        # Sampling workflow enabled: Digestible Energy AR
+        # ===============================================
+        ar = _ars[0]
+        wf.doActionFor(ar, 'sampling_workflow')
+
+        ## XXX I don't know how to test cascading subscribers properly.
+        ## check_state(ar, 'to_be_sampled')
 
         transaction.get().commit()
 

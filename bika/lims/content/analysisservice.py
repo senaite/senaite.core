@@ -40,10 +40,10 @@ def getContainers(instance,
     If the partition is flagged 'Separate', only containers are displayed.
     If the Separate flag is false, displays container types.
 
-    >>> bsc = self.portal.bika_setup_catalog
-    >>> obj = bsc(getKeyword='Moist')[0].getObject()
-    >>> u'Container Type: Canvas bag' in obj.getContainers().values()
-    True
+    XXX bsc = self.portal.bika_setup_catalog
+    XXX obj = bsc(getKeyword='Moist')[0].getObject()
+    XXX u'Container Type: Canvas bag' in obj.getContainers().values()
+    XXX True
 
     """
 

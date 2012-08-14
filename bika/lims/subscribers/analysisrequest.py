@@ -2,10 +2,11 @@ from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
+from Products.DCWorkflow.interfaces import IAfterTransitionEvent
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.subscribers import skip
 from bika.lims.subscribers import doActionFor
+from bika.lims.subscribers import skip
 import transaction
 
 def AfterTransitionEventHandler(instance, event):

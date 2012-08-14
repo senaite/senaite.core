@@ -539,8 +539,8 @@ class LoadSetupData(BrowserView):
             else:
                 folder = setup_folder
 
-            _id = setup_folder.invokeFactory('SamplePoint', id = 'tmp')
-            obj = setup_folder[_id]
+            _id = folder.invokeFactory('SamplePoint', id = 'tmp')
+            obj = folder[_id]
             latitude = {'degrees': row['lat deg'],
                         'minutes': row['lat min'],
                         'seconds': row['lat sec'],
