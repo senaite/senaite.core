@@ -56,13 +56,16 @@ schema = Schema((
     ),
 )) + \
 BikaSchema.copy() + \
-Schema((
+Schema((  
     RecordsField('ResultsRange',
         schemata = 'Specifications',
         required = 1,
         type = 'analysisspec',
         subfields = ('keyword', 'min', 'max', 'error'),
         required_subfields = ('keyword', 'min', 'max', 'error'),
+        subfield_validators = {'min':'analysisspecs_validator',
+                               'max':'analysisspecs_validator',
+                               'error':'analysisspecs_validator'},
         subfield_labels = {'keyword': _('Analysis Service'),
                            'min': _('Min'),
                            'max': _('Max'),
