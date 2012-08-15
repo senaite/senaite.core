@@ -14,7 +14,7 @@ import plone
 
 class AnalysesRepeated(BrowserView):
     implements(IViewView)
-    template = ViewPageTemplateFile("report_out.pt")
+    template = ViewPageTemplateFile("templates/report_out.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
@@ -37,7 +37,7 @@ class AnalysesRepeated(BrowserView):
         date_query = formatDateQuery(self.context, 'c_DateReceived')
         if date_query:
             query['getDateReceived'] = date_query
-            received = formatDateParms(self.context, 'c_DateReceived') 
+            received = formatDateParms(self.context, 'c_DateReceived')
         else:
             received = 'Undefined'
         parms.append(
@@ -101,7 +101,7 @@ class AnalysesRepeated(BrowserView):
         samplepoints = {}
         categories = {}
         services = {}
-        
+
         for a_proxy in bac(query):
             analysis = a_proxy.getObject()
 
@@ -144,9 +144,9 @@ class AnalysesRepeated(BrowserView):
         footline = []
         footitem = {'value': _('Number of analyses retested for period'),
                     'colspan': 7,
-                    'class': 'total_label'} 
+                    'class': 'total_label'}
         footline.append(footitem)
-        footitem = {'value': count_all} 
+        footitem = {'value': count_all}
         footline.append(footitem)
         footlines.append(footline)
 
@@ -161,5 +161,5 @@ class AnalysesRepeated(BrowserView):
 
         return self.template()
 
-    
+
 

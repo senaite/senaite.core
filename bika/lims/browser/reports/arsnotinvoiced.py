@@ -15,7 +15,7 @@ import plone
 
 class ARsNotInvoiced(BrowserView):
     implements(IViewView)
-    template = ViewPageTemplateFile("report_out.pt")
+    template = ViewPageTemplateFile("templates/report_out.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
@@ -39,7 +39,7 @@ class ARsNotInvoiced(BrowserView):
         date_query = formatDateQuery(self.context, 'c_DatePublished')
         if date_query:
             query['getDatePublished'] = date_query
-            pubished = formatDateParms(self.context, 'c_DatePublished') 
+            pubished = formatDateParms(self.context, 'c_DatePublished')
         else:
             pubished = 'Undefined'
         parms.append(
@@ -78,7 +78,7 @@ class ARsNotInvoiced(BrowserView):
         samplepoints = {}
         categories = {}
         services = {}
-        
+
         for ar_proxy in bc(query):
             ar = ar_proxy.getObject()
 
@@ -112,9 +112,9 @@ class ARsNotInvoiced(BrowserView):
         footline = []
         footitem = {'value': _('Number of analyses retested for period'),
                     'colspan': 5,
-                    'class': 'total_label'} 
+                    'class': 'total_label'}
         footline.append(footitem)
-        footitem = {'value': count_all} 
+        footitem = {'value': count_all}
         footline.append(footitem)
         footlines.append(footline)
 
@@ -129,5 +129,5 @@ class ARsNotInvoiced(BrowserView):
 
         return self.template()
 
-    
+
 

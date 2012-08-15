@@ -1,0 +1,27 @@
+<div class="field" tal:condition="not:here/member_is_client">
+
+    <label i18n:translate="">Profile</label>
+    <br/>
+
+    <select name="ProfileUID:ignore_empty"
+            style=""
+            id="ProfileUID"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+
+        <option value=""/>
+
+        <tal:profiles
+            tal:repeat="profile view/analysisprofiles">
+
+            <option
+                tal:define="profile_uid python:profile.getObject().UID()"
+                tal:attributes="value profile_uid;
+                    selected python:request.get('ProfileUID', '') == profile_uid and 'selected' or ''"
+                tal:content="profile/Title">
+            </option>
+
+        </tal:profiles>
+
+    </select>
+
+</div>

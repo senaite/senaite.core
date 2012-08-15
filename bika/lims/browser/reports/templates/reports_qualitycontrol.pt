@@ -42,7 +42,7 @@
     i18n:translate=""
 >Analyses repeated</a>
 <br/>
-<span i18n:translate=""> Repeated analyses
+<span i18n:translate="">Repeated analyses
 </span>
 </p>
 
@@ -52,7 +52,7 @@
     i18n:translate=""
 >Results per sample point</a>
 <br/>
-<span i18n:translate=""> Results per samplepoint and analysis service
+<span i18n:translate="">Results per samplepoint and analysis service
 </span>
 </p>
 
@@ -88,19 +88,19 @@
 
 <legend i18n:translate="">Selection criteria</legend>
 
-<metal:date use-macro="context/selection_macros/macros/spec"/>
+<metal:date use-macro="context/@@selection_macros/select_analysisspecification"/>
 
 <tal:received
     tal:define="date_id string:DateReceived;
                 date_label string:Received">
-<metal:date use-macro="context/selection_macros/macros/date"/>
+<metal:date use-macro="context/@@selection_macros/select_daterange"/>
 </tal:received>
 
-<metal:date use-macro="context/selection_macros/macros/review_state"/>
+<metal:date use-macro="context/@@selection_macros/select_analysis_review_state"/>
 
-<metal:date use-macro="context/selection_macros/macros/cancellation_state"/>
+<metal:date use-macro="context/@@selection_macros/select_cancellation_state"/>
 
-<metal:date use-macro="context/selection_macros/macros/ws_review_state"/>
+<metal:date use-macro="context/@@selection_macros/select_worksheet_state"/>
 
 </fieldset>
     <input tabindex=""
@@ -122,14 +122,14 @@
 <tal:received
     tal:define="date_id string:DateReceived;
                 date_label string:Received">
-<metal:date use-macro="context/selection_macros/macros/date"/>
+<metal:date use-macro="context/@@selection_macros/select_daterange"/>
 </tal:received>
 
-<metal:date use-macro="context/selection_macros/macros/review_state"/>
+<metal:date use-macro="context/@@selection_macros/select_analysis_review_state"/>
 
-<metal:date use-macro="context/selection_macros/macros/cancellation_state"/>
+<metal:date use-macro="context/@@selection_macros/select_cancellation_state"/>
 
-<metal:date use-macro="context/selection_macros/macros/ws_review_state"/>
+<metal:date use-macro="context/@@selection_macros/select_worksheet_state"/>
 
 </fieldset>
     <input tabindex=""
@@ -149,30 +149,30 @@
 
 <legend i18n:translate="">Selection criteria</legend>
 
-<tal:samplepoint tal:define="nullable python:0">
-<metal:block use-macro="context/selection_macros/macros/samplepoint"/>
+<tal:samplepoint tal:define="allow_blank python:0">
+<metal:block use-macro="context/@@selection_macros/select_samplepoint"/>
 </tal:samplepoint>
 
-<tal:sampletype tal:define="nullable python:0">
-<metal:block use-macro="context/selection_macros/macros/sampletype"/>
+<tal:sampletype tal:define="allow_blank python:0">
+<metal:block use-macro="context/@@selection_macros/select_sampletype"/>
 </tal:sampletype>
 
-<tal:analysisservice 
+<tal:analysisservice
     tal:define="multiselect python:1;
-                nullable python:0">
-<metal:block use-macro="context/selection_macros/macros/analysisservice"/>
+                allow_blank python:0">
+<metal:block use-macro="context/@@selection_macros/select_analysisservice"/>
 </tal:analysisservice>
 
 
 <tal:received
     tal:define="date_id string:DateAnalysisPublished;
                 date_label string:Published">
-<metal:date use-macro="context/selection_macros/macros/date"/>
+<metal:date use-macro="context/@@selection_macros/select_daterange"/>
 </tal:received>
 
-<metal:block use-macro="context/selection_macros/macros/cancellation_state"/>
+<metal:block use-macro="context/@@selection_macros/select_cancellation_state"/>
 
-<metal:block use-macro="context/selection_macros/macros/ws_review_state"/>
+<metal:block use-macro="context/@@selection_macros/select_worksheet_state"/>
 
 </fieldset>
     <input tabindex=""

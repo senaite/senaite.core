@@ -1,0 +1,19 @@
+<div class="field" tal:define="
+    specs python:['client', 'lab']">
+
+    <label i18n:translate="label_specification">Specification</label>
+    <br/>
+
+    <tal:specs>
+        <input
+            class="noborder"
+            type="radio"
+            name="spec"
+            value="client"
+            tal:attributes="
+                value spec;
+                checked python:request.get('spec', 'client') == spec and 'checked' or None"/>
+        <span tal:content="spec" i18n:translate="">Client</span>
+    </tal:specs>
+
+</div>

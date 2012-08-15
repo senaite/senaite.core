@@ -1,0 +1,25 @@
+<div class="field" tal:condition="not:here/member_is_client">
+
+    <label i18n:translate="">Client</label>
+    <br/>
+
+    <select name="ClientUID:ignore_empty"
+            id="ClientUID"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+
+        <option value=""/>
+
+        <tal:clients tal:repeat="client view/clients">
+
+                <option
+                    tal:attributes="
+                        value client/UID;
+                        selected python:request.get('ClientUID', '') == client.UID and 'selected' or ''"
+                    tal:content="client/Title">
+                </option>
+
+        </tal:clients>
+
+    </select>
+
+</div>

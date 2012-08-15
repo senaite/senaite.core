@@ -15,14 +15,14 @@ import plone
 
 class AnalysesPerService(BrowserView):
     implements(IViewView)
-    template = ViewPageTemplateFile("report_out.pt")
+    template = ViewPageTemplateFile("templates/report_out.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
 
     def __call__(self):
         # get all the data into datalines
-        
+
         sc = getToolByName(self.context, 'bika_setup_catalog')
         bc = getToolByName(self.context, 'bika_analysis_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
@@ -55,7 +55,7 @@ class AnalysesPerService(BrowserView):
         date_query = formatDateQuery(self.context, 'DateRequested')
         if date_query:
             query['created'] = date_query
-            requested = formatDateParms(self.context, 'DateRequested') 
+            requested = formatDateParms(self.context, 'DateRequested')
         else:
             requested = 'Undefined'
         parms.append(
@@ -66,7 +66,7 @@ class AnalysesPerService(BrowserView):
         date_query = formatDateQuery(self.context, 'DatePublished')
         if date_query:
             query['getDatePublished'] = date_query
-            published = formatDateParms(self.context, 'DatePublished') 
+            published = formatDateParms(self.context, 'DatePublished')
         else:
             published = 'Undefined'
         parms.append(
@@ -121,7 +121,7 @@ class AnalysesPerService(BrowserView):
         datalines = []
         for cat in sc(portal_type="AnalysisCategory",
                         sort_on='sortable_title'):
-            dataline = [{'value': cat.Title, 
+            dataline = [{'value': cat.Title,
                         'class': 'category',
                         'colspan': 2},]
             datalines.append(dataline)
@@ -148,12 +148,12 @@ class AnalysesPerService(BrowserView):
         footlines = []
         footline = []
         footitem = {'value': _('Total'),
-                    'class': 'total_label'} 
+                    'class': 'total_label'}
         footline.append(footitem)
-        footitem = {'value': count_all} 
+        footitem = {'value': count_all}
         footline.append(footitem)
         footlines.append(footline)
-        
+
 
         self.report_content = {
                 'headings': headings,
@@ -165,4 +165,4 @@ class AnalysesPerService(BrowserView):
 
         return self.template()
 
-    
+

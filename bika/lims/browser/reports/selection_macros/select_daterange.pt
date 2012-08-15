@@ -1,0 +1,45 @@
+<div class="field">
+
+  <label tal:content="string:${view/field_title}"></label>
+  <br/>
+
+  <table>
+    <tr>
+      <td>
+        <span i18n:translate="">From</span>
+      </td>
+      <td>
+        <tal:date tal:define="
+           input_id string:${view/field_name}_fromdate;
+           input_name input_id">
+          <input class='datepicker_2months'
+                 size="10"
+                 type='text'
+                 readonly="readonly"
+                 tal:attributes="
+                    value python:'';
+                    name input_name;"/>
+        </tal:date>
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        <span i18n:translate="">to</span>
+      </td>
+      <td>
+        <tal:date tal:define="
+           input_id string:${view/field_name}_todate;
+           input_name input_id">
+          <input class='datepicker_2months'
+                 size="10"
+                 type='text'
+                 readonly="readonly"
+                 tal:attributes="
+                    value python:'';
+                    name input_name;"/>
+        </tal:date>
+      </td>
+    </tr>
+  </table>
+</div>

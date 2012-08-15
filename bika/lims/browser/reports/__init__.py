@@ -16,8 +16,10 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import TimeOrDate
-from bika.lims.utils import pretty_user_name_or_id, pretty_user_email,\
-     logged_in_client, getUsers
+from bika.lims.utils import pretty_user_name_or_id
+from bika.lims.utils import pretty_user_email
+from bika.lims.utils import logged_in_client
+from bika.lims.utils import getUsers
 from bika.lims.interfaces import IReportFolder
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -32,7 +34,7 @@ class ProductivityView(BrowserView):
     """ Productivity View form
     """
     implements(IViewView)
-    template = ViewPageTemplateFile("reports_productivity.pt")
+    template = ViewPageTemplateFile("templates/reports_productivity.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
@@ -47,7 +49,7 @@ class QualityControlView(BrowserView):
     """ QC View form
     """
     implements(IViewView)
-    template = ViewPageTemplateFile("reports_qualitycontrol.pt")
+    template = ViewPageTemplateFile("templates/reports_qualitycontrol.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
@@ -61,7 +63,7 @@ class AdministrationView(BrowserView):
     """ Administration View form
     """
     implements(IViewView)
-    template = ViewPageTemplateFile("reports_administration.pt")
+    template = ViewPageTemplateFile("templates/reports_administration.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
@@ -78,7 +80,7 @@ class ReportHistoryView(BikaListingView):
 
     def __init__(self, context, request):
         super(ReportHistoryView, self).__init__(context, request)
-        
+
         self.catalog = "bika_catalog"
         # this will be reset in the call to filter on own reports
         self.contentFilter = {'portal_type': 'Report',
@@ -179,7 +181,7 @@ class SubmitForm(BrowserView):
     """ Redirect to specific report
     """
     implements(IViewView)
-    template = ViewPageTemplateFile("report_frame.pt")
+    template = ViewPageTemplateFile("templates/report_frame.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
@@ -244,7 +246,7 @@ class SubmitForm(BrowserView):
 
         # this is the good part
         ramdisk = StringIO()
-        pdf = pisa.CreatePDF(self.template(), ramdisk) 
+        pdf = pisa.CreatePDF(self.template(), ramdisk)
         result = ramdisk.getvalue()
         ramdisk.close()
 

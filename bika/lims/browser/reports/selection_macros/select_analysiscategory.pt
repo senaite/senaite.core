@@ -1,0 +1,21 @@
+<div class="field" >
+    <label i18n:translate="">Analysis category</label><br/>
+    <select name="CategoryUID:ignore_empty"
+            style=""
+            id="CategoryUID"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+
+        <option value=""/>
+
+        <tal:categories tal:repeat="category view/analyiscategories">
+          <option
+            value=""
+            tal:define="category_uid python:category.UID"
+            tal:attributes="
+                value category_uid;
+                selected python:request.get('CategoryUID', '') == category_uid and 'selected' or ''"
+            tal:content="category/Title"></option>
+        </tal:categories>
+
+    </select>
+</div>

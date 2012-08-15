@@ -49,25 +49,25 @@
 <br/>
 <b> Under construction </b>
 <!--
-<metal:block use-macro="context/selection_macros/macros/client"/>
+<tal:select content="structure context/@@selection_macros/select_client"/>
 
 <tal:created
     tal:define="date_id string:DateRequested;
                 date_label string:Requested">
-<metal:date use-macro="context/selection_macros/macros/date"/>
+<tal:select content="structure context/@@selection_macros/select_daterange"/>
 </tal:created>
 
 <tal:published
     tal:define="date_id string:DatePublished;
                 date_label string:Published">
-<metal:date use-macro="context/selection_macros/macros/date"/>
+<tal:select content="structure context/@@selection_macros/select_daterange"/>
 </tal:published>
 
-<metal:date use-macro="context/selection_macros/macros/review_state"/>
+<tal:select content="structure context/@@selection_macros/select_analysis_review_state"/>
 
-<metal:date use-macro="context/selection_macros/macros/cancellation_state"/>
+<tal:select content="structure context/@@selection_macros/select_cancellation_state"/>
 
-<metal:date use-macro="context/selection_macros/macros/ws_review_state"/>
+<tal:select content="structure context/@@selection_macros/select_worksheet_state"/>
 
 -->
 </fieldset>

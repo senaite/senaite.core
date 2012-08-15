@@ -5,6 +5,7 @@
     i18n_domain="bika">
 
     <!-- main site/reports view -->
+
     <browser:page
       for="bika.lims.interfaces.IReportFolder"
       name="reports_productivity"
@@ -42,4 +43,14 @@
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
+
+    <!-- seletion macros for query forms -->
+
+    <browser:page
+      for="*"
+      name="selection_macros"
+      class="bika.lims.browser.reports.selection_macros.SelectionMacrosView"
+      permission="zope.Public"
+    />
+
 </configure>

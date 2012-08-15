@@ -13,119 +13,101 @@ import plone
 
 class ResultsPerSamplePoint(BrowserView):
     implements(IViewView)
-    template = ViewPageTemplateFile("templates/report_out.pt")
+    template = ViewPageTemplateFile("output_resultspersamplepoint.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
 
+    def error(self, message):
+        # Return to the query form and display a message
+        self.context.plone_utils.addPortalMessage(message, 'error')
+        self.template = ViewPageTemplateFile("reports_qualitycontrol.pt")
+        return template()
+
     def __call__(self):
-        # get all the data into datalines
+        bsc = getToolByName(self.context, "bika_setup_catalog")
+        bac = getToolByName(self.context, "bika_analysis_catalog")
+        rc = getToolByName(self.context, "reference_catalog")
+        site_props = self.context.portal_properties.site_properties
+        localTimeFormat = site_props.getProperty("localTimeFormat")
 
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        bac = getToolByName(self.context, 'bika_analysis_catalog')
-        rc = getToolByName(self.context, 'reference_catalog')
-        localTimeFormat = self.context.portal_properties.site_properties.getProperty('localTimeFormat')
-        self.report_content = {}
-        parm_lines = {}
-        parms = []
-        headings = {}
-        headings['header'] = _("Results per sample point")
-        headings['subheader'] = _("Analysis results per sample point and analysis service")
+        # Parse form criteria
 
-        count_all = 0
+        sp_uid = self.request.form["SamplePointUID"]
+        sp_title = rc.lookupObject(sp_uid).Title()
 
-        query = {'portal_type' : "Analysis",
-                 'review_state': 'published',
-                 'sort_on'     : 'getDateAnalysisPublished'}
+        st_uid = self.request.form["SampleTypeUID"]
+        st_title = rc.lookupObject(st_uid).Title()
 
-        if self.request.form.has_key('getSamplePointUID'):
-            sp_uid = self.request.form['getSamplePointUID']
-            query['getSamplePointUID'] = sp_uid
-            sp = rc.lookupObject(sp_uid)
-            sp_title = sp.Title()
+        if "ServiceUID" not in self.request.form:
+            self.error(_("No analysis services were selected."))
+        if type(self.request.form["ServiceUID"]) in (list, tuple):
+            service_uids = self.request.form["ServiceUID"] # Multiple services
         else:
-            sp_title = 'Undefined'
-        parms.append(
-            { 'title': _('Sample point'),
-             'value': sp_title,
-             'type': 'text'})
+            service_uids = (self.request.form["ServiceUID"],) # Single service
+        services = [rc.lookupObject(s) for s in service_uids]
 
-        if self.request.form.has_key('getSampleTypeUID'):
-            st_uid = self.request.form['getSampleTypeUID']
-            query['getSampleTypeUID'] = st_uid
-            st = rc.lookupObject(st_uid)
-            st_title = st.Title()
-        else:
-            st_title = 'Undefined'
-        parms.append(
-            { 'title': _('Sample type'),
-             'value': st_title,
-             'type': 'text'})
+        self.report_content = {
+            # 'parms' is for displaying the selected criteria in the output
+            'parms': [
+                {'title': _('Sample point'), 'value': sp_title, 'type': 'text'},
+                {'title': _('Sample type'), 'value': st_title, 'type': 'text'}
+            ],
+            'headings': {
+                'header': "Results per sample point",
+                'subheader': "Analysis results per sample point and analysis service"
+            }
+        }
 
-        service_uids = []
-        if self.request.form.has_key('getServiceUID'):
-            service_uid = self.request.form['getServiceUID']
-            query['getServiceUID'] = service_uid
-        if type(service_uid) == str:
-            # a single service was selected
-            service_uids.append(service_uid)
-            no_services = 1
-        else:
-            # multiple services were selected
-            service_uids = list(service_uid)
-            no_services = len(service_uids)
+        query = {
+            "portal_type": "Analysis",
+            "getSamplePointUID": sp_uid,
+            "getSampleTypeUID": st_uid,
+            "getServiceUID": services,
+            "sort_on": "sortable_title"
+        }
 
-        service_titles = []
-        service_values = {}
-        service_counts = {}
-        service_oor = {}            # out of range
-        service_joor = {}           # just out of range
-        service_keys = {}
-        for service_uid in service_uids:
-            service = rc.lookupObject(service_uid)
-            service_titles.append('%s  (%s)' \
-                %(service.Title(), service.getUnit()))
-            service_values[service_uid] = []
+
+
+
+
+        for service in services:
+            uid = services.UID()
+            service_titles.append('%s (%s)' % (service.Title(),
+                                               service.getUnit()))
+            service_values[uid] = []
             service_counts[service_uid] = 0
             service_oor[service_uid] = 0
             service_joor[service_uid] = 0
             service_keys[service_uid] = service.getKeyword()
 
-
         date_query = formatDateQuery(self.context, 'DateAnalysisPublished')
         if date_query:
             query['getDateAnalysisPublished'] = date_query
-            published = formatDateParms(self.context, 'DateAnalysisPublished')
-        else:
-            published = 'Undefined'
-        parms.append(
-            { 'title': _('Published'),
-             'value': published,
-             'type': 'text'})
+            query['review_state'] = 'published'
+            parms.append({
+                'title': _('Published'),
+                'value': formatDateParms(self.context, 'DateAnalysisPublished'),
+                'type': 'text'
+            })
 
         if self.request.form.has_key('cancellation_state'):
             query['cancellation_state'] = self.request.form['cancellation_state']
             cancellation_state = workflow.getTitleForStateOnType(
                         self.request.form['cancellation_state'], 'Analysis')
-        else:
-            cancellation_state = 'Undefined'
-        parms.append(
-            { 'title': _('Active'),
-             'value': cancellation_state,
-             'type': 'text'})
-
-
+            parms.append(
+                {'title': _('Active'),
+                 'value': cancellation_state,
+                 'type': 'text'})
 
         if self.request.form.has_key('ws_review_state'):
             query['worksheetanalysis_review_state'] = self.request.form['ws_review_state']
             ws_review_state = workflow.getTitleForStateOnType(
                         self.request.form['ws_review_state'], 'Analysis')
-        else:
-            ws_review_state = 'Undefined'
-        parms.append(
-            { 'title': _('Assigned to worksheet'),
-             'value': ws_review_state,
-             'type': 'text'})
+            parms.append(
+                {'title': _('Assigned to worksheet'),
+                 'value': ws_review_state,
+                 'type': 'text'})
 
         # get the lab specs for these services
         specs = {}
@@ -141,7 +123,6 @@ class ResultsPerSamplePoint(BrowserView):
                 if results_range.has_key(keyword):
                     specs[service_uid] = results_range[keyword]
 
-
         # and now lets do the actual report lines
         formats = {'columns': no_services + 1,
                    'col_heads': [' ',] + service_titles,
@@ -151,36 +132,17 @@ class ResultsPerSamplePoint(BrowserView):
         datalines = []
         dataline = []
 
-        dataline = [{'value':'Specification minimum',
-                    'class':'colhead'}, ]
+        dataline = [{'value':'Specification minimum', 'class':'colhead'}, ]
         for service_uid in service_uids:
-            dataline.append({'value': specs[service_uid]['min'],
-                             'class':'colhead number'})
+            spec = specs.get(service_uid, {'min':''})
+            dataline.append({'value': spec['min'], 'class':'colhead number'})
         datalines.append(dataline)
 
-        dataline = [{'value':'Specification maximum',
-                    'class':'colhead'}, ]
+        dataline = [{'value':'Specification maximum', 'class':'colhead'}, ]
         for service_uid in service_uids:
-            dataline.append({'value': specs[service_uid]['max'],
-                             'class':'colhead number'})
+            spec = specs.get(service_uid, {'max':''})
+            dataline.append({'value': spec['max'], 'class':'colhead number'})
         datalines.append(dataline)
-
-        current = None
-        first = True
-        def loadlines():
-            more = True
-            while more:
-                thisline = [{'value': current},]
-                more = False
-                for service_uid in service_uids:
-                    if service_values[service_uid]:
-                        item = service_values[service_uid].pop(0)
-                        if service_values[service_uid]:
-                            more = True
-                        thisline.append(item)
-                    else:
-                        thisline.append({'value': '-'})
-                datalines.append(thisline)
 
         joor_img = '++resource++bika.lims.images/warning.png'
         oor_img  = '++resource++bika.lims.images/exclamation.png'
@@ -270,14 +232,9 @@ class ResultsPerSamplePoint(BrowserView):
         footlines.append(footline)
 
 
-
-        self.report_content = {
-                'headings': headings,
-                'parms': parms,
-                'formats': formats,
-                'datalines': datalines,
-                'footings': footlines}
-
+        self.report_content[formats] = formats
+        self.report_content['datalines'] = datalines
+        self.report_content['footings'] = footlines
 
         return self.template()
 

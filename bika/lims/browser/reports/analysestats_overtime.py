@@ -16,14 +16,14 @@ import plone
 
 class AnalysesTatsOverTime(BrowserView):
     implements(IViewView)
-    template = ViewPageTemplateFile("report_out.pt")
+    template = ViewPageTemplateFile("templates/report_out.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
 
     def __call__(self):
         # get all the data into datalines
-        
+
         sc = getToolByName(self.context, 'bika_setup_catalog')
         bc = getToolByName(self.context, 'bika_analysis_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
@@ -81,7 +81,7 @@ class AnalysesTatsOverTime(BrowserView):
         date_query = formatDateQuery(self.context, 'tats_DateReceived')
         if date_query:
             query['created'] = date_query
-            received = formatDateParms(self.context, 'tats_DateReceived') 
+            received = formatDateParms(self.context, 'tats_DateReceived')
         else:
             received = 'Undefined'
         parms.append(
@@ -105,7 +105,7 @@ class AnalysesTatsOverTime(BrowserView):
             if period == 'Day':
                 datekey = received.strftime('%d %b %Y')
             elif period == 'Week':
-                # key period on Monday 
+                # key period on Monday
                 dayofweek = received.strftime('%w') # Sunday = 0
                 if dayofweek == 0:
                     firstday = received - 6
@@ -147,7 +147,7 @@ class AnalysesTatsOverTime(BrowserView):
         datalines = []
 
         period_keys = periods.keys()
-        for period in period_keys: 
+        for period in period_keys:
             dataline = [{'value': period,
                         'class' : ''},]
             dataline.append({'value': periods[period]['duration'],
@@ -187,5 +187,5 @@ class AnalysesTatsOverTime(BrowserView):
 
         return self.template()
 
-    
+
 

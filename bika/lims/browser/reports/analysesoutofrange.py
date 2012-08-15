@@ -13,7 +13,7 @@ import plone
 
 class AnalysesOutOfRange(BrowserView):
     implements(IViewView)
-    template = ViewPageTemplateFile("report_out.pt")
+    template = ViewPageTemplateFile("templates/report_out.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
@@ -50,7 +50,7 @@ class AnalysesOutOfRange(BrowserView):
         date_query = formatDateQuery(self.context, 'c_DateReceived')
         if date_query:
             query['getDateReceived'] = date_query
-            received = formatDateParms(self.context, 'c_DateReceived') 
+            received = formatDateParms(self.context, 'c_DateReceived')
         else:
             received = 'Undefined'
         parms.append(
@@ -117,10 +117,10 @@ class AnalysesOutOfRange(BrowserView):
         categories = {}
         services = {}
         specs = {}
-        
+
         if lab_spec:
             owner_uid = self.context.bika_setup.bika_analysisspecs.UID()
-            
+
         for a_proxy in bac(query):
             analysis = a_proxy.getObject()
             if analysis.getResult():
@@ -130,7 +130,7 @@ class AnalysesOutOfRange(BrowserView):
                     continue
             else:
                 continue
-       
+
             sampletypeuid = analysis.getSampleTypeUID()
 
             # determine which specs to use, and load if not yet found
@@ -157,7 +157,7 @@ class AnalysesOutOfRange(BrowserView):
             else:
                 continue
 
-            # check if in shoulder: out of range, but in acceptable 
+            # check if in shoulder: out of range, but in acceptable
             #     error percentage
             shoulder = False
             error_amount = (result / 100) * float(spec[keyword]['error'])
@@ -219,9 +219,9 @@ class AnalysesOutOfRange(BrowserView):
         footline = []
         footitem = {'value': _('Number of analyses out of range for period'),
                     'colspan': 9,
-                    'class': 'total_label'} 
+                    'class': 'total_label'}
         footline.append(footitem)
-        footitem = {'value': count_all} 
+        footitem = {'value': count_all}
         footline.append(footitem)
         footlines.append(footline)
 
@@ -234,7 +234,7 @@ class AnalysesOutOfRange(BrowserView):
         footline.append(footitem)
         footnotes.append(footline)
 
-        
+
 
         self.report_content = {
                 'headings': headings,
@@ -247,5 +247,5 @@ class AnalysesOutOfRange(BrowserView):
 
         return self.template()
 
-    
+
 

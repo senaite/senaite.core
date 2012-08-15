@@ -15,7 +15,7 @@ import plone
 
 class AnalysesPerSampleType(BrowserView):
     implements(IViewView)
-    template = ViewPageTemplateFile("report_out.pt")
+    template = ViewPageTemplateFile("templates/report_out.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
@@ -55,7 +55,7 @@ class AnalysesPerSampleType(BrowserView):
         date_query = formatDateQuery(self.context, 'st_DateRequested')
         if date_query:
             query['created'] = date_query
-            requested = formatDateParms(self.context, 'st_DateRequested') 
+            requested = formatDateParms(self.context, 'st_DateRequested')
         else:
             requested = 'Undefined'
         parms.append(
@@ -127,12 +127,12 @@ class AnalysesPerSampleType(BrowserView):
         footlines = []
         footline = []
         footitem = {'value': _('Total'),
-                    'class': 'total_label'} 
+                    'class': 'total_label'}
         footline.append(footitem)
-        footitem = {'value': count_all} 
+        footitem = {'value': count_all}
         footline.append(footitem)
         footlines.append(footline)
-        
+
 
         self.report_content = {
                 'headings': headings,

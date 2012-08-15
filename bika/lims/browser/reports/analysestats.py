@@ -15,14 +15,14 @@ import plone
 
 class AnalysesTats(BrowserView):
     implements(IViewView)
-    template = ViewPageTemplateFile("report_out.pt")
+    template = ViewPageTemplateFile("templates/report_out.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
 
     def __call__(self):
         # get all the data into datalines
-        
+
         sc = getToolByName(self.context, 'bika_setup_catalog')
         bc = getToolByName(self.context, 'bika_analysis_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
@@ -55,7 +55,7 @@ class AnalysesTats(BrowserView):
         date_query = formatDateQuery(self.context, 'DateReceived')
         if date_query:
             query['created'] = date_query
-            received = formatDateParms(self.context, 'DateReceived') 
+            received = formatDateParms(self.context, 'DateReceived')
         else:
             received = 'Undefined'
         parms.append(
@@ -65,9 +65,11 @@ class AnalysesTats(BrowserView):
 
         query['review_state'] = 'published'
 
+        wf = getToolByName(self.context, 'portal_workflow')
+
         if self.request.form.has_key('ws_review_state'):
             query['worksheetanalysis_review_state'] = self.request.form['ws_review_state']
-            ws_review_state = workflow.getTitleForStateOnType(
+            ws_review_state = wf.getTitleForStateOnType(
                         self.request.form['ws_review_state'], 'Analysis')
         else:
             ws_review_state = 'Undefined'
@@ -157,7 +159,7 @@ class AnalysesTats(BrowserView):
 
         for cat in sc(portal_type='AnalysisCategory',
                         sort_on='sortable_title'):
-            catline = [{'value': cat.Title, 
+            catline = [{'value': cat.Title,
                         'class': 'category',
                         'colspan': 7},]
             first_time = True
@@ -188,7 +190,7 @@ class AnalysesTats(BrowserView):
 
                 count = services[service.UID]['count_early'] + \
                         services[service.UID]['count_late'] + \
-                        services[service.UID]['count_undefined'] 
+                        services[service.UID]['count_undefined']
 
                 dataline.append({'value': count,
                                  'class' : 'number'})
@@ -285,7 +287,7 @@ class AnalysesTats(BrowserView):
             footline.append({'value' : '',
                              'class' : 'total number'})
 
-        
+
         footlines.append(footline)
 
         self.report_content = {
@@ -298,5 +300,5 @@ class AnalysesTats(BrowserView):
 
         return self.template()
 
-    
+
 

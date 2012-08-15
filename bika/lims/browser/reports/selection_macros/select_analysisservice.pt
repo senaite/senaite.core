@@ -1,0 +1,30 @@
+<div class="field" tal:define="
+    allow_blank allow_blank | python: 1;
+    multiselect multiselect | python: 0;">
+
+    <label i18n:translate="">Analysis service</label>
+    <br/>
+
+    <select name="ServiceUID:ignore_empty"
+            size="7"
+            id="ServiceUID"
+            tal:attributes="
+                style string:font-family:${here/base_properties/fontFamily};;font-size:100%;
+                multiple multiselect">
+
+        <option tal:condition="python:allow_blank" value=""/>
+
+        <tal:services  tal:repeat="service view/analysisservices">
+
+            <option value=""
+                tal:define="service_uid python:service.UID"
+                tal:attributes="
+                    value service_uid;
+                    selected python:request.get('ServiceUID', '') == service_uid and 'selected' or ''"
+                tal:content="service/Title">
+            </option>
+
+        </tal:services>
+
+    </select>
+</div>

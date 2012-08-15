@@ -14,14 +14,14 @@ import plone
 
 class AnalysesAttachments(BrowserView):
     implements(IViewView)
-    template = ViewPageTemplateFile("report_out.pt")
+    template = ViewPageTemplateFile("templates/report_out.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
 
     def __call__(self):
         # get all the data into datalines
-        
+
         pc = getToolByName(self.context, 'portal_catalog')
         sc = getToolByName(self.context, 'bika_setup_catalog')
         bc = getToolByName(self.context, 'bika_analysis_catalog')
@@ -56,7 +56,7 @@ class AnalysesAttachments(BrowserView):
         date_query = formatDateQuery(self.context, 'DateLoaded')
         if date_query:
             query['getDateLoaded'] = date_query
-            loaded = formatDateParms(self.context, 'DateLoaded') 
+            loaded = formatDateParms(self.context, 'DateLoaded')
         else:
             loaded = 'Undefined'
         parms.append(
@@ -116,12 +116,12 @@ class AnalysesAttachments(BrowserView):
         footline = []
         footitem = {'value': _('Total'),
                     'colspan': 5,
-                    'class': 'total_label'} 
+                    'class': 'total_label'}
         footline.append(footitem)
-        footitem = {'value': count_all} 
+        footitem = {'value': count_all}
         footline.append(footitem)
         footlines.append(footline)
-        
+
 
         self.report_content = {
                 'headings': headings,
@@ -133,5 +133,5 @@ class AnalysesAttachments(BrowserView):
 
         return self.template()
 
-    
+
 

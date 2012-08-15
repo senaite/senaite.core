@@ -1,0 +1,24 @@
+<div class="field">
+
+    <label i18n:translate="">Status</label>
+    <br/>
+
+    <select name="review_state:ignore_empty"
+            id="review_state">
+
+        <option value=""/>
+
+        <tal:states
+            tal:repeat="state view/analysis_review_states">
+
+            <option value=""
+                tal:attributes="value state/id;
+                    selected python:request.get('review_state', '') == state['id'] and 'selected' or ''"
+                tal:content="state/title">
+            </option>
+
+        </tal:states>
+
+    </select>
+
+</div>

@@ -1,0 +1,22 @@
+<div metal:define-macro="ws_review_state"
+        tal:define="ws_review_states here/worksheetanalysis_workflow_states">
+<div class="field">
+    <label i18n:translate=""
+        >Worksheet</label><br/>
+    <select name="ws_review_state:ignore_empty"
+            style=""
+            id="ws_review_state">
+        <option value=""/>
+        <tal:states
+            define="states ws_review_states"
+            tal:repeat="state states">
+        <option value=""
+            tal:attributes="value state/id;
+                selected python:request.get('ws_review_state', '') == state['id'] and 'selected' or ''"
+            tal:content="state/title"></option>
+        </tal:states>
+    </select>
+</div>
+</div>
+
+

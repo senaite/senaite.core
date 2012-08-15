@@ -73,6 +73,9 @@ class IReferenceSupplier(Interface):
 class IReferenceSuppliers(Interface):
     """Reference Suppliers """
 
+class IReportsFolder(Interface):
+    """Reports Folder"""
+
 class IInvoice(Interface):
     """Invoice"""
 

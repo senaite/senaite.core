@@ -1,0 +1,27 @@
+<div class="field" >
+
+    <label i18n:translate="">Instrument</label>
+    <br/>
+
+    <select name="getInstrumentUID:ignore_empty"
+            style=""
+            id="getInstrumentUID"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+
+        <option value=""/>
+
+        <tal:instruments
+            tal:repeat="instrument view/instruments">
+
+            <option
+                tal:define="instrument_uid instrument/UID"
+                tal:attributes="
+                    value instrument_uid;
+                    selected python:request.get('getInstrumentUID', '') == instrument_uid and 'selected' or ''"
+                tal:content="instrument/Title"></option>
+
+        </tal:instruments>
+
+    </select>
+
+</div>

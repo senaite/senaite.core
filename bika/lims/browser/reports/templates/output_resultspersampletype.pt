@@ -1,0 +1,170 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:tal="http://xml.zope.org/namespaces/tal"
+	xmlns:metal="http://xml.zope.org/namespaces/metal"
+	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+	i18n:domain="bika"
+    tal:define="portal_url nocall:context/portal_url;
+                  portal portal_url/getPortalObject;">
+<head>
+
+    <style type="text/css" media="all"
+           tal:condition="python:exists('portal/ploneCustom.css')"
+           tal:content="structure string:&lt;!-- @import url($portal_url/ploneCustom.css); --&gt;">
+
+    </style>
+
+    <link rel="stylesheet" type="text/css" media="all" href=""
+          tal:attributes="href string:$portal_url/reports.css" />
+
+</head>
+<body
+    tal:define="
+        report_content view/report_content;
+        report_format python:report_content.has_key('formats')
+                and report_content['formats'] or [];
+        report_parms python:report_content.has_key('parms')
+                and report_content['parms'] or [];
+        report_headers python:report_content.has_key('headings')
+                and report_content['headings'] or {};
+        footlines python:report_content.has_key('footings')
+            and report_content['footings'] or [];
+        footnotes python:report_content.has_key('footnotes')
+            and report_content['footnotes'] or [];
+        datalines python:report_content.has_key('datalines')
+            and report_content['datalines'] or [];
+        ">
+
+<h2 tal:condition="python:report_headers.has_key('header')">
+<span tal:content="python:report_headers['header']"/>
+</h2>
+<h3 tal:condition="python:report_headers.has_key('subheader')">
+<span tal:content="python:report_headers['subheader']"/>
+</h3>
+<div>
+<table
+    class="bika-report-parms"
+    summary="Parameters"
+    cellpadding="0" cellspacing="0">
+<tal:parms tal:repeat="line report_parms">
+    <tr>
+        <td tal:content="python:line['title']"/>
+        <td tal:content="python:line['value']"/>
+    </tr>
+</tal:parms>
+
+</table>
+</div>
+
+<br/>
+<div>
+
+<table
+    class="bika-report-table"
+    summary="Results"
+    cellpadding="0" cellspacing="0"
+    tal:define="
+        col_cnt python:report_format['columns'];
+        col_heads python:report_format['col_heads'];
+        "
+    >
+<thead>
+<tr>
+    <th
+        tal:repeat="col_head col_heads"
+        tal:content="col_head">
+    </th>
+</tr>
+</thead>
+
+<tbody>
+<metal:block tal:repeat="line datalines">
+<tr>
+<tal:column
+    tal:repeat="i python:range(len(line))">
+    <td class="" colspan=""
+        tal:define="
+            img_before python:line[i].has_key('img_before')
+                and line[i]['img_before'] or None;
+            img_after python:line[i].has_key('img_after')
+                and line[i]['img_after'] or None;
+            colspan python:line[i].has_key('colspan')
+                and line[i]['colspan'] or 1;
+            class python:line[i].has_key('class')
+                and line[i]['class'] or None;
+            "
+        tal:attributes="
+            class class;
+            colspan colspan">
+        <tal:img tal:condition="img_before">
+            <img src=""
+                tal:attributes="src string:${portal_url}/${img_before}" />
+            &nbsp
+        </tal:img>
+        <span tal:content="python:line[i]['value']"/>
+        <tal:img tal:condition="img_after">
+            <img src=""
+            tal:attributes="src string:${portal_url}/${img_after}" />
+            &nbsp
+        </tal:img>
+    </td>
+</tal:column>
+</tr>
+</metal:block>
+</tbody>
+
+<tfoot>
+<metal:block tal:repeat="line footlines">
+<tr>
+<tal:column
+    tal:repeat="i python:range(len(line))">
+    <td class="" colspan=""
+        tal:define="
+            colspan python:line[i].has_key('colspan')
+                and line[i]['colspan'] or 1;
+            class python:line[i].has_key('class')
+                and line[i]['class'] or None;"
+        tal:attributes="
+            class class;
+            colspan colspan">
+        <span tal:content="python:line[i]['value']"/>
+    </td>
+</tal:column>
+</tr>
+</metal:block>
+</tfoot>
+
+</table>
+
+
+<tal:notes tal:repeat="note footnotes">
+<tal:note
+    tal:repeat="i python:range(len(note))">
+    <p class="discreet"
+        tal:define="
+            img_before python:note[i].has_key('img_before')
+                and note[i]['img_before'] or None;
+            img_after python:note[i].has_key('img_after')
+                and note[i]['img_after'] or None;
+            colspan python:note[i].has_key('colspan')
+                and note[i]['colspan'] or 1;
+            class python:note[i].has_key('class')
+                and note[i]['class'] or None;
+            "
+        tal:attributes="class class">
+        <tal:img tal:condition="img_before">
+            <img src=""
+                tal:attributes="src string:${portal_url}/${img_before}" />
+            &nbsp
+        </tal:img>
+        <span tal:content="python:note[i]['value']"/>
+        <tal:img tal:condition="img_after">
+            <img src=""
+            tal:attributes="src string:${portal_url}/${img_after}" />
+            &nbsp
+        </tal:img>
+    </p>
+</tal:note>
+</tal:notes>
+</body>
+
+</html>

@@ -1,0 +1,26 @@
+<div class="field" tal:define="
+    periods python:['Day', 'Week', 'Month' ]">
+
+    <label i18n:translate="">Period</label>
+    <br/>
+
+    <select name="Period:ignore_empty"
+            style=""
+            id="Period"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+
+        <tal:periods
+            tal:repeat="period periods">
+
+            <option
+                tal:attributes="
+                    value python:period;
+                    selected python:request.get('period', '') == period and 'selected' or ''"
+                tal:content="period">
+            </option>
+
+        </tal:periods>
+
+    </select>
+
+</div>
