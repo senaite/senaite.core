@@ -308,7 +308,11 @@ validation.register(CoordinateValidator())
 
 class ResultOptionsValidator:
     """Validating AnalysisService ResultOptions field.
-        XXX Applied as a subfield validator but validates entire field.
+        XXX Applied as a subfield validator but validates 
+        for x in range(len(interim_fields)):
+            row = interim_fields[x]
+            keys = row.keys()
+            if 'title' not in keys:entire field.
     """
 
     implements(IValidator)
@@ -441,3 +445,61 @@ class StandardIDValidator:
         return True
 
 validation.register(StandardIDValidator())
+
+
+class AnalysisSpecificationsValidator:
+    """Min value must be below max value
+    """
+    
+    implements(IValidator)
+    name = "analysisspecs_validator"
+
+    def __call__(self, value, *args, **kwargs):
+        
+            instance = kwargs['instance']
+            fieldname = kwargs['field'].getName()
+            request = kwargs.get('REQUEST', {})
+                        
+            if instance.REQUEST.get('validated', '') == self.name:
+                return True
+            else:
+                instance.REQUEST['validated'] = self.name    
+                
+            ts = getToolByName(instance, 'translation_service').translate
+                            
+            mins   = request.get('min',{})[0]
+            maxs   = request.get('max',{})[0]
+            errors = request.get('error',{})[0]
+                        
+            # Retrieve all AS uids
+            uids = mins.keys()
+            for uid in uids:
+                
+                # Foreach AS, check spec. input values
+                min = mins[uid]
+                max = maxs[uid]
+                err = errors[uid]
+                
+                min = min == '' and '0' or min
+                max = max == '' and '0' or max
+                err = err == '' and '0' or err
+                
+                # Values must be numbers
+                try: min = float(min)
+                except: return ts(_("Validation failed: Min values must be numeric"))  
+                try: max = float(max)
+                except: return ts(_("Validation failed: Max values must be numeric"))                
+                try: err = float(err)
+                except: return ts(_("Validation failed: Percentage error values must be numeric"))    
+                            
+                # Min value must be < max
+                if min > max :
+                    return ts(_("Validation failed: Max values must be greater than Min values"))   
+                
+                # Error percentage must be between 0 and 100
+                if err < 0 or err > 100 :
+                    return ts(_("Validation failed: Error percentage must be between 0 and 100"))
+                                
+            return True
+    
+validation.register(AnalysisSpecificationsValidator())    
