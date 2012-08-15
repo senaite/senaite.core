@@ -155,7 +155,7 @@ class ARTemplateAnalysesWidget(TypesWidget):
             consumption.
         """
         bsc = getToolByName(instance, 'bika_setup_catalog')
-        value = empty_marker
+        value = []
         service_uids = form.get('uids', None)
         Partitions = form.get('Partition', None)
 
@@ -166,8 +166,7 @@ class ARTemplateAnalysesWidget(TypesWidget):
                    and Partitions[service_uid] != '':
                     value.append({'service_uid':service_uid,
                                   'partition':Partitions[service_uid]})
-        if value:
-            return value, {}
+        return value, {}
 
     security.declarePublic('Analyses')
     def Analyses(self, field, allow_edit = False):
