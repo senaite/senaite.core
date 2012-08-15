@@ -31,4 +31,12 @@
     rendering="link"
     insert-after="*"/>
 
+<!-- Overwrite default jqueryui.css -->
+<stylesheet
+    id="++resource++jquery-ui-themes/sunburst/jqueryui.css"
+    media="screen"
+    rel="stylesheet"
+    rendering="link"
+    insert-after="*"/>
+
 </object>
