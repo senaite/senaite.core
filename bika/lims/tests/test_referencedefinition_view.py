@@ -2,6 +2,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.testbrowser import Browser
 from Products.validation import validation
 from bika.lims.testing import BIKA_LIMS_FUNCTIONAL_TESTING
+from Products.Archetypes.config import REFERENCE_CATALOG
 from bika.lims.tests.base import *
 from plone.app.testing import *
 from plone.testing import z2
