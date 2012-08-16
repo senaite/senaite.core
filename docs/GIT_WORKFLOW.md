@@ -1,62 +1,61 @@
 Bika's Git Workflow
 ===================
 
- dev			                                                  master
- |                                                                    |
- | $ git checkout dev                                                 |
- | $ git pull origin dev                                              |
- |                                                                    |
- | $ git checkout -b branchA                                          |
- |------------------------> branchA                                   |
- |                            |                                       |
- |                            |                                       |
- |                            | $ git commit -a                       |
- |                            |     ·                                 |
- |                            |     ·                                 |
- |                            | $ git commit -a                       |
- |                            |                                       |
- |                            |                                       |
- |                            |                                       |
- |                            |<-------------------------------+      |
- |                            · $ git pull origin branchA      |      |
- |                            · $ git checkout dev             |      |
- |                            · $ git remote update            |      |
- |                            · $ git pull origin dev          |      |
- |                            · $ git checkout branchA         |      |
- #-------------------------->>* $ git merge dev                |      |
- |                              $ git push origin branchA      |      |
- |<···························+ Pull request [on github]       |      |
- · REJECTED                   ·                                |      |
- |                            · $ git reset --hard ORIG_HEAD --+      |
- |                            |                                       |
- |                            | $ git commit -a                       |
- |                            |     ·                                 |
- |                            |     ·                                 |
- |                            | $ git commit -a                       |
- |                            |                                       |
- |                            |                                       |
- |                            · $ git pull origin branchA             |
- |                            · $ git checkout dev                    |
- |                            · $ git remote update                   |
- |                            · $ git pull origin dev                 |
- |                            · $ git checkout branchA                |
- #-------------------------->>* $ git merge dev                       |
- |                              $ git push origin branchA             |
- |<···························+ Pull request [on github]              |
- · ACCEPTED                  /                                        |
- *<<------------------------# merge A to dev [by maintainer]          |
- |                              $ git push origin :branchA            |
- |                                                                    |
- ·                                                                    |
- · Functional testing                                                 |
- ·                                            merge dev to master     |
- ·                                            [by maintainer]         |
- #------------------------------------------------------------------>>*
- |                                                                    |
- |                                                                    |
- |                                                          rev.flag--@
- |                                                                    |
-
+   dev			                                                  master
+   |                                                                  |
+   | $ git checkout dev                                               |
+   | $ git pull origin dev                                            |
+   |                                                                  |
+   | $ git checkout -b branchA                                        |
+   |------------------------> branchA                                 |
+   |                            |                                     |
+   |                            |                                     |
+   |                            | $ git commit -a                     |
+   |                            |     ·                               |
+   |                            |     ·                               |
+   |                            | $ git commit -a                     |
+   |                            |                                     |
+   |                            |                                     |
+   |                            |                                     |
+   |                            |<-------------------------------+    |
+   |                            · $ git pull origin branchA      |    |
+   |                            · $ git checkout dev             |    |
+   |                            · $ git remote update            |    |
+   |                            · $ git pull origin dev          |    |
+   |                            · $ git checkout branchA         |    |
+   #-------------------------->>* $ git merge dev                |    |
+   |                              $ git push origin branchA      |    |
+   |<···························+ Pull request [on github]       |    |
+   · REJECTED                   ·                                |    |
+   |                            · $ git reset --hard ORIG_HEAD --+    |
+   |                            |                                     |
+   |                            | $ git commit -a                     |
+   |                            |     ·                               |
+   |                            |     ·                               |
+   |                            | $ git commit -a                     |
+   |                            |                                     |
+   |                            |                                     |
+   |                            · $ git pull origin branchA           |
+   |                            · $ git checkout dev                  |
+   |                            · $ git remote update                 |
+   |                            · $ git pull origin dev               |
+   |                            · $ git checkout branchA              |
+   #-------------------------->>* $ git merge dev                     |
+   |                              $ git push origin branchA           |
+   |<···························+ Pull request [on github]            |
+   · ACCEPTED                  /                                      |
+   *<<------------------------# merge A to dev [by maintainer]        |
+   |                              $ git push origin :branchA          |
+   |                                                                  |
+   ·                                                                  |
+   · Functional testing                                               |
+   ·                                            merge dev to master   |
+   ·                                            [by maintainer]       |
+   #---------------------------------------------------------------->>*
+   |                                                                  |
+   |                                                                  |
+   |                                                        rev.flag--@
+   |                                                                  |
 
 Other useful git commands
 =========================
