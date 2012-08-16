@@ -9,8 +9,10 @@ import json
 
 class ReferenceResultsView(BikaListingView):
     """ bika listing to display reference results for a
-        Reference Sample referenceresults parameter must
-        be list of dict(ReferenceResultsField value)
+        Reference Sample's widget
+
+        referenceresults parameter must be list of
+        dict(ReferenceResultsField value)
     """
 
     def __init__(self, context, request, fieldvalue, allow_edit):
@@ -53,7 +55,6 @@ class ReferenceResultsView(BikaListingView):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         self.categories = []
         services = bsc(portal_type = 'AnalysisService',
-                       inactive_state = 'active',
                        sort_on = 'sortable_title')
         items = []
         for service in services:
@@ -68,7 +69,7 @@ class ReferenceResultsView(BikaListingView):
                           'result':'',
                           'min':'',
                           'max':''}
-            
+
             after_icons = ''
             if service.getAccredited():
                 after_icons += "<img\
@@ -89,11 +90,11 @@ class ReferenceResultsView(BikaListingView):
                 after_icons += "<img\
                 src='%s/++resource++bika.lims.images/attach_no.png'\
                 title='%s'>"%(self.context.absolute_url(),
-                              _('Attachment not permitted'))               
-            
+                              _('Attachment not permitted'))
+
             workflow = getToolByName(self.context, 'portal_workflow')
-            state = workflow.getInfoFor(service, 'inactive_state', '')            
-                        
+            state = workflow.getInfoFor(service, 'inactive_state', '')
+
             # this folderitems doesn't subclass from the bika_listing.py
             # so we create items from scratch
             item = {
