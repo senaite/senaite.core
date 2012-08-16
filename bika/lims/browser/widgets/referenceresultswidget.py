@@ -70,7 +70,7 @@ class ReferenceResultsView(BikaListingView):
                           'min':'',
                           'max':''}
 
-            after_icons = ''
+            after_icons = ' <span class="discreet">(%s)</span>&nbsp;&nbsp;' % service.getKeyword()
             if service.getAccredited():
                 after_icons += "<img\
                 src='%s/++resource++bika.lims.images/accredited.png'\
@@ -94,7 +94,9 @@ class ReferenceResultsView(BikaListingView):
 
             workflow = getToolByName(self.context, 'portal_workflow')
             state = workflow.getInfoFor(service, 'inactive_state', '')
-
+            unitspan = "<span class='discreet'>%s</span>" % service.getUnit()
+            percspan = "<span class='discreet'>%</span>";            
+            
             # this folderitems doesn't subclass from the bika_listing.py
             # so we create items from scratch
             item = {
@@ -115,7 +117,7 @@ class ReferenceResultsView(BikaListingView):
                 'max': refres['max'],
                 'replace': {},
                 'before': {},
-                'after': {'service':after_icons},
+                'after': {'service':after_icons, 'result':unitspan, 'min':unitspan, 'max':unitspan, 'error': percspan},
                 'choices':{},
                 'class': "state-%s" % state,
                 'state_class': 'state-%s' % state,
@@ -124,8 +126,8 @@ class ReferenceResultsView(BikaListingView):
             items.append(item)
 
         self.categories.sort()
-        for i in range(len(items)):
-            items[i]['table_row_class'] = "even"
+        #for i in range(len(items)):
+            #items[i]['table_row_class'] = "even"
 
         return items
 

@@ -78,7 +78,7 @@ class AnalysisSpecificationView(BikaListingView):
                         'max': '',
                         'error': ''}
             
-            after_icons = ''
+            after_icons = ' <span class="discreet">(%s)</span>&nbsp;&nbsp;' % service.getKeyword()
             if service.getAccredited():
                 after_icons += "<img\
                 src='%s/++resource++bika.lims.images/accredited.png'\
@@ -103,8 +103,10 @@ class AnalysisSpecificationView(BikaListingView):
             # TRICK for AS keyword retrieval on form POST
             after_icons += '<input type="hidden" name="keyword.%s:records"\
             value="%s"></input>' % (service.UID(), service.getKeyword())
-            
+                        
             state = workflow.getInfoFor(service, 'inactive_state', '')            
+            unitspan = "<span class='discreet'>%s</span>" % service.getUnit()
+            percspan = "<span class='discreet'>%</span>";
             
             item = {
                 'obj': service,
@@ -124,7 +126,7 @@ class AnalysisSpecificationView(BikaListingView):
                 'max': specresults['max'],
                 'replace': {},
                 'before': {},
-                'after': {'service':after_icons},
+                'after': {'service':after_icons,'min':unitspan, 'max':unitspan, 'error': percspan},
                 'choices':{},
                 'class': "state-%s" % (state),
                 'state_class': "state-%s" % (state),
@@ -133,6 +135,9 @@ class AnalysisSpecificationView(BikaListingView):
             items.append(item)
 
         self.categories.sort()
+        for i in range(len(items)):
+            items[i]['table_row_class'] = "even"        
+        
         return items            
 
 class AnalysisSpecificationWidget(TypesWidget):
