@@ -57,7 +57,8 @@ class ReferenceResultsView(BikaListingView):
                        sort_on = 'sortable_title')
         items = []
         for service in services:
-            cat = service.getCategoryTitle
+            service = service.getObject()
+            cat = service.getCategoryTitle()
             if cat not in self.categories:
                 self.categories.append(cat)
             if service.UID in self.referenceresults:
@@ -67,31 +68,56 @@ class ReferenceResultsView(BikaListingView):
                           'result':'',
                           'min':'',
                           'max':''}
-
+            
+            after_icons = ''
+            if service.getAccredited():
+                after_icons += "<img\
+                src='%s/++resource++bika.lims.images/accredited.png'\
+                title='%s'>"%(self.context.absolute_url(),
+                              _("Accredited"))
+            if service.getReportDryMatter():
+                after_icons += "<img\
+                src='%s/++resource++bika.lims.images/dry.png'\
+                title='%s'>"%(self.context.absolute_url(),
+                              _("Can be reported as dry matter"))
+            if service.getAttachmentOption() == 'r':
+                after_icons += "<img\
+                src='%s/++resource++bika.lims.images/attach_reqd.png'\
+                title='%s'>"%(self.context.absolute_url(),
+                              _("Attachment required"))
+            if service.getAttachmentOption() == 'n':
+                after_icons += "<img\
+                src='%s/++resource++bika.lims.images/attach_no.png'\
+                title='%s'>"%(self.context.absolute_url(),
+                              _('Attachment not permitted'))               
+            
+            workflow = getToolByName(self.context, 'portal_workflow')
+            state = workflow.getInfoFor(service, 'inactive_state', '')            
+                        
             # this folderitems doesn't subclass from the bika_listing.py
             # so we create items from scratch
             item = {
                 'obj': service,
-                'id': service.id,
-                'uid': service.UID,
-                'title': service.Title,
+                'id': service.getId(),
+                'uid': service.UID(),
+                'title': service.Title(),
                 'category': cat,
                 'selected': service.UID in self.referenceresults.keys(),
                 'type_class': 'contenttype-ReferenceResult',
                 'url': service.absolute_url(),
                 'relative_url': service.absolute_url(),
                 'view_url': service.absolute_url(),
-                'service': service.Title,
+                'service': service.Title(),
                 'result': refres['result'],
                 'error': '',
                 'min': refres['min'],
                 'max': refres['max'],
                 'replace': {},
                 'before': {},
-                'after': {},
+                'after': {'service':after_icons},
                 'choices':{},
-                'class': {},
-                'state_class': 'state-active',
+                'class': "state-%s" % state,
+                'state_class': 'state-%s' % state,
                 'allow_edit': ['result', 'error','min', 'max'],
             }
             items.append(item)
