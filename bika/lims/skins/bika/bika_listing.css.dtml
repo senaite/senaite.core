@@ -51,7 +51,7 @@ div.bika-listing-table-container {
     margin-top: 10px;
     width:100%;
     border-radius: 5px 5px 5px 5px;
-    box-shadow: 0pt 1px 2px rgba(0, 0, 0, 0.5); 
+    box-shadow: 0pt 1px 2px rgba(0, 0, 0, 0.5);
     display: inline-block;
     overflow: hidden;
     margin-bottom:10px;
@@ -61,19 +61,19 @@ table.bika-listing-table {
     font-size: &dtml-fontSmallSize;;
     border-bottom: medium none;
     width: 100%;
-    border: 1px solid rgb(220, 220, 220); 
-    border: medium none;     
-    border-collapse: collapse;   
+    border: 1px solid rgb(220, 220, 220);
+    border: medium none;
+    border-collapse: collapse;
 }
 
 .bika-listing-table tr {
     line-height: 2em;
 }
 
-.bika-listing-table thead {   
+.bika-listing-table thead {
     text-decoration:none;
     border: 0px solid rgb(220, 220, 220);
-    color:rgb(250, 250, 250);    
+    color:rgb(250, 250, 250);
     text-shadow: 0px 0px 1px rgb(51, 51, 51);
     border-radius:5px 5px 0px 0px;
     -moz-border-radius:5px 5px 0px 0px;
@@ -90,7 +90,7 @@ table.bika-listing-table {
 .bika-listing-table thead tr th {
     padding-top:5px;
     padding-left:5px;
-    font-size: 1.2em;
+    font-size: 1.3em;
 }
 
 .bika-listing-table thead tr {
@@ -109,9 +109,10 @@ table.bika-listing-table {
 }
 
 .bika-listing-table tbody tr th {
-    font-size: 1.3em;
+    font-size: 1.2em;
     padding: 1px 1px 1px 10px;
     vertical-align:left;
+	color: #444;
 }
 
 .bika-listing-table tbody tr td {
@@ -139,7 +140,7 @@ table.bika-listing-table {
 }
 
 .bika-listing-table tr {
-	line-height: 2em; 
+	line-height: 2em;
     border-left: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
 }
 /*
