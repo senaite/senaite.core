@@ -55,8 +55,8 @@ buttonBorderColor:string=#ccc
 buttonBackgroundColor:string=#fff
 buttonTextColor:string=#222
 
-buttonHoverBorderColor:string=#bbb
-buttonHoverBackgroundColor:string=#eee
+buttonHoverBorderColor:string=#999999
+buttonHoverBackgroundColor:string=#DCDCDC
 buttonHoverTextColor:string=#333
 
 buttonClickBorderColor:string=#bbb
