@@ -91,10 +91,8 @@
 <div class='bika-listing-table-container'>
 <table
 	summary="Content listing"
-	tal:attributes="
-		class python:'bika-listing-table%s'% (view.bika_listing.setoddeven and ' setoddeven' or '');"
-	i18n:attributes="
-		summary summary_content_listing;"
+	tal:attributes="class python:'bika-listing-table'"
+	i18n:attributes="summary summary_content_listing;"
 	tal:define="
 		columns view/bika_listing/columns;
 		column_list python:review_state['columns']" style="margin-bottom:0px;">

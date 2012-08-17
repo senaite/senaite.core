@@ -32,9 +32,6 @@ contentViewBackgroundColor:string=#e2e2c7
 contentViewFontColor:string=black
 inputFontColor:string=Black
 
-evenRowBackgroundColor:string=#eee
-oddRowBackgroundColor:string=transparent
-
 textTransform:string=none
 
 notifyBorderColor:string=#f7f32a

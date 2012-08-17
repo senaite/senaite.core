@@ -143,14 +143,6 @@ table.bika-listing-table {
 	line-height: 2em;
     border-left: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
 }
-/*
-.bika-listing-table tr.odd {
-	background-color: &dtml-oddRowBackgroundColor;;
-}
-
-.bika-listing-table tr.even {
-	background-color: &dtml-evenRowBackgroundColor;;
-}*/
 
 .bika-listing-table a.state-visible  {
 	background-color: &dtml-visibleBackgroundColor;

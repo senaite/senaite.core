@@ -29,7 +29,6 @@ class AnalysesView(BikaListingView):
         self.contentFilter['portal_type'] = 'Analysis'
         self.contentFilter['sort_on'] = 'sortable_title'
         self.context_actions = {}
-        self.setoddeven = True
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = False

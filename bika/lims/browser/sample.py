@@ -40,7 +40,6 @@ class SamplePartitionsView(BikaListingView):
         self.show_sort_column = False
         self.show_column_toggles = False
         self.show_select_row = False
-        self.setoddeven = False
         self.show_select_column = True
         self.pagesize = 1000
         self.form_id = "partitions"

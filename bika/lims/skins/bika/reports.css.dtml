@@ -73,15 +73,6 @@ div.bika_report {
     border-bottom: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
 }
 
-.bika-report-table tr.odd {
-	background-color: &dtml-oddRowBackgroundColor;;
-}
-
-.bika-report-table tr.even {
-	background-color: &dtml-evenRowBackgroundColor;;
-}
-
-
 .bika-report-table th {
 	color: &dtml-tableHeaderTextColor;;
 	padding:1px 4px 1px 4px;
