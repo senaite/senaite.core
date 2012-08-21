@@ -94,7 +94,9 @@ class ReferenceResultsView(BikaListingView):
 
             workflow = getToolByName(self.context, 'portal_workflow')
             state = workflow.getInfoFor(service, 'inactive_state', '')
-            unitspan = "<span class='discreet'>%s</span>" % service.getUnit()
+
+            unit = service.getUnit()
+            unitspan = unit and "<span class='discreet'>%s</span>" % unit or ''
             percspan = "<span class='discreet'>%</span>";
 
             # this folderitems doesn't subclass from the bika_listing.py
@@ -117,7 +119,11 @@ class ReferenceResultsView(BikaListingView):
                 'max': refres['max'],
                 'replace': {},
                 'before': {},
-                'after': {'service':after_icons, 'result':unitspan, 'min':unitspan, 'max':unitspan, 'error': percspan},
+                'after': {'service':after_icons,
+                          'result':unitspan,
+                          'min':unitspan,
+                          'max':unitspan,
+                          'error': percspan},
                 'choices':{},
                 'class': "state-%s" % state,
                 'state_class': 'state-%s' % state,
