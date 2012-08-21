@@ -62,10 +62,10 @@ class ReferenceResultsView(BikaListingView):
             cat = service.getCategoryTitle()
             if cat not in self.categories:
                 self.categories.append(cat)
-            if service.UID in self.referenceresults:
-                refres = self.referenceresults[service.UID]
+            if service.UID() in self.referenceresults:
+                refres = self.referenceresults[service.UID()]
             else:
-                refres = {'uid': service.UID,
+                refres = {'uid': service.UID(),
                           'result':'',
                           'min':'',
                           'max':''}
@@ -95,8 +95,8 @@ class ReferenceResultsView(BikaListingView):
             workflow = getToolByName(self.context, 'portal_workflow')
             state = workflow.getInfoFor(service, 'inactive_state', '')
             unitspan = "<span class='discreet'>%s</span>" % service.getUnit()
-            percspan = "<span class='discreet'>%</span>";            
-            
+            percspan = "<span class='discreet'>%</span>";
+
             # this folderitems doesn't subclass from the bika_listing.py
             # so we create items from scratch
             item = {
@@ -105,7 +105,7 @@ class ReferenceResultsView(BikaListingView):
                 'uid': service.UID(),
                 'title': service.Title(),
                 'category': cat,
-                'selected': service.UID in self.referenceresults.keys(),
+                'selected': service.UID() in self.referenceresults.keys(),
                 'type_class': 'contenttype-ReferenceResult',
                 'url': service.absolute_url(),
                 'relative_url': service.absolute_url(),
@@ -126,8 +126,6 @@ class ReferenceResultsView(BikaListingView):
             items.append(item)
 
         self.categories.sort()
-        #for i in range(len(items)):
-            #items[i]['table_row_class'] = "even"
 
         return items
 
