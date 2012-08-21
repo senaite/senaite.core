@@ -485,8 +485,13 @@ class SampleEdit(BrowserView):
                 self.context.edit(**values)
                 self.context.reindexObject()
                 ars = self.context.getAnalysisRequests()
+                # Analyses and AnalysisRequets have calculated fields
+                # that are indexed; re-index all these objects.
                 for ar in ars:
                     ar.reindexObject()
+                    analyses = self.context.getAnalyses(full_objects=True)
+                    for a in analyses:
+                        a.reindexObject()
                 message = PMF("Changes saved.")
 
             # If this sample was "To Be Sampled", and the
@@ -495,6 +500,8 @@ class SampleEdit(BrowserView):
             if workflow.getInfoFor(sample, "review_state") == "to_be_sampled" \
                and form.get("Sampler", None) \
                and form.get("DateSampled", None):
+                # This transition does not invoke the regular WorkflowAction
+                # in analysisrequest.py
                 workflow.doActionFor(sample, "sample")
                 sample.reindexObject()
 

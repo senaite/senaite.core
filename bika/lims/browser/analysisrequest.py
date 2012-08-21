@@ -197,7 +197,18 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
         elif action == "sample":
             # This action happens only for a single context.
-            # Context can be a sample or an AR, however.
+            # Context can be a sample or an AR.
+            #
+            # Once the Sampler/DateSampled values are completed on the
+            # Sample or AR form, the user has two choices.
+            #
+            # 1) Use the normal Plone UI actions dropdown, (invokes this code).
+            # 2) Click the save button, which invokes code in SampleEdit or
+            #    AnalysisRequestEdit __call__ methods.
+            #
+            # Both these methods do pretty much the same thing, but now, it's
+            # done in three places.
+
             if self.context.portal_type == "AnalysisRequest":
                 sample = self.context.getSample()
             else:
@@ -212,23 +223,21 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                                        self.context.absolute_url())
                 self.request.response.redirect(self.destination_url)
                 return
-##             grab this object's Sampler and DateSampled from the form
-##            Sampler = form['getSampler'][0][sample_uid].strip()
-##            Sampler = Sampler and Sampler or ''
-##            DateSampled = form['getDateSampled'][0][obj_uid].strip()
-##            DateSampled = DateSampled and DateTime(DateSampled) or ''
-##
-##            # write them to the sample
-##            sample.setSampler(Sampler)
-##            sample.setDateSampled(DateSampled)
-##
-##            # transition the object if both values are present
-##            if Sampler and DateSampled:
-            workflow.doActionFor(sample, action)
-            sample.reindexObject()
-            message = "Changes saved."
-            message = self.context.translate(message)
-            self.context.plone_utils.addPortalMessage(message, 'info')
+            # grab this object's Sampler and DateSampled from the form
+            Sampler = form['getSampler'][0][sample_uid].strip()
+            Sampler = Sampler and Sampler or ''
+            DateSampled = form['getDateSampled'][0][obj_uid].strip()
+            DateSampled = DateSampled and DateTime(DateSampled) or ''
+            # write them to the sample
+            sample.setSampler(Sampler)
+            sample.setDateSampled(DateSampled)
+            # transition the object if both values are present
+            if Sampler and DateSampled:
+                workflow.doActionFor(sample, action)
+                sample.reindexObject()
+                message = "Changes saved."
+                message = self.context.translate(message)
+                self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
             self.request.response.redirect(self.destination_url)
@@ -616,6 +625,14 @@ class AnalysisRequestViewView(BrowserView):
                 self.context.reindexObject()
                 sample.edit(**values)
                 sample.reindexObject()
+                ars = sample.getAnalysisRequests()
+                # Analyses and AnalysisRequets have calculated fields
+                # that are indexed; re-index all these objects.
+                for ar in ars:
+                    ar.reindexObject()
+                    analyses = sample.getAnalyses(full_objects=True)
+                    for a in analyses:
+                        a.reindexObject()
                 message = PMF("Changes saved.")
 
             # If this sample was "To Be Sampled", and the
@@ -624,6 +641,8 @@ class AnalysisRequestViewView(BrowserView):
             if workflow.getInfoFor(sample, "review_state") == "to_be_sampled" \
                and form.get("Sampler", None) \
                and form.get("DateSampled", None):
+                # This transition does not invoke the regular WorkflowAction
+                # in analysisrequest.py
                 workflow.doActionFor(sample, "sample")
                 sample.reindexObject()
 
