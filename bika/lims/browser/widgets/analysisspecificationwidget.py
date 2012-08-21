@@ -104,7 +104,9 @@ class AnalysisSpecificationView(BikaListingView):
             value="%s"></input>' % (service.UID(), service.getKeyword())
 
             state = workflow.getInfoFor(service, 'inactive_state', '')
-            unitspan = "<span class='discreet'>%s</span>" % service.getUnit()
+            unit = service.getUnit()
+            unitspan = unit and \
+                "<span class='discreet'>%s</span>" % service.getUnit() or ''
             percspan = "<span class='discreet'>%</span>";
 
             item = {
@@ -125,7 +127,10 @@ class AnalysisSpecificationView(BikaListingView):
                 'max': specresults['max'],
                 'replace': {},
                 'before': {},
-                'after': {'service':after_icons,'min':unitspan, 'max':unitspan, 'error': percspan},
+                'after': {'service':after_icons,
+                          'min':unitspan,
+                          'max':unitspan,
+                          'error': percspan},
                 'choices':{},
                 'class': "state-%s" % (state),
                 'state_class': "state-%s" % (state),
@@ -135,8 +140,8 @@ class AnalysisSpecificationView(BikaListingView):
 
         self.categories.sort()
         for i in range(len(items)):
-            items[i]['table_row_class'] = "even"        
-        
+            items[i]['table_row_class'] = "even"
+
         return items
 
 class AnalysisSpecificationWidget(TypesWidget):
