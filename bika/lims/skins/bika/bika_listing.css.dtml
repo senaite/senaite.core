@@ -47,48 +47,101 @@ div.bika_listing {
 	color: &dtml-fontColor;;
 }
 
-.bika-listing-table {
+div.bika-listing-table-container {
+    margin-top: 10px;
+    width:100%;
+    border-radius: 5px 5px 5px 5px;
+    box-shadow: 0pt 1px 2px rgba(0, 0, 0, 0.5);
+    display: inline-block;
+    overflow: hidden;
+    margin-bottom:10px;
+}
+
+table.bika-listing-table {
     font-size: &dtml-fontSmallSize;;
     border-bottom: medium none;
-	margin-bottom: 0 !important;
+    width: 100%;
+    border: 1px solid rgb(220, 220, 220);
+    border: medium none;
+    border-collapse: collapse;
 }
+
+.bika-listing-table tr {
+    line-height: 2em;
+}
+
+.bika-listing-table thead {
+    text-decoration:none;
+    border: 0px solid rgb(220, 220, 220);
+    color:rgb(250, 250, 250);
+    text-shadow: 0px 0px 1px rgb(51, 51, 51);
+    border-radius:5px 5px 0px 0px;
+    -moz-border-radius:5px 5px 0px 0px;
+    -webkit-border-radius:5px 5px 0px 0px;
+    box-shadow:0px 1px 2px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow:0px 1px 2px rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow:0px 1px 2px rgba(0, 0, 0, 0.5);
+    background-color: rgb(153, 153, 153);
+    background-image:linear-gradient(-90deg, rgb(170, 170, 170), rgb(153, 153, 153));
+    background-image:-webkit-gradient(linear, 50% 0%, 50% 100%, from(rgb(170, 170, 170)), to(rgb(153, 153, 153)));
+    background-image:-moz-linear-gradient(-90deg, rgb(170, 170, 170), rgb(153, 153, 153));
+}
+
+.bika-listing-table thead tr th {
+    padding-top:5px;
+    padding-left:5px;
+    font-size: 1.3em;
+}
+
+.bika-listing-table thead tr {
+    border-bottom: 1px solid #EFEFEF;
+    border-left: 1px solid #DDDDDD;
+}
+
+.bika-listing-table thead tr td.listing-filter-row a {
+    font-size:1.2em;
+    text-shadow: 0 0 1px #BBB;
+}
+
+.bika-listing-table tbody tr {
+    border-bottom: 1px solid #EFEFEF;
+    border-left: 1px solid #DDDDDD;
+}
+
+.bika-listing-table tbody tr th {
+    font-size: 1.2em;
+    padding: 1px 1px 1px 10px;
+    vertical-align:left;
+	color: #444;
+}
+
+.bika-listing-table tbody tr td {
+    padding-top:3px;
+    padding-bottom:0px;
+    padding-left:5px;
+}
+
+.bika-listing-table tbody tr td.service {
+    padding-left:20px;
+}
+
+.bika-listing-table tfoot tr {
+    margin-top:10px;
+    background-color: #EFEFEF;
+}
+
+.bika-listing-table tfoot tr td {
+    padding: 3px 4px 1px;
+}
+
 
 .bika-listing-table a {
     text-decoration: none;
 }
 
 .bika-listing-table tr {
-	line-height: 2em; /*2.1em;*/
+	line-height: 2em;
     border-left: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
-}
-
-.bika-listing-table tr.odd {
-	background-color: &dtml-oddRowBackgroundColor;;
-}
-
-.bika-listing-table tr.even {
-	background-color: &dtml-evenRowBackgroundColor;;
-}
-
-
-.bika-listing-table th {
-    background-color: &dtml-tableHeaderBackgroundColor;;
-	color: &dtml-tableHeaderTextColor;;
-	padding:1px;
-	text-align:center;
-    vertical-align: middle;
-/* <dtml-if tableVerticalGrid> */ border-right: 1px solid &dtml-borderColor;;
-/* <dtml-else> */ border-right: none; /* </dtml-if> */
-}
-
-.bika-listing-table td {
-    vertical-align: middle;
-	padding:1px 4px 1px 4px;
-/* <dtml-if tableHorizontalGrid> */	border-right: 1px solid &dtml-borderColor;;
-/* <dtml-else> */	border-right: none; /* </dtml-if> */
-}
-
-.bika-listing-table td {
 }
 
 .bika-listing-table a.state-visible  {
@@ -173,11 +226,19 @@ div.bika_listing {
   padding:5px 3px 5px 3px !important;
 }
 
-td.listing-filter-row {
-   padding:0 0 .5em 0;
-   margin:0;
-   border:none !important;
-   background: none !important;
+table.bika-listing-table thead tr td.listing-filter-row {
+   background-attachment: scroll !important;
+    background-clip: border-box !important;
+    background-color: #EFEFEF;
+    background-image: none !important;
+    background-origin: padding-box !important;
+    background-position: 0 0 !important;
+    background-repeat: repeat !important;
+    background-size: auto auto !important;
+    border: medium none !important;
+    margin: 0;
+    padding: 2px 10px 2px 2px;
+    text-shadow: none;
 }
 
 td.review_state_selector{
@@ -197,6 +258,7 @@ td.review_state_selector{
   text-decoration:none;
   font-weight:normal;
   padding:3px 5px 3px 5px !important;
+  font-size:1.1em;
 }
 
 .review_state_selector a:hover{
@@ -241,6 +303,7 @@ td.review_state_selector{
     font-weight: normal;
 	width:8em;
     padding: 2px 5px 2px 20px !important;
+    background-color:#fff;
 }
 
 .filter-search-button {
@@ -337,6 +400,7 @@ tfoot td.batching a {
   color: &dtml-buttonSelectedTextColor; !important;
   border:1px solid &dtml-buttonSelectedBorderColor; !important;
   padding:1px 2px 1px 2px;
+  cursor:pointer;
 }
 .action_button:hover {
   background: &dtml-buttonHoverBackgroundColor; !important;

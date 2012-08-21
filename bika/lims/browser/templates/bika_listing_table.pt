@@ -88,20 +88,18 @@
 	name="item_data"
 	tal:attributes="value python:hasattr(view.bika_listing, 'json_interim_fields') and
 	                             view.bika_listing.json_interim_fields or []"/>
-
+<div class='bika-listing-table-container'>
 <table
 	summary="Content listing"
-	tal:attributes="
-		class python:'bika-listing-table%s'% (view.bika_listing.setoddeven and ' setoddeven' or '');"
-	i18n:attributes="
-		summary summary_content_listing;"
+	tal:attributes="class python:'bika-listing-table'"
+	i18n:attributes="summary summary_content_listing;"
 	tal:define="
 		columns view/bika_listing/columns;
-		column_list python:review_state['columns']">
+		column_list python:review_state['columns']" style="margin-bottom:0px;">
 
 	<thead>
 
-	<tr style="border:none !important;">
+	<tr style="border:none !important;" tal:condition="python:len(view.bika_listing.review_states) > 1">
 <tal:comment replace="nothing">***************
 Workflow review state selector
 ********************************</tal:comment>
@@ -245,7 +243,7 @@ Draggable column for manually ordering items
 <tal:comment replace="nothing">***************
 Item select checkboxes.
 ********************************</tal:comment>
-	<td style="text-align:center"
+	<td style="width:24px;"
 		tal:condition="view/bika_listing/show_select_column"
 		tal:define="cl python:'class' in item and 'select_column' in item['class'] and
 					item['class']['select_column'] or '';"
@@ -673,5 +671,5 @@ Batching
 </tfoot>
 
 </table>
-
+</div>
 </form>

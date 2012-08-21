@@ -23,11 +23,6 @@ borderWidthStrong:string=2px
 borderStyle:string=solid
 borderStyleAnnotations:string=dashed
 
-evenRowTextColor:string=#eee
-evenRowBackgroundColor:string=#eee
-oddRowTextColor:string=#fff
-oddRowBackgroundColor:string=#fff
-
 visibleTextColor:string=#205c90
 visibleBackgroundColor:string=transparent
 
@@ -55,8 +50,8 @@ buttonBorderColor:string=#ccc
 buttonBackgroundColor:string=#fff
 buttonTextColor:string=#222
 
-buttonHoverBorderColor:string=#bbb
-buttonHoverBackgroundColor:string=#eee
+buttonHoverBorderColor:string=#999999
+buttonHoverBackgroundColor:string=#DCDCDC
 buttonHoverTextColor:string=#333
 
 buttonClickBorderColor:string=#bbb

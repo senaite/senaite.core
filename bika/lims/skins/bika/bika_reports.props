@@ -24,11 +24,6 @@ borderWidthStrong:string=2px
 borderStyle:string=solid
 borderStyleAnnotations:string=dashed
 
-evenRowTextColor:string=#eee
-evenRowBackgroundColor:string=#eee
-oddRowTextColor:string=#fff
-oddRowBackgroundColor:string=#fff
-
 visibleTextColor:string=#205c90
 visibleBackgroundColor:string=transparent
 

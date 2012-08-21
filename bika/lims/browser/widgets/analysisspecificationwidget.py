@@ -10,11 +10,11 @@ from operator import itemgetter
 import json
 
 class AnalysisSpecificationView(BikaListingView):
-    """ bika listing to display Analysis Services (AS) table for an 
+    """ bika listing to display Analysis Services (AS) table for an
         Analysis Specification.
     """
-    
-    def __init__(self, context, request, fieldvalue, allow_edit):      
+
+    def __init__(self, context, request, fieldvalue, allow_edit):
         BikaListingView.__init__(self, context, request)
         self.context_actions = {}
         self.contentFilter = {'review_state' : 'impossible_state'}
@@ -25,14 +25,13 @@ class AnalysisSpecificationView(BikaListingView):
         self.show_select_row = False
         self.show_select_all_checkbox = False
         self.show_select_column = False
-        self.setoddeven = False
         self.pagesize = 1000
         self.allow_edit = allow_edit
-                
+
         self.specsresults = {}
         for specresults in fieldvalue:
             self.specsresults[specresults['keyword']] = specresults
-        
+
         self.columns = {
             'service': {'title': _('Service'), 'index': 'sortable_title', 'sortable': False},
             'min': {'title': _('Min'), 'sortable': False,},
@@ -47,22 +46,22 @@ class AnalysisSpecificationView(BikaListingView):
              'transitions': [],
              'columns': ['service', 'min', 'max', 'error'],
              },
-        ]        
-       
- 
+        ]
+
+
     def folderitems(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        self.categories = []        
-        
+        self.categories = []
+
         # Check edition permissions
         mtool = getToolByName(self.context, 'portal_membership')
         member = mtool.getAuthenticatedMember()
         roles = member.getRoles()
         self.allow_edit = 'LabManager' in roles or 'Manager' in roles
-        
+
         # Analysis Services retrieval and custom item creation
-        items = []        
-        workflow = getToolByName(self.context, 'portal_workflow')        
+        items = []
+        workflow = getToolByName(self.context, 'portal_workflow')
         services = bsc(portal_type = "AnalysisService",
                        sort_on = "sortable_title")
         for service in services:
@@ -77,7 +76,7 @@ class AnalysisSpecificationView(BikaListingView):
                         'min': '',
                         'max': '',
                         'error': ''}
-            
+
             after_icons = ''
             if service.getAccredited():
                 after_icons += "<img\
@@ -98,14 +97,14 @@ class AnalysisSpecificationView(BikaListingView):
                 after_icons += "<img\
                 src='%s/++resource++bika.lims.images/attach_no.png'\
                 title='%s'>"%(self.context.absolute_url(),
-                              _('Attachment not permitted'))          
-                
+                              _('Attachment not permitted'))
+
             # TRICK for AS keyword retrieval on form POST
             after_icons += '<input type="hidden" name="keyword.%s:records"\
             value="%s"></input>' % (service.UID(), service.getKeyword())
-            
-            state = workflow.getInfoFor(service, 'inactive_state', '')            
-            
+
+            state = workflow.getInfoFor(service, 'inactive_state', '')
+
             item = {
                 'obj': service,
                 'id': service.getId(),
@@ -129,11 +128,11 @@ class AnalysisSpecificationView(BikaListingView):
                 'class': "state-%s" % (state),
                 'state_class': "state-%s" % (state),
                 'allow_edit': ['min', 'max', 'error'],
-            }        
+            }
             items.append(item)
 
         self.categories.sort()
-        return items            
+        return items
 
 class AnalysisSpecificationWidget(TypesWidget):
     _properties = TypesWidget._properties.copy()
@@ -144,7 +143,7 @@ class AnalysisSpecificationWidget(TypesWidget):
     })
 
     security = ClassSecurityInfo()
-    
+
     security.declarePublic('process_form')
     def process_form(self, instance, field, form, empty_marker = None, emptyReturnsMarker = False):
         """ Return a list of dictionaries fit for AnalysisSpecsResultsField
@@ -160,24 +159,24 @@ class AnalysisSpecificationWidget(TypesWidget):
                 except:
                     continue
                 value.append({'keyword':keyword,
-                              'uid':uid, 
+                              'uid':uid,
                               'min':form['min'][0][uid],
                               'max':form['max'][0][uid],
                               'error':form['error'][0][uid]})
-        return value, {}    
+        return value, {}
 
     security.declarePublic('AnalysisSpecificationResults')
     def AnalysisSpecificationResults(self, field, allow_edit = False):
         """ Prints a bika listing with categorized services.
             field contains the archetypes field with a list of services in it
         """
-        fieldvalue = getattr(field, field.accessor)()      
+        fieldvalue = getattr(field, field.accessor)()
         view = AnalysisSpecificationView(self,
                                             self.REQUEST,
                                             fieldvalue = fieldvalue,
                                             allow_edit = allow_edit)
-        return view.contents_table(table_only = True)       
-     
+        return view.contents_table(table_only = True)
+
 registerWidget(AnalysisSpecificationWidget,
                title = 'Analysis Specification Results',
                description = ('Analysis Specification Results'))

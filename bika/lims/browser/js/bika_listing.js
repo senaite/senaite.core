@@ -4,19 +4,6 @@ $(document).ready(function(){
 	_ = window.jsi18n_bika;
 	PMF = window.jsi18n_plone;
 
-	function setoddeven(){
-		// set alternating odd and even classes if table has setoddeven class
-		$.each($("table.setoddeven tbody.item-listing-tbody tr"), function(i,tr){
-			if (i%2 == 0) {
-				$(tr).addClass('even');
-			} else {
-				$(tr).addClass('odd');
-			}
-		});
-	}
-
-	setoddeven();
-
 	// review_state
 	$(".review_state_selector a").live('click', function(){
 		form = $(this).parents("form");
@@ -29,10 +16,7 @@ $(document).ready(function(){
 		options = {
 			target: $(this).parents("table"),
 			replaceTarget: true,
-			data: form.formToArray(),
-			success: function(){
-				setoddeven();
-			}
+			data: form.formToArray()
 		}
 		form.ajaxSubmit(options);
 		$("[name=table_only]").remove();
@@ -73,10 +57,7 @@ $(document).ready(function(){
 		options = {
 			target: $(this).parents("table"),
 			replaceTarget: true,
-			data: form.formToArray(),
-			success: function(){
-				setoddeven();
-			}
+			data: form.formToArray()
 		}
 		form.ajaxSubmit(options);
 		$("[name=table_only]").remove();
@@ -130,10 +111,7 @@ $(document).ready(function(){
 		options = {
 			target: $(form).children(".bika-listing-table"),
 			replaceTarget: true,
-			data: form.formToArray(),
-			success: function(){
-				setoddeven();
-			}
+			data: form.formToArray()
 		}
 		form.ajaxSubmit(options);
 		$('[name=table_only]').remove();
@@ -153,10 +131,7 @@ $(document).ready(function(){
 		options = {
 			target: $(form).children(".bika-listing-table"),
 			replaceTarget: true,
-			data: form.formToArray(),
-			success: function(){
-				setoddeven();
-			}
+			data: form.formToArray()
 		}
 		form.ajaxSubmit(options);
 		$('[name=table_only]').remove();
@@ -174,7 +149,6 @@ $(document).ready(function(){
 			.toggle(true);
 		// change TH state
 		$(this).removeClass('collapsed').addClass('expanded');
-		setoddeven();
 	});
 	$(".bika-listing-table th.expanded").live('click', function(){
 		table = $(this).parents('.bika-listing-table');
@@ -185,7 +159,6 @@ $(document).ready(function(){
 			.toggle(false);
 		// change TH state
 		$(this).removeClass('expanded').addClass('collapsed');
-		setoddeven();
 	});
 
 	// always select checkbox when editable listing item is changed
@@ -218,10 +191,7 @@ $(document).ready(function(){
 		options = {
 			target: $(this).parents('table'),
 			replaceTarget: true,
-			data: form.formToArray(),
-			success: function(){
-				setoddeven();
-			}
+			data: form.formToArray()
 		}
 		form.ajaxSubmit(options);
 		$('[name=table_only]').remove();
@@ -384,10 +354,7 @@ $(document).ready(function(){
 		options = {
 			target: $(form).children(".bika-listing-table"),
 			replaceTarget: true,
-			data: form.formToArray(),
-			success: function(){
-				setoddeven();
-			}
+			data: form.formToArray()
 		}
 		$(".tooltip").remove();
 		form.ajaxSubmit(options);

@@ -193,7 +193,6 @@ class WorksheetAnalysesView(AnalysesView):
                               'worksheetanalysis_review_state':'unassigned'}
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.contentFilter = {}
-        self.setoddeven = False
         self.show_select_row = False
         self.show_sort_column = False
         self.allow_edit = True
@@ -316,18 +315,8 @@ class WorksheetAnalysesView(AnalysesView):
             if pos in empties:
                 continue
 
-            # first set Pos column for this row, to have a rowspan
+            # set Pos column for this row, to have a rowspan
             items[x]['rowspan'] = {'Pos': len(pos_items)}
-            for y in pos_items:
-                # then set our slot's odd/even css
-                for k in self.columns.keys():
-                    cl = (actual_table_position % 2 == 0) and "even" or "odd"
-                    if k in items[y]['class']:
-                        items[y]['class'][k] += " %s" % cl
-                    else:
-                        items[y]['class'][k] = cl
-                    items[y]['class']['select_column'] = cl
-                items[y]['table_row_class'] = cl
 
             # fill the rowspan with a little table
             obj = items[x]['obj']
@@ -860,9 +849,6 @@ class WorksheetARsView(BikaListingView):
             }
             items.append(item)
         items = sorted(items, key = itemgetter('Position'))
-        for i in range(len(items)):
-            items[i]['table_row_class'] = ((i + 1) % 2 == 0) and \
-                 "even" or "odd"
 
         return items
 
@@ -943,9 +929,6 @@ class WorksheetServicesView(BikaListingView):
 
         items = sorted(items, key = itemgetter('Service'))
         self.categories.sort()
-        for i in range(len(items)):
-            items[i]['table_row_class'] = ((i + 1) % 2 == 0) and \
-                 "even" or "odd"
 
         return items
 

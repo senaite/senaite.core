@@ -358,15 +358,6 @@ th.expanded {
 	margin-bottom:2px !important;
 }
 
-
-.header_table tr.odd {
-	background-color: &dtml-oddRowBackgroundColor;;
-}
-
-.header_table tr.even {
-	background-color: &dtml-evenRowBackgroundColor;;
-}
-
 .header_table td,
 .header_table th {
   line-height:1.5em;
