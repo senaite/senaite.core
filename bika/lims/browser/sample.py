@@ -489,9 +489,9 @@ class SampleEdit(BrowserView):
                 # that are indexed; re-index all these objects.
                 for ar in ars:
                     ar.reindexObject()
-                    analyses = self.context.getAnalyses(full_objects=True)
+                    analyses = self.context.getAnalyses({'review_state':'to_be_sampled'})
                     for a in analyses:
-                        a.reindexObject()
+                        a.getObject().reindexObject()
                 message = PMF("Changes saved.")
 
             # If this sample was "To Be Sampled", and the

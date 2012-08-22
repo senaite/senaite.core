@@ -93,6 +93,15 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                 # write them to the sample
                 sample.setSampler(Sampler)
                 sample.setDateSampled(DateSampled)
+                sample.reindexObject()
+                ars = sample.getAnalysisRequests()
+                # Analyses and AnalysisRequets have calculated fields
+                # that are indexed; re-index all these objects.
+                for ar in ars:
+                    ar.reindexObject()
+                    analyses = sample.getAnalyses({'review_state':'to_be_sampled'})
+                    for a in analyses:
+                        a.getObject().reindexObject()
 
                 # transition the object if both values are present
                 if Sampler and DateSampled:

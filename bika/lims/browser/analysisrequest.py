@@ -630,9 +630,9 @@ class AnalysisRequestViewView(BrowserView):
                 # that are indexed; re-index all these objects.
                 for ar in ars:
                     ar.reindexObject()
-                    analyses = sample.getAnalyses(full_objects=True)
+                    analyses = sample.getAnalyses({'review_state':'to_be_sampled'})
                     for a in analyses:
-                        a.reindexObject()
+                        a.getObject().reindexObject()
                 message = PMF("Changes saved.")
 
             # If this sample was "To Be Sampled", and the
