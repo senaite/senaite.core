@@ -3,6 +3,7 @@
 */
 
 /* columns.css */
+@media screen { 
 
 div.width-1\3a 4 {
     width: 16.5%;
@@ -705,6 +706,8 @@ select {
 .nomargin {margin:0 !important;}
 .nopadding {padding:0 !important;}
 .nowrap {  whitespace:nowrap !important; }
+
+}
 
 /* Print Only */
 @media print {
