@@ -154,7 +154,12 @@ class WorksheetWorkflowAction(WorkflowAction):
             selected_analysis_uids = selected_analyses.keys()
 
             for analysis_uid in selected_analysis_uids:
-                analysis = bac(UID=analysis_uid)[0].getObject()
+                try:
+                    analysis = bac(UID=analysis_uid)[0].getObject()
+                except IndexError:
+                    # Duplicate analyses are removed when their analyses
+                    # get removed, so indexerror is expected.
+                    continue
                 if skip(analysis, action, peek=True):
                     continue
                 self.context.removeAnalysis(analysis)
