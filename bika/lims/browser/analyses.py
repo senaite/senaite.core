@@ -326,7 +326,6 @@ class AnalysesView(BikaListingView):
                 if (not calculation or (calculation and not calculation.getDependentServices())) and \
                    items[i]['review_state'] not in ['to_be_sampled', 'to_be_preserved', 'sample_due', 'published'] and \
                    items[i]['result_captured'] > items[i]['DueDate']:
-                    print 'shit'
                     DueDate = TimeOrDate(self.context, item['DueDate'], long_format = 0)
                     if self.context.portal_type == 'AnalysisRequest':
                         items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
