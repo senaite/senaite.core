@@ -76,6 +76,13 @@
 		tal:attributes="value python:view.bika_listing.instrument"/>
 </tal:worksheet-cheat-2>
 
+<div class='bika-listing-table-container'>
+
+<tal:comment replace="nothing">
+  These two hidden fields must be located directly above the <table> element
+  Some of the javascript relies on this to distinguish between data
+  for pages with multiple editable tables. XXX This should use form_id
+</tal:comment>
 <input type="hidden"
 	name="specs"
 	tal:omit-tag="python:table_only"
@@ -88,7 +95,6 @@
 	name="item_data"
 	tal:attributes="value python:hasattr(view.bika_listing, 'json_interim_fields') and
 	                             view.bika_listing.json_interim_fields or []"/>
-<div class='bika-listing-table-container'>
 <table
 	summary="Content listing"
 	tal:attributes="class python:'bika-listing-table'"
