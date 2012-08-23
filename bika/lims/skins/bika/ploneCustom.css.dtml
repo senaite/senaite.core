@@ -712,12 +712,17 @@ select {
 }
 
 /* Print Only */
+
 @media print {
   .noprint {display:none !important;}
   .noshow {display:block !important;}
-  .filter-search-input {display: none;}  
-  body {font-size:55% !important;}
-  
+  .filter-search-input {display: none !important;}  
+  .context_action_link {display: none !important;}
+  .selected {display: none !important;}  
+  .noborder {display:none; !important;}
+  th {text-align: left; }
+  table {width: 100%;}
+  body {font-size:55% !important;}  
 }
 
 
