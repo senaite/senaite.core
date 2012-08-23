@@ -538,6 +538,13 @@ Table cells for each column from in review_state's column list.
 				title python:'Result out of range (min %(min)s, max %(max)s, error %(error)s%%)'%(item['result_in_range'][1]);
 				src string:${portal/absolute_url}/++resource++bika.lims.images/warning.png;"
 			icon="warning"/>
+		<img
+			tal:condition="python:column == 'Result' and item['Result']=='0/0'"
+			tal:attributes="
+				uid item/uid;
+				title python:'No valid result';
+				src string:${portal/absolute_url}/++resource++bika.lims.images/exclamation.png;"
+			icon="exclamation"/>
 	<tal:comment replace="nothing"><!-- shoulder --></tal:comment>
 	</span>
 	</span> <tal:comment replace="nothing"><!-- </span tal:condition="not:replace"> --></tal:comment>

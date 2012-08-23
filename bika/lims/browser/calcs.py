@@ -51,6 +51,9 @@ class ajaxCalculateAnalysisEntry():
             elif form_result == "":
                 # empty result returns "" value to set form result empty
                 Result['result'] = form_result
+            elif form_result == "0/0":
+                # 0/0 result means divbyzero: set result value to empty
+                Result['result'] = ""
             else:
                 # other un-floatable results get forced to 0.
                 Result['result'] = 0.0
@@ -153,6 +156,16 @@ class ajaxCalculateAnalysisEntry():
                                         'msg': inval})
 
             except ZeroDivisionError, e:
+                Result['result'] = '0/0'
+                Result['formatted_result'] = '0/0'
+                self.current_results[uid] = '0/0'
+                self.alerts.append(
+                    {'uid': uid,
+                    'field': 'Result',
+                    'icon': 'exclamation',
+                    'msg': "Division by zero: " + html_quote(str(e.args[0])) + "("+formula+")"
+                    })       
+                self.results.append(Result)
                 return None
             except KeyError, e:
                 self.alerts.append(
