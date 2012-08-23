@@ -3,38 +3,41 @@
 */
 
 /* columns.css */
+@media screen { 
 
-div.width-1\3a 4 {
-    width: 16.5%;
-}
+    div.width-1\3a 4 {
+	width: 16.5%;
+    }
+    
+    div.width-3\3a 4 {
+	width: 80.2%;
+    }
+    
+    div.position-1\3a 4 {
+	margin-left:    -81.5%;
+    }
+    
+    div.position-3\:4 {
+	margin-left: -16.855%;
+	    width:81%
+    }
+    
+    div.width-3\:4 {
+	    width:81.2%
+    }
+    
+    div.width-1\:2 {
+	width: 64.4% !important;
+    }
+    
+    div.width-1\:4 {
+	width: 15.75% !important;
+    }
+    
+    div.position-1\:4 {
+	margin-left: -82.25%;
+    }
 
-div.width-3\3a 4 {
-    width: 80.2%;
-}
-
-div.position-1\3a 4 {
-    margin-left:    -81.5%;
-}
-
-div.position-3\:4 {
-    margin-left: -16.855%;
-	width:81%
-}
-
-div.width-3\:4 {
-	width:81.2%
-}
-
-div.width-1\:2 {
-    width: 64.4% !important;
-}
-
-div.width-1\:4 {
-    width: 15.75% !important;
-}
-
-div.position-1\:4 {
-    margin-left: -82.25%;
 }
 
 /************************/
@@ -706,10 +709,21 @@ select {
 .nopadding {padding:0 !important;}
 .nowrap {  whitespace:nowrap !important; }
 
+}
+
 /* Print Only */
+
 @media print {
   .noprint {display:none !important;}
   .noshow {display:block !important;}
+  .filter-search-input {display: none !important;}  
+  .context_action_link {display: none !important;}
+  .selected {display: none !important;}  
+  .noborder {display:none; !important;}
+  th {text-align: left; }
+  table {width: 100%;}
+  body {font-size:55% !important;}  
 }
+
 
 </dtml-with>
