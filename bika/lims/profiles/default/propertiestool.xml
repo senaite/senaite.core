@@ -7,6 +7,14 @@
     <property name="datepicker_format" type="string">%d %b %Y</property>
  </object>
 
+<object name="site_properties" meta_type="Plone Property Sheet">
+  <property name="localTimeFormat" type="string">%d %b %Y</property>
+  <property name="localLongTimeFormat" type="string">%d %b %Y %H:%M</property>
+  <property name="localTimeOnlyFormat" type="string">%H:%M</property>
+  <property name="disable_folder_sections" type="boolean">True</property>
+  <property name="disable_nonfolderish_sections" type="boolean">True</property>
+</object>
+
  <object name="navtree_properties" meta_type="Plone Property Sheet">
   <property name="title">NavigationTree properties</property>
   <property name="sortAttribute"
@@ -95,14 +103,6 @@
   </property>
   <property name="enable_wf_state_filtering" type="boolean">False</property>
   <property name="wf_states_to_show" type="lines"/>
-</object>
-
-<object name="site_properties" meta_type="Plone Property Sheet">
-  <property name="localTimeFormat" type="string">%d %b %Y</property>
-  <property name="localLongTimeFormat" type="string">%d %b %Y %I:%M %p</property>
-  <property name="localTimeOnlyFormat" type="string">%I:%M %p</property>
-  <property name="disable_folder_sections" type="boolean">True</property>
-  <property name="disable_nonfolderish_sections" type="boolean">True</property>
 </object>
 
 </object>
