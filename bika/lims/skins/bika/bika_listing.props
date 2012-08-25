@@ -32,6 +32,9 @@ cancelledBackgroundColor:string=#FFC8C8
 inactiveTextColor:string=#000
 inactiveBackgroundColor:string=#FFC8C8
 
+submittedbycurrentuserTextColor:string=#000
+submittedbycurrentuserBackgroundColor:string=#FFFB89
+
 sampleDueTextColor:string=#2bb800
 sampleDueBackgroundColor:string=transparent
 

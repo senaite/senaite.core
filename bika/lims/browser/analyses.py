@@ -9,10 +9,7 @@ from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.permissions import EditFieldResults
-from bika.lims.permissions import EditResults
-from bika.lims.permissions import ManageBika
-from bika.lims.permissions import ViewResults
+from bika.lims.permissions import *
 from bika.lims.utils import isActive, TimeOrDate
 from zope.component import getMultiAdapter
 import json
@@ -337,6 +334,21 @@ class AnalysesView(BikaListingView):
                              self.context.translate(_("Late Analysis")))
                 else:
                     items[i]['replace']['DueDate'] = TimeOrDate(self.context, item['DueDate'])
+
+            # Submitting user may not verify results (admin can though)
+            if items[i]['review_state'] == 'to_be_verified' and \
+               not checkPermission(VerifyOwnResults, obj):
+                user_id = getSecurityManager().getUser().getId()
+                self_submitted = False
+                review_history = list(workflow.getInfoFor(obj, 'review_history'))
+                review_history.reverse()
+                for event in review_history:
+                    if event.get('action') == 'submit':
+                        if event.get('actor') == user_id:
+                            self_submitted = True
+                        break
+                if self_submitted:
+                    items[i]['table_row_class'] = "state-submitted-by-current-user"
 
             # add icon for assigned analyses in AR views
             if self.context.portal_type == 'AnalysisRequest' and \

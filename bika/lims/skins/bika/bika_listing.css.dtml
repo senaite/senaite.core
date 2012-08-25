@@ -159,6 +159,11 @@ table.bika-listing-table {
 	color: &dtml-inactiveTextColor; !important;
 }
 
+.bika-listing-table .state-submitted-by-current-user td {
+	background-color: &dtml-submittedbycurrentuserBackgroundColor; !important;
+	color: &dtml-submittedbycurrentuserTextColor; !important;
+}
+
 .bika-listing-table .state-sample_due {
 	background-color: &dtml-sampleDueBackgroundColor;
 	color: &dtml-sampleDueTextColor; !important;

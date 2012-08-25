@@ -2194,7 +2194,7 @@ class AnalysisRequestsView(BikaListingView):
                 items[x]['required'] = ['getSampler', 'getDateSampled']
                 items[x]['allow_edit'] = ['getSampler', 'getDateSampled']
                 samplers = getUsers(sample, ['Sampler', 'LabManager', 'Manager'])
-                username = mtool.getAuthenticatedMember().getUserName()
+                username = member.getUserName()
                 users = [({'ResultValue': u, 'ResultText': samplers.getValue(u)})
                          for u in samplers]
                 items[x]['choices'] = {'getSampler': users}
@@ -2213,7 +2213,7 @@ class AnalysisRequestsView(BikaListingView):
                 items[x]['required'] = ['getPreserver', 'getDatePreserved']
                 items[x]['allow_edit'] = ['getPreserver', 'getDatePreserved']
                 preservers = getUsers(obj, ['Preserver', 'LabManager', 'Manager'])
-                username = mtool.getAuthenticatedMember().getUserName()
+                username = member.getUserName()
                 users = [({'ResultValue': u, 'ResultText': preservers.getValue(u)})
                          for u in preservers]
                 items[x]['choices'] = {'getPreserver': users}
@@ -2223,6 +2223,20 @@ class AnalysisRequestsView(BikaListingView):
                     self.context, DateTime(), long_format=1, with_time=False)
                 items[x]['class']['getPreserver'] = 'provisional'
                 items[x]['class']['getDatePreserved'] = 'provisional'
+
+            # Submitting user may not verify results
+            if items[x]['review_state'] == 'to_be_verified' and \
+               not checkPermission(VerifyOwnResults, obj):
+                self_submitted = False
+                review_history = list(workflow.getInfoFor(obj, 'review_history'))
+                review_history.reverse()
+                for event in review_history:
+                    if event.get('action') == 'submit':
+                        if event.get('actor') == member.getId():
+                            self_submitted = True
+                        break
+                if self_submitted:
+                    items[x]['table_row_class'] = "state-submitted-by-current-user"
 
         # Hide Preservation/Sampling workflow actions if the edit columns
         # are not displayed.
