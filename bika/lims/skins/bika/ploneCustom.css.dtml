@@ -51,7 +51,9 @@ table {
 }
 
 #portal-breadcrumbs{
-    margin-bottom: .3em;
+    border-bottom: 1px solid #DCDCDC;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
 }
 
 .searchSection{
@@ -253,12 +255,17 @@ dl.portlet dt.portletLateAnalyses {
 
 ul#portal-globalnav {
   line-height:2em;
+  margin-left: -15px;
+  margin-right: -15px;
+  padding-left: 15px;
+  margin-bottom: 0px;
 }
 
 /* portal_tabs bar */
 #portal-globalnav li a {
     padding:.25em;
-	text-align:center;
+    text-align:center;
+    font-size: 1.1em;
 }
 a .navTreeCurrentNode .navTreeFolderish {
   border-radius: .25em;
@@ -725,5 +732,102 @@ select {
   body {font-size:55% !important;}  
 }
 
+span.documentFirstHeading {
+    color: #222222;
+    position: relative;
+    size: 2em;
+    text-shadow: 0 0 2px #CCCCCC;
+    top: -0.2em;
+    margin-right:20px;
+    margin-left:5px;
+}
 
+div.documentDescription {
+    margin-bottom: 10px;
+}
+
+div.portletWrapper {
+    border-radius: 5px 5px 5px 5px;
+    -moz-border-radius:5px 5px 5px 5px;
+    -webkit-border-radius:5px 5px 5px 5px;    
+    overflow:hidden;
+    margin-bottom:5px;
+}
+
+div.portletWrapper dl.portlet {
+    border:1px solid &dtml-portletHeaderBackgroundColor;;
+}
+
+div.portletWrapper dl.portlet dt.portletHeader {
+    text-decoration:none;
+}
+
+div.portletWrapper dl.portlet dt.portletHeader {
+    text-decoration:none;
+    font-size:1.15em;
+}
+
+div.portletWrapper dl.portlet ddl.portletItem ul.navTree li.navTreeItem {
+    line-height:2em;
+    border: 1px dotted #DCDCDC;
+}
+dl.portlet ul.navTree .navTreeCurrentItem {
+    background-color:none;
+}
+
+dl.portlet ul.navTree .navTreeCurrentNode {
+    background-color:#EFEFEF;
+    border-bottom: 0.1em solid #CDCDCD;
+}
+
+dl.portlet ul.navTree .navTreeCurrentNode a {
+    color:#333;
+    font-weight:bold;
+}
+
+dl.portlet ul.navTree .navTreeCurrentItem {
+    border:none;
+    background-color:#EFEFEF;
+    margin-left:0px;
+    margin-right:0px;
+}
+dl.portlet li {
+    margin-bottom:0px;
+}
+
+
+#portal-top {
+    background-color: #EFEFEF;
+    margin-bottom: 15px;
+}
+
+dl.portlet ul.navTreeLevel1 > .navTreeItem {
+    border-bottom: 0.1em dotted #DDDDDD;
+    line-height: 2em;
+    padding: 0.25em 1em;
+}
+
+dl.portlet dd ul.navTree li ul.navTreeLevel1 {
+   margin-left: -10px;
+   margin-right: -11px;
+}
+
+dl.portlet dd ul.navTree li ul.navTreeLevel1 li {
+   padding-left: 15px;
+}
+
+dl.portlet dd ul.navTree li a {
+    font-size: 1.1em;
+}
+
+dl.portlet dd ul.navTree li a span {
+    padding-left:5px;
+}
+div.managePortletsLink {
+    background: none repeat scroll 0 0 #EFEFEF;
+    border: 1px solid #DCDCDC;
+    border-radius: 0 0 0 0;
+    padding: 3px 5px 3px 3px;
+    text-align: right;
+}
 </dtml-with>
