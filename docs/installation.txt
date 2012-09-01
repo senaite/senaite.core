@@ -1,51 +1,40 @@
 Installation
 ------------
 
-This document describes the installation of Bika LIMS using the Plone Unified
-Installer package.
+### Install Plone:
 
-### Download and install Plone
+Download the latest Unified Installer from http://plone.org/download and
+visit http://plone.org/documentation/topic/Installation for more about
+installing and configuring Plone.
 
-The latest Unified Installer can be found at http://plone.org/products
+### Install Gnuplot:
 
-Plone 4 or newer is required.
+Gnplot is required for plotting results.
 
-    $ tar xzf Plone-4.1.5-UnifiedInstaller.tgz
-    $ cd Plone-4.1.5-UnifiedInstaller
-    $ ./install.sh --target=Plone --libz=yes --password=admin standalone
+Visit http://gnuplot.sourceforge.net/
 
-Visit http://plone.org/documentation/topic/Installation for more information about setting up Plone.
+### Install Bika LIMS:
 
-### Edit Plone/zinstance/buildout.conf.
-
-Find the "eggs" section and add "bika.lims"
+Edit buildout.cfg and add "bika.lims" to the eggs section:
 
     eggs =
-        ...
+        Plone
+        Pillow
         bika.lims
 
-### Run buildout
+Run buildout:
 
-    sudo bin/buildout
+    $ bin/buildout
 
-### Start Plone
+### Start Plone:
 
-    # Start in foreground (debug) mode, noting error
-    # messages if any and taking corrective action
     $ bin/plonectl fg
 
-    # start normally:
-    $ bin/plonectl start
+### Add a new site:
 
-### Add a new plone site.
+Visit http://localhost:8080 and add a new site.  Be sure to select the
+checkbox for the Bika LIMS extension profile.
 
-Assign an ID of your choice, and select the checkbox to activate the
-Bika-LIMS extension profile.  To add Bika LIMS to an existing Plone site,
-visit the Addons page of Site Setup.
+### Test:
 
-if you need to re-add admin: bin\plonectl adduser admin admin
-or bin\instance adduser admin admin (for zeo)
-That's it!
-
-You should be able to test the site now by visiting
-http://localhost:8080
+Visit http://localhost:8080 and view your site.
