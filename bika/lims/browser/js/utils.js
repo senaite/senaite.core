@@ -339,3 +339,12 @@ $(document).ready(function(){
 
 });
 }(jQuery));
+
+// Patch for temporary resolution of issue #281.
+jQuery(function($){
+     for(var picker in $.datepicker.regional) {
+	$.datepicker.regional[picker].monthNamesShort = $.datepicker.regional['en-GB'].monthNamesShort;
+	$.datepicker.regional[picker].dateFormat = $.datepicker.regional['en-GB'].dateFormat;	
+	$.datepicker.setDefaults($.datepicker.regional[picker]);
+     }
+});
