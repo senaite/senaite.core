@@ -284,7 +284,7 @@ h1, h2, h3, h4, h5, h6 {
         <th i18n:translate="">Date Received</th>
         <td tal:repeat="ar view/batch"
           tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1"
-          tal:content="python:view.TimeOrDate(context, ar.getDateReceived(), long_format=1)"
+          tal:content="python:view.ulocalized_time(ar.getDateReceived(), long_format=1, context=here)"
           >2005-01-01 10:00</td>
       </tr>
 
@@ -292,7 +292,7 @@ h1, h2, h3, h4, h5, h6 {
         <th i18n:translate="">Date Published</th>
         <td tal:repeat="ar view/batch"
           tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1"
-          tal:content="python:view.TimeOrDate(context, ar.getDatePublished(), long_format=1)"
+          tal:content="python:view.ulocalized_time(ar.getDatePublished(), long_format=1, context=here)"
           >2005-01-01 10:00</td>
       </tr>
 

@@ -2,14 +2,13 @@ from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.utils import sendmail, encode_header
 from email.Utils import formataddr
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from bika.lims.config import POINTS_OF_CAPTURE
-from bika.lims.utils import TimeOrDate
 from email.mime.text import MIMEText
 from os.path import join
 import App
@@ -24,7 +23,6 @@ class Publish(BrowserView):
     def __init__(self, context, request, action, analysis_requests):
         self.context = context
         self.request = request
-        self.TimeOrDate = TimeOrDate
         # the workflow transition that invoked us
         self.action = action
         # the list of ARs that we will process.

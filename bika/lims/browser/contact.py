@@ -1,7 +1,7 @@
 from Acquisition import aq_parent, aq_inner, aq_base
 from bika.lims import bikaMessageFactory as _
 from bika.lims import PMF
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.CMFCore.utils import getToolByName
 import json

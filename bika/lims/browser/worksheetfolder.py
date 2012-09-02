@@ -3,13 +3,12 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import DisplayList
 from DocumentTemplate import sequence
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims import PMF, logger
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
-from bika.lims.utils import TimeOrDate
 from bika.lims.utils import getUsers
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
@@ -84,7 +83,6 @@ class WorksheetFolderListingView(BikaListingView):
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.title = _("Worksheets")
         self.description = ""
-        self.TimeOrDate = TimeOrDate
 
         pm = getToolByName(context, "portal_membership")
         # this is a property of self, because self.getAnalysts returns it
@@ -297,7 +295,7 @@ class WorksheetFolderListingView(BikaListingView):
                 # give empties pretty classes.
                 items[x]['table_row_class'] = 'state-empty-worksheet'
 
-            items[x]['CreationDate'] = TimeOrDate(self.context, obj.creation_date)
+                items[x]['CreationDate'] = self.ulocalized_time(obj.creation_date)
 
             layout = obj.getLayout()
 

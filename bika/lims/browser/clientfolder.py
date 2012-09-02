@@ -8,7 +8,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IClientFolder
 from plone.app.content.browser.interfaces import IFolderContentsView
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from zope.interface import implements
 from Products.CMFCore import permissions
 

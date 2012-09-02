@@ -1,11 +1,11 @@
 from AccessControl import getSecurityManager
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.utils import isActive, TimeOrDate
+from bika.lims.utils import isActive
 from operator import itemgetter
 from bika.lims.browser.analyses import AnalysesView
 from plone.app.layout.globals.interfaces import IViewView
@@ -22,7 +22,6 @@ class ViewView(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/referencesample_big.png"
-        self.TimeOrDate = TimeOrDate
 
     def __call__(self):
         rc = getToolByName(self.context, REFERENCE_CATALOG)
@@ -281,12 +280,9 @@ class ReferenceSamplesView(BikaListingView):
             else:
                 items[x]['Definition'] = ' '
 
-            items[x]['DateSampled'] = \
-                 TimeOrDate(self.context, obj.getDateSampled(), long_format=0)
-            items[x]['DateReceived'] = \
-                 TimeOrDate(self.context, obj.getDateReceived(), long_format=0)
-            items[x]['ExpiryDate'] = \
-                 TimeOrDate(self.context, obj.getExpiryDate(), long_format=0)
+            items[x]['DateSampled'] = self.ulocalized_time(obj.getDateSampled())
+            items[x]['DateReceived'] = self.ulocalized_time(obj.getDateReceived())
+            items[x]['ExpiryDate'] = self.ulocalized_time(obj.getExpiryDate())
 
             after_icons = ''
             if obj.getBlank():

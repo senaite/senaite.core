@@ -4,7 +4,7 @@ from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.ATContentTypes.utils import DT2dt,dt2DT
 from Products.CMFPlone.TranslationServiceTool import TranslationServiceTool
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
 from bika.lims import interfaces
 from bika.lims import logger
@@ -125,54 +125,6 @@ def formatDuration(context, totminutes):
         hours_str = ''
 
     return '%s%s' % (hours_str, mins_str)
-
-def TimeOrDate(context, datetime, long_format = False, with_time = True):
-    """ Return the Time date is today,
-        otherwise return the Date.
-    """
-    localLongTimeFormat = context.portal_properties.site_properties.getProperty('localLongTimeFormat')
-    localTimeFormat = context.portal_properties.site_properties.getProperty('localTimeFormat')
-    localTimeOnlyFormat = context.portal_properties.site_properties.getProperty('localTimeOnlyFormat')
-
-    formatter = context.REQUEST.locale.dates.getFormatter('dateTime', 'long')
-
-    if hasattr(datetime, 'Date'):
-        if (datetime.Date() > DateTime().Date()) or long_format:
-            if with_time:
-                dt = formatter.format(DT2dt(DateTime(datetime)))
-                # cut off the timezone
-                matches = re.match(r"(.*)\s\+.*", dt).groups()
-                dt = matches and matches[0] or dt
-                ##dt = datetime.asdatetime().strftime(localLongTimeFormat)
-            else:
-                dt = formatter.format(DT2dt(DateTime(datetime)))
-                # cut off the time
-                matches = re.match(r"(.*)\s\d+:.*", dt).groups()
-                dt = matches and matches[0] or dt
-                ##dt = datetime.asdatetime().strftime(localTimeFormat)
-        elif (datetime.Date() < DateTime().Date()):
-            dt = formatter.format(DT2dt(DateTime(datetime)))
-            # cut off the time
-            matches = re.match(r"(.*)\s\d+:.*", dt).groups()
-            dt = matches and matches[0] or dt
-            ##dt = datetime.asdatetime().strftime(localTimeFormat)
-        elif datetime.Date() == DateTime().Date():
-            dt = datetime.asdatetime().strftime(localTimeOnlyFormat)
-        else:
-            dt = formatter.format(DT2dt(DateTime(datetime)))
-            # cut off the time
-            matches = re.match(r"(.*)\s\d+:.*", dt).groups()
-            dt = matches and matches[0] or dt
-            ##dt = datetime.asdatetime().strftime(localTimeFormat)
-        dt = dt.replace("PM", "pm").replace("AM", "am")
-        if len(dt) > 10:
-            dt = dt.replace("12:00 am", "")
-        if dt == "12:00 am":
-            dt = datetime.asdatetime().strftime(localTimeFormat)
-    else:
-        dt = datetime
-    return dt
-
 
 # encode_header function copied from roundup's rfc2822 package.
 hqre = re.compile(r'^[A-z0-9!"#$%%&\'()*+,-./:;<=>?@\[\]^_`{|}~ ]+$')

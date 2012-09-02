@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2012-07-17 10:58+0000\n"
+"POT-Creation-Date: 2012-09-02 14:44+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -240,10 +240,6 @@ msgstr ""
 msgid "Extracts"
 msgstr ""
 
-#: ../profiles/default/actions.xml
-msgid "Import"
-msgstr ""
-
 #: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
 msgid "Imported"
 msgstr ""
@@ -280,10 +276,6 @@ msgstr ""
 #: ../profiles/default/types/InvoiceBatch.xml
 #: ../profiles/default/types/InvoiceFolder.xml
 msgid "Invoices"
-msgstr ""
-
-#: ../profiles/default/actions.xml
-msgid "LIMS"
 msgstr ""
 
 #: ../profiles/default/types/LabContact.xml
@@ -536,6 +528,10 @@ msgstr ""
 
 #: ../profiles/default/workflows/bika_sample_workflow/definition.xml
 msgid "Sample received"
+msgstr ""
+
+#: ../profiles/default/types/Client.xml
+msgid "SamplePoints"
 msgstr ""
 
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-07-17 10:58+0000\n"
+"POT-Creation-Date: 2012-09-02 14:44+0000\n"
 "PO-Revision-Date: 2012-07-13 03:56+0000\n"
 "Last-Translator: Tao Li <wintersun_li@yahoo.com>\n"
 "Language-Team: Bika <bikasupport@bikalabs.com>\n"
@@ -243,10 +243,6 @@ msgstr ""
 msgid "Extracts"
 msgstr ""
 
-#: ../profiles/default/actions.xml
-msgid "Import"
-msgstr ""
-
 #: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
 msgid "Imported"
 msgstr ""
@@ -284,10 +280,6 @@ msgstr ""
 #: ../profiles/default/types/InvoiceFolder.xml
 msgid "Invoices"
 msgstr "发票"
-
-#: ../profiles/default/actions.xml
-msgid "LIMS"
-msgstr "LIMS"
 
 #: ../profiles/default/types/LabContact.xml
 msgid "Lab Contact"
@@ -539,6 +531,10 @@ msgstr ""
 
 #: ../profiles/default/workflows/bika_sample_workflow/definition.xml
 msgid "Sample received"
+msgstr ""
+
+#: ../profiles/default/types/Client.xml
+msgid "SamplePoints"
 msgstr ""
 
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml

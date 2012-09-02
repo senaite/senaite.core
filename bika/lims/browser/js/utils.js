@@ -4,6 +4,8 @@ jarn.i18n.loadCatalog('bika');
 window.jsi18n_bika = jarn.i18n.MessageFactory('bika');
 jarn.i18n.loadCatalog('plone');
 window.jsi18n_plone = jarn.i18n.MessageFactory('plone');
+jarn.i18n.loadCatalog('plonelocales');
+window.jsi18n_plonelocales = jarn.i18n.MessageFactory('plonelocales');
 
 function portalMessage(message) {
 	str = "<dl class='portalMessage error'>"+
@@ -247,18 +249,26 @@ function enableAddAttachment(this_field) {
 	return
 }
 
+
 $(document).ready(function(){
 
 	_ = window.jsi18n_bika;
 	PMF = window.jsi18n_plone;
+	plonelocales = window.jsi18n_plonelocales;
+
+	// This is duplicated here - It really should be coming from the
+	// translation catalogue
+	// date_format_short_datepicker = "M dd, yy"
+
+	dateFormat = window.jsi18n_plonelocales("date_format_short_datepicker");
 
 	$('input.datepicker').live('click', function() {
 		$(this).datepicker({
 			showOn:'focus',
 			showAnim:'',
-			dateFormat:'dd M yy',
 			changeMonth:true,
-			changeYear:true
+			changeYear:true,
+			dateFormat:dateFormat
 		})
 		.click(function(){$(this).attr('value', '');})
 		.focus();
@@ -269,10 +279,10 @@ $(document).ready(function(){
 		$(this).datepicker({
 			showOn:'focus',
 			showAnim:'',
-			dateFormat:'dd M yy',
 			changeMonth:true,
 			changeYear:true,
-			maxDate: '+0d'
+			maxDate: '+0d',
+			dateFormat: dateFormat
 		})
 		.click(function(){$(this).attr('value', '');})
 		.focus();
@@ -282,11 +292,11 @@ $(document).ready(function(){
 		$(this).datepicker({
 			showOn:'focus',
 			showAnim:'',
-			dateFormat:'dd M yy',
 			changeMonth:true,
 			changeYear:true,
 			maxDate: '+0d',
-			numberOfMonths: 2
+			numberOfMonths: 2,
+			dateFormat: dateFormat
 		})
 		.click(function(){$(this).attr('value', '');})
 		.focus();
@@ -340,11 +350,3 @@ $(document).ready(function(){
 });
 }(jQuery));
 
-// Patch for temporary resolution of issue #281.
-jQuery(function($){
-     for(var picker in $.datepicker.regional) {
-	$.datepicker.regional[picker].monthNamesShort = $.datepicker.regional['en-GB'].monthNamesShort;
-	$.datepicker.regional[picker].dateFormat = $.datepicker.regional['en-GB'].dateFormat;	
-	$.datepicker.setDefaults($.datepicker.regional[picker]);
-     }
-});

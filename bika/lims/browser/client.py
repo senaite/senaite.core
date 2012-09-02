@@ -2,7 +2,7 @@ from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF, logger
 from bika.lims import bikaMessageFactory as _
@@ -12,7 +12,6 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.publish import Publish
 from bika.lims.browser.sample import SamplesView
 from bika.lims.permissions import *
-from bika.lims.utils import TimeOrDate
 from bika.lims.utils import isActive
 from bika.lims.subscribers import skip
 from bika.lims.subscribers import doActionFor
@@ -768,8 +767,8 @@ class ClientOrdersView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
             items[x]['OrderNumber'] = obj.getOrderNumber()
-            items[x]['OrderDate'] = TimeOrDate(self.context, obj.getOrderDate())
-            items[x]['DateDispatched'] = TimeOrDate(self.context, obj.getDateDispatched())
+            items[x]['OrderDate'] = self.ulocalized_time(obj.getOrderDate())
+            items[x]['DateDispatched'] = self.ulocalized_time(obj.getDateDispatched())
 
             items[x]['replace']['OrderNumber'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['OrderNumber'])

@@ -6,7 +6,7 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import EditResults, EditWorksheet, ManageWorksheets
 from bika.lims import PMF, logger
@@ -18,7 +18,7 @@ from bika.lims.browser.referencesample import ReferenceSamplesView
 from bika.lims.exportimport import instruments
 from bika.lims.subscribers import skip
 from bika.lims.subscribers import doActionFor
-from bika.lims.utils import getUsers, isActive, TimeOrDate
+from bika.lims.utils import getUsers, isActive
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -260,8 +260,8 @@ class WorksheetAnalysesView(AnalysesView):
             if obj.portal_type == "ReferenceAnalysis":
                 items[x]['DueDate'] = ''
             else:
-                items[x]['DueDate'] = \
-                    TimeOrDate(self.context, obj.getDueDate(), long_format = 0)
+                items[x]['DueDate'] = self.ulocalized_time(obj.getDueDate())
+
             items[x]['Order'] = ''
 
         # insert placeholder row items in the gaps
@@ -603,11 +603,10 @@ class AddAnalysesView(BikaListingView):
             service = obj.getService()
             client = obj.aq_parent.aq_parent
             items[x]['getClientOrderNumber'] = obj.getClientOrderNumber()
-            items[x]['getDateReceived'] = \
-                TimeOrDate(self.context, obj.getDateReceived())
+            items[x]['getDateReceived'] = self.ulocalized_time(obj.getDateReceived())
+
             DueDate = obj.getDueDate()
-            items[x]['getDueDate'] = \
-                TimeOrDate(self.context, DueDate)
+            items[x]['getDueDate'] = self.ulocalized_time(DueDate)
             if DueDate < DateTime():
                 items[x]['after']['DueDate'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                     (self.context.absolute_url(),
@@ -843,7 +842,7 @@ class WorksheetARsView(BikaListingView):
                 'Position': pos,
                 'RequestID': ar.id,
                 'Client': ar.aq_parent.Title(),
-                'created': TimeOrDate(ar, ar.created()),
+                'created': self.ulocalized_time(ar.created()),
                 'replace': {},
                 'before': {},
                 'after': {},

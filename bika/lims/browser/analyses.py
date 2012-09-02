@@ -5,12 +5,12 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import transaction_note
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.permissions import *
-from bika.lims.utils import isActive, TimeOrDate
+from bika.lims.utils import isActive
 from zope.component import getMultiAdapter
 import json
 import plone
@@ -151,7 +151,7 @@ class AnalysesView(BikaListingView):
             else:
                 items[i]['DueDate'] = obj.getDueDate()
                 cd = obj.getResultCaptureDate()
-                items[i]['CaptureDate'] = cd and TimeOrDate(self.context, cd) or ''
+                items[i]['CaptureDate'] = cd and self.ulocalized_time(cd) or ''
             items[i]['Attachments'] = ''
 
             # calculate specs
@@ -323,7 +323,7 @@ class AnalysesView(BikaListingView):
                 if (not calculation or (calculation and not calculation.getDependentServices())) and \
                    items[i]['review_state'] not in ['to_be_sampled', 'to_be_preserved', 'sample_due', 'published'] and \
                    items[i]['result_captured'] > items[i]['DueDate']:
-                    DueDate = TimeOrDate(self.context, item['DueDate'], long_format = 0)
+                    DueDate = self.ulocalized_time(item['DueDate'])
                     if self.context.portal_type == 'AnalysisRequest':
                         items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                             (DueDate, self.portal_url,
@@ -333,7 +333,8 @@ class AnalysesView(BikaListingView):
                             (DueDate, self.portal_url,
                              self.context.translate(_("Late Analysis")))
                 else:
-                    items[i]['replace']['DueDate'] = TimeOrDate(self.context, item['DueDate'])
+                    items[i]['replace']['DueDate'] = self.ulocalized_time(
+                        item['DueDate'])
 
             # Submitting user may not verify results (admin can though)
             if items[i]['review_state'] == 'to_be_verified' and \

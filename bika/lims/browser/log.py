@@ -4,7 +4,6 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.utils import TimeOrDate
 from operator import itemgetter
 from plone.app.layout.globals.interfaces import IViewView
 from plone.app.layout.viewlets.content import ContentHistoryView, ContentHistoryViewlet
@@ -90,7 +89,7 @@ class LogView(BikaListingView):
                 'allow_edit': [],
 
                 'Version': isVersionable and self.context.get('version_id', '') or '0',
-                'Date': TimeOrDate(self.context, entry.get('time'), long_format=1),
+                'Date': self.ulocalized_time(entry.get('time')),
                 'sortable_date': entry.get('time'),
                 'User': entry.get('actor'),
                 'Action': entry.get('action') and entry.get('action') or 'Create',
@@ -132,7 +131,7 @@ class LogView(BikaListingView):
                 'allow_edit': [],
 
                 'Version': entry.get('version_id'),
-                'Date': TimeOrDate(self.context, DateTime(entry.get('time')), long_format=1),
+                'Date': self.ulocalized_time(DateTime(entry.get('time'))),
                 'sortable_date': entry.get('time'),
                 'User': entry.get('actor').get('fullname'),
                 'Action': entry.get('action') and entry.get('action') or 'Create',

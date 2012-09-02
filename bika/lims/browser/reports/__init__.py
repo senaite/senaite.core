@@ -11,11 +11,10 @@ from resultspersamplepoint import ResultsPerSamplePoint
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.utils import TimeOrDate
 from bika.lims.utils import pretty_user_name_or_id
 from bika.lims.utils import pretty_user_email
 from bika.lims.utils import logged_in_client
@@ -39,7 +38,6 @@ class ProductivityView(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/report_big.png"
-        self.TimeOrDate = TimeOrDate
         self.getAnalysts = getUsers(context, ['Manager', 'LabManager', 'Analyst'])
 
     def __call__(self):
@@ -54,7 +52,6 @@ class QualityControlView(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/report_big.png"
-        self.TimeOrDate = TimeOrDate
 
     def __call__(self):
         return self.template()
@@ -68,7 +65,6 @@ class AdministrationView(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/report_big.png"
-        self.TimeOrDate = TimeOrDate
 
     def __call__(self):
         return self.template()
@@ -169,7 +165,7 @@ class ReportHistoryView(BikaListingView):
                 items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
                     (client.absolute_url(), client.Title())
             items[x]['FileSize'] = '%sKb' % (file.get_size() / 1024)
-            items[x]['Created'] = TimeOrDate(self.context, obj.created())
+            items[x]['Created'] = self.ulocalized_time(obj.created())
             items[x]['By'] = pretty_user_name_or_id(self.context, obj.Creator())
 
             items[x]['replace']['ReportType'] = \
@@ -185,7 +181,6 @@ class SubmitForm(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
-        self.TimeOrDate = TimeOrDate
 
     def __call__(self):
         lab = self.context.bika_setup.laboratory

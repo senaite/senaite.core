@@ -71,9 +71,8 @@ function deleteSampleButton(){
 	$("#ar_"+column+"_SampleID_button").val($("#ar_"+column+"_SampleID_default").val());
 	$("#ar_"+column+"_SampleID").val('');
 	$("#ar_"+column+"_ClientReference").val('').removeAttr("readonly");
-	// XXX Datepicker format is not i18n aware (dd Oct 2011)
 	$("#ar_"+column+"_SamplingDate")
-		.datepicker({'dateFormat': 'dd M yy', showAnim: ''})
+		.datepicker({'dateFormat': window.jsi18n_plonelocales('date_format_short_datepicker'), showAnim: ''})
 		.click(function(){$(this).attr('value', '');})
 		.attr('value', '');
 	$("#ar_"+column+"_ClientSampleID").val('').removeAttr("readonly");
@@ -846,14 +845,13 @@ $(document).ready(function(){
 	// clear date widget values if the page is reloaded.
 	e = $('input[id$="_SamplingDate"]');
 	if(e.length > 0){
-		// XXX Datepicker format is not i18n aware (dd Oct 2011)
 		if($($(e).parents('form').children('[name=came_from]')).val() == 'add'){
 			$(e)
-			.datepicker({'dateFormat': 'dd M yy', showAnim: ''})
+			.datepicker({'dateFormat': window.jsi18n_plonelocales('date_format_short_datepicker'), showAnim: ''})
 			.click(function(){$(this).attr('value', '');})
 		} else {
 			$(e)
-			.datepicker({'dateFormat': 'dd M yy', showAnim: ''})
+			.datepicker({'dateFormat': window.jsi18n_plonelocales('date_format_short_datepicker'), showAnim: ''})
 		}
 	}
 

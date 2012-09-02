@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-07-17 10:58+0000\n"
+"POT-Creation-Date: 2012-09-02 14:44+0000\n"
 "PO-Revision-Date: 2012-07-08 18:08+0000\n"
 "Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
 "Language-Team: Bika <bikasupport@bikalabs.com>\n"
@@ -244,10 +244,6 @@ msgstr "Exporta el lot"
 msgid "Extracts"
 msgstr "Extractes"
 
-#: ../profiles/default/actions.xml
-msgid "Import"
-msgstr "Importació"
-
 #: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
 msgid "Imported"
 msgstr "Importats"
@@ -285,10 +281,6 @@ msgstr "Factura els lots"
 #: ../profiles/default/types/InvoiceFolder.xml
 msgid "Invoices"
 msgstr "Factures"
-
-#: ../profiles/default/actions.xml
-msgid "LIMS"
-msgstr "LIMS"
 
 #: ../profiles/default/types/LabContact.xml
 msgid "Lab Contact"
@@ -541,6 +533,10 @@ msgstr "Tipus de mostres"
 #: ../profiles/default/workflows/bika_sample_workflow/definition.xml
 msgid "Sample received"
 msgstr "Mostra rebuda"
+
+#: ../profiles/default/types/Client.xml
+msgid "SamplePoints"
+msgstr ""
 
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml

@@ -1,12 +1,14 @@
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.client import ClientSamplesView
-from bika.lims.utils import formatDateQuery, formatDateParms, \
-                logged_in_client, TimeOrDate, pretty_user_name_or_id
+from bika.lims.utils import formatDateQuery
+from bika.lims.utils import formatDateParms
+from bika.lims.utils import logged_in_client
+from bika.lims.utils import pretty_user_name_or_id
 from bika.lims.interfaces import IQueries
 from plone.app.content.browser.interfaces import IFolderContentsView
 from Products.CMFPlone.PloneBatch import Batch
@@ -359,10 +361,10 @@ class QueryAnalysisRequests(BrowserView):
             details[7].append({'value': ar.getProfile() and ar.getProfile().Title() or ' '})
             details[8].append({'value': ar.getSampleTypeTitle()})
             details[9].append({'value': ar.getSamplePointTitle()})
-            details[10].append({'value': TimeOrDate(self.context, ar.getSample().getDateSampled())})
-            details[11].append({'value': TimeOrDate(self.context, ar.created())})
-            details[12].append({'value': TimeOrDate(self.context, ar.getDateReceived())})
-            details[13].append({'value': TimeOrDate(self.context, ar.getDatePublished())})
+            details[10].append({'value': self.ulocalized_time(ar.getSample().getDateSampled())})
+            details[11].append({'value': self.ulocalized_time(ar.created())})
+            details[12].append({'value': self.ulocalized_time(ar.getDateReceived())})
+            details[13].append({'value': self.ulocalized_time(ar.getDatePublished())})
             details[14].append({'value': workflow.getInfoFor(ar, 'review_state')})
             #details[15].append({'value': ar.getSubmittedBy().Title()})
             details[15].append({'value': ' '})

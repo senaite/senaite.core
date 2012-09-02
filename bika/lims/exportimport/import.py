@@ -1,9 +1,8 @@
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.content.instrument import getDataInterfaces
-from bika.lims.utils import TimeOrDate
 from operator import itemgetter
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements

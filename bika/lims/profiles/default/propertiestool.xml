@@ -2,15 +2,7 @@
 
 <object name="portal_properties" meta_type="Plone Properties Tool">
 
- <object name="bika_properties" meta_type="Plone Property Sheet">
-  <property name="title">Bika-LIMS Site Properties</property>
-    <property name="datepicker_format" type="string">%d %b %Y</property>
- </object>
-
 <object name="site_properties" meta_type="Plone Property Sheet">
-  <property name="localTimeFormat" type="string">%d %b %Y</property>
-  <property name="localLongTimeFormat" type="string">%d %b %Y %H:%M</property>
-  <property name="localTimeOnlyFormat" type="string">%H:%M</property>
   <property name="disable_folder_sections" type="boolean">True</property>
   <property name="disable_nonfolderish_sections" type="boolean">True</property>
 </object>

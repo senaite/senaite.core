@@ -1,11 +1,11 @@
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.client import ClientSamplesView
-from bika.lims.utils import formatDateQuery, formatDateParms, TimeOrDate
+from bika.lims.utils import formatDateQuery, formatDateParms
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
@@ -125,7 +125,7 @@ class AnalysesRepeated(BrowserView):
             dataitem = {'value': analysis.getServiceTitle()}
             dataline.append(dataitem)
 
-            dataitem = {'value': TimeOrDate(self.context, analysis.getDateReceived())}
+            dataitem = {'value': self.ulocalized_time(analysis.getDateReceived())}
             dataline.append(dataitem)
 
             state = wf_tool.getInfoFor(analysis, 'review_state', '')

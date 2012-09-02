@@ -4,7 +4,7 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF
 from bika.lims import bikaMessageFactory as _
@@ -18,7 +18,6 @@ from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.permissions import *
 from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
-from bika.lims.utils import TimeOrDate
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
@@ -393,7 +392,6 @@ class AnalysisRequestViewView(BrowserView):
     def __init__(self, context, request):
         super(AnalysisRequestViewView, self).__init__(context, request)
         self.icon = "++resource++bika.lims.images/analysisrequest_big.png"
-        self.TimeOrDate = TimeOrDate
 
         self.portal = getToolByName(context, 'portal_url').getPortalObject()
         self.portal_url = self.portal.absolute_url()
@@ -406,7 +404,6 @@ class AnalysisRequestViewView(BrowserView):
         getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
         workflow = getToolByName(self.context, 'portal_workflow')
         props = getToolByName(self.context, 'portal_properties').bika_properties
-        datepicker_format = props.getProperty('datepicker_format')
 
         ## Create header_table data rows
         sample = self.context.getSample()
@@ -514,21 +511,25 @@ class AnalysisRequestViewView(BrowserView):
              'allow_edit': False,
              'value': self.context.created(),
              'condition':True,
-             'formatted_value': TimeOrDate(self.context, self.context.created()),
+             'formatted_value': self.ulocalized_time(self.context.created()),
              'type': 'text'},
             {'id': 'SamplingDate',
              'title': _('Sampling Date'),
              'allow_edit': allow_sample_edit,
-             'value': sample.getSamplingDate().strftime(datepicker_format),
-             'formatted_value': TimeOrDate(self.context, self.context.getSamplingDate()),
+             'value': self.ulocalized_time(
+                sample.getSamplingDate()),
+             'formatted_value': self.ulocalized_time(
+                self.context.getSamplingDate()),
              'condition':True,
              'class': 'datepicker',
              'type': 'text'},
             {'id': 'DateSampled',
              'title': _('Date Sampled'),
              'allow_edit': allow_sample_edit,
-             'value': sample.getDateSampled() and sample.getDateSampled().strftime(datepicker_format) or '',
-             'formatted_value': sample.getDateSampled() and TimeOrDate(self.context, sample.getDateSampled()) or '',
+             'value': sample.getDateSampled() and self.ulocalized_time(
+                sample.getDateSampled()) or '',
+             'formatted_value': sample.getDateSampled() and self.ulocalized_time(
+                sample.getDateSampled()) or '',
              'condition':SamplingWorkflowEnabled,
              'class': 'datepicker',
              'type': 'text',
@@ -554,7 +555,7 @@ class AnalysisRequestViewView(BrowserView):
              'title': _('Date Received'),
              'allow_edit': False,
              'value': self.context.getDateReceived(),
-             'formatted_value': TimeOrDate(self.context, self.context.getDateReceived()),
+             'formatted_value': self.ulocalized_time(self.context.getDateReceived()),
              'condition':True,
              'type': 'text'},
             {'id': 'Composite',
@@ -1344,10 +1345,10 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                 'ClientReference': items[x]['ClientReference'],
                 'Requests': ", ".join([o.Title() for o in obj.getAnalysisRequests()]),
                 'ClientSampleID': items[x]['ClientSampleID'],
-                'DateReceived': obj.getDateReceived() and \
-                               TimeOrDate(self.context, obj.getDateReceived()) or '',
-                'SamplingDate': obj.getSamplingDate() and \
-                               TimeOrDate(self.context, obj.getSamplingDate()) or '',
+                'DateReceived': obj.getDateReceived() and self.ulocalized_time(
+                    obj.getDateReceived()) or '',
+                'SamplingDate': obj.getSamplingDate() and self.ulocalized_time(
+                    obj.getSamplingDate()) or '',
                 'SampleType': items[x]['SampleTypeTitle'],
                 'SamplePoint': items[x]['SamplePointTitle'],
                 'Composite': obj.getComposite(),
@@ -1358,9 +1359,9 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                 'column': self.request.get('column', None),
             })
             items[x]['DateReceived'] = obj.getDateReceived() and \
-                 TimeOrDate(self.context, obj.getDateReceived()) or ''
+                 self.ulocalized_time(obj.getDateReceived()) or ''
             items[x]['SamplingDate'] = obj.getSamplingDate() and \
-                 TimeOrDate(self.context, obj.getSamplingDate()) or ''
+                 self.ulocalized_time(obj.getSamplingDate()) or ''
         return items
 
     def FieldAnalyses(self, sample):
@@ -2130,10 +2131,9 @@ class AnalysisRequestsView(BikaListingView):
                                                          obj.Creator())
 
             samplingdate = obj.getSample().getSamplingDate()
-            items[x]['SamplingDate'] = TimeOrDate(self.context, samplingdate, long_format = 0)
-
-            items[x]['getDateReceived'] = TimeOrDate(self.context, obj.getDateReceived())
-            items[x]['getDatePublished'] =  TimeOrDate(self.context, obj.getDatePublished())
+            items[x]['SamplingDate'] = self.ulocalized_time(samplingdate)
+            items[x]['getDateReceived'] = self.ulocalized_time(obj.getDateReceived())
+            items[x]['getDatePublished'] = self.ulocalized_time(obj.getDatePublished())
 
             deviation = sample.getSamplingDeviation()
             items[x]['SamplingDeviation'] = deviation and deviation.Title() or ''
@@ -2160,18 +2160,19 @@ class AnalysisRequestsView(BikaListingView):
             if after_icons:
                 items[x]['after']['getRequestID'] = after_icons
 
-            items[x]['Created'] = TimeOrDate(self.context,
-                                             obj.created())
+            items[x]['Created'] = self.ulocalized_time(obj.created())
 
             items[x]['getSample'] = sample
             items[x]['replace']['getSample'] = \
                 "<a href='%s'>%s</a>" % (sample.absolute_url(), sample.Title())
 
             if not samplingdate > DateTime():
-                datesampled = TimeOrDate(self.context, sample.getDateSampled())
+                datesampled = self.ulocalized_time(sample.getDateSampled())
+
                 if not datesampled:
-                    datesampled = TimeOrDate(self.context, DateTime(),
-                                             long_format=1, with_time = False)
+                    datesampled = self.ulocalized_time(
+                        DateTime(),
+                        long_format=1)
                     items[x]['class']['getDateSampled'] = 'provisional'
                 sampler = sample.getSampler().strip()
                 if sampler:
@@ -2219,8 +2220,9 @@ class AnalysisRequestsView(BikaListingView):
                 items[x]['choices'] = {'getPreserver': users}
                 preserver = username in preservers.keys() and username or ''
                 items[x]['getPreserver'] = preserver
-                items[x]['getDatePreserved'] = TimeOrDate(
-                    self.context, DateTime(), long_format=1, with_time=False)
+                items[x]['getDatePreserved'] = self.ulocalized_time(
+                    DateTime(),
+                    long_format=1)
                 items[x]['class']['getPreserver'] = 'provisional'
                 items[x]['class']['getDatePreserved'] = 'provisional'
 

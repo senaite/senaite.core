@@ -8,9 +8,10 @@
     xmlns:monkey="http://namespaces.plone.org/monkey"
     i18n_domain="bika">
 
+  <i18n:registerTranslations directory="locales" />
+
   <include package="jarn.jsi18n" />
   <include package="collective.indexing" />
-  <include package="collective.subtractiveworkflow" />
   <include package="plone.app.z3cform" />
   <include package="Products.TinyMCE" />
   <include package="Products.CMFCore" />

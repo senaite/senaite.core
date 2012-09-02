@@ -9,14 +9,14 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory
 from Products.CMFPlone.utils import pretty_title_or_id, isExpired, safe_unicode
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
-from bika.lims.utils import isActive, TimeOrDate
+from bika.lims.utils import isActive
 from operator import itemgetter
 from plone.app.content.batching import Batch
 from plone.app.content.browser import tableview
@@ -533,8 +533,7 @@ class BikaListingView(BrowserView):
                  path,
                  safe_unicode(description))
 
-            modified = TimeOrDate(self.context,
-                                  obj.ModificationDate, long_format = 1)
+            modified = self.ulocalized_time(obj.modified()),
 
             # element css classes
             type_class = 'contenttype-' + \
