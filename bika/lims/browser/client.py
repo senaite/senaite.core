@@ -106,8 +106,8 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                 if Sampler and DateSampled:
                     workflow.doActionFor(sample, action)
                     new_state = workflow.getInfoFor(sample, 'review_state')
+                    doActionFor(ar, action)
                     transitioned[new_state].append(sample.Title())
-                doActionFor(ar, action)
 
             message = None
             for state in transitioned:
