@@ -111,7 +111,7 @@ class SamplePartitionsView(BikaListingView):
     def folderitems(self, full_objects = False):
         items = BikaListingView.folderitems(self)
 
-        props = getToolByName(self.context, 'portal_properties').bika_properties
+        #props = getToolByName(self.context, 'portal_properties').bika_properties
 
         bsc = getToolByName(self.context, 'bika_setup_catalog')
 

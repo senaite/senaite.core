@@ -403,7 +403,7 @@ class AnalysisRequestViewView(BrowserView):
         checkPermission = self.context.portal_membership.checkPermission
         getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
         workflow = getToolByName(self.context, 'portal_workflow')
-        props = getToolByName(self.context, 'portal_properties').bika_properties
+#        props = getToolByName(self.context, 'portal_properties').bika_properties
 
         ## Create header_table data rows
         sample = self.context.getSample()
