@@ -13,25 +13,26 @@ from zope.interface import implements
 import json
 import plone
 
-class AnalysesPerService(BrowserView):
+class Report(BrowserView):
     implements(IViewView)
     template = ViewPageTemplateFile("templates/report_out.pt")
 
-    def __init__(self, context, request):
+    def __init__(self, context, request, report):
+        self.report = report
         BrowserView.__init__(self, context, request)
 
     def __call__(self):
         # get all the data into datalines
 
         sc = getToolByName(self.context, 'bika_setup_catalog')
-        bc = getToolByName(self.context, 'bika_analysis_catalog')
+        bac = getToolByName(self.context, 'bika_analysis_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
         self.report_content = {}
         parm_lines = {}
         parms = []
         headings = {}
-        headings['header'] = _("Analyses per analysis service")
-        headings['subheader'] = _("Number of analyses requested per analysis service")
+        headings['header'] = _("Analyses per sample type")
+        headings['subheader'] = _("Number of analyses requested per sample type")
 
         count_all = 0
         query = {'portal_type': 'Analysis'}
@@ -52,28 +53,16 @@ class AnalysesPerService(BrowserView):
              'value': client_title,
              'type': 'text'})
 
-        date_query = formatDateQuery(self.context, 'DateRequested')
+        date_query = formatDateQuery(self.context, 'st_DateRequested')
         if date_query:
             query['created'] = date_query
-            requested = formatDateParms(self.context, 'DateRequested')
+            requested = formatDateParms(self.context, 'st_DateRequested')
         else:
             requested = 'Undefined'
         parms.append(
             { 'title': _('Requested'),
              'value': requested,
              'type': 'text'})
-
-        date_query = formatDateQuery(self.context, 'DatePublished')
-        if date_query:
-            query['getDatePublished'] = date_query
-            published = formatDateParms(self.context, 'DatePublished')
-        else:
-            published = 'Undefined'
-        parms.append(
-            { 'title': _('Published'),
-             'value': published,
-             'type': 'text'})
-
 
         workflow = getToolByName(self.context, 'portal_workflow')
         if self.request.form.has_key('review_state'):
@@ -98,8 +87,6 @@ class AnalysesPerService(BrowserView):
              'value': cancellation_state,
              'type': 'text'})
 
-
-
         if self.request.form.has_key('ws_review_state'):
             query['worksheetanalysis_review_state'] = self.request.form['ws_review_state']
             ws_review_state = workflow.getTitleForStateOnType(
@@ -114,35 +101,28 @@ class AnalysesPerService(BrowserView):
 
         # and now lets do the actual report lines
         formats = {'columns': 2,
-                   'col_heads': [ _('Analysis service'), _('Number of analyses')],
+                   'col_heads': [ _('Sample type'), _('Number of analyses')],
                    'class': '',
                   }
 
         datalines = []
-        for cat in sc(portal_type="AnalysisCategory",
+        for sampletype in sc(portal_type="SampleType",
                         sort_on='sortable_title'):
-            dataline = [{'value': cat.Title,
-                        'class': 'category',
-                        'colspan': 2},]
+            query['getSampleTypeUID'] = sampletype.UID
+            analyses = bac(query)
+            count_analyses = len(analyses)
+
+            dataline = []
+            dataitem = {'value': sampletype.Title}
+            dataline.append(dataitem)
+            dataitem = {'value': count_analyses }
+
+            dataline.append(dataitem)
+
+
             datalines.append(dataline)
-            for service in sc(portal_type="AnalysisService",
-                            getCategoryUID = cat.UID,
-                            sort_on='sortable_title'):
-                query['getServiceUID'] = service.UID
-                analyses = bc(query)
-                count_analyses = len(analyses)
 
-                dataline = []
-                dataitem = {'value': service.Title}
-                dataline.append(dataitem)
-                dataitem = {'value': count_analyses }
-
-                dataline.append(dataitem)
-
-
-                datalines.append(dataline)
-
-                count_all += count_analyses
+            count_all += count_analyses
 
         # footer data
         footlines = []
@@ -162,7 +142,9 @@ class AnalysesPerService(BrowserView):
                 'datalines': datalines,
                 'footings': footlines}
 
+        title = self.context.translate(headings['header'])
 
-        return self.template()
+        return {'report_title': title,
+                'report_data': self.template()}
 
 

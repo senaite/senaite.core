@@ -33,17 +33,21 @@
         </td>
         <td VALIGN="top">
           <div id="arsnotinvoiced" style="display:none" class="criteria">
-            <form action="reports" method="post" name="arsnotinvoiced">
-              <input type="hidden" name="report_id" value="arsnotinvoiced" />
+            <form action="createreport" method="post" name="administration_arsnotinvoiced">
+              <input type="hidden" name="report_id" value="administration_arsnotinvoiced" />
               <fieldset>
                 <legend i18n:translate="">Selection criteria</legend>
-                <tal:published tal:define="
-                  date_id string:DatePublished;
-                  date_label string:Published">
-                  <tal:select content="structure context/@@selection_macros/select_daterange"/>
-                </tal:published>
-                <tal:select content="structure context/@@selection_macros/select_analysis_review_state"/>
-                <tal:select content="structure context/@@selection_macros/select_cancellation_state"/>
+                <tal:x content="structure python:view.selection_macros.select_daterange(
+                                                 field_id='Published',
+                                                 field_title='Date Published')"/>
+                <tal:x content="structure python:view.selection_macros.select_state(
+                                                 workflow_id='bika_analysis_workflow',
+                                                 field_id='bika_analysis_workflow',
+                                                 field_title='Analysis state')"/>
+                <tal:x content="structure python:view.selection_macros.select_state(
+                                                 workflow_id='bika_cancellation_workflow',
+                                                 field_id='bika_cancellation_workflow',
+                                                 field_title='Cancellation state')"/>
               </fieldset>
               <input tabindex=""
                      class="searchButton"

@@ -16,7 +16,7 @@
 
     <browser:page
       for="bika.lims.interfaces.IReportFolder"
-      name="reports_qualitycontrol"
+      name="qualitycontrol"
       class="bika.lims.browser.reports.QualityControlView"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
@@ -24,21 +24,21 @@
 
     <browser:page
       for="bika.lims.interfaces.IReportFolder"
-      name="reports_administration"
+      name="administration"
       class="bika.lims.browser.reports.AdministrationView"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
     <browser:page
       for="bika.lims.interfaces.IReportFolder"
-      name="reports_history"
+      name="history"
       class="bika.lims.browser.reports.ReportHistoryView"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
     <browser:page
       for="bika.lims.interfaces.IReportFolder"
-      name="reports"
+      name="createreport"
       class="bika.lims.browser.reports.SubmitForm"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"

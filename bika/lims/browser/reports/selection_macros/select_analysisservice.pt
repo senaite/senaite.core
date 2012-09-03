@@ -1,6 +1,4 @@
-<div class="field" tal:define="
-    allow_blank allow_blank | python: 1;
-    multiselect multiselect | python: 0;">
+<div class="field">
 
     <label i18n:translate="">Analysis service</label>
     <br/>
@@ -9,10 +7,11 @@
             size="7"
             id="ServiceUID"
             tal:attributes="
+                size python:view.multiselect and '7' or '1';
                 style string:font-family:${here/base_properties/fontFamily};;font-size:100%;
-                multiple multiselect">
+                multiple view/multiselect">
 
-        <option tal:condition="python:allow_blank" value=""/>
+        <option tal:condition="python:view.allow_blank and not view.multiselect" value=""/>
 
         <tal:services  tal:repeat="service view/analysisservices">
 

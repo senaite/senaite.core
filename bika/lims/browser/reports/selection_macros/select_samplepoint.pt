@@ -1,5 +1,4 @@
-<div class="field" tal:define="
-    allow_blank allow_blank | python:1">
+<div class="field">
 
     <label i18n:translate="">Sample point</label>
     <br/>
@@ -8,7 +7,7 @@
             id="SamplePointUID"
             tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
 
-        <option tal:condition="python:allow_blank" value=""/>
+        <option tal:condition="python:view.allow_blank" value=""/>
 
         <tal:samplepoints tal:repeat="samplepoint view/samplepoints">
 

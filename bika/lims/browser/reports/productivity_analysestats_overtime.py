@@ -14,11 +14,12 @@ from zope.interface import implements
 import json
 import plone
 
-class AnalysesTatsOverTime(BrowserView):
+class Report(BrowserView):
     implements(IViewView)
     template = ViewPageTemplateFile("templates/report_out.pt")
 
-    def __init__(self, context, request):
+    def __init__(self, context, request, report):
+        self.report = report
         BrowserView.__init__(self, context, request)
 
     def __call__(self):
@@ -137,8 +138,8 @@ class AnalysesTatsOverTime(BrowserView):
 
         # and now lets do the actual report lines
         formats = {'columns': 2,
-                   'col_heads': [ _('Date'), \
-                                  _('Turnaround time (h)'), \
+                   'col_heads': [ _('Date'),
+                                  _('Turnaround time (h)'),
                                   ],
                    'class': '',
                   }
@@ -154,11 +155,11 @@ class AnalysesTatsOverTime(BrowserView):
                              'class' : 'number'})
             datalines.append(dataline)
 
-
-        ave_total_duration = total_duration / total_count
+        if total_count > 0:
+            ave_total_duration = total_duration / total_count
+        else:
+            ave_total_duration = 0
         ave_total_duration = formatDuration(self.context, ave_total_duration)
-
-
 
         # footer data
         footlines = []
@@ -184,8 +185,10 @@ class AnalysesTatsOverTime(BrowserView):
                 'datalines': datalines,
                 'footings': footlines}
 
+        title = self.context.translate(headings['header'])
 
-        return self.template()
+        return {'report_title': title,
+                'report_data': self.template()}
 
 
 

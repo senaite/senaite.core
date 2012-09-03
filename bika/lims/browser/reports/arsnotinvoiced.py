@@ -17,7 +17,8 @@ class ARsNotInvoiced(BrowserView):
     implements(IViewView)
     template = ViewPageTemplateFile("templates/report_out.pt")
 
-    def __init__(self, context, request):
+    def __init__(self, context, request, report):
+        self.report = report
         BrowserView.__init__(self, context, request)
 
     def __call__(self):

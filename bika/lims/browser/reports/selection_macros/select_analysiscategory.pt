@@ -7,7 +7,7 @@
 
         <option value=""/>
 
-        <tal:categories tal:repeat="category view/analyiscategories">
+        <tal:categories tal:repeat="category view/analysiscategories">
           <option
             value=""
             tal:define="category_uid python:category.UID"

@@ -6,6 +6,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from analysisrequests import QueryAnalysisRequests
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from bika.lims.interfaces import IQueries
 from bika.lims.utils import pretty_user_name_or_id, pretty_user_email, logged_in_client, getUsers
 from cStringIO import StringIO
@@ -26,6 +27,7 @@ class QueryView(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
+        self.selection_macros = SelectionMacrosView(context, request)
         self.icon = "++resource++bika.lims.images/query_big.png"
         self.getAnalysts = getUsers(context, ['Manager', 'LabManager', 'Analyst'])
 

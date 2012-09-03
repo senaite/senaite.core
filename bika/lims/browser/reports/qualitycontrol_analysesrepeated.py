@@ -5,68 +5,51 @@ from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.client import ClientSamplesView
-from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client
-from bika.lims.interfaces import IReportFolder
+from bika.lims.utils import formatDateQuery, formatDateParms
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 import json
 import plone
 
-class AnalysesPerSampleType(BrowserView):
+class Report(BrowserView):
     implements(IViewView)
     template = ViewPageTemplateFile("templates/report_out.pt")
 
-    def __init__(self, context, request):
+    def __init__(self, context, request, report):
+        self.report = report
         BrowserView.__init__(self, context, request)
 
     def __call__(self):
-        # get all the data into datalines
-
-        sc = getToolByName(self.context, 'bika_setup_catalog')
         bac = getToolByName(self.context, 'bika_analysis_catalog')
-        rc = getToolByName(self.context, 'reference_catalog')
         self.report_content = {}
         parm_lines = {}
         parms = []
         headings = {}
-        headings['header'] = _("Analyses per sample type")
-        headings['subheader'] = _("Number of analyses requested per sample type")
+        headings['header'] = _("Analyses retested")
+        headings['subheader'] = _("Analyses which have been retested")
 
         count_all = 0
-        query = {'portal_type': 'Analysis'}
-        if self.request.form.has_key('getClientUID'):
-            client_uid = self.request.form['getClientUID']
-            query['getClientUID'] = client_uid
-            client = rc.lookupObject(client_uid)
-            client_title = client.Title()
-        else:
-            client = logged_in_client(self.context)
-            if client:
-                client_title = client.Title()
-                query['getClientUID'] = client.UID()
-            else:
-                client_title = 'Undefined'
-        parms.append(
-            { 'title': _('Client'),
-             'value': client_title,
-             'type': 'text'})
 
-        date_query = formatDateQuery(self.context, 'st_DateRequested')
+        query = {'portal_type': 'Analysis',
+                 'getRetested': True,
+                 'sort_order': 'reverse'}
+
+        date_query = formatDateQuery(self.context, 'c_DateReceived')
         if date_query:
-            query['created'] = date_query
-            requested = formatDateParms(self.context, 'st_DateRequested')
+            query['getDateReceived'] = date_query
+            received = formatDateParms(self.context, 'c_DateReceived')
         else:
-            requested = 'Undefined'
+            received = 'Undefined'
         parms.append(
-            { 'title': _('Requested'),
-             'value': requested,
+            { 'title': _('Received'),
+             'value': received,
              'type': 'text'})
 
-        workflow = getToolByName(self.context, 'portal_workflow')
+        wf_tool = getToolByName(self.context, 'portal_workflow')
         if self.request.form.has_key('review_state'):
             query['review_state'] = self.request.form['review_state']
-            review_state = workflow.getTitleForStateOnType(
+            review_state = wf_tool.getTitleForStateOnType(
                         self.request.form['review_state'], 'Analysis')
         else:
             review_state = 'Undefined'
@@ -77,7 +60,7 @@ class AnalysesPerSampleType(BrowserView):
 
         if self.request.form.has_key('cancellation_state'):
             query['cancellation_state'] = self.request.form['cancellation_state']
-            cancellation_state = workflow.getTitleForStateOnType(
+            cancellation_state = wf_tool.getTitleForStateOnType(
                         self.request.form['cancellation_state'], 'Analysis')
         else:
             cancellation_state = 'Undefined'
@@ -86,9 +69,10 @@ class AnalysesPerSampleType(BrowserView):
              'value': cancellation_state,
              'type': 'text'})
 
+
         if self.request.form.has_key('ws_review_state'):
             query['worksheetanalysis_review_state'] = self.request.form['ws_review_state']
-            ws_review_state = workflow.getTitleForStateOnType(
+            ws_review_state = wf_tool.getTitleForStateOnType(
                         self.request.form['ws_review_state'], 'Analysis')
         else:
             ws_review_state = 'Undefined'
@@ -99,34 +83,68 @@ class AnalysesPerSampleType(BrowserView):
 
 
         # and now lets do the actual report lines
-        formats = {'columns': 2,
-                   'col_heads': [ _('Sample type'), _('Number of analyses')],
+        formats = {'columns': 8,
+                   'col_heads': [ _('Client'),
+                                  _('Request'),
+                                  _('Sample type'),
+                                  _('Sample point'),
+                                  _('Category'),
+                                  _('Analysis'),
+                                  _('Received'),
+                                  _('Status'),
+                                  ],
                    'class': '',
                   }
 
         datalines = []
-        for sampletype in sc(portal_type="SampleType",
-                        sort_on='sortable_title'):
-            query['getSampleTypeUID'] = sampletype.UID
-            analyses = bac(query)
-            count_analyses = len(analyses)
+        clients = {}
+        sampletypes = {}
+        samplepoints = {}
+        categories = {}
+        services = {}
+
+        for a_proxy in bac(query):
+            analysis = a_proxy.getObject()
 
             dataline = []
-            dataitem = {'value': sampletype.Title}
-            dataline.append(dataitem)
-            dataitem = {'value': count_analyses }
 
+            dataitem = {'value': analysis.getClientTitle()}
+            dataline.append(dataitem)
+
+            dataitem = {'value': analysis.getRequestID()}
+            dataline.append(dataitem)
+
+            dataitem = {'value': analysis.aq_parent.getSampleTypeTitle()}
+            dataline.append(dataitem)
+
+            dataitem = {'value': analysis.aq_parent.getSamplePointTitle()}
+            dataline.append(dataitem)
+
+            dataitem = {'value': analysis.getCategoryTitle()}
+            dataline.append(dataitem)
+
+            dataitem = {'value': analysis.getServiceTitle()}
+            dataline.append(dataitem)
+
+            dataitem = {'value': self.ulocalized_time(analysis.getDateReceived())}
+            dataline.append(dataitem)
+
+            state = wf_tool.getInfoFor(analysis, 'review_state', '')
+            review_state = wf_tool.getTitleForStateOnType(
+                        state, 'Analysis')
+            dataitem = {'value': review_state}
             dataline.append(dataitem)
 
 
             datalines.append(dataline)
 
-            count_all += count_analyses
+            count_all += 1
 
-        # footer data
+        # table footer data
         footlines = []
         footline = []
-        footitem = {'value': _('Total'),
+        footitem = {'value': _('Number of analyses retested for period'),
+                    'colspan': 7,
                     'class': 'total_label'}
         footline.append(footitem)
         footitem = {'value': count_all}
@@ -141,7 +159,10 @@ class AnalysesPerSampleType(BrowserView):
                 'datalines': datalines,
                 'footings': footlines}
 
+        title = self.context.translate(headings['header'])
 
-        return self.template()
+        return {'report_title': title,
+                'report_data': self.template()}
+
 
 

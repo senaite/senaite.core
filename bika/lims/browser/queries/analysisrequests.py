@@ -345,9 +345,9 @@ class QueryAnalysisRequests(BrowserView):
         self.batch = Batch(ars, batch_size, batch_start)
 
         analyses = []
-        ar_ids = []
         analysis_dict = {}
         service_dict = {}
+        ar_ids = []
         for arp in self.batch:
             ar = arp.getObject()
             ar_ids.append(ar.getRequestID())
@@ -360,7 +360,7 @@ class QueryAnalysisRequests(BrowserView):
             details[6].append({'value': ar.getSample().getSampleID()})
             details[7].append({'value': ar.getProfile() and ar.getProfile().Title() or ' '})
             details[8].append({'value': ar.getSampleTypeTitle()})
-            details[9].append({'value': ar.getSamplePointTitle()})
+
             details[10].append({'value': self.ulocalized_time(ar.getSample().getDateSampled())})
             details[11].append({'value': self.ulocalized_time(ar.created())})
             details[12].append({'value': self.ulocalized_time(ar.getDateReceived())})
@@ -369,17 +369,16 @@ class QueryAnalysisRequests(BrowserView):
             #details[15].append({'value': ar.getSubmittedBy().Title()})
             details[15].append({'value': ' '})
 
-            details[16].append({'value': ar.get_verifier().Title()})
+            #details[16].append({'value': ar.get_verifier().Title()})
+            details[16].append({'value': ' '})
 
             #analyses
-            for analysis in ar.getAnalyses():
+            for analysis in ar.getAnalyses(full_objects=True):
                 service_uid = analysis.getServiceUID()
-                if not service_dict.has_key(analysis.Title()):
-                    service_dict['analysis.Title()'] = service_uid
                 if not analysis_dict.has_key(service_uid):
+                    service_dict[analysis.Title()] = service_uid
                     analysis_dict[service_uid] = {}
-                ar_index = ar_ids.index(ar.getRequestID())
-                analysis_dict[service_uid] = {ar_index: analysis.getResult()}
+                analysis_dict[service_uid][ar.getRequestID()] = analysis.getResult()
 
             if len(details[0]) == batch_size:
                 break
@@ -394,14 +393,14 @@ class QueryAnalysisRequests(BrowserView):
         service_titles.sort()
 
         for service_title in service_titles:
-            service_uid = analysis_dict[service_title]
-            analysis_line = [service_title,]
-            for i in range(batch_size):
-                if analysis_dict[service_uid].has_key(i):
-                    analysis_line.append({'value': analysis_dict[service_uid][i]})
+            service_uid = service_dict[service_title]
+            analysis_line = [{'value': service_title},]
+            for ar_id in ar_ids:
+                if analysis_dict[service_uid].has_key(ar_id):
+                    analysis_line.append({'value': analysis_dict[service_uid][ar_id]})
                 else:
                     analysis_line.append({})
-            self.datalines.extend(analysis_line)
+            self.datalines.append(analysis_line)
 
 
 

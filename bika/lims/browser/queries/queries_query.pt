@@ -69,10 +69,10 @@
 
 <legend i18n:translate="">Selection criteria</legend>
 <br/>
-<tal:select content="context/@@selection_macros/select_client"/>
+<tal:select content="structure context/@@selection_macros/select_client"/>
 
-<tal:select content="context/@@selection_macros/select_contact"/>
-<tal:select content="context/@@selection_macros/select_profiles"/>
+<tal:select content="structure context/@@selection_macros/select_contact"/>
+<tal:select content="structure context/@@selection_macros/select_profile"/>
 
 <div class="field">
     <label i18n:translate="">Request ID</label><br/>
@@ -94,44 +94,52 @@
     <input name="ClientSampleID:ignore_empty" id="ClientSampleID">
 </div>
 
-<tal:select content="context/@@selection_macros/select_sampletype"/>
-<tal:select content="context/@@selection_macros/select_samplepoint"/>
+<tal:select content="structure context/@@selection_macros/select_sampletype"/>
+<tal:select content="structure context/@@selection_macros/select_samplepoint"/>
 
 <tal:sampled
-    tal:define="date_id string:DateSampled;
-                date_label string:Sampled">
-<tal:select content="context/@@selection_macros/select_daterange"/>
+    content="structure python:view.selection_macros.select_daterange(
+                        field_id='DateSampled',
+                        field_title='Sampled')">
 </tal:sampled>
 
 <tal:requested
-    tal:define="date_id string:DateRequested;
-                date_label string:Requested">
-<tal:select content="context/@@selection_macros/select_daterange"/>
+    content="structure python:view.selection_macros.select_daterange(
+                        field_id='DateRequested',
+                        field_title='Requested')">
 </tal:requested>
 
 <tal:received
-    tal:define="date_id string:DateReceived;
-                date_label string:Received">
-<tal:select content="context/@@selection_macros/select_daterange"/>
+    content="structure python:view.selection_macros.select_daterange(
+                        field_id='DateReceived',
+                        field_title='Received')">
 </tal:received>
 
 <tal:published
-    tal:define="date_id string:DatePublished;
-                date_label string:Published">
-<tal:select content="context/@@selection_macros/select_daterange"/>
+    content="structure python:view.selection_macros.select_daterange(
+                        field_id='DatePublished',
+                        field_title='Published')">
 </tal:published>
 
-<tal:select content="context/@@selection_macros/select_analysiscategory"/>
+<tal:select content="structure context/@@selection_macros/select_analysiscategory"/>
 
-<tal:select content="context/@@selection_macros/select_analysisservice"/>
+<tal:select content="structure context/@@selection_macros/select_analysisservice"/>
 
-<tal:select content="context/@@selection_macros/select_analyst"/>
+<tal:select content="structure context/@@selection_macros/select_analyst"/>
 
-<tal:select content="context/@@selection_macros/select_analysis_review_state"/>
+<tal:x content="structure python:view.selection_macros.select_state(
+                           workflow_id='bika_analysis_workflow',
+                           field_id='bika_analysis_workflow',
+                           field_title='Analysis state')"/>
+<tal:x content="structure python:view.selection_macros.select_state(
+                           workflow_id='bika_cancellation_workflow',
+                           field_id='bika_cancellation_workflow',
+                           field_title='Cancellation state')"/>
+<tal:x content="structure python:view.selection_macros.select_state(
+                           workflow_id='bika_worksheetanalysis_workflow',
+                           field_id='bika_worksheetanalysis_workflow',
+                           field_title='Worksheet state')"/>
 
-<tal:select content="context/@@selection_macros/select_cancellation_state"/>
-
-<tal:select content="context/@@selection_macros/select_worksheet_state"/>
 </fieldset>
     <input tabindex=""
         class="searchButton"

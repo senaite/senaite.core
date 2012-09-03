@@ -1,22 +1,26 @@
-<div metal:define-macro="ws_review_state"
-        tal:define="ws_review_states here/worksheetanalysis_workflow_states">
 <div class="field">
-    <label i18n:translate=""
-        >Worksheet</label><br/>
-    <select name="ws_review_state:ignore_empty"
-            style=""
-            id="ws_review_state">
-        <option value=""/>
-        <tal:states
-            define="states ws_review_states"
-            tal:repeat="state states">
-        <option value=""
-            tal:attributes="value state/id;
-                selected python:request.get('ws_review_state', '') == state['id'] and 'selected' or ''"
-            tal:content="state/title"></option>
-        </tal:states>
+
+    <label i18n:translate="">Sample type</label>
+    <br/>
+
+    <select name="SampleTypeUID:ignore_empty"
+            id="SampleTypeUID"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+
+        <option tal:condition="python:view.allow_blank" value=""/>
+
+        <tal:sampletypes tal:repeat="sampletype view/sampletypes">
+
+            <option value=""
+                tal:define="sampletype_uid python:sampletype.UID"
+                tal:attributes="
+                    value sampletype_uid;
+                    selected python:request.get('SampleTypeUID', '') == sampletype_uid and 'selected' or ''"
+                tal:content="sampletype/Title">
+            </option>
+
+        </tal:sampletypes>
+
     </select>
-</div>
-</div>
 
-
+</div>

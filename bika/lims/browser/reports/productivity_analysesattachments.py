@@ -12,11 +12,12 @@ from zope.interface import implements
 import json
 import plone
 
-class AnalysesAttachments(BrowserView):
+class Report(BrowserView):
     implements(IViewView)
     template = ViewPageTemplateFile("templates/report_out.pt")
 
-    def __init__(self, context, request):
+    def __init__(self, context, request, report):
+        self.report = report
         BrowserView.__init__(self, context, request)
 
     def __call__(self):
@@ -131,7 +132,8 @@ class AnalysesAttachments(BrowserView):
                 'footings': footlines}
 
 
-        return self.template()
+        return {'report_title': self.context.translate(headings['header']),
+                'report_data': self.template()}
 
 
 

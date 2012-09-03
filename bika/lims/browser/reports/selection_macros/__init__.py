@@ -6,6 +6,15 @@ from bika.lims import bikaMessageFactory as _
 
 class SelectionMacrosView(BrowserView):
     """ Display snippets for the query form
+
+    These methods are called directlly from tal:
+
+        context/@@selection_macros/analysts
+
+    or from Python:
+
+        python:view.selection_macros.analysisservices(allow_blank=False)
+
     """
     def __init__(self, context, request):
         super(SelectionMacrosView, self).__init__(context, request)
@@ -14,124 +23,98 @@ class SelectionMacrosView(BrowserView):
         self.bsc = getToolByName(context, 'bika_setup_catalog')
         self.pc = getToolByName(context, 'portal_catalog')
 
-    select_analysiscategory = ViewPageTemplateFile("select_analysiscategory.pt")
+    select_analysiscategory_pt = ViewPageTemplateFile("select_analysiscategory.pt")
+    def select_analysiscategory(self):
+        self.analysiscategories = self.bsc(portal_type='AnalysisCategory',
+                                           sort_on='sortable_title')
+        return self.select_analysiscategory_pt()
 
-    def analysiscategories(self):
-        return self.bsc(portal_type='AnalysisCategory',
-                        sort_on='sortable_title')
+    select_analysisservice_pt = ViewPageTemplateFile("select_analysisservice.pt")
+    def select_analysisservice(self, allow_blank=True, multiselect=False):
+        self.allow_blank = allow_blank
+        self.multiselect = multiselect
+        self.analysisservices = self.bsc(portal_type='AnalysisService',
+                                         sort_on='sortable_title')
+        return self.select_analysisservice_pt()
 
-    select_analysisservice = ViewPageTemplateFile("select_analysisservice.pt")
+    select_analysisspecification_pt = ViewPageTemplateFile("select_analysisspecification.pt")
+    def select_analysisspecification(self, specs=['lab', 'client']):
+        self.specs = specs
+        return self.select_analysisspecification_pt()
 
-    def analysisservices(self):
-        return self.bsc(portal_type='AnalysisService',
-                        sort_on='sortable_title')
+    select_analyst_pt = ViewPageTemplateFile("select_analyst.pt")
+    def select_analyst(self):
+        self.analysts = getUsers(self.context,
+                                 ['Manager', 'LabManager', 'Analyst'])
+        return self.select_analyst_pt()
 
-    select_analysisspecification = ViewPageTemplateFile("select_analysisspecification.pt")
+    select_client_pt = ViewPageTemplateFile("select_client.pt")
+    def select_client(self):
+        self.clients = self.pc(portal_type='Client',
+                               inactive_state='active',
+                               sort_on='sortable_title')
+        return self.select_client_pt()
 
-    select_analyst = ViewPageTemplateFile("select_analyst.pt")
+    select_contact_pt = ViewPageTemplateFile("select_contact.pt")
+    def select_contact(self):
+        self.contacts = self.pc(portal_type='Contact',
+                                inactive_state='active',
+                                sort_on='sortable_title')
+        return self.select_contact_pt()
 
-    def analysts(self):
-        return getUsers(self.context, ['Manager', 'LabManager', 'Analyst'])
+    select_daterange_pt = ViewPageTemplateFile("select_daterange.pt")
+    def select_daterange(self, field_id, field_title):
+        self.field_id = field_id
+        self.field_title = _(field_title)
+        return self.select_daterange_pt()
 
-    select_cancellation_state = ViewPageTemplateFile("select_cancellation_state.pt")
+    select_instrument_pt = ViewPageTemplateFile("select_instrument.pt")
+    def select_instrument(self):
+        self.instruments = self.bsc(portal_type='Instrument',
+                                    inactive_state='active',
+                                    sort_on='sortable_title')
+        return self.select_instrument_pt()
 
-    def cancellation_states(self):
+    select_period_pt = ViewPageTemplateFile("select_period.pt")
+    def select_period(self):
+        return self.select_period_pt()
+
+    select_profile_pt = ViewPageTemplateFile("select_profile.pt")
+    def select_profile(self):
+        self.analysisprofiles = self.bsc(portal_type='AnalysisProfile',
+                                         inactive_state='active',
+                                         sort_on='sortable_title')
+        return self.select_profile_pt()
+
+    select_state_pt = ViewPageTemplateFile("select_state.pt")
+    def select_state(self, workflow_id, field_id, field_title):
+        self.field_id = field_id
+        self.field_title = field_title
         wf = getToolByName(self.context, 'portal_workflow')
-        states = []
-        for state_id in ('active', 'cancelled'):
-            # the 'Analysis' type is irrelevant
-            state_title = wf.getTitleForStateOnType(state_id, 'Analysis')
-            states.append({
-                'id': state_id,
-                'title': state_title} )
-        return states
-
-    select_client = ViewPageTemplateFile("select_client.pt")
-
-    def clients(self):
-        return self.pc(portal_type='Client',
-                       inactive_state='active',
-                       sort_on='sortable_title')
-
-    select_contact = ViewPageTemplateFile("select_contact.pt")
-
-    def contacts(self):
-        return self.pc(portal_type='Contact',
-                       inactive_state='active',
-                       sort_on='sortable_title')
-
-    select_daterange = ViewPageTemplateFile("select_daterange.pt")
-
-    def select_date_received(self):
-        self.field_title = _("Date Received")
-        self.field_name = 'Received'
-        return self.select_daterange()
-
-    def select_date_requested(self):
-        self.field_title = _("Date Requested")
-        self.field_name = 'Requested'
-        return self.select_daterange()
-
-    def select_date_published(self):
-        self.field_title = _("Date Published")
-        self.field_name = 'Published'
-        return self.select_daterange()
-
-    def select_date_loaded(self):
-        self.field_title = _("Date Loaded")
-        self.field_name = 'Loaded'
-        return self.select_daterange()
-
-    select_instrument = ViewPageTemplateFile("select_instrument.pt")
-
-    def instruments(self):
-        return self.bsc(portal_type='Instrument',
-                        inactive_state='active',
-                        sort_on='sortable_title')
-
-    select_period = ViewPageTemplateFile("select_period.pt")
-
-    select_profile = ViewPageTemplateFile("select_profile.pt")
-
-    def analysisprofiles(self):
-        return self.bsc(portal_type='AnalysisProfile',
-                        inactive_state='active',
-                        sort_on='sortable_title')
-
-    select_analysis_review_state = ViewPageTemplateFile("select_analysis_review_state.pt")
-
-    def analysis_review_states(self):
-        wf = getToolByName(self.context, 'portal_workflow')
-        states_folder = wf.bika_analysis_workflow.states
-        states = []
-        for state_id in ('sample_due',
-                         'sample_received',
-                         'attachment_due',
-                         'to_be_verified',
-                         'verified',
-                         'published'):
-            state = states_folder[state_id]
-            states.append({
+        states = wf[workflow_id].states
+        self.states = []
+        for state_id in states:
+            state = states[state_id]
+            self.states.append({
                 'id': state.getId(),
                 'title': state.title
             })
-        return states
+        return self.select_state_pt()
 
-    select_samplepoint = ViewPageTemplateFile("select_samplepoint.pt")
+    select_samplepoint_pt = ViewPageTemplateFile("select_samplepoint.pt")
+    def select_samplepoint(self, allow_blank=True, multiselect=False):
+        self.allow_blank = allow_blank
+        self.multiselect = multiselect
+        self.samplepoints = self.bsc(portal_type='SamplePoint',
+                                     inactive_state='active',
+                                     sort_on='sortable_title')
+        return self.select_samplepoint_pt()
 
-    def samplepoints(self):
-        return bika_setup_catalog(portal_type='SamplePoint',
-                                  inactive_state='active',
-                                  sort_on='sortable_title')
-
-    select_sampletype = ViewPageTemplateFile("select_sampletype.pt")
-
-    def sampletypes(self):
-        return bika_setup_catalog(portal_type='SampleType',
-                                  inactive_state='active',
-                                  sort_on='sortable_title')
-
-    select_worksheet_state = ViewPageTemplateFile("select_worksheet_state.pt")
-
-##    def __call__(self):
-##        return self.template()
+    select_sampletype_pt = ViewPageTemplateFile("select_sampletype.pt")
+    def select_sampletype(self, allow_blank=True, multiselect=False):
+        self.allow_blank = allow_blank
+        self.multiselect = multiselect
+        self.sampletypes = self.bsc(portal_type='SampleType',
+                                    inactive_state='active',
+                                    sort_on='sortable_title')
+        return self.select_sampletype_pt()
