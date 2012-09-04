@@ -146,6 +146,9 @@ schema = BikaSchema.copy() + Schema((
     ComputedField('DateReceived',
         expression = 'context.aq_parent.getDateReceived()',
     ),
+    ComputedField('DateSampled',
+        expression = 'context.aq_parent.getSample().getDateSampled()',
+    ),
 ),
 )
 
