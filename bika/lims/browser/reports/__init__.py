@@ -214,14 +214,6 @@ class SubmitForm(BrowserView):
             self.client_title = None
             self.client_address = None
 
-        ## Create new report object
-
-        reportid = self.aq_parent.generateUniqueId('Report')
-        self.aq_parent.invokeFactory(id = reportid, type_name = "Report")
-        report = self.aq_parent._getOb(reportid)
-        report.edit(Client = clientuid)
-        report.processForm()
-
         ## Render form output
 
         # the report can add file names to this list; they will be deleted
@@ -239,7 +231,13 @@ class SubmitForm(BrowserView):
         # Report must return dict with:
         # - report_title - title string for pdf/history listing
         # - report_data - rendered report
-        output = Report(self.context, self.request, report)()
+        output = Report(self.context, self.request)()
+
+        if type(output) in (str, unicode, bytes):
+            # remove temporary files
+            for f in self.request['to_remove']:
+                os.remove(f)
+            return output
 
         ## The report output gets pulled through report_frame.pt
         self.reportout = output['report_data']
@@ -252,7 +250,14 @@ class SubmitForm(BrowserView):
         result = ramdisk.getvalue()
         ramdisk.close()
 
-        # write pdf to report object
+        ## Create new report object
+        reportid = self.aq_parent.generateUniqueId('Report')
+        self.aq_parent.invokeFactory(id = reportid, type_name = "Report")
+        report = self.aq_parent._getOb(reportid)
+        report.edit(Client = clientuid)
+        report.processForm()
+
+        ## write pdf to report object
         report.edit(title = output['report_title'], ReportFile = result)
         report.reindexObject()
 
@@ -268,6 +273,5 @@ class SubmitForm(BrowserView):
             setheader('Content-Type', 'application/pdf')
             setheader("Content-Disposition", "attachment;filename=\"%s\""%fn)
             self.request.RESPONSE.write(result)
-
 
         return

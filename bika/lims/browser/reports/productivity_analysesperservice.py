@@ -17,7 +17,7 @@ class Report(BrowserView):
     implements(IViewView)
     template = ViewPageTemplateFile("templates/productivity_analysesperservice.pt")
 
-    def __init__(self, context, request, report):
+    def __init__(self, context, request, report=None):
         self.report = report
         BrowserView.__init__(self, context, request)
 

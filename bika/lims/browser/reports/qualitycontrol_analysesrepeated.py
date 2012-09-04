@@ -16,7 +16,7 @@ class Report(BrowserView):
     implements(IViewView)
     template = ViewPageTemplateFile("templates/report_out.pt")
 
-    def __init__(self, context, request, report):
+    def __init__(self, context, request, report=None):
         self.report = report
         BrowserView.__init__(self, context, request)
 

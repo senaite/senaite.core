@@ -5,6 +5,7 @@ from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import formatDateQuery, formatDateParms
+from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from gpw import plot
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -17,15 +18,13 @@ import tempfile
 class Report(BrowserView):
     implements(IViewView)
     template = ViewPageTemplateFile("templates/qualitycontrol_resultspersamplepoint.pt")
+    # if unsuccessful we return here:
+    default_template = ViewPageTemplateFile("templates/qualitycontrol.pt")
 
-    def __init__(self, context, request, report):
+    def __init__(self, context, request, report=None):
+        super(Report, self).__init__(context, request)
         self.report = report
-        BrowserView.__init__(self, context, request)
-
-    def error(self, message):
-        self.context.plone_utils.addPortalMessage(message, 'error')
-        self.template = ViewPageTemplateFile("templates/qualitycontrol.pt")
-        raise Redirect
+        self.selection_macros = SelectionMacrosView(self.context, self.request)
 
     def __call__(self):
         self.portal = getToolByName(self.context, 'portal_url').getPortalObject()
@@ -71,7 +70,9 @@ class Report(BrowserView):
         spec_title = spec == 'lab' and _("Lab") or _("Client")
 
         if "ServiceUID" not in self.request.form:
-            self.error(_("No analysis services were selected."))
+            message = _("No analysis services were selected.")
+            self.context.plone_utils.addPortalMessage(message, 'error')
+            return self.default_template()
         if type(self.request.form["ServiceUID"]) in (list, tuple):
             service_uids = self.request.form["ServiceUID"] # Multiple services
         else:
@@ -135,7 +136,9 @@ class Report(BrowserView):
 
         proxies = bac(query)
         if not proxies:
-            self.error(_("No analyses matched your query"))
+            message = _("No analyses matched your query")
+            self.context.plone_utils.addPortalMessage(message, 'error')
+            return self.default_template()
 
         cached_specs = {} # keyed by parent_folder
 
