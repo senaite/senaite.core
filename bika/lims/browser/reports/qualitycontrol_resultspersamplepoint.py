@@ -57,7 +57,7 @@ class Report(BrowserView):
         client_uid = self.request.form.get("ClientUID", "")
         client_title = client_uid and rc.lookupObject(client_uid).Title() or ''
         if client_title:
-            title_parms.append(client_title)
+            title_parts.append(client_title)
 
         st_uid = self.request.form["SampleTypeUID"]
         st_title = rc.lookupObject(st_uid).Title()
