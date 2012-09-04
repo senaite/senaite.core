@@ -19,15 +19,15 @@
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
 
- <alias from="(Default)" to="reports_productivity"/>
+ <alias from="(Default)" to="productivity"/>
  <alias from="view" to="base_view"/>
- <alias from="edit" to="reports_productivity"/>
+ <alias from="edit" to="productivity"/>
 
  <action title="Productivity"
          action_id="view"
          category="object"
          condition_expr=""
-         url_expr="string:${object_url}/reports_productivity"
+         url_expr="string:${object_url}/productivity"
          i18n:attributes="title"
          visible="True">
   <permission value="View"/>
@@ -37,7 +37,7 @@
          action_id="qualitycontrol"
          category="object"
          condition_expr=""
-         url_expr="string:${object_url}/reports_qualitycontrol"
+         url_expr="string:${object_url}/qualitycontrol"
          i18n:attributes="title"
          visible="True">
   <permission value="Modify portal content"/>
@@ -47,7 +47,7 @@
          action_id="administration"
          category="object"
          condition_expr=""
-         url_expr="string:${object_url}/reports_administration"
+         url_expr="string:${object_url}/administration"
          i18n:attributes="title"
          visible="True">
   <permission value="Modify portal content"/>
@@ -57,7 +57,7 @@
          action_id="history"
          category="object"
          condition_expr=""
-         url_expr="string:${object_url}/reports_history"
+         url_expr="string:${object_url}/history"
          i18n:attributes="title"
          visible="True">
   <permission value="View"/>

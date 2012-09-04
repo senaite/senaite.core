@@ -8,7 +8,7 @@
 
     <browser:page
       for="bika.lims.interfaces.IReportFolder"
-      name="reports_productivity"
+      name="productivity"
       class="bika.lims.browser.reports.ProductivityView"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
