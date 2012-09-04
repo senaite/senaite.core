@@ -283,6 +283,8 @@ class WorksheetFolderListingView(BikaListingView):
                 items[x]['replace']['Template'] = "<a href='%s'>%s</a>" % \
                     (wst.absolute_url(), wst.Title())
 
+            items[x]['CreationDate'] = self.ulocalized_time(obj.creation_date)
+
             nr_analyses = len(obj.getAnalyses())
             if nr_analyses == '0':
                 # manager and labmanager see *all* worksheets
@@ -294,8 +296,6 @@ class WorksheetFolderListingView(BikaListingView):
                     continue
                 # give empties pretty classes.
                 items[x]['table_row_class'] = 'state-empty-worksheet'
-
-                items[x]['CreationDate'] = self.ulocalized_time(obj.creation_date)
 
             layout = obj.getLayout()
 
