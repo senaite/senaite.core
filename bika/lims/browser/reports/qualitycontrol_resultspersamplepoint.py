@@ -1,7 +1,7 @@
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import formatDateQuery, formatDateParms
@@ -33,10 +33,7 @@ class Report(BrowserView):
         bac = getToolByName(self.context, "bika_analysis_catalog")
         MinimumResults = self.context.bika_setup.getMinimumResults()
         rc = getToolByName(self.context, "reference_catalog")
-        site_props = self.context.portal_properties.site_properties
-        localTimeFormat = site_props.getProperty("localTimeFormat")
-        localTimeOnlyFormat = site_props.getProperty("localTimeOnlyFormat")
-        localLongTimeFormat = site_props.getProperty("localLongTimeFormat")
+        workflow = getToolByName(self.context, 'portal_workflow')
 ##        warning_icon = "<span style='font-weight:600;font-size:110%;font-color:#ff0000;'>!</span>"
 ##        error_icon = "<span style='font-weight:600;font-size:110%;color:#ff6666;'>!</span>"
         warning_icon = "<img " +\
@@ -97,34 +94,24 @@ class Report(BrowserView):
         }
 
 
-        date_query = formatDateQuery(self.context, 'DateAnalysisPublished')
+        date_query = formatDateQuery(self.context, 'DateSampled')
+        self.logger.info(date_query)
         if date_query:
-            title_parts.append(self.context.translate(_("Published")))
-            query['getDateAnalysisPublished'] = date_query
-            query['review_state'] = 'published'
+            query['getDateSampled'] = date_query
             parms.append({
-                'title': _('Published'),
-                'value': formatDateParms(self.context, 'DateAnalysisPublished'),
+                'title': _('Date Sampled'),
+                'value': formatDateParms(self.context, 'DateSampled'),
                 'type': 'text'
             })
-##        if self.request.form.has_key('cancellation_state'):
-##            query['cancellation_state'] = self.request.form['cancellation_state']
-##            cancellation_state = workflow.getTitleForStateOnType(
-##                self.request.form['cancellation_state'], 'Analysis')
-##            title_parts.append(self.context.translate(_(cancellation_state)))
-##            parms.append({
-##                'title': _('Active'),
-##                'value': cancellation_state,
-##                'type': 'text'
-##            })
-        if self.request.form.has_key('ws_review_state'):
-            query['worksheetanalysis_review_state'] = self.request.form['ws_review_state']
-            ws_review_state = workflow.getTitleForStateOnType(
-                self.request.form['ws_review_state'], 'Analysis')
-            title_parts.append(self.context.translate(_(ws_review_state)))
+
+        if self.request.form.has_key('bika_worksheetanalysis_workflow'):
+            query['worksheetanalysis_review_state'] = self.request.form['bika_worksheetanalysis_workflow']
+            bika_worksheetanalysis_workflow = workflow.getTitleForStateOnType(
+                self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
+            title_parts.append(self.context.translate(_(bika_worksheetanalysis_workflow)))
             parms.append({
                 'title': _('Assigned to worksheet'),
-                'value': ws_review_state,
+                'value': bika_worksheetanalysis_workflow,
                 'type': 'text'
             })
 
@@ -230,15 +217,15 @@ class Report(BrowserView):
         set ylabel "%(ylabel)s"
         set key off
         #set logscale
-        set timefmt "%(timefmt)s"
+        set timefmt "%%Y-%%m-%%d %%H:%%M"
         set xdata time
-        set format x "%(xtimefmt)s"
+        set format x "%%Y-%%m-%%d\\n%%H:%%M"
         set xrange ["%(x_start)s":"%(x_end)s"]
         set yrange [%(y_start)s:%(y_end)s]
         set xtics rotate by 90 offset 0,-5 out nomirror
         set ytics nomirror
-        plot "gpw_DATAFILE_gpw" using 1:5 title 'data' with points pt 7 ps .5 lc rgb '#0060ad',\
-        '' using 1:5 smooth bezier lw .5'
+        plot "gpw_DATAFILE_gpw" using 1:3 title 'data' with points pt 7 ps .5 lc rgb '#0060ad',\
+        '' using 1:3 smooth bezier lw .5
         """
         ## Compile plots and format data for display
         for service_title in keys:
@@ -247,12 +234,12 @@ class Report(BrowserView):
             result_dates = [o['Sampled'] for o in analyses[service_title]]
 
             parms = []
-            plotdata = ""
+            plotdata = str()
 
             for a in analyses[service_title]:
 
-                a['Sampled'] = a['Sampled'].strftime(localLongTimeFormat)
-                a['Captured'] = a['Captured'].strftime(localLongTimeFormat)
+                a['Sampled'] = a['Sampled'].strftime(r"%Y-%m-%d %H:%M")
+                a['Captured'] = a['Captured'].strftime(r"%Y-%m-%d %H:%M")
 
                 plotdata += "%s\t%s\n"%(
                     a['Sampled'],
@@ -290,16 +277,15 @@ class Report(BrowserView):
                     'title': "",
                     'xlabel': self.context.translate(_("Date Sampled")),
                     'ylabel': analyses[service_title][0]['Unit'],
-                    'timefmt': localLongTimeFormat,
-                    'xtimefmt': "%s\\n%s"%(localTimeFormat,localTimeOnlyFormat),
-                    'x_start': "%s 00:00" % min(result_dates).strftime(localTimeFormat),
-                    'x_end': "%s 23:59" % max(result_dates).strftime(localTimeFormat),
-                    'y_start': max(min(result_values)-5, 0),
-                    'y_end': max(result_values)+2,
+                    'x_start': "%s 00:00" % min(result_dates).strftime("%Y-%m-%d"),
+                    'x_end': "%s 23:59" % max(result_dates).strftime("%Y-%m-%d"),
+                    'y_start':  int(round(min(result_values) / 10.0) * 10),
+                    'y_end': int(round(max(result_values) / 10.0) * 10),
                 }
-                _plotscript = _plotscript.encode('utf-8')
 
-                plot_png = plot(plotdata, plotscript=_plotscript, usefifo=False)
+                plot_png = plot(str(plotdata),
+                                plotscript=str(_plotscript),
+                                usefifo=False)
 
                 # Temporary PNG data file
                 fh,data_fn = tempfile.mkstemp(suffix='.png')

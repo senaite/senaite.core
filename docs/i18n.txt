@@ -1,0 +1,17 @@
+### Updating PO files from Transifex:
+
+Install the transifex-client (tx).  Visit http://www.transifex.net/ for
+more information.
+
+Alternatively, download the PO files for your language directly from Transifex,
+and replace them in the bika/lims/locales folder.
+
+### Dates/Times
+
+Some assumptions have been made about the contents of the date_format_long,
+date_format_short, date_format_short_datepicker and time_format msgids in the
+plonelocales domain
+
+- date_format_short and date_format_short_datepicker must be equivalent, though
+one is a JQuery-UI format string, and the other a Python strftime format
+string in TAL-notation.

@@ -3,8 +3,10 @@
     <label tal:content="view/field_title">Status</label>
     <br/>
 
-    <select name="review_state:ignore_empty"
-            tal:attributes="id view/field_id">
+    <select
+            tal:attributes="
+                id view/field_id;
+                name string:${view/field_id}:ignore_empty">
 
         <option value=""/>
 

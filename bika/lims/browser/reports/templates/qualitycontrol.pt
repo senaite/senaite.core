@@ -150,18 +150,13 @@
                                              multiselect=True,
                                              allow_blank=False)"/>
             <tal:x content="structure python:view.selection_macros.select_daterange(
-                                             field_id='Received',
-                                             field_title='Date Received')"/>
+                                             field_id='DateSampled',
+                                             field_title='Date Sampled')"/>
             <tal:x content="structure python:view.selection_macros.select_state(
                                              workflow_id='bika_worksheetanalysis_workflow',
                                              field_id='bika_worksheetanalysis_workflow',
                                              field_title='Worksheet state')"/>
 <tal:comment replace="nothing">
-<!--            <tal:x content="structure python:view.selection_macros.select_state(-->
-<!--                                             workflow_id='bika_cancellation_workflow',-->
-<!--                                             field_id='bika_cancellation_workflow',-->
-<!--                                             field_title='Cancellation state')"/>-->
-<!--            <tal:x content="structure context/@@selection_macros/select_analysisspecification"/>-->
 </tal:comment>
           </fieldset>
           <input tabindex=""

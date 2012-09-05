@@ -27,7 +27,6 @@ class Report(BrowserView):
         sc = getToolByName(self.context, 'bika_setup_catalog')
         bc = getToolByName(self.context, 'bika_analysis_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
-        localTimeFormat = self.context.portal_properties.site_properties.getProperty('localTimeFormat')
         self.report_content = {}
         parm_lines = {}
         parms = []
@@ -104,7 +103,7 @@ class Report(BrowserView):
             dataline.append(dataitem)
             dataitem = {'value': '%s%s' %(filesize, sizeunit)}
             dataline.append(dataitem)
-            dataitem = {'value': dateloaded.asdatetime().strftime(localTimeFormat)}
+            dataitem = {'value': self.ulocalized_time(dateloaded)}
             dataline.append(dataitem)
 
 

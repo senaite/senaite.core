@@ -4,7 +4,6 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from bika.lims import logger
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from bika.lims.interfaces import IReportFolder
@@ -140,7 +139,6 @@ class ReportHistoryView(BikaListingView):
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         props = self.context.portal_properties.site_properties
-        localTimeFormat = props.getProperty('localTimeFormat')
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
@@ -183,15 +181,11 @@ class SubmitForm(BrowserView):
         report_id = self.request.get('report_id', '')
         if not report_id:
             message =  "No report specified in request"
-            logger.error(message)
+            self.logger.error(message)
             self.context.plone_utils.addPortalMessage(message, 'error')
             return self.template()
 
         props = self.context.portal_properties.site_properties
-
-        localTimeFormat = props.getProperty('localTimeFormat')
-        localTimeOnlyFormat = props.getProperty('localTimeOnlyFormat')
-        localLongTimeFormat = props.getProperty('localLongTimeFormat')
 
         self.date = DateTime()
         username = self.context.portal_membership.getAuthenticatedMember().getUserName()
@@ -222,9 +216,9 @@ class SubmitForm(BrowserView):
 
         try:
             exec("from bika.lims.browser.reports.%s import Report" % report_id)
-        except:
+        except ImportError:
             message = "Report %s not found (shouldn't happen)" % report_id
-            logger.error(message)
+            self.logger.error(message)
             self.context.plone_utils.addPortalMessage(message, 'error')
             return self.template()
 
@@ -261,7 +255,7 @@ class SubmitForm(BrowserView):
         report.edit(title = output['report_title'], ReportFile = result)
         report.reindexObject()
 
-        fn = "%s - %s" % (self.date.strftime(localLongTimeFormat),
+        fn = "%s - %s" % (self.date.strftime(r"%Y-%m-%d"),
                           output['report_title'])
 
         # remove temporary files

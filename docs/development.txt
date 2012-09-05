@@ -5,39 +5,6 @@ You can copy development-buildout.cfg into your zinstance folder, then run:
 
     $ bin/buildout -c development-buildout.cfg
 
-### i18ndude
-
-The i18ndude tool is required only if you intend to add strings that need to
-be translated.
-
-Update your develop.cfg:
-
-    eggs =
-        ...
-        i18ndude
-
-After this you can use locales/updatelocales.sh to update the POT/PO files.
-
-### Updating PO files from Transifex:
-
-Install the transifex-client (tx).  Visit http://www.transifex.net/ for
-more information.
-
-Alternatively, download the PO files for your language directly from Transifex,
-and replace them in the bika/lims/locales folder.
-
-### testing
-
-Modify the [test] section to look like this:
-
-    [test]
-    recipe = zc.recipe.testrunner
-    eggs =
-        bika.lims [test]
-    defaults = ['--auto-color', '--auto-progress']
-
-You can then run bin/test to execute all tests in bika.lims
-
 Miscellaneous issues
 --------------------
 
@@ -68,4 +35,3 @@ Use the built-in Title and Description indexes and metadatas where possible!
     def Title(self):
         t = self.Description()
         return t and t or ''
-

@@ -13,7 +13,7 @@ from decimal import Decimal
 import json
 import plone
 
-class ARsNotInvoiced(BrowserView):
+class Report(BrowserView):
     implements(IViewView)
     template = ViewPageTemplateFile("templates/report_out.pt")
 
@@ -128,7 +128,8 @@ class ARsNotInvoiced(BrowserView):
                 'footings': footlines}
 
 
-        return self.template()
+        return {'report_title': self.context.translate(headings['header']),
+                'report_data': self.template()}
 
 
 

@@ -154,6 +154,6 @@ class Report(BrowserView):
                 'footings': footlines}
 
 
-        return {'report_title': self.context.translate(headings['header']).
+        return {'report_title': self.context.translate(headings['header']),
                 'report_data': self.template()}
 
