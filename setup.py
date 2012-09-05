@@ -37,6 +37,7 @@ setup(name='bika.lims',
           'plone.app.iterate',
           'xhtml2pdf',
           'magnitude',
+          'gpw',
           'jarn.jsi18n',
       ],
       extras_require = {
