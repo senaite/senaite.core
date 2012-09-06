@@ -256,10 +256,6 @@ $(document).ready(function(){
 	PMF = window.jsi18n_plone;
 	plonelocales = window.jsi18n_plonelocales;
 
-	// This is duplicated here - It really should be coming from the
-	// translation catalogue
-	// date_format_short_datepicker = "M dd, yy"
-
 	dateFormat = window.jsi18n_plonelocales("date_format_short_datepicker");
 
 	$('input.datepicker').live('click', function() {
