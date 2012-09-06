@@ -338,7 +338,7 @@ class bika_browserdata(BrowserView):
                         backrefs.append(item)
                     if item not in skip:
                         skip.append(item)
-                        brefs = item.getBackReferences('AnalysisServiceCalculation')
+                        brefs = item.getBackReferences()
                         walk(brefs)
             walk([service, ])
 
