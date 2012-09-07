@@ -7,7 +7,8 @@ setup(name='bika.lims',
       version=version,
       description="Bika LIMS",
       long_description=open("README.md").read() + "\n" +
-                       open(os.path.join("docs", "installation.txt")).read() + "\n" +
+                       open(os.path.join("docs", "linux.md")).read() + "\n" +
+                       open(os.path.join("docs", "windows.md")).read() + "\n" +
                        open(os.path.join("docs", "CHANGELOG.txt")).read(),
       # Get more strings from
       # http://pypi.python.org/pypi?:action=list_classifiers
