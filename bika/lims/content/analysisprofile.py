@@ -10,6 +10,7 @@ from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser.widgets import ServicesWidget
+from bika.lims.browser.widgets import AnalysisProfileAnalysesWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from zope.interface import Interface, implements
@@ -30,7 +31,7 @@ schema = BikaSchema.copy() + Schema((
         multiValued = 1,
         allowed_types = ('AnalysisService',),
         relationship = 'AnalysisProfileAnalysisService',
-        widget = ServicesWidget(
+        widget = AnalysisProfileAnalysesWidget(
             label = _("Profile Analyses"),
             description = _("The analyses included in this profile, grouped per category"),
         )
