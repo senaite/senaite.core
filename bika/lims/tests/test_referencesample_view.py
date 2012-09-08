@@ -85,10 +85,10 @@ class Tests(BikaFunctionalTestCase):
         outcatnum = self.browser.getControl(name='CatalogueNumber').value
         outlotnum = self.browser.getControl(name='LotNumber').value
         outremark = self.browser.getControl(name='Remarks').value
-        outdatesampled = time.strftime(time.strptime(self.browser.getControl(name='DateSampled').value, '%d %b %Y'), '%Y-%m-%D')
-        outdatereceived = time.strftime(time.strptime(self.browser.getControl(name='DateReceived').value, '%d %b %Y'), '%Y-%m-%D')
-        outdateopened = time.strftime(time.strptime(self.browser.getControl(name='DateOpened').value, '%d %b %Y'), '%Y-%m-%D')
-        outexpirydate = time.strftime(time.strptime(self.browser.getControl(name='ExpiryDate').value, '%d %b %Y'), '%Y-%m-%D')
+        outdatesampled = time.strftime(time.strptime(self.browser.getControl(name='DateSampled').value, '%b %d, %Y'), '%Y-%m-%D')
+        outdatereceived = time.strftime(time.strptime(self.browser.getControl(name='DateReceived').value, '%b %d, %Y'), '%Y-%m-%D')
+        outdateopened = time.strftime(time.strptime(self.browser.getControl(name='DateOpened').value, '%b %d, %Y'), '%Y-%m-%D')
+        outexpirydate = time.strftime(time.strptime(self.browser.getControl(name='ExpiryDate').value, '%b %d, %Y'), '%Y-%m-%D')
 
         assertEqual(title, outtitle, "Title value doesn't match: %s <> %s" % title, outtitle)
         assertEqual(refdef, outrefdef, "Reference Definition doesn't match: %s <> %s" % refdef, outrefdef)
