@@ -6,20 +6,20 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
-"POT-Creation-Date: 2012-07-17 10:58+0000\n"
+"POT-Creation-Date: 2012-09-08 15:17+0000\n"
 "PO-Revision-Date: 2012-09-02 14:12+0000\n"
 "Last-Translator: Inus Scheepers <inus@animatica.co.za>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Domain: plone\n"
-"Language: af\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "Preferred-Encodings: utf-8 latin1\n"
+"Domain: plone\n"
+"Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
+"Language: af\n"
 
 #: ../profiles/default/types/ARTemplate.xml
 msgid "AR Template"
@@ -164,7 +164,8 @@ msgstr "Gekanselleer"
 msgid "Client"
 msgstr "Kliënt"
 
-#: ../profiles/default/actions.xml ../profiles/default/types/ClientFolder.xml
+#: ../profiles/default/actions.xml
+#: ../profiles/default/types/ClientFolder.xml
 msgid "Clients"
 msgstr "Kliënte"
 
@@ -243,10 +244,6 @@ msgstr "Uitvoerbundel"
 msgid "Extracts"
 msgstr "Uittreksels"
 
-#: ../profiles/default/actions.xml
-msgid "Import"
-msgstr "Invoer"
-
 #: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
 msgid "Imported"
 msgstr "Ingevoer"
@@ -284,10 +281,6 @@ msgstr "Faktuurbundels"
 #: ../profiles/default/types/InvoiceFolder.xml
 msgid "Invoices"
 msgstr "Fakture"
-
-#: ../profiles/default/actions.xml
-msgid "LIMS"
-msgstr "LIMS"
 
 #: ../profiles/default/types/LabContact.xml
 msgid "Lab Contact"
@@ -348,7 +341,8 @@ msgstr "Hanteer uitslae"
 msgid "Method"
 msgstr "Metode"
 
-#: ../profiles/default/controlpanel.xml ../profiles/default/types/Methods.xml
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/Methods.xml
 msgid "Methods"
 msgstr "Metodes"
 
@@ -364,7 +358,8 @@ msgstr "Oop"
 msgid "Order pending"
 msgstr "Bestelling wagtend"
 
-#: ../profiles/default/actions.xml ../profiles/default/types/Client.xml
+#: ../profiles/default/actions.xml
+#: ../profiles/default/types/Client.xml
 msgid "Orders"
 msgstr "Bestellings"
 
@@ -477,7 +472,8 @@ msgstr "Verwysing Verskaffers"
 msgid "Registered"
 msgstr "Geregistreerd"
 
-#: ../profiles/default/actions.xml ../profiles/default/types/Report.xml
+#: ../profiles/default/actions.xml
+#: ../profiles/default/types/Report.xml
 msgid "Report"
 msgstr "Rapporteer"
 
@@ -538,13 +534,18 @@ msgstr "Monster Tipes"
 msgid "Sample received"
 msgstr "Monster ontvang"
 
+#: ../profiles/default/types/Client.xml
+msgid "SamplePoints"
+msgstr ""
+
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_sample_workflow/definition.xml
 msgid "Sampled"
 msgstr "Gemonster"
 
-#: ../profiles/default/actions.xml ../profiles/default/types/Client.xml
+#: ../profiles/default/actions.xml
+#: ../profiles/default/types/Client.xml
 msgid "Samples"
 msgstr "Monsters"
 
@@ -888,3 +889,4 @@ msgstr "Remove"
 #: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
 msgid "verify_transition_title"
 msgstr "Verify"
+

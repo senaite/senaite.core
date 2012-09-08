@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-09-02 14:44+0000\n"
+"POT-Creation-Date: 2012-09-08 15:17+0000\n"
 "PO-Revision-Date: 2012-09-02 06:11+0000\n"
 "Last-Translator: lemoene Smit <admin@bikalabs.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"

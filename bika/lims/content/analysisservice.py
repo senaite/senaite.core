@@ -468,7 +468,7 @@ schema = BikaSchema.copy() + Schema((
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = _('Default Preservation'),
-            description = _("Select a default preservation for this this "
+            description = _("Select a default preservation for this "
                             "analysis service. If the preservation depends on "
                             "the sample type combination, specify a preservation "
                             "per sample type in the table below"),
