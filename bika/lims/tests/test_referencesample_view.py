@@ -85,6 +85,7 @@ class Tests(BikaFunctionalTestCase):
         outcatnum = self.browser.getControl(name='CatalogueNumber').value
         outlotnum = self.browser.getControl(name='LotNumber').value
         outremark = self.browser.getControl(name='Remarks').value
+        from pdb import set_trace; set_trace()
         outdatesampled = time.strftime(time.strptime(self.browser.getControl(name='DateSampled').value, '%b %d, %Y'), '%Y-%m-%D')
         outdatereceived = time.strftime(time.strptime(self.browser.getControl(name='DateReceived').value, '%b %d, %Y'), '%Y-%m-%D')
         outdateopened = time.strftime(time.strptime(self.browser.getControl(name='DateOpened').value, '%b %d, %Y'), '%Y-%m-%D')

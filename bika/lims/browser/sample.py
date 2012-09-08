@@ -111,8 +111,6 @@ class SamplePartitionsView(BikaListingView):
     def folderitems(self, full_objects = False):
         items = BikaListingView.folderitems(self)
 
-        #props = getToolByName(self.context, 'portal_properties').bika_properties
-
         bsc = getToolByName(self.context, 'bika_setup_catalog')
 
         containers = [({'ResultValue':o.UID,
@@ -287,7 +285,6 @@ class SampleEdit(BrowserView):
         getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
         workflow = getToolByName(self.context, 'portal_workflow')
         ars = self.context.getAnalysisRequests()
-        props = getToolByName(self.context, 'portal_properties').bika_properties
         sample = self.context
 
         ## Create header_table data rows
