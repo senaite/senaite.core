@@ -18,11 +18,8 @@
                     portal_type='Analysis',
                     getDueDate={'query': [now,], 'range': 'max'},
                     sort_on='getDateReceived',
-                    review_state=['assigned',
-                                  'sample_received',
-                                  'sample_due',
-                                  'to_be_verified',
-                                  'verified'],
+                    review_state=['sample_received',
+                                  'sample_due'],
                     cancellation_state='active');
                  results python:[p.getObject() for p in rs[:5]];"
      tal:condition="python:results">
