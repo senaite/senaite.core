@@ -2,19 +2,21 @@ Bika LIMS Installation
 ----------------------
 
 This document describes the installation of Bika LIMS 
-using the Plone Unified Installer package.
+on Ubuntu Linux, using the Plone Unified Installer package.
 
 ### Download and install Plone
 
-The latest Unified Installer can be found at
-http://plone.org/products/plone/releases
-Plone 4 or newer is required.  Plone 4.2.1 is the latest stable version tested.
+The latest Unified Installer can be found at http://plone.org/products/plone/releases
+Plone 4 or newer is required. Bika has been tested with Plone 4.2.1.
 
-### Install dependencies
+All steps are required except where marked as optionally. If your installation fails, 
+ensure that each step has completed successfully.
 
-The following commands are as used under Ubuntu 12.04.
-Use package manner to install needed dependencies:
-(apt-get is an acceptable to aptitude)
+### Install server (Linux) dependencies
+
+The following commands are as used for Ubuntu 12.04.
+Use a package manager to install the needed dependencies:
+(apt-get is an alternative to aptitude)
 
 sudo aptitude install gcc
 sudo aptitude install zlib1g-dev
@@ -22,11 +24,12 @@ sudo aptitude install libssl-dev
 sudo aptitude install gnuplot
 sudo aptitude install git-core
 
-### Download and install Plone
+### Download and install the Plone UnifiedInstaller
 
-Retrieve the unified installer, and run the installer script. The "dev"
-branch is used in this example. Omit the "-b dev" argument to use the
-master. Modify your directory if needed, "/home/bika" is used below.
+Retrieve the unified installer and run the install shell script. 
+The "dev" branch is used in this case. Omit the "-b dev" argument
+to use the master branch instead. Modify the target installation
+directory "/home/bika" as needed.
 
 wget https://launchpad.net/plone/4.2/4.2.1/+download/Plone-4.2.1-UnifiedInstaller.tgz 
 tar xzf Plone-4.2.1-UnifiedInstaller.tgz 
@@ -34,9 +37,9 @@ cd Plone-4.2.1-UnifiedInstaller/
 sudo ./install.sh --target=/home/bika standalone 
 
 Visit http://plone.org/documentation/topic/Installation for more
-information about setting up Plone if the step above fails.
+information about setting up Plone if the above fails.
 
-### Change to the new instance directory
+### Change to the new Plone instance directory
 
 cd /home/bika/zinstance
 
@@ -45,13 +48,13 @@ This is a good intermediary checkpoint in case of any system
 issues or installation problems. Refer to http://Plone.org 
 if this step fails.
 
-### Option - Retrieve the development branch Github Bika code 
+### (Option) Retrieve the development branch Bika code 
 
 sudo git clone -b dev git://github.com/bikalabs/Bika-LIMS.git src/bika.lims
 
-    Omit the command line switch '-b dev' to get the master branch instead.
+    Omit the command line switch '-b dev' to use the master branch instead.
 
-### Edit Plone/zinstance/buildout.conf to add Bika LIMS.
+### Edit Plone/zinstance/buildout.conf and add Bika LIMS.
 
 Find the "eggs" section and add "bika.lims"
 
@@ -59,52 +62,60 @@ Find the "eggs" section and add "bika.lims"
         ...
         bika.lims
 
-### Option - Use latest source code
-Find the "develop" section and add "src/bika.lims"
+### (Option) - Use the latest source code instead of the PYPI egg
+Find the "develop" section and add "src/bika.lims" to it
 
    develop = 
         src/bika.lims
-
-
-Omitting this step will cause the latest Python egg from 
-PYPI to be used instead of the Github code at
-https://github.com/bikalabs/Bika-LIMS/tree/dev
 
 ### Run buildout
 
 sudo bin/buildout
 
+Some error messages may scroll past, especially on the first run of
+buildout during the "reportlab" installation. They can be ignored.
+
 ### Start Plone
 
-    # Start in foreground (debug) mode, noting error
-    # messages if any and taking corrective action
+Start the Plone instance in foreground (debug) mode which will
+display the instance log on the console. 
 
 bin/plonectl fg
 
-    # start normally:
+Alternatively, start it as a normal server process:
 
 bin/plonectl start
 
-### Add a new Plone instance:
+The log should indicate that the Zope server is ready to serve
+requests, and the port. If it does not start up, ensure that a
+server is not already using the chosen port.
+
+You may track the instance log for a server process by running
+
+sudo tail -f var/log/instance.log
+
+### Add a new Plone instance with the Bika LIMS extension:
 
 Assign an ID of your choice, and select the checkbox to activate the
-Bika-LIMS extension profile.  To add Bika LIMS to an existing Plone site,
-visit the Addons page of Site Setup.
+Bika-LIMS extension profile. The 'title' field is optional.
+
+To add Bika LIMS to an existing Plone site, visit the Addons page 
+of Site Setup or the quickinstaller.
 
 IMPORTANT: Don't use "Bika" or "BIKA" as the instance name, this is a
-reserved namespace. If you get "Site Error" "AttributeError: adapters",
-this is the most likely cause of it.
+reserved namespace. If you get "Site Error" citing "AttributeError: adapters",
+this is the most likely cause.
 
 ### Removing the installed database and starting fresh
 
 In case you need to start with a clean slate, (re)move the Data.fs files.
 This will remove all Plone instances, and WILL DESTROY all entered data.
-The code will not be affected.
+The Plone and Bika code will not be affected.
 
 sudo rm -f var/filestorage/*
 
-In this case, or if you have problems loggin in, you might need to re-add
-the admin user:
+In this case, or if you have problems logging in, you might need to 
+initialize the Plone database with an admin user:
 
 bin/plonectl adduser admin password
 
@@ -114,7 +125,7 @@ That's it!
 You should be able to test the site now by visiting
 
 http://localhost:8080/Plone
-or 
+or, for the really lazy: 
 http://admin:password@localhost:8080/Plone 
 
 If you need to visit the ZMI, use
@@ -128,3 +139,49 @@ You can edit the code in src/bika.lims and restart the instance to
 make the changes take effect. It should not affect the installed databases.
 Changing the CSS does not require the instance to be restarted.
 
+Once logged in, you will be given the option to load a test laboratory
+setup via a link on the front page. To verify, select a client from the
+left-hand portlet, add an Analysis Request, and fill in the fields. 
+Progress the AR through reception, results entry, verification/retraction
+and publication phases. Note that the mail server setup, in "Site Setup"
+at the top righthand, needs to be completed before mail can be delivered.
+
+#### Adding Plone proxying to Apache setup for port 80  HTTP service
+
+Find the apache virtual host entry, by default in Ubuntu in 
+/etc/apache2/sites-enabled/000-default and add the following:
+
+<Virtualhost *:80>
+...
+ <Proxy *>
+    Order deny,allow
+    Allow from all
+  </Proxy>
+ 
+  Proxypass / http://localhost:8080/
+  ProxypassReverse / http://localhost:8080/
+ 
+</VirtualHost>
+
+You would also need to enable the module for the stock Ubuntu
+installation of apache:
+
+sudo a2enmod proxy
+
+Restart apache to effect changes:
+
+sudo apache2ctl restart
+
+You may now visit http://server/Plone (or your chosen instance name).
+
+#### Adding Plone server to the system startup
+
+Add the following line to  /etc/rc.local, before
+the "exit 0" line, adjusting for the target directory name:
+
+/home/bika/zinstance/bin/plonectl start
+
+Test by rebooting the server and verification by visiting the
+URL by browser to check if the site is accessible.
+
+--end.
