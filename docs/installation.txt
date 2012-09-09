@@ -31,7 +31,7 @@ sudo aptitude install git-core
 # to use the master branch instead. Modify the target installation
 # directory "/home/bika" as needed.
 
-wget https://launchpad.net/plone/4.2/4.2.1/+download/Plone-4.2.1-UnifiedInstaller.tgz 
+wget -nc https://launchpad.net/plone/4.2/4.2.1/+download/Plone-4.2.1-UnifiedInstaller.tgz 
 tar xzf Plone-4.2.1-UnifiedInstaller.tgz 
 cd Plone-4.2.1-UnifiedInstaller/
 sudo ./install.sh --target=/home/bika standalone 
