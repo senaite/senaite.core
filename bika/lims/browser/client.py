@@ -213,10 +213,10 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                     obj.setDatePublished(DateTime())
                     ARs_to_publish.append(obj)
 
-                transitioned = Publish(self.context,
-                                       self.request,
-                                       action,
-                                       ARs_to_publish)()
+            transitioned = Publish(self.context,
+                                   self.request,
+                                   action,
+                                   ARs_to_publish)()
 
             if len(transitioned) > 1:
                 message = _('${items} were published.',

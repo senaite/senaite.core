@@ -1,0 +1,26 @@
+title:string=AnalysisRequest result PDF formats
+
+backgroundColor:string=#fff
+
+fontFamily:string='Helvetica Neue',Arial,FreeSans,sans-serif
+fontColor:string=#222222
+fontBaseSize:string=10pt
+fontSmallSize:string=90%
+fontSmallerSize:string=80%
+fontBigSize:string=110%
+fontBiggerSize:string=120%
+
+headingFontColor:string=#444444
+headingFontBaseSize:string=110%
+headingFontFamily:string="Lucida Grande", Verdana, Lucida, Helvetica, Arial, sans-serif
+headingFontWeight:string=bold
+
+tableHeaderBackgroundColor:string=#dfdfdf
+tableHeaderBorderColor:string=#cfcfcf
+tableHeaderTextColor:string=#222
+tableHeaderFontBaseSize:string=100%
+
+tableCellBackgroundColor:string=#eee
+tableCellBorderColor:string=#dfdfdf
+tableCellTextColor:string=#222
+tableCellFontBaseSize:string=80%

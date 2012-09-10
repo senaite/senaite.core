@@ -2,208 +2,64 @@
   xmlns:tal="http://xml.zope.org/namespaces/tal"
   xmlns:metal="http://xml.zope.org/namespaces/metal"
   xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-  i18n:domain="bika">
+  i18n:domain="bika"
+  tal:define="portal_url nocall:context/portal_url;
+              portal portal_url/getPortalObject;">
+
+<head>
+    <style type="text/css" media="all"
+           tal:condition="python:exists('portal/ploneCustom.css')"
+           tal:content="structure string:&lt;!-- @import url($portal_url/ploneCustom.css); --&gt;">
+    </style>
+    <link rel="stylesheet" type="text/css" media="all" href=""
+          tal:attributes="href string:$portal_url/analysisrequest_results.css" />
+</head>
 
 <body tal:define="
   plone_view python:view.context.restrictedTraverse('@@plone');
   portal python:context.portal_url.getPortalObject();
-  laboratory python:view.context.bika_setup.laboratory;
-  lab_address python:laboratory.getPostalAddress();
-  lab_address python:lab_address and lab_address or laboratory.getBillingAddress();
-  lab_address python:lab_address and lab_address or laboratory.getPhysicalAddress();
-  lab_accredited python:laboratory.getLaboratoryAccredited();
+  lab_accredited view/laboratory/getLaboratoryAccredited;
   global columns python:0;
   pub_pref view/pub_pref;
   accredited python:lab_accredited and view.any_accredited;
   global invoice_exclude python:False;
-  global out_of_range python:0;
-  contact python:view.contact">
+  global out_of_range python:0;">
 
-<style>
-body {
-    font-family: Arial, "Lucida Grande", Verdana, Lucida, Helvetica, sans-serif;
-    font-size: 65%;
-    background-color: transparent;
-    color: Black;
-    margin: 1em;
-    padding: 0;
-}
-img {
-    border: none;
-    vertical-align: middle;
-}
-hr {
-    height: 1px;
-    color: #d3d3ad;
-    background-color: transparent;
-}
-h1, h2, h3, h4, h5, h6 {
-    color: Black; ! important;
-    font-size: 69%;
-    font-weight: normal;
-    margin: 0;
-    padding-top: 0.5em;
-}
-.logos {
-    width: 50%
-}
-.analysisrequest {
-    border-collapse: collapse;
-    border-top: none;
-    border-right: none;
-    border-bottom: 1px solid #CCCCCC;
-    border-left: none;
-    font-size: 85%;
-    margin: 1em 0em 1em 0em;
-}
-.analysisrequest tr{
-    border-top: 1px solid #CCCCCC;
-    border-right:none;
-    border-bottom: none;
-    border-left: 1px solid #CCCCCC;
-    margin: 1em 0em 1em 0em;
-}
-.analysisrequest tr.category_heading {
-    border-top: 1px solid #CCCCCC;
-    border-right: 1px solid #CCCCCC;
-    border-bottom: none;
-    border-left: 1px solid #CCCCCC;
-    padding: .15em 0em .15em 0em;
-    font-size: 1.1em;
-}
-.analysisrequest tr.category_heading th {
-    background-color:#EAEAEA;
-    text-align:center;
-    font-weight:bold;
-}
-.analysisrequest th {
-    background:#EEEEEE;
-    border-top: none;
-    border-right: 1px solid #CCCCCC;
-    border-bottom: none;
-    border-left: none;
-    font-weight: normal;
-    padding: 0em .25em 0em .5em;
-    text-align: left;
-}
-.analysisrequest td {
-    border-top: none;
-    border-right: 1px solid #CCCCCC;
-    border-bottom: none;
-    border-left: none;
-    padding: 0em 0em;
-    vertical-align: top;
-    padding: 0em .25em 0em .25em;
-    text-align: center;
-}
-.remarks {
-    border-collapse: collapse;
-    border-left: 1px solid #636321;
-    border-bottom: 1px solid #636321;
-    font-size: 85%;
-    margin: 1em 0em 1em 0em;
-}
-.remarks th {
-    background: #d3d3ad;
-    border-top: 1px solid #636321;
-    border-right: 1px solid #636321;
-    font-weight: normal;
-    padding: 0em 1em 0em 1em;
-    text-align: left;
-}
-.remarks td {
-    border-right: 1px solid #636321;
-    border-top: 1px solid #636321;
-    border-bottom: 1px solid #636321;
-    padding: 0em 1em 0em 1em;
-    vertical-align: top;
-    text-align: left;
-}
-.remarks th.tabletitle {
-    text-align: center;
-}
-.out_of_range {
-    color: red;
-}
-.retested {
-    color: red;
-    font-size: 80%;
-    font-weight: normal;
-}
-.discreeter {
-    color: #AAA;
-    font-size: 80%;;
-    font-weight: normal;
-}
-.address {
-    width: 100%
-}
-.address td {
-    width: 50%;
-    vertical-align: top;
-    font-size: 80%;
-}
-</style>
+<table class="logo-table">
+<tr>
+    <td>
+      <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/logo_email.png"/>
+    </td>
+    <td tal:condition="accredited"
+        tal:define="logo python:context.bika_setup.laboratory.getAccreditationBodyLogo()">
+      <img
+          tal:condition="logo"
+          tal:attributes="src string:${portal/absolute_url}/bika_setup/laboratory/AccreditationBodyLogo"/>
+      <img
+          tal:condition="not: logo"
+          tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/AccreditationBodyLogo.png"/>
+    </td>
+</tr>
+</table>
 
-  <table class="logos">
-    <tr>
-      <td>
-        <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/logo_email.png"/>
-      </td>
-      <td tal:condition="accredited"
-          tal:define="logo python:context.bika_setup.laboratory.getAccreditationBodyLogo()">
-        <img
-            tal:condition="logo"
-            tal:attributes="src string:${portal/absolute_url}/bika_setup/laboratory/AccreditationBodyLogo"/>
-        <img
-            tal:condition="not: logo"
-            tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/AccreditationBodyLogo.png"/>
-      </td>
-    </tr>
-  </table>
+<table class="address-table">
+  <tr>
+    <td>
+      <span tal:content="view/contact/getFullname"/>
+      <br/>
+      <span tal:content="view/client/Title"/>
+      <br/>
+      <span tal:content="structure view/client_address"/>
+    </td>
+    <td>
+      <span tal:content="view/laboratory/Title"/>
+      <br/>
+      <span tal:content="structure view/lab_address"/>
+    </td>
+  </tr>
+</table>
 
-  <table class="address">
-    <tr>
-      <td tal:define="
-        client python:contact.aq_parent;
-        contact_address python:contact.getPostalAddress();
-        contact_address python:contact_address or contact.getBillingAddress();
-        contact_address python:contact_address or client.getPostalAddress();
-        contact_address python:contact_address or client.getBillingAddress();
-        contact_address python:contact_address or contact.getPhysicalAddress();
-        contact_address python:contact_address or client.getPhysicalAddress()">
-        <span tal:content="contact/getFullname"/>
-        <span tal:content="client/Title"/>
-        <br/>
-        <span tal:define="address python:contact_address.get('address','')"
-          tal:content="structure python:modules['Products.PythonScripts.standard'].newline_to_br(address)"/>
-        <div>
-          <span tal:content="python:contact_address.get('city','')"/>,
-          <span tal:content="python:contact_address.get('state','')"/>,
-          <span tal:content="python:contact_address.get('zip','')"/>
-          <span tal:content="python:contact_address.get('country','')"/>
-        </div>
-      </td>
-
-      <td>
-        <span tal:content="laboratory/Title"/>
-        <br/>
-        <span tal:define="address python:lab_address.get('address','')"
-          tal:content="structure python:modules['Products.PythonScripts.standard'].newline_to_br(address)"/>
-        <div>
-          <span tal:content="python:lab_address.get('city','')"/>,
-          <span tal:content="python:lab_address.get('state','')"/>,
-          <span tal:content="python:lab_address.get('zip','')"/>
-          <span tal:content="python:lab_address.get('country','')"/>
-        </div>
-      </td>
-    </tr>
-  </table>
-
-  <table
-    class="analysisrequest"
-    summary="analysis request listing"
-    cellpadding="2" cellspacing="0">
+  <table class="main-table" cellpadding="2" cellspacing="0">
 
     <thead>
 
@@ -365,7 +221,7 @@ h1, h2, h3, h4, h5, h6 {
                   result_class python:in_range[0] and '' or 'out_of_range';
                   global out_of_range python:in_range[0] and out_of_range or 1;">
 
-                <td nowrap align="center"
+                <td nowrap
                   tal:attributes="class result_class">
                   <span tal:content="result">10.00</span>
                   <span tal:content="string:${analysis/Unit}"
@@ -400,28 +256,30 @@ h1, h2, h3, h4, h5, h6 {
     </tbody>
   </table>
 
-  <table class="remarks">
-    <th class="tabletitle"
-      colspan="2"
-      i18n:translate="">Remarks</th>
-    <tr tal:repeat="ar view/batch">
-    <th tal:content="string:${ar/getRequestID}:">AR:</th>
-    <td width=50%
-      tal:content="python:ar.getRemarks() or default">None</td>
+  <table class="main-table">
+    <tr>
+        <th colspan="2" i18n:translate="">Remarks</th>
     </tr>
+    <tal:repeat repeat="ar view/batch">
+        <tr tal:define="remarks python:ar.getRemarks()"
+            tal:condition="remarks">
+            <td width="10%"
+                tal:content="string:${ar/getRequestID}:">AR:</td>
+            <td tal:content="remarks">Remarks</td>
+        </tr>
+    </tal:repeat>
   </table>
 
-  <table class="remarks">
+  <table class="main-table">
     <tr>
-      <th class="tabletitle"
-        colspan="2"
-        i18n:translate="">Attachments
+      <th colspan="2" i18n:translate="">Attachments
       </th>
     </tr>
     <tal:ar tal:repeat="ar view/batch">
       <tr tal:define="attachments ar/getAttachment"
         tal:condition="attachments">
-        <th tal:content="string:${ar/getRequestID}:">AR:</th>
+        <td width="10%"
+            tal:content="string:${ar/getRequestID}:">AR:</td>
         <td>
           <tal:attachment tal:repeat="attachment attachments">
           <div tal:define="
@@ -521,7 +379,7 @@ h1, h2, h3, h4, h5, h6 {
       <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/accredited.png">
       <span i18n:translate="">
         Methods included in the
-        <tal:block replace="laboratory/AccreditationBody" i18n:name="accreditation_body"/>
+        <tal:block replace="view/laboratory/AccreditationBody" i18n:name="accreditation_body"/>
         schedule of Accreditation for this Laboratory. Analysis remarks are not accredited
       </span>
     </p>
@@ -542,10 +400,10 @@ h1, h2, h3, h4, h5, h6 {
       <span i18n:translate="">
         This document shall not be reproduced except in full,
         without the written approval of
-        <tal:block replace="laboratory/Title" i18n:name="name_lab"/></span>
+        <tal:block replace="view/laboratory/Title" i18n:name="name_lab"/></span>
     </p>
 
-    <p tal:define="confidence_level laboratory/Confidence|nothing"
+    <p tal:define="confidence_level view/laboratory/Confidence|nothing"
       tal:condition="confidence_level">
       <span tal:define="global seq_no python:seq_no + 1"
         tal:content="string:$seq_no.">1</span>
