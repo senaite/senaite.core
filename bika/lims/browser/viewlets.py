@@ -11,7 +11,7 @@ class NoSetupDataViewlet(ViewletBase):
     template = ViewPageTemplateFile('templates/load_setup_data_viewlet.pt')
 
     def render(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
         portal = getToolByName(self.context, 'portal_url').getPortalObject()
         portal_url = portal.absolute_url()
         if self.request.URL == portal_url + "/front-page/document_view" \
