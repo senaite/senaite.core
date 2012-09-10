@@ -93,6 +93,8 @@ class Publish(BrowserView):
                 # compose and send email
                 if 'email' in self.pub_pref:
 
+                    self.Footer = self.context.bika_setup.getResultFooter()
+
                     # render template to utf-8
                     ar_results = self.ar_results().encode("utf-8")
 

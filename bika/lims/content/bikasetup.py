@@ -119,6 +119,18 @@ schema = BikaFolderSchema.copy() + Schema((
                             "who prefer fewer results per email"),
         )
     ),
+    TextField('ResultFooter',
+        schemata = "Results Reports",
+        default_content_type = 'text/x-web-intelligent',
+        allowable_content_types = ('text/x-web-intelligent',),
+        default_output_type="text/html",
+        default="",
+        widget = TextAreaWidget(
+            label = _('Result Footer'),
+            description = _("This text will be appended to results reports."),
+            append_only = True,
+        ),
+    ),
 ##    IntegerField('BatchFax',
 ##        schemata = "Results Reports",
 ##        required = 1,
