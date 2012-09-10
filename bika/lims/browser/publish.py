@@ -99,7 +99,7 @@ class Publish(BrowserView):
                     ar_results = self.ar_results().encode("utf-8")
 
                     debug_mode = App.config.getConfiguration().debug_mode
-                    if not debug_mode:
+                    if debug_mode:
                         ar_debug_name = '%s_%s.html' % \
                             (self.analysis_requests[0].Title(), self.action)
                         open(join(Globals.INSTANCE_HOME,'var', ar_debug_name),

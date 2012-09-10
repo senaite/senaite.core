@@ -1,12 +1,6 @@
-Development setup
------------------
-
 You can copy development-buildout.cfg into your zinstance folder, then run:
 
     $ bin/buildout -c development-buildout.cfg
-
-Miscellaneous issues
---------------------
 
 Indent everything correctly (Especially TAL files!)
 
@@ -21,6 +15,9 @@ If you don't have a mail server configured, you can use this command to start
 a simple printing debug SMTP server:
 
     $ python -m smtpd -n -c DebuggingServer localhost:1025
+
+In debug mode a copy of the HTML that is meant to be included in the email,
+will be written to Plone/zinstance/parts/instance/var/[first_ar]_[action].html
 
 Use the built-in Title and Description indexes and metadatas where possible!
 
