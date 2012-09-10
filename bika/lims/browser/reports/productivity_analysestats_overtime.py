@@ -5,8 +5,7 @@ from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.client import ClientSamplesView
-from bika.lims.utils import formatDateQuery, formatDateParms, formatDuration, \
-    pretty_user_name_or_id
+from bika.lims.utils import formatDateQuery, formatDateParms, formatDuration
 from bika.lims.interfaces import IReportFolder
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -54,7 +53,7 @@ class Report(BrowserView):
         if self.request.form.has_key('Analyst'):
             analyst = self.request.form['Analyst']
             query['getAnalyst'] = analyst
-            analyst_title = pretty_user_name_or_id(self.context, analyst)
+            analyst_title = self.user_fullname(analyst)
         else:
             analyst_title = 'Undefined'
         parms.append(

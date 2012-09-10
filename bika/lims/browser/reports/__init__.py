@@ -10,7 +10,6 @@ from bika.lims.interfaces import IReportFolder
 from bika.lims.utils import getUsers
 from bika.lims.utils import logged_in_client
 from bika.lims.utils import pretty_user_email
-from bika.lims.utils import pretty_user_name_or_id
 from cStringIO import StringIO
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -153,7 +152,7 @@ class ReportHistoryView(BikaListingView):
                     (client.absolute_url(), client.Title())
             items[x]['FileSize'] = '%sKb' % (file.get_size() / 1024)
             items[x]['Created'] = self.ulocalized_time(obj.created())
-            items[x]['By'] = pretty_user_name_or_id(self.context, obj.Creator())
+            items[x]['By'] = self.user_fullname(obj.Creator())
 
             items[x]['replace']['Title'] = \
                  "<a href='%s/at_download/ReportFile'>%s</a>" % \
@@ -189,7 +188,7 @@ class SubmitForm(BrowserView):
 
         self.date = DateTime()
         username = self.context.portal_membership.getAuthenticatedMember().getUserName()
-        self.reporter = pretty_user_name_or_id(self.context, username)
+        self.reporter = self.user_fullname(username)
         self.reporter_email = pretty_user_email(self.context, username)
 
         lab = self.context.bika_setup.laboratory

@@ -189,22 +189,6 @@ def sortable_title(portal, title):
             break
     return sortabletitle
 
-def pretty_user_name_or_id(context, userid):
-    pc = getToolByName(context, 'portal_catalog')
-    r = pc(portal_type = 'Contact', getUsername = userid)
-    if len(r) == 1:
-        return r[0].Title
-
-    mtool = getToolByName(context, 'portal_membership')
-    member = mtool.getMemberById(userid)
-    if member is None:
-        return userid
-    else:
-        fullname = member.getProperty('fullname')
-    if fullname in (None, ''):
-        return userid
-    return fullname
-
 def pretty_user_email(context, userid):
     pc = getToolByName(context, 'portal_catalog')
     r = pc(portal_type = 'Contact', getUsername = userid)

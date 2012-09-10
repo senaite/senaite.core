@@ -16,7 +16,6 @@ from bika.lims.permissions import *
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
-from bika.lims.utils import pretty_user_name_or_id
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 import json
@@ -142,14 +141,14 @@ class SamplePartitionsView(BikaListingView):
 
 ##            sampler = obj.getSampler().strip()
 ##            items[x]['getSampler'] = \
-##                sampler and pretty_user_name_or_id(self.context, sampler) or ''
+##                sampler and self.user_fullname(sampler) or ''
 ##            datesampled = obj.getDateSampled()
 ##            items[x]['getDateSampled'] = \
 ##                datesampled and self.ulocalized_time(datesampled) or ''
 
             preserver = obj.getPreserver().strip()
             items[x]['getPreserver'] = \
-                preserver and pretty_user_name_or_id(self.context, preserver) or ''
+                preserver and self.user_fullname(preserver) or ''
             datepreserved = obj.getDatePreserved()
             items[x]['getDatePreserved'] = \
                 datepreserved and self.ulocalized_time(datepreserved) or ''
@@ -351,7 +350,7 @@ class SampleEdit(BrowserView):
             {'id': 'Creator',
              'title': PMF('Creator'),
              'allow_edit': False,
-             'value': pretty_user_name_or_id(self.context, self.context.Creator()),
+             'value': self.user_fullname(self.context.Creator()),
              'condition':True,
              'type': 'text'},
             {'id': 'Composite',
@@ -798,8 +797,7 @@ class SamplesView(BikaListingView):
             items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
                 (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
 
-            items[x]['Creator'] = pretty_user_name_or_id(self.context,
-                                                         obj.Creator())
+            items[x]['Creator'] = self.user_fullname(obj.Creator())
 
             items[x]['DateReceived'] = self.ulocalized_time(obj.getDateReceived())
 
@@ -817,8 +815,7 @@ class SamplesView(BikaListingView):
                     items[x]['class']['getDateSampled'] = 'provisional'
                 sampler = obj.getSampler().strip()
                 if sampler:
-                    items[x]['replace']['getSampler'] = pretty_user_name_or_id(
-                        self.context, sampler)
+                    items[x]['replace']['getSampler'] = self.user_fullname(sampler)
                 if 'Sampler' in member.getRoles() and not sampler:
                     sampler = member.id
                     items[x]['class']['getSampler'] = 'provisional'

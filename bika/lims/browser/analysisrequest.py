@@ -21,7 +21,6 @@ from bika.lims.subscribers import skip
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
-from bika.lims.utils import pretty_user_name_or_id
 from magnitude import mg
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -502,7 +501,7 @@ class AnalysisRequestViewView(BrowserView):
             {'id': 'Creator',
              'title': PMF('Creator'),
              'allow_edit': False,
-             'value': pretty_user_name_or_id(self.context, self.context.Creator()),
+             'value': self.user_fullname(self.context.Creator()),
              'condition':True,
              'type': 'text'},
             {'id': 'DateCreated',
@@ -2126,8 +2125,7 @@ class AnalysisRequestsView(BikaListingView):
             items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
                  (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
 
-            items[x]['Creator'] = pretty_user_name_or_id(self.context,
-                                                         obj.Creator())
+            items[x]['Creator'] = self.user_fullname(obj.Creator())
 
             samplingdate = obj.getSample().getSamplingDate()
             items[x]['SamplingDate'] = self.ulocalized_time(samplingdate)
@@ -2175,8 +2173,7 @@ class AnalysisRequestsView(BikaListingView):
                     items[x]['class']['getDateSampled'] = 'provisional'
                 sampler = sample.getSampler().strip()
                 if sampler:
-                    items[x]['replace']['getSampler'] = pretty_user_name_or_id(
-                        self.context, sampler)
+                    items[x]['replace']['getSampler'] = self.user_fullname(sampler)
                 if 'Sampler' in member.getRoles() and not sampler:
                     sampler = member.id
                     items[x]['class']['getSampler'] = 'provisional'

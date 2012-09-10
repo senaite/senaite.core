@@ -8,7 +8,6 @@ from bika.lims.browser.client import ClientSamplesView
 from bika.lims.utils import formatDateQuery
 from bika.lims.utils import formatDateParms
 from bika.lims.utils import logged_in_client
-from bika.lims.utils import pretty_user_name_or_id
 from bika.lims.interfaces import IQueries
 from plone.app.content.browser.interfaces import IFolderContentsView
 from Products.CMFPlone.PloneBatch import Batch
@@ -253,7 +252,7 @@ class QueryAnalysisRequests(BrowserView):
         if self.request.form.has_key('Analyst'):
             analyst = self.request.form['Analyst']
             query['getAnalyst'] = analyst
-            analyst_name = pretty_user_name_or_id(self.context, analyst)
+            analyst_name = self.user_fullname(analyst)
             self.parms.append(
                 {'title': _('Analyst'),
                  'value': analyst_name,

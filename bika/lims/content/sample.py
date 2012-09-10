@@ -17,7 +17,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import ManageBika, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.utils import sortable_title, pretty_user_name_or_id
+from bika.lims.utils import sortable_title
 import sys
 import time
 from zope.interface import implements

@@ -8,7 +8,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from bika.lims.interfaces import IQueries
-from bika.lims.utils import pretty_user_name_or_id, pretty_user_email, logged_in_client, getUsers
+from bika.lims.utils import pretty_user_email, logged_in_client, getUsers
 from cStringIO import StringIO
 from invoices import QueryInvoices
 from orders import QueryOrders
@@ -66,7 +66,7 @@ class SubmitForm(BrowserView):
         else:
             clientuid = None
         username = self.context.portal_membership.getAuthenticatedMember().getUserName()
-        self.querier = pretty_user_name_or_id(self.context, username)
+        self.querier = self.user_fullname(username)
         self.querier_email = pretty_user_email(self.context, username)
         query_id =  self.request.form['query_id']
         querytype = ''
