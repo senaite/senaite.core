@@ -47,7 +47,7 @@ class Publish(BrowserView):
 
         laboratory = self.context.bika_setup.laboratory
         BatchEmail = self.context.bika_setup.getBatchEmail()
-        BatchFax = self.context.bika_setup.getBatchFax()
+##        BatchFax = self.context.bika_setup.getBatchFax()
 
         # group analysis requests by contact
         ARs_by_contact = {}
@@ -61,8 +61,8 @@ class Publish(BrowserView):
             ars.sort()
             self.contact = ars[0].getContact()
             self.pub_pref = self.contact.getPublicationPreference()
-            batch_size = 'email' in self.pub_pref and BatchEmail or \
-                         'fax' in self.pub_pref and BatchFax or 1
+            batch_size = 'email' in self.pub_pref and BatchEmail or 5
+##                         'fax' in self.pub_pref and BatchFax or 1
 
             # send batches of ARs to each contact
             for b in range(0, len(ars), batch_size):
