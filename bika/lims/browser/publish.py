@@ -96,11 +96,12 @@ class Publish(BrowserView):
                     # render template to utf-8
                     ar_results = self.ar_results().encode("utf-8")
 
-                    # XXX
-                    ar_debug_name = '%s_%s.html' % \
-                        (self.analysis_requests[0].Title(), self.action)
-                    open(join(Globals.INSTANCE_HOME,'var', ar_debug_name),
-                                "w").write(ar_results)
+                    debug_mode = App.config.getConfiguration().debug_mode
+                    if not debug_mode:
+                        ar_debug_name = '%s_%s.html' % \
+                            (self.analysis_requests[0].Title(), self.action)
+                        open(join(Globals.INSTANCE_HOME,'var', ar_debug_name),
+                             "w").write(ar_results)
 
                     mime_msg = MIMEMultipart('related')
                     mime_msg['Subject'] = self.get_mail_subject()
