@@ -1,6 +1,6 @@
 """Bika's browser views are based on this one, for a nice set of utilities.
 """
-
+from Products.CMFCore.utils import getToolByName
 from AccessControl import ClassSecurityInfo
 from Products.CMFPlone.i18nl10n import ulocalized_time
 from Products.Five.browser import BrowserView
