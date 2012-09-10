@@ -9,7 +9,6 @@ from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from bika.lims.interfaces import IReportFolder
 from bika.lims.utils import getUsers
 from bika.lims.utils import logged_in_client
-from bika.lims.utils import pretty_user_email
 from cStringIO import StringIO
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -189,7 +188,7 @@ class SubmitForm(BrowserView):
         self.date = DateTime()
         username = self.context.portal_membership.getAuthenticatedMember().getUserName()
         self.reporter = self.user_fullname(username)
-        self.reporter_email = pretty_user_email(self.context, username)
+        self.reporter_email = self.user_email(username)
 
         lab = self.context.bika_setup.laboratory
         self.lab_title = lab.getName()

@@ -189,20 +189,6 @@ def sortable_title(portal, title):
             break
     return sortabletitle
 
-def pretty_user_email(context, userid):
-    pc = getToolByName(context, 'portal_catalog')
-    r = pc(portal_type = 'Contact', getUsername = userid)
-    if len(r) == 1:
-        contact = r[0].getObject()
-        return contact.getEmailAddress()
-
-    mtool = getToolByName(context, 'portal_membership')
-    member = mtool.getMemberById(userid)
-    if member is None:
-        return None
-    else:
-        return member.getProperty('email')
-
 def logged_in_client(context, member=None):
     if not member:
         membership_tool=getToolByName(context, 'portal_membership')

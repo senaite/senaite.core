@@ -47,6 +47,15 @@ class BrowserView(BrowserView):
         contact_fullname = c and c[0].getObject().getFullname() or None
         return contact_fullname or member_fullname or userid
 
+    def user_email(self, userid):
+        member = self.portal_membership.getMemberById(userid)
+        if member is None:
+            return userid
+        member_email = member.getProperty('email')
+        c = self.portal_catalog(portal_type = 'Contact', getUsername = userid)
+        contact_email = c and c[0].getObject().getEmailAddress() or None
+        return contact_email or member_email or _('None')
+
     def python_date_format(self, long_format=None, time_only=False):
         """This convert plonelocales date format msgstrs to Python
         strftime format strings, by the same rules as ulocalized_time.
