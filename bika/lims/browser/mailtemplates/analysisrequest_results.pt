@@ -229,6 +229,13 @@ h1, h2, h3, h4, h5, h6 {
       </tr>
 
       <tr>
+        <th i18n:translate="">Sampling Deviation</th>
+        <td tal:repeat="ar view/batch"
+          tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1"
+          tal:content="python:ar.getSample().getSamplingDeviation()">None</td>
+      </tr>
+
+      <tr>
         <th i18n:translate="">Request ID</th>
         <td tal:repeat="ar view/batch"
           tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1">
