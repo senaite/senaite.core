@@ -212,6 +212,9 @@ class BikaGenerator:
         mp(CancelAndReinstate, ['Manager', 'LabManager', 'Owner'], 1)
 
         # /clients folder permissions
+        # Member role must have view permission on /clients, to see the list.
+        # This means within a client, perms granted on Member role are available
+        # in clients not our own, allowing sideways entry if we're not careful.
         mp = portal.clients.manage_permission
         mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver'], 0)
         mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst', 'Sampler', 'Preserver'], 0)

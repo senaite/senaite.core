@@ -17,7 +17,7 @@
       for="bika.lims.interfaces.IClient"
       name="analysisrequests"
       class="bika.lims.browser.client.ClientAnalysisRequestsView"
-      permission="cmf.ListFolderContents"
+      permission="bika.lims.ManageClients"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -25,7 +25,7 @@
       for="bika.lims.interfaces.IClient"
       name="samples"
       class="bika.lims.browser.client.ClientSamplesView"
-      permission="cmf.ListFolderContents"
+      permission="bika.lims.ManageClients"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -41,7 +41,7 @@
       for="bika.lims.interfaces.IClient"
       name="analysisprofiles"
       class="bika.lims.browser.client.ClientAnalysisProfilesView"
-      permission="cmf.ListFolderContents"
+      permission="bika.lims.ManageClients"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -49,7 +49,7 @@
       for="bika.lims.interfaces.IClient"
       name="artemplates"
       class="bika.lims.browser.client.ClientARTemplatesView"
-      permission="cmf.ListFolderContents"
+      permission="bika.lims.ManageClients"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -57,7 +57,7 @@
       for="bika.lims.interfaces.IClient"
       name="samplepoints"
       class="bika.lims.browser.client.ClientSamplePointsView"
-      permission="cmf.ListFolderContents"
+      permission="bika.lims.ManageClients"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -65,7 +65,7 @@
       for="bika.lims.interfaces.IClient"
       name="analysisspecs"
       class="bika.lims.browser.client.ClientAnalysisSpecsView"
-      permission="cmf.ListFolderContents"
+      permission="bika.lims.ManageClients"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -73,7 +73,7 @@
       for="bika.lims.interfaces.IClient"
       name="set_to_lab_defaults"
       class="bika.lims.browser.client.SetSpecsToLabDefaults"
-      permission="cmf.ListFolderContents"
+      permission="bika.lims.ManageClients"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -81,7 +81,7 @@
       for="bika.lims.interfaces.IClient"
       name="attachments"
       class="bika.lims.browser.client.ClientAttachmentsView"
-      permission="cmf.ListFolderContents"
+      permission="bika.lims.ManageClients"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -89,7 +89,7 @@
       for="bika.lims.interfaces.IClient"
       name="orders"
       class="bika.lims.browser.client.ClientOrdersView"
-      permission="cmf.ListFolderContents"
+      permission="bika.lims.ManageClients"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -97,7 +97,7 @@
       for="bika.lims.interfaces.IClient"
       name="contacts"
       class="bika.lims.browser.client.ClientContactsView"
-      permission="cmf.ListFolderContents"
+      permission="bika.lims.ManageClients"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
