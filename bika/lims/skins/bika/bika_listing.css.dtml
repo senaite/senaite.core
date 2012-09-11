@@ -6,11 +6,10 @@
 
 .context_action_link {
 	position:relative;
-	top:-0.5em;
+	top:-0.4em;
     margin-right: .5em;
     font-size: 50%;
-    /* border:1px solid #eee !important; */
-    border:none
+    border:1px solid #dfdfdf !important;
     vertical-align: middle;
 	font-weight:normal;
 	letter-spacing: 0;
@@ -19,6 +18,18 @@
 }
 .context_action_link:hover {
 	/* background-color:#eee !important; */
+}
+
+.worksheet_add_controls {
+    vertical-align:center;
+	font-size:90%;
+	margin-bottom:0.25em;
+}
+.worksheet_add {
+    padding: 2px 2px 2px 22px !important;
+	position:relative;
+	top:0;
+	font-size:100%;
 }
 
 .context_action_dropdown {
@@ -64,10 +75,6 @@ table.bika-listing-table {
     border: 1px solid rgb(220, 220, 220);
     border: medium none;
     border-collapse: collapse;
-}
-
-.bika-listing-table tr {
-    line-height: 2em;
 }
 
 .bika-listing-table thead {
@@ -140,7 +147,7 @@ table.bika-listing-table {
 }
 
 .bika-listing-table tr {
-	line-height: 2em;
+	line-height: 1.5em;
     border-left: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
 }
 
