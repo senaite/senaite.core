@@ -93,8 +93,6 @@ class Publish(BrowserView):
 
             self.Footer = self.context.bika_setup.getResultFooter()
 
-            result_email_body = self.context.bika_setup.getResultEmailBody()
-
             # send batches of ARs to each contact
             for b in range(0, len(ars), batch_size):
                 self.batch = ars[b:b+batch_size]
@@ -155,12 +153,9 @@ class Publish(BrowserView):
                         (encode_header(self.contact.getFullname()),
                          self.contact.getEmailAddress()))
                     mime_msg.preamble = 'This is a multi-part MIME message.'
-                    if pdf.err:
-                        msg_txt = MIMEText(ar_results, _subtype='html')
-                        mime_msg.attach(msg_txt)
-                    else:
-                        msg_txt = MIMEText(result_email_body, _subtype='html')
-                        mime_msg.attach(msg_txt)
+                    msg_txt = MIMEText(ar_results, _subtype='html')
+                    mime_msg.attach(msg_txt)
+                    if not pdf.err:
                         part = MIMEBase('application', "application/pdf")
                         part.add_header('Content-Disposition', 'attachment; filename="%s.pdf"' % out_fn)
                         part.set_payload( pdf_data )

@@ -36,12 +36,15 @@ body {
 }
 
 .logo-table {
+  margin-bottom:1em;
+  width: 100%;
 }
 .logo-table td {
 }
 
 .address-table {
   margin-bottom:1.5em;
+  width: 100%;
 }
 .address-table td {
 }
