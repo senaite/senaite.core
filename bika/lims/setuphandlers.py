@@ -170,9 +170,9 @@ class BikaGenerator:
         mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
         mp(permissions.ManageUsers, ['Manager', 'LabManager', ], 1)
 
-        mp(ApplyVersionControl, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
-        mp(SaveNewVersion, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
-        mp(AccessPreviousVersions, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
+        mp(ApplyVersionControl, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'Member'], 1)
+        mp(SaveNewVersion, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'Member'], 1)
+        mp(AccessPreviousVersions, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'Member'], 1)
 
         mp(ManageBika, ['Manager', 'LabManager'], 1)
         mp(ManageClients, ['Manager', 'LabManager', 'LabClerk'], 1)
@@ -210,6 +210,13 @@ class BikaGenerator:
         mp(EditResults, ['Manager', 'LabManager', 'Analyst'], 1)
         mp(EditFieldResults, ['Manager', 'LabManager', 'Sampler'], 1)
         mp(CancelAndReinstate, ['Manager', 'LabManager', 'Owner'], 1)
+
+        mp = portal.bika_setup.manage_permission
+        mp('Access contents information',  ['Contributor', 'Editor', 'Manager', 'Owner', 'Reader', 'Site Administrator', 'LabManager', 'Anonymous', 'Member'], 1)
+##        mp(ApplyVersionControl, ['Manager', 'LabManager', 'Member'], 1)
+##        mp(SaveNewVersion, ['Manager', 'LabManager', 'Member'], 1)
+##        mp(AccessPreviousVersions, ['Manager', 'LabManager', 'Member'], 1)
+
 
         # /clients folder permissions
         # Member role must have view permission on /clients, to see the list.
@@ -293,10 +300,15 @@ class BikaGenerator:
         mp(permissions.View, ['Manager', 'LabManager'], 0)
         portal.pricelists.reindexObject()
 
-        mp = portal.bika_setup.manage_permission
-        mp(ApplyVersionControl, ['Manager', 'LabManager', 'Member'], 1)
-        mp(SaveNewVersion, ['Manager', 'LabManager', 'Member'], 1)
-        mp(AccessPreviousVersions, ['Manager', 'LabManager', 'Member'], 1)
+        # /methods folder permissions
+        mp = portal.methods.manage_permission
+        mp(CancelAndReinstate, ['Manager', 'LabManager'], 0)
+        mp(permissions.ListFolderContents, ['Member'], 1)
+        mp(permissions.AddPortalContent, ['Manager', 'LabManager'], 0)
+        mp(permissions.DeleteObjects, ['Manager', 'LabManager'], 0)
+        mp(permissions.View, ['Manager', 'LabManager', 'Member'], 0)
+        portal.methods.reindexObject()
+
 
     def setupVersioning(self, portal):
         portal_repository = getToolByName(portal, 'portal_repository')
