@@ -420,7 +420,7 @@
         Methods of analysis available by clicking on the 'Request' link</span>
     </p>
 
-    <p tal:condition="view/Footer" tal:content="view/Footer"/>
+    <p tal:condition="view/Footer" tal:content="structure view/Footer"/>
 
   </div>
 
