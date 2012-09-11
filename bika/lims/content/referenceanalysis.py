@@ -48,6 +48,11 @@ schema = BikaSchema.copy() + Schema((
             label = _("Result"),
         )
     ),
+    DateTimeField('ResultCaptureDate',
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
     StringField('ResultDM',
     ),
     ReferenceField('Attachment',
@@ -152,6 +157,12 @@ class ReferenceAnalysis(BaseContent):
         else:
             return True, None
         return False, spec
+
+    security.declarePublic('setResult')
+    def setResult(self, value, **kw):
+        # Always update ResultCapture date when this field is modified
+        self.setResultCaptureDate(DateTime())
+        self.getField('Result').set(self, value, **kw)
 
     security.declarePublic('current_date')
     def current_date(self):
