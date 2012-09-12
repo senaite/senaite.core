@@ -134,7 +134,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 ar_state = workflow.getInfoFor(ar, 'review_state')
                 for analysis in new:
                     analysis.updateDueDate()
-                    changeWorkflowState(analysis, ar_state)
+                    changeWorkflowState(analysis, 'bika_analysis_workflow', ar_state)
 
             message = self.context.translate(PMF("Changes saved."))
             self.context.plone_utils.addPortalMessage(message, 'info')
