@@ -5,6 +5,7 @@ from AccessControl import ClassSecurityInfo
 from Products.CMFPlone.i18nl10n import ulocalized_time
 from Products.Five.browser import BrowserView
 from bika.lims import logger
+from bika.lims import bikaMessageFactory as _
 from zope.i18n import translate
 from zope.cachedescriptors.property import Lazy as lazy_property
 
