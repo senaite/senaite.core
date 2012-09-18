@@ -59,6 +59,7 @@ class ReferenceAnalysesView(AnalysesView):
             'Service': {'title': _('Service'), 'toggle':True},
             'Worksheet': {'title': _('Worksheet'), 'toggle':True},
             'Result': {'title': _('Result'), 'toggle':True},
+            'Captured': {'title': _('Captured'), 'toggle':True},
             'Uncertainty': {'title': _('+-'), 'toggle':True},
             'DueDate': {'title': _('Due Date'),
                         'index': 'getDueDate',
@@ -76,6 +77,7 @@ class ReferenceAnalysesView(AnalysesView):
                         'Service',
                         'Worksheet',
                         'Result',
+                        'Captured',
                         'Uncertainty',
                         'DueDate',
                         'state_title'],
@@ -92,6 +94,7 @@ class ReferenceAnalysesView(AnalysesView):
             items[x]['id'] = obj.getId()
             items[x]['Category'] = service.getCategory().Title()
             items[x]['Service'] = service.Title()
+            items[x]['Captured'] = self.ulocalized_time(obj.getResultCaptureDate())
             brefs = obj.getBackReferences("WorksheetAnalysis")
             items[x]['Worksheet'] = brefs and brefs[0].Title() or ''
         return items
