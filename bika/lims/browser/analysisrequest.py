@@ -685,41 +685,55 @@ class AnalysisRequestViewView(BrowserView):
     def analysisprofiles(self):
         """ Return applicable client and Lab AnalysisProfile records
         """
-        profiles = []
+        res = profiles = []
         for profile in self.context.objectValues("AnalysisProfile"):
             if isActive(profile):
                 profiles.append((profile.Title(), profile))
+        profiles.sort(lambda x,y:cmp(x[0], y[0]))
+        res += profiles
+        profiles = []
         for profile in self.context.bika_setup.bika_analysisprofiles.objectValues("AnalysisProfile"):
             if isActive(profile):
                 profiles.append((self.context.translate(_('Lab')) + ": " + profile.Title(), profile))
-        return profiles
+        profiles.sort(lambda x,y:cmp(x[0], y[0]))
+        res += profiles
+        return res
 
     def artemplates(self):
         """ Return applicable client and Lab ARTemplate records
         """
-        templates = []
+        res = templates = []
         for template in self.context.objectValues("ARTemplate"):
             if isActive(template):
                 templates.append((template.Title(), template))
+        templates.sort(lambda x,y:cmp(x[0], y[0]))
+        res += templates
+        templates = []
         for template in self.context.bika_setup.bika_artemplates.objectValues("ARTemplate"):
             if isActive(template):
                 templates.append((self.context.translate(_('Lab')) + ": " + template.Title(), template))
-        return templates
+        templates.sort(lambda x,y:cmp(x[0], y[0]))
+        res += templates
+        return res
 
     def samplingdeviations(self):
         """ SamplingDeviation vocabulary for AR Add
         """
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        return [(sd.getObject().Title(), sd.getObject()) \
-                for sd in bsc(portal_type = 'SamplingDeviation',
-                              inactive_review_state = 'active')]
+        res = [(sd.getObject().Title(), sd.getObject()) \
+               for sd in bsc(portal_type = 'SamplingDeviation',
+                             inactive_review_state = 'active')]
+        res.sort(lambda x,y:cmp(x[0], y[0]))
+        return res
 
     def containertypes(self):
         """ DefaultContainerType vocabulary for AR Add
         """
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        return [(o.getObject().Title(), o.getObject()) \
-                for o in bsc(portal_type = 'ContainerType')]
+        res = [(o.getObject().Title(), o.getObject()) \
+               for o in bsc(portal_type = 'ContainerType')]
+        res.sort(lambda x,y:cmp(x[0], y[0]))
+        return res
 
     def SelectedServices(self):
         """ return information about services currently selected in the
