@@ -438,7 +438,7 @@ class AnalysisRequestViewView(BrowserView):
         samplingdeviations = DisplayList(
             [(sd.UID, sd.title) for sd \
              in bsc(portal_type = 'SamplingDeviation',
-                    inactive_review_state = 'active')])
+                    inactive_state = 'active')])
 
         self.header_columns = 3
         self.header_rows = [
@@ -722,7 +722,7 @@ class AnalysisRequestViewView(BrowserView):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         res = [(sd.getObject().Title(), sd.getObject()) \
                for sd in bsc(portal_type = 'SamplingDeviation',
-                             inactive_review_state = 'active')]
+                             inactive_state = 'active')]
         res.sort(lambda x,y:cmp(x[0], y[0]))
         return res
 

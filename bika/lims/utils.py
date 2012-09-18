@@ -397,7 +397,7 @@ class bika_browserdata(BrowserView):
         ## to resolve Title->UID
         data['st_uids'] = {}
         for st_proxy in bsc(portal_type = 'SampleType',
-                        inactive_review_state = 'active'):
+                        inactive_state = 'active'):
             st = st_proxy.getObject()
             data['st_uids'][st.Title()] = {
                 'uid':st.UID(),
@@ -408,7 +408,7 @@ class bika_browserdata(BrowserView):
 
         data['sp_uids'] = {}
         for sp_proxy in bsc(portal_type = 'SamplePoint',
-                        inactive_review_state = 'active'):
+                        inactive_state = 'active'):
             sp = sp_proxy.getObject()
             data['sp_uids'][sp.Title()] = {
                 'uid':sp.UID(),

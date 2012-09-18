@@ -670,5 +670,5 @@ plone-manual.pot
 
     Active/Inactive states for objects which can be deactivated
 
-    Indexed as inactive_review_state in the catalogs.
+    Indexed as inactive_state in the catalogs.
 

@@ -306,7 +306,7 @@ class SampleEdit(BrowserView):
         samplingdeviations = DisplayList(
             [(sd.UID, sd.title) for sd \
              in bsc(portal_type = 'SamplingDeviation',
-                    inactive_review_state = 'active')])
+                    inactive_state = 'active')])
 
         self.header_columns = 3
         self.header_rows = [
