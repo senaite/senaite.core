@@ -69,7 +69,7 @@ class bika_analysis_reset(UniqueObject, SimpleItem):
                         price = float(new_cprice)
                     except:
                         invalid_counter += 1
-                        msgs.append('%s %s %s: corporate price %s is not numeric - not updated' % (counter, cat, service, new_cprice))
+                        msgs.append('%s %s %s: bulk discount %s is not numeric - not updated' % (counter, cat, service, new_cprice))
                         continue
             else:
                 new_cprice = None
@@ -106,7 +106,7 @@ class bika_analysis_reset(UniqueObject, SimpleItem):
             if len(s_proxies) == 1:
                 service_obj = s_proxies[0].getObject()
                 old_price = service_obj.getPrice()
-                old_cprice = service_obj.getCorporatePrice()
+                old_cprice = service_obj.getBulkPrice()
                 price_change = False
                 cprice_change = False
                 if new_price:
@@ -118,8 +118,8 @@ class bika_analysis_reset(UniqueObject, SimpleItem):
                 if new_cprice:
                     if old_cprice != new_cprice:
                         cprice_change = True
-                        service_obj.edit(CorporatePrice = new_cprice)
-                        msgs.append('%s %s %s %s corporate price updated from %s to %s' % (counter, cat, service, keyword, old_cprice, new_cprice))
+                        service_obj.edit(BulkPrice = new_cprice)
+                        msgs.append('%s %s %s %s bulk discount updated from %s to %s' % (counter, cat, service, keyword, old_cprice, new_cprice))
 
                 if price_change and cprice_change:
                     updated_both_counter += 1
@@ -135,9 +135,9 @@ class bika_analysis_reset(UniqueObject, SimpleItem):
         msgs.append('%s services without keyword - not updated' % (no_kw_counter))
         msgs.append('%s duplicate services - not updated' % (dup_counter))
         msgs.append('%s services not found - not updated' % (not_found_counter))
-        msgs.append('%s service price and corporate prices updated' % (updated_both_counter))
+        msgs.append('%s service price and bulk discounts updated' % (updated_both_counter))
         msgs.append('%s service prices updated' % (updated_price_counter))
-        msgs.append('%s service corporate prices updated' % (updated_cprice_counter))
+        msgs.append('%s service bulk discounts updated' % (updated_cprice_counter))
         return msgs
 
 InitializeClass(bika_analysis_reset)

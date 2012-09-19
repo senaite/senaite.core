@@ -44,11 +44,6 @@ PRICELIST_TYPES = DisplayList((
     ('LabProduct', _('Lab Products')),
 ))
 
-CLIENT_TYPES = DisplayList((
-    ('corporate', _('Bulk Discount')),
-    ('noncorporate', _('Standard Price')),
-))
-
 ANALYSIS_TYPES = DisplayList((
     ('a', _('Analysis')),
     ('b', _('Blank')),

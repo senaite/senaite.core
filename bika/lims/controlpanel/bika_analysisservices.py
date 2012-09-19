@@ -48,7 +48,7 @@ class AnalysisServicesWorkflowAction(WorkflowAction):
                     Unit = service.getUnit(),
                     Precision = service.getPrecision(),
                     Price = service.getPrice(),
-                    CorporatePrice = service.getCorporatePrice(),
+                    BulkDiscount = service.getBulkPrice(),
                     VAT = service.getVAT(),
                     Calculation = service.getCalculation(),
                     Instrument = service.getInstrument(),

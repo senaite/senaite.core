@@ -342,7 +342,7 @@ schema = BikaSchema.copy() + Schema((
             ),
         ),
     # read access permission
-    FixedPointField('CorporatePrice',
+    FixedPointField('BulkPrice',
         schemata = "Description",
         default = '0.00',
         widget = DecimalWidget(
@@ -530,10 +530,10 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         discount = discount and discount or 0
         return float(price) - (float(price) * float(discount)) / 100
 
-    security.declarePublic('getDiscountedCorporatePrice')
-    def getDiscountedCorporatePrice(self):
-        """ compute discounted corporate price excl. vat """
-        price = self.getCorporatePrice()
+    security.declarePublic('getDiscountedBulkPrice')
+    def getDiscountedBulkPrice(self):
+        """ compute discounted bulk discount excl. vat """
+        price = self.getBulkPrice()
         price = price and price or 0
         discount = self.bika_setup.getMemberDiscount()
         discount = discount and discount or 0
@@ -547,9 +547,9 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         vat = vat and vat or 0
         return float(price) + (float(price) * float(vat)) / 100
 
-    def getTotalCorporatePrice(self):
+    def getTotalBulkPrice(self):
         """ compute total price """
-        price = self.getCorporatePrice()
+        price = self.getBulkPrice()
         vat = self.getVAT()
         price = price and price or 0
         vat = vat and vat or 0
@@ -565,7 +565,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         return float(price) + (float(price) * float(vat)) / 100
 
     security.declarePublic('getTotalDiscountedCorporatePrice')
-    def getTotalDiscountedCorporatePrice(self):
+    def getTotalDiscountedBulkPrice(self):
         """ compute total discounted corporate price """
         price = self.getDiscountedCorporatePrice()
         vat = self.getVAT()

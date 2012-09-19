@@ -32,7 +32,7 @@ class bika_services_export(UniqueObject, SimpleItem):
         rows = []
 
         # header labels
-        header = ['Analysis Category', 'Analysis Service', 'KeyWord', 'InstrumentKey', 'Price', 'Corporate Price']
+        header = ['Analysis Category', 'Analysis Service', 'KeyWord', 'InstrumentKey', 'Price', 'bulk discount']
         rows.append(header)
 
         for s in self.portal_catalog(portal_type = 'AnalysisService',
@@ -40,7 +40,7 @@ class bika_services_export(UniqueObject, SimpleItem):
             service = s.getObject()
 
             # create detail line
-            detail = [service.getCategoryTitle(), service.Title(), service.getKeyword(), service.getInstrumentKeyword(), service.getPrice(), service.getCorporatePrice()]
+            detail = [service.getCategoryTitle(), service.Title(), service.getKeyword(), service.getInstrumentKeyword(), service.getPrice(), service.getBulkPrice()]
             rows.append(detail)
 
 

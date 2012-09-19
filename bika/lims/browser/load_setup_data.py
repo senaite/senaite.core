@@ -695,7 +695,7 @@ class LoadSetupData(BrowserView):
                 Unit = row['Unit'] and unicode(row['Unit']) or None,
                 Category = self.cats[unicode(row['Category'])].UID(),
                 Price = "%02f" % float(row['Price']),
-                CorporatePrice = "%02f" % float(row['BulkPrice']),
+                BulkPrice = "%02f" % float(row['BulkPrice']),
                 VAT = "%02f" % float(row['VAT']),
                 Precision = unicode(row['Precision']),
                 Accredited = row['Accredited'] and True or False,
