@@ -31,6 +31,12 @@ def sendmail(portal, from_addr, to_addrs, msg):
     mailspool = portal.portal_mailspool
     mailspool.sendmail(from_addr, to_addrs, msg)
 
+class js_log(BrowserView):
+    def __call__(self, message):
+        """Javascript sends a string for us to place into the log.
+        """
+        self.logger.info(message)
+
 ModuleSecurityInfo('Products.bika.utils').declarePublic('printfile')
 def printfile(portal, from_addr, to_addrs, msg):
     import os

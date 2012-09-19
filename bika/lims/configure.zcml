@@ -58,4 +58,13 @@
     layer="bika.lims.interfaces.IBikaLIMS"
   />
 
+  <!-- Put javascript errors in Plone log -->
+  <browser:page
+    for="*"
+    name="js_log"
+    class="bika.lims.utils.js_log"
+    permission="zope.Public"
+    layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
 </configure>

@@ -126,7 +126,7 @@ textarea#description,
 }
 
 
-.global-spinner {
+.kss-spinner {
 	position: fixed;
 	top: 50%;
 	left: 50%;
@@ -141,7 +141,7 @@ textarea#description,
 	overflow: auto;
 }
 
-.global-spinner img {
+.kss-spinner img {
 	height:20px;
 	width:20px;
 }

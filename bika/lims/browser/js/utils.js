@@ -16,6 +16,17 @@ function portalMessage(message) {
 	$(str).appendTo('#viewlet-above-content');
 }
 
+function log(e) {
+	console.log(e.message);
+	message = "Javascript: " + e.message + " url: " + window.location.url;
+	$.ajax({
+		type: 'POST',
+		url: 'js_log',
+		data: {'message':message,
+				'_authenticator': $('input[name="_authenticator"]').val()}
+	});
+}
+
 function calculate_partitions(service_uids, st_uid, st_minvol){
 	parts = [];
 
@@ -315,12 +326,10 @@ $(document).ready(function(){
 			});
 	});
 
-	$('body').append('<div id="global-spinner" class="global-spinner" style="display:none"><img id="img-global-spinner" src="spinner.gif" alt="Loading"/></div>');
-	$('#global-spinner')
-		.ajaxStart(function() { $(this).toggle(true); })
-		.ajaxStop(function() { $(this).toggle(false); });
-	// we don't use #kss-spinner but it gets in the way.
-	$("#kss-spinner").empty();
+	$('#kss-spinner')
+		.empty()
+		.append('<img src="spinner.gif" alt="Loading"/>')
+		.ajaxComplete(function() { $(this).toggle(false); });
 
 	$(".numeric").live('keypress', function(event) {
 
