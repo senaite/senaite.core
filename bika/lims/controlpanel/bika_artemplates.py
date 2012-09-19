@@ -53,21 +53,7 @@ class TemplatesView(BikaListingView):
                          'Description']},
         ]
 
-    def getARTemplates(self, contentFilter={}):
-        istate = contentFilter.get("inactive_state", None)
-        if istate == 'active':
-            templates = [p for p in self.context.objectValues("ARTemplate")
-                        if isActive(p)]
-        elif istate == 'inactive':
-            templates = [p for p in self.context.objectValues("ARTemplate")
-                        if not isActive(p)]
-        else:
-            templates = [p for p in self.context.objectValues("ARTemplate")]
-        templates.sort(lambda a,b:cmp(a.Title().lower(), b.Title().lower()))
-        return templates
-
     def folderitems(self):
-        self.contentsMethod = self.getARTemplates
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
