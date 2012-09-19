@@ -602,7 +602,7 @@ Batching
 				<span class="previous"
 				  tal:condition="batch/has_previous">
 					<a href=""
-					   tal:attributes="href string:${view/url};pagenumber string:${batch/previouspage}">
+                       tal:attributes="href python:view.bika_listing.GET_url(pagenumber=batch.previouspage)">
 					   &laquo;
 					   <span i18n:domain="plone" i18n:translate="">
 						   Previous
@@ -613,19 +613,14 @@ Batching
 				</span>
 				<!-- Link to first -->
 				<span tal:condition="batch/show_link_to_first">
-					<a href=""
-					   pagenumber="1"
-					   tal:attributes="href string:${view/url}">1</a>
-					<span tal:condition="batch/second_page_not_in_navlist"
-						  tal:omit-tag="">
+					<a href="" pagenumber="1" tal:attributes="href string:${view/url}">1</a>
+					<span tal:condition="batch/second_page_not_in_navlist" tal:omit-tag="">
 					   ...
 					</span>
 				</span>
 				<!-- Pagelist with links to previous pages for quick navigation -->
 				<span tal:repeat="pagenumber batch/previous_pages" tal:omit-tag="" >
-				  <a href="" tal:content="pagenumber"
-					 tal:attributes="href string:${view/url};
-									 pagenumber string:$pagenumber"/>
+				  <a href="" tal:content="pagenumber" tal:attributes="href python:view.bika_listing.GET_url(pagenumber=pagenumber)"/>
 				</span>
 				<!-- Current page -->
 				<span tal:condition="batch/navlist" tal:omit-tag="">
@@ -633,28 +628,24 @@ Batching
 				</span>
 				<!-- Pagelist with links to next pages for quick navigation -->
 				<span tal:repeat="pagenumber batch/next_pages" tal:omit-tag="" >
-				  <a href="" tal:content="pagenumber"
-					 tal:attributes="href string:${view/url};
-									 pagenumber string:$pagenumber"/>
+				  <a href="" tal:content="pagenumber" tal:attributes="href python:view.bika_listing.GET_url(pagenumber=pagenumber)"/>
 				</span>
 				<!-- Link to last -->
 				<span tal:condition="batch/show_link_to_last">
-					<span tal:condition="batch/before_last_page_not_in_navlist"
-						  tal:omit-tag="">
+					<span tal:condition="batch/before_last_page_not_in_navlist" tal:omit-tag="">
 					   ...
 					</span>
 					<a href=""
-					   tal:attributes="href view/url;
-									   pagenumber batch/lastpage"
-					   tal:content="batch/lastpage">3457</a>
+                       tal:attributes="href python:view.bika_listing.GET_url(pagenumber=batch.lastpage)"
+					   tal:content="string:${batch/lastpage}">3457</a>
 				</span>
 				<span class="next"
 					  tal:condition="batch/has_next">
 					<a href=""
-					   tal:attributes="href string:${view/url};pagenumber batch/nextpage;pagesize view/bika_listing/pagesize">
+                       tal:attributes="href python:view.bika_listing.GET_url(pagenumber=batch.nextpage)">
 					   <span i18n:domain="plone" i18n:translate="">
 						   Next
-						   <span i18n:domain="plone" i18n:name="number" tal:omit-tag="" tal:content="batch/next_item_count">n</span>
+						   <span i18n:domain="plone" i18n:name="number" tal:omit-tag="" tal:content="string:${batch/next_item_count}">n</span>
 						   items
 					   </span>
 					   &raquo;
@@ -671,7 +662,7 @@ Batching
 				<span class="pagesize_selector noborder"
 					style="vertical-align:top !important"
 					style="text-align:right">
-					<select name="pagesize">
+					<select class="pagesize">
 						<option value="10" tal:attributes="selected python:int(view.bika_listing.pagesize) == 10 and 'selected' or ''">10</option>
 						<option value="25" tal:attributes="selected python:int(view.bika_listing.pagesize) == 25 and 'selected' or ''">25</option>
 						<option value="50" tal:attributes="selected python:int(view.bika_listing.pagesize) == 50 and 'selected' or ''">50</option>

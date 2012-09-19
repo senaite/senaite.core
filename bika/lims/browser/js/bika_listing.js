@@ -100,43 +100,12 @@ $(document).ready(function(){
 	});
 
 	// pagesize
-	$("select[name='pagesize']").live('change', function(){
+	$("select.pagesize").live('change', function(){
 		form = $(this).parents('form');
 		form_id = $(form).attr('id');
 		pagesize = $(this).val();
-		$("[name="+form_id+"_pagesize]").val(pagesize);
-		stored_form_action = $(form).attr("action");
-		$(form).attr("action", window.location.href);
-		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
-		options = {
-			target: $(form).children(".bika-listing-table"),
-			replaceTarget: true,
-			data: form.formToArray()
-		}
-		form.ajaxSubmit(options);
-		$('[name=table_only]').remove();
-		$(form).attr('action', stored_form_action)
-		return false;
-	});
-
-	// batching pagenumber links
-	$("a[pagenumber]").live('click', function(){
-		form = $(this).parents('form');
-		form_id = $(form).attr('id');
-		pagenumber = $(this).attr('pagenumber');
-		$("[name="+form_id+"_pagenumber]").val(pagenumber);
-		stored_form_action = $(form).attr("action");
-		$(form).attr("action", window.location.href);
-		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
-		options = {
-			target: $(form).children(".bika-listing-table"),
-			replaceTarget: true,
-			data: form.formToArray()
-		}
-		form.ajaxSubmit(options);
-		$('[name=table_only]').remove();
-		$(form).attr('action', stored_form_action)
-		return false;
+		new_query = $.query.set(form_id + "_pagesize", pagesize).toString();
+		window.location = window.location.href + new_query;
 	});
 
 	// expand/collapse categorised rows

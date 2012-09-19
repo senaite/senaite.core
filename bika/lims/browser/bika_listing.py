@@ -428,6 +428,21 @@ class BikaListingView(BrowserView):
                                         or self.columns[col]['toggle'] == True)])
         return toggle_cols
 
+    def GET_url(self, **kwargs):
+        url = self.context.absolute_url()
+        query = ""
+        for x in kwargs.keys():
+            if query: query+="&"
+            query+='%s_%s=%s' % (self.form_id, x, kwargs.get(x))
+        for x in "pagenumber", "pagesize", "review_state":
+            if x in kwargs.keys():
+                continue
+            if query: query+="&"
+            query+='%s_%s=%s' % (self.form_id, x, getattr(self, x))
+        if query:
+            url = url + "?" + query
+        return url
+
     def __call__(self):
         """ Handle request parameters and render the form."""
         self._process_request()
