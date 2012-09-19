@@ -99,6 +99,7 @@ class ClientFolderContentsView(BikaListingView):
         return clients
 
     def folderitems(self):
+        self.filter_indexes = None
         self.contentsMethod = self.getClientList
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
