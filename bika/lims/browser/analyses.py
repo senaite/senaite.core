@@ -320,18 +320,15 @@ class AnalysesView(BikaListingView):
 
             # check if this analysis is late/overdue
             if items[i]['obj'].portal_type != "DuplicateAnalysis":
-                if (not calculation or (calculation and not calculation.getDependentServices())) and \
-                   items[i]['review_state'] not in ['to_be_sampled', 'to_be_preserved', 'sample_due', 'published'] and \
-                   items[i]['result_captured'] > items[i]['DueDate']:
-                    DueDate = self.ulocalized_time(item['DueDate'])
-                    if self.context.portal_type == 'AnalysisRequest':
-                        items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
-                            (DueDate, self.portal_url,
-                             self.context.translate(_("Due Date")) + ": %s"%DueDate)
-                    else:
-                        items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
-                            (DueDate, self.portal_url,
-                             self.context.translate(_("Late Analysis")))
+                if (not calculation or (calculation and not calculation.getDependentServices())):
+                   if items[i]['review_state'] not in ['to_be_sampled', 'to_be_preserved', 'sample_due', 'published'] \
+                       and (
+                            items[i]['result_captured'] > items[i]['DueDate'] \
+                            or not items[i]['result_captured']
+                            ):
+                       DueDate = self.ulocalized_time(item['DueDate'])
+                       items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
+                            (DueDate, self.portal_url, self.context.translate(_("Late Analysis")))
                 else:
                     items[i]['replace']['DueDate'] = self.ulocalized_time(
                         item['DueDate'])
