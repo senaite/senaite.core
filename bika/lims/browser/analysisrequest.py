@@ -685,8 +685,11 @@ class AnalysisRequestViewView(BrowserView):
     def analysisprofiles(self):
         """ Return applicable client and Lab AnalysisProfile records
         """
-        res = profiles = []
-        for profile in self.context.objectValues("AnalysisProfile"):
+        res = []
+        profiles = []
+        client = self.context.portal_type == 'AnalysisRequest' \
+            and self.context.aq_parent or self.context
+        for profile in client.objectValues("AnalysisProfile"):
             if isActive(profile):
                 profiles.append((profile.Title(), profile))
         profiles.sort(lambda x,y:cmp(x[0], y[0]))
@@ -702,8 +705,11 @@ class AnalysisRequestViewView(BrowserView):
     def artemplates(self):
         """ Return applicable client and Lab ARTemplate records
         """
-        res = templates = []
-        for template in self.context.objectValues("ARTemplate"):
+        res = []
+        templates = []
+        client = self.context.portal_type == 'AnalysisRequest' \
+            and self.context.aq_parent or self.context
+        for template in client.objectValues("ARTemplate"):
             if isActive(template):
                 templates.append((template.Title(), template))
         templates.sort(lambda x,y:cmp(x[0], y[0]))
