@@ -19,6 +19,13 @@ class ProfilesView(BikaListingView):
     def __init__(self, context, request):
         super(ProfilesView, self).__init__(context, request)
         self.catalog = "bika_setup_catalog"
+        self.contentFilter = {
+            'portal_type': 'AnalysisProfile',
+            'path': {
+                "query": "/".join(self.context.getPhysicalPath()),
+                "level" : 0 },
+        }
+        self.catalog = "bika_setup_catalog"
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True

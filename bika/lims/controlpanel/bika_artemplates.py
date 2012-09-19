@@ -18,6 +18,13 @@ class TemplatesView(BikaListingView):
     implements(IFolderContentsView, IViewView)
     def __init__(self, context, request):
         super(TemplatesView, self).__init__(context, request)
+        self.catalog = "bika_setup_catalog"
+        self.contentFilter = {
+            'portal_type': 'ARTemplate',
+            'path': {
+                "query": "/".join(self.context.getPhysicalPath()),
+                "level" : 0 },
+        }
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
