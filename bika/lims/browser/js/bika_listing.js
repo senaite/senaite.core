@@ -283,11 +283,11 @@ $(document).ready(function(){
 		if (cookie == null || cookie == undefined) {
 			cookie = {};
 		}
-		if(col_id=='DEFAULT'){
+		if(col_id==_('Default')){
 			// Remove entry from existing cookie if there is one
 			delete(cookie[cookie_key]);
 			createCookie('toggle_cols', $.toJSON(cookie), 365);
-		} else if(col_id=='ALL') {
+		} else if(col_id==_('All')) {
 			// add all possible columns
 			toggle_cols = [];
 			$.each($.parseJSON($('#'+form_id+"_toggle_cols").val()), function(i,v){
@@ -315,21 +315,11 @@ $(document).ready(function(){
 			}
 			cookie[cookie_key] = toggle_cols;
 			createCookie('toggle_cols', $.toJSON(cookie), 365);
+
 		}
-		stored_form_action = $(form).attr("action");
 		$(form).attr("action", window.location.href);
-		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
-		$(form).append("<input type='hidden' name='"+form_id+"_toggle_cols' value='"+$.toJSON(cookie)+"'>");
-		options = {
-			target: $(form).children(".bika-listing-table"),
-			replaceTarget: true,
-			data: form.formToArray()
-		}
 		$(".tooltip").remove();
-		form.ajaxSubmit(options);
-		$('[name=table_only]').remove();
-		$('[name='+form_id+'_toggle_cols]').remove();
-		$(form).attr('action', stored_form_action);
+		form.submit();
 		return false;
 	});
 
