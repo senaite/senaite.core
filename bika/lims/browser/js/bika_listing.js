@@ -250,11 +250,11 @@ $(document).ready(function(){
 				txt = txt + "<td>"+col_title+"</td></tr>";
 			}
 		}
-		txt = txt + "<tr col_id='ALL' form_id='"+form_id+"'>";
+		txt = txt + "<tr col_id='" + _("All") + "' form_id='"+form_id+"'>";
 		txt = txt + "<td style='border-top:1px solid #ddd'>&nbsp;</td>";
 		txt = txt + "<td style='border-top:1px solid #ddd'>"+_('All')+"</td></tr>";
 
-		txt = txt + "<tr col_id='DEFAULT' form_id='"+form_id+"'>";
+		txt = txt + "<tr col_id='" + _("Default") + "' form_id='"+form_id+"'>";
 		txt = txt + "<td>&nbsp;</td>";
 		txt = txt + "<td>"+_('Default')+"</td></tr>";
 
