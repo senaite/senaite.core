@@ -11,7 +11,7 @@
 
 <stylesheet
     id="++resource++bika.lims.css/hide_editable_border.css"
-    expression="python:here.portal_type in ['AnalysisCategories', 'AnalysisCategory', 'AnalysisServices', 'AnalysisSpecs', 'AnalysisProfile', 'AnalysisProfiles', 'ARTemplate', 'ARTemplates', 'AttachmentType', 'AttachmentTypes', 'BikaSetup', 'Calculations', 'ClientFolder', 'Container', 'Containers', 'ContainerType', 'ContainerTypes', 'Department', 'Departments', 'Instruments', 'LabContact', 'LabContacts', 'Laboratory', 'LabProduct', 'LabProducts', 'Methods', 'Preservation', 'Preservations', 'ReferenceDefinition', 'ReferenceDefinitions', 'ReferenceManufacturer', 'ReferenceManufacturers', 'ReferenceSuppliers', 'SamplePoints', 'SampleTypes', 'WorksheetTemplates', 'SamplingDeviations', 'SamplingDeviation', 'SampleMatrices', 'SampleMatrix']"
+    expression="python:here.portal_type in ['AnalysisCategories', 'AnalysisCategory', 'AnalysisServices', 'AnalysisSpecs', 'AnalysisProfile', 'AnalysisProfiles', 'ARTemplate', 'ARTemplates', 'AttachmentType', 'AttachmentTypes', 'BikaSetup', 'Calculations', 'ClientFolder', 'Container', 'Containers', 'ContainerType', 'ContainerTypes', 'Department', 'Departments', 'Instruments', 'LabContacts', 'Laboratory', 'LabProduct', 'LabProducts', 'Methods', 'Preservation', 'Preservations', 'ReferenceDefinition', 'ReferenceDefinitions', 'ReferenceManufacturer', 'ReferenceManufacturers', 'ReferenceSuppliers', 'SamplePoints', 'SampleTypes', 'WorksheetTemplates', 'SamplingDeviations', 'SamplingDeviation', 'SampleMatrices', 'SampleMatrix']"
     media="screen"
     rel="stylesheet"
     rendering="link"

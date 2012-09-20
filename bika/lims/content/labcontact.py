@@ -10,6 +10,7 @@ from bika.lims.content.person import Person
 from bika.lims.config import ManageClients, PUBLICATION_PREFS, PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from zope.interface import implements
+from bika.lims.interfaces import ILabContact
 import sys
 
 schema = Person.schema.copy() + Schema((
@@ -50,6 +51,7 @@ class LabContact(Person):
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
+    implements(ILabContact)
 
     _at_rename_after_creation = True
     def _renameAfterCreation(self, check_auto_id=False):
@@ -59,6 +61,12 @@ class LabContact(Person):
     def Title(self):
         """ Return the contact's Fullname as title """
         return self.getFullname()
+
+    security.declareProtected(ManageClients, 'hasUser')
+    def hasUser(self):
+        """ check if contact has user """
+        return self.portal_membership.getMemberById(
+            self.getUsername()) is not None
 
     def getDepartments(self):
         bsc = getToolByName(self, 'bika_setup_catalog')

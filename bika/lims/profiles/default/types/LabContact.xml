@@ -45,4 +45,14 @@
   <permission value="Modify portal content"/>
  </action>
 
+ <action title="Login details"
+         action_id="access"
+         category="object"
+         condition_expr=""
+         url_expr="string:${object_url}/login_details"
+         i18n:attributes="title"
+         visible="True">
+  <permission value="Modify portal content"/>
+ </action>
+
 </object>

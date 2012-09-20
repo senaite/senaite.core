@@ -5,10 +5,18 @@
     i18n_domain="bika">
 
     <browser:page
-      for="*"
+      for="bika.lims.interfaces.IContact"
       name="login_details"
       class="bika.lims.browser.contact.ContactLoginDetailsView"
       permission="bika.lims.ManageClients"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.ILabContact"
+      name="login_details"
+      class="bika.lims.browser.contact.ContactLoginDetailsView"
+      permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
