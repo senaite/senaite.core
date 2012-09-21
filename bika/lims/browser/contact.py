@@ -1,9 +1,8 @@
 from Acquisition import aq_parent, aq_inner, aq_base
-from bika.lims import bikaMessageFactory as _
-from bika.lims import PMF
-from bika.lims.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.CMFCore.utils import getToolByName
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims.browser import BrowserView
 import json
 
 class ContactLoginDetailsView(BrowserView):
@@ -77,6 +76,18 @@ class ContactLoginDetailsView(BrowserView):
                 group=self.context.portal_groups.getGroupById('Clients')
                 group.addMember(username)
 
+            # Additional groups for LabContact users.
+            if self.request['groups']:
+                groups = self.request['groups']
+                if not type(groups) in (list,tuple):
+                    groups = [groups,]
+                for group in groups:
+                    group = self.portal_groups.getGroupById(group)
+                    group.addMember(username)
+            else:
+                if self.context.portal_type == 'LabContact':
+                    return error('groups', PMF("Input is required but not given."))
+
             contact.reindexObject()
 
             if properties.validate_email or self.request.get('mail_me', 0):
@@ -87,8 +98,6 @@ class ContactLoginDetailsView(BrowserView):
                     transaction.abort()
                     return error(
                         None, PMF("SMTP server disconnected."))
-
-
 
             message = PMF("Member registered.")
             self.context.plone_utils.addPortalMessage(message, 'info')

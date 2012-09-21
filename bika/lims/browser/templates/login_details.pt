@@ -90,7 +90,7 @@
 <!--			</tal:password>-->
 
 			<div class="field">
-				<label i18n:translate="">Email</label>
+                <label i18n:translate="">Email</label>
 				<span class="fieldRequired" title="Required"
 					i18n:attributes="title"
 					i18n:translate="">(Required)</span>
@@ -102,6 +102,23 @@
 				<input type="text" name="email" size="30"
 					tal:attributes="value python: context.getEmailAddress() and context.getEmailAddress() or view.request.get('email', '')"/>
 			</div>
+
+            <div class="field"
+                 tal:condition="python: view.context.portal_type == 'LabContact'">
+                <label i18n:translate="label_add_to_groups">Add to the following groups:</label>
+                <span class="fieldRequired" i18n:translate="">(Required)</span>
+                <br/>
+                <select name="groups" size="10" multiple="1">
+                    <option value='LabManagers'>LabManagers</option>
+                    <option value='LabClerks'>LabClerks</option>
+                    <option value='Analysts'>Analysts</option>
+                    <option value='Verifiers'>Verifiers</option>
+                    <option value='Samplers'>Samplers</option>
+                    <option value='Preservers'>Preservers</option>
+                    <option value='Publishers'>Publishers</option>
+                    <option value='Reviewers'>Reviewers</option>
+                </select>
+            </div>
 
 			<input class="context allowMultiSubmit"
 				type="submit"

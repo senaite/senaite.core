@@ -39,6 +39,14 @@ class BrowserView(BrowserView):
     def portal_membership(self):
         return getToolByName(self.context, 'portal_membership')
 
+    @lazy_property
+    def portal_groups(self):
+        return getToolByName(self.context, 'portal_groups')
+
+    @lazy_property
+    def checkPermission(self, perm, obj):
+        return self.portal_membership.checkPermission(perm, obj)
+
     def user_fullname(self, userid):
         member = self.portal_membership.getMemberById(userid)
         if member is None:
