@@ -1413,6 +1413,11 @@ class ajaxExpandCategory(BikaListingView):
         if hasattr(self.context, 'getRequestID'): self.came_from = "edit"
         return self.template()
 
+    def bulk_discount_applies(self):
+        client = self.context.portal_type == 'AnalysisRequest' \
+            and self.context.aq_parent or self.context
+        return client.getBulkDiscount()
+
     def Services(self, poc, CategoryUID):
         """ return a list of services brains """
         bsc = getToolByName(self.context, 'bika_setup_catalog')
