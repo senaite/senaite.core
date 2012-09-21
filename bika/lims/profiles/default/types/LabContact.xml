@@ -41,7 +41,7 @@
          url_expr="string:${object_url}/edit"
          i18n:attributes="title"
          i18n:domain="plone"
-         visible="False">
+         visible="True">
   <permission value="Modify portal content"/>
  </action>
 
