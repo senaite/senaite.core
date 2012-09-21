@@ -123,7 +123,7 @@ Workflow review state selector
 				<a
 					tal:define="state_id state/id"
 					tal:attributes="
-						href view/view_url;
+                        href python:view.bika_listing.GET_url(review_state=state['id']);
 						value state_id;
 						id state/id;
 						class python:request.get(form_id + '_review_state', 'default') == state_id

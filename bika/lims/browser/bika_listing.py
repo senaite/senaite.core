@@ -430,17 +430,14 @@ class BikaListingView(BrowserView):
 
     def GET_url(self, **kwargs):
         url = self.context.absolute_url()
-        query = ""
-        for x in kwargs.keys():
-            if query: query+="&"
-            query+='%s_%s=%s' % (self.form_id, x, kwargs.get(x))
+        query = {}
         for x in "pagenumber", "pagesize", "review_state":
-            if x in kwargs.keys():
-                continue
-            if query: query+="&"
-            query+='%s_%s=%s' % (self.form_id, x, getattr(self, x))
+            if str(getattr(self, x)) != 'None':
+                query['%s_%s'%(self.form_id, x)] = getattr(self, x)
+        for x in kwargs.keys():
+            query['%s_%s'%(self.form_id, x)] = kwargs.get(x)
         if query:
-            url = url + "?" + query
+            url = url + "?" + "&".join(["%s=%s"%(x,y) for x,y in query.items()])
         return url
 
     def __call__(self):

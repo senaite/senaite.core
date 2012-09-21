@@ -4,26 +4,6 @@ $(document).ready(function(){
 	_ = window.jsi18n_bika;
 	PMF = window.jsi18n_plone;
 
-	// review_state
-	$(".review_state_selector a").live('click', function(){
-		form = $(this).parents("form");
-		form_id = $(form).attr("id");
-		review_state = $(this).attr("value");
-		$("[name="+form_id+"_review_state]").val(review_state);
-		stored_form_action = $(form).attr("action");
-		$(form).attr("action", window.location.href);
-		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
-		options = {
-			target: $(this).parents("table"),
-			replaceTarget: true,
-			data: form.formToArray()
-		}
-		form.ajaxSubmit(options);
-		$("[name=table_only]").remove();
-		$(form).attr("action", stored_form_action)
-		return false;
-	});
-
 	// Click column header - set or modify sort order.
 	$("th.sortable").live('click', function(){
 		form = $(this).parents("form");
@@ -105,7 +85,7 @@ $(document).ready(function(){
 		form_id = $(form).attr('id');
 		pagesize = $(this).val();
 		new_query = $.query.set(form_id + "_pagesize", pagesize).toString();
-		window.location = window.location.href + new_query;
+		window.location = window.location.href.split("?")[0] + new_query;
 	});
 
 	// expand/collapse categorised rows
