@@ -1,11 +1,11 @@
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
-from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import formatDateQuery, formatDateParms
+from bika.lims.browser import BrowserView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
+from bika.lims.utils import formatDateQuery, formatDateParms
 from gpw import plot
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -186,6 +186,7 @@ class Report(BrowserView):
                 'precision': precision,
                 'Sampled': analysis.getDateSampled(),
                 'Captured': analysis.getResultCaptureDate(),
+                'Uncertainty': analysis.getUncertainty(),
                 'result_in_range': result_in_range,
                 'Unit': service.getUnit(),
                 'Keyword': keyword,
@@ -222,11 +223,22 @@ class Report(BrowserView):
         set format x "%%Y-%%m-%%d\\n%%H:%%M"
         set xrange ["%(x_start)s":"%(x_end)s"]
         set yrange [%(y_start)s:%(y_end)s]
-        set xtics rotate by 90 offset 0,-5 out nomirror
+        set xtics border nomirror rotate by 90 font "Verdana, 5" offset 0,-3
         set ytics nomirror
-        plot "gpw_DATAFILE_gpw" using 1:3 title 'data' with points pt 7 ps .5 lc rgb '#0060ad',\
-        '' using 1:3 smooth bezier lw .5
+
+        f(x) = mean_y
+        fit f(x) 'gpw_DATAFILE_gpw' u 1:3 via mean_y
+        stddev_y = sqrt(FIT_WSSR / (FIT_NDF + 1))
+
+        plot mean_y-stddev_y with filledcurves y1=mean_y lt 1 lc rgb "#efefef",\
+             mean_y+stddev_y with filledcurves y1=mean_y lt 1 lc rgb "#efefef",\
+             mean_y with lines lc rgb '#ffffff' lw 2,\
+             "gpw_DATAFILE_gpw" using 1:3 title 'data' with points pt 7 ps 1,\
+               '' using 1:3 smooth unique,\
+               '' using 1:4 with lines lc rgb '#000000' lw .1,\
+               '' using 1:5 with lines lc rgb '#000000' lw .1
         """
+
         ## Compile plots and format data for display
         for service_title in keys:
             # used to calculate XY axis ranges
@@ -241,11 +253,8 @@ class Report(BrowserView):
                 a['Sampled'] = a['Sampled'].strftime(r"%Y-%m-%d %H:%M")
                 a['Captured'] = a['Captured'].strftime(r"%Y-%m-%d %H:%M")
 
-                plotdata += "%s\t%s\n"%(
-                    a['Sampled'],
-                    a['Result'],
-                )
-                plotdata.encode('utf-8')
+                R = a['Result']
+                U = a['Uncertainty']
 
                 a['Result'] = str("%." + precision + "f")% a['Result']
 
@@ -267,16 +276,26 @@ class Report(BrowserView):
                 a['range_min'] = in_range[1] and in_range[1]['min'] or ''
                 a['range_max'] = in_range[1] and in_range[1]['max'] or ''
 
+                plotdata += "%s\t%s\t%s\t%s\t%s\n"%(
+                    a['Sampled'],
+                    R,
+                    a['range_min'],
+                    a['range_max'],
+                    U and U or 0,
+                )
+                plotdata.encode('utf-8')
+
             spec_str = "%s: %s, %s: %s" % (
                 self.context.translate(_("Range min")), a['range_min'],
                 self.context.translate(_("Range max")), a['range_max'],
             )
             parms.append({'title': _('Specification'), 'value': spec_str,})
+            unit = analyses[service_title][0]['Unit']
             if MinimumResults <= len(dict([(d, d) for d in result_dates])):
                 _plotscript = str(plotscript)%{
                     'title': "",
                     'xlabel': self.context.translate(_("Date Sampled")),
-                    'ylabel': analyses[service_title][0]['Unit'],
+                    'ylabel': unit and unit or '',
                     'x_start': "%s 00:00" % min(result_dates).strftime("%Y-%m-%d"),
                     'x_end': "%s 23:59" % max(result_dates).strftime("%Y-%m-%d"),
                     'y_start':  int(round(min(result_values) / 10.0) * 10),
@@ -286,6 +305,10 @@ class Report(BrowserView):
                 plot_png = plot(str(plotdata),
                                 plotscript=str(_plotscript),
                                 usefifo=False)
+
+                print plotdata
+                print _plotscript
+                print "-------"
 
                 # Temporary PNG data file
                 fh,data_fn = tempfile.mkstemp(suffix='.png')
