@@ -192,9 +192,9 @@ class SubmitForm(BrowserView):
         # signature image
         self.reporter_signature = ""
         c = [x for x in self.bika_setup_catalog(portal_type='LabContact')
-             if x.getObject().getUsername() == username][0]
+             if x.getObject().getUsername() == username]
         if c:
-            sf = c.getObject().getSignature()
+            sf = c[0].getObject().getSignature()
             if sf:
                 self.reporter_signature = sf.absolute_url() + "/Signature"
 
