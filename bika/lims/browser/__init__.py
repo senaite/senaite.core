@@ -63,7 +63,7 @@ class BrowserView(BrowserView):
         member_email = member.getProperty('email')
         c = self.portal_catalog(portal_type = 'Contact', getUsername = userid)
         contact_email = c and c[0].getObject().getEmailAddress() or None
-        return contact_email or member_email or _('None')
+        return contact_email or member_email or ''
 
     def python_date_format(self, long_format=None, time_only=False):
         """This convert plonelocales date format msgstrs to Python
