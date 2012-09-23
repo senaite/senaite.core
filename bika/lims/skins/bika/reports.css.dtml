@@ -57,7 +57,7 @@ div.bika_report {
     padding:1px 10px;
 }
 
-h1.h2,h3 {
+h1,h2,h3 {
 -pdf-outline: false !important;
 }
 
@@ -65,6 +65,10 @@ h3.bika-report-table-header {
   -pdf-outline: true !important;
   -pdf-level: 0!important;
   font-size:110%;
+}
+.h3{
+  font-weight:bold;
+  font-size:120%;
 }
 
 .bika-report-table {

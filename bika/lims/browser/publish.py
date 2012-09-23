@@ -53,6 +53,19 @@ class Publish(BrowserView):
 
         BatchEmail = self.context.bika_setup.getBatchEmail()
 
+        username = self.context.portal_membership.getAuthenticatedMember().getUserName()
+        self.reporter = self.user_fullname(username)
+        self.reporter_email = self.user_email(username)
+
+        # signature image
+        self.reporter_signature = ""
+        c = [x for x in self.bika_setup_catalog(portal_type='LabContact')
+             if x.getObject().getUsername() == username][0]
+        if c:
+            sf = c.getObject().getSignature()
+            if sf:
+                self.reporter_signature = sf.absolute_url() + "/Signature"
+
         # lab address
         self.laboratory = laboratory = self.context.bika_setup.laboratory
         lab_address = laboratory.getPostalAddress() \

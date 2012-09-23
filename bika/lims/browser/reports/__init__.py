@@ -1,14 +1,13 @@
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
-from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from bika.lims.interfaces import IReportFolder
-from bika.lims.utils import getUsers
-from bika.lims.utils import logged_in_client
+from bika.lims.utils import getUsers, logged_in_client
 from cStringIO import StringIO
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -190,7 +189,17 @@ class SubmitForm(BrowserView):
         self.reporter = self.user_fullname(username)
         self.reporter_email = self.user_email(username)
 
+        # signature image
+        self.reporter_signature = ""
+        c = [x for x in self.bika_setup_catalog(portal_type='LabContact')
+             if x.getObject().getUsername() == username][0]
+        if c:
+            sf = c.getObject().getSignature()
+            if sf:
+                self.reporter_signature = sf.absolute_url() + "/Signature"
+
         lab = self.context.bika_setup.laboratory
+        self.laboratory = lab
         self.lab_title = lab.getName()
         self.lab_address = lab.getPrintAddress()
         self.lab_email = lab.getEmailAddress()
