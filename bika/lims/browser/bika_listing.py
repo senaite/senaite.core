@@ -326,11 +326,9 @@ class BikaListingView(BrowserView):
         except:
             pagesize = self.pagesize
         self.pagesize = pagesize
-        self.request.set('pagesize', self.pagesize)
 
         # pagenumber
         self.pagenumber = int(self.request.get(form_id + '_pagenumber', self.pagenumber))
-        self.request.set('pagenumber', self.pagenumber)
 
         # index filters.
         self.And = []
