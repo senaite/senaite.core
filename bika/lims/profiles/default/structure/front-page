@@ -20,7 +20,7 @@ Content-Type: text/html
 
 <dl class="enableFormTabbing"> <dt id="fieldsetlegend-Access"> Access </dt> <dd id="fieldset-Access">
 <div style="margin-left:-20px;margin-bottom:30px;" class="center">
-	<h2 style="margin-bottom:10px;border-bottom:1px solid #888;font-size:1.6em;text-align:left;">Bika 3 Gaob LIMS Workflow</h2>
+	<h2 style="margin-bottom:10px;border-bottom:1px solid #888;font-size:1.6em;text-align:left;">Gaob Bika LIMS 3 Workflow</h2>
 	<p style="line-height:140%;font-size:1.2em;text-align:left;">Bika workflow has been designed to fit with all types of labs and is totally conformant with ISO-17025 accreditation. Also, Bika's flexibility and open-source approach allows you to customize the system according to your lab specific requirements.</p></br><img src="workflow-diagram.png" alt="Bika LIMS" class="image-inline" title="Bika LIMS">
 </div>
 <div style="margin-left:-20px;margin-bottom:30px;">
@@ -33,7 +33,7 @@ Content-Type: text/html
 	</div>
 
 	<div style="float:right;width:47%;">
-		<h2 style="margin-bottom:10px;border-bottom:1px solid #888;font-size:1.6em;">Bika 3 Gaob installation</h2>
+		<h2 style="margin-bottom:10px;border-bottom:1px solid #888;font-size:1.6em;">Gaob Bika LIMS 3 installation</h2>
 		<p style="line-height:140%;font-size:1.2em;">Bika 3 Gaob can be installed easily in a ready-to-use way for <a href="http://www.bikalabs.com/helpcentre/manual/bika-installation-guides/bika-on-ubuntu-linux/installing-bika-lims-3">Linux</a> and <a href="http://www.bikalabs.com/helpcentre/manual/bika-installation-guides/bika-on-windows/installing-bika-lims-3-0">Windows</a>.</p>
 		<p style="line-height:140%;font-size:1.2em;">
 		If you want more power, you can also install Bika 3 Gaob by retrieving the source code directly from the repository, allowing easy system updates. That's the <span style="font-weight:bold;font-size:0.9em;color:#333">recommended installation method for developers and testing purposes</span>. You can find the instructions <a href="https://github.com/bikalabs/Bika-LIMS/blob/master/docs/installation.txt">here</a>.
