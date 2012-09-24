@@ -23,7 +23,7 @@ rm i18ndude.pot
 
 ### plonelocales
 ### ============
-$I18NDUDE sync --pot plonelocales.pot */LC_MESSAGES/plonelocales.po
+# $I18NDUDE sync --pot plonelocales.pot */LC_MESSAGES/plonelocales.po
 
 for po in `find . -name "*.po"`; do msgfmt -o ${po/%po/mo} $po; done
 
