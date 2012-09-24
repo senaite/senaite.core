@@ -84,7 +84,9 @@ $(document).ready(function(){
 		form = $(this).parents('form');
 		form_id = $(form).attr('id');
 		pagesize = $(this).val();
-		new_query = $.query.set(form_id + "_pagesize", pagesize).toString();
+		new_query = $.query
+		    .set(form_id + "_pagesize", pagesize)
+            .set(form_id + "_pagenumber", 1).toString();
 		window.location = window.location.href.split("?")[0] + new_query;
 	});
 

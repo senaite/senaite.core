@@ -601,14 +601,14 @@ Batching
 				</span>
 				<!-- Link to first -->
 				<span tal:condition="batch/show_link_to_first">
-					<a href="" pagenumber="1" tal:attributes="href string:${view/url}">1</a>
+                    <a href="" tal:attributes="href python:view.bika_listing.GET_url(pagenumber=1)">1</a>
 					<span tal:condition="batch/second_page_not_in_navlist" tal:omit-tag="">
 					   ...
 					</span>
 				</span>
 				<!-- Pagelist with links to previous pages for quick navigation -->
 				<span tal:repeat="pagenumber batch/previous_pages" tal:omit-tag="" >
-				  <a href="" tal:content="pagenumber" tal:attributes="href python:view.bika_listing.GET_url(pagenumber=pagenumber)"/>
+                  <a href="" tal:content="pagenumber" tal:attributes="href python:view.bika_listing.GET_url(pagenumber=pagenumber)"/>
 				</span>
 				<!-- Current page -->
 				<span tal:condition="batch/navlist" tal:omit-tag="">
