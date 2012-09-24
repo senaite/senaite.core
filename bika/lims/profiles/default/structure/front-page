@@ -20,42 +20,36 @@ Content-Type: text/html
 
 <dl class="enableFormTabbing"> <dt id="fieldsetlegend-Access"> Access </dt> <dd id="fieldset-Access">
 <div style="margin-left:-20px;margin-bottom:30px;" class="center">
-<h2 style="margin-bottom:10px;border-bottom:1px solid #888;font-size:1.6em;text-align:left;">Bika 3 Gaob LIMS Workflow</h2>
-<p style="line-height:140%;font-size:1.2em;text-align:left;">Bika workflow has been designed to fit with all types of labs and is totally conformant with ISO-17025 accreditation. Also, Bika's flexibility and open-source approach allows you to customize the system according to your lab specific requirements.</p><br/>
-<img src="http://localhost:8080/Plone/workflow-diagram.png" alt="Bika LIMS" class="image-inline" title="Bika LIMS">
+	<h2 style="margin-bottom:10px;border-bottom:1px solid #888;font-size:1.6em;text-align:left;">Bika 3 Gaob LIMS Workflow</h2>
+	<p style="line-height:140%;font-size:1.2em;text-align:left;">Bika workflow has been designed to fit with all types of labs and is totally conformant with ISO-17025 accreditation. Also, Bika's flexibility and open-source approach allows you to customize the system according to your lab specific requirements.</p></br><img src="workflow-diagram.png" alt="Bika LIMS" class="image-inline" title="Bika LIMS">
 </div>
-
 <div style="margin-left:-20px;margin-bottom:30px;">
-<div style="float:left;width:47%;">
+	<div style="float:left;width:47%;">
+		<h2 style="margin-bottom:10px;border-bottom:1px solid #888;font-size:1.6em;">Why Gaob release name?</h2>
+		<p style="line-height:140%;font-size:1.2em;">In the tradition of <i>Chief </i>Inkosi Bika LIMS 2 using a  title for a release, this edition is code-named<i> </i>Gaob Bika LIMS 3. Gaob, <i>King,</i> is taken from <a class="external-link" href="http://www.san.org.za/">Khoi San</a> Nama, language of <a class="external-link" href="http://www.independent.co.uk/news/science/worlds-most-ancient-race-traced-in-dna-study-1677113.html">the world's first  people</a>.</p>
 
-<h2 style="margin-bottom:10px;border-bottom:1px solid #888;font-size:1.6em;">Why Gaob release name?</h2>
-<p style="line-height:140%;font-size:1.2em;">In the tradition of <i>Chief </i>Inkosi Bika LIMS 2 using a  title for a release, this edition is code-named<i> </i>Gaob Bika LIMS 3. Gaob, <i>King,</i> is taken from <a class="external-link" href="http://www.san.org.za/">Khoi San</a> Nama, language of <a class="external-link" href="http://www.independent.co.uk/news/science/worlds-most-ancient-race-traced-in-dna-study-1677113.html">the world's first  people</a>.</p>
+		<h2 style="margin-bottom:10px;border-bottom:1px solid #888;font-size:1.6em;padding-top:15px;">Initial testing data</h2>
+		<p style="line-height:140%;font-size:1.2em;">We created standardised spreadsheets to configure the LIMS with setup data of your choice. The demo is populated with data of uniform   nature for ease of testing. See <a href="setup-data-in-this-installation" class="internal-link">Setup data used to configure this installation</a></p>
+	</div>
 
-<h2 style="margin-bottom:10px;border-bottom:1px solid #888;font-size:1.6em;padding-top:15px;">Initial testing data</h2>
-<p style="line-height:140%;font-size:1.2em;">We created standardised spreadsheets to configure the LIMS with setup data of your choice. The demo is populated with data of uniform   nature for ease of testing. See <a href="http://localhost:8080/Plone/setup-data-in-this-installation" class="internal-link">Setup data used to configure this installation</a></p>
+	<div style="float:right;width:47%;">
+		<h2 style="margin-bottom:10px;border-bottom:1px solid #888;font-size:1.6em;">Bika 3 Gaob installation</h2>
+		<p style="line-height:140%;font-size:1.2em;">Bika 3 Gaob can be installed easily in a ready-to-use way for <a href="http://www.bikalabs.com/helpcentre/manual/bika-installation-guides/bika-on-ubuntu-linux/installing-bika-lims-3">Linux</a> and <a href="http://www.bikalabs.com/helpcentre/manual/bika-installation-guides/bika-on-windows/installing-bika-lims-3-0">Windows</a>.</p>
+		<p style="line-height:140%;font-size:1.2em;">
+		If you want more power, you can also install Bika 3 Gaob by retrieving the source code directly from the repository, allowing easy system updates. That's the <span style="font-weight:bold;font-size:0.9em;color:#333">recommended installation method for developers and testing purposes</span>. You can find the instructions <a href="https://github.com/bikalabs/Bika-LIMS/blob/master/docs/installation.txt">here</a>.
+		</p>
+	</div>
+
+	<div style="clear:both">
+		<h2 style="margin-bottom:10px;padding-top:15px;border-bottom:1px solid #888;font-size:1.6em;">Feedback and support</h2>
+		<ul style="font-size:1.2em;margin-left:15px;">
+			<li>Bika mailing lists: <a class="external-link" href="https://groups.google.com/forum/?hl=en#%21forum/bika-design">LIMS design</a>, <a class="external-link" href="http://lists.sourceforge.net/lists/listinfo/bika-users">Users</a> or <a class="external-link" href="http://lists.sourceforge.net/lists/listinfo/bika-developers">Developers</a></li>
+			<li>Bugs reporting, Issues and Feature requests: <a class="external-link" href="https://github.com/bikalabs/Bika-LIMS/issues">public issue tracker</a></li>
+			<li>IRC: <a class="chatzilla-link" href="http://webchat.freenode.net?channels=bika" id="ch-url-anchor">irc://freenode/bika</a>, the #bika channel on irc.freenode.net</li>
+		</ul>
+	</div>
 </div>
-
-<div style="float:right;width:47%;">
-<h2 style="margin-bottom:10px;border-bottom:1px solid #888;font-size:1.6em;">Bika 3 Gaob installation</h2>
-<p style="line-height:140%;font-size:1.2em;">Bika 3 Gaob can be installed easily in a ready-to-use way for <a href="http://www.bikalabs.com/helpcentre/manual/bika-installation-guides/bika-on-ubuntu-linux/installing-bika-lims-3">Linux</a> and <a href="http://www.bikalabs.com/helpcentre/manual/bika-installation-guides/bika-on-windows/installing-bika-lims-3-0">Windows</a>.</p>
-<p style="line-height:140%;font-size:1.2em;">
-If you want more power, you can also install Bika 3 Gaob by retrieving the source code directly from the repository, allowing easy system updates. That's the <span style="font-weight:bold;font-size:0.9em;color:#333">recommended installation method for developers and testing purposes</span>. You can find the instructions <a href="https://github.com/bikalabs/Bika-LIMS/blob/master/docs/installation.txt">here</a>.
-</p>
-</div>
-
-<div style="clear:both">
-<h2 style="margin-bottom:10px;padding-top:15px;border-bottom:1px solid #888;font-size:1.6em;">Feedback and support</h2>
-<ul style="font-size:1.2em;margin-left:15px;">
-<li>Bika mailing lists: <a class="external-link" href="https://groups.google.com/forum/?hl=en#%21forum/bika-design">LIMS design</a>, <a class="external-link" href="http://lists.sourceforge.net/lists/listinfo/bika-users">Users</a> or <a class="external-link" href="http://lists.sourceforge.net/lists/listinfo/bika-developers">Developers</a></li>
-<li>Bugs reporting, Issues and Feature requests: <a class="external-link" href="https://github.com/bikalabs/Bika-LIMS/issues">public issue tracker</a></li>
-<li>IRC: <a class="chatzilla-link" href="http://webchat.freenode.net?channels=bika" id="ch-url-anchor">irc://freenode/bika</a>, the #bika channel on irc.freenode.net</li>
-</ul>
-
-</div>
-</div>
-
 <div style="clear:both"></div>
-</div>
 </dd> <dt id="fieldsetlegend-New"> New functions</dt> <dd id="fieldset-New">
 <table class="invisible two_column_table">
 <tbody>
