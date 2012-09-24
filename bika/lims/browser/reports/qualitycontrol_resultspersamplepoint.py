@@ -212,7 +212,7 @@ class Report(BrowserView):
         }
 
         plotscript = """
-        set terminal png size 700,350 font "Verdana, 8"
+        set terminal pngcairo size 700,350 font "Verdana, 8"
         set title "%(title)s"
         set xlabel "%(xlabel)s"
         set ylabel "%(ylabel)s"
@@ -222,7 +222,8 @@ class Report(BrowserView):
         set xdata time
         set format x "%%Y-%%m-%%d\\n%%H:%%M"
         set xrange ["%(x_start)s":"%(x_end)s"]
-        set yrange [%(y_start)s:%(y_end)s]
+        set auto fix
+        set offsets graph 0, 0, 1, 1
         set xtics border nomirror rotate by 90 font "Verdana, 5" offset 0,-3
         set ytics nomirror
 
@@ -232,12 +233,11 @@ class Report(BrowserView):
 
         plot mean_y-stddev_y with filledcurves y1=mean_y lt 1 lc rgb "#efefef",\
              mean_y+stddev_y with filledcurves y1=mean_y lt 1 lc rgb "#efefef",\
-             mean_y with lines lc rgb '#ffffff' lw 2,\
-             "gpw_DATAFILE_gpw" using 1:3 title 'data' with points pt 7 ps 1,\
-               '' using 1:3 smooth unique,\
-               '' using 1:4 with lines lc rgb '#000000' lw .1,\
-               '' using 1:5 with lines lc rgb '#000000' lw .1
-        """
+             mean_y with lines lc rgb '#ffffff' lw 3,\
+             "gpw_DATAFILE_gpw" using 1:3 title 'data' with points pt 7 ps 1 lc rgb '#0000ee' lw 2,\
+               '' using 1:3 smooth unique lc rgb '#aaaaaa' lw 2,\
+               '' using 1:4 with lines lc rgb '#000000' lw 1,\
+               '' using 1:5 with lines lc rgb '#000000' lw 1"""
 
         ## Compile plots and format data for display
         for service_title in keys:
@@ -247,6 +247,9 @@ class Report(BrowserView):
 
             parms = []
             plotdata = str()
+
+            range_min = ''
+            range_max = ''
 
             for a in analyses[service_title]:
 
@@ -265,50 +268,54 @@ class Report(BrowserView):
                     if this_spec_results and a['Keyword'] in this_spec_results:
                         this_spec = this_spec_results[a['Keyword']]
                         in_range[1] == this_spec
-                # result out of range
-                if in_range[0] == False:
-                    out_of_range_count += 1
-                    a['Result'] = "%s %s" % (a['Result'], error_icon)
-                # result almost out of range
-                if in_range[0] == 1:
-                    in_shoulder_range_count += 1
-                    a['Result'] = "%s %s" % (a['Result'], warning_icon)
+                # If no specs are supplied, fake them
+                # and do not print specification values or errors
                 a['range_min'] = in_range[1] and in_range[1]['min'] or ''
                 a['range_max'] = in_range[1] and in_range[1]['max'] or ''
+                if a['range_min'] and a['range_max']:
+                    range_min = a['range_min']
+                    range_max = a['range_max']
+                    # result out of range
+                    if str(in_range[0]) == 'False':
+                        out_of_range_count += 1
+                        a['Result'] = "%s %s" % (a['Result'], error_icon)
+                    # result almost out of range
+                    if str(in_range[0]) == '1':
+                        in_shoulder_range_count += 1
+                        a['Result'] = "%s %s" % (a['Result'], warning_icon)
+                else:
+                    a['range_min'] = min(result_values)
+                    a['range_max'] = max(result_values)
 
                 plotdata += "%s\t%s\t%s\t%s\t%s\n"%(
                     a['Sampled'],
                     R,
-                    a['range_min'],
-                    a['range_max'],
+                    range_min,
+                    range_max,
                     U and U or 0,
                 )
                 plotdata.encode('utf-8')
 
-            spec_str = "%s: %s, %s: %s" % (
-                self.context.translate(_("Range min")), a['range_min'],
-                self.context.translate(_("Range max")), a['range_max'],
-            )
-            parms.append({'title': _('Specification'), 'value': spec_str,})
+            if range_min and range_max:
+                spec_str = "%s: %s, %s: %s" % (
+                    self.context.translate(_("Range min")), range_min,
+                    self.context.translate(_("Range max")), range_max,
+                )
+                parms.append({'title': _('Specification'), 'value': spec_str,})
+
             unit = analyses[service_title][0]['Unit']
             if MinimumResults <= len(dict([(d, d) for d in result_dates])):
                 _plotscript = str(plotscript)%{
                     'title': "",
                     'xlabel': self.context.translate(_("Date Sampled")),
                     'ylabel': unit and unit or '',
-                    'x_start': "%s 00:00" % min(result_dates).strftime("%Y-%m-%d"),
-                    'x_end': "%s 23:59" % max(result_dates).strftime("%Y-%m-%d"),
-                    'y_start':  int(round(min(result_values) / 10.0) * 10),
-                    'y_end': int(round(max(result_values) / 10.0) * 10),
+                    'x_start': "%s" % min(result_dates).strftime("%Y-%m-%d %H:%M"),
+                    'x_end': "%s" % max(result_dates).strftime("%Y-%m-%d %H:%M"),
                 }
 
                 plot_png = plot(str(plotdata),
                                 plotscript=str(_plotscript),
                                 usefifo=False)
-
-                print plotdata
-                print _plotscript
-                print "-------"
 
                 # Temporary PNG data file
                 fh,data_fn = tempfile.mkstemp(suffix='.png')
@@ -345,7 +352,7 @@ class Report(BrowserView):
         if in_shoulder_range_count:
             msgid = _("Analyses in error shoulder range")
             self.report_data['footnotes'].append(
-                "%s %s" % (warning_icon, translate(msgid)))
+                "%s %s" % (warning_icon, self.context.translate(msgid)))
 
         self.report_data['parms'].append(
             {"title": _("Analyses out of range"),
