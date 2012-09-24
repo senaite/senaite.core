@@ -326,9 +326,13 @@ class BikaListingView(BrowserView):
         except:
             pagesize = self.pagesize
         self.pagesize = pagesize
+        # Plone's batching wants this variable:
+        self.request.set('pagesize', self.pagesize)
 
         # pagenumber
         self.pagenumber = int(self.request.get(form_id + '_pagenumber', self.pagenumber))
+        # Plone's batching wants this variable:
+        self.request.set('pagenumber', self.pagenumber)
 
         # index filters.
         self.And = []
