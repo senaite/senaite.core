@@ -1,23 +1,24 @@
-# this file is maintained manually.
-# contains bika translations from the plone domain.
+# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
+# SOME DESCRIPTIVE TITLE.
 # Translators:
+# <campbell@bikalabs.com>, 2012.
 # <campbell@bikalabs.com>, 2012.
 # Jordi Puiggené <jordi.puiggene@gmail.com>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-09-08 15:17+0000\n"
-"PO-Revision-Date: 2012-07-16 16:28+0000\n"
+"POT-Creation-Date: 2012-09-25 10:07+0000\n"
+"PO-Revision-Date: 2012-09-17 16:26+0000\n"
 "Last-Translator: Jordi Puiggené <jordi.puiggene@gmail.com>\n"
-"Language-Team: Bika <bikasupport@bikalabs.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
-"Domain: DOMAIN\n"
+"Domain: plone\n"
 "Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
 "Language: es\n"
 
@@ -325,6 +326,7 @@ msgid "Log entry"
 msgstr "Entrada de registro"
 
 #: ../profiles/default/types/Contact.xml
+#: ../profiles/default/types/LabContact.xml
 msgid "Login details"
 msgstr "Detalles de acceso"
 
@@ -536,7 +538,7 @@ msgstr "Muestra recibida"
 
 #: ../profiles/default/types/Client.xml
 msgid "SamplePoints"
-msgstr ""
+msgstr "Puntos de muestreo"
 
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
