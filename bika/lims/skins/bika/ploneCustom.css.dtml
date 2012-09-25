@@ -831,7 +831,7 @@ div.managePortletsLink {
     padding: 3px 5px 3px 3px;
     text-align: right;
 }
-
+/*
 #portal-column-content {
 	float:left;
 	left:0;
@@ -859,5 +859,5 @@ div.managePortletsLink {
 }
 #portal-columns {
 	width:99.7%;
-}
+}*/
 </dtml-with>
