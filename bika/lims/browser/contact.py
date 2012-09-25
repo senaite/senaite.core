@@ -1,24 +1,107 @@
 from Acquisition import aq_parent, aq_inner, aq_base
-from bika.lims import bikaMessageFactory as _
-from bika.lims import PMF
-from Products.Five.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.CMFCore.utils import getToolByName
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims.browser import BrowserView
 import json
 
 class ContactLoginDetailsView(BrowserView):
     """ The contact login details edit
     """
-    template = ViewPageTemplateFile("templates/contact_login_details.pt")
-
-    def __init__(self, context, request):
-        BrowserView.__init__(self, context, request)
-        self.context = context
-        self.request = request
+    template = ViewPageTemplateFile("templates/login_details.pt")
 
     def __call__(self):
+
         if self.request.form.has_key("submitted"):
-            return contact_logindetails_submit(self.context, self.request)
+
+            def error(field, message):
+                if field:
+                    message = "%s: %s" % (field, message)
+                self.context.plone_utils.addPortalMessage(message, 'error')
+                return self.template()
+
+            form = self.request.form
+            contact = self.context
+
+            password = form.get('password', '')
+            username = form.get('username', '')
+            confirm = form.get('confirm', '')
+            email = form.get('email', '')
+
+            if not username:
+                return error('username', PMF("Input is required but not given."))
+
+            if not email:
+                return error('email', PMF("Input is required but not given."))
+
+            reg_tool = self.context.portal_registration
+            properties = self.context.portal_properties.site_properties
+
+##            if properties.validate_email:
+##                password = reg_tool.generatePassword()
+##            else:
+            if password!=confirm:
+                return error('password', PMF("Passwords do not match."))
+
+            if not password:
+                return error('password', PMF("Input is required but not given."))
+
+            if not confirm:
+                return error('password', PMF("Passwords do not match."))
+
+            if len(password) < 5:
+                return error('password', PMF("Passwords must contain at least 5 letters."))
+
+            try:
+                reg_tool.addMember(username,
+                                   password,
+                                   properties = {
+                                       'username': username,
+                                       'email': email,
+                                       'fullname': username})
+            except ValueError, msg:
+                return error(None, msg)
+
+            contact.setUsername(username)
+            contact.setEmailAddress(email)
+
+            # If we're being created in a Client context, then give
+            # the contact an Owner local role on client.
+            if contact.aq_parent.portal_type == 'Client':
+                contact.aq_parent.manage_setLocalRoles( username, ['Owner',] )
+                if hasattr(aq_base(contact.aq_parent), 'reindexObjectSecurity'):
+                    contact.aq_parent.reindexObjectSecurity()
+
+                # add user to Clients group
+                group=self.context.portal_groups.getGroupById('Clients')
+                group.addMember(username)
+
+            # Additional groups for LabContact users.
+            if self.request['groups']:
+                groups = self.request['groups']
+                if not type(groups) in (list,tuple):
+                    groups = [groups,]
+                for group in groups:
+                    group = self.portal_groups.getGroupById(group)
+                    group.addMember(username)
+            else:
+                if self.context.portal_type == 'LabContact':
+                    return error('groups', PMF("Input is required but not given."))
+
+            contact.reindexObject()
+
+            if properties.validate_email or self.request.get('mail_me', 0):
+                try:
+                    reg_tool.registeredNotify(username)
+                except:
+                    import transaction
+                    transaction.abort()
+                    return error(
+                        None, PMF("SMTP server disconnected."))
+
+            message = PMF("Member registered.")
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            return self.template()
         else:
             return self.template()
 
@@ -27,85 +110,3 @@ class ContactLoginDetailsView(BrowserView):
         while True:
             i += 1
             yield i
-
-def contact_logindetails_submit(context, request):
-
-    def missing(field):
-        message = PMF("Input is required but not given.")
-        errors.append(field + ': ' + message)
-
-    def nomatch(field):
-        message = PMF("Passwords do not match.")
-        errors.append(field + ': ' + message)
-
-    def minlimit(field):
-        message = PMF("Passwords must contain at least 5 letters.")
-        errors.append(field + ': ' + message)
-
-    form = request.form
-
-    if form.has_key("save_button"):
-        contact = context
-    password = form['password']
-    username = form['username']
-    confirm = form['confirm']
-    email = form['email']
-    errors = []
-
-    if not username:
-        missing('username')
-
-    if not email:
-        missing('email')
-
-    reg_tool = context.portal_registration
-    properties = context.portal_properties.site_properties
-##    if properties.validate_email:
-##        password = reg_tool.generatePassword()
-##    else:
-    if password!=confirm:
-        nomatch('password')
-        nomatch('confirm')
-
-    if not password:
-        missing('password')
-
-    if not confirm:
-        missing('confirm')
-
-    if len(password) < 5:
-        minlimit('password')
-        minlimit('confirm')
-
-    if errors:
-        return json.dumps({'errors':errors})
-
-    try:
-        reg_tool.addMember(username,
-                           password,
-                           properties = {
-                               'username': username,
-                               'email': email,
-                               'fullname': username})
-    except ValueError, msg:
-        return json.dumps({'errors': [str(msg),]})
-
-    contact.setUsername(username)
-    contact.setEmailAddress(email)
-    contact.reindexObject()
-
-    # Give contact an Owner local role on client
-    contact.aq_parent.manage_setLocalRoles( username, ['Owner',] )
-    if hasattr(aq_base(contact.aq_parent), 'reindexObjectSecurity'):
-        contact.aq_parent.reindexObjectSecurity()
-
-    # add user to Clients group
-    group=context.portal_groups.getGroupById('Clients')
-    group.addMember(username)
-
-##    if properties.validate_email or request.get('mail_me', 0):
-##        reg_tool.registeredNotify(username)
-
-    message = "Registered"
-    context.plone_utils.addPortalMessage(message, 'info')
-    return json.dumps({'success':message})

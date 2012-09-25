@@ -4,42 +4,6 @@ $(document).ready(function(){
 	_ = window.jsi18n_bika;
 	PMF = window.jsi18n_plone;
 
-	function setoddeven(){
-		// set alternating odd and even classes if table has setoddeven class
-		$.each($("table.setoddeven tbody.item-listing-tbody tr"), function(i,tr){
-			if (i%2 == 0) {
-				$(tr).addClass('even');
-			} else {
-				$(tr).addClass('odd');
-			}
-		});
-	}
-
-	setoddeven();
-
-	// review_state
-	$(".review_state_selector a").live('click', function(){
-		form = $(this).parents("form");
-		form_id = $(form).attr("id");
-		review_state = $(this).attr("value");
-		$("[name="+form_id+"_review_state]").val(review_state);
-		stored_form_action = $(form).attr("action");
-		$(form).attr("action", window.location.href);
-		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
-		options = {
-			target: $(this).parents("table"),
-			replaceTarget: true,
-			data: form.formToArray(),
-			success: function(){
-				setoddeven();
-			}
-		}
-		form.ajaxSubmit(options);
-		$("[name=table_only]").remove();
-		$(form).attr("action", stored_form_action)
-		return false;
-	});
-
 	// Click column header - set or modify sort order.
 	$("th.sortable").live('click', function(){
 		form = $(this).parents("form");
@@ -73,10 +37,7 @@ $(document).ready(function(){
 		options = {
 			target: $(this).parents("table"),
 			replaceTarget: true,
-			data: form.formToArray(),
-			success: function(){
-				setoddeven();
-			}
+			data: form.formToArray()
 		}
 		form.ajaxSubmit(options);
 		$("[name=table_only]").remove();
@@ -119,49 +80,14 @@ $(document).ready(function(){
 	});
 
 	// pagesize
-	$("select[name='pagesize']").live('change', function(){
+	$("select.pagesize").live('change', function(){
 		form = $(this).parents('form');
 		form_id = $(form).attr('id');
 		pagesize = $(this).val();
-		$("[name="+form_id+"_pagesize]").val(pagesize);
-		stored_form_action = $(form).attr("action");
-		$(form).attr("action", window.location.href);
-		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
-		options = {
-			target: $(form).children(".bika-listing-table"),
-			replaceTarget: true,
-			data: form.formToArray(),
-			success: function(){
-				setoddeven();
-			}
-		}
-		form.ajaxSubmit(options);
-		$('[name=table_only]').remove();
-		$(form).attr('action', stored_form_action)
-		return false;
-	});
-
-	// batching pagenumber links
-	$("a[pagenumber]").live('click', function(){
-		form = $(this).parents('form');
-		form_id = $(form).attr('id');
-		pagenumber = $(this).attr('pagenumber');
-		$("[name="+form_id+"_pagenumber]").val(pagenumber);
-		stored_form_action = $(form).attr("action");
-		$(form).attr("action", window.location.href);
-		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
-		options = {
-			target: $(form).children(".bika-listing-table"),
-			replaceTarget: true,
-			data: form.formToArray(),
-			success: function(){
-				setoddeven();
-			}
-		}
-		form.ajaxSubmit(options);
-		$('[name=table_only]').remove();
-		$(form).attr('action', stored_form_action)
-		return false;
+		new_query = $.query
+		    .set(form_id + "_pagesize", pagesize)
+            .set(form_id + "_pagenumber", 1).toString();
+		window.location = window.location.href.split("?")[0] + new_query;
 	});
 
 	// expand/collapse categorised rows
@@ -174,7 +100,6 @@ $(document).ready(function(){
 			.toggle(true);
 		// change TH state
 		$(this).removeClass('collapsed').addClass('expanded');
-		setoddeven();
 	});
 	$(".bika-listing-table th.expanded").live('click', function(){
 		table = $(this).parents('.bika-listing-table');
@@ -185,7 +110,6 @@ $(document).ready(function(){
 			.toggle(false);
 		// change TH state
 		$(this).removeClass('expanded').addClass('collapsed');
-		setoddeven();
 	});
 
 	// always select checkbox when editable listing item is changed
@@ -218,10 +142,7 @@ $(document).ready(function(){
 		options = {
 			target: $(this).parents('table'),
 			replaceTarget: true,
-			data: form.formToArray(),
-			success: function(){
-				setoddeven();
-			}
+			data: form.formToArray()
 		}
 		form.ajaxSubmit(options);
 		$('[name=table_only]').remove();
@@ -311,11 +232,11 @@ $(document).ready(function(){
 				txt = txt + "<td>"+col_title+"</td></tr>";
 			}
 		}
-		txt = txt + "<tr col_id='ALL' form_id='"+form_id+"'>";
+		txt = txt + "<tr col_id='" + _("All") + "' form_id='"+form_id+"'>";
 		txt = txt + "<td style='border-top:1px solid #ddd'>&nbsp;</td>";
 		txt = txt + "<td style='border-top:1px solid #ddd'>"+_('All')+"</td></tr>";
 
-		txt = txt + "<tr col_id='DEFAULT' form_id='"+form_id+"'>";
+		txt = txt + "<tr col_id='" + _("Default") + "' form_id='"+form_id+"'>";
 		txt = txt + "<td>&nbsp;</td>";
 		txt = txt + "<td>"+_('Default')+"</td></tr>";
 
@@ -344,11 +265,11 @@ $(document).ready(function(){
 		if (cookie == null || cookie == undefined) {
 			cookie = {};
 		}
-		if(col_id=='DEFAULT'){
+		if(col_id==_('Default')){
 			// Remove entry from existing cookie if there is one
 			delete(cookie[cookie_key]);
 			createCookie('toggle_cols', $.toJSON(cookie), 365);
-		} else if(col_id=='ALL') {
+		} else if(col_id==_('All')) {
 			// add all possible columns
 			toggle_cols = [];
 			$.each($.parseJSON($('#'+form_id+"_toggle_cols").val()), function(i,v){
@@ -376,24 +297,11 @@ $(document).ready(function(){
 			}
 			cookie[cookie_key] = toggle_cols;
 			createCookie('toggle_cols', $.toJSON(cookie), 365);
+
 		}
-		stored_form_action = $(form).attr("action");
 		$(form).attr("action", window.location.href);
-		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
-		$(form).append("<input type='hidden' name='"+form_id+"_toggle_cols' value='"+$.toJSON(cookie)+"'>");
-		options = {
-			target: $(form).children(".bika-listing-table"),
-			replaceTarget: true,
-			data: form.formToArray(),
-			success: function(){
-				setoddeven();
-			}
-		}
 		$(".tooltip").remove();
-		form.ajaxSubmit(options);
-		$('[name=table_only]').remove();
-		$('[name='+form_id+'_toggle_cols]').remove();
-		$(form).attr('action', stored_form_action);
+		form.submit();
 		return false;
 	});
 

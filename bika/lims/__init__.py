@@ -38,7 +38,7 @@ def initialize(context):
     from content.analysisspec import AnalysisSpec
     from content.arimport import ARImport
     from content.arimportitem import ARImportItem
-    from content.arprofile import ARProfile
+    from content.analysisprofile import AnalysisProfile
     from content.artemplate import ARTemplate
     from content.attachment import Attachment
     from content.attachmenttype import AttachmentType
@@ -62,6 +62,7 @@ def initialize(context):
     from content.labproduct import LabProduct
     from content.logentry import LogEntry
     from content.method import Method
+    from content.methods import Methods
     from content.organisation import Organisation
     from content.person import Person
     from content.preservation import Preservation
@@ -74,14 +75,15 @@ def initialize(context):
     from content.referencesample import ReferenceSample
     from content.referencesamplesfolder import ReferenceSamplesFolder
     from content.referencesupplier import ReferenceSupplier
-    from content.rejectanalysis import RejectAnalysis
     from content.report import Report
     from content.reportfolder import ReportFolder
     from content.sample import Sample
+    from content.samplematrix import SampleMatrix
     from content.samplepartition import SamplePartition
     from content.samplepoint import SamplePoint
     from content.samplesfolder import SamplesFolder
     from content.sampletype import SampleType
+    from content.samplingdeviation import SamplingDeviation
     from content.suppliercontact import SupplierContact
     from content.supplyorder import SupplyOrder
     from content.supplyorderitem import SupplyOrderItem
@@ -92,7 +94,7 @@ def initialize(context):
     from controlpanel.bika_analysiscategories import AnalysisCategories
     from controlpanel.bika_analysisservices import AnalysisServices
     from controlpanel.bika_analysisspecs import AnalysisSpecs
-    from controlpanel.bika_arprofiles import ARProfiles
+    from controlpanel.bika_analysisprofiles import AnalysisProfiles
     from controlpanel.bika_artemplates import ARTemplates
     from controlpanel.bika_attachmenttypes import AttachmentTypes
     from controlpanel.bika_calculations import Calculations
@@ -102,13 +104,14 @@ def initialize(context):
     from controlpanel.bika_instruments import Instruments
     from controlpanel.bika_labcontacts import LabContacts
     from controlpanel.bika_labproducts import LabProducts
-    from controlpanel.bika_methods import Methods
     from controlpanel.bika_preservations import Preservations
     from controlpanel.bika_referencedefinitions import ReferenceDefinitions
     from controlpanel.bika_referencemanufacturers import ReferenceManufacturers
     from controlpanel.bika_referencesuppliers import ReferenceSuppliers
+    from controlpanel.bika_samplematrices import SampleMatrices
     from controlpanel.bika_samplepoints import SamplePoints
     from controlpanel.bika_sampletypes import SampleTypes
+    from controlpanel.bika_samplingdeviations import SamplingDeviations
     from controlpanel.bika_worksheettemplates import WorksheetTemplates
 
     content_types, constructors, ftis = process_types(

@@ -53,13 +53,13 @@
     Preservation python:part.getPreservation() and part.getPreservation().Title() or '';
     Container    python:part.getContainer() and part.getContainer().Title() or '';
     SamplingDate python:sample.getSamplingDate() and sample.getSamplingDate().Date();
+    Deviation    python:sample.getSamplingDeviation() and sample.getSamplingDeviation().Title() or '';
     DateSampled  python:sample.getDateSampled() and sample.getDateSampled().Date();
     Composite    python:sample.getComposite();
+    AdHoc        python:sample.getAdHoc();
     barcode_str  string:${SampleID}${partnr};
     analyses     python:part.getBackReferences('AnalysisSamplePartition');
     field_analyses python:[analysis for analysis in analyses if analysis.getService().getPointOfCapture()=='field'];
-
-    deviation    python:None;
     ">
 <thead>
 
@@ -86,7 +86,7 @@
 
 <tr>
 <th i18n:translate="">Deviation</th>
-<td tal:content="deviation/Title|nothing"/>
+<td tal:content="Deviation"/>
 <th i18n:translate="">Composite</th>
 <td class="left" tal:content="Composite"/>
 </tr>

@@ -5,15 +5,12 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import transaction_note
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.permissions import EditFieldResults
-from bika.lims.permissions import EditResults
-from bika.lims.permissions import ManageBika
-from bika.lims.permissions import ViewResults
-from bika.lims.utils import isActive, TimeOrDate
+from bika.lims.permissions import *
+from bika.lims.utils import isActive
 from zope.component import getMultiAdapter
 import json
 import plone
@@ -29,7 +26,6 @@ class AnalysesView(BikaListingView):
         self.contentFilter['portal_type'] = 'Analysis'
         self.contentFilter['sort_on'] = 'sortable_title'
         self.context_actions = {}
-        self.setoddeven = True
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = False
@@ -143,6 +139,7 @@ class AnalysesView(BikaListingView):
             items[i]['Uncertainty'] = ''
             items[i]['retested'] = obj.getRetested()
             items[i]['class']['retested'] = 'center'
+            items[i]['result_captured'] = obj.getResultCaptureDate()
             items[i]['calculation'] = calculation and True or False
             try:
                 items[i]['Partition'] = obj.getSamplePartition().Title()
@@ -154,7 +151,7 @@ class AnalysesView(BikaListingView):
             else:
                 items[i]['DueDate'] = obj.getDueDate()
                 cd = obj.getResultCaptureDate()
-                items[i]['CaptureDate'] = cd and TimeOrDate(self.context, cd) or ''
+                items[i]['CaptureDate'] = cd and self.ulocalized_time(cd) or ''
             items[i]['Attachments'] = ''
 
             # calculate specs
@@ -323,20 +320,33 @@ class AnalysesView(BikaListingView):
 
             # check if this analysis is late/overdue
             if items[i]['obj'].portal_type != "DuplicateAnalysis":
-                if (not calculation or (calculation and not calculation.getDependentServices())) and \
-                   items[i]['review_state'] not in ['to_be_sampled', 'to_be_preserved', 'sample_due', 'published'] and \
-                   items[i]['DueDate'] < DateTime():
-                    DueDate = TimeOrDate(self.context, item['DueDate'], long_format = 0)
-                    if self.context.portal_type == 'AnalysisRequest':
-                        items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
-                            (DueDate, self.portal_url,
-                             self.context.translate(_("Due Date")) + ": %s"%DueDate)
-                    else:
-                        items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
-                            (DueDate, self.portal_url,
-                             self.context.translate(_("Late Analysis")))
+                if (not calculation or (calculation and not calculation.getDependentServices())):
+                   if items[i]['review_state'] not in ['to_be_sampled', 'to_be_preserved', 'sample_due', 'published'] \
+                       and (
+                            items[i]['result_captured'] > items[i]['DueDate'] \
+                            or not items[i]['result_captured']
+                            ):
+                       DueDate = self.ulocalized_time(item['DueDate'])
+                       items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
+                            (DueDate, self.portal_url, self.context.translate(_("Late Analysis")))
                 else:
-                    items[i]['replace']['DueDate'] = TimeOrDate(self.context, item['DueDate'])
+                    items[i]['replace']['DueDate'] = self.ulocalized_time(
+                        item['DueDate'])
+
+            # Submitting user may not verify results (admin can though)
+            if items[i]['review_state'] == 'to_be_verified' and \
+               not checkPermission(VerifyOwnResults, obj):
+                user_id = getSecurityManager().getUser().getId()
+                self_submitted = False
+                review_history = list(workflow.getInfoFor(obj, 'review_history'))
+                review_history.reverse()
+                for event in review_history:
+                    if event.get('action') == 'submit':
+                        if event.get('actor') == user_id:
+                            self_submitted = True
+                        break
+                if self_submitted:
+                    items[i]['table_row_class'] = "state-submitted-by-current-user"
 
             # add icon for assigned analyses in AR views
             if self.context.portal_type == 'AnalysisRequest' and \

@@ -26,7 +26,7 @@
            size="30"
            tal:attributes="name fieldName;
                            id fieldName;
-                           value python: widget.TimeOrDate(here, value, long_format=0);
+                           value python: value and widget.ulocalized_time(value, long_format=0, context=context) or '';
                            size widget/size|nothing;
                            DatePicker string:1;
                            maxlength widget/maxlength|nothing;"/>

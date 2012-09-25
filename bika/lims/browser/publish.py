@@ -2,20 +2,24 @@ from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims.browser import BrowserView
+from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.utils import sendmail, encode_header
+from cStringIO import StringIO
 from email.Utils import formataddr
 from email.mime.image import MIMEImage
+from email.MIMEBase import MIMEBase
 from email.mime.multipart import MIMEMultipart
-from bika.lims.config import POINTS_OF_CAPTURE
-from bika.lims.utils import TimeOrDate
 from email.mime.text import MIMEText
+from email import Encoders
 from os.path import join
-import App
 from smtplib import SMTPRecipientsRefused
+from smtplib import SMTPServerDisconnected
+import App
 import Globals
 import re
+import xhtml2pdf.pisa as pisa
 
 class Publish(BrowserView):
     """Pre/Re/Publish analysis requests"""
@@ -24,9 +28,9 @@ class Publish(BrowserView):
     def __init__(self, context, request, action, analysis_requests):
         self.context = context
         self.request = request
-        self.TimeOrDate = TimeOrDate
         # the workflow transition that invoked us
         self.action = action
+
         # the list of ARs that we will process.
         # Filter them here so we only publish those with verified analyses.
         workflow = getToolByName(self.context, 'portal_workflow')
@@ -47,11 +51,34 @@ class Publish(BrowserView):
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         workflow = getToolByName(self.context, 'portal_workflow')
 
-        laboratory = self.context.bika_setup.laboratory
         BatchEmail = self.context.bika_setup.getBatchEmail()
-        BatchFax = self.context.bika_setup.getBatchFax()
 
-        # group analysis requests by contact
+        username = self.context.portal_membership.getAuthenticatedMember().getUserName()
+        self.reporter = self.user_fullname(username)
+        self.reporter_email = self.user_email(username)
+
+        # signature image
+        self.reporter_signature = ""
+        c = [x for x in self.bika_setup_catalog(portal_type='LabContact')
+             if x.getObject().getUsername() == username]
+        if c:
+            sf = c[0].getObject().getSignature()
+            if sf:
+                self.reporter_signature = sf.absolute_url() + "/Signature"
+
+        # lab address
+        self.laboratory = laboratory = self.context.bika_setup.laboratory
+        lab_address = laboratory.getPostalAddress() \
+            or laboratory.getBillingAddress() \
+            or laboratory.getPhysicalAddress()
+        if lab_address:
+            _keys = ['address', 'city', 'state', 'zip', 'country']
+            _list = [lab_address.get(v) for v in _keys]
+            self.lab_address = "<br/>".join(_list).replace("\n", "<br/>")
+        else:
+            self.lab_address = None
+
+        # group/publish analysis requests by contact
         ARs_by_contact = {}
         for ar in self.analysis_requests:
             contact_uid = ar.getContact().UID()
@@ -63,8 +90,21 @@ class Publish(BrowserView):
             ars.sort()
             self.contact = ars[0].getContact()
             self.pub_pref = self.contact.getPublicationPreference()
-            batch_size = 'email' in self.pub_pref and BatchEmail or \
-                         'fax' in self.pub_pref and BatchFax or 1
+            batch_size = 'email' in self.pub_pref and BatchEmail or 5
+
+            # client address
+            self.client = ars[0].aq_parent
+            client_address = self.client.getPostalAddress() \
+                or self.contact.getBillingAddress() \
+                or self.contact.getPhysicalAddress()
+            if client_address:
+                _keys = ['address', 'city', 'state', 'zip', 'country']
+                _list = [client_address.get(v) for v in _keys]
+                self.client_address = "<br/>".join(_list).replace("\n", "<br/>")
+            else:
+                self.client_address = None
+
+            self.Footer = self.context.bika_setup.getResultFooter()
 
             # send batches of ARs to each contact
             for b in range(0, len(ars), batch_size):
@@ -75,6 +115,9 @@ class Publish(BrowserView):
                 # dictionary:
                 #   {'Point Of Capture': {'Category': [service,service,...]}}
                 self.services = {}
+
+                out_fn = "_".join([ar.Title() for ar in self.batch])
+
                 for ar in self.batch:
                     if ar.getReportDryMatter():
                         self.any_drymatter = True
@@ -88,21 +131,31 @@ class Publish(BrowserView):
                             self.services[poc] = {}
                         if cat not in self.services[poc]:
                             self.services[poc][cat] = []
-                        self.services[poc][cat].append(service)
+                        if service not in self.services[poc][cat]:
+                            self.services[poc][cat].append(service)
                         if (service.getAccredited()):
                             self.any_accredited = True
 
                 # compose and send email
                 if 'email' in self.pub_pref:
 
-                    # render template to utf-8
-                    ar_results = self.ar_results().encode("utf-8")
+                    # render template
+                    ar_results = self.ar_results()
 
-                    # XXX
-                    ar_debug_name = '%s_%s.html' % \
-                        (self.analysis_requests[0].Title(), self.action)
-                    open(join(Globals.INSTANCE_HOME,'var', ar_debug_name),
-                                "w").write(ar_results)
+                    debug_mode = App.config.getConfiguration().debug_mode
+                    if debug_mode:
+                        open(join(Globals.INSTANCE_HOME,'var', out_fn + ".html"),
+                             "w").write(ar_results)
+
+                    pisa.showLogging()
+                    ramdisk = StringIO()
+                    pdf = pisa.CreatePDF(ar_results, ramdisk)
+                    pdf_data = ramdisk.getvalue()
+                    ramdisk.close()
+
+                    if debug_mode:
+                        open(join(Globals.INSTANCE_HOME,'var', out_fn + ".pdf"),
+                             "wb").write(pdf_data)
 
                     mime_msg = MIMEMultipart('related')
                     mime_msg['Subject'] = self.get_mail_subject()
@@ -115,18 +168,35 @@ class Publish(BrowserView):
                     mime_msg.preamble = 'This is a multi-part MIME message.'
                     msg_txt = MIMEText(ar_results, _subtype='html')
                     mime_msg.attach(msg_txt)
+                    if not pdf.err:
+                        part = MIMEBase('application', "application/pdf")
+                        part.add_header('Content-Disposition', 'attachment; filename="%s.pdf"' % out_fn)
+                        part.set_payload( pdf_data )
+                        Encoders.encode_base64(part)
+                        mime_msg.attach(part)
 
                     try:
                         host = getToolByName(self.context, 'MailHost')
                         host.send(mime_msg.as_string(), immediate=True)
+                    except SMTPServerDisconnected, msg:
+                        if not debug_mode:
+                            raise SMTPServerDisconnected(msg)
                     except SMTPRecipientsRefused, msg:
                         raise WorkflowException(str(msg))
+
                     if self.action == 'publish':
                         for ar in self.batch:
                             try:
                                 workflow.doActionFor(ar, 'publish')
                             except WorkflowException:
                                 pass
+
+##                    if not pdf.err:
+##                        setheader = self.request.RESPONSE.setHeader
+##                        setheader('Content-Type', 'application/pdf')
+##                        setheader("Content-Disposition", "attachment;filename=\"%s.pdf\"" % out_fn)
+##                        self.request.RESPONSE.write(pdf_data)
+
                 else:
                     raise Exception, "XXX pub_pref %s" % self.pub_pref
 

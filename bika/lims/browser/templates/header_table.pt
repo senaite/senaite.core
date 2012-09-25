@@ -23,7 +23,7 @@
 	<table class="header_table" cellpadding="0" cellspacing="0">
 
 		<tal:row repeat="row header_rows">
-		<tr tal:attributes="class python: repeat['row'].even() and 'even' or 'odd'">
+		<tr>
 
 		<tal:item repeat="item row">
 			<th
@@ -34,7 +34,8 @@
 					tal:condition="python: item['allow_edit'] and item.get('required', False)"
 					class="fieldRequired">&nbsp;</span>
 			</th>
-			<td class="left">
+			<td class="left"
+				tal:attributes="style python:item['type'] == 'choices' and 'vertical-align:top' or '';">
 
 				<tal:view
 					condition="not:item/allow_edit"
@@ -67,8 +68,12 @@
 							id item/id;
 							value item/value;"/>
 					<!-- EDIT for choices -->
+		            <div style="width:130px; border:none;text-align:left;">
 					<select
-						style="font-size: 100%"
+						style="width:126px; position:absolute; z-index:+1;font-size: 100%"
+						onactivate="this.style.width='auto';"
+						onchange="this.blur();"
+						onblur="this.style.width='126px';"
 						tal:condition="python:item['type'] == 'choices'"
 						tal:attributes="
 							class python:item.get('class', '');
@@ -88,6 +93,7 @@
 							</option>
 						</tal:options>
 					</select>
+					</div>
 					<!-- EDIT for boolean -->
 					<input
 						style="font-size: 100%"

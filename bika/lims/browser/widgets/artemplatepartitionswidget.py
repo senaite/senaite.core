@@ -3,7 +3,7 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Registry import registerWidget, registerPropertyType
 from Products.Archetypes.Widget import TypesWidget
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from operator import itemgetter
@@ -24,7 +24,6 @@ class ARTemplatePartitionsView(BikaListingView):
         self.show_select_all_checkbox = False
         self.show_column_toggles = False
         self.show_select_column = False
-        self.setoddeven = False
         self.pagesize = 1000
         self.allow_edit = allow_edit
         self.form_id = "partitions"

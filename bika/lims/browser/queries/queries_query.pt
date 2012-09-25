@@ -69,14 +69,10 @@
 
 <legend i18n:translate="">Selection criteria</legend>
 <br/>
-<br/>
-<br/>
-<b> Under construction </b>
-<!--
-<metal:block use-macro="context/selection_macros/macros/client"/>
+<tal:select content="structure context/@@selection_macros/select_client"/>
 
-<metal:block use-macro="context/selection_macros/macros/contact"/>
-<metal:block use-macro="context/selection_macros/macros/profiles"/>
+<tal:select content="structure context/@@selection_macros/select_contact"/>
+<tal:select content="structure context/@@selection_macros/select_profile"/>
 
 <div class="field">
     <label i18n:translate="">Request ID</label><br/>
@@ -98,44 +94,52 @@
     <input name="ClientSampleID:ignore_empty" id="ClientSampleID">
 </div>
 
-<metal:block use-macro="context/selection_macros/macros/sampletype"/>
-<metal:block use-macro="context/selection_macros/macros/samplepoint"/>
+<tal:select content="structure context/@@selection_macros/select_sampletype"/>
+<tal:select content="structure context/@@selection_macros/select_samplepoint"/>
 
 <tal:sampled
-    tal:define="date_id string:DateSampled;
-                date_label string:Sampled">
-<metal:date use-macro="context/selection_macros/macros/date"/>
+    content="structure python:view.selection_macros.select_daterange(
+                        field_id='DateSampled',
+                        field_title='Sampled')">
 </tal:sampled>
 
 <tal:requested
-    tal:define="date_id string:DateRequested;
-                date_label string:Requested">
-<metal:date use-macro="context/selection_macros/macros/date"/>
+    content="structure python:view.selection_macros.select_daterange(
+                        field_id='DateRequested',
+                        field_title='Requested')">
 </tal:requested>
 
 <tal:received
-    tal:define="date_id string:DateReceived;
-                date_label string:Received">
-<metal:date use-macro="context/selection_macros/macros/date"/>
+    content="structure python:view.selection_macros.select_daterange(
+                        field_id='DateReceived',
+                        field_title='Received')">
 </tal:received>
 
 <tal:published
-    tal:define="date_id string:DatePublished;
-                date_label string:Published">
-<metal:date use-macro="context/selection_macros/macros/date"/>
+    content="structure python:view.selection_macros.select_daterange(
+                        field_id='DatePublished',
+                        field_title='Published')">
 </tal:published>
 
-<metal:block use-macro="context/selection_macros/macros/category"/>
+<tal:select content="structure context/@@selection_macros/select_analysiscategory"/>
 
-<metal:block use-macro="context/selection_macros/macros/analysisservice"/>
+<tal:select content="structure context/@@selection_macros/select_analysisservice"/>
 
-<metal:block use-macro="context/selection_macros/macros/submittedby"/>
+<tal:select content="structure context/@@selection_macros/select_analyst"/>
 
-<metal:date use-macro="context/selection_macros/macros/review_state"/>
+<tal:x content="structure python:view.selection_macros.select_state(
+                           workflow_id='bika_analysis_workflow',
+                           field_id='bika_analysis_workflow',
+                           field_title='Analysis state')"/>
+<tal:x content="structure python:view.selection_macros.select_state(
+                           workflow_id='bika_cancellation_workflow',
+                           field_id='bika_cancellation_workflow',
+                           field_title='Cancellation state')"/>
+<tal:x content="structure python:view.selection_macros.select_state(
+                           workflow_id='bika_worksheetanalysis_workflow',
+                           field_id='bika_worksheetanalysis_workflow',
+                           field_title='Worksheet state')"/>
 
-<metal:date use-macro="context/selection_macros/macros/cancellation_state"/>
-
-<metal:date use-macro="context/selection_macros/macros/ws_review_state"/>
 </fieldset>
     <input tabindex=""
         class="searchButton"
@@ -144,7 +148,6 @@
         value="Query"
         i18n:attributes="value"
         />
--->
 </form>
 </div>
 

@@ -127,6 +127,11 @@ schema = BikaSchema.copy() + Schema((
     ReferenceResultsField('ReferenceResults',
         schemata = 'Reference Results',
         required = 1,
+        subfield_validators = {
+                    'result':'referencevalues_validator',
+                    'min':'referencevalues_validator',
+                    'max':'referencevalues_validator',
+                    'error':'referencevalues_validator'},        
         widget = ReferenceResultsWidget(
             label = _("Expected Results"),
         ),

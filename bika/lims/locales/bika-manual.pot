@@ -17,21 +17,6 @@ msgstr ""
 msgid "Default"
 msgstr ""
 
-#. The variables used here are the same as used in the strftime formating.
-#. Supported are ${A}, ${a}, ${B}, ${b}, ${H}, ${I}, ${m}, ${d}, ${M}, ${p},
-#. ${S}, ${Y}, ${y}, ${Z}, each used as variable in the msgstr.
-#. For example: "${A} ${d}. ${B} ${Y}, ${H}:${M} ${Z}"
-#. In english speaking countries default is:
-#. ${b} ${d}, ${Y} ${I}:${M} ${p}
-msgid "date_format_long"
-msgstr ""
-
-msgid "date_format_short"
-msgstr ""
-
-msgid "time_format"
-msgstr ""
-
 # ../browser/js/analysisrequest.js
 msgid "Service dependencies"
 msgstr ""
@@ -54,7 +39,4 @@ msgid "Slot"
 msgstr ""
 
 msgid "Parent"
-msgstr ""
-
-msgid "Type"
 msgstr ""

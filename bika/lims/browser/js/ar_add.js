@@ -54,6 +54,7 @@ function changeReportDryMatter(){
 	column = $(this).attr('column');
 	if ($(this).attr("checked")){
 		// only play with service checkboxes when enabling dry matter
+		unsetAnalysisProfile(column);
 		jQuery.ajaxSetup({async:false});
 		toggleCat(poc, cat, $(this).attr("column"), selectedservices=[uid], force_expand=true);
 		jQuery.ajaxSetup({async:true});
@@ -70,18 +71,21 @@ function deleteSampleButton(){
 	$("#ar_"+column+"_SampleID_button").val($("#ar_"+column+"_SampleID_default").val());
 	$("#ar_"+column+"_SampleID").val('');
 	$("#ar_"+column+"_ClientReference").val('').removeAttr("readonly");
-	// XXX Datepicker format is not i18n aware (dd Oct 2011)
 	$("#ar_"+column+"_SamplingDate")
-		.datepicker({'dateFormat': 'dd M yy', showAnim: ''})
+		.datepicker({'dateFormat': window.jsi18n_plonelocales('date_format_short_datepicker'), showAnim: ''})
 		.click(function(){$(this).attr('value', '');})
 		.attr('value', '');
 	$("#ar_"+column+"_ClientSampleID").val('').removeAttr("readonly");
 	$("#ar_"+column+"_SamplePoint").val('').removeAttr("readonly");
 	$("#ar_"+column+"_SampleType").val('').removeAttr("readonly");
+	$("#ar_"+column+"_SamplingDeviation").val('').removeAttr("disabled");
 	$("#ar_"+column+"_Composite").attr('checked', false).removeAttr("disabled");
+	$("#ar_"+column+"_AdHoc").attr('checked', false).removeAttr("disabled");
+	$("#ar_"+column+"_DefaultContainerType").removeAttr("disabled");
 	$("#deleteSampleButton_" + column).toggle(false);
 	// uncheck and enable all visible service checkboxes
 	$("input[id*='_"+column+"_']").filter(".cb").removeAttr('disabled').attr('checked', false);
+	uncheck_partnrs(column);
 	recalc_prices();
 }
 
@@ -115,12 +119,31 @@ function copyButton(){
 		}
 		$("[id*=_ARTemplate]").change();
 	}
-	else if ($(this).hasClass('ARProfileCopyButton')){ // Profile selector
-		first_val = $('#ar_0_ARProfile').val();
+	else if ($(this).hasClass('AnalysisProfileCopyButton')){ // Profile selector
+		first_val = $('#ar_0_AnalysisProfile').val();
 		for (col=1; col<parseInt($("#col_count").val()); col++) {
-			$("#ar_"+col+"_ARProfile").val(first_val);
+			$("#ar_"+col+"_AnalysisProfile").val(first_val);
 		}
-		$("[id*=_ARProfile]").change();
+		$("[id*=_AnalysisProfile]").change();
+	}
+	else if ($(this).hasClass('SampleTypeCopyButton')){ // SampleType - Must set partitions on copy
+		first_val = $('#ar_0_SampleType').val();
+		for (col=1; col<parseInt($("#col_count").val()); col++) {
+			$("#ar_"+col+"_SampleType").val(first_val);
+			$("#ar_"+col+"_SampleType").change();
+		}
+	}
+	else if ($(this).hasClass('SamplingDeviationCopyButton')){ // Sampling Deviation
+		first_val = $('#ar_0_SamplingDeviation').val();
+		for (col=1; col<parseInt($("#col_count").val()); col++) {
+			$("#ar_"+col+"_SamplingDeviation").val(first_val);
+		}
+	}
+	else if ($(this).hasClass('DefaultContainerTypeCopyButton')){ // Default Container Type
+		first_val = $('#ar_0_DefaultContainerType').val();
+		for (col=1; col<parseInt($("#col_count").val()); col++) {
+			$("#ar_"+col+"_DefaultContainerType").val(first_val);
+		}
 	}
 	else if ($(this).parent().attr('class') == 'service'){ // Analysis Service checkbox
 		first_val = $('input[column="0"]').filter('#'+this.id).attr("checked");
@@ -512,9 +535,9 @@ function unsetARTemplate(column){
 	}
 }
 
-function unsetARProfile(column){
-	if($("#ar_"+column+"_ARProfile").val() != ""){
-		$("#ar_"+column+"_ARProfile").val("");
+function unsetAnalysisProfile(column){
+	if($("#ar_"+column+"_AnalysisProfile").val() != ""){
+		$("#ar_"+column+"_AnalysisProfile").val("");
 	}
 }
 
@@ -535,6 +558,9 @@ function setARTemplate(){
 	template_data = $.parseJSON($("#template_data").val())[templateUID];
 	analyses = template_data['Analyses'];
 
+	// always remove DryMatter - the Template can put it back.
+	$("#ar_"+column+"_ReportDryMatter").attr("checked", false);
+
 	// set our template fields
 	// SampleType and SamplePoint are strings - the item's Title.
 	unsetAnalyses(column);
@@ -544,13 +570,10 @@ function setARTemplate(){
 	$('#ar_'+column+'_SamplePoint').val(sp);
 	dm = template_data['ReportDryMatter'];
 	$('#ar_'+column+'_ReportDryMatter').attr('checked', dm);
-	$('#ar_'+column+'_ARProfile').val(template_data['ARProfile']);
+	$('#ar_'+column+'_AnalysisProfile').val(template_data['AnalysisProfile']);
 
 	// Apply Template analyses/parts
 	parts = []; // #parts[column] will contain this dictionary
-	for(pi=0;pi<template_data['Partitions'].length;pi++){
-		parts.push({});
-	}
 	for(pi=0;pi<template_data['Partitions'].length;pi++){
 		P = template_data['Partitions'][pi];
 		partnr = parseInt(P['part_id'].split("-")[1], 10);
@@ -558,8 +581,12 @@ function setARTemplate(){
 		if(cu.length > 1 && cu[0] != ""){ cu = [cu]; }
 		else { cu = []; }
 		pu = P['preservation_uid'];
-		if(pu.length > 1 && pu[0] != ""){ pu = [pu]; }
-		else { pu = []; }
+		if(pu != null && pu != undefined && pu.length > 1 && pu[0] != ""){
+			pu = [pu];
+		}
+		else {
+			pu = [];
+		}
 		parts[partnr-1] = {'container':cu,
 							'preservation':pu,
 							'services':[]}
@@ -613,13 +640,16 @@ function setARTemplate(){
 	recalc_prices(column);
 }
 
-function setARProfile(column){
-	profileUID = $("#ar_"+column+"_ARProfile").val();
+function setAnalysisProfile(column){
+	profileUID = $("#ar_"+column+"_AnalysisProfile").val();
 	if(profileUID == "") return;
 	unsetAnalyses(column);
 
 	profile_data = $.parseJSON($("#profile_data").val())[profileUID];
 	profile_services = profile_data['Services'];
+
+	// always remove DryMatter - the Template can put it back.
+	$("#ar_"+column+"_ReportDryMatter").attr("checked", false);
 
 	$.each(profile_services, function(poc_categoryUID, selectedservices){
 		if( $("tbody[class*='expanded']").filter("#"+poc_categoryUID).length > 0 ){
@@ -643,7 +673,7 @@ function setARProfile(column){
 function service_checkbox_change(){
 	var column = $(this).attr("column");
 	var element = $(this);
-	unsetARProfile(column);
+	unsetAnalysisProfile(column);
 	unsetARTemplate(column);
 
 	// Unselecting Dry Matter Service unsets 'Report Dry Matter'
@@ -715,6 +745,12 @@ function setupAutoCompleters(){
 				st = window.bika_utils.data.st_uids[title];
 				if (st['samplepoints'].length == 1) {
 					$("#ar_"+col+"_SamplePoint").val(st['samplepoints'][0]);
+				}
+				ct = st['containertype'];
+				disabled = $(e).attr('disabled');
+				if (ct != undefined && ct != null
+				    && (disabled == null || disabled == undefined)) {
+					$("#ar_"+col+"_DefaultContainerType").val(ct);
 				}
 				match = true;
 			}
@@ -809,14 +845,13 @@ $(document).ready(function(){
 	// clear date widget values if the page is reloaded.
 	e = $('input[id$="_SamplingDate"]');
 	if(e.length > 0){
-		// XXX Datepicker format is not i18n aware (dd Oct 2011)
 		if($($(e).parents('form').children('[name=came_from]')).val() == 'add'){
 			$(e)
-			.datepicker({'dateFormat': 'dd M yy', showAnim: ''})
+			.datepicker({'dateFormat': window.jsi18n_plonelocales('date_format_short_datepicker'), showAnim: ''})
 			.click(function(){$(this).attr('value', '');})
 		} else {
 			$(e)
-			.datepicker({'dateFormat': 'dd M yy', showAnim: ''})
+			.datepicker({'dateFormat': window.jsi18n_plonelocales('date_format_short_datepicker'), showAnim: ''})
 		}
 	}
 
@@ -824,10 +859,10 @@ $(document).ready(function(){
 
 	$("select[class='ARTemplate']").change(setARTemplate);
 
-	$("select[class='ARProfile']").change(function(){
+	$("select[class='AnalysisProfile']").change(function(){
 		column = $(this).attr("column");
 		unsetARTemplate(column);
-		setARProfile(column);
+		setAnalysisProfile(column);
 		calculate_parts(column);
 	});
 
@@ -844,7 +879,7 @@ $(document).ready(function(){
 
 	$(".deleteSampleButton").click(deleteSampleButton);
 
-	$(".ReportDryMatter").change(function(){changeReportDryMatter()});
+	$(".ReportDryMatter").change(changeReportDryMatter);
 
 	// AR Add/Edit ajax form submits
 	ar_edit_form = $('#analysisrequest_edit_form');
@@ -899,6 +934,7 @@ $(document).ready(function(){
 
 	// these go here so that popup windows can access them in our context
 	window.recalc_prices = recalc_prices;
+	window.calculate_parts = calculate_parts;
 	window.toggleCat = toggleCat;
 
 });

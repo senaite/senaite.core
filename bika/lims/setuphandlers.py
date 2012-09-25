@@ -40,6 +40,7 @@ class BikaGenerator:
                        'invoices',
                        'pricelists',
                        'bika_setup',
+                       'methods',
                        'analysisrequests',
                        'referencesamples',
                        'samples',
@@ -61,10 +62,12 @@ class BikaGenerator:
                        'bika_preservations',
                        'bika_instruments',
                        'bika_analysisspecs',
-                       'bika_arprofiles',
+                       'bika_analysisprofiles',
                        'bika_artemplates',
                        'bika_labcontacts',
                        'bika_labproducts',
+                       'bika_samplematrices',
+                       'bika_samplingdeviations',
                        'bika_samplepoints',
                        'bika_sampletypes',
                        'bika_referencedefinitions',
@@ -74,9 +77,6 @@ class BikaGenerator:
             obj = bika_setup._getOb(obj_id)
             obj.unmarkCreationFlag()
             obj.reindexObject()
-        obj = portal._getOb('bika_methods')
-        obj.unmarkCreationFlag()
-        obj.reindexObject()
 
         lab = bika_setup.laboratory
         lab.edit(title = _('Laboratory'))
@@ -153,8 +153,9 @@ class BikaGenerator:
 
         # Root permissions
         mp = portal.manage_permission
-        mp(AddARProfile, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
+        mp(AddAnalysisProfile, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddARTemplate, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
+        mp(AddSamplePoint, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddAnalysis, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
         mp(AddAnalysisRequest, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
         mp(AddClient, ['Manager', 'Owner', 'LabManager'], 1)
@@ -170,9 +171,9 @@ class BikaGenerator:
         mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
         mp(permissions.ManageUsers, ['Manager', 'LabManager', ], 1)
 
-        mp(ApplyVersionControl, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
-        mp(SaveNewVersion, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
-        mp(AccessPreviousVersions, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
+        mp(ApplyVersionControl, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'Member'], 1)
+        mp(SaveNewVersion, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'Member'], 1)
+        mp(AccessPreviousVersions, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'Member'], 1)
 
         mp(ManageBika, ['Manager', 'LabManager'], 1)
         mp(ManageClients, ['Manager', 'LabManager', 'LabClerk'], 1)
@@ -211,7 +212,17 @@ class BikaGenerator:
         mp(EditFieldResults, ['Manager', 'LabManager', 'Sampler'], 1)
         mp(CancelAndReinstate, ['Manager', 'LabManager', 'Owner'], 1)
 
+        mp = portal.bika_setup.manage_permission
+        mp('Access contents information',  ['Contributor', 'Editor', 'Manager', 'Owner', 'Reader', 'Site Administrator', 'LabManager', 'Anonymous', 'Member'], 1)
+##        mp(ApplyVersionControl, ['Manager', 'LabManager', 'Member'], 1)
+##        mp(SaveNewVersion, ['Manager', 'LabManager', 'Member'], 1)
+##        mp(AccessPreviousVersions, ['Manager', 'LabManager', 'Member'], 1)
+
+
         # /clients folder permissions
+        # Member role must have view permission on /clients, to see the list.
+        # This means within a client, perms granted on Member role are available
+        # in clients not our own, allowing sideways entry if we're not careful.
         mp = portal.clients.manage_permission
         mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver'], 0)
         mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst', 'Sampler', 'Preserver'], 0)
@@ -290,10 +301,15 @@ class BikaGenerator:
         mp(permissions.View, ['Manager', 'LabManager'], 0)
         portal.pricelists.reindexObject()
 
-        mp = portal.bika_setup.manage_permission
-        mp(ApplyVersionControl, ['Manager', 'LabManager', 'Member'], 1)
-        mp(SaveNewVersion, ['Manager', 'LabManager', 'Member'], 1)
-        mp(AccessPreviousVersions, ['Manager', 'LabManager', 'Member'], 1)
+        # /methods folder permissions
+        mp = portal.methods.manage_permission
+        mp(CancelAndReinstate, ['Manager', 'LabManager'], 0)
+        mp(permissions.ListFolderContents, ['Member'], 1)
+        mp(permissions.AddPortalContent, ['Manager', 'LabManager'], 0)
+        mp(permissions.DeleteObjects, ['Manager', 'LabManager'], 0)
+        mp(permissions.View, ['Manager', 'LabManager', 'Member'], 0)
+        portal.methods.reindexObject()
+
 
     def setupVersioning(self, portal):
         portal_repository = getToolByName(portal, 'portal_repository')
@@ -364,8 +380,11 @@ class BikaGenerator:
         addIndex(bac, 'worksheetanalysis_review_state', 'FieldIndex')
         addIndex(bac, 'cancellation_state', 'FieldIndex')
 
-        addIndex(bac, 'getDateAnalysisPublished', 'DateIndex')
         addIndex(bac, 'getDueDate', 'DateIndex')
+        addIndex(bac, 'getDateSampled', 'DateIndex')
+        addIndex(bac, 'getDateReceived', 'DateIndex')
+        addIndex(bac, 'getResultCaptureDate', 'DateIndex')
+        addIndex(bac, 'getDateAnalysisPublished', 'DateIndex')
 
         addIndex(bac, 'getClientUID', 'FieldIndex')
         addIndex(bac, 'getAnalyst', 'FieldIndex')
@@ -503,13 +522,15 @@ class BikaGenerator:
         at.setCatalogsByType('AnalysisCategory', ['bika_setup_catalog', ])
         at.setCatalogsByType('AnalysisService', ['bika_setup_catalog', ])
         at.setCatalogsByType('AnalysisSpec', ['bika_setup_catalog', ])
+        at.setCatalogsByType('SampleMatrix', ['bika_setup_catalog', ])
         at.setCatalogsByType('SampleType', ['bika_setup_catalog', ])
         at.setCatalogsByType('SamplePoint', ['bika_setup_catalog', ])
+        at.setCatalogsByType('SamplingDeviation', ['bika_setup_catalog', ])
         at.setCatalogsByType('Instrument', ['bika_setup_catalog', ])
         at.setCatalogsByType('Method', ['bika_setup_catalog', ])
         at.setCatalogsByType('AttachmentType', ['bika_setup_catalog', ])
         at.setCatalogsByType('Calculation', ['bika_setup_catalog', ])
-        at.setCatalogsByType('ARProfile', ['bika_setup_catalog', ])
+        at.setCatalogsByType('AnalysisProfile', ['bika_setup_catalog', ])
         at.setCatalogsByType('ARTemplate', ['bika_setup_catalog', ])
         at.setCatalogsByType('LabProduct', ['bika_setup_catalog', ])
         at.setCatalogsByType('LabContact', ['bika_setup_catalog', ])
@@ -669,4 +690,7 @@ def setupVarious(context):
         pass
     gen.setupCatalogs(site)
 
-
+    # Plone's jQuery gets clobbered when jsregistry is loaded.
+    setup = site.portal_setup
+    setup.runImportStepFromProfile('profile-plone.app.jquery:default', 'jsregistry')
+    setup.runImportStepFromProfile('profile-plone.app.jquerytools:default', 'jsregistry')

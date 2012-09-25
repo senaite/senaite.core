@@ -93,9 +93,9 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisRequestInvoice',
     ),
     ReferenceField('Profile',
-        allowed_types = ('ARProfile',),
+        allowed_types = ('AnalysisProfile',),
         referenceClass = HoldingReference,
-        relationship = 'AnalysisRequestARProfile',
+        relationship = 'AnalysisRequestAnalysisProfile',
     ),
     ReferenceField('Template',
         allowed_types = ('ARTemplate',),
@@ -327,7 +327,7 @@ class AnalysisRequest(BaseFolder):
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if review_state == 'published':
                 continue
-            if analysis.getDueDate() < now:
+            if analysis.getDueDate() < analysis.getResultCaptureDate():
                 return True
         return False
 

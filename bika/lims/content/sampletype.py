@@ -4,7 +4,7 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
 from bika.lims.config import PROJECTNAME
 from bika.lims.browser.widgets import DurationWidget
@@ -14,6 +14,7 @@ from magnitude import mg, MagnitudeError
 from zope.interface import implements
 import json
 import plone
+import sys
 
 schema = BikaSchema.copy() + Schema((
     DurationField('RetentionPeriod',
@@ -32,6 +33,17 @@ schema = BikaSchema.copy() + Schema((
             description = _("Samples of this type should be treated as hazardous"),
         ),
     ),
+    ReferenceField('SampleMatrix',
+        required = 0,
+        allowed_types = ('SampleMatrix',),
+        vocabulary = 'SampleMatricesVocabulary',
+        relationship = 'SampleTypeSampleMatrix',
+        referenceClass = HoldingReference,
+        widget = ReferenceWidget(
+            checkbox_bound = 1,
+            label = _('Sample Matrix'),
+        ),
+    ),
     StringField('Prefix',
         required = True,
         widget = StringWidget(
@@ -43,6 +55,20 @@ schema = BikaSchema.copy() + Schema((
         widget = StringWidget(
             label = _("Minimum Volume"),
             description = _("The minimum sample volume required for analysis eg. '10 ml' or '1 kg'."),
+        ),
+    ),
+    ReferenceField('ContainerType',
+        required = 0,
+        allowed_types = ('ContainerType',),
+        vocabulary = 'ContainerTypesVocabulary',
+        relationship = 'SampleTypeContainerType',
+        widget = ReferenceWidget(
+            checkbox_bound = 1,
+            label = _("Default Container Type"),
+            description = _("The default container type. New sample partitions "
+                            "are automatically assigned a container of this "
+                            "type, unless it has been specified in more details "
+                            "per analysis service"),
         ),
     ),
     ReferenceField('SamplePoints',
@@ -133,6 +159,14 @@ class SampleType(BaseContent, HistoryAwareMixin):
 
     def getSamplePoints(self, **kw):
         return self.Schema()['SamplePoints'].get(self)
+
+    def SampleMatricesVocabulary(self):
+        from bika.lims.content.samplematrix import SampleMatrices
+        return SampleMatrices(self, allow_blank=True)
+
+    def ContainerTypesVocabulary(self):
+        from bika.lims.content.containertype import ContainerTypes
+        return ContainerTypes(self, allow_blank=True)
 
 registerType(SampleType, PROJECTNAME)
 

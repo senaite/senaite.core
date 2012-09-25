@@ -4,7 +4,7 @@ from Products.Archetypes import atapi
 from Products.Archetypes.ArchetypeTool import registerType
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from plone.app.layout.globals.interfaces import IViewView
@@ -88,16 +88,40 @@ schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(SamplePoints, PROJECTNAME)
 
 class ajax_SamplePoints(BrowserView):
-    """ autocomplete data source for sample points field
-        return JSON data [string,string]
-        if "sampletype" is in the request, it's expected to be a title string
-        The objects returned will be filtered by the sampletype's SamplePoints.
-        if no items are found, all items are returned.
+    """ The autocomplete data source for sample point selection widgets.
+        Returns a JSON list of sample point titles.
 
-        If term is a one or two letters, return items that begin with them
-            If there aren't any, return items that contain them
+        Request parameters:
+
+        - sampletype: if specified, it's expected to be the title
+          of a SamplePoint object.  Optionally, the string 'Lab: ' might be
+          prepended, to distinguish between Lab and Client objects.
+
+        - term: the string which will be searched against all SamplePoint
+          titles.
+
+        - _authenticator: The plone.protect authenticator.
 
     """
+
+    def filter_list(self, items, searchterm):
+        if searchterm and len(searchterm) < 3:
+            # Items that start with A or AA
+            items = [s.getObject()
+                     for s in items
+                     if s.Title.lower().startswith(searchterm)]
+            if not items:
+                # or, items that contain A or AA
+                items = [s.getObject()
+                         for s in items
+                         if s.Title.lower().find(searchterm) > -1]
+        else:
+            # or, items that contain searchterm.
+            items = [s.getObject()
+                     for s in items
+                     if s.Title.lower().find(searchterm) > -1]
+        return items
+
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
@@ -105,31 +129,47 @@ class ajax_SamplePoints(BrowserView):
         items = []
         if not term:
             return items
+        # Strip "Lab: " from sample point title
+        term = term.replace("%s: " % _("Lab"), '')
         sampletype = self.request.get('sampletype', '')
         if sampletype and len(sampletype) > 1:
-            st = bsc(portal_type="SampleType",Title=sampletype)
+            st = bsc(portal_type = "SampleType",
+                     title = sampletype,
+                     inactive_state = 'active')
             if not st:
                 return json.dumps([])
             st = st[0].getObject()
-            items = st.getSamplePoints()
-        if not items:
-            items = bsc(portal_type = "SamplePoint", sort_on='sortable_title')
-            if term and len(term) < 3:
-                # Items that start with A or AA
-                items = [s.getObject()
-                         for s in items
-                         if s.Title.lower().startswith(term)]
-                if not items:
-                    # or, items that contain A or AA
-                    items = [s.getObject()
-                             for s in items
-                             if s.Title.lower().find(term) > -1]
-            else:
-                # or, items that contain term.
-                items = [s.getObject()
-                         for s in items
-                         if s.Title.lower().find(term) > -1]
+            items = [o.UID() for o in st.getSamplePoints()]
 
-        items = [callable(s.Title) and s.Title() or s.Title
-                 for s in items]
+        if not items:
+            client_items = lab_items = []
+
+            # User (client) sample points
+            if self.context.portal_type in ('Client', 'AnalysisRequest'):
+                if self.context.portal_type == 'Client':
+                    client_path = self.context.getPhysicalPath()
+                else:
+                    client_path = self.context.aq_parent.getPhysicalPath()
+                client_items = list(
+                    bsc(portal_type = "SamplePoint",
+                        path = {"query": "/".join(client_path), "level" : 0 },
+                        inactive_state = 'active',
+                        sort_on='sortable_title'))
+
+            # Global (lab) sample points
+            lab_path = self.context.bika_setup.bika_samplepoints.getPhysicalPath()
+            lab_items = list(
+                bsc(portal_type = "SamplePoint",
+                    path = {"query": "/".join(lab_path), "level" : 0 },
+                    inactive_state = 'active',
+                    sort_on='sortable_title'))
+
+            client_items = [callable(s.Title) and s.Title() or s.Title
+                     for s in self.filter_list(client_items, term)]
+            lab_items = [callable(s.Title) and s.Title() or s.Title
+                     for s in self.filter_list(lab_items, term)]
+            lab_items = ["%s: %s" % (_("Lab"), i) for i in lab_items]
+
+            items = client_items + lab_items
+
         return json.dumps(items)

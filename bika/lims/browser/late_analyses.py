@@ -4,7 +4,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.publish import Publish
-from bika.lims.utils import isActive, TimeOrDate
+from bika.lims.utils import isActive
 from zope.component import getMultiAdapter
 import plone
 
@@ -83,8 +83,8 @@ class LateAnalysesView(BikaListingView):
             items[x]['Contact'] = ''
             items[x]['replace']['Contact'] = "<a href='mailto:%s'>%s</a>" % \
                  (contact.getEmailAddress(), contact.getFullname())
-            items[x]['DateReceived'] = TimeOrDate(self.context, sample.getDateReceived())
-            items[x]['DueDate'] = TimeOrDate(self.context, obj.getDueDate())
+            items[x]['DateReceived'] = self.ulocalized_time(sample.getDateReceived())
+            items[x]['DueDate'] = self.ulocalized_time(obj.getDueDate())
 
             late = DateTime() - obj.getDueDate()
             days = int(late / 1)

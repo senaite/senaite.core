@@ -6,24 +6,22 @@
 @page {
     size: A4;
     margin: 1cm;
-    margin-bottom: 2cm;
-@frame footer {
-    -pdf-frame-content: footerContent;
-    bottom: 1cm;
-    margin-left: 1cm;
-    margin-right: 1cm;
-    height: 1cm;
-}
+    @frame header {
+        -pdf-frame-content: headerContent;
+        top:0cm;
+        margin-left: 1cm;
+        margin-right: 1cm;
+    }
+    @frame footer {
+        -pdf-frame-content: footerContent;
+        bottom: 1cm;
+        height: 1cm;
+        margin-left: 1cm;
+        margin-right: 1cm;
+        margin-top: 1cm;
+    }
 
-@frame header {
-    -pdf-frame-content: headerContent;
-    top:0cm;
-    margin-left: 1cm;
-    margin-right: 1cm;
 }
-}
-.testgreen {
-    color: Black}
 
 .out_of_range {
     color: Red
@@ -31,10 +29,11 @@
 .number {
     text-align: right
 }
-.category {
+.category_heading {
     font-size: 110%;
     font-weight:bold;
     border: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
+    background:#eee;
 }
 .total {
     font-size: 120%;
@@ -44,23 +43,37 @@
 
 
 div.bika_report {
-	font-family: &dtml-fontFamily;;
+    font-family: &dtml-fontFamily;;
     background-color: &dtml-backgroundColor;;
-	color: &dtml-fontColor;;
+    color: &dtml-fontColor;;
 }
 
 .bika-report-parms {
     font-size: 110%;
-	margin-bottom: 0 !important;
+    margin-bottom: 0 !important;
 }
 
 .bika-report-parms td, th {
-	padding:5px 10px;
+    padding:1px 10px;
+}
+
+h1,h2,h3 {
+-pdf-outline: false !important;
+}
+
+h3.bika-report-table-header {
+  -pdf-outline: true !important;
+  -pdf-level: 0!important;
+  font-size:110%;
+}
+.h3{
+  font-weight:bold;
+  font-size:120%;
 }
 
 .bika-report-table {
     font-size: &dtml-fontBaseSize;;
-	margin-bottom: 0 !important;
+    margin-bottom: 15px !important;
 }
 
 .bika-report-table a {
@@ -68,40 +81,25 @@ div.bika_report {
 }
 
 .bika-report-table tr {
-	line-height: 2em; /*2.1em;*/
-    border-left: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
-    border-bottom: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
+    padding:1px 10px;
 }
-
-.bika-report-table tr.odd {
-	background-color: &dtml-oddRowBackgroundColor;;
-}
-
-.bika-report-table tr.even {
-	background-color: &dtml-evenRowBackgroundColor;;
-}
-
 
 .bika-report-table th {
-	color: &dtml-tableHeaderTextColor;;
-	padding:1px 4px 1px 4px;
-    font-size: &dtml-fontBaseSize; !important;
-	text-align:center;
+    color: &dtml-tableHeaderTextColor;;
+    padding:0px 4px;
+    font-size: 55% !important;
+    text-align:left;
     vertical-align: middle !important;
-    border-top: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
-/* <dtml-if tableVerticalGrid> */ border-right: 1px solid &dtml-borderColor;;
-/* <dtml-else> */ border-right: none; /* </dtml-if> */
+    border-bottom: 1px solid #ccc;
 }
 
 .bika-report-table td {
     font-size: &dtml-fontBaseSize; !important;
+    font-size: 55% !important;
     vertical-align: middle !important;
-	padding:1px 4px 1px 4px;
-/* <dtml-if tableHorizontalGrid> */	border-right: 1px solid &dtml-borderColor;;
-/* <dtml-else> */	border-right: none; /* </dtml-if> */
-}
-
-.bika-report-table td {
+    text-align:left;
+    padding:1px 4px;
+    border-bottom: 1px solid #ddd;
 }
 
 .bika-report-table th.column,
@@ -113,7 +111,5 @@ div.bika_report {
     white-space:nowrap !important;
 }
 
-
 /* </dtml-with> */
-
 

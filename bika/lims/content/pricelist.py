@@ -4,7 +4,7 @@ from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from Products.Archetypes.public import *
 from Products.CMFCore import permissions
 from bika.lims import bikaMessageFactory as _
-from bika.lims.config import ManagePricelists, ManageBika, PRICELIST_TYPES, CLIENT_TYPES, PROJECTNAME
+from bika.lims.config import ManagePricelists, ManageBika, PRICELIST_TYPES, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from zope.interface import implements
 import sys
@@ -17,14 +17,13 @@ schema = BikaSchema.copy() + Schema((
             label = _("Pricelist for"),
         ),
     ),
-    StringField('ClientType',
-        required = 1,
-        vocabulary = CLIENT_TYPES,
+    BooleanField('BulkDiscount',
+        default = False,
         widget = SelectionWidget(
-            label = _("Pricing model"),
+            label = _("Bulk discount applies"),
         ),
     ),
-    FixedPointField('Discount',
+    FixedPointField('BulkPrice',
         widget = DecimalWidget(
             label = _("Discount %"),
             description = _("Enter discount percentage value"),
@@ -120,10 +119,10 @@ class Pricelist(BaseFolder):
                 itemAccredited = obj.getAccredited()
             if self.getType() == 'AnalysisService':
                 cat = obj.getCategoryTitle()
-                if self.getClientType() == 'corporate':
-                    if obj.getCorporatePrice():
-                        price = obj.getCorporatePrice()
-                        totalprice = obj.getTotalCorporatePrice()
+                if self.getBulkDiscount():
+                    if obj.getBulkDiscount():
+                        price = obj.getBulkPrice()
+                        totalprice = obj.getTotalBulkPrice()
                         vat = totalprice - price
                     else:
                         price = None
@@ -149,9 +148,9 @@ class Pricelist(BaseFolder):
                     totalprice = None
                     vat = None
 
-            if self.getDiscount():
-                price = price * (100.0 - self.getDiscount()) / 100.0
-                totalprice = totalprice * (100 - self.getDiscount()) / 100.0
+            if self.getBulkPrice():
+                price = price * (100.0 - self.getBulkPrice()) / 100.0
+                totalprice = totalprice * (100 - self.getBulkPrice()) / 100.0
                 vat = totalprice - price
 
             item.edit(

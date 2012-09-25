@@ -1,7 +1,7 @@
 from App.Common import package_home
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims import PMF
@@ -86,6 +86,7 @@ class LoadSetupData(BrowserView):
         self.fix_client_contact_ccs()
         self.instruments = {}
         self.load_instruments(sheets['Instruments'])
+        self.load_sample_matrices(sheets['Sample Matrices'])
         self.load_sample_points(sheets['Sample Points'])
         self.load_sample_types(sheets['Sample Types'])
         self.cats = {}
@@ -134,8 +135,10 @@ class LoadSetupData(BrowserView):
         self.load_reference_supplier_contacts(sheets['Reference Supplier Contacts'])
         self.load_attachment_types(sheets['Attachment Types'])
         self.load_lab_products(sheets['Lab Products'])
+        self.load_sampling_deviations(sheets['Sampling Deviations'])
         self.load_worksheet_templates(sheets['Worksheet Templates'])
         self.load_reference_manufacturers(sheets['Reference Manufacturers'])
+        self.load_bika_setup(sheets['Setup'])
 
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         bsc.clearFindAndRebuild()
@@ -144,17 +147,39 @@ class LoadSetupData(BrowserView):
         self.plone_utils.addPortalMessage(message)
         self.request.RESPONSE.redirect(portal.absolute_url())
 
-    def load_images(self, filename):
-        #archive = ZipFile(filename, 'r', ZIP_DEFLATED)
-        #self.images = {}
-        #for zipinfo in archive.filelist:
-        #    if zipinfo.filename.lower().endswith('.xml'):
-        #        xml = XML(archive.read(zipinfo.filename))
-        #for xmlfile in archive/xl/drawings/*.xml:
-        #    drawing = xml.etree.ElementTree.XML(xmlfile.read())
-        #drawings = xml.etree.ElementTree.XML
-        pass
-
+    def load_bika_setup(self,sheet):
+        nr_rows = sheet.get_highest_row()
+##        self.request.response.write("<input type='hidden' id='load_section' value='BikaSetup' max='%s'/>"%(nr_rows))
+##        self.request.response.flush()
+        values = {}
+        for r in range(nr_rows):
+            values[sheet.cell(row=r, column=0).value] = \
+                sheet.cell(row=r, column=2).value
+        self.context.bika_setup.edit(
+            PasswordLifetime = int(values['PasswordLifetime']),
+            AutoLogOff = int(values['AutoLogOff']),
+            Currency = values['Currency'],
+            MemberDiscount = str(float(values['MemberDiscount'])),
+            VAT = str(float(values['VAT'])),
+            MinimumResults = int(values['MinimumResults']),
+            BatchEmail = int(values['BatchEmail']),
+##            BatchFax = int(values['BatchFax']),
+##            SMSGatewayAddress = values['SMSGatewayAddress'],
+            SamplingWorkflowEnabled = values['SamplingWorkflowEnabled'],
+            CategoriseAnalysisServices = values['CategoriseAnalysisServices'],
+            DryMatterService = self.services[values['DryMatterService']],
+            ARImportOption = values['ARImportOption'],
+            ARAttachmentOption = values['ARAttachmentOption'],
+            AnalysisAttachmentOption = values['AnalysisAttachmentOption'],
+            DefaultSampleLifetime = eval(values['DefaultSampleLifetime']),
+            AutoPrintLabels = values['AutoPrintLabels'],
+            AutoLabelSize = values['AutoLabelSize'],
+            YearInPrefix = values['YearInPrefix'],
+            SampleIDPadding = int(values['SampleIDPadding']),
+            ARIDPadding = int(values['ARIDPadding']),
+            ExternalIDServer = values['ExternalIDServer'],
+            IDServerURL = values['IDServerURL'],
+        )
 
     def load_containertypes(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -500,9 +525,20 @@ class LoadSetupData(BrowserView):
 ##        self.request.response.flush()
         rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
         fields = rows[1]
-        folder = self.context.bika_setup.bika_samplepoints
+        setup_folder = self.context.bika_setup.bika_samplepoints
         for row in rows[3:]:
             row = dict(zip(fields, row))
+
+            if row['_Client_Name']:
+                client_name = unicode(row['_Client_Name'])
+                client = self.portal_catalog(portal_type = "Client",
+                                             Title = client_name)
+                if len(client) == 0:
+                    raise IndexError("Client invalid: '%s'" % client_name)
+                folder = client[0].getObject()
+            else:
+                folder = setup_folder
+
             _id = folder.invokeFactory('SamplePoint', id = 'tmp')
             obj = folder[_id]
             latitude = {'degrees': row['lat deg'],
@@ -545,6 +581,40 @@ class LoadSetupData(BrowserView):
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
 
+    def load_sampling_deviations(self, sheet):
+        nr_rows = sheet.get_highest_row()
+        nr_cols = sheet.get_highest_column()
+##        self.request.response.write("<input type='hidden' id='load_section' value='Sampling Deviations' max='%s'/>"%(nr_rows-3))
+##        self.request.response.flush()
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
+        fields = rows[1]
+        folder = self.context.bika_setup.bika_samplingdeviations
+        for row in rows[3:]:
+            row = dict(zip(fields, row))
+            _id = folder.invokeFactory('SamplingDeviation', id = 'tmp')
+            obj = folder[_id]
+            obj.edit(title = unicode(row['title']),
+                     description = unicode(row['description']))
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
+
+    def load_sample_matrices(self, sheet):
+        nr_rows = sheet.get_highest_row()
+        nr_cols = sheet.get_highest_column()
+##        self.request.response.write("<input type='hidden' id='load_section' value='Sample Matrices' max='%s'/>"%(nr_rows-3))
+##        self.request.response.flush()
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
+        fields = rows[1]
+        folder = self.context.bika_setup.bika_samplematrices
+        for row in rows[3:]:
+            row = dict(zip(fields, row))
+            _id = folder.invokeFactory('SampleMatrix', id = 'tmp')
+            obj = folder[_id]
+            obj.edit(title = unicode(row['title']),
+                     description = unicode(row['description']))
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
+
     def load_analysis_categories(self, sheet):
         nr_rows = sheet.get_highest_row()
         nr_cols = sheet.get_highest_column()
@@ -571,7 +641,7 @@ class LoadSetupData(BrowserView):
 ##        self.request.response.flush()
         rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
         fields = rows[1]
-        folder = self.context.bika_methods
+        folder = self.context.methods
         self.methods = {}
         for row in rows[3:]:
             row = dict(zip(fields, row))
@@ -625,7 +695,7 @@ class LoadSetupData(BrowserView):
                 Unit = row['Unit'] and unicode(row['Unit']) or None,
                 Category = self.cats[unicode(row['Category'])].UID(),
                 Price = "%02f" % float(row['Price']),
-                CorporatePrice = "%02f" % float(row['BulkPrice']),
+                BulkPrice = "%02f" % float(row['BulkPrice']),
                 VAT = "%02f" % float(row['VAT']),
                 Precision = unicode(row['Precision']),
                 Accredited = row['Accredited'] and True or False,
@@ -744,10 +814,10 @@ class LoadSetupData(BrowserView):
 ##        self.request.response.flush()
         rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
         fields = rows[1]
-        folder = self.context.bika_setup.bika_arprofiles
+        folder = self.context.bika_setup.bika_analysisprofiles
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            _id = folder.invokeFactory('ARProfile', id = 'tmp')
+            _id = folder.invokeFactory('AnalysisProfile', id = 'tmp')
             obj = folder[_id]
             services = [d.strip() for d in unicode(row['Service']).split(",")]
             proxies = self.bsc(portal_type="AnalysisService",

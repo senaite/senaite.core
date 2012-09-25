@@ -82,7 +82,10 @@
                 <span
                     tal:define="date_sampled context/getDateSampled"
                     tal:condition="date_sampled"
-                    tal:content="python:view.TimeOrDate(context, date_sampled, long_format=1)"/>
+                    tal:content="python:view.ulocalized_time(
+						date_sampled,
+						long_format=None,
+						time_only=False)"/>
             </td>
         </tr>
 
@@ -92,7 +95,10 @@
                 <span
                     tal:define="date_received context/getDateReceived"
                     tal:condition="date_received"
-                    tal:content="python:view.TimeOrDate(context, date_received, long_format=1)"/>
+                    tal:content="python:view.ulocalized_time(
+						date_received,
+						long_format=None,
+						time_only=False)"/>
             </td>
         </tr>
 
@@ -102,7 +108,10 @@
                 <span
                     tal:define="date_opened context/getDateOpened"
                     tal:condition="date_opened"
-                    tal:content="python:view.TimeOrDate(context, date_opened, long_format=1)"/>
+                    tal:content="python:view.ulocalized_time(
+						date_opened,
+						long_format=None,
+						time_only=False)"/>
             </td>
         </tr>
 
@@ -112,7 +121,10 @@
                 <span
                     tal:define="expiry_date context/getExpiryDate"
                     tal:condition="expiry_date"
-                    tal:content="python:view.TimeOrDate(context, expiry_date, long_format=1)"/>
+                    tal:content="python:view.ulocalized_time(
+						expiry_date,
+						long_format=None,
+						time_only=False)"/>
             </td>
         </tr>
 

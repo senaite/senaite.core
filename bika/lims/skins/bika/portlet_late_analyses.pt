@@ -18,11 +18,8 @@
                     portal_type='Analysis',
                     getDueDate={'query': [now,], 'range': 'max'},
                     sort_on='getDateReceived',
-                    review_state=['assigned',
-                                  'sample_received',
-                                  'sample_due',
-                                  'to_be_verified',
-                                  'verified'],
+                    review_state=['sample_received',
+                                  'sample_due'],
                     cancellation_state='active');
                  results python:[p.getObject() for p in rs[:5]];"
      tal:condition="python:results">
@@ -30,7 +27,7 @@
     <dl class="portlet" id="portlet-late-analysis">
 
         <dt class="portletHeader portletLateAnalyses">
-        <img src="" tal:attributes="src string:++resource++bika.lims.images/late.png"/>
+        <img src="" tal:attributes="src string:${context/portal_url}/++resource++bika.lims.images/late.png"/>
         <span i18n:translate="">Late Analyses</span></dt>
 
         <tal:block repeat="o results">
@@ -40,7 +37,7 @@
                 tal:attributes="href python: sm.checkPermission('BIKA: Edit Results', o) and o.aq_parent.absolute_url() + '/manage_results' or o.aq_parent.absolute_url();
                                 title python: o.aq_parent.getId();">
                 <img src="" height="16" width="16"
-                        tal:attributes="src string:++resource++bika.lims.images/analysisservice.png"/>
+                        tal:attributes="src string:${context/portal_url}++resource++bika.lims.images/analysisservice.png"/>
                 <span tal:replace="o/Title|o/getId"/>
             </a>
 

@@ -14,15 +14,16 @@
  <property name="global_allow">False</property>
  <property name="filter_content_types">True</property>
  <property name="allowed_content_types">
+  <element value="ARImport"/>
+  <element value="ARTemplate"/>
+  <element value="AnalysisProfile"/>
   <element value="AnalysisRequest"/>
-  <element value="Sample"/>
+  <element value="AnalysisSpec"/>
   <element value="Attachment"/>
   <element value="Contact"/>
+  <element value="Sample"/>
+  <element value="SamplePoint"/>
   <element value="SupplyOrder"/>
-  <element value="ARImport"/>
-  <element value="ARProfile"/>
-  <element value="ARTemplate"/>
-  <element value="AnalysisSpec"/>
  </property>
  <property name="allow_discussion">False</property>
  <property name="immediate_view">base_edit</property>
@@ -63,6 +64,18 @@
   <permission value="BIKA: Manage Samples"/>
  </action>
 
+ <action title="SamplePoints"
+         action_id="samplepoints"
+         category="object"
+         condition_expr=""
+         icon_expr="string:${portal_url}/images/samplepoint.png"
+         link_target=""
+         url_expr="string:${object_url}/samplepoints"
+         i18n:attributes="title"
+         visible="True">
+  <permission value="BIKA: Manage Samples"/>
+ </action>
+
  <action title="Analysis Requests"
          action_id="view"
          category="object"
@@ -91,9 +104,9 @@
          action_id="profiles"
          category="object"
          condition_expr=""
-         icon_expr="string:${portal_url}/images/arprofile.png"
+         icon_expr="string:${portal_url}/images/analysisprofile.png"
          link_target=""
-         url_expr="string:${object_url}/arprofiles"
+         url_expr="string:${object_url}/analysisprofiles"
          i18n:attributes="title"
          visible="True">
   <permission value="BIKA: Manage Clients"/>

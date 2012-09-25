@@ -1,21 +1,24 @@
-from Acquisition import aq_inner
+from Products.CMFCore.utils import getToolByName
 from Testing.makerequest import makerequest
 from bika.lims.browser.load_setup_data import LoadSetupData
-from bika.lims.setuphandlers import setupVarious
-from plone.app.testing import *
+from plone.app.testing import IntegrationTesting, FunctionalTesting
+from plone.app.testing import PLONE_FIXTURE
+from plone.app.testing import PloneSandboxLayer
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import TEST_USER_NAME
+from plone.app.testing import login
+from plone.app.testing import setRoles
+from plone.testing import Layer
 from plone.testing import z2
-import DateTime
 import Products.ATExtensions
 import Products.PloneTestCase.setup
 import bika.lims
-import os
-import plone.app.iterate
 import collective.js.jqueryui
-import sys
+import plone.app.iterate
 
-class BikaLimsLayer(PloneSandboxLayer):
+class BikaLIMS(PloneSandboxLayer):
 
-    defaultBases = (PLONE_FIXTURE, )
+    defaultBases = (PLONE_FIXTURE,)
 
     def setUpZope(self, app, configurationContext):
         # Load ZCML
@@ -23,36 +26,38 @@ class BikaLimsLayer(PloneSandboxLayer):
         self.loadZCML(package=plone.app.iterate)
         self.loadZCML(package=collective.js.jqueryui)
         self.loadZCML(package=bika.lims)
+
         # Required by Products.CMFPlone:plone-content
         z2.installProduct(app, 'Products.PythonScripts')
         z2.installProduct(app, 'bika.lims')
 
+        # Install product and call its initialize() function
+        z2.installProduct(app, 'bika.lims')
+
     def setUpPloneSite(self, portal):
+        # Install into Plone site using portal_setup
+        self.applyProfile(portal, 'bika.lims:default')
 
         login(portal, TEST_USER_NAME)
         setRoles(portal, TEST_USER_ID, ['Member', 'Manager',])
-
-        request = makerequest(portal.aq_parent).REQUEST
+        self.request = makerequest(portal.aq_parent).REQUEST
 
         # initialise skins support
         portal.clearCurrentSkin()
-        portal.setupCurrentSkin(request)
+        portal.setupCurrentSkin(self.request)
         Products.PloneTestCase.setup._placefulSetUp(portal)
 
-        self.applyProfile(portal, 'Products.CMFPlone:plone')
-        self.applyProfile(portal, 'Products.CMFPlone:plone-content')
-        self.applyProfile(portal, 'Products.CMFPlone:dependencies')
-        self.applyProfile(portal, 'Products.CMFPlone:testfixture')
-        self.applyProfile(portal, 'plone.app.iterate:plone.app.iterate')
-        self.applyProfile(portal, 'collective.js.jqueryui:default')
         self.applyProfile(portal, 'bika.lims:default')
 
-        request.form['submitted'] = 1
-        request.form['xlsx'] = "test"
-
-        lsd = LoadSetupData(portal, request)
+        self.request.form['submitted'] = 1
+        self.request.form['xlsx'] = "test"
+        lsd = LoadSetupData(portal, self.request)
         lsd()
 
-BIKA_FIXTURE = BikaLimsLayer()
-BIKA_INTEGRATION_TESTING = IntegrationTesting(bases=(BIKA_FIXTURE,), name="BikaLimsLayer:Integration")
-BIKA_FUNCTIONAL_TESTING = FunctionalTesting(bases=(BIKA_FIXTURE,), name="BikaLimsLayer:Functional")
+    def tearDownZope(self, app):
+        # Uninstall product
+        z2.uninstallProduct(app, 'bika.lims')
+
+BIKA_LIMS_FIXTURE = BikaLIMS()
+BIKA_LIMS_INTEGRATION_TESTING = IntegrationTesting(bases=(BIKA_LIMS_FIXTURE,), name="BikaLIMSIntegrationTesting")
+BIKA_LIMS_FUNCTIONAL_TESTING = FunctionalTesting(bases=(BIKA_LIMS_FIXTURE,), name="BikaLIMSFunctionalTesting")

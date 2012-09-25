@@ -4,7 +4,7 @@ from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.ATContentTypes.utils import DT2dt,dt2DT
 from Products.CMFPlone.TranslationServiceTool import TranslationServiceTool
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
 from bika.lims import interfaces
 from bika.lims import logger
@@ -30,6 +30,12 @@ ModuleSecurityInfo('Products.bika.utils').declarePublic('sendmail')
 def sendmail(portal, from_addr, to_addrs, msg):
     mailspool = portal.portal_mailspool
     mailspool.sendmail(from_addr, to_addrs, msg)
+
+class js_log(BrowserView):
+    def __call__(self, message):
+        """Javascript sends a string for us to place into the log.
+        """
+        self.logger.info(message)
 
 ModuleSecurityInfo('Products.bika.utils').declarePublic('printfile')
 def printfile(portal, from_addr, to_addrs, msg):
@@ -126,54 +132,6 @@ def formatDuration(context, totminutes):
 
     return '%s%s' % (hours_str, mins_str)
 
-def TimeOrDate(context, datetime, long_format = False, with_time = True):
-    """ Return the Time date is today,
-        otherwise return the Date.
-    """
-    localLongTimeFormat = context.portal_properties.site_properties.getProperty('localLongTimeFormat')
-    localTimeFormat = context.portal_properties.site_properties.getProperty('localTimeFormat')
-    localTimeOnlyFormat = context.portal_properties.site_properties.getProperty('localTimeOnlyFormat')
-
-    formatter = context.REQUEST.locale.dates.getFormatter('dateTime', 'long')
-
-    if hasattr(datetime, 'Date'):
-        if (datetime.Date() > DateTime().Date()) or long_format:
-            if with_time:
-                dt = formatter.format(DT2dt(DateTime(datetime)))
-                # cut off the timezone
-                matches = re.match(r"(.*)\s\+.*", dt).groups()
-                dt = matches and matches[0] or dt
-                ##dt = datetime.asdatetime().strftime(localLongTimeFormat)
-            else:
-                dt = formatter.format(DT2dt(DateTime(datetime)))
-                # cut off the time
-                matches = re.match(r"(.*)\s\d+:.*", dt).groups()
-                dt = matches and matches[0] or dt
-                ##dt = datetime.asdatetime().strftime(localTimeFormat)
-        elif (datetime.Date() < DateTime().Date()):
-            dt = formatter.format(DT2dt(DateTime(datetime)))
-            # cut off the time
-            matches = re.match(r"(.*)\s\d+:.*", dt).groups()
-            dt = matches and matches[0] or dt
-            ##dt = datetime.asdatetime().strftime(localTimeFormat)
-        elif datetime.Date() == DateTime().Date():
-            dt = datetime.asdatetime().strftime(localTimeOnlyFormat)
-        else:
-            dt = formatter.format(DT2dt(DateTime(datetime)))
-            # cut off the time
-            matches = re.match(r"(.*)\s\d+:.*", dt).groups()
-            dt = matches and matches[0] or dt
-            ##dt = datetime.asdatetime().strftime(localTimeFormat)
-        dt = dt.replace("PM", "pm").replace("AM", "am")
-        if len(dt) > 10:
-            dt = dt.replace("12:00 am", "")
-        if dt == "12:00 am":
-            dt = datetime.asdatetime().strftime(localTimeFormat)
-    else:
-        dt = datetime
-    return dt
-
-
 # encode_header function copied from roundup's rfc2822 package.
 hqre = re.compile(r'^[A-z0-9!"#$%%&\'()*+,-./:;<=>?@\[\]^_`{|}~ ]+$')
 
@@ -237,36 +195,6 @@ def sortable_title(portal, title):
             break
     return sortabletitle
 
-def pretty_user_name_or_id(context, userid):
-    pc = getToolByName(context, 'portal_catalog')
-    r = pc(portal_type = 'Contact', getUsername = userid)
-    if len(r) == 1:
-        return r[0].Title
-
-    mtool = getToolByName(context, 'portal_membership')
-    member = mtool.getMemberById(userid)
-    if member is None:
-        return userid
-    else:
-        fullname = member.getProperty('fullname')
-    if fullname in (None, ''):
-        return userid
-    return fullname
-
-def pretty_user_email(context, userid):
-    pc = getToolByName(context, 'portal_catalog')
-    r = pc(portal_type = 'Contact', getUsername = userid)
-    if len(r) == 1:
-        contact = r[0].getObject()
-        return contact.getEmailAddress()
-
-    mtool = getToolByName(context, 'portal_membership')
-    member = mtool.getMemberById(userid)
-    if member is None:
-        return None
-    else:
-        return member.getProperty('email')
-
 def logged_in_client(context, member=None):
     if not member:
         membership_tool=getToolByName(context, 'portal_membership')
@@ -283,7 +211,7 @@ def logged_in_client(context, member=None):
                 client = obj
     return client
 
-def changeWorkflowState(content, state_id, acquire_permissions=False,
+def changeWorkflowState(content, wf_id, state_id, acquire_permissions=False,
                         portal_workflow=None, **kw):
     """Change the workflow state of an object
     @param content: Content obj which state will be changed
@@ -300,8 +228,13 @@ def changeWorkflowState(content, state_id, acquire_permissions=False,
         portal_workflow = getToolByName(content, 'portal_workflow')
 
     # Might raise IndexError if no workflow is associated to this type
-    wf_def = portal_workflow.getWorkflowsFor(content)[0]
-    wf_id= wf_def.getId()
+    found_wf = 0
+    for wf_def in portal_workflow.getWorkflowsFor(content):
+        if wf_id == wf_def.getId():
+            found_wf = 1
+            break
+    if not found_wf:
+        logger.error("%s: Cannot find workflow id %s" % (content, wf_id))
 
     wf_state = {
         'action': None,
@@ -359,7 +292,6 @@ class bika_browserdata(BrowserView):
                                 inactive_state = "active")])
 
         for uid, service in services.items():
-
             ## Store categories
             ## data['categories'][poc_catUID]: [uid, uid]
             key = "%s_%s" % (service.getPointOfCapture(),
@@ -382,7 +314,8 @@ class bika_browserdata(BrowserView):
                         backrefs.append(item)
                     if item not in skip:
                         skip.append(item)
-                        walk(item.getBackReferences())
+                        brefs = item.getBackReferences()
+                        walk(brefs)
             walk([service, ])
 
             ## Get dependencies
@@ -470,17 +403,18 @@ class bika_browserdata(BrowserView):
         ## to resolve Title->UID
         data['st_uids'] = {}
         for st_proxy in bsc(portal_type = 'SampleType',
-                        inactive_review_state = 'active'):
+                        inactive_state = 'active'):
             st = st_proxy.getObject()
             data['st_uids'][st.Title()] = {
                 'uid':st.UID(),
                 'minvol': st.getJSMinimumVolume(),
+                'containertype': st.getContainerType() and st.getContainerType().UID() or '',
                 'samplepoints': [sp.Title() for sp in st.getSamplePoints()]
             }
 
         data['sp_uids'] = {}
         for sp_proxy in bsc(portal_type = 'SamplePoint',
-                        inactive_review_state = 'active'):
+                        inactive_state = 'active'):
             sp = sp_proxy.getObject()
             data['sp_uids'][sp.Title()] = {
                 'uid':sp.UID(),

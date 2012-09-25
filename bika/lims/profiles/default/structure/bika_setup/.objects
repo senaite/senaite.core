@@ -1,5 +1,5 @@
 bika_analysiscategories,AnalysisCategories
-bika_arprofiles,ARProfiles
+bika_analysisprofiles,AnalysisProfiles
 bika_artemplates,ARTemplates
 bika_analysisservices,AnalysisServices
 bika_analysisspecs,AnalysisSpecs
@@ -16,6 +16,8 @@ bika_preservations,Preservations
 bika_referencedefinitions,ReferenceDefinitions
 bika_referencemanufacturers,ReferenceManufacturers
 bika_referencesuppliers,ReferenceSuppliers
+bika_samplematrices,SampleMatrices
 bika_samplepoints,SamplePoints
 bika_sampletypes,SampleTypes
+bika_samplingdeviations,SamplingDeviations
 bika_worksheettemplates,WorksheetTemplates

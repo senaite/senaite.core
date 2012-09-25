@@ -3,8 +3,8 @@
  <property name="title">Controls the available content types in your portal</property>
  <object name="ARImport" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ARImportItem" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ARProfile" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ARProfiles" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="AnalysisProfile" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="AnalysisProfiles" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ARTemplate" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ARTemplates" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Analysis" meta_type="Factory-based Type Information with dynamic views"/>
@@ -60,16 +60,19 @@
  <object name="ReferenceSamplesFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceSupplier" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceSuppliers" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="RejectAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReportFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Report" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Sample" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="SampleMatrix" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="SampleMatrices" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SamplePartition" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SamplePoint" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SamplePoints" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SamplesFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SampleType" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SampleTypes" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="SamplingDeviation" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="SamplingDeviations" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SupplierContact" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SupplyOrder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SupplyOrderItem" meta_type="Factory-based Type Information with dynamic views"/>

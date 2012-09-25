@@ -1,0 +1,90 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:tal="http://xml.zope.org/namespaces/tal"
+	xmlns:metal="http://xml.zope.org/namespaces/metal"
+	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="bika"
+    tal:define="plone_view context/@@plone;
+                portal_url nocall:context/portal_url">
+<body tal:define="
+        accredited view/laboratory/getLaboratoryAccredited;
+        portal python:context.portal_url.getPortalObject();">
+<table>
+    <tr>
+        <td class="left">
+            <img tal:attributes="src string:${portal_url}/logo.png"/>
+            <br/>
+            <span tal:content="view/client_title | nothing"/>
+            <tal:address tal:repeat="line view/client_address">
+                <span tal:content="structure line "/>
+                <br/>
+            </tal:address>
+        </td>
+        <td align="right" tal:condition="accredited"
+	        tal:define="logo python:view.laboratory.getAccreditationBodyLogo()">
+	      <img
+	          tal:condition="logo"
+	          tal:attributes="src string:${portal/absolute_url}/bika_setup/laboratory/AccreditationBodyLogo"/>
+	      <img
+	          tal:condition="not: logo"
+	          tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/AccreditationBodyLogo.png"/>
+	    </td>
+        <td align="right" tal:condition="python: not accredited">&nbsp;
+        </td>
+    </tr>
+    <tr>
+       <td class="left">
+           <span i18n:translate="">Print date:</span>
+           <span tal:define="printdate view/date"
+                 tal:content="python:plone_view.toLocalizedTime(printdate, long_format=1)"/>
+           <br/>
+           <span i18n:translate="">Created by:</span>
+	       <span tal:content="view/reporter"/>
+	       <tal:email tal:condition="view/reporter_email">
+	            (<a tal:define="email view/reporter_email"
+	               tal:content="email"
+	               tal:attributes="href string:mailto:${email}"/>)
+	       </tal:email>
+	       <tal:signature tal:condition="view/reporter_signature">
+	            <br/>
+	            <img tal:attributes="src view/reporter_signature"/>
+	       </tal:signature>
+       </td>
+       <td align="right">
+           <span class="h3" tal:content="view/lab_title | nothing"/>
+           <br/>
+           <tal:address tal:repeat="line view/lab_address">
+               <span tal:content="structure line "/>
+               <br/>
+           </tal:address>
+
+           <tal:labemail tal:condition="view/lab_email">
+               <a tal:define="email view/lab_email"
+                  tal:content="email"
+                  tal:attributes="href string:mailto:${email}"/>
+           </tal:labemail>
+
+           <tal:laburl tal:condition="view/lab_url">
+               <br/>
+               <a tal:define="url view/lab_url"
+                  tal:content="url"
+                  tal:attributes="href string:url"/>
+           </tal:laburl>
+
+        </td>
+    </tr>
+
+</table>
+
+<div>
+    <span class="documentFirstHeading" tal:content="view/title | nothing"/>
+</div>
+
+<div tal:content="structure view/reportout"/>
+
+<div align="right" id="footerContent">
+        <span>Page:</span>
+        <pdf:pagenumber/>
+</div>
+</body>
+
+</html>

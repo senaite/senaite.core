@@ -20,27 +20,25 @@
 <body
     tal:define="
         query_content view/query_content;
-        query_format python:query_content.has_key('formats')
-                and query_content['formats'] or [];
-        query_parms python:query_content.has_key('parms')
-                and query_content['parms'] or [];
-        query_headers python:query_content.has_key('headings') 
-                and query_content['headings'] or {};
-        footlines python:query_content.has_key('footings')
-            and query_content['footings'] or [];
-        footnotes python:query_content.has_key('footnotes')
-            and query_content['footnotes'] or [];
-        datalines python:query_content.has_key('datalines')
-            and query_content['datalines'] or [];
+        batch view/batch;
+        query_format view/formats;
+        query_parms view/parms;
+        query_undefined view/parms_undefined;
+        query_headers view/headings;
+        footlines view/footlines | nothing;
+        footnotes view/footnotes | nothing;
+        datalines view/datalines;
         ">
 
 <h2 tal:condition="python:query_headers.has_key('header')">
 <span tal:content="python:query_headers['header']"/>
 </h2>
-<h3 tal:condition="python:query_headers.has_key('subheader')">
-<span tal:content="python:query_headers['subheader']"/>
+
+<!-- parameters specified -->
+<div tal:condition="query_parms">
+<h3 tal:condition="python:query_headers.has_key('head_parms')">
+    <span tal:content="python:query_headers['head_parms']"/>
 </h3>
-<div>
 <table
     class="bika-query-parms"
     summary="Parameters"
@@ -49,6 +47,24 @@
     <tr>
         <td tal:content="python:line['title']"/>
         <td tal:content="python:line['value']"/>
+    </tr>
+</tal:parms>
+
+</table>
+</div>
+
+<!-- parameters undefined -->
+<div tal:condition="query_undefined">
+<h3 tal:condition="python:query_headers.has_key('head_undefined')">
+    <span tal:content="python:query_headers['head_undefined']"/> 
+</h3>
+<table
+    class="bika-query-undefined"
+    summary="Undefined"
+    cellpadding="0" cellspacing="0">
+<tal:parms tal:repeat="line query_undefined">
+    <tr>
+        <td colspan="2" tal:content="python:line['value']"/>
     </tr>
 </tal:parms>
 
@@ -132,9 +148,9 @@
 </tr>
 </metal:block>
 </tfoot>
-
 </table>
 
+<div metal:use-macro="here/batch_macros/macros/navigation" />
 
 <tal:notes tal:repeat="note footnotes">
 <tal:note

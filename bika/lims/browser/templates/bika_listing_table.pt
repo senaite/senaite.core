@@ -1,3 +1,7 @@
+<tal:comment replace="nothing"> This template also renders an AJAX table-only
+version. use "tal:omit-tag='table_only'" on the elements which should not be
+displayed when ajax requests the table. </tal:comment>
+
 <form name="bika_listing_form" method="post" action="workflow_action"
     i18n:domain="bika"
 	tal:attributes="id form_id"
@@ -49,18 +53,6 @@
 	tal:attributes="
 		name python:form_id+'_sort_order';
 		value python:request.get(form_id+'_sort_order', 'ascending')"/>
-<input type="hidden" tal:omit-tag="python:table_only"
-	tal:attributes="
-		name python:form_id+'_review_state';
-		value review_state_id"/>
-<input type="hidden" tal:omit-tag="python:table_only"
-	tal:attributes="
-		name python:form_id+'_pagesize';
-		value python:request.get(form_id+'_pagesize', view.bika_listing.pagesize)"/>
-<input type="hidden" tal:omit-tag="python:table_only"
-	tal:attributes="
-		name python:form_id+'_pagenumber';
-		value python:request.get(form_id+'_pagenumber', '1')"/>
 
 <tal:worksheet-cheat-1 condition="python:hasattr(view.bika_listing, 'analyst')">
 	<input type="hidden"
@@ -76,6 +68,14 @@
 		tal:attributes="value python:view.bika_listing.instrument"/>
 </tal:worksheet-cheat-2>
 
+<div class='bika-listing-table-container'
+     tal:omit-tag="python:table_only">
+
+<tal:comment replace="nothing"> These two hidden fields must be located
+directly above the table element Some of the javascript relies on this to
+distinguish between data for pages with multiple editable tables.
+XXX This should use form_id </tal:comment>
+
 <input type="hidden"
 	name="specs"
 	tal:omit-tag="python:table_only"
@@ -88,20 +88,17 @@
 	name="item_data"
 	tal:attributes="value python:hasattr(view.bika_listing, 'json_interim_fields') and
 	                             view.bika_listing.json_interim_fields or []"/>
-
 <table
 	summary="Content listing"
-	tal:attributes="
-		class python:'bika-listing-table%s'% (view.bika_listing.setoddeven and ' setoddeven' or '');"
-	i18n:attributes="
-		summary summary_content_listing;"
+	tal:attributes="class python:'bika-listing-table'"
+	i18n:attributes="summary summary_content_listing;"
 	tal:define="
 		columns view/bika_listing/columns;
-		column_list python:review_state['columns']">
+		column_list python:review_state['columns']" style="margin-bottom:0px;">
 
 	<thead>
 
-	<tr style="border:none !important;">
+	<tr style="border:none !important;" tal:condition="python:len(view.bika_listing.review_states) > 1">
 <tal:comment replace="nothing">***************
 Workflow review state selector
 ********************************</tal:comment>
@@ -114,7 +111,7 @@ Workflow review state selector
 				<a
 					tal:define="state_id state/id"
 					tal:attributes="
-						href view/view_url;
+                        href python:view.bika_listing.GET_url(review_state=state['id']);
 						value state_id;
 						id state/id;
 						class python:request.get(form_id + '_review_state', 'default') == state_id
@@ -245,7 +242,7 @@ Draggable column for manually ordering items
 <tal:comment replace="nothing">***************
 Item select checkboxes.
 ********************************</tal:comment>
-	<td style="text-align:center"
+	<td style="width:24px;"
 		tal:condition="view/bika_listing/show_select_column"
 		tal:define="cl python:'class' in item and 'select_column' in item['class'] and
 					item['class']['select_column'] or '';"
@@ -529,6 +526,13 @@ Table cells for each column from in review_state's column list.
 				title python:'Result out of range (min %(min)s, max %(max)s, error %(error)s%%)'%(item['result_in_range'][1]);
 				src string:${portal/absolute_url}/++resource++bika.lims.images/warning.png;"
 			icon="warning"/>
+		<img
+			tal:condition="python:column == 'Result' and item['Result']=='0/0'"
+			tal:attributes="
+				uid item/uid;
+				title python:'No valid result';
+				src string:${portal/absolute_url}/++resource++bika.lims.images/exclamation.png;"
+			icon="exclamation"/>
 	<tal:comment replace="nothing"><!-- shoulder --></tal:comment>
 	</span>
 	</span> <tal:comment replace="nothing"><!-- </span tal:condition="not:replace"> --></tal:comment>
@@ -586,7 +590,7 @@ Batching
 				<span class="previous"
 				  tal:condition="batch/has_previous">
 					<a href=""
-					   tal:attributes="href string:${view/url};pagenumber string:${batch/previouspage}">
+                       tal:attributes="href python:view.bika_listing.GET_url(pagenumber=batch.previouspage)">
 					   &laquo;
 					   <span i18n:domain="plone" i18n:translate="">
 						   Previous
@@ -597,19 +601,14 @@ Batching
 				</span>
 				<!-- Link to first -->
 				<span tal:condition="batch/show_link_to_first">
-					<a href=""
-					   pagenumber="1"
-					   tal:attributes="href string:${view/url}">1</a>
-					<span tal:condition="batch/second_page_not_in_navlist"
-						  tal:omit-tag="">
+                    <a href="" tal:attributes="href python:view.bika_listing.GET_url(pagenumber=1)">1</a>
+					<span tal:condition="batch/second_page_not_in_navlist" tal:omit-tag="">
 					   ...
 					</span>
 				</span>
 				<!-- Pagelist with links to previous pages for quick navigation -->
 				<span tal:repeat="pagenumber batch/previous_pages" tal:omit-tag="" >
-				  <a href="" tal:content="pagenumber"
-					 tal:attributes="href string:${view/url};
-									 pagenumber string:$pagenumber"/>
+                  <a href="" tal:content="pagenumber" tal:attributes="href python:view.bika_listing.GET_url(pagenumber=pagenumber)"/>
 				</span>
 				<!-- Current page -->
 				<span tal:condition="batch/navlist" tal:omit-tag="">
@@ -617,28 +616,24 @@ Batching
 				</span>
 				<!-- Pagelist with links to next pages for quick navigation -->
 				<span tal:repeat="pagenumber batch/next_pages" tal:omit-tag="" >
-				  <a href="" tal:content="pagenumber"
-					 tal:attributes="href string:${view/url};
-									 pagenumber string:$pagenumber"/>
+				  <a href="" tal:content="pagenumber" tal:attributes="href python:view.bika_listing.GET_url(pagenumber=pagenumber)"/>
 				</span>
 				<!-- Link to last -->
 				<span tal:condition="batch/show_link_to_last">
-					<span tal:condition="batch/before_last_page_not_in_navlist"
-						  tal:omit-tag="">
+					<span tal:condition="batch/before_last_page_not_in_navlist" tal:omit-tag="">
 					   ...
 					</span>
 					<a href=""
-					   tal:attributes="href view/url;
-									   pagenumber batch/lastpage"
-					   tal:content="batch/lastpage">3457</a>
+                       tal:attributes="href python:view.bika_listing.GET_url(pagenumber=batch.lastpage)"
+					   tal:content="string:${batch/lastpage}">3457</a>
 				</span>
 				<span class="next"
 					  tal:condition="batch/has_next">
 					<a href=""
-					   tal:attributes="href string:${view/url};pagenumber batch/nextpage;pagesize view/bika_listing/pagesize">
+                       tal:attributes="href python:view.bika_listing.GET_url(pagenumber=batch.nextpage)">
 					   <span i18n:domain="plone" i18n:translate="">
 						   Next
-						   <span i18n:domain="plone" i18n:name="number" tal:omit-tag="" tal:content="batch/next_item_count">n</span>
+						   <span i18n:domain="plone" i18n:name="number" tal:omit-tag="" tal:content="string:${batch/next_item_count}">n</span>
 						   items
 					   </span>
 					   &raquo;
@@ -655,7 +650,7 @@ Batching
 				<span class="pagesize_selector noborder"
 					style="vertical-align:top !important"
 					style="text-align:right">
-					<select name="pagesize">
+					<select class="pagesize">
 						<option value="10" tal:attributes="selected python:int(view.bika_listing.pagesize) == 10 and 'selected' or ''">10</option>
 						<option value="25" tal:attributes="selected python:int(view.bika_listing.pagesize) == 25 and 'selected' or ''">25</option>
 						<option value="50" tal:attributes="selected python:int(view.bika_listing.pagesize) == 50 and 'selected' or ''">50</option>
@@ -673,5 +668,5 @@ Batching
 </tfoot>
 
 </table>
-
+</div>
 </form>

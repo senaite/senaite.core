@@ -1,0 +1,139 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:tal="http://xml.zope.org/namespaces/tal"
+	xmlns:metal="http://xml.zope.org/namespaces/metal"
+	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+	metal:use-macro="here/main_template/macros/master"
+	i18n:domain="bika">
+
+<body>
+
+<metal:title fill-slot="content-title">
+	<h1 i18n:translate="">Login details</h1>
+</metal:title>
+
+<metal:description fill-slot="content-description">
+	<p i18n:translate="" tal:condition="context/hasUser">
+		<span tal:content="here/getFullname" i18n:name="contact_fullname">Pete Smith</span>
+		can log into the LIMS by using
+		<strong tal:content="here/getUsername" i18n:name="contact_username">username</strong>
+		as username. Contacts must change their own
+		passwords. If a password is forgotten a contact
+		can request a new password from the login form.
+	</p>
+	<div class="portalMessage" i18n:translate=""
+		tal:condition="not:context/hasUser">
+		No user exists for
+		<span tal:content="here/getFullname" i18n:name="contact_fullname">Pete Smith</span>
+		and he/she will not be able to log in.
+		Fill in the form below to create one for him/her.
+	</div>
+</metal:description>
+
+<metal:content fill-slot="content-core" tal:define="
+	portal context/@@plone_portal_state/portal;
+	tabindex view/tabindex;">
+
+	<form id="contact_edit_form"
+		method="post"
+		tal:condition="not:here/hasUser">
+
+		<span tal:replace="structure context/@@authenticator/authenticator"/>
+		<input type="hidden" name="submitted" value="1"/>
+		<input type="hidden"
+			name="fullname"
+			value="fullname"
+			tal:attributes="value here/getFullname"/>
+
+		<fieldset>
+
+			<div class="field">
+				<label i18n:translate="">User Name</label>
+				<span class="fieldRequired" title="Required"
+					i18n:attributes="title"
+					i18n:translate="">(Required)</span>
+				<div i18n:translate="">
+					Enter a user name, usually something like
+					'jsmith'. No spaces or special characters.
+					Usernames and passwords are case sensitive,
+					make sure the caps lock key is not enabled.
+					This is the name used to log in.
+				</div>
+				<input type="text" name="username" size="30"
+					tal:attributes="value python:view.request.get('username', '')"/>
+			</div>
+
+
+<!--			<tal:password condition="not:context/portal_properties/site_properties/validate_email|nothing">-->
+			<div class="field"
+				tal:condition="python:context.portal_membership.checkPermission('Add portal member', context)">
+					<label i18n:translate="">Password</label>
+					<span class="fieldRequired" title="Required"
+						i18n:attributes="title"
+						i18n:translate="">(Required)</span>
+					<div class="formHelp" i18n:translate="">
+						Minimum 5 characters.
+					</div>
+					<input type="password" name="password" size="10"/>
+				</div>
+
+			<div class="field"
+				tal:condition="python:context.portal_membership.checkPermission('Add portal member', context)">
+					<label i18n:translate="">Confirm password</label>
+					<span class="fieldRequired" title="Required"
+						i18n:attributes="title"
+						i18n:translate="">(Required)</span>
+					<div class="formHelp" i18n:translate="">
+						Re-enter the password. Make sure the passwords are identical.
+					</div>
+					<input type="password" name="confirm" size="10"/>
+			</div>
+<!--			</tal:password>-->
+
+			<div class="field">
+                <label i18n:translate="">Email</label>
+				<span class="fieldRequired" title="Required"
+					i18n:attributes="title"
+					i18n:translate="">(Required)</span>
+				<div class="formHelp" i18n:translate="">
+					Enter an email address. This is necessary in case the password
+					is lost. We respect your privacy, and will not give the address
+					away to any third parties or expose it anywhere.
+				</div>
+				<input type="text" name="email" size="30"
+					tal:attributes="value python: context.getEmailAddress() and context.getEmailAddress() or view.request.get('email', '')"/>
+			</div>
+
+            <div class="field"
+                 tal:condition="python: view.context.portal_type == 'LabContact'">
+                <label i18n:translate="label_add_to_groups">Add to the following groups:</label>
+                <span class="fieldRequired" i18n:translate="">(Required)</span>
+                <br/>
+                <select name="groups" size="10" multiple="1">
+                    <option value='LabManagers'>LabManagers</option>
+                    <option value='LabClerks'>LabClerks</option>
+                    <option value='Analysts'>Analysts</option>
+                    <option value='Verifiers'>Verifiers</option>
+                    <option value='Samplers'>Samplers</option>
+                    <option value='Preservers'>Preservers</option>
+                    <option value='Publishers'>Publishers</option>
+                    <option value='Reviewers'>Reviewers</option>
+                </select>
+            </div>
+
+			<input class="context allowMultiSubmit"
+				type="submit"
+				tabindex=""
+				name="save_button"
+				value="Save"
+				i18n:attributes="value"
+				tal:attributes="tabindex tabindex/next;" />
+
+		</fieldset>
+
+	</form>
+
+</metal:content>
+
+</body>
+
+</html>

@@ -1,11 +1,11 @@
 from AccessControl import getSecurityManager
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.utils import isActive, TimeOrDate
+from bika.lims.utils import isActive
 from operator import itemgetter
 from bika.lims.browser.analyses import AnalysesView
 from plone.app.layout.globals.interfaces import IViewView
@@ -22,11 +22,11 @@ class ViewView(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.icon = "++resource++bika.lims.images/referencesample_big.png"
-        self.TimeOrDate = TimeOrDate
-        rc = getToolByName(context, REFERENCE_CATALOG)
 
+    def __call__(self):
+        rc = getToolByName(self.context, REFERENCE_CATALOG)
         self.results = {} # {category_title: listofdicts}
-        for r in context.getReferenceResults():
+        for r in self.context.getReferenceResults():
             service = rc.lookupObject(r['uid'])
             cat = service.getCategory().Title()
             if cat not in self.results:
@@ -35,8 +35,6 @@ class ViewView(BrowserView):
             self.results[cat].append(r)
         self.categories = self.results.keys()
         self.categories.sort()
-
-    def __call__(self):
         return self.template()
 
 class ReferenceAnalysesView(AnalysesView):
@@ -61,6 +59,7 @@ class ReferenceAnalysesView(AnalysesView):
             'Service': {'title': _('Service'), 'toggle':True},
             'Worksheet': {'title': _('Worksheet'), 'toggle':True},
             'Result': {'title': _('Result'), 'toggle':True},
+            'Captured': {'title': _('Captured'), 'toggle':True},
             'Uncertainty': {'title': _('+-'), 'toggle':True},
             'DueDate': {'title': _('Due Date'),
                         'index': 'getDueDate',
@@ -78,6 +77,7 @@ class ReferenceAnalysesView(AnalysesView):
                         'Service',
                         'Worksheet',
                         'Result',
+                        'Captured',
                         'Uncertainty',
                         'DueDate',
                         'state_title'],
@@ -94,6 +94,7 @@ class ReferenceAnalysesView(AnalysesView):
             items[x]['id'] = obj.getId()
             items[x]['Category'] = service.getCategory().Title()
             items[x]['Service'] = service.Title()
+            items[x]['Captured'] = self.ulocalized_time(obj.getResultCaptureDate())
             brefs = obj.getBackReferences("WorksheetAnalysis")
             items[x]['Worksheet'] = brefs and brefs[0].Title() or ''
         return items
@@ -197,7 +198,7 @@ class ReferenceSamplesView(BikaListingView):
         self.columns = {
             'ID': {
                 'title': _('ID'),
-                'index': 'sortable_title'},
+                'index': 'id'},
             'Title': {
                 'title': _('Title'),
                 'index': 'sortable_title',
@@ -282,12 +283,9 @@ class ReferenceSamplesView(BikaListingView):
             else:
                 items[x]['Definition'] = ' '
 
-            items[x]['DateSampled'] = \
-                 TimeOrDate(self.context, obj.getDateSampled(), long_format=0)
-            items[x]['DateReceived'] = \
-                 TimeOrDate(self.context, obj.getDateReceived(), long_format=0)
-            items[x]['ExpiryDate'] = \
-                 TimeOrDate(self.context, obj.getExpiryDate(), long_format=0)
+            items[x]['DateSampled'] = self.ulocalized_time(obj.getDateSampled())
+            items[x]['DateReceived'] = self.ulocalized_time(obj.getDateReceived())
+            items[x]['ExpiryDate'] = self.ulocalized_time(obj.getExpiryDate())
 
             after_icons = ''
             if obj.getBlank():

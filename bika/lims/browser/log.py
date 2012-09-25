@@ -4,7 +4,6 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.utils import TimeOrDate
 from operator import itemgetter
 from plone.app.layout.globals.interfaces import IViewView
 from plone.app.layout.viewlets.content import ContentHistoryView, ContentHistoryViewlet
@@ -63,6 +62,7 @@ class LogView(BikaListingView):
 
         isVersionable = pr.isVersionable(aq_inner(self.context))
         review_history = wf.getInfoFor(self.context, 'review_history')
+        review_history = list(review_history)
         review_history.reverse()
         items = []
         for entry in review_history:
@@ -89,7 +89,7 @@ class LogView(BikaListingView):
                 'allow_edit': [],
 
                 'Version': isVersionable and self.context.get('version_id', '') or '0',
-                'Date': TimeOrDate(self.context, entry.get('time'), long_format=1),
+                'Date': self.ulocalized_time(entry.get('time')),
                 'sortable_date': entry.get('time'),
                 'User': entry.get('actor'),
                 'Action': entry.get('action') and entry.get('action') or 'Create',
@@ -108,7 +108,7 @@ class LogView(BikaListingView):
         for entry in version_history:
             # this folderitems doesn't subclass from the bika_listing.py
             # so we create items from scratch
-            # disregard the first entry of version history, as it is 
+            # disregard the first entry of version history, as it is
             # represented by the first entry in review_history
             if not entry.get('version_id'):
                 continue
@@ -131,7 +131,7 @@ class LogView(BikaListingView):
                 'allow_edit': [],
 
                 'Version': entry.get('version_id'),
-                'Date': TimeOrDate(self.context, DateTime(entry.get('time')), long_format=1),
+                'Date': self.ulocalized_time(DateTime(entry.get('time'))),
                 'sortable_date': entry.get('time'),
                 'User': entry.get('actor').get('fullname'),
                 'Action': entry.get('action') and entry.get('action') or 'Create',

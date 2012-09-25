@@ -3,7 +3,7 @@
  <factorytypes>
   <type portal_type="ARImport"/>
   <type portal_type="ARImportItem"/>
-  <type portal_type="ARProfile"/>
+  <type portal_type="AnalysisProfile"/>
   <type portal_type="ARTemplate"/>
   <type portal_type="Analysis"/>
   <type portal_type="AnalysisCategory"/>
@@ -31,8 +31,10 @@
   <type portal_type="ReferenceSample"/>
   <type portal_type="ReferenceSupplier"/>
   <type portal_type="Sample"/>
+  <type portal_type="SampleMatrix"/>
   <type portal_type="SamplePoint"/>
   <type portal_type="SampleType"/>
+  <type portal_type="SamplingDeviation"/>
   <type portal_type="WorksheetTemplate"/>
  </factorytypes>
 </object>

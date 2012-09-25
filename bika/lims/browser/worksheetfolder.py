@@ -3,13 +3,12 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import DisplayList
 from DocumentTemplate import sequence
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims import PMF, logger
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
-from bika.lims.utils import TimeOrDate
 from bika.lims.utils import getUsers
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
@@ -55,13 +54,17 @@ class WorksheetFolderWorkflowAction(WorkflowAction):
 
 
 class WorksheetFolderListingView(BikaListingView):
+
+    implements(IFolderContentsView)
+
     template = ViewPageTemplateFile("templates/worksheetfolder.pt")
+
     def __init__(self, context, request):
-        BikaListingView.__init__(self, context, request)
+        super(WorksheetFolderListingView, self).__init__(context, request)
         self.catalog = 'bika_catalog'
         self.contentFilter = {
             'portal_type': 'Worksheet',
-            'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
+            'review_state':['open', 'to_be_verified', 'verified'],
             'sort_on':'id',
             'sort_order': 'reverse'}
         self.context_actions = {_('Add'):
@@ -73,13 +76,13 @@ class WorksheetFolderListingView(BikaListingView):
         self.show_select_row = False
         self.show_select_all_checkbox = True
         self.show_select_column = True
+        self.pagesize = 25
 
         request.set('disable_border', 1)
 
         self.icon = "++resource++bika.lims.images/worksheet_big.png"
         self.title = _("Worksheets")
         self.description = ""
-        self.TimeOrDate = TimeOrDate
 
         pm = getToolByName(context, "portal_membership")
         # this is a property of self, because self.getAnalysts returns it
@@ -135,7 +138,7 @@ class WorksheetFolderListingView(BikaListingView):
             {'id':'default',
              'title': _('All'),
              'contentFilter': {'portal_type': 'Worksheet',
-                               'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
+                               'review_state':['open', 'to_be_verified', 'verified'],
                                'sort_on':'id',
                                'sort_order': 'reverse'},
              'transitions':[{'id':'retract'},
@@ -155,7 +158,7 @@ class WorksheetFolderListingView(BikaListingView):
             {'id':'mine',
              'title': _('Mine'),
              'contentFilter': {'portal_type': 'Worksheet',
-                               'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
+                               'review_state':['open', 'to_be_verified', 'verified'],
                                'sort_on':'id',
                                'sort_order': 'reverse'},
              'transitions':[{'id':'retract'},
@@ -228,6 +231,25 @@ class WorksheetFolderListingView(BikaListingView):
         pm = getToolByName(self.context, "portal_membership")
 
         member = pm.getAuthenticatedMember()
+        # Only show "my" worksheets
+        # this cannot be setup in contentFilter,
+        # because AuthenticatedMember is not available in __init__
+        cookie = json.loads(self.request.get("review_state", '{}'))
+        cookie_key = "%s%s" % (self.context.portal_type, self.form_id)
+        # POST
+        selected_state = self.request.get("%s_review_state"%self.form_id, '')
+        if not selected_state:
+            # cookie
+            selected_state = cookie.get(cookie_key, '')
+        if selected_state == 'mine':
+            # modify contentFolter for current state
+            new_review_states = []
+            for state in self.review_states:
+                if state['id'] == 'mine':
+                    state['contentFilter']['getAnalyst'] = member.getId()
+                else:
+                    new_review_states.append(state)
+            self.review_states = new_review_states
 
         items = BikaListingView.folderitems(self)
         new_items = []
@@ -244,6 +266,8 @@ class WorksheetFolderListingView(BikaListingView):
 
             obj = items[x]['obj']
 
+            review_state = wf.getInfoFor(obj, 'review_state')
+
             analyst = obj.getAnalyst().strip()
             creator = obj.Creator().strip()
 
@@ -259,19 +283,7 @@ class WorksheetFolderListingView(BikaListingView):
                 items[x]['replace']['Template'] = "<a href='%s'>%s</a>" % \
                     (wst.absolute_url(), wst.Title())
 
-            # Only show "my" worksheets
-            # this cannot be setup in contentFilter,
-            # because AuthenticatedMember is not available in __init__
-            cookie = json.loads(self.request.get("review_state", '{}'))
-            cookie_key = "%s%s" % (self.context.portal_type, self.form_id)
-            # first check POST
-            selected_state = self.request.get("%s_review_state"%self.form_id, '')
-            if not selected_state:
-                # then check cookie
-                selected_state = cookie.get(cookie_key, '')
-            if selected_state == 'mine':
-                if member.getId() not in (analyst, creator):
-                    continue
+            items[x]['CreationDate'] = self.ulocalized_time(obj.creation_date)
 
             nr_analyses = len(obj.getAnalyses())
             if nr_analyses == '0':
@@ -284,8 +296,6 @@ class WorksheetFolderListingView(BikaListingView):
                     continue
                 # give empties pretty classes.
                 items[x]['table_row_class'] = 'state-empty-worksheet'
-
-            items[x]['CreationDate'] = TimeOrDate(self.context, obj.creation_date)
 
             layout = obj.getLayout()
 

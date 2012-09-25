@@ -11,7 +11,7 @@ from Products.CMFCore.permissions import AddPortalContent
 
 # Add Permissions:
 # ----------------
-AddARProfile = 'BIKA: Add ARProfile'
+AddAnalysisProfile = 'BIKA: Add AnalysisProfile'
 AddARTemplate = 'BIKA: Add ARTemplate'
 AddAnalysis = 'BIKA: Add Analysis'
 AddAnalysisRequest = 'BIKA: Add Analysis Request'
@@ -20,7 +20,10 @@ AddClient = 'BIKA: Add Client'
 AddClientFolder = 'BIKA: Add ClientFolder'
 AddMethod = 'BIKA: Add Method'
 AddSample = 'BIKA: Add Sample'
+AddSamplePoint = 'BIKA: Add SamplePoint'
+AddSampleMatrix = 'BIKA: Add SampleMatrix'
 AddSamplePartition = 'BIKA: Add SamplePartition'
+AddSamplingDeviation = 'BIKA: Add SamplingDeviation'
 
 # Default Archetypes Add Permission
 ADD_CONTENT_PERMISSION = AddPortalContent
@@ -28,13 +31,15 @@ ADD_CONTENT_PERMISSION = AddPortalContent
 # Add Permissions for specific types, if required
 ADD_CONTENT_PERMISSIONS = {
     'ARAnalysisSpec': AddAnalysisSpec,
-    'ARProfile': AddARProfile,
+    'AnalysisProfile': AddAnalysisProfile,
     'Analysis': AddAnalysis,
     'AnalysisRequest': AddAnalysisRequest,
     'Client': AddClient,
     'Method': AddMethod,
     'Sample': AddSample,
+    'SampleMatrix': AddSampleMatrix,
     'SamplePartition': AddSamplePartition,
+    'SamplingDeviation': AddSamplingDeviation,
 }
 
 # Very Old permissions:

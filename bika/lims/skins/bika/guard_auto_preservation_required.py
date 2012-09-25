@@ -49,10 +49,6 @@ elif context.portal_type == 'AnalysisRequest':
 
     # If none of this sample's partitions require preservation, then we return
     # false.
-    sample = context.getSample()
-    if not sample:
-        # AR is being created - AR Add will transition us.
-        return None
     preservation_required = False
     for part in sample.objectValues("SamplePartition"):
         if part.getPreservation():

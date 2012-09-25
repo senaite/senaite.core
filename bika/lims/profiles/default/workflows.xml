@@ -28,8 +28,8 @@
   <type type_id="ARImport">
    <bound-workflow workflow_id="bika_arimport_workflow"/>
   </type>
- <type type_id="ARProfiles"/>
- <type type_id="ARProfile">
+ <type type_id="AnalysisProfiles"/>
+ <type type_id="AnalysisProfile">
    <bound-workflow workflow_id="bika_one_state_workflow"/>
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
@@ -120,7 +120,10 @@
   </type>
   <type type_id="Containers"/>
 
-  <type type_id="ContainerType"/>
+  <type type_id="ContainerType">
+   <bound-workflow workflow_id="bika_one_state_workflow"/>
+   <bound-workflow workflow_id="bika_inactive_workflow"/>  
+  </type>
   <type type_id="ContainerTypes"/>
 
   <type type_id="Department">
@@ -224,11 +227,16 @@
   </type>
 
   <type type_id="ReferenceSuppliers"/>
-  <type type_id="RejectAnalysis"/>
 
   <type type_id="Sample">
    <bound-workflow workflow_id="bika_sample_workflow"/>
    <bound-workflow workflow_id="bika_cancellation_workflow"/>
+  </type>
+
+  <type type_id="SampleMatrices"/>
+  <type type_id="SampleMatrix">
+   <bound-workflow workflow_id="bika_one_state_workflow"/>
+   <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
 
   <type type_id="SamplePartition">
@@ -244,6 +252,12 @@
 
   <type type_id="SampleTypes"/>
   <type type_id="SampleType">
+   <bound-workflow workflow_id="bika_one_state_workflow"/>
+   <bound-workflow workflow_id="bika_inactive_workflow"/>
+  </type>
+
+  <type type_id="SamplingDeviations"/>
+  <type type_id="SamplingDeviation">
    <bound-workflow workflow_id="bika_one_state_workflow"/>
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>

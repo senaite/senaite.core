@@ -23,11 +23,6 @@ borderWidthStrong:string=2px
 borderStyle:string=solid
 borderStyleAnnotations:string=dashed
 
-evenRowTextColor:string=#eee
-evenRowBackgroundColor:string=#eee
-oddRowTextColor:string=#fff
-oddRowBackgroundColor:string=#fff
-
 visibleTextColor:string=#205c90
 visibleBackgroundColor:string=transparent
 
@@ -36,6 +31,9 @@ cancelledBackgroundColor:string=#FFC8C8
 
 inactiveTextColor:string=#000
 inactiveBackgroundColor:string=#FFC8C8
+
+submittedbycurrentuserTextColor:string=#000
+submittedbycurrentuserBackgroundColor:string=#FFFB89
 
 sampleDueTextColor:string=#2bb800
 sampleDueBackgroundColor:string=transparent
@@ -55,8 +53,8 @@ buttonBorderColor:string=#ccc
 buttonBackgroundColor:string=#fff
 buttonTextColor:string=#222
 
-buttonHoverBorderColor:string=#bbb
-buttonHoverBackgroundColor:string=#eee
+buttonHoverBorderColor:string=#999999
+buttonHoverBackgroundColor:string=#DCDCDC
 buttonHoverTextColor:string=#333
 
 buttonClickBorderColor:string=#bbb

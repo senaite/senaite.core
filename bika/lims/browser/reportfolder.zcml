@@ -5,9 +5,10 @@
     i18n_domain="bika">
 
     <!-- main site/reports view -->
+
     <browser:page
       for="bika.lims.interfaces.IReportFolder"
-      name="reports_productivity"
+      name="productivity"
       class="bika.lims.browser.reports.ProductivityView"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
@@ -15,7 +16,7 @@
 
     <browser:page
       for="bika.lims.interfaces.IReportFolder"
-      name="reports_qualitycontrol"
+      name="qualitycontrol"
       class="bika.lims.browser.reports.QualityControlView"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
@@ -23,23 +24,33 @@
 
     <browser:page
       for="bika.lims.interfaces.IReportFolder"
-      name="reports_administration"
+      name="administration"
       class="bika.lims.browser.reports.AdministrationView"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
     <browser:page
       for="bika.lims.interfaces.IReportFolder"
-      name="reports_history"
+      name="history"
       class="bika.lims.browser.reports.ReportHistoryView"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
     <browser:page
       for="bika.lims.interfaces.IReportFolder"
-      name="reports"
+      name="createreport"
       class="bika.lims.browser.reports.SubmitForm"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
+
+    <!-- seletion macros for query forms -->
+
+    <browser:page
+      for="*"
+      name="selection_macros"
+      class="bika.lims.browser.reports.selection_macros.SelectionMacrosView"
+      permission="zope.Public"
+    />
+
 </configure>

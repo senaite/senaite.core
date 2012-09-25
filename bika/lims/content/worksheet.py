@@ -186,6 +186,12 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 continue
             ref_uid = reference.addReferenceAnalysis(service_uid, ref_type)
             ref_analysis = rc.lookupObject(ref_uid)
+
+            # copy the interimfields
+            calculation = service.getCalculation()
+            if calc:
+                ref_analysis.setInterimFields(calc.getInterimFields())
+
             self.setLayout(
                 self.getLayout() + [{'position' : position,
                                      'type':ref_type,

@@ -17,7 +17,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import ManageBika, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.utils import sortable_title, pretty_user_name_or_id
+from bika.lims.utils import sortable_title
 import sys
 import time
 from zope.interface import implements
@@ -104,6 +104,16 @@ schema = BikaSchema.copy() + Schema((
             visible = {'edit':'hidden'},
         ),
     ),
+    ReferenceField('SamplingDeviation',
+        vocabulary_display_path_bound = sys.maxint,
+        allowed_types = ('SamplingDeviation',),
+        relationship = 'SampleSamplingDeviation',
+        referenceClass = HoldingReference,
+        widget = ReferenceWidget(
+            checkbox_bound = 1,
+            label = _('Sampling Deviation'),
+        ),
+    ),
     DateTimeField('DateReceived',
         widget = DateTimeWidget(
             label = _("Date Received"),
@@ -163,6 +173,12 @@ schema = BikaSchema.copy() + Schema((
             visible = {'edit':'hidden'},
         ),
     ),
+    BooleanField('AdHoc',
+        default=False,
+        widget=BooleanWidget(
+            label=_("Ad-Hoc"),
+        ),
+    ),
 ))
 
 schema['title'].required = False
@@ -192,7 +208,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
         """ convert SampleType title to UID
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
-        sampletype = bsc(portal_type = 'SampleType', Title = value)
+        sampletype = bsc(portal_type = 'SampleType', title = value)
         value = sampletype[0].UID
         return self.Schema()['SampleType'].set(self, value)
 
@@ -204,7 +220,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
         sp_uid = None
         if value:
             bsc = getToolByName(self, 'bika_setup_catalog')
-            samplepoints = bsc(portal_type = 'SamplePoint', Title = value)
+            samplepoints = bsc(portal_type = 'SamplePoint', title = value)
             if samplepoints:
                 sp_uid = samplepoints[0].UID
         return self.Schema()['SamplePoint'].set(self, sp_uid)

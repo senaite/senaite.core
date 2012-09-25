@@ -23,9 +23,9 @@ class PartitionSetupWidget(RecordsWidget):
         default = super(PartitionSetupWidget,self).process_form(
             instance, field, form, empty_marker, emptyReturnsMarker)
         if not default:
-            return default
+            return [], {}
         value = default[0]
-        kwargs = default[1]
+        kwargs = len(default) > 1 and default[1] or {}
         newvalue = []
         for v in value:
             v = dict(v)

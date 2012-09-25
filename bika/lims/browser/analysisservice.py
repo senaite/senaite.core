@@ -1,4 +1,4 @@
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.content.analysisservice import getContainers

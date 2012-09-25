@@ -20,9 +20,18 @@ import sys
 
 schema = Organisation.schema.copy() + atapi.Schema((
     atapi.StringField('ClientID',
+        required = 1,
         searchable = True,
+        validators = ('uniquefieldvalidator', 'standard_id_validator'),
         widget = atapi.StringWidget(
             label = _("Client ID"),
+        ),
+    ),
+    atapi.BooleanField('BulkDiscount',
+        default = False,
+        write_permission = ManageClients,
+        widget = atapi.BooleanWidget(
+            label = _("Bulk discount applies"),
         ),
     ),
     atapi.BooleanField('MemberDiscountApplies',
@@ -30,15 +39,6 @@ schema = Organisation.schema.copy() + atapi.Schema((
         write_permission = ManageClients,
         widget = atapi.BooleanWidget(
             label = _("Member discount applies"),
-        ),
-    ),
-    atapi.StringField('ClientType',
-        required = 1,
-        default = 'noncorporate',
-        write_permission = ManageClients,
-        vocabulary = CLIENT_TYPES,
-        widget = atapi.SelectionWidget(
-            label = _("Client Type"),
         ),
     ),
     atapi.LinesField('EmailSubject',
@@ -85,6 +85,8 @@ schema['AccountNumber'].write_permission = ManageClients
 schema['title'].widget.visible = False
 schema['description'].widget.visible = False
 
+schema.moveField('ClientID', after='Name')
+
 class Client(Organisation):
     implements(IClient)
     security = ClassSecurityInfo()
@@ -119,7 +121,20 @@ class Client(Organisation):
         for contact in self.objectValues('Contact'):
             if contact.getUsername() == username:
                 return contact.UID()
-        return
+
+    security.declarePublic('getContactUIDForUser')
+    def getContactUIDForUser(self):
+        """ get the UID of the user associated with the authenticated user
+        """
+        membership_tool = getToolByName(instance, 'portal_membership')
+        member = membership_tool.getAuthenticatedMember()
+        username = mtool.getAuthenticatedMember().getUserName()
+        r = self.portal_catalog(
+            portal_type = 'Contact',
+            getUsername = username
+        )
+        if len(r) == 1:
+            return r[0].UID
 
     security.declarePublic('getCCContacts')
     def getCCContacts(self):
@@ -143,36 +158,11 @@ class Client(Organisation):
                                           y['title'].lower()))
         return contact_data
 
-    security.declarePublic('getContactUIDForUser')
-    def getContactUIDForUser(self):
-        """ get the UID of the contact associated with the authenticated
-            user
-        """
-        user = self.REQUEST.AUTHENTICATED_USER
-        user_id = user.getUserName()
-        r = self.portal_catalog(
-            portal_type = 'Contact',
-            getUsername = user_id
-        )
-        if len(r) == 1:
-            return r[0].UID
-
     security.declarePublic('getARImportOptions')
     def getARImportOptions(self):
         return ARIMPORT_OPTIONS
 
-    security.declarePublic('getSampleTypeDisplayList')
-    def getSampleTypeDisplayList(self):
-        """ return all sample types """
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        sampletypes = []
-        for st in bsc(portal_type = 'SampleType',
-                      inactive_state = 'active',
-                      sort_on = 'sortable_title'):
-            sampletypes.append((st.UID, st.Title))
-        return DisplayList(sampletypes)
-
-    security.declarePublic('getSampleTypeDisplayList')
+    security.declarePublic('getAnalysisCategories')
     def getAnalysisCategories(self):
         """ return all available analysis categories """
         bsc = getToolByName(self, 'bika_setup_catalog')

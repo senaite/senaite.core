@@ -9,14 +9,14 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory
 from Products.CMFPlone.utils import pretty_title_or_id, isExpired, safe_unicode
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
-from bika.lims.utils import isActive, TimeOrDate
+from bika.lims.utils import isActive
 from operator import itemgetter
 from plone.app.content.batching import Batch
 from plone.app.content.browser import tableview
@@ -147,7 +147,6 @@ class BikaListingView(BrowserView):
     contentFilter = {}
     allow_edit = True
     context_actions = {}
-    setoddeven = True
     show_select_column = False
     show_select_row = False
     show_select_all_checkbox = True
@@ -327,10 +326,12 @@ class BikaListingView(BrowserView):
         except:
             pagesize = self.pagesize
         self.pagesize = pagesize
+        # Plone's batching wants this variable:
         self.request.set('pagesize', self.pagesize)
 
         # pagenumber
         self.pagenumber = int(self.request.get(form_id + '_pagenumber', self.pagenumber))
+        # Plone's batching wants this variable:
         self.request.set('pagenumber', self.pagenumber)
 
         # index filters.
@@ -387,14 +388,14 @@ class BikaListingView(BrowserView):
                     if value.find(":") > -1:
                         try:
                             lohi = [DateTime(x) for x in value.split(":")]
-                        except SyntaxError:
-                            logger.error("Syntax error (And, DateIndex='%s', term='%s')"%(index,value))
+                        except:
+                            logger.error("Error (And, DateIndex='%s', term='%s')"%(index,value))
                         self.Or.append(Between(index, lohi[0], lohi[1]))
                     else:
                         try:
                             self.Or.append(Eq(index, DateTime(value)))
-                        except SyntaxError:
-                            logger.error("Syntax error (Or, DateIndex='%s', term='%s')"%(index,value))
+                        except:
+                            logger.error("Error (Or, DateIndex='%s', term='%s')"%(index,value))
                 else:
                     self.Or.append(Generic(index, value))
             self.Or.append(MatchRegexp('review_state', value))
@@ -428,6 +429,18 @@ class BikaListingView(BrowserView):
                                    and ('toggle' not in self.columns[col]
                                         or self.columns[col]['toggle'] == True)])
         return toggle_cols
+
+    def GET_url(self, **kwargs):
+        url = self.context.absolute_url()
+        query = {}
+        for x in "pagenumber", "pagesize", "review_state":
+            if str(getattr(self, x)) != 'None':
+                query['%s_%s'%(self.form_id, x)] = getattr(self, x)
+        for x in kwargs.keys():
+            query['%s_%s'%(self.form_id, x)] = kwargs.get(x)
+        if query:
+            url = url + "?" + "&".join(["%s=%s"%(x,y) for x,y in query.items()])
+        return url
 
     def __call__(self):
         """ Handle request parameters and render the form."""
@@ -534,8 +547,7 @@ class BikaListingView(BrowserView):
                  path,
                  safe_unicode(description))
 
-            modified = TimeOrDate(self.context,
-                                  obj.ModificationDate, long_format = 1)
+            modified = self.ulocalized_time(obj.modified()),
 
             # element css classes
             type_class = 'contenttype-' + \

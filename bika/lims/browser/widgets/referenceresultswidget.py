@@ -2,15 +2,17 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Registry import registerWidget, registerPropertyType
 from Products.Archetypes.Widget import TypesWidget
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 import json
 
 class ReferenceResultsView(BikaListingView):
     """ bika listing to display reference results for a
-        Reference Sample referenceresults parameter must
-        be list of dict(ReferenceResultsField value)
+        Reference Sample's widget
+
+        referenceresults parameter must be list of
+        dict(ReferenceResultsField value)
     """
 
     def __init__(self, context, request, fieldvalue, allow_edit):
@@ -23,7 +25,6 @@ class ReferenceResultsView(BikaListingView):
         self.show_select_row = False
         self.show_select_all_checkbox = False
         self.show_select_column = False
-        self.setoddeven = False
         self.pagesize = 1000
         self.allow_edit = allow_edit
 
@@ -53,52 +54,83 @@ class ReferenceResultsView(BikaListingView):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         self.categories = []
         services = bsc(portal_type = 'AnalysisService',
-                       inactive_state = 'active',
                        sort_on = 'sortable_title')
         items = []
         for service in services:
-            cat = service.getCategoryTitle
+            service = service.getObject()
+            cat = service.getCategoryTitle()
             if cat not in self.categories:
                 self.categories.append(cat)
-            if service.UID in self.referenceresults:
-                refres = self.referenceresults[service.UID]
+            if service.UID() in self.referenceresults:
+                refres = self.referenceresults[service.UID()]
             else:
-                refres = {'uid': service.UID,
+                refres = {'uid': service.UID(),
                           'result':'',
                           'min':'',
                           'max':''}
+
+            after_icons = ' <span class="discreet">(%s)</span>&nbsp;&nbsp;' % service.getKeyword()
+            if service.getAccredited():
+                after_icons += "<img\
+                src='%s/++resource++bika.lims.images/accredited.png'\
+                title='%s'>"%(self.context.absolute_url(),
+                              _("Accredited"))
+            if service.getReportDryMatter():
+                after_icons += "<img\
+                src='%s/++resource++bika.lims.images/dry.png'\
+                title='%s'>"%(self.context.absolute_url(),
+                              _("Can be reported as dry matter"))
+            if service.getAttachmentOption() == 'r':
+                after_icons += "<img\
+                src='%s/++resource++bika.lims.images/attach_reqd.png'\
+                title='%s'>"%(self.context.absolute_url(),
+                              _("Attachment required"))
+            if service.getAttachmentOption() == 'n':
+                after_icons += "<img\
+                src='%s/++resource++bika.lims.images/attach_no.png'\
+                title='%s'>"%(self.context.absolute_url(),
+                              _('Attachment not permitted'))
+
+            workflow = getToolByName(self.context, 'portal_workflow')
+            state = workflow.getInfoFor(service, 'inactive_state', '')
+
+            unit = service.getUnit()
+            unitspan = unit and "<span class='discreet'>%s</span>" % unit or ''
+            percspan = "<span class='discreet'>%</span>";
 
             # this folderitems doesn't subclass from the bika_listing.py
             # so we create items from scratch
             item = {
                 'obj': service,
-                'id': service.id,
-                'uid': service.UID,
-                'title': service.Title,
+                'id': service.getId(),
+                'uid': service.UID(),
+                'title': service.Title(),
                 'category': cat,
-                'selected': service.UID in self.referenceresults.keys(),
+                'selected': service.UID() in self.referenceresults.keys(),
                 'type_class': 'contenttype-ReferenceResult',
                 'url': service.absolute_url(),
                 'relative_url': service.absolute_url(),
                 'view_url': service.absolute_url(),
-                'service': service.Title,
+                'service': service.Title(),
                 'result': refres['result'],
                 'error': '',
                 'min': refres['min'],
                 'max': refres['max'],
                 'replace': {},
                 'before': {},
-                'after': {},
+                'after': {'service':after_icons,
+                          'result':unitspan,
+                          'min':unitspan,
+                          'max':unitspan,
+                          'error': percspan},
                 'choices':{},
-                'class': {},
-                'state_class': 'state-active',
+                'class': "state-%s" % state,
+                'state_class': 'state-%s' % state,
                 'allow_edit': ['result', 'error','min', 'max'],
             }
             items.append(item)
 
         self.categories.sort()
-        for i in range(len(items)):
-            items[i]['table_row_class'] = "even"
 
         return items
 

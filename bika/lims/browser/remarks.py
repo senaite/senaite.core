@@ -1,11 +1,10 @@
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from DateTime import DateTime
 from AccessControl import getSecurityManager
 from AccessControl import ClassSecurityInfo
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.Widget import TextAreaWidget
 from Products.Archetypes.Registry import registerWidget
-from bika.lims.utils import TimeOrDate
 import plone
 
 from plone.intelligenttext.transforms import \
@@ -21,7 +20,7 @@ class ajaxSetRemarks(BrowserView):
         value = self.request['value'].strip() + "\n\n"
         existing = self.context.getRemarks(mimetype='text/x-web-intelligent').strip()
 
-        date = TimeOrDate(self.context, DateTime(), long_format=True)
+        date = self.ulocalized_time(DateTime, long_format=True)
         user = getSecurityManager().getUser()
         divider = "=== %s (%s)\n" % (date, user)
 

@@ -1,35 +1,29 @@
-# this file is maintained manually.
-# contains bika translations from the plone domain.
+# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
+# SOME DESCRIPTIVE TITLE.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 msgid ""
 msgstr ""
-"Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-06-20 09:26+0000\n"
-"PO-Revision-Date: 2012-01-01 23:11+0000\n"
-"Last-Translator: Bika <bikasupport@bikalabs.com>\n"
-"Language-Team: Bika <bikasupport@bikalabs.com>\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2012-09-25 17:05+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
-"Domain: DOMAIN\n"
-
-#: ../profiles/default/types/ARProfile.xml
-msgid "AR Profile"
-msgstr ""
-
-#: ../profiles/default/types/ARProfiles.xml
-msgid "AR Profiles"
-msgstr ""
+"Domain: plone\n"
 
 #: ../profiles/default/types/ARTemplate.xml
 msgid "AR Template"
 msgstr ""
 
-#: ../profiles/default/types/ARTemplates.xml
 #: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/ARTemplates.xml
+#: ../profiles/default/types/Client.xml
 msgid "AR Templates"
 msgstr ""
 
@@ -77,12 +71,18 @@ msgstr ""
 msgid "Analysis Category"
 msgstr ""
 
-#: ../profiles/default/types/AnalysisRequest.xml
-msgid "Analysis Request"
+#: ../profiles/default/types/AnalysisProfile.xml
+msgid "Analysis Profile"
 msgstr ""
 
 #: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/AnalysisProfiles.xml
+#: ../profiles/default/types/Client.xml
 msgid "Analysis Profiles"
+msgstr ""
+
+#: ../profiles/default/types/AnalysisRequest.xml
+msgid "Analysis Request"
 msgstr ""
 
 #: ../profiles/default/actions.xml
@@ -240,10 +240,6 @@ msgstr ""
 msgid "Extracts"
 msgstr ""
 
-#: ../profiles/default/actions.xml
-msgid "Import"
-msgstr ""
-
 #: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
 msgid "Imported"
 msgstr ""
@@ -282,10 +278,6 @@ msgstr ""
 msgid "Invoices"
 msgstr ""
 
-#: ../profiles/default/actions.xml
-msgid "LIMS"
-msgstr ""
-
 #: ../profiles/default/types/LabContact.xml
 msgid "Lab Contact"
 msgstr ""
@@ -318,7 +310,7 @@ msgstr ""
 msgid "Large Sticker"
 msgstr ""
 
-#: ../profiles/default/types/ARProfile.xml
+#: ../profiles/default/types/AnalysisProfile.xml
 #: ../profiles/default/types/AnalysisRequest.xml
 #: ../profiles/default/types/AnalysisService.xml
 msgid "Log"
@@ -329,6 +321,7 @@ msgid "Log entry"
 msgstr ""
 
 #: ../profiles/default/types/Contact.xml
+#: ../profiles/default/types/LabContact.xml
 msgid "Login details"
 msgstr ""
 
@@ -408,10 +401,6 @@ msgstr ""
 msgid "Productivity"
 msgstr ""
 
-#: ../profiles/default/types/Client.xml
-msgid "Profiles"
-msgstr ""
-
 #: ../profiles/default/types/ReportFolder.xml
 msgid "Quality Control"
 msgstr ""
@@ -480,16 +469,6 @@ msgstr ""
 msgid "Registered"
 msgstr ""
 
-#: ../profiles/default/types/RejectAnalysis.xml
-msgid "Reject Analysis"
-msgstr ""
-
-#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
-#: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
-#: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
-msgid "Rejected"
-msgstr ""
-
 #: ../profiles/default/actions.xml
 #: ../profiles/default/types/Report.xml
 msgid "Report"
@@ -511,6 +490,15 @@ msgstr ""
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_sample_workflow/definition.xml
 msgid "Sample Due"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/SampleMatrices.xml
+msgid "Sample Matrices"
+msgstr ""
+
+#: ../profiles/default/types/SampleMatrix.xml
+msgid "Sample Matrix"
 msgstr ""
 
 #: ../profiles/default/types/SamplePartition.xml
@@ -543,6 +531,10 @@ msgstr ""
 msgid "Sample received"
 msgstr ""
 
+#: ../profiles/default/types/Client.xml
+msgid "SamplePoints"
+msgstr ""
+
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_sample_workflow/definition.xml
@@ -556,6 +548,15 @@ msgstr ""
 
 #: ../profiles/default/types/SamplesFolder.xml
 msgid "SamplesFolder"
+msgstr ""
+
+#: ../profiles/default/types/SamplingDeviation.xml
+msgid "Sampling Deviation"
+msgstr ""
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/SamplingDeviations.xml
+msgid "Sampling Deviations"
 msgstr ""
 
 #: ../profiles/default/types/AnalysisRequest.xml
@@ -578,10 +579,6 @@ msgstr ""
 
 #: ../profiles/default/types/SupplyOrder.xml
 msgid "Supply Order"
-msgstr ""
-
-#: ../profiles/default/types/Client.xml
-msgid "Templates"
 msgstr ""
 
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
@@ -682,6 +679,10 @@ msgstr ""
 #: ../profiles/default/workflows/bika_referencesample_workflow/definition.xml
 #: ../profiles/default/workflows/bika_sample_workflow/definition.xml
 msgid "dispose_transition_title"
+msgstr ""
+
+#. Default: "Duplicate"
+msgid "duplicate_transition_title"
 msgstr ""
 
 #. Default: "Expire"
@@ -801,6 +802,10 @@ msgstr ""
 msgid "publish_transition_title"
 msgstr ""
 
+#. Default: "Reassign"
+msgid "reassign_transition_title"
+msgstr ""
+
 #. Default: "Receive sample"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
@@ -854,7 +859,7 @@ msgstr ""
 
 #. Default: "Save selection"
 msgid "save_selection_button_transition_title"
-msgstr "Save selection"
+msgstr ""
 
 #. Default: "Submit ARImport"
 #: ../profiles/default/workflows/bika_arimport_workflow/definition.xml

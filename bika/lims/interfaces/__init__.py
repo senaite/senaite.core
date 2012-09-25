@@ -37,11 +37,23 @@ class IReportFolder(Interface):
 class ISample(Interface):
     """Sample"""
 
+class ISampleMatrix(Interface):
+    """Sample Matrix"""
+
+class ISampleMatrices(Interface):
+    """Sample Matrices"""
+
 class ISamplePartition(Interface):
     """Sample"""
 
 class ISamplesFolder(Interface):
     """Samples Folder"""
+
+class ISamplingDeviation(Interface):
+    """Sampling Deviation"""
+
+class ISamplingDeviations(Interface):
+    """Sampling Deviations"""
 
 class IWorksheetFolder(Interface):
     """WorksheetFolder"""
@@ -60,6 +72,9 @@ class IReferenceSupplier(Interface):
 
 class IReferenceSuppliers(Interface):
     """Reference Suppliers """
+
+class IReportsFolder(Interface):
+    """Reports Folder"""
 
 class IInvoice(Interface):
     """Invoice"""
@@ -95,6 +110,10 @@ class ICalculation(Interface):
     ""
 class ICalculations(Interface):
     ""
+class IContacts(Interface):
+    ""
+class IContact(Interface):
+    ""
 class IDepartments(Interface):
     ""
 class IContainers(Interface):
@@ -105,11 +124,13 @@ class IInstruments(Interface):
     ""
 class IAnalysisSpecs(Interface):
     ""
-class IARProfiles(Interface):
+class IAnalysisProfiles(Interface):
     ""
 class IARTemplates(Interface):
     ""
 class ILabContacts(Interface):
+    ""
+class ILabContact(Interface):
     ""
 class IMethods(Interface):
     ""

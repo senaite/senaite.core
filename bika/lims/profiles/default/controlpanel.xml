@@ -66,6 +66,15 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
+ <configlet title="Sample Matrices" action_id="bika_samplematrices"
+    appId="bika.lims" category="bika" condition_expr=""
+    icon_expr="string:++resource++bika.lims.images/samplematrix.png"
+    url_expr="string:$portal_url/bika_setup/bika_samplematrices"
+	visible="True"
+	i18n:attributes="title">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
  <configlet title="Sample Types" action_id="bika_sampletypes"
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/sampletype.png"
@@ -84,6 +93,15 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
+ <configlet title="Sampling Deviations" action_id="bika_samplingdeviations"
+    appId="bika.lims" category="bika" condition_expr=""
+    icon_expr="string:++resource++bika.lims.images/samplingdeviation.png"
+    url_expr="string:$portal_url/bika_setup/bika_samplingdeviations"
+	visible="True"
+	i18n:attributes="title">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
  <configlet title="Instruments" action_id="bika_instruments"
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/instrument.png"
@@ -93,10 +111,10 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
- <configlet title="Methods" action_id="bika_methods"
+ <configlet title="Methods" action_id="methods"
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/method.png"
-    url_expr="string:$portal_url/bika_methods"
+    url_expr="string:$portal_url/methods"
     visible="True"
 	i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
@@ -147,10 +165,10 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
- <configlet title="Analysis Profiles" action_id="bika_arprofiles"
+ <configlet title="Analysis Profiles" action_id="bika_analysisprofiles"
     appId="bika.lims" category="bika" condition_expr=""
-    icon_expr="string:++resource++bika.lims.images/arprofile.png"
-    url_expr="string:$portal_url/bika_setup/bika_arprofiles"
+    icon_expr="string:++resource++bika.lims.images/analysisprofile.png"
+    url_expr="string:$portal_url/bika_setup/bika_analysisprofiles"
     visible="True"
 	i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
@@ -168,7 +186,7 @@
  <configlet title="Lab Products" action_id="bika_labproducts"
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/product.png"
-    url_expr="string:$portal_url/bika_setup/labproducts"
+    url_expr="string:$portal_url/bika_setup/bika_labproducts"
     visible="True"
 	i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>

@@ -1,39 +1,34 @@
-# this file is maintained manually.
-# contains bika translations from the plone domain.
+# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
+# SOME DESCRIPTIVE TITLE.
 # Translators:
+# <campbell@bikalabs.com>, 2012.
+# <campbell@bikalabs.com>, 2012.
 # Jordi Puiggené <jordi.puiggene@gmail.com>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-06-20 09:26+0000\n"
-"PO-Revision-Date: 2012-05-11 14:41+0000\n"
-"Last-Translator: lemoene Smit <admin@bikalabs.com>\n"
-"Language-Team: Bika <bikasupport@bikalabs.com>\n"
+"POT-Creation-Date: 2012-09-25 17:05+0000\n"
+"PO-Revision-Date: 2012-09-17 16:28+0000\n"
+"Last-Translator: Jordi Puiggené <jordi.puiggene@gmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
-"Domain: DOMAIN\n"
+"Domain: plone\n"
 "Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
 "Language: ca\n"
-
-#: ../profiles/default/types/ARProfile.xml
-msgid "AR Profile"
-msgstr "Perfil de sol·licitud d'anàlisi"
-
-#: ../profiles/default/types/ARProfiles.xml
-msgid "AR Profiles"
-msgstr "Perfils de sol·licitud d'anàlisi"
 
 #: ../profiles/default/types/ARTemplate.xml
 msgid "AR Template"
 msgstr "Plantilla de sol·licitud d'anàlisi"
 
-#: ../profiles/default/types/ARTemplates.xml
 #: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/ARTemplates.xml
+#: ../profiles/default/types/Client.xml
 msgid "AR Templates"
 msgstr "Plantilles de sol·licituds d'anàlisi"
 
@@ -81,13 +76,19 @@ msgstr "Categories d'anàlisi"
 msgid "Analysis Category"
 msgstr "Categoria d'anàlisi"
 
+#: ../profiles/default/types/AnalysisProfile.xml
+msgid "Analysis Profile"
+msgstr "Perfil de sol·licitud d'anàlisi"
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/AnalysisProfiles.xml
+#: ../profiles/default/types/Client.xml
+msgid "Analysis Profiles"
+msgstr "Perfils de sol·licituds d'anàlisi"
+
 #: ../profiles/default/types/AnalysisRequest.xml
 msgid "Analysis Request"
 msgstr "Sol·licitud d'anàlisi"
-
-#: ../profiles/default/controlpanel.xml
-msgid "Analysis Profiles"
-msgstr "Perfils de sol·licituds d'anàlisi"
 
 #: ../profiles/default/actions.xml
 #: ../profiles/default/types/AnalysisRequestsFolder.xml
@@ -244,10 +245,6 @@ msgstr "Exporta el lot"
 msgid "Extracts"
 msgstr "Extractes"
 
-#: ../profiles/default/actions.xml
-msgid "Import"
-msgstr "Importació"
-
 #: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
 msgid "Imported"
 msgstr "Importats"
@@ -286,10 +283,6 @@ msgstr "Factura els lots"
 msgid "Invoices"
 msgstr "Factures"
 
-#: ../profiles/default/actions.xml
-msgid "LIMS"
-msgstr "LIMS"
-
 #: ../profiles/default/types/LabContact.xml
 msgid "Lab Contact"
 msgstr "Contactes del laboratori"
@@ -322,7 +315,7 @@ msgstr "Informació del laboratori"
 msgid "Large Sticker"
 msgstr "Etiqueta gran"
 
-#: ../profiles/default/types/ARProfile.xml
+#: ../profiles/default/types/AnalysisProfile.xml
 #: ../profiles/default/types/AnalysisRequest.xml
 #: ../profiles/default/types/AnalysisService.xml
 msgid "Log"
@@ -333,6 +326,7 @@ msgid "Log entry"
 msgstr "Entrada del registre"
 
 #: ../profiles/default/types/Contact.xml
+#: ../profiles/default/types/LabContact.xml
 msgid "Login details"
 msgstr "Dades d'accés"
 
@@ -412,10 +406,6 @@ msgstr "Imprimeix la llista de preus"
 msgid "Productivity"
 msgstr "Productivitat"
 
-#: ../profiles/default/types/Client.xml
-msgid "Profiles"
-msgstr "Perfils"
-
 #: ../profiles/default/types/ReportFolder.xml
 msgid "Quality Control"
 msgstr "Control de qualitat"
@@ -426,7 +416,7 @@ msgstr "Preguntes"
 
 #: ../profiles/default/actions.xml
 msgid "Query"
-msgstr ""
+msgstr "Consulta"
 
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
@@ -484,16 +474,6 @@ msgstr "Proveïdors de referència"
 msgid "Registered"
 msgstr "Registrat"
 
-#: ../profiles/default/types/RejectAnalysis.xml
-msgid "Reject Analysis"
-msgstr "Rebutja l'anàlisi"
-
-#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
-#: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
-#: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
-msgid "Rejected"
-msgstr "Rebutjat"
-
 #: ../profiles/default/actions.xml
 #: ../profiles/default/types/Report.xml
 msgid "Report"
@@ -516,6 +496,15 @@ msgstr "Mostra"
 #: ../profiles/default/workflows/bika_sample_workflow/definition.xml
 msgid "Sample Due"
 msgstr "Mostra pendent"
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/SampleMatrices.xml
+msgid "Sample Matrices"
+msgstr "Sample Matrices"
+
+#: ../profiles/default/types/SampleMatrix.xml
+msgid "Sample Matrix"
+msgstr "Sample Matrix"
 
 #: ../profiles/default/types/SamplePartition.xml
 msgid "Sample Partition"
@@ -547,6 +536,10 @@ msgstr "Tipus de mostres"
 msgid "Sample received"
 msgstr "Mostra rebuda"
 
+#: ../profiles/default/types/Client.xml
+msgid "SamplePoints"
+msgstr "Punts de mostreig"
+
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_sample_workflow/definition.xml
@@ -561,6 +554,15 @@ msgstr "Mostres"
 #: ../profiles/default/types/SamplesFolder.xml
 msgid "SamplesFolder"
 msgstr "SamplesFolder"
+
+#: ../profiles/default/types/SamplingDeviation.xml
+msgid "Sampling Deviation"
+msgstr "Sampling Deviation"
+
+#: ../profiles/default/controlpanel.xml
+#: ../profiles/default/types/SamplingDeviations.xml
+msgid "Sampling Deviations"
+msgstr "Sampling Deviations"
 
 #: ../profiles/default/types/AnalysisRequest.xml
 #: ../profiles/default/types/Sample.xml
@@ -583,10 +585,6 @@ msgstr "Proveïdors"
 #: ../profiles/default/types/SupplyOrder.xml
 msgid "Supply Order"
 msgstr "Comanda de proveïdor"
-
-#: ../profiles/default/types/Client.xml
-msgid "Templates"
-msgstr ""
 
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
@@ -664,7 +662,6 @@ msgstr "Assigna"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
-#, fuzzy
 msgid "attach_transition_title"
 msgstr "Afegeix un fitxer adjunt"
 
@@ -689,6 +686,10 @@ msgstr "Envia la comanda"
 msgid "dispose_transition_title"
 msgstr "Descarta"
 
+#. Default: "Duplicate"
+msgid "duplicate_transition_title"
+msgstr "Duplicate"
+
 #. Default: "Expire"
 #: ../profiles/default/workflows/bika_referencesample_workflow/definition.xml
 #: ../profiles/default/workflows/bika_sample_workflow/definition.xml
@@ -702,19 +703,19 @@ msgstr "Importació"
 
 #. Default: "Accounting"
 msgid "label_schema_Accounting"
-msgstr "label_schema_Accounting"
+msgstr "Accounting"
 
 #. Default: "Address"
 msgid "label_schema_Address"
-msgstr "label_schema_Address"
+msgstr "Address"
 
 #. Default: "Analyses"
 msgid "label_schema_Analyses"
-msgstr ""
+msgstr "Anàlisis"
 
 #. Default: "Bank details"
 msgid "label_schema_Bank details"
-msgstr "label_schema_Bank details"
+msgstr "Dades d'accés"
 
 #. Default: "Calculation"
 msgid "label_schema_Calculation"
@@ -722,11 +723,11 @@ msgstr "Càlcul"
 
 #. Default: "Container and Preservation"
 msgid "label_schema_Container and Preservation"
-msgstr ""
+msgstr "Container and Preservation"
 
 #. Default: "Dates"
 msgid "label_schema_Dates"
-msgstr "label_schema_Dates"
+msgstr "Dates"
 
 #. Default: "Description"
 msgid "label_schema_Description"
@@ -734,23 +735,23 @@ msgstr "Descripció"
 
 #. Default: "Email Telephone Fax"
 msgid "label_schema_Email Telephone Fax"
-msgstr "label_schema_Email Telephone Fax"
+msgstr "Email Telephone Fax"
 
 #. Default: "ID Server"
 msgid "label_schema_ID Server"
-msgstr "label_schema_ID Server"
+msgstr "ID Server"
 
 #. Default: "Labels"
 msgid "label_schema_Labels"
-msgstr "label_schema_Labels"
+msgstr "Labels"
 
 #. Default: "Layout"
 msgid "label_schema_Layout"
-msgstr "label_schema_Layout"
+msgstr "Layout"
 
 #. Default: "Location"
 msgid "label_schema_Location"
-msgstr "label_schema_Location"
+msgstr "Location"
 
 #. Default: "Method"
 msgid "label_schema_Method"
@@ -778,15 +779,15 @@ msgstr "Informes de resultats"
 
 #. Default: "Sample Partitions"
 msgid "label_schema_Sample Partitions"
-msgstr ""
+msgstr "Sample Partitions"
 
 #. Default: "Security"
 msgid "label_schema_Security"
-msgstr "label_schema_Security"
+msgstr "Security"
 
 #. Default: "Uncertainties"
 msgid "label_schema_Uncertainties"
-msgstr "label_schema_Uncertainties"
+msgstr "Uncertainties"
 
 #. Default: "Prepublish"
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
@@ -805,6 +806,10 @@ msgstr "Conserva"
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "publish_transition_title"
 msgstr "Publish"
+
+#. Default: "Reassign"
+msgid "reassign_transition_title"
+msgstr "Reassigna"
 
 #. Default: "Receive sample"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
@@ -840,7 +845,7 @@ msgstr "Retira"
 #. Default: "Retract worksheet"
 #: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
 msgid "retract_worksheet_transition_title"
-msgstr ""
+msgstr "Retira"
 
 #. Default: "Sample"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
@@ -864,7 +869,7 @@ msgstr "Save selection"
 #. Default: "Submit ARImport"
 #: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
 msgid "submit_arimport_transition_title"
-msgstr ""
+msgstr "Tramet"
 
 #. Default: "Submit for verification"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml

@@ -1,6 +1,5 @@
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import TimeOrDate
 
 class ReferenceSamplesView(BikaListingView):
 
@@ -100,14 +99,10 @@ class ReferenceSamplesView(BikaListingView):
                  obj.getReferenceManufacturer().Title() or ''
             items[x]['Definition'] = obj.getReferenceDefinition() and \
                  obj.getReferenceDefinition().Title() or ''
-            items[x]['DateSampled'] = \
-                 TimeOrDate(self.context, obj.getDateSampled())
-            items[x]['DateReceived'] = \
-                 TimeOrDate(self.context, obj.getDateReceived())
-            items[x]['DateOpened'] = \
-                 TimeOrDate(self.context, obj.getDateOpened())
-            items[x]['ExpiryDate'] = \
-                 TimeOrDate(self.context, obj.getExpiryDate())
+            items[x]['DateSampled'] = self.ulocalized_time(obj.getDateSampled())
+            items[x]['DateReceived'] = self.ulocalized_time(obj.getDateReceived())
+            items[x]['DateOpened'] = self.ulocalized_time(obj.getDateOpened())
+            items[x]['ExpiryDate'] = self.ulocalized_time(obj.getExpiryDate())
 
             after_icons = ''
             if obj.getBlank():

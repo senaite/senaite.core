@@ -1,6 +1,6 @@
 id: front-page
 title: Welcome to Gaob Bika LIMS 3
-description: This is 3.0a3 of 21June 2012
+description: This is 3.0 RC1 of 24 Sept 2012
 subject:
 relatedItems:
 location:
@@ -8,7 +8,7 @@ language:
 effectiveDate: 2011/01/01 23:00:00 GMT+2
 expirationDate: None
 creation_date: 2011/01/01 23:00:00 GMT+2
-modification_date: 2012/06/21 03:22:36.020815 GMT+2
+modification_date: 2012/09/24 03:22:36.020815 GMT+2
 creators: admin
 contributors:
 rights:
@@ -18,154 +18,54 @@ presentation: False
 tableContents: False
 Content-Type: text/html
 
-<dl class="enableFormTabbing"> <dt id="fieldsetlegend-Access"> Access </dt> <dd id="fieldset-Access">
-<table class="invisible two_column_table">
-<tbody>
-<tr>
-<td>
-<h2>Access</h2>
-<p><span class="link-mailto"><a href="mailto:demorequest@bikalabs.com?subject=Access%20to%20Gaob%20Bika%20LIMS%203%20on-line%20installation"><span>Bika LIMS 3 demo request</span></a></span><b><br /></b></p>
-<h2>Feedback</h2>
-<p>Don't hesitate to post questions and comment to the Bika mailing lists: <a class="external-link" href="https://groups.google.com/forum/?hl=en#%21forum/bika-design">LIMS design</a>, <a class="external-link" href="http://lists.sourceforge.net/lists/listinfo/bika-users">Users</a> or <a class="external-link" href="http://lists.sourceforge.net/lists/listinfo/bika-developers">Developers</a></p>
-<p>Please log issues and feature requests in the <a class="external-link" href="https://github.com/bikalabs/Bika-LIMS/issues">public issue tracker</a> <br /><br />IRC <a class="chatzilla-link" href="http://webchat.freenode.net?channels=bika" id="ch-url-anchor">irc://freenode/bika</a>, the #bika channel on irc.freenode.net</p>
-<h2 align="left" class="Subheading">Test data</h2>
-<p align="left">We created standardised spreadsheets to configure the LIMS with setup data of your choice. The demo is populated with data of uniform   nature for ease of testing. See <a class="internal-link" href="setup-data-in-this-installation">Setup data used to configure this installation</a></p>
-<h2 align="left" class="Subheading">Installation</h2>
-<p>Installation guides: <a href="http://www.bikalabs.com/helpcentre/manual/bika-installation-guides/bika-on-ubuntu-linux/installing-bika-lims-3"><span class="state-published">Linux</span></a> · <a href="http://www.bikalabs.com/helpcentre/manual/bika-installation-guides/bika-on-windows/installing-bika-lims-3-0"><span class="state-published">Windows</span></a></p>
-<h2 align="left" class="Subheading">Gaob?</h2>
-<p>In the tradition of <i>Chief </i>Inkosi Bika LIMS 2 using a  title for a release, this edition is code-named<i> </i>Gaob Bika LIMS 3. Gaob, <i>King,</i> is taken from <a class="external-link" href="http://www.san.org.za/">Khoi San</a> Nama, language of <a class="external-link" href="http://www.independent.co.uk/news/science/worlds-most-ancient-race-traced-in-dna-study-1677113.html">the world's first  people</a></p>
-<h2 align="left" class="Subheading">Download</h2>
-<ul>
-<li><a href="https://github.com/bikalabs/Bika-LIMS">PyPI</a></li>
-<li><a href="https://github.com/bikalabs/Bika-LIMS">GitHub</a></li>
+<div style="margin-bottom:30px;" class="center">
+<h2 style="margin-bottom:10px;border-bottom:1px solid #888;font-size:1.6em;text-align:left;"> Workflow</h2>
+<p style="line-height:140%;font-size:1.2em;text-align:left;padding-bottom:15px;">
+     The Bika LIMS workflow fits all lab disciplines, conforming to the ISO 17025 standard. Bika is Open Source, flexible and allows customisations to your lab's specific requirements.</p>
+<img src="workflow-diagram.png" alt="Bika LIMS" class="image-inline" title="Bika LIMS"/>
+</div>
+<div style="margin-bottom:30px;">
+<div style="float:left;width:47%;">
+<h2 style="margin-bottom:10px;border-bottom:1px solid #888;font-size:1.6em;">The meaning of Gaob</h2>
+<p style="line-height:140%;font-size:1.2em;">In the tradition of <i>Chief </i>Inkosi Bika LIMS 2 using a title for a release, this edition is code-named<i> </i>Gaob Bika LIMS 3. Gaob, <i>King,</i> is taken from <a class="external-link" href="http://www.san.org.za/">Khoi San</a> Nama, language of <a class="external-link" href="http://www.independent.co.uk/news/science/worlds-most-ancient-race-traced-in-dna-study-1677113.html">the world's first people</a>.</p>
+
+<h2 style="margin-bottom:10px;padding-top:15px;border-bottom:1px solid #888;font-size:1.6em;">Documentation</h2>
+        <p style="line-height:140%;font-size:1.2em;">
+            Work in progress:
+        <ul style="font-size:1.2em;margin-left:15px;">
+                <li><a class="external-link" href="http://demo.bikalabs.com/knowledge-centre/manual/bika-3-user-manual">User Manual</a></li>
+                <li><a href="http://demo.bikalabs.com/knowledge-centre/manual/bika-3-user-manual/introduction-and-overview"><span class="state-published">Introduction and Overview</span></a></li>
+                <li><a href="http://demo.bikalabs.com/knowledge-centre/manual/bika-3-user-manual/setup-and-configuration"><span class="state-published">Setup and Configuration</span></a></li>
+    </ul>
+        </p>
+        
+        <h2 style="margin-bottom:10px;border-bottom:1px solid #888;font-size:1.6em;padding-top:15px;">Gaob Bika LIMS 3 installation</h2>
+        <p style="line-height:140%;font-size:1.2em;">
+            Gaob Bika 3 installs easily:
+    <ul style="font-size:1.2em;margin-left:15px;">
+              <li><a href="http://www.bikalabs.com/helpcentre/manual/bika-installation-guides/bika-on-ubuntu-linux/installing-bika-lims-3">Linux</a></li>
+              <li><a href="http://www.bikalabs.com/helpcentre/manual/bika-installation-guides/bika-on-windows/installing-bika-lims-3-0">Windows</a></li>
+    </ul>
+        </p>
+  </div>
+    <div style="float:right;width:47%;">
+        
+        <h2 style="margin-bottom:10px;border-bottom:1px solid #888;font-size:1.6em;">Source code</h2>
+        <p style="line-height:140%;font-size:1.2em;">
+            If you want more power, install Gaob Bika 3 by retrieving the source directly from the code repository for updates. It's the recommended installation method for developers and users who want to test the latest version.
+      <ul style="font-size:1.2em;margin-left:15px;">
+               <li><a href="https://github.com/bikalabs/Bika-LIMS/tree/master/docs/installation.txt">Installation</a></li>
+               <li><a href="https://github.com/bikalabs/Bika-LIMS/tree/dev">Source repository</a></li>
+               <li><a class="external-link" href="http://www.bikalabs.com/softwarecenter/bika/releases/3.0">Bika 3 Project page</a></li>
+      </ul>
+        </p>
+        
+        <h2 style="margin-bottom:10px;border-bottom:1px solid #888;font-size:1.6em;padding-top:15px;">Feedback and support</h2>
+<ul style="font-size:1.2em;margin-left:15px;">
+<li>Bika mailing lists: <a class="external-link" href="https://groups.google.com/forum/?hl=en#%21forum/bika-design">LIMS design</a>, <a class="external-link" href="http://lists.sourceforge.net/lists/listinfo/bika-users">Users</a> and <a class="external-link" href="http://lists.sourceforge.net/lists/listinfo/bika-developers">Developers</a></li>
+<li>Bug reporting, issues and feature requests: <a class="external-link" href="https://github.com/bikalabs/Bika-LIMS/issues">Public issue tracker</a></li>
+<li>IRC: <a class="chatzilla-link" href="http://webchat.freenode.net?channels=bika" id="ch-url-anchor">irc://freenode.net/#bika</a>, the #bika channel on irc.freenode.net</li>
 </ul>
-</td>
-<td style="text-align: left; ">
-<p style="text-align: center; "><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview/bikas-web-based-workflow"><img class="image-inline" src="workflow-diagram.png" /></a></p>
-<p style="text-align: center; "><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview/bikas-web-based-workflow">Web based workflow</a></p>
-<p align="left"><img alt="Accredited lab analyses" src="++resource++bika.lims.images/warning.png" /> <b><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/system-defaults/bika-setup">Sampling</a> is [on] by default<br /></b></p>
-<p align="left">Labs will set sampling workflow maybe once  during the system life cycle. When enabled, the system enforces the sampling step, it gets logged and time stamped and field results captured</p>
-<p align="left"><b>Preservation<br /></b></p>
-<p align="left">When preservation was set up for a sample, the system enforces a preservation step in its workflow</p>
-<div align="left"></div>
-<div align="left"></div>
-</td>
-</tr>
-</tbody>
-</table>
-</dd> <dt id="fieldsetlegend-New"> New functions</dt> <dd id="fieldset-New">
-<table class="invisible two_column_table">
-<tbody>
-<tr>
-<td>
-<p align="center"><a class="external-link" href="http://www.bikalabs.com/portfolio/umhlathuze"><img alt="Umhlathuze logo" class="image-inline" src="http://www.bikalabs.com/images/umhlathuze" /></a></p>
-<p>New items sponsored by the water quality lab at the City of uMhlathuze, Richards Bay:</p>
-<a class="external-link" href="bika_setup/bika_calculations">Results calculations</a>,     including interim fields and dependent analyses, are user    configurable and new calculations can be added by authorised users<br /><br /> Dormant setup items can be de-activated, which will remove them from general view while maintaining database integrity. The same for sample and analysis request cancellation workflows<br /><br />
-<p><a class="external-link" href="http://plone.org/">Plone 4</a>'s versioning is used to maintain references to historical data. Working copy support combined with  content locking  allow multiple users  access to data without conflicts</p>
-<p>Using AJAX, Plone 4's user interface and a host of smaller enhancements, many clicks were saved and general performance improved</p>
-<p class="callout"><b>Where did all the columns go?</b><br /><br />To facilitate tablet display screens, users select which columns they need for Samples, Analysis Request and Worksheet lists. See <a href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview/display-columns.-screen-restrictions"><span class="state-published">Display columns. Screen restrictions</span></a> in the manual<br /><br /><b>Right click </b>on the column headers on these list to display the column display toggle menu</p>
-</td>
-<td>
-<p class="callout" style="text-align: left; "><b>New in this upgrade</b> v3.0a2<br /><br />Besides numerous improvements and bug fixes, the v3.0a2 egg includes the following:<br /><br />Optional sampling and preservation workflows and roles<br /><br />Sample partitioning · Container &amp; preservation automation<br /><br />AR templates · Sample point &amp; Sample type restrictions<br /><br />Reports (framework only). The 'Analysis per service' report shows what is planned<br /><br />Improved i18n handling, and updated translation strings from Transifex. English, Afrikaans, Spanish (Castillian and Catalan) completed. Others well under way<br /><br />Numerous performance enhancements<br /><br />Analysis Service &amp; Method associations<br /><br />Improved Analysis Service and Method pop-up<br /><br />Currency selection from Zope locales<br /><br />Combined AR View and Edit tabs<br /><br />Re-factored AR 'Add/Remove Analyses' screen<br /><br />Append only remarks fields on more objects</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd> <dt id="fieldsetlegend-Status"> Status </dt> <dd id="fieldset-Status">
-<table class="invisible two_column_table">
-<tbody>
-<tr>
-<td>
-<h3>Under construction</h3>
-<ul>
-<li>Barcoding (70%)</li>
-<li>SQL (ContentMirror) (60%)</li>
-<li>User manual (50%)</li>
-</ul>
-<h3>Bika Water</h3>
-<ul>
-<li>Sampling Schedule and Rounds</li>
-<li>Extra reports and graphs</li>
-</ul>
-</td>
-<td>
-<h3 class="Subheading">To do</h3>
-<ul>
-<li>Working hours calendar</li>
-<li>QC graphs</li>
-<li>PDF, SMS, and Fax results publication options</li>
-<li>Queries</li>
-</ul>
-<ul>
-<li>Invoices</li>
-<li>Price lists</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p align="left" style="text-align: center; "> </p>
-<div align="center"><img alt="Laboratory instruments in the LIMS/LIS" src="++resource++bika.lims.images/instrument_big.png" /> <img alt="Reference samples" src="++resource++bika.lims.images/referencesample_big.png" /> <img alt="LIMS/LIS analysis results calculations" src="++resource++bika.lims.images/calculation_big.png" /> <img alt="LIMS/LIS analysis results dependencies" src="++resource++bika.lims.images/dependencies_big.png" /> <img alt="LIMS/LIS late analyses" src="++resource++bika.lims.images/late_big.png" /> <img alt="Sample types in the LIMS/LIS" src="++resource++bika.lims.images/sampletype_big.png" /> <img alt="Sample points in the LIMS/LIS" src="++resource++bika.lims.images/samplepoint_big.png" /> <img alt="Accredited lab analyses" src="++resource++bika.lims.images/accredited_big.png" /> <img alt="Analysis results expressed as dry matter" src="++resource++bika.lims.images/dry_big.png" /><br /><br /><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview/icons">New Bika 3 icon set</a></div>
-</dd> <dt id="fieldsetlegend-Code"> Code </dt> <dd id="fieldset-Code">
-<table class="invisible two_column_table">
-<tbody>
-<tr>
-<td>
-<h3>Code repository</h3>
-<p>Fresh code is always available at <a href="https://github.com/bikalabs/Bika-LIMS">https://github.com/bikalabs/Bika-LIMS</a></p>
-<p><b><a class="external-link" href="http://www.bikalabs.com/softwarecenter/bika/releases/3.0">Bika 3 Project page</a></b></p>
-</td>
-<td align="center">
-<p>Code analysis at <a class="external-link" href="https://www.ohloh.net/p/bika">ohloh.net</a></p>
-<a class="external-link" href="https://www.ohloh.net/p/bika"><img alt="ohloh" class="image-inline" src="Plone/portal_skins/bika/CodeGraphOhloh.png" /></a><br /></td>
-</tr>
-</tbody>
-</table>
-</dd> <dt id="fieldsetlegend-Code"> Manual </dt> <dd id="fieldset-Manual">
-<table class="invisible two_column_table">
-<tbody>
-<tr>
-<td>
-<h3><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual">User Manual</a></h3>
-<p><a href="knowledge-centre/manual/bika-3-user-manual/wip.-work-in-progress"><span class="state-hidden">WIP. Work in progress</span></a></p>
-<ol>
-<li><a href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview"><span class="state-published">Introduction and Overview</span></a></li>
-<li><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration"><span class="state-published">Setup and Configuration</span></a></li>
-<li><a href="knowledge-centre/manual/bika-3-user-manual/clients"><span class="state-published">Clients</span></a></li>
-<li><a href="knowledge-centre/manual/bika-3-user-manual/samples.-analyses.-analysis-requests"><span class="state-published">Samples. Analyses. Analysis Requests</span></a></li>
-<li><a href="knowledge-centre/manual/bika-3-user-manual/worksheets"><span class="state-published">Worksheets</span></a></li>
-</ol>
-<p> </p>
-</td>
-<td style="text-align: left; ">
-<p align="left"><b>Last updates May 2012</b></p>
-<p align="left"><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/system-defaults"><span class="state-published">System Defaults</span></a></p>
-<p align="left"><a href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview/search-and-find"><span class="state-published">Search and Find</span></a></p>
-<p align="left"><a href="knowledge-centre/manual/bika-3-user-manual/users-and-roles.-groups"><span class="state-published">Users and roles. Groups</span></a></p>
-<p align="left"><a href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/methods"><span class="state-published">Methods</span></a></p>
-<p align="left"><span class="state-published"><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/ar-templates">AR Templates</a></span></p>
-<p align="left"><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/sample-types">Sample Type</a> and <a class="external-link" href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/sample-points">Sample Point</a> relationship</p>
-<p align="left"><b>Earlier updates</b></p>
-<p><a href="knowledge-centre/manual/bika-3-user-manual/samples.-analyses.-analysis-requests/receiving-samples-label-printing">Receiving Samples · Label printing </a></p>
-<p><a href="knowledge-centre/manual/bika-3-user-manual/samples.-analyses.-analysis-requests/manual-results-capture">Single AR and analysis results capture </a><a href="knowledge-centre/manual/bika-3-user-manual/samples.-analyses.-analysis-requests/results-verification"><span class="state-published"> </span></a></p>
-<p><a href="knowledge-centre/manual/bika-3-user-manual/samples.-analyses.-analysis-requests/results-verification"><span class="state-published">Results Verification. Or Retraction</span></a></p>
-<p align="left"><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview/display-columns.-screen-restrictions">Display columns. Screen restrictions</a></p>
-<p><a href="knowledge-centre/manual/bika-3-user-manual/worksheets/worksheet-overview"><span class="state-published">Worksheet Overview</span></a> <a href="knowledge-centre/manual/bika-3-user-manual/worksheets/creating-worksheets"><span class="state-published"> </span></a></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd> <dt id="fieldsetlegend-Translations"> Translations </dt> <dd id="fieldset-Translations">
-<table class="invisible two_column_table">
-<tbody>
-<tr>
-<td>
-<h3>Translations</h3>
-The Bika dictionaries are ready for translation via the easy-to-use web interface at <a class="external-link" href="https://www.transifex.net/projects/p/bika-lims/resource/bika/">Transifex.net</a>. Please see <a class="external-link" href="http://www.bikalabs.com/helpcentre/how-to/transifex">How to translate Gaob Bika 3 </a><br /><br />
-<p>Approved new translations will be taken up into future Bika releases but can also be downloaded directly from Transifex<br /><br />The Transifex interface provides a fun way to translate Bika - do so for your language now!</p>
-</td>
-<td align="center"><a href="https://www.transifex.net/" target="_blank"><img src="https://sw.transifex.net/14/static/charts/images/tx-logo-micro.png" /></a> <a href="https://www.transifex.net/projects/p/bika-lims/resource/bika/" target="_blank" title="See more information on Transifex.net">Top translations: bika-lims » bika</a> <br /><br /> <a class="external-link" href="https://www.transifex.net/projects/p/bika-lims/resource/bika/"><img src="https://www.transifex.net/projects/p/bika-lims/resource/bika/chart/image_png" /></a><br /></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
+    </div>
+</div>
+<div style="clear:both"></div>

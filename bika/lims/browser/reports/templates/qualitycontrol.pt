@@ -1,0 +1,204 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="here/main_template/macros/master"
+  i18n:domain="bika">
+<body>
+
+<metal:content-title fill-slot="content-title">
+  <h1 i18n:translate="">Quality Control Reports</h1>
+</metal:content-title>
+
+<metal:content-description fill-slot="content-description">
+</metal:content-description>
+
+<metal:content-core fill-slot="content-core">
+
+<table>
+  <tr>
+    <td VALIGN="top">
+      <fieldset>
+        <legend i18n:translate="">Report</legend>
+
+        <p>
+          <a href="#"
+             id="analysesoutofrange_selector"
+             i18n:translate="">Analyses out of range</a>
+          <br/>
+          <span i18n:translate="">
+            Analysis results out of lab or client specified range
+            Note that this may take several minutes
+          </span>
+        </p>
+
+        <p>
+          <a href="#"
+             id="analysesrepeated_selector"
+             i18n:translate="">Analyses repeated</a>
+          <br/>
+          <span i18n:translate="">
+            Repeated analyses
+          </span>
+        </p>
+
+        <p>
+          <a href="#"
+             id="resultspersamplepoint_selector"
+             i18n:translate="">Results per sample point</a>
+          <br/>
+          <span i18n:translate="">
+            Results per samplepoint and analysis service
+          </span>
+        </p>
+
+        <p>
+          <a href="#"
+             id="standardanalysisqc_selector"
+             i18n:translate="">Standard analysis QC</a>
+          <br/>
+          <span i18n:translate="">
+            Standard analysis quality control graphs
+          </span>
+        </p>
+
+        <p>
+          <a href="#"
+             id="duplicateanalysisqc_selector"
+             i18n:translate="">Duplicate analysis QC</a>
+          <br/>
+          <span i18n:translate="">
+            Duplicate analysis quality control graphs
+          </span>
+        </p>
+      </fieldset>
+    </td>
+    <td VALIGN="top">
+
+      <div id="analysesoutofrange" style="display:none" class="criteria">
+        <form action="createreport" method="post" name="qualitycontrol_analysesoutofrange">
+          <input type="hidden" name="report_id" value="qualitycontrol_analysesoutofrange" />
+          <fieldset>
+            <legend i18n:translate="">Analyses out of range</legend>
+            <tal:x content="structure context/@@selection_macros/select_analysisspecification"/>
+            <tal:x content="structure python:view.selection_macros.select_daterange(
+                                                   field_id='Received',
+                                                   field_title='Date Received')"/>
+            <tal:x content="structure python:view.selection_macros.select_state(
+                                                   workflow_id='bika_analysis_workflow',
+                                                   field_id='bika_analysis_workflow',
+                                                   field_title='Analysis state')"/>
+            <tal:x content="structure python:view.selection_macros.select_state(
+                                                   workflow_id='bika_cancellation_workflow',
+                                                   field_id='bika_cancellation_workflow',
+                                                   field_title='Cancellation state')"/>
+            <tal:x content="structure python:view.selection_macros.select_state(
+                                                   workflow_id='bika_worksheetanalysis_workflow',
+                                                   field_id='bika_worksheetanalysis_workflow',
+                                                   field_title='Worksheet state')"/>
+          </fieldset>
+          <input tabindex=""
+            class="searchButton"
+            type="submit"
+            name="submit"
+            value="Report"
+            i18n:attributes="value"/>
+        </form>
+      </div>
+
+      <div id="analysesrepeated" style="display:none" class="criteria">
+        <form action="createreport" method="post" name="qualitycontrol_analysesrepeated">
+          <input type="hidden" name="report_id" value="qualitycontrol_analysesrepeated" />
+          <fieldset>
+            <legend i18n:translate="">Analyses repeated</legend>
+              <tal:x content="structure python:view.selection_macros.select_daterange(
+                                                     field_id='Received',
+                                                     field_title='Date Received')"/>
+              <tal:x content="structure python:view.selection_macros.select_state(
+                                                     workflow_id='bika_analysis_workflow',
+                                                     field_id='bika_analysis_workflow',
+                                                     field_title='Analysis state')"/>
+              <tal:x content="structure python:view.selection_macros.select_state(
+                                                     workflow_id='bika_cancellation_workflow',
+                                                     field_id='bika_cancellation_workflow',
+                                                     field_title='Cancellation state')"/>
+              <tal:x content="structure python:view.selection_macros.select_state(
+                                                     workflow_id='bika_worksheetanalysis_workflow',
+                                                     field_id='bika_worksheetanalysis_workflow',
+                                                     field_title='Worksheet state')"/>
+          </fieldset>
+            <input tabindex=""
+              class="searchButton"
+              type="submit"
+              name="submit"
+              value="Report"
+              i18n:attributes="value"/>
+        </form>
+      </div>
+
+      <div id="resultspersamplepoint" style="display:none" class="criteria">
+        <form action="createreport" method="post" name="qualitycontrol_resultspersamplepoint">
+          <input type="hidden" name="report_id" value="qualitycontrol_resultspersamplepoint" />
+          <fieldset>
+            <legend i18n:translate="">Results per sample point</legend>
+            <tal:x content="structure context/@@selection_macros/select_client"/>
+            <tal:x content="structure python:view.selection_macros.select_samplepoint(
+                                             allow_blank=False)"/>
+            <tal:x content="structure python:view.selection_macros.select_sampletype(
+                                             allow_blank=False)"/>
+            <tal:x content="structure python:view.selection_macros.select_analysisservice(
+                                             multiselect=True,
+                                             allow_blank=False)"/>
+            <tal:x content="structure python:view.selection_macros.select_daterange(
+                                             field_id='DateSampled',
+                                             field_title='Date Sampled')"/>
+            <tal:x content="structure python:view.selection_macros.select_state(
+                                             workflow_id='bika_worksheetanalysis_workflow',
+                                             field_id='bika_worksheetanalysis_workflow',
+                                             field_title='Worksheet state')"/>
+<tal:comment replace="nothing">
+</tal:comment>
+          </fieldset>
+          <input tabindex=""
+              class="searchButton"
+              type="submit"
+              name="submit"
+              value="Report"
+              i18n:attributes="value"/>
+        </form>
+      </div>
+
+      <div id="standardanalysisqc" style="display:none" class="criteria">
+        <form action="createreport" method="post" name="qualitycontrol_standardanalysisqc">
+          <input type="hidden" name="report_id" value="qualitycontrol_standardanalysisqc" />
+          <fieldset>
+            <legend i18n:translate="">Standard analysis QC</legend>
+            <br/>
+            <br/>
+            <br/>
+          </fieldset>
+          <b> Under construction </b>
+
+      </div>
+
+      <div id="duplicateanalysisqc" style="display:none" class="criteria">
+        <form action="createreport" method="post" name="qualitycontrol_duplicateanalysisqc">
+          <input type="hidden" name="report_id" value="qualitycontrol_duplicateanalysisqc" />
+          <fieldset>
+          <legend i18n:translate="">Duplicate analysis QC</legend>
+            <br/>
+            <br/>
+            <br/>
+            <b> Under construction </b>
+          </fieldset>
+        </form>
+      </div>
+    </td>
+  </tr>
+</table>
+
+</metal:content-core>
+
+</body>
+</html>
+

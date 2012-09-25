@@ -23,15 +23,6 @@ from zope.interface import implements
 #    pass
 
 schema = BikaSchema.copy() + Schema((
-    StringField('ReferenceAnalysisID',
-        required = 1,
-        searchable = True,
-        widget = StringWidget(
-            label = _("ReferenceAnalysis ID"),
-            description = _("The ID assigned to the reference analysis"),
-            visible = {'edit':'hidden'},
-        ),
-    ),
     StringField('ReferenceType',
         vocabulary = STD_TYPES,
         widget = SelectionWidget(
@@ -56,6 +47,11 @@ schema = BikaSchema.copy() + Schema((
         widget = StringWidget(
             label = _("Result"),
         )
+    ),
+    DateTimeField('ResultCaptureDate',
+        widget = ComputedWidget(
+            visible = False,
+        ),
     ),
     StringField('ResultDM',
     ),
@@ -161,6 +157,12 @@ class ReferenceAnalysis(BaseContent):
         else:
             return True, None
         return False, spec
+
+    security.declarePublic('setResult')
+    def setResult(self, value, **kw):
+        # Always update ResultCapture date when this field is modified
+        self.setResultCaptureDate(DateTime())
+        self.getField('Result').set(self, value, **kw)
 
     security.declarePublic('current_date')
     def current_date(self):

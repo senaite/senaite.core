@@ -1,0 +1,124 @@
+/* <dtml-with analysisrequest_results>
+<dtml-call "REQUEST.set('portal_url', portal_url())">
+*/
+
+body {
+    font-family: &dtml-fontFamily;;
+    background-color: &dtml-backgroundColor;;
+    color: &dtml-fontColor;;
+    font-size: &dtml-fontBaseSize;;
+}
+
+@page {
+    size: A4;
+    margin: 1cm;
+    @frame header {
+        -pdf-frame-content: headerContent;
+        top:0cm;
+        margin-left: 1cm;
+        margin-right: 1cm;
+    }
+    @frame footer {
+        -pdf-frame-content: footerContent;
+        bottom: 1cm;
+        height: 1cm;
+        margin-left: 1cm;
+        margin-right: 1cm;
+        margin-top: 1cm;
+    }
+}
+
+.out_of_range {
+    color: red;
+}
+.number {
+    text-align:left;
+}
+
+.logo-table {
+  margin-bottom:1em;
+  width: 100%;
+}
+.logo-table td {
+}
+
+.address-table {
+  margin-bottom:1.5em;
+  width: 100%;
+}
+.address-table td {
+}
+
+.heading {
+    font-size: &dtml-headingFontBaseSize;;
+    font-weight: &dtml-headingFontWeight;;
+    color: &dtml-headingFontColor;;
+}
+
+h1 {
+  font-size: &dtml-fontBiggerSize;;
+  font-weight: &dtml-headingFontWeight;;
+  color: &dtml-headingFontColor;;
+}
+
+h2 {
+  font-size: &dtml-fontBigSize;;
+  font-weight: &dtml-headingFontWeight;;
+  color: &dtml-headingFontColor;;
+}
+
+h3 {
+  font-size: &dtml-fontBaseSize;;
+  font-weight: &dtml-headingFontWeight;;
+  color: &dtml-headingFontColor;;
+}
+
+h4 {
+  font-size: &dtml-fontSmallSize;;
+  font-weight: &dtml-headingFontWeight;;
+  color: &dtml-headingFontColor;;
+}
+
+.main-table {
+    border-collapse: collapse;
+    margin-bottom: 15px !important;
+}
+
+.main-table a {
+    text-decoration: none;
+}
+
+.main-table tr {
+    padding:1px 10px;
+}
+
+.main-table th {
+    color: &dtml-tableHeaderTextColor;;
+    background-color: &dtml-tableHeaderBackgroundColor;;
+    padding:0px 4px;
+    font-size: &dtml-tableHeaderFontBaseSize; !important;
+    text-align:left;
+    vertical-align: middle !important;
+    border-top: 1px solid &dtml-tableHeaderBorderColor;;
+    border-bottom: 1px solid &dtml-tableHeaderBorderColor;;
+}
+
+.main-table td {
+    font-size: &dtml-fontSmallSize; !important;
+    vertical-align: middle !important;
+    text-align:left !important;
+    padding:1px 4px;
+    border-bottom: 1px solid &dtml-tableCellBackgroundColor;;
+}
+
+.main-table th.column,
+.main-table td.interim,
+.main-table td.Result,
+.main-table td.getRequestID,
+.main-table td.Title,
+.main-table td.ID {
+    white-space:nowrap !important;
+}
+
+/* </dtml-with> */
+

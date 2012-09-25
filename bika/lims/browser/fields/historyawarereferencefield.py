@@ -54,6 +54,8 @@ class HistoryAwareReferenceField(ReferenceField):
         member = pm.getAuthenticatedMember()
         canSaveNewVersion = pm.checkPermission(SaveNewVersion, instance)
 
+        ts = getToolByName(instance, "translation_service").translate
+
         #convert objects to uids
         #convert uids to objects
         uids = []
@@ -84,8 +86,7 @@ class HistoryAwareReferenceField(ReferenceField):
                     pr = getToolByName(instance, 'portal_repository')
                     if pr.isVersionable(targets[uid]):
                         pr.save(obj=targets[uid],
-                                comment=instance.translate(
-                                    _("Initial revision")))
+                                comment=ts(_("Initial revision")))
                 if not hasattr(instance, 'reference_versions'):
                     instance.reference_versions = {}
                 if not hasattr(targets[uid], 'version_id'):
@@ -135,19 +136,25 @@ class HistoryAwareReferenceField(ReferenceField):
 
         rd = {}
         for r in res:
+            if r is None:
+                continue
             uid = r.UID()
             if hasattr(instance, 'reference_versions') and \
                hasattr(r, 'version_id') and \
                uid in instance.reference_versions and \
                instance.reference_versions[uid] != r.version_id and \
                r.version_id != None:
+
                 version_id = instance.reference_versions[uid]
-                if canAccessPreviousVersions:
+                # a simple permission check should do fine but sometimes when we
+                # DO have the permission, and Authentication Error is raised anyway
+                try:
                     o = pr.retrieve(r, selector=version_id).object
-                else:
-                    msg = "Permission 'CMFEditions: Access previous versions' denied (%s --> %s, version_id=%s) " % \
-                        (instance,r,version_id)
-                    raise Unauthorized(msg)
+                except Exception, msg:
+                    msg = "History retrieve failed: %s can't get %s (version %s): %s" % \
+                        (instance,r,version_id, msg)
+                    logger.warn(msg)
+                    o = r
             else:
                 o = r
             rd[uid] = o

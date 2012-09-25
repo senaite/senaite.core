@@ -31,7 +31,7 @@ Content-Type: text/html
 <h3><a href="bika_setup/bika_analysisspecs"><img src="++resource++bika.lims.images/analysisspec_big.png" alt="" /> Analysis Specifications </a></h3>
 <p>All Sample Types: minimum 9,  maximum 11, tolerance 10%</p>
 <p>&nbsp;</p>
-<h3 class="western"><a href="bika_setup/bika_arprofiles"><img src="++resource++bika.lims.images/arprofile_big.png" alt="" /> Analysis Profiles </a></h3>
+<h3 class="western"><a href="bika_setup/bika_analysisprofiles"><img src="++resource++bika.lims.images/analysisprofile_big.png" alt="" /> Analysis Profiles </a></h3>
 <p class="western"><strong>Trace Metals</strong></p>
 <p class="western">Ca, Cu, Fe, Mg, Mn, Na and Zn</p>
 <p class="western"><strong>Digestable Energy</strong></p>

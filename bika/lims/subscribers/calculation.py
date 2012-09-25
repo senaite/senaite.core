@@ -25,13 +25,10 @@ def AfterTransitionEventHandler(instance, event):
             if wf.getInfoFor(service, "inactive_state") == "inactive":
                 inactive_services.append(service.Title())
         if inactive_services:
-            message = instance.translate(
-                "message_calculation_reactivate_deps_not_active",
-                "bika",
-                {'inactive_services': ", ".join(inactive_services)},
-                instance,
-                default = "Cannot activate calculation, because the following " \
-                          "service dependencies are inactive: ${inactive_services}")
+            msg = _("Cannot activate calculation, because the following "
+                    "service dependencies are inactive: ${inactive_services}",
+                    mapping = {'inactive_services': ", ".join(inactive_services)})
+            message = instance.translate(msg)
             pu.addPortalMessage(message, 'error')
             transaction.get().abort()
             raise WorkflowException
@@ -47,13 +44,10 @@ def AfterTransitionEventHandler(instance, event):
             if calc and calc.UID() == instance.UID():
                 calc_services.append(service.Title())
         if calc_services:
-            message = instance.translate(
-                "message_calculation_deactivate_in_use",
-                "bika",
-                {'calc_services': ", ".join(calc_services)},
-                instance,
-                default = "Cannot deactivate calculation, because it is " \
-                          "in use by the following services: ${calc_services}")
+            msg = _('Cannot deactivate calculation, because it is in use by the '
+                    'following services: ${calc_services}',
+                    mapping = {'calc_services': ", ".join(calc_services)})
+            message = instance.translate(msg)
             pu.addPortalMessage(message, 'error')
             transaction.get().abort()
             raise WorkflowException

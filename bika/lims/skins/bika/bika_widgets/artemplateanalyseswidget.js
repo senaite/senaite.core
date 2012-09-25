@@ -283,9 +283,9 @@ function calculate_parts(){
 }
 
 ////////////////////////////////////////
-function setARProfile(){
+function setAnalysisProfile(){
 	// get profile services list
-	arprofiles = $.parseJSON($("#ARProfiles").attr('value'));
+	analysisprofiles = $.parseJSON($("#AnalysisProfiles").attr('value'));
 	// clear existing selection
 	$('input[id^=analyses_cb_]').filter(":checked").attr("checked", false);
 	$.each($("select[name^=Partition]"), function(i,element){
@@ -297,7 +297,7 @@ function setARProfile(){
 
 	// select individual services
 	profile_uid = $(this).val();
-	service_uids = arprofiles[profile_uid];
+	service_uids = analysisprofiles[profile_uid];
 	if (service_uids != undefined && service_uids != null) {
 		$.each(service_uids, function(i,service_uid){
 			check_service(service_uid);
@@ -379,7 +379,7 @@ function click_uid_checkbox(){
 	} else {
 		uncheck_service(service_uid);
 	}
-	$("#ARProfile\\:list").val('');
+	$("#AnalysisProfile\\:list").val('');
 }
 
 $(document).ready(function(){
@@ -388,7 +388,7 @@ $(document).ready(function(){
 
 	$("[name='uids:list']").live('click', click_uid_checkbox);
 
-	$("#ARProfile\\:list").change(setARProfile);
+	$("#AnalysisProfile\\:list").change(setAnalysisProfile);
 
 });
 }(jQuery));

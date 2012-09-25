@@ -55,19 +55,9 @@
   </permission-map>
  </state>
 
- <state state_id="rejected" title="Rejected" i18n:attributes="title">
-  <description i18n:translate=""></description>
-  <permission-map name="BIKA: Edit Worksheet" acquired="False">
-   <permission-role>Manager</permission-role>
-   <permission-role>LabManager</permission-role>
-   <permission-role>Analyst</permission-role>
-   <permission-role>LabClerk</permission-role>
-  </permission-map>
- </state>
-
  <transition transition_id="reject"
              title="Reject"
-             new_state="rejected"
+             new_state=""
              trigger="USER"
              before_script=""
              after_script=""

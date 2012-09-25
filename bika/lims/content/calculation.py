@@ -49,19 +49,22 @@ schema = BikaSchema.copy() + Schema((
         allowable_content_types = ('text/plain',),
         widget = TextAreaWidget(
             label = _("Calculation Formula"),
-            description = "Calculation Formula description"
-            "<p>The formula you type here will be dynamically calculated when "
-            "an analysis using this calculation is displayed.</p>"
-            "<p>To enter a Calculation, use standard maths operators,  + - * / ( ), "
-            "and all keywords available, both from other Analysis Services and the "
-            "Interim Fields specified here, as variables. "
-            "Enclose them in square brackets [ ].</p>"
-            "<p>E.g, the calculation for Total Hardness, the total of  Calcium (ppm) "
-            "and Magnesium (ppm) ions in water, is entered as [Ca] + [Mg], where Ca and MG "
-            "are the keywords for those two Analysis Services.</p>",
-        )
+            description = _(
+                "calculation_formula_description",
+                "<p>The formula you type here will be dynamically calculated "
+                "when an analysis using this calculation is displayed.</p>"
+                "<p>To enter a Calculation, use standard maths operators,  "
+                "+ - * / ( ), and all keywords available, both from other "
+                "Analysis Services and the Interim Fields specified here, "
+                "as variables. Enclose them in square brackets [ ].</p>"
+                "<p>E.g, the calculation for Total Hardness, the total of "
+                "Calcium (ppm) and Magnesium (ppm) ions in water, is entered "
+                "as [Ca] + [Mg], where Ca and MG are the keywords for those "
+                "two Analysis Services.</p>"),
+            )
     ),
 ))
+
 schema['title'].widget.visible = True
 schema['title'].schemata = 'Description'
 schema['description'].widget.visible = True
@@ -77,6 +80,20 @@ class Calculation(BaseFolder, HistoryAwareMixin):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
+
+
+    def setInterimFields(self, value):
+        new_value = []
+
+        for x in range(len(value)):
+            row = dict(value[x])
+            keys = row.keys()
+            if 'value' not in keys:
+                row['value'] = 0
+            new_value.append(row)
+
+        self.getField('InterimFields').set(self, new_value)
+
 
     def setFormula(self, Formula=None):
         """Set the Dependent Services from the text of the calculation Formula

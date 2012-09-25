@@ -119,27 +119,38 @@ schema = BikaFolderSchema.copy() + Schema((
                             "who prefer fewer results per email"),
         )
     ),
-    IntegerField('BatchFax',
+    TextField('ResultFooter',
         schemata = "Results Reports",
-        required = 1,
-        default = 4,
-        widget = IntegerWidget(
-            label = _("Maximum columns per results fax"),
-            description = _("Too many AR columns per fax will see the font size minimised and could "
-                            "render faxes illegible. 4 ARs maximum per page is recommended"),
-        )
+        default_content_type = 'text/x-web-intelligent',
+        allowable_content_types = ('text/x-web-intelligent',),
+        default_output_type="text/html",
+        default="",
+        widget = TextAreaWidget(
+            label = _('Result Footer'),
+            description = _("This text will be appended to results reports."),
+            append_only = False,
+        ),
     ),
-    # XXX stringfield, chars to strip from cell number
-    StringField('SMSGatewayAddress',
-        schemata = "Results Reports",
-        required = 0,
-        widget = StringWidget(
-            label = _("SMS Gateway Email Address"),
-            description = _("The email to SMS gateway address. Either a complete email address, "
-                            "or just the domain, e.g. '@2way.co.za', the contact's mobile phone "
-                            "number will be prepended to"),
-        )
-    ),
+##    IntegerField('BatchFax',
+##        schemata = "Results Reports",
+##        required = 1,
+##        default = 4,
+##        widget = IntegerWidget(
+##            label = _("Maximum columns per results fax"),
+##            description = _("Too many AR columns per fax will see the font size minimised and could "
+##                            "render faxes illegible. 4 ARs maximum per page is recommended"),
+##        )
+##    ),
+##    StringField('SMSGatewayAddress',
+##        schemata = "Results Reports",
+##        required = 0,
+##        widget = StringWidget(
+##            label = _("SMS Gateway Email Address"),
+##            description = _("The email to SMS gateway address. Either a complete email address, "
+##                            "or just the domain, e.g. '@2way.co.za', the contact's mobile phone "
+##                            "number will be prepended to"),
+##        )
+##    ),
     BooleanField('SamplingWorkflowEnabled',
         schemata = "Analyses",
         default = False,

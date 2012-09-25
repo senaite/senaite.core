@@ -1,13 +1,14 @@
 from setuptools import setup, find_packages
 import os
 
-version = '3.0a3'
+version = '3.0rc1'
 
 setup(name='bika.lims',
       version=version,
       description="Bika LIMS",
       long_description=open("README.md").read() + "\n" +
-                       open(os.path.join("docs", "installation.txt")).read() + "\n" +
+                       open(os.path.join("docs", "linux.md")).read() + "\n" +
+                       open(os.path.join("docs", "windows.md")).read() + "\n" +
                        open(os.path.join("docs", "CHANGELOG.txt")).read(),
       # Get more strings from
       # http://pypi.python.org/pypi?:action=list_classifiers
@@ -30,7 +31,6 @@ setup(name='bika.lims',
           'Products.CMFEditions',
           'Products.AdvancedQuery',
           'Products.TinyMCE',
-          'collective.subtractiveworkflow',
           'collective.indexing>=2.0a3',
           'collective.js.jqueryui',
           'plone.app.z3cform',
@@ -38,6 +38,7 @@ setup(name='bika.lims',
           'plone.app.iterate',
           'xhtml2pdf',
           'magnitude',
+          'gpw',
           'jarn.jsi18n',
       ],
       extras_require = {

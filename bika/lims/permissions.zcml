@@ -14,7 +14,7 @@
 
 # Add Permissions:
 # ----------------
-<permission id="bika.lims.permissions.AddARProfile" title="BIKA: Add ARProfile"/>
+<permission id="bika.lims.permissions.AddAnalysisProfile" title="BIKA: Add AnalysisProfile"/>
 <permission id="bika.lims.permissions.AddARTemplate" title="BIKA: Add ARTemplate"/>
 <permission id="bika.lims.permissions.AddAnalysis" title="BIKA: Add Analysis"/>
 <permission id="bika.lims.permissions.AddAnalysisRequest" title="BIKA: Add Analysis Request"/>
@@ -23,8 +23,10 @@
 <permission id="bika.lims.permissions.AddClientFolder" title="BIKA: Add ClientFolder"/>
 <permission id="bika.lims.permissions.AddMethod" title="BIKA: Add Method"/>
 <permission id="bika.lims.permissions.AddSample" title="BIKA: Add Sample"/>
+<permission id="bika.lims.permissions.AddSamplePoint" title="BIKA: Add SamplePoint"/>
+<permission id="bika.lims.permissions.AddSampleMatrix" title="BIKA: Add SampleMatrix"/>
 <permission id="bika.lims.permissions.AddSamplePartition" title="BIKA: Add SamplePartition"/>
-
+<permission id="bika.lims.permissions.AddSamplingDeviation" title="BIKA: Add SamplingDeviation"/>
 
 # Old stuff I haven't looked at
 # =============================

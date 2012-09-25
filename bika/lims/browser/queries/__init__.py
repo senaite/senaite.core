@@ -1,22 +1,22 @@
-from analysisrequests import QueryAnalysisRequests
-from orders import QueryOrders
-from invoices import QueryInvoices
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from analysisrequests import QueryAnalysisRequests
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.utils import TimeOrDate
-from bika.lims.utils import pretty_user_name_or_id, pretty_user_email, logged_in_client
+from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from bika.lims.interfaces import IQueries
+from bika.lims.utils import logged_in_client, getUsers
+from cStringIO import StringIO
+from invoices import QueryInvoices
+from orders import QueryOrders
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 import json
 import plone
-from cStringIO import StringIO
 import sys
 
 class QueryView(BrowserView):
@@ -27,8 +27,10 @@ class QueryView(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
+        self.selection_macros = SelectionMacrosView(context, request)
         self.icon = "++resource++bika.lims.images/query_big.png"
-        self.TimeOrDate = TimeOrDate
+        self.getAnalysts = getUsers(context, ['Manager', 'LabManager', 'Analyst'])
+
         request.set('disable_border', 1)
 
     def __call__(self):
@@ -43,7 +45,6 @@ class SubmitForm(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
-        self.TimeOrDate = TimeOrDate
 
     def __call__(self):
         lab = self.context.bika_setup.laboratory
@@ -65,8 +66,8 @@ class SubmitForm(BrowserView):
         else:
             clientuid = None
         username = self.context.portal_membership.getAuthenticatedMember().getUserName()
-        self.querier = pretty_user_name_or_id(self.context, username)
-        self.querier_email = pretty_user_email(self.context, username)
+        self.querier = self.user_fullname(username)
+        self.querier_email = self.user_email(username)
         query_id =  self.request.form['query_id']
         querytype = ''
         if query_id == 'analysisrequests':

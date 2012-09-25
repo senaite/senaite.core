@@ -4,6 +4,8 @@ jarn.i18n.loadCatalog('bika');
 window.jsi18n_bika = jarn.i18n.MessageFactory('bika');
 jarn.i18n.loadCatalog('plone');
 window.jsi18n_plone = jarn.i18n.MessageFactory('plone');
+jarn.i18n.loadCatalog('plonelocales');
+window.jsi18n_plonelocales = jarn.i18n.MessageFactory('plonelocales');
 
 function portalMessage(message) {
 	str = "<dl class='portalMessage error'>"+
@@ -12,6 +14,17 @@ function portalMessage(message) {
 		"</ul></dd></dl>";
 	$('.portalMessage').remove();
 	$(str).appendTo('#viewlet-above-content');
+}
+
+function log(e) {
+	console.log(e.message);
+	message = "Javascript: " + e.message + " url: " + window.location.url;
+	$.ajax({
+		type: 'POST',
+		url: 'js_log',
+		data: {'message':message,
+				'_authenticator': $('input[name="_authenticator"]').val()}
+	});
 }
 
 function calculate_partitions(service_uids, st_uid, st_minvol){
@@ -247,18 +260,22 @@ function enableAddAttachment(this_field) {
 	return
 }
 
+
 $(document).ready(function(){
 
 	_ = window.jsi18n_bika;
 	PMF = window.jsi18n_plone;
+	plonelocales = window.jsi18n_plonelocales;
+
+	dateFormat = window.jsi18n_plonelocales("date_format_short_datepicker");
 
 	$('input.datepicker').live('click', function() {
 		$(this).datepicker({
 			showOn:'focus',
 			showAnim:'',
-			dateFormat:'dd M yy',
 			changeMonth:true,
-			changeYear:true
+			changeYear:true,
+			dateFormat:dateFormat
 		})
 		.click(function(){$(this).attr('value', '');})
 		.focus();
@@ -269,10 +286,10 @@ $(document).ready(function(){
 		$(this).datepicker({
 			showOn:'focus',
 			showAnim:'',
-			dateFormat:'dd M yy',
 			changeMonth:true,
 			changeYear:true,
-			maxDate: '+0d'
+			maxDate: '+0d',
+			dateFormat: dateFormat
 		})
 		.click(function(){$(this).attr('value', '');})
 		.focus();
@@ -282,11 +299,11 @@ $(document).ready(function(){
 		$(this).datepicker({
 			showOn:'focus',
 			showAnim:'',
-			dateFormat:'dd M yy',
 			changeMonth:true,
 			changeYear:true,
 			maxDate: '+0d',
-			numberOfMonths: 2
+			numberOfMonths: 2,
+			dateFormat: dateFormat
 		})
 		.click(function(){$(this).attr('value', '');})
 		.focus();
@@ -309,12 +326,10 @@ $(document).ready(function(){
 			});
 	});
 
-	$('body').append('<div id="global-spinner" class="global-spinner" style="display:none"><img id="img-global-spinner" src="spinner.gif" alt="Loading"/></div>');
-	$('#global-spinner')
-		.ajaxStart(function() { $(this).toggle(true); })
-		.ajaxStop(function() { $(this).toggle(false); });
-	// we don't use #kss-spinner but it gets in the way.
-	$("#kss-spinner").empty();
+	$('#kss-spinner')
+		.empty()
+		.append('<img src="spinner.gif" alt="Loading"/>')
+		.ajaxComplete(function() { $(this).toggle(false); });
 
 	$(".numeric").live('keypress', function(event) {
 
@@ -339,3 +354,4 @@ $(document).ready(function(){
 
 });
 }(jQuery));
+

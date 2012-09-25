@@ -36,19 +36,14 @@ def getContainers(instance,
     the container list, as well as being used as the AT field vocabulary.
 
     Returns a tuple of tuples: ((object_uid, object_title), ())
-    Objects in result can be containers, container types, or both.
 
-    >>> bsc = self.portal.bika_setup_catalog
+    If the partition is flagged 'Separate', only containers are displayed.
+    If the Separate flag is false, displays container types.
 
-    >>> obj = bsc(getKeyword='Moist')[0].getObject()
-    >>> u'Canvas bag' in obj.getContainers().values()
-    True
-
-    >>> obj = bsc(getKeyword='Aflatox')[0].getObject()
-    >>> u'20 ml glass vial' in obj.getContainers().values()
-    True
-    >>> u'Canvas bag' in obj.getContainers().values()
-    False
+    XXX bsc = self.portal.bika_setup_catalog
+    XXX obj = bsc(getKeyword='Moist')[0].getObject()
+    XXX u'Container Type: Canvas bag' in obj.getContainers().values()
+    XXX True
 
     """
 
@@ -81,7 +76,8 @@ def getContainers(instance,
             if not container.getContainerType():
                 items.append((container.UID(), container.Title()))
 
-    cat_str = instance.translate(_('Container Type'))
+    ts = getToolByName(instance, 'translation_service').translate
+    cat_str = ts(_('Container Type'))
     containertypes = [c.getContainerType() for c in containers]
     containertypes = dict([(ct.UID(), ct.Title())
                            for ct in containertypes if ct])
@@ -219,7 +215,7 @@ schema = BikaSchema.copy() + Schema((
                             "defined results calculations"),
         ),
     ),
-    ReferenceField('Method',
+    HistoryAwareReferenceField('Method',
         schemata = "Method",
         required = 0,
         searchable = True,
@@ -346,7 +342,7 @@ schema = BikaSchema.copy() + Schema((
             ),
         ),
     # read access permission
-    FixedPointField('CorporatePrice',
+    FixedPointField('BulkPrice',
         schemata = "Description",
         default = '0.00',
         widget = DecimalWidget(
@@ -472,7 +468,7 @@ schema = BikaSchema.copy() + Schema((
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = _('Default Preservation'),
-            description = _("Select a default preservation for this this "
+            description = _("Select a default preservation for this "
                             "analysis service. If the preservation depends on "
                             "the sample type combination, specify a preservation "
                             "per sample type in the table below"),
@@ -534,10 +530,10 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         discount = discount and discount or 0
         return float(price) - (float(price) * float(discount)) / 100
 
-    security.declarePublic('getDiscountedCorporatePrice')
-    def getDiscountedCorporatePrice(self):
-        """ compute discounted corporate price excl. vat """
-        price = self.getCorporatePrice()
+    security.declarePublic('getDiscountedBulkPrice')
+    def getDiscountedBulkPrice(self):
+        """ compute discounted bulk discount excl. vat """
+        price = self.getBulkPrice()
         price = price and price or 0
         discount = self.bika_setup.getMemberDiscount()
         discount = discount and discount or 0
@@ -551,9 +547,9 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         vat = vat and vat or 0
         return float(price) + (float(price) * float(vat)) / 100
 
-    def getTotalCorporatePrice(self):
+    def getTotalBulkPrice(self):
         """ compute total price """
-        price = self.getCorporatePrice()
+        price = self.getBulkPrice()
         vat = self.getVAT()
         price = price and price or 0
         vat = vat and vat or 0
@@ -569,7 +565,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         return float(price) + (float(price) * float(vat)) / 100
 
     security.declarePublic('getTotalDiscountedCorporatePrice')
-    def getTotalDiscountedCorporatePrice(self):
+    def getTotalDiscountedBulkPrice(self):
         """ compute total discounted corporate price """
         price = self.getDiscountedCorporatePrice()
         vat = self.getVAT()
@@ -596,9 +592,9 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
 
     def getAnalysisCategories(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('','')] + [(o.UID, o.Title) for o in
-                               bsc(portal_type='AnalysisCategory',
-                                   inactive_state = 'active')]
+        items = [(o.UID, o.Title) for o in
+                 bsc(portal_type='AnalysisCategory',
+                     inactive_state = 'active')]
         o = self.getCategory()
         if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))

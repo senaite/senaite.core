@@ -1,18 +1,12 @@
 from Products.validation import validation
-from bika.lims.testing import BIKA_INTEGRATION_TESTING
+from Products.validation import validation as validationService
+from bika.lims.testing import BIKA_LIMS_INTEGRATION_TESTING
+from bika.lims.tests.base import BikaIntegrationTestCase
 from plone.app.testing import *
 from plone.testing import z2
-from Products.validation import validation as validationService
-
 import unittest
 
-class Tests(unittest.TestCase):
-
-    layer = BIKA_INTEGRATION_TESTING
-
-    def setUp(self):
-        self.portal = self.layer['portal']
-        self.app = self.layer['app']
+class Tests(BikaIntegrationTestCase):
 
     def test_UniqueFieldValidator(self):
         login(self.portal, TEST_USER_NAME)
@@ -135,96 +129,84 @@ class Tests(unittest.TestCase):
 
         latitude = {'degrees':'!','minutes':'2','seconds':'3', 'bearing':'N'}
         self.portal.REQUEST.form['Latitude'] = latitude
-        self.assertEqual(sp.schema.get('Latitude').validate(latitude, sp),
-            u"Validation failed: degrees must be numeric")
+        val = sp.schema.get('Latitude').validate(latitude, sp)
+        self.assertEqual(True, u"Validation failed: degrees must be numeric" in val)
 
         latitude = {'degrees':'0','minutes':'!','seconds':'3', 'bearing':'N'}
         self.portal.REQUEST.form['Latitude'] = latitude
         self.portal.REQUEST['validated'] = None
-        self.assertEqual(
-            sp.schema.get('Latitude').validate(latitude, sp),
-            u"Validation failed: minutes must be numeric")
+        val = sp.schema.get('Latitude').validate(latitude, sp)
+        self.assertEqual(True, u"Validation failed: minutes must be numeric" in val)
 
         latitude = {'degrees':'0','minutes':'0','seconds':'!', 'bearing':'N'}
         self.portal.REQUEST.form['Latitude'] = latitude
         self.portal.REQUEST['validated'] = None
-        self.assertEqual(
-            sp.schema.get('Latitude').validate(latitude, sp),
-            u"Validation failed: seconds must be numeric")
+        val = sp.schema.get('Latitude').validate(latitude, sp)
+        self.assertEqual(True, u"Validation failed: seconds must be numeric" in val)
 
         latitude = {'degrees':'0','minutes':'60','seconds':'0', 'bearing':'N'}
         self.portal.REQUEST.form['Latitude'] = latitude
         self.portal.REQUEST['validated'] = None
-        self.assertEqual(
-            sp.schema.get('Latitude').validate(latitude, sp),
-            u"Validation failed: minutes must be 0 - 59")
+        val = sp.schema.get('Latitude').validate(latitude, sp)
+        self.assertEqual(True, u"Validation failed: minutes must be 0 - 59" in val)
 
         latitude = {'degrees':'0','minutes':'0','seconds':'60', 'bearing':'N'}
         self.portal.REQUEST.form['Latitude'] = latitude
         self.portal.REQUEST['validated'] = None
-        self.assertEqual(
-            sp.schema.get('Latitude').validate(latitude, sp),
-            u"Validation failed: seconds must be 0 - 59")
+        val = sp.schema.get('Latitude').validate(latitude, sp)
+        self.assertEqual(True, u"Validation failed: seconds must be 0 - 59" in val)
 
         # latitude specific
 
         latitude = {'degrees':'91','minutes':'0','seconds':'0', 'bearing':'N'}
         self.portal.REQUEST.form['Latitude'] = latitude
         self.portal.REQUEST['validated'] = None
-        self.assertEqual(
-            sp.schema.get('Latitude').validate(latitude, sp),
-            u"Validation failed: degrees must be 0 - 90")
+        val = sp.schema.get('Latitude').validate(latitude, sp)
+        self.assertEqual(True, u"Validation failed: degrees must be 0 - 90" in val)
 
         latitude = {'degrees':'90','minutes':'1','seconds':'0', 'bearing':'N'}
         self.portal.REQUEST.form['Latitude'] = latitude
         self.portal.REQUEST['validated'] = None
-        self.assertEqual(
-            sp.schema.get('Latitude').validate(latitude, sp),
-            u"Validation failed: degrees is 90; minutes must be zero")
+        val = sp.schema.get('Latitude').validate(latitude, sp)
+        self.assertEqual(True, u"Validation failed: degrees is 90; minutes must be zero" in val)
 
         latitude = {'degrees':'90','minutes':'0','seconds':'1', 'bearing':'N'}
         self.portal.REQUEST.form['Latitude'] = latitude
         self.portal.REQUEST['validated'] = None
-        self.assertEqual(
-            sp.schema.get('Latitude').validate(latitude, sp),
-            u"Validation failed: degrees is 90; seconds must be zero")
+        val = sp.schema.get('Latitude').validate(latitude, sp)
+        self.assertEqual(True, u"Validation failed: degrees is 90; seconds must be zero" in val)
 
         latitude = {'degrees':'90','minutes':'0','seconds':'0', 'bearing':'E'}
         self.portal.REQUEST.form['Latitude'] = latitude
         self.portal.REQUEST['validated'] = None
-        self.assertEqual(
-            sp.schema.get('Latitude').validate(latitude, sp),
-            u"Validation failed: Bearing must be N/S")
+        val = sp.schema.get('Latitude').validate(latitude, sp)
+        self.assertEqual(True, u"Validation failed: Bearing must be N/S" in val)
 
         # longitude specific
 
         longitude = {'degrees':'181','minutes':'0','seconds':'0', 'bearing':'E'}
         self.portal.REQUEST.form['Longitude'] = longitude
         self.portal.REQUEST['validated'] = None
-        self.assertEqual(
-            sp.schema.get('Longitude').validate(longitude, sp),
-            u"Validation failed: degrees must be 0 - 180")
+        val = sp.schema.get('Longitude').validate(longitude, sp)
+        self.assertEqual(True, u"Validation failed: degrees must be 0 - 180" in val)
 
         longitude = {'degrees':'180','minutes':'1','seconds':'0', 'bearing':'E'}
         self.portal.REQUEST.form['Longitude'] = longitude
         self.portal.REQUEST['validated'] = None
-        self.assertEqual(
-            sp.schema.get('Longitude').validate(longitude, sp),
-            u"Validation failed: degrees is 180; minutes must be zero")
+        val = sp.schema.get('Longitude').validate(longitude, sp)
+        self.assertEqual(True, u"Validation failed: degrees is 180; minutes must be zero" in val)
 
         longitude = {'degrees':'180','minutes':'0','seconds':'1', 'bearing':'E'}
         self.portal.REQUEST.form['Longitude'] = longitude
         self.portal.REQUEST['validated'] = None
-        self.assertEqual(
-            sp.schema.get('Longitude').validate(longitude, sp),
-            u"Validation failed: degrees is 180; seconds must be zero")
+        val = sp.schema.get('Longitude').validate(longitude, sp)
+        self.assertEqual(True, u"Validation failed: degrees is 180; seconds must be zero" in val)
 
         longitude = {'degrees':'0','minutes':'0','seconds':'0', 'bearing':'N'}
         self.portal.REQUEST.form['Longitude'] = longitude
         self.portal.REQUEST['validated'] = None
-        self.assertEqual(
-            sp.schema.get('Longitude').validate(longitude, sp),
-            u"Validation failed: Bearing must be E/W")
+        val = sp.schema.get('Longitude').validate(longitude, sp)
+        self.assertEqual(True, u"Validation failed: Bearing must be E/W" in val)
 
         longitude = {'degrees':'1','minutes':'1','seconds':'1', 'bearing':'E'}
         self.portal.REQUEST.form['Longitude'] = longitude
@@ -234,5 +216,5 @@ class Tests(unittest.TestCase):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(Tests))
-    suite.layer = BIKA_INTEGRATION_TESTING
+    suite.layer = BIKA_LIMS_INTEGRATION_TESTING
     return suite

@@ -44,7 +44,9 @@
 	delete_attachments python:True;
 	update_attachments python:True">
 
-    <div tal:condition="attachments_allowed">
+    <div
+        tal:condition="update_attachments"
+        tal:define="ar_review_state ar_review_state">
         <metal:block use-macro="here/attachments/macros/attachments"/>
     </div>
 

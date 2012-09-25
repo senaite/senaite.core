@@ -2,7 +2,7 @@
 """
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.Archetypes.event import ObjectInitializedEvent
 from bika.lims import bikaMessageFactory as _

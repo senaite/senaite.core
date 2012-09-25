@@ -53,9 +53,9 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IARProfiles"
+      for="bika.lims.interfaces.IAnalysisProfiles"
       name="folder_view"
-      class=".bika_arprofiles.ProfilesView"
+      class=".bika_analysisprofiles.ProfilesView"
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -64,6 +64,14 @@
       for="bika.lims.interfaces.IARTemplates"
       name="folder_view"
       class=".bika_artemplates.TemplatesView"
+      permission="bika.lims.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.ISampleMatrices"
+      name="folder_view"
+      class=".bika_samplematrices.SampleMatricesView"
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -80,6 +88,14 @@
       for="bika.lims.interfaces.ISampleTypes"
       name="folder_view"
       class=".bika_sampletypes.SampleTypesView"
+      permission="bika.lims.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.ISamplingDeviations"
+      name="folder_view"
+      class=".bika_samplingdeviations.SamplingDeviationsView"
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -109,14 +125,6 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IMethods"
-      name="folder_view"
-      class=".bika_methods.MethodsView"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.IAttachmentTypes"
       name="folder_view"
       class=".bika_attachmenttypes.AttachmentTypesView"
@@ -139,8 +147,6 @@
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
-
-
 
     <browser:page
       for="bika.lims.interfaces.ILabProducts"

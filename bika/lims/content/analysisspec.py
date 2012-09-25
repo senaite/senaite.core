@@ -16,7 +16,7 @@ from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser.fields import HistoryAwareReferenceField
-from bika.lims.browser.widgets import SpecWidget
+from bika.lims.browser.widgets import AnalysisSpecificationWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from types import ListType, TupleType
@@ -56,20 +56,23 @@ schema = Schema((
     ),
 )) + \
 BikaSchema.copy() + \
-Schema((
+Schema((  
     RecordsField('ResultsRange',
-        schemata = 'Reference Results',
+        schemata = 'Specifications',
         required = 1,
         type = 'analysisspec',
         subfields = ('keyword', 'min', 'max', 'error'),
         required_subfields = ('keyword', 'min', 'max', 'error'),
+        subfield_validators = {'min':'analysisspecs_validator',
+                               'max':'analysisspecs_validator',
+                               'error':'analysisspecs_validator'},
         subfield_labels = {'keyword': _('Analysis Service'),
                            'min': _('Min'),
                            'max': _('Max'),
                            'error': _('% Error')},
-        widget = SpecWidget(
+        widget = AnalysisSpecificationWidget(
             checkbox_bound = 1,
-            label = _("Reference Results"),
+            label = _("Specifications"),
             description = _("Click on Analysis Categories (against shaded background) "
                             "to see Analysis Services in each category. Enter minimum "
                             "and maximum values to indicate a valid results range. "

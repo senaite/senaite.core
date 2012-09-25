@@ -4,7 +4,7 @@ from Products.Archetypes import atapi
 from Products.Archetypes.ArchetypeTool import registerType
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
@@ -106,14 +106,20 @@ class ajax_SampleTypes(BrowserView):
         if not term:
             return items
         samplepoint = self.request.get('samplepoint', '')
+        # Strip "Lab: " from sample point titles
+        samplepoint = samplepoint.replace("%s: " % _("Lab"), '')
         if samplepoint and len(samplepoint) > 1:
-            sp = bsc(portal_type="SamplePoint",Title=samplepoint)
+            sp = bsc(portal_type = "SamplePoint",
+                     inactive_state = 'active',
+                     title=samplepoint)
             if not sp:
                 return json.dumps([])
             sp = sp[0].getObject()
             items = sp.getSampleTypes()
         if not items:
-            items = bsc(portal_type = "SampleType", sort_on='sortable_title')
+            items = bsc(portal_type = "SampleType",
+                        inactive_state = 'active',
+                        sort_on='sortable_title')
             if term and len(term) < 3:
                 # Items that start with A or AA
                 items = [s.getObject()

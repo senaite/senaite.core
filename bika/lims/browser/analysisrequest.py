@@ -4,7 +4,7 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser import BrowserView
+from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF
 from bika.lims import bikaMessageFactory as _
@@ -18,16 +18,14 @@ from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.permissions import *
 from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
-from bika.lims.utils import TimeOrDate
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
-from bika.lims.utils import pretty_user_name_or_id
+from magnitude import mg
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.i18n.locales import locales
 from zope.interface import implements, alsoProvides
-from magnitude import mg
 import App
 import json
 import plone
@@ -136,7 +134,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 ar_state = workflow.getInfoFor(ar, 'review_state')
                 for analysis in new:
                     analysis.updateDueDate()
-                    changeWorkflowState(analysis, ar_state)
+                    changeWorkflowState(analysis, 'bika_analysis_workflow', ar_state)
 
             message = self.context.translate(PMF("Changes saved."))
             self.context.plone_utils.addPortalMessage(message, 'info')
@@ -197,7 +195,18 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
         elif action == "sample":
             # This action happens only for a single context.
-            # Context can be a sample or an AR, however.
+            # Context can be a sample or an AR.
+            #
+            # Once the Sampler/DateSampled values are completed on the
+            # Sample or AR form, the user has two choices.
+            #
+            # 1) Use the normal Plone UI actions dropdown, (invokes this code).
+            # 2) Click the save button, which invokes code in SampleEdit or
+            #    AnalysisRequestEdit __call__ methods.
+            #
+            # Both these methods do pretty much the same thing, but now, it's
+            # done in three places.
+
             if self.context.portal_type == "AnalysisRequest":
                 sample = self.context.getSample()
             else:
@@ -212,23 +221,21 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                                        self.context.absolute_url())
                 self.request.response.redirect(self.destination_url)
                 return
-##             grab this object's Sampler and DateSampled from the form
-##            Sampler = form['getSampler'][0][sample_uid].strip()
-##            Sampler = Sampler and Sampler or ''
-##            DateSampled = form['getDateSampled'][0][obj_uid].strip()
-##            DateSampled = DateSampled and DateTime(DateSampled) or ''
-##
-##            # write them to the sample
-##            sample.setSampler(Sampler)
-##            sample.setDateSampled(DateSampled)
-##
-##            # transition the object if both values are present
-##            if Sampler and DateSampled:
-            workflow.doActionFor(sample, action)
-            sample.reindexObject()
-            message = "Changes saved."
-            message = self.context.translate(message)
-            self.context.plone_utils.addPortalMessage(message, 'info')
+            # grab this object's Sampler and DateSampled from the form
+            Sampler = form['getSampler'][0][sample_uid].strip()
+            Sampler = Sampler and Sampler or ''
+            DateSampled = form['getDateSampled'][0][obj_uid].strip()
+            DateSampled = DateSampled and DateTime(DateSampled) or ''
+            # write them to the sample
+            sample.setSampler(Sampler)
+            sample.setDateSampled(DateSampled)
+            # transition the object if both values are present
+            if Sampler and DateSampled:
+                workflow.doActionFor(sample, action)
+                sample.reindexObject()
+                message = "Changes saved."
+                message = self.context.translate(message)
+                self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
             self.request.response.redirect(self.destination_url)
@@ -384,7 +391,6 @@ class AnalysisRequestViewView(BrowserView):
     def __init__(self, context, request):
         super(AnalysisRequestViewView, self).__init__(context, request)
         self.icon = "++resource++bika.lims.images/analysisrequest_big.png"
-        self.TimeOrDate = TimeOrDate
 
         self.portal = getToolByName(context, 'portal_url').getPortalObject()
         self.portal_url = self.portal.absolute_url()
@@ -396,8 +402,6 @@ class AnalysisRequestViewView(BrowserView):
         checkPermission = self.context.portal_membership.checkPermission
         getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
         workflow = getToolByName(self.context, 'portal_workflow')
-        props = getToolByName(self.context, 'portal_properties').bika_properties
-        datepicker_format = props.getProperty('datepicker_format')
 
         ## Create header_table data rows
         sample = self.context.getSample()
@@ -430,6 +434,11 @@ class AnalysisRequestViewView(BrowserView):
         SamplingWorkflowEnabled =\
             self.context.bika_setup.getSamplingWorkflowEnabled()
         samplers = getUsers(sample, ['Sampler', 'LabManager', 'Manager'])
+
+        samplingdeviations = DisplayList(
+            [(sd.UID, sd.title) for sd \
+             in bsc(portal_type = 'SamplingDeviation',
+                    inactive_state = 'active')])
 
         self.header_columns = 3
         self.header_rows = [
@@ -477,6 +486,12 @@ class AnalysisRequestViewView(BrowserView):
              'condition':True,
              'type': 'text',
              'required': True},
+            {'id': 'SampleMatrix',
+             'title': _('Sample Matrix'),
+             'allow_edit': False,
+             'value': st.getSampleMatrix() and st.getSampleMatrix().Title() or '',
+             'condition':True,
+             'type': 'text'},
             {'id': 'SamplePoint',
              'title': _('Sample Point'),
              'allow_edit': allow_sample_edit,
@@ -486,7 +501,7 @@ class AnalysisRequestViewView(BrowserView):
             {'id': 'Creator',
              'title': PMF('Creator'),
              'allow_edit': False,
-             'value': pretty_user_name_or_id(self.context, self.context.Creator()),
+             'value': self.user_fullname(self.context.Creator()),
              'condition':True,
              'type': 'text'},
             {'id': 'DateCreated',
@@ -494,21 +509,25 @@ class AnalysisRequestViewView(BrowserView):
              'allow_edit': False,
              'value': self.context.created(),
              'condition':True,
-             'formatted_value': TimeOrDate(self.context, self.context.created()),
+             'formatted_value': self.ulocalized_time(self.context.created()),
              'type': 'text'},
             {'id': 'SamplingDate',
              'title': _('Sampling Date'),
              'allow_edit': allow_sample_edit,
-             'value': sample.getSamplingDate().strftime(datepicker_format),
-             'formatted_value': TimeOrDate(self.context, self.context.getSamplingDate()),
+             'value': self.ulocalized_time(
+                sample.getSamplingDate()),
+             'formatted_value': self.ulocalized_time(
+                self.context.getSamplingDate()),
              'condition':True,
              'class': 'datepicker',
              'type': 'text'},
             {'id': 'DateSampled',
              'title': _('Date Sampled'),
              'allow_edit': allow_sample_edit,
-             'value': sample.getDateSampled() and sample.getDateSampled().strftime(datepicker_format) or '',
-             'formatted_value': sample.getDateSampled() and TimeOrDate(self.context, sample.getDateSampled()) or '',
+             'value': sample.getDateSampled() and self.ulocalized_time(
+                sample.getDateSampled()) or '',
+             'formatted_value': sample.getDateSampled() and self.ulocalized_time(
+                sample.getDateSampled()) or '',
              'condition':SamplingWorkflowEnabled,
              'class': 'datepicker',
              'type': 'text',
@@ -522,17 +541,31 @@ class AnalysisRequestViewView(BrowserView):
              'vocabulary': samplers,
              'type': 'choices',
              'required': True},
+            {'id': 'SamplingDeviation',
+             'title': _('Sampling Deviation'),
+             'allow_edit': allow_sample_edit,
+             'value': sample.getSamplingDeviation() and sample.getSamplingDeviation().UID() or '',
+             'formatted_value': sample.getSamplingDeviation() and sample.getSamplingDeviation().Title() or '',
+             'condition':True,
+             'vocabulary': samplingdeviations,
+             'type': 'choices'},
             {'id': 'DateReceived',
              'title': _('Date Received'),
              'allow_edit': False,
              'value': self.context.getDateReceived(),
-             'formatted_value': TimeOrDate(self.context, self.context.getDateReceived()),
+             'formatted_value': self.ulocalized_time(self.context.getDateReceived()),
              'condition':True,
              'type': 'text'},
             {'id': 'Composite',
              'title': _('Composite'),
              'allow_edit': allow_sample_edit,
              'value': sample.getComposite(),
+             'condition':True,
+             'type': 'boolean'},
+            {'id': 'AdHoc',
+             'title': _('Ad-Hoc'),
+             'allow_edit': allow_sample_edit,
+             'value': sample.getAdHoc(),
              'condition':True,
              'type': 'boolean'},
             {'id': 'InvoiceExclude',
@@ -581,16 +614,24 @@ class AnalysisRequestViewView(BrowserView):
 
                 values[row['id']] = value
 
-            # boolean - checkboxes are 'true' or 'false in form.
+            # boolean - checkboxes are 'true'/'on' or 'false'/missing in form.
             for row in [r for r in self.header_rows if r.get('type', '') == 'boolean']:
                 value = form.get(row['id'], 'false')
-                values[row['id']] = value == 'true' and True or False
+                values[row['id']] = value == 'true' and True or value == 'on' and True or False
 
             if not message:
                 self.context.edit(**values)
                 self.context.reindexObject()
                 sample.edit(**values)
                 sample.reindexObject()
+                ars = sample.getAnalysisRequests()
+                # Analyses and AnalysisRequets have calculated fields
+                # that are indexed; re-index all these objects.
+                for ar in ars:
+                    ar.reindexObject()
+                    analyses = sample.getAnalyses({'review_state':'to_be_sampled'})
+                    for a in analyses:
+                        a.getObject().reindexObject()
                 message = PMF("Changes saved.")
 
             # If this sample was "To Be Sampled", and the
@@ -599,6 +640,8 @@ class AnalysisRequestViewView(BrowserView):
             if workflow.getInfoFor(sample, "review_state") == "to_be_sampled" \
                and form.get("Sampler", None) \
                and form.get("DateSampled", None):
+                # This transition does not invoke the regular WorkflowAction
+                # in analysisrequest.py
                 workflow.doActionFor(sample, "sample")
                 sample.reindexObject()
 
@@ -639,29 +682,64 @@ class AnalysisRequestViewView(BrowserView):
     def now(self):
         return DateTime()
 
-    def arprofiles(self):
-        """ Return applicable client and Lab ARProfile records
+    def analysisprofiles(self):
+        """ Return applicable client and Lab AnalysisProfile records
         """
+        res = []
         profiles = []
-        for profile in self.context.objectValues("ARProfile"):
+        client = self.context.portal_type == 'AnalysisRequest' \
+            and self.context.aq_parent or self.context
+        for profile in client.objectValues("AnalysisProfile"):
             if isActive(profile):
                 profiles.append((profile.Title(), profile))
-        for profile in self.context.bika_setup.bika_arprofiles.objectValues("ARProfile"):
+        profiles.sort(lambda x,y:cmp(x[0], y[0]))
+        res += profiles
+        profiles = []
+        for profile in self.context.bika_setup.bika_analysisprofiles.objectValues("AnalysisProfile"):
             if isActive(profile):
                 profiles.append((self.context.translate(_('Lab')) + ": " + profile.Title(), profile))
-        return profiles
+        profiles.sort(lambda x,y:cmp(x[0], y[0]))
+        res += profiles
+        return res
 
     def artemplates(self):
         """ Return applicable client and Lab ARTemplate records
         """
+        res = []
         templates = []
-        for template in self.context.objectValues("ARTemplate"):
+        client = self.context.portal_type == 'AnalysisRequest' \
+            and self.context.aq_parent or self.context
+        for template in client.objectValues("ARTemplate"):
             if isActive(template):
                 templates.append((template.Title(), template))
+        templates.sort(lambda x,y:cmp(x[0], y[0]))
+        res += templates
+        templates = []
         for template in self.context.bika_setup.bika_artemplates.objectValues("ARTemplate"):
             if isActive(template):
                 templates.append((self.context.translate(_('Lab')) + ": " + template.Title(), template))
-        return templates
+        templates.sort(lambda x,y:cmp(x[0], y[0]))
+        res += templates
+        return res
+
+    def samplingdeviations(self):
+        """ SamplingDeviation vocabulary for AR Add
+        """
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        res = [(sd.getObject().Title(), sd.getObject()) \
+               for sd in bsc(portal_type = 'SamplingDeviation',
+                             inactive_state = 'active')]
+        res.sort(lambda x,y:cmp(x[0], y[0]))
+        return res
+
+    def containertypes(self):
+        """ DefaultContainerType vocabulary for AR Add
+        """
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        res = [(o.getObject().Title(), o.getObject()) \
+               for o in bsc(portal_type = 'ContainerType')]
+        res.sort(lambda x,y:cmp(x[0], y[0]))
+        return res
 
     def SelectedServices(self):
         """ return information about services currently selected in the
@@ -717,8 +795,8 @@ class AnalysisRequestViewView(BrowserView):
         default_spec = ('Clients' in member_groups) and 'client' or 'lab'
         return default_spec
 
-    def getARProfileTitle(self):
-        """Grab the context's current ARProfile Title if any
+    def getAnalysisProfileTitle(self):
+        """Grab the context's current AnalysisProfile Title if any
         """
         return self.context.getProfile() and \
                self.context.getProfile().Title() or ''
@@ -836,12 +914,12 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         return json.dumps(ps)
 
     def listProfiles(self):
-        ## List of selected services for each ARProfile
+        ## List of selected services for each AnalysisProfile
         profiles = {}
         client = self.context.portal_type == 'AnalysisRequest' \
             and self.context.aq_parent or self.context
-        for context in (client, self.context.bika_setup.bika_arprofiles):
-            for profile in [p for p in context.objectValues("ARProfile")
+        for context in (client, self.context.bika_setup.bika_analysisprofiles):
+            for profile in [p for p in context.objectValues("AnalysisProfile")
                             if isActive(p)]:
                 slist = {}
                 profile_services = profile.getService()
@@ -855,7 +933,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                     else:
                         slist[key] = [p_service.UID(), ]
 
-                title = context == self.context.bika_setup.bika_arprofiles \
+                title = context == self.context.bika_setup.bika_analysisprofiles \
                     and self.context.translate(_('Lab')) + ": " + profile.Title() \
                     or profile.Title()
 
@@ -881,19 +959,21 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                     or template.Title()
                 sp_title = template.getSamplePoint()
                 st_title = template.getSampleType()
-                profile = template.getARProfile()
+                profile = template.getAnalysisProfile()
+                Analyses = [{
+                    'service_poc':bsc(UID=x['service_uid'])[0].getObject().getPointOfCapture(),
+                    'category_uid':bsc(UID=x['service_uid'])[0].getObject().getCategoryUID(),
+                    'partition':x['partition'],
+                    'service_uid':x['service_uid']}
+                            for x in template.getAnalyses()]
                 t_dict = {
                     'UID':template.UID(),
                     'Title':template.Title(),
-                    'ARProfile':profile and profile.UID() or '',
+                    'AnalysisProfile':profile and profile.UID() or '',
                     'SamplePoint':sp_title,
                     'SampleType':st_title,
                     'Partitions':template.getPartitions(),
-                    'Analyses':[{'service_poc':bsc(UID=x['service_uid'])[0].getObject().getPointOfCapture(),
-                                 'category_uid':bsc(UID=x['service_uid'])[0].getObject().getCategoryUID(),
-                                 'partition':x['partition'],
-                                 'service_uid':x['service_uid']}
-                                for x in template.getAnalyses()],
+                    'Analyses':Analyses,
                     'ReportDryMatter':template.getReportDryMatter(),
                 }
                 templates[template.UID()] = t_dict
@@ -1283,20 +1363,23 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                 'ClientReference': items[x]['ClientReference'],
                 'Requests': ", ".join([o.Title() for o in obj.getAnalysisRequests()]),
                 'ClientSampleID': items[x]['ClientSampleID'],
-                'DateReceived': obj.getDateReceived() and \
-                               TimeOrDate(self.context, obj.getDateReceived()) or '',
-                'SamplingDate': obj.getSamplingDate() and \
-                               TimeOrDate(self.context, obj.getSamplingDate()) or '',
+                'DateReceived': obj.getDateReceived() and self.ulocalized_time(
+                    obj.getDateReceived()) or '',
+                'SamplingDate': obj.getSamplingDate() and self.ulocalized_time(
+                    obj.getSamplingDate()) or '',
                 'SampleType': items[x]['SampleTypeTitle'],
                 'SamplePoint': items[x]['SamplePointTitle'],
                 'Composite': obj.getComposite(),
+                'AdHoc': obj.getAdHoc(),
+                'SamplingDeviation': obj.getSamplingDeviation() and \
+                                     obj.getSamplingDeviation().UID() or '',
                 'field_analyses': self.FieldAnalyses(obj),
                 'column': self.request.get('column', None),
             })
             items[x]['DateReceived'] = obj.getDateReceived() and \
-                 TimeOrDate(self.context, obj.getDateReceived()) or ''
+                 self.ulocalized_time(obj.getDateReceived()) or ''
             items[x]['SamplingDate'] = obj.getSamplingDate() and \
-                 TimeOrDate(self.context, obj.getSamplingDate()) or ''
+                 self.ulocalized_time(obj.getSamplingDate()) or ''
         return items
 
     def FieldAnalyses(self, sample):
@@ -1329,6 +1412,11 @@ class ajaxExpandCategory(BikaListingView):
         plone.protect.PostOnly(self.request.form)
         if hasattr(self.context, 'getRequestID'): self.came_from = "edit"
         return self.template()
+
+    def bulk_discount_applies(self):
+        client = self.context.portal_type == 'AnalysisRequest' \
+            and self.context.aq_parent or self.context
+        return client.getBulkDiscount()
 
     def Services(self, poc, CategoryUID):
         """ return a list of services brains """
@@ -1427,29 +1515,15 @@ class ajaxAnalysisRequestSubmit():
                         error(field, column, self.context.translate(msg))
 
                 elif field == "SampleType":
-                    valid = True
-                    try:
-                        if not bsc(portal_type = 'SampleType',
-                                   inactive_state = 'active',
-                                   Title = ar[field]):
-                            valid = False
-                    except:
-                        valid = False
-                    if not valid:
+                    if not bsc(portal_type = 'SampleType', title = ar[field]):
                         msg = _("${sampletype} is not a valid sample type",
                                 mapping={'sampletype':ar[field]})
                         error(field, column, self.context.translate(msg))
 
                 elif field == "SamplePoint":
-                    valid = True
-                    try:
-                        if not bsc(portal_type = 'SamplePoint',
-                                   inactive_state = 'active',
-                                   Title = ar[field]):
-                            valid = False
-                    except:
-                        valid = False
-                    if not valid:
+                    # Strip "Lab: " from sample point titles
+                    sp_str = ar[field].replace("%s: " % _("Lab"), '')
+                    if not bsc(portal_type = 'SamplePoint', title = sp_str):
                         msg = _("${samplepoint} is not a valid sample point",
                                 mapping={'samplepoint':ar[field]})
                         error(field, column, self.context.translate(msg))
@@ -1473,9 +1547,9 @@ class ajaxAnalysisRequestSubmit():
             formkey = "ar.%s" % column
             values = form[formkey].copy()
             profile = None
-            if (values.has_key('ARProfile')):
-                profileUID = values['ARProfile']
-                for proxy in bsc(portal_type = 'ARProfile',
+            if (values.has_key('AnalysisProfile')):
+                profileUID = values['AnalysisProfile']
+                for proxy in bsc(portal_type = 'AnalysisProfile',
                                  inactive_state = 'active',
                                  UID = profileUID):
                     profile = proxy.getObject()
@@ -1489,27 +1563,25 @@ class ajaxAnalysisRequestSubmit():
 
             if values.has_key('SampleID'):
                 # Secondary AR
-                sample_id = values['SampleID']
-                sample_proxy = bc(portal_type = 'Sample',
-                                  cancellation_state = 'active',
-                                  id = sample_id)
-                assert len(sample_proxy) == 1
-                sample = sample_proxy[0].getObject()
-                composite = values.get('Composite', False)
-                sample.edit(Composite = composite)
-                sample.reindexObject()
+                sample = bc(portal_type = 'Sample',
+                            cancellation_state = 'active',
+                            id = values['SampleID'])[0].getObject()
             else:
                 # Primary AR
                 client = self.context
                 _id = client.invokeFactory('Sample', id = 'tmp')
                 sample = client[_id]
+                # Strip "Lab: " from sample point title
+                sp_str = values.get('SamplePoint', '').replace("%s: " % _("Lab"), '')
                 sample.edit(
                     ClientReference = values.get('ClientReference', ''),
                     ClientSampleID = values.get('ClientSampleID', ''),
-                    SamplePoint = values.get('SamplePoint', ''),
+                    SamplePoint = sp_str,
                     SampleType = values['SampleType'],
                     SamplingDate = values['SamplingDate'],
-                    Composite = values.get('Composite',False),
+                    SamplingDeviation = values.get('SamplingDeviation', ''),
+                    Composite = values.get('Composite', False),
+                    AdHoc = values.get('AdHoc', False),
                     SamplingWorkflowEnabled = SamplingWorkflowEnabled,
                 )
                 sample.processForm()
@@ -1524,20 +1596,32 @@ class ajaxAnalysisRequestSubmit():
 
             sample_uid = sample.UID()
 
-            # XXX Selecting a template sets the hidden 'parts' field to template values.
-            # XXX Selecting a profile will allow ar_add.js to fill in the parts field.
-            # XXX The result is the same once we are here.
+            # Selecting a template sets the hidden 'parts' field to template values.
+            # Selecting a profile will allow ar_add.js to fill in the parts field.
+            # The result is the same once we are here.
             if not parts:
                 parts = [{'services':[],
                          'container':[],
                          'preservation':'',
                          'separate':False}]
 
+            # Apply DefaultContainerType to partitions without a container
+            d_clist = []
+            D_UID = values.get("DefaultContainerType", None)
+            if D_UID:
+                d_clist = [c.UID for c in bsc(portal_type='Container')
+                           if c.getObject().getContainerType().UID() == D_UID]
+                for i in range(len(parts)):
+                    if not parts[i].get('container', []):
+                        parts[i]['container'] = d_clist
+
             # Create sample partitions
             parts_and_services = {}
-            for p in parts:
+            for _i in range(len(parts)):
+                p = parts[_i]
                 _id = sample.invokeFactory('SamplePartition', id = 'tmp')
                 part = sample[_id]
+                parts[_i]['object'] = part
                 # Sort available containers by capacity and select the
                 # smallest one possible.
                 containers = [_p.getObject() for _p in bsc(UID=p['container'])]
@@ -1553,9 +1637,21 @@ class ajaxAnalysisRequestSubmit():
                     container = containers[0]
                 else:
                     container = None
+
+                # If container is pre-preserved, set the part's preservation,
+                # and flag the partition to be transitioned below.
+                if container \
+                   and container.getPrePreserved() \
+                   and container.getPreservation():
+                    preservation = container.getPreservation().UID()
+                    parts[_i]['prepreserved'] = True
+                else:
+                    preservation = p['preservation']
+                    parts[_i]['prepreserved'] = False
+
                 part.edit(
                     Container = container,
-                    Preservation = p['preservation'],
+                    Preservation = preservation,
                 )
                 part.processForm()
                 if SamplingWorkflowEnabled:
@@ -1627,9 +1723,18 @@ class ajaxAnalysisRequestSubmit():
                 doActionFor(sample, lowest_state)
                 doActionFor(ar, lowest_state)
 
+            # receive secondary AR
             if values.has_key('SampleID') and \
                wftool.getInfoFor(sample, 'review_state') != 'sample_due':
                 wftool.doActionFor(ar, 'receive')
+
+            # Transition pre-preserved partitions.
+            for p in parts:
+                if p['prepreserved']:
+                    part = p['object']
+                    state = wftool.getInfoFor(part, 'review_state')
+                    if state == 'to_be_preserved':
+                        wftool.doActionFor(part, 'preserve')
 
         if len(ARs) > 1:
             message = self.context.translate(
@@ -1726,6 +1831,10 @@ class AnalysisRequestsView(BikaListingView):
             'getSamplePointTitle': {'title': _('Sample Point'),
                                     'index': 'getSamplePointTitle',
                                     'toggle': False},
+            'SamplingDeviation': {'title': _('Sampling Deviation'),
+                                  'toggle': False},
+            'AdHoc': {'title': _('Ad-Hoc'),
+                      'toggle': False},
             'SamplingDate': {'title': _('Sampling Date'),
                              'index': 'getSamplingDate',
                              'toggle': True},
@@ -1778,6 +1887,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'SamplingDeviation',
+                        'AdHoc',
                         'SamplingDate',
                         'getDateSampled',
                         'getSampler',
@@ -1811,6 +1922,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getPreserver',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'SamplingDeviation',
+                        'AdHoc',
                         'state_title']},
            {'id':'sample_received',
              'title': _('Received'),
@@ -1830,6 +1943,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'SamplingDeviation',
+                        'AdHoc',
                         'getDateSampled',
                         'getSampler',
                         'getDatePreserved',
@@ -1855,6 +1970,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'SamplingDeviation',
+                        'AdHoc',
                         'getDateSampled',
                         'getSampler',
                         'getDatePreserved',
@@ -1876,6 +1993,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'SamplingDeviation',
+                        'AdHoc',
                         'getDateSampled',
                         'getSampler',
                         'getDatePreserved',
@@ -1896,6 +2015,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'SamplingDeviation',
+                        'AdHoc',
                         'getDateSampled',
                         'getSampler',
                         'getDatePreserved',
@@ -1922,6 +2043,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'SamplingDeviation',
+                        'AdHoc',
                         'getDateSampled',
                         'getSampler',
                         'getDatePreserved',
@@ -1956,6 +2079,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'SamplingDeviation',
+                        'AdHoc',
                         'getDateSampled',
                         'getSampler',
                         'getDatePreserved',
@@ -1990,6 +2115,8 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'SamplingDeviation',
+                        'AdHoc',
                         'SamplingDate',
                         'getDateSampled',
                         'getSampler',
@@ -2023,14 +2150,17 @@ class AnalysisRequestsView(BikaListingView):
             items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
                  (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
 
-            items[x]['Creator'] = pretty_user_name_or_id(self.context,
-                                                         obj.Creator())
+            items[x]['Creator'] = self.user_fullname(obj.Creator())
 
             samplingdate = obj.getSample().getSamplingDate()
-            items[x]['SamplingDate'] = TimeOrDate(self.context, samplingdate, long_format = 0)
+            items[x]['SamplingDate'] = self.ulocalized_time(samplingdate)
+            items[x]['getDateReceived'] = self.ulocalized_time(obj.getDateReceived())
+            items[x]['getDatePublished'] = self.ulocalized_time(obj.getDatePublished())
 
-            items[x]['getDateReceived'] = TimeOrDate(self.context, obj.getDateReceived())
-            items[x]['getDatePublished'] =  TimeOrDate(self.context, obj.getDatePublished())
+            deviation = sample.getSamplingDeviation()
+            items[x]['SamplingDeviation'] = deviation and deviation.Title() or ''
+
+            items[x]['AdHoc'] = sample.getAdHoc() and True or ''
 
             after_icons = ""
             state = workflow.getInfoFor(obj, 'worksheetanalysis_review_state')
@@ -2052,23 +2182,23 @@ class AnalysisRequestsView(BikaListingView):
             if after_icons:
                 items[x]['after']['getRequestID'] = after_icons
 
-            items[x]['Created'] = TimeOrDate(self.context,
-                                             obj.created())
+            items[x]['Created'] = self.ulocalized_time(obj.created())
 
             items[x]['getSample'] = sample
             items[x]['replace']['getSample'] = \
                 "<a href='%s'>%s</a>" % (sample.absolute_url(), sample.Title())
 
             if not samplingdate > DateTime():
-                datesampled = TimeOrDate(self.context, sample.getDateSampled())
+                datesampled = self.ulocalized_time(sample.getDateSampled())
+
                 if not datesampled:
-                    datesampled = TimeOrDate(self.context, DateTime(),
-                                             long_format=1, with_time = False)
+                    datesampled = self.ulocalized_time(
+                        DateTime(),
+                        long_format=1)
                     items[x]['class']['getDateSampled'] = 'provisional'
                 sampler = sample.getSampler().strip()
                 if sampler:
-                    items[x]['replace']['getSampler'] = pretty_user_name_or_id(
-                        self.context, sampler)
+                    items[x]['replace']['getSampler'] = self.user_fullname(sampler)
                 if 'Sampler' in member.getRoles() and not sampler:
                     sampler = member.id
                     items[x]['class']['getSampler'] = 'provisional'
@@ -2086,7 +2216,7 @@ class AnalysisRequestsView(BikaListingView):
                 items[x]['required'] = ['getSampler', 'getDateSampled']
                 items[x]['allow_edit'] = ['getSampler', 'getDateSampled']
                 samplers = getUsers(sample, ['Sampler', 'LabManager', 'Manager'])
-                username = mtool.getAuthenticatedMember().getUserName()
+                username = member.getUserName()
                 users = [({'ResultValue': u, 'ResultText': samplers.getValue(u)})
                          for u in samplers]
                 items[x]['choices'] = {'getSampler': users}
@@ -2105,16 +2235,31 @@ class AnalysisRequestsView(BikaListingView):
                 items[x]['required'] = ['getPreserver', 'getDatePreserved']
                 items[x]['allow_edit'] = ['getPreserver', 'getDatePreserved']
                 preservers = getUsers(obj, ['Preserver', 'LabManager', 'Manager'])
-                username = mtool.getAuthenticatedMember().getUserName()
+                username = member.getUserName()
                 users = [({'ResultValue': u, 'ResultText': preservers.getValue(u)})
                          for u in preservers]
                 items[x]['choices'] = {'getPreserver': users}
                 preserver = username in preservers.keys() and username or ''
                 items[x]['getPreserver'] = preserver
-                items[x]['getDatePreserved'] = TimeOrDate(
-                    self.context, DateTime(), long_format=1, with_time=False)
+                items[x]['getDatePreserved'] = self.ulocalized_time(
+                    DateTime(),
+                    long_format=1)
                 items[x]['class']['getPreserver'] = 'provisional'
                 items[x]['class']['getDatePreserved'] = 'provisional'
+
+            # Submitting user may not verify results
+            if items[x]['review_state'] == 'to_be_verified' and \
+               not checkPermission(VerifyOwnResults, obj):
+                self_submitted = False
+                review_history = list(workflow.getInfoFor(obj, 'review_history'))
+                review_history.reverse()
+                for event in review_history:
+                    if event.get('action') == 'submit':
+                        if event.get('actor') == member.getId():
+                            self_submitted = True
+                        break
+                if self_submitted:
+                    items[x]['table_row_class'] = "state-submitted-by-current-user"
 
         # Hide Preservation/Sampling workflow actions if the edit columns
         # are not displayed.

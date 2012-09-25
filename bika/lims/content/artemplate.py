@@ -1,6 +1,6 @@
 """
     AnalysisRequests often use the same configurations.
-    ARTemplate includes all AR fields, including preset ARProfile
+    ARTemplate includes all AR fields, including preset AnalysisProfile
 """
 
 from AccessControl import ClassSecurityInfo
@@ -83,24 +83,24 @@ schema = BikaSchema.copy() + Schema((
                             "partitions on the template's Analyses tab"),
         )
     ),
-    ReferenceField('ARProfile',
+    ReferenceField('AnalysisProfile',
         schemata = 'Analyses',
         required = 0,
         multiValued = 0,
-        allowed_types = ('ARProfile',),
-        vocabulary = 'ARProfiles',
-        relationship = 'ARTemplateARProfile',
+        allowed_types = ('AnalysisProfile',),
+        vocabulary = 'AnalysisProfiles',
+        relationship = 'ARTemplateAnalysisProfile',
         widget = ReferenceWidget(
             checkbox_bound = 1,
             label = _("Analysis Profile"),
-            description = _("The AR Profile selection for this template"),
+            description = _("The Analysis Profile selection for this template"),
         ),
     ),
     RecordsField('Analyses',
         schemata = 'Analyses',
         required = 0,
         type = 'artemplate_analyses',
-        subfields = ('service_uid', 'price', 'partition'),
+        subfields = ('service_uid', 'partition'),
         subfield_labels = {'service_uid': _('Title'),
                            'partition': _('Partition')},
         default = [],
@@ -128,12 +128,12 @@ class ARTemplate(BaseContent):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    security.declarePublic('ARProfiles')
-    def ARProfiles(self, instance=None):
+    security.declarePublic('AnalysisProfiles')
+    def AnalysisProfiles(self, instance=None):
         instance = instance or self
         bsc = getToolByName(instance, 'bika_setup_catalog')
         items = []
-        for p in bsc(portal_type='ARProfile',
+        for p in bsc(portal_type='AnalysisProfile',
                       inactive_state='active',
                       sort_on = 'sortable_title'):
             p = p.getObject()
@@ -148,14 +148,12 @@ class ARTemplate(BaseContent):
         uid = None
         if value:
             bsc = getToolByName(self, 'bika_setup_catalog')
-            items = bsc(portal_type = 'SampleType', Title = value)
+            items = bsc(portal_type = 'SampleType', title = value)
             if not items:
                 msg = _("${sampletype} is not a valid sample type",
                         mapping={'sampletype':value})
-                self.context.plone_utils.addPortalMessage(msg, 'error')
-                self.destination_url = self.request.get_header("referer",
-                                       self.context.absolute_url())
-                self.request.response.redirect(self.destination_url)
+                self.plone_utils.addPortalMessage(msg, 'error')
+                self.REQUEST.response.redirect(self.absolute_url())
                 return False
             uid = items[0].UID
         return self.Schema()['SampleType'].set(self, uid)
@@ -171,15 +169,15 @@ class ARTemplate(BaseContent):
         """
         uid = None
         if value:
+            # Strip "Lab: " from sample point title
+            value = value.replace("%s: " % _("Lab"), '')
             bsc = getToolByName(self, 'bika_setup_catalog')
-            items = bsc(portal_type = 'SamplePoint', Title = value)
+            items = bsc(portal_type = 'SamplePoint', title = value)
             if not items:
                 msg = _("${samplepoint} is not a valid sample point",
                         mapping={'samplepoint':value})
-                self.context.plone_utils.addPortalMessage(msg, 'error')
-                self.destination_url = self.request.get_header("referer",
-                                       self.context.absolute_url())
-                self.request.response.redirect(self.destination_url)
+                self.plone_utils.addPortalMessage(msg, 'error')
+                self.REQUEST.response.redirect(self.absolute_url())
                 return False
             uid = items[0].UID
         return self.Schema()['SamplePoint'].set(self, uid)

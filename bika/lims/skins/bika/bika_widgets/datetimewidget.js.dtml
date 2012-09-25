@@ -1,7 +1,0 @@
-jQuery(function($){
-$(document).ready(function(){
-	// XXX Date not i18n aware
-	$('input[DatePicker="1"]').datepicker({'dateFormat': 'dd M yy', showAnim: ''});
-
-});
-});

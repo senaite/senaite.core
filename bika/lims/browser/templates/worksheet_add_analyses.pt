@@ -53,12 +53,15 @@
 							tal:content="python:profile[1]"/>
 					</tal:profile>
 				</select>&nbsp;
-				<input type="submit" value="Apply template" i18n:attributes="value"/>
+				<input type="submit"
+					   class="ws-analyses-search-button"
+				       value="Apply template"
+				       i18n:attributes="value"/>
 			</form>
 
 		</td></tr></table>
 
-		<fieldset class="criteria" name="criteria">
+		<fieldset class="criteria" name="criteria" style="margin-top: 0.5em;">
 			<label tal:attributes="for string:${form_id}_getCategoryTitle"
 				i18n:translate="">Category</label>
 			<select id="CategorySelector"

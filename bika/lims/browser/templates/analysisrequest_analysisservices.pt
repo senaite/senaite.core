@@ -32,15 +32,26 @@
 		    tal:define="analysis python: hasattr(here, service.id) and here[service.id] or None;
                 vat python:service_obj.getVAT()">
 			<span tal:replace="python:currencies[currency].symbol"/>
-			<input
-				class="price numeric"
-				type="text"
-				size="5"
-				tal:attributes="
-					value python: analysis and analysis.getPrice() or service_obj.getPrice();
-					id string:${service/UID}_price;
-					name string:Prices.${service/UID}:record;
-					vat_amount vat"/>
+            <input
+                tal:condition="python: not view.bulk_discount_applies()"
+                class="price numeric"
+                type="text"
+                size="5"
+                tal:attributes="
+                    value python: analysis and analysis.getPrice() or service_obj.getPrice();
+                    id string:${service/UID}_price;
+                    name string:Prices.${service/UID}:record;
+                    vat_amount vat"/>
+            <input
+                tal:condition="python: view.bulk_discount_applies()"
+                class="price numeric"
+                type="text"
+                size="5"
+                tal:attributes="
+                    value python: analysis and analysis.getPrice() or service_obj.getBulkPrice();
+                    id string:${service/UID}_price;
+                    name string:Prices.${service/UID}:record;
+                    vat_amount vat"/>
 			<input
 				type="hidden"
 				tal:attributes="
