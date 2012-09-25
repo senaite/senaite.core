@@ -1,5 +1,30 @@
-3.0 dev
-=======
+3.0rc1
+======
+
+2012-09-25
+----------
+
+### Changes
+
+- Requires Python 2.7 (Plone 4.2)
+- Add GNUPlot dependency
+- Added client sample points
+- Added Sampling Deviation selections
+- Added Ad-Hoc sample flag
+- Added Sample Matrices (Sampletype categorisation)
+- Added custom ResultsFooter field in bika setup
+- Added PDF Attachments to published results
+- Electronic signature included in Results and Reports
+- Login details form to create users for LabContacts
+- Sampling workflow is disabled by default
+- Methods are versioned by default
+- Methods are publicly accessible by default
+- Queries WIP
+- Reports WIP
+- Modified label layouts for easier customisation
+- Cleaned print styles
+- Use plonelocales for handling Date/Time formats
+- SMS and Fax setup items are disabled by default
 
 2012-06-21
 ----------
