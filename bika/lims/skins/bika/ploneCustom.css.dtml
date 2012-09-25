@@ -831,4 +831,33 @@ div.managePortletsLink {
     padding: 3px 5px 3px 3px;
     text-align: right;
 }
+/*
+#portal-column-content {
+	float:left;
+	left:0;
+	margin-left:24%;
+	position:relative;
+	width:55%;
+}
+#portal-column-one {
+	float:left;
+	display:block;
+	left:-23%;
+	margin-left:-55%;
+	position:relative;
+	max-width:210px;
+	width:210px;
+}
+#portal-column-two {
+	float:right;
+	left:0;
+	margin-right:10px;
+	width:190px;
+	max-width:190px;
+	position:relative;
+	width:190px;	
+}
+#portal-columns {
+	width:99.7%;
+}*/
 </dtml-with>
