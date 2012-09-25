@@ -1,4 +1,4 @@
-<div class="field">
+<div class="field" i18n:domain="bika">
 
     <label tal:content="view/field_title">Status</label>
     <br/>

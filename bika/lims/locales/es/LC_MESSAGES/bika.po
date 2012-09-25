@@ -10,8 +10,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-09-25 10:07+0000\n"
-"PO-Revision-Date: 2012-09-25 00:38+0000\n"
+"POT-Creation-Date: 2012-09-25 17:04+0000\n"
+"PO-Revision-Date: 2012-09-25 16:17+0000\n"
 "Last-Translator: Jordi Puiggené <jordi.puiggene@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -406,6 +406,10 @@ msgstr "Especificaciones de análisis"
 msgid "Analysis Type"
 msgstr "Tipo de análisis"
 
+#: ../browser/reports/selection_macros/select_analysiscategory.pt:2
+msgid "Analysis category"
+msgstr ""
+
 #: ../exportimport/instruments/fiastar.py:193
 msgid "Analysis container UID ${parent_uid} not found"
 msgstr "No se ha encontrado el contenedor de análisis con UID {$parent_uid}"
@@ -495,7 +499,7 @@ msgstr "Análisis fuera de tiempo"
 
 #: ../browser/queries/analysisrequests.py:257
 #: ../browser/reports/productivity_analysestats_overtime.py:60
-#: ../browser/templates/worksheet_manage_results.pt:38
+#: ../browser/reports/selection_macros/select_analyst.pt:4
 msgid "Analyst"
 msgstr "Analista"
 
@@ -647,7 +651,7 @@ msgstr "Marca"
 #: ../content/client.py:34
 #: ../content/pricelist.py:23
 msgid "Bulk discount applies"
-msgstr ""
+msgstr "Descuento por volumen aplicable"
 
 #: ../content/analysisservice.py:349
 msgid "Bulk price (excluding VAT)"
@@ -919,6 +923,7 @@ msgstr "Confirme la contraseña"
 
 #: ../browser/late_analyses.py:44
 #: ../browser/queries/analysisrequests.py:87
+#: ../browser/reports/selection_macros/select_contact.pt:3
 msgid "Contact"
 msgstr "Contacto"
 
@@ -1413,6 +1418,10 @@ msgstr "Primer nombre"
 msgid "Formula"
 msgstr "Fórmula"
 
+#: ../browser/reports/selection_macros/select_daterange.pt:9
+msgid "From"
+msgstr ""
+
 #: ../browser/analysisrequest.py:1220
 #: ../browser/client.py:805
 #: ../browser/referencesupplier.py:145
@@ -1521,7 +1530,7 @@ msgstr "Revisión inicial"
 
 #: ../browser/accreditation.py:52
 #: ../browser/reports/productivity_analysestats_overtime.py:72
-#: ../browser/templates/worksheet_manage_results.pt:55
+#: ../browser/reports/selection_macros/select_instrument.pt:3
 msgid "Instrument"
 msgstr "Equipo"
 
@@ -2068,6 +2077,10 @@ msgstr "Pendiente"
 msgid "Pending orders"
 msgstr "Pedidos pendientes"
 
+#: ../browser/reports/selection_macros/select_period.pt:5
+msgid "Period"
+msgstr ""
+
 #: ../config.py:59
 msgid "Permitted"
 msgstr "Permitido"
@@ -2197,7 +2210,7 @@ msgstr "Imprimir"
 
 #: ../browser/reports/templates/report_frame.pt:36
 msgid "Print date:"
-msgstr ""
+msgstr "Fecha de impresión:"
 
 #: ../content/supplyorderitem.py:19
 msgid "Product"
@@ -2208,8 +2221,8 @@ msgid "Productivity Reports"
 msgstr "Informes de productividad"
 
 #: ../browser/queries/analysisrequests.py:101
+#: ../browser/reports/selection_macros/select_profile.pt:3
 #: ../browser/templates/analysisrequest_view.pt:73
-#: ../browser/templates/ar_add.pt:177
 msgid "Profile"
 msgstr "Perfil"
 
@@ -2262,11 +2275,11 @@ msgstr "Consultas"
 
 #: ../browser/queries/queries_query.pt:26
 msgid "Query"
-msgstr "Consulta"
+msgstr "Consultas"
 
 #: ../browser/queries/queries_query.pt:33
 msgid "Query analysis requests on various criteria"
-msgstr "Consulta de solicitudes de anáisis para múltiples criterios de búsqueda"
+msgstr "Consulta de solicitudes de análisis para múltiples criterios de búsqueda"
 
 #: ../browser/queries/queries_query.pt:55
 msgid "Query invoices on client, invoice date and description"
@@ -2388,7 +2401,7 @@ msgstr "Análisis repetidos"
 #: ../browser/reports/templates/productivity.pt:26
 #: ../browser/reports/templates/qualitycontrol.pt:22
 msgid "Report"
-msgstr "Informe"
+msgstr "Informes"
 
 #: ../browser/reports/__init__.py:110
 #: ../content/report.py:23
@@ -2464,7 +2477,7 @@ msgstr "Resultado"
 
 #: ../content/bikasetup.py:129
 msgid "Result Footer"
-msgstr ""
+msgstr "Pie de página"
 
 #: ../content/analysisservice.py:444
 msgid "Result Options"
@@ -3140,7 +3153,7 @@ msgstr "Para este servicio es necesario utilizar un contenedor por separado"
 
 #: ../content/bikasetup.py:130
 msgid "This text will be appended to results reports."
-msgstr ""
+msgstr "El texto será añadido al pie de página de los informes de resultadosD"
 
 #: ../content/laboratory.py:26
 msgid "This value is reported at the bottom of all published results"
@@ -3528,6 +3541,11 @@ msgstr "laboratorio"
 #. Default: "Add to the following groups:"
 #: ../browser/templates/login_details.pt:108
 msgid "label_add_to_groups"
+msgstr "Añadir a los grupos siguientes:"
+
+#. Default: "Specification"
+#: ../browser/reports/selection_macros/select_analysisspecification.pt:3
+msgid "label_specification"
 msgstr ""
 
 #: ../browser/calcs.py:236
@@ -3558,4 +3576,8 @@ msgstr "title_move_item_down"
 #: ../browser/templates/bika_listing_table.pt:227
 msgid "title_move_item_up"
 msgstr "title_move_item_up"
+
+#: ../browser/reports/selection_macros/select_daterange.pt:28
+msgid "to"
+msgstr ""
 

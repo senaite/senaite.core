@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-09-25 10:07+0000\n"
-"PO-Revision-Date: 2012-09-25 00:39+0000\n"
+"POT-Creation-Date: 2012-09-25 17:04+0000\n"
+"PO-Revision-Date: 2012-09-25 16:12+0000\n"
 "Last-Translator: Jordi Puiggené <jordi.puiggene@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -401,6 +401,10 @@ msgstr "Especificacions d'anàlisi"
 msgid "Analysis Type"
 msgstr "Tipus d'anàlisi"
 
+#: ../browser/reports/selection_macros/select_analysiscategory.pt:2
+msgid "Analysis category"
+msgstr ""
+
 #: ../exportimport/instruments/fiastar.py:193
 msgid "Analysis container UID ${parent_uid} not found"
 msgstr "No s'ha trobat el contenidor d'anàlisis amb UID ${parent_uid}"
@@ -490,7 +494,7 @@ msgstr "Anàlisis fora de temps"
 
 #: ../browser/queries/analysisrequests.py:257
 #: ../browser/reports/productivity_analysestats_overtime.py:60
-#: ../browser/templates/worksheet_manage_results.pt:38
+#: ../browser/reports/selection_macros/select_analyst.pt:4
 msgid "Analyst"
 msgstr "Analista"
 
@@ -642,7 +646,7 @@ msgstr "Marca"
 #: ../content/client.py:34
 #: ../content/pricelist.py:23
 msgid "Bulk discount applies"
-msgstr ""
+msgstr "Descompte per volum admès"
 
 #: ../content/analysisservice.py:349
 msgid "Bulk price (excluding VAT)"
@@ -914,6 +918,7 @@ msgstr "Confirmeu la paraula de pas"
 
 #: ../browser/late_analyses.py:44
 #: ../browser/queries/analysisrequests.py:87
+#: ../browser/reports/selection_macros/select_contact.pt:3
 msgid "Contact"
 msgstr "Contacte"
 
@@ -1408,6 +1413,10 @@ msgstr "Nom"
 msgid "Formula"
 msgstr "Fórmula"
 
+#: ../browser/reports/selection_macros/select_daterange.pt:9
+msgid "From"
+msgstr ""
+
 #: ../browser/analysisrequest.py:1220
 #: ../browser/client.py:805
 #: ../browser/referencesupplier.py:145
@@ -1516,7 +1525,7 @@ msgstr "Revisió inicial"
 
 #: ../browser/accreditation.py:52
 #: ../browser/reports/productivity_analysestats_overtime.py:72
-#: ../browser/templates/worksheet_manage_results.pt:55
+#: ../browser/reports/selection_macros/select_instrument.pt:3
 msgid "Instrument"
 msgstr "Equip"
 
@@ -2063,6 +2072,10 @@ msgstr "Pendent"
 msgid "Pending orders"
 msgstr "Comandes pendents"
 
+#: ../browser/reports/selection_macros/select_period.pt:5
+msgid "Period"
+msgstr ""
+
 #: ../config.py:59
 msgid "Permitted"
 msgstr "Permès"
@@ -2192,7 +2205,7 @@ msgstr "Imprimeix"
 
 #: ../browser/reports/templates/report_frame.pt:36
 msgid "Print date:"
-msgstr ""
+msgstr "Data d'impressió:"
 
 #: ../content/supplyorderitem.py:19
 msgid "Product"
@@ -2203,8 +2216,8 @@ msgid "Productivity Reports"
 msgstr "Informes de productivitat"
 
 #: ../browser/queries/analysisrequests.py:101
+#: ../browser/reports/selection_macros/select_profile.pt:3
 #: ../browser/templates/analysisrequest_view.pt:73
-#: ../browser/templates/ar_add.pt:177
 msgid "Profile"
 msgstr "Perfil"
 
@@ -2459,7 +2472,7 @@ msgstr "Resultat"
 
 #: ../content/bikasetup.py:129
 msgid "Result Footer"
-msgstr ""
+msgstr "Peu de pàgina"
 
 #: ../content/analysisservice.py:444
 msgid "Result Options"
@@ -3135,7 +3148,7 @@ msgstr "Per aquest servei és necessari utilitzar un contenidor separat."
 
 #: ../content/bikasetup.py:130
 msgid "This text will be appended to results reports."
-msgstr ""
+msgstr "El text s'inclourà com a peu de pàgina als informes de resultats"
 
 #: ../content/laboratory.py:26
 msgid "This value is reported at the bottom of all published results"
@@ -3523,6 +3536,11 @@ msgstr "laboratori"
 #. Default: "Add to the following groups:"
 #: ../browser/templates/login_details.pt:108
 msgid "label_add_to_groups"
+msgstr "Afegeix als grups següents:"
+
+#. Default: "Specification"
+#: ../browser/reports/selection_macros/select_analysisspecification.pt:3
+msgid "label_specification"
 msgstr ""
 
 #: ../browser/calcs.py:236
@@ -3553,4 +3571,8 @@ msgstr "title_move_item_down"
 #: ../browser/templates/bika_listing_table.pt:227
 msgid "title_move_item_up"
 msgstr "title_move_item_up"
+
+#: ../browser/reports/selection_macros/select_daterange.pt:28
+msgid "to"
+msgstr ""
 

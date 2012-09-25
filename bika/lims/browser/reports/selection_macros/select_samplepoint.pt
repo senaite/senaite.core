@@ -1,4 +1,4 @@
-<div class="field">
+<div class="field" i18n:domain="bika">
 
     <label i18n:translate="">Sample point</label>
     <br/>

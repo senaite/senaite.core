@@ -1,4 +1,4 @@
-<div class="field"
+<div class="field" i18n:domain="bika"
     tal:define="analysts view/analysts">
 
     <label i18n:translate="">Analyst</label>

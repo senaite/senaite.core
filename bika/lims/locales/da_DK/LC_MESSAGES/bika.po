@@ -6,9 +6,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2012-09-25 10:07+0000\n"
-"PO-Revision-Date: 2012-09-08 15:27+0000\n"
-"Last-Translator: lemoene Smit <admin@bikalabs.com>\n"
+"POT-Creation-Date: 2012-09-25 17:04+0000\n"
+"PO-Revision-Date: 2012-09-25 10:23+0000\n"
+"Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -402,6 +402,10 @@ msgstr "Analyse Specifikationer"
 msgid "Analysis Type"
 msgstr "Analysetype"
 
+#: ../browser/reports/selection_macros/select_analysiscategory.pt:2
+msgid "Analysis category"
+msgstr ""
+
 #: ../exportimport/instruments/fiastar.py:193
 msgid "Analysis container UID ${parent_uid} not found"
 msgstr ""
@@ -491,7 +495,7 @@ msgstr ""
 
 #: ../browser/queries/analysisrequests.py:257
 #: ../browser/reports/productivity_analysestats_overtime.py:60
-#: ../browser/templates/worksheet_manage_results.pt:38
+#: ../browser/reports/selection_macros/select_analyst.pt:4
 msgid "Analyst"
 msgstr "Analytiker"
 
@@ -915,6 +919,7 @@ msgstr ""
 
 #: ../browser/late_analyses.py:44
 #: ../browser/queries/analysisrequests.py:87
+#: ../browser/reports/selection_macros/select_contact.pt:3
 msgid "Contact"
 msgstr ""
 
@@ -1409,6 +1414,10 @@ msgstr ""
 msgid "Formula"
 msgstr ""
 
+#: ../browser/reports/selection_macros/select_daterange.pt:9
+msgid "From"
+msgstr ""
+
 #: ../browser/analysisrequest.py:1220
 #: ../browser/client.py:805
 #: ../browser/referencesupplier.py:145
@@ -1517,7 +1526,7 @@ msgstr ""
 
 #: ../browser/accreditation.py:52
 #: ../browser/reports/productivity_analysestats_overtime.py:72
-#: ../browser/templates/worksheet_manage_results.pt:55
+#: ../browser/reports/selection_macros/select_instrument.pt:3
 msgid "Instrument"
 msgstr "Instrument"
 
@@ -2064,6 +2073,10 @@ msgstr ""
 msgid "Pending orders"
 msgstr ""
 
+#: ../browser/reports/selection_macros/select_period.pt:5
+msgid "Period"
+msgstr ""
+
 #: ../config.py:59
 msgid "Permitted"
 msgstr ""
@@ -2204,8 +2217,8 @@ msgid "Productivity Reports"
 msgstr ""
 
 #: ../browser/queries/analysisrequests.py:101
+#: ../browser/reports/selection_macros/select_profile.pt:3
 #: ../browser/templates/analysisrequest_view.pt:73
-#: ../browser/templates/ar_add.pt:177
 msgid "Profile"
 msgstr ""
 
@@ -3525,6 +3538,11 @@ msgstr ""
 msgid "label_add_to_groups"
 msgstr ""
 
+#. Default: "Specification"
+#: ../browser/reports/selection_macros/select_analysisspecification.pt:3
+msgid "label_specification"
+msgstr ""
+
 #: ../browser/calcs.py:236
 msgid "max"
 msgstr ""
@@ -3552,5 +3570,9 @@ msgstr ""
 #. Default: "Move item up"
 #: ../browser/templates/bika_listing_table.pt:227
 msgid "title_move_item_up"
+msgstr ""
+
+#: ../browser/reports/selection_macros/select_daterange.pt:28
+msgid "to"
 msgstr ""
 

@@ -1,4 +1,4 @@
-<div class="field">
+<div class="field" i18n:domain="bika">
 
     <label i18n:translate="label_specification">Specification</label>
     <br/>
