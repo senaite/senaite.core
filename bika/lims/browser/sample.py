@@ -8,7 +8,6 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import EditSample
 from bika.lims import PMF
 from bika.lims import bikaMessageFactory as _
-from Products.CMFPlone import PloneLocalesMessageFactory as _plonelocales
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import POINTS_OF_CAPTURE
@@ -179,7 +178,7 @@ class SamplePartitionsView(BikaListingView):
 ##                items[x]['getSampler'] = sampler and sampler or \
 ##                    (username in samplers.keys() and username) or ''
 ##                items[x]['getDateSampled'] = items[x]['getDateSampled'] \
-##                    or DateTime().strftime(_plonelocales('date_format_short'))
+##                    or DateTime().strftime(self.date_format_short)
 ##                items[x]['class']['getSampler'] = 'provisional'
 ##                items[x]['class']['getDateSampled'] = 'provisional'
 
@@ -197,7 +196,7 @@ class SamplePartitionsView(BikaListingView):
                 items[x]['getPreserver'] = preserver and preserver or \
                     (username in preservers.keys() and username) or ''
                 items[x]['getDatePreserved'] = items[x]['getDatePreserved'] \
-                    or DateTime().strftime(_plonelocales('date_format_short'))
+                    or DateTime().strftime(self.date_format_short)
                 items[x]['class']['getPreserver'] = 'provisional'
                 items[x]['class']['getDatePreserved'] = 'provisional'
 

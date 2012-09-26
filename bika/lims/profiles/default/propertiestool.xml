@@ -5,6 +5,9 @@
 <object name="site_properties" meta_type="Plone Property Sheet">
   <property name="disable_folder_sections" type="boolean">True</property>
   <property name="disable_nonfolderish_sections" type="boolean">True</property>
+  <property name="localLongTimeFormat" type="string">%Y-%m-%d %I:%M %p</property>
+  <property name="localTimeFormat" type="string">%Y-%m-%d</property>
+  <property name="localTimeOnlyFormat" type="string">%I:%M %p</property>
 </object>
 
  <object name="navtree_properties" meta_type="Plone Property Sheet">

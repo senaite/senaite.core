@@ -87,7 +87,7 @@ class InstrumentsView(BikaListingView):
             items[x]['Brand'] = obj.Brand
             items[x]['Model'] = obj.Model
             items[x]['ExpiryDate'] = obj.CalibrationExpiryDate and \
-                obj.CalibrationExpiryDate.asdatetime().strftime("%d %b %Y") or ''
+                obj.CalibrationExpiryDate.asdatetime().strftime(self.date_format_short) or ''
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
 

@@ -3521,7 +3521,7 @@ msgstr "kliënt"
 
 #: ../browser/sample.py:378
 msgid "date_format_short_datepicker"
-msgstr ""
+msgstr "yy-mm-dd"
 
 #: ../browser/templates/referencesample_view.pt:135
 msgid "deactivate"

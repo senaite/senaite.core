@@ -72,7 +72,7 @@ function deleteSampleButton(){
 	$("#ar_"+column+"_SampleID").val('');
 	$("#ar_"+column+"_ClientReference").val('').removeAttr("readonly");
 	$("#ar_"+column+"_SamplingDate")
-		.datepicker({'dateFormat': window.jsi18n_plonelocales('date_format_short_datepicker'), showAnim: ''})
+		.datepicker({'dateFormat': window.jsi18n_bika('date_format_short_datepicker'), showAnim: ''})
 		.click(function(){$(this).attr('value', '');})
 		.attr('value', '');
 	$("#ar_"+column+"_ClientSampleID").val('').removeAttr("readonly");
@@ -847,11 +847,11 @@ $(document).ready(function(){
 	if(e.length > 0){
 		if($($(e).parents('form').children('[name=came_from]')).val() == 'add'){
 			$(e)
-			.datepicker({'dateFormat': window.jsi18n_plonelocales('date_format_short_datepicker'), showAnim: ''})
+			.datepicker({'dateFormat': window.jsi18n_bika('date_format_short_datepicker'), showAnim: ''})
 			.click(function(){$(this).attr('value', '');})
 		} else {
 			$(e)
-			.datepicker({'dateFormat': window.jsi18n_plonelocales('date_format_short_datepicker'), showAnim: ''})
+			.datepicker({'dateFormat': window.jsi18n_bika('date_format_short_datepicker'), showAnim: ''})
 		}
 	}
 

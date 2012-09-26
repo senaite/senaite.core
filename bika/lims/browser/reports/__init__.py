@@ -262,7 +262,7 @@ class SubmitForm(BrowserView):
         report.edit(title = output['report_title'], ReportFile = result)
         report.reindexObject()
 
-        fn = "%s - %s" % (self.date.strftime(r"%Y-%m-%d"),
+        fn = "%s - %s" % (self.date.strftime(self.date_format_short),
                           output['report_title'])
 
         # remove temporary files

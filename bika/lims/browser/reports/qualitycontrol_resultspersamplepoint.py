@@ -218,9 +218,9 @@ class Report(BrowserView):
         set ylabel "%(ylabel)s"
         set key off
         #set logscale
-        set timefmt "%%Y-%%m-%%d %%H:%%M"
+        set timefmt "%(date_format_long)s"
         set xdata time
-        set format x "%%Y-%%m-%%d\\n%%H:%%M"
+        set format x "%(date_format_short)s\\n%(time_format)s"
         set xrange ["%(x_start)s":"%(x_end)s"]
         set auto fix
         set offsets graph 0, 0, 1, 1
@@ -253,8 +253,8 @@ class Report(BrowserView):
 
             for a in analyses[service_title]:
 
-                a['Sampled'] = a['Sampled'].strftime(r"%Y-%m-%d %H:%M")
-                a['Captured'] = a['Captured'].strftime(r"%Y-%m-%d %H:%M")
+                a['Sampled'] = a['Sampled'].strftime(self.date_format_long)
+                a['Captured'] = a['Captured'].strftime(self.date_format_long)
 
                 R = a['Result']
                 U = a['Uncertainty']
@@ -309,8 +309,11 @@ class Report(BrowserView):
                     'title': "",
                     'xlabel': self.context.translate(_("Date Sampled")),
                     'ylabel': unit and unit or '',
-                    'x_start': "%s" % min(result_dates).strftime("%Y-%m-%d %H:%M"),
-                    'x_end': "%s" % max(result_dates).strftime("%Y-%m-%d %H:%M"),
+                    'x_start': "%s" % min(result_dates).strftime(self.date_format_long),
+                    'x_end': "%s" % max(result_dates).strftime(self.date_format_long),
+                    'date_format_long': self.date_format_long,
+                    'date_format_short': self.date_format_short,
+                    'time_format': self.time_format,
                 }
 
                 plot_png = plot(str(plotdata),

@@ -21,7 +21,7 @@ class BrowserView(BrowserView):
     security.declarePublic('ulocalized_time')
     def ulocalized_time(self, time, long_format=None, time_only=None):
         return ulocalized_time(time, long_format, time_only, self.context,
-                               'plonelocales', self.request)
+                               'bika', self.request)
 
     @lazy_property
     def portal_catalog(self):
@@ -66,7 +66,7 @@ class BrowserView(BrowserView):
         return contact_email or member_email or ''
 
     def python_date_format(self, long_format=None, time_only=False):
-        """This convert plonelocales date format msgstrs to Python
+        """This convert bika domain date format msgstrs to Python
         strftime format strings, by the same rules as ulocalized_time.
         XXX i18nl10n.py may change, and that is where this code is taken from.
         """
@@ -75,9 +75,9 @@ class BrowserView(BrowserView):
         if time_only:
             msgid = 'time_format'
         # get the formatstring
-        formatstring = translate(msgid, 'plonelocales', {}, self.request)
+        formatstring = translate(msgid, 'bika', {}, self.request)
         if formatstring is None or formatstring.startswith('date_') or formatstring.startswith('time_'):
-            self.logger.error("plonelocales/%s/%s could not be translated" %
+            self.logger.error("bika/%s/%s could not be translated" %
                               (self.request.get('LANGUAGE'), msgid))
             # msg catalog was not able to translate this msgids
             # use default setting
@@ -91,3 +91,25 @@ class BrowserView(BrowserView):
                     format = properties.localTimeFormat
             return format
         return formatstring.replace(r"${", '%').replace('}', '')
+
+    @lazy_property
+    def date_format_long(self):
+        fmt = self.python_date_format(long_format=1)
+        if fmt == "date_format_long":
+            fmt = "%Y-%m-%d %I:%M %p"
+        return fmt
+
+    @lazy_property
+    def date_format_short(self):
+        fmt = self.python_date_format()
+        if fmt == "date_format_short":
+            fmt = "%Y-%m-%d"
+        return fmt
+
+    @lazy_property
+    def time_format(self):
+        fmt = self.python_date_format(time_only=True)
+        if fmt == "time_format":
+            fmt = "%I:%M %p"
+        return fmt
+
