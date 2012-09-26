@@ -798,7 +798,7 @@ dl.portlet li {
 
 
 #portal-top {
-    background-color: #F8F8F8;
+    background-color: #FFFFFF;
     margin-bottom: 15px;
 }
 
@@ -855,7 +855,7 @@ div.managePortletsLink {
 	width:190px;
 	max-width:190px;
 	position:relative;
-	width:190px;	
+	width:190px;
 }
 #portal-columns {
 	width:99.7%;
