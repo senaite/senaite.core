@@ -24,8 +24,24 @@ class BrowserView(BrowserView):
                                'bika', self.request)
 
     @lazy_property
+    def portal(self):
+        return getToolByName(self.context, 'portal_url').getPortalObject()
+
+    @lazy_property
+    def portal_url(self):
+        return self.portal.absolute_url()
+
+    @lazy_property
     def portal_catalog(self):
         return getToolByName(self.context, 'portal_catalog')
+
+    @lazy_property
+    def reference_catalog(self):
+        return getToolByName(self.context, 'reference_catalog')
+
+    @lazy_property
+    def bika_analysis_catalog(self):
+        return getToolByName(self.context, 'bika_analysis_catalog')
 
     @lazy_property
     def bika_setup_catalog(self):
@@ -42,6 +58,10 @@ class BrowserView(BrowserView):
     @lazy_property
     def portal_groups(self):
         return getToolByName(self.context, 'portal_groups')
+
+    @lazy_property
+    def portal_workflow(self):
+        return getToolByName(self.context, 'portal_workflow')
 
     @lazy_property
     def checkPermission(self, perm, obj):
@@ -81,7 +101,7 @@ class BrowserView(BrowserView):
                               (self.request.get('LANGUAGE'), msgid))
             # msg catalog was not able to translate this msgids
             # use default setting
-            properties = getToolByName(context, 'portal_properties').site_properties
+            properties = getToolByName(self.context, 'portal_properties').site_properties
             if long_format:
                 format = properties.localLongTimeFormat
             else:

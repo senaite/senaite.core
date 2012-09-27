@@ -165,9 +165,6 @@ class SubmitForm(BrowserView):
     # default and errors use this template:
     template = ViewPageTemplateFile("templates/productivity.pt")
 
-    def __init__(self, context, request):
-        BrowserView.__init__(self, context, request)
-
     def __call__(self):
         """Create and render selected report
         """

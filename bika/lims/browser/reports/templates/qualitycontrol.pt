@@ -143,18 +143,18 @@
             <legend i18n:translate="">Results per sample point</legend>
             <tal:x content="structure context/@@selection_macros/select_client"/>
             <tal:x content="structure python:view.selection_macros.select_samplepoint(
-                                             allow_blank=False)"/>
+                                             allow_blank=True)"/>
             <tal:x content="structure python:view.selection_macros.select_sampletype(
                                              allow_blank=False)"/>
             <tal:x content="structure python:view.selection_macros.select_analysisservice(
                                              multiselect=True,
                                              allow_blank=False)"/>
             <tal:x content="structure python:view.selection_macros.select_daterange(
-                                             field_id='DateSampled',
+                                             field_id='getDateSampled',
                                              field_title='Date Sampled')"/>
             <tal:x content="structure python:view.selection_macros.select_state(
                                              workflow_id='bika_worksheetanalysis_workflow',
-                                             field_id='bika_worksheetanalysis_workflow',
+                                             field_id='worksheetanalysis_review_state',
                                              field_title='Worksheet state')"/>
 <tal:comment replace="nothing">
 </tal:comment>
