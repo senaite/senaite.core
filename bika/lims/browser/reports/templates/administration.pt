@@ -15,6 +15,7 @@
 </metal:content-description>
 
 <metal:content-core fill-slot="content-core">
+  <input tal:replace="structure context/@@authenticator/authenticator"/>
   <p/>
   <div>
     <table>

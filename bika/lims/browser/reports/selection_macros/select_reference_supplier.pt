@@ -1,0 +1,26 @@
+<div class="field" i18n:domain="bika">
+
+    <label i18n:translate="">Reference Supplier</label>
+    <br/>
+
+    <select name="ReferenceSupplierUID:ignore_empty"
+            id="ReferenceSupplierUID"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+
+        <option value=""></option>
+
+        <tal:samplepoints tal:repeat="referencesupplier view/reference_suppliers">
+
+            <option value=""
+                tal:define="referencesupplier_uid python:referencesupplier.UID"
+                tal:attributes="
+                    value referencesupplier_uid;
+                    selected python:request.get('ReferenceSupplierUID', '') == referencesupplier_uid and 'selected' or ''"
+                tal:content="referencesupplier/Title">
+            </option>
+
+        </tal:samplepoints>
+
+    </select>
+
+</div>

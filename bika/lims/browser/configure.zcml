@@ -17,7 +17,6 @@
   <include file="remarks.zcml"/>
   <include file="referencesample.zcml"/>
   <include file="referencesupplier.zcml"/>
-  <include file="reportfolder.zcml"/>
   <include file="sample.zcml"/>
   <include file="stickers.zcml"/>
   <include file="worksheet.zcml"/>
@@ -26,6 +25,7 @@
 
   <include package=".fields"/>
   <include package=".widgets"/>
+  <include package=".reports"/>
 
   <browser:page
       for="*"

@@ -2879,11 +2879,11 @@ msgid "Specify the uncertainty value for a given range, e.g. for results in a ra
 msgstr ""
 
 #: ../browser/reports/templates/qualitycontrol.pt:56
-msgid "Standard analysis QC"
+msgid "Reference analysis QC"
 msgstr ""
 
 #: ../browser/reports/templates/qualitycontrol.pt:60
-msgid "Standard analysis quality control graphs"
+msgid "Reference analysis quality control graphs"
 msgstr ""
 
 #: ../browser/analysisrequest.py:1305

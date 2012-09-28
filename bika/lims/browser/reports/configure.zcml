@@ -53,4 +53,21 @@
       permission="zope.Public"
     />
 
+    <!-- AJAX views for StandardAnalysis query form -->
+
+    <browser:page
+      for="*"
+      name="referenceanalysisqc_samples"
+      class="bika.lims.browser.reports.ReferenceAnalysisQC_Samples"
+      permission="zope.Public"
+    />
+
+    <browser:page
+      for="*"
+      name="referenceanalysisqc_services"
+      class="bika.lims.browser.reports.ReferenceAnalysisQC_Services"
+      permission="zope.Public"
+    />
+
+
 </configure>

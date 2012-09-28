@@ -138,7 +138,8 @@ class Report(BrowserView):
             return this_spec
 
         ## Compile a list of dictionaries, with all relevant analysis data
-        for analysis in (a.getObject() for a in proxies):
+        for analysis in proxies:
+            analysis = analysis.getObject()
             client = analysis.aq_parent.aq_parent
             uid = analysis.UID()
             service = analysis.getService()
@@ -188,7 +189,7 @@ class Report(BrowserView):
             'subheader': subheader,
             'parms': parms,
             'tables': [],
-            'footnotes': [], # list of strings
+            'footnotes': [],
         }
 
         plotscript = """

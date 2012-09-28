@@ -1,0 +1,90 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  i18n:domain="bika"
+  tal:define="portal_url nocall:context/portal_url;
+    portal portal_url/getPortalObject;">
+<head>
+  <link rel="stylesheet" type="text/css" media="all" href=""
+    tal:attributes="href string:$portal_url/reports.css" />
+</head>
+
+<body>
+
+  <h2
+    style="-pdf-outline:false"
+    tal:content="python:view.report_data['header']"/>
+  <h3
+    style="-pdf-outline:false"
+    tal:content="python:view.report_data['subheader']"/>
+
+  <!-- Summary -->
+
+  <table
+    class="bika-report-parms"
+    summary="Summary"
+    cellpadding="0"
+    cellspacing="0">
+    <tr tal:repeat="line python:view.report_data['parms']">
+      <td tal:content="python:line['title']"/>
+      <td tal:content="python:line['value']"/>
+    </tr>
+  </table>
+
+  <!-- Results -->
+
+  <span
+    tal:repeat="table python:view.report_data['tables']"
+    class="qualitycontrol_referenceanalysisqc">
+    <h3
+      class='bika-report-table-header'
+      style="padding-bottom:1px;margin-bottom:1px;-pdf-keep-with-next: true"
+      tal:content="table/title">Table Header</h3>
+
+    <span class="plot-container">
+      <img
+        tal:condition="python:table['plot_url']"
+        tal:attributes="src python:table['plot_url']" />
+    </span>
+
+    <br tal:condition="python: table['parms']"/>
+    <span tal:repeat="line python:table['parms']">
+      <span tal:content="python: '%(title)s: %(value)s' % line"/>
+      <br/>
+    </span>
+
+    <table
+      class="bika-report-table"
+      summary="Results"
+      cellpadding="0"
+      cellspacing="0"
+      tal:define="col_titles python:table['columns'];">
+      <thead>
+        <tr>
+          <th tal:repeat="col_title col_titles"
+              tal:content="col_title"/>
+        </tr>
+      </thead>
+      <tbody>
+        <tr tal:repeat="row python:table['data']">
+          <td tal:repeat="col_title col_titles">
+            <span tal:content="structure python:row[col_title]"/>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+<!--  <div>-->
+<!--    <pdf:nextpage />-->
+<!--  </div>-->
+
+  </span>
+
+
+
+
+</body>
+</html>
+
+

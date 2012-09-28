@@ -2878,11 +2878,11 @@ msgid "Specify the uncertainty value for a given range, e.g. for results in a ra
 msgstr "Valor d'incertesa per un rang de valors concret. Per exemple, un valor d'incertesa de 0.5 per un rang de valors entre 0 i 10 significa que el resultat 6.67 es mostrarà així: '6.67 +- 0.5'. Assegureu-vos que els rangs successius són continus, p. ex. al rang 0.00 - 10.00 l'ha de seguir el rang 10.01 - 20.00 i a aquest últim l'ha de seguir el rang 20.01 - 30.00"
 
 #: ../browser/reports/templates/qualitycontrol.pt:56
-msgid "Standard analysis QC"
+msgid "Reference analysis QC"
 msgstr "Anàlisis de control de qualitat QC estàndar"
 
 #: ../browser/reports/templates/qualitycontrol.pt:60
-msgid "Standard analysis quality control graphs"
+msgid "Reference analysis quality control graphs"
 msgstr "Gràfics d'anàlisis de control de qualitat estàndar"
 
 #: ../browser/analysisrequest.py:1305

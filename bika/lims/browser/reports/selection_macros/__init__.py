@@ -134,6 +134,19 @@ class SelectionMacrosView(BrowserView):
         self.analysisprofiles = self.bsc(portal_type='AnalysisProfile', inactive_state='active', sort_on='sortable_title')
         return self.select_profile_pt()
 
+    select_reference_supplier_pt = ViewPageTemplateFile("select_reference_supplier.pt")
+    def select_reference_supplier(self):
+        self.reference_suppliers = self.bsc(portal_type='ReferenceSupplier', inactive_state='active', sort_on='sortable_title')
+        return self.select_reference_supplier_pt()
+
+    select_reference_sample_pt = ViewPageTemplateFile("select_reference_sample.pt")
+    def select_reference_sample(self):
+        return self.select_reference_sample_pt()
+
+    select_reference_service_pt = ViewPageTemplateFile("select_reference_service.pt")
+    def select_reference_service(self):
+        return self.select_reference_service_pt()
+
     select_state_pt = ViewPageTemplateFile("select_state.pt")
     def select_state(self, workflow_id, field_id, field_title):
         self.field_id = field_id

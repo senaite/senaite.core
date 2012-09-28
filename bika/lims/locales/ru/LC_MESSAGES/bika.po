@@ -2880,11 +2880,11 @@ msgid "Specify the uncertainty value for a given range, e.g. for results in a ra
 msgstr "Установите значение неопределенности для данного диапазона, например для результатов в диапазоне от 0 до максимум 10 и неопределенностью значения 0,5, результат 6,67 будет отображаться как +-0,5. Пожалуйста, убедитесь что ряд возможных результатов будет продолжен, т.е. 0,00 - 10,00 будет продолжен 10.01 - 20.00, 20.01 - 30 .00 и т.д."
 
 #: ../browser/reports/templates/qualitycontrol.pt:56
-msgid "Standard analysis QC"
+msgid "Reference analysis QC"
 msgstr "Стандартные анализы СК"
 
 #: ../browser/reports/templates/qualitycontrol.pt:60
-msgid "Standard analysis quality control graphs"
+msgid "Reference analysis quality control graphs"
 msgstr "Стандартный анализ качества контрольный график"
 
 #: ../browser/analysisrequest.py:1305

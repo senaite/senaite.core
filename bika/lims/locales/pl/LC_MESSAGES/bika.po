@@ -2880,11 +2880,11 @@ msgid "Specify the uncertainty value for a given range, e.g. for results in a ra
 msgstr "Określ wartość niepewności dla danego zakresu, np. dla wyników w przedziale od 0 a do 10, wartość niepewności wynosi 0,5 - wynik 6,67 będzie wyświetlany jako 6,67 ± 0,5. Prosimy upewnić się kolejne zakresy są ciągłe, np. 0,00 - 10,00 następnie 10.01 - 20.00, 20.01 - 30 .00 itd."
 
 #: ../browser/reports/templates/qualitycontrol.pt:56
-msgid "Standard analysis QC"
+msgid "Reference analysis QC"
 msgstr "Próbki kontrolne QC"
 
 #: ../browser/reports/templates/qualitycontrol.pt:60
-msgid "Standard analysis quality control graphs"
+msgid "Reference analysis quality control graphs"
 msgstr "Wykresy kontroli jakości dla próbek kontrolnych"
 
 #: ../browser/analysisrequest.py:1305
