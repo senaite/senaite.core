@@ -1,9 +1,34 @@
+#!/bin/bash
 # Bika LIMS Installation
 # ----------------------
 #
 # This document describes the installation of Bika LIMS 
-# on Ubuntu Linux, using the Plone Unified Installer package.
-#
+# on Ubuntu/Fedora Linux, using the Plone Unified Installer package.
+
+# ## Configure environment.
+# Change the following values if you are installing to a different directory
+# or a using an internet proxy
+
+# The target installation directory
+BIKA_HOME=/home/bika
+
+# If a proxy is used, set this value.
+# PROXY=http://user:password@proxy1:80
+
+# Script check.  You need to run this script as root
+if [ ! $UID -eq 0 ]; then
+  echo "Script must be run as root"
+  echo "Try: sudo `basename $0`"
+  exit 1
+fi
+
+# Set the linux proxy environment variables.  It may alread have been set
+# but the sudo setup may not be configured to pass it along.
+if [ -n "${PROXY}" ]; then
+  export http_proxy=${PROXY}
+  export https_proxy=${PROXY}
+fi
+
 # ## Download and install Plone
 #
 # The latest Unified Installer can be found at http://plone.org/products/plone/releases
@@ -14,34 +39,46 @@
 #
 # ## Install server (Linux) dependencies
 #
-# The following commands are as used for Ubuntu 12.04.
+# The following commands are as used for Ubuntu 12.04 and Fedora 17.
 # Use a package manager to install the needed dependencies:
-# (apt-get is an alternative to aptitude)
+# (apt-get is an alternative to yum)
 
-sudo aptitude install gcc
-sudo aptitude install zlib1g-dev
-sudo aptitude install libssl-dev
-sudo aptitude install gnuplot
-sudo aptitude install git-core
+if [ -f /etc/lsb-release ]; then # Ubuntu
+  aptitude install gcc
+  aptitude install zlib1g-dev
+  aptitude install libssl-dev
+  aptitude install gnuplot
+  aptitude install git-core
+else 
+  if [ -f /etc/redhat-release ]; then # Fedora
+    yum install gcc zlib-devel openssl-devel gnuplot git-core wget patch
+  fi
+fi
 
 # ## Download and install the Plone UnifiedInstaller
 
 # Retrieve the unified installer and run the install shell script. 
 # The "dev" branch is used in this case. Omit the "-b dev" argument
-# to use the master branch instead. Modify the target installation
-# directory "/home/bika" as needed.
+# to use the master branch instead.
 
+mkdir -p $BIKA_HOME
 wget -nc https://launchpad.net/plone/4.2/4.2.1/+download/Plone-4.2.1-UnifiedInstaller.tgz 
 tar xzf Plone-4.2.1-UnifiedInstaller.tgz 
 cd Plone-4.2.1-UnifiedInstaller/
-sudo ./install.sh --target=/home/bika standalone 
+./install.sh --target=${BIKA_HOME} standalone 
 
 # Visit http://plone.org/documentation/topic/Installation for more
 # information about setting up Plone if the above fails.
 
 # ## Change to the new Plone instance directory
 
-cd /home/bika/zinstance
+cd ${BIKA_HOME}/zinstance
+
+# If the proxy isn't set for git, set it.  The linux
+# environment variables should be enough, but it didn't work on fedora.
+if [ -n "$PROXY" ] && [ -z "`git config --get http.proxy`" ]; then
+  git config --global http.proxy ${PROXY}
+fi
 
 # At this point a plain Plone instance could be built and run. 
 # This is a good intermediary checkpoint in case of any system
@@ -50,7 +87,7 @@ cd /home/bika/zinstance
 
 # ## (Option) Retrieve the development branch Bika code 
 
-sudo git clone -b dev git://github.com/bikalabs/Bika-LIMS.git src/bika.lims
+git clone -b dev https://github.com/bikalabs/Bika-LIMS.git src/bika.lims
 
 #    Omit the command line switch '-b dev' to use the master branch instead.
 
@@ -62,8 +99,8 @@ sudo git clone -b dev git://github.com/bikalabs/Bika-LIMS.git src/bika.lims
 #         ...
 #         bika.lims
 
-sudo python -c 'open("buildout.1","w").write("".join([line.replace("    Pillow", "    Pillow\n    bika.lims") for line in open("buildout.cfg").readlines()]))'
-sudo mv buildout.1 buildout.cfg
+python -c 'open("buildout.1","w").write("".join([line.replace("    Pillow", "    Pillow\n    bika.lims") for line in open("buildout.cfg").readlines()]))'
+mv buildout.1 buildout.cfg
 
 ### (Option) - Use the latest source code instead of the PYPI egg
 # Find the "develop" section and add "src/bika.lims" to it
@@ -71,13 +108,13 @@ sudo mv buildout.1 buildout.cfg
 #   develop = 
 #        src/bika.lims
 
-sudo python -c 'open("buildout.2","w").write("".join([line.replace("develop =", "develop =\n     src/bika.lims") for line in open("buildout.cfg").readlines()]))'
-sudo mv buildout.2 buildout.cfg
+python -c 'open("buildout.2","w").write("".join([line.replace("develop =", "develop =\n     src/bika.lims") for line in open("buildout.cfg").readlines()]))'
+mv buildout.2 buildout.cfg
 
 
 ### Run buildout
 
-sudo bin/buildout
+bin/buildout
 
 # Some error messages may scroll past, especially on the first run of
 # buildout during the "reportlab" installation. They can be ignored.
@@ -87,11 +124,11 @@ sudo bin/buildout
 # Start the Plone instance in foreground (debug) mode which will
 # display the instance log on the console. 
 
-sudo bin/plonectl fg
+bin/plonectl fg
 
 # Alternatively, start it as a normal server process:
 
-# sudo bin/plonectl start
+# bin/plonectl start
 
 # The log should indicate that the Zope server is ready to serve
 # requests, and the port. If it does not start up, ensure that a
@@ -99,7 +136,7 @@ sudo bin/plonectl fg
 # 
 # You may track the instance log for a server process by running
 # 
-# sudo tail -f var/log/instance.log
+# tail -f var/log/instance.log
 
 ### Add a new Plone instance with the Bika LIMS extension:
 
@@ -119,12 +156,12 @@ sudo bin/plonectl fg
 # This will remove all Plone instances, and WILL DESTROY all entered data.
 # The Plone and Bika code will not be affected.
 
-# sudo rm -f var/filestorage/*
+# rm -f var/filestorage/*
 
 # In this case, or if you have problems logging in, you might need to 
 # initialize the Plone database with an admin user:
 
-# sudo bin/plonectl adduser admin password
+# bin/plonectl adduser admin password
 
 # That's it!
 
@@ -182,11 +219,11 @@ sudo bin/plonectl fg
 # You would also need to enable the module for the stock Ubuntu
 # installation of apache:
 
-# sudo a2enmod proxy
+# a2enmod proxy
 
 # Restart apache to effect changes:
 
-# sudo apache2ctl restart
+# apache2ctl restart
 
 # You may now visit http://server/Plone (or your chosen instance name).
 
