@@ -4,7 +4,8 @@ $(document).ready(function(){
 	$('[datepicker=1]').datepicker({
 		dateFormat: dateFormat,
 		changeMonth:true,
-		changeYear:true
+		changeYear:true,
+		yearRange: "-100:+1"
 	});
 });
 });
