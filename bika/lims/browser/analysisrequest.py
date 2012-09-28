@@ -1778,11 +1778,11 @@ class AnalysisRequestsView(BikaListingView):
 
         self.context_actions = {}
 
-        if self.context.portal_type == "Client":
-            if self.view_url.find("analysisrequests") == -1:
-                self.view_url = self.view_url + "/analysisrequests"
-        else:
+        if self.context.portal_type == "AnalysisRequestsFolder":
             self.request.set('disable_border', 1)
+
+        if self.view_url.find("analysisrequests") == -1:
+            self.view_url = self.view_url + "/analysisrequests"
 
         translate = self.context.translate
 
