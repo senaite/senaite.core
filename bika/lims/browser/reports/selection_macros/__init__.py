@@ -3,8 +3,6 @@ from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.utils import getUsers
 from bika.lims import bikaMessageFactory as _
-import pdb
-from pdb import Pdb
 
 class SelectionMacrosView(BrowserView):
     """ Display snippets for the query form, and
