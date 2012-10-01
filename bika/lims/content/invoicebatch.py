@@ -64,7 +64,7 @@ class InvoiceBatch(BaseFolder):
             new_invoice = True
             _invNum = "%s" % invoice.getInvoiceNumber()[:8]
             _clientNum = "%s" % invoice.getClient().getAccountNumber()
-            _invDate = "%s" % invoice.getInvoiceDate().strftime('%d/%m/%Y')
+            _invDate = "%s" % invoice.getInvoiceDate().strftime('%Y-%m-%d')
             _monthNum = invoice.getInvoiceDate().month()
             if _monthNum < 7:
                 _periodNum = _monthNum + 6

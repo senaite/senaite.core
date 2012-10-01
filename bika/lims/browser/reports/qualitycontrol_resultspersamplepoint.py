@@ -27,15 +27,8 @@ class Report(BrowserView):
         self.selection_macros = SelectionMacrosView(self.context, self.request)
 
     def __call__(self):
-        self.portal = getToolByName(self.context, 'portal_url').getPortalObject()
-        self.portal_url = self.portal.absolute_url()
-        bsc = getToolByName(self.context, "bika_setup_catalog")
-        bac = getToolByName(self.context, "bika_analysis_catalog")
+
         MinimumResults = self.context.bika_setup.getMinimumResults()
-        rc = getToolByName(self.context, "reference_catalog")
-        workflow = getToolByName(self.context, 'portal_workflow')
-##        warning_icon = "<span style='font-weight:600;font-size:110%;font-color:#ff0000;'>!</span>"
-##        error_icon = "<span style='font-weight:600;font-size:110%;color:#ff6666;'>!</span>"
         warning_icon = "<img " +\
             "src='"+self.portal_url+"/++resource++bika.lims.images/warning.png' " +\
             "height='9' width='9'/>"
@@ -46,74 +39,60 @@ class Report(BrowserView):
         header = _("Results per sample point")
         subheader = _("Analysis results for per sample point and analysis service")
 
-        title_parts = []
-
-        # Parse form criteria
-
-        client_uid = self.request.form.get("ClientUID", "")
-        client_title = client_uid and rc.lookupObject(client_uid).Title() or ''
-        if client_title:
-            title_parts.append(client_title)
-
-        st_uid = self.request.form["SampleTypeUID"]
-        st_title = rc.lookupObject(st_uid).Title()
-        title_parts.append(st_title)
-
-        sp_uid = self.request.form["SamplePointUID"]
-        sp_title = rc.lookupObject(sp_uid).Title()
-        title_parts.append(sp_title)
+        self.contentFilter = {'portal_type': 'Analysis',
+                              'review_state': ['verified', 'published'],
+                              'sort_on': "getDateSampled"}
 
         spec = self.request.form.get('spec', 'lab')
-        spec_title = spec == 'lab' and _("Lab") or _("Client")
+        spec_title = (spec == 'lab') and _("Lab") or _("Client")
 
-        if "ServiceUID" not in self.request.form:
+        parms = []
+        titles = []
+
+        val = self.selection_macros.parse_client(self.request)
+        if val:
+            self.contentFilter[val['contentFilter'][0]] = val['contentFilter'][1]
+            parms.append(val['parms'])
+            titles.append(val['titles'])
+
+        val = self.selection_macros.parse_samplepoint(self.request)
+        sp_uid = val
+        if val:
+            self.contentFilter[val['contentFilter'][0]] = val['contentFilter'][1]
+            parms.append(val['parms'])
+            titles.append(val['titles'])
+
+        val = self.selection_macros.parse_sampletype(self.request)
+        st_uid = val
+        if val:
+            self.contentFilter[val['contentFilter'][0]] = val['contentFilter'][1]
+            parms.append(val['parms'])
+            titles.append(val['titles'])
+
+        val = self.selection_macros.parse_analysisservice(self.request)
+        if val:
+            self.contentFilter[val['contentFilter'][0]] = val['contentFilter'][1]
+            parms.append(val['parms'])
+        else:
             message = _("No analysis services were selected.")
             self.context.plone_utils.addPortalMessage(message, 'error')
             return self.default_template()
-        if type(self.request.form["ServiceUID"]) in (list, tuple):
-            service_uids = self.request.form["ServiceUID"] # Multiple services
-        else:
-            service_uids = (self.request.form["ServiceUID"],) # Single service
-        services = [rc.lookupObject(s) for s in service_uids]
 
-        parms = []
-        if client_title:
-            parms.append({'title': _("Client"), "value": client_title})
-        parms.append({'title': _("Sample point"), "value": sp_title})
-        parms.append({'title': _("Sample type"), "value": st_title})
-        parms.append({'title': _("Services"),
-                      "value": ','.join([s.Title() for s in services])})
+        val = self.selection_macros.parse_daterange(self.request,
+                                                    'getDateSampled',
+                                                    'DateSampled')
+        if val:
+            self.contentFilter[val['contentFilter'][0]] = val['contentFilter'][1]
+            parms.append(val['parms'])
+            titles.append(val['titles'])
 
-        query = {
-            "portal_type": "Analysis",
-            "review_state": ['verified', 'published'],
-            "getSamplePointUID": sp_uid,
-            "getSampleTypeUID": st_uid,
-            "getServiceUID": service_uids,
-            "sort_on": "getDateSampled"
-        }
-
-
-        date_query = formatDateQuery(self.context, 'DateSampled')
-        self.logger.info(date_query)
-        if date_query:
-            query['getDateSampled'] = date_query
-            parms.append({
-                'title': _('Date Sampled'),
-                'value': formatDateParms(self.context, 'DateSampled'),
-                'type': 'text'
-            })
-
-        if self.request.form.has_key('bika_worksheetanalysis_workflow'):
-            query['worksheetanalysis_review_state'] = self.request.form['bika_worksheetanalysis_workflow']
-            bika_worksheetanalysis_workflow = workflow.getTitleForStateOnType(
-                self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
-            title_parts.append(self.context.translate(_(bika_worksheetanalysis_workflow)))
-            parms.append({
-                'title': _('Assigned to worksheet'),
-                'value': bika_worksheetanalysis_workflow,
-                'type': 'text'
-            })
+        val = self.selection_macros.parse_state(self.request,
+                                                'bika_worksheetanalysis_workflow',
+                                                'worksheetanalysis_review_state',
+                                                'Worksheet state')
+        if val:
+            self.contentFilter[val['contentFilter'][0]] = val['contentFilter'][1]
+            parms.append(val['parms'])
 
         # Query the catalog and store analysis data in a dict
         analyses = {}
@@ -121,7 +100,8 @@ class Report(BrowserView):
         in_shoulder_range_count = 0
         analysis_count = 0
 
-        proxies = bac(query)
+        proxies = self.bika_analysis_catalog(self.contentFilter)
+
         if not proxies:
             message = _("No analyses matched your query")
             self.context.plone_utils.addPortalMessage(message, 'error')
@@ -141,7 +121,7 @@ class Report(BrowserView):
             else:
                 parent = self.context.bika_setup.bika_analysisspecs
             if not parent.UID() in cached_specs:
-                proxies = bsc(
+                proxies = self.bika_setup_catalog(
                     portal_type = 'AnalysisSpec',
                     getSampleTypeUID = st_uid,
                     path = {"query": "/".join(parent.getPhysicalPath()),
@@ -158,7 +138,8 @@ class Report(BrowserView):
             return this_spec
 
         ## Compile a list of dictionaries, with all relevant analysis data
-        for analysis in (a.getObject() for a in proxies):
+        for analysis in proxies:
+            analysis = analysis.getObject()
             client = analysis.aq_parent.aq_parent
             uid = analysis.UID()
             service = analysis.getService()
@@ -208,19 +189,19 @@ class Report(BrowserView):
             'subheader': subheader,
             'parms': parms,
             'tables': [],
-            'footnotes': [], # list of strings
+            'footnotes': [],
         }
 
         plotscript = """
-        set terminal pngcairo size 700,350 font "Verdana, 8"
+        set terminal png transparent truecolor enhanced size 700,350 font "Verdana, 8"
         set title "%(title)s"
         set xlabel "%(xlabel)s"
         set ylabel "%(ylabel)s"
         set key off
         #set logscale
-        set timefmt "%%Y-%%m-%%d %%H:%%M"
+        set timefmt "%(date_format_long)s"
         set xdata time
-        set format x "%%Y-%%m-%%d\\n%%H:%%M"
+        set format x "%(date_format_short)s\\n%(time_format)s"
         set xrange ["%(x_start)s":"%(x_end)s"]
         set auto fix
         set offsets graph 0, 0, 1, 1
@@ -253,8 +234,8 @@ class Report(BrowserView):
 
             for a in analyses[service_title]:
 
-                a['Sampled'] = a['Sampled'].strftime(r"%Y-%m-%d %H:%M")
-                a['Captured'] = a['Captured'].strftime(r"%Y-%m-%d %H:%M")
+                a['Sampled'] = a['Sampled'].strftime(self.date_format_long)
+                a['Captured'] = a['Captured'].strftime(self.date_format_long)
 
                 R = a['Result']
                 U = a['Uncertainty']
@@ -309,8 +290,11 @@ class Report(BrowserView):
                     'title': "",
                     'xlabel': self.context.translate(_("Date Sampled")),
                     'ylabel': unit and unit or '',
-                    'x_start': "%s" % min(result_dates).strftime("%Y-%m-%d %H:%M"),
-                    'x_end': "%s" % max(result_dates).strftime("%Y-%m-%d %H:%M"),
+                    'x_start': "%s" % min(result_dates).strftime(self.date_format_long),
+                    'x_end': "%s" % max(result_dates).strftime(self.date_format_long),
+                    'date_format_long': self.date_format_long,
+                    'date_format_short': self.date_format_short,
+                    'time_format': self.time_format,
                 }
 
                 plot_png = plot(str(plotdata),
@@ -362,8 +346,8 @@ class Report(BrowserView):
              "value": in_shoulder_range_count})
 
         title = self.context.translate(header)
-        if title_parts:
-            title += " (%s)" % " ".join(title_parts)
+        if titles:
+            title += " (%s)" % " ".join(titles)
         return {
             'report_title': title,
             'report_data': self.template(),

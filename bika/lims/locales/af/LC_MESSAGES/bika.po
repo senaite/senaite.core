@@ -2880,11 +2880,11 @@ msgid "Specify the uncertainty value for a given range, e.g. for results in a ra
 msgstr "Spesifiseer die onsekerheidswaardes vir 'n gegewe bereik, bv. vir resultate in 'n bereik met 'n minimum van 0 en 'n maksimum van 10 is die onsekerheidswaarde 0.5. 'n Resultaat van 6.67 sal gerapporteer word as 6.67 +- 0.5. maak seker opeenvolgende bereike is aaneenlopend, bv. 0.00-10.00 word gevolg deur 10.01-20.00, 20.01-30.00, ens. "
 
 #: ../browser/reports/templates/qualitycontrol.pt:56
-msgid "Standard analysis QC"
+msgid "Reference analysis QC"
 msgstr "Standaardontleding KB"
 
 #: ../browser/reports/templates/qualitycontrol.pt:60
-msgid "Standard analysis quality control graphs"
+msgid "Reference analysis quality control graphs"
 msgstr "Standaardontleding KB Grafieke"
 
 #: ../browser/analysisrequest.py:1305
@@ -3521,7 +3521,7 @@ msgstr "kliënt"
 
 #: ../browser/sample.py:378
 msgid "date_format_short_datepicker"
-msgstr ""
+msgstr "yy-mm-dd"
 
 #: ../browser/templates/referencesample_view.pt:135
 msgid "deactivate"

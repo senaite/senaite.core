@@ -1,0 +1,16 @@
+<!-- This is populated with Javascript, when the ReferenceSupplier is selected. -->
+
+<div class="field" i18n:domain="bika">
+
+    <label i18n:translate="">Reference Sample</label>
+    <br/>
+
+    <select name="ReferenceSampleUID:ignore_empty"
+            id="ReferenceSampleUID"
+            tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
+
+        <option value=""></option>
+
+    </select>
+
+</div>

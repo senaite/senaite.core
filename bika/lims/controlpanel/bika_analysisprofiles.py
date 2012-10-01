@@ -21,6 +21,7 @@ class ProfilesView(BikaListingView):
         self.catalog = "bika_setup_catalog"
         self.contentFilter = {
             'portal_type': 'AnalysisProfile',
+            'sort_order': 'sortable_title',
             'path': {
                 "query": "/".join(self.context.getPhysicalPath()),
                 "level" : 0 },

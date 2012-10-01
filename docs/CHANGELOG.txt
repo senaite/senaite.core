@@ -1,6 +1,20 @@
 3.0rc1
 ======
 
+2012-10-01
+
+Bug fixes
+
+- Removed Bika Health data from released egg
+- Remove remarks from portal_factory screens
+- Add Month/Year selectors to default datetime widget
+- ClientFolder default sorting.
+- Date formats for jquery datepicker
+- Don't overwrite the Title specified in @@plone-addsite
+
+3.0rc1
+======
+
 2012-09-25
 ----------
 

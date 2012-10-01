@@ -21,6 +21,7 @@ class TemplatesView(BikaListingView):
         self.catalog = "bika_setup_catalog"
         self.contentFilter = {
             'portal_type': 'ARTemplate',
+            'sort_order': 'sortable_title',
             'path': {
                 "query": "/".join(self.context.getPhysicalPath()),
                 "level" : 0 },

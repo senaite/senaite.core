@@ -281,7 +281,8 @@ class ClientARImportsView(BikaListingView):
     def __init__(self, context, request):
         super(ClientARImportsView, self).__init__(context, request)
         self.catalog = "portal_catalog"
-        self.contentFilter = {'portal_type': 'ARImport'}
+        self.contentFilter = {'portal_type': 'ARImport',
+                              'sort_on':'sortable_title'}
         self.context_actions = {_('AR Import'):
                                 {'url': 'createObject?type_name=ARImport',
                                  'icon': '++resource++bika.lims.images/add.png'}}
@@ -346,6 +347,7 @@ class ClientAnalysisProfilesView(BikaListingView):
         self.catalog = "bika_setup_catalog"
         self.contentFilter = {
             'portal_type': 'AnalysisProfile',
+            'sort_on':'sortable_title',
             'path': {
                 "query": "/".join(self.context.getPhysicalPath()),
                 "level" : 0 },
@@ -413,6 +415,7 @@ class ClientARTemplatesView(BikaListingView):
         self.catalog = "bika_setup_catalog"
         self.contentFilter = {
             'portal_type': 'ARTemplate',
+            'sort_on':'sortable_title',
             'path': {
                 "query": "/".join(self.context.getPhysicalPath()),
                 "level" : 0 },
@@ -478,6 +481,7 @@ class ClientSamplePointsView(BikaListingView):
         self.catalog = "bika_setup_catalog"
         self.contentFilter = {
             'portal_type': 'SamplePoint',
+            'sort_on':'sortable_title',
             'path': {
                 "query": "/".join(self.context.getPhysicalPath()),
                 "level" : 0 },
@@ -542,6 +546,7 @@ class ClientAnalysisSpecsView(BikaListingView):
         self.catalog = 'bika_setup_catalog'
         self.contentFilter = {
             'portal_type': 'AnalysisSpec',
+            'sort_on':'sortable_title',
             'getClientUID': context.UID(),
             'path': {
                 "query": "/".join(context.getPhysicalPath()),
@@ -718,7 +723,7 @@ class ClientOrdersView(BikaListingView):
     def __init__(self, context, request):
         super(ClientOrdersView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'SupplyOrder',
-                              'sort_on':'id',
+                              'sort_on':'sortable_title',
                               'sort_order': 'reverse'}
         self.context_actions = {_('Add'):
                                 {'url': 'createObject?type_name=SupplyOrder',

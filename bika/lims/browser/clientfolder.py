@@ -30,7 +30,7 @@ class ClientFolderContentsView(BikaListingView):
         request.set('disable_border', 1)
 
         self.columns = {
-            'title': {'title': _('Name'), 'index': 'sortable_title'},
+            'title': {'title': _('Name')},
             'EmailAddress': {'title': _('Email Address')},
             'Phone': {'title': _('Phone')},
             'Fax': {'title': _('Fax')},
@@ -96,6 +96,7 @@ class ClientFolderContentsView(BikaListingView):
                 if self.review_state == 'inactive' and state != 'inactive':
                     continue
             clients.append(client)
+        clients.sort(lambda x,y: cmp(x.Title(),y.Title()))
         return clients
 
     def folderitems(self):

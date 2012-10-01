@@ -165,9 +165,6 @@ class SubmitForm(BrowserView):
     # default and errors use this template:
     template = ViewPageTemplateFile("templates/productivity.pt")
 
-    def __init__(self, context, request):
-        BrowserView.__init__(self, context, request)
-
     def __call__(self):
         """Create and render selected report
         """
@@ -181,8 +178,6 @@ class SubmitForm(BrowserView):
             self.logger.error(message)
             self.context.plone_utils.addPortalMessage(message, 'error')
             return self.template()
-
-        props = self.context.portal_properties.site_properties
 
         self.date = DateTime()
         username = self.context.portal_membership.getAuthenticatedMember().getUserName()
@@ -262,7 +257,7 @@ class SubmitForm(BrowserView):
         report.edit(title = output['report_title'], ReportFile = result)
         report.reindexObject()
 
-        fn = "%s - %s" % (self.date.strftime(r"%Y-%m-%d"),
+        fn = "%s - %s" % (self.date.strftime(self.date_format_short),
                           output['report_title'])
 
         # remove temporary files
@@ -276,3 +271,47 @@ class SubmitForm(BrowserView):
             self.request.RESPONSE.write(result)
 
         return
+
+class ReferenceAnalysisQC_Samples(BrowserView):
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        # get Supplier from request
+        supplier = self.request.form.get('ReferenceSupplierUID', '')
+        supplier = self.reference_catalog.lookupObject(supplier)
+        if supplier:
+            # get ReferenceSamples for this supplier
+            samples = self.bika_catalog(portal_type = 'ReferenceSample',
+                                        path={"query": "/".join(supplier.getPhysicalPath()),
+                                              "level" : 0 })
+            ret = []
+            for sample in samples:
+                sample = sample.getObject()
+                UID = sample.UID()
+                title = sample.Title()
+                definition = sample.getReferenceDefinition()
+                if definition:
+                    title = "%s (%s)" % (title, definition.Title())
+                ret.append((UID,title))
+            return json.dumps(ret)
+
+class ReferenceAnalysisQC_Services(BrowserView):
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        # get Sample from request
+        sample = self.request.form.get('ReferenceSampleUID', '')
+        sample = self.reference_catalog.lookupObject(sample)
+        if sample:
+            # get ReferenceSamples for this supplier
+            analyses = self.bika_analysis_catalog(portal_type = 'ReferenceAnalysis',
+                                                  path={"query": "/".join(sample.getPhysicalPath()),
+                                                        "level" : 0 })
+            ret = {}
+            for analysis in analyses:
+                service = analysis.getObject().getService()
+                if ret.has_key(service.UID()):
+                    ret[service.UID()]['analyses'].append(analysis.UID)
+                else:
+                    ret[service.UID()] = {'title': service.Title(),
+                                          'analyses': [analysis.UID,]}
+            ret = [[k, v['title'], v['analyses']] for k,v in ret.items()]
+            return json.dumps(ret)

@@ -111,9 +111,9 @@ class Report(BrowserView):
                     firstday = received - 6
                 else:
                     firstday = received - (int(dayofweek) - 1)
-                datekey = firstday.strftime('%d %b %Y')
+                datekey = firstday.strftime(self.date_format_short)
             elif period == 'Month':
-                datekey = received.strftime('%b %Y')
+                datekey = received.strftime('%m-%d')
             if not periods.has_key(datekey):
                 periods[datekey] = {'count': 0,
                                     'duration': 0,

@@ -4,8 +4,6 @@ jarn.i18n.loadCatalog('bika');
 window.jsi18n_bika = jarn.i18n.MessageFactory('bika');
 jarn.i18n.loadCatalog('plone');
 window.jsi18n_plone = jarn.i18n.MessageFactory('plone');
-jarn.i18n.loadCatalog('plonelocales');
-window.jsi18n_plonelocales = jarn.i18n.MessageFactory('plonelocales');
 
 function portalMessage(message) {
 	str = "<dl class='portalMessage error'>"+
@@ -265,9 +263,8 @@ $(document).ready(function(){
 
 	_ = window.jsi18n_bika;
 	PMF = window.jsi18n_plone;
-	plonelocales = window.jsi18n_plonelocales;
 
-	dateFormat = window.jsi18n_plonelocales("date_format_short_datepicker");
+	dateFormat = _("date_format_short_datepicker");
 
 	$('input.datepicker').live('click', function() {
 		$(this).datepicker({

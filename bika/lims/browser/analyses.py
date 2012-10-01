@@ -139,7 +139,7 @@ class AnalysesView(BikaListingView):
             items[i]['Uncertainty'] = ''
             items[i]['retested'] = obj.getRetested()
             items[i]['class']['retested'] = 'center'
-            items[i]['result_captured'] = obj.getResultCaptureDate()
+            items[i]['result_captured'] = self.ulocalized_time(obj.getResultCaptureDate())
             items[i]['calculation'] = calculation and True or False
             try:
                 items[i]['Partition'] = obj.getSamplePartition().Title()
@@ -149,9 +149,9 @@ class AnalysesView(BikaListingView):
                 items[i]['DueDate'] = ''
                 items[i]['CaptureDate'] = ''
             else:
-                items[i]['DueDate'] = obj.getDueDate()
+                items[i]['DueDate'] = self.ulocalized_time(obj.getDueDate(), long_format=1)
                 cd = obj.getResultCaptureDate()
-                items[i]['CaptureDate'] = cd and self.ulocalized_time(cd) or ''
+                items[i]['CaptureDate'] = cd and self.ulocalized_time(cd, long_format=1) or ''
             items[i]['Attachments'] = ''
 
             # calculate specs
@@ -326,12 +326,12 @@ class AnalysesView(BikaListingView):
                             items[i]['result_captured'] > items[i]['DueDate'] \
                             or not items[i]['result_captured']
                             ):
-                       DueDate = self.ulocalized_time(item['DueDate'])
+                       DueDate = self.ulocalized_time(item['DueDate'], long_format=1)
                        items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                             (DueDate, self.portal_url, self.context.translate(_("Late Analysis")))
                 else:
                     items[i]['replace']['DueDate'] = self.ulocalized_time(
-                        item['DueDate'])
+                        item['DueDate'], long_format=1)
 
             # Submitting user may not verify results (admin can though)
             if items[i]['review_state'] == 'to_be_verified' and \

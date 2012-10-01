@@ -15,6 +15,8 @@
 
 <metal:content-core fill-slot="content-core">
 
+<input tal:replace="structure context/@@authenticator/authenticator"/>
+
 <table>
   <tr>
     <td VALIGN="top">
@@ -54,11 +56,11 @@
 
         <p>
           <a href="#"
-             id="standardanalysisqc_selector"
-             i18n:translate="">Standard analysis QC</a>
+             id="referenceanalysisqc_selector"
+             i18n:translate="">Reference analysis QC</a>
           <br/>
           <span i18n:translate="">
-            Standard analysis quality control graphs
+            Reference analysis quality control graphs
           </span>
         </p>
 
@@ -143,21 +145,19 @@
             <legend i18n:translate="">Results per sample point</legend>
             <tal:x content="structure context/@@selection_macros/select_client"/>
             <tal:x content="structure python:view.selection_macros.select_samplepoint(
-                                             allow_blank=False)"/>
+                                             allow_blank=True)"/>
             <tal:x content="structure python:view.selection_macros.select_sampletype(
                                              allow_blank=False)"/>
             <tal:x content="structure python:view.selection_macros.select_analysisservice(
                                              multiselect=True,
                                              allow_blank=False)"/>
             <tal:x content="structure python:view.selection_macros.select_daterange(
-                                             field_id='DateSampled',
+                                             field_id='getDateSampled',
                                              field_title='Date Sampled')"/>
             <tal:x content="structure python:view.selection_macros.select_state(
                                              workflow_id='bika_worksheetanalysis_workflow',
-                                             field_id='bika_worksheetanalysis_workflow',
+                                             field_id='worksheetanalysis_review_state',
                                              field_title='Worksheet state')"/>
-<tal:comment replace="nothing">
-</tal:comment>
           </fieldset>
           <input tabindex=""
               class="searchButton"
@@ -168,17 +168,25 @@
         </form>
       </div>
 
-      <div id="standardanalysisqc" style="display:none" class="criteria">
-        <form action="createreport" method="post" name="qualitycontrol_standardanalysisqc">
-          <input type="hidden" name="report_id" value="qualitycontrol_standardanalysisqc" />
+      <div id="referenceanalysisqc" style="display:none" class="criteria">
+        <form action="createreport" method="post" name="qualitycontrol_referenceanalysisqc">
+          <input type="hidden" name="report_id" value="qualitycontrol_referenceanalysisqc" />
           <fieldset>
-            <legend i18n:translate="">Standard analysis QC</legend>
-            <br/>
-            <br/>
-            <br/>
+            <legend i18n:translate="">Reference analysis QC</legend>
+            <tal:x content="structure context/@@selection_macros/select_reference_supplier"/>
+            <tal:x content="structure context/@@selection_macros/select_reference_sample"/>
+            <tal:x content="structure context/@@selection_macros/select_reference_service"/>
+            <tal:x content="structure python:view.selection_macros.select_daterange(
+                                             field_id='getDateVerified',
+                                             field_title='Date Verified')"/>
           </fieldset>
-          <b> Under construction </b>
-
+          <input tabindex=""
+              class="searchButton"
+              type="submit"
+              name="submit"
+              value="Report"
+              i18n:attributes="value"/>
+        </form>
       </div>
 
       <div id="duplicateanalysisqc" style="display:none" class="criteria">
