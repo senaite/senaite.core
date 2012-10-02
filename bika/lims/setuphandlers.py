@@ -110,10 +110,10 @@ class BikaGenerator:
         if 'LabManagers' not in portal_groups.listGroupIds():
             try:
                 portal_groups.addGroup('LabManagers', title = "Lab Managers",
-                       roles = ['Member', 'LabManager', 'Site Administrator'])
+                       roles = ['Member', 'LabManager', 'Site Administrator', ])
             except KeyError:
                 portal_groups.addGroup('LabManagers', title = "Lab Managers",
-                       roles = ['Member', 'LabManager', 'Manager'])# Plone < 4.1
+                       roles = ['Member', 'LabManager', 'Manager', ])# Plone < 4.1
 
         if 'LabClerks' not in portal_groups.listGroupIds():
             portal_groups.addGroup('LabClerks', title = "Lab Clerks",
@@ -171,21 +171,21 @@ class BikaGenerator:
         mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
         mp(permissions.ManageUsers, ['Manager', 'LabManager', ], 1)
 
-        mp(ApplyVersionControl, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'Member'], 1)
-        mp(SaveNewVersion, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'Member'], 1)
-        mp(AccessPreviousVersions, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'Member'], 1)
+        mp(ApplyVersionControl, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
+        mp(SaveNewVersion, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
+        mp(AccessPreviousVersions, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner'], 1)
 
+        mp(DispatchOrder, ['Manager', 'LabManager', 'LabClerk'], 1)
+        mp(ManageARImport, ['Manager', 'LabManager', 'LabClerk'], 1)
+        mp(ManageAnalysisRequests, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 1)
         mp(ManageBika, ['Manager', 'LabManager'], 1)
         mp(ManageClients, ['Manager', 'LabManager', 'LabClerk'], 1)
-        mp(ManageWorksheets, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(ManageOrders, ['Manager', 'LabManager', 'LabClerk'], 1)
-        mp(ManageAnalysisRequests, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 1)
-        mp(ManageSamples, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 1)
-        mp(ManageReferenceSuppliers, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-        mp(ManageReference, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(ManagePricelists, ['Manager', 'LabManager', 'Owner'], 1)
-        mp(ManageARImport, ['Manager', 'LabManager', 'LabClerk'], 1)
-        mp(DispatchOrder, ['Manager', 'LabManager', 'LabClerk'], 1)
+        mp(ManageReference, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+        mp(ManageReferenceSuppliers, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+        mp(ManageSamples, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 1)
+        mp(ManageWorksheets, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(PostInvoiceBatch, ['Manager', 'LabManager', 'Owner'], 1)
 
         mp(CancelAndReinstate, ['Manager', 'LabManager'], 0)
@@ -274,7 +274,7 @@ class BikaGenerator:
 
         # /reports folder permissions
         mp = portal.reports.manage_permission
-        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk' ], 0)
+        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', ], 0)
         mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member'], 0)
         mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Owner'], 0)
         mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Member'], 0)
@@ -336,16 +336,6 @@ class BikaGenerator:
             try:cat.addColumn(col)
             except:pass
 
-        bac = getToolByName(portal, 'bika_analysis_catalog', None)
-        if bac == None:
-            logger.warning('Could not find the bika_analysis_catalog tool.')
-            return
-
-        at = getToolByName(portal, 'archetype_tool')
-        at.setCatalogsByType('Analysis', ['bika_analysis_catalog', ])
-        at.setCatalogsByType('ReferenceAnalysis', ['bika_analysis_catalog', ])
-        at.setCatalogsByType('DuplicateAnalysis', ['bika_analysis_catalog', ])
-
         # create lexicon
         wordSplitter = Empty()
         wordSplitter.group = 'Word Splitter'
@@ -357,11 +347,27 @@ class BikaGenerator:
         stopWords.group = 'Stop Words'
         stopWords.name = 'Remove listed and single char words'
         elem = [wordSplitter, caseNormalizer, stopWords]
-        try:bac.manage_addProduct['ZCTextIndex'].manage_addLexicon('Lexicon', 'Lexicon', elem)
-        except:pass
         zc_extras = Empty()
         zc_extras.index_type = 'Okapi BM25 Rank'
         zc_extras.lexicon_id = 'Lexicon'
+
+        ### bika_analysis_catalog
+
+        bac = getToolByName(portal, 'bika_analysis_catalog', None)
+        if bac == None:
+            logger.warning('Could not find the bika_analysis_catalog tool.')
+            return
+
+        try:
+            bac.manage_addProduct['ZCTextIndex'].manage_addLexicon('Lexicon', 'Lexicon', elem)
+        except:
+            logger.warning('Could not add ZCTextIndex to bika_analysis_catalog')
+            pass
+
+        at = getToolByName(portal, 'archetype_tool')
+        at.setCatalogsByType('Analysis', ['bika_analysis_catalog', ])
+        at.setCatalogsByType('ReferenceAnalysis', ['bika_analysis_catalog', ])
+        at.setCatalogsByType('DuplicateAnalysis', ['bika_analysis_catalog', ])
 
         addIndex(bac, 'path', 'ExtendedPathIndex', ('getPhysicalPath'))
         addIndex(bac, 'allowedRolesAndUsers', 'KeywordIndex')
@@ -418,15 +424,18 @@ class BikaGenerator:
         addColumn(bac, 'cancellation_state')
         addColumn(bac, 'getRequestID')
 
+        ### bika_catalog
+
         bc = getToolByName(portal, 'bika_catalog', None)
         if bc == None:
             logger.warning('Could not find the bika_catalog tool.')
             return
 
-        bsc = getToolByName(portal, 'bika_setup_catalog', None)
-        if bsc == None:
-            logger.warning('Could not find the setup catalog tool.')
-            return
+        try:
+            bc.manage_addProduct['ZCTextIndex'].manage_addLexicon('Lexicon', 'Lexicon', elem)
+        except:
+            logger.warning('Could not add ZCTextIndex to bika_catalog')
+            pass
 
         at = getToolByName(portal, 'archetype_tool')
         at.setCatalogsByType('AnalysisRequest', ['bika_catalog', ])
@@ -435,23 +444,6 @@ class BikaGenerator:
         at.setCatalogsByType('ReferenceSample', ['bika_catalog', ])
         at.setCatalogsByType('Report', ['bika_catalog', ])
         at.setCatalogsByType('Worksheet', ['bika_catalog', ])
-
-        # create lexicon
-        wordSplitter = Empty()
-        wordSplitter.group = 'Word Splitter'
-        wordSplitter.name = 'Unicode Whitespace splitter'
-        caseNormalizer = Empty()
-        caseNormalizer.group = 'Case Normalizer'
-        caseNormalizer.name = 'Unicode Case Normalizer'
-        stopWords = Empty()
-        stopWords.group = 'Stop Words'
-        stopWords.name = 'Remove listed and single char words'
-        elem = [wordSplitter, caseNormalizer, stopWords]
-        try:bc.manage_addProduct['ZCTextIndex'].manage_addLexicon('Lexicon', 'Lexicon', elem)
-        except:pass
-        zc_extras = Empty()
-        zc_extras.index_type = 'Okapi BM25 Rank'
-        zc_extras.lexicon_id = 'Lexicon'
 
         addIndex(bc, 'path', 'ExtendedPathIndex', ('getPhysicalPath'))
         addIndex(bc, 'allowedRolesAndUsers', 'KeywordIndex')
@@ -515,6 +507,19 @@ class BikaGenerator:
         addColumn(bc, 'inactive_state')
         addColumn(bc, 'cancellation_state')
 
+        ### bika_setup_catalog
+
+        bsc = getToolByName(portal, 'bika_setup_catalog', None)
+        if bsc == None:
+            logger.warning('Could not find the setup catalog tool.')
+            return
+
+        try:
+            bsc.manage_addProduct['ZCTextIndex'].manage_addLexicon('Lexicon', 'Lexicon', elem)
+        except:
+            logger.warning('Could not add ZCTextIndex to bika_setup_catalog')
+            pass
+
         at = getToolByName(portal, 'archetype_tool')
         at.setCatalogsByType('Department', ['bika_setup_catalog', ])
         at.setCatalogsByType('Container', ['bika_setup_catalog', ])
@@ -540,23 +545,6 @@ class BikaGenerator:
         at.setCatalogsByType('ReferenceDefinition', ['bika_setup_catalog', ])
         at.setCatalogsByType('Unit', ['bika_setup_catalog', ])
         at.setCatalogsByType('WorksheetTemplate', ['bika_setup_catalog', ])
-
-        # create lexicon
-        wordSplitter = Empty()
-        wordSplitter.group = 'Word Splitter'
-        wordSplitter.name = 'Unicode Whitespace splitter'
-        caseNormalizer = Empty()
-        caseNormalizer.group = 'Case Normalizer'
-        caseNormalizer.name = 'Unicode Case Normalizer'
-        stopWords = Empty()
-        stopWords.group = 'Stop Words'
-        stopWords.name = 'Remove listed and single char words'
-        elem = [wordSplitter, caseNormalizer, stopWords]
-        try:bsc.manage_addProduct['ZCTextIndex'].manage_addLexicon('Lexicon', 'Lexicon', elem)
-        except:pass
-        zc_extras = Empty()
-        zc_extras.index_type = 'Okapi BM25 Rank'
-        zc_extras.lexicon_id = 'Lexicon'
 
         addIndex(bsc, 'path', 'ExtendedPathIndex', ('getPhysicalPath'))
         addIndex(bsc, 'allowedRolesAndUsers', 'KeywordIndex')
@@ -668,6 +656,7 @@ class BikaGenerator:
         addColumn(bsc, 'getUnit')
         addColumn(bsc, 'getVATAmount')
         addColumn(bsc, 'getVolume')
+
 
 def setupVarious(context):
     """
