@@ -171,7 +171,7 @@ class ARImport(BaseFolder):
 
     def Title(self):
         """ Return the id as title """
-        return self.getId()
+        return str(self.getId()).decode('utf-8').encode('utf-8')
 
 
     security.declarePublic('current_date')

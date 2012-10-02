@@ -60,7 +60,7 @@ class LabContact(Person):
 
     def Title(self):
         """ Return the contact's Fullname as title """
-        return self.getFullname()
+        return str(self.getFullname()).decode('utf-8').encode('utf-8')
 
     security.declareProtected(ManageClients, 'hasUser')
     def hasUser(self):

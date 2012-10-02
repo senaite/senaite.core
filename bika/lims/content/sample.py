@@ -200,7 +200,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
 
     def Title(self):
         """ Return the Sample ID as title """
-        return self.getId()
+        return str(self.getId()).encode('utf-8')
 
     # Forms submit Title Strings which need
     # to be converted to objects somewhere along the way...

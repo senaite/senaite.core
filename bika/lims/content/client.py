@@ -100,7 +100,7 @@ class Client(Organisation):
 
     def Title(self):
         """ Return the Organisation's Name as its title """
-        return self.getField('Name').get(self)
+        return str(self.getField('Name').get(self)).decode('utf-8').encode('utf-8')
 
     def setTitle(self, value):
         return self.setName(value)

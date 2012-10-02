@@ -73,7 +73,7 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
 
     def Title(self):
         """ Return the Sample ID as title """
-        return self.getId()
+        return str(self.getId()).encode('utf-8')
 
     security.declarePublic('getAnalyses')
     def getAnalyses(self):

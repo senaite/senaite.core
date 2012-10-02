@@ -81,7 +81,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         renameAfterCreation(self)
 
     def Title(self):
-        return self.id
+        return str(self.id).encode('utf-8')
 
     def getFolderContents(self, contentFilter):
         # The bika_listing machine passes contentFilter to all

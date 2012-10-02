@@ -91,7 +91,7 @@ class SupplyOrder(BaseFolder):
 
     def Title(self):
         """ Return the OrderNumber as title """
-        return self.getOrderNumber()
+        return str(self.getOrderNumber()).encode('utf-8')
 
     security.declarePublic('getContactUIDForUser')
     def getContactUIDForUser(self):

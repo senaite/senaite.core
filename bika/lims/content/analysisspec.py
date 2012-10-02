@@ -56,7 +56,7 @@ schema = Schema((
     ),
 )) + \
 BikaSchema.copy() + \
-Schema((  
+Schema((
     RecordsField('ResultsRange',
         schemata = 'Specifications',
         required = 1,
@@ -111,9 +111,10 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
         """ Return the SampleType as title """
         try:
             st = self.getSampleType()
-            return st and st.Title() or ''
+            st = st and st.Title() or ''
         except:
-            return ''
+            st = ''
+        return str(st).decode('utf-8').encode('utf-8')
 
     security.declarePublic('getSpecCategories')
     def getSpecCategories(self):

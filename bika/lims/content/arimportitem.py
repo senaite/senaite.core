@@ -88,7 +88,7 @@ class ARImportItem(BaseContent):
 
     def Title(self):
         """ Return the Product as title """
-        return self.getSampleName()
+        return str(self.getSampleName()).decode('utf-8').encode('utf-8')
 
 
 atapi.registerType(ARImportItem, PROJECTNAME)

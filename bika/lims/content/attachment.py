@@ -75,7 +75,7 @@ class Attachment(BaseFolder):
 
     def Title(self):
         """ Return the Id """
-        return self.getId()
+        return str(self.getId()).decode('utf-8').encode('utf-8')
 
     def getTextTitle(self):
         """ Return the request and possibly analayis title as title """

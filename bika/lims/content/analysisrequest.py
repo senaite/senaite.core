@@ -234,7 +234,7 @@ class AnalysisRequest(BaseFolder):
 
     def Title(self):
         """ Return the Request ID as title """
-        return self.getRequestID()
+        return str(self.getRequestID()).decode('utf-8').encode('utf-8')
 
     def Description(self):
         """ Return searchable data as Description """

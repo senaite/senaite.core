@@ -50,9 +50,10 @@ class SupplyOrderItem( BaseContent):
         """ Return the Product as title """
         product = self.getProduct()
         if product:
-            return product.Title()
+            ret = product.Title()
         else:
-            return ''
+            ret = ''
+        return str(ret).encode('utf-8')
 
     security.declareProtected(View, 'getTotal')
     def getTotal(self):

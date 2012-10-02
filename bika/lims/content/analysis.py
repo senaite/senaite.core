@@ -166,9 +166,10 @@ class Analysis(BaseContent):
         """ Return the service title as title """
         try:
             s = self.getService()
+            if s: s = s.Title()
         except ArchivistRetrieveError:
-            return ""
-        if s: return s.Title()
+            s = ''
+        return str(s).decode('utf-8').encode('utf-8')
 
     def updateDueDate(self):
         # set the max hours allowed

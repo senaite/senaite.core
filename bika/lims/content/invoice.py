@@ -96,7 +96,7 @@ class Invoice(BaseFolder):
 
     def Title(self):
         """ Return the InvoiceNumber as title """
-        return self.getInvoiceNumber()
+        return str(self.getInvoiceNumber()).decode('utf-8').encode('utf-8')
 
     security.declareProtected(View, 'getSubtotal')
     def getSubtotal(self):

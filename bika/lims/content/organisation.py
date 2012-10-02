@@ -115,9 +115,8 @@ class Organisation(ATFolder):
     def Title(self):
         """ Return the Organisation's Name as its title """
         field = self.getField('Name')
-        if field:
-            return field.get(self)
-        return ''
+        field = field and field.get(self) or ''
+        return str(field).encode('utf-8')
 
     def getPossibleAddresses(self):
         return ['PhysicalAddress', 'PostalAddress', 'BillingAddress']
