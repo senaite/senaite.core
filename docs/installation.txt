@@ -91,6 +91,13 @@ git clone -b dev https://github.com/bikalabs/Bika-LIMS.git src/bika.lims
 
 #    Omit the command line switch '-b dev' to use the master branch instead.
 
+# If running the dev version (used '-b dev' switch), compile mo files
+cd ${BIKA_HOME}/zinstance/src/bika.lims/bika/lims/locales
+for po in `find -name "*.po"`; do
+  msgfmt -o ${po/%po/mo} $po
+done
+cd ${BIKA_HOME}/zinstance
+
 # ## Edit Plone/zinstance/buildout.conf and add Bika LIMS.
 
 # Find the "eggs" section and add "bika.lims"
