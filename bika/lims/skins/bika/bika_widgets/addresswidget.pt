@@ -1,0 +1,137 @@
+<html xmlns:tal="http://xml.zope.org/namespaces/tal"
+	xmlns:metal="http://xml.zope.org/namespaces/metal" i18n:domain="bika">
+
+<metal:view_macro define-macro="view"
+	tal:define="innerJoin field/innerJoin;
+			outerJoin field/outerJoin;
+			subfieldViews python:field.getSubfieldViews(here,innerJoin)"
+	tal:replace="structure python:outerJoin.join(subfieldViews)" />
+
+<metal:define define-macro="edit"
+	tal:define="addr python:request.form.get(fieldName, accessor());
+				possibles here/getPossibleAddresses;
+				country python:addr.get('country', '');
+				state python:addr.get('state','');
+				district python:addr.get('district','');
+				city python:addr.get('city','');
+				zip python:addr.get('zip','');
+				address python:addr.get('address','');">
+
+	<fieldset>
+		<span tal:replace="structure context/@@authenticator/authenticator" />
+		<legend i18n:translate="" tal:content="python:widget.Label(here)">
+		</legend>
+
+		<table>
+
+			<tr>
+				<td class="field"><label
+					i18n:translate="" tal:attributes="for string:${fieldName}_country">Country</label>
+				</td>
+				<td>
+					<select size="1"
+						tal:attributes="name string:${fieldName}.country:record;
+										id string:${fieldName}.country"
+						tal:define="values python:widget.getCountries()">
+						<tal:x tal:repeat="value values">
+							<option tal:content="python:value[1]"
+								tal:attributes="value python:value[1];
+												selected python:value[1] == country and 'selected' or '';">
+							</option>
+						</tal:x>
+					</select>
+				</td>
+				<td class="field" style="padding-left: 2em;"><label
+					i18n:translate="">Copy from</label> <select size="1" id=""
+					tal:attributes='id string:${fieldName}.selection;
+										onChange string:javascript:copyAddress("${fieldName}")'>
+						<option></option>
+						<tal:possibles tal:repeat="possible possibles">
+							<option tal:content="possible"
+								tal:condition="python:possible != fieldName"
+								tal:attributes="value possible"></option>
+						</tal:possibles>
+				</select></td>
+			</tr>
+
+			<tr>
+				<td class="field"><label
+					i18n:translate="" tal:attributes="for string:${fieldName}_state">State</label>
+				</td>
+				<td>
+					<select size="1"
+						tal:attributes="name string:${fieldName}.state:record;
+										id string:${fieldName}.state"
+						tal:define="values python:widget.getStates(country)">
+						<option value=''></option>
+						<tal:x tal:repeat="value values">
+							<option tal:content="python:value[2]"
+								tal:attributes="value python:value[2];
+												selected python:value[2] == state and 'selected' or '';">
+							</option>
+						</tal:x>
+					</select>
+				</td>
+			</tr>
+
+			<tr>
+				<td class="field"><label
+					i18n:translate="" tal:attributes="for string:${fieldName}_district">District</label>
+				</td>
+				<td>
+					<select size="1"
+						tal:attributes="name string:${fieldName}.district:record;
+										id string:${fieldName}.district"
+						tal:define="values python:widget.getDistricts(country, state)">
+						<option value=''></option>
+						<tal:x tal:repeat="value values">
+							<option tal:content="python:value[2]"
+								tal:attributes="value python:value[2];
+												selected python:value[2] == district and 'selected' or '';">
+							</option>
+						</tal:x>
+					</select>
+				</td>
+			</tr>
+
+			<tr>
+				<td class="field"><label
+					i18n:translate="" tal:attributes="for string:${fieldName}_city">City</label>
+				</td>
+				<td><input
+					tal:attributes="value city;
+										name string:${fieldName}.city:record;
+										id string:${fieldName}.city" />
+				</td>
+			</tr>
+
+
+			<tr>
+				<td class="field"><label
+					i18n:translate="" tal:attributes="for string:${fieldName}_zip">Postal
+						code</label></td>
+				<td><input
+					tal:attributes="value zip;
+										name string:${fieldName}.zip:record;
+										id string:${fieldName}.zip" />
+				</td>
+			</tr>
+
+			<tr>
+				<td class="field" valign="top"><label i18n:translate="">Address</label>
+				</td>
+				<td><textarea cols="20" rows="3"
+						tal:attributes="name string:${fieldName}.address:record;
+											id string:${fieldName}.address"
+						tal:content="address"></textarea></td>
+			</tr>
+
+		</table>
+	</fieldset>
+</metal:define>
+
+<div metal:define-macro="search">
+	<div metal:use-macro="here/widgets/string/macros/edit"></div>
+</div>
+
+</html>

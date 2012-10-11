@@ -8,6 +8,7 @@ from bika.lims.content.bikaschema import BikaSchema, BikaFolderSchema
 from archetypes.referencebrowserwidget import ReferenceBrowserWidget
 from plone.app.folder.folder import ATFolder
 from bika.lims.browser.fields import AddressField
+from bika.lims.browser.widgets import AddressWidget
 from bika.lims import PMF, bikaMessageFactory as _
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + ManagedSchema((
@@ -43,22 +44,19 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + ManagedSchema((
     ),
     AddressField('PhysicalAddress',
         schemata = 'Address',
-        widget = RecordWidget(
-           macro = 'bika_widgets/custom_address_widget',
+        widget = AddressWidget(
            label = _("Physical address"),
         ),
     ),
     AddressField('PostalAddress',
         schemata = 'Address',
-        widget = RecordWidget(
-           macro = 'bika_widgets/custom_address_widget',
+        widget = AddressWidget(
            label = _("Postal address"),
         ),
     ),
     AddressField('BillingAddress',
         schemata = 'Address',
-        widget = RecordWidget(
-           macro = 'bika_widgets/custom_address_widget',
+        widget = AddressWidget(
            label = _("Billing address"),
         ),
     ),

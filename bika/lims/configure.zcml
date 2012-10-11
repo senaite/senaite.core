@@ -24,6 +24,7 @@
   <include package=".content" />
   <include package=".controlpanel" />
   <include package=".exportimport" />
+  <include package=".locales" />
   <include package=".subscribers" />
 
   <include file="profiles.zcml" />

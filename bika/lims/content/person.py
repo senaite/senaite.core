@@ -5,6 +5,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.public import *
 from bika.lims.content.bikaschema import BikaSchema
 from Products.ATExtensions.ateapi import RecordWidget
+from bika.lims.browser.widgets import AddressWidget
 from archetypes.referencebrowserwidget import ReferenceBrowserWidget
 from bika.lims.config import GENDERS, PROJECTNAME
 from bika.lims.browser.fields import AddressField
@@ -86,15 +87,13 @@ schema = BikaSchema.copy() + Schema((
     ),
     AddressField('PhysicalAddress',
         schemata = 'Address',
-        widget = RecordWidget(
-           macro = 'bika_widgets/custom_address_widget',
+        widget = AddressWidget(
            label = _("Physical address"),
         ),
     ),
     AddressField('PostalAddress',
         schemata = 'Address',
-        widget = RecordWidget(
-           macro = 'bika_widgets/custom_address_widget',
+        widget = AddressWidget(
            label = _("Postal address"),
         ),
     ),
