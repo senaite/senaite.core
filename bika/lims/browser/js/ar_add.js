@@ -881,7 +881,46 @@ $(document).ready(function(){
 
 	$(".ReportDryMatter").change(changeReportDryMatter);
 
-	// AR Add/Edit ajax form submits
+	// Dropdown grid of Batches
+	for (col=1; col<parseInt($("#col_count").val()); col++) {
+		$("[id*=BatchID]").combogrid({
+			colModel: [{'columnName':'BatchUID','hidden':true},
+			           {'columnName':'BatchID','width':'25','label':window.jsi18n_bika('Batch ID')},
+			           {'columnName':'Description','width':'35','label':window.jsi18n_bika('Description')}],
+			url: window.location.href.replace("/ar_add","") + "/getBatches?_authenticator=" + $('input[name="_authenticator"]').val(),
+			select: function( event, ui ) {
+				$(this).val(ui.item.BatchID);
+				$(this).change();
+				return false;
+			}
+		});
+	}
+
+    // Add Batch popup
+	$('a.add_batch').prepOverlay(
+        {
+            subtype: 'ajax',
+            filter: 'head>*,#content>*:not(div.configlet),dl.portalMessage.error,dl.portalMessage.info',
+            formselector: '#batch-base-edit[action*=new]',
+            closeselector: '[name="form.button.cancel"]',
+            width:'40%',
+            noform:'close',
+            config: {
+            	onLoad: function() {
+            		// manually remove remarks
+            		this.getOverlay().find("#archetypes-fieldname-Remarks").remove();
+//            		// display only first tab's fields
+//            		$("ul.formTabs").remove();
+//            		$("#fieldset-schemaname").remove();
+	            },
+	            onClose: function(){
+	            	// here is where we'd populate the form controls, if we cared to.
+	            }
+            }
+	    }
+    );
+
+    // AR Add/Edit ajax form submits
 	ar_edit_form = $('#analysisrequest_edit_form');
 	if (ar_edit_form.ajaxForm != undefined){
 		var options = {

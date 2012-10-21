@@ -34,182 +34,195 @@ from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
     StringField('RequestID',
-        required = 1,
-        searchable = True,
-        widget = StringWidget(
-            label = _('Request ID'),
-            description = _("The ID assigned to the client's request by the lab"),
-            visible = {'edit':'hidden'},
+        required=1,
+        searchable=True,
+        widget=StringWidget(
+            label=_('Request ID'),
+            description=_("The ID assigned to the client's request by the lab"),
+            visible={'edit':'hidden'},
+        ),
+    ),
+    ReferenceField('Batch',
+        allowed_types=('Batch',),
+        relationship='AnalysisRequestBatch',
+        widget=StringWidget(
+            visible=False,
+        )
+    ),
+    ComputedField('BatchUID',
+        expression='context.getBatch() and context.getBatch().UID() or None',
+        widget=ComputedWidget(
+            visible=False,
         ),
     ),
     ReferenceField('Contact',
-        required = 1,
-        vocabulary = 'getContactsDisplayList',
-        default_method = 'getContactUIDForUser',
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('Contact',),
-        referenceClass = HoldingReference,
-        relationship = 'AnalysisRequestContact',
+        required=1,
+        vocabulary='getContactsDisplayList',
+        default_method='getContactUIDForUser',
+        vocabulary_display_path_bound=sys.maxint,
+        allowed_types=('Contact',),
+        referenceClass=HoldingReference,
+        relationship='AnalysisRequestContact',
     ),
     ReferenceField('Sample',
-        required = 1,
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('Sample',),
-        referenceClass = HoldingReference,
-        relationship = 'AnalysisRequestSample',
+        required=1,
+        vocabulary_display_path_bound=sys.maxint,
+        allowed_types=('Sample',),
+        referenceClass=HoldingReference,
+        relationship='AnalysisRequestSample',
     ),
     ARAnalysesField('Analyses',
-        required = 1,
+        required=1,
     ),
     StringField('ClientOrderNumber',
-        searchable = True,
-        widget = StringWidget(
-            label = _('Client Order'),
+        searchable=True,
+        widget=StringWidget(
+            label=_('Client Order'),
         ),
     ),
     ReferenceField('Attachment',
-        multiValued = 1,
-        allowed_types = ('Attachment',),
-        referenceClass = HoldingReference,
-        relationship = 'AnalysisRequestAttachment',
+        multiValued=1,
+        allowed_types=('Attachment',),
+        referenceClass=HoldingReference,
+        relationship='AnalysisRequestAttachment',
     ),
     ReferenceField('CCContact',
-        multiValued = 1,
-        vocabulary = 'getContactsDisplayList',
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('Contact',),
-        referenceClass = HoldingReference,
-        relationship = 'AnalysisRequestCCContact',
+        multiValued=1,
+        vocabulary='getContactsDisplayList',
+        vocabulary_display_path_bound=sys.maxint,
+        allowed_types=('Contact',),
+        referenceClass=HoldingReference,
+        relationship='AnalysisRequestCCContact',
     ),
     StringField('CCEmails',
-        widget = StringWidget(
-            label = _('CC Emails')
+        widget=StringWidget(
+            label=_('CC Emails')
         ),
     ),
     ReferenceField('Invoice',
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('Invoice',),
-        referenceClass = HoldingReference,
-        relationship = 'AnalysisRequestInvoice',
+        vocabulary_display_path_bound=sys.maxint,
+        allowed_types=('Invoice',),
+        referenceClass=HoldingReference,
+        relationship='AnalysisRequestInvoice',
     ),
     ReferenceField('Profile',
-        allowed_types = ('AnalysisProfile',),
-        referenceClass = HoldingReference,
-        relationship = 'AnalysisRequestAnalysisProfile',
+        allowed_types=('AnalysisProfile',),
+        referenceClass=HoldingReference,
+        relationship='AnalysisRequestAnalysisProfile',
     ),
     ReferenceField('Template',
-        allowed_types = ('ARTemplate',),
-        referenceClass = HoldingReference,
-        relationship = 'AnalysisRequestARTemplate',
+        allowed_types=('ARTemplate',),
+        referenceClass=HoldingReference,
+        relationship='AnalysisRequestARTemplate',
     ),
     BooleanField('InvoiceExclude',
-        default = False,
-        widget = BooleanWidget(
-            label = _('Invoice Exclude'),
-            description = _('Select if analyses to be excluded from invoice'),
+        default=False,
+        widget=BooleanWidget(
+            label=_('Invoice Exclude'),
+            description=_('Select if analyses to be excluded from invoice'),
         ),
     ),
     BooleanField('ReportDryMatter',
-        default = False,
-        widget = BooleanWidget(
-            label = _('Report as Dry Matter'),
-            description = _('This result can be reported as dry matter'),
+        default=False,
+        widget=BooleanWidget(
+            label=_('Report as Dry Matter'),
+            description=_('This result can be reported as dry matter'),
         ),
     ),
     DateTimeField('DateReceived',
-        widget = DateTimeWidget(
-            label = _('Date Received'),
-            visible = {'edit':'hidden'},
+        widget=DateTimeWidget(
+            label=_('Date Received'),
+            visible={'edit':'hidden'},
         ),
     ),
     DateTimeField('DatePublished',
-        widget = DateTimeWidget(
-            label = _('Date Published'),
-            visible = {'edit':'hidden'},
+        widget=DateTimeWidget(
+            label=_('Date Published'),
+            visible={'edit':'hidden'},
         ),
     ),
     TextField('Remarks',
-        searchable = True,
-        default_content_type = 'text/x-web-intelligent',
-        allowable_content_types = ('text/x-web-intelligent',),
+        searchable=True,
+        default_content_type='text/x-web-intelligent',
+        allowable_content_types=('text/x-web-intelligent',),
         default_output_type="text/html",
-        widget = TextAreaWidget(
-            macro = "bika_widgets/remarks",
-            label = _('Remarks'),
-            append_only = True,
+        widget=TextAreaWidget(
+            macro="bika_widgets/remarks",
+            label=_('Remarks'),
+            append_only=True,
         ),
     ),
     FixedPointField('MemberDiscount',
-        default_method = 'getDefaultMemberDiscount',
-        widget = DecimalWidget(
-            label = _('Member discount %'),
-            description = _('Enter percentage value eg. 33.0'),
+        default_method='getDefaultMemberDiscount',
+        widget=DecimalWidget(
+            label=_('Member discount %'),
+            description=_('Enter percentage value eg. 33.0'),
         ),
     ),
     ComputedField('ClientUID',
-        searchable = True,
-        expression = 'here.aq_parent.UID()',
-        widget = ComputedWidget(
-            visible = False,
+        searchable=True,
+        expression='here.aq_parent.UID()',
+        widget=ComputedWidget(
+            visible=False,
         ),
     ),
     ComputedField('ClientReference',
-        searchable = True,
-        expression = 'here.getSample() and here.getSample().getClientReference()' ,
-        widget = ComputedWidget(
-            visible = False,
+        searchable=True,
+        expression='here.getSample() and here.getSample().getClientReference()' ,
+        widget=ComputedWidget(
+            visible=False,
         ),
     ),
     ComputedField('SamplingDate',
-        expression = 'here.getSample() and here.getSample().getSamplingDate() or ""',
-        widget = ComputedWidget(
-            visible = False,
+        expression='here.getSample() and here.getSample().getSamplingDate() or ""',
+        widget=ComputedWidget(
+            visible=False,
         ),
     ),
     ComputedField('ClientSampleID',
-        searchable = True,
-        expression = 'here.getSample() and here.getSample().getClientSampleID()',
-        widget = ComputedWidget(
-            visible = False,
+        searchable=True,
+        expression='here.getSample() and here.getSample().getClientSampleID()',
+        widget=ComputedWidget(
+            visible=False,
         ),
     ),
     ComputedField('SampleTypeTitle',
-        searchable = True,
-        expression = "here.getSample() and here.getSample().getSampleType() and here.getSample().getSampleType().Title() or ''",
-        widget = ComputedWidget(
-            visible = False,
+        searchable=True,
+        expression="here.getSample() and here.getSample().getSampleType() and here.getSample().getSampleType().Title() or ''",
+        widget=ComputedWidget(
+            visible=False,
         ),
     ),
     ComputedField('SamplePointTitle',
-        searchable = True,
-        expression = "here.getSample() and here.getSample().getSamplePoint() and here.getSample().getSamplePoint().Title() or ''",
-        widget = ComputedWidget(
-            visible = False,
+        searchable=True,
+        expression="here.getSample() and here.getSample().getSamplePoint() and here.getSample().getSamplePoint().Title() or ''",
+        widget=ComputedWidget(
+            visible=False,
         ),
     ),
     ComputedField('SampleUID',
-        expression = 'here.getSample() and here.getSample().UID()',
-        widget = ComputedWidget(
-            visible = False,
+        expression='here.getSample() and here.getSample().UID()',
+        widget=ComputedWidget(
+            visible=False,
         ),
     ),
     ComputedField('ContactUID',
-        expression = 'here.getContact() and here.getContact().UID()',
-        widget = ComputedWidget(
-            visible = False,
+        expression='here.getContact() and here.getContact().UID()',
+        widget=ComputedWidget(
+            visible=False,
         ),
     ),
     ComputedField('ProfileUID',
-        expression = 'here.getProfile( and here.getProfile().UID()',
-        widget = ComputedWidget(
-            visible = False,
+        expression='here.getProfile( and here.getProfile().UID()',
+        widget=ComputedWidget(
+            visible=False,
         ),
     ),
     ComputedField('Invoiced',
-        expression = 'here.getInvoice() and True or False',
-        default = False,
-        widget = ComputedWidget(
-            visible = False,
+        expression='here.getInvoice() and True or False',
+        default=False,
+        widget=ComputedWidget(
+            visible=False,
         ),
     ),
 )
@@ -371,7 +384,7 @@ class AnalysisRequest(BaseFolder):
     getTotal = getTotalPrice
 
     security.declareProtected(ManageInvoices, 'issueInvoice')
-    def issueInvoice(self, REQUEST = None, RESPONSE = None):
+    def issueInvoice(self, REQUEST=None, RESPONSE=None):
         """ issue invoice
         """
         # check for an adhoc invoice batch for this month
@@ -379,8 +392,8 @@ class AnalysisRequest(BaseFolder):
         batch_month = now.strftime('%b %Y')
         batch_title = '%s - %s' % (batch_month, 'ad hoc')
         invoice_batch = None
-        for b_proxy in self.portal_catalog(portal_type = 'InvoiceBatch',
-                                           Title = batch_title):
+        for b_proxy in self.portal_catalog(portal_type='InvoiceBatch',
+                                           Title=batch_title):
             invoice_batch = b_proxy.getObject()
         if not invoice_batch:
             first_day = DateTime(now.year(), now.month(), 1)
@@ -392,12 +405,12 @@ class AnalysisRequest(BaseFolder):
 
             invoices = self.invoices
             batch_id = invoices.generateUniqueId('InvoiceBatch')
-            invoices.invokeFactory(id = batch_id, type_name = 'InvoiceBatch')
+            invoices.invokeFactory(id=batch_id, type_name='InvoiceBatch')
             invoice_batch = invoices._getOb(batch_id)
             invoice_batch.edit(
-                title = batch_title,
-                BatchStartDate = start_of_month,
-                BatchEndDate = end_of_month,
+                title=batch_title,
+                BatchStartDate=start_of_month,
+                BatchEndDate=end_of_month,
             )
             invoice_batch.processForm()
 
@@ -408,14 +421,14 @@ class AnalysisRequest(BaseFolder):
                 '%s/analysisrequest_invoice' % self.absolute_url())
 
     security.declarePublic('printInvoice')
-    def printInvoice(self, REQUEST = None, RESPONSE = None):
+    def printInvoice(self, REQUEST=None, RESPONSE=None):
         """ print invoice
         """
         invoice = self.getInvoice()
         invoice_url = invoice.absolute_url()
         RESPONSE.redirect('%s/invoice_print' % invoice_url)
 
-    def addARAttachment(self, REQUEST = None, RESPONSE = None):
+    def addARAttachment(self, REQUEST=None, RESPONSE=None):
         """ Add the file as an attachment
         """
         workflow = getToolByName(self, 'portal_workflow')
@@ -427,12 +440,12 @@ class AnalysisRequest(BaseFolder):
             analysis_uid = None
 
         attachmentid = self.generateUniqueId('Attachment')
-        self.aq_parent.invokeFactory(id = attachmentid, type_name = "Attachment")
+        self.aq_parent.invokeFactory(id=attachmentid, type_name="Attachment")
         attachment = self.aq_parent._getOb(attachmentid)
         attachment.edit(
-            AttachmentFile = this_file,
-            AttachmentType = self.REQUEST.form['AttachmentType'],
-            AttachmentKeys = self.REQUEST.form['AttachmentKeys'])
+            AttachmentFile=this_file,
+            AttachmentType=self.REQUEST.form['AttachmentType'],
+            AttachmentKeys=self.REQUEST.form['AttachmentKeys'])
         attachment.processForm()
         attachment.reindexObject()
 
@@ -459,7 +472,7 @@ class AnalysisRequest(BaseFolder):
         RESPONSE.redirect(
                 '%s/manage_results' % self.absolute_url())
 
-    def delARAttachment(self, REQUEST = None, RESPONSE = None):
+    def delARAttachment(self, REQUEST=None, RESPONSE=None):
         """ delete the attachment """
         tool = getToolByName(self, REFERENCE_CATALOG)
         if self.REQUEST.form.has_key('ARAttachment'):
@@ -516,8 +529,8 @@ class AnalysisRequest(BaseFolder):
         user = self.REQUEST.AUTHENTICATED_USER
         user_id = user.getUserName()
         pc = getToolByName(self, 'portal_catalog')
-        r = pc(portal_type = 'Contact',
-               getUsername = user_id)
+        r = pc(portal_type='Contact',
+               getUsername=user_id)
         if len(r) == 1:
             return r[0].UID
 

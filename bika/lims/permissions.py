@@ -16,6 +16,7 @@ AddARTemplate = 'BIKA: Add ARTemplate'
 AddAnalysis = 'BIKA: Add Analysis'
 AddAnalysisRequest = 'BIKA: Add Analysis Request'
 AddAnalysisSpec = 'BIKA: Add AnalysisSpec'
+AddBatch = 'BIKA: Add Batch'
 AddClient = 'BIKA: Add Client'
 AddClientFolder = 'BIKA: Add ClientFolder'
 AddMethod = 'BIKA: Add Method'
@@ -34,6 +35,7 @@ ADD_CONTENT_PERMISSIONS = {
     'AnalysisProfile': AddAnalysisProfile,
     'Analysis': AddAnalysis,
     'AnalysisRequest': AddAnalysisRequest,
+    'Batch': AddBatch,
     'Client': AddClient,
     'Method': AddMethod,
     'Sample': AddSample,

@@ -42,6 +42,8 @@ def initialize(context):
     from content.artemplate import ARTemplate
     from content.attachment import Attachment
     from content.attachmenttype import AttachmentType
+    from content.batch import Batch
+    from content.batchfolder import BatchFolder
     from content.bikaschema import BikaSchema
     from content.bikasetup import BikaSetup
     from content.calculation import Calculation

@@ -19,6 +19,7 @@
 <permission id="bika.lims.permissions.AddAnalysis" title="BIKA: Add Analysis"/>
 <permission id="bika.lims.permissions.AddAnalysisRequest" title="BIKA: Add Analysis Request"/>
 <permission id="bika.lims.permissions.AddAnalysisSpec" title="BIKA: Add AnalysisSpec"/>
+<permission id="bika.lims.permissions.AddBatch" title="BIKA: Add Batch"/>
 <permission id="bika.lims.permissions.AddClient" title="BIKA: Add Client"/>
 <permission id="bika.lims.permissions.AddClientFolder" title="BIKA: Add ClientFolder"/>
 <permission id="bika.lims.permissions.AddMethod" title="BIKA: Add Method"/>

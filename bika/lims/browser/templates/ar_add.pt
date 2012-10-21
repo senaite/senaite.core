@@ -139,6 +139,44 @@
                     tabindex tabindex/next;"/>
         </td>
     </tr>
+    <!-- Batch selector -->
+    <tr tal:define="field_name string:BatchID">
+        <th colspan="2" style="white-space:nowrap">
+            <span i18n:translate="">Batch</span>
+            <a style="border-bottom:none !important;margin-left:1em;"
+               class='add_batch'
+               tal:attributes="href string:${portal/absolute_url}/batches/portal_factory/Batch/new"
+               rel="#overlay">
+               <img style="padding-bottom:2px;" tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/add.png"/>
+            </a>
+        </th>
+        <td>
+            <img class="copyButton BatchIDCopyButton"
+                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
+        </td>
+        <tal:block repeat="column python:range(view.col_count)">
+            <td class="topborder ar_column" style="padding-top:2px;"
+                tal:define="
+                    input_name string:ar.${column}.${field_name}:ignore_empty:record;
+                    input_id string:ar_${column}_${field_name};
+                    hidden_name string:ar.${column}.BatchUID:ignore_empty:record;
+                    hidden_id string:ar_${column}_BatchUID;">
+            <div style="width:100px; border:none;text-align:left;padding-left:2px;">
+            <input tal:attributes="
+                class field_name;
+                column column;
+                id input_id;
+                name input_name;"
+                style="width:96px; position:absolute; z-index:+1;"/>
+            <input type="hidden" tal:attributes="
+                class string:${field_name}UID;
+                column column;
+                id hidden_id;
+                name hidden_name;"/>
+            </div>
+            </td>
+        </tal:block>
+    </tr>
     <!-- AR Template (only visible and useable for AR-Add-->
     <tr tal:define="field_name string:ARTemplate">
         <th colspan="2" style="white-space:nowrap" i18n:translate="">Template</th>

@@ -448,10 +448,10 @@ class AnalysisRequestViewView(BrowserView):
              'value': "<a href='%s'>%s</a>"%(sample.absolute_url(), sample.id),
              'condition':True,
              'type': 'text'},
-            {'id': 'ClientSampleID',
-             'title': _('Client SID'),
-             'allow_edit': True,
-             'value': sample.getClientSampleID(),
+            {'id': 'BatchID',
+             'title': _('Batch ID'),
+             'allow_edit': False,
+             'value': self.context.getBatch().getBatchID(),
              'condition':True,
              'type': 'text'},
             {'id': 'Contact',
@@ -465,6 +465,12 @@ class AnalysisRequestViewView(BrowserView):
                        %(",".join(cc_uids),
                          contact.UID(), contact.Title(), "; ".join(cc_titles),"; ".join(cc_titles),
                          "; ".join(cc_emails),"; ".join(cc_hrefs)),
+             'condition':True,
+             'type': 'text'},
+            {'id': 'ClientSampleID',
+             'title': _('Client SID'),
+             'allow_edit': True,
+             'value': sample.getClientSampleID(),
              'condition':True,
              'type': 'text'},
             {'id': 'ClientReference',
@@ -1660,6 +1666,13 @@ class ajaxAnalysisRequestSubmit():
                     wftool.doActionFor(part, 'no_sampling_workflow')
                 parts_and_services[part.id] = p['services']
 
+            # resolve BatchID
+            brains = bc(portal_type="Batch", Title=values['BatchID'])
+            if brains:
+                batch_uid = brains[0].UID
+            else:
+                batch_uid = None
+
             # create the AR
 
             Analyses = values['Analyses']
@@ -1670,6 +1683,7 @@ class ajaxAnalysisRequestSubmit():
             ar = self.context[_id]
             # ar.edit() for some fields before firing the event
             ar.edit(
+                Batch = batch_uid,
                 Contact = form['Contact'],
                 CCContact = form['cc_uids'].split(","),
                 CCEmails = form['CCEmails'],
@@ -1817,6 +1831,7 @@ class AnalysisRequestsView(BikaListingView):
                         'toggle': False},
             'getSample': {'title': _("Sample"),
                           'toggle': True,},
+            'BatchID': {'title': _("Batch ID"), 'toggle': True},
             'Client': {'title': _('Client'),
                        'toggle': True},
             'getClientReference': {'title': _('Client Ref'),
@@ -1879,6 +1894,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id':'reinstate'}],
              'columns':['getRequestID',
                         'getSample',
+                        'BatchID',
                         'Client',
                         'Creator',
                         'Created',
@@ -1910,6 +1926,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id':'reinstate'}],
              'columns':['getRequestID',
                         'getSample',
+                        'BatchID',
                         'Client',
                         'Creator',
                         'Created',
@@ -1935,6 +1952,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id':'reinstate'}],
              'columns':['getRequestID',
                         'getSample',
+                        'BatchID',
                         'Client',
                         'Creator',
                         'Created',
@@ -1962,6 +1980,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id':'reinstate'}],
              'columns':['getRequestID',
                         'getSample',
+                        'BatchID',
                         'Client',
                         'Creator',
                         'Created',
@@ -1985,6 +2004,7 @@ class AnalysisRequestsView(BikaListingView):
              'transitions': [{'id':'publish'}],
              'columns':['getRequestID',
                         'getSample',
+                        'BatchID',
                         'Client',
                         'Creator',
                         'Created',
@@ -2007,6 +2027,7 @@ class AnalysisRequestsView(BikaListingView):
                                'sort_order': 'reverse'},
              'columns':['getRequestID',
                         'getSample',
+                        'BatchID',
                         'Client',
                         'Creator',
                         'Created',
@@ -2035,6 +2056,7 @@ class AnalysisRequestsView(BikaListingView):
              'transitions': [{'id':'reinstate'}],
              'columns':['getRequestID',
                         'getSample',
+                        'BatchID',
                         'Client',
                         'Creator',
                         'Created',
@@ -2071,6 +2093,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id':'reinstate'}],
              'columns':['getRequestID',
                         'getSample',
+                        'BatchID',
                         'Client',
                         'Creator',
                         'Created',
@@ -2107,6 +2130,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id':'reinstate'}],
              'columns':['getRequestID',
                         'getSample',
+                        'BatchID',
                         'Client',
                         'Creator',
                         'Created',
@@ -2145,6 +2169,11 @@ class AnalysisRequestsView(BikaListingView):
             items[x]['getRequestID'] = obj.getRequestID()
             items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
                  (url, items[x]['getRequestID'])
+
+            batch = obj.getBatch()
+            items[x]['BatchID'] = batch.getBatchID()
+            items[x]['replace']['BatchID'] = "<a href='%s'>%s</a>" % \
+                 (batch.absolute_url(), items[x]['BatchID'])
 
             items[x]['Client'] = obj.aq_parent.Title()
             items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \

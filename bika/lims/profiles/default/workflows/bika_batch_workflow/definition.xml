@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             i18n:domain="plone"
+             workflow_id="bika_batch_workflow"
+             title="Bika Batch Workflow"
+             state_variable="review_state"
+             initial_state="open"
+             manager_bypass="False">
+
+ <state state_id="open" title="Open" i18n:attributes="title">
+  <description i18n:translate=""></description>
+  <exit-transition transition_id="close"/>
+ </state>
+
+ <state state_id="closed" title="Closed" i18n:attributes="title">
+  <description i18n:translate=""></description>
+  <exit-transition transition_id="open"/>
+ </state>
+
+ <transition transition_id="close"
+             title="Close"
+             new_state="closed"
+             trigger="USER"
+             before_script=""
+             after_script=""
+             i18n:attributes="title close_transition_title">
+  <description i18n:translate=""></description>
+  <action url="workflow_action?workflow_action=close"
+          category=""
+          icon=""
+          i18n:translate="close_transition_title">Close</action>
+  <guard>
+   <guard-expression>python:True</guard-expression>
+  </guard>
+  </transition>
+
+ <transition transition_id="open"
+             title="Open"
+             new_state="open"
+             trigger="USER"
+             before_script=""
+             after_script=""
+             i18n:attributes="title open_transition_title">
+  <description i18n:translate=""></description>
+  <action url="workflow_action?workflow_action=open"
+          category=""
+          icon=""
+          i18n:translate="open_transition_title">Open</action>
+  <guard>
+   <guard-expression>python:True</guard-expression>
+  </guard>
+ </transition>
+
+ <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
+  <description i18n:translate="">The last transition</description>
+  <default>
+   <expression>transition/getId|nothing</expression>
+  </default>
+  <guard>
+  </guard>
+ </variable>
+
+ <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
+  <description i18n:translate="">The ID of the user who performed the last transition</description>
+  <default>
+   <expression>user/getId</expression>
+  </default>
+  <guard>
+  </guard>
+ </variable>
+
+ <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
+  <description i18n:translate="">Comments about the last transition</description>
+  <default>
+   <expression>python:state_change.kwargs.get('comment', '')</expression>
+  </default>
+  <guard>
+  </guard>
+ </variable>
+
+ <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
+  <description i18n:translate="">Provides access to workflow history</description>
+  <default>
+   <expression>state_change/getHistory</expression>
+  </default>
+  <guard>
+  </guard>
+ </variable>
+
+ <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
+  <description i18n:translate="">Time of the last transition</description>
+  <default>
+   <expression>state_change/getDateTime</expression>
+  </default>
+  <guard>
+  </guard>
+ </variable>
+
+</dc-workflow>

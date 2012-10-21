@@ -37,6 +37,7 @@ class BikaGenerator:
 
         # index objects - importing through GenericSetup doesn't
         for obj_id in ('clients',
+                       'batches',
                        'invoices',
                        'pricelists',
                        'bika_setup',
@@ -438,6 +439,7 @@ class BikaGenerator:
             pass
 
         at = getToolByName(portal, 'archetype_tool')
+        at.setCatalogsByType('Batch', ['bika_catalog', ])
         at.setCatalogsByType('AnalysisRequest', ['bika_catalog', ])
         at.setCatalogsByType('Sample', ['bika_catalog', ])
         at.setCatalogsByType('SamplePartition', ['bika_catalog', ])
@@ -466,6 +468,7 @@ class BikaGenerator:
         addIndex(bc, 'worksheetanalysis_review_state', 'FieldIndex')
         addIndex(bc, 'cancellation_state', 'FieldIndex')
 
+        addIndex(bc, 'getBatchUID', 'FieldIndex')
         addIndex(bc, 'getSampleID', 'FieldIndex')
         addIndex(bc, 'getSampleUID', 'FieldIndex')
         addIndex(bc, 'getRequestID', 'FieldIndex')

@@ -13,6 +13,12 @@ class IClientFolder(Interface):
 class IClient(Interface):
     """Client"""
 
+class IBatchFolder(Interface):
+    """Batch folder"""
+
+class IBatch(Interface):
+    """Batch"""
+
 class IAnalysisRequest(Interface):
     """Analysis Request"""
 
