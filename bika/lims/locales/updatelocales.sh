@@ -4,6 +4,11 @@ I18NDUDE=~/Plone/zinstance/bin/i18ndude
 ### Grab new translated strings
 # tx pull -a
 
+# Flush the english (transifex source language) po files
+# If we don't do this, new *-manual translations won't be synced.
+> en/LC_MESSAGES/bika.po
+> en/LC_MESSAGES/plone.po
+
 find . -name "*.mo" -delete
 
 ### bika domain
