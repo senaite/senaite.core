@@ -56,6 +56,7 @@ class BikaGenerator:
         for obj_id in ('bika_analysiscategories',
                        'bika_analysisservices',
                        'bika_attachmenttypes',
+                       'bika_batchlabels',
                        'bika_calculations',
                        'bika_departments',
                        'bika_containers',
@@ -548,6 +549,7 @@ class BikaGenerator:
         at.setCatalogsByType('ReferenceDefinition', ['bika_setup_catalog', ])
         at.setCatalogsByType('Unit', ['bika_setup_catalog', ])
         at.setCatalogsByType('WorksheetTemplate', ['bika_setup_catalog', ])
+        at.setCatalogsByType('BatchLabel', ['bika_setup_catalog', ])
 
         addIndex(bsc, 'path', 'ExtendedPathIndex', ('getPhysicalPath'))
         addIndex(bsc, 'allowedRolesAndUsers', 'KeywordIndex')

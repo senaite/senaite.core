@@ -75,6 +75,7 @@
     <element value="SamplePartition"/>
     <element value="SamplePoint"/>
     <element value="SampleType"/>
+    <element value="BatchLabel"/>
     <element value="Worksheet"/>
     <element value="WorksheetTemplate"/>
     <element value="ATBooleanCriterion"/>

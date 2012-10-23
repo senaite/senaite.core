@@ -18,6 +18,9 @@ class IBatchFolder(Interface):
 
 class IBatch(Interface):
     """Batch"""
+    
+class IBatchLabels(Interface):
+    """Batch label"""
 
 class IAnalysisRequest(Interface):
     """Analysis Request"""
@@ -156,6 +159,6 @@ class IWorksheetTemplates(Interface):
     ""
 
 class IBikaCatalog(Interface):
-   ""
+    ""
 class IBikaSetupCatalog(Interface):
-   ""
+    ""
