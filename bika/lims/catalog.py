@@ -154,6 +154,7 @@ class BikaSetupCatalog(CatalogTool):
                                                  'ReferenceManufacturer',
                                                  'ReferenceSupplier',
                                                  'ReferenceDefinition',
+                                                 'BatchLabel',
                                                  'WorksheetTemplate'),
                                 search_sub = True,
                                 apply_func = indexObject)
