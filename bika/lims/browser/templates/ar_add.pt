@@ -145,7 +145,7 @@
             <span i18n:translate="">Batch</span>
             <a style="border-bottom:none !important;margin-left:1em;"
                class='add_batch'
-               tal:attributes="href string:${portal/absolute_url}/batches/portal_factory/Batch/new"
+               tal:attributes="href string:${portal/absolute_url}/batches/portal_factory/Batch/new/edit"
                rel="#overlay">
                <img style="padding-bottom:2px;" tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/add.png"/>
             </a>
