@@ -13,7 +13,7 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IClient"
+      for="*"
       name="getBatches"
       class="bika.lims.browser.batchfolder.ajaxGetBatches"
       permission="zope.Public"

@@ -881,20 +881,7 @@ $(document).ready(function(){
 
 	$(".ReportDryMatter").change(changeReportDryMatter);
 
-	// Dropdown grid of Batches
-	for (col=1; col<parseInt($("#col_count").val()); col++) {
-		$("[id*=BatchID]").combogrid({
-			colModel: [{'columnName':'BatchUID','hidden':true},
-			           {'columnName':'BatchID','width':'25','label':window.jsi18n_bika('Batch ID')},
-			           {'columnName':'Description','width':'35','label':window.jsi18n_bika('Description')}],
-			url: window.location.href.replace("/ar_add","") + "/getBatches?_authenticator=" + $('input[name="_authenticator"]').val(),
-			select: function( event, ui ) {
-				$(this).val(ui.item.BatchID);
-				$(this).change();
-				return false;
-			}
-		});
-	}
+	// Dropdown grid of Batches is handled by batch.js
 
     // Add Batch popup
 	$('a.add_batch').prepOverlay(

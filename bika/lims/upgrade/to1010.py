@@ -15,8 +15,12 @@ def addBatches(tool):
 
     # reimport Types Tool to add BatchFolder and Batch
     setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
+
     # reimport Workflows to add bika_batch_workflow
     setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow')
+
+    # reimport jsregistry.xml to add batch.js
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
 
     typestool = getToolByName(portal, 'portal_types')
     workflowtool = getToolByName(portal, 'portal_workflow')
