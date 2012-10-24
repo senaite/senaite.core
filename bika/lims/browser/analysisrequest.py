@@ -440,6 +440,8 @@ class AnalysisRequestViewView(BrowserView):
              in bsc(portal_type = 'SamplingDeviation',
                     inactive_state = 'active')])
 
+        batch = self.context.getBatch()
+
         self.header_columns = 3
         self.header_rows = [
             {'id': 'SampleID',
@@ -451,7 +453,7 @@ class AnalysisRequestViewView(BrowserView):
             {'id': 'BatchID',
              'title': _('Batch ID'),
              'allow_edit': False,
-             'value': self.context.getBatch().getBatchID(),
+             'value': batch and batch.getBatchID() or '',
              'condition':True,
              'type': 'text'},
             {'id': 'Contact',
@@ -2171,7 +2173,7 @@ class AnalysisRequestsView(BikaListingView):
                  (url, items[x]['getRequestID'])
 
             batch = obj.getBatch()
-            items[x]['BatchID'] = batch.getBatchID()
+            items[x]['BatchID'] = batch and batch.getBatchID() or ''
             items[x]['replace']['BatchID'] = "<a href='%s'>%s</a>" % \
                  (batch.absolute_url(), items[x]['BatchID'])
 
