@@ -5,6 +5,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF, logger, bikaMessageFactory as _
 from bika.lims.browser import BrowserView
+from bika.lims.browser.batchfolder import BatchFolderContentsView
 from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction, \
     AnalysisRequestsView
 from bika.lims.browser.bika_listing import BikaListingView
@@ -233,6 +234,22 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
         else:
             AnalysisRequestWorkflowAction.__call__(self)
 
+class ClientBatchesView(BatchFolderContentsView):
+    def __init__(self, context, request):
+        super(ClientBatchesView, self).__init__(context, request)
+        self.view_url = self.context.absolute_url() + "/batches"
+
+    def contentsMethod(self, contentFilter):
+        bc = getToolByName(self.context, "bika_catalog")
+        state = [x for x in self.review_states if x['id'] == self.review_state][0]
+        batches = {}
+        for ar in bc(portal_type = 'AnalysisRequest',
+                     ClientUID = self.context.UID()):
+            ar = ar.getObject()
+            if ar.getBatchUID():
+                batches[ar.getBatchUID()] = ar.getBatch()
+        return batches.values()
+
 class ClientAnalysisRequestsView(AnalysisRequestsView):
     def __init__(self, context, request):
         super(ClientAnalysisRequestsView, self).__init__(context, request)
@@ -262,6 +279,9 @@ class ClientAnalysisRequestsView(AnalysisRequestsView):
                         'url':'ar_add',
                         'icon': '++resource++bika.lims.images/add.png'}
         return super(ClientAnalysisRequestsView, self).__call__()
+
+class ClientBatchAnalysisRequestsView(ClientAnalysisRequestsView):
+    pass
 
 class ClientSamplesView(SamplesView):
     def __init__(self, context, request):
