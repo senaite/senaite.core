@@ -7,14 +7,22 @@
              initial_state="open"
              manager_bypass="False">
 
+ <permission>View</permission>
+
  <state state_id="open" title="Open" i18n:attributes="title">
   <description i18n:translate=""></description>
   <exit-transition transition_id="close"/>
+  <permission-map name="View" acquired="False">
+      <permission-role>Authenticated</permission-role>
+  </permission-map>
  </state>
 
  <state state_id="closed" title="Closed" i18n:attributes="title">
   <description i18n:translate=""></description>
   <exit-transition transition_id="open"/>
+  <permission-map name="View" acquired="False">
+      <permission-role>Authenticated</permission-role>
+  </permission-map>
  </state>
 
  <transition transition_id="close"
@@ -30,7 +38,7 @@
           icon=""
           i18n:translate="close_transition_title">Close</action>
   <guard>
-   <guard-expression>python:True</guard-expression>
+   <guard-permission>Modify portal content</guard-permission>
   </guard>
   </transition>
 
@@ -47,7 +55,7 @@
           icon=""
           i18n:translate="open_transition_title">Open</action>
   <guard>
-   <guard-expression>python:True</guard-expression>
+   <guard-permission>Modify portal content</guard-permission>
   </guard>
  </transition>
 

@@ -1,3 +1,4 @@
+
 """ Bika setup handlers. """
 
 from Products.Archetypes.event import ObjectInitializedEvent
@@ -156,6 +157,7 @@ class BikaGenerator:
         # Root permissions
         mp = portal.manage_permission
         mp(AddAnalysisProfile, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
+        mp(AddBatch, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddARTemplate, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddSamplePoint, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddAnalysis, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
@@ -215,11 +217,14 @@ class BikaGenerator:
         mp(CancelAndReinstate, ['Manager', 'LabManager', 'Owner'], 1)
 
         mp = portal.bika_setup.manage_permission
-        mp('Access contents information',  ['Contributor', 'Editor', 'Manager', 'Owner', 'Reader', 'Site Administrator', 'LabManager', 'Anonymous', 'Member'], 1)
-##        mp(ApplyVersionControl, ['Manager', 'LabManager', 'Member'], 1)
-##        mp(SaveNewVersion, ['Manager', 'LabManager', 'Member'], 1)
-##        mp(AccessPreviousVersions, ['Manager', 'LabManager', 'Member'], 1)
+        mp('Access contents information',  ['Authenticated'], 1)
+        mp(permissions.View, ['Authenticated'], 1)
+        portal.bika_setup.reindexObject()
 
+        mp = portal.bika_setup.laboratory.manage_permission
+        mp('Access contents information',  ['Authenticated'], 1)
+        mp(permissions.View, ['Authenticated'], 1)
+        portal.bika_setup.laboratory.reindexObject()
 
         # /clients folder permissions
         # Member role must have view permission on /clients, to see the list.
@@ -243,6 +248,16 @@ class BikaGenerator:
         mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
         mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
         portal.worksheets.reindexObject()
+
+        # /batches folder permissions
+        mp = portal.batches.manage_permission
+        mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
+        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Authenticated'], 0)
+        mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+        mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Authenticated'], 0)
+        mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
+        portal.batches.reindexObject()
 
         # /analysisrequests folder permissions
         mp = portal.analysisrequests.manage_permission
