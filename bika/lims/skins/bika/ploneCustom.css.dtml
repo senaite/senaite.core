@@ -3,50 +3,50 @@
 */
 
 html body{
-    font: &dtml-fontBaseSize; "Lucida Grande",Verdana,Lucida,Helvetica,Arial,sans-serif;
+  font: &dtml-fontBaseSize; "Lucida Grande",Verdana,Lucida,Helvetica,Arial,sans-serif;
 }
 
 table {
-    font-size: 100%;
+  /*font-size: 100%;*/
 }
 
 #portal-breadcrumbs{
-    border-bottom: 1px solid #DCDCDC;
-    margin-bottom: 15px;
-    padding-bottom: 5px;
+  border-bottom: 1px solid #DCDCDC;
+  margin-bottom: 15px;
+  padding-bottom: 5px;
 }
 
 .searchSection{
-	display: none;
+  display: none;
 }
 
 #portal-logo{
-	margin: 10px 0 10px 0;
+  margin: 10px 0 10px 0;
 }
 
 #content {
-    line-height: 1em;
-    margin: 0 0.25em 1em;
+  line-height: 1em;
+  margin: 0 0.25em 1em;
 }
 
 #content h1 {
-    margin-top: .1em;
+  margin-top: .1em;
 }
 
 h1 span {
-	position:relative;
-	top:-0.2em;
+  position:relative;
+  top:-0.2em;
 }
 
 #content p, #content table, #content dl, dl.portlet p, dl.portlet {
-    margin-bottom: 1em;
+  margin-bottom: 1em;
 }
 dl.portlet dd {
   padding: 2px 5px;
 }
 
 #content dl.portalMessage {
-	margin-top:.25em;
+  margin-top:.25em;
 }
 
 /* overwrite sunburst special display of description fields */
@@ -54,21 +54,21 @@ dl.portlet dd {
 #archetypes-fieldname-description,
 textarea#description,
 #content textarea {
-    color:#111111 !important;
-    font-family: Arial,FreeSans,sans-serif !important;
-    font-style: normal !important;
-    font-size: &dtml-fontSmallSize; !important;
-    font-weight: normal !important;
+  color:#111111 !important;
+  font-family: Arial,FreeSans,sans-serif !important;
+  font-style: normal !important;
+  font-size: &dtml-fontSmallSize; !important;
+  font-weight: normal !important;
 }
 
 #content a:link {
-    border-bottom: 0;
-    color: &dtml-linkColor; !important;
-    text-decoration:none;
+  border-bottom: 0;
+  color: &dtml-linkColor; !important;
+  text-decoration:none;
 }
 
 #content a:hover {
-    color: &dtml-linkActiveColor; !important;
+  color: &dtml-linkActiveColor; !important;
 }
 
 #content a:hover, dl.portlet a:hover {
@@ -81,29 +81,29 @@ textarea#description,
 }
 
 #portal-footer {
-    background-color: &dtml-footerBackgroundColor;;
-    color: &dtml-footerTextColor;;
+  background-color: &dtml-footerBackgroundColor;;
+  color: &dtml-footerTextColor;;
 }
 
 
 .kss-spinner {
-	position: fixed;
-	top: 50%;
-	left: 50%;
-	margin-left: -50px; /* half width of the spinner gif */
-	margin-top: -50px; /* half height of the spinner gif */
-	padding:10px;
-	background-color:#fff;
-	border:1px solid #bbb;
-	border-radius: .5em;
-	text-align:center;
-	z-index:1234;
-	overflow: auto;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-left: -50px; /* half width of the spinner gif */
+  margin-top: -50px; /* half height of the spinner gif */
+  padding:10px;
+  background-color:#fff;
+  border:1px solid #bbb;
+  border-radius: .5em;
+  text-align:center;
+  z-index:1234;
+  overflow: auto;
 }
 
 .kss-spinner img {
-	height:20px;
-	width:20px;
+  height:20px;
+  width:20px;
 }
 
 /* edit-bar */
@@ -111,10 +111,10 @@ textarea#description,
 #edit-bar {
   background-color: &dtml-editbarBackgroundColor; !important;
   color: &dtml-editbarTextColor; !important;
-    border-top: 0.3em solid &dtml-editbarBackgroundColor; !important;
-    border-left: 0.3em solid &dtml-editbarBackgroundColor; !important;
-    border-right: 0.3em solid &dtml-editbarBackgroundColor; !important;
-	border-bottom:none;
+  border-top: 0.3em solid &dtml-editbarBackgroundColor; !important;
+  border-left: 0.3em solid &dtml-editbarBackgroundColor; !important;
+  border-right: 0.3em solid &dtml-editbarBackgroundColor; !important;
+  border-bottom:none;
 }
 
 #edit-bar #content-views{
@@ -129,91 +129,91 @@ textarea#description,
 
 #content-views li.selected a,
 #content-views li a:hover {
-    background-color: &dtml-editbarCurrentTabBackgroundColor; !important;
-    color: &dtml-editbarCurrentTabTextColor; !important;
+  background-color: &dtml-editbarCurrentTabBackgroundColor; !important;
+  color: &dtml-editbarCurrentTabTextColor; !important;
 }
 
 #contentActionMenus dl.actionMenu a,
 #contentActionMenus dl.actionMenu.activated dd {
-    background-color: &dtml-editbarBackgroundColor; !important;
-    color: &dtml-editbarTextColor; !important;
+  background-color: &dtml-editbarBackgroundColor; !important;
+  color: &dtml-editbarTextColor; !important;
 }
 
 #contentActionMenus dl.actionMenu.activated dd a:hover,
 #contentActionMenus dl.actionMenu.activated dd .actionMenuSelected {
-    background-color: &dtml-editbarCurrentTabBackgroundColor; !important;
-    color: &dtml-editbarCurrentTabTextColor; !important;
+  background-color: &dtml-editbarCurrentTabBackgroundColor; !important;
+  color: &dtml-editbarCurrentTabTextColor; !important;
 }
 
 #contentActionMenus dl.actionMenu.activated dd {
-    border-bottom: 0.5em solid &dtml-editbarBackgroundColor; !important;
+  border-bottom: 0.5em solid &dtml-editbarBackgroundColor; !important;
 }
 
 #edit-bar .actionMenuHeader {
 }
 
 #edit-bar .actionMenuContent {
-    border-bottom: 0.5em solid &dtml-editbarBackgroundColor; !important;
+  border-bottom: 0.5em solid &dtml-editbarBackgroundColor; !important;
 }
 
 /* Form tabs */
 
 #content ul.formTabs {
-    background-color: &dtml-formTabsBackgroundColor; !important;
-    border-top: 0.3em solid &dtml-formTabsBackgroundColor; !important;
-    border-left: 0.3em solid &dtml-formTabsBackgroundColor; !important;
-    border-right: 0.3em solid &dtml-formTabsBackgroundColor; !important;
-	border-bottom:none;
-	color: &dtml-formTabsTextColor; !important;
+  background-color: &dtml-formTabsBackgroundColor; !important;
+  border-top: 0.3em solid &dtml-formTabsBackgroundColor; !important;
+  border-left: 0.3em solid &dtml-formTabsBackgroundColor; !important;
+  border-right: 0.3em solid &dtml-formTabsBackgroundColor; !important;
+  border-bottom:none;
+  color: &dtml-formTabsTextColor; !important;
 }
 
 #content ul.formTabs .FormTab {
-    background-color: &dtml-formTabsBackgroundColor; !important;
-	color: &dtml-formTabsTextColor; !important;
+  background-color: &dtml-formTabsBackgroundColor; !important;
+  color: &dtml-formTabsTextColor; !important;
 }
 
 #content li.formTab a.selected,
 #content li.formTab a:hover {
-    background-color: &dtml-formTabsCurrentTabBackgroundColor; !important;
-	color: &dtml-formTabsCurrentTabTextColor; !important;
+  background-color: &dtml-formTabsCurrentTabBackgroundColor; !important;
+  color: &dtml-formTabsCurrentTabTextColor; !important;
 }
 
 /* Portlets */
 
 dl.portlet dt, div.portletAssignments div.portletHeader {
-    background-color: &dtml-portletHeaderBackgroundColor;;
-	color: &dtml-portletHeaderTextColor;;
+  background-color: &dtml-portletHeaderBackgroundColor;;
+  color: &dtml-portletHeaderTextColor;;
 }
 
 dl.portlet dt a,
 div.portletAssignments div.portletHeader a {
-    background-color: &dtml-portletHeaderBackgroundColor; !important;
-	color: &dtml-portletHeaderTextColor; !important;
+  background-color: &dtml-portletHeaderBackgroundColor; !important;
+  color: &dtml-portletHeaderTextColor; !important;
 }
 
 dl.portlet dt a:hover,
 div.portletAssignments div.portletHeader a:hover {
-    background-color: &dtml-portletHeaderBackgroundColor;;
-	color: &dtml-linkColor;;
+  background-color: &dtml-portletHeaderBackgroundColor;;
+  color: &dtml-linkColor;;
 }
 
 dt.PortletLateAnalyses {
-    background-color: &dtml-portletLateAnalysesBackgroundColor; !important;
-	color: &dtml-portletLateAnalysesTextColor; !important;
+  background-color: &dtml-portletLateAnalysesBackgroundColor; !important;
+  color: &dtml-portletLateAnalysesTextColor; !important;
 }
 
 dl.portlet dt.portletLateAnalyses {
-    background-color: &dtml-portletLateAnalysesBackgroundColor;;
-	color: &dtml-portletLateAnalysesTextColor;;
+  background-color: &dtml-portletLateAnalysesBackgroundColor;;
+  color: &dtml-portletLateAnalysesTextColor;;
 }
 
 /* Pretty table classes for tinyMCE
 */
 .three_column_table td {
-    width:33% !important;
+  width:33% !important;
 }
 .two_column_table td {
-    width:50% !important;
+  width:50% !important;
 }
 
 ul#portal-globalnav {
@@ -226,9 +226,9 @@ ul#portal-globalnav {
 
 /* portal_tabs bar */
 #portal-globalnav li a {
-    padding:.25em;
-    text-align:center;
-    font-size: 1.1em;
+  padding:.25em;
+  text-align:center;
+/*  font-size: 1.1em; */
 }
 a .navTreeCurrentNode .navTreeFolderish {
   border-radius: .25em;
@@ -244,18 +244,18 @@ a .navTreeCurrentItem {
 }
 
 #plone-contentmenu-workflow .state-cancelled {
-    background-color: red;
-    border: 0.1em solid red;
-    border-radius: 0.5em 0.5em 0.5em 0.5em;
-    color: White !important;
-    padding: 0 0.5em;
+  background-color: red;
+  border: 0.1em solid red;
+  border-radius: 0.5em 0.5em 0.5em 0.5em;
+  color: White !important;
+  padding: 0 0.5em;
 }
 #plone-contentmenu-workflow .state-inactive {
-    background-color: red;
-    border: 0.1em solid red;
-    border-radius: 0.5em 0.5em 0.5em 0.5em;
-    color: White !important;
-    padding: 0 0.5em;
+  background-color: red;
+  border: 0.1em solid red;
+  border-radius: 0.5em 0.5em 0.5em 0.5em;
+  color: White !important;
+  padding: 0 0.5em;
 }
 
 .documentActions{
@@ -265,30 +265,29 @@ a .navTreeCurrentItem {
 /* Attachments */
 
 dt.attachments {
-    color: &dtml-linkColor;;
-    font-weight:bold;
-	font-family: "Helvetica Neue",Arial,FreeSans,sans-serif;
-	font-size:1.25em !important;
-	color: #444444 !important;
-    cursor: pointer !important;
-	line-height:1em !important;
+  color: &dtml-linkColor;;
+  font-weight:bold;
+/*  font-size:1.25em !important; */
+  color: #444444 !important;
+  cursor: pointer !important;
+  line-height:1em !important;
 }
 
 dt.collapsibleHeader {
-	margin-left:1px !important;
+  margin-left:1px !important;
 }
 
 dl.expandedInlineCollapsible dt.collapsibleHeader,
 dl.expandedBlockCollapsible dt.collapsibleHeader {
-    background: &dtml-backgroundColor; !important;
-    padding-left: 0 !important;
+  background: &dtml-backgroundColor; !important;
+  padding-left: 0 !important;
 }
 
 dl.collapsedInlineCollapsible dt.collapsibleHeader,
 dl.collapsedBlockCollapsible dt.collapsibleHeader {
-    background: &dtml-backgroundColor; !important;
-    padding-left:0 !important;
-    position: relative;
+  background: &dtml-backgroundColor; !important;
+  padding-left:0 !important;
+  position: relative;
 }
 
 div.attachments {
@@ -305,21 +304,21 @@ div.attachments {
 
 
 th.collapsed {
-    background: #DDDDDD url(treeCollapsed.png) no-repeat 6px 50% !important;
-    cursor:pointer !important;
-	padding-left:20px !important;
-    text-color: &dtml-linkColor; !important;
-    font-weight:bold !important;
-	border:1px solid #CCCCCC !important;
+  background: #DDDDDD url(treeCollapsed.png) no-repeat 6px 50% !important;
+  cursor:pointer !important;
+  padding-left:20px !important;
+  text-color: &dtml-linkColor; !important;
+  font-weight:bold !important;
+  border:1px solid #CCCCCC !important;
 }
 
 th.expanded {
-    background: #DDDDDD url(treeExpanded.png) no-repeat 6px 50% !important;
-    cursor:pointer !important;
-	padding-left:20px !important;
-    text-color: &dtml-linkColor; !important;
-    font-weight:bold !important;
-	border:1px solid #CCCCCC !important;
+  background: #DDDDDD url(treeExpanded.png) no-repeat 6px 50% !important;
+  cursor:pointer !important;
+  padding-left:20px !important;
+  text-color: &dtml-linkColor; !important;
+  font-weight:bold !important;
+  border:1px solid #CCCCCC !important;
 }
 
 
@@ -328,7 +327,7 @@ th.expanded {
  * Header tables (header_table.pt)
  */
 .header_table {
-	margin-bottom:2px !important;
+  margin-bottom:2px !important;
 }
 
 .header_table td,
@@ -346,42 +345,42 @@ th.expanded {
  * Analysis Request tables
  */
 table.analysisrequest {
-	border-top: 1px solid #dddddd;
+  border-top: 1px solid #dddddd;
 }
 
 table.analysisrequest.add td {
-    text-align: center;
-	border-bottom:1px solid #eee;
+  text-align: center;
+  border-bottom:1px solid #eee;
 }
 table.analysisrequest.add td.contact {
-    text-align: left;
+  text-align: left;
 }
 
 table.analysisrequest.edit td {
-    text-align: center;
-	border-bottom:1px solid #eee;
+  text-align: center;
+  border-bottom:1px solid #eee;
 }
 table.analysisrequest.add td.ar_column {
-    width:8em;
+  width:8em;
 }
 #cc_titles {
-	width:60%;
-	background:transparent;
-	border:none;
+  width:60%;
+  background:transparent;
+  border:none;
 }
 #cc_emails {
-	width:100%;
-	background:transparent;
-	border:none;
+  width:100%;
+  background:transparent;
+  border:none;
 }
 
 table.analysisrequest .pointofcapture th {
-	padding-top:5px;
-    background: #fff;
-    border-left: 0;
-	border-right:0;
-    background: #fff;
-	font-size:1.1em;
+  padding-top:5px;
+  background: #fff;
+  border-left: 0;
+  border-right:0;
+  background: #fff;
+/*  font-size:1.1em;*/
 }
 
 .AnalysisProfile,
@@ -398,100 +397,100 @@ table.analysisrequest .noleftborder { border-left: 0; }
 table.analysisrequest th { border-color: #DDDDDD; }
 
 table.analysisrequest th.analysiscategory.collapsed{
-    background: #DDDDDD url(treeCollapsed.png) no-repeat 6px 50%;
-    cursor:pointer;
-	padding-left:20px;
-    text-color: &dtml-linkColor; !important;
-    font-weight:bold;
-	border:1px solid #CCCCCC;
+  background: #DDDDDD url(treeCollapsed.png) no-repeat 6px 50%;
+  cursor:pointer;
+  padding-left:20px;
+  text-color: &dtml-linkColor; !important;
+  font-weight:bold;
+  border:1px solid #CCCCCC;
 }
 
 table.analysisrequest th.analysiscategory.expanded{
-    background: #DDDDDD url(treeExpanded.png) no-repeat 6px 50%;
-    cursor:pointer;
-	padding-left:20px;
-    text-color: &dtml-linkColor; !important;
-    font-weight:bold;
-	border:1px solid #CCCCCC;
+  background: #DDDDDD url(treeExpanded.png) no-repeat 6px 50%;
+  cursor:pointer;
+  padding-left:20px;
+  text-color: &dtml-linkColor; !important;
+  font-weight:bold;
+  border:1px solid #CCCCCC;
 }
 
 table.analysisrequest tr.analysiscategory {
 }
 
 table.analysisrequest .right {
-    text-align: right;
+  text-align: right;
 }
 
 table.analysisrequest .price {
-	border: 1px solid #eee;
-	border-radius:.25em;
-	background:transparent;
-    text-align: right;
-    padding: 1px 2px;
+  border: 1px solid #eee;
+  border-radius:.25em;
+  background:transparent;
+  text-align: right;
+  padding: 1px 2px;
 }
 
 table.analysisrequest .unit {
-	font-size:80%;
-	color: #555;
+  font-size:&dtml-fontSmallerSize;;
+  color: #555;
 }
 
 table.analysisrequest input {
-    margin:0;
+  margin:0;
 }
 .analysisrequest td.contact {
-    text-align: left;
+  text-align: left;
 }
 
 .provisional input,
 .provisional select {
-	color: #777 !important;
+  color: #777 !important;
 }
 
 .delAttachmentButton {
-    background: &dtml-globalBackgroundColor; url(&dtml-portal_url;/++resource++bika.lims.images/delete.png) center center no-repeat;
-	background-color: transparent;
-    border: medium none ! important;
-    cursor: pointer;
-    height: 16px;
-    width: 16px;
+  background: &dtml-globalBackgroundColor; url(&dtml-portal_url;/++resource++bika.lims.images/delete.png) center center no-repeat;
+  background-color: transparent;
+  border: medium none ! important;
+  cursor: pointer;
+  height: 16px;
+  width: 16px;
 }
 .removeButton {
-    background: &dtml-globalBackgroundColor; url(&dtml-portal_url;/++resource++bika.lims.images/delete.png) center center no-repeat;
-    border: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor; ! important;
-    cursor: pointer;
-    height: 16px;
-    width: 16px;
-    visibility: hidden;
+  background: &dtml-globalBackgroundColor; url(&dtml-portal_url;/++resource++bika.lims.images/delete.png) center center no-repeat;
+  border: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor; ! important;
+  cursor: pointer;
+  height: 16px;
+  width: 16px;
+  visibility: hidden;
 }
 
 .select_sample {
-    color: &dtml-linkColor; !important;
-    font-weight:bold;
-    cursor: pointer;
+  color: &dtml-linkColor; !important;
+  font-weight:bold;
+  cursor: pointer;
 }
 
 .copyButton{
-    border: 0;
-	cursor: pointer;
+  border: 0;
+  cursor: pointer;
 }
 
 .deleteAttachmentButton {
-    border: 0;
-	cursor: pointer;
-	margin-left:3px !important;
+  border: 0;
+  cursor: pointer;
+  margin-left:3px !important;
 }
 
 .deleteSampleButton{
-    border: 0;
-	cursor: pointer;
+  border: 0;
+  cursor: pointer;
 }
 
 .link {
-    color: &dtml-linkColor; !important;
-    cursor: pointer;
+  color: &dtml-linkColor; !important;
+  cursor: pointer;
 }
 .center{
-    text-align: center;
+  text-align: center;
 }
 
 /*************
@@ -544,17 +543,17 @@ table.analysisrequest input {
   vertical-align:middle;
 }
 .template-manage_results .bika-listing-table td table td.pos {
-  font-size:120%;
+  /* font-size:120%; */
   width:1ex;
   padding:5px;
   vertical-align:top;
 }
 .template-manage_results .bika-listing-table td table td.pos_top {
-  font-size:110%;
+  /*font-size:110%;*/
 }
 .template-manage_results .bika-listing-table td table td.pos_top_icons {
   padding:5px;
-  font-size:110%;
+  /*font-size:110%;*/
   width:1ex;
   vertical-align:top;
 }
@@ -567,32 +566,32 @@ table.analysisrequest input {
 }
 
 .worksheet_add_control {
-    width:100%;
-	text-align:center !important;
-	vertical-align:top !important;
+  width:100%;
+  text-align:center !important;
+  vertical-align:top !important;
 }
 fieldset.criteria {
-    padding-top:1em;
-    margin-bottom:0;
+  padding-top:1em;
+  margin-bottom:0;
 }
 fieldset.criteria p {
-    padding-bottom:0;
-    margin-bottom:.5em;
+  padding-bottom:0;
+  margin-bottom:.5em;
 }
 .worksheet_add_control_services {
-	text-align:center !important;
-	vertical-align:top !important;
+  text-align:center !important;
+  vertical-align:top !important;
 }
 .worksheet_add_references {
-	padding-left:5px;
-	text-align:center !important;
-	vertical-align:top !important;
+  padding-left:5px;
+  text-align:center !important;
+  vertical-align:top !important;
 }
 
 .worksheet_add_references tbody.item-listing-tbody tr:hover,
 #worksheet_add_duplicate_ars tbody.item-listing-tbody tr:hover {
-    cursor:pointer;
-	background:&dtml-notifyBackgroundColor; !important;
+  cursor:pointer;
+  background:&dtml-notifyBackgroundColor; !important;
 }
 
 /* sample links in ws listing */
@@ -612,18 +611,18 @@ a.duplicate {
  *  General Form Elements
  */
 input.cb {
-    border: none;
-    background-color: transparent;
-    vertical-align: middle;
-    position: relative;
-    bottom: 1px;
+  border: none;
+  background-color: transparent;
+  vertical-align: middle;
+  position: relative;
+  bottom: 1px;
 }
 fieldset {
-	padding:.5em;
-	margin: 0;
+  padding:.5em;
+  margin: 0;
 }
 select {
-    vertical-align: middle !important;
+  vertical-align: middle !important;
 }
 
 .button {
@@ -680,78 +679,78 @@ select {
 .nowrap {  whitespace:nowrap !important; }
 
 span.documentFirstHeading {
-    color: #222222;
-    position: relative;
-    size: 2em;
-    text-shadow: 0 0 2px #CCCCCC;
-    top: -0.2em;
-    margin-right:20px;
-    margin-left:5px;
+  color: #222222;
+  position: relative;
+  size: 2em;
+  text-shadow: 0 0 2px #CCCCCC;
+  top: -0.2em;
+  margin-right:20px;
+  margin-left:5px;
 }
 
 div.documentDescription {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
 
 div.portletWrapper {
-    border-radius: 5px 5px 5px 5px;
-    -moz-border-radius:5px 5px 5px 5px;
-    -webkit-border-radius:5px 5px 5px 5px;
-    overflow:hidden;
-    margin-bottom:5px;
+  border-radius: 5px 5px 5px 5px;
+  -moz-border-radius:5px 5px 5px 5px;
+  -webkit-border-radius:5px 5px 5px 5px;
+  overflow:hidden;
+  margin-bottom:5px;
 }
 
 div.portletWrapper dl.portlet {
-    border:1px solid &dtml-portletHeaderBackgroundColor;;
+  border:1px solid &dtml-portletHeaderBackgroundColor;;
 }
 
 div.portletWrapper dl.portlet dt.portletHeader {
-    text-decoration:none;
+  text-decoration:none;
 }
 
 div.portletWrapper dl.portlet dt.portletHeader {
-    text-decoration:none;
-    font-size:1.15em;
+  text-decoration:none;
+  /*font-size:1.15em;*/
 }
 
 div.portletWrapper dl.portlet ddl.portletItem ul.navTree li.navTreeItem {
-    line-height:2em;
-    border: 1px dotted #DCDCDC;
+  line-height:2em;
+  border: 1px dotted #DCDCDC;
 }
 dl.portlet ul.navTree .navTreeCurrentItem {
-    background-color:none;
+  background-color:none;
 }
 
 dl.portlet ul.navTree .navTreeCurrentNode {
-    background-color:#EFEFEF;
-    border-bottom: 0.1em solid #CDCDCD;
+  background-color:#EFEFEF;
+  border-bottom: 0.1em solid #CDCDCD;
 }
 
 dl.portlet ul.navTree .navTreeCurrentNode a {
-    color:#333;
-    font-weight:bold;
+  color:#333;
+  font-weight:bold;
 }
 
 dl.portlet ul.navTree .navTreeCurrentItem {
-    border:none;
-    background-color:#EFEFEF;
-    margin-left:0px;
-    margin-right:0px;
+  border:none;
+  background-color:#EFEFEF;
+  margin-left:0px;
+  margin-right:0px;
 }
 dl.portlet li {
-    margin-bottom:0px;
+  margin-bottom:0px;
 }
 
 
 #portal-top {
-    background-color: #FFFFFF;
-    margin-bottom: 15px;
+  background-color: #FFFFFF;
+  margin-bottom: 15px;
 }
 
 dl.portlet ul.navTreeLevel1 > .navTreeItem {
-    border-bottom: 0.1em dotted #DDDDDD;
-    line-height: 2em;
-    padding: 0.25em 1em;
+  border-bottom: 0.1em dotted #DDDDDD;
+  line-height: 2em;
+  padding: 0.25em 1em;
 }
 
 dl.portlet dd ul.navTree li ul.navTreeLevel1 {
@@ -764,46 +763,46 @@ dl.portlet dd ul.navTree li ul.navTreeLevel1 li {
 }
 
 dl.portlet dd ul.navTree li a {
-    font-size: 1.1em;
+  /*font-size: 1.1em;*/
 }
 
 dl.portlet dd ul.navTree li a span {
-    padding-left:5px;
+  padding-left:5px;
 }
 div.managePortletsLink {
-    background: none repeat scroll 0 0 #EFEFEF;
-    border: 1px solid #DCDCDC;
-    border-radius: 0 0 0 0;
-    padding: 3px 5px 3px 3px;
-    text-align: right;
+  background: none repeat scroll 0 0 #EFEFEF;
+  border: 1px solid #DCDCDC;
+  border-radius: 0 0 0 0;
+  padding: 3px 5px 3px 3px;
+  text-align: right;
 }
 /*
 #portal-column-content {
-	float:left;
-	left:0;
-	margin-left:24%;
-	position:relative;
-	width:55%;
+  float:left;
+  left:0;
+  margin-left:24%;
+  position:relative;
+  width:55%;
 }
 #portal-column-one {
-	float:left;
-	display:block;
-	left:-23%;
-	margin-left:-55%;
-	position:relative;
-	max-width:210px;
-	width:210px;
+  float:left;
+  display:block;
+  left:-23%;
+  margin-left:-55%;
+  position:relative;
+  max-width:210px;
+  width:210px;
 }
 #portal-column-two {
-	float:right;
-	left:0;
-	margin-right:10px;
-	width:190px;
-	max-width:190px;
-	position:relative;
-	width:190px;
+  float:right;
+  left:0;
+  margin-right:10px;
+  width:190px;
+  max-width:190px;
+  position:relative;
+  width:190px;
 }
 #portal-columns {
-	width:99.7%;
+  width:99.7%;
 }*/
 </dtml-with>

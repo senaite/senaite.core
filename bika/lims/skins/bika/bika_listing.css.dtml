@@ -5,221 +5,221 @@
 /* General Bika Listing Table */
 
 .context_action_link {
-	position:relative;
-	top:-0.4em;
-    margin-right: .5em;
-    font-size: 50%;
-    border:1px solid #dfdfdf !important;
-    vertical-align: middle;
-	font-weight:normal;
-	letter-spacing: 0;
-	border-radius: .5em;
-	padding: 5px 2px 3px 22px;
+  position:relative;
+  top:-0.4em;
+  margin-right: .5em;
+  font-size: 60%;
+  /*border:1px solid #dfdfdf !important;*/
+  vertical-align: middle;
+  font-weight:normal;
+  letter-spacing: 0;
+  border-radius: .5em;
+  padding: 5px 2px 3px 22px;
 }
 .context_action_link:hover {
-	/* background-color:#eee !important; */
+  /* background-color:#eee !important; */
 }
 
 .worksheet_add_controls {
-    vertical-align:center;
-	font-size:90%;
-	margin-bottom:0.25em;
+  vertical-align:center;
+  /*font-size:90%;*/
+  margin-bottom:0.25em;
 }
 .worksheet_add {
-    padding: 2px 2px 2px 22px !important;
-	position:relative;
-	top:0;
-	font-size:100%;
+  padding: 2px 2px 2px 22px !important;
+  position:relative;
+  top:0;
+  font-size:100%;
 }
 
 .context_action_dropdown {
-    margin:none;
-    border:none !important;
-    vertical-align: middle;
-	font-weight:normal;
-	letter-spacing: 0;
-	padding: 2px 2px 2px 2px;
+  margin:none;
+  border:none !important;
+  vertical-align: middle;
+  font-weight:normal;
+  letter-spacing: 0;
+  padding: 2px 2px 2px 2px;
 }
 
 /* for inline select dropdowns */
 #content option {
-    color: black;
-    padding-right: 5px !important;
+  color: black;
+  padding-right: 5px !important;
 }
 #content option {
-    color: black;
-    padding-right: 5px !important;
+  color: black;
+  padding-right: 5px !important;
 }
 
 
 div.bika_listing {
-	font-family: &dtml-fontFamily;;
-    background-color: &dtml-backgroundColor;;
-	color: &dtml-fontColor;;
+  font-family: &dtml-fontFamily;;
+  background-color: &dtml-backgroundColor;;
+  color: &dtml-fontColor;;
 }
 
 div.bika-listing-table-container {
-    margin-top: 10px;
-    width:100%;
-    border-radius: 5px 5px 5px 5px;
-    box-shadow: 0pt 1px 2px rgba(0, 0, 0, 0.5);
-    display: inline-block;
-    overflow: hidden;
-    margin-bottom:10px;
+  margin-top: 10px;
+  width:100%;
+  border-radius: 5px 5px 5px 5px;
+  box-shadow: 0pt 1px 2px rgba(0, 0, 0, 0.5);
+  display: inline-block;
+  overflow: hidden;
+  margin-bottom:10px;
 }
 
 table.bika-listing-table {
-    font-size: &dtml-fontSmallSize;;
-    border-bottom: medium none;
-    width: 100%;
-    border: 1px solid rgb(220, 220, 220);
-    border: medium none;
-    border-collapse: collapse;
+  font-size: &dtml-fontSmallSize;;
+  border-bottom: medium none;
+  width: 100%;
+  border: 1px solid rgb(220, 220, 220);
+  border: medium none;
+  border-collapse: collapse;
 }
 
 .bika-listing-table thead {
-    text-decoration:none;
-    border: 0px solid rgb(220, 220, 220);
-    color:rgb(250, 250, 250);
-    text-shadow: 0px 0px 1px rgb(51, 51, 51);
-    border-radius:5px 5px 0px 0px;
-    -moz-border-radius:5px 5px 0px 0px;
-    -webkit-border-radius:5px 5px 0px 0px;
-    box-shadow:0px 1px 2px rgba(0, 0, 0, 0.5);
-    -moz-box-shadow:0px 1px 2px rgba(0, 0, 0, 0.5);
-    -webkit-box-shadow:0px 1px 2px rgba(0, 0, 0, 0.5);
-    background-color: rgb(153, 153, 153);
-    background-image:linear-gradient(-90deg, rgb(170, 170, 170), rgb(153, 153, 153));
-    background-image:-webkit-gradient(linear, 50% 0%, 50% 100%, from(rgb(170, 170, 170)), to(rgb(153, 153, 153)));
-    background-image:-moz-linear-gradient(-90deg, rgb(170, 170, 170), rgb(153, 153, 153));
+  text-decoration:none;
+  border: 0px solid rgb(220, 220, 220);
+  color:rgb(250, 250, 250);
+  text-shadow: 0px 0px 1px rgb(51, 51, 51);
+  border-radius:5px 5px 0px 0px;
+  -moz-border-radius:5px 5px 0px 0px;
+  -webkit-border-radius:5px 5px 0px 0px;
+  box-shadow:0px 1px 2px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow:0px 1px 2px rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow:0px 1px 2px rgba(0, 0, 0, 0.5);
+  background-color: rgb(153, 153, 153);
+  background-image:linear-gradient(-90deg, rgb(170, 170, 170), rgb(153, 153, 153));
+  background-image:-webkit-gradient(linear, 50% 0%, 50% 100%, from(rgb(170, 170, 170)), to(rgb(153, 153, 153)));
+  background-image:-moz-linear-gradient(-90deg, rgb(170, 170, 170), rgb(153, 153, 153));
 }
 
 .bika-listing-table thead tr th {
-    padding-top:5px;
-    padding-left:5px;
-    font-size: 1.3em;
+  padding-top:5px;
+  padding-left:5px;
+  /*font-size: 1.3em;*/
 }
 
 .bika-listing-table thead tr {
-    border-bottom: 1px solid #EFEFEF;
-    border-left: 1px solid #DDDDDD;
+  border-bottom: 1px solid #EFEFEF;
+  border-left: 1px solid #DDDDDD;
 }
 
 .bika-listing-table thead tr td.listing-filter-row a {
-    font-size:1.2em;
-    text-shadow: 0 0 1px #BBB;
+  /*font-size:1.2em;*/
+  text-shadow: 0 0 1px #BBB;
 }
 
 .bika-listing-table tbody tr {
-    border-bottom: 1px solid #EFEFEF;
-    border-left: 1px solid #DDDDDD;
+  border-bottom: 1px solid #EFEFEF;
+  border-left: 1px solid #DDDDDD;
 }
 
 .bika-listing-table tbody tr th {
-    font-size: 1.2em;
-    padding: 1px 1px 1px 10px;
-    vertical-align:left;
-	color: #444;
+  /*font-size: 1.2em;*/
+  padding: 1px 1px 1px 10px;
+  vertical-align:left;
+  color: #444;
 }
 
 .bika-listing-table tbody tr td {
-    padding-top:3px;
-    padding-bottom:0px;
-    padding-left:5px;
+  padding-top:3px;
+  padding-bottom:0px;
+  padding-left:5px;
 }
 
 .bika-listing-table tbody tr td.service {
-    padding-left:20px;
+  padding-left:20px;
 }
 
 .bika-listing-table tfoot tr {
-    margin-top:10px;
-    background-color: #EFEFEF;
+  margin-top:10px;
+  background-color: #EFEFEF;
 }
 
 .bika-listing-table tfoot tr td {
-    padding: 3px 4px 1px;
+  padding: 3px 4px 1px;
 }
 
 
 .bika-listing-table a {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 .bika-listing-table tr {
-	line-height: 1.5em;
-    border-left: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
+  line-height: 1.5em;
+  border-left: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
 }
 
 .bika-listing-table a.state-visible  {
-	background-color: &dtml-visibleBackgroundColor;
-	color: &dtml-visibleTextColor; !important;
+  background-color: &dtml-visibleBackgroundColor;
+  color: &dtml-visibleTextColor; !important;
 }
 
 .bika-listing-table .state-cancelled {
-	background-color: &dtml-cancelledBackgroundColor; !important;
-	color: &dtml-cancelledTextColor; !important;
+  background-color: &dtml-cancelledBackgroundColor; !important;
+  color: &dtml-cancelledTextColor; !important;
 }
 
 .bika-listing-table .state-inactive {
-	background-color: &dtml-inactiveBackgroundColor; !important;
-	color: &dtml-inactiveTextColor; !important;
+  background-color: &dtml-inactiveBackgroundColor; !important;
+  color: &dtml-inactiveTextColor; !important;
 }
 
 .bika-listing-table .state-submitted-by-current-user td {
-	background-color: &dtml-submittedbycurrentuserBackgroundColor; !important;
-	color: &dtml-submittedbycurrentuserTextColor; !important;
+  background-color: &dtml-submittedbycurrentuserBackgroundColor; !important;
+  color: &dtml-submittedbycurrentuserTextColor; !important;
 }
 
 .bika-listing-table .state-sample_due {
-	background-color: &dtml-sampleDueBackgroundColor;
-	color: &dtml-sampleDueTextColor; !important;
+  background-color: &dtml-sampleDueBackgroundColor;
+  color: &dtml-sampleDueTextColor; !important;
 }
 
 .bika-listing-table .state-recieved,
 .bika-listing-table .state-sample_received {
-	background-color: &dtml-sampleReceivedBackgroundColor;
-	color: &dtml-sampleReceivedTextColor; !important;
+  background-color: &dtml-sampleReceivedBackgroundColor;
+  color: &dtml-sampleReceivedTextColor; !important;
 }
 
 /* empty worksheets in worksheet folder listing */
 .bika-listing-table .state-empty-worksheet {
-	background-color: &dtml-emptyBackgroundColor; !important;
-	color: &dtml-emptyTextColor; !important;
+  background-color: &dtml-emptyBackgroundColor; !important;
+  color: &dtml-emptyTextColor; !important;
 }
 
 /* empty rows in ws manage results */
 .bika-listing-table .state-empty {
-	background-color: &dtml-wsEmptyPositionBackgroundColor; !important;
-	color: &dtml-wsEmptyPositionTextColor; !important;
-	vertical-align:middle !important;
-	padding:5px;
+  background-color: &dtml-wsEmptyPositionBackgroundColor; !important;
+  color: &dtml-wsEmptyPositionTextColor; !important;
+  vertical-align:middle !important;
+  padding:5px;
 }
 
 .bika-listing-table th.sortable {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .bika-listing-table th.sortable.ascending{
-	background: &dtml-tableHeaderBackgroundColor; url(arrowUp.png) 95% 50% no-repeat;
-	padding-right:1.5em;
-	color: tableHeaderTextColor;
+  background: &dtml-tableHeaderBackgroundColor; url(arrowUp.png) 95% 50% no-repeat;
+  padding-right:1.5em;
+  color: tableHeaderTextColor;
 }
 .bika-listing-table th.sortable.descending{
-	background: &dtml-tableHeaderBackgroundColor; url(arrowDown.png) 95% 50% no-repeat;
-	padding-right:1.5em;
-	color: tableHeaderTextColor;
+  background: &dtml-tableHeaderBackgroundColor; url(arrowDown.png) 95% 50% no-repeat;
+  padding-right:1.5em;
+  color: tableHeaderTextColor;
 }
 
 .bika-listing-table th.ascending.indexed{
-	background: &dtml-tableHeaderBackgroundColor; url(arrowUpAlternative.png) 95% 50% no-repeat !important;
-	padding-right:1.5em;
-	color: tableHeaderTextColor;
+  background: &dtml-tableHeaderBackgroundColor; url(arrowUpAlternative.png) 95% 50% no-repeat !important;
+  padding-right:1.5em;
+  color: tableHeaderTextColor;
 }
 .bika-listing-table th.descending.indexed{
-	background: &dtml-tableHeaderBackgroundColor; url(arrowDownAlternative.png) 95% 50% no-repeat !important;
-	padding-right:1.5em;
-	color: tableHeaderTextColor;
+  background: &dtml-tableHeaderBackgroundColor; url(arrowDownAlternative.png) 95% 50% no-repeat !important;
+  padding-right:1.5em;
+  color: tableHeaderTextColor;
 }
 
 .bika-listing-table th.column,
@@ -228,7 +228,7 @@ table.bika-listing-table {
 .bika-listing-table td.getRequestID,
 .bika-listing-table td.Title,
 .bika-listing-table td.ID {
-    white-space:nowrap !important;
+  white-space:nowrap !important;
 }
 
 /* The review state selector links */
@@ -240,22 +240,22 @@ table.bika-listing-table {
 
 table.bika-listing-table thead tr td.listing-filter-row {
    background-attachment: scroll !important;
-    background-clip: border-box !important;
-    background-color: #EFEFEF;
-    background-image: none !important;
-    background-origin: padding-box !important;
-    background-position: 0 0 !important;
-    background-repeat: repeat !important;
-    background-size: auto auto !important;
-    border: medium none !important;
-    margin: 0;
-    padding: 2px 10px 2px 2px;
-    text-shadow: none;
+  background-clip: border-box !important;
+  background-color: #EFEFEF;
+  background-image: none !important;
+  background-origin: padding-box !important;
+  background-position: 0 0 !important;
+  background-repeat: repeat !important;
+  background-size: auto auto !important;
+  border: medium none !important;
+  margin: 0;
+  padding: 2px 10px 2px 2px;
+  text-shadow: none;
 }
 
 td.review_state_selector{
-    white-space:nowrap !important;
-    background: none !important;
+  white-space:nowrap !important;
+  background: none !important;
 }
 
 .review_state_selector tr,
@@ -270,7 +270,7 @@ td.review_state_selector{
   text-decoration:none;
   font-weight:normal;
   padding:3px 5px 3px 5px !important;
-  font-size:1.1em;
+  /*font-size:1.1em;*/
 }
 
 .review_state_selector a:hover{
@@ -297,25 +297,25 @@ td.review_state_selector{
   margin-bottom:2px;
 }
 .review_state_td {
-	background-color:#fff !important;
-	border-right:0 !important;
-	border-left:0 !important;
-	padding:0px 0px 0px 0px !important;
+  background-color:#fff !important;
+  border-right:0 !important;
+  border-left:0 !important;
+  padding:0px 0px 0px 0px !important;
 }
 
 /***  filter text entry and buttons   ***/
 
 .filter-search-input {
-	background:transparent;
-	background-image:url(&dtml-portal_url;/++resource++bika.lims.images/search_submit.png);
-	background-position:2% 55%;
-	background-repeat:no-repeat;
-    border: 1px solid #DDD !important;
-    border-radius: &dtml-buttonBorderRadius;;
-    font-weight: normal;
-	width:8em;
-    padding: 2px 5px 2px 20px !important;
-    background-color:#fff;
+  background:transparent;
+  background-image:url(&dtml-portal_url;/++resource++bika.lims.images/search_submit.png);
+  background-position:2% 55%;
+  background-repeat:no-repeat;
+  border: 1px solid #DDD !important;
+  border-radius: &dtml-buttonBorderRadius;;
+  font-weight: normal;
+  width:8em;
+  padding: 2px 5px 2px 20px !important;
+  background-color:#fff;
 }
 
 .filter-search-button {
@@ -368,15 +368,15 @@ td.review_state_selector{
 /*** Manage results header *****/
 
 .manage_results_header table {
-    border:medium none;
+  border:medium none;
 }
 .manage_results_header tr{
 }
 .manage_results_header th{
-	padding: 0 .25em 0 0;
+  padding: 0 .25em 0 0;
 }
 .manage_results_header td{
-	padding: 0 2em 0 0;
+  padding: 0 2em 0 0;
 }
 
 /* batch selectors */
@@ -389,10 +389,10 @@ tfoot tr {
 
 }
 tfoot td {
-    margin: 0;
-    padding:0;
-	border: medium none !important;
-	vertical-align:top !important;
+  margin: 0;
+  padding:0;
+  border: medium none !important;
+  vertical-align:top !important;
 }
 tfoot td.workflow_actions {
 }
