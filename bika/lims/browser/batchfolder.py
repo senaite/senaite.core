@@ -14,6 +14,7 @@ from Products.CMFCore import permissions
 import plone
 import json
 
+
 class BatchFolderContentsView(BikaListingView):
 
     implements(IFolderContentsView)
@@ -21,7 +22,7 @@ class BatchFolderContentsView(BikaListingView):
     def __init__(self, context, request):
         super(BatchFolderContentsView, self).__init__(context, request)
         self.catalog = 'bika_catalog'
-        self.contentFilter = {'portal_type':'Batch'}
+        self.contentFilter = {'portal_type': 'Batch'}
         self.context_actions = {}
         self.icon = "++resource++bika.lims.images/batch_big.png"
         self.title = _("Batches")
@@ -35,12 +36,12 @@ class BatchFolderContentsView(BikaListingView):
 
         self.columns = {
             'BatchID': {'title': _('Batch ID')},
-            'Description':  {'title': _('Description')},
-            'Requests':  {'title': _('Analysis Requests')},
-            'state_title': {'title': _('State'), 'sortable':False},
+            'Description': {'title': _('Description')},
+            'Requests': {'title': _('Analysis Requests')},
+            'state_title': {'title': _('State'), 'sortable': False},
         }
 
-        self.review_states = [ # leave these titles and ids alone
+        self.review_states = [  # leave these titles and ids alone
             {'id':'default',
              'contentFilter': {'cancellation_state':'active',
                                'review_state': 'open'},
@@ -76,21 +77,28 @@ class BatchFolderContentsView(BikaListingView):
              },
         ]
 
-#    def __call__(self):
-#        return super(BatchFolderContentsView, self).__call__()
+    def __call__(self):
+        if self.context.absolute_url() == self.portal.batches.absolute_url() \
+        and self.portal_membership.checkPermission(AddBatch, self.portal.batches):
+            self.context_actions[_('Add')] = \
+                {'url': 'createObject?type_name=Batch',
+                 'icon': self.portal.absolute_url() + '/++resource++bika.lims.images/add.png'}
+        return super(BatchFolderContentsView, self).__call__()
 
     def folderitems(self):
         self.filter_indexes = None
 
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
+            if 'obj' not in items[x]:
+                continue
             obj = items[x]['obj']
 
             items[x]['replace']['BatchID'] = "<a href='%s'>%s</a>" % (items[x]['url'], obj.getBatchID())
             items[x]['Requests'] = len(self.context.getBackReferences("AnalysisRequestBatch"))
 
         return items
+
 
 class ajaxGetBatches(BrowserView):
     """ Vocabulary source for jquery combo dropdown box
@@ -115,9 +123,9 @@ class ajaxGetBatches(BrowserView):
             rows.reverse()
         pages = len(rows) / int(nr_rows)
         pages += divmod(len(rows), int(nr_rows))[1] and 1 or 0
-        ret = {'page':page,
-               'total':pages,
-               'records':len(rows),
-               'rows':rows[ (int(page) - 1) * int(nr_rows) : int(page) * int(nr_rows) ]}
+        ret = {'page': page,
+               'total': pages,
+               'records': len(rows),
+               'rows': rows[(int(page) - 1) * int(nr_rows): int(page) * int(nr_rows)]}
 
         return json.dumps(ret)
