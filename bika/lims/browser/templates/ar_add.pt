@@ -140,7 +140,8 @@
         </td>
     </tr>
     <!-- Batch selector -->
-    <tr tal:define="field_name string:BatchID">
+    <tr tal:condition="python:checkPermission('BIKA: Add Batch', portal.batches)"
+        tal:define="field_name string:BatchID">
         <th colspan="2" style="white-space:nowrap">
             <span i18n:translate="">Batch</span>
             <a style="border-bottom:none !important;margin-left:1em;"
