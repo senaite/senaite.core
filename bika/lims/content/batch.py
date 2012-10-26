@@ -21,11 +21,6 @@ schema = BikaSchema.copy() + Schema((
             label=_("Batch ID"),
         )
     ),
-    ReferenceField('AnalysisRequests',
-        allowed_types=('AnalysisRequest',),
-        relationship='BatchAnalysisRequests',
-        multiValued=1,
-    ),
     TextField('Remarks',
         searchable=True,
         default_content_type='text/x-web-intelligent',
@@ -43,7 +38,6 @@ schema = BikaSchema.copy() + Schema((
 schema['title'].required = False
 schema['title'].widget.visible = False
 schema['description'].widget.visible = True
-schema['AnalysisRequests'].widget.visible = False
 
 schema.moveField('BatchID', before='description')
 
