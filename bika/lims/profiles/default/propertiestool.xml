@@ -22,7 +22,7 @@
   <property name="includeTop" type="boolean">False</property>
   <property name="topLevel" type="int">0</property>
   <property name="bottomLevel" type="int">0</property>
-  <property name="showAllParents" type="boolean">True</property>
+  <property name="showAllParents" type="boolean">False</property>
   <property name="idsNotToList" type="lines"/>
   <property name="parentMetaTypesNotToQuery" type="lines">
     <element value="TempFolder"/>
