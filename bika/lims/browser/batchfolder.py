@@ -32,7 +32,6 @@ class BatchFolderContentsView(BikaListingView):
         self.show_select_all_checkbox = False
         self.show_select_column = True
         self.pagesize = 25
-        request.set('disable_border', 1)
 
         self.columns = {
             'BatchID': {'title': _('Batch ID')},
@@ -78,6 +77,9 @@ class BatchFolderContentsView(BikaListingView):
         ]
 
     def __call__(self):
+        if self.context.absolute_url() == self.portal.batches.absolute_url():
+            # in contexts other than /batches, we do want to show the edit border
+            request.set('disable_border', 1)
         if self.context.absolute_url() == self.portal.batches.absolute_url() \
         and self.portal_membership.checkPermission(AddBatch, self.portal.batches):
             self.context_actions[_('Add')] = \
