@@ -1,16 +1,19 @@
-from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.permissions import View
 from AccessControl import getSecurityManager
 from bika.lims.permissions import AddClient
 from bika.lims.permissions import ManageClients
+from Products.CMFCore.utils import getToolByName
 from bika.lims.permissions import ManageAnalysisRequests
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims import bikaMessageFactory as _
+from operator import itemgetter
 from bika.lims.interfaces import IClientFolder
 from plone.app.content.browser.interfaces import IFolderContentsView
 from bika.lims.browser import BrowserView
 from zope.interface import implements
 from Products.CMFCore import permissions
+import plone,json
+
 
 class ClientFolderContentsView(BikaListingView):
 
@@ -118,3 +121,34 @@ class ClientFolderContentsView(BikaListingView):
             items[x]['Fax'] = obj.getFax()
 
         return items
+
+
+class ajaxGetClients(BrowserView):
+    """ Vocabulary source for jquery combo dropdown box
+    """
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        searchTerm = self.request['searchTerm']
+        page = self.request['page']
+        nr_rows = self.request['rows']
+        sord = self.request['sord']
+        sidx = self.request['sidx']
+        wf = getToolByName(self.context, 'portal_workflow')
+
+        rows = [{'ClientID': b.Title or '',
+                 'Title': b.Description,
+                 'ClientUID': b.UID} for b in self.portal_catalog(portal_type='Client')
+                if b.Title.find(searchTerm) > -1
+                or b.Description.find(searchTerm) > -1]
+
+        rows = sorted(rows, key=itemgetter(sidx and sidx or 'ClientID'))
+        if sord == 'desc':
+            rows.reverse()
+        pages = len(rows) / int(nr_rows)
+        pages += divmod(len(rows), int(nr_rows))[1] and 1 or 0
+        ret = {'page': page,
+               'total': pages,
+               'records': len(rows),
+               'rows': rows[(int(page) - 1) * int(nr_rows): int(page) * int(nr_rows)]}
+
+        return json.dumps(ret)
