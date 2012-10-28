@@ -22,7 +22,7 @@ class Tests(BikaFunctionalTestCase):
 
     def test_setup_supplied_values(self):
         self.browser.open("%s%s" % (self.baseurl, "/bika_setup/bika_analysisprofiles/analysisprofile-1"))
-        self.assertTrue(u"Trace Metals" in self.browser.contents)
+        self.assertTrue("Trace Metals" in self.browser.contents)
         control = self.browser.getControl(name="uids:list")
         uids = control.value
         all_uids = control.options

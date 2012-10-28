@@ -1,6 +1,6 @@
 from Products.CMFCore.utils import getToolByName
 from Testing.makerequest import makerequest
-from bika.lims.browser.load_setup_data import LoadSetupData
+from bika.lims.exportimport.load_setup_data import LoadSetupData
 from plone.app.testing import IntegrationTesting, FunctionalTesting
 from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import PloneSandboxLayer
@@ -50,7 +50,7 @@ class BikaLIMS(PloneSandboxLayer):
         self.applyProfile(portal, 'bika.lims:default')
 
         self.request.form['submitted'] = 1
-        self.request.form['xlsx'] = "test"
+        self.request.form['existing'] = "test"
         lsd = LoadSetupData(portal, self.request)
         lsd()
 

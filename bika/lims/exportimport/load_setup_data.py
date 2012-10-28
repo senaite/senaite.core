@@ -1,4 +1,3 @@
-from App.Common import package_home
 from DateTime import DateTime
 from Persistence import PersistentMapping
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -67,6 +66,31 @@ class LoadSetupData(BrowserView):
                 changeWorkflowState(obj, wf_id, state['review_state'],
                                     set_permissions=set_permissions,
                                     portal_workflow=self.wf, **state)
+
+    def solve_deferred(self):
+        # walk through self.deferred, linking ReferenceFields as we go
+        unsolved = []
+        for d in self.deferred:
+            src_obj = d['src_obj']
+            src_field = src_obj.getField(d['src_field'])
+            multiValued = src_field.multiValued
+            src_mutator = src_field.getMutator(src_obj)
+            src_accessor = src_field.getAccessor(src_obj)
+
+            tool = getToolByName(self.context, d['dest_catalog'])
+            proxies = tool(d['dest_query'])
+            if len(proxies) > 0:
+                obj = proxies[0].getObject()
+                if multiValued:
+                    value = src_accessor()
+                    value.append(obj.UID())
+                else:
+                    value = obj.UID()
+                src_mutator(value)
+            else:
+                unsolved.append(d)
+        self.deferred = unsolved
+        return len(unsolved)
 
     def __call__(self):
         form = self.request.form
@@ -174,15 +198,24 @@ class LoadSetupData(BrowserView):
         if 'Attachment Types' in sheets:
             self.load_attachment_types(sheets['Attachment Types'])
 
-        print "Rebuilding bika_setup_catalog"
+        check = len(self.deferred)
+        while len(self.deferred) > 0:
+            new = self.solve_deferred()
+            logger.info("solved %s of %s deferred references" % (check - new, check))
+            if new == check:
+                raise Exception("%s unsolved deferred references: %s"%(len(self.deferred), self.deferred))
+            check = new
+
+        logger.info("Rebuilding bika_setup_catalog")
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         bsc.clearFindAndRebuild()
-        print "Rebuilding bika_catalog"
+        logger.info("Rebuilding bika_catalog")
         bc = getToolByName(self.context, 'bika_catalog')
         bc.clearFindAndRebuild()
-        print "Rebuilding bika_analysis_catalog"
+        logger.info("Rebuilding bika_analysis_catalog")
         bac = getToolByName(self.context, 'bika_analysis_catalog')
         bac.clearFindAndRebuild()
+
 
         message = PMF("Changes saved.")
         self.plone_utils.addPortalMessage(message)
@@ -403,8 +436,10 @@ class LoadSetupData(BrowserView):
 
             if row['Department_title']:
                 self.deferred.append({'src_obj': obj,
-                                      'dest_type': 'Department',
-                                      'dest_query': {'title':row['Department_title']}})
+                                      'src_field': 'Department',
+                                      'dest_catalog': 'bika_setup_catalog',
+                                      'dest_query': {'portal_type':'Department',
+                                                     'title':row['Department_title']}})
 
             ## Create Plone user
             if(row['Username']):
@@ -539,10 +574,12 @@ class LoadSetupData(BrowserView):
 
             # CC Contacts
             if row['CCContacts']:
-                for _fullname in row['CCContacts']:
+                for _fullname in row['CCContacts'].split(","):
                     self.deferred.append({'src_obj': contact,
-                                          'dest_type': 'Contact',
-                                          'dest_query': {'getFullname':_fullname}})
+                                          'src_field': 'CCContact',
+                                          'dest_catalog': 'portal_catalog',
+                                          'dest_query': {'portal_type':'Contact',
+                                                         'getFullname':_fullname}})
 
             ## Create Plone user
             if(row['Username']):
@@ -615,7 +652,7 @@ class LoadSetupData(BrowserView):
                      description = unicode(row['description']),
                      Composite = row['description'] and True or False,
                      Elevation = unicode(row['Elevation']),
-                     SampleTypes = row['SampleType_title'] and self.sampletypes[row['SampleType_title']] or None,
+                     SampleTypes = row['SampleType_title'] and self.sampletypes[row['SampleType_title']] or []
                      )
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
@@ -634,7 +671,7 @@ class LoadSetupData(BrowserView):
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
                      RetentionPeriod = {'days':row['RetentionPeriod'],'hours':0,'minutes':0},
-                     Hazardouus = int(row['Hazardous']) and True or False,
+                     Hazardoous = row['Hazardous'] and True or False,
                      SampleMatrix = row['SampleMatrix_title'] and self.samplematrices[row['SampleMatrix_title']] or None,
                      Prefix = unicode(row['Prefix']),
                      MinimumVolume = unicode(row['MinimumVolume']),
@@ -867,9 +904,12 @@ class LoadSetupData(BrowserView):
                      InterimFields = calc_interims,
                      Formula = str(row['Formula']))
             for kw in dep_keywords:
+                # If the keyword is in calc_interims, no service dependency gets deferred
                 self.deferred.append({'src_obj': obj,
-                                      'dest_type': 'AnalysisService',
-                                      'dest_query': {'getKeyword':kw}})
+                                      'src_field': 'DependentServices',
+                                      'dest_catalog': 'bika_setup_catalog',
+                                      'dest_query': {'portal_type':'AnalysisService',
+                                                     'getKeyword':kw}})
             calc_obj = obj
             self.calcs[row['title']] = obj
             obj.unmarkCreationFlag()
@@ -950,14 +990,14 @@ class LoadSetupData(BrowserView):
         self.artemplates = {}
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            analyses = self.artemplate_analyses[row['ARTemplate']]
+            analyses = self.artemplate_analyses[row['title']]
             client_title = row['Client_title'] or 'lab'
-            if row['ARTemplate'] in self.artemplate_partitions:
-                partitions = self.artemplate_partitions[row['ARTemplate']]
+            if row['title'] in self.artemplate_partitions:
+                partitions = self.artemplate_partitions[row['title']]
             else:
-                partitions = [{'part_id': 'part-%s' % part,
+                partitions = [{'part_id': 'part-1',
                                'container': '',
-                               'preservation': preservation.Title()}]
+                               'preservation': ''}]
 
             if client_title == 'lab':
                 folder = self.context.bika_setup.bika_artemplates
@@ -965,13 +1005,13 @@ class LoadSetupData(BrowserView):
                 folder = self.clients[client_title]
 
             if row['SampleType_title']:
-                sampletypes = row['SampleType_title'].split(",")
+                sampletypes = row['SampleType_title']
             else:
-                sampletypes = []
+                sampletypes = None
             if row['SamplePoint_title']:
-                samplepoints = row['SamplePoint_title'].split(",")
+                samplepoints = row['SamplePoint_title']
             else:
-                samplepoints = []
+                samplepoints = None
 
             _id = folder.invokeFactory('ARTemplate', id = 'tmp')
             obj = folder[_id]
