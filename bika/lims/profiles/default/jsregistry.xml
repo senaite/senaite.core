@@ -40,7 +40,7 @@
               conditionalcomment=""
               cookable="True"
               enabled="on"
-              expression="python:here.portal_type == 'Client'"
+              expression="python:here.portal_type in ['Client']"
               id="++resource++bika.lims.js/client.js"
               inline="False"
               insert-after="*"/>
@@ -51,7 +51,7 @@
               conditionalcomment=""
               cookable="True"
               enabled="on"
-              expression="python:here.portal_type in ['Client', 'AnalysisRequest','Worksheet',]"
+              expression="python:here.portal_type in ['Client', 'AnalysisRequest','Worksheet']"
               id="++resource++bika.lims.js/calcs.js"
               inline="False"
               insert-after="*"/>
@@ -62,7 +62,7 @@
               conditionalcomment=""
               cookable="True"
               enabled="on"
-              expression=""
+              expression="python:here.portal_type in ['Client', 'AnalysisRequest', 'Batch']"
               id="++resource++bika.lims.js/batch.js"
               inline="False"
               insert-after="*"/>
@@ -95,7 +95,7 @@
               conditionalcomment=""
               cookable="True"
               enabled="on"
-              expression="python:here.portal_type in ['Sample',]"
+              expression="python:here.portal_type in ['Sample']"
               id="++resource++bika.lims.js/sample.js"
               inline="False"
               insert-after="*"/>
@@ -106,7 +106,7 @@
               conditionalcomment=""
               cookable="True"
               enabled="on"
-              expression="python:here.portal_type in ['Contact',]"
+              expression="python:here.portal_type in ['Contact']"
               id="++resource++bika.lims.js/contact.js"
               inline="False"
               insert-after="*"/>
@@ -117,7 +117,7 @@
               conditionalcomment=""
               cookable="True"
               enabled="on"
-              expression="python:here.portal_type in ['ReferenceSample',]"
+              expression="python:here.portal_type in ['ReferenceSample']"
               id="++resource++bika.lims.js/referencesample.js"
               inline="False"
               insert-after="*"/>
@@ -128,7 +128,7 @@
               conditionalcomment=""
               cookable="True"
               enabled="on"
-              expression="python:here.portal_type in ['ReportFolder',]"
+              expression="python:here.portal_type in ['ReportFolder']"
               id="++resource++bika.lims.js/reports.js"
               inline="False"
               insert-after="*"/>
@@ -139,7 +139,7 @@
               conditionalcomment=""
               cookable="True"
               enabled="on"
-              expression="python:here.portal_type in ['AnalysisService',]"
+              expression="python:here.portal_type in ['AnalysisService']"
               id="++resource++bika.lims.js/analysisservice.js"
               inline="False"
               insert-after="*"/>
@@ -150,7 +150,7 @@
               conditionalcomment=""
               cookable="True"
               enabled="on"
-              expression="python:here.portal_type in ['ARTemplate',]"
+              expression="python:here.portal_type in ['ARTemplate']"
               id="++resource++bika.lims.js/artemplate.js"
               inline="False"
               insert-after="*"/>

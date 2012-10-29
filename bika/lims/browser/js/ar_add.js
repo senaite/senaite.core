@@ -881,32 +881,6 @@ $(document).ready(function(){
 
 	$(".ReportDryMatter").change(changeReportDryMatter);
 
-	// Dropdown grid of Batches is handled by batch.js
-
-    // Add Batch popup
-	$('a.add_batch').prepOverlay(
-        {
-            subtype: 'ajax',
-            filter: 'head>*,#content>*:not(div.configlet),dl.portalMessage.error,dl.portalMessage.info',
-            formselector: '#batch-base-edit[action*=new]',
-            closeselector: '[name="form.button.cancel"]',
-            width:'40%',
-            noform:'close',
-            config: {
-            	onLoad: function() {
-            		// manually remove remarks
-            		this.getOverlay().find("#archetypes-fieldname-Remarks").remove();
-//            		// display only first tab's fields
-//            		$("ul.formTabs").remove();
-//            		$("#fieldset-schemaname").remove();
-	            },
-	            onClose: function(){
-	            	// here is where we'd populate the form controls, if we cared to.
-	            }
-            }
-	    }
-    );
-
     // AR Add/Edit ajax form submits
 	ar_edit_form = $('#analysisrequest_edit_form');
 	if (ar_edit_form.ajaxForm != undefined){

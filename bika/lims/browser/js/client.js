@@ -31,5 +31,47 @@ $(document).ready(function(){
 			});
     });
 
+    if(window.location.href.search(window.bika_utils.data.prefixes['Client']) == -1 &&
+       window.location.href.search('portal_factory/Client') == -1){
+        $("input[id=ClientID]").after('<a style="border-bottom:none !important;margin-left:.5;"' +
+                    ' class="add_client"' +
+                    ' href="'+window.portal_url+'/clients/portal_factory/Client/new/edit"' +
+                    ' rel="#overlay">' +
+                    ' <img style="padding-bottom:1px;" src="'+window.portal_url+'/++resource++bika.lims.images/add.png"/>' +
+                ' </a>');
+    }
+
+    $('a.add_client').prepOverlay(
+        {
+            subtype: 'ajax',
+            filter: 'head>*,#content>*:not(div.configlet),dl.portalMessage.error,dl.portalMessage.info',
+            formselector: '#client-base-edit',
+            closeselector: '[name="form.button.cancel"]',
+            width:'40%',
+            noform:'close',
+            config: {
+                onLoad: function() {
+                    // manually remove remarks
+                    this.getOverlay().find("#archetypes-fieldname-Remarks").remove();
+                },
+                onClose: function(){
+                    // here is where we'd populate the form controls, if we cared to.
+                }
+            }
+        }
+    );
+
+    $("input[id*=ClientID]").combogrid({
+        colModel: [{'columnName':'ClientUID','hidden':true},
+                   {'columnName':'ClientID','width':'25','label':window.jsi18n_bika('Client ID')},
+                   {'columnName':'Title','width':'35','label':window.jsi18n_bika('Title')}],
+        url: window.location.href.replace("/ar_add","") + "/getClients?_authenticator=" + $('input[name="_authenticator"]').val(),
+        select: function( event, ui ) {
+            $(this).val(ui.item.ClientID);
+            $(this).change();
+            return false;
+        }
+    });
+
 });
 }(jQuery));
