@@ -671,7 +671,7 @@ class LoadSetupData(BrowserView):
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
                      RetentionPeriod = {'days':row['RetentionPeriod'],'hours':0,'minutes':0},
-                     Hazardoous = row['Hazardous'] and True or False,
+                     Hazardous = row['Hazardous'] and True or False,
                      SampleMatrix = row['SampleMatrix_title'] and self.samplematrices[row['SampleMatrix_title']] or None,
                      Prefix = unicode(row['Prefix']),
                      MinimumVolume = unicode(row['MinimumVolume']),

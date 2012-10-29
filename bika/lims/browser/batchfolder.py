@@ -79,7 +79,7 @@ class BatchFolderContentsView(BikaListingView):
     def __call__(self):
         if self.context.absolute_url() == self.portal.batches.absolute_url():
             # in contexts other than /batches, we do want to show the edit border
-            request.set('disable_border', 1)
+            self.request.set('disable_border', 1)
         if self.context.absolute_url() == self.portal.batches.absolute_url() \
         and self.portal_membership.checkPermission(AddBatch, self.portal.batches):
             self.context_actions[_('Add')] = \
