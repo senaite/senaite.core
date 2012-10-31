@@ -203,8 +203,9 @@ function calculate_partitions(service_uids, st_uid, st_minvol){
 var bika_utils = bika_utils || {
 
 	init: function () {
+
 		if ('localStorage' in window && window.localStorage !== null) {
-			bika_utils.storage = localStorage;
+			bika_utils.storage = window.localStorage;
 		} else {
 			bika_utils.storage = {};
 		}
