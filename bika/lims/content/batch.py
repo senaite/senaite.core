@@ -21,6 +21,13 @@ schema = BikaSchema.copy() + Schema((
             label=_("Batch ID"),
         )
     ),
+    LinesField('BatchLabels',
+        vocabulary = "BatchLabelVocabulary",
+        widget=MultiSelectionWidget(
+            label=_("Batch labels"),
+            format="checkbox",
+        )
+    ),
     TextField('Remarks',
         searchable=True,
         default_content_type='text/x-web-intelligent',
@@ -30,16 +37,13 @@ schema = BikaSchema.copy() + Schema((
             macro="bika_widgets/remarks",
             label=_('Remarks'),
             append_only=True,
-        ),
-    ),
-),
+        )
+    )
+)
 )
 
 schema['title'].required = False
 schema['title'].widget.visible = False
-schema['description'].widget.visible = True
-
-schema.moveField('BatchID', before='description')
 
 class Batch(BaseContent):
     implements(IBatch)
@@ -60,5 +64,15 @@ class Batch(BaseContent):
         """ Return the BatchID or id as title """
         res = self.getBatchID()
         return str(res).encode('utf-8')
+
+    def BatchLabelVocabulary(self):
+        """ return all batch labels """
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        ret = []
+        for p in bsc(portal_type = 'BatchLabel',
+                      inactive_state = 'active',
+                      sort_on = 'sortable_title'):
+            ret.append((p.UID, p.Title))
+        return DisplayList(ret)
 
 registerType(Batch, PROJECTNAME)

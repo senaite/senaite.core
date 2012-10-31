@@ -17,7 +17,7 @@
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
 
- <alias from="(Default)" to="base_edit"/>
+ <alias from="(Default)" to="view"/>
  <alias from="view" to="base_edit"/>
  <alias from="edit" to="base_edit"/>
 
@@ -25,7 +25,7 @@
          action_id="view"
          category="object"
          condition_expr=""
-         url_expr="string:${object_url}"
+         url_expr="string:${object/aq_parent/absolute_url}"
          i18n:attributes="title"
          i18n:domain="plone"
          visible="False">
