@@ -129,6 +129,7 @@ class LoadSetupData(BrowserView):
         self.load_containers(sheets["Containers"])
         self.load_instruments(sheets['Instruments'])
         self.load_sample_matrices(sheets['Sample Matrices'])
+        self.load_BatchLabels(sheets['Batch Labels'])
         self.load_sample_types(sheets['Sample Types'])
         self.load_sample_points(sheets['Sample Points'])
         self.link_samplepoint_sampletype(sheets['Sample Point Sample Types'])
@@ -292,6 +293,22 @@ class LoadSetupData(BrowserView):
             obj = folder[_id]
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']))
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
+            self.containertypes[unicode(row['title'])] = obj
+
+    def load_BatchLabels(self, sheet):
+        nr_rows = sheet.get_highest_row()
+        nr_cols = sheet.get_highest_column()
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
+        fields = rows[0]
+        folder = self.context.bika_setup.bika_batchlabels
+        self.containertypes = {}
+        for row in rows[3:]:
+            row = dict(zip(fields, row))
+            _id = folder.invokeFactory('BatchLabel', id = 'tmp')
+            obj = folder[_id]
+            obj.edit(title = unicode(row['title']))
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
             self.containertypes[unicode(row['title'])] = obj
