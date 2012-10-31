@@ -141,7 +141,7 @@ class ajaxGetClients(BrowserView):
                 if b.Title.find(searchTerm) > -1
                 or b.Description.find(searchTerm) > -1]
 
-        rows = sorted(rows, key=itemgetter(sidx and sidx or 'ClientID'))
+        rows = sorted(rows, key=itemgetter(sidx and sidx or 'sortable_title'))
         if sord == 'desc':
             rows.reverse()
         pages = len(rows) / int(nr_rows)

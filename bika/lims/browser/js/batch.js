@@ -12,6 +12,17 @@ $(document).ready(function(){
                     ' rel="#overlay">' +
                     ' <img style="padding-bottom:1px;" src="'+window.portal_url+'/++resource++bika.lims.images/add.png"/>' +
                 ' </a>');
+        $("input[id*=BatchID]").combogrid({
+            colModel: [{'columnName':'BatchUID','hidden':true},
+                       {'columnName':'BatchID','width':'25','label':window.jsi18n_bika('Batch ID')},
+                       {'columnName':'Description','width':'35','label':window.jsi18n_bika('Description')}],
+            url: window.location.href.replace("/ar_add","") + "/getBatches?_authenticator=" + $('input[name="_authenticator"]').val(),
+            select: function( event, ui ) {
+                $(this).val(ui.item.BatchID);
+                $(this).change();
+                return false;
+            }
+        });
     }
 
     $('a.add_batch').prepOverlay(
@@ -30,24 +41,10 @@ $(document).ready(function(){
 //                  $("ul.formTabs").remove();
 //                  $("#fieldset-schemaname").remove();
                 },
-                onClose: function(){
-                    // here is where we'd populate the form controls, if we cared to.
-                }
             }
         }
     );
 
-    $("input[id*=BatchID]").combogrid({
-        colModel: [{'columnName':'BatchUID','hidden':true},
-                   {'columnName':'BatchID','width':'25','label':window.jsi18n_bika('Batch ID')},
-                   {'columnName':'Description','width':'35','label':window.jsi18n_bika('Description')}],
-        url: window.location.href.replace("/ar_add","") + "/getBatches?_authenticator=" + $('input[name="_authenticator"]').val(),
-        select: function( event, ui ) {
-            $(this).val(ui.item.BatchID);
-            $(this).change();
-            return false;
-        }
-    });
 
 });
 }(jQuery));
