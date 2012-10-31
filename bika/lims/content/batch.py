@@ -11,7 +11,10 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IBatch
 from datetime import timedelta
+from bika.lims.utils import isActive
 from zope.interface import implements
+import plone
+import json
 
 schema = BikaSchema.copy() + Schema((
     StringField('BatchID',
@@ -65,6 +68,29 @@ class Batch(BaseContent):
         res = self.getBatchID()
         return str(res).encode('utf-8')
 
+    security.declarePublic('getCCContacts')
+    def getCCContacts(self):
+        """ Return JSON containing all Lab contacts (with empty default CC lists).
+        This function is used to set form values for javascript.
+        """
+        contact_data = []
+        for contact in self.bika_setup.bika_labcontacts.objectValues('LabContact'):
+            if isActive(contact):
+                this_contact_data = {'title': contact.Title(),
+                                     'uid': contact.UID(), }
+                ccs = []
+                if hasattr(contact, 'getCCContact'):
+                    for cc in contact.getCCContact():
+                        if isActive(cc):
+                            ccs.append({'title': cc.Title(),
+                                        'uid': cc.UID(),})
+                this_contact_data['ccs_json'] = json.dumps(ccs)
+                this_contact_data['ccs'] = ccs
+            contact_data.append(this_contact_data)
+        contact_data.sort(lambda x, y:cmp(x['title'].lower(),
+                                          y['title'].lower()))
+        return contact_data
+
     def BatchLabelVocabulary(self):
         """ return all batch labels """
         bsc = getToolByName(self, 'bika_setup_catalog')
@@ -74,5 +100,11 @@ class Batch(BaseContent):
                       sort_on = 'sortable_title'):
             ret.append((p.UID, p.Title))
         return DisplayList(ret)
+
+    def getAnalysisRequests(self):
+        bc = getToolByName(self, 'bika_catalog')
+        uid = self.context.UID()
+        return [b.getObject() for b in bc(portal_type='AnalysisRequest',
+                                          getBatchUID=uid)]
 
 registerType(Batch, PROJECTNAME)

@@ -66,6 +66,12 @@ def addBatches(tool):
     types.append("BatchLabel")
     ntp.manage_changeProperties(MetaTypesNotToQuery=types)
 
+    # Add Prefix for new type
+    prefixes = portal.bika_setup.getPrefixes()
+    if 'Batch' not in [p['portal_type'] for p in prefixes]:
+        prefixes.append({'portal_type':'Batch', 'prefix':'B', 'padding':'3'})
+
+
     # batch permission defaults
     mp = portal.manage_permission
     mp(AddBatch, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)

@@ -248,6 +248,7 @@ schema = BikaFolderSchema.copy() + Schema((
     PrefixesField('Prefixes',
         schemata = "ID Server",
         default = [{'portal_type': 'ARImport', 'prefix': 'B', 'padding': '3'},
+                   {'portal_type': 'AnalysisRequest', 'prefix': 'client', 'padding': '0'},
                    {'portal_type': 'Client', 'prefix': 'client', 'padding': '0'},
                    {'portal_type': 'Batch', 'prefix': 'batch', 'padding': '0'},
                    {'portal_type': 'DuplicateAnalysis', 'prefix': 'DA', 'padding': '0'},

@@ -690,6 +690,10 @@ class AnalysisRequestViewView(BrowserView):
     def now(self):
         return DateTime()
 
+    def getMemberDiscountApplies(self):
+        client = self.context.portal_type == 'Client' and self.context or self.context.aq_parent
+        return client and client.getMemberDiscountApplies() or False
+
     def analysisprofiles(self):
         """ Return applicable client and Lab AnalysisProfile records
         """
@@ -766,13 +770,16 @@ class AnalysisRequestViewView(BrowserView):
                         service.UID()])
         return res
 
+    def getRestrictedCategories(self):
+        return self.context.getRestrictedCategories()
+
     def Categories(self):
         """ Dictionary keys: poc
             Dictionary values: (Category UID,category Title)
         """
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         cats = {}
-        restricted = [u.UID() for u in self.context.getRestrictedCategories()]
+        restricted = [u.UID() for u in self.getRestrictedCategories()]
         for service in bsc(portal_type = "AnalysisService",
                            inactive_state = 'active'):
             cat = (service.getCategoryUID, service.getCategoryTitle)
@@ -784,11 +791,14 @@ class AnalysisRequestViewView(BrowserView):
                 cats[poc].append(cat)
         return cats
 
+    def getDefaultCategories(self):
+        return self.context.getDefaultCategories()
+
     def DefaultCategories(self):
         """ Used in AR add context, to return list of UIDs for
         automatically-expanded categories.
         """
-        cats = self.context.getDefaultCategories()
+        cats = self.getDefaultCategories()
         return [cat.UID() for cat in cats]
 
     def getDefaultSpec(self):
@@ -1422,8 +1432,16 @@ class ajaxExpandCategory(BikaListingView):
         return self.template()
 
     def bulk_discount_applies(self):
-        client = self.context.portal_type == 'AnalysisRequest' \
-            and self.context.aq_parent or self.context
+        if self.context.portal_type == 'AnalysisRequest':
+            client = self.context.aq_parent
+        elif self.context.portal_type == 'Batch':
+            bc = getToolByName(self.context, 'bika_catalog')
+            proxies = bc(portal_type="AnalysisRequest", getBatchUID=self.context.UID())
+            client = proxies[0].getObject()
+        elif self.context.portal_type == 'Client':
+            client = self.context
+        else:
+            return False
         return client.getBulkDiscount()
 
     def Services(self, poc, CategoryUID):

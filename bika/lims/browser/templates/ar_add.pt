@@ -47,7 +47,7 @@
 <!-- member discount percentage if applicable -->
 <input type="hidden" id="member_discount" name="member_discount"
     tal:attributes="value here/bika_setup/getMemberDiscount"
-    tal:condition="here/getMemberDiscountApplies"/>
+    tal:condition="view/getMemberDiscountApplies"/>
 
 <!-- col_count goes here for the jquery expanding services rows to know how to print themselves -->
 <input type="hidden" id="col_count" name="col_count"
@@ -139,13 +139,36 @@
                     tabindex tabindex/next;"/>
         </td>
     </tr>
+
     <!-- Batch selector -->
-    <tr tal:condition="python:checkPermission('BIKA: Add Batch', portal.batches)"
+    <tal:batch_context
+        tal:condition="python:context.portal_type == 'Batch'"
+        tal:repeat="column python:range(view.col_count)"
+        tal:define="field_name string:BatchID">
+        <tal:x
+            tal:define="
+                input_name string:ar.${column}.${field_name}:ignore_empty:record;
+                input_id string:ar_${column}_${field_name};
+                hidden_name string:ar.${column}.BatchUID:ignore_empty:record;
+                hidden_id string:ar_${column}_BatchUID;">
+        <input
+            tal:attributes="value python:context.getBatchID(); column column; id input_id; name input_name;"
+            type="hidden"
+            style="width:96px; position:absolute; z-index:+1;"/>
+        <input
+            tal:attributes="value python:context.UID(); column column; id hidden_id; name hidden_name;"
+            type="hidden"
+            style="width:96px; position:absolute; z-index:+1;"/>
+        </tal:x>
+    </tal:batch_context>
+
+    <tr tal:condition="python:checkPermission('BIKA: Add Batch', portal.batches) and context.portal_type != 'Batch'"
         tal:define="field_name string:BatchID">
         <th colspan="2" style="white-space:nowrap">
             <span i18n:translate="">Batch</span>
             <a style="border-bottom:none !important;margin-left:1em;"
                class='add_batch'
+               tal:condition="python:context.portal_type != 'Batch'"
                tal:attributes="href string:${portal/absolute_url}/batches/portal_factory/Batch/new/edit"
                rel="#overlay">
                <img style="padding-bottom:2px;" tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/add.png"/>
@@ -153,31 +176,26 @@
         </th>
         <td>
             <img class="copyButton BatchIDCopyButton"
+                 tal:condition="python:context.portal_type != 'Batch'"
                  tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
         </td>
         <tal:block repeat="column python:range(view.col_count)">
             <td class="topborder ar_column" style="padding-top:2px;"
-                tal:define="
-                    input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                    input_id string:ar_${column}_${field_name};
-                    hidden_name string:ar.${column}.BatchUID:ignore_empty:record;
-                    hidden_id string:ar_${column}_BatchUID;">
+            tal:define="
+                input_name string:ar.${column}.${field_name}:ignore_empty:record;
+                input_id string:ar_${column}_${field_name};
+                hidden_name string:ar.${column}.BatchUID:ignore_empty:record;
+                hidden_id string:ar_${column}_BatchUID;">
             <div style="width:100px; border:none;text-align:left;padding-left:2px;">
-            <input tal:attributes="
-                class field_name;
-                column column;
-                id input_id;
-                name input_name;"
+            <input
+                tal:attributes="class field_name; column column; id input_id; name input_name;"
+                tal:condition="python:context.portal_type != 'Batch'"
                 style="width:96px; position:absolute; z-index:+1;"/>
-            <input type="hidden" tal:attributes="
-                class string:${field_name}UID;
-                column column;
-                id hidden_id;
-                name hidden_name;"/>
             </div>
             </td>
         </tal:block>
     </tr>
+
     <!-- AR Template (only visible and useable for AR-Add-->
     <tr tal:define="field_name string:ARTemplate">
         <th colspan="2" style="white-space:nowrap" i18n:translate="">Template</th>
@@ -276,7 +294,8 @@
         </tal:linksample>
     </tr>
     <!-- Client Order -->
-    <tr tal:define="field_name string:ClientOrderNumber">
+    <tr tal:define="field_name string:ClientOrderNumber"
+        tal:condition="python: context.portal_type != 'Batch'">
         <th colspan="2" style="white-space:nowrap" i18n:translate="">Client Order</th>
         <td>
             <img class="copyButton"
@@ -295,7 +314,8 @@
         </tal:block>
     </tr>
     <!-- Client Reference -->
-    <tr tal:define="field_name string:ClientReference">
+    <tr tal:define="field_name string:ClientReference"
+        tal:condition="python: context.portal_type != 'Batch'">
         <th colspan="2" style="white-space:nowrap" i18n:translate="">Client Reference</th>
         <td>
             <img class="copyButton"
@@ -427,7 +447,8 @@
         </tal:block>
     </tr>
     <!-- Default Container Type -->
-    <tr tal:define="field_name string:DefaultContainerType">
+    <tr tal:define="field_name string:DefaultContainerType"
+            tal:condition="python: context.portal_type != 'Batch'">
         <th colspan="2" style="white-space:nowrap" i18n:translate="">Default Container Type</th>
         <td>
             <img class="copyButton DefaultContainerTypeCopyButton"
@@ -461,7 +482,8 @@
         </tal:block>
     </tr>
     <!-- Ad-Hoc -->
-    <tr tal:define="field_name string:AdHoc">
+    <tr tal:define="field_name string:AdHoc"
+        tal:condition="python: context.portal_type != 'Batch'">
         <th colspan="2" style="white-space:nowrap" i18n:translate="">Ad-Hoc</th>
         <td>
             <img class="copyButton"
@@ -528,7 +550,8 @@
         </tal:block>
     </tr>
     <!-- Exclude from Invoice -->
-    <tr tal:define="field_name string:InvoiceExclude">
+    <tr tal:define="field_name string:InvoiceExclude"
+        tal:condition="python:context.portal_type != 'Batch'">
         <th colspan="2" style="white-space:nowrap" i18n:translate="">Exclude from invoice</th>
         <td>
             <img class="copyButton"
@@ -555,7 +578,7 @@
 <tal:i define="
     cats view/Categories;
     POINTS_OF_CAPTURE python: modules['bika.lims.config'].POINTS_OF_CAPTURE;">
-    <tal:i repeat="poc python:cats.keys()">
+    <tal:i repeat="poc python:['field', 'lab']">
         <thead class="pointofcapture"
             tal:attributes="id poc">
             <tr>
@@ -595,7 +618,7 @@
 
 <tfoot>
 
-<tr tal:condition="here/getMemberDiscountApplies">
+<tr tal:condition="view/getMemberDiscountApplies">
     <th class="topborder" colspan="2">
         <b i18n:translate="">Discount</b>
         <span class="discreet">(<tal:i content="here/bika_setup/getMemberDiscount"/>%)</span>
