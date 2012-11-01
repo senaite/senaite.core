@@ -24,7 +24,6 @@ import transaction
 import zope
 
 class LoadSetupData(BrowserView):
-    template = ViewPageTemplateFile("import.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
@@ -98,17 +97,17 @@ class LoadSetupData(BrowserView):
         portal = getSite()
 
         wb = None
-        if 'existing' in form and form['existing']:
-            fn = form['existing']
-            self.dataset_name = fn
-            filename = resource_filename("bika.lims", "setupdata/%s/%s.xlsx" % (fn, fn))
-            wb = load_workbook(filename = filename)
-        elif 'file' in form and form['file']:
-            tmp = tempfile.mktemp()
-            file_content = form['file'].read()
-            open(tmp, 'wb').write(file_content)
-            wb = load_workbook(filename=tmp)
-            self.dataset_name = 'uploaded'
+        if 'setupexisting' in form and 'existing' in form and form['existing']:
+                fn = form['existing']
+                self.dataset_name = fn
+                filename = resource_filename("bika.lims", "setupdata/%s/%s.xlsx" % (fn, fn))
+                wb = load_workbook(filename = filename)
+        elif 'setupfile' in form and 'file' in form and form['file']:
+                tmp = tempfile.mktemp()
+                file_content = form['file'].read()
+                open(tmp, 'wb').write(file_content)
+                wb = load_workbook(filename=tmp)
+                self.dataset_name = 'uploaded'
 
         assert(wb != None)
 
@@ -129,8 +128,10 @@ class LoadSetupData(BrowserView):
         self.load_containers(sheets["Containers"])
         self.load_instruments(sheets['Instruments'])
         self.load_sample_matrices(sheets['Sample Matrices'])
+
         if 'Batch Labels' in sheets:
             self.load_BatchLabels(sheets['Batch Labels'])
+
         self.load_sample_types(sheets['Sample Types'])
         self.load_sample_points(sheets['Sample Points'])
         self.link_samplepoint_sampletype(sheets['Sample Point Sample Types'])
@@ -310,6 +311,42 @@ class LoadSetupData(BrowserView):
             _id = folder.invokeFactory('BatchLabel', id = 'tmp')
             obj = folder[_id]
             obj.edit(title = unicode(row['title']))
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
+            self.containertypes[unicode(row['title'])] = obj
+
+
+    def load_CaseStatuses(self, sheet):
+        nr_rows = sheet.get_highest_row()
+        nr_cols = sheet.get_highest_column()
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
+        fields = rows[0]
+        folder = self.context.bika_setup.bika_casestatuses
+        self.containertypes = {}
+        for row in rows[3:]:
+            row = dict(zip(fields, row))
+            _id = folder.invokeFactory('CaseStatus', id = 'tmp')
+            obj = folder[_id]
+            obj.edit(title = unicode(row['title']),
+                     description = unicode(row['description']))
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
+            self.containertypes[unicode(row['title'])] = obj
+
+
+    def load_CaseOutcomes(self, sheet):
+        nr_rows = sheet.get_highest_row()
+        nr_cols = sheet.get_highest_column()
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
+        fields = rows[0]
+        folder = self.context.bika_setup.bika_caseoutcomes
+        self.containertypes = {}
+        for row in rows[3:]:
+            row = dict(zip(fields, row))
+            _id = folder.invokeFactory('CaseOutcome', id = 'tmp')
+            obj = folder[_id]
+            obj.edit(title = unicode(row['title']),
+                     description = unicode(row['description']))
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
             self.containertypes[unicode(row['title'])] = obj
@@ -503,11 +540,11 @@ class LoadSetupData(BrowserView):
                 if contact.getUsername() == unicode(row['LabContact_Username']):
                     manager = contact
                     break
-            if not manager:
-                message = "Error: lookup of '%s' in LabContacts/Username failed."%unicode(row['LabContact_Username'])
-                self.plone_utils.addPortalMessage(message)
-                return self.template()
-            obj.setManager(manager.UID())
+            else:
+                message = "Department: lookup of '%s' in LabContacts/Username failed."%unicode(row['LabContact_Username'])
+                logger.info(message)
+            if manager:
+                obj.setManager(manager.UID())
             self.departments[unicode(row['title'])] = obj
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
@@ -601,14 +638,17 @@ class LoadSetupData(BrowserView):
 
             ## Create Plone user
             if(row['Username']):
-                member = self.portal_registration.addMember(
-                    unicode(row['Username']),
-                    unicode(row['Password']),
-                    properties = {
-                        'username': unicode(row['Username']),
-                        'email': unicode(row['EmailAddress']),
-                        'fullname': fullname}
-                    )
+                try:
+                    member = self.portal_registration.addMember(
+                        unicode(row['Username']),
+                        unicode(row['Password']),
+                        properties = {
+                            'username': unicode(row['Username']),
+                            'email': unicode(row['EmailAddress']),
+                            'fullname': fullname}
+                        )
+                except:
+                    logger.info("Error adding user (already exists?): %s" % row['Username'])
                 contact.aq_parent.manage_setLocalRoles(unicode(row['Username']), ['Owner',] )
                 # add user to Clients group
                 group = self.portal_groups.getGroupById('Clients')
@@ -826,15 +866,15 @@ class LoadSetupData(BrowserView):
                 Keyword = unicode(row['Keyword']),
                 PointOfCapture = unicode(row['PointOfCapture']),
                 Category = self.cats[unicode(row['AnalysisCategory_title'])].UID(),
-                Department = self.departments[unicode(row['Department_title'])].UID(),
+                Department = row['Department_title'] and self.departments[unicode(row['Department_title'])].UID() or None,
                 ReportDryMatter = row['ReportDryMatter'] and True or False,
                 AttachmentOption = row['Attachment'][0].lower(),
                 Unit = row['Unit'] and unicode(row['Unit']) or None,
-                Precision = unicode(row['Precision']),
+                Precision = row['Precision'] and unicode(row['Precision']) or '2',
                 MaxTimeAllowed = MTA,
-                Price = "%02f" % float(row['Price']),
-                BulkPrice = "%02f" % float(row['BulkPrice']),
-                VAT = "%02f" % float(row['VAT']),
+                Price = row['Price'] and "%02f"%(float(row['Price'])) or "0,00",
+                BulkPrice = row['BulkPrice'] and "%02f"%(float(row['BulkPrice'])) or "0.00",
+                VAT = row['VAT'] and "%02f"%(float(row['VAT'])) or "0.00",
                 Method = row['Method'] and self.methods[unicode(row['Method'])] or None,
                 Instrument = row['Instrument_title'] and self.instruments[row['Instrument_title']] or None,
                 Calculation = row['Calculation_title'] and self.calcs[row['Calculation_title']] or None,
