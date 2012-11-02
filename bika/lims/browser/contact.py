@@ -77,16 +77,14 @@ class ContactLoginDetailsView(BrowserView):
                 group.addMember(username)
 
             # Additional groups for LabContact users.
-            if self.request['groups']:
+            # not required (not available for client Contact)
+            if 'groups' in self.request and self.request['groups']:
                 groups = self.request['groups']
                 if not type(groups) in (list,tuple):
                     groups = [groups,]
                 for group in groups:
                     group = self.portal_groups.getGroupById(group)
                     group.addMember(username)
-            else:
-                if self.context.portal_type == 'LabContact':
-                    return error('groups', PMF("Input is required but not given."))
 
             contact.reindexObject()
 
