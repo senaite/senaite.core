@@ -40,7 +40,7 @@
               conditionalcomment=""
               cookable="True"
               enabled="on"
-              expression="python:here.portal_type in ['Client']"
+              expression="python:here.portal_type in ['Client', 'Batch']"
               id="++resource++bika.lims.js/client.js"
               inline="False"
               insert-after="*"/>

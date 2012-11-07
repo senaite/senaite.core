@@ -885,8 +885,8 @@ $(document).ready(function(){
 	ar_edit_form = $('#analysisrequest_edit_form');
 	if (ar_edit_form.ajaxForm != undefined){
 		var options = {
-			url: window.location.href.replace("/ar_add","/analysisrequest_submit").
-				 replace("/base_edit","/analysisrequest_submit"),
+			url: window.location.href.replace("/ar_add","").
+				 replace("/base_edit","") + "/analysisrequest_submit",
 			dataType: 'json',
 			data: {'_authenticator': $('input[name="_authenticator"]').val()},
 			beforeSubmit: function(formData, jqForm, options) {

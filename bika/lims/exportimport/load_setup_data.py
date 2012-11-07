@@ -567,6 +567,9 @@ class LoadSetupData(BrowserView):
 
             _id = folder.invokeFactory('Client', id = 'tmp')
             obj = folder[_id]
+            if not row['ClientID']:
+                message = "Client %s has no Client ID"
+                raise Exception(message)
             obj.edit(Name = unicode(row['Name']),
                      ClientID = unicode(row['ClientID']),
                      MemberDiscountApplies = row['MemberDiscountApplies'] and True or False,
