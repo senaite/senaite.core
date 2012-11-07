@@ -64,7 +64,7 @@ $(document).ready(function(){
     $("input[id*=ClientID]").combogrid({
         colModel: [{'columnName':'ClientUID','hidden':true},
                    {'columnName':'ClientID','width':'25','label':window.jsi18n_bika('Client ID')},
-                   {'columnName':'Title','width':'35','label':window.jsi18n_bika('Title')}],
+                   {'columnName':'Title','width':'75','label':window.jsi18n_bika('Title')}],
         url: window.portal_url + "/getClients?_authenticator=" + $('input[name="_authenticator"]').val(),
         select: function( event, ui ) {
             $(this).val(ui.item.ClientID);

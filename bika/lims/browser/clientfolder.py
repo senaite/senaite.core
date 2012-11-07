@@ -135,13 +135,14 @@ class ajaxGetClients(BrowserView):
         sidx = self.request['sidx']
         wf = getToolByName(self.context, 'portal_workflow')
 
-        rows = [{'ClientID': b.Title or '',
-                 'Title': b.Description,
-                 'ClientUID': b.UID} for b in self.portal_catalog(portal_type='Client')
-                if b.Title.find(searchTerm) > -1
-                or b.Description.find(searchTerm) > -1]
+        clients = (x.getObject() for x in self.portal_catalog(portal_type="Client"))
+        rows = [{'ClientID': b.getClientID() and b.getClientID() or '',
+                 'Title': b.Title() ,
+                 'ClientUID': b.UID()} for b in clients
+                if b.Title().find(searchTerm) > -1
+                or b.Description().find(searchTerm) > -1]
 
-        rows = sorted(rows, key=itemgetter(sidx and sidx or 'sortable_title'))
+        rows = sorted(rows, key=itemgetter(sidx and sidx or 'Title'))
         if sord == 'desc':
             rows.reverse()
         pages = len(rows) / int(nr_rows)
