@@ -49,7 +49,7 @@ class BikaLIMS(PloneSandboxLayer):
 
         self.applyProfile(portal, 'bika.lims:default')
 
-        self.request.form['submitted'] = 1
+        self.request.form['setupexisting'] = 1
         self.request.form['existing'] = "test"
         lsd = LoadSetupData(portal, self.request)
         lsd()
