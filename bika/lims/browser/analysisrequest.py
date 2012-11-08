@@ -1494,12 +1494,12 @@ class ajaxAnalysisRequestSubmit():
             if not form.has_key(formkey):
                 continue
             ar = form[formkey]
-            if len(ar.keys()) == 3: # three empty price fields (client context)
-                if ar.has_key('subtotal'):
-                    continue
-            if len(ar.keys()) == 2: # two empty Batch fields (batch context)
-                if ar.has_key('BatchID'):
-                    continue
+            keys = ar.keys()
+            for k in ('subtotal', 'vat', 'total', 'ClientID', 'ClientUID', 'BatchID', 'BatchUID'):
+                if k in keys:
+                    keys.remove(k)
+            if len(keys) == 0:
+                continue
             columns.append(column)
 
         if len(columns) == 0:
