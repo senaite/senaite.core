@@ -247,7 +247,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             if 'receive' in self.context.bika_setup.getAutoPrintLabels():
                 size = self.context.bika_setup.getAutoLabelSize()
                 q = "/sticker?size=%s&items=%s" % (size, self.context.getId())
-                self.destination_url = self.context.absolute_url() + q
+                self.destination_url = self.portal_url + q
             WorkflowAction.__call__(self)
 
         ## submit
@@ -692,7 +692,7 @@ class AnalysisRequestViewView(BrowserView):
 
     def getMemberDiscountApplies(self):
         client = self.context.portal_type == 'Client' and self.context or self.context.aq_parent
-        return client and client.getMemberDiscountApplies() or False
+        return client and client.portal_type == 'Client' and client.getMemberDiscountApplies() or False
 
     def analysisprofiles(self):
         """ Return applicable client and Lab AnalysisProfile records
@@ -771,7 +771,9 @@ class AnalysisRequestViewView(BrowserView):
         return res
 
     def getRestrictedCategories(self):
-        return self.context.getRestrictedCategories()
+        if self.context.portal_type == 'Client':
+            return self.context.getRestrictedCategories()
+        return []
 
     def Categories(self):
         """ Dictionary keys: poc
@@ -792,7 +794,9 @@ class AnalysisRequestViewView(BrowserView):
         return cats
 
     def getDefaultCategories(self):
-        return self.context.getDefaultCategories()
+        if self.context.portal_type == 'Client':
+            return self.context.getDefaultCategories()
+        return []
 
     def DefaultCategories(self):
         """ Used in AR add context, to return list of UIDs for

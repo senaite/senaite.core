@@ -898,6 +898,7 @@ $(document).ready(function(){
 				if(responseText['success'] != undefined){
 					if(responseText['labels'] != undefined){
 						destination = window.location.href.replace("/ar_add","");
+						destination = destination.replace("/analysisrequests", "");
 						destination = destination.replace("/base_edit", "");
 						ars = responseText['labels'];
 						labelsize = responseText['labelsize'];

@@ -42,6 +42,8 @@ class WorkflowAction:
         # Save context UID for benefit of event subscribers.
         self.request['context_uid'] = hasattr(self.context, 'UID') and \
             self.context.UID() or ''
+        self.portal = getToolByName(self.context, 'portal_url').getPortalObject()
+        self.portal_url = self.portal.absolute_url()
 
     def _get_form_workflow_action(self):
         """ Retrieve the workflow action from the submitted form """
@@ -128,11 +130,11 @@ class WorkflowAction:
             self.context.plone_utils.addPortalMessage(message, 'info')
 
         # automatic label printing
-        if action == 'receive' and 'receive' in self.context.bika_setup.getAutoPrintLabels():
-            q = "/sticker?size=%s&items=" % (self.context.bika_setup.getAutoLabelSize())
+        if action == 'receive' and 'receive' in self.portal.bika_setup.getAutoPrintLabels():
+            q = "/sticker?size=%s&items=" % (self.portal.bika_setup.getAutoLabelSize())
             # selected_items is a list of UIDs (stickers for AR_add use IDs)
             q += ",".join([i.getId() for i in selected_items.values()])
-            self.request.response.redirect(self.context.absolute_url() + q)
+            self.request.response.redirect(self.portal_url + q)
         else:
             self.request.response.redirect(self.destination_url)
 

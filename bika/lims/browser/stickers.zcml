@@ -5,47 +5,7 @@
     i18n_domain="bika">
 
     <browser:page
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="sticker"
-      class="bika.lims.browser.stickers.Sticker"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IAnalysisRequestsFolder"
-      name="sticker"
-      class="bika.lims.browser.stickers.Sticker"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IClient"
-      name="sticker"
-      class="bika.lims.browser.stickers.Sticker"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.ISamplesFolder"
-      name="sticker"
-      class="bika.lims.browser.stickers.Sticker"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IReferenceSample"
-      name="sticker"
-      class="bika.lims.browser.stickers.Sticker"
-      permission="zope2.View"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.ISample"
+      for="*"
       name="sticker"
       class="bika.lims.browser.stickers.Sticker"
       permission="zope2.View"
