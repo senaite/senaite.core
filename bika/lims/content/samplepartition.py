@@ -104,9 +104,9 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
         rp = rp or st_retention
 
         td = timedelta(
-            days = rp['days'] and int(rp['days']) or 0,
-            hours = rp['hours'] and int(rp['hours']) or 0,
-            minutes = rp['minutes'] and int(rp['minutes']) or 0)
+            days = 'days' in rp and int(rp['days']) or 0,
+            hours = 'hours' in rp and int(rp['hours']) or 0,
+            minutes = 'minutes' in rp and int(rp['minutes']) or 0)
 
         dis_date = DateSampled and dt2DT(DT2dt(DateSampled) + td) or None
         return dis_date
