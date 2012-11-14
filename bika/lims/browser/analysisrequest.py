@@ -920,7 +920,11 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         self.can_edit_ar = True
         self.DryMatterService = self.context.bika_setup.getDryMatterService()
         request.set('disable_plone.rightcolumn', 1)
-        self.col_count = 6
+        self.col_count = self.request.get('col_count', 6)
+        try:
+            self.col_count = int(self.col_count)
+        except:
+            self.col_count == 6
 
     def __call__(self):
         return self.template()

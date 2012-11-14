@@ -28,6 +28,7 @@ import json
 import plone
 
 class BatchAnalysisRequestsView(AnalysisRequestsView, AnalysisRequestAddView):
+    template = ViewPageTemplateFile("templates/analysisrequests.pt")
     ar_add = ViewPageTemplateFile("templates/ar_add.pt")
     def __init__(self, context, request):
         super(BatchAnalysisRequestsView, self).__init__(context, request)
