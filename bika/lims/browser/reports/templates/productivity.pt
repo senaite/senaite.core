@@ -12,6 +12,9 @@
 	    		font-size:1.1em;
 	    		margin:15px 0px;
 	    	}  
+	    	#content-core div fieldset {
+	    		border-style:none;
+	    	}
 	    	ul#toc-reports {
 	    		list-style-type:square;
 	    		color:#CDCDCD;
