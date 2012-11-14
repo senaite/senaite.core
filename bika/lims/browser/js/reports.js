@@ -73,7 +73,7 @@ $(document).ready(function(){
 	$("#samplereceivedvsreported_selector").click(function(event){
 		$(".criteria").toggle(false);
 		event.preventDefault();
-		$("#samplereceivedvseported").toggle(true);
+		$("#samplereceivedvsreported").toggle(true);
 	});
 	$("#analysesbydepartment_selector").click(function(event){
 		$(".criteria").toggle(false);
