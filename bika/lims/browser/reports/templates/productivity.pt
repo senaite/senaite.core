@@ -79,6 +79,22 @@
     			Lists all samples received for a date range, 
     			and sub totals them per country
     		</span>
+    		<div id="dailysamplesreceived" style="display:none" class="criteria">
+				<form action="createreport" method="post" name="productivity_dailysamplesreceived">
+				    <input type="hidden" name="report_id" value="productivity_dailysamplesreceived" />
+				    <fieldset>
+				        <tal:x content="structure python:view.selection_macros.select_daterange(
+					                                          field_id='Received',
+					                                          field_title='Date Received')"/>
+				    </fieldset>
+				    <input tabindex=""
+				        class="searchButton"
+				        type="submit"
+				        name="submit"
+				        value="Report"
+				        i18n:attributes="value"/>
+				</form>
+			</div>
 		</li> 
 		
 		
@@ -90,6 +106,22 @@
     			samples received and results reported for them with
     			differences between the two
     		</span>
+    		<div id="samplereceivedvsreported" style="display:none" class="criteria">
+				<form action="createreport" method="post" name="productivity_samplereceivedvsreported">
+				    <input type="hidden" name="report_id" value="productivity_samplereceivedvsreported" />
+				    <fieldset>
+				        <tal:x content="structure python:view.selection_macros.select_daterange(
+					                                          field_id='Received',
+					                                          field_title='Date Received')"/>
+				    </fieldset>
+				    <input tabindex=""
+				        class="searchButton"
+				        type="submit"
+				        name="submit"
+				        value="Report"
+				        i18n:attributes="value"/>
+				</form>
+			</div>
 		</li>   
     </ul>
     
@@ -292,6 +324,22 @@
     			Report tables between a period of time the number of
     			analyses published per department
     		</span>
+    		<div id="analysesbydepartment" style="display:none" class="criteria">
+				<form action="createreport" method="post" name="productivity_analysesbydepartment">
+				    <input type="hidden" name="report_id" value="productivity_analysesbydepartment" />
+				    <fieldset>
+				        <tal:x content="structure python:view.selection_macros.select_daterange(
+					                                          field_id='Received',
+					                                          field_title='Date Received')"/>
+				    </fieldset>
+				    <input tabindex=""
+				        class="searchButton"
+				        type="submit"
+				        name="submit"
+				        value="Report"
+				        i18n:attributes="value"/>
+				</form>
+			</div>
 		</li>
 		
 		<!-- Analyses perfomed as % of total --> 
@@ -303,6 +351,22 @@
     			analyses published and expressed as a percentage of all
     			analyses performed
     		</span>
+    		<div id="analysesperformedpertotal" style="display:none" class="criteria">
+				<form action="createreport" method="post" name="productivity_analysesperformedpertotal">
+				    <input type="hidden" name="report_id" value="productivity_analysesperformedpertotal" />
+				    <fieldset>
+				        <tal:x content="structure python:view.selection_macros.select_daterange(
+					                                          field_id='Received',
+					                                          field_title='Date Received')"/>
+				    </fieldset>
+				    <input tabindex=""
+				        class="searchButton"
+				        type="submit"
+				        name="submit"
+				        value="Report"
+				        i18n:attributes="value"/>
+				</form>
+			</div>
 		</li>   
 		<li>
     		<a href="#" id="analysisrequestsummary_selector"
@@ -311,6 +375,22 @@
     			Report tables between a period of time the number of
     			analysis requests submitted grouped by categories and year
     		</span>
+    		<div id="analysisrequestsummary" style="display:none" class="criteria">
+				<form action="createreport" method="post" name="productivity_analysisrequestsummary">
+				    <input type="hidden" name="report_id" value="productivity_analysisrequestsummary" />
+				    <fieldset>
+				        <tal:x content="structure python:view.selection_macros.select_daterange(
+					                                          field_id='Received',
+					                                          field_title='Date Received')"/>
+				    </fieldset>
+				    <input tabindex=""
+				        class="searchButton"
+				        type="submit"
+				        name="submit"
+				        value="Report"
+				        i18n:attributes="value"/>
+				</form>
+			</div>
 		</li>
     </ul>
     
@@ -347,6 +427,22 @@
     			Report tables of Analysis Requests and totals submitted 
     			between	a period of time
     		</span>
+    		<div id="dataentrydaybook" style="display:none" class="criteria">
+				<form action="createreport" method="post" name="productivity_dataentrydaybook">
+				    <input type="hidden" name="report_id" value="productivity_dataentrydaybook" />
+				    <fieldset>
+				        <tal:x content="structure python:view.selection_macros.select_daterange(
+					                                          field_id='Received',
+					                                          field_title='Date Received')"/>
+				    </fieldset>
+				    <input tabindex=""
+				        class="searchButton"
+				        type="submit"
+				        name="submit"
+				        value="Report"
+				        i18n:attributes="value"/>
+				</form>
+			</div>
 		</li> 
 	</ul>
 </fieldset>
