@@ -134,7 +134,7 @@ class WorkflowAction:
             q = "/sticker?size=%s&items=" % (self.portal.bika_setup.getAutoLabelSize())
             # selected_items is a list of UIDs (stickers for AR_add use IDs)
             q += ",".join([i.getId() for i in selected_items.values()])
-            self.request.response.redirect(self.portal_url + q)
+            self.request.response.redirect(self.context.absolute_url() + q)
         else:
             self.request.response.redirect(self.destination_url)
 

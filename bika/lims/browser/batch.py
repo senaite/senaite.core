@@ -28,6 +28,7 @@ import json
 import plone
 
 class BatchAnalysisRequestsView(AnalysisRequestsView, AnalysisRequestAddView):
+    template = ViewPageTemplateFile("templates/analysisrequests.pt")
     ar_add = ViewPageTemplateFile("templates/ar_add.pt")
     def __init__(self, context, request):
         super(BatchAnalysisRequestsView, self).__init__(context, request)
@@ -44,7 +45,7 @@ class BatchAnalysisRequestsView(AnalysisRequestsView, AnalysisRequestAddView):
             if isActive(self.context):
                 if mtool.checkPermission(AddAnalysisRequest, self.portal):
                     self.context_actions[self.context.translate(_('Add new'))] = {
-                        'url':self.context.absolute_url() + '/ar_add',
+                        'url':self.context.absolute_url() + '/ar_add?col_count=1',
                         'icon': '++resource++bika.lims.images/add.png'}
             return super(BatchAnalysisRequestsView, self).__call__()
         else:

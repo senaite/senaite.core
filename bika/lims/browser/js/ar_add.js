@@ -886,9 +886,10 @@ $(document).ready(function(){
 	if (ar_edit_form.ajaxForm != undefined){
 		var options = {
 			url: window.location.href
-			     .replace("/ar_add","")
-				 .replace("/base_edit","")
-				 .replace("analysisrequests", "") + "/analysisrequest_submit",
+				.split("?")[0]
+				.replace("/ar_add","")
+				.replace("/base_edit","")
+				.replace("analysisrequests", "") + "/analysisrequest_submit",
 			dataType: 'json',
 			data: {'_authenticator': $('input[name="_authenticator"]').val()},
 			beforeSubmit: function(formData, jqForm, options) {
@@ -897,17 +898,22 @@ $(document).ready(function(){
 			success: function(responseText, statusText, xhr, $form) {
 				if(responseText['success'] != undefined){
 					if(responseText['labels'] != undefined){
-						destination = window.location.href.replace("/ar_add","");
-						destination = destination.replace("/analysisrequests", "");
-						destination = destination.replace("/base_edit", "");
+						destination = window.location.href
+							.split("?")[0]
+							.replace("/ar_add","")
+							.replace("/analysisrequests", "")
+							.replace("/base_edit", "");
 						ars = responseText['labels'];
 						labelsize = responseText['labelsize'];
 						q = "/sticker?size="+labelsize+"&items=";
 						q = q + ars.join(",");
 						window.location.replace(destination+q);
 					} else {
-						destination = window.location.href.replace("/ar_add","");
-						destination = destination.replace("/base_edit", "/base_view");
+						destination = window.location.href
+							.split("?")[0]
+							.replace("/ar_add","")
+							.replace("/analysisrequests","")
+							.replace("/base_edit", "/base_view");
 						window.location.replace(destination);
 					}
 				} else {

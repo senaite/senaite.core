@@ -105,13 +105,6 @@ class Client(Organisation):
     def setTitle(self, value):
         return self.setName(value)
 
-    def getClientID(self):
-        ### If no ID is defined (old data) invent one
-        cid = self.getField('ClientID').get(self)
-        if cid:
-            return cid.decode('utf-8').encode('utf-8')
-        return self.getId().decode('utf-8').encode('utf-8')
-
     security.declarePublic('getContactsDisplayList')
     def getContactsDisplayList(self):
         wf = getToolByName(self, 'portal_workflow')
