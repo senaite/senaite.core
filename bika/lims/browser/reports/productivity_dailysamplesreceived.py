@@ -1,18 +1,18 @@
-from AccessControl import getSecurityManager
-from DateTime import DateTime
-from Products.CMFCore.utils import getToolByName
+#from AccessControl import getSecurityManager
+#from DateTime import DateTime
+#from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
-from bika.lims.browser.client import ClientSamplesView
+#from bika.lims.browser.client import ClientSamplesView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
-from bika.lims.interfaces import IReportFolder
-from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client
-from plone.app.content.browser.interfaces import IFolderContentsView
+#from bika.lims.interfaces import IReportFolder
+#from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client
+#from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
-import json
-import plone
+#import json
+#import plone
 
 class Report(BrowserView):
     implements(IViewView)
@@ -57,8 +57,7 @@ class Report(BrowserView):
             # a data line for each one
             analyses = sample.getAnalyses({})
             for analysis in analyses:         
-                analysis = analysis.getObject()   
-                import pdb;pdb.set_trace()    
+                analysis = analysis.getObject()    
                 dataline = {'AnalysisKeyword': analysis.getKeyword(),
                              'AnalysisTitle': analysis.getServiceTitle(),
                              'SampleID': sample.getSampleID(),
