@@ -1,12 +1,13 @@
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
-from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser import BrowserView
 from bika.lims.browser.client import ClientSamplesView
-from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client
+from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from bika.lims.interfaces import IReportFolder
+from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
@@ -15,136 +16,68 @@ import plone
 
 class Report(BrowserView):
     implements(IViewView)
-    template = ViewPageTemplateFile("templates/report_out.pt")
+    default_template = ViewPageTemplateFile("templates/productivity.pt")
+    template = ViewPageTemplateFile("templates/productivity_dailysamplesreceived.pt")
 
     def __init__(self, context, request, report=None):
+        super(Report, self).__init__(context, request)
         self.report = report
-        BrowserView.__init__(self, context, request)
+        self.selection_macros = SelectionMacrosView(self.context, self.request)
 
     def __call__(self):
-        # get all the data into datalines
-
-        sc = getToolByName(self.context, 'bika_setup_catalog')
-        bac = getToolByName(self.context, 'bika_analysis_catalog')
-        rc = getToolByName(self.context, 'reference_catalog')
-        self.report_content = {}
-        parm_lines = {}
+        
         parms = []
-        headings = {}
-        headings['header'] = _("Daily samples received")
-        headings['subheader'] = _("Samples received for a date range grouped by countries")
-
-        count_all = 0
-        query = {'portal_type': 'Sample'}
-        if self.request.form.has_key('getClientUID'):
-            client_uid = self.request.form['getClientUID']
-            query['getClientUID'] = client_uid
-            client = rc.lookupObject(client_uid)
-            client_title = client.Title()
-        else:
-            client = logged_in_client(self.context)
-            if client:
-                client_title = client.Title()
-                query['getClientUID'] = client.UID()
-            else:
-                client_title = 'Undefined'
-        parms.append(
-            { 'title': _('Client'),
-             'value': client_title,
-             'type': 'text'})
-
-        date_query = formatDateQuery(self.context, 'st_DateRequested')
-        if date_query:
-            query['created'] = date_query
-            requested = formatDateParms(self.context, 'st_DateRequested')
-        else:
-            requested = 'Undefined'
-        parms.append(
-            { 'title': _('Requested'),
-             'value': requested,
-             'type': 'text'})
-
-        workflow = getToolByName(self.context, 'portal_workflow')
-        if self.request.form.has_key('review_state'):
-            query['review_state'] = self.request.form['review_state']
-            review_state = workflow.getTitleForStateOnType(
-                        self.request.form['review_state'], 'Analysis')
-        else:
-            review_state = 'Undefined'
-        parms.append(
-            { 'title': _('Status'),
-             'value': review_state,
-             'type': 'text'})
-
-        if self.request.form.has_key('cancellation_state'):
-            query['cancellation_state'] = self.request.form['cancellation_state']
-            cancellation_state = workflow.getTitleForStateOnType(
-                        self.request.form['cancellation_state'], 'Analysis')
-        else:
-            cancellation_state = 'Undefined'
-        parms.append(
-            { 'title': _('Active'),
-             'value': cancellation_state,
-             'type': 'text'})
-
-        if self.request.form.has_key('ws_review_state'):
-            query['worksheetanalysis_review_state'] = self.request.form['ws_review_state']
-            ws_review_state = workflow.getTitleForStateOnType(
-                        self.request.form['ws_review_state'], 'Analysis')
-        else:
-            ws_review_state = 'Undefined'
-        parms.append(
-            { 'title': _('Assigned to worksheet'),
-             'value': ws_review_state,
-             'type': 'text'})
-
-
-        # and now lets do the actual report lines
-        formats = {'columns': 2,
-                   'col_heads': [ _('Sample type'), _('Number of analyses')],
-                   'class': '',
-                  }
-
+        titles = []
+        
+        self.contentFilter = {'portal_type': 'Sample',
+                              'review_state': ['sample_received', 'expired', 'disposed'],
+                              'sort_on': 'getDateReceived'}
+               
+        val = self.selection_macros.parse_daterange(self.request,
+                                                    'getDateReceived',
+                                                    _('Date Received'))        
+        if val:
+            self.contentFilter[val['contentFilter'][0]] = val['contentFilter'][1]
+            parms.append(val['parms'])
+            titles.append(val['titles'])
+            
+        # Query the catalog and store results in a dictionary             
+        samples = self.bika_catalog(self.contentFilter)
+        if not samples:
+            message = _("No samples matched your query")
+            self.context.plone_utils.addPortalMessage(message, "error")
+            return self.default_template()
+              
         datalines = []
-        for sampletype in sc(portal_type="SampleType",
-                        sort_on='sortable_title'):
-            query['getSampleTypeUID'] = sampletype.UID
-            analyses = bac(query)
-            count_analyses = len(analyses)
-
-            dataline = []
-            dataitem = {'value': sampletype.Title}
-            dataline.append(dataitem)
-            dataitem = {'value': count_analyses }
-
-            dataline.append(dataitem)
-
-
-            datalines.append(dataline)
-
-            count_all += count_analyses
-
-        # footer data
-        footlines = []
-        footline = []
-        footitem = {'value': _('Total'),
-                    'class': 'total_label'}
-        footline.append(footitem)
-        footitem = {'value': count_all}
-        footline.append(footitem)
+        analyses_count = 0
+        for sample in samples:
+            sample = sample.getObject()
+            
+            # For each sample, retrieve the analyses and generate
+            # a data line for each one
+            analyses = sample.getAnalyses({})
+            for analysis in analyses:         
+                analysis = analysis.getObject()   
+                import pdb;pdb.set_trace()    
+                dataline = {'AnalysisKeyword': analysis.getKeyword(),
+                             'AnalysisTitle': analysis.getServiceTitle(),
+                             'SampleID': sample.getSampleID(),
+                             'SampleType': sample.getSampleType().Title(),
+                             'SampleDateReceived': self.ulocalized_time(sample.getDateReceived(), long_format=1),
+                             'SampleDateSampled': self.ulocalized_time(sample.getDateSampled(), long_format=1)}
+                datalines.append(dataline)
+                analyses_count += 1
+            
+        # Footer total data      
+        footlines = []  
+        footline = {'TotalCount': analyses_count}
         footlines.append(footline)
-
-
-        self.report_content = {
-                'headings': headings,
-                'parms': parms,
-                'formats': formats,
-                'datalines': datalines,
-                'footings': footlines}
-
-        title = self.context.translate(headings['header'])
-
-        return {'report_title': title,
+        
+        self.report_data = {
+            'parameters': parms,
+            'datalines': datalines,
+            'footlines': footlines }
+        
+        return {'report_title': _('Daily samples received'),
                 'report_data': self.template()}
-
 

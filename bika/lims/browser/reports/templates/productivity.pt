@@ -79,15 +79,14 @@
     		<a href="#" id="dailysamplesreceived_selector" 
     		i18n:translate="">Daily samples received</a><br/>
     		<span i18n:translate="">
-    			Lists all samples received for a date range, 
-    			and sub totals them per country
+    			Lists all samples received for a date range
     		</span>
     		<div id="dailysamplesreceived" style="display:none" class="criteria">
 				<form action="createreport" method="post" name="productivity_dailysamplesreceived">
 				    <input type="hidden" name="report_id" value="productivity_dailysamplesreceived" />
 				    <fieldset>
 				        <tal:x content="structure python:view.selection_macros.select_daterange(
-					                                          field_id='Received',
+					                                          field_id='getDateReceived',
 					                                          field_title='Date Received')"/>
 				    </fieldset>
 				    <input tabindex=""
