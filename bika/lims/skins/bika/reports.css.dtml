@@ -121,7 +121,7 @@ table.bika-report-table {
 }
 td.total_label {
 	font-weight:bold;
-	text-align:right;
+	align:right;
 }
 
 /* </dtml-with> */

@@ -113,7 +113,7 @@
 				    <input type="hidden" name="report_id" value="productivity_samplereceivedvsreported" />
 				    <fieldset>
 				        <tal:x content="structure python:view.selection_macros.select_daterange(
-					                                          field_id='Received',
+					                                          field_id='getDateReceived',
 					                                          field_title='Date Received')"/>
 				    </fieldset>
 				    <input tabindex=""

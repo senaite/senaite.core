@@ -72,18 +72,6 @@ class Report(BrowserView):
                         'RatioPercentage':('{0:.1g}'.format(ratio*100))+"%"}   
             datalines[monthyear] = dataline
             
-            if (monthyear in footlines):
-                received = footlines[monthyear]['ReceivedCount']+1
-                publishedcnt = published and footlines[monthyear]['PublishedCount'] + 1 or footlines[monthyear]['PublishedCount']    
-            ratio = publishedcnt/received
-            footline = {'MonthYear': monthyear,
-                        'ReceivedCount': received,
-                        'PublishedCount': publishedcnt,
-                        'UnpublishedCount': received-publishedcnt,
-                        'Ratio':ratio,
-                        'RatioPercentage':('{0:.1g}'.format(ratio*100))+"%"}                
-            footlines[monthyear] = footline
-            
             total_received_count += 1 
             total_published_count = published and total_published_count+1 or total_published_count
             

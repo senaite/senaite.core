@@ -18,8 +18,7 @@
         footlines python:report_data.has_key('footlines') and report_data['footlines'] or {};">
         
 		<h2 i18n:translate="">Samples received vs. reported</h2>
-		<h3 i18n:translate="">Report tables between a period of time the number of samples received 
-							  and results reported for them with differences between the two </h3>
+		<h3 i18n:translate=""></h3>
 			
 		<!-- Summary -->
 		<table class="bika-report-parms" summary="Parameters">
@@ -43,21 +42,11 @@
 			<tbody>
 				<metal:block tal:repeat="key python:datalines.keys()">
 				<tr>
-					<td tal:content="key" colspan="4"></td>
-				</tr>
-				<tr>
-					<td>&nbsp;</td>
+					<td tal:content="key"></td>
 					<td tal:content="python:datalines[key]['ReceivedCount']"></td>
 					<td tal:content="python:datalines[key]['PublishedCount']"></td>					
 					<td tal:content="python:datalines[key]['UnpublishedCount']"></td>
 					<td tal:content="python:datalines[key]['RatioPercentage']"></td>
-				</tr>
-				<tr>
-					<td class='total_label' i18n:translate="">Subtotal</td>
-					<td tal:content="python:footlines[key]['ReceivedCount']"></td>
-					<td tal:content="python:footlines[key]['PublishedCount']"></td>					
-					<td tal:content="python:footlines[key]['UnpublishedCount']"></td>
-					<td tal:content="python:footlines[key]['RatioPercentage']"></td>
 				</tr>
 				</metal:block>
 			</tbody>	
