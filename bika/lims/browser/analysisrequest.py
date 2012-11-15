@@ -247,7 +247,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             if 'receive' in self.context.bika_setup.getAutoPrintLabels():
                 size = self.context.bika_setup.getAutoLabelSize()
                 q = "/sticker?size=%s&items=%s" % (size, self.context.getId())
-                self.destination_url = self.portal_url + q
+                self.destination_url = self.context.absolute_url() + q
             WorkflowAction.__call__(self)
 
         ## submit
@@ -391,9 +391,6 @@ class AnalysisRequestViewView(BrowserView):
     def __init__(self, context, request):
         super(AnalysisRequestViewView, self).__init__(context, request)
         self.icon = "++resource++bika.lims.images/analysisrequest_big.png"
-
-        self.portal = getToolByName(context, 'portal_url').getPortalObject()
-        self.portal_url = self.portal.absolute_url()
 
     def __call__(self):
         form = self.request.form

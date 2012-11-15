@@ -29,7 +29,7 @@ class BrowserView(BrowserView):
 
     @lazy_property
     def portal_url(self):
-        return self.portal.absolute_url()
+        return self.portal.absolute_url().split("?")[0]
 
     @lazy_property
     def portal_catalog(self):
