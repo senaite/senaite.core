@@ -65,6 +65,36 @@ $(document).ready(function(){
 		event.preventDefault();
 		$("#arsnotinvoiced").toggle(true);
 	});
+	$("#dailysamplesreceived_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#dailysamplesreceived").toggle(true);
+	});
+	$("#samplereceivedvsreported_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#samplereceivedvsreported").toggle(true);
+	});
+	$("#analysesbydepartment_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#analysesbydepartment").toggle(true);
+	});
+	$("#analysesperformedpertotal_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#analysesperformedpertotal").toggle(true);
+	});
+	$("#analysisrequestsummary_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#analysisrequestsummary").toggle(true);
+	});
+	$("#dataentrydaybook_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#dataentrydaybook").toggle(true);
+	});
 
 	// AJAX: Set ReferenceSamples dropdown when Supplier is selected
 	$("#ReferenceSupplierUID").change(function(){
