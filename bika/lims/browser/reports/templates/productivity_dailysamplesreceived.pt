@@ -29,6 +29,8 @@
         		- AnalysisTitle: The name of the analysis attached to a sample
         		- SampleID: Identifier of the sample
         		- SampleType: Title of the sample type attached to sample 
+        		- SampleDateReceived: Date of sample reception in lab
+        		- SampleSamplingDate
         	
         	footlines[0]
         		- TotalCount: Number of result lines

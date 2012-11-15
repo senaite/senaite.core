@@ -64,7 +64,7 @@ class Report(BrowserView):
                              'SampleID': sample.getSampleID(),
                              'SampleType': sample.getSampleType().Title(),
                              'SampleDateReceived': self.ulocalized_time(sample.getDateReceived(), long_format=1),
-                             'SampleDateSampled': self.ulocalized_time(sample.getDateSampled(), long_format=1)}
+                             'SampleSamplingDate': self.ulocalized_time(sample.getSamplingDate())}
                 datalines.append(dataline)
                 analyses_count += 1
             
