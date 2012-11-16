@@ -75,10 +75,10 @@ $(document).ready(function(){
 		event.preventDefault();
 		$("#samplereceivedvsreported").toggle(true);
 	});
-	$("#analysesbydepartment_selector").click(function(event){
+	$("#analysesperdepartment_selector").click(function(event){
 		$(".criteria").toggle(false);
 		event.preventDefault();
-		$("#analysesbydepartment").toggle(true);
+		$("#analysesperdepartment").toggle(true);
 	});
 	$("#analysesperformedpertotal_selector").click(function(event){
 		$(".criteria").toggle(false);

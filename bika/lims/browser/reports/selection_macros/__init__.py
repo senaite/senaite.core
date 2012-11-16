@@ -202,3 +202,7 @@ class SelectionMacrosView(BrowserView):
             res['parms'] = {'title': _("Sample Type"), 'value': title}
             res['titles'] = title
             return res
+        
+    select_groupingperiod_pt = ViewPageTemplateFile("select_groupingperiod.pt")
+    def select_groupingperiod(self):
+        return self.select_groupingperiod_pt()
