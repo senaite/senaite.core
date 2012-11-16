@@ -1221,8 +1221,24 @@ class AnalysisRequestSelectCCView(BikaListingView):
         self.icon = "++resource++bika.lims.images/contact_big.png"
         self.title = _("Contacts to CC")
         self.description = _("Select the contacts that will receive analysis results for this request.")
-        c = context.portal_type == 'AnalysisRequest' and context.aq_parent or context
         self.catalog = "portal_catalog"
+
+        # c is the Context inside of which we will search for Contacts.
+        c = None
+        if context.portal_type == 'Batch':
+            if hasattr(context, 'getClientUID'):
+                client = self.portal_catalog(portal_type='Client', UID=context.getClientUID())
+                if client:
+                    c = client[0].getObject()
+                else:
+                    c = context
+            else:
+                c = context
+        elif context.portal_type == 'AnalysisRequest':
+            c = context.aq_parent
+        if not c:
+            c = context
+
         self.contentFilter = {'portal_type': 'Contact',
                               'sort_on':'sortable_title',
                               'inactive_state': 'active',
