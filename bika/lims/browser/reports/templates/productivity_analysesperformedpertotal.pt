@@ -28,17 +28,23 @@
        	datalines {
        		<group>: { 
        			 Group, 
-       			 Count, 
+       			 Requested,
+       			 Performed, 
        			 Published,
-       			 PublishedRatio,
-       			 PublishedRatioPercentage, 
+       			 PerformedRequestedRatio,
+       			 PerformedRequestedRatioPercentage,       			 
+       			 PublishedPerformedRatio,
+       			 PublishedPerformedRatioPercentage, 
        			 Analyses {
        			 		<analysis>: {
        			 			Analysis
-       			 			Count,
+       			 			Requested,
+       			 			Performed,
        			 			Published,
-       			 			PublishedRatio,
-       			 			PublishedRatioPercentage
+       			 			PerformedRequestedRatio,
+			       			PerformedRequestedRatioPercentage,       			 
+			       			PublishedPerformedRatio,
+			       			PublishedPerformedRatioPercentage,
        			 		}
        			 }        			 	
    			}
@@ -50,24 +56,29 @@
    		
    		- Group: The period grouping name
    		- Analysis: The name of the analysis
-   		- Count: The total number of analyses in a group
+   		- Requested: The number of requested analyses in a group
    		- Published: The number of published analyses in a group
-   		- PublishedRatio: Ratio of published analyses amongst total number in a group
-   		- PublishedRatioPercentage: PublishedRatio expressed as a percentage
+   		- PerformedRequestedRatio: Ratio of performed analyses amongst requested
+   		- PerformedRequestedRatioPercentage: PerformedRequestedRatio expressed as percentage
+   		- PublishedPerformedRatio: Ratio of published analyses amongst performed in a group
+   		- PublishedRatioPercentage: PublishedPerformedRatio expressed as a percentage
        	
        	footlines {
        		Total: {
-       			Count,    		-- total analyses count
+       			Requested,    	-- total requested analyses count
        			Published,		-- total published analyses count
-       			PublishedRatio,	-- Ratio of total published analyses
-       			PublishedRatioPercentage
+       			PerformedRequestedRatio,
+       			PerformedRequestedRatioPercentage,
+       			PublishedPerformedRatio,	
+       			PublishedPerformedRatioPercentage
        		}
        	}
         
         -->
         
-		<h2 i18n:translate="">Analyses performed as % of total</h2>
-		<h3 i18n:translate=""></h3>
+		<h2 i18n:translate="">Analyses performed and published as % of total</h2>
+		<h3 i18n:translate="">Number of analyses published and expressed as a percentage 
+				of all analyses performed</h3>
 			
 		<!-- Summary -->
 		<table class="bika-report-parms" summary="Parameters">
@@ -83,7 +94,9 @@
 				<tr>
 					<th i18n:translate="">Period</th>					
 					<th i18n:translate="">Analysis</th>
+					<th i18n:translate="">Requested</th>
 					<th i18n:translate="">Performed</th>
+					<th i18n:translate="">% Performed</th>
 					<th i18n:translate="">Published</th>
 					<th i18n:translate="">% Published</th>
 				</tr>
@@ -96,26 +109,32 @@
 				<metal:block tal:repeat="analysis python:datalines[key]['Analyses'].keys()">
 				<tr>
 					<td>&nbsp;</td>
-					<td tal:content="analysis"></td>
-					<td tal:content="python:datalines[key]['Analyses'][analysis]['Count']"></td>	
+					<td tal:content="python:datalines[key]['Analyses'][analysis]['Analysis']"></td>
+					<td tal:content="python:datalines[key]['Analyses'][analysis]['Requested']"></td>	
+					<td tal:content="python:datalines[key]['Analyses'][analysis]['Performed']"></td>	
+					<td tal:content="python:datalines[key]['Analyses'][analysis]['PerformedRequestedRatioPercentage']"></td>
 					<td tal:content="python:datalines[key]['Analyses'][analysis]['Published']"></td>					
-					<td tal:content="python:datalines[key]['Analyses'][analysis]['PublishedRatioPercentage']"></td>
+					<td tal:content="python:datalines[key]['Analyses'][analysis]['PublishedPerformedRatioPercentage']"></td>
 				</tr>
 				</metal:block>
 				<tr>
 					<td class='total_label' i18n:translate="" colspan="2" align="right">Subtotal</td>
-					<td tal:content="python:datalines[key]['Count']"></td>
+					<td tal:content="python:datalines[key]['Requested']"></td>
+					<td tal:content="python:datalines[key]['Performed']"></td>
+					<td tal:content="python:datalines[key]['PerformedRequestedRatioPercentage']"></td>
 					<td tal:content="python:datalines[key]['Published']"></td>
-					<td tal:content="python:datalines[key]['PublishedRatioPercentage']"></td>
+					<td tal:content="python:datalines[key]['PublishedPerformedRatioPercentage']"></td>
 				</tr>
 				</metal:block>
 			</tbody>	
 			<tfoot>
 				<tr>
 					<td class='total_label' i18n:translate="" colspan="2" align="right">Total</td>
-					<td tal:content="python:footlines['Total']['Count']"></td>
+					<td tal:content="python:footlines['Total']['Requested']"></td>
+					<td tal:content="python:footlines['Total']['Performed']"></td>
+					<td tal:content="python:footlines['Total']['PerformedRequestedRatioPercentage']"></td>
 					<td tal:content="python:footlines['Total']['Published']"></td>
-					<td tal:content="python:footlines['Total']['PublishedRatioPercentage']"></td>
+					<td tal:content="python:footlines['Total']['PublishedPerformedRatioPercentage']"></td>
 				</tr>
 			</tfoot>		
 		</table>
