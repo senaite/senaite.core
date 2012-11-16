@@ -104,12 +104,12 @@
 			<tbody>
 				<metal:block tal:repeat="key python:datalines.keys()">
 				<tr>
-					<td tal:content="key" colspan="5"></td>
+					<td tal:content="key" colspan="7"></td>
 				</tr>
 				<metal:block tal:repeat="analysis python:datalines[key]['Analyses'].keys()">
 				<tr>
 					<td>&nbsp;</td>
-					<td tal:content="python:datalines[key]['Analyses'][analysis]['Analysis']"></td>
+					<td tal:content="python:datalines[key]['Analyses'][analysis]['Analysis']" width="50%"></td>
 					<td tal:content="python:datalines[key]['Analyses'][analysis]['Requested']"></td>	
 					<td tal:content="python:datalines[key]['Analyses'][analysis]['Performed']"></td>	
 					<td tal:content="python:datalines[key]['Analyses'][analysis]['PerformedRequestedRatioPercentage']"></td>
