@@ -362,8 +362,9 @@
 				    <input type="hidden" name="report_id" value="productivity_analysesperformedpertotal" />
 				    <fieldset>
 				        <tal:x content="structure python:view.selection_macros.select_daterange(
-					                                          field_id='Received',
-					                                          field_title='Date Received')"/>
+				                                               field_id='getDateRequested',
+				                                               field_title='Date Requested')"/>
+					    <tal:x content="structure python:view.selection_macros.select_groupingperiod()"/>
 				    </fieldset>
 				    <input tabindex=""
 				        class="searchButton"
