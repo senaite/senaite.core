@@ -351,11 +351,11 @@
 		<!-- Analyses perfomed as % of total --> 
 		<li>
     		<a href="#" id="analysesperformedpertotal_selector"
-    		i18n:translate="">Analyses performed as % of total</a><br/>
+    		i18n:translate="">Analyses performed and published as % of total</a><br/>
     		<span i18n:translate="">
     			Report tables between a period of time the number of
     			analyses published and expressed as a percentage of all
-    			analyses performed
+    			analyses performed.
     		</span>
     		<div id="analysesperformedpertotal" style="display:none" class="criteria">
 				<form action="createreport" method="post" name="productivity_analysesperformedpertotal">

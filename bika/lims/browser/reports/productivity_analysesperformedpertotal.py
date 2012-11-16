@@ -42,6 +42,7 @@ class Report(BrowserView):
         footlines = {}
         totalcount = len(analyses)
         totalpublishedcount = 0
+        totalperformedcount = 0
         groupby = ('GroupingPeriod' in self.request.form) and self.request.form['GroupingPeriod'] or 'Day'
         for analysis in analyses:
             analysis = analysis.getObject()
@@ -61,17 +62,19 @@ class Report(BrowserView):
             else :
                 group = self.ulocalized_time(daterequested)
             
-            dataline = {'Group': group, 'Count': 0, 'Published': 0, 'Analyses': {} }
-            anline = {'Analysis':antitle, 'Count': 0, 'Published': 0 }
+            dataline = {'Group': group, 'Requested': 0, 'Performed': 0, 'Published': 0, 'Analyses': {} }
+            anline = {'Analysis':antitle, 'Requested': 0, 'Performed': 0, 'Published': 0 }
             if (group in datalines):
                 dataline = datalines[group]                
                 if (ankeyword in dataline['Analyses']):
                     anline = dataline['Analyses'][ankeyword]
             
-            grouptotalcount = dataline['Count']+1
+            grouptotalcount = dataline['Requested']+1
+            groupperformedcount = dataline['Performed']
             grouppublishedcount = dataline['Published']
             
-            anltotalcount = anline['Count']+1
+            anltotalcount = anline['Requested']+1
+            anlperformedcount = anline['Performed']
             anlpublishedcount = anline['Published']
             
             workflow = getToolByName(self.context, 'portal_workflow')
@@ -81,28 +84,48 @@ class Report(BrowserView):
                 grouppublishedcount += 1
                 totalpublishedcount += 1
                 
-            groupratio = float(grouppublishedcount)/float(grouptotalcount)
-            anlratio = float(anlpublishedcount)/float(anltotalcount)
+            if (analysis.getResult()):
+                anlperformedcount += 1
+                groupperformedcount += 1
+                totalperformedcount += 1
             
-            dataline['Count'] = grouptotalcount
+            group_performedrequested_ratio = float(groupperformedcount)/float(grouptotalcount)
+            group_publishedperformed_ratio = groupperformedcount > 0 and float(grouppublishedcount)/float(groupperformedcount) or 0
+            
+            anl_performedrequested_ratio = float(anlperformedcount)/float(anltotalcount)
+            anl_publishedperformed_ratio = anlperformedcount > 0 and float(anlpublishedcount)/float(anlperformedcount) or 0
+            
+            dataline['Requested'] = grouptotalcount
+            dataline['Performed'] = groupperformedcount
             dataline['Published'] = grouppublishedcount
-            dataline['PublishedRatio'] = groupratio
-            dataline['PublishedRatioPercentage'] = ('{0:.0f}'.format(groupratio*100))+"%"
+            dataline['PerformedRequestedRatio'] = group_performedrequested_ratio
+            dataline['PerformedRequestedRatioPercentage'] = ('{0:.0f}'.format(group_performedrequested_ratio*100))+"%"
+            dataline['PublishedPerformedRatio'] = group_publishedperformed_ratio
+            dataline['PublishedPerformedRatioPercentage'] = ('{0:.0f}'.format(group_publishedperformed_ratio*100))+"%"
             
-            anline['Count'] = anltotalcount
+            anline['Requested'] = anltotalcount
+            anline['Performed'] = anlperformedcount
             anline['Published'] = anlpublishedcount
-            anline['PublishedRatio'] = anlratio
-            anline['PublishedRatioPercentage'] = ('{0:.0f}'.format(anlratio*100))+"%"
+            anline['PerformedRequestedRatio'] = anl_performedrequested_ratio
+            anline['PerformedRequestedRatioPercentage'] = ('{0:.0f}'.format(anl_performedrequested_ratio*100))+"%"
+            anline['PublishedPerformedRatio'] = anl_publishedperformed_ratio
+            anline['PublishedPerformedRatioPercentage'] = ('{0:.0f}'.format(anl_publishedperformed_ratio*100))+"%"
             
             dataline['Analyses'][ankeyword]=anline            
             datalines[group] = dataline                          
                 
-        # Footer total data      
-        totalratio = float(totalpublishedcount)/float(totalcount)
-        footline = {'Count': totalcount,
+        # Footer total data              
+        total_performedrequested_ratio = float(totalperformedcount)/float(totalcount)
+        total_publishedperformed_ratio = totalperformedcount > 0 and float(totalpublishedcount)/float(totalperformedcount) or 0
+            
+        footline = {'Requested': totalcount,
+                    'Performed': totalperformedcount,
                     'Published': totalpublishedcount,
-                    'PublishedRatio': totalratio,
-                    'PublishedRatioPercentage': ('{0:.0f}'.format(totalratio*100))+"%" }
+                    'PerformedRequestedRatio': total_performedrequested_ratio,
+                    'PerformedRequestedRatioPercentage': ('{0:.0f}'.format(total_performedrequested_ratio*100))+"%",
+                    'PublishedPerformedRatio': total_publishedperformed_ratio,
+                    'PublishedPerformedRatioPercentage': ('{0:.0f}'.format(total_publishedperformed_ratio*100))+"%" }
+                    
         footlines['Total'] = footline;
         
         self.report_data = {'parameters': parms,
