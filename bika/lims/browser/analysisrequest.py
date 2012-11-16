@@ -2222,7 +2222,9 @@ class AnalysisRequestsView(BikaListingView):
                 items[x]['Client'] = ''
                 items[x]['Creator'] = ''
                 items[x]['getSample'] = sample.getSampleID()
+                items[x]['replace']['getSample'] = "<a href='%s'>%s</a>" % (sample.absolute_url(), items[x]['getSample'])
                 items[x]['getRequestID'] = obj.getRequestID()
+                items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % (obj.absolute_url(), items[x]['getRequestID'])
                 sp = sample.getSamplePoint()
                 if sp and sp.aq_parent != self.portal.bika_setup.bika_samplepoints:
                     items[x]['replace']['getSamplePointTitle'] = ''
