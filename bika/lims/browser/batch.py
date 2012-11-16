@@ -40,16 +40,12 @@ class BatchAnalysisRequestsView(AnalysisRequestsView, AnalysisRequestAddView):
         wf = getToolByName(self.context, 'portal_workflow')
         mtool = getToolByName(self.context, 'portal_membership')
         addPortalMessage = self.context.plone_utils.addPortalMessage
-        nr_ars = bc(portal_type="AnalysisRequest", getBatchUID = self.context.UID())
-        if nr_ars:
-            if isActive(self.context):
-                if mtool.checkPermission(AddAnalysisRequest, self.portal):
-                    self.context_actions[self.context.translate(_('Add new'))] = {
-                        'url':self.context.absolute_url() + '/ar_add?col_count=1',
-                        'icon': '++resource++bika.lims.images/add.png'}
-            return super(BatchAnalysisRequestsView, self).__call__()
-        else:
-            return self.ar_add()
+        if isActive(self.context):
+            if mtool.checkPermission(AddAnalysisRequest, self.portal):
+                self.context_actions[self.context.translate(_('Add new'))] = {
+                    'url':self.context.absolute_url() + '/ar_add?col_count=1',
+                    'icon': '++resource++bika.lims.images/add.png'}
+        return super(BatchAnalysisRequestsView, self).__call__()
 
     @lazy_property
 
