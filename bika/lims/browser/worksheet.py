@@ -1116,7 +1116,7 @@ class ajaxAttachAnalyses(BrowserView):
                 if matches:
                     rows.append(row)
 
-        rows = sorted(rows, key = itemgetter(sidx and sidx or 'slot'))
+        rows = sorted(rows, cmp=lambda x,y: cmp(x.lower(), y.lower()), key = itemgetter(sidx and sidx or 'slot'))
         if sord == 'desc':
             rows.reverse()
         pages = len(rows) / int(nr_rows)
