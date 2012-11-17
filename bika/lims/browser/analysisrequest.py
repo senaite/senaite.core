@@ -1068,16 +1068,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
         self.parts = p.contents_table()
 
-    def selected_cats(self, items):
-        """ all categories are selected
-        """
-        cats = []
-        for item in items:
-            cat = item.get('category', 'None')
-            if cat not in cats:
-                cats.append(cat)
-        return cats
-
     def folderitems(self):
         self.categories = []
 

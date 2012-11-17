@@ -33,11 +33,6 @@ class AnalysesView(BikaListingView):
         self.pagesize = 1000
         self.form_id = 'analyses_form'
 
-        if 'show_categories' in kwargs:
-            self.show_categories = kwargs['show_categories']
-        else:
-            self.show_categories = False
-
         self.portal = getToolByName(context, 'portal_url').getPortalObject()
         self.portal_url = self.portal.absolute_url()
 
@@ -94,17 +89,10 @@ class AnalysesView(BikaListingView):
              },
         ]
         self.chosen_spec = request.get('specification', 'lab')
-        super(AnalysesView, self).__init__(context, request)
-
-    def selected_cats(self, items):
-        """ all categories are selected
-        """
-        cats = []
-        for item in items:
-            cat = item.get('category', 'None')
-            if cat not in cats:
-                cats.append(cat)
-        return cats
+        super(AnalysesView, self).__init__(context,
+                                           request,
+                                           show_categories=True,
+                                           expand_all_categories = True)
 
     def folderitems(self):
         rc = getToolByName(self.context, REFERENCE_CATALOG)

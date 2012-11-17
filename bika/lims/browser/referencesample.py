@@ -92,7 +92,7 @@ class ReferenceAnalysesView(AnalysesView):
             obj = items[x]['obj']
             service = obj.getService()
             items[x]['id'] = obj.getId()
-            items[x]['Category'] = service.getCategory().Title()
+            items[x]['category'] = service.getCategory().Title()
             items[x]['Service'] = service.Title()
             items[x]['Captured'] = self.ulocalized_time(obj.getResultCaptureDate())
             brefs = obj.getBackReferences("WorksheetAnalysis")
