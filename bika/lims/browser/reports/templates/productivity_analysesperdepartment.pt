@@ -28,37 +28,57 @@
        	datalines {
        		<group>: { 
        			 Group, 
-       			 Count, 
-       			 Ratio,
-       			 RatioPercentage, 
+       			 Requested,
+       			 Performed,
+       			 Published,
+       			 PerformedRequestedRatio,
+       			 PerformedRequestedRatioPercentage,
+       			 PublishedPerformedRatio,
+       			 PublishedPerformedRatioPercentage,, 
        			 Departments {
-       			 		<dept>: {
+       			 		<department>: {
        			 			Department
-       			 			Count,
-       			 			Ratio
-       			 			RatioPercentage	
+       			 			Requested,
+       			 			Performed,
+       			 			Published,
+       			 			PerformedRequestedRatio,
+       			 			PerformedRequestedRatioPercentage,
+       			 			PublishedPerformedRatio,
+       			 			PublishedPerformedRatioPercentage	
        			 		}
        			 }        			 	
    			}
    		}
      			
    		Where:
-   		- dict key <group> is the group name (year, monthyear, yearweek)
-   		- dict key <dept> is the dept name
+   		- dict key <group> is the period grouping name (year, monthyear, yearweek)
+   		- dict key <department> is the department title
    		
+   		- Group: The period grouping name
    		- Department: The name of the department
-   		- Count: The number of items for that group/subgroup
-   		- Ratio: Group items number/Subgroup items number
-   		- RatioPercentage: Ratio * 100 with 2 decimals
+   		- Requested: The number of requested analyses in a group
+   		- Published: The number of published analyses in a group
+   		- PerformedRequestedRatio: Ratio of performed analyses amongst requested
+   		- PerformedRequestedRatioPercentage: PerformedRequestedRatio expressed as percentage
+   		- PublishedPerformedRatio: Ratio of published analyses amongst performed in a group
+   		- PublishedRatioPercentage: PublishedPerformedRatio expressed as a percentage
        	
        	footlines {
-       		'Total': total count
+       		Total: {
+       			Requested,    	-- total requested analyses count
+       			Published,		-- total published analyses count
+       			PerformedRequestedRatio,
+       			PerformedRequestedRatioPercentage,
+       			PublishedPerformedRatio,	
+       			PublishedPerformedRatioPercentage
+       		}
        	}
         
         -->
         
-		<h2 i18n:translate="">Analyses per department</h2>
-		<h3 i18n:translate=""></h3>
+		<h2 i18n:translate="">Analyses summary per department</h2>
+		<h3 i18n:translate="">Number of analysis requested and published per department
+							  and expresed as a percentage of all analyses performed</h3>
 			
 		<!-- Summary -->
 		<table class="bika-report-parms" summary="Parameters">
@@ -74,35 +94,47 @@
 				<tr>
 					<th i18n:translate="">Period</th>					
 					<th i18n:translate="">Department</th>
-					<th i18n:translate="">Count</th>
-					<th i18n:translate="">%</th>
+					<th i18n:translate="">Requested</th>
+					<th i18n:translate="">Performed</th>
+					<th i18n:translate="">% Performed</th>
+					<th i18n:translate="">Published</th>
+					<th i18n:translate="">% Published</th>
 				</tr>
 			</thead>
 			<tbody>
 				<metal:block tal:repeat="key python:datalines.keys()">
 				<tr>
-					<td tal:content="key" colspan="4"></td>
+					<td tal:content="key" colspan="7"></td>
 				</tr>
-				<metal:block tal:repeat="dept python:datalines[key]['Departments'].keys()">
+				<metal:block tal:repeat="department python:datalines[key]['Departments'].keys()">
 				<tr>
 					<td>&nbsp;</td>
-					<td tal:content="dept"></td>
-					<td tal:content="python:datalines[key]['Departments'][dept]['Count']"></td>					
-					<td tal:content="python:datalines[key]['Departments'][dept]['RatioPercentage']"></td>
+					<td tal:content="python:datalines[key]['Departments'][department]['Department']" width="50%"></td>
+					<td tal:content="python:datalines[key]['Departments'][department]['Requested']"></td>	
+					<td tal:content="python:datalines[key]['Departments'][department]['Performed']"></td>	
+					<td tal:content="python:datalines[key]['Departments'][department]['PerformedRequestedRatioPercentage']"></td>
+					<td tal:content="python:datalines[key]['Departments'][department]['Published']"></td>					
+					<td tal:content="python:datalines[key]['Departments'][department]['PublishedPerformedRatioPercentage']"></td>
 				</tr>
 				</metal:block>
 				<tr>
 					<td class='total_label' i18n:translate="" colspan="2" align="right">Subtotal</td>
-					<td tal:content="python:datalines[key]['Count']"></td>
-					<td tal:content="python:datalines[key]['RatioPercentage']"></td>
+					<td tal:content="python:datalines[key]['Requested']"></td>
+					<td tal:content="python:datalines[key]['Performed']"></td>
+					<td tal:content="python:datalines[key]['PerformedRequestedRatioPercentage']"></td>
+					<td tal:content="python:datalines[key]['Published']"></td>
+					<td tal:content="python:datalines[key]['PublishedPerformedRatioPercentage']"></td>
 				</tr>
 				</metal:block>
 			</tbody>	
 			<tfoot>
 				<tr>
 					<td class='total_label' i18n:translate="" colspan="2" align="right">Total</td>
-					<td tal:content="python:footlines['Total']['Count']"></td>
-					<td>100%</td>
+					<td tal:content="python:footlines['Total']['Requested']"></td>
+					<td tal:content="python:footlines['Total']['Performed']"></td>
+					<td tal:content="python:footlines['Total']['PerformedRequestedRatioPercentage']"></td>
+					<td tal:content="python:footlines['Total']['Published']"></td>
+					<td tal:content="python:footlines['Total']['PublishedPerformedRatioPercentage']"></td>
 				</tr>
 			</tfoot>		
 		</table>
