@@ -54,6 +54,9 @@
 	    		padding-bottom:2px;
 	    		display:block;
 	    	}
+ 		    #toc-reports li div fieldset div.field select {
+    			width: inherit;
+			}
 	    	#toc-reports li div fieldset div.field table tr td {
 	    		padding-right:10px;
 	    	}
@@ -415,8 +418,8 @@
 				    <input type="hidden" name="report_id" value="productivity_dataentrydaybook" />
 				    <fieldset>
 				        <tal:x content="structure python:view.selection_macros.select_daterange(
-					                                          field_id='Received',
-					                                          field_title='Date Received')"/>
+					                                          field_id='getDateCreated',
+					                                          field_title='Date Created')"/>
 				    </fieldset>
 				    <input tabindex=""
 				        class="searchButton"
