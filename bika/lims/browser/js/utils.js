@@ -39,7 +39,7 @@ function calculate_partitions(service_uids, st_uid, st_minvol){
 		service_data = window.bika_utils.data.services[service_uid];
 		if (service_data == undefined || service_data == null){
 			service_data = {'Separate':false,
-			                'Container':[],
+							'Container':[],
 							'Preservation':[],
 							'PartitionSetup':[],
 							'backrefs':[],
@@ -325,12 +325,20 @@ $(document).ready(function(){
 	});
 
 	$('#kss-spinner')
-		.empty()
-		.append('<img src="spinner.gif" alt="Loading"/>')
-		.ajaxComplete(function() { $(this).toggle(false); });
+		.hide()  // hide it initially
+		.ajaxStart(function() {
+			bika_spinner = setTimeout(function(){$('#kss-spinner').show()},500);
+		})
+		.ajaxStop(function() {
+			clearTimeout(bika_spinner);
+			$(this).hide();
+		})
+		.ajaxComplete(function() {
+			clearTimeout(bika_spinner);
+			$(this).hide();
+		});
 
 	$(".numeric").live('keypress', function(event) {
-
 		// Backspace, tab, enter, end, home, left, right, ., <, >, and -
 		// We don't support the del key in Opera because del == . == 46.
 		var allowedKeys = [8, 9, 13, 35, 36, 37, 39, 46, 60, 62, 45];
