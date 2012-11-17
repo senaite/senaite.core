@@ -664,7 +664,10 @@ class AnalysisRequestViewView(BrowserView):
         self.tables = {}
         for poc in POINTS_OF_CAPTURE:
             if self.context.getAnalyses(getPointOfCapture = poc):
-                t = AnalysesView(ar, self.request, getPointOfCapture = poc)
+                t = AnalysesView(ar,
+                                 self.request,
+                                 getPointOfCapture = poc,
+                                 show_categories=True)
                 t.allow_edit = True
                 t.form_id = "%s_analyses" % poc
                 t.review_states[0]['transitions'] = [{'id':'submit'},
@@ -1022,11 +1025,9 @@ class AnalysisRequestAnalysesView(BikaListingView):
         self.table_only = True
         self.show_select_all_checkbox = False
         self.pagesize = 1000
-        analyses = self.context.getAnalyses()
-        self.analyses = dict(
-            [(x.getObject().getServiceUID(), x.getObject()) for x in analyses]
-        )
-        self.selected = [x.getObject().getServiceUID() for x in analyses]
+        analyses = self.context.getAnalyses(full_objects=True)
+        self.analyses = dict([(a.getServiceUID(), a) for a in analyses])
+        self.selected = [a.getServiceUID() for a in analyses]
 
         self.columns = {
             'Title': {'title': _('Service'),
@@ -1067,6 +1068,16 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
         self.parts = p.contents_table()
 
+    def selected_cats(self, items):
+        """ all categories are selected
+        """
+        cats = []
+        for item in items:
+            cat = item.get('category', 'None')
+            if cat not in cats:
+                cats.append(cat)
+        return cats
+
     def folderitems(self):
         self.categories = []
 
@@ -1087,12 +1098,11 @@ class AnalysisRequestAnalysesView(BikaListingView):
                       for o in
                       self.context.getSample().objectValues('SamplePartition')
                       if wf.getInfoFor(o, 'cancellation_state', 'active') == 'active']
-
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
 
-            cat = obj.getCategoryTitle()
+            cat = obj.getCategory().Title()
             items[x]['category'] = cat
             if cat not in self.categories:
                 self.categories.append(cat)
@@ -1187,7 +1197,8 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
                     t = AnalysesView(ar,
                                      self.request,
                                      getPointOfCapture = poc,
-                                     sort_on = 'getServiceTitle')
+                                     sort_on = 'getServiceTitle',
+                                     show_categories = True)
                     t.form_id = "ar_manage_results_%s" % poc
                     t.allow_edit = True
                     t.review_states[0]['transitions'] = [{'id':'submit'},

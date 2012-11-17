@@ -33,6 +33,11 @@ class AnalysesView(BikaListingView):
         self.pagesize = 1000
         self.form_id = 'analyses_form'
 
+        if 'show_categories' in kwargs:
+            self.show_categories = kwargs['show_categories']
+        else:
+            self.show_categories = False
+
         self.portal = getToolByName(context, 'portal_url').getPortalObject()
         self.portal_url = self.portal.absolute_url()
 
@@ -91,6 +96,16 @@ class AnalysesView(BikaListingView):
         self.chosen_spec = request.get('specification', 'lab')
         super(AnalysesView, self).__init__(context, request)
 
+    def selected_cats(self, items):
+        """ all categories are selected
+        """
+        cats = []
+        for item in items:
+            cat = item.get('category', 'None')
+            if cat not in cats:
+                cats.append(cat)
+        return cats
+
     def folderitems(self):
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
@@ -124,6 +139,12 @@ class AnalysesView(BikaListingView):
             unit = service.getUnit()
             keyword = service.getKeyword()
             precision = service.getPrecision()
+
+            if self.show_categories:
+                cat = obj.getService().getCategory().Title()
+                items[i]['category'] = cat
+                if cat not in self.categories:
+                    self.categories.append(cat)
 
             # Check for InterimFields attribute on our object,
             interim_fields = hasattr(obj, 'getInterimFields') \
