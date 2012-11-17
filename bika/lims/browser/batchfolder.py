@@ -119,8 +119,6 @@ class ajaxGetBatches(BrowserView):
                  'BatchUID': b.UID} for b in self.bika_catalog(portal_type='Batch')
                 if b.Title.find(searchTerm) > -1
                 or b.Description.find(searchTerm) > -1]
-
-                    or batch.Description().find(searchTerm) > -1:
         rows = sorted(rows, cmp=lambda x,y: cmp(x.lower(), y.lower()), key=itemgetter(sidx and sidx or 'BatchID'))
         if sord == 'desc':
             rows.reverse()
