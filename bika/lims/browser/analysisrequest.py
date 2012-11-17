@@ -1685,10 +1685,10 @@ class ajaxAnalysisRequestSubmit():
                 if containers:
                     containers.sort(lambda a,b:cmp(
                         a.getCapacity() \
-                        and mg(float(a.getCapacity().split(" ", 1)[0]), a.getCapacity().split(" ", 1)[1]) \
+                        and mg(float(a.getCapacity().lower().split(" ", 1)[0]), a.getCapacity().lower().split(" ", 1)[1]) \
                         or mg(0, 'ml'),
                         b.getCapacity() \
-                        and mg(float(b.getCapacity().split(" ", 1)[0]), b.getCapacity().split(" ", 1)[1]) \
+                        and mg(float(b.getCapacity().lower().split(" ", 1)[0]), b.getCapacity().lower().split(" ", 1)[1]) \
                         or mg(0, 'ml')
                     ))
                     container = containers[0]
