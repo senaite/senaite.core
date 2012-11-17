@@ -98,7 +98,8 @@ function showSelectSample(){
 function showSelectCC(){
 	contact_uid = $('#primary_contact').val();
 	cc_uids = $('#cc_uids').attr('value');
-	window.open('ar_select_cc?hide_uids=' + contact_uid + '&selected_uids=' + cc_uids,
+	url = window.location.href.split("?")[0].replace("/ar_add", "").replace("/analysisrequests","")
+	window.open(url+'/ar_select_cc?hide_uids=' + contact_uid + '&selected_uids=' + cc_uids,
 		'ar_select_cc','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=550');
 }
 

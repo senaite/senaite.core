@@ -120,7 +120,8 @@ class ajaxGetBatches(BrowserView):
                 if b.Title.find(searchTerm) > -1
                 or b.Description.find(searchTerm) > -1]
 
-        rows = sorted(rows, key=itemgetter(sidx and sidx or 'BatchID'))
+                    or batch.Description().find(searchTerm) > -1:
+        rows = sorted(rows, cmp=lambda x,y: cmp(x.lower(), y.lower()), key=itemgetter(sidx and sidx or 'BatchID'))
         if sord == 'desc':
             rows.reverse()
         pages = len(rows) / int(nr_rows)
