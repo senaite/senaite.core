@@ -189,7 +189,7 @@ Table data rows start here
 ********************************</tal:comment>
 <tal:cats
 	tal:repeat="cat python: view.bika_listing.categories + ['None',]">
-	<tr tal:condition="python: cat and cat != 'None'">
+	<tr tal:condition="python: view.bika_listing.show_categories and cat and cat != 'None'">
 		<th
 			style="text-align: left;"
 			tal:attributes="
