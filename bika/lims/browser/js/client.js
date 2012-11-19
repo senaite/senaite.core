@@ -31,7 +31,7 @@ $(document).ready(function(){
 			});
     });
 
-    if(window.location.href.search(window.bika_utils.data.prefixes['Client']) == -1 &&
+     if($(".portaltype-client").length == 0 &&
        window.location.href.search('portal_factory/Client') == -1){
         $("input[id=ClientID]").after('<a style="border-bottom:none !important;margin-left:.5;"' +
                     ' class="add_client"' +
