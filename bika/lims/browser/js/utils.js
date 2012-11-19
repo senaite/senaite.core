@@ -327,14 +327,20 @@ $(document).ready(function(){
 	$('#kss-spinner')
 		.hide()  // hide it initially
 		.ajaxStart(function() {
-			bika_spinner = setTimeout(function(){$('#kss-spinner').show()},500);
+			window.bika_spinner = setTimeout(function(){$('#kss-spinner').show()},500);
 		})
 		.ajaxStop(function() {
-			clearTimeout(bika_spinner);
+			if(window.bika_spinner != undefined &&
+			   window.bika_spinner != null) {
+				clearTimeout(bika_spinner);
+			}
 			$(this).hide();
 		})
 		.ajaxComplete(function() {
-			clearTimeout(bika_spinner);
+			if(window.bika_spinner != undefined &&
+			   window.bika_spinner != null) {
+				clearTimeout(bika_spinner);
+			}
 			$(this).hide();
 		});
 
