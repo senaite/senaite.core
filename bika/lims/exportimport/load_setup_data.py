@@ -234,9 +234,9 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             values[row['Field']] = row['Value']
 
-        DSL = {'days': int(values['DefaultSampleLifetime_days']),
-               'hours': int(values['DefaultSampleLifetime_hours']),
-               'minutes': int(values['DefaultSampleLifetime_minutes']),
+        DSL = {'days': int(values['DefaultSampleLifetime_days'] and values['DefaultSampleLifetime_days'] or 0),
+               'hours': int(values['DefaultSampleLifetime_hours'] and values['DefaultSampleLifetime_hours'] or 0),
+               'minutes': int(values['DefaultSampleLifetime_minutes'] and values['DefaultSampleLifetime_minutes'] or 0),
                }
 
         self.context.bika_setup.edit(
@@ -363,9 +363,9 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             _id = folder.invokeFactory('Preservation', id = 'tmp')
             obj = folder[_id]
-            RP = {'days': int(row['RetentionPeriod_days']),
-                  'hours': int(row['RetentionPeriod_hours']),
-                  'minutes': int(row['RetentionPeriod_minutes']),
+            RP = {'days': int(row['RetentionPeriod_days'] and row['RetentionPeriod_days'] or 0),
+                  'hours': int(row['RetentionPeriod_hours'] and row['RetentionPeriod_hours'] or 0),
+                  'minutes': int(row['RetentionPeriod_minutes'] and row['RetentionPeriod_minutes'] or 0),
                   }
 
             obj.edit(title = unicode(row['title']),
@@ -731,7 +731,7 @@ class LoadSetupData(BrowserView):
             obj = folder[_id]
             obj.edit(title = unicode(row['title']),
                      description = unicode(row['description']),
-                     RetentionPeriod = {'days':row['RetentionPeriod'],'hours':0,'minutes':0},
+                     RetentionPeriod = {'days':row['RetentionPeriod'] and row['RetentionPeriod'] or 0,'hours':0,'minutes':0},
                      Hazardous = row['Hazardous'] and True or False,
                      SampleMatrix = row['SampleMatrix_title'] and self.samplematrices[row['SampleMatrix_title']] or None,
                      Prefix = unicode(row['Prefix']),
@@ -859,9 +859,9 @@ class LoadSetupData(BrowserView):
 
             _id = folder.invokeFactory('AnalysisService', id = 'tmp')
             obj = folder[_id]
-            MTA = {'days': int(row['MaxTimeAllowed_days']),
-                   'hours': int(row['MaxTimeAllowed_hours']),
-                   'minutes': int(row['MaxTimeAllowed_minutes']),
+            MTA = {'days': int(row['MaxTimeAllowed_days'] and row['MaxTimeAllowed_days'] or 0),
+                   'hours': int(row['MaxTimeAllowed_days'] and row['MaxTimeAllowed_days'] or 0),
+                   'minutes': int(row['MaxTimeAllowed_minutes'] and row['MaxTimeAllowed_minutes'] or 0),
                    }
             obj.edit(
                 title = unicode(row['title']),
