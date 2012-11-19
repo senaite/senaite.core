@@ -54,6 +54,9 @@
 	    		padding-bottom:2px;
 	    		display:block;
 	    	}
+ 		    #toc-reports li div fieldset div.field select {
+    			width: inherit;
+			}
 	    	#toc-reports li div fieldset div.field table tr td {
 	    		padding-right:10px;
 	    	}
@@ -320,10 +323,10 @@
 		<!-- Analyses by lab department -->
 		<li>
     		<a href="#" id="analysesperdepartment_selector" 
-    		i18n:translate="">Analyses per lab department</a><br/>
+    		i18n:translate="">Analyses summary per department</a><br/>
     		<span i18n:translate="">
-    			Report tables between a period of time the number of
-    			analyses published per department
+    			Number of analysis requested and published per department
+				and expresed as a percentage of all analyses performed
     		</span>
     		<div id="analysesperdepartment" style="display:none" class="criteria">
 				<form action="createreport" method="post" name="productivity_analysesperdepartment">
@@ -375,30 +378,6 @@
 				</form>
 			</div>
 		</li>   
-		<li>
-    		<a href="#" id="analysisrequestsummary_selector"
-    		i18n:translate="">Analysis Request summary by date range</a><br/>
-    		<span i18n:translate="">
-    			Report tables between a period of time the number of
-    			analysis requests submitted grouped by categories and year
-    		</span>
-    		<div id="analysisrequestsummary" style="display:none" class="criteria">
-				<form action="createreport" method="post" name="productivity_analysisrequestsummary">
-				    <input type="hidden" name="report_id" value="productivity_analysisrequestsummary" />
-				    <fieldset>
-				        <tal:x content="structure python:view.selection_macros.select_daterange(
-					                                          field_id='Received',
-					                                          field_title='Date Received')"/>
-				    </fieldset>
-				    <input tabindex=""
-				        class="searchButton"
-				        type="submit"
-				        name="submit"
-				        value="Generate report"
-				        i18n:attributes="value"/>
-				</form>
-			</div>
-		</li>
     </ul>
     
     <h2 style="font-size:1.1em;margin:15px 0px;" i18n:translate="">Other productivity reports</h2> 	
@@ -439,8 +418,8 @@
 				    <input type="hidden" name="report_id" value="productivity_dataentrydaybook" />
 				    <fieldset>
 				        <tal:x content="structure python:view.selection_macros.select_daterange(
-					                                          field_id='Received',
-					                                          field_title='Date Received')"/>
+					                                          field_id='getDateCreated',
+					                                          field_title='Date Created')"/>
 				    </fieldset>
 				    <input tabindex=""
 				        class="searchButton"
