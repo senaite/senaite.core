@@ -19,22 +19,10 @@
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
 
- <alias from="(Default)" to="analysisrequests"/>
- <alias from="view" to="analysisrequests"/>
+ <alias from="(Default)" to="base_view"/>
+ <alias from="analysisrequests" to="base_view"/>
  <alias from="edit" to="base_edit"/>
-
- <action title="View"
-         action_id="view"
-         category="object"
-         condition_expr=""
-         icon_expr=""
-         link_target=""
-         url_expr="string:${object_url}"
-         i18n:attributes="title"
-         i18n:domain="plone"
-         visible="False">
-  <permission value="View"/>
- </action>
+ <alias from="view" to="base_view"/>
 
  <action title="Edit"
          action_id="edit"
@@ -50,13 +38,14 @@
  </action>
 
  <action title="Analysis Requests"
-         action_id="analysisrequests"
+         action_id="view"
          category="object"
          condition_expr=""
-         icon_expr="string:${portal_url}/++resource++bika.lims.images/ar.png"
+         icon_expr=""
          link_target=""
-         url_expr="string:${object_url}/analysisrequests"
+         url_expr="string:${object_url}"
          i18n:attributes="title"
+         i18n:domain="plone"
          visible="True">
   <permission value="View"/>
  </action>

@@ -23,7 +23,7 @@
 
     <browser:page
       for="bika.lims.interfaces.IClient"
-      name="analysisrequests"
+      name="base_view"
       class="bika.lims.browser.client.ClientAnalysisRequestsView"
       permission="bika.lims.ManageClients"
       layer="bika.lims.interfaces.IBikaLIMS"

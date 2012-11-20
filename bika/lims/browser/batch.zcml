@@ -6,7 +6,7 @@
 
     <browser:page
       for="bika.lims.interfaces.IBatch"
-      name="analysisrequests"
+      name="base_view"
       class="bika.lims.browser.batch.BatchAnalysisRequestsView"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
