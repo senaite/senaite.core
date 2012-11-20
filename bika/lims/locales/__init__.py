@@ -1,6 +1,7 @@
 # Data from www.geonames.org. See http://download.geonames.org/export/dump/readme.txt
 
 from bika.lims.browser import BrowserView
+from operator import itemgetter
 import json
 import plone
 
@@ -40945,6 +40946,36 @@ DISTRICTS = [
  ['ZW', '00', 'Bikita District'],
  ['ZW', '00', 'Beitbridge District'],
  ['ZW', '02', 'Gokwe South District']]
+
+class ajaxGetCountries(BrowserView):
+
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        searchTerm = self.request['searchTerm'].lower()
+        page = self.request['page']
+        nr_rows = self.request['rows']
+        sord = self.request['sord']
+        sidx = self.request['sidx']
+        rows = []
+
+        # lookup objects from ISO code list
+        for country in COUNTRIES:
+            if country['ISO'].lower().find(searchTerm) > -1 \
+                or country['Country'].lower().find(searchTerm) > -1:
+                rows.append({'Code': country['ISO'],
+                             'Country': country['Country']})
+
+        rows = sorted(rows, cmp=lambda x,y: cmp(x.lower(), y.lower()), key=itemgetter(sidx and sidx or 'Country'))
+        if sord == 'desc':
+            rows.reverse()
+        pages = len(rows) / int(nr_rows)
+        pages += divmod(len(rows), int(nr_rows))[1] and 1 or 0
+        ret = {'page':page,
+               'total':pages,
+               'records':len(rows),
+               'rows':rows[ (int(page) - 1) * int(nr_rows) : int(page) * int(nr_rows) ]}
+
+        return json.dumps(ret)
 
 class ajaxGetStates(BrowserView):
 

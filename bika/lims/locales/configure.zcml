@@ -6,6 +6,14 @@
 
     <browser:page
       for="*"
+      name="getCountries"
+      class="bika.lims.locales.ajaxGetCountries"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="*"
       name="getGeoStates"
       class="bika.lims.locales.ajaxGetStates"
       permission="zope.Public"
