@@ -231,9 +231,6 @@ var bika_utils = bika_utils || {
 
 }
 
-bika_utils.init();
-window.bika_utils = bika_utils;
-
 function enableAddAttachment(this_field) {
 	// XX move this to worksheet or AR or wherever it actually belongs
 	attachfile = document.getElementById('AttachFile').value
@@ -261,6 +258,9 @@ function enableAddAttachment(this_field) {
 
 
 $(document).ready(function(){
+
+	bika_utils.init();
+	window.bika_utils = bika_utils;
 
 	_ = window.jsi18n_bika;
 	PMF = window.jsi18n_plone;
