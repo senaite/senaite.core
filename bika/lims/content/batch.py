@@ -19,8 +19,9 @@ import json
 schema = BikaSchema.copy() + Schema((
     StringField('BatchID',
         searchable=True,
-        required=1,
+        required=0,
         widget=StringWidget(
+            visible = False,
             label=_("Batch ID"),
         )
     ),
@@ -67,6 +68,10 @@ class Batch(BaseContent):
         """ Return the BatchID or id as title """
         res = self.getBatchID()
         return str(res).encode('utf-8')
+
+    security.declarePublic('getBatchID')
+    def getBatchID(self):
+        return self.getId()
 
     security.declarePublic('getCCContacts')
     def getCCContacts(self):
