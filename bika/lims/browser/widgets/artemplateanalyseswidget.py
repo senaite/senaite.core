@@ -30,6 +30,8 @@ class ARTemplateAnalysesView(BikaListingView):
         self.show_select_column = True
         self.pagesize = 1000
         self.allow_edit = allow_edit
+        self.show_categories = True
+        self.expand_all_categories = True
         self.form_id = "analyses"
 
         self.columns = {

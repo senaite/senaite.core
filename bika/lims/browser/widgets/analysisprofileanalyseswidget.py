@@ -28,6 +28,8 @@ class AnalysisProfileAnalysesView(BikaListingView):
         self.show_select_all_checkbox = False
         self.show_column_toggles = False
         self.show_select_column = True
+        self.show_categories = True
+        self.expand_all_categories = True
         self.pagesize = 1000
         self.allow_edit = allow_edit
         self.form_id = "analyses"
