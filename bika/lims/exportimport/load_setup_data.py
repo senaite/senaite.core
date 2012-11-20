@@ -118,45 +118,78 @@ class LoadSetupData(BrowserView):
             sheets[sheetname] = wb.get_sheet_by_name(sheetname)
             self.nr_rows += sheets[sheetname].get_highest_row()
 
-        self.load_lab_information(sheets['Lab Information'])
-        self.load_lab_contacts(sheets['Lab Contacts'])
-        self.load_lab_departments(sheets['Lab Departments'])
-        self.load_clients(sheets['Clients'])
-        self.load_client_contacts(sheets['Client Contacts'])
-        self.load_containertypes(sheets["Container Types"])
-        self.load_preservations(sheets["Preservations"])
-        self.load_containers(sheets["Containers"])
-        self.load_instruments(sheets['Instruments'])
-        self.load_sample_matrices(sheets['Sample Matrices'])
+        if 'Lab Information' in sheets:
+            self.load_lab_information(sheets['Lab Information'])
+        if 'Lab Contacts' in sheets:
+            self.load_lab_contacts(sheets['Lab Contacts'])
+        if 'Lab Departments' in sheets:
+            self.load_lab_departments(sheets['Lab Departments'])
+        if 'Clients' in sheets:
+            self.load_clients(sheets['Clients'])
+        if 'Client Contacts' in sheets:
+            self.load_client_contacts(sheets['Client Contacts'])
+        if 'Container Types' in sheets:
+            self.load_containertypes(sheets["Container Types"])
+        if 'Preservations' in sheets:
+            self.load_preservations(sheets["Preservations"])
+        if 'Containers' in sheets:
+            self.load_containers(sheets["Containers"])
+        if 'Instruments' in sheets:
+            self.load_instruments(sheets['Instruments'])
+        if 'Sample Matrices' in sheets:
+            self.load_sample_matrices(sheets['Sample Matrices'])
 
         if 'Batch Labels' in sheets:
             self.load_BatchLabels(sheets['Batch Labels'])
 
-        self.load_sample_types(sheets['Sample Types'])
-        self.load_sample_points(sheets['Sample Points'])
-        self.link_samplepoint_sampletype(sheets['Sample Point Sample Types'])
-        self.load_analysis_categories(sheets['Analysis Categories'])
-        self.load_methods(sheets['Methods'])
-        self.load_interim_fields(sheets['Calculation Interim Fields'])
-        #self.load_lab_products(sheets['Lab Products'])
-        self.load_sampling_deviations(sheets['Sampling Deviations'])
-        self.load_reference_manufacturers(sheets['Reference Manufacturers'])
+        if 'Sample Types' in sheets:
+            self.load_sample_types(sheets['Sample Types'])
+        if 'Sample Points' in sheets:
+            self.load_sample_points(sheets['Sample Points'])
+        if 'Sample Point Sample Types' in sheets:
+            self.link_samplepoint_sampletype(sheets['Sample Point Sample Types'])
+        if 'Analysis Categories' in sheets:
+            self.load_analysis_categories(sheets['Analysis Categories'])
+        if 'Methods' in sheets:
+            self.load_methods(sheets['Methods'])
+        if 'Calculation Interim Fields' in sheets:
+            self.load_interim_fields(sheets['Calculation Interim Fields'])
+        #if 'Lab Products' in sheets:
+        #    self.load_lab_products(sheets['Lab Products'])
+        if 'Sampling Deviations' in sheets:
+            self.load_sampling_deviations(sheets['Sampling Deviations'])
+        if 'Reference Manufacturers' in sheets:
+            self.load_reference_manufacturers(sheets['Reference Manufacturers'])
 
-        self.load_calculations(sheets['Calculations'])
-        self.load_analysis_services(sheets['Analysis Services'])
-        self.service_result_options(sheets['AnalysisService ResultOptions'])
-        self.service_uncertainties(sheets['Analysis Service Uncertainties'])
+        if 'Calculations' in sheets:
+            self.load_calculations(sheets['Calculations'])
+        if 'Analysis Services' in sheets:
+            self.load_analysis_services(sheets['Analysis Services'])
+        if 'AnalysisService ResultOptions' in sheets:
+            self.service_result_options(sheets['AnalysisService ResultOptions'])
+        if 'Analysis Service Uncertainties' in sheets:
+            self.service_uncertainties(sheets['Analysis Service Uncertainties'])
 
-        self.load_analysis_specifications(sheets['Analysis Specifications'])
-        self.load_analysis_profile_services(sheets['Analysis Profile Services'])
-        self.load_analysis_profiles(sheets['Analysis Profiles'])
-        self.load_artemplate_analyses(sheets['AR Template Analyses'])
-        self.load_artemplate_partitions(sheets['AR Template Partitions'])
-        self.load_artemplates(sheets['AR Templates'])
-        self.load_reference_definition_results(sheets['Reference Definition Results'])
-        self.load_reference_definitions(sheets['Reference Definitions'])
-        self.load_reference_suppliers(sheets['Reference Suppliers'])
-        self.load_reference_supplier_contacts(sheets['Reference Supplier Contacts'])
+        if 'Analysis Specifications' in sheets:
+            self.load_analysis_specifications(sheets['Analysis Specifications'])
+        if 'Analysis Profile Services' in sheets:
+            self.load_analysis_profile_services(sheets['Analysis Profile Services'])
+        if 'Analysis Profiles' in sheets:
+            self.load_analysis_profiles(sheets['Analysis Profiles'])
+        if 'AR Template Analyses' in sheets:
+            self.load_artemplate_analyses(sheets['AR Template Analyses'])
+        if 'AR Template Partitions' in sheets:
+            self.load_artemplate_partitions(sheets['AR Template Partitions'])
+        if 'AR Templates' in sheets:
+            self.load_artemplates(sheets['AR Templates'])
+        if 'Reference Definition Results' in sheets:
+            self.load_reference_definition_results(sheets['Reference Definition Results'])
+        if 'Reference Definitions' in sheets:
+            self.load_reference_definitions(sheets['Reference Definitions'])
+        if 'Reference Suppliers' in sheets:
+            self.load_reference_suppliers(sheets['Reference Suppliers'])
+        if 'Reference Supplier Contacts' in sheets:
+            self.load_reference_supplier_contacts(sheets['Reference Supplier Contacts'])
 
         if 'Worksheet Template Layouts' in sheets:
             self.load_wst_layouts(sheets['Worksheet Template Layouts'])
@@ -195,7 +228,8 @@ class LoadSetupData(BrowserView):
 #        if 'Worksheet Layouts' in sheets:
 #            self.load_worksheet_layouts(sheets['Worksheet Layouts'])
 
-        self.load_bika_setup(sheets['Setup'])
+        if 'Setup' in sheets:
+            self.load_bika_setup(sheets['Setup'])
         if 'ID Prefixes' in sheets:
             self.load_id_prefixes(sheets['ID Prefixes'])
         if 'Attachment Types' in sheets:
