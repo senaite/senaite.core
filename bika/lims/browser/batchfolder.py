@@ -35,8 +35,6 @@ class BatchFolderContentsView(BikaListingView):
 
         self.columns = {
             'BatchID': {'title': _('Batch ID')},
-            'Description': {'title': _('Description')},
-            'Requests': {'title': _('Analysis Requests')},
             'state_title': {'title': _('State'), 'sortable': False},
         }
 
@@ -46,32 +44,24 @@ class BatchFolderContentsView(BikaListingView):
                                'review_state': 'open'},
              'title': _('Open'),
              'columns':['BatchID',
-                        'Description',
-                        'Requests',
                         'state_title', ]
              },
             {'id':'closed',
              'contentFilter': {'review_state': 'closed'},
              'title': _('Closed'),
              'columns':['BatchID',
-                        'Description',
-                        'Requests',
                         'state_title', ]
              },
             {'id':'cancelled',
              'title': _('Cancelled'),
              'contentFilter': {'cancellation_state': 'cancelled'},
              'columns':['BatchID',
-                        'Description',
-                        'Requests',
                         'state_title', ]
              },
             {'id':'all',
              'title': _('All'),
              'contentFilter':{},
              'columns':['BatchID',
-                        'Description',
-                        'Requests',
                         'state_title', ]
              },
         ]
@@ -97,7 +87,6 @@ class BatchFolderContentsView(BikaListingView):
             obj = items[x]['obj']
 
             items[x]['replace']['BatchID'] = "<a href='%s'>%s</a>" % (items[x]['url'], obj.getBatchID())
-            items[x]['Requests'] = len(self.context.getBackReferences("AnalysisRequestBatch"))
 
         return items
 
@@ -107,18 +96,24 @@ class ajaxGetBatches(BrowserView):
     """
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
-        searchTerm = self.request['searchTerm']
+        searchTerm = self.request['searchTerm'].lower()
         page = self.request['page']
         nr_rows = self.request['rows']
         sord = self.request['sord']
         sidx = self.request['sidx']
-        wf = getToolByName(self.context, 'portal_workflow')
 
-        rows = [{'BatchID': b.Title or '',
-                 'Description': b.Description,
-                 'BatchUID': b.UID} for b in self.bika_catalog(portal_type='Batch')
-                if b.Title.find(searchTerm) > -1
-                or b.Description.find(searchTerm) > -1]
+        rows = []
+
+        batches = self.bika_catalog(portal_type='Batch')
+
+        for batch in batches:
+            if batch.Title.lower().find(searchTerm) > -1 \
+            or batch.Description.lower().find(searchTerm) > -1:
+                batch = batch.getObject()
+                rows.append({'BatchID': batch.Title(),
+                             'Description': batch.Description(),
+                             'BatchUID': batch.UID()})
+
         rows = sorted(rows, cmp=lambda x,y: cmp(x.lower(), y.lower()), key=itemgetter(sidx and sidx or 'BatchID'))
         if sord == 'desc':
             rows.reverse()

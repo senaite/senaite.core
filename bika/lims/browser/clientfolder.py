@@ -128,7 +128,7 @@ class ajaxGetClients(BrowserView):
     """
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
-        searchTerm = self.request['searchTerm']
+        searchTerm = self.request['searchTerm'].lower()
         page = self.request['page']
         nr_rows = self.request['rows']
         sord = self.request['sord']
@@ -139,8 +139,9 @@ class ajaxGetClients(BrowserView):
         rows = [{'ClientID': b.getClientID() and b.getClientID() or '',
                  'Title': b.Title() ,
                  'ClientUID': b.UID()} for b in clients
-                if b.Title().find(searchTerm) > -1
-                or b.Description().find(searchTerm) > -1]
+                if b.Title().lower().find(searchTerm) > -1
+                or b.getClientID().lower().find(searchTerm) > -1
+                or b.Description().lower().find(searchTerm) > -1]
 
         rows = sorted(rows, cmp=lambda x,y: cmp(x.lower(), y.lower()), key=itemgetter(sidx and sidx or 'Title'))
         if sord == 'desc':
