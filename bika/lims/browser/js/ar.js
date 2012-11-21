@@ -57,7 +57,8 @@ function workflow_transition_preserve(event){
 
 $(document).ready(function(){
 
-	_ = window.jsi18n_bika;
+	_ = jarn.i18n.MessageFactory('bika');
+	PMF = jarn.i18n.MessageFactory('plone');
 
 	$('#open_cc_browser').click(openCCBrowser);
 

@@ -67,12 +67,16 @@ function changeReportDryMatter(){
 }
 
 function deleteSampleButton(){
+
+	_ = jarn.i18n.MessageFactory('bika');
+	PMF = jarn.i18n.MessageFactory('plone');
+
 	column = $(this).attr('column');
 	$("#ar_"+column+"_SampleID_button").val($("#ar_"+column+"_SampleID_default").val());
 	$("#ar_"+column+"_SampleID").val('');
 	$("#ar_"+column+"_ClientReference").val('').removeAttr("readonly");
 	$("#ar_"+column+"_SamplingDate")
-		.datepicker({'dateFormat': window.jsi18n_bika('date_format_short_datepicker'), showAnim: ''})
+		.datepicker({'dateFormat': _('date_format_short_datepicker'), showAnim: ''})
 		.click(function(){$(this).attr('value', '');})
 		.attr('value', '');
 	$("#ar_"+column+"_ClientSampleID").val('').removeAttr("readonly");
@@ -838,8 +842,8 @@ function clickAnalysisCategory(){
 
 $(document).ready(function(){
 
-	_ = window.jsi18n_bika;
-	PMF = window.jsi18n_plone;
+	_ = jarn.i18n.MessageFactory('bika');
+	PMF = jarn.i18n.MessageFactory('plone');
 
 	// Sampling Date field is readonly to prevent invalid data entry, so
 	// clicking SamplingDate field clears existing values.
@@ -848,11 +852,11 @@ $(document).ready(function(){
 	if(e.length > 0){
 		if($($(e).parents('form').children('[name=came_from]')).val() == 'add'){
 			$(e)
-			.datepicker({'dateFormat': window.jsi18n_bika('date_format_short_datepicker'), showAnim: ''})
+			.datepicker({'dateFormat': _('date_format_short_datepicker'), showAnim: ''})
 			.click(function(){$(this).attr('value', '');})
 		} else {
 			$(e)
-			.datepicker({'dateFormat': window.jsi18n_bika('date_format_short_datepicker'), showAnim: ''})
+			.datepicker({'dateFormat': _('date_format_short_datepicker'), showAnim: ''})
 		}
 	}
 

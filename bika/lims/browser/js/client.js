@@ -1,8 +1,8 @@
 (function( $ ) {
 $(document).ready(function(){
 
-	_ = window.jsi18n_bika;
-	PMF = window.jsi18n_plone;
+    _ = jarn.i18n.MessageFactory('bika');
+    PMF = jarn.i18n.MessageFactory('plone');
 
 	// Confirm before resetting client specs to default lab specs
     $("a[href*=set_to_lab_defaults]").click(function(event){
@@ -63,8 +63,8 @@ $(document).ready(function(){
 
     $("input[id*=ClientID]").combogrid({
         colModel: [{'columnName':'ClientUID','hidden':true},
-                   {'columnName':'ClientID','width':'25','label':window.jsi18n_bika('Client ID')},
-                   {'columnName':'Title','width':'75','label':window.jsi18n_bika('Title')}],
+                   {'columnName':'ClientID','width':'25','label':_('Client ID')},
+                   {'columnName':'Title','width':'75','label':_('Title')}],
         url: window.portal_url + "/getClients?_authenticator=" + $('input[name="_authenticator"]').val(),
         select: function( event, ui ) {
             $(this).val(ui.item.ClientID);

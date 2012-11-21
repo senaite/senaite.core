@@ -71,8 +71,8 @@ function clickSaveButton(event){
 
 $(document).ready(function(){
 
-	_ = window.jsi18n_bika;
-	PMF = window.jsi18n_plone;
+	_ = jarn.i18n.MessageFactory('bika');
+	PMF = jarn.i18n.MessageFactory('plone');
 
 	$("#SampleType").autocomplete({ minLength: 0, source: autocomplete_sampletype});
 	$("#SamplePoint").autocomplete({ minLength: 0, source: autocomplete_samplepoint});

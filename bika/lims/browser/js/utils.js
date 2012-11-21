@@ -1,14 +1,13 @@
+jarn.i18n.loadCatalog('bika');
+jarn.i18n.loadCatalog('plone');
+
 (function( $ ) {
 
-jarn.i18n.loadCatalog('bika');
-window.jsi18n_bika = jarn.i18n.MessageFactory('bika');
-jarn.i18n.loadCatalog('plone');
-window.jsi18n_plone = jarn.i18n.MessageFactory('plone');
-
 function portalMessage(message) {
+	_ = jarn.i18n.MessageFactory('bika');
 	str = "<dl class='portalMessage error'>"+
-		"<dt>"+window.jsi18n_bika('Error')+"</dt>"+
-		"<dd><ul>" + window.jsi18n_bika(message) +
+		"<dt>"+_('Error')+"</dt>"+
+		"<dd><ul>" + _(message) +
 		"</ul></dd></dl>";
 	$('.portalMessage').remove();
 	$(str).appendTo('#viewlet-above-content');
@@ -231,6 +230,9 @@ var bika_utils = bika_utils || {
 
 }
 
+bika_utils.init();
+window.bika_utils = bika_utils;
+
 function enableAddAttachment(this_field) {
 	// XX move this to worksheet or AR or wherever it actually belongs
 	attachfile = document.getElementById('AttachFile').value
@@ -259,11 +261,8 @@ function enableAddAttachment(this_field) {
 
 $(document).ready(function(){
 
-	bika_utils.init();
-	window.bika_utils = bika_utils;
-
-	_ = window.jsi18n_bika;
-	PMF = window.jsi18n_plone;
+	_ = jarn.i18n.MessageFactory('bika');
+	PMF = jarn.i18n.MessageFactory('plone');
 
 	dateFormat = _("date_format_short_datepicker");
 

@@ -1,8 +1,8 @@
 (function( $ ) {
 $(document).ready(function(){
 
-	_ = window.jsi18n_bika;
-	PMF = window.jsi18n_plone;
+	_ = jarn.i18n.MessageFactory('bika');
+	PMF = jarn.i18n.MessageFactory('plone');
 
 	// ##cc_uids is the parent AR form's CC contacts box
 	$.each(window.opener.$("#cc_uids").attr('value').split(","), function(i,e){

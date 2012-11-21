@@ -1,8 +1,8 @@
 (function( $ ) {
 $(document).ready(function(){
 
-	_ = window.jsi18n_bika;
-	PMF = window.jsi18n_plone;
+	_ = jarn.i18n.MessageFactory('bika');
+	PMF = jarn.i18n.MessageFactory('plone');
 
 	// Click column header - set or modify sort order.
 	$("th.sortable").live('click', function(){

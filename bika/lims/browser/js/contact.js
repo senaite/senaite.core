@@ -1,8 +1,8 @@
 (function( $ ) {
 $(document).ready(function(){
 
-	jarn.i18n.loadCatalog('bika');
-	_ = jarn.i18n.MessageFactory('bika')
+    _ = jarn.i18n.MessageFactory('bika');
+    PMF = jarn.i18n.MessageFactory('plone');
 
 });
 }(jQuery));
