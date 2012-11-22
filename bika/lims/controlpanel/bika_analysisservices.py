@@ -198,7 +198,8 @@ class AnalysisServicesView(BikaListingView):
             items[x]['Keyword'] = obj.getKeyword()
             cat = obj.getCategoryTitle()
             if self.do_cats:
-                items[x]['category'] = cat
+                items[x]['category'] = cat # Category is for display column value
+                items[x]['Category'] = cat # category is for bika_listing to groups entries
                 if cat not in self.categories:
                     self.categories.append(cat)
 

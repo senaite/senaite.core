@@ -43,8 +43,7 @@
 				</td>
 				<td class="field" style="padding-left: 2em;"><label
 					i18n:translate="">Copy from</label> <select size="1" id=""
-					tal:attributes='id string:${fieldName}.selection;
-										onChange string:javascript:copyAddress("${fieldName}")'>
+					tal:attributes='id string:${fieldName}.selection;'>
 						<option></option>
 						<tal:possibles tal:repeat="possible possibles">
 							<option tal:content="possible"
