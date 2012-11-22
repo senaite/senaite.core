@@ -95,6 +95,13 @@ $(document).ready(function(){
 		event.preventDefault();
 		$("#dataentrydaybook").toggle(true);
 	});
+	
+	$("#usershistory_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#usershistory").toggle(true);
+	});
+
 
 	// AJAX: Set ReferenceSamples dropdown when Supplier is selected
 	$("#ReferenceSupplierUID").change(function(){
