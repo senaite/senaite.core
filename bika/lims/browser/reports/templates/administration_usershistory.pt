@@ -25,54 +25,33 @@
         	
        	parameters[]
        	
-       	datalines {
-       		<group>: { 
-       			 Group, 
-       			 Requested,
-       			 Performed, 
-       			 Published,
-       			 PerformedRequestedRatio,
-       			 PerformedRequestedRatioPercentage,       			 
-       			 PublishedPerformedRatio,
-       			 PublishedPerformedRatioPercentage, 
-       			 Analyses {
-       			 		<analysis>: {
-       			 			Analysis
-       			 			Requested,
-       			 			Performed,
-       			 			Published,
-       			 			PerformedRequestedRatio,
-			       			PerformedRequestedRatioPercentage,       			 
-			       			PublishedPerformedRatio,
-			       			PublishedPerformedRatioPercentage,
-       			 		}
-       			 }        			 	
+       	datalines [
+       	    	{EntityNameOrId, 
+       			 EntityAbsoluteUrl,
+       			 EntityCreationdate, 
+       			 EntityModificationDate,
+       			 EntityType,
+       			 Action,       			 
+       			 ActionDate,
+       			 ActionDateStr, 
+       			 ActionActor,
+       			 ActionActorFullName,
+       			 ActionComments		 	
    			}
    		}
      			
-   		Where:
-   		- dict key <group> is the period grouping name (year, monthyear, yearweek)
-   		- dict key <analysis> is the analysis title
-   		
-   		- Group: The period grouping name
-   		- Analysis: The name of the analysis
-   		- Requested: The number of requested analyses in a group
-   		- Published: The number of published analyses in a group
-   		- PerformedRequestedRatio: Ratio of performed analyses amongst requested
-   		- PerformedRequestedRatioPercentage: PerformedRequestedRatio expressed as percentage
-   		- PublishedPerformedRatio: Ratio of published analyses amongst performed in a group
-   		- PublishedRatioPercentage: PublishedPerformedRatio expressed as a percentage
-       	
-       	footlines {
-       		Total: {
-       			Requested,    	-- total requested analyses count
-       			Published,		-- total published analyses count
-       			PerformedRequestedRatio,
-       			PerformedRequestedRatioPercentage,
-       			PublishedPerformedRatio,	
-       			PublishedPerformedRatioPercentage
-       		}
-       	}
+   		Where:   		
+   		- EntityNameOrId: The entity identifier
+   		- EntityAbsoluteUrl: The url of the entity
+   		- EntityCreationdate: The date in which the entity was created
+   		- EntityModificationDate: The last modification date of the entity
+   		- EntityType: Type of the entity (method, instrument, etc.)
+   		- Action: Action performed (Edited, Created, Deactivated, etc.)
+   		- ActionDate: Date in which the action was performed
+   		- ActionDateStr: ActionDate in localized format
+   		- ActionActor: User who performed the action
+   		- ActionActorFullName: Full name of ActionActor
+   		- ActionComments: Comments regards to the action
         
         -->
         
@@ -91,9 +70,10 @@
 		<table class="bika-report-table" summary="Results">
 			<thead>
 				<tr>
-					<th i18n:translate="">Date</th>					
+					<th i18n:translate="">Date</th>
+					<th i18n:translate="">UserID</th>
+					<th i18n:translate="">User</th>				
 					<th i18n:translate="">Action</th>
-					<th i18n:translate="">User</th>
 					<th i18n:translate="">Type</th>
 					<th i18n:translate="">Entity</th>
 					<th i18n:translate="">Comments</th>
@@ -102,9 +82,10 @@
 			<tbody>
 				<metal:block tal:repeat="line python:datalines">
 				<tr>
-					<td tal:content="python:line['ActionDateStr']"></td>
-					<td tal:content="python:line['Action']"></td>
+					<td tal:content="python:line['ActionDateStr']"></td>					
 					<td tal:content="python:line['ActionActor']"></td>
+					<td tal:content="python:line['ActionActorFullName']"></td>
+					<td tal:content="python:line['Action']"></td>
 					<td tal:content="python:line['EntityType']"></td>
 					<td>
 						<a tal:attributes="href python:line['EntityAbsoluteUrl']"
@@ -113,17 +94,7 @@
 					<td tal:content="python:line['ActionComments']"></td>
 				</tr>
 				</metal:block>
-			</tbody>	
-			<!-- tfoot>
-				<tr>
-					<td class='total_label' i18n:translate="" colspan="2" align="right">Total</td>
-					<td tal:content="python:footlines['Total']['Requested']"></td>
-					<td tal:content="python:footlines['Total']['Performed']"></td>
-					<td tal:content="python:footlines['Total']['PerformedRequestedRatioPercentage']"></td>
-					<td tal:content="python:footlines['Total']['Published']"></td>
-					<td tal:content="python:footlines['Total']['PublishedPerformedRatioPercentage']"></td>
-				</tr>
-			</tfoot -->		
+			</tbody>			
 		</table>
 	</body>
 </html>

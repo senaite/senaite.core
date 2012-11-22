@@ -14,7 +14,7 @@
                 tal:attributes="
                     value python:user;
                     selected python:request.get('User', '') == user and 'selected' or ''"
-                tal:content="python:analysts.getValue(user))">
+                tal:content="python:users.getValue(user)">
             </option>
         </tal:analysts>
 
