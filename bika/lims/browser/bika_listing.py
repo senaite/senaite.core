@@ -440,7 +440,7 @@ class BikaListingView(BrowserView):
         return toggle_cols
 
     def GET_url(self, **kwargs):
-        url = self.context.absolute_url()
+        url = self.request['URL'].split("?")[0]
         query = {}
         for x in "pagenumber", "pagesize", "review_state":
             if str(getattr(self, x)) != 'None':
