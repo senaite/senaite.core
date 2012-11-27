@@ -48,6 +48,8 @@ schema = BikaSchema.copy() + Schema((
 
 schema['title'].required = False
 schema['title'].widget.visible = False
+schema['description'].required = False
+schema['description'].widget.visible = True
 
 class Batch(BaseContent):
     implements(IBatch)

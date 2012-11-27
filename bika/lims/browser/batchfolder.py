@@ -35,6 +35,7 @@ class BatchFolderContentsView(BikaListingView):
 
         self.columns = {
             'BatchID': {'title': _('Batch ID')},
+            'Description': {'title': _('Description')},
             'state_title': {'title': _('State'), 'sortable': False},
         }
 
@@ -44,24 +45,28 @@ class BatchFolderContentsView(BikaListingView):
                                'review_state': 'open'},
              'title': _('Open'),
              'columns':['BatchID',
+                        'Description',
                         'state_title', ]
              },
             {'id':'closed',
              'contentFilter': {'review_state': 'closed'},
              'title': _('Closed'),
              'columns':['BatchID',
+                        'Description',
                         'state_title', ]
              },
             {'id':'cancelled',
              'title': _('Cancelled'),
              'contentFilter': {'cancellation_state': 'cancelled'},
              'columns':['BatchID',
+                        'Description',
                         'state_title', ]
              },
             {'id':'all',
              'title': _('All'),
              'contentFilter':{},
              'columns':['BatchID',
+                        'Description',
                         'state_title', ]
              },
         ]

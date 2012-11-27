@@ -14,8 +14,8 @@ $(document).ready(function(){
                 ' </a>');
         $("input[id*=BatchID]").combogrid({
             colModel: [{'columnName':'BatchUID','hidden':true},
-                       {'columnName':'BatchID','width':'25','label':_('Batch ID')},
-                       {'columnName':'Description','width':'35','label':_('Description')}],
+                       {'columnName':'BatchID','width':'35','label':_('Batch ID')},
+                       {'columnName':'Description','width':'65','label':_('Description')}],
             url: window.location.href.replace("/ar_add","") + "/getBatches?_authenticator=" + $('input[name="_authenticator"]').val(),
             select: function( event, ui ) {
                 $(this).val(ui.item.BatchID);
