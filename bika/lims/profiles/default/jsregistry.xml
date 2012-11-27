@@ -2,222 +2,222 @@
 <object name="portal_javascripts" meta_type="JavaScripts Registry">
 
   <javascript authenticated="False"
+              id="++resource++bika.lims.js/jquery.json.js"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
               cookable="True"
               enabled="on"
               expression=""
-              id="++resource++bika.lims.js/jquery.json.js"
               inline="False"
               insert-after="*"/>
 
  <javascript authenticated="False"
+              id="++resource++bika.lims.js/utils.js"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
               cookable="True"
               enabled="on"
               expression=""
-              id="++resource++bika.lims.js/utils.js"
               inline="False"
               insert-after="++resource++bika.lims.js/jquery.json.js"/>
 
   <javascript authenticated="False"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression=""
               id="++resource++bika.lims.js/bika_listing.js"
-              inline="False"
-              insert-after="*"/>
-
-  <javascript authenticated="False"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
               cookable="True"
               enabled="on"
-              expression="python:here.portal_type in ['Client', 'Batch']"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="True"
               id="++resource++bika.lims.js/client.js"
-              inline="False"
-              insert-after="*"/>
-
-  <javascript authenticated="False"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
               cookable="True"
               enabled="on"
-              expression="python:here.portal_type in ['Client', 'AnalysisRequest','Worksheet']"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="True"
               id="++resource++bika.lims.js/calcs.js"
-              inline="False"
-              insert-after="*"/>
-
-  <javascript authenticated="False"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
               cookable="True"
               enabled="on"
-              expression="python:here.portal_type in ['Client', 'AnalysisRequest', 'Batch']"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="True"
               id="++resource++bika.lims.js/batch.js"
-              inline="False"
-              insert-after="*"/>
-
-<javascript authenticated="False"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
               cookable="True"
               enabled="on"
-              expression="python:here.portal_type in ['AnalysisRequest', ]"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+<javascript authenticated="True"
               id="++resource++bika.lims.js/ar.js"
-              inline="False"
-              insert-after="*"/>
-
-<javascript authenticated="False"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
               cookable="True"
               enabled="on"
-              expression="python:here.portal_type in ['Worksheet','WorksheetFolder']"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+<javascript authenticated="True"
               id="++resource++bika.lims.js/worksheet.js"
-              inline="False"
-              insert-after="*"/>
-
-  <javascript authenticated="False"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
               cookable="True"
               enabled="on"
-              expression="python:here.portal_type in ['Sample']"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="True"
               id="++resource++bika.lims.js/sample.js"
-              inline="False"
-              insert-after="*"/>
-
-  <javascript authenticated="False"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
               cookable="True"
               enabled="on"
-              expression="python:here.portal_type in ['Contact']"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="True"
               id="++resource++bika.lims.js/contact.js"
-              inline="False"
-              insert-after="*"/>
-
-  <javascript authenticated="False"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
               cookable="True"
               enabled="on"
-              expression="python:here.portal_type in ['ReferenceSample']"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="True"
               id="++resource++bika.lims.js/referencesample.js"
-              inline="False"
-              insert-after="*"/>
-
-  <javascript authenticated="False"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
               cookable="True"
               enabled="on"
-              expression="python:here.portal_type in ['ReportFolder']"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="True"
               id="++resource++bika.lims.js/reports.js"
-              inline="False"
-              insert-after="*"/>
-
-  <javascript authenticated="False"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
               cookable="True"
               enabled="on"
-              expression="python:here.portal_type in ['AnalysisService']"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="True"
               id="++resource++bika.lims.js/analysisservice.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="True"
+              id="++resource++bika.lims.js/artemplate.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="True"
+              id="++resource++bika.lims.js/queries.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="True"
+              id="++resource++bika.lims.js/barcode.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="True"
+              id="++resource++bika.lims.js/jquery-barcode-2.0.2.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
               inline="False"
               insert-after="*"/>
 
   <javascript authenticated="False"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression="python:here.portal_type in ['ARTemplate']"
-              id="++resource++bika.lims.js/artemplate.js"
-              inline="False"
-              insert-after="*"/>
-
-  <javascript authenticated="True"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression=""
-              id="++resource++bika.lims.js/queries.js"
-              inline="False"
-              insert-after="*"/>
-
-  <javascript authenticated="True"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression=""
-              id="++resource++bika.lims.js/barcode.js"
-              inline="False"
-              insert-after="*"/>
-
-  <javascript authenticated="True"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression=""
-              id="++resource++bika.lims.js/jquery-barcode-2.0.2.js"
-              inline="False"
-              insert-after="*"/>
-
-  <javascript authenticated="True"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression=""
               id="++resource++bika.lims.js/jquery-query-2.1.7.js"
-              inline="False"
-              insert-after="*"/>
-
-  <javascript authenticated="True"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
               cookable="True"
               enabled="on"
               expression=""
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="False"
               id="++resource++bika.lims.js/jquery.ui.combogrid-1.6.2.js"
-              inline="False"
-              insert-after="*"/>
-
-  <javascript authenticated="True"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
               cookable="True"
               enabled="on"
               expression=""
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="True"
               id="++resource++bika.lims.js/attachments.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
               inline="False"
               insert-after="*"/>
 
