@@ -31,7 +31,7 @@ $(document).ready(function(){
             filter: 'head>*,#content>*:not(div.configlet),dl.portalMessage.error,dl.portalMessage.info',
             formselector: '#batch-base-edit',
             closeselector: '[name="form.button.cancel"]',
-            width:'40%',
+            width:'70%',
             noform:'close',
             config: {
                 onLoad: function() {
