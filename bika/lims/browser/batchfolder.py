@@ -117,7 +117,7 @@ class ajaxGetBatches(BrowserView):
             if batch.Title.lower().find(searchTerm) > -1 \
             or batch.Description.lower().find(searchTerm) > -1:
                 batch = batch.getObject()
-                rows.append({'BatchID': batch.Title(),
+                rows.append({'BatchID': batch.getBatchID(),
                              'Description': batch.Description(),
                              'BatchUID': batch.UID()})
 
