@@ -259,12 +259,17 @@ function enableAddAttachment(this_field) {
 }
 
 
+
+
 $(document).ready(function(){
 
 	_ = jarn.i18n.MessageFactory('bika');
 	PMF = jarn.i18n.MessageFactory('plone');
 
-	dateFormat = _("date_format_short_datepicker");
+	var curDate = new Date();
+	var y = curDate.getFullYear();
+	var limitString = '1900:' + y;
+	var dateFormat = _("date_format_short_datepicker");
 
 	$('input.datepicker').live('click', function() {
 		$(this).datepicker({
@@ -272,8 +277,8 @@ $(document).ready(function(){
 			showAnim:'',
 			changeMonth:true,
 			changeYear:true,
-			dateFormat:dateFormat,
-			yearRange: "-100:+0"
+			dateFormat: dateFormat,
+			yearRange: limitString
 		})
 		.click(function(){$(this).attr('value', '');})
 		.focus();
@@ -286,9 +291,9 @@ $(document).ready(function(){
 			showAnim:'',
 			changeMonth:true,
 			changeYear:true,
-			maxDate: '+0d',
+			maxDate: curDate,
 			dateFormat: dateFormat,
-			yearRange: "-100:+0"
+			yearRange: limitString
 		})
 		.click(function(){$(this).attr('value', '');})
 		.focus();
@@ -303,7 +308,7 @@ $(document).ready(function(){
 			maxDate: '+0d',
 			numberOfMonths: 2,
 			dateFormat: dateFormat,
-			yearRange: "-100:+0"
+			yearRange: limitString
 		})
 		.click(function(){$(this).attr('value', '');})
 		.focus();

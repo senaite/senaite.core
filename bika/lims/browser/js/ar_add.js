@@ -71,12 +71,24 @@ function deleteSampleButton(){
 	_ = jarn.i18n.MessageFactory('bika');
 	PMF = jarn.i18n.MessageFactory('plone');
 
+	var curDate = new Date();
+	var y = curDate.getFullYear();
+	var limitString = '1900:' + y;
+	var dateFormat = _("date_format_short_datepicker");
+
 	column = $(this).attr('column');
 	$("#ar_"+column+"_SampleID_button").val($("#ar_"+column+"_SampleID_default").val());
 	$("#ar_"+column+"_SampleID").val('');
 	$("#ar_"+column+"_ClientReference").val('').removeAttr("readonly");
 	$("#ar_"+column+"_SamplingDate")
-		.datepicker({'dateFormat': _('date_format_short_datepicker'), showAnim: ''})
+		.datepicker({
+			showOn:'focus',
+			showAnim:'',
+			changeMonth:true,
+			changeYear:true,
+			dateFormat: dateFormat,
+			yearRange: limitString
+		})
 		.click(function(){$(this).attr('value', '');})
 		.attr('value', '');
 	$("#ar_"+column+"_ClientSampleID").val('').removeAttr("readonly");
@@ -845,6 +857,11 @@ $(document).ready(function(){
 	_ = jarn.i18n.MessageFactory('bika');
 	PMF = jarn.i18n.MessageFactory('plone');
 
+	var curDate = new Date();
+	var y = curDate.getFullYear();
+	var limitString = '1900:' + y;
+	var dateFormat = _("date_format_short_datepicker");
+
 	// Sampling Date field is readonly to prevent invalid data entry, so
 	// clicking SamplingDate field clears existing values.
 	// clear date widget values if the page is reloaded.
@@ -852,11 +869,25 @@ $(document).ready(function(){
 	if(e.length > 0){
 		if($($(e).parents('form').children('[name=came_from]')).val() == 'add'){
 			$(e)
-			.datepicker({'dateFormat': _('date_format_short_datepicker'), showAnim: ''})
+			.datepicker({
+				showOn:'focus',
+				showAnim:'',
+				changeMonth:true,
+				changeYear:true,
+				dateFormat: dateFormat,
+				yearRange: limitString
+			})
 			.click(function(){$(this).attr('value', '');})
 		} else {
 			$(e)
-			.datepicker({'dateFormat': _('date_format_short_datepicker'), showAnim: ''})
+			.datepicker({
+				showOn:'focus',
+				showAnim:'',
+				changeMonth:true,
+				changeYear:true,
+				dateFormat: dateFormat,
+				yearRange: limitString
+			})
 		}
 	}
 
