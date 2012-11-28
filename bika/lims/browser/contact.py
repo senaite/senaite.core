@@ -1,6 +1,7 @@
 from Acquisition import aq_parent, aq_inner, aq_base
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.Archetypes.utils import DisplayList
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 import json
@@ -108,3 +109,27 @@ class ContactLoginDetailsView(BrowserView):
         while True:
             i += 1
             yield i
+
+
+# class CCContactsVocabulary(ContactsVocabulary):
+#     """Return a JSON value, containing all Contacts and their default CCs
+#     for this client.  This function is used to set form values for javascript.
+#     """
+#     def __call__(self):
+#         contacts = ContactsVocabulary.__call__(self)
+
+#         contact_data = []
+#         for contact in contacts:
+#             this_contact_data = {'title': contact.Title(),
+#                                  'uid': contact.UID(), }
+#             ccs = []
+#             for cc in contact.getCCContact():
+#                 if isActive(cc):
+#                     ccs.append({'title': cc.Title(),
+#                                 'uid': cc.UID(),})
+#             this_contact_data['ccs_json'] = json.dumps(ccs)
+#             this_contact_data['ccs'] = ccs
+#             contact_data.append(this_contact_data)
+#         contact_data.sort(lambda x, y:cmp(x['title'].lower(),
+#                                           y['title'].lower()))
+#         return contact_data

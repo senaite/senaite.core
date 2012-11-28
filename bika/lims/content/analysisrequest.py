@@ -22,7 +22,6 @@ from bika.lims.config import PROJECTNAME, \
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.utils import sortable_title
-
 from decimal import Decimal
 from email.Utils import formataddr
 from types import ListType, TupleType
@@ -57,7 +56,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ReferenceField('Contact',
         required=1,
-        vocabulary='getContactsDisplayList',
+        vocabulary='getContacts',
         default_method='getContactUIDForUser',
         vocabulary_display_path_bound=sys.maxint,
         allowed_types=('Contact',),
@@ -88,7 +87,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ReferenceField('CCContact',
         multiValued=1,
-        vocabulary='getContactsDisplayList',
+        vocabulary='getContacts',
         vocabulary_display_path_bound=sys.maxint,
         allowed_types=('Contact',),
         referenceClass=HoldingReference,

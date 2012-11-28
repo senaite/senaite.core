@@ -30,7 +30,7 @@ schema = Person.schema.copy() + Schema((
     ),
     ReferenceField('CCContact',
         schemata = 'Publication preference',
-        vocabulary = 'getCCContactsDisplayList',
+        vocabulary = 'getContacts',
         multiValued = 1,
         allowed_types = ('Contact',),
         relationship = 'ContactContact',
@@ -67,15 +67,5 @@ class Contact(Person):
         """ check if contact has user """
         return self.portal_membership.getMemberById(
             self.getUsername()) is not None
-
-    security.declarePublic('getCCContactsDisplayList')
-    def getCCContactsDisplayList(self):
-        pairs = []
-        all_contacts = self.aq_parent.getContactsDisplayList().items()
-        # remove myself
-        for item in all_contacts:
-            if item[0] != self.UID():
-                pairs.append((item[0], item[1]))
-        return DisplayList(pairs)
 
 atapi.registerType(Contact, PROJECTNAME)

@@ -76,7 +76,7 @@
 <thead>
     <!-- Contact -->
     <tr tal:define="client_contacts python:hasattr(context, 'getCCContacts')
-        and context.getCCContacts() or '';
+        and context.getCCContacts() or context.getContacts();
     this_contact python:client_contacts and (type(client_contacts) in (list, tuple) and client_contacts[0]['uid'] or client_contacts['uid']) or '';
     this_contact python:this_contact and
         [c for c in client_contacts

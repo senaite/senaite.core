@@ -1,6 +1,7 @@
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
+from Products.Archetypes.utils import DisplayList
 from Products.Archetypes.ArchetypeTool import registerType
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser.bika_listing import BikaListingView
@@ -105,6 +106,18 @@ class Departments(ATFolder):
     implements(IDepartments)
     displayContentsTab = False
     schema = schema
+
+    def getContacts(self):
+        pc = getToolByName(self, 'portal_catalog')
+        bc = getToolByName(self, 'bika_catalog')
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        # fallback - all Lab Contacts
+        pairs = []
+        for contact in bsc(portal_type = 'LabContact',
+                           inactive_state = 'active',
+                           sort_on = 'sortable_title'):
+            pairs.append((contact.UID, contact.Title))
+        return DisplayList(pairs)
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 atapi.registerType(Departments, PROJECTNAME)

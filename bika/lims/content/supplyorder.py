@@ -17,7 +17,7 @@ from bika.lims import bikaMessageFactory as _
 schema = BikaSchema.copy() + Schema((
     ReferenceField('Contact',
                    required = 1,
-                   vocabulary = 'getContactsDisplayList',
+                   vocabulary = 'getContacts',
                    default_method = 'getContactUIDForUser',
                    vocabulary_display_path_bound = sys.maxint,
                    allowed_types = ('Contact',),

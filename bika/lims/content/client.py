@@ -105,17 +105,6 @@ class Client(Organisation):
     def setTitle(self, value):
         return self.setName(value)
 
-    security.declarePublic('getContactsDisplayList')
-    def getContactsDisplayList(self):
-        wf = getToolByName(self, 'portal_workflow')
-        pairs = []
-        for contact in self.objectValues('Contact'):
-            if wf.getInfoFor(contact, 'inactive_state', '') == 'active':
-                pairs.append((contact.UID(), contact.Title()))
-        # sort the list by the second item
-        pairs.sort(lambda x, y:cmp(x[1], y[1]))
-        return DisplayList(pairs)
-
     security.declarePublic('getContactFromUsername')
     def getContactFromUsername(self, username):
         for contact in self.objectValues('Contact'):
@@ -136,27 +125,6 @@ class Client(Organisation):
         if len(r) == 1:
             return r[0].UID
 
-    security.declarePublic('getCCContacts')
-    def getCCContacts(self):
-        """Return a JSON value, containing all Contacts and their default CCs
-        for this client.  This function is used to set form values for javascript.
-        """
-        contact_data = []
-        for contact in self.objectValues('Contact'):
-            if isActive(contact):
-                this_contact_data = {'title': contact.Title(),
-                                     'uid': contact.UID(), }
-                ccs = []
-                for cc in contact.getCCContact():
-                    if isActive(cc):
-                        ccs.append({'title': cc.Title(),
-                                    'uid': cc.UID(),})
-                this_contact_data['ccs_json'] = json.dumps(ccs)
-                this_contact_data['ccs'] = ccs
-            contact_data.append(this_contact_data)
-        contact_data.sort(lambda x, y:cmp(x['title'].lower(),
-                                          y['title'].lower()))
-        return contact_data
 
     security.declarePublic('getARImportOptions')
     def getARImportOptions(self):

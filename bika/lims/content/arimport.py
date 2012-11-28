@@ -74,7 +74,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceField('Contact',
-        vocabulary = 'getContactsDisplayList',
+        vocabulary = 'getContacts',
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('Contact',),
         referenceClass = HoldingReference,
@@ -86,7 +86,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceField('CCContact',
-        vocabulary = 'getContactsDisplayList',
+        vocabulary = 'getContacts',
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('Contact',),
         referenceClass = HoldingReference,
@@ -172,7 +172,6 @@ class ARImport(BaseFolder):
     def Title(self):
         """ Return the id as title """
         return str(self.getId()).decode('utf-8').encode('utf-8')
-
 
     security.declarePublic('current_date')
     def current_date(self):
