@@ -25,13 +25,20 @@ schema = BikaSchema.copy() + Schema((
             label=_("Batch ID"),
         )
     ),
+    StringField('ClientBatchID',
+        searchable=True,
+        required=0,
+        widget=StringWidget(
+            label=_("Client Batch ID")
+        )
+    ),
     LinesField('BatchLabels',
         vocabulary = "BatchLabelVocabulary",
         widget=MultiSelectionWidget(
             label=_("Batch labels"),
             format="checkbox",
         )
-    ),
+    ),    
     TextField('Remarks',
         searchable=True,
         default_content_type='text/x-web-intelligent',
