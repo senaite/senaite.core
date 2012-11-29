@@ -135,7 +135,8 @@ class ajaxGetClients(BrowserView):
         sidx = self.request['sidx']
         wf = getToolByName(self.context, 'portal_workflow')
 
-        clients = (x.getObject() for x in self.portal_catalog(portal_type="Client"))
+        clients = (x.getObject() for x in self.portal_catalog(portal_type="Client",
+                                                              inactive_state = 'active'))
         rows = [{'ClientID': b.getClientID() and b.getClientID() or '',
                  'Title': b.Title() ,
                  'ClientUID': b.UID()} for b in clients
