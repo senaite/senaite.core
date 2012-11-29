@@ -84,6 +84,7 @@ schema = Organisation.schema.copy() + atapi.Schema((
 schema['AccountNumber'].write_permission = ManageClients
 schema['title'].widget.visible = False
 schema['description'].widget.visible = False
+schema['EmailAddress'].schemata = 'default'
 
 schema.moveField('ClientID', after='Name')
 
