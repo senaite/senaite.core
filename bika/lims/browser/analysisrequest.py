@@ -1720,14 +1720,7 @@ class ajaxAnalysisRequestSubmit():
 
             # resolve BatchID
             batch_id = values.get('BatchID', '')
-            if batch_id:
-                brains = bc(portal_type="Batch", getBatchUID=values['BatchUID'])
-                if brains:
-                    batch_uid = brains[0].UID
-                else:
-                    batch_uid = None
-            else:
-                batch_uid = None
+            batch_uid = values.get('BatchUID', '')
 
             # create the AR
 
