@@ -105,6 +105,36 @@ class Client(Organisation):
     def setTitle(self, value):
         return self.setName(value)
 
+    def getContacts(self, dl=True):
+        pc = getToolByName(self, 'portal_catalog')
+        bc = getToolByName(self, 'bika_catalog')
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        pairs = []
+        objects = []
+        for contact in self.objectValues('Contact'):
+            if isActive(contact):
+                pairs.append((contact.UID(), contact.Title()))
+                if not dl:
+                    objects.append(contact)
+        pairs.sort(lambda x, y:cmp(x[1].lower(), y[1].lower()))
+        return dl and DisplayList(pairs) or objects
+
+    def getCCs(self):
+        items = []
+        for contact in self.getContacts(dl=False):
+            item = {'uid': contact.UID(), 'title': contact.Title()}
+            ccs = []
+            if hasattr(contact, 'getCCContact'):
+                for cc in contact.getCCContact():
+                    if isActive(cc):
+                        ccs.append({'title': cc.Title(),
+                                    'uid': cc.UID(),})
+            item['ccs_json'] = json.dumps(ccs)
+            item['ccs'] = ccs
+            items.append(item)
+        items.sort(lambda x, y:cmp(x['title'].lower(), y['title'].lower()))
+        return items
+
     security.declarePublic('getContactFromUsername')
     def getContactFromUsername(self, username):
         for contact in self.objectValues('Contact'):

@@ -75,28 +75,35 @@ class Batch(BaseContent):
     def getBatchID(self):
         return self.getId()
 
-    security.declarePublic('getCCContacts')
-    def getCCContacts(self):
-        """ Return JSON containing all Lab contacts (with empty default CC lists).
-        This function is used to set form values for javascript.
-        """
-        contact_data = []
-        for contact in self.bika_setup.bika_labcontacts.objectValues('LabContact'):
-            if isActive(contact):
-                this_contact_data = {'title': contact.Title(),
-                                     'uid': contact.UID(), }
-                ccs = []
-                if hasattr(contact, 'getCCContact'):
-                    for cc in contact.getCCContact():
-                        if isActive(cc):
-                            ccs.append({'title': cc.Title(),
-                                        'uid': cc.UID(),})
-                this_contact_data['ccs_json'] = json.dumps(ccs)
-                this_contact_data['ccs'] = ccs
-            contact_data.append(this_contact_data)
-        contact_data.sort(lambda x, y:cmp(x['title'].lower(),
-                                          y['title'].lower()))
-        return contact_data
+    def getContacts(self, dl=True):
+        pc = getToolByName(self, 'portal_catalog')
+        bc = getToolByName(self, 'bika_catalog')
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        pairs = []
+        objects = []
+        for contact in bsc(portal_type = 'LabContact',
+                           inactive_state = 'active',
+                           sort_on = 'sortable_title'):
+            pairs.append((contact.UID, contact.Title))
+            if not dl:
+                objects.append(contact.getObject())
+        return dl and DisplayList(pairs) or objects
+
+    def getCCs(self):
+        items = []
+        for contact in self.getContacts(dl=False):
+            item = {'uid': contact.UID(), 'title': contact.Title()}
+            ccs = []
+            if hasattr(contact, 'getCCContact'):
+                for cc in contact.getCCContact():
+                    if isActive(cc):
+                        ccs.append({'title': cc.Title(),
+                                    'uid': cc.UID(),})
+            item['ccs_json'] = json.dumps(ccs)
+            item['ccs'] = ccs
+            items.append(item)
+        items.sort(lambda x, y:cmp(x['title'].lower(), y['title'].lower()))
+        return items
 
     def BatchLabelVocabulary(self):
         """ return all batch labels """
@@ -113,5 +120,6 @@ class Batch(BaseContent):
         uid = self.context.UID()
         return [b.getObject() for b in bc(portal_type='AnalysisRequest',
                                           getBatchUID=uid)]
+
 
 registerType(Batch, PROJECTNAME)
