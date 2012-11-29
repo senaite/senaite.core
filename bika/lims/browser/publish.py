@@ -73,7 +73,7 @@ class Publish(BrowserView):
             or laboratory.getPhysicalAddress()
         if lab_address:
             _keys = ['address', 'city', 'state', 'zip', 'country']
-            _list = [lab_address.get(v) for v in _keys]
+            _list = [lab_address.get(v) for v in _keys if lab_address.get(v)]
             self.lab_address = "<br/>".join(_list).replace("\n", "<br/>")
         else:
             self.lab_address = None
