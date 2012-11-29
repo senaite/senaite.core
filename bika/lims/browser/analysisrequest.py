@@ -1530,6 +1530,8 @@ class ajaxAnalysisRequestSubmit():
 
         # Now some basic validation
         required_fields = ['SampleType', 'SamplingDate']
+        if self.context.portal_type == 'Batch':
+            required_fields.append('ClientID')
         validated_fields = ('SampleID', 'SampleType', 'SamplePoint')
 
         for column in columns:
