@@ -54,9 +54,9 @@ class ajaxCalculateAnalysisEntry():
             elif form_result == "0/0":
                 # 0/0 result means divbyzero: set result value to empty
                 Result['result'] = ""
-            else:
-                # other un-floatable results get forced to 0.
-                Result['result'] = 0.0
+            # else:
+            #     # other un-floatable results get forced to 0.
+            #     Result['result'] = 0.0
 
         # This gets set if <> is detected in interim values, so that
         # TypeErrors during calculation can set the correct alert message
@@ -78,13 +78,14 @@ class ajaxCalculateAnalysisEntry():
                     unsatisfied = True
                     break
                 key = dependency.getService().getKeyword()
-                # All mappings must be float, or error alert is returned
+                # All mappings must be float, or they are ignored.
                 try:
                     mapping[key] = float(self.current_results[dependency_uid])
                 except:
-                    # indeterminate interim values (<x, >x, invalid)
-                    # set 'indeterminate' flag on this analyses' result
-                    indeterminate = True
+                    continue
+                    # # indeterminate interim values (<x, >x, invalid)
+                    # # set 'indeterminate' flag on this analyses' result
+                    # indeterminate = True
             if unsatisfied:
                 # unsatisfied means that one or more result on which we depend
                 # is blank or unavailable, so we set blank result and abort.
@@ -103,13 +104,14 @@ class ajaxCalculateAnalysisEntry():
                                              'result': '',
                                              'formatted_result': ''})
                         return None
-                    # All interims must be float, or error alert is returned
+                    # All interims must be float, or they are ignored.
                     try:
                         i['value'] = float(i['value'])
                     except:
-                        # indeterminate interim values (<x, >x, invald)
-                        # set 'indeterminate' flag on this analyses' result
-                        indeterminate = True
+                        continue
+                        # # indeterminate interim values (<x, >x, invald)
+                        # # set 'indeterminate' flag on this analyses' result
+                        # indeterminate = True
 
                     # all interims are ServiceKeyword.InterimKeyword
                     if i_uid in deps:
@@ -122,17 +124,24 @@ class ajaxCalculateAnalysisEntry():
                         mapping[i['keyword']] = i['value']
 
             # Grab values for hidden InterimFields for only for current calculation
+            # we can't allow non-floats through here till we change the eval's interpolation
             hidden_fields = []
             c_fields = calculation.getInterimFields()
             s_fields = service.getInterimFields()
             for field in c_fields:
                 if field.get('hidden', False):
                     hidden_fields.append(field['keyword'])
-                    mapping[field['keyword']] = field['value']
+                    try:
+                        mapping[field['keyword']] = float(field['value'])
+                    except ValueError:
+                        pass
             # also grab stickier defaults from AnalysisService
             for field in s_fields:
                 if field['keyword'] in hidden_fields:
-                    mapping[field['keyword']] = field['value']
+                    try:
+                        mapping[field['keyword']] = float(field['value'])
+                    except ValueError:
+                        pass
 
             # convert formula to a valid python string, ready for interpolation
             formula = calculation.getFormula()
