@@ -17,7 +17,7 @@ import plone
 
 class AnalysesView(BikaListingView):
     """ Displays a list of Analyses in a table.
-        All InterimFields from all analyses are added to self.columns[].
+        Visible InterimFields from all analyses are added to self.columns[].
         Keyword arguments are passed directly to bika_analysis_catalog.
     """
     def __init__(self, context, request, **kwargs):
@@ -321,7 +321,7 @@ class AnalysesView(BikaListingView):
 
             # Add this analysis' interim fields to the interim_columns list
             for f in self.interim_fields[obj.UID()]:
-                if f['keyword'] not in self.interim_columns:
+                if f['keyword'] not in self.interim_columns and not f.get('hidden', False):
                     self.interim_columns[f['keyword']] = f['title']
                 # and to the item itself
                 items[i][f['keyword']] = f
@@ -391,6 +391,8 @@ class AnalysesView(BikaListingView):
             for state in self.review_states:
                 # InterimFields are displayed in review_state
                 # They are anyway available through View.columns though.
+                # In case of hidden fields, the calcs.py should check calcs/services
+                # for additional InterimFields!!
                 pos = 'Result' in state['columns'] and \
                     state['columns'].index('Result') or len(state['columns'])
                 for col_id in interim_keys:

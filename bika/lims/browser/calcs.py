@@ -121,6 +121,19 @@ class ajaxCalculateAnalysisEntry():
                     if uid == i_uid:
                         mapping[i['keyword']] = i['value']
 
+            # Grab values for hidden InterimFields for only for current calculation
+            hidden_fields = []
+            c_fields = calculation.getInterimFields()
+            s_fields = service.getInterimFields()
+            for field in c_fields:
+                if field.get('hidden', False):
+                    hidden_fields.append(field['keyword'])
+                    mapping[field['keyword']] = field['value']
+            # also grab stickier defaults from AnalysisService
+            for field in s_fields:
+                if field['keyword'] in hidden_fields:
+                    mapping[field['keyword']] = field['value']
+
             # convert formula to a valid python string, ready for interpolation
             formula = calculation.getFormula()
             formula = formula.replace('[', '%(').replace(']', ')f')
@@ -164,7 +177,7 @@ class ajaxCalculateAnalysisEntry():
                     'field': 'Result',
                     'icon': 'exclamation',
                     'msg': "Division by zero: " + html_quote(str(e.args[0])) + "("+formula+")"
-                    })       
+                    })
                 self.results.append(Result)
                 return None
             except KeyError, e:
