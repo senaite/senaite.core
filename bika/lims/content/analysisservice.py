@@ -10,12 +10,9 @@ from Products.CMFCore.utils import getToolByName
 from Products.validation import validation
 from Products.validation.validators.RegexValidator import RegexValidator
 from bika.lims import PMF, bikaMessageFactory as _
-from bika.lims.browser.fields import DurationField
-from bika.lims.browser.fields import HistoryAwareReferenceField
-from bika.lims.browser.widgets import DurationWidget
-from bika.lims.browser.widgets import PartitionSetupWidget
-from bika.lims.browser.widgets import RecordsWidget
-from bika.lims.browser.widgets import ServicesWidget
+from bika.lims.browser.widgets import *
+from bika.lims.browser.widgets.recordswidget import RecordsWidget
+from bika.lims.browser.fields import *
 from bika.lims.config import ATTACHMENT_OPTIONS, PROJECTNAME, SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisService
@@ -278,6 +275,14 @@ schema = BikaSchema.copy() + Schema((
         expression = "context.getCalculation() and context.getCalculation().UID() or ''",
         widget = ComputedWidget(
             visible = False,
+        ),
+    ),
+    InterimFieldsField('InterimFields',
+        schemata = 'Method',
+        widget = RecordsWidget(
+            label = _("Calculation Interim Fields"),
+            description =_("Values can be entered here which will override the defaults"
+                           "specified in the Calculation Interim Fields."),
         ),
     ),
     DurationField('MaxTimeAllowed',
