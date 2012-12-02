@@ -595,7 +595,7 @@ function setARTemplate(){
 		P = template_data['Partitions'][pi];
 		partnr = parseInt(P['part_id'].split("-")[1], 10);
 		cu = P['container_uid'];
-		if(cu.length > 1 && cu[0] != ""){ cu = [cu]; }
+		if(cu != null && cu != undefined && cu.length > 1 && cu[0] != ""){ cu = [cu]; }
 		else { cu = []; }
 		pu = P['preservation_uid'];
 		if(pu != null && pu != undefined && pu.length > 1 && pu[0] != ""){
