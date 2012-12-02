@@ -52,7 +52,6 @@ class HistoryAwareReferenceField(ReferenceField):
 
         pm = getToolByName(instance, "portal_membership")
         member = pm.getAuthenticatedMember()
-        canSaveNewVersion = pm.checkPermission(SaveNewVersion, instance)
 
         ts = getToolByName(instance, "translation_service").translate
 
@@ -74,24 +73,23 @@ class HistoryAwareReferenceField(ReferenceField):
         sub = [t for t in targetUIDs if t not in uids]
         add = [v for v in uids if v and v not in targetUIDs]
 
-        if canSaveNewVersion:
-            newuids = [t for t in list(targetUIDs) + list(uids) if t not in sub]
-            for uid in newuids:
-                # update version_id of all existing references that aren't
-                # about to be removed anyway (contents of sub)
-                version_id = hasattr(targets[uid], 'version_id') and \
-                           targets[uid].version_id or None
-                if version_id == None:
-                    # attempt initial save of unversioned targets
-                    pr = getToolByName(instance, 'portal_repository')
-                    if pr.isVersionable(targets[uid]):
-                        pr.save(obj=targets[uid],
-                                comment=ts(_("Initial revision")))
-                if not hasattr(instance, 'reference_versions'):
-                    instance.reference_versions = {}
-                if not hasattr(targets[uid], 'version_id'):
-                    targets[uid].version_id = None
-                instance.reference_versions[uid] = targets[uid].version_id
+        newuids = [t for t in list(targetUIDs) + list(uids) if t not in sub]
+        for uid in newuids:
+            # update version_id of all existing references that aren't
+            # about to be removed anyway (contents of sub)
+            version_id = hasattr(targets[uid], 'version_id') and \
+                       targets[uid].version_id or None
+            if version_id == None:
+                # attempt initial save of unversioned targets
+                pr = getToolByName(instance, 'portal_repository')
+                if pr.isVersionable(targets[uid]):
+                    pr.save(obj=targets[uid],
+                            comment=ts(_("Initial revision")))
+            if not hasattr(instance, 'reference_versions'):
+                instance.reference_versions = {}
+            if not hasattr(targets[uid], 'version_id'):
+                targets[uid].version_id = None
+            instance.reference_versions[uid] = targets[uid].version_id
 
         # tweak keyword arguments for addReference
         addRef_kw = kwargs.copy()
@@ -146,15 +144,7 @@ class HistoryAwareReferenceField(ReferenceField):
                r.version_id != None:
 
                 version_id = instance.reference_versions[uid]
-                # a simple permission check should do fine but sometimes when we
-                # DO have the permission, and Authentication Error is raised anyway
-                try:
-                    o = pr.retrieve(r, selector=version_id).object
-                except Exception, msg:
-                    msg = "History retrieve failed: %s can't get %s (version %s): %s" % \
-                        (instance,r,version_id, msg)
-                    logger.warn(msg)
-                    o = r
+                o = pr.retrieve(r, selector=version_id).object
             else:
                 o = r
             rd[uid] = o
