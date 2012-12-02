@@ -276,7 +276,8 @@ class Sample(BaseFolder, HistoryAwareMixin):
 
     def getLastARNumber(self):
         ARs = self.getBackReferences("AnalysisRequestSample")
-        ar_ids = [AR.id for AR in ARs]
+        prefix = self.getSampleType().getPrefix()
+        ar_ids = [AR.id for AR in ARs if AR.id.startswith(prefix)]
         ar_ids.sort()
         try:
             last_ar_number = int(ar_ids[-1].split("-")[-1])

@@ -1615,6 +1615,12 @@ class ajaxAnalysisRequestSubmit():
                                  UID = templateUID):
                     template = proxy.getObject()
 
+            if self.context.portal_type == 'Client':
+                client = self.context
+            else:
+                ClientID = values['ClientID']
+                proxies = pc(portal_type = 'Client', getClientID = ClientID)
+                client = proxies[0].getObject()
             if values.has_key('SampleID'):
                 # Secondary AR
                 sample = bc(portal_type = 'Sample',
@@ -1622,12 +1628,6 @@ class ajaxAnalysisRequestSubmit():
                             id = values['SampleID'])[0].getObject()
             else:
                 # Primary AR
-                if self.context.portal_type == 'Client':
-                    client = self.context
-                else:
-                    ClientID = values['ClientID']
-                    proxies = pc(portal_type = 'Client', getClientID = ClientID)
-                    client = proxies[0].getObject()
 
                 _id = client.invokeFactory('Sample', id = 'tmp')
                 sample = client[_id]
@@ -1679,46 +1679,50 @@ class ajaxAnalysisRequestSubmit():
             parts_and_services = {}
             for _i in range(len(parts)):
                 p = parts[_i]
-                _id = sample.invokeFactory('SamplePartition', id = 'tmp')
-                part = sample[_id]
-                parts[_i]['object'] = part
-                # Sort available containers by capacity and select the
-                # smallest one possible.
-                containers = [_p.getObject() for _p in bsc(UID=p['container'])]
-                if containers:
-                    containers.sort(lambda a,b:cmp(
-                        a.getCapacity() \
-                        and mg(float(a.getCapacity().lower().split(" ", 1)[0]), a.getCapacity().lower().split(" ", 1)[1]) \
-                        or mg(0, 'ml'),
-                        b.getCapacity() \
-                        and mg(float(b.getCapacity().lower().split(" ", 1)[0]), b.getCapacity().lower().split(" ", 1)[1]) \
-                        or mg(0, 'ml')
-                    ))
-                    container = containers[0]
+                if 'part-%s'%(_i+1) in sample.objectIds():
+                    parts[_i]['object'] = sample['part-%s'%(_i+1)]
+                    parts_and_services['part-%s'%(_i+1)] = p['services']
                 else:
-                    container = None
+                    _id = sample.invokeFactory('SamplePartition', id = 'tmp')
+                    part = sample[_id]
+                    parts[_i]['object'] = part
+                    # Sort available containers by capacity and select the
+                    # smallest one possible.
+                    containers = [_p.getObject() for _p in bsc(UID=p['container'])]
+                    if containers:
+                        containers.sort(lambda a,b:cmp(
+                            a.getCapacity() \
+                            and mg(float(a.getCapacity().lower().split(" ", 1)[0]), a.getCapacity().lower().split(" ", 1)[1]) \
+                            or mg(0, 'ml'),
+                            b.getCapacity() \
+                            and mg(float(b.getCapacity().lower().split(" ", 1)[0]), b.getCapacity().lower().split(" ", 1)[1]) \
+                            or mg(0, 'ml')
+                        ))
+                        container = containers[0]
+                    else:
+                        container = None
 
-                # If container is pre-preserved, set the part's preservation,
-                # and flag the partition to be transitioned below.
-                if container \
-                   and container.getPrePreserved() \
-                   and container.getPreservation():
-                    preservation = container.getPreservation().UID()
-                    parts[_i]['prepreserved'] = True
-                else:
-                    preservation = p['preservation']
-                    parts[_i]['prepreserved'] = False
+                    # If container is pre-preserved, set the part's preservation,
+                    # and flag the partition to be transitioned below.
+                    if container \
+                       and container.getPrePreserved() \
+                       and container.getPreservation():
+                        preservation = container.getPreservation().UID()
+                        parts[_i]['prepreserved'] = True
+                    else:
+                        preservation = p['preservation']
+                        parts[_i]['prepreserved'] = False
 
-                part.edit(
-                    Container = container,
-                    Preservation = preservation,
-                )
-                part.processForm()
-                if SamplingWorkflowEnabled:
-                    wftool.doActionFor(part, 'sampling_workflow')
-                else:
-                    wftool.doActionFor(part, 'no_sampling_workflow')
-                parts_and_services[part.id] = p['services']
+                    part.edit(
+                        Container = container,
+                        Preservation = preservation,
+                    )
+                    part.processForm()
+                    if SamplingWorkflowEnabled:
+                        wftool.doActionFor(part, 'sampling_workflow')
+                    else:
+                        wftool.doActionFor(part, 'no_sampling_workflow')
+                    parts_and_services[part.id] = p['services']
 
             # resolve BatchID
             batch_id = values.get('BatchID', '')
@@ -1789,13 +1793,20 @@ class ajaxAnalysisRequestSubmit():
                 doActionFor(ar, lowest_state)
 
             # receive secondary AR
-            if values.has_key('SampleID') and \
-               wftool.getInfoFor(sample, 'review_state') != 'sample_due':
-                wftool.doActionFor(ar, 'receive')
+            if values.has_key('SampleID'):
+                if wftool.getInfoFor(sample, 'review_state') == 'sampled':
+                    wftool.doActionFor(ar, 'sample_due')
+                if wftool.getInfoFor(sample, 'review_state') == 'sample_due':
+                    wftool.doActionFor(ar, 'receive')
+                for analysis in ar.getAnalyses(full_objects=1):
+                    if wftool.getInfoFor(analysis, 'review_state') == 'sampled':
+                        wftool.doActionFor(analysis, 'sample_due')
+                    if wftool.getInfoFor(analysis, 'review_state') == 'sample_due':
+                        wftool.doActionFor(analysis, 'receive')
 
             # Transition pre-preserved partitions.
             for p in parts:
-                if p['prepreserved']:
+                if 'prepreserved' in p and p['prepreserved']:
                     part = p['object']
                     state = wftool.getInfoFor(part, 'review_state')
                     if state == 'to_be_preserved':
