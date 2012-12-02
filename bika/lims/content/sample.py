@@ -281,7 +281,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
         ar_ids.sort()
         try:
             last_ar_number = int(ar_ids[-1].split("-")[-1])
-        except ValueError:
+        except:
             return 0
         return last_ar_number
 
