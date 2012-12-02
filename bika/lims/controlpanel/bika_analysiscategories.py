@@ -66,7 +66,7 @@ class AnalysisCategoriesView(BikaListingView):
                 continue
             obj = items[x]['obj']
             items[x]['Description'] = obj.Description()
-            items[x]['Department'] = obj.getDepartment().Title()
+            items[x]['Department'] = obj.getDepartment() and obj.getDepartment().Title() or ''
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                (items[x]['url'], items[x]['Title'])
 
