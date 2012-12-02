@@ -27,6 +27,8 @@ class BikaGenerator:
 
         obj = portal._getOb('front-page')
         alsoProvides(obj, IHaveNoBreadCrumbs)
+        mp = obj.manage_permission
+        mp(permissions.View, ['Anonymous'], 1)
 
         # remove undesired content objects
         del_ids = []
