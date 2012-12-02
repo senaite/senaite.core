@@ -1,9 +1,5 @@
-from AccessControl import ModuleSecurityInfo
-from DateTime import DateTime
-from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
-from Products.Archetypes.utils import shasattr
 from bika.lims import logger
 import transaction
 
@@ -16,6 +12,6 @@ def ObjectModifiedEventHandler(obj, event):
     if obj.portal_type == 'Calculation':
         # Update historyaware back-references
         backrefs = obj.getBackReferences('AnalysisServiceCalculation')
-        for service in backrefs:
-            service.setCalculation(obj.UID())
-
+        for i,service in enumerate(backrefs):
+            print "%s points to %s (version %s)" % (service.Title(), obj.Title(), obj.version_id+1)
+            service['reference_versions'][obj.UID()] = obj.version_id+1
