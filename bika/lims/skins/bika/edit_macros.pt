@@ -33,6 +33,11 @@
 			  <span
 				  tal:content="context/title_or_id"
 				  tal:omit-tag="python:True">Item title</span>
+          <span
+             tal:omit-tag="python:True"
+             tal:condition="python:hasattr(context, 'version_id')"
+             tal:content="python:'(v%s)'%context.version_id">
+          </span>
 			</span>
 		  </span>
 		</h1>
