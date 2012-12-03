@@ -99,7 +99,7 @@ class Publish(BrowserView):
                 or self.contact.getPhysicalAddress()
             if client_address:
                 _keys = ['address', 'city', 'state', 'zip', 'country']
-                _list = [client_address.get(v) for v in _keys]
+                _list = [client_address.get(v) for v in _keys if client_address.get(v)]
                 self.client_address = "<br/>".join(_list).replace("\n", "<br/>")
             else:
                 self.client_address = None

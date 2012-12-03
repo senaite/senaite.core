@@ -408,6 +408,7 @@ def AfterTransitionEventHandler(instance, event):
         endtime = DateTime()
         instance.setDateAnalysisPublished(endtime)
         starttime = instance.aq_parent.getDateReceived()
+        starttime = starttime or instance.created()
         service = instance.getService()
         maxtime = service.getMaxTimeAllowed()
         # set the instance duration value to default values
