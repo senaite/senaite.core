@@ -232,6 +232,7 @@
         tal:define="field_name string:BatchID">
         <th colspan="2" style="white-space:nowrap">
             <span i18n:translate="">Batch</span>
+<!-- #435
             <a style="border-bottom:none !important;margin-left:1em;"
                class='add_batch'
                tal:condition="python:context.portal_type != 'Batch'"
@@ -239,7 +240,8 @@
                rel="#overlay">
                <img style="padding-bottom:2px;" tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/add.png"/>
             </a>
-        </th>
+ -->
+         </th>
         <td>
             <img class="copyButton BatchIDCopyButton"
                  tal:condition="python:context.portal_type != 'Batch' and view.col_count > 1"
