@@ -3,7 +3,7 @@
              i18n:domain="plone"
              workflow_id="bika_one_state_workflow"
              title="Bika Single State Workflow"
-             state_variable="cancellation_state"
+             state_variable="review_state"
              initial_state="active"
              manager_bypass="False">
 
