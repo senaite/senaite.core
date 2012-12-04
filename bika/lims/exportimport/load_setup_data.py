@@ -154,6 +154,8 @@ class LoadSetupData(BrowserView):
             self.load_methods(sheets['Methods'])
         if 'Calculation Interim Fields' in sheets:
             self.load_interim_fields(sheets['Calculation Interim Fields'])
+        if 'AnalysisService InterimFields' in sheets:
+            self.load_service_interims(sheets['AnalysisService InterimFields'])
         #if 'Lab Products' in sheets:
         #    self.load_lab_products(sheets['Lab Products'])
         if 'Sampling Deviations' in sheets:
@@ -770,7 +772,7 @@ class LoadSetupData(BrowserView):
                      SampleMatrix = row['SampleMatrix_title'] and self.samplematrices[row['SampleMatrix_title']] or None,
                      Prefix = unicode(row['Prefix']),
                      MinimumVolume = unicode(row['MinimumVolume']),
-                     ContainerType = row['ContainerType_title'] and self.containertypes[row['ContainerType_title']] or None
+                     ContainerType = row['ContainerType_title'] and self.containertypes[unicode(row['ContainerType_title'])] or None
             )
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
@@ -880,6 +882,25 @@ class LoadSetupData(BrowserView):
             renameAfterCreation(obj)
             self.methods[unicode(row['title'])] = obj
 
+    def load_service_interims(self, sheet):
+        # Read all InterimFields into self.service_interims
+        nr_rows = sheet.get_highest_row()
+        nr_cols = sheet.get_highest_column()
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
+        fields = rows[0]
+        self.service_interims = {}
+        for row in rows[3:]:
+            row = dict(zip(fields, row))
+            service_title = row['Service_title']
+            if service_title not in self.service_interims.keys():
+                self.service_interims[service_title] = []
+            self.service_interims[service_title].append({
+                'keyword': unicode(row['keyword']),
+                'title': unicode(row['title']),
+                'type': 'int',
+                'value': unicode(row['value']),
+                'unit': unicode(row['unit'] and row['unit'] or '')})
+
     def load_analysis_services(self, sheet):
         nr_rows = sheet.get_highest_row()
         nr_cols = sheet.get_highest_column()
@@ -897,8 +918,9 @@ class LoadSetupData(BrowserView):
                    'hours': int(row['MaxTimeAllowed_days'] and row['MaxTimeAllowed_days'] or 0),
                    'minutes': int(row['MaxTimeAllowed_minutes'] and row['MaxTimeAllowed_minutes'] or 0),
                    }
+            title = unicode(row['title'])
             obj.edit(
-                title = unicode(row['title']),
+                title = title,
                 description = row['description'] and unicode(row['description']) or '',
                 Keyword = unicode(row['Keyword']),
                 PointOfCapture = unicode(row['PointOfCapture']),
@@ -916,7 +938,8 @@ class LoadSetupData(BrowserView):
                 Instrument = row['Instrument_title'] and self.instruments[row['Instrument_title']] or None,
                 Calculation = row['Calculation_title'] and self.calcs[row['Calculation_title']] or None,
                 DuplicateVariation = "%02f" % float(row['DuplicateVariation']),
-                Accredited = row['Accredited'] and True or False
+                Accredited = row['Accredited'] and True or False,
+                InterimFields = self.service_interims.get(title, [])
             )
             service_obj = obj
             self.services[row['title']] = obj
@@ -952,7 +975,6 @@ class LoadSetupData(BrowserView):
                         'errorvalue': row['Uncertainty Value']})
             service.setUncertainties(sru)
 
-
     def load_interim_fields(self, sheet):
         # Read all InterimFields into self.interim_fields
         nr_rows = sheet.get_highest_row()
@@ -969,6 +991,7 @@ class LoadSetupData(BrowserView):
                 'keyword': unicode(row['keyword']),
                 'title': unicode(row['title']),
                 'type': 'int',
+                'hidden': row['hidden'] and True or False,
                 'value': unicode(row['value']),
                 'unit': unicode(row['unit'] and row['unit'] or '')})
 
