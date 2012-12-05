@@ -27,4 +27,7 @@ class SamplingDeviation(BaseFolder):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
+    def Title(self):
+        return self.title
+
 registerType(SamplingDeviation, PROJECTNAME)

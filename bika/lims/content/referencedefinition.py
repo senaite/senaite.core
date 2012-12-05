@@ -22,7 +22,7 @@ schema = BikaSchema.copy() + Schema((
             'result':'referencevalues_validator',
             'min':'referencevalues_validator',
             'max':'referencevalues_validator',
-            'error':'referencevalues_validator'},        
+            'error':'referencevalues_validator'},
         widget = ReferenceResultsWidget(
             label = _("Reference Results"),
             description = _("Click on Analysis Categories (against shaded background) "
@@ -68,5 +68,8 @@ class ReferenceDefinition(BaseContent):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
+
+    def Title(self):
+        return self.title
 
 registerType(ReferenceDefinition, PROJECTNAME)

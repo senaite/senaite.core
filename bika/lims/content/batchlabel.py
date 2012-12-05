@@ -17,6 +17,9 @@ class BatchLabel(BaseContent):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
-    
+
+    def Title(self):
+        return self.title
+
 registerType(BatchLabel, PROJECTNAME)
 
