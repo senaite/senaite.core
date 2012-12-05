@@ -214,7 +214,7 @@ class createSamplePartition(BrowserView):
         SamplingWorkflowEnabled = part.bika_setup.getSamplingWorkflowEnabled()
         ## We force the object to have the same state as the parent
         sample_state = wf.getInfoFor(self.context, 'review_state')
-        changeWorkflowState(part, sample_state)
+        changeWorkflowState(part, "bika_sample_workflow", sample_state)
         self.request.RESPONSE.redirect(self.context.absolute_url() +
                                        "/partitions")
         return
