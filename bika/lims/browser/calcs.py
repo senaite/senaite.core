@@ -170,12 +170,13 @@ class ajaxCalculateAnalysisEntry():
                                         'field': 'Result',
                                         'icon': 'exclamation',
                                         'msg': Indet})
-                else:
-                    inval = self.context.translate(_("Invalid result"))
-                    self.alerts.append({'uid': uid,
-                                        'field': 'Result',
-                                        'icon': 'exclamation',
-                                        'msg': inval})
+                # Non-floatable results are not actually invalid
+                # else:
+                #     inval = self.context.translate(_("Invalid result"))
+                #     self.alerts.append({'uid': uid,
+                #                         'field': 'Result',
+                #                         'icon': 'exclamation',
+                #                         'msg': inval})
 
             except ZeroDivisionError, e:
                 Result['result'] = '0/0'

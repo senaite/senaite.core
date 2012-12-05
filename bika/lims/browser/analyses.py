@@ -284,13 +284,14 @@ class AnalysesView(BikaListingView):
                                     '<img width="16" height="16" title="%s"' % Indet + \
                                     'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
                                     (self.portal_url)
-                            else:
-                                # result being un-floatable, is an error.
-                                msg = self.context.translate(_("Invalid result"))
-                                items[i]['after']['Result'] = \
-                                    '<img width="16" height="16" title="%s"' % msg + \
-                                    'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
-                                    (self.portal_url)
+                            # result being unfloatable is no longer an error.
+                            # else:
+                            #     # result being un-floatable, is an error.
+                            #     msg = self.context.translate(_("Invalid result"))
+                            #     items[i]['after']['Result'] = \
+                            #         '<img width="16" height="16" title="%s"' % msg + \
+                            #         'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
+                            #         (self.portal_url)
                 items[i]['Uncertainty'] = obj.getUncertainty(result)
 
                 attachments = ""
