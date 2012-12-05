@@ -939,7 +939,7 @@ class LoadSetupData(BrowserView):
                 Calculation = row['Calculation_title'] and self.calcs[row['Calculation_title']] or None,
                 DuplicateVariation = "%02f" % float(row['DuplicateVariation']),
                 Accredited = row['Accredited'] and True or False,
-                InterimFields = self.service_interims.get(title, [])
+                InterimFields = hasattr(self,'service_interims') and self.service_interims.get(title, []) or []
             )
             service_obj = obj
             self.services[row['title']] = obj
@@ -991,7 +991,7 @@ class LoadSetupData(BrowserView):
                 'keyword': unicode(row['keyword']),
                 'title': row.get('title', ''),
                 'type': 'int',
-                'hidden': row['hidden'] and True or False,
+                'hidden': ('hidden' in row and row['hidden']) and True or False,
                 'value': unicode(row['value']),
                 'unit': unicode(row['unit'] and row['unit'] or '')})
 
@@ -1268,30 +1268,32 @@ class LoadSetupData(BrowserView):
             if not row['ReferenceSupplier_Name']:
                 continue
             folder = self.bsc(portal_type="ReferenceSupplier",
-                              Title = row['ReferenceSupplier_Name'])[0].getObject()
-            _id = folder.invokeFactory('SupplierContact', id = 'tmp')
-            obj = folder[_id]
-            obj.edit(
-                Firstname = unicode(row['Firstname']),
-                Surname = unicode(row['Surname']),
-                EmailAddress = unicode(row['EmailAddress']))
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-
-            if 'Username' in row:
-##               'Password' in row:
-##                self.context.REQUEST.set('username', unicode(row['Username']))
-##                self.context.REQUEST.set('password', unicode(row['Password']))
-##                self.context.REQUEST.set('email', unicode(row['EmailAddress']))
-##                pr = getToolByName(self.context, 'portal_registration')
-##                pr.addMember(unicode(row['Username']),
-##                             unicode(row['Password']),
-##                             properties = {
-##                                 'username': unicode(row['Username']),
-##                                 'email': unicode(row['EmailAddress']),
-##                                 'fullname': " ".join((row['Firstname'],
-##                                                       row['Surname']))})
-                obj.setUsername(unicode(row['Username']))
+                              Title = row['ReferenceSupplier_Name'])
+            if (len(folder) > 0):
+                folder = folder[0].getObject()
+                _id = folder.invokeFactory('SupplierContact', id = 'tmp')
+                obj = folder[_id]
+                obj.edit(
+                    Firstname = unicode(row['Firstname']),
+                    Surname = unicode(row['Surname']),
+                    EmailAddress = unicode(row['EmailAddress']))
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
+    
+                if 'Username' in row:
+    ##               'Password' in row:
+    ##                self.context.REQUEST.set('username', unicode(row['Username']))
+    ##                self.context.REQUEST.set('password', unicode(row['Password']))
+    ##                self.context.REQUEST.set('email', unicode(row['EmailAddress']))
+    ##                pr = getToolByName(self.context, 'portal_registration')
+    ##                pr.addMember(unicode(row['Username']),
+    ##                             unicode(row['Password']),
+    ##                             properties = {
+    ##                                 'username': unicode(row['Username']),
+    ##                                 'email': unicode(row['EmailAddress']),
+    ##                                 'fullname': " ".join((row['Firstname'],
+    ##                                                       row['Surname']))})
+                    obj.setUsername(unicode(row['Username']))
 
     def load_reference_sample_results(self, sheet):
         # Read the Ref Sample Results into self.refsample_results
