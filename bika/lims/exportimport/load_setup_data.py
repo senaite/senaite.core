@@ -329,11 +329,11 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             _id = folder.invokeFactory('ContainerType', id = 'tmp')
             obj = folder[_id]
-            obj.edit(title = unicode(row['title']),
-                     description = unicode(row['description']))
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''))
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
-            self.containertypes[unicode(row['title'])] = obj
+            self.containertypes[row.get('title', '')] = obj
 
     def load_BatchLabels(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -346,10 +346,10 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             _id = folder.invokeFactory('BatchLabel', id = 'tmp')
             obj = folder[_id]
-            obj.edit(title = unicode(row['title']))
+            obj.edit(title = row.get('title', ''))
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
-            self.containertypes[unicode(row['title'])] = obj
+            self.containertypes[row.get('title', '')] = obj
 
 
     def load_CaseStatuses(self, sheet):
@@ -363,11 +363,11 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             _id = folder.invokeFactory('CaseStatus', id = 'tmp')
             obj = folder[_id]
-            obj.edit(title = unicode(row['title']),
-                     description = unicode(row['description']))
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''))
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
-            self.containertypes[unicode(row['title'])] = obj
+            self.containertypes[row.get('title', '')] = obj
 
 
     def load_CaseOutcomes(self, sheet):
@@ -381,11 +381,11 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             _id = folder.invokeFactory('CaseOutcome', id = 'tmp')
             obj = folder[_id]
-            obj.edit(title = unicode(row['title']),
-                     description = unicode(row['description']))
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''))
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
-            self.containertypes[unicode(row['title'])] = obj
+            self.containertypes[row.get('title', '')] = obj
 
 
     def load_preservations(self, sheet):
@@ -404,13 +404,13 @@ class LoadSetupData(BrowserView):
                   'minutes': int(row['RetentionPeriod_minutes'] and row['RetentionPeriod_minutes'] or 0),
                   }
 
-            obj.edit(title = unicode(row['title']),
-                     description = unicode(row['description']),
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''),
                      RetentionPeriod = RP
             )
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
-            self.preservations[unicode(row['title'])] = obj
+            self.preservations[row.get('title', '')] = obj
 
 
     def load_containers(self, sheet):
@@ -425,8 +425,8 @@ class LoadSetupData(BrowserView):
             _id = folder.invokeFactory('Container', id = 'tmp')
             obj = folder[_id]
             P = row['Preservation_title']
-            obj.edit(title = unicode(row['title']),
-                     description = unicode(row['description']),
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''),
                      Capacity = unicode(row['Capacity']),
                      PrePreserved = row['PrePreserved'] and row['PrePreserved'] or False)
             if row['ContainerType_title']:
@@ -435,7 +435,7 @@ class LoadSetupData(BrowserView):
                 obj.setPreservation(self.preservations[P])
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
-            self.containers[unicode(row['title'])] = obj
+            self.containers[row.get('title', '')] = obj
 
 
     def load_lab_information(self, sheet):
@@ -569,8 +569,8 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             _id = folder.invokeFactory('Department', id = 'tmp')
             obj = folder[_id]
-            obj.edit(title = unicode(row['title']),
-                     description = unicode(row['description']))
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''))
             manager = None
             for contact in lab_contacts:
                 if contact.getUsername() == unicode(row['LabContact_Username']):
@@ -581,7 +581,7 @@ class LoadSetupData(BrowserView):
                 logger.info(message)
             if manager:
                 obj.setManager(manager.UID())
-            self.departments[unicode(row['title'])] = obj
+            self.departments[row.get('title', '')] = obj
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
 
@@ -705,8 +705,8 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             _id = folder.invokeFactory('Instrument', id = 'tmp')
             obj = folder[_id]
-            obj.edit(title = unicode(row['title']),
-                     description = unicode(row['description']),
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''),
                      Type = unicode(row['Type']),
                      Brand = unicode(row['Brand']),
                      Model = unicode(row['Model']),
@@ -714,7 +714,7 @@ class LoadSetupData(BrowserView):
                      CalibrationCertificate = unicode(row['CalibrationCertificate']),
                      CalibrationExpiryDate = unicode(row['CalibrationExpiryDate']),
                      DataInterface = row['DataInterface'])
-            self.instruments[unicode(row['title'])] = obj
+            self.instruments[row.get('title', '')] = obj
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
 
@@ -745,8 +745,8 @@ class LoadSetupData(BrowserView):
             _id = folder.invokeFactory('SamplePoint', id = 'tmp')
             obj = folder[_id]
             self.samplepoints[row['title']] = obj
-            obj.edit(title = unicode(row['title']),
-                     description = unicode(row['description']),
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''),
                      Composite = row['description'] and True or False,
                      Elevation = unicode(row['Elevation']),
                      SampleTypes = row['SampleType_title'] and self.sampletypes[row['SampleType_title']] or []
@@ -765,8 +765,8 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             _id = folder.invokeFactory('SampleType', id = 'tmp')
             obj = folder[_id]
-            obj.edit(title = unicode(row['title']),
-                     description = unicode(row['description']),
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''),
                      RetentionPeriod = {'days':row['RetentionPeriod'] and row['RetentionPeriod'] or 0,'hours':0,'minutes':0},
                      Hazardous = row['Hazardous'] and True or False,
                      SampleMatrix = row['SampleMatrix_title'] and self.samplematrices[row['SampleMatrix_title']] or None,
@@ -811,8 +811,8 @@ class LoadSetupData(BrowserView):
             _id = folder.invokeFactory('SamplingDeviation', id = 'tmp')
             obj = folder[_id]
             self.samplingdeviations[row['title']] = obj.UID()
-            obj.edit(title = unicode(row['title']),
-                     description = unicode(row['description']))
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''))
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
 
@@ -827,8 +827,8 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             _id = folder.invokeFactory('SampleMatrix', id = 'tmp')
             obj = folder[_id]
-            obj.edit(title = unicode(row['title']),
-                     description = unicode(row['description']))
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''))
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
             self.samplematrices[row['title']] = obj
@@ -844,11 +844,11 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             _id = folder.invokeFactory('AnalysisCategory', id = 'tmp')
             obj = folder[_id]
-            obj.edit(title = unicode(row['title']),
-                     description = unicode(row['description']))
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''))
             if row['Department_title']:
                 obj.setDepartment(self.departments[unicode(row['Department_title'])].UID())
-            self.cats[unicode(row['title'])] = obj
+            self.cats[row.get('title', '')] = obj
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
 
@@ -864,8 +864,8 @@ class LoadSetupData(BrowserView):
             _id = folder.invokeFactory('Method', id = 'tmp')
             obj = folder[_id]
 
-            obj.edit(title = unicode(row['title']),
-                     description = unicode(row['description']),
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''),
                      Instructions = unicode(row['Instructions']))
 
             if row['MethodDocument']:
@@ -880,7 +880,7 @@ class LoadSetupData(BrowserView):
 
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
-            self.methods[unicode(row['title'])] = obj
+            self.methods[row.get('title', '')] = obj
 
     def load_service_interims(self, sheet):
         # Read all InterimFields into self.service_interims
@@ -896,7 +896,7 @@ class LoadSetupData(BrowserView):
                 self.service_interims[service_title] = []
             self.service_interims[service_title].append({
                 'keyword': unicode(row['keyword']),
-                'title': unicode(row['title']),
+                'title': row.get('title', ''),
                 'type': 'int',
                 'value': unicode(row['value']),
                 'unit': unicode(row['unit'] and row['unit'] or '')})
@@ -918,10 +918,10 @@ class LoadSetupData(BrowserView):
                    'hours': int(row['MaxTimeAllowed_days'] and row['MaxTimeAllowed_days'] or 0),
                    'minutes': int(row['MaxTimeAllowed_minutes'] and row['MaxTimeAllowed_minutes'] or 0),
                    }
-            title = unicode(row['title'])
+            title = row.get('title', '')
             obj.edit(
                 title = title,
-                description = row['description'] and unicode(row['description']) or '',
+                description = row['description'] and row.get('description', '') or '',
                 Keyword = unicode(row['Keyword']),
                 PointOfCapture = unicode(row['PointOfCapture']),
                 Category = self.cats[unicode(row['AnalysisCategory_title'])].UID(),
@@ -989,7 +989,7 @@ class LoadSetupData(BrowserView):
                 self.interim_fields[calc_title] = []
             self.interim_fields[calc_title].append({
                 'keyword': unicode(row['keyword']),
-                'title': unicode(row['title']),
+                'title': row.get('title', ''),
                 'type': 'int',
                 'hidden': row['hidden'] and True or False,
                 'value': unicode(row['value']),
@@ -1006,7 +1006,7 @@ class LoadSetupData(BrowserView):
         for row in rows[3:]:
             row = dict(zip(fields, row))
 
-            calc_title = unicode(row['title'])
+            calc_title = row.get('title', '')
             calc_interims = self.interim_fields.get(calc_title, [])
             formula = unicode(row['Formula'])
             # scan formula for dep services
@@ -1018,7 +1018,7 @@ class LoadSetupData(BrowserView):
             _id = folder.invokeFactory('Calculation', id = 'tmp')
             obj = folder[_id]
             obj.edit(title = calc_title,
-                     description = unicode(row['description']),
+                     description = row.get('description', ''),
                      InterimFields = calc_interims,
                      Formula = str(row['Formula']))
             for kw in dep_keywords:
@@ -1059,13 +1059,13 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             _id = folder.invokeFactory('AnalysisProfile', id = 'tmp')
             obj = folder[_id]
-            obj.edit(title = unicode(row['title']),
-                     description = unicode(row['description']),
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''),
                      ProfileKey = unicode(row['ProfileKey']))
             obj.setService(self.profile_services[row['title']])
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
-            self.profiles[unicode(row['title'])] = obj
+            self.profiles[row.get('title', '')] = obj
 
     def load_artemplate_analyses(self, sheet):
         # Read the AR Template Services into self.artemplate_analyses
@@ -1133,8 +1133,8 @@ class LoadSetupData(BrowserView):
 
             _id = folder.invokeFactory('ARTemplate', id = 'tmp')
             obj = folder[_id]
-            obj.edit(title = unicode(row['title']),
-                     description = unicode(row['description']),
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''),
                      Remarks = unicode(row['Remarks']),
                      ReportDryMatter = bool(row['ReportDryMatter']))
             obj.setSampleType(sampletypes)
@@ -1143,7 +1143,7 @@ class LoadSetupData(BrowserView):
             obj.setAnalyses(analyses)
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
-            self.artemplates[unicode(row['title'])] = obj.UID()
+            self.artemplates[row.get('title', '')] = obj.UID()
 
     def load_reference_definition_results(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -1175,14 +1175,14 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             _id = folder.invokeFactory('ReferenceDefinition', id = 'tmp')
             obj = folder[_id]
-            obj.edit(title = unicode(row['title']),
-                     description = unicode(row['description']),
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''),
                      Blank = row['Blank'] and True or False,
                      ReferenceResults = self.ref_def_results.get(row['title'], []),
                      Hazardous = row['Hazardous'] and True or False)
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
-            self.definitions[unicode(row['title'])] = obj.UID()
+            self.definitions[row.get('title', '')] = obj.UID()
 
     def load_analysis_specifications(self, sheet):
         nr_rows = sheet.get_highest_row()
@@ -1232,8 +1232,8 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             _id = folder.invokeFactory('ReferenceManufacturer', id = 'tmp')
             obj = folder[_id]
-            obj.edit(title = unicode(row['title']),
-                     description = unicode(row['description']))
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''))
             obj.unmarkCreationFlag()
             self.ref_manufacturers[row['title']] = obj.UID()
             renameAfterCreation(obj)
@@ -1327,7 +1327,7 @@ class LoadSetupData(BrowserView):
             ref_man = row['ReferenceManufacturer_title']
             ref_man = ref_man and self.ref_manufacturers[ref_man] or ''
             obj.edit(title = unicode(row['id']),
-                     description = unicode(row['description']),
+                     description = row.get('description', ''),
                      Blank = row['Blank'],
                      Hazardous = row['Hazardous'],
                      ReferenceResults = self.refsample_results[row['id']],
@@ -1402,8 +1402,8 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             _id = folder.invokeFactory('AttachmentType', id = 'tmp')
             obj = folder[_id]
-            obj.edit(title = unicode(row['title']),
-                     description = unicode(row['description']))
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''))
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
 
@@ -1418,8 +1418,8 @@ class LoadSetupData(BrowserView):
             _id = folder.invokeFactory('LabProduct', id = 'tmp')
             obj = folder[_id]
 
-            obj.edit(title = unicode(row['title']),
-                     description = unicode(row['description']),
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''),
                      Volume = unicode(row['Volume']),
                      Unit = unicode(row['Unit'] and row['Unit'] or ''),
                      Price = "%02f" % float(row['Price']))
@@ -1473,8 +1473,8 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             _id = folder.invokeFactory('WorksheetTemplate', id = 'tmp')
             obj = folder[_id]
-            obj.edit(title = unicode(row['title']),
-                     description = unicode(row['description']),
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''),
                      Layout = self.wst_layouts[row['title']])
             obj.setService(self.wst_services[row['title']])
             obj.unmarkCreationFlag()
