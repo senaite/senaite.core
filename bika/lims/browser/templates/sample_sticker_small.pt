@@ -46,13 +46,14 @@
     Container    python:part.getContainer() and part.getContainer().Title() or '';
     SamplingDate python:sample.getSamplingDate() and sample.getSamplingDate().Date();
     DateSampled  python:sample.getDateSampled() and sample.getDateSampled().Date();
-    barcode_str  string:${SampleID}${partnr};
+    barcode_str  python:part.getSmartID();
     analyses     python:part.getBackReferences('AnalysisSamplePartition');
     field_analyses python:[analysis for analysis in analyses if analysis.getService().getPointOfCapture()=='field'];
+    smart_id	 python:part.getSmartID();
     ">
 <tr>
     <td>
-        <strong tal:content="string:${SampleID}/${partnr}"/>
+        <strong tal:content="string:${smart_id}"/>
         <img tal:condition="python:sample.getSampleType().getHazardous()"
              tal:attributes="src string:${portal_url}/++resource++bika.lims.images/hazardous.png"/>
     </td>

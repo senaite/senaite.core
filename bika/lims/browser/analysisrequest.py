@@ -82,7 +82,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     sample.manage_delObjects(['part-%s'%(nr_existing - i),])
             # modify part container/preservation
             for part_uid, part_id in form['PartTitle'][0].items():
-                part = sample[part_id]
+                part = sample["part-P"+str(int(part_id.split('-P')[1]))]
                 part.edit(
                     Container = form['getContainer'][0][part_uid],
                     Preservation = form['getPreservation'][0][part_uid],
@@ -1084,7 +1084,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
             [(a.getService().getKeyword(), wf.getInfoFor(a, 'review_state'))
              for a in analyses])
 
-        partitions = [{'ResultValue':o.Title(), 'ResultText':o.Title()}
+        partitions = [{'ResultValue':o.Title(), 'ResultText':o.getSmartID()}
                       for o in
                       self.context.getSample().objectValues('SamplePartition')
                       if wf.getInfoFor(o, 'cancellation_state', 'active') == 'active']

@@ -69,7 +69,7 @@ def generateUniqueId(context):
         sample_number = sample_id.split(s_prefix)[1]
         ar_number = sample.getLastARNumber()
         ar_number = ar_number and ar_number + 1 or 1
-        return "%s%s-%s" % (s_prefix,
+        return "%s%s-R%s" % (s_prefix,
                            str(sample_number).zfill(sample_padding),
                            str(ar_number).zfill(ar_padding))
 
@@ -80,7 +80,7 @@ def generateUniqueId(context):
         padding = int(matches and matches[0]['padding'] or '0')
         # at this time the part exists, so +1 would be 1 too many
         partnr = str(len(context.aq_parent.objectValues('SamplePartition')))
-        return "%s-%s" % (prefix,partnr.zfill(padding))
+        return "%s-P%s" % (prefix,partnr.zfill(padding))
 
     if context.bika_setup.getExternalIDServer():
 
