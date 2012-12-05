@@ -46,6 +46,14 @@ class Publish(BrowserView):
                         ARs_to_publish.append(ar)
         self.analysis_requests = ARs_to_publish
 
+    def formattedResult(self, result, precision=2):
+        if not result:
+            return ''
+        try:
+            result = str('%%.%sf' % precision)%float(result)
+        except:
+            return result
+
     def __call__(self):
 
         rc = getToolByName(self.context, REFERENCE_CATALOG)
