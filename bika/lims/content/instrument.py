@@ -68,6 +68,26 @@ schema = BikaSchema.copy() + Schema((
                             "modules."),
         ),
     ),
+    TextField('InlabCalibrationProcedure',
+        schemata = 'Procedures',
+        default_content_type = 'text/x-web-intelligent',
+        allowable_content_types = ('text/x-web-intelligent',),
+        default_output_type="text/html",
+        widget = TextAreaWidget(
+            label = _("In-lab calibration procedure"),
+            description = _("Instructions for in-lab regular calibration routines intended for analysts"),
+        ),
+    ),
+    TextField('PreventiveMaintenanceProcedure',
+        schemata = 'Procedures',
+        default_content_type = 'text/x-web-intelligent',
+        allowable_content_types = ('text/x-web-intelligent',),
+        default_output_type="text/html",
+        widget = TextAreaWidget(
+            label = _("Preventive maintenance procedure"),
+            description = _("Instructions for regular preventive and maintenance routines intended for analysts"),
+        ),
+    ),
 ))
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
