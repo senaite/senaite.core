@@ -153,6 +153,10 @@ class ISamplePoints(Interface):
     ""
 class ISampleTypes(Interface):
     ""
+class ISupplier(Interface):
+    ""
+class ISuppliers(Interface):
+    ""
 class IPreservations(Interface):
     ""
 class IReferenceManufacturers(Interface):

@@ -84,6 +84,21 @@ schema = BikaSchema.copy() + Schema((
         widget=ComputedWidget(
         ),
     ),
+    ReferenceField('Supplier',
+        vocabulary='getSuppliers',
+        allowed_types=('Supplier',),
+        relationship='InstrumentSupplier',
+        required=1,
+        widget=SelectionWidget(
+            format='select',
+            label=_('Supplier'),
+        ),
+    ),
+    ComputedField('SupplierUID',
+        expression='here.getSupplier() and here.getSupplier().UID() or None',
+        widget=ComputedWidget(
+        ),
+    ),
     TextField('InlabCalibrationProcedure',
         schemata = 'Procedures',
         default_content_type = 'text/x-web-intelligent',
@@ -142,5 +157,14 @@ class Instrument(BaseContent):
             manufacturers.append([manufacturer.UID, manufacturer.Title])
         manufacturers.sort(lambda x,y:cmp(x[1], y[1]))
         return DisplayList(manufacturers)
+
+    def getSuppliers(self):        
+        suppliers = []
+        bsc = getToolByName(self, "bika_setup_catalog")
+        for supplier in bsc(portal_type = 'Supplier',
+                                inactive_state = 'active'):
+            suppliers.append([supplier.UID, supplier.getName])
+        suppliers.sort(lambda x,y:cmp(x[1], y[1]))
+        return DisplayList(suppliers)
 
 registerType(Instrument, PROJECTNAME)

@@ -61,6 +61,7 @@
     <element value="LogEntry"/>
     <element value="Manufacturer"/>
     <element value="Method"/>
+    <element value="Supplier"/>
     <element value="SupplyOrder"/>
     <element value="SupplyOrderItem"/>
     <element value="Preservation"/>

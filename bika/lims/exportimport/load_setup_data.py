@@ -194,7 +194,11 @@ class LoadSetupData(BrowserView):
             self.load_reference_suppliers(sheets['Reference Suppliers'])
         if 'Reference Supplier Contacts' in sheets:
             self.load_reference_supplier_contacts(sheets['Reference Supplier Contacts'])
-
+        if 'Suppliers' in sheets:
+            self.load_reference_suppliers(sheets['Suppliers'])
+        if 'Supplier Contacts' in sheets:
+            self.load_reference_supplier_contacts(sheets['Supplier Contacts'])
+            
         if 'Worksheet Template Layouts' in sheets:
             self.load_wst_layouts(sheets['Worksheet Template Layouts'])
         if 'Worksheet Template Services' in sheets:
@@ -1773,7 +1777,7 @@ class LoadSetupData(BrowserView):
         rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
         fields = rows[0]
         folder = self.context.bika_setup.bika_manufacturers
-        self.ref_manufacturers = {}
+        self.manufacturers = {}
         for row in rows[3:]:
             row = dict(zip(fields, row))
             _id = folder.invokeFactory('Manufacturer', id = 'tmp')
@@ -1781,5 +1785,50 @@ class LoadSetupData(BrowserView):
             obj.edit(title = row.get('title', ''),
                      description = row.get('description', ''))
             obj.unmarkCreationFlag()
-            self.ref_manufacturers[row['title']] = obj.UID()
+            self.manufacturers[row['title']] = obj.UID()
             renameAfterCreation(obj)
+    
+    def load_suppliers(self, sheet):
+        nr_rows = sheet.get_highest_row()
+        nr_cols = sheet.get_highest_column()
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
+        fields = rows[0]
+        folder = self.context.bika_setup.bika_suppliers
+        self.suppliers = {}
+        for row in rows[3:]:
+            row = dict(zip(fields, row))
+            _id = folder.invokeFactory('Supplier', id = 'tmp')
+            obj = folder[_id]
+            obj.edit(AccountNumber = unicode(row['AccountNumber']),
+                     Name = unicode(row['Name']),
+                     EmailAddress = unicode(row['EmailAddress']),
+                     Phone = unicode(row['Phone']),
+                     Fax = unicode(row['Fax']))
+            obj.unmarkCreationFlag()
+            self.suppliers[obj.Title()] = obj
+            renameAfterCreation(obj)
+
+    def load_supplier_contacts(self, sheet):
+        nr_rows = sheet.get_highest_row()
+        nr_cols = sheet.get_highest_column()
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
+        fields = rows[0]
+        for row in rows[3:]:
+            row = dict(zip(fields, row))
+            if not row['Supplier_Name']:
+                continue
+            folder = self.bsc(portal_type="Supplier",
+                              Title = row['Supplier_Name'])
+            if (len(folder) > 0):
+                folder = folder[0].getObject()
+                _id = folder.invokeFactory('SupplierContact', id = 'tmp')
+                obj = folder[_id]
+                obj.edit(
+                    Firstname = unicode(row['Firstname']),
+                    Surname = unicode(row['Surname']),
+                    EmailAddress = unicode(row['EmailAddress']))
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
+    
+                if 'Username' in row:
+                    obj.setUsername(unicode(row['Username']))
