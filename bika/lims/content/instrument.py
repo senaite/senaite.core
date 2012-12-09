@@ -15,7 +15,23 @@ schema = BikaSchema.copy() + Schema((
     StringField('Type',
         widget = StringWidget(
             label = _("Instrument type"),
+            visible = False,
         )
+    ),
+    ReferenceField('InstrumentType',
+        vocabulary='getInstrumentTypes',
+        allowed_types=('InstrumentType',),
+        relationship='InstrumentInstrumentType',
+        required=1,
+        widget=SelectionWidget(
+            format='select',
+            label=_('Instrument type'),
+        ),
+    ),
+    ComputedField('InstrumentTypeUID',
+        expression='here.getInstrumentType() and here.getInstrumentType().UID() or None',
+        widget=ComputedWidget(
+        ),
     ),
     StringField('Brand',
         widget = StringWidget(
@@ -166,5 +182,14 @@ class Instrument(BaseContent):
             suppliers.append([supplier.UID, supplier.getName])
         suppliers.sort(lambda x,y:cmp(x[1], y[1]))
         return DisplayList(suppliers)
+    
+    def getInstrumentTypes(self):        
+        its = []
+        bsc = getToolByName(self, "bika_setup_catalog")
+        for it in bsc(portal_type = 'InstrumentType',
+                                inactive_state = 'active'):
+            its.append([it.UID, it.Title])
+        its.sort(lambda x,y:cmp(x[1], y[1]))
+        return DisplayList(its)
 
 registerType(Instrument, PROJECTNAME)

@@ -134,6 +134,8 @@ class LoadSetupData(BrowserView):
             self.load_preservations(sheets["Preservations"])
         if 'Containers' in sheets:
             self.load_containers(sheets["Containers"])
+        if 'InstrumentTypes' in sheets:
+            self.load_instrumenttypes(sheets['Instrument Types'])
         if 'Instruments' in sheets:
             self.load_instruments(sheets['Instruments'])
         if 'Sample Matrices' in sheets:
@@ -1832,3 +1834,20 @@ class LoadSetupData(BrowserView):
     
                 if 'Username' in row:
                     obj.setUsername(unicode(row['Username']))
+
+    def load_instrumenttypes(self, sheet):
+        nr_rows = sheet.get_highest_row()
+        nr_cols = sheet.get_highest_column()
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
+        fields = rows[0]
+        folder = self.context.bika_setup.bika_instrumenttypes
+        self.instrumenttypes = {}
+        for row in rows[3:]:
+            row = dict(zip(fields, row))
+            _id = folder.invokeFactory('InstrumentType', id = 'tmp')
+            obj = folder[_id]
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''))
+            obj.unmarkCreationFlag()
+            self.instrumenttypes[row['title']] = obj.UID()
+            renameAfterCreation(obj)

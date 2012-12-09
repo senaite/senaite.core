@@ -110,6 +110,15 @@
 	i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
+ 
+ <configlet title="Instrument Types" action_id="bika_instrumenttypes"
+    appId="bika.lims" category="bika" condition_expr=""
+    icon_expr="string:++resource++bika.lims.images/instrumenttype.png"
+    url_expr="string:$portal_url/bika_setup/bika_instrumenttypes"
+    visible="True"
+	i18n:attributes="title">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
 
  <configlet title="Methods" action_id="methods"
     appId="bika.lims" category="bika" condition_expr=""

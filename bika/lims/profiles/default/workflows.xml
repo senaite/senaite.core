@@ -158,6 +158,12 @@
    <bound-workflow workflow_id="bika_one_state_workflow"/>
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+	
+  <type type_id="InstrumentTypes"/>
+  <type type_id="InstrumentType">
+   <bound-workflow workflow_id="bika_one_state_workflow"/>
+   <bound-workflow workflow_id="bika_inactive_workflow"/>
+  </type>
 
   <type type_id="Invoice"/>
   <type type_id="InvoiceBatch"/>

@@ -66,6 +66,7 @@ class BikaGenerator:
                        'bika_containertypes',
                        'bika_preservations',
                        'bika_instruments',
+                       'bika_instrumenttypes',
                        'bika_analysisspecs',
                        'bika_analysisprofiles',
                        'bika_artemplates',
@@ -558,6 +559,7 @@ class BikaGenerator:
         at.setCatalogsByType('SamplePoint', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('SamplingDeviation', ['bika_setup_catalog', ])
         at.setCatalogsByType('Instrument', ['bika_setup_catalog', ])
+        at.setCatalogsByType('InstrumentType', ['bika_setup_catalog', ])
         at.setCatalogsByType('Method', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('AttachmentType', ['bika_setup_catalog', ])
         at.setCatalogsByType('Calculation', ['bika_setup_catalog', 'portal_catalog'])

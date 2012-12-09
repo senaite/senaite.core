@@ -131,6 +131,10 @@ class IContainerTypes(Interface):
     ""
 class IInstruments(Interface):
     ""
+class IInstrumentType(Interface):
+    ""
+class IInstrumentTypes(Interface):
+    ""
 class IAnalysisSpecs(Interface):
     ""
 class IAnalysisProfiles(Interface):

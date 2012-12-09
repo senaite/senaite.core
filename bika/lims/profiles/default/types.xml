@@ -38,6 +38,8 @@
  <object name="DuplicateAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Instrument" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Instruments" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="InstrumentType" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="InstrumentTypes" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Invoice" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="InvoiceBatch" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="InvoiceFolder" meta_type="Factory-based Type Information with dynamic views"/>
