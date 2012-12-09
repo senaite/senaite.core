@@ -141,6 +141,10 @@ class ILabContacts(Interface):
     ""
 class ILabContact(Interface):
     ""
+class IManufacturer(Interface):
+    ""
+class IManufacturers(Interface):
+    ""
 class IMethods(Interface):
     ""
 class ILabProducts(Interface):

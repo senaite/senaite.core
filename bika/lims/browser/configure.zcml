@@ -14,6 +14,7 @@
   <include file="clientfolder.zcml"/>
   <include file="contact.zcml"/>
   <include file="late_analyses.zcml"/>
+  <include file="manufacturer.zcml"/>
   <include file="menu.zcml"/>
   <include file="queries.zcml"/>
   <include file="remarks.zcml"/>

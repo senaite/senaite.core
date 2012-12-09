@@ -176,6 +176,12 @@
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
   <type type_id="LabProducts"/>
+  
+  <type type_id="Manufacturers"/>
+  <type type_id="Manufacturer">
+  	<bound-workflow workflow_id="bika_one_state_workflow"/>
+  	<bound-workflow workflow_id="bika_inactive_workflow"/>
+  </type>
 
   <type type_id="Methods"/>
   <type type_id="Method">

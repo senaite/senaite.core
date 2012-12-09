@@ -9,6 +9,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
 from bika.lims.browser.widgets import RecordsWidget
 from zope.interface import implements
+from Products.CMFCore.utils import getToolByName
 
 schema = BikaSchema.copy() + Schema((
     StringField('Type',
@@ -68,6 +69,21 @@ schema = BikaSchema.copy() + Schema((
                             "modules."),
         ),
     ),
+    ReferenceField('Manufacturer',
+        vocabulary='getManufacturers',
+        allowed_types=('Manufacturer',),
+        relationship='InstrumentManufacturer',
+        required=1,
+        widget=SelectionWidget(
+            format='select',
+            label=_('Manufacturer'),
+        ),
+    ),
+    ComputedField('ManufacturerUID',
+        expression='here.getManufacturer() and here.getManufacturer().UID() or None',
+        widget=ComputedWidget(
+        ),
+    ),
     TextField('InlabCalibrationProcedure',
         schemata = 'Procedures',
         default_content_type = 'text/x-web-intelligent',
@@ -117,5 +133,14 @@ class Instrument(BaseContent):
 
     def getDataInterfacesList(self):
         return getDataInterfaces(self)
+    
+    def getManufacturers(self):        
+        manufacturers = []
+        bsc = getToolByName(self, "bika_setup_catalog")
+        for manufacturer in bsc(portal_type = 'Manufacturer',
+                                inactive_state = 'active'):
+            manufacturers.append([manufacturer.UID, manufacturer.Title])
+        manufacturers.sort(lambda x,y:cmp(x[1], y[1]))
+        return DisplayList(manufacturers)
 
 registerType(Instrument, PROJECTNAME)

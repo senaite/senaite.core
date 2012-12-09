@@ -162,6 +162,8 @@ class LoadSetupData(BrowserView):
             self.load_sampling_deviations(sheets['Sampling Deviations'])
         if 'Reference Manufacturers' in sheets:
             self.load_reference_manufacturers(sheets['Reference Manufacturers'])
+        if 'Manufacturers' in sheets:
+            self.load_manufacturers(sheets['Manufacturers'])
 
         if 'Calculations' in sheets:
             self.load_calculations(sheets['Calculations'])
@@ -1765,4 +1767,19 @@ class LoadSetupData(BrowserView):
             self.set_wf_history(obj, row['workflow_history'])
             obj.unmarkCreationFlag()
 
-
+    def load_manufacturers(self, sheet):
+        nr_rows = sheet.get_highest_row()
+        nr_cols = sheet.get_highest_column()
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
+        fields = rows[0]
+        folder = self.context.bika_setup.bika_manufacturers
+        self.ref_manufacturers = {}
+        for row in rows[3:]:
+            row = dict(zip(fields, row))
+            _id = folder.invokeFactory('Manufacturer', id = 'tmp')
+            obj = folder[_id]
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''))
+            obj.unmarkCreationFlag()
+            self.ref_manufacturers[row['title']] = obj.UID()
+            renameAfterCreation(obj)

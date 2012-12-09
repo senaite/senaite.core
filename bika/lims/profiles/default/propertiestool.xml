@@ -59,6 +59,7 @@
     <element value="LabContact"/>
     <element value="LabProduct"/>
     <element value="LogEntry"/>
+    <element value="Manufacturer"/>
     <element value="Method"/>
     <element value="SupplyOrder"/>
     <element value="SupplyOrderItem"/>

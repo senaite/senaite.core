@@ -13,6 +13,7 @@ bika_containertypes,ContainerTypes
 bika_departments,Departments
 laboratory,Laboratory
 bika_labproducts,LabProducts
+bika_manufacturers,Manufacturers
 bika_preservations,Preservations
 bika_referencedefinitions,ReferenceDefinitions
 bika_referencemanufacturers,ReferenceManufacturers

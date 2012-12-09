@@ -48,6 +48,8 @@
  <object name="LabProducts" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Laboratory" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="LogEntry" meta_type="Factory-based Type Information"/>
+ <object name="Manufacturer" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Manufacturers" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Method" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Methods" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Preservation" meta_type="Factory-based Type Information with dynamic views"/>

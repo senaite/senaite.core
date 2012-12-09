@@ -144,6 +144,7 @@ class BikaSetupCatalog(CatalogTool):
                                                  'SamplePoint',
                                                  'SamplingDeviation',
                                                  'Instrument',
+                                                 'Manufacturer',
                                                  'Method',
                                                  'AttachmentType',
                                                  'Calculation',

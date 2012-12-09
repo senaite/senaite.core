@@ -191,6 +191,16 @@
 	i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
+ 
+ <configlet title="Manufacturers"
+    action_id="bika_manufacturers"
+    appId="bika.lims" category="bika" condition_expr=""
+    icon_expr="string:++resource++bika.lims.images/manufacturer.png"
+    url_expr="string:$portal_url/bika_setup/bika_manufacturers"
+    visible="True"
+	i18n:attributes="title">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
 
  <configlet title="Reference Manufacturers"
     action_id="bika_referencemanufacturers"
