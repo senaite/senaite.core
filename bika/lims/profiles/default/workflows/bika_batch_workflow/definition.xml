@@ -8,37 +8,108 @@
              manager_bypass="False">
 
  <permission>View</permission>
+ <permission>Modify portal content</permission>
 
  <state state_id="open" title="Open" i18n:attributes="title">
-  <description i18n:translate=""></description>
-  <exit-transition transition_id="close"/>
-  <permission-map name="View" acquired="False">
-      <permission-role>Authenticated</permission-role>
-  </permission-map>
+    <description i18n:translate=""></description>
+    <exit-transition transition_id="receive"/>
+    <permission-map name="View" acquired="False">
+        <permission-role>Owner</permission-role>
+        <permission-role>Analyst</permission-role>
+        <permission-role>LabClerk</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>LabTechnician</permission-role>
+        <permission-role>LabClerk</permission-role>
+        <permission-role>Owner</permission-role>
+    </permission-map>
+ </state>
+
+ <state state_id="sample_received" title="Sample received" i18n:attributes="title">
+    <description i18n:translate=""></description>
+    <exit-transition transition_id="open"/>
+    <exit-transition transition_id="submit"/>
+    <permission-map name="View" acquired="False">
+        <permission-role>Owner</permission-role>
+        <permission-role>Analyst</permission-role>
+        <permission-role>LabClerk</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>LabTechnician</permission-role>
+        <permission-role>LabClerk</permission-role>
+        <permission-role>Owner</permission-role>
+    </permission-map>
+ </state>
+
+ <state state_id="to_be_verified" title="To be verified" i18n:attributes="title">
+    <description i18n:translate=""></description>
+    <exit-transition transition_id="open"/>
+    <exit-transition transition_id="receive"/>
+    <exit-transition transition_id="verify"/>
+    <permission-map name="View" acquired="False">
+        <permission-role>Owner</permission-role>
+        <permission-role>Analyst</permission-role>
+        <permission-role>LabClerk</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+    </permission-map>
+ </state>
+
+ <state state_id="verified" title="Verified" i18n:attributes="title">
+    <description i18n:translate=""></description>
+    <exit-transition transition_id="close"/>
+    <permission-map name="View" acquired="False">
+        <permission-role>Owner</permission-role>
+        <permission-role>Analyst</permission-role>
+        <permission-role>LabClerk</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+    </permission-map>
  </state>
 
  <state state_id="closed" title="Closed" i18n:attributes="title">
-  <description i18n:translate=""></description>
-  <exit-transition transition_id="open"/>
-  <permission-map name="View" acquired="False">
-      <permission-role>Authenticated</permission-role>
-  </permission-map>
- </state>
+    <description i18n:translate=""></description>
+    <permission-map name="View" acquired="False">
+        <permission-role>Owner</permission-role>
+        <permission-role>Analyst</permission-role>
+        <permission-role>LabClerk</permission-role>
+        <permission-role>LabManager</permission-role>
+        <permission-role>Manager</permission-role>
+    </permission-map>
+    <permission-map name="Modify portal content" acquired="False">
+        <permission-role>Manager</permission-role>
+        <permission-role>LabManager</permission-role>
+    </permission-map>
+   </state>
 
- <transition transition_id="close"
-             title="Close"
-             new_state="closed"
+ <transition transition_id="receive"
+             title="Receive"
+             new_state="sample_received"
              trigger="USER"
              before_script=""
-             after_script=""
-             i18n:attributes="title close_transition_title">
+             after_script="default"
+             i18n:attributes="title receive_transition_title">
   <description i18n:translate=""></description>
-  <action url="workflow_action?workflow_action=close"
-          category=""
-          icon=""
-          i18n:translate="close_transition_title">Close</action>
+<!--  <action url="" category="workflow" icon="" i18n:translate="receive_transition_title">Receive</action> -->
   <guard>
    <guard-permission>Modify portal content</guard-permission>
+   <guard-expression>python:not hasattr(here, 'workflow_guard_receive') and True or here.workflow_guard_receive()</guard-expression>
   </guard>
   </transition>
 
@@ -47,17 +118,60 @@
              new_state="open"
              trigger="USER"
              before_script=""
-             after_script=""
+             after_script="default"
              i18n:attributes="title open_transition_title">
   <description i18n:translate=""></description>
-  <action url="workflow_action?workflow_action=open"
-          category=""
-          icon=""
-          i18n:translate="open_transition_title">Open</action>
+  <!-- <action url="" category="workflow" icon="" i18n:translate="open_transition_title">Open</action> -->
   <guard>
    <guard-permission>Modify portal content</guard-permission>
+   <guard-expression>python:not hasattr(here, 'workflow_guard_open') and True or here.workflow_guard_open()</guard-expression>
   </guard>
- </transition>
+  </transition>
+
+ <transition transition_id="submit"
+             title="Submit"
+             new_state="to_be_verified"
+             trigger="USER"
+             before_script=""
+             after_script="default"
+             i18n:attributes="title submit_transition_title">
+  <description i18n:translate=""></description>
+  <!-- <action url="" category="workflow" icon="" i18n:translate="submit_transition_title">Submit</action> -->
+  <guard>
+   <guard-permission>Modify portal content</guard-permission>
+   <guard-expression>python:not hasattr(here, 'workflow_guard_submit') and True or here.workflow_guard_submit()</guard-expression>
+  </guard>
+  </transition>
+
+ <transition transition_id="verify"
+             title="Verify"
+             new_state="verified"
+             trigger="USER"
+             before_script=""
+             after_script="default"
+             i18n:attributes="title receive_transition_verify">
+  <description i18n:translate=""></description>
+  <action url="" category="workflow" icon="" i18n:translate="verify_transition_title">Verify</action>
+  <guard>
+   <guard-permission>Modify portal content</guard-permission>
+   <guard-expression>python:not hasattr(here, 'workflow_guard_verify') and True or here.workflow_guard_verify()</guard-expression>
+  </guard>
+  </transition>
+
+ <transition transition_id="close"
+             title="Close"
+             new_state="closed"
+             trigger="USER"
+             before_script=""
+             after_script="default"
+             i18n:attributes="title close_transition_title">
+  <description i18n:translate=""></description>
+  <action url="" category="workflow" icon="" i18n:translate="close_transition_title">Close</action>
+  <guard>
+   <guard-permission>Modify portal content</guard-permission>
+   <guard-expression>python:not hasattr(here, 'workflow_guard_close') and True or here.workflow_guard_close()</guard-expression>
+  </guard>
+  </transition>
 
  <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
   <description i18n:translate="">The last transition</description>
@@ -103,5 +217,9 @@
   <guard>
   </guard>
  </variable>
+
+ <script script_id="default" type="Script (Python)"
+         filename="workflows/bika_batch_workflow/scripts/default.py"
+         module="" function=""/>
 
 </dc-workflow>

@@ -42,7 +42,7 @@ class BatchFolderContentsView(BikaListingView):
         self.review_states = [  # leave these titles and ids alone
             {'id':'default',
              'contentFilter': {'cancellation_state':'active',
-                               'review_state': 'open'},
+                               'review_state': ['open', 'received', 'to_be_verified', 'verified']},
              'title': _('Open'),
              'columns':['BatchID',
                         'Description',
