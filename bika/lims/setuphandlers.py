@@ -207,7 +207,7 @@ class BikaGenerator:
         mp(RejectWorksheet, ['Manager', 'LabManager', 'Verifier'], 1)
         mp(Retract, ['Manager', 'LabManager', 'Verifier'], 1)
         mp(Verify, ['Manager', 'LabManager', 'Verifier'], 1)
-        mp(PublishAR, ['Manager', 'LabManager', 'Publisher'], 1)
+        mp(Publish, ['Manager', 'LabManager', 'Publisher'], 1)
         mp(EditSample, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler'], 1)
         mp(EditAR, ['Manager', 'LabManager', 'LabClerk', 'Sampler'], 1)
         mp(EditWorksheet, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
