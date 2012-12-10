@@ -149,7 +149,7 @@
              trigger="USER"
              before_script=""
              after_script="default"
-             i18n:attributes="title receive_transition_verify">
+             i18n:attributes="title verify_transition_title">
   <description i18n:translate=""></description>
   <action url="" category="workflow" icon="" i18n:translate="verify_transition_title">Verify</action>
   <guard>
