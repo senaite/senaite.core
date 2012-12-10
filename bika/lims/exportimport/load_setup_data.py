@@ -384,7 +384,7 @@ class LoadSetupData(BrowserView):
             obj.edit(title = row.get('title', ''),
                      description = row.get('description', ''))
             obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
+            # renameAfterCreation(obj)
             self.containertypes[row.get('title', '')] = obj
 
 
@@ -497,9 +497,9 @@ class LoadSetupData(BrowserView):
             ## Create LabContact
 
             if row['Signature']:
-                file_title = sortable_title(obj, values['AccreditationBodyLogo'])
+                file_title = sortable_title(obj, row['Signature'])
                 path = resource_filename("bika.lims","setupdata/%s/%s" \
-                                         % (self.dataset_name, row['MethodDocument']))
+                                         % (self.dataset_name, row['Signature']))
                 file_data = open(path, "rb").read()
             else:
                 file_data = None
