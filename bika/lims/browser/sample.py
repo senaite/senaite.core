@@ -44,7 +44,7 @@ class SamplePartitionsView(BikaListingView):
 
         self.columns = {
             'PartTitle': {'title': _('Partition'),
-                          'sortable':False},
+                          'sortable':False},     
             'getContainer': {'title': _('Container'),
                              'sortable':False},
             'getPreservation': {'title': _('Preservation'),
@@ -124,7 +124,7 @@ class SamplePartitionsView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
 
-            items[x]['PartTitle'] = obj.getId()
+            items[x]['PartTitle'] = obj.getSmartID()
 
             container = obj.getContainer()
             if self.allow_edit:
@@ -214,7 +214,7 @@ class createSamplePartition(BrowserView):
         SamplingWorkflowEnabled = part.bika_setup.getSamplingWorkflowEnabled()
         ## We force the object to have the same state as the parent
         sample_state = wf.getInfoFor(self.context, 'review_state')
-        changeWorkflowState(part, sample_state)
+        changeWorkflowState(part, "bika_sample_workflow", sample_state)
         self.request.RESPONSE.redirect(self.context.absolute_url() +
                                        "/partitions")
         return

@@ -151,7 +151,7 @@ class AnalysesView(BikaListingView):
             items[i]['result_captured'] = self.ulocalized_time(obj.getResultCaptureDate())
             items[i]['calculation'] = calculation and True or False
             try:
-                items[i]['Partition'] = obj.getSamplePartition().Title()
+                items[i]['Partition'] = obj.getSamplePartition().getSmartID()
             except AttributeError:
                 items[i]['Partition'] = ''
             if obj.portal_type == "ReferenceAnalysis":
