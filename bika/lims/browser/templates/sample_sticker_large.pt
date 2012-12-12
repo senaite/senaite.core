@@ -57,10 +57,10 @@
     DateSampled  python:sample.getDateSampled() and sample.getDateSampled().Date();
     Composite    python:sample.getComposite();
     AdHoc        python:sample.getAdHoc();
-    barcode_str  python:part.getSmartID();
+    barcode_str  python:part.getId();
     analyses     python:part.getBackReferences('AnalysisSamplePartition');
     field_analyses python:[analysis for analysis in analyses if analysis.getService().getPointOfCapture()=='field'];
-    smart_id	 python:part.getSmartID();
+    smart_id	 python:part.getId();
     ">
 <thead>
 

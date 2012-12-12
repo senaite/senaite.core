@@ -44,7 +44,7 @@ class SamplePartitionsView(BikaListingView):
 
         self.columns = {
             'PartTitle': {'title': _('Partition'),
-                          'sortable':False},     
+                          'sortable':False},
             'getContainer': {'title': _('Container'),
                              'sortable':False},
             'getPreservation': {'title': _('Preservation'),
@@ -124,7 +124,7 @@ class SamplePartitionsView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
 
-            items[x]['PartTitle'] = obj.getSmartID()
+            items[x]['PartTitle'] = obj.getId()
 
             container = obj.getContainer()
             if self.allow_edit:

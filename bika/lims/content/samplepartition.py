@@ -51,12 +51,6 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
-    ComputedField('SmartID',
-        expression = 'context.aq_parent.id+"-P"+(context.id.split("-P")[1]).zfill(2)',
-        widget = ComputedWidget(
-            visible = False,
-        )
-    ),
 )
 )
 

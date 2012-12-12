@@ -1084,7 +1084,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
             [(a.getService().getKeyword(), wf.getInfoFor(a, 'review_state'))
              for a in analyses])
 
-        partitions = [{'ResultValue':o.Title(), 'ResultText':o.getSmartID()}
+        partitions = [{'ResultValue':o.Title(), 'ResultText':o.getId()}
                       for o in
                       self.context.getSample().objectValues('SamplePartition')
                       if wf.getInfoFor(o, 'cancellation_state', 'active') == 'active']
