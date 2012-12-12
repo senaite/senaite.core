@@ -4,6 +4,7 @@ from Products.ATExtensions.ateapi import RecordField, RecordsField
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
+from Products.CMFEditions.ArchivistTool import ArchivistRetrieveError
 from Products.validation import validation
 from Products.validation.validators.RegexValidator import RegexValidator
 import sys
@@ -120,6 +121,7 @@ class HistoryAwareReferenceField(ReferenceField):
     def get(self, instance, aslist=False, **kwargs):
         """get() returns the list of objects referenced under the relationship.
         """
+        uc = getToolByName(instance, "uid_catalog")
 
         try: res = instance.getRefs(relationship=self.relationship)
         except:
@@ -137,6 +139,8 @@ class HistoryAwareReferenceField(ReferenceField):
             if r is None:
                 continue
             uid = r.UID()
+            r = uc(UID=uid)[0].getObject()
+            logger.info(r.Title(), r.version_id)
             if hasattr(instance, 'reference_versions') and \
                hasattr(r, 'version_id') and \
                uid in instance.reference_versions and \
@@ -144,7 +148,10 @@ class HistoryAwareReferenceField(ReferenceField):
                r.version_id != None:
 
                 version_id = instance.reference_versions[uid]
-                o = pr.retrieve(r, selector=version_id).object
+                try:
+                    o = pr.retrieve(r, selector=version_id).object
+                except ArchivistRetrieveError:
+                    o = r
             else:
                 o = r
             rd[uid] = o

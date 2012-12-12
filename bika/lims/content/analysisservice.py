@@ -529,6 +529,9 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
     def Title(self):
         return self.title.decode('utf-8').encode('utf-8')
 
+    def setTitle(self, value):
+        return self.title.decode('utf-8').encode('utf-8')
+
     security.declarePublic('getDiscountedPrice')
     def getDiscountedPrice(self):
         """ compute discounted price excl. vat """
