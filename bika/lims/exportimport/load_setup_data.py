@@ -920,7 +920,6 @@ class LoadSetupData(BrowserView):
                    }
             title = row.get('title', '')
             obj.edit(
-                title = title,
                 description = row['description'] and row.get('description', '') or '',
                 Keyword = unicode(row['Keyword']),
                 PointOfCapture = unicode(row['PointOfCapture']),
@@ -941,6 +940,7 @@ class LoadSetupData(BrowserView):
                 Accredited = row['Accredited'] and True or False,
                 InterimFields = hasattr(self,'service_interims') and self.service_interims.get(title, []) or []
             )
+            obj.setTitle(title)
             service_obj = obj
             self.services[row['title']] = obj
             obj.unmarkCreationFlag()
@@ -1279,7 +1279,7 @@ class LoadSetupData(BrowserView):
                     EmailAddress = unicode(row['EmailAddress']))
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
-    
+
                 if 'Username' in row:
     ##               'Password' in row:
     ##                self.context.REQUEST.set('username', unicode(row['Username']))

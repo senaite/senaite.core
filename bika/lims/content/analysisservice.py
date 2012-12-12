@@ -527,7 +527,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         return renameAfterCreation(self)
 
     def Title(self):
-        return self.title
+        return self.title.decode('utf-8').encode('utf-8')
 
     security.declarePublic('getDiscountedPrice')
     def getDiscountedPrice(self):
