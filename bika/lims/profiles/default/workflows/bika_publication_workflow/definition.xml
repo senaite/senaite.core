@@ -25,7 +25,7 @@
              after_script="default"
              i18n:attributes="title publish_transition_title">
   <description i18n:translate=""></description>
-  <action url="" category="workflow" i18n:translate="publish_transition_title">Publish</action>
+  <action url="%(content_url)s/publish" category="workflow" i18n:translate="publish_transition_title">Publish</action>
   <guard>
    <guard-permission>BIKA: Publish</guard-permission>
    <guard-expression>python:not hasattr(here, 'workflow_guard_publish') and True or here.workflow_guard_publish()</guard-expression>
@@ -40,7 +40,7 @@
              after_script="default"
              i18n:attributes="title republish_transition_title">
   <description i18n:translate=""></description>
-  <action url="" category="workflow" i18n:translate="republish_transition_title">Publish</action>
+  <action url="%(content_url)s/publish" category="workflow" i18n:translate="republish_transition_title">Republish</action>
   <guard>
    <guard-permission>BIKA: Publish</guard-permission>
    <guard-expression>python:not hasattr(here, 'workflow_guard_republish') and True or here.workflow_guard_republish()</guard-expression>

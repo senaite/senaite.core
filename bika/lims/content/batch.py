@@ -193,5 +193,19 @@ class Batch(BaseContent):
     # def workflow_script_close(self, state_info):
     #     skip(self, 'open')
 
+    def workflow_guard_publish(self):
+        return True
+
+    # doesn't work, action url in bika_publication_workflow does it.
+    # def workflow_script_publish(self, state_info):
+    #     self.REQUEST.RESPONSE.redirect(self.absolute_url() + "/publish")
+
+    def workflow_guard_republish(self):
+        return self.workflow_guard_publish()
+
+    # bika_publication_workflow republish action currently goes to "/publish"
+    # def workflow_script_republish(self, state_info):
+    #     self.workflow_script_publish(state_info)
+
 
 registerType(Batch, PROJECTNAME)
