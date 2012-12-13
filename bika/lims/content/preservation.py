@@ -38,7 +38,4 @@ class Preservation(BaseContent):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    def Title(self):
-        return self.title
-
 registerType(Preservation, PROJECTNAME)

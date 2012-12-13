@@ -6,6 +6,7 @@ from Products.ATContentTypes.utils import DT2dt,dt2DT
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
 from bika.lims.config import PROJECTNAME
@@ -73,7 +74,7 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
 
     def Title(self):
         """ Return the Sample ID as title """
-        return str(self.getId()).encode('utf-8')
+        return safe_unicode(self.getId()).encode('utf-8')
 
     security.declarePublic('getAnalyses')
     def getAnalyses(self):

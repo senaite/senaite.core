@@ -81,9 +81,6 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    def Title(self):
-        return self.title
-
     def setInterimFields(self, value):
         new_value = []
 

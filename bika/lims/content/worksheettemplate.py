@@ -85,9 +85,6 @@ class WorksheetTemplate(BaseContent):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    def Title(self):
-        return self.title
-
     security.declarePublic('getAnalysisTypes')
     def getAnalysisTypes(self):
         """ return Analysis type displaylist """

@@ -10,6 +10,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.validation import validation
 from Products.validation.validators.RegexValidator import RegexValidator
 from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims.utils import to_utf8 as _c
 from bika.lims.browser.widgets import *
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from bika.lims.browser.fields import *
@@ -525,12 +526,6 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         return renameAfterCreation(self)
-
-    def Title(self):
-        return self.title.decode('utf-8').encode('utf-8')
-
-    def setTitle(self, value):
-        return self.title.decode('utf-8').encode('utf-8')
 
     security.declarePublic('getDiscountedPrice')
     def getDiscountedPrice(self):

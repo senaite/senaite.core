@@ -7,6 +7,7 @@ from Products.Archetypes import atapi
 from Products.Archetypes.public import *
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims.config import ManageClients, PUBLICATION_PREFS, PROJECTNAME
 from bika.lims.content.person import Person
 from bika.lims import PMF, bikaMessageFactory as _
@@ -60,7 +61,7 @@ class Contact(Person):
 
     def Title(self):
         """ Return the contact's Fullname as title """
-        return str(self.getFullname()).decode('utf-8').encode('utf-8')
+        return safe_unicode(self.getFullname()).encode('utf-8')
 
     security.declareProtected(ManageClients, 'hasUser')
     def hasUser(self):

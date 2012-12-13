@@ -67,9 +67,6 @@ class Container(BaseContent):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    def Title(self):
-        return self.title
-
     def getJSCapacity(self, **kw):
         """Try convert the Capacity to 'ml' or 'g' so that JS has an
         easier time working with it.  If conversion fails, return raw value.

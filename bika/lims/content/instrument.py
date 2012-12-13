@@ -92,9 +92,6 @@ class Instrument(BaseContent):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    def Title(self):
-        return self.title
-
     def getDataInterfacesList(self):
         return getDataInterfaces(self)
 

@@ -7,6 +7,7 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
@@ -75,7 +76,7 @@ class Attachment(BaseFolder):
 
     def Title(self):
         """ Return the Id """
-        return str(self.getId()).decode('utf-8').encode('utf-8')
+        return safe_unicode(self.getId()).encode('utf-8')
 
     def getTextTitle(self):
         """ Return the request and possibly analayis title as title """

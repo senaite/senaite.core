@@ -163,9 +163,6 @@ class ReferenceSample(BaseFolder):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    def Title(self):
-        return self.title
-
     security.declarePublic('current_date')
     def current_date(self):
         return DateTime()

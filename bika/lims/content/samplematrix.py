@@ -28,9 +28,6 @@ class SampleMatrix(BaseFolder):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    def Title(self):
-        return self.title
-
 registerType(SampleMatrix, PROJECTNAME)
 
 def SampleMatrices(self, instance=None, allow_blank=False):

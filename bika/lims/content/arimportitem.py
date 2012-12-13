@@ -5,6 +5,7 @@ from Products.CMFCore.permissions import View, \
     ModifyPortalContent
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
@@ -88,7 +89,7 @@ class ARImportItem(BaseContent):
 
     def Title(self):
         """ Return the Product as title """
-        return str(self.getSampleName()).decode('utf-8').encode('utf-8')
+        return safe_unicode(self.getSampleName()).encode('utf-8')
 
 
 atapi.registerType(ARImportItem, PROJECTNAME)

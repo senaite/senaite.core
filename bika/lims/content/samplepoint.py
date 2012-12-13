@@ -87,9 +87,6 @@ class SamplePoint(BaseContent, HistoryAwareMixin):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    def Title(self):
-        return self.title
-
     def SampleTypesVocabulary(self):
         from bika.lims.content.sampletype import SampleTypes
         return SampleTypes(self, allow_blank=False)

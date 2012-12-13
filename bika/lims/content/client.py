@@ -6,6 +6,7 @@ from Products.Archetypes import atapi
 from Products.Archetypes.utils import DisplayList
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims import interfaces
 from bika.lims.config import *
@@ -101,7 +102,7 @@ class Client(Organisation):
 
     def Title(self):
         """ Return the Organisation's Name as its title """
-        return str(self.getField('Name').get(self)).decode('utf-8').encode('utf-8')
+        return safe_unicode(self.getField('Name').get(self)).encode('utf-8')
 
     def setTitle(self, value):
         return self.setName(value)

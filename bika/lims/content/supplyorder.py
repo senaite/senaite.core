@@ -7,6 +7,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.permissions import ListFolderContents, \
      ModifyPortalContent, View
 from Products.CMFCore import permissions
+from Products.CMFPlone.utils import safe_unicode
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
@@ -91,7 +92,7 @@ class SupplyOrder(BaseFolder):
 
     def Title(self):
         """ Return the OrderNumber as title """
-        return str(self.getOrderNumber()).encode('utf-8')
+        return safe_unicode(self.getOrderNumber()).encode('utf-8')
 
     security.declarePublic('getContactUIDForUser')
     def getContactUIDForUser(self):

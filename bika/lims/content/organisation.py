@@ -4,6 +4,7 @@ from Products.Archetypes.public import *
 from bika.lims.config import PROJECTNAME
 from Products.CMFCore import permissions as CMFCorePermissions
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims.content.bikaschema import BikaSchema, BikaFolderSchema
 from archetypes.referencebrowserwidget import ReferenceBrowserWidget
 from plone.app.folder.folder import ATFolder
@@ -114,7 +115,7 @@ class Organisation(ATFolder):
         """ Return the Organisation's Name as its title """
         field = self.getField('Name')
         field = field and field.get(self) or ''
-        return str(field).encode('utf-8')
+        return safe_unicode(field).encode('utf-8')
 
     def getPossibleAddresses(self):
         return ['PhysicalAddress', 'PostalAddress', 'BillingAddress']

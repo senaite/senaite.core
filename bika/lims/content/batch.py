@@ -5,6 +5,7 @@ from Products.ATContentTypes.utils import DT2dt, dt2DT
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
 from bika.lims.config import PROJECTNAME
@@ -78,8 +79,7 @@ class Batch(BaseContent):
 
     def Title(self):
         """ Return the BatchID or id as title """
-        res = self.getBatchID()
-        return str(res).encode('utf-8')
+        return safe_unicode(self.getBatchID()).encode('utf-8')
 
     security.declarePublic('getBatchID')
     def getBatchID(self):

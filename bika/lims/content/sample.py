@@ -15,6 +15,7 @@ from Products.Archetypes.references import HoldingReference
 from Products.CMFCore import permissions
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims.config import ManageBika, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.utils import sortable_title
@@ -211,7 +212,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
 
     def Title(self):
         """ Return the Sample ID as title """
-        return str(self.getId()).encode('utf-8')
+        return safe_unicode(self.getId()).encode('utf-8')
 
     # Forms submit Title Strings which need
     # to be converted to objects somewhere along the way...

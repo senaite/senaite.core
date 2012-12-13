@@ -3,6 +3,7 @@ from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from Products.Archetypes.public import *
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.Registry import registerField
@@ -81,7 +82,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         renameAfterCreation(self)
 
     def Title(self):
-        return str(self.id).encode('utf-8')
+        return safe_unicode(self.getId()).encode('utf-8')
 
     def getFolderContents(self, contentFilter):
         # The bika_listing machine passes contentFilter to all

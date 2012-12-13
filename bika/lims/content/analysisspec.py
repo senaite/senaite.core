@@ -14,6 +14,7 @@ from Products.CMFCore import permissions
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.widgets import AnalysisSpecificationWidget
@@ -113,8 +114,8 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
             st = self.getSampleType()
             st = st and st.Title() or ''
         except:
-            st = ''
-        return str(st).decode('utf-8').encode('utf-8')
+            st = self.getId()
+        return safe_unicode(st).encode('utf-8')
 
     security.declarePublic('getSpecCategories')
     def getSpecCategories(self):

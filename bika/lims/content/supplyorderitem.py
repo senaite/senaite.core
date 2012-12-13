@@ -3,6 +3,7 @@ from Products.Archetypes import atapi
 from AccessControl import ClassSecurityInfo
 from Products.CMFCore.permissions import View, \
     ModifyPortalContent
+from Products.CMFPlone.utils import safe_unicode
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from bika.lims.content.bikaschema import BikaSchema
@@ -53,7 +54,7 @@ class SupplyOrderItem( BaseContent):
             ret = product.Title()
         else:
             ret = ''
-        return str(ret).encode('utf-8')
+        return safe_unicode(ret).encode('utf-8')
 
     security.declareProtected(View, 'getTotal')
     def getTotal(self):

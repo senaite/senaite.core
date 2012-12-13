@@ -41,7 +41,4 @@ class ReferenceSupplier(Organisation):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    def Title(self):
-        return self.title
-
 registerType(ReferenceSupplier, PROJECTNAME)

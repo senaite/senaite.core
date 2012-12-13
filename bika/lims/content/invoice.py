@@ -3,6 +3,7 @@ from DateTime import DateTime
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from Products.Archetypes.public import *
 from Products.CMFCore.permissions import View
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.config import ManageInvoices, ManageBika, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -96,7 +97,7 @@ class Invoice(BaseFolder):
 
     def Title(self):
         """ Return the InvoiceNumber as title """
-        return str(self.getInvoiceNumber()).decode('utf-8').encode('utf-8')
+        return safe_unicode(self.getInvoiceNumber()).encode('utf-8')
 
     security.declareProtected(View, 'getSubtotal')
     def getSubtotal(self):

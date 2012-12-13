@@ -16,6 +16,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import transaction_note
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims.browser.fields import ARAnalysesField
 from bika.lims.config import PROJECTNAME, \
     ManageInvoices
@@ -246,14 +247,12 @@ class AnalysisRequest(BaseFolder):
 
     def Title(self):
         """ Return the Request ID as title """
-        return str(self.getRequestID()).decode('utf-8').encode('utf-8')
+        return safe_unicode(self.getRequestID()).encode('utf-8')
 
     def Description(self):
         """ Return searchable data as Description """
-        return " ".join((
-            self.getRequestID(),
-            self.aq_parent.Title()
-        ))
+        descr = " ".join((self.getRequestID(), self.aq_parent.Title()))
+        return safe_unicode(descr).encode('utf-8')
 
     def getDefaultMemberDiscount(self):
         """ compute default member discount if it applies """

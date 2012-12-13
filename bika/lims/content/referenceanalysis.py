@@ -7,6 +7,7 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import HistoryAwareReferenceField
@@ -112,7 +113,7 @@ class ReferenceAnalysis(BaseContent):
         """ Return the Service ID as title """
         s = self.getService()
         s = s and s.Title() or ''
-        return str(s).encode('utf-8')
+        return safe_unicode(s).encode('utf-8')
 
     def getUncertainty(self, result = None):
         """ Calls self.Service.getUncertainty with either the

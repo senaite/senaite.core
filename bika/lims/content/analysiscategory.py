@@ -48,9 +48,6 @@ class AnalysisCategory(BaseContent):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    def Title(self):
-        return self.title
-
     def getDepartments(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
         deps = []
