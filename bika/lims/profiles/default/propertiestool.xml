@@ -47,6 +47,7 @@
     <element value="ARTemplate"/>
     <element value="Attachment"/>
     <element value="AttachmentType"/>
+    <element value="Batch"/>
     <element value="BikaSetup"/>
     <element value="Calculation"/>
     <element value="Client"/>
