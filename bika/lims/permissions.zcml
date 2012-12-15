@@ -79,5 +79,7 @@
 # Sampling workflow - allows editing field results while in sample_due state
 <permission id="bika.lims.EditFieldResults" title="BIKA: Edit Field Results"/>
 
+<permission id="bika.lims.ManageLoginDetails" title="BIKA: Manage Login Details"/>
+
 
 </configure>
