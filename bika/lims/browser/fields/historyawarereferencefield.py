@@ -140,7 +140,6 @@ class HistoryAwareReferenceField(ReferenceField):
                 continue
             uid = r.UID()
             r = uc(UID=uid)[0].getObject()
-            logger.info(r.Title(), r.version_id)
             if hasattr(instance, 'reference_versions') and \
                hasattr(r, 'version_id') and \
                uid in instance.reference_versions and \
