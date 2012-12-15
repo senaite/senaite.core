@@ -10,7 +10,6 @@ from bika.lims import logger
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import sortable_title
-from Products.CMFPlone.utils import safe_unicode
 from bika.lims.utils import to_utf8 as _c
 from cStringIO import StringIO
 from openpyxl.reader.excel import load_workbook
@@ -27,8 +26,8 @@ import zope
 
 def _c(text):
     if text == None:
-        return None
-    return safe_unicode(text).encode('utf-8')
+        text = ''
+    return unicode(text).encode('utf-8')
 
 class LoadSetupData(BrowserView):
 
@@ -793,8 +792,8 @@ class LoadSetupData(BrowserView):
         for row in rows[3:]:
             row = dict(zip(fields, row))
 
-            st = _c(self.sampletypes[row['SampleType_title']])
-            sp = _c(self.samplepoints[row['SamplePoint_title']])
+            st = self.sampletypes[row['SampleType_title']]
+            sp = self.samplepoints[row['SamplePoint_title']]
 
             sampletypes = sp.getSampleTypes()
             if st not in sampletypes:
@@ -945,7 +944,7 @@ class LoadSetupData(BrowserView):
                 Calculation = row['Calculation_title'] and self.calcs[row['Calculation_title']] or None,
                 DuplicateVariation = "%02f" % float(row['DuplicateVariation']),
                 Accredited = row['Accredited'] and True or False,
-                InterimFields = hasattr(self,'service_interims') and self.service_interims.get(title, []) or []
+                InterimFields = hasattr(self,'service_interims') and self.service_interims.get(row['title'], []) or []
             )
             service_obj = obj
             self.services[row['title']] = obj
