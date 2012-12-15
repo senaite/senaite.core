@@ -54,6 +54,8 @@ $(document).ready(function(){
 		           {'columnName':'parent','width':'35','label':_('Parent')},
 		           {'columnName':'type','width':'20','label':_('Type')}],
 		url: window.location.href.replace("/manage_results","") + "/attachAnalyses?_authenticator=" + $('input[name="_authenticator"]').val(),
+        showOn: true,
+        width: '650px',
 		select: function( event, ui ) {
 			$( "#Analysis" ).val(ui.item.service + " (slot "+ui.item.slot+")");
 			$( "#analysis_uid" ).val(ui.item.analysis_uid);
