@@ -135,7 +135,6 @@ class Batch(BaseContent):
         """
         wf = getToolByName(self, 'portal_workflow')
         states = ['sample_registered', 'to_be_sampled', 'sampled', 'to_be_preserved', 'sample_due']
-        import pdb;pdb.set_trace()
         for o in self.getAnalysisRequests():
             if wf.getInfoFor(o, 'review_state') in states:
                 return False
