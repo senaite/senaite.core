@@ -3,7 +3,7 @@
 
 <stylesheet
     id="++resource++bika.lims.css/hide_contentmenu.css"
-    expression="python:here.portal_type in ['Batch', 'Client', 'AnalysisRequest', 'Worksheet', 'Sample', 'AnalysisCategory', 'AnalysisProfile', 'ARTemplate', 'AnalysisService', 'AnalysisSpec', 'Attachment', 'Calculation', 'Instrument', 'LabContact', 'Laboratory', 'Method', 'Department', 'ReferenceDefinition', 'ReferenceManufacturer', 'ReportFolder', 'SampleType', 'SamplePoint', 'WorksheetTemplate', 'LabProduct', 'ReferenceSupplier', 'ReferenceSample', 'Preservation']"
+    expression="python:here.portal_type in ['Batch', 'Client', 'AnalysisRequest', 'Worksheet', 'Sample', 'AnalysisCategory', 'AnalysisProfile', 'ARTemplate', 'AnalysisService', 'AnalysisSpec', 'Attachment', 'Calculation', 'Instrument', 'Contact', 'LabContact', 'Laboratory', 'Method', 'Department', 'ReferenceDefinition', 'ReferenceManufacturer', 'ReportFolder', 'SampleType', 'SamplePoint', 'WorksheetTemplate', 'LabProduct', 'ReferenceSupplier', 'ReferenceSample', 'Preservation']"
     media="screen"
     rel="stylesheet"
     rendering="link"
