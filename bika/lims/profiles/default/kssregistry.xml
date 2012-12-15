@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<object name="portal_kss" meta_type="KSS Registry">
+ <!--  Javascript widgets and such do not play nice with at.kss features
+    Really, should be disabling for bika.lims.interfaces.IBikaLIMS contexts,
+    but there is no such marker applied to all Bika classes.  So we just
+    disable it here.
+ -->
+ <kineticstylesheet cacheable="True" compression="safe" cookable="True"
+    enabled="0" expression="" id="at.kss"/>
+</object>
