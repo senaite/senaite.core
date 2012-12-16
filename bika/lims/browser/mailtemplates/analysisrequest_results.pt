@@ -262,6 +262,11 @@
                 <span tal:condition="analysis/getResultDM"
                   tal:content="analysis/getResultDM">10</span>
               </td>
+              <tal:remarks tal:condition="python:view.context.bika_setup.getEnableAnalysisRemarks()">
+                <td tal:attributes="colspan python:ar.getReportDryMatter() and '2'or '1'"
+                  tal:content="analysis/getRemarks">
+                </td>
+              </tal:remarks>
             </tal:result>
             <tal:notanalysis tal:condition="python:not analysis_found">
               <td></td>

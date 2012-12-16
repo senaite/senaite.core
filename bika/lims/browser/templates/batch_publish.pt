@@ -103,11 +103,16 @@
       </tr>
     </thead>
     <tbody>
-      <tr tal:repeat="analysis ar/datalines">
-        <tal:x repeat="header view/analysis_headers">
-          <td tal:content="python:analysis[header]"/>
-        </tal:x>
-      </tr>
+      <tal:analyses repeat="analysis ar/datalines">
+        <tr>
+          <tal:x repeat="header view/analysis_headers">
+            <td tal:content="python:analysis[header]"/>
+          </tal:x>
+        </tr>
+        <tr tal:condition="python:view.context.bika_setup.getEnableAnalysisRemarks()">
+          <td tal:content="analysis['Remarks']"/>
+        </tr>
+      </tal:analyses>
     </tbody>
   </table>
 </div>

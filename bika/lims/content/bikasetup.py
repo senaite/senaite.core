@@ -168,6 +168,13 @@ schema = BikaFolderSchema.copy() + Schema((
                             "helpful when the list is long")
         ),
     ),
+    BooleanField('EnableAnalysisRemarks',
+        schemata = "Analyses",
+        default = False,
+        widget = BooleanWidget(
+            label = _("Add a remarks field to all analyses"),
+        ),
+    ),
     ReferenceField('DryMatterService',
         schemata = "Analyses",
         required = 0,

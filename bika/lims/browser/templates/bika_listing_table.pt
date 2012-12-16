@@ -202,9 +202,11 @@ Table data rows start here
 	<tal:items
 		tal:repeat="item view/batch">
 		<tr tal:condition="python:item.has_key('id') and item.get('category', 'None') == cat"
-			tal:define="keyword python:item.has_key('Keyword') and item['Keyword'] or ''"
+			tal:define="keyword python:item.has_key('Keyword') and item['Keyword'] or '';
+						tmpstyle python:(cat != 'None' and not cat in selected_cats) and 'display:none;;' or '';
+						tmpstyle python:view.context.bika_setup.getEnableAnalysisRemarks() and tmpstyle + 'border-bottom:0 !important;;' or tmpstyle;"
 			tal:attributes="
-				style python:(cat != 'None' and not cat in selected_cats) and 'display:none' or '';
+			     style tmpstyle;
 				cat cat;
 				class item/table_row_class;
 				id string:folder-contents-item-${item/uid};
@@ -546,6 +548,51 @@ Table cells for each column from in review_state's column list.
 	</tal:cell>
 
 	</tr>
+
+     <!-- Row Remarks field (for Analyses) -->
+     <tal:remarks_condition tal:define="allow_edit python:(view.bika_listing.allow_edit
+												and 'Remarks' in item['allow_edit'])
+												or item.get('calculation', None);">
+
+		<tr	tal:condition="python:view.context.bika_setup.getEnableAnalysisRemarks()
+			                     and item.has_key('id')
+			                     and item.get('category', 'None') == cat
+			                     and item['obj'].portal_type == 'Analysis' and (
+			                     	allow_edit or item.get('Remarks')
+			                     )"
+			tal:define="keyword python:item.has_key('Keyword') and item['Keyword'] or '';"
+			tal:attributes="cat cat;
+						class item/table_row_class;
+						id string:folder-contents-item-${item/uid};
+						uid item/uid;
+						keyword keyword;">
+
+			<td tal:condition="python:context.portal_type=='Worksheet'">&nbsp;</td>
+			<td tal:condition="python:context.portal_type!='Worksheet'"><span i18n:translate="">Remarks</span>:</td>
+
+			<td tal:attributes="colspan python:int(nr_cols)-1;">
+				<input
+					type="text" style="font-size: 90%"
+					autocomplete="off"
+					style="width:95%"
+					tal:condition="python:allow_edit"
+					tal:attributes="
+						class python:'listing_remarks';
+						tabindex tabindex/next;
+						uid string:${item/uid};
+						st_uid string:${item/st_uid|nothing};
+						objectId string:${item/id};
+						name string:Remarks.${item/uid}:records;
+						value python:item.get('Remarks', '');"/>
+				<span
+					style="font-size: 90%"
+					autocomplete="off"
+					tal:condition="python:not allow_edit"
+					tal:content="python:item.get('Remarks', '')"/>
+			</td>
+		</tr>
+	</tal:remarks_condition>
+
 	</tal:items>
 </tal:cats>
 </tbody>

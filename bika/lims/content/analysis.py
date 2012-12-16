@@ -96,6 +96,8 @@ schema = BikaSchema.copy() + Schema((
 
     StringField('Analyst',
     ),
+    TextField('Remarks',
+    ),
     ReferenceField('Instrument',
         required = 0,
         allowed_types = ('Instrument',),

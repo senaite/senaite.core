@@ -280,14 +280,15 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 if not analysis:
                     # ignore result if analysis object no longer exists
                     continue
-                if not checkPermission(EditResults, analysis) \
-                   and not checkPermission(EditFieldResults, analysis):
-                    mtool = getToolByName(self.context, 'portal_membership')
-                    username = mtool.getAuthenticatedMember().getUserName()
-                    path = "/".join(self.context.getPhysicalPath())
-                    logger.info("Changes no longer allowed (user: %s, object: %s)" % \
-                                (username, path))
-                    continue
+                # Shouldn't happen - better have an actual error
+                # if not checkPermission(EditResults, analysis) \
+                #    and not checkPermission(EditFieldResults, analysis):
+                #     mtool = getToolByName(self.context, 'portal_membership')
+                #     username = mtool.getAuthenticatedMember().getUserName()
+                #     path = "/".join(self.context.getPhysicalPath())
+                #     logger.info("Changes no longer allowed (user: %s, object: %s)" % \
+                #                 (username, path))
+                #     continue
                 results[uid] = result
                 service = analysis.getService()
                 interimFields = item_data[uid]
@@ -297,12 +298,15 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     hasInterims[uid] = False
                 service_unit = service.getUnit() and service.getUnit() or ''
                 retested = form.has_key('retested') and form['retested'].has_key(uid)
+                remarks = form.get('Remarks', [{},])[0].get(uid, '')
                 # Don't save uneccessary things
                 if analysis.getInterimFields() != interimFields or \
-                   analysis.getRetested() != retested:
+                   analysis.getRetested() != retested or \
+                   analysis.getRemarks() != remarks:
                     analysis.edit(
                         InterimFields = interimFields,
-                        Retested = retested)
+                        Retested = retested,
+                        Remarks = remarks)
                 # save results separately, otherwise capture date is rewritten
                 if analysis.getResult() != result or \
                    analysis.getResultDM() != dry_result:

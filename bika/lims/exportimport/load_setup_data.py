@@ -293,6 +293,7 @@ class LoadSetupData(BrowserView):
 ##            SMSGatewayAddress = values['SMSGatewayAddress'],
             SamplingWorkflowEnabled = values['SamplingWorkflowEnabled'],
             CategoriseAnalysisServices = values['CategoriseAnalysisServices'],
+            EnableAnalysisRemarks = values.get('EnableAnalysisRemarks', ''),
             DryMatterService = self.services.get(values['DryMatterService'], ''),
             ARImportOption = values['ARImportOption'],
             ARAttachmentOption = values['ARAttachmentOption'][0].lower(),

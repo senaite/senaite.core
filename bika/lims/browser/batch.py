@@ -181,7 +181,8 @@ class BatchPublishView(BrowserView):
                 datalines.append({_("Analysis Service"): analysis.getService().Title(),
                                   _("Method"): method and method.Title() or "",
                                   _("Result"): formatted_result,
-                                  _("Analyst"): self.user_fullname(analysis.getAnalyst())})
+                                  _("Analyst"): self.user_fullname(analysis.getAnalyst()),
+                                  _("Remarks"): analysis.getRemarks()})
             self.ars.append({
                         _("Request ID"): ar.getRequestID(),
                                 _("Date Requested"): self.ulocalized_time(datecreated), # requested->created

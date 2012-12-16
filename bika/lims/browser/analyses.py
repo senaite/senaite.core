@@ -145,6 +145,7 @@ class AnalysesView(BikaListingView):
             items[i]['Result'] = ''
             items[i]['formatted_result'] = ''
             items[i]['interim_fields'] = interim_fields
+            items[i]['Remarks'] = obj.getRemarks()
             items[i]['Uncertainty'] = ''
             items[i]['retested'] = obj.getRetested()
             items[i]['class']['retested'] = 'center'
@@ -249,7 +250,7 @@ class AnalysesView(BikaListingView):
                   (poc != 'field' and getSecurityManager().checkPermission(EditResults, obj)) )
 
             if can_edit_analysis:
-                items[i]['allow_edit'] = ['Result', ]
+                items[i]['allow_edit'] = ['Result', 'Remarks', ]
                 # if the Result field is editable, our interim fields are too
                 for f in self.interim_fields[obj.UID()]:
                     items[i]['allow_edit'].append(f['keyword'])
