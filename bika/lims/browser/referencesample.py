@@ -21,7 +21,7 @@ class ViewView(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
-        self.icon = "++resource++bika.lims.images/referencesample_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/referencesample_big.png"
 
     def __call__(self):
         rc = getToolByName(self.context, REFERENCE_CATALOG)
@@ -179,7 +179,7 @@ class ReferenceSamplesView(BikaListingView):
     def __init__(self, context, request):
         super(ReferenceSamplesView, self).__init__(context, request)
         portal = getToolByName(context, 'portal_url').getPortalObject()
-        self.icon = "++resource++bika.lims.images/referencesample_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/referencesample_big.png"
         self.title = _("Reference Samples")
         self.description = _("All reference samples in the system are displayed here.")
         self.catalog = 'bika_catalog'

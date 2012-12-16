@@ -31,7 +31,7 @@ class SamplePartitionsView(BikaListingView):
                                       "level" : 0 }
         self.context_actions = {}
         self.title = _("Sample Partitions")
-        self.icon = "++resource++bika.lims.images/samplepartition_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/samplepartition_big.png"
         self.description = ""
         self.allow_edit = True
         self.show_select_all_checkbox = False
@@ -257,7 +257,7 @@ class SampleEdit(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
-        self.icon = "++resource++bika.lims.images/sample_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/sample_big.png"
         self.allow_edit = True
 
     def now(self):
@@ -574,7 +574,7 @@ class SamplesView(BikaListingView):
         else:
             self.view_url = self.view_url + "/samples"
 
-        self.icon = "++resource++bika.lims.images/sample_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/sample_big.png"
         self.title = _("Samples")
         self.description = ""
 

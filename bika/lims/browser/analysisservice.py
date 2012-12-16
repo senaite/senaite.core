@@ -65,7 +65,7 @@ class ajaxServicePopup(BrowserView):
 
     def __init__(self, context, request):
         super(ajaxServicePopup, self).__init__(context, request)
-        self.icon = "++resource++bika.lims.images/analysisservice_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/analysisservice_big.png"
 
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)

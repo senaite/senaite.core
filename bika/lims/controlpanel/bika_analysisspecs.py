@@ -25,7 +25,7 @@ class AnalysisSpecsView(BikaListingView):
         self.context_actions = {_('Add'):
                                 {'url': 'createObject?type_name=AnalysisSpec',
                                  'icon': '++resource++bika.lims.images/add.png'}}
-        self.icon = "++resource++bika.lims.images/analysisspec_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/analysisspec_big.png"
         self.title = _("Analysis Specifications")
         self.description = _("Set up the laboratory analysis service results specifications")
         self.show_sort_column = False

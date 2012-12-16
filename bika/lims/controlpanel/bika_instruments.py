@@ -27,7 +27,7 @@ class InstrumentsView(BikaListingView):
                                 {'url': 'createObject?type_name=Instrument',
                                  'icon': '++resource++bika.lims.images/add.png'}}
         self.title = _("Instruments")
-        self.icon = "++resource++bika.lims.images/instrument_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/instrument_big.png"
         self.description = ""
         self.show_sort_column = False
         self.show_select_row = False

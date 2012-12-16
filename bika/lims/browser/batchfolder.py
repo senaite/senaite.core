@@ -24,7 +24,7 @@ class BatchFolderContentsView(BikaListingView):
         self.catalog = 'bika_catalog'
         self.contentFilter = {'portal_type': 'Batch'}
         self.context_actions = {}
-        self.icon = "++resource++bika.lims.images/batch_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/batch_big.png"
         self.title = _("Batches")
         self.description = ""
         self.show_sort_column = False

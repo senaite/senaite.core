@@ -30,7 +30,7 @@ class LogView(BikaListingView):
         self.show_workflow_action_buttons = False
         self.pagesize = 1000
 
-        self.icon = "++resource++bika.lims.images/%s_big.png" % \
+        self.icon = self.portal_url + "/++resource++bika.lims.images/%s_big.png" % \
             context.portal_type.lower()
         self.title = "%s %s" % (self.context.Title(),
                                 self.context.translate(_("Log")))

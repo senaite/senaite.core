@@ -27,7 +27,7 @@ class LabProductsView(BikaListingView):
                                 {'url': 'createObject?type_name=LabProduct',
                                  'icon': '++resource++bika.lims.images/add.png'}}
         self.title = _("Lab Products")
-        self.icon = "++resource++bika.lims.images/product_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/product_big.png"
         self.description = ""
         self.show_sort_column = False
         self.show_select_row = False

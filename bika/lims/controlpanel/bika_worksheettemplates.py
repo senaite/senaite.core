@@ -29,7 +29,7 @@ class WorksheetTemplatesView(BikaListingView):
                                 {'url': 'createObject?type_name=WorksheetTemplate',
                                  'icon': '++resource++bika.lims.images/add.png'}}
         self.title = _("Worksheet Templates")
-        self.icon = "++resource++bika.lims.images/worksheettemplate_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/worksheettemplate_big.png"
         self.description = ""
         self.show_sort_column = False
         self.show_select_row = False

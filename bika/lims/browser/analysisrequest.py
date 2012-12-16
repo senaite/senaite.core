@@ -390,7 +390,7 @@ class AnalysisRequestViewView(BrowserView):
 
     def __init__(self, context, request):
         super(AnalysisRequestViewView, self).__init__(context, request)
-        self.icon = "++resource++bika.lims.images/analysisrequest_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/analysisrequest_big.png"
 
     def __call__(self):
         form = self.request.form
@@ -1019,7 +1019,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
                               'sort_on': 'sortable_title',
                               'inactive_state': 'active',}
         self.context_actions = {}
-        self.icon = "++resource++bika.lims.images/analysisrequest_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/analysisrequest_big.png"
         self.title = self.context.Title()
         self.show_sort_column = False
         self.show_select_row = False
@@ -1221,7 +1221,7 @@ class AnalysisRequestSelectCCView(BikaListingView):
 
     def __init__(self, context, request):
         super(AnalysisRequestSelectCCView, self).__init__(context, request)
-        self.icon = "++resource++bika.lims.images/contact_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/contact_big.png"
         self.title = _("Contacts to CC")
         self.description = _("Select the contacts that will receive analysis results for this request.")
         self.catalog = "portal_catalog"
@@ -1305,7 +1305,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
 
     def __init__(self, context, request):
         super(AnalysisRequestSelectSampleView, self).__init__(context, request)
-        self.icon = "++resource++bika.lims.images/sample_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/sample_big.png"
         self.title = _("Select Sample")
         self.description = _("Click on a sample to create a secondary AR")
         c = context.portal_type == 'AnalysisRequest' and context.aq_parent or context
@@ -1871,7 +1871,7 @@ class AnalysisRequestsView(BikaListingView):
         self.show_select_column = True
         self.form_id = "analysisrequests"
 
-        self.icon = "++resource++bika.lims.images/analysisrequest_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/analysisrequest_big.png"
         self.title = _("Analysis Requests")
         self.description = ""
 

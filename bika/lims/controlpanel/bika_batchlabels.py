@@ -21,7 +21,7 @@ class BatchLabelsView(BikaListingView):
                                 {'url': 'createObject?type_name=BatchLabel',
                                  'icon': '++resource++bika.lims.images/add.png'}}
         self.title = _("Batch Labels")
-        self.icon = "++resource++bika.lims.images/batchlabel_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/batchlabel_big.png"
         self.description = ""
         self.show_sort_column = False
         self.show_select_row = False

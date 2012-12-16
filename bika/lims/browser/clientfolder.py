@@ -22,7 +22,7 @@ class ClientFolderContentsView(BikaListingView):
     def __init__(self, context, request):
         super(ClientFolderContentsView, self).__init__(context, request)
         self.contentFilter = {}
-        self.icon = "++resource++bika.lims.images/client_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/client_big.png"
         self.title = _("Clients")
         self.description = ""
         self.show_sort_column = False

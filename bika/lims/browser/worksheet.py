@@ -196,7 +196,7 @@ class WorksheetAnalysesView(AnalysesView):
         self.contentFilter = {'portal_type':'Analysis',
                               'review_state':'sample_received',
                               'worksheetanalysis_review_state':'unassigned'}
-        self.icon = "++resource++bika.lims.images/worksheet_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
         self.contentFilter = {}
         self.show_select_row = False
         self.show_sort_column = False
@@ -408,7 +408,7 @@ class ManageResultsView(BrowserView):
         self.getAnalysts = getUsers(context, ['Manager', 'LabManager', 'Analyst'])
 
     def __call__(self):
-        self.icon = "++resource++bika.lims.images/worksheet_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
 
         # Worksheet Attachmemts
         # the expandable form is handled here.
@@ -502,7 +502,7 @@ class AddAnalysesView(BikaListingView):
 
     def __init__(self, context, request):
         BikaListingView.__init__(self, context, request)
-        self.icon = "++resource++bika.lims.images/worksheet_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
         self.title = _("Add Analyses")
         self.description = ""
         self.catalog = "bika_analysis_catalog"
@@ -663,7 +663,7 @@ class AddBlankView(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
-        self.icon = "++resource++bika.lims.images/worksheet_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
         self.title = _("Add Blank Reference")
         self.description = _("Select services in the left column to locate "
                              "reference samples. Select a reference by clicking it. ")
@@ -707,7 +707,7 @@ class AddControlView(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
-        self.icon = "++resource++bika.lims.images/worksheet_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
         self.title = _("Add Control Reference")
         self.description = _("Select services in the left column to locate "
                              "reference samples. Select a reference by clicking it. ")
@@ -750,7 +750,7 @@ class AddDuplicateView(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
-        self.icon = "++resource++bika.lims.images/worksheet_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
         self.title = _("Add Duplicate")
         self.description = _("Select a destinaton position and the AR to duplicate.")
 

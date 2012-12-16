@@ -97,7 +97,7 @@ class AnalysisServicesView(BikaListingView):
         self.context_actions = {_('Add'):
                                 {'url':'createObject?type_name=AnalysisService',
                                  'icon': '++resource++bika.lims.images/add.png'}}
-        self.icon = "++resource++bika.lims.images/analysisservice_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/analysisservice_big.png"
         self.title = _("Analysis Services")
         self.show_sort_column = False
         self.show_select_row = False

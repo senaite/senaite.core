@@ -80,7 +80,7 @@ class WorksheetFolderListingView(BikaListingView):
 
         request.set('disable_border', 1)
 
-        self.icon = "++resource++bika.lims.images/worksheet_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
         self.title = _("Worksheets")
         self.description = ""
 
