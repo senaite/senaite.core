@@ -153,7 +153,7 @@ class Client(Organisation):
                                     'uid': cc.UID(),})
                 this_contact_data['ccs_json'] = json.dumps(ccs)
                 this_contact_data['ccs'] = ccs
-            contact_data.append(this_contact_data)
+                contact_data.append(this_contact_data)
         contact_data.sort(lambda x, y:cmp(x['title'].lower(),
                                           y['title'].lower()))
         return contact_data
