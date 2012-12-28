@@ -19,7 +19,7 @@
 
 	<fieldset>
 		<span tal:replace="structure context/@@authenticator/authenticator" />
-		<legend i18n:translate="" tal:content="python:widget.Label(here)">
+		<legend i18n:translate="" tal:content="python:widget.Label(here)" tal:condition="widget/showLegend">
 		</legend>
 
 		<table>
@@ -42,8 +42,8 @@
 						</tal:x>
 					</select>
 				</td>
-				<td class="field" style="padding-left: 2em;"><label
-					i18n:translate="">Copy from</label> <select size="1" id=""
+				<td class="field" style="padding-left: 2em;" tal:condition="widget/showCopyFrom">
+					<label i18n:translate="">Copy from</label> <select size="1" id=""
 					tal:attributes='id string:${fieldName}.selection;'>
 						<option></option>
 						<tal:possibles tal:repeat="possible possibles">
@@ -74,7 +74,7 @@
 				</td>
 			</tr>
 
-			<tr>
+			<tr tal:condition="widget/showDistrict">
 				<td class="field"><label
 					i18n:translate="" tal:attributes="for string:${fieldName}_district">District</label>
 				</td>
@@ -94,7 +94,7 @@
 				</td>
 			</tr>
 
-			<tr>
+			<tr tal:condition="widget/showCity">
 				<td class="field"><label
 					i18n:translate="" tal:attributes="for string:${fieldName}_city">City</label>
 				</td>
@@ -106,7 +106,7 @@
 			</tr>
 
 
-			<tr>
+			<tr tal:condition="widget/showPostalCode">
 				<td class="field"><label
 					i18n:translate="" tal:attributes="for string:${fieldName}_zip">Postal
 						code</label></td>
@@ -117,7 +117,7 @@
 				</td>
 			</tr>
 
-			<tr>
+			<tr tal:condition="widget/showAddress">
 				<td class="field" valign="top"><label i18n:translate="">Address</label>
 				</td>
 				<td><textarea cols="20" rows="3"

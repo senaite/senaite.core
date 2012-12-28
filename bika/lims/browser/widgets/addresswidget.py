@@ -14,6 +14,12 @@ class AddressWidget(TypesWidget):
         'macro': "bika_widgets/addresswidget",
         'helper_js': ("bika_widgets/addresswidget.js",),
         'helper_css': ("bika_widgets/addresswidget.css",),
+        'showLegend': True,
+        'showDistrict': True,
+        'showCopyFrom': True,
+        'showCity': True,
+        'showPostalCode': True,
+        'showAddress': True,
     })
 
     security = ClassSecurityInfo()
