@@ -10,7 +10,7 @@
       <metal:block define-slot="title">
         <h1
             tal:condition="python:context.checkCreationFlag()">
-			<img tal:attributes="src python:context.portal_url() + '/++resource++bika.lims.images/' + context.portal_type.lower() + '_big.png'"/>
+      <img tal:attributes="src python:'%s/%s'%(context.portal_url(), context.icon().replace('.png', '_big.png'))"/>
           <span i18n:translate="heading_add_item">
 			Add
 			<span i18n:name="itemtype"
@@ -24,7 +24,7 @@
         </h1>
         <h1
             tal:condition="python: not context.checkCreationFlag()">
-			<img tal:attributes="src python:context.portal_url() + '/++resource++bika.lims.images/' + context.portal_type.lower() + '_big.png'"/>
+      <img tal:attributes="src python:'%s/%s'%(context.portal_url(), context.icon().replace('.png', '_big.png'))"/>
           <span i18n:translate="heading_edit_item">
 			Edit
 			<span i18n:name="itemtype"
