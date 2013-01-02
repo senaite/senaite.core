@@ -113,3 +113,59 @@ class InstrumentCalibrationsView(BikaListingView):
                  (items[x]['url'], items[x]['Title'])
                  
         return items
+    
+class InstrumentCertificationsView(BikaListingView):
+    implements(IFolderContentsView, IViewView)
+    
+    def __init__(self, context, request):
+        super(InstrumentCertificationsView, self).__init__(context, request)
+        self.catalog = "portal_catalog"
+        self.contentFilter = {
+            'portal_type': 'InstrumentCertification',
+        }
+        self.context_actions = {_('Add'): 
+                                {'url': 'createObject?type_name=InstrumentCertification',
+                                 'icon': '++resource++bika.lims.images/add.png'}}
+        self.show_table_only = False
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = True
+        self.pagesize = 25 
+        self.form_id = "instrumentcertifications"
+        self.icon = "++resources++bika.lims.images/instrumentcertification_big.png"
+        self.title = _("Instrument Certifications")
+        self.description = ""
+        
+        self.columns = {
+            'Title': {'title': _('Certification Num'),
+                      'index': 'sortable_title'},
+            'getAgency': {'title': _('Agency')},
+            'getDate': {'title': _('Date')},
+            'getValidFrom': {'title': _('Valid from')},
+            'getValidTo': {'title': _('Valid to')},
+        }
+        self.review_states = [
+            {'id':'default',
+             'title':_('All'),
+             'contentFilter':{},
+             'columns': [ 'Title',
+                         'getAgency',
+                         'getDate',
+                         'getValidFrom',
+                         'getValidTo']},
+        ]
+    
+    def folderitems(self):
+        items = BikaListingView.folderitems(self)
+        for x in range (len(items)):
+            if not items[x].has_key('obj'): continue
+            
+            obj = items[x]['obj']
+            items[x]['getAgency'] = obj.getAgency()
+            items[x]['getDate'] = obj.getDate()
+            items[x]['getValidFrom'] = obj.getValidFrom()
+            items[x]['getValidTo'] = obj.getValidTo()
+            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['Title'])
+                 
+        return items

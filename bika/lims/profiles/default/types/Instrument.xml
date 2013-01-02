@@ -16,6 +16,7 @@
  <property name="allowed_content_types">
  	<element value="InstrumentMaintenanceTask"/>
  	<element value="InstrumentCalibration"/>
+ 	<element value="InstrumentCertification"/>
  </property>
  <property name="allow_discussion">False</property>
  <property name="immediate_view">base_edit</property>
@@ -63,6 +64,17 @@
 	 	condition_expr=""
 	 	icon_expr="string:${portal_url}/images/instrumentcalibration.png"
 	 	url_expr="string:${object_url}/calibrations"
+	 	i18n:attributes="title"
+	 	visible="True">
+ 	<permission value="Modify portal content"/>
+ </action>
+ 
+  <action title="Certifications"
+	 	action_id="certification"
+	 	category="object"
+	 	condition_expr=""
+	 	icon_expr="string:${portal_url}/images/instrumentcertification.png"
+	 	url_expr="string:${object_url}/certifications"
 	 	i18n:attributes="title"
 	 	visible="True">
  	<permission value="Modify portal content"/>

@@ -57,6 +57,7 @@ def initialize(context):
     from content.duplicateanalysis import DuplicateAnalysis
     from content.instrument import Instrument
     from content.instrumentcalibration import InstrumentCalibration
+    from content.instrumentcertification import InstrumentCertification
     from content.instrumentmaintenancetask import InstrumentMaintenanceTask
     from content.instrumenttype import InstrumentType
     from content.invoice import Invoice
