@@ -88,7 +88,7 @@ class InstrumentCalibrationsView(BikaListingView):
                       'index': 'sortable_title'},
             'getDownFrom': {'title': _('Down from')},
             'getDownTo': {'title': _('Down to')},
-            'getCalibrator': {'title': _('Maintainer')},
+            'getCalibrator': {'title': _('Calibrator')},
         }
         self.review_states = [
             {'id':'default',
@@ -165,6 +165,59 @@ class InstrumentCertificationsView(BikaListingView):
             items[x]['getDate'] = obj.getDate()
             items[x]['getValidFrom'] = obj.getValidFrom()
             items[x]['getValidTo'] = obj.getValidTo()
+            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['Title'])
+                 
+        return items
+
+class InstrumentValidationsView(BikaListingView):
+    implements(IFolderContentsView, IViewView)
+    
+    def __init__(self, context, request):
+        super(InstrumentValidationsView, self).__init__(context, request)
+        self.catalog = "portal_catalog"
+        self.contentFilter = {
+            'portal_type': 'InstrumentValidation',
+        }
+        self.context_actions = {_('Add'): 
+                                {'url': 'createObject?type_name=InstrumentValidation',
+                                 'icon': '++resource++bika.lims.images/add.png'}}
+        self.show_table_only = False
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = True
+        self.pagesize = 25 
+        self.form_id = "instrumentvalidations"
+        self.icon = "++resources++bika.lims.images/instrumentvalidation_big.png"
+        self.title = _("Instrument Validations")
+        self.description = ""
+        
+        self.columns = {
+            'Title': {'title': _('Task'),
+                      'index': 'sortable_title'},
+            'getDownFrom': {'title': _('Down from')},
+            'getDownTo': {'title': _('Down to')},
+            'getValidator': {'title': _('Validator')},
+        }
+        self.review_states = [
+            {'id':'default',
+             'title':_('All'),
+             'contentFilter':{},
+             'columns': [ 'Title',
+                         'getDownFrom',
+                         'getDownTo',
+                         'getValidator']},
+        ]
+    
+    def folderitems(self):
+        items = BikaListingView.folderitems(self)
+        for x in range (len(items)):
+            if not items[x].has_key('obj'): continue
+            
+            obj = items[x]['obj']
+            items[x]['getDownFrom'] = obj.getDownFrom()
+            items[x]['getDownTo'] = obj.getDownTo()
+            items[x]['getValidator'] = obj.getValidator()
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
                  

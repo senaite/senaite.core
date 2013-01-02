@@ -59,6 +59,7 @@ def initialize(context):
     from content.instrumentcalibration import InstrumentCalibration
     from content.instrumentcertification import InstrumentCertification
     from content.instrumentmaintenancetask import InstrumentMaintenanceTask
+    from content.instrumentvalidation import InstrumentValidation
     from content.instrumenttype import InstrumentType
     from content.invoice import Invoice
     from content.invoicebatch import InvoiceBatch

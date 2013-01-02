@@ -26,6 +26,7 @@
   <type portal_type="InstrumentCertification"/>
   <type portal_type="InstrumentMaintenanceTask"/>
   <type portal_type="InstrumentType"/>
+  <type portal_type="InstrumentValidation"/>
   <type portal_type="LabContact"/>
   <type portal_type="LabProduct"/>
   <type portal_type="Manufacturer"/>

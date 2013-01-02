@@ -17,6 +17,7 @@
  	<element value="InstrumentMaintenanceTask"/>
  	<element value="InstrumentCalibration"/>
  	<element value="InstrumentCertification"/>
+ 	<element value="InstrumentValidation"/>
  </property>
  <property name="allow_discussion">False</property>
  <property name="immediate_view">base_edit</property>
@@ -57,6 +58,17 @@
 	 	visible="True">
  	<permission value="Modify portal content"/>
  </action>
+ 
+ <action title="Validations"
+	 	action_id="validation"
+	 	category="object"
+	 	condition_expr=""
+	 	icon_expr="string:${portal_url}/images/instrumentvalidation.png"
+	 	url_expr="string:${object_url}/validations"
+	 	i18n:attributes="title"
+	 	visible="True">
+ 	<permission value="Modify portal content"/>
+ </action>
 
  <action title="Calibrations"
 	 	action_id="calibration"
@@ -78,5 +90,16 @@
 	 	i18n:attributes="title"
 	 	visible="True">
  	<permission value="Modify portal content"/>
- </action>
+  </action>
+
+  <action title="Validations"
+	 	action_id="validation"
+	 	category="object"
+	 	condition_expr=""
+	 	icon_expr="string:${portal_url}/images/instrumentvalidation.png"
+	 	url_expr="string:${object_url}/validations"
+	 	i18n:attributes="title"
+	 	visible="True">
+ 	<permission value="Modify portal content"/>
+  </action>
 </object>
