@@ -49,7 +49,7 @@
 	 	action_id="maintenance"
 	 	category="object"
 	 	condition_expr=""
-	 	icon_expr="string:${portal_url}/images/task.png"
+	 	icon_expr="string:${portal_url}/images/instrumentmaintenance.png"
 	 	url_expr="string:${object_url}/maintenance"
 	 	i18n:attributes="title"
 	 	visible="True">

@@ -5,7 +5,7 @@
         i18n:domain="plone">
  <property name="title">InstrumentMaintenanceTask</property>
  <property name="description"></property>
- <property name="content_icon">++resource++bika.lims.images/task.png</property>
+ <property name="content_icon">++resource++bika.lims.images/instrumentmaintenance.png</property>
  <property name="content_meta_type">InstrumentMaintenanceTask</property>
  <property name="product">bika.lims</property>
  <property name="factory">addInstrumentMaintenanceTask</property>

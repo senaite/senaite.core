@@ -25,7 +25,7 @@ class InstrumentMaintenanceView(BikaListingView):
         self.show_select_column = True
         self.pagesize = 25 
         self.form_id = "instrumentmaintenance"
-        self.icon = "++resources++bika.lims.images/instrument_maintenance_big.png"
+        self.icon = "++resources++bika.lims.images/instrumentmaintenance_big.png"
         self.title = _("Instrument Maintenance")
         self.description = ""
         
