@@ -10,6 +10,7 @@ from zope.interface import implements
 from Products.CMFCore.utils import getToolByName
 from plone.app.folder.folder import ATFolder
 from Products.ATContentTypes.content import schemata
+from Products.Archetypes.references import HoldingReference
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
                                      
@@ -59,6 +60,28 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
             description = _("The serial number that uniquely identifies the instrument"),
         )
     ),  
+
+    # Procedures
+    TextField('InlabCalibrationProcedure',
+        schemata = 'Procedures',
+        default_content_type = 'text/x-web-intelligent',
+        allowable_content_types = ('text/x-web-intelligent',),
+        default_output_type="text/html",
+        widget = TextAreaWidget(
+            label = _("In-lab calibration procedure"),
+            description = _("Instructions for in-lab regular calibration routines intended for analysts"),
+        ),
+    ),
+    TextField('PreventiveMaintenanceProcedure',
+        schemata = 'Procedures',
+        default_content_type = 'text/x-web-intelligent',
+        allowable_content_types = ('text/x-web-intelligent',),
+        default_output_type="text/html",
+        widget = TextAreaWidget(
+            label = _("Preventive maintenance procedure"),
+            description = _("Instructions for regular preventive and maintenance routines intended for analysts"),
+        ),
+    ),     
                                                                               
 #    ComputedField('InstrumentTypeUID',
 #        expression='here.getInstrumentType() and here.getInstrumentType().UID() or None',
@@ -142,27 +165,8 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 
 
 
-#
-#    TextField('InlabCalibrationProcedure',
-#        schemata = 'Procedures',
-#        default_content_type = 'text/x-web-intelligent',
-#        allowable_content_types = ('text/x-web-intelligent',),
-#        default_output_type="text/html",
-#        widget = TextAreaWidget(
-#            label = _("In-lab calibration procedure"),
-#            description = _("Instructions for in-lab regular calibration routines intended for analysts"),
-#        ),
-#    ),
-#    TextField('PreventiveMaintenanceProcedure',
-#        schemata = 'Procedures',
-#        default_content_type = 'text/x-web-intelligent',
-#        allowable_content_types = ('text/x-web-intelligent',),
-#        default_output_type="text/html",
-#        widget = TextAreaWidget(
-#            label = _("Preventive maintenance procedure"),
-#            description = _("Instructions for regular preventive and maintenance routines intended for analysts"),
-#        ),
-#    ),
+
+
 #                                     
 #    # Schedule tab
 #    StringField('ScheduleTaskType',
