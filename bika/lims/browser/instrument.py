@@ -30,6 +30,8 @@ class InstrumentMaintenanceView(BikaListingView):
         self.description = ""
         
         self.columns = {
+            'Title': {'title': _('Task'),
+                      'index': 'sortable_title'},
             'getDownFrom': {'title': _('Down from')},
             'getDownTo': {'title': _('Down to')},
             'getMaintainer': {'title': _('Maintainer')},
@@ -39,7 +41,8 @@ class InstrumentMaintenanceView(BikaListingView):
             {'id':'default',
              'title':_('All'),
              'contentFilter':{},
-             'columns': [ 'getDownFrom',
+             'columns': [ 'Title',
+                         'getDownFrom',
                          'getDownTo',
                          'getMaintainer',
                          'getCost']},
@@ -54,5 +57,7 @@ class InstrumentMaintenanceView(BikaListingView):
             items[x]['getDownFrom'] = obj.getDownFrom()
             items[x]['getDownTo'] = obj.getDownTo()
             items[x]['getMaintainer'] = obj.getMaintainer()
-            
+            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['Title'])
+                 
         return items
