@@ -55,6 +55,7 @@
     <element value="Department"/>
     <element value="DuplicateAnalysis"/>
     <element value="Instrument"/>
+    <element value="InstrumentMaintenanceTask"/>
     <element value="InstrumentType"/>
     <element value="InvoiceLineItem"/>
     <element value="LabContact"/>

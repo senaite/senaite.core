@@ -1,25 +1,20 @@
-<?xml version="1.0"?>
-<object name="Instrument"
+<?xml version="1.0" encoding="UTF-8"?>
+<object name="InstrumentMaintenanceTask"
         meta_type="Factory-based Type Information with dynamic views"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
         i18n:domain="plone">
- <property name="title" i18n:translate="">Instrument</property>
+ <property name="title">InstrumentMaintenanceTask</property>
  <property name="description"></property>
- <property name="content_icon">++resource++bika.lims.images/instrument.png</property>
- <property name="content_meta_type">Instrument</property>
+ <property name="content_icon">++resource++bika.lims.images/task.png</property>
+ <property name="content_meta_type">InstrumentMaintenanceTask</property>
  <property name="product">bika.lims</property>
- <property name="factory">addInstrument</property>
- <property name="add_view_expr">string:${object/absolute_url}/base_edit</property>
- <property name="link_target"></property>
+ <property name="factory">addInstrumentMaintenanceTask</property>
  <property name="global_allow">False</property>
- <property name="filter_content_types">True</property>
- <property name="allowed_content_types">
- 	<element value="InstrumentMaintenanceTask"/>
- </property>
+ <property name="filter_content_types">False</property>
+ <property name="allowed_content_types"/>
  <property name="allow_discussion">False</property>
- <property name="immediate_view">base_edit</property>
  <property name="default_view_fallback">False</property>
-
+ 
  <alias from="(Default)" to="base_edit"/>
  <alias from="view" to="base_edit"/>
  <alias from="edit" to="base_edit"/>
@@ -38,22 +33,12 @@
  <action title="Edit"
          action_id="edit"
          category="object"
-         url_expr="string:${object_url}/base_edit"
+         condition_expr=""
+         url_expr="string:${object_url}/edit"
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">
   <permission value="Modify portal content"/>
  </action>
  
- <action title="Maintenance"
-	 	action_id="maintenance"
-	 	category="object"
-	 	condition_expr=""
-	 	icon_expr="string:${portal_url}/images/task.png"
-	 	url_expr="string:${object_url}/maintenance"
-	 	i18n:attributes="title"
-	 	visible="True">
- 	<permission value="Modify portal content"/>
- </action>
-
 </object>

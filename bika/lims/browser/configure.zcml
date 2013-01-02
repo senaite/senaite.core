@@ -13,6 +13,7 @@
   <include file="client.zcml"/>
   <include file="clientfolder.zcml"/>
   <include file="contact.zcml"/>
+  <include file="instrument.zcml"/>
   <include file="instrumenttype.zcml"/>
   <include file="late_analyses.zcml"/>
   <include file="manufacturer.zcml"/>

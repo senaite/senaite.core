@@ -22,6 +22,7 @@
   <type portal_type="ContainerType"/>
   <type portal_type="Department"/>
   <type portal_type="Instrument"/>
+  <type portal_type="InstrumentMaintenanceTask"/>
   <type portal_type="InstrumentType"/>
   <type portal_type="LabContact"/>
   <type portal_type="LabProduct"/>
