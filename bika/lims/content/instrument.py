@@ -498,6 +498,9 @@ class Instrument(ATFolder):
     
     def getMaintenanceTasks(self):
         return self.objectValues('InstrumentMaintenanceTask')
+    
+    def getCalibrations(self):
+        return self.objectValues('InstrumentCalibration')
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 

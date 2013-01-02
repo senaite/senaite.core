@@ -131,8 +131,6 @@ class IContainerTypes(Interface):
     ""
 class IInstrument(Interface):
     ""
-class IInstrumentMaintenanceFolder(Interface):
-    ""
 class IInstruments(Interface):
     ""
 class IInstrumentType(Interface):

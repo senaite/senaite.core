@@ -159,6 +159,7 @@
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
 
+  <type type_id="InstrumentCalibration"/>
   <type type_id="InstrumentMaintenanceTask"/>
 
   <type type_id="InstrumentTypes"/>
