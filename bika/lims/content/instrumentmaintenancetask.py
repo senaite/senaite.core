@@ -8,6 +8,15 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 
 schema = BikaSchema.copy() + Schema((
+    
+    StringField('Type',
+        vocabulary = "getMaintenanceTypes",
+        widget = ReferenceWidget(
+            checkbox_bound = 1,
+            label = _("Maintenance type",
+                      "Type"),
+        ),
+    ),
                                      
     DateTimeField('DownFrom',
         with_time = 1,
@@ -81,9 +90,13 @@ class InstrumentMaintenanceTask(BaseFolder):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
+        
+    def getMaintenanceTypes(self):
+        """ Return the current list of maintenance types
+        """
+        types = [('preventive',_('Preventive')),
+                 ('repair', _('Repair')),
+                 ('enhancement', _('Enhancement'))]
+        return DisplayList(types)
     
-    def Title(self):
-        """ Instrument maintenance has no title """
-        return "acca"    
-
 atapi.registerType(InstrumentMaintenanceTask, PROJECTNAME)
