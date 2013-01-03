@@ -21,30 +21,33 @@ class InstrumentMaintenanceView(BikaListingView):
         self.show_table_only = False
         self.show_sort_column = False
         self.show_select_row = False
-        self.show_select_column = True
-        self.pagesize = 25 
+        self.show_select_column = False
+        self.show_select_all_checkbox = False
+        self.show_column_toggles = False
+        self.allow_edit = False
+        self.pagesize = 40
         self.form_id = "instrumentmaintenance"
         self.icon = "++resources++bika.lims.images/instrumentmaintenance_big.png"
         self.title = _("Instrument Maintenance")
         self.description = ""
         
         self.columns = {
+            'created' : {'title': _('Created')},
             'Title': {'title': _('Task'),
                       'index': 'sortable_title'},
             'getDownFrom': {'title': _('Down from')},
             'getDownTo': {'title': _('Down to')},
             'getMaintainer': {'title': _('Maintainer')},
-            'getCost': {'title': _('Cost')},
         }
         self.review_states = [
             {'id':'default',
              'title':_('All'),
              'contentFilter':{},
-             'columns': [ 'Title',
+             'columns': [ 'created',
+                         'Title',
                          'getDownFrom',
                          'getDownTo',
-                         'getMaintainer',
-                         'getCost']},
+                         'getMaintainer']},
         ]
     
     def folderitems(self):
@@ -53,9 +56,10 @@ class InstrumentMaintenanceView(BikaListingView):
             if not items[x].has_key('obj'): continue
             
             obj = items[x]['obj']
-            items[x]['getDownFrom'] = obj.getDownFrom()
-            items[x]['getDownTo'] = obj.getDownTo()
+            items[x]['getDownFrom'] = obj.getDownFrom() and self.ulocalized_time(obj.getDownFrom(), long_format=1) or ''
+            items[x]['getDownTo'] = obj.getDownTo() and self.ulocalized_time(obj.getDownTo(), long_format=1) or ''
             items[x]['getMaintainer'] = obj.getMaintainer()
+            items[x]['created'] = self.ulocalized_time(obj.created())
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
                  
