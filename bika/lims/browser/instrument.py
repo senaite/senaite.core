@@ -1,11 +1,12 @@
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.content.instrumentmaintenancetask import InstrumentMaintenanceTaskStatuses as mstatus
 from bika.lims.subscribers import doActionFor, skip
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
-from bika.lims.content.instrumentmaintenancetask import InstrumentMaintenanceTaskStatuses as mstatus
 
 class InstrumentMaintenanceView(BikaListingView):
     implements(IFolderContentsView, IViewView)
@@ -19,12 +20,10 @@ class InstrumentMaintenanceView(BikaListingView):
         self.context_actions = {_('Add'): 
                                 {'url': 'createObject?type_name=InstrumentMaintenanceTask',
                                  'icon': '++resource++bika.lims.images/add.png'}}
-        self.show_table_only = False
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
         self.show_select_all_checkbox = False
-        self.show_column_toggles = False
         self.pagesize = 40
         self.form_id = "instrumentmaintenance"
         self.icon = "++resources++bika.lims.images/instrumentmaintenance_big.png"
@@ -33,45 +32,40 @@ class InstrumentMaintenanceView(BikaListingView):
         
         self.columns = {
             'getCurrentState' : {'title': ''},
-            'created' : {'title': _('Created')},
             'Title': {'title': _('Task'),
-                      'index': 'sortable_title'},
-            'getDownFrom': {'title': _('Down from')},
-            'getDownTo': {'title': _('Down to')},
-            'getMaintainer': {'title': _('Maintainer')},
+                      'index': 'sortable_title'},            
+            'getType' : {'title': _('Task type', 'Type'), 'sortable': True},
+            'getDownFrom': {'title': _('Down from'), 'sortable': True},
+            'getDownTo': {'title': _('Down to'), 'sortable': True},
+            'getMaintainer': {'title': _('Maintainer'), 'sortable': True},
         }
         
         self.review_states = [
             {'id':'default',
              'title': _('Open'),
-             'contentFilter': {'cancellation_state':'active',
-                               'sort_on':'created',
-                               'sort_order': 'reverse'},
+             'contentFilter': {'cancellation_state':'active'},
              'columns': ['getCurrentState',
-                         'created',
                          'Title',
+                         'getType',
                          'getDownFrom',
                          'getDownTo',
                          'getMaintainer']},
             {'id':'cancelled',
              'title': _('Cancelled'),
-             'contentFilter': {'cancellation_state': 'cancelled',
-                               'sort_on':'created',
-                               'sort_order': 'reverse'},
+             'contentFilter': {'cancellation_state': 'cancelled'},
              'columns': ['getCurrentState',
-                         'created',
                          'Title',
+                         'getType',
                          'getDownFrom',
                          'getDownTo',
                          'getMaintainer']},
             
             {'id':'all',
              'title': _('All'),
-             'contentFilter':{'sort_on':'created',
-                              'sort_order': 'reverse'},
+             'contentFilter':{},
              'columns': ['getCurrentState',
-                         'created',
                          'Title',
+                         'getType',
                          'getDownFrom',
                          'getDownTo',
                          'getMaintainer']},
@@ -83,31 +77,31 @@ class InstrumentMaintenanceView(BikaListingView):
             if not items[x].has_key('obj'): continue
             
             obj = items[x]['obj']
+            items[x]['getType'] = safe_unicode(_(obj.getType()[0])).encode('utf-8')
             items[x]['getDownFrom'] = obj.getDownFrom() and self.ulocalized_time(obj.getDownFrom(), long_format=1) or ''
             items[x]['getDownTo'] = obj.getDownTo() and self.ulocalized_time(obj.getDownTo(), long_format=1) or ''
-            items[x]['getMaintainer'] = obj.getMaintainer()
-            items[x]['created'] = self.ulocalized_time(obj.created())
+            items[x]['getMaintainer'] = safe_unicode(_(obj.getMaintainer())).encode('utf-8')
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['Title'])
+                 (items[x]['url'], safe_unicode(items[x]['Title']).encode('utf-8'))
                     
             status = obj.getCurrentState();
             statustext = obj.getCurrentStateI18n();
             statusimg = "";
             if status == mstatus.CLOSED:
-                statusimg = "closed.png"
+                statusimg = "instrumentmaintenance_closed.png"
             elif status == mstatus.CANCELLED:
-                statusimg = "cancelled.png"
+                statusimg = "instrumentmaintenance_cancelled.png"
             elif status == mstatus.INQUEUE:
-                statusimg = "inqueue.png"
+                statusimg = "instrumentmaintenance_inqueue.png"
             elif status == mstatus.OVERDUE:
-                statusimg = "overdue.png"
+                statusimg = "instrumentmaintenance_overdue.png"
             elif status == mstatus.PENDING:
-                statusimg = "pending.png"
+                statusimg = "instrumentmaintenance_pending.png"
                 
             items[x]['replace']['getCurrentState'] = \
                 "<img title='%s' src='%s/++resource++bika.lims.images/%s'/>" % \
                 (statustext, self.portal_url, statusimg)
-            
+                            
         return items
 
 class InstrumentCalibrationsView(BikaListingView):

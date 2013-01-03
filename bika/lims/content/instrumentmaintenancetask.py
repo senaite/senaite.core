@@ -123,9 +123,9 @@ class InstrumentMaintenanceTask(BaseFolder):
     def getMaintenanceTypes(self):
         """ Return the current list of maintenance types
         """
-        types = [('preventive',safe_unicode(_('Preventive')).encode('utf-8')),
-                 ('repair', safe_unicode(_('Repair')).encode('utf-8')),
-                 ('enhancement', safe_unicode(_('Enhancement')).encode('utf-8'))]
+        types = [('Preventive',safe_unicode(_('Preventive')).encode('utf-8')),
+                 ('Repair', safe_unicode(_('Repair')).encode('utf-8')),
+                 ('Enhancement', safe_unicode(_('Enhancement')).encode('utf-8'))]
         return DisplayList(types)
     
     def getCurrentStateI18n(self):
