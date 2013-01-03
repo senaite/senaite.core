@@ -21,10 +21,9 @@ class InstrumentMaintenanceView(BikaListingView):
         self.show_table_only = False
         self.show_sort_column = False
         self.show_select_row = False
-        self.show_select_column = False
+        self.show_select_column = True
         self.show_select_all_checkbox = False
         self.show_column_toggles = False
-        self.allow_edit = False
         self.pagesize = 40
         self.form_id = "instrumentmaintenance"
         self.icon = "++resources++bika.lims.images/instrumentmaintenance_big.png"
@@ -33,17 +32,43 @@ class InstrumentMaintenanceView(BikaListingView):
         
         self.columns = {
             'created' : {'title': _('Created')},
+            'getCurrentState' : {'title': _('State')},
             'Title': {'title': _('Task'),
                       'index': 'sortable_title'},
             'getDownFrom': {'title': _('Down from')},
             'getDownTo': {'title': _('Down to')},
             'getMaintainer': {'title': _('Maintainer')},
         }
+        
         self.review_states = [
             {'id':'default',
-             'title':_('All'),
-             'contentFilter':{},
-             'columns': [ 'created',
+             'title': _('Open'),
+             'contentFilter': {'cancellation_state':'active',
+                               'sort_on':'created',
+                               'sort_order': 'reverse'},
+             'columns': ['created',
+                         'getCurrentState',
+                         'Title',
+                         'getDownFrom',
+                         'getDownTo',
+                         'getMaintainer']},
+            {'id':'cancelled',
+             'title': _('Cancelled'),
+             'contentFilter': {'cancellation_state': 'cancelled',
+                               'sort_on':'created',
+                               'sort_order': 'reverse'},
+             'columns': ['created',
+                         'Title',
+                         'getDownFrom',
+                         'getDownTo',
+                         'getMaintainer']},
+            
+            {'id':'all',
+             'title': _('All'),
+             'contentFilter':{'sort_on':'created',
+                              'sort_order': 'reverse'},
+             'columns': ['created',
+                         'getCurrentState',
                          'Title',
                          'getDownFrom',
                          'getDownTo',

@@ -1,7 +1,10 @@
 from AccessControl import ClassSecurityInfo
+from DateTime import DateTime
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.Archetypes.public import *
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.config import PROJECTNAME
@@ -78,7 +81,14 @@ schema = BikaSchema.copy() + Schema((
             label = _("Price"),
         ),
     ),   
-                                       
+    
+    BooleanField('Closed',
+        default = '0',
+        widget = BooleanWidget(
+            label = _("Closed"),
+            description = _("Set the maintenance task as closed.")
+        ),
+    ),
 ))
 
 IdField = schema['id']
@@ -103,9 +113,29 @@ class InstrumentMaintenanceTask(BaseFolder):
     def getMaintenanceTypes(self):
         """ Return the current list of maintenance types
         """
-        types = [('preventive',_('Preventive')),
-                 ('repair', _('Repair')),
-                 ('enhancement', _('Enhancement'))]
+        types = [('preventive',safe_unicode(_('Preventive')).encode('utf-8')),
+                 ('repair', safe_unicode(_('Repair')).encode('utf-8')),
+                 ('enhancement', safe_unicode(_('Enhancement')).encode('utf-8'))]
         return DisplayList(types)
+    
+    def getCurrentStateI18n(self):
+        return safe_unicode(_(self.getCurrentState()).encode('utf-8'))
+    
+    def getCurrentState(self):
+        workflow = getToolByName(self, 'portal_workflow')
+        if self.getClosed():
+            return "Closed"        
+        elif workflow.getInfoFor(self, 'cancellation_state', '') == 'cancelled':
+            return "Cancelled"
+        else:
+            now = DateTime()
+            dfrom = self.getDownFrom()
+            dto = self.getDownTo()
+            if (now > dto):
+                return "Overdue"
+            if (now >= dfrom):
+                return "Pending"
+            else:
+                return "In queue"
     
 atapi.registerType(InstrumentMaintenanceTask, PROJECTNAME)

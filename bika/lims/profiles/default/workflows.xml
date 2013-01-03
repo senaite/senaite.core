@@ -161,7 +161,10 @@
 
   <type type_id="InstrumentCalibration"/>
   <type type_id="InstrumentCertification"/>
-  <type type_id="InstrumentMaintenanceTask"/>
+  <type type_id="InstrumentMaintenanceTask">
+  	<bound-workflow workflow_id="bika_one_state_workflow"/>
+    <bound-workflow workflow_id="bika_cancellation_workflow"/>
+  </type>
 
   <type type_id="InstrumentTypes"/>
   <type type_id="InstrumentType">
