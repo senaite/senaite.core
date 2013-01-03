@@ -5,6 +5,7 @@ from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
+from bika.lims.content.instrumentmaintenancetask import InstrumentMaintenanceTaskStatuses as mstatus
 
 class InstrumentMaintenanceView(BikaListingView):
     implements(IFolderContentsView, IViewView)
@@ -31,8 +32,8 @@ class InstrumentMaintenanceView(BikaListingView):
         self.description = ""
         
         self.columns = {
+            'getCurrentState' : {'title': ''},
             'created' : {'title': _('Created')},
-            'getCurrentState' : {'title': _('State')},
             'Title': {'title': _('Task'),
                       'index': 'sortable_title'},
             'getDownFrom': {'title': _('Down from')},
@@ -46,8 +47,8 @@ class InstrumentMaintenanceView(BikaListingView):
              'contentFilter': {'cancellation_state':'active',
                                'sort_on':'created',
                                'sort_order': 'reverse'},
-             'columns': ['created',
-                         'getCurrentState',
+             'columns': ['getCurrentState',
+                         'created',
                          'Title',
                          'getDownFrom',
                          'getDownTo',
@@ -57,7 +58,8 @@ class InstrumentMaintenanceView(BikaListingView):
              'contentFilter': {'cancellation_state': 'cancelled',
                                'sort_on':'created',
                                'sort_order': 'reverse'},
-             'columns': ['created',
+             'columns': ['getCurrentState',
+                         'created',
                          'Title',
                          'getDownFrom',
                          'getDownTo',
@@ -67,8 +69,8 @@ class InstrumentMaintenanceView(BikaListingView):
              'title': _('All'),
              'contentFilter':{'sort_on':'created',
                               'sort_order': 'reverse'},
-             'columns': ['created',
-                         'getCurrentState',
+             'columns': ['getCurrentState',
+                         'created',
                          'Title',
                          'getDownFrom',
                          'getDownTo',
@@ -87,7 +89,25 @@ class InstrumentMaintenanceView(BikaListingView):
             items[x]['created'] = self.ulocalized_time(obj.created())
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
-                 
+                    
+            status = obj.getCurrentState();
+            statustext = obj.getCurrentStateI18n();
+            statusimg = "";
+            if status == mstatus.CLOSED:
+                statusimg = "closed.png"
+            elif status == mstatus.CANCELLED:
+                statusimg = "cancelled.png"
+            elif status == mstatus.INQUEUE:
+                statusimg = "inqueue.png"
+            elif status == mstatus.OVERDUE:
+                statusimg = "overdue.png"
+            elif status == mstatus.PENDING:
+                statusimg = "pending.png"
+                
+            items[x]['replace']['getCurrentState'] = \
+                "<img title='%s' src='%s/++resource++bika.lims.images/%s'/>" % \
+                (statustext, self.portal_url, statusimg)
+            
         return items
 
 class InstrumentCalibrationsView(BikaListingView):
@@ -196,7 +216,7 @@ class InstrumentCertificationsView(BikaListingView):
             items[x]['getValidTo'] = obj.getValidTo()
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
-                 
+            
         return items
 
 class InstrumentValidationsView(BikaListingView):

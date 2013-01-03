@@ -25,7 +25,6 @@ schema = BikaSchema.copy() + Schema((
         with_time = 1,
         with_date = 1,
         required = 1,
-        default_method = 'current_date',
         widget = DateTimeWidget(
             label = _("From"),
             description = _("Date from which the instrument is under maintenance"),
@@ -104,12 +103,18 @@ schema['description'].schemata = 'default'
 schema['title'].validators = ()
 schema['title']._validationLayer()
 
+class InstrumentMaintenanceTaskStatuses:
+    CLOSED = 'Closed'
+    CANCELLED = 'Cancelled'
+    OVERDUE = "Overdue"
+    PENDING = "Pending"
+    INQUEUE = "In queue"
 
 class InstrumentMaintenanceTask(BaseFolder):
     security = ClassSecurityInfo()
     schema = schema
-    displayContentsTab = False
-
+    displayContentsTab = False       
+    
     _at_rename_after_creation = True
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
@@ -129,18 +134,18 @@ class InstrumentMaintenanceTask(BaseFolder):
     def getCurrentState(self):
         workflow = getToolByName(self, 'portal_workflow')
         if self.getClosed():
-            return "Closed"        
+            return InstrumentMaintenanceTaskStatuses.CLOSED       
         elif workflow.getInfoFor(self, 'cancellation_state', '') == 'cancelled':
-            return "Cancelled"
+            return InstrumentMaintenanceTaskStatuses.CANCELLED
         else:
             now = DateTime()
             dfrom = self.getDownFrom()
             dto = self.getDownTo() and self.getDownTo() or DateTime(9999, 12, 31)
             if (now > dto):
-                return "Overdue"
+                return InstrumentMaintenanceTaskStatuses.OVERDUE
             if (now >= dfrom):
-                return "Pending"
+                return InstrumentMaintenanceTaskStatuses.PENDING
             else:
-                return "In queue"
+                return InstrumentMaintenanceTaskStatuses.INQUEUE
     
 atapi.registerType(InstrumentMaintenanceTask, PROJECTNAME)
