@@ -24,9 +24,12 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField('DownFrom',
         with_time = 1,
         with_date = 1,
+        required = 1,
+        default_method = 'current_date',
         widget = DateTimeWidget(
             label = _("From"),
             description = _("Date from which the instrument is under maintenance"),
+            show_hm = True,
         ),
     ), 
                                      
@@ -36,6 +39,7 @@ schema = BikaSchema.copy() + Schema((
         widget = DateTimeWidget(
             label = _("To"),
             description = _("Date until the instrument will not be available"),
+            show_hm = True,
         ),
     ),
                                      
@@ -95,6 +99,7 @@ IdField = schema['id']
 schema['description'].required = False
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
+
 # Title is not needed to be unique
 schema['title'].validators = ()
 schema['title']._validationLayer()
@@ -130,7 +135,7 @@ class InstrumentMaintenanceTask(BaseFolder):
         else:
             now = DateTime()
             dfrom = self.getDownFrom()
-            dto = self.getDownTo()
+            dto = self.getDownTo() and self.getDownTo() or DateTime(9999, 12, 31)
             if (now > dto):
                 return "Overdue"
             if (now >= dfrom):
