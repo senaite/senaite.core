@@ -81,6 +81,15 @@ schema = BikaSchema.copy() + Schema((
                                        
 ))
 
+IdField = schema['id']
+schema['description'].required = False
+schema['description'].widget.visible = True
+schema['description'].schemata = 'default'
+# Title is not needed to be unique
+schema['title'].validators = ()
+schema['title']._validationLayer()
+
+
 class InstrumentMaintenanceTask(BaseFolder):
     security = ClassSecurityInfo()
     schema = schema
