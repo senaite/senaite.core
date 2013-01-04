@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    i18n:domain="plone">
+<body>
+
+<metal:view_macro define-macro="view">
+	<div metal:use-macro="here/widgets/string/macros/view" />
+</metal:view_macro>
+
+<metal:search_macro define-macro="search">
+	<div metal:use-macro="here/widgets/string/macros/edit"/>
+</metal:search_macro>
+
+<metal:edit_macro define-macro="edit">
+  	<metal:use use-macro="field_macro | context/widgets/field/macros/edit">
+		<metal:body_macro fill-slot="widget_body">
+			
+			<!-- From -->
+	     	<input type="checkbox"
+	     		tal:attributes="name python:fieldName+'_fromenabled';
+	     						id python:fieldName+'_fromenabled';
+	     						checked python: (value and value['fromenabled']) and value['fromenabled'] or False;"/>&nbsp;
+			<label tal:attributes="for python:fieldName+'_fromdate';"  i18n:translate="">From</label>:&nbsp;
+			<input type="text" size="15" readonly="readonly"
+				class="blurrable firstToFocus"
+				tal:attributes="name python:fieldName+'_fromdate';
+	     	   			   		id python:fieldName+'_fromdate';
+	     	   			  		value python: (value and value['fromdate']) and widget.ulocalized_time(value['fromdate'], long_format=0, context=context) or '';
+	     	   			  		DatePicker string:1"/>&nbsp;		     	
+	     	   			  		
+	     	<!-- Repeat every -->
+ 		    <input type="checkbox"
+	     		tal:attributes="name python:fieldName+'_repeatenabled';
+	     						id python:fieldName+'_repeatenabled';
+	     						checked python: (value and value['repeatenabled']) and value['repeatenabled'] or False;"/>&nbsp;
+	     	<label tal:attributes="for python:fieldName+'_repeatunit';"  i18n:translate="">Repeat every</label>:&nbsp;
+	     	<input type="text" size="2" maxlength="2" readonly="readonly"
+     	   		tal:attributes="name python:fieldName+'_repeatunit';
+	     	   				   	id python:fieldName+'_repeatunit';
+	     	   				   	value python: (value and value['repeatunit']) and value['repeatunit'] or '';"/>&nbsp;
+	     	<select tal:define="values python:['Days','Weeks','Months','Years']">
+			    <option name="foo:list" value="1"
+			            tal:repeat="val values"
+			            tal:attributes="value val;
+			                            selected python:(value and value['repeatperiod'] and val==value['repeatperiod']) and True or False" >
+			        <span tal:replace="val" /></option>
+			</select>
+	     	
+	     	<!-- Until -->
+	     	<input type="checkbox"
+	     		tal:attributes="name python:fieldName+'_repeatuntil';
+	     						id python:fieldName+'_repeatuntil';
+	     						checked python: (value and value['repeatuntil']) and value['repeatuntil'] or False;"/>&nbsp;
+	     	<label tal:attributes="for python:fieldName+'_repeatuntil';" i18n:translate="">Until</label>:&nbsp;
+			<input type="text" size="15" readonly="readonly"
+				class="blurrable firstToFocus"
+				tal:attributes="name python:fieldName+'_repeatuntil';
+	     	   			   		id python:fieldName+'_repeatuntil';
+	     	   			  		value python: (value and value['repeatuntil']) and widget.ulocalized_time(value['repeatuntil'], long_format=0, context=context) or '';
+	     	   			  		DatePicker string:1"/>&nbsp;
+	     	 
+	     	   			  		
+		</metal:body_macro>
+	</metal:use>
+</metal:edit_macro>
+
+</body>
+</html>

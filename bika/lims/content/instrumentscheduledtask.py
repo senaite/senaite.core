@@ -1,12 +1,13 @@
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.ATContentTypes.content import schemata
+from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes import atapi
 from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.widgets import DateTimeWidget
+from bika.lims.browser.widgets import ScheduleInputWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 
@@ -18,6 +19,13 @@ schema = BikaSchema.copy() + Schema((
             checkbox_bound = 1,
             label = _("Task type",
                       "Type"),
+        ),
+    ),
+                                     
+    RecordsField('ScheduleCriteria',
+        required=1,
+        widget=ScheduleInputWidget(
+            label=_('Criteria'),
         ),
     ),
                                          
