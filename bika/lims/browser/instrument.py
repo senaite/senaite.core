@@ -265,3 +265,56 @@ class InstrumentValidationsView(BikaListingView):
                  (items[x]['url'], items[x]['Title'])
                  
         return items
+
+class InstrumentScheduleView(BikaListingView):
+    implements(IFolderContentsView, IViewView)
+    
+    def __init__(self, context, request):
+        super(InstrumentScheduleView, self).__init__(context, request)
+        self.catalog = "portal_catalog"
+        self.contentFilter = {
+            'portal_type': 'InstrumentScheduledTask',
+        }
+        self.context_actions = {_('Add'): 
+                                {'url': 'createObject?type_name=InstrumentScheduledTask',
+                                 'icon': '++resource++bika.lims.images/add.png'}}
+        self.show_table_only = False
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = True
+        self.pagesize = 25 
+        self.form_id = "instrumentschedule"
+        self.icon = "++resources++bika.lims.images/instrumentschedule_big.png"
+        self.title = _("Instrument Scheduled Tasks")
+        self.description = ""
+        
+        self.columns = {
+            'Title': {'title': _('Scheduled task'),
+                      'index': 'sortable_title'},
+            'getType': {'title': _('Task type', 'Type')},
+            'getCriteria': {'title': _('Criteria')},
+            'getCreatedBy': {'title': _('Created by')},
+            'created' : {'title': _('Created')},
+        }
+        self.review_states = [
+            {'id':'default',
+             'title':_('All'),
+             'contentFilter':{},
+             'columns': [ 'Title',
+                         'getType',
+                         'getCriteria',
+                         'getCreatedBy',
+                         'created']},
+        ]
+    
+    def folderitems(self):
+        items = BikaListingView.folderitems(self)
+        for x in range (len(items)):
+            if not items[x].has_key('obj'): continue
+            
+            obj = items[x]['obj']
+            items[x]['created'] = self.ulocalized_time(obj.created())
+            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['Title'])
+                 
+        return items

@@ -507,6 +507,9 @@ class Instrument(ATFolder):
     
     def getValidations(self):
         return self.objectValues('InstrumentValidation')
+    
+    def getSchedule(self):
+        return self.objectValues('InstrumentScheduledTask')
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 

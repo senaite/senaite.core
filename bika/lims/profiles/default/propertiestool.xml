@@ -58,6 +58,7 @@
 	<element value="InstrumentCalibration"/>
 	<element value="InstrumentCertification"/>
     <element value="InstrumentMaintenanceTask"/>
+    <element value="InstrumentScheduledTask"/>
     <element value="InstrumentType"/>
     <element value="InstrumentValidation"/>
     <element value="InvoiceLineItem"/>
