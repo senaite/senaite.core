@@ -282,7 +282,9 @@ class InstrumentScheduleView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
+        self.show_select_all_checkbox = False
         self.pagesize = 25 
+        
         self.form_id = "instrumentschedule"
         self.icon = "++resources++bika.lims.images/instrumentschedule_big.png"
         self.title = _("Instrument Scheduled Tasks")
@@ -293,17 +295,36 @@ class InstrumentScheduleView(BikaListingView):
                       'index': 'sortable_title'},
             'getType': {'title': _('Task type', 'Type')},
             'getCriteria': {'title': _('Criteria')},
-            'getCreatedBy': {'title': _('Created by')},
+            'creator': {'title': _('Created by')},
             'created' : {'title': _('Created')},
         }
+        
         self.review_states = [
             {'id':'default',
-             'title':_('All'),
+             'title': _('Active'),
+             'contentFilter': {'inactive_state': 'active'},
+             'transitions': [{'id':'deactivate'}, ],
+             'columns': [ 'Title',
+                         'getType',
+                         'getCriteria',
+                         'creator',
+                         'created']},
+            {'id':'inactive',
+             'title': _('Dormant'),
+             'contentFilter': {'inactive_state': 'inactive'},
+             'transitions': [{'id':'activate'}, ],
+             'columns': [ 'Title',
+                         'getType',
+                         'getCriteria',
+                         'creator',
+                         'created']},
+            {'id':'all',
+             'title': _('All'),
              'contentFilter':{},
              'columns': [ 'Title',
                          'getType',
                          'getCriteria',
-                         'getCreatedBy',
+                         'creator',
                          'created']},
         ]
     
@@ -314,6 +335,8 @@ class InstrumentScheduleView(BikaListingView):
             
             obj = items[x]['obj']
             items[x]['created'] = self.ulocalized_time(obj.created())
+            items[x]['creator'] = obj.Creator()
+            items[x]['getType'] = safe_unicode(_(obj.getType()[0])).encode('utf-8')
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
                  
