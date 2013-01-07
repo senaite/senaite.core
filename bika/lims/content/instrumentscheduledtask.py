@@ -100,9 +100,5 @@ class InstrumentScheduledTask(BaseFolder):
             if crit['repeatuntilenabled'] == True and crit['repeatuntil']:
                 criteria += _("until") + " " + crit['repeatuntil']
         return criteria;
-    
-    def setInstrument(self, value, **kw):
-        import pdb;pdb.set_trace()
-        self.getField('Instrument').set(self, self.aq_parent, **kw)
             
 atapi.registerType(InstrumentScheduledTask, PROJECTNAME)
