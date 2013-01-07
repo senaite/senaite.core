@@ -15,6 +15,32 @@ class ScheduleInputWidget(TypesWidget):
     })
     
     security = ClassSecurityInfo()
+    
+    def process_form(self, instance, field, form, empty_marker=None, emptyReturnsMarker=False):
+        
+        values = len(instance.getScheduleCriteria())>0 and instance.getScheduleCriteria() or []
+        
+        if "form.button.save" in form:
+            value = []            
+            fn = form['fieldName']
+            fromDate = fn + "_fromdate" in form and form[fn+"_fromdate"] or None
+            fromEnabled = (fromDate and fn + "_fromenabled" in form and form[fn+"_fromenabled"] == 'on') and True or False            
+            repeatUnit = fn + "_repeatunit" in form and form[fn+"_repeatunit"] or None
+            repeatPeriod = fn + "_repeatperiodselected" in form and form[fn+"_repeatperiodselected"] or None
+            repeatEnabled = (repeatUnit and fn + "_repeatenabled" in form and form[fn+"_repeatenabled"] == 'on') and True or False           
+            repeatUntil = fn + "_repeatuntil" in form and form[fn+"_repeatuntil"] or None
+            repeatUntilEnabled = (repeatUntil and fn + "_repeatuntilenabled" in form and form[fn+"_repeatuntilenabled"] == 'on') and True or False
+            
+            value.append({'fromenabled': fromEnabled,
+                          'fromdate': fromDate,
+                          'repeatenabled': repeatEnabled,
+                          'repeatunit':repeatUnit,
+                          'repeatperiod':repeatPeriod,
+                          'repeatuntilenabled':repeatUntilEnabled,
+                          'repeatuntil':repeatUntil})
+            
+        return value, {}      
+       
 
 registerWidget(ScheduleInputWidget,
                title = 'ScheduleInputWidget',

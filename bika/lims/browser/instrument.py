@@ -254,9 +254,7 @@ class InstrumentValidationsView(BikaListingView):
     
     def folderitems(self):
         items = BikaListingView.folderitems(self)
-        for x in range (len(items)):
-            if not items[x].has_key('obj'): continue
-            
+        for x in range (len(items)):            
             obj = items[x]['obj']
             items[x]['getDownFrom'] = obj.getDownFrom()
             items[x]['getDownTo'] = obj.getDownTo()

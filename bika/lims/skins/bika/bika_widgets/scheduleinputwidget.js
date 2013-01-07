@@ -12,8 +12,8 @@ $(document).ready(function(){
 	repeatperiod = $('#'+fieldName+"_repeatperiod");
 	untilEnabled = $('#'+fieldName+"_repeatuntilenabled");
 	repeatUntil = $('#'+fieldName+"_repeatuntil");
-	
-    
+	repeatperiodselected = $('#'+fieldName+"_repeatperiodselected");
+    preventFocus = true;
 	dateFormat = _('date_format_short_datepicker');
 	
     fromDate.datepicker({
@@ -27,7 +27,7 @@ $(document).ready(function(){
 		dateFormat: dateFormat,
 		changeMonth:true,
 		changeYear:true,
-		yearRange: "-100:+1"
+		yearRange: "-100:+20"
 	});
 	
 	fromEnabled.click( function(){
@@ -42,11 +42,19 @@ $(document).ready(function(){
 		evaluateRepeatEnabled();
 	});
 	
+	repeatperiod.change(function () {
+	  $('#'+fieldName+"_repeatperiod option:selected").each(function () {
+		  repeatperiodselected.val($(this).val())		  
+	  });
+	});
+		
 	function evaluateFromEnabled() {
 		if (fromEnabled.is(':checked')) {
 			fromDate.datepicker('enable');	
 			fromDate.attr('readonly', false);
-			fromDate.focus();
+			if (!preventFocus) {
+				fromDate.focus();
+			}
 		} else {
 			fromDate.datepicker('disable');
 			fromDate.attr('readonly', true);
@@ -57,7 +65,9 @@ $(document).ready(function(){
 		if (untilEnabled.is(':checked')) {
 			repeatUntil.datepicker('enable');	
 			repeatUntil.attr('readonly', false);
-			repeatUntil.focus();
+			if (!preventFocus) {
+				repeatUntil.focus()
+			}
 		} else {
 			repeatUntil.datepicker('disable');
 			repeatUntil.attr('readonly', true);
@@ -68,15 +78,19 @@ $(document).ready(function(){
 		if (repeatEnabled.is(':checked')) {
 			repeatunit.attr('readonly', false);
 			repeatperiod.attr('disabled', false);
-			repeatunit.focus();
+			if (!preventFocus) {
+				repeatunit.focus()
+			}
 		} else {
 			repeatunit.attr('readonly', true);
 			repeatperiod.attr('disabled', true);
 		}
 	}
 	
+	
 	evaluateFromEnabled();
 	evaluateRepeatEnabled();
 	evaluateUntilEnabled();
+	preventFocus = false;
 });
 });

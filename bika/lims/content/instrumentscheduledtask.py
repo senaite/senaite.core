@@ -24,6 +24,7 @@ schema = BikaSchema.copy() + Schema((
                                      
     RecordsField('ScheduleCriteria',
         required=1,
+        type='schedulecriteria',
         widget=ScheduleInputWidget(
             label=_('Criteria'),
         ),
@@ -72,6 +73,17 @@ class InstrumentScheduledTask(BaseFolder):
         return DisplayList(types)
     
     def getCriteria(self):
-        return "criteria"
-        
+        criteria = "";
+        criterias = self.getScheduleCriteria()
+        if criterias and len(criterias) > 0:
+            crit = criterias[0]
+            if crit['fromenabled'] == True and crit['fromdate']:
+                criteria += _('From') + " " + crit['fromdate'] + " "
+            if crit['repeatenabled'] == True and crit['repeatunit'] and crit['repeatperiod']:
+                criteria += _("repeating every") + " " + crit['repeatunit'] + " " + _(crit['repeatperiod']) + " "
+            import pdb;pdb.set_trace()
+            if crit['repeatuntilenabled'] == True and crit['repeatuntil']:
+                criteria += _("until") + " " + crit['repeatuntil']
+        return criteria;
+            
 atapi.registerType(InstrumentScheduledTask, PROJECTNAME)
