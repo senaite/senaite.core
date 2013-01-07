@@ -4,6 +4,7 @@ from Products.ATContentTypes.content import schemata
 from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes import atapi
 from Products.Archetypes.public import *
+from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
@@ -13,6 +14,21 @@ from bika.lims.content.bikaschema import BikaSchema
 
 schema = BikaSchema.copy() + Schema((
     
+    ReferenceField('Instrument',
+        allowed_types=('Instrument',),
+        relationship='InstrumentScheduledTaskInstrument',
+        widget=StringWidget(
+            visible=False,
+        )
+    ),
+                                     
+    ComputedField('InstrumentUID',
+        expression = 'context.getInstrument() and context.getInstrument().UID() or None',
+        widget=ComputedWidget(
+            visible=False,
+        ),
+    ),                                
+
     StringField('Type',
         vocabulary = "getTaskTypes",
         widget = ReferenceWidget(
@@ -81,9 +97,12 @@ class InstrumentScheduledTask(BaseFolder):
                 criteria += _('From') + " " + crit['fromdate'] + " "
             if crit['repeatenabled'] == True and crit['repeatunit'] and crit['repeatperiod']:
                 criteria += _("repeating every") + " " + crit['repeatunit'] + " " + _(crit['repeatperiod']) + " "
-            import pdb;pdb.set_trace()
             if crit['repeatuntilenabled'] == True and crit['repeatuntil']:
                 criteria += _("until") + " " + crit['repeatuntil']
         return criteria;
+    
+    def setInstrument(self, value, **kw):
+        import pdb;pdb.set_trace()
+        self.getField('Instrument').set(self, self.aq_parent, **kw)
             
 atapi.registerType(InstrumentScheduledTask, PROJECTNAME)

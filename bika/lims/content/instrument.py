@@ -509,7 +509,11 @@ class Instrument(ATFolder):
         return self.objectValues('InstrumentValidation')
     
     def getSchedule(self):
-        return self.objectValues('InstrumentScheduledTask')
+        return self.objectValues('InstrumentScheduledTask')                                     
+#        pc = getToolByName(self, 'portal_catalog')
+#        uid = self.context.UID()
+#        return [p.getObject() for p in pc(portal_type='InstrumentScheduleTask',
+#                                          getInstrumentUID=uid)]
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 

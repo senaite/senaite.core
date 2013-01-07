@@ -272,6 +272,7 @@ class InstrumentScheduleView(BikaListingView):
         self.catalog = "portal_catalog"
         self.contentFilter = {
             'portal_type': 'InstrumentScheduledTask',
+            'getInstrumentUID()':context.UID(),
         }
         self.context_actions = {_('Add'): 
                                 {'url': 'createObject?type_name=InstrumentScheduledTask',
@@ -328,14 +329,19 @@ class InstrumentScheduleView(BikaListingView):
     
     def folderitems(self):
         items = BikaListingView.folderitems(self)
-        for x in range (len(items)):
-            if not items[x].has_key('obj'): continue
+        outitems = []
+        toshow = []
+        for sch in self.context.getSchedule():
+            toshow.append(sch.UID())
             
+        for x in range (len(items)):
+            if not items[x].has_key('obj'): continue            
             obj = items[x]['obj']
-            items[x]['created'] = self.ulocalized_time(obj.created())
-            items[x]['creator'] = obj.Creator()
-            items[x]['getType'] = safe_unicode(_(obj.getType()[0])).encode('utf-8')
-            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['Title'])
-                 
-        return items
+            if obj.UID() in toshow:
+                items[x]['created'] = self.ulocalized_time(obj.created())
+                items[x]['creator'] = obj.Creator()
+                items[x]['getType'] = safe_unicode(_(obj.getType()[0])).encode('utf-8')
+                items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                     (items[x]['url'], items[x]['Title'])
+                outitems.append(items[x]) 
+        return outitems
