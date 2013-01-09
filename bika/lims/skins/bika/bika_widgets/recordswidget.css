@@ -1,0 +1,28 @@
+table.recordswidget {
+    margin-bottom: 5px !important;
+}
+
+table.recordswidget tr.header {
+/*    border-bottom:1px solid #ddd;
+*/    border-top:1px solid #ddd;
+    font-weight:normal !important;
+}
+
+table.recordswidget td {
+    padding:2px 3px;
+}
+
+table.recordswidget th  {
+    padding:2px 6px;
+}
+
+.icons-on table.listing td {
+    line-height: 1em;
+    padding: 2px 3px
+}
+
+.rw_deletebtn {
+    border: 0;
+    cursor: pointer;
+}
+
