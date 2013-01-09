@@ -3,11 +3,11 @@ plone_skin:string=Plone Default
 
 logoName:string=logo.png
 
-fontFamily:string="Helvetica Neue",Arial,FreeSans,sans-serif
-fontBaseSize:string=100%
-fontColor:string=Black
-fontSmallSize:string=90%
-fontSmallerSize:string=80%
+fontFamily:string=Arial,FreeSans,sans-serif
+fontBaseSize:string=10pt;
+fontColor:string=#222
+fontSmallSize:string=75%
+fontSmallerSize:string=70%
 
 backgroundColor:string=White
 
@@ -86,4 +86,3 @@ contextmenuHighlightTextColor:string=#fff
 
 footerBackgroundColor:string=#fff
 footerTextColor:string=#000
-

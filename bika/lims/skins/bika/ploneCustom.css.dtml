@@ -2,10 +2,9 @@
 <dtml-call "REQUEST.set('portal_url', portal_url())">
 */
 
-html body{
-  font: &dtml-fontBaseSize; "Lucida Grande",Verdana,Lucida,Helvetica,Arial,sans-serif;
+body {
+  font-size: &dtml-fontBaseSize;
 }
-
 table {
   /*font-size: 100%;*/
 }
