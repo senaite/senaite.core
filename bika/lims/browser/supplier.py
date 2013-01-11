@@ -6,7 +6,16 @@ class SupplierInstrumentsView(InstrumentsView):
 
     def __init__(self, context, request):
         super(SupplierInstrumentsView, self).__init__(context, request)
-        self.contentFilter['getSupplierUID']=self.context.UID()
+    
+    def folderitems(self):
+        items = InstrumentsView.folderitems(self)
+        uidsup = self.context.UID()
+        outitems = []
+        for x in range(len(items)):
+            obj = items[x]['obj']
+            if obj.getSupplier().UID() == uidsup:
+                outitems.append(items[x])
+        return outitems
 
 class ContactsView(BikaListingView):
 
