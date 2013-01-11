@@ -1234,11 +1234,11 @@ class LoadSetupData(BrowserView):
         nr_cols = sheet.get_highest_column()
         rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
         fields = rows[0]
-        folder = self.context.bika_setup.bika_referencemanufacturers
+        folder = self.context.bika_setup.bika_manufacturers
         self.ref_manufacturers = {}
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            _id = folder.invokeFactory('ReferenceManufacturer', id = 'tmp')
+            _id = folder.invokeFactory('Manufacturer', id = 'tmp')
             obj = folder[_id]
             obj.edit(title = row.get('title', ''),
                      description = row.get('description', ''))

@@ -67,8 +67,6 @@
  <object name="ReferenceAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceDefinition" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceDefinitions" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ReferenceManufacturer" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ReferenceManufacturers" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceSample" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceSamplesFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceSupplier" meta_type="Factory-based Type Information with dynamic views"/>

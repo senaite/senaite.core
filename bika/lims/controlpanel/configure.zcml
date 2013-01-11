@@ -181,14 +181,6 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IReferenceManufacturers"
-      name="folder_view"
-      class=".bika_referencemanufacturers.ReferenceManufacturersView"
-      permission="bika.lims.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
       for="bika.lims.interfaces.IReferenceSuppliers"
       name="folder_view"
       class=".bika_referencesuppliers.ReferenceSuppliersView"

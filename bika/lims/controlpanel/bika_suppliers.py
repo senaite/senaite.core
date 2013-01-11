@@ -26,7 +26,7 @@ class SuppliersView(BikaListingView):
                                 {'url': 'createObject?type_name=Supplier',
                                  'icon': '++resource++bika.lims.images/add.png'}}
         self.title = _("Suppliers")
-        self.icon = "++resource++bika.lims.images/manufacturer_big.png"
+        self.icon = "++resource++bika.lims.images/supplier_big.png"
         self.description = ""
         self.show_sort_column = False
         self.show_select_row = False

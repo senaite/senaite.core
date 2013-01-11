@@ -81,7 +81,6 @@ def initialize(context):
     from content.pricelistlineitem import PricelistLineItem
     from content.referenceanalysis import ReferenceAnalysis
     from content.referencedefinition import ReferenceDefinition
-    from content.referencemanufacturer import ReferenceManufacturer
     from content.referencesample import ReferenceSample
     from content.referencesamplesfolder import ReferenceSamplesFolder
     from content.referencesupplier import ReferenceSupplier
@@ -120,7 +119,6 @@ def initialize(context):
     from controlpanel.bika_manufacturers import Manufacturers
     from controlpanel.bika_preservations import Preservations
     from controlpanel.bika_referencedefinitions import ReferenceDefinitions
-    from controlpanel.bika_referencemanufacturers import ReferenceManufacturers
     from controlpanel.bika_referencesuppliers import ReferenceSuppliers
     from controlpanel.bika_samplematrices import SampleMatrices
     from controlpanel.bika_samplepoints import SamplePoints

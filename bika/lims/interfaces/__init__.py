@@ -165,8 +165,6 @@ class ISuppliers(Interface):
     ""
 class IPreservations(Interface):
     ""
-class IReferenceManufacturers(Interface):
-    ""
 class IReferenceDefinitions(Interface):
     ""
 class IWorksheetTemplates(Interface):

@@ -79,7 +79,6 @@ class BikaGenerator:
                        'bika_sampletypes',
                        'bika_suppliers',
                        'bika_referencedefinitions',
-                       'bika_referencemanufacturers',
                        'bika_referencesuppliers',
                        'bika_worksheettemplates'):
             obj = bika_setup._getOb(obj_id)
@@ -569,7 +568,6 @@ class BikaGenerator:
         at.setCatalogsByType('LabContact', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('Manufacturer', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('Preservation', ['bika_setup_catalog', ])
-        at.setCatalogsByType('ReferenceManufacturer', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('ReferenceSupplier', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('ReferenceDefinition', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('Supplier', ['bika_setup_catalog', 'portal_catalog'])

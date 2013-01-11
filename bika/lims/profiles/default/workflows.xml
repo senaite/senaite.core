@@ -254,13 +254,6 @@
 
   <type type_id="ReferenceDefinitions"/>
 
-  <type type_id="ReferenceManufacturer">
-   <bound-workflow workflow_id="bika_one_state_workflow"/>
-   <bound-workflow workflow_id="bika_inactive_workflow"/>
-  </type>
-
-  <type type_id="ReferenceManufacturers"/>
-
   <type type_id="ReferenceSample">
    <bound-workflow workflow_id="bika_referencesample_workflow"/>
    <bound-workflow workflow_id="bika_inactive_workflow"/>
