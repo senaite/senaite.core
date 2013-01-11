@@ -15,7 +15,7 @@ class Tests(BikaFunctionalTestCase):
 
     baseurl = None
     browser = None
-    supurl  = "/bika_setup/bika_referencesuppliers/referencesupplier-1/"
+    supurl  = "/bika_setup/bika_suppliers/supplier-1/"
 
     def setUp(self):
         BikaFunctionalTestCase.setUp(self)

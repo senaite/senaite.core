@@ -14,6 +14,14 @@
     
     <browser:page
       for="bika.lims.interfaces.ISupplier"
+      name="base_view"
+      class="bika.lims.browser.supplier.ReferenceSamplesView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+    
+    <browser:page
+      for="bika.lims.interfaces.ISupplier"
       name="instruments"
       class="bika.lims.browser.supplier.SupplierInstrumentsView"
       permission="zope.Public"

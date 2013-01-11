@@ -261,13 +261,6 @@
 
   <type type_id="ReferenceSamplesFolder"/>
 
-  <type type_id="ReferenceSupplier">
-   <bound-workflow workflow_id="bika_one_state_workflow"/>
-   <bound-workflow workflow_id="bika_inactive_workflow"/>
-  </type>
-
-  <type type_id="ReferenceSuppliers"/>
-
   <type type_id="Sample">
    <bound-workflow workflow_id="bika_sample_workflow"/>
    <bound-workflow workflow_id="bika_cancellation_workflow"/>

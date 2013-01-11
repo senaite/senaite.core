@@ -152,7 +152,7 @@ class BikaSetupCatalog(CatalogTool):
                                                  'ARTemplate',
                                                  'LabContact',
                                                  'LabProduct',
-                                                 'ReferenceSupplier',
+                                                 'Supplier',
                                                  'ReferenceDefinition',
                                                  'BatchLabel',
                                                  'WorksheetTemplate'),

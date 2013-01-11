@@ -173,7 +173,7 @@
           <input type="hidden" name="report_id" value="qualitycontrol_referenceanalysisqc" />
           <fieldset>
             <legend i18n:translate="">Reference analysis QC</legend>
-            <tal:x content="structure context/@@selection_macros/select_reference_supplier"/>
+            <tal:x content="structure context/@@selection_macros/select_supplier"/>
             <tal:x content="structure context/@@selection_macros/select_reference_sample"/>
             <tal:x content="structure context/@@selection_macros/select_reference_service"/>
             <tal:x content="structure python:view.selection_macros.select_daterange(

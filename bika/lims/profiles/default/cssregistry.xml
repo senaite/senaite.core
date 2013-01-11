@@ -3,7 +3,7 @@
 
 <stylesheet
     id="++resource++bika.lims.css/hide_contentmenu.css"
-    expression="python:here.portal_type in ['Batch', 'Client', 'AnalysisRequest', 'Worksheet', 'Sample', 'AnalysisCategory', 'AnalysisProfile', 'ARTemplate', 'AnalysisService', 'AnalysisSpec', 'Attachment', 'Calculation', 'Instrument', 'LabContact', 'Laboratory', 'Method', 'Department', 'ReferenceDefinition', 'ReportFolder', 'SampleType', 'SamplePoint', 'WorksheetTemplate', 'LabProduct', 'ReferenceSupplier', 'ReferenceSample', 'Preservation']"
+    expression="python:here.portal_type in ['Batch', 'Client', 'AnalysisRequest', 'Worksheet', 'Sample', 'AnalysisCategory', 'AnalysisProfile', 'ARTemplate', 'AnalysisService', 'AnalysisSpec', 'Attachment', 'Calculation', 'Instrument', 'LabContact', 'Laboratory', 'Method', 'Department', 'ReferenceDefinition', 'ReportFolder', 'SampleType', 'SamplePoint', 'WorksheetTemplate', 'LabProduct', 'ReferenceSample', 'Preservation']"
     media="screen"
     rel="stylesheet"
     rendering="link"
@@ -11,7 +11,7 @@
 
 <stylesheet
     id="++resource++bika.lims.css/hide_editable_border.css"
-    expression="python:here.portal_type in ['AnalysisCategories', 'AnalysisCategory', 'AnalysisServices', 'AnalysisSpecs', 'AnalysisProfile', 'AnalysisProfiles', 'ARTemplate', 'ARTemplates', 'AttachmentType', 'AttachmentTypes', 'BatchFolder', 'BikaSetup', 'Calculations', 'ClientFolder', 'Container', 'Containers', 'ContainerType', 'ContainerTypes', 'Department', 'Departments', 'Instruments', 'InstrumentTypes', 'LabContacts', 'Laboratory', 'LabProduct', 'LabProducts', 'Manufacturers', 'Methods', 'Preservation', 'Preservations', 'ReferenceDefinition', 'ReferenceDefinitions', 'ReferenceSuppliers', 'SamplePoints', 'SampleTypes', 'WorksheetTemplates', 'SamplingDeviations', 'SamplingDeviation', 'SampleMatrices', 'SampleMatrix', 'Suppliers', 'BatchLabel', 'BatchLabels']"
+    expression="python:here.portal_type in ['AnalysisCategories', 'AnalysisCategory', 'AnalysisServices', 'AnalysisSpecs', 'AnalysisProfile', 'AnalysisProfiles', 'ARTemplate', 'ARTemplates', 'AttachmentType', 'AttachmentTypes', 'BatchFolder', 'BikaSetup', 'Calculations', 'ClientFolder', 'Container', 'Containers', 'ContainerType', 'ContainerTypes', 'Department', 'Departments', 'Instruments', 'InstrumentTypes', 'LabContacts', 'Laboratory', 'LabProduct', 'LabProducts', 'Manufacturers', 'Methods', 'Preservation', 'Preservations', 'ReferenceDefinition', 'ReferenceDefinitions', 'SamplePoints', 'SampleTypes', 'WorksheetTemplates', 'SamplingDeviations', 'SamplingDeviation', 'SampleMatrices', 'SampleMatrix', 'Suppliers', 'BatchLabel', 'BatchLabels']"
     media="screen"
     rel="stylesheet"
     rendering="link"

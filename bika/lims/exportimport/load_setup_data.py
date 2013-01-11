@@ -1251,11 +1251,11 @@ class LoadSetupData(BrowserView):
         nr_cols = sheet.get_highest_column()
         rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
         fields = rows[0]
-        folder = self.context.bika_setup.bika_referencesuppliers
+        folder = self.context.bika_setup.bika_suppliers
         self.ref_suppliers = {}
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            _id = folder.invokeFactory('ReferenceSupplier', id = 'tmp')
+            _id = folder.invokeFactory('Supplier', id = 'tmp')
             obj = folder[_id]
             obj.edit(AccountNumber = unicode(row['AccountNumber']),
                      Name = unicode(row['Name']),
@@ -1275,7 +1275,7 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             if not row['ReferenceSupplier_Name']:
                 continue
-            folder = self.bsc(portal_type="ReferenceSupplier",
+            folder = self.bsc(portal_type="Supplier",
                               Title = row['ReferenceSupplier_Name'])
             if (len(folder) > 0):
                 folder = folder[0].getObject()

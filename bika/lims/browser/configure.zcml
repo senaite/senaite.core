@@ -21,7 +21,6 @@
   <include file="queries.zcml"/>
   <include file="remarks.zcml"/>
   <include file="referencesample.zcml"/>
-  <include file="referencesupplier.zcml"/>
   <include file="sample.zcml"/>
   <include file="stickers.zcml"/>
   <include file="supplier.zcml"/>

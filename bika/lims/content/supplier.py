@@ -2,7 +2,7 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from bika.lims import bikaMessageFactory as _
-from bika.lims.config import PROJECTNAME, ManageReferenceSuppliers
+from bika.lims.config import PROJECTNAME, ManageSuppliers
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.organisation import Organisation
 from bika.lims.interfaces import ISupplier
@@ -21,7 +21,7 @@ schema = Organisation.schema.copy() + ManagedSchema((
         ),
     ),
 ))
-schema['AccountNumber'].write_permission = ManageReferenceSuppliers
+schema['AccountNumber'].write_permission = ManageSuppliers
 
 class Supplier(Organisation):
     implements(ISupplier)

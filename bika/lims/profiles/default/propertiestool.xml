@@ -75,7 +75,6 @@
     <element value="ReferenceAnalysis"/>
     <element value="ReferenceDefinition"/>
     <element value="ReferenceSample"/>
-    <element value="ReferenceSupplier"/>
     <element value="Report"/>
     <element value="ReportFolder"/>
     <element value="Sample"/>

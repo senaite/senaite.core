@@ -79,7 +79,6 @@ class BikaGenerator:
                        'bika_sampletypes',
                        'bika_suppliers',
                        'bika_referencedefinitions',
-                       'bika_referencesuppliers',
                        'bika_worksheettemplates'):
             obj = bika_setup._getOb(obj_id)
             obj.unmarkCreationFlag()
@@ -150,8 +149,8 @@ class BikaGenerator:
             portal_groups.addGroup('Clients', title = "Clients",
                 roles = ['Member', ])
 
-        if 'ReferenceSuppliers' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('ReferenceSuppliers', title = "",
+        if 'Suppliers' not in portal_groups.listGroupIds():
+            portal_groups.addGroup('Suppliers', title = "",
                 roles = ['Member', ])
 
     def setupPermissions(self, portal):
@@ -191,7 +190,7 @@ class BikaGenerator:
         mp(ManageOrders, ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(ManagePricelists, ['Manager', 'LabManager', 'Owner'], 1)
         mp(ManageReference, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-        mp(ManageReferenceSuppliers, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
+        mp(ManageSuppliers, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(ManageSamples, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 1)
         mp(ManageWorksheets, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(PostInvoiceBatch, ['Manager', 'LabManager', 'Owner'], 1)
@@ -568,7 +567,6 @@ class BikaGenerator:
         at.setCatalogsByType('LabContact', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('Manufacturer', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('Preservation', ['bika_setup_catalog', ])
-        at.setCatalogsByType('ReferenceSupplier', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('ReferenceDefinition', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('Supplier', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('Unit', ['bika_setup_catalog', ])

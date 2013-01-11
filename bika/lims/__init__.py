@@ -83,7 +83,6 @@ def initialize(context):
     from content.referencedefinition import ReferenceDefinition
     from content.referencesample import ReferenceSample
     from content.referencesamplesfolder import ReferenceSamplesFolder
-    from content.referencesupplier import ReferenceSupplier
     from content.report import Report
     from content.reportfolder import ReportFolder
     from content.sample import Sample
@@ -119,7 +118,6 @@ def initialize(context):
     from controlpanel.bika_manufacturers import Manufacturers
     from controlpanel.bika_preservations import Preservations
     from controlpanel.bika_referencedefinitions import ReferenceDefinitions
-    from controlpanel.bika_referencesuppliers import ReferenceSuppliers
     from controlpanel.bika_samplematrices import SampleMatrices
     from controlpanel.bika_samplepoints import SamplePoints
     from controlpanel.bika_sampletypes import SampleTypes

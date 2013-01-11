@@ -108,10 +108,10 @@
 			</property>
 			<property name="visible">False</property>
 		</object>
-		<object name="referencesuppliers" meta_type="CMF Action" i18n:domain="plone">
+		<object name="suppliers" meta_type="CMF Action" i18n:domain="plone">
 			<property name="title" i18n:translate="">Suppliers</property>
 			<property name="description" i18n:translate=""/>
-			<property name="url_expr">string:$portal_url/referencesuppliers</property>
+			<property name="url_expr">string:$portal_url/suppliers</property>
 			<property name="link_target"/>
 			<property name="icon_expr"/>
 			<property name="available_expr"/>

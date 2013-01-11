@@ -76,12 +76,6 @@ class IReferenceSample(Interface):
 class IReferenceSamplesFolder(Interface):
     """Reference Samples Folder"""
 
-class IReferenceSupplier(Interface):
-    """Reference Supplier"""
-
-class IReferenceSuppliers(Interface):
-    """Reference Suppliers """
-
 class IReportsFolder(Interface):
     """Reports Folder"""
 
