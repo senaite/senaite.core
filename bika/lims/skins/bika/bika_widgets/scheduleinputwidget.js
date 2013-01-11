@@ -78,12 +78,16 @@ $(document).ready(function(){
 		if (repeatEnabled.is(':checked')) {
 			repeatunit.attr('readonly', false);
 			repeatperiod.attr('disabled', false);
+			$('#'+fieldName+"_repeatperiod option:selected").each(function () {
+			  repeatperiodselected.val($(this).val())		  
+			});
 			if (!preventFocus) {
 				repeatunit.focus()
 			}
 		} else {
 			repeatunit.attr('readonly', true);
 			repeatperiod.attr('disabled', true);
+			repeatperiodselected.val("");
 		}
 	}
 	
