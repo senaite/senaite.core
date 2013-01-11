@@ -73,36 +73,40 @@ class InstrumentMaintenanceView(BikaListingView):
     
     def folderitems(self):
         items = BikaListingView.folderitems(self)
+        outitems = []
+        toshow = []
+        for man in self.context.getMaintenanceTasks():
+            toshow.append(man.UID())
         for x in range (len(items)):
-            if not items[x].has_key('obj'): continue
-            
+            if not items[x].has_key('obj'): continue            
             obj = items[x]['obj']
-            items[x]['getType'] = safe_unicode(_(obj.getType()[0])).encode('utf-8')
-            items[x]['getDownFrom'] = obj.getDownFrom() and self.ulocalized_time(obj.getDownFrom(), long_format=1) or ''
-            items[x]['getDownTo'] = obj.getDownTo() and self.ulocalized_time(obj.getDownTo(), long_format=1) or ''
-            items[x]['getMaintainer'] = safe_unicode(_(obj.getMaintainer())).encode('utf-8')
-            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], safe_unicode(items[x]['Title']).encode('utf-8'))
+            if obj.UID() in toshow:
+                items[x]['getType'] = safe_unicode(_(obj.getType()[0])).encode('utf-8')
+                items[x]['getDownFrom'] = obj.getDownFrom() and self.ulocalized_time(obj.getDownFrom(), long_format=1) or ''
+                items[x]['getDownTo'] = obj.getDownTo() and self.ulocalized_time(obj.getDownTo(), long_format=1) or ''
+                items[x]['getMaintainer'] = safe_unicode(_(obj.getMaintainer())).encode('utf-8')
+                items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                     (items[x]['url'], safe_unicode(items[x]['Title']).encode('utf-8'))
+                        
+                status = obj.getCurrentState();
+                statustext = obj.getCurrentStateI18n();
+                statusimg = "";
+                if status == mstatus.CLOSED:
+                    statusimg = "instrumentmaintenance_closed.png"
+                elif status == mstatus.CANCELLED:
+                    statusimg = "instrumentmaintenance_cancelled.png"
+                elif status == mstatus.INQUEUE:
+                    statusimg = "instrumentmaintenance_inqueue.png"
+                elif status == mstatus.OVERDUE:
+                    statusimg = "instrumentmaintenance_overdue.png"
+                elif status == mstatus.PENDING:
+                    statusimg = "instrumentmaintenance_pending.png"
                     
-            status = obj.getCurrentState();
-            statustext = obj.getCurrentStateI18n();
-            statusimg = "";
-            if status == mstatus.CLOSED:
-                statusimg = "instrumentmaintenance_closed.png"
-            elif status == mstatus.CANCELLED:
-                statusimg = "instrumentmaintenance_cancelled.png"
-            elif status == mstatus.INQUEUE:
-                statusimg = "instrumentmaintenance_inqueue.png"
-            elif status == mstatus.OVERDUE:
-                statusimg = "instrumentmaintenance_overdue.png"
-            elif status == mstatus.PENDING:
-                statusimg = "instrumentmaintenance_pending.png"
-                
-            items[x]['replace']['getCurrentState'] = \
-                "<img title='%s' src='%s/++resource++bika.lims.images/%s'/>" % \
-                (statustext, self.portal_url, statusimg)
-                            
-        return items
+                items[x]['replace']['getCurrentState'] = \
+                    "<img title='%s' src='%s/++resource++bika.lims.images/%s'/>" % \
+                    (statustext, self.portal_url, statusimg)
+                outitems.append(items[x]) 
+        return outitems   
 
 class InstrumentCalibrationsView(BikaListingView):
     implements(IFolderContentsView, IViewView)
@@ -145,17 +149,21 @@ class InstrumentCalibrationsView(BikaListingView):
     
     def folderitems(self):
         items = BikaListingView.folderitems(self)
+        outitems = []
+        toshow = []
+        for cal in self.context.getCalibrations():
+            toshow.append(cal.UID())
         for x in range (len(items)):
-            if not items[x].has_key('obj'): continue
-            
+            if not items[x].has_key('obj'): continue            
             obj = items[x]['obj']
-            items[x]['getDownFrom'] = obj.getDownFrom()
-            items[x]['getDownTo'] = obj.getDownTo()
-            items[x]['getCalibrator'] = obj.getCalibrator()
-            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['Title'])
-                 
-        return items
+            if obj.UID() in toshow:
+                items[x]['getDownFrom'] = obj.getDownFrom()
+                items[x]['getDownTo'] = obj.getDownTo()
+                items[x]['getCalibrator'] = obj.getCalibrator()
+                items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                     (items[x]['url'], items[x]['Title'])
+                outitems.append(items[x]) 
+        return outitems
     
 class InstrumentCertificationsView(BikaListingView):
     implements(IFolderContentsView, IViewView)
@@ -200,18 +208,22 @@ class InstrumentCertificationsView(BikaListingView):
     
     def folderitems(self):
         items = BikaListingView.folderitems(self)
+        outitems = []
+        toshow = []
+        for cer in self.context.getCertifications():
+            toshow.append(cer.UID())
         for x in range (len(items)):
-            if not items[x].has_key('obj'): continue
-            
+            if not items[x].has_key('obj'): continue            
             obj = items[x]['obj']
-            items[x]['getAgency'] = obj.getAgency()
-            items[x]['getDate'] = obj.getDate()
-            items[x]['getValidFrom'] = obj.getValidFrom()
-            items[x]['getValidTo'] = obj.getValidTo()
-            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['Title'])
-            
-        return items
+            if obj.UID() in toshow:
+                items[x]['getAgency'] = obj.getAgency()
+                items[x]['getDate'] = obj.getDate()
+                items[x]['getValidFrom'] = obj.getValidFrom()
+                items[x]['getValidTo'] = obj.getValidTo()
+                items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                     (items[x]['url'], items[x]['Title'])
+                outitems.append(items[x]) 
+        return outitems
 
 class InstrumentValidationsView(BikaListingView):
     implements(IFolderContentsView, IViewView)
@@ -254,15 +266,21 @@ class InstrumentValidationsView(BikaListingView):
     
     def folderitems(self):
         items = BikaListingView.folderitems(self)
-        for x in range (len(items)):            
+        outitems = []
+        toshow = []
+        for val in self.context.getValidations():
+            toshow.append(val.UID())
+        for x in range (len(items)):
+            if not items[x].has_key('obj'): continue        
             obj = items[x]['obj']
-            items[x]['getDownFrom'] = obj.getDownFrom()
-            items[x]['getDownTo'] = obj.getDownTo()
-            items[x]['getValidator'] = obj.getValidator()
-            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['Title'])
-                 
-        return items
+            if obj.UID() in toshow:
+                items[x]['getDownFrom'] = obj.getDownFrom()
+                items[x]['getDownTo'] = obj.getDownTo()
+                items[x]['getValidator'] = obj.getValidator()
+                items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                     (items[x]['url'], items[x]['Title'])
+                outitems.append(items[x]) 
+        return outitems
 
 class InstrumentScheduleView(BikaListingView):
     implements(IFolderContentsView, IViewView)

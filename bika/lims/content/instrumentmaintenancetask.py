@@ -12,6 +12,21 @@ from bika.lims.content.bikaschema import BikaSchema
 
 schema = BikaSchema.copy() + Schema((
     
+    ReferenceField('Instrument',
+        allowed_types=('Instrument',),
+        relationship='InstrumentMaintenanceTaskInstrument',
+        widget=StringWidget(
+            visible=False,
+        )
+    ),
+                                     
+    ComputedField('InstrumentUID',
+        expression = 'context.getInstrument() and context.getInstrument().UID() or None',
+        widget=ComputedWidget(
+            visible=False,
+        ),
+    ),               
+                                     
     StringField('Type',
         vocabulary = "getMaintenanceTypes",
         widget = ReferenceWidget(

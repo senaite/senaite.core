@@ -8,7 +8,22 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 
 schema = BikaSchema.copy() + Schema((
-                           
+    
+    ReferenceField('Instrument',
+        allowed_types=('Instrument',),
+        relationship='InstrumentCertificationInstrument',
+        widget=StringWidget(
+            visible=False,
+        )
+    ),
+                                     
+    ComputedField('InstrumentUID',
+        expression = 'context.getInstrument() and context.getInstrument().UID() or None',
+        widget=ComputedWidget(
+            visible=False,
+        ),
+    ),               
+                                                   
     StringField('Agency',
         widget = StringWidget(
             label = _("Agency"),
