@@ -225,6 +225,9 @@ class BikaGenerator:
         mp = portal.bika_setup.manage_permission
         mp('Access contents information',  ['Authenticated'], 1)
         mp(permissions.View, ['Authenticated'], 1)
+        mp(ApplyVersionControl, ['Authenticated'], 1)
+        mp(SaveNewVersion, ['Authenticated'], 1)
+        mp(AccessPreviousVersions, ['Authenticated'], 1)
         portal.bika_setup.reindexObject()
 
         mp = portal.bika_setup.laboratory.manage_permission
