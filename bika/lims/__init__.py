@@ -63,7 +63,6 @@ def initialize(context):
     from content.labcontact import LabContact
     from content.laboratory import Laboratory
     from content.labproduct import LabProduct
-    from content.logentry import LogEntry
     from content.method import Method
     from content.methods import Methods
     from content.organisation import Organisation
