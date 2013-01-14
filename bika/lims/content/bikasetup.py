@@ -264,7 +264,6 @@ schema = BikaFolderSchema.copy() + Schema((
                    {'portal_type': 'ReferenceSample', 'prefix': 'RS', 'padding': '4'},
                    {'portal_type': 'SupplyOrder', 'prefix': 'O', 'padding': '3'},
                    {'portal_type': 'Worksheet', 'prefix': 'WS', 'padding': '4'},
-                   {'portal_type': 'SamplePartition', 'prefix': 'part', 'padding': '0'},
                    ],
 #        fixedSize=8,
         widget=RecordsWidget(
@@ -365,5 +364,16 @@ class BikaSetup(folder.ATFolder):
                                    inactive_state = 'active')]
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
+
+    def getPrefixFor(self, portal_type):
+        """Return the prefix for a portal_type.
+        If not found, simply uses the portal_type itself
+        """
+        prefix = [p for p in self.getPrefixes() if p['portal_type'] == portal_type]
+        if prefix:
+            return prefix[0]['prefix']
+        else:
+            return portal_type
+
 
 registerType(BikaSetup, PROJECTNAME)
