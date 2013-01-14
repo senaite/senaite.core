@@ -557,7 +557,7 @@ Table cells for each column from in review_state's column list.
 		<tr	tal:condition="python:view.context.bika_setup.getEnableAnalysisRemarks()
 			                     and item.has_key('id')
 			                     and item.get('category', 'None') == cat
-			                     and item['obj'].portal_type == 'Analysis' and (
+			                     and hasattr(item['obj'], 'portal_type') and item['obj'].portal_type == 'Analysis' and (
 			                     	allow_edit or item.get('Remarks')
 			                     )"
 			tal:define="keyword python:item.has_key('Keyword') and item['Keyword'] or '';"
