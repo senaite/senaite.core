@@ -320,6 +320,7 @@ $(document).ready(function(){
 		dialog
 			.load(window.portal_url + "/analysisservice_popup",
 				{'service_title':$(this).text(),
+				 'analysis_uid':$(this).parents('tr').attr('uid'),
 				 '_authenticator': $('input[name="_authenticator"]').val()}
 			)
 			.dialog({

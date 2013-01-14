@@ -1,6 +1,7 @@
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.log import LogView
 from bika.lims.content.analysisservice import getContainers
 from bika.lims.browser.bika_listing import BikaListingView
 from Products.CMFCore.utils import getToolByName
@@ -70,10 +71,21 @@ class ajaxServicePopup(BrowserView):
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
+        uc = getToolByName(self.context, 'uid_catalog')
 
         service_title = self.request.get('service_title', '').strip()
         if not service_title:
             return ''
+
+        analysis = uc(UID=self.request.get('analysis_uid', None))
+        if analysis:
+            analysis = analysis[0].getObject()
+            self.request['ajax_load'] = 1
+            tmp = LogView(analysis, self.request)
+            self.log = tmp.folderitems()
+            self.log.reverse()
+        else:
+            self.log = []
 
         brains = bsc(portal_type="AnalysisService", Title=service_title)
         if not brains:
