@@ -1913,6 +1913,8 @@ class AnalysisRequestsView(BikaListingView):
             'getClientSampleID': {'title': _('Client SID'),
                                   'index': 'getClientSampleID',
                                   'toggle': False},
+            'ClientContact': {'title': _('Contact'),
+                                 'toggle': False},
             'getSampleTypeTitle': {'title': _('Sample Type'),
                                    'index': 'getSampleTypeTitle',
                                    'toggle': True},
@@ -1973,6 +1975,7 @@ class AnalysisRequestsView(BikaListingView):
                         'Created',
                         'getClientOrderNumber',
                         'getClientReference',
+                        'ClientContact',
                         'getClientSampleID',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
@@ -2006,6 +2009,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
+                        'ClientContact',
                         'getDateSampled',
                         'getSampler',
                         'getDatePreserved',
@@ -2032,6 +2036,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
+                        'ClientContact',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
                         'SamplingDeviation',
@@ -2060,6 +2065,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
+                        'ClientContact',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
                         'SamplingDeviation',
@@ -2084,6 +2090,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
+                        'ClientContact',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
                         'SamplingDeviation',
@@ -2107,6 +2114,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
+                        'ClientContact',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
                         'SamplingDeviation',
@@ -2136,6 +2144,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
+                        'ClientContact',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
                         'SamplingDeviation',
@@ -2173,6 +2182,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
+                        'ClientContact',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
                         'SamplingDeviation',
@@ -2210,6 +2220,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
+                        'ClientContact',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
                         'SamplingDeviation',
@@ -2325,6 +2336,10 @@ class AnalysisRequestsView(BikaListingView):
                 sampler = ''
             items[x]['getDateSampled'] = datesampled
             items[x]['getSampler'] = sampler
+
+            items[x]['ClientContact'] = obj.getContact().Title()
+            items[x]['replace']['ClientContact'] = "<a href='%s'>%s</a>" % \
+                (obj.getContact().absolute_url(), obj.getContact().Title())
 
             # sampling workflow - inline edits for Sampler and Date Sampled
             checkPermission = self.context.portal_membership.checkPermission
