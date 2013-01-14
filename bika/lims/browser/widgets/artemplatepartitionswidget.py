@@ -63,11 +63,11 @@ class ARTemplatePartitionsView(BikaListingView):
                 # it's a template, there is no 'object', 'uid' etc.
                 # so things get a little frayed over here.
                 'obj': part,
-                'uid': part['part_id'],
-                'id': part['part_id'],
-                'part_id': part['part_id'],
-                'container_uid': part['container_uid'],
-                'preservation_uid': part['preservation_uid'],
+                'uid': part.get('part_id', 'part-1'),
+                'id': part.get('part_id', 'part-1'),
+                'part_id': part.get('part_id', 'part-1'),
+                'container_uid': part.get('container_uid', None),
+                'preservation_uid': part.get('preservation_uid', None),
                 'type_class': 'contenttype-ARTemplate',
                 'url': self.context.absolute_url(),
                 'relative_url': self.context.absolute_url(),
