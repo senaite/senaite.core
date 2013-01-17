@@ -144,7 +144,7 @@ class ReferenceResultsView(BikaListingView):
         uc = getToolByName(self.context, 'uid_catalog')
         # not using <self.contentsMethod=bsc>
         for x in self.context.getReferenceResults():
-            service = uc(UID=x['uid'])[0]
+            service = uc(UID=x['uid'])[0].getObject()
             item = {
                 'obj': self.context,
                 'id': x['uid'],
@@ -152,8 +152,8 @@ class ReferenceResultsView(BikaListingView):
                 'result': x['result'],
                 'min': x['min'],
                 'max': x['max'],
-                'title': service.Title,
-                'Service': service.Title,
+                'title': service.Title(),
+                'Service': service.Title(),
                 'type_class': 'contenttype-ReferenceResult',
                 'url': service.absolute_url(),
                 'relative_url': service.absolute_url(),
@@ -167,7 +167,7 @@ class ReferenceResultsView(BikaListingView):
                 'allow_edit': [],
             }
             item['replace']['Service'] = "<a href='%s'>%s</a>" % \
-                (service.absolute_url(), service.Title)
+                (service.absolute_url(), service.Title())
             items.append(item)
 
         items = sorted(items, key = itemgetter('Service'))
