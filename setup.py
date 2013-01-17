@@ -39,7 +39,7 @@ setup(name='bika.lims',
           'xhtml2pdf',
           'magnitude',
           'gpw',
-          'jarn.jsi18n',
+          'jarn.jsi18n==0.3',
       ],
       extras_require = {
           'test': [
