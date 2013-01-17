@@ -16,7 +16,6 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.referencesample import ReferenceSamplesView
 from bika.lims.exportimport import instruments
-from bika.lims.permissions import *
 from bika.lims.subscribers import skip
 from bika.lims.subscribers import doActionFor
 from bika.lims.utils import getUsers, isActive
@@ -66,10 +65,9 @@ class WorksheetWorkflowAction(WorkflowAction):
                 if not analysis:
                     # ignore result if analysis object no longer exists
                     continue
-                # Shouldn't happen - better have an actual error
-                # if not(getSecurityManager().checkPermission(EditResults, analysis)):
-                #     # or changes no longer allowed
-                #     continue
+                if not(getSecurityManager().checkPermission(EditResults, analysis)):
+                    # or changes no longer allowed
+                    continue
                 if not isActive(analysis):
                     # or it's cancelled
                     continue
@@ -81,14 +79,12 @@ class WorksheetWorkflowAction(WorkflowAction):
                 else:
                     hasInterims[uid] = False
                 unit = service.getUnit()
-                remarks = form.get('Remarks', [{},])[0].get(uid, '')
                 analysis.edit(
                     Result = result,
                     InterimFields = interimFields,
                     Retested = form.has_key('retested') and \
                                form['retested'].has_key(uid),
-                    Unit = unit and unit or '',
-                    Remarks = remarks)
+                    Unit = unit and unit or '')
 
             # discover which items may be submitted
             submissable = []
@@ -205,7 +201,6 @@ class WorksheetAnalysesView(AnalysesView):
         self.show_select_row = False
         self.show_sort_column = False
         self.allow_edit = True
-        self.show_categories = False
 
         self.columns = {
             'Pos': {'title': _('Position')},
@@ -310,19 +305,8 @@ class WorksheetAnalysesView(AnalysesView):
         items = sorted(items, key = itemgetter('Pos'))
 
         slot_items = {} # pos:[item_nrs]
-        items_with_remarks = {} # pos:[nr_items_w_remarks]
         for x in range(len(items)):
-            obj = items[x]['obj']
-            can_edit_analysis = self.portal_membership.checkPermission(EditResults, obj)
-            has_remarks = obj.getRemarks()
-            has_calculation = obj.getService().getCalculation() and True or False
             p = items[x]['Pos']
-            if p in items_with_remarks:
-                if can_edit_analysis or has_remarks or has_calculation:
-                    items_with_remarks[p] += 1
-            else:
-                if can_edit_analysis or has_remarks or has_calculation:
-                    items_with_remarks[p] = 1
             if p in slot_items:
                 slot_items[p].append(x)
             else:
@@ -337,7 +321,7 @@ class WorksheetAnalysesView(AnalysesView):
                 continue
 
             # set Pos column for this row, to have a rowspan
-            items[x]['rowspan'] = {'Pos': len(pos_items) + items_with_remarks.get(pos, 0)}
+            items[x]['rowspan'] = {'Pos': len(pos_items)}
 
             # fill the rowspan with a little table
             obj = items[x]['obj']
@@ -352,14 +336,11 @@ class WorksheetAnalysesView(AnalysesView):
                 client = obj.getReferenceDefinition()
             else:
                 client = parent.aq_parent
-
-            pos_table_rowspan = 4
-
             pos_text = "<table class='worksheet-position' width='100%%' cellpadding='0' cellspacing='0' style='padding-bottom:5px;'><tr>" + \
-                       "<td class='pos' rowspan='%s'>%s</td>" % (pos_table_rowspan, pos)
+                       "<td class='pos' rowspan='3'>%s</td>" % pos
             pos_text += "<td class='pos_top'><a href='%s'>%s</a></td>" % \
                 (client.absolute_url(), client.Title())
-            pos_text += "<td class='pos_top_icons' rowspan='%s'>"%pos_table_rowspan
+            pos_text += "<td class='pos_top_icons' rowspan='3'>"
             if obj.portal_type == 'DuplicateAnalysis':
                 pos_text += "<img title='%s' src='%s/++resource++bika.lims.images/duplicate.png'/>" % (_("Duplicate"), self.context.absolute_url())
                 pos_text += "<br/>"
