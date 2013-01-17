@@ -12,7 +12,7 @@ from bika.lims import logger
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import  WorkflowAction
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.browser.publish import Publish
+from bika.lims.browser.publish import Publish as doPublish
 from bika.lims.browser.sample import SamplePartitionsView
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.permissions import *
@@ -360,7 +360,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
             # publish entire AR.
             self.context.setDatePublished(DateTime())
-            transitioned = Publish(self.context,
+            transitioned = doPublish(self.context,
                                    self.request,
                                    action,
                                    [self.context, ])()
