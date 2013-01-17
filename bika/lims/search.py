@@ -27,7 +27,7 @@ EVER = DateTime('1970-01-03')
 
 class SearchView(Search):
 
-    catalogs = ['portal_catalog', 'bika_catalog']
+    catalogs = ['portal_catalog', 'bika_catalog', 'bika_setup_catalog']
 
     def __init__(self, context, request):
         super(SearchView, self).__init__(self, context, request)
