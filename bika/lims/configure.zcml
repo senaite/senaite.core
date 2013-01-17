@@ -26,6 +26,7 @@
   <include package=".exportimport" />
   <include package=".locales" />
   <include package=".subscribers" />
+  <include package=".search" />
 
   <include file="profiles.zcml" />
 
