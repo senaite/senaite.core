@@ -41,6 +41,24 @@ class MethodsView(BikaListingView):
                             'toggle': True},
         }
 
+        self.review_states = [
+            {'id':'default',
+             'title': _('Active'),
+             'contentFilter': {'inactive_state': 'active'},
+             'transitions': [{'id':'deactivate'}, ],
+             'columns': ['Title', 'Description']},
+            {'id':'inactive',
+             'title': _('Dormant'),
+             'contentFilter': {'inactive_state': 'inactive'},
+             'transitions': [{'id':'activate'}, ],
+             'columns': ['Title', 'Description']},
+            {'id':'all',
+             'title': _('All'),
+             'contentFilter':{},
+             'columns': ['Title', 'Description']},
+        ]
+
+
 
     def __call__(self):
         mtool = getToolByName(self.context, 'portal_membership')

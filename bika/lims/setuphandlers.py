@@ -330,10 +330,11 @@ class BikaGenerator:
         # /methods folder permissions
         mp = portal.methods.manage_permission
         mp(CancelAndReinstate, ['Manager', 'LabManager'], 0)
-        mp(permissions.ListFolderContents, ['Member'], 1)
+        mp(permissions.ListFolderContents, ['Member', 'Authenticated', 'Anonymous'], 1)
         mp(permissions.AddPortalContent, ['Manager', 'LabManager'], 0)
         mp(permissions.DeleteObjects, ['Manager', 'LabManager'], 0)
-        mp(permissions.View, ['Manager', 'LabManager', 'Member'], 0)
+        mp(permissions.View, ['Manager', 'Member', 'Authenticated', 'Anonymous'], 1)
+        mp('Access contents information', ['Manager', 'Member', 'Authenticated', 'Anonymous'], 1)
         portal.methods.reindexObject()
 
 
