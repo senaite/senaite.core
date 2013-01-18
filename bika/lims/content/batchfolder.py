@@ -1,3 +1,4 @@
+from bika.lims.utils import isActive
 """BatchFolder contains AR Batches.
 """
 from Products.ATContentTypes.content import schemata

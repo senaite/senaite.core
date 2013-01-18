@@ -1,3 +1,4 @@
+from bika.lims.utils import isActive
 """ClientFolder is a container for Client instances.
 """
 from Products.ATContentTypes.content import schemata

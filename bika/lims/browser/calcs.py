@@ -1,3 +1,4 @@
+from zope.i18n import translate
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.PythonScripts.standard import html_quote
 from Products.CMFCore.utils import getToolByName
