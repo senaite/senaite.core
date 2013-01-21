@@ -282,7 +282,7 @@ schema = BikaSchema.copy() + Schema((
         schemata = 'Method',
         widget = RecordsWidget(
             label = _("Calculation Interim Fields"),
-            description =_("Values can be entered here which will override the defaults"
+            description =_("Values can be entered here which will override the defaults "
                            "specified in the Calculation Interim Fields."),
         ),
     ),
