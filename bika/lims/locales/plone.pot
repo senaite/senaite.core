@@ -374,7 +374,20 @@ msgstr ""
 msgid "Batch"
 msgstr ""
 #
+# File: ../profiles/default/types/BatchLabel.xml, line: -1
+msgid "Batch Label"
+msgstr ""
+#
+# File: ../profiles/default/types/BatchLabels.xml, line: -1
+msgid "Batch Labels"
+msgstr ""
+#
+# File: ../profiles/default/controlpanel.xml, line: -1
+msgid "Batch labels"
+msgstr ""
+#
 # File: ../profiles/default/types/BatchFolder.xml, line: -1
+# File: ../profiles/default/types/Client.xml, line: -1
 msgid "Batches"
 msgstr ""
 #
@@ -557,10 +570,6 @@ msgstr ""
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/AnalysisService.xml, line: -1
 msgid "Log"
-msgstr ""
-#
-# File: ../profiles/default/types/LogEntry.xml, line: -1
-msgid "Log entry"
 msgstr ""
 #
 # File: ../profiles/default/types/Contact.xml, line: -1
@@ -771,6 +780,7 @@ msgstr ""
 msgid "Sample Types"
 msgstr ""
 #
+# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml, line: -1
 # File: ../profiles/default/workflows/bika_sample_workflow/definition.xml, line: -1
 msgid "Sample received"
 msgstr ""
@@ -851,8 +861,8 @@ msgid "To Be Sampled"
 msgstr ""
 #
 # File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml, line: -1
 # File: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml, line: -1
-# File: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml, line: -1
 msgid "To be verified"
 msgstr ""
 #
@@ -862,9 +872,13 @@ msgstr ""
 msgid "Unassigned"
 msgstr ""
 #
+# File: ../profiles/default/workflows/bika_publication_workflow/definition.xml, line: -1
+msgid "Unpublished"
+msgstr ""
+#
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml, line: -1
 # File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line: -1
-# File: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml, line: -1
 msgid "Verified"
 msgstr ""
 #
