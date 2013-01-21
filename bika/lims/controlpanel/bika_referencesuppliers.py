@@ -25,7 +25,7 @@ class ReferenceSuppliersView(BikaListingView):
     implements(IFolderContentsView, IViewView)
     def __init__(self, context, request):
         super(ReferenceSuppliersView, self).__init__(context, request)
-        self.icon = "++resource++bika.lims.images/referencesupplier_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/referencesupplier_big.png"
         self.title = _("Reference Suppliers")
         self.catalog = 'bika_setup_catalog'
         self.contentFilter = {'portal_type': 'ReferenceSupplier',

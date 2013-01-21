@@ -27,11 +27,11 @@
 				tal:condition="python:service_obj.getReportDryMatter()"
 				tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/dry.png"/>
 		</td>
-		<td
-			style="white-space:nowrap;"
-		    tal:define="analysis python: hasattr(here, service.id) and here[service.id] or None;
+        <td tal:condition="python:context.portal_type == 'Client'"
+            style="white-space:nowrap;"
+            tal:define="analysis python: hasattr(here, service.id) and here[service.id] or None;
                 vat python:service_obj.getVAT()">
-			<span tal:replace="python:currencies[currency].symbol"/>
+            <span tal:replace="python:currencies[currency].symbol"/>
             <input
                 tal:condition="python: not view.bulk_discount_applies()"
                 class="price numeric"
@@ -52,13 +52,34 @@
                     id string:${service/UID}_price;
                     name string:Prices.${service/UID}:record;
                     vat_amount vat"/>
-			<input
-				type="hidden"
-				tal:attributes="
-					value vat;
-					id string:${service/UID}_vat;
-					name string:VAT.${service/UID}:record;"/>
-		</td>
+            <input
+                type="hidden"
+                tal:attributes="
+                    value vat;
+                    id string:${service/UID}_vat;
+                    name string:VAT.${service/UID}:record;"/>
+        </td>
+        <td tal:condition="python:context.portal_type != 'Client'"
+            style="white-space:nowrap;"
+            tal:define="analysis python: hasattr(here, service.id) and here[service.id] or None;
+                vat python:service_obj.getVAT()">
+            <span tal:replace="python:currencies[currency].symbol"/>
+            <span tal:replace="python: analysis and analysis.getPrice() or service_obj.getPrice()"/>
+            <input
+                type="hidden"
+                class="price numeric"
+                tal:attributes="
+                    value python: analysis and analysis.getPrice() or service_obj.getPrice();
+                    id string:${service/UID}_price;
+                    name string:Prices.${service/UID}:record;
+                    vat_amount vat"/>
+            <input
+                type="hidden"
+                tal:attributes="
+                    value vat;
+                    id string:${service/UID}_vat;
+                    name string:VAT.${service/UID}:record;"/>
+        </td>
 		<td class="service">
 			<image
 				class="copyButton"

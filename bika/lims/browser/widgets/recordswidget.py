@@ -1,6 +1,7 @@
 from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.widget import RecordsWidget as ATRecordsWidget
 from Products.Archetypes.Registry import registerWidget
+import json
 
 class RecordsWidget(ATRecordsWidget):
     security = ClassSecurityInfo()
@@ -10,6 +11,8 @@ class RecordsWidget(ATRecordsWidget):
         'helper_js': ("bika_widgets/recordswidget.js",),
         'helper_css': ("bika_widgets/recordswidget.css",),
         'allowDelete': True,
+        'readOnly': False,
+        'combogrid_options': '',
     })
 
     def process_form(self, instance, field, form, empty_marker=None,
@@ -30,7 +33,10 @@ class RecordsWidget(ATRecordsWidget):
 
         return value, {}
 
+    def jsondumps(self, val):
+        return json.dumps(val)
+
 registerWidget(RecordsWidget,
                title = 'RecordsWidget',
-               description = (''),
+               description = '',
                )

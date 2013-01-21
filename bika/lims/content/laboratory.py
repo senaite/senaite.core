@@ -5,6 +5,7 @@ from Products.CMFCore.permissions import ListFolderContents, \
     ModifyPortalContent, View
 from plone.app import folder
 from Products.Archetypes.public import *
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims.content.organisation import Organisation
 from bika.lims.config import ManageBika, PROJECTNAME
 from bika.lims import PMF, bikaMessageFactory as _
@@ -105,6 +106,7 @@ class Laboratory(UniqueObject, Organisation):
         return self.schema
 
     def Title(self):
-        return self.title and self.title or _("Laboratory")
+        title = self.title and self.title or _("Laboratory")
+        return safe_unicode(title).encode('utf-8')
 
 registerType(Laboratory, PROJECTNAME)

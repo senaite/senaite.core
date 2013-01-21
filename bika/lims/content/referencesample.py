@@ -131,7 +131,7 @@ schema = BikaSchema.copy() + Schema((
                     'result':'referencevalues_validator',
                     'min':'referencevalues_validator',
                     'max':'referencevalues_validator',
-                    'error':'referencevalues_validator'},        
+                    'error':'referencevalues_validator'},
         widget = ReferenceResultsWidget(
             label = _("Expected Results"),
         ),

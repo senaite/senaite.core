@@ -14,6 +14,7 @@ from Products.CMFCore import permissions
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.widgets import AnalysisSpecificationWidget
@@ -56,7 +57,7 @@ schema = Schema((
     ),
 )) + \
 BikaSchema.copy() + \
-Schema((  
+Schema((
     RecordsField('ResultsRange',
         schemata = 'Specifications',
         required = 1,
@@ -111,9 +112,10 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
         """ Return the SampleType as title """
         try:
             st = self.getSampleType()
-            return st and st.Title() or ''
+            st = st and st.Title() or ''
         except:
-            return ''
+            st = self.getId()
+        return safe_unicode(st).encode('utf-8')
 
     security.declarePublic('getSpecCategories')
     def getSpecCategories(self):

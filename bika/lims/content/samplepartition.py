@@ -6,6 +6,7 @@ from Products.ATContentTypes.utils import DT2dt,dt2DT
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
 from bika.lims.config import PROJECTNAME
@@ -51,7 +52,7 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
-),
+)
 )
 
 schema['title'].required = False
@@ -73,7 +74,7 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
 
     def Title(self):
         """ Return the Sample ID as title """
-        return self.getId()
+        return safe_unicode(self.getId()).encode('utf-8')
 
     security.declarePublic('getAnalyses')
     def getAnalyses(self):
@@ -104,9 +105,9 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
         rp = rp or st_retention
 
         td = timedelta(
-            days = rp['days'] and int(rp['days']) or 0,
-            hours = rp['hours'] and int(rp['hours']) or 0,
-            minutes = rp['minutes'] and int(rp['minutes']) or 0)
+            days = 'days' in rp and int(rp['days']) or 0,
+            hours = 'hours' in rp and int(rp['hours']) or 0,
+            minutes = 'minutes' in rp and int(rp['minutes']) or 0)
 
         dis_date = DateSampled and dt2DT(DT2dt(DateSampled) + td) or None
         return dis_date

@@ -31,7 +31,7 @@ class SamplePartitionsView(BikaListingView):
                                       "level" : 0 }
         self.context_actions = {}
         self.title = _("Sample Partitions")
-        self.icon = "++resource++bika.lims.images/samplepartition_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/samplepartition_big.png"
         self.description = ""
         self.allow_edit = True
         self.show_select_all_checkbox = False
@@ -214,7 +214,7 @@ class createSamplePartition(BrowserView):
         SamplingWorkflowEnabled = part.bika_setup.getSamplingWorkflowEnabled()
         ## We force the object to have the same state as the parent
         sample_state = wf.getInfoFor(self.context, 'review_state')
-        changeWorkflowState(part, sample_state)
+        changeWorkflowState(part, "bika_sample_workflow", sample_state)
         self.request.RESPONSE.redirect(self.context.absolute_url() +
                                        "/partitions")
         return
@@ -257,7 +257,7 @@ class SampleEdit(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
-        self.icon = "++resource++bika.lims.images/sample_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/sample_big.png"
         self.allow_edit = True
 
     def now(self):
@@ -574,7 +574,7 @@ class SamplesView(BikaListingView):
         else:
             self.view_url = self.view_url + "/samples"
 
-        self.icon = "++resource++bika.lims.images/sample_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/sample_big.png"
         self.title = _("Samples")
         self.description = ""
 
@@ -784,18 +784,28 @@ class SamplesView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
-            items[x]['replace']['getSampleID'] = "<a href='%s'>%s</a>" % \
-                (items[x]['url'], obj.getSampleID())
 
-            requests = ["<a href='%s'>%s</a>" % (o.absolute_url(), o.Title())
-                        for o in obj.getAnalysisRequests()]
-            items[x]['replace']['Requests'] = ",".join(requests)
-
-            items[x]['Client'] = obj.aq_parent.Title()
-            items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
-                (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
-
-            items[x]['Creator'] = self.user_fullname(obj.Creator())
+            # Sanitize the list: If the user does not have local Owner role on the object's
+            # parent, then some fields are not displayed
+            if member.id in obj.aq_parent.users_with_local_role('Owner'):
+                items[x]['replace']['getSampleID'] = "<a href='%s'>%s</a>" % \
+                    (items[x]['url'], obj.getSampleID())
+                items[x]['replace']['Requests'] = ",".join(
+                    ["<a href='%s'>%s</a>" % (o.absolute_url(), o.Title()) for o in obj.getAnalysisRequests()])
+                items[x]['Client'] = obj.aq_parent.Title()
+                items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
+                    (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
+                items[x]['Creator'] = self.user_fullname(obj.Creator())
+            else:
+                items[x]['getClientReference'] = ''
+                items[x]['getClientSampleID'] = ''
+                items[x]['replace']['getSampleID'] = obj.getSampleID()
+                items[x]['replace']['Requests'] = ",".join([o.Title() for o in obj.getAnalysisRequests()])
+                items[x]['Client'] = ''
+                items[x]['Creator'] = ''
+                sp = obj.getSamplePoint()
+                if sp and sp.aq_parent != self.portal.bika_setup.bika_samplepoints:
+                    items[x]['replace']['getSamplePointTitle'] = ''
 
             items[x]['DateReceived'] = self.ulocalized_time(obj.getDateReceived())
 

@@ -383,8 +383,9 @@ function click_uid_checkbox(){
 }
 
 $(document).ready(function(){
-	_ = window.jsi18n_bika;
-	PMF = window.jsi18n_plone;
+
+	_ = jarn.i18n.MessageFactory('bika');
+	PMF = jarn.i18n.MessageFactory('plone');
 
 	$("[name='uids:list']").live('click', click_uid_checkbox);
 

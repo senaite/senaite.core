@@ -12,7 +12,7 @@ from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('Manager',
-        vocabulary = 'getContactsDisplayList',
+        vocabulary = 'getContacts',
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('LabContact',),
         referenceClass = HoldingReference,
@@ -56,15 +56,5 @@ class Department(BaseContent):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
-
-    security.declarePublic('getContactsDisplayList')
-    def getContactsDisplayList(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        pairs = []
-        for contact in bsc(portal_type = 'LabContact'):
-            pairs.append((contact.UID, contact.Title))
-        # sort the list by the second item
-        pairs.sort(lambda x, y:cmp(x[1], y[1]))
-        return DisplayList(pairs)
 
 registerType(Department, PROJECTNAME)

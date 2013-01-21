@@ -22,7 +22,7 @@ schema = BikaSchema.copy() + Schema((
             'result':'referencevalues_validator',
             'min':'referencevalues_validator',
             'max':'referencevalues_validator',
-            'error':'referencevalues_validator'},        
+            'error':'referencevalues_validator'},
         widget = ReferenceResultsWidget(
             label = _("Reference Results"),
             description = _("Click on Analysis Categories (against shaded background) "

@@ -5,6 +5,65 @@
   metal:use-macro="here/main_template/macros/master"
   i18n:domain="bika">
 
+<head>
+<metal:block fill-slot="head_slot">
+	    <style media="screen" type="text/css">
+	    	h2 {
+	    		font-size:1.1em;
+	    		margin:15px 0px;
+	    	}  
+	    	#content-core div fieldset {
+	    		border-style:none;
+	    	}
+	    	ul#toc-reports {
+	    		list-style-type:square;
+	    		color:#CDCDCD;
+	    	}
+	    	#toc-reports li {
+	    		color:#333;
+	    		padding-bottom:10px;
+	    	}
+	    	#toc-reports li span {
+	    		font-size:0.9em;
+	    		color:#666;
+	    	}  	
+	    	#toc-reports li div {
+	    		margin-top:5px;
+	    		border-radius: 5px 5px 5px 5px;
+	    		margin-bottom: 5px;
+	    		overflow:hidden;    		
+	    		padding:10px 10px 15px 15px;
+	    		background-color:#efefef;
+	    	}
+	    	#toc-reports li div fieldset {
+	    		border-style:none;
+	    		margin-bottom:10px;
+	    		padding:0px;
+	    	}
+	    	#toc-reports li div fieldset div.field {
+	    		clear:none;
+	    		float:left;
+	    		width:32%;
+	    		padding:0px 5px 0px 0px;
+	    		font-size:0.9em;
+	    	}
+	    	#toc-reports li div fieldset div.field label {
+	    		width:100%;
+	    		border-bottom:1px solid #dcdcdc;
+	    		margin-bottom:-8px;
+	    		padding-bottom:2px;
+	    		display:block;
+	    	}
+ 		    #toc-reports li div fieldset div.field select {
+    			width: inherit;
+			}
+	    	#toc-reports li div fieldset div.field table tr td {
+	    		padding-right:10px;
+	    	}
+	    </style>
+    </metal:block>  
+</head>
+
 <body>
 
 <metal:content-title fill-slot="content-title">
@@ -16,53 +75,73 @@
 
 <metal:content-core fill-slot="content-core">
   <input tal:replace="structure context/@@authenticator/authenticator"/>
-  <p/>
-  <div>
-    <table>
-      <tr>
-        <td VALIGN="top">
-          <legend i18n:translate="">Report</legend>
-          <p>
-            <a href="#"
-               id="arsnotinvoiced_selector"
-               i18n:translate="">Analysis requests not invoiced</a>
-            <br/>
-            <span i18n:translate="">
-              Report of published analysis requests which have not been invoiced
-            </span>
-          </p>
-        </td>
-        <td VALIGN="top">
-          <div id="arsnotinvoiced" style="display:none" class="criteria">
-            <form action="createreport" method="post" name="administration_arsnotinvoiced">
-              <input type="hidden" name="report_id" value="administration_arsnotinvoiced" />
-              <fieldset>
-                <legend i18n:translate="">Selection criteria</legend>
-                <tal:x content="structure python:view.selection_macros.select_daterange(
-                                                 field_id='Published',
-                                                 field_title='Date Published')"/>
-                <tal:x content="structure python:view.selection_macros.select_state(
-                                                 workflow_id='bika_analysis_workflow',
-                                                 field_id='bika_analysis_workflow',
-                                                 field_title='Analysis state')"/>
-                <tal:x content="structure python:view.selection_macros.select_state(
-                                                 workflow_id='bika_cancellation_workflow',
-                                                 field_id='bika_cancellation_workflow',
-                                                 field_title='Cancellation state')"/>
-              </fieldset>
-              <input tabindex=""
-                     class="searchButton"
-                     type="submit"
-                     name="submit"
-                     value="Report"
-                     i18n:attributes="value"/>
-            </form>
-          </div>
-        </td>
-      </tr>
-    </table>
-  </div>
+  
+<div>  
+<fieldset>
+	<h2 i18n:translate="">Analyses related reports</h2>    
+    <ul id="toc-reports">      
+		<li>
+    		<a href="#" id="arsnotinvoiced_selector" 
+    		i18n:translate="">Analysis requests not invoiced</a><br/>
+    		<span i18n:translate="">
+    			Report of published analysis requests which have not been invoiced
+    		</span>
+    		<div id="arsnotinvoiced" style="display:none" class="criteria">
+				<form action="createreport" method="post" name="administration_arsnotinvoiced">
+	              <input type="hidden" name="report_id" value="administration_arsnotinvoiced" />
+	              <fieldset>
+	                <tal:x content="structure python:view.selection_macros.select_daterange(
+	                                                 field_id='Published',
+	                                                 field_title='Date Published')"/>
+	                <tal:x content="structure python:view.selection_macros.select_state(
+	                                                 workflow_id='bika_analysis_workflow',
+	                                                 field_id='bika_analysis_workflow',
+	                                                 field_title='Analysis state')"/>
+	                <tal:x content="structure python:view.selection_macros.select_state(
+	                                                 workflow_id='bika_cancellation_workflow',
+	                                                 field_id='bika_cancellation_workflow',
+	                                                 field_title='Cancellation state')"/>
+	              </fieldset>
+	              <input tabindex=""
+	                     class="searchButton"
+	                     type="submit"
+	                     name="submit"
+	                     value="Report"
+	                     i18n:attributes="value"/>
+            	</form>
+			</div>
+		</li>
+ 	</ul>
+ 	
+ 	<h2 i18n:translate="">Traceability</h2>    
+    <ul id="toc-reports">      
+		<li>
+    		<a href="#" id="usershistory_selector" 
+    		i18n:translate="">User history</a><br/>
+    		<span i18n:translate="">
+    			Actions performed by users (or specific user) between a period of time
+    		</span>
+    		<div id="usershistory" style="display:none" class="criteria">
+				<form action="createreport" method="post" name="administration_usershistory">
+	              <input type="hidden" name="report_id" value="administration_usershistory" />
+	              <fieldset>
+	                <tal:x content="structure python:view.selection_macros.select_daterange(
+	                                                 field_id='getDateCreated',
+	                                                 field_title='Date Created')"/>
+	                <tal:x content="structure context/@@selection_macros/select_user"/>
+	              </fieldset>
+	              <input tabindex=""
+	                     class="searchButton"
+	                     type="submit"
+	                     name="submit"
+	                     value="Report"
+	                     i18n:attributes="value"/>
+            	</form>
+			</div>
+		</li>
+ 	</ul>
+</fieldset> 
+</div>
 </metal:content-core>
-
 </body>
 </html>

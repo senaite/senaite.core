@@ -13,6 +13,15 @@ class IClientFolder(Interface):
 class IClient(Interface):
     """Client"""
 
+class IBatchFolder(Interface):
+    """Batch folder"""
+
+class IBatch(Interface):
+    """Batch"""
+    
+class IBatchLabels(Interface):
+    """Batch label"""
+
 class IAnalysisRequest(Interface):
     """Analysis Request"""
 
@@ -150,6 +159,6 @@ class IWorksheetTemplates(Interface):
     ""
 
 class IBikaCatalog(Interface):
-   ""
+    ""
 class IBikaSetupCatalog(Interface):
-   ""
+    ""

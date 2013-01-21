@@ -17,7 +17,7 @@ import plone
 
 class AnalysesView(BikaListingView):
     """ Displays a list of Analyses in a table.
-        All InterimFields from all analyses are added to self.columns[].
+        Visible InterimFields from all analyses are added to self.columns[].
         Keyword arguments are passed directly to bika_analysis_catalog.
     """
     def __init__(self, context, request, **kwargs):
@@ -89,7 +89,10 @@ class AnalysesView(BikaListingView):
              },
         ]
         self.chosen_spec = request.get('specification', 'lab')
-        super(AnalysesView, self).__init__(context, request)
+        super(AnalysesView, self).__init__(context,
+                                           request,
+                                           show_categories=True,
+                                           expand_all_categories = True)
 
     def folderitems(self):
         rc = getToolByName(self.context, REFERENCE_CATALOG)
@@ -125,6 +128,12 @@ class AnalysesView(BikaListingView):
             keyword = service.getKeyword()
             precision = service.getPrecision()
 
+            if self.show_categories:
+                cat = obj.getService().getCategory().Title()
+                items[i]['category'] = cat
+                if cat not in self.categories:
+                    self.categories.append(cat)
+
             # Check for InterimFields attribute on our object,
             interim_fields = hasattr(obj, 'getInterimFields') \
                 and obj.getInterimFields() or []
@@ -136,13 +145,14 @@ class AnalysesView(BikaListingView):
             items[i]['Result'] = ''
             items[i]['formatted_result'] = ''
             items[i]['interim_fields'] = interim_fields
+            items[i]['Remarks'] = obj.getRemarks()
             items[i]['Uncertainty'] = ''
             items[i]['retested'] = obj.getRetested()
             items[i]['class']['retested'] = 'center'
             items[i]['result_captured'] = self.ulocalized_time(obj.getResultCaptureDate())
             items[i]['calculation'] = calculation and True or False
             try:
-                items[i]['Partition'] = obj.getSamplePartition().Title()
+                items[i]['Partition'] = obj.getSamplePartition().getId()
             except AttributeError:
                 items[i]['Partition'] = ''
             if obj.portal_type == "ReferenceAnalysis":
@@ -240,7 +250,7 @@ class AnalysesView(BikaListingView):
                   (poc != 'field' and getSecurityManager().checkPermission(EditResults, obj)) )
 
             if can_edit_analysis:
-                items[i]['allow_edit'] = ['Result', ]
+                items[i]['allow_edit'] = ['Result', 'Remarks', ]
                 # if the Result field is editable, our interim fields are too
                 for f in self.interim_fields[obj.UID()]:
                     items[i]['allow_edit'].append(f['keyword'])
@@ -275,13 +285,14 @@ class AnalysesView(BikaListingView):
                                     '<img width="16" height="16" title="%s"' % Indet + \
                                     'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
                                     (self.portal_url)
-                            else:
-                                # result being un-floatable, is an error.
-                                msg = self.context.translate(_("Invalid result"))
-                                items[i]['after']['Result'] = \
-                                    '<img width="16" height="16" title="%s"' % msg + \
-                                    'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
-                                    (self.portal_url)
+                            # result being unfloatable is no longer an error.
+                            # else:
+                            #     # result being un-floatable, is an error.
+                            #     msg = self.context.translate(_("Invalid result"))
+                            #     items[i]['after']['Result'] = \
+                            #         '<img width="16" height="16" title="%s"' % msg + \
+                            #         'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
+                            #         (self.portal_url)
                 items[i]['Uncertainty'] = obj.getUncertainty(result)
 
                 attachments = ""
@@ -312,7 +323,7 @@ class AnalysesView(BikaListingView):
 
             # Add this analysis' interim fields to the interim_columns list
             for f in self.interim_fields[obj.UID()]:
-                if f['keyword'] not in self.interim_columns:
+                if f['keyword'] not in self.interim_columns and not f.get('hidden', False):
                     self.interim_columns[f['keyword']] = f['title']
                 # and to the item itself
                 items[i][f['keyword']] = f
@@ -382,6 +393,8 @@ class AnalysesView(BikaListingView):
             for state in self.review_states:
                 # InterimFields are displayed in review_state
                 # They are anyway available through View.columns though.
+                # In case of hidden fields, the calcs.py should check calcs/services
+                # for additional InterimFields!!
                 pos = 'Result' in state['columns'] and \
                     state['columns'].index('Result') or len(state['columns'])
                 for col_id in interim_keys:

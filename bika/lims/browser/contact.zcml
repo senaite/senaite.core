@@ -16,7 +16,7 @@
       for="bika.lims.interfaces.ILabContact"
       name="login_details"
       class="bika.lims.browser.contact.ContactLoginDetailsView"
-      permission="bika.lims.ManageBika"
+      permission="bika.lims.ManageLoginDetails"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

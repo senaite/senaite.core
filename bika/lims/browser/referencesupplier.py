@@ -5,7 +5,7 @@ class ReferenceSamplesView(BikaListingView):
 
     def __init__(self, context, request):
         super(ReferenceSamplesView, self).__init__(context, request)
-        self.icon = "++resource++bika.lims.images/referencesample_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/referencesample_big.png"
         self.title = _("Reference Samples")
         self.catalog = 'bika_catalog'
         self.contentFilter = {'portal_type': 'ReferenceSample',
@@ -138,7 +138,7 @@ class ContactsView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 25
-        self.icon = "++resource++bika.lims.images/referencesupplier_contact_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/referencesupplier_contact_big.png"
         self.title = _("Contacts")
 
         self.columns = {

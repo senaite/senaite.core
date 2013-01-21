@@ -10,6 +10,7 @@ from Products.CMFCore import permissions
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import ManageBika, PROJECTNAME
 from bika.lims import bikaMessageFactory as _
@@ -74,7 +75,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceField('Contact',
-        vocabulary = 'getContactsDisplayList',
+        vocabulary = 'getContacts',
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('Contact',),
         referenceClass = HoldingReference,
@@ -86,7 +87,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceField('CCContact',
-        vocabulary = 'getContactsDisplayList',
+        vocabulary = 'getContacts',
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('Contact',),
         referenceClass = HoldingReference,
@@ -171,8 +172,7 @@ class ARImport(BaseFolder):
 
     def Title(self):
         """ Return the id as title """
-        return self.getId()
-
+        return safe_unicode(self.getId()).encode('utf-8')
 
     security.declarePublic('current_date')
     def current_date(self):

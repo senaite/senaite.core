@@ -16,6 +16,7 @@ AddARTemplate = 'BIKA: Add ARTemplate'
 AddAnalysis = 'BIKA: Add Analysis'
 AddAnalysisRequest = 'BIKA: Add Analysis Request'
 AddAnalysisSpec = 'BIKA: Add AnalysisSpec'
+AddBatch = 'BIKA: Add Batch'
 AddClient = 'BIKA: Add Client'
 AddClientFolder = 'BIKA: Add ClientFolder'
 AddMethod = 'BIKA: Add Method'
@@ -34,6 +35,7 @@ ADD_CONTENT_PERMISSIONS = {
     'AnalysisProfile': AddAnalysisProfile,
     'Analysis': AddAnalysis,
     'AnalysisRequest': AddAnalysisRequest,
+    'Batch': AddBatch,
     'Client': AddClient,
     'Method': AddMethod,
     'Sample': AddSample,
@@ -73,7 +75,7 @@ ImportAnalysis = 'BIKA: Import Analysis'
 Retract = "BIKA: Retract"
 Verify = 'BIKA: Verify'
 VerifyOwnResults = 'BIKA: Verify own results'
-PublishAR = 'BIKA: Publish'
+Publish = 'BIKA: Publish'
 EditSample = 'BIKA: Edit Sample'
 EditAR = 'BIKA: Edit AR'
 ResultsNotRequested = 'BIKA: Results not requested'
@@ -82,3 +84,6 @@ ViewResults = 'BIKA: View Results'
 EditResults = 'BIKA: Edit Results'
 EditFieldResults = 'BIKA: Edit Field Results'
 CancelAndReinstate = 'BIKA: Cancel and reinstate'
+
+# For adding login credentials to Contacts.
+ManageLoginDetails = 'BIKA: Manage Login Details'

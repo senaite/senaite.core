@@ -97,13 +97,20 @@ class AnalysisServicesView(BikaListingView):
         self.context_actions = {_('Add'):
                                 {'url':'createObject?type_name=AnalysisService',
                                  'icon': '++resource++bika.lims.images/add.png'}}
-        self.icon = "++resource++bika.lims.images/analysisservice_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/analysisservice_big.png"
         self.title = _("Analysis Services")
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
         self.show_select_all_checkbox = False
         self.pagesize = 25
+
+        self.categories = []
+        self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
+        if self.do_cats:
+            self.pagesize = 1000 # hide batching controls
+            self.show_categories=True,
+            self.expand_all_categories=False
 
         self.columns = {
             'Title': {'title': _('Service'),
@@ -182,10 +189,6 @@ class AnalysisServicesView(BikaListingView):
         ]
 
     def folderitems(self):
-        self.categories = []
-        do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
-        if do_cats:
-            self.pagesize = 1000 # hide batching controls
 
         items = BikaListingView.folderitems(self)
 
@@ -193,12 +196,12 @@ class AnalysisServicesView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
             items[x]['Keyword'] = obj.getKeyword()
-            items[x]['Category'] = obj.getCategoryTitle()
-            if do_cats:
-                items[x]['category'] = items[x]['Category']
-            if items[x]['Category'] not in self.categories \
-               and do_cats:
-                self.categories.append(items[x]['Category'])
+            cat = obj.getCategoryTitle()
+            items[x]['Category'] = cat # Category is for display column value
+            if self.do_cats:
+                items[x]['category'] = cat # category is for bika_listing to groups entries
+                if cat not in self.categories:
+                    self.categories.append(cat)
 
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])

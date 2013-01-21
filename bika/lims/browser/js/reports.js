@@ -1,8 +1,8 @@
 jQuery( function($) {
 $(document).ready(function(){
 
-	_ = window.jsi18n_bika;
-	PMF = window.jsi18n_plone;
+	_ = jarn.i18n.MessageFactory('bika');
+	PMF = jarn.i18n.MessageFactory('plone');
 
 	$("#analysestotals_selector").click(function(event){
 		$(".criteria").toggle(false);
@@ -65,6 +65,43 @@ $(document).ready(function(){
 		event.preventDefault();
 		$("#arsnotinvoiced").toggle(true);
 	});
+	$("#dailysamplesreceived_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#dailysamplesreceived").toggle(true);
+	});
+	$("#samplereceivedvsreported_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#samplereceivedvsreported").toggle(true);
+	});
+	$("#analysesperdepartment_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#analysesperdepartment").toggle(true);
+	});
+	$("#analysesperformedpertotal_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#analysesperformedpertotal").toggle(true);
+	});
+	$("#analysisrequestsummary_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#analysisrequestsummary").toggle(true);
+	});
+	$("#dataentrydaybook_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#dataentrydaybook").toggle(true);
+	});
+	
+	$("#usershistory_selector").click(function(event){
+		$(".criteria").toggle(false);
+		event.preventDefault();
+		$("#usershistory").toggle(true);
+	});
+
 
 	// AJAX: Set ReferenceSamples dropdown when Supplier is selected
 	$("#ReferenceSupplierUID").change(function(){

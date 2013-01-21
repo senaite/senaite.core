@@ -24,6 +24,7 @@ class ServicesView(BikaListingView):
         self.contentFilter = {'review_state': 'impossible_state'}
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url
+        self.show_categories = True
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_all_checkbox = False

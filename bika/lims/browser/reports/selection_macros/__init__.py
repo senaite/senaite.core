@@ -65,6 +65,11 @@ class SelectionMacrosView(BrowserView):
     def select_analyst(self):
         self.analysts = getUsers(self.context, ['Manager', 'LabManager', 'Analyst'])
         return self.select_analyst_pt()
+    
+    select_user_pt = ViewPageTemplateFile("select_user.pt")
+    def select_user(self):
+        self.users = getUsers(self.context, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Verifier'])
+        return self.select_user_pt()
 
     select_client_pt = ViewPageTemplateFile("select_client.pt")
     def select_client(self):
@@ -117,7 +122,7 @@ class SelectionMacrosView(BrowserView):
         res['parms'] = {'title': field_title, 'value': parms}
         res['titles'] = parms
         return res
-
+    
     select_instrument_pt = ViewPageTemplateFile("select_instrument.pt")
     def select_instrument(self):
         self.instruments = self.bsc(portal_type='Instrument', inactive_state='active', sort_on='sortable_title')
@@ -202,3 +207,7 @@ class SelectionMacrosView(BrowserView):
             res['parms'] = {'title': _("Sample Type"), 'value': title}
             res['titles'] = title
             return res
+        
+    select_groupingperiod_pt = ViewPageTemplateFile("select_groupingperiod.pt")
+    def select_groupingperiod(self):
+        return self.select_groupingperiod_pt()

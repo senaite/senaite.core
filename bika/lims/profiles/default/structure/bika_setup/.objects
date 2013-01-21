@@ -4,6 +4,7 @@ bika_artemplates,ARTemplates
 bika_analysisservices,AnalysisServices
 bika_analysisspecs,AnalysisSpecs
 bika_attachmenttypes,AttachmentTypes
+bika_batchlabels,BatchLabels
 bika_calculations,Calculations
 bika_instruments,Instruments
 bika_labcontacts,LabContacts

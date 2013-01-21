@@ -1,6 +1,7 @@
 from Acquisition import aq_parent, aq_inner, aq_base
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.Archetypes.utils import DisplayList
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 import json
@@ -77,16 +78,14 @@ class ContactLoginDetailsView(BrowserView):
                 group.addMember(username)
 
             # Additional groups for LabContact users.
-            if self.request['groups']:
+            # not required (not available for client Contact)
+            if 'groups' in self.request and self.request['groups']:
                 groups = self.request['groups']
                 if not type(groups) in (list,tuple):
                     groups = [groups,]
                 for group in groups:
                     group = self.portal_groups.getGroupById(group)
                     group.addMember(username)
-            else:
-                if self.context.portal_type == 'LabContact':
-                    return error('groups', PMF("Input is required but not given."))
 
             contact.reindexObject()
 

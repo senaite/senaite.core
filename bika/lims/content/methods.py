@@ -26,7 +26,7 @@ class MethodsView(BikaListingView):
                               'sort_on': 'sortable_title'}
         self.context_actions = {}
         self.title = _("Methods")
-        self.icon = "++resource++bika.lims.images/method_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/method_big.png"
         self.description = ""
         self.show_sort_column = False
         self.show_select_row = False
@@ -40,6 +40,24 @@ class MethodsView(BikaListingView):
                             'index': 'description',
                             'toggle': True},
         }
+
+        self.review_states = [
+            {'id':'default',
+             'title': _('Active'),
+             'contentFilter': {'inactive_state': 'active'},
+             'transitions': [{'id':'deactivate'}, ],
+             'columns': ['Title', 'Description']},
+            {'id':'inactive',
+             'title': _('Dormant'),
+             'contentFilter': {'inactive_state': 'inactive'},
+             'transitions': [{'id':'activate'}, ],
+             'columns': ['Title', 'Description']},
+            {'id':'all',
+             'title': _('All'),
+             'contentFilter':{},
+             'columns': ['Title', 'Description']},
+        ]
+
 
 
     def __call__(self):

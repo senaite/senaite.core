@@ -4,10 +4,12 @@ from Products.Archetypes.public import *
 from bika.lims.config import PROJECTNAME
 from Products.CMFCore import permissions as CMFCorePermissions
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims.content.bikaschema import BikaSchema, BikaFolderSchema
 from archetypes.referencebrowserwidget import ReferenceBrowserWidget
 from plone.app.folder.folder import ATFolder
 from bika.lims.browser.fields import AddressField
+from bika.lims.browser.widgets import AddressWidget
 from bika.lims import PMF, bikaMessageFactory as _
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + ManagedSchema((
@@ -43,22 +45,19 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + ManagedSchema((
     ),
     AddressField('PhysicalAddress',
         schemata = 'Address',
-        widget = RecordWidget(
-           macro = 'bika_widgets/custom_address_widget',
+        widget = AddressWidget(
            label = _("Physical address"),
         ),
     ),
     AddressField('PostalAddress',
         schemata = 'Address',
-        widget = RecordWidget(
-           macro = 'bika_widgets/custom_address_widget',
+        widget = AddressWidget(
            label = _("Postal address"),
         ),
     ),
     AddressField('BillingAddress',
         schemata = 'Address',
-        widget = RecordWidget(
-           macro = 'bika_widgets/custom_address_widget',
+        widget = AddressWidget(
            label = _("Billing address"),
         ),
     ),
@@ -115,9 +114,8 @@ class Organisation(ATFolder):
     def Title(self):
         """ Return the Organisation's Name as its title """
         field = self.getField('Name')
-        if field:
-            return field.get(self)
-        return ''
+        field = field and field.get(self) or ''
+        return safe_unicode(field).encode('utf-8')
 
     def getPossibleAddresses(self):
         return ['PhysicalAddress', 'PostalAddress', 'BillingAddress']

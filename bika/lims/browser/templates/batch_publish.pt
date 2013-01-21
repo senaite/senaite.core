@@ -1,0 +1,152 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="bika"
+    tal:define="portal_url nocall:context/portal_url;
+                portal portal_url/getPortalObject;">
+<head>
+    <style type="text/css" media="all"
+           tal:condition="python:exists('portal/ploneCustom.css')"
+           tal:content="structure string:&lt;!-- @import url($portal_url/ploneCustom.css); --&gt;">
+    </style>
+    <style type="text/css" media="all"
+           tal:condition="python:exists('portal/reports.css')"
+           tal:content="structure string:&lt;!-- @import url($portal_url/reports.css); --&gt;">
+    </style>
+    <style type="text/css">
+
+     td {padding-top:2px;}
+
+     .ars_table td {
+        padding: 0 50px 0 0;
+      }
+
+    </style>
+</head>
+
+<body>
+
+<table class="headertable" style="width:100%;">
+    <tr>
+        <!-- logo etc -->
+        <td class="left">
+            <img tal:attributes="src string:${view/portal_url}/logo.png"/>
+            <br/>
+            <tal:address tal:content="view/lab_address"/>
+            <br tal:condition="view/lab_address"/>
+            <tal:labemail tal:condition="view/laboratory/getEmailAddress">
+                <a tal:content="view/laboratory/getEmailAddress"
+                   tal:attributes="href string:mailto:${view/laboratory/getEmailAddress}"/>
+            </tal:labemail>
+            <tal:laburl tal:condition="view/laboratory/getLabURL">
+                <br/>
+                <a tal:content="view/laboratory/getLabURL"
+                   tal:attributes="href string:${view/laboratory/getLabURL}"/>
+            </tal:laburl>
+        </td>
+        <td align="right">
+          <!-- top right -->
+          <table>
+            <tr><td>
+                <tal:x i18n:translate="">Batch ID</tal:x>:
+            </td><td>
+                <span class="documentFirstHeading">
+                  <span tal:omit-tag="python:True" tal:content="context/getBatchID"/>
+                </span>
+            </td></tr>
+
+            <tr><td>
+                <tal:x i18n:translate="">Client</tal:x>:
+            </td><td>
+                <span tal:condition="nocall:view/client|nothing" omit-tag="python:True">
+                  <span tal:content="view/client/Title"/>
+                </span>
+            </td></tr>
+
+            <tr><td>
+                <tal:x i18n:translate="">Phone</tal:x>:
+            </td><td>
+                <span tal:omit-tag="python:True" tal:content="view/client/getPhone"/>
+            </td></tr>
+
+          </table>
+
+        </td>
+    </tr>
+</table>
+<br/>
+
+<!-- Analysis Request results -->
+<div tal:repeat="ar view/ars">
+
+  <!-- AR details -->
+  <hr/>
+  <table style="width:100%;" summary="Summary">
+    <tbody>
+      <tal:x repeat="header view/ar_headers">
+        <tal:x condition="repeat/header/even" tal:omit-tag="python:True" tal:content="structure string:<tr>"/>
+          <td><span tal:content="header"/>: <span tal:content="python:ar[header]"/></td>
+        <tal:x condition="repeat/header/odd" tal:omit-tag="python:True" tal:content="structure string:</tr>"/>
+      </tal:x>
+      <td>&nbsp;</td>
+    </tbody>
+  </table>
+
+  <!-- Analyses and Results -->
+  <table class="bika-report-table" style="width:100%;" summary="Results">
+    <thead>
+      <tr>
+        <tal:x repeat="header view/analysis_headers">
+          <th><span tal:content="header"/></th>
+        </tal:x>
+      </tr>
+    </thead>
+    <tbody>
+      <tal:analyses repeat="analysis ar/datalines">
+        <tr>
+          <tal:x repeat="header view/analysis_headers">
+            <td tal:content="python:analysis[header]"/>
+          </tal:x>
+        </tr>
+        <tr tal:condition="python:view.context.bika_setup.getEnableAnalysisRemarks()">
+          <td tal:content="analysis['Remarks']"/>
+        </tr>
+      </tal:analyses>
+    </tbody>
+  </table>
+</div>
+
+
+<div id="footerContent">
+  <table>
+  <tr><td>
+      <tal:x i18n:translate="">Print date:</tal:x>
+      <span tal:content="python:view.ulocalized_time(view.now)"/>
+  </td><td align="right">
+        <span>Page:</span>
+        <pdf:pagenumber/>
+  </td></tr>
+  </table>
+</div>
+
+
+
+<!--
+            <span i18n:translate="">Created by:</span>
+           <span tal:content="view/reporter"/>
+           <tal:email tal:condition="view/reporter_email">
+              (<a tal:define="email view/reporter_email"
+                 tal:content="email"
+                 tal:attributes="href string:mailto:${email}"/>)
+           </tal:email>
+           <tal:signature tal:condition="view/reporter_signature">
+              <br/>
+              <img tal:attributes="src view/reporter_signature"/>
+           </tal:signature>
+           <br/>
+ -->
+
+</body>
+
+</html>

@@ -62,15 +62,6 @@
         layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <!-- Alert for an instance without any setup data  -->
-    <browser:viewlet
-        name="bika.abovecontenttitle.nosetupdata"
-        manager="plone.app.layout.viewlets.interfaces.IAboveContent"
-        class=".viewlets.NoSetupDataViewlet"
-        permission="zope2.View"
-        layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
     <browser:viewlet
         name="plone.footer"
         manager="plone.app.layout.viewlets.interfaces.IPortalFooter"

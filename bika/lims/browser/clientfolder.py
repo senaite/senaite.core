@@ -1,16 +1,19 @@
-from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.permissions import View
 from AccessControl import getSecurityManager
 from bika.lims.permissions import AddClient
 from bika.lims.permissions import ManageClients
+from Products.CMFCore.utils import getToolByName
 from bika.lims.permissions import ManageAnalysisRequests
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims import bikaMessageFactory as _
+from operator import itemgetter
 from bika.lims.interfaces import IClientFolder
 from plone.app.content.browser.interfaces import IFolderContentsView
 from bika.lims.browser import BrowserView
 from zope.interface import implements
 from Products.CMFCore import permissions
+import plone,json
+
 
 class ClientFolderContentsView(BikaListingView):
 
@@ -19,7 +22,7 @@ class ClientFolderContentsView(BikaListingView):
     def __init__(self, context, request):
         super(ClientFolderContentsView, self).__init__(context, request)
         self.contentFilter = {}
-        self.icon = "++resource++bika.lims.images/client_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/client_big.png"
         self.title = _("Clients")
         self.description = ""
         self.show_sort_column = False
@@ -118,3 +121,37 @@ class ClientFolderContentsView(BikaListingView):
             items[x]['Fax'] = obj.getFax()
 
         return items
+
+
+class ajaxGetClients(BrowserView):
+    """ Vocabulary source for jquery combo dropdown box
+    """
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        searchTerm = self.request['searchTerm'].lower()
+        page = self.request['page']
+        nr_rows = self.request['rows']
+        sord = self.request['sord']
+        sidx = self.request['sidx']
+        wf = getToolByName(self.context, 'portal_workflow')
+
+        clients = (x.getObject() for x in self.portal_catalog(portal_type="Client",
+                                                              inactive_state = 'active'))
+        rows = [{'ClientID': b.getClientID() and b.getClientID() or '',
+                 'Title': b.Title() ,
+                 'ClientUID': b.UID()} for b in clients
+                if b.Title().lower().find(searchTerm) > -1
+                or b.getClientID().lower().find(searchTerm) > -1
+                or b.Description().lower().find(searchTerm) > -1]
+
+        rows = sorted(rows, cmp=lambda x,y: cmp(x.lower(), y.lower()), key=itemgetter(sidx and sidx or 'Title'))
+        if sord == 'desc':
+            rows.reverse()
+        pages = len(rows) / int(nr_rows)
+        pages += divmod(len(rows), int(nr_rows))[1] and 1 or 0
+        ret = {'page': page,
+               'total': pages,
+               'records': len(rows),
+               'rows': rows[(int(page) - 1) * int(nr_rows): int(page) * int(nr_rows)]}
+
+        return json.dumps(ret)

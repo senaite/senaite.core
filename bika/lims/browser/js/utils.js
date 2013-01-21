@@ -1,14 +1,13 @@
+jarn.i18n.loadCatalog('bika');
+jarn.i18n.loadCatalog('plone');
+
 (function( $ ) {
 
-jarn.i18n.loadCatalog('bika');
-window.jsi18n_bika = jarn.i18n.MessageFactory('bika');
-jarn.i18n.loadCatalog('plone');
-window.jsi18n_plone = jarn.i18n.MessageFactory('plone');
-
 function portalMessage(message) {
+	_ = jarn.i18n.MessageFactory('bika');
 	str = "<dl class='portalMessage error'>"+
-		"<dt>"+window.jsi18n_bika('Error')+"</dt>"+
-		"<dd><ul>" + window.jsi18n_bika(message) +
+		"<dt>"+_('Error')+"</dt>"+
+		"<dd><ul>" + _(message) +
 		"</ul></dd></dl>";
 	$('.portalMessage').remove();
 	$(str).appendTo('#viewlet-above-content');
@@ -39,7 +38,7 @@ function calculate_partitions(service_uids, st_uid, st_minvol){
 		service_data = window.bika_utils.data.services[service_uid];
 		if (service_data == undefined || service_data == null){
 			service_data = {'Separate':false,
-			                'Container':[],
+							'Container':[],
 							'Preservation':[],
 							'PartitionSetup':[],
 							'backrefs':[],
@@ -203,8 +202,9 @@ function calculate_partitions(service_uids, st_uid, st_minvol){
 var bika_utils = bika_utils || {
 
 	init: function () {
+
 		if ('localStorage' in window && window.localStorage !== null) {
-			bika_utils.storage = localStorage;
+			bika_utils.storage = window.localStorage;
 		} else {
 			bika_utils.storage = {};
 		}
@@ -259,12 +259,17 @@ function enableAddAttachment(this_field) {
 }
 
 
+
+
 $(document).ready(function(){
 
-	_ = window.jsi18n_bika;
-	PMF = window.jsi18n_plone;
+	_ = jarn.i18n.MessageFactory('bika');
+	PMF = jarn.i18n.MessageFactory('plone');
 
-	dateFormat = _("date_format_short_datepicker");
+	var curDate = new Date();
+	var y = curDate.getFullYear();
+	var limitString = '1900:' + y;
+	var dateFormat = _("date_format_short_datepicker");
 
 	$('input.datepicker').live('click', function() {
 		$(this).datepicker({
@@ -272,7 +277,8 @@ $(document).ready(function(){
 			showAnim:'',
 			changeMonth:true,
 			changeYear:true,
-			dateFormat:dateFormat
+			dateFormat: dateFormat,
+			yearRange: limitString
 		})
 		.click(function(){$(this).attr('value', '');})
 		.focus();
@@ -285,8 +291,9 @@ $(document).ready(function(){
 			showAnim:'',
 			changeMonth:true,
 			changeYear:true,
-			maxDate: '+0d',
-			dateFormat: dateFormat
+			maxDate: curDate,
+			dateFormat: dateFormat,
+			yearRange: limitString
 		})
 		.click(function(){$(this).attr('value', '');})
 		.focus();
@@ -300,7 +307,8 @@ $(document).ready(function(){
 			changeYear:true,
 			maxDate: '+0d',
 			numberOfMonths: 2,
-			dateFormat: dateFormat
+			dateFormat: dateFormat,
+			yearRange: limitString
 		})
 		.click(function(){$(this).attr('value', '');})
 		.focus();
@@ -312,6 +320,7 @@ $(document).ready(function(){
 		dialog
 			.load(window.portal_url + "/analysisservice_popup",
 				{'service_title':$(this).text(),
+				 'analysis_uid':$(this).parents('tr').attr('uid'),
 				 '_authenticator': $('input[name="_authenticator"]').val()}
 			)
 			.dialog({
@@ -324,12 +333,26 @@ $(document).ready(function(){
 	});
 
 	$('#kss-spinner')
-		.empty()
-		.append('<img src="spinner.gif" alt="Loading"/>')
-		.ajaxComplete(function() { $(this).toggle(false); });
+		.hide()  // hide it initially
+		.ajaxStart(function() {
+			window.bika_spinner = setTimeout(function(){$('#kss-spinner').show()},500);
+		})
+		.ajaxStop(function() {
+			if(window.bika_spinner != undefined &&
+			   window.bika_spinner != null) {
+				clearTimeout(bika_spinner);
+			}
+			$(this).hide();
+		})
+		.ajaxComplete(function() {
+			if(window.bika_spinner != undefined &&
+			   window.bika_spinner != null) {
+				clearTimeout(bika_spinner);
+			}
+			$(this).hide();
+		});
 
 	$(".numeric").live('keypress', function(event) {
-
 		// Backspace, tab, enter, end, home, left, right, ., <, >, and -
 		// We don't support the del key in Opera because del == . == 46.
 		var allowedKeys = [8, 9, 13, 35, 36, 37, 39, 46, 60, 62, 45];
@@ -348,6 +371,9 @@ $(document).ready(function(){
 
 	// Archetypes :int inputs get numeric class
 	$("input[name*='\\:int']").addClass('numeric');
+
+	// #336: focus searchGadget when page load completes
+	$("#searchGadget").focus();
 
 });
 }(jQuery));

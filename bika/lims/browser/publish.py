@@ -2,6 +2,7 @@ from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
@@ -46,6 +47,14 @@ class Publish(BrowserView):
                         ARs_to_publish.append(ar)
         self.analysis_requests = ARs_to_publish
 
+    def formattedResult(self, result, precision=2):
+        if not result:
+            return ''
+        try:
+            result = str('%%.%sf' % precision)%float(result)
+        except:
+            return result
+
     def __call__(self):
 
         rc = getToolByName(self.context, REFERENCE_CATALOG)
@@ -73,7 +82,7 @@ class Publish(BrowserView):
             or laboratory.getPhysicalAddress()
         if lab_address:
             _keys = ['address', 'city', 'state', 'zip', 'country']
-            _list = [lab_address.get(v) for v in _keys]
+            _list = [lab_address.get(v) for v in _keys if lab_address.get(v)]
             self.lab_address = "<br/>".join(_list).replace("\n", "<br/>")
         else:
             self.lab_address = None
@@ -99,7 +108,7 @@ class Publish(BrowserView):
                 or self.contact.getPhysicalAddress()
             if client_address:
                 _keys = ['address', 'city', 'state', 'zip', 'country']
-                _list = [client_address.get(v) for v in _keys]
+                _list = [client_address.get(v) for v in _keys if client_address.get(v)]
                 self.client_address = "<br/>".join(_list).replace("\n", "<br/>")
             else:
                 self.client_address = None
@@ -141,6 +150,7 @@ class Publish(BrowserView):
 
                     # render template
                     ar_results = self.ar_results()
+                    ar_results = safe_unicode(ar_results).encode('utf-8')
 
                     debug_mode = App.config.getConfiguration().debug_mode
                     if debug_mode:

@@ -1,5 +1,6 @@
 from Acquisition import aq_inner, aq_parent
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.CMFPlone.utils import safe_unicode
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
@@ -30,10 +31,9 @@ class LogView(BikaListingView):
         self.show_workflow_action_buttons = False
         self.pagesize = 1000
 
-        self.icon = "++resource++bika.lims.images/%s_big.png" % \
+        self.icon = self.portal_url + "/++resource++bika.lims.images/%s_big.png" % \
             context.portal_type.lower()
-        self.title = "%s %s" % (self.context.Title(),
-                                self.context.translate(_("Log")))
+        self.title = safe_unicode(self.context.Title()) + " " + safe_unicode(self.context.translate(_("Log"))).encode('utf-8')
         self.description = ""
 
         self.columns = {

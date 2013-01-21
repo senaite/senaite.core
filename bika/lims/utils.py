@@ -23,6 +23,12 @@ import transaction
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
 allow_module('csv')
 
+def to_utf8(text):
+    if type(text) == unicode:
+        return text.encode('utf-8')
+    else:
+        return unicode(text).encode('utf-8')
+
 # Wrapper for PortalTransport's sendmail - don't know why there sendmail
 # method is marked private
 ModuleSecurityInfo('Products.bika.utils').declarePublic('sendmail')
@@ -442,5 +448,7 @@ class bika_browserdata(BrowserView):
                 'title':p.Title(),
                 'uid':p.UID(),
             }
+
+        data['prefixes'] = dict([(p['portal_type'], p['prefix']) for p in self.context.bika_setup.getPrefixes()])
 
         return json.dumps(data)

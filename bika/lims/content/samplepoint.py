@@ -102,6 +102,8 @@ class SamplePoint(BaseContent, HistoryAwareMixin):
             value = [bsc(UID=value)[0].getObject(),]
         elif value and type(value) in (list, tuple) and type(value[0]) == str:
             value = [bsc(UID=uid)[0].getObject() for uid in value if uid]
+        if not type(value) in (list, tuple):
+            value = [value,]
         ## Find all SampleTypes that were removed
         existing = self.Schema()['SampleTypes'].get(self)
         removed = existing and [s for s in existing if s not in value] or []

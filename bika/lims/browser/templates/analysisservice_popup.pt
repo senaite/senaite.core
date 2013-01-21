@@ -32,6 +32,7 @@
 		    padding:1px 5px;
 			border-bottom:1px solid #eee;
 		}
+		.service_popup #analysis_log { margin-bottom:1em;padding-left:1.5em; }
 	</style>
 
 </head>
@@ -275,6 +276,27 @@
 		</div>
 
 	</tal:parts>
+
+    <div id="analysis_log">
+		<h5>
+			<img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/calendar.png"/>
+			<span i18n:translate="">Log</span>
+		</h5>
+		<table>
+			<tr>
+				<th i18n:translate="">Date</th>
+				<th i18n:translate="">User</th>
+				<th i18n:translate="">Action</th>
+				<th i18n:translate="">Description</th>
+			</tr>
+			<tr tal:repeat="line view/log">
+				<td tal:content="line/Date"/>
+				<td tal:content="line/User"/>
+				<td tal:content="line/Action"/>
+				<td tal:content="line/Description"/>
+			</tr>
+		</table>
+	</div>
 
 </div>
 

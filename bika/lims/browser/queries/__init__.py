@@ -28,7 +28,7 @@ class QueryView(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.selection_macros = SelectionMacrosView(context, request)
-        self.icon = "++resource++bika.lims.images/query_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/query_big.png"
         self.getAnalysts = getUsers(context, ['Manager', 'LabManager', 'Analyst'])
 
         request.set('disable_border', 1)

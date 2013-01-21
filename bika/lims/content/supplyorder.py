@@ -7,6 +7,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.permissions import ListFolderContents, \
      ModifyPortalContent, View
 from Products.CMFCore import permissions
+from Products.CMFPlone.utils import safe_unicode
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
@@ -17,7 +18,7 @@ from bika.lims import bikaMessageFactory as _
 schema = BikaSchema.copy() + Schema((
     ReferenceField('Contact',
                    required = 1,
-                   vocabulary = 'getContactsDisplayList',
+                   vocabulary = 'getContacts',
                    default_method = 'getContactUIDForUser',
                    vocabulary_display_path_bound = sys.maxint,
                    allowed_types = ('Contact',),
@@ -91,7 +92,7 @@ class SupplyOrder(BaseFolder):
 
     def Title(self):
         """ Return the OrderNumber as title """
-        return self.getOrderNumber()
+        return safe_unicode(self.getOrderNumber()).encode('utf-8')
 
     security.declarePublic('getContactUIDForUser')
     def getContactUIDForUser(self):

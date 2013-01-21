@@ -20,7 +20,7 @@ class ajaxSetRemarks(BrowserView):
         value = self.request['value'].strip() + "\n\n"
         existing = self.context.getRemarks(mimetype='text/x-web-intelligent').strip()
 
-        date = self.ulocalized_time(DateTime, long_format=True)
+        date = DateTime().rfc822()
         user = getSecurityManager().getUser()
         divider = "=== %s (%s)\n" % (date, user)
 

@@ -26,7 +26,7 @@ class ProductivityView(BrowserView):
     template = ViewPageTemplateFile("templates/productivity.pt")
     def __call__(self):
         self.selection_macros = SelectionMacrosView(self.context, self.request)
-        self.icon = "++resource++bika.lims.images/report_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/report_big.png"
         self.getAnalysts = getUsers(self.context, ['Manager', 'LabManager', 'Analyst'])
         return self.template()
 
@@ -38,7 +38,7 @@ class QualityControlView(BrowserView):
     template = ViewPageTemplateFile("templates/qualitycontrol.pt")
     def __call__(self):
         self.selection_macros = SelectionMacrosView(self.context, self.request)
-        self.icon = "++resource++bika.lims.images/report_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/report_big.png"
         return self.template()
 
 
@@ -49,7 +49,7 @@ class AdministrationView(BrowserView):
     template = ViewPageTemplateFile("templates/administration.pt")
     def __call__(self):
         self.selection_macros = SelectionMacrosView(self.context, self.request)
-        self.icon = "++resource++bika.lims.images/report_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/report_big.png"
         return self.template()
 
 
@@ -71,7 +71,7 @@ class ReportHistoryView(BikaListingView):
         self.show_select_column = True
         self.pagesize = 50
 
-        self.icon = "++resource++bika.lims.images/report_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/report_big.png"
         self.title = _("Reports")
         self.description = ""
 

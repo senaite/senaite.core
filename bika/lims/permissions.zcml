@@ -19,6 +19,7 @@
 <permission id="bika.lims.permissions.AddAnalysis" title="BIKA: Add Analysis"/>
 <permission id="bika.lims.permissions.AddAnalysisRequest" title="BIKA: Add Analysis Request"/>
 <permission id="bika.lims.permissions.AddAnalysisSpec" title="BIKA: Add AnalysisSpec"/>
+<permission id="bika.lims.permissions.AddBatch" title="BIKA: Add Batch"/>
 <permission id="bika.lims.permissions.AddClient" title="BIKA: Add Client"/>
 <permission id="bika.lims.permissions.AddClientFolder" title="BIKA: Add ClientFolder"/>
 <permission id="bika.lims.permissions.AddMethod" title="BIKA: Add Method"/>
@@ -59,7 +60,7 @@
 <permission id="bika.lims.Retract" title="BIKA: Retract"/>
 <permission id="bika.lims.Verify" title="BIKA: Verify"/>
 <permission id="bika.lims.VerifyOwnResults" title="BIKA: Verify own results"/>
-<permission id="bika.lims.PublishAR" title="BIKA: Publish"/>
+<permission id="bika.lims.Publish" title="BIKA: Publish"/>
 <permission id="bika.lims.CancelAndReinstate" title="BIKA: Cancel and reinstate"/>
 
 # For screen navigation:
@@ -77,6 +78,8 @@
 <permission id="bika.lims.EditResults" title="BIKA: Edit Results"/>
 # Sampling workflow - allows editing field results while in sample_due state
 <permission id="bika.lims.EditFieldResults" title="BIKA: Edit Field Results"/>
+
+<permission id="bika.lims.ManageLoginDetails" title="BIKA: Manage Login Details"/>
 
 
 </configure>

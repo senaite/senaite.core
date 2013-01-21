@@ -1,0 +1,10 @@
+body {font-size:55% !important;}
+table {width: 100%;}
+th {text-align: left; }
+.noprint {display:none !important;}
+.noshow {display:block !important;}
+.filter-search-input {display: none !important;}
+.context_action_link {display: none !important;}
+.selected {display: none !important;}
+.noborder {display:none !important;}
+

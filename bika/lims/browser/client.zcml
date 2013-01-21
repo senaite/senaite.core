@@ -15,7 +15,15 @@
 
     <browser:page
       for="bika.lims.interfaces.IClient"
-      name="analysisrequests"
+      name="batches"
+      class="bika.lims.browser.client.ClientBatchesView"
+      permission="bika.lims.ManageClients"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IClient"
+      name="base_view"
       class="bika.lims.browser.client.ClientAnalysisRequestsView"
       permission="bika.lims.ManageClients"
       layer="bika.lims.interfaces.IBikaLIMS"

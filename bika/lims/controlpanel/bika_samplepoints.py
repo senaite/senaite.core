@@ -30,7 +30,7 @@ class SamplePointsView(BikaListingView):
                                 {'url': 'createObject?type_name=SamplePoint',
                                  'icon': '++resource++bika.lims.images/add.png'}}
         self.title = _("Sample Points")
-        self.icon = "++resource++bika.lims.images/samplepoint_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/samplepoint_big.png"
         self.description = ""
         self.show_sort_column = False
         self.show_select_row = False

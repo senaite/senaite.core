@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             i18n:domain="plone"
+             workflow_id="bika_publication_workflow"
+             title="Bika Publication Workflow"
+             state_variable="publish_state"
+             initial_state="unpublished"
+             manager_bypass="False">
+
+ <state state_id="unpublished" title="Unpublished" i18n:attributes="title">
+  <description i18n:translate=""></description>
+  <exit-transition transition_id="publish"/>
+ </state>
+
+ <state state_id="published" title="Published" i18n:attributes="title">
+  <description i18n:translate=""></description>
+  <exit-transition transition_id="republish"/>
+ </state>
+
+ <transition transition_id="publish"
+             title="Publish"
+             new_state="published"
+             trigger="USER"
+             before_script=""
+             after_script="default"
+             i18n:attributes="title publish_transition_title">
+  <description i18n:translate=""></description>
+  <action url="%(content_url)s/publish" category="workflow" i18n:translate="publish_transition_title">Publish</action>
+  <guard>
+   <guard-permission>BIKA: Publish</guard-permission>
+   <guard-expression>python:not hasattr(here, 'workflow_guard_publish') and True or here.workflow_guard_publish()</guard-expression>
+  </guard>
+ </transition>
+
+ <transition transition_id="republish"
+             title="Republish"
+             new_state=""
+             trigger="USER"
+             before_script=""
+             after_script="default"
+             i18n:attributes="title republish_transition_title">
+  <description i18n:translate=""></description>
+  <action url="%(content_url)s/publish" category="workflow" i18n:translate="republish_transition_title">Republish</action>
+  <guard>
+   <guard-permission>BIKA: Publish</guard-permission>
+   <guard-expression>python:not hasattr(here, 'workflow_guard_republish') and True or here.workflow_guard_republish()</guard-expression>
+  </guard>
+ </transition>
+
+ <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
+  <description i18n:translate="">The last transition</description>
+  <default>
+   <expression>transition/getId|nothing</expression>
+  </default>
+  <guard>
+  </guard>
+ </variable>
+
+ <variable variable_id="actor" for_catalog="False" for_status="True" update_always="True">
+  <description i18n:translate="">The ID of the user who performed the last transition</description>
+  <default>
+   <expression>user/getId</expression>
+  </default>
+  <guard>
+  </guard>
+ </variable>
+
+ <variable variable_id="comments" for_catalog="False" for_status="True" update_always="True">
+  <description i18n:translate="">Comments about the last transition</description>
+  <default>
+   <expression>python:state_change.kwargs.get('comment', '')</expression>
+  </default>
+  <guard>
+  </guard>
+ </variable>
+
+ <variable variable_id="review_history" for_catalog="False" for_status="False" update_always="False">
+  <description i18n:translate="">Provides access to workflow history</description>
+  <default>
+   <expression>state_change/getHistory</expression>
+  </default>
+  <guard>
+  </guard>
+ </variable>
+
+ <variable variable_id="time" for_catalog="False" for_status="True" update_always="True">
+  <description i18n:translate="">Time of the last transition</description>
+  <default>
+   <expression>state_change/getDateTime</expression>
+  </default>
+  <guard>
+  </guard>
+ </variable>
+
+ <script script_id="default" type="Script (Python)"
+         filename="workflows/bika_batch_workflow/scripts/default.py"
+         module="" function=""/>
+
+</dc-workflow>

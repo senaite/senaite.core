@@ -16,6 +16,7 @@ import tempfile
 
 class Report(BrowserView):
     implements(IViewView)
+
     template = ViewPageTemplateFile("templates/qualitycontrol_referenceanalysisqc.pt")
     # if unsuccessful we return here:
     default_template = ViewPageTemplateFile("templates/qualitycontrol.pt")
@@ -26,20 +27,14 @@ class Report(BrowserView):
         self.selection_macros = SelectionMacrosView(self.context, self.request)
 
     def __call__(self):
-        MinimumResults = self.context.bika_setup.getMinimumResults()
-        warning_icon = "<img " +\
-            "src='"+self.portal_url+"/++resource++bika.lims.images/warning.png' " +\
-            "height='9' width='9'/>"
-        error_icon = "<img " +\
-            "src='"+self.portal_url+"/++resource++bika.lims.images/exclamation.png' " +\
-            "height='9' width='9'/>"
 
         header = _("Reference analysis QC")
         subheader = _("Reference analysis quality control graphs ")
 
-        self.contentFilter = {'portal_type': 'ReferenceAnalysis',
-                              'review_state': ['verified', 'published'],
-                              }
+        MinimumResults = self.context.bika_setup.getMinimumResults()
+
+        warning_icon = "<img src='"+self.portal_url+"/++resource++bika.lims.images/warning.png' height='9' width='9'/>"
+        error_icon = "<img src='"+self.portal_url+"/++resource++bika.lims.images/exclamation.png' height='9' width='9'/>"
 
         self.parms = []
         titles = []
@@ -50,6 +45,7 @@ class Report(BrowserView):
             message = _("No reference sample was selected.")
             self.context.plone_utils.addPortalMessage(message, 'error')
             return self.default_template()
+
         self.parms.append({'title':_("Reference Sample"),'value':sample.Title()})
         titles.append(sample.Title())
 
@@ -60,27 +56,19 @@ class Report(BrowserView):
             self.context.plone_utils.addPortalMessage(message, 'error')
             return self.default_template()
 
-        self.contentFilter['path'] = {"query": "/".join(sample.getPhysicalPath()),
-                                      "level" : 0 }
-        keyword = service.getKeyword()
-        unit = service.getUnit()
-        service_title = "%s (%s)" % (service.Title(), service.getKeyword())
-        try:
-            precision = str(service.getPrecision())
-        except:
-            precision = "2"
+        self.contentFilter = {'portal_type': 'ReferenceAnalysis',
+                              'review_state': ['verified', 'published'],
+                              'path': {"query": "/".join(sample.getPhysicalPath()),
+                                       "level" : 0 }}
+
         self.parms.append({'title':_("Analysis Service"),'value':service.Title()})
         titles.append(service.Title())
 
-        val = self.selection_macros.parse_daterange(self.request,
-                                                    'getDateVerified',
-                                                    'DateVerified')
+        val = self.selection_macros.parse_daterange(self.request, 'getDateVerified', 'DateVerified')
         if val:
             self.contentFilter[val['contentFilter'][0]] = val['contentFilter'][1]
             self.parms.append(val['parms'])
             titles.append(val['titles'])
-
-        # GET min/max for range checking
 
         proxies = self.bika_analysis_catalog(self.contentFilter)
         if not proxies:
@@ -88,39 +76,54 @@ class Report(BrowserView):
             self.context.plone_utils.addPortalMessage(message, 'error')
             return self.default_template()
 
-        ## Compile a list with all relevant analysis data
+        # Compile a list with all relevant analysis data
         analyses = []
+
         out_of_range_count = 0
-        in_shoulder_range_count = 0
-        plot_data = ""
-        formatted_results = []
         results = []
+        capture_dates = []
+
+        plotdata = ""
         tabledata = []
 
         for analysis in proxies:
             analysis = analysis.getObject()
-            analyses.append(analysis)
+            service = analysis.getService()
+            resultsrange = [x for x in sample.getReferenceResults() if x['uid'] == service_uid][0]
             try:
                 result = float(analysis.getResult())
-            except ValueError:
-                pass
-            results.append(result)
-            captured = self.ulocalized_time(analysis.getResultCaptureDate(), long_format=1)
-            analyst = analysis.getAnalyst()
-            title = analysis.getId()
-            formatted_result = str("%." + precision + "f")%result
-            formatted_results.append(formatted_result)
-            tabledata.append({_("Analysis"): title,
+                results.append(result)
+            except:
+                result = analysis.getResult()
+            capture_dates.append(analysis.getResultCaptureDate())
+
+            if result < float(resultsrange['min']) or result > float(resultsrange['max']):
+                out_of_range_count += 1
+
+            try: precision = str(service.getPrecision())
+            except: precision = "2"
+
+            try: formatted_result = str("%." + precision + "f")%result
+            except: formatted_result = result
+
+            tabledata.append({_("Analysis"): analysis.getId(),
                               _("Result"): formatted_result,
-                              _("Analyst"): analyst,
-                              _("Captured"): captured})
-        plotdata = "\n".join(formatted_results)
+                              _("Analyst"): analysis.getAnalyst(),
+                              _("Captured"): analysis.getResultCaptureDate().strftime(self.date_format_long)})
+
+            plotdata += "%s\t%s\t%s\t%s\n"%(
+                analysis.getResultCaptureDate().strftime(self.date_format_long),
+                result,
+                resultsrange['min'],
+                resultsrange['max']
+            )
         plotdata.encode('utf-8')
 
-        ### CHECK RANGES
+        result_values = [int(r) for r in results]
+        result_dates = [c for c in capture_dates]
 
         self.parms += [
-            {"title": _("Total analyses"), "value": len(analyses)},
+            {"title": _("Total analyses"), "value": len(proxies)},
         ]
 
         ## This variable is output to the TAL
@@ -132,63 +135,61 @@ class Report(BrowserView):
             'footnotes': [],
         }
 
-        plotscript = """
-        set terminal png transparent truecolor enhanced size 700,350 font "Verdana, 8"
-        set title "%(title)s"
-        set xlabel "%(xlabel)s"
-        set ylabel "%(ylabel)s"
-        set yzeroaxis
-        #set logscale
-        set xrange [highest:lowest]
-        set xtics border nomirror rotate by 90 font "Verdana, 5" offset 0,-3
-        set ytics nomirror
+        if MinimumResults <= len(proxies):
+            plotscript = """
+            set terminal png transparent truecolor enhanced size 700,350 font "Verdana, 8"
+            set title "%(title)s"
+            set xlabel "%(xlabel)s"
+            set ylabel "%(ylabel)s"
+            set key off
+            #set logscale
+            set timefmt "%(timefmt)s"
+            set xdata time
+            set format x "%(xformat)s"
+            set xrange ["%(x_start)s":"%(x_end)s"]
+            set auto fix
+            set offsets graph 0, 0, 1, 1
+            set xtics border nomirror rotate by 90 font "Verdana, 5" offset 0,-3
+            set ytics nomirror
 
-        binwidth = %(highest)-%(lowest)/100
-        scale = (binwidth/(%(highest)-%(lowest)))
+            f(x) = mean_y
+            fit f(x) 'gpw_DATAFILE_gpw' u 1:3 via mean_y
+            stddev_y = sqrt(FIT_WSSR / (FIT_NDF + 1))
 
-        bin_number(x) = floor(x/binwidth)
-        rounded(x) = binwidth * ( binnumber(x) + 0.5 )
+            plot mean_y-stddev_y with filledcurves y1=mean_y lt 1 lc rgb "#efefef",\
+                 mean_y+stddev_y with filledcurves y1=mean_y lt 1 lc rgb "#efefef",\
+                 mean_y with lines lc rgb '#ffffff' lw 3,\
+                 "gpw_DATAFILE_gpw" using 1:3 title 'data' with points pt 7 ps 1 lc rgb '#0000ee' lw 2,\
+                   '' using 1:3 smooth unique lc rgb '#aaaaaa' lw 2,\
+                   '' using 1:4 with lines lc rgb '#000000' lw 1,\
+                   '' using 1:5 with lines lc rgb '#000000' lw 1""" % \
+            {
+                'title': "",
+                'xlabel': "",
+                'ylabel': service.getUnit(),
+                'x_start': "%s" % min(result_dates).strftime(self.date_format_short),
+                'x_end': "%s" % max(result_dates).strftime(self.date_format_short),
+                'timefmt': r'%Y-%m-%d %H:%M',
+                'xformat': '%%Y-%%m-%%d\n%%H:%%M',
+            }
 
-        #f(x) = mean_x
-        #fit f(x) 'gpw_DATAFILE_gpw' u 1:2 via mean_x
-        #stddev_x = sqrt(FIT_WSSR / (FIT_NDF + 1))
-        #
-        #plot mean_y-stddev_y with lines y1=mean_y lt 1 lc rgb "#afafaf",\
-        #     mean_y+stddev_y with lines y1=mean_y lt 1 lc rgb "#afafaf",\
-        #     mean_y with lines lc rgb '#000000' lw 1,\
-        plot "gpw_DATAFILE_gpw" using (rounded($1)):(1) smooth frequency
-        """
-
-        if MinimumResults <= len(analyses):
-            _plotscript = str(plotscript)%\
-            {'title': "",
-             'xlabel': "",
-             'ylabel': "",
-             'highest': max(results),
-             'lowest': min(results)}
-
-            plot_png = plot(str(plotdata),
-                                plotscript=str(_plotscript),
-                                usefifo=False)
-
-            print plotdata
-            print _plotscript
-            print "-------"
+            plot_png = plot(str(plotdata), plotscript=str(plotscript), usefifo=False)
 
             # Temporary PNG data file
             fh,data_fn = tempfile.mkstemp(suffix='.png')
             os.write(fh, plot_png)
             plot_url = data_fn
             self.request['to_remove'].append(data_fn)
-
             plot_url = data_fn
         else:
             plot_url = ""
 
         table = {
-            'title': "%s: %s" % (
+            'title': "%s: %s (%s)" % (
                 self.context.translate(_("Analysis Service")),
-                service_title),
+                service.Title(),
+                service.getKeyword()
+            ),
             'columns': [_('Analysis'),
                         _('Result'),
                         _('Analyst'),
@@ -206,17 +207,10 @@ class Report(BrowserView):
             translate = self.context.translate
             self.report_data['footnotes'].append(
                 "%s %s" % (error_icon, translate(msgid)))
-        if in_shoulder_range_count:
-            msgid = _("Analyses in error shoulder range")
-            self.report_data['footnotes'].append(
-                "%s %s" % (warning_icon, translate(msgid)))
 
         self.report_data['parms'].append(
             {"title": _("Analyses out of range"),
              "value": out_of_range_count})
-        self.report_data['parms'].append(
-            {"title": _("Analyses in error shoulder range"),
-             "value": in_shoulder_range_count})
 
         title = self.context.translate(header)
         if titles:

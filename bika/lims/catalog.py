@@ -8,8 +8,6 @@ from Products.CMFPlone.CatalogTool import CatalogTool
 from Products.CMFPlone.utils import base_hasattr
 from Products.CMFPlone.utils import safe_callable
 from Products.ZCatalog.ZCatalog import ZCatalog
-from bika.lims.interfaces import IBikaSetupCatalog
-from bika.lims.interfaces import IBikaCatalog
 from bika.lims.subscribers import skip
 from zope.component import getUtility
 from zope.interface import Interface, implements
@@ -40,8 +38,6 @@ class BikaCatalog(CatalogTool):
     SamplePartition
     Report
     """
-    implements(IBikaCatalog)
-
     security = ClassSecurityInfo()
     _properties = ({'id':'title', 'type': 'string', 'mode':'w'},)
 
@@ -65,6 +61,7 @@ class BikaCatalog(CatalogTool):
         portal = getToolByName(self, 'portal_url').getPortalObject()
         portal.ZopeFindAndApply(portal,
                                 obj_metatypes = ('AnalysisRequest',
+                                                 'Batch',
                                                  'Sample',
                                                  'SamplePartition',
                                                  'ReferenceSample',
@@ -79,14 +76,12 @@ InitializeClass(BikaCatalog)
 class BikaAnalysisCatalog(CatalogTool):
     """ Catalog for analysis types
     """
-    implements(IBikaCatalog)
-
     security = ClassSecurityInfo()
     _properties = ({'id':'title', 'type': 'string', 'mode':'w'},)
 
     title = 'Bika Analysis Catalog'
     id = 'bika_analysis_catalog'
-    portal_type = meta_type = 'BikaCatalog'
+    portal_type = meta_type = 'BikaAnalysisCatalog'
     plone_tool = 1
 
     def __init__(self):
@@ -115,8 +110,6 @@ InitializeClass(BikaAnalysisCatalog)
 class BikaSetupCatalog(CatalogTool):
     """ Catalog for all bika_setup objects
     """
-    implements(IBikaSetupCatalog)
-
     security = ClassSecurityInfo()
     _properties = ({'id':'title', 'type': 'string', 'mode':'w'},)
 
@@ -161,6 +154,7 @@ class BikaSetupCatalog(CatalogTool):
                                                  'ReferenceManufacturer',
                                                  'ReferenceSupplier',
                                                  'ReferenceDefinition',
+                                                 'BatchLabel',
                                                  'WorksheetTemplate'),
                                 search_sub = True,
                                 apply_func = indexObject)

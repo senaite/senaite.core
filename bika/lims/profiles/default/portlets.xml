@@ -24,14 +24,14 @@
 
 
 
-    <assignment name="Calendar" category="context" key="/"
+    <assignment name="Calendar" category="context" key="/front-page"
         manager="plone.rightcolumn" type="portlets.Calendar" visible="True">
     </assignment>
 
     <assignment
         name="portlet_to_be_sampled-pt"
         category="context"
-        key="/"
+        key="/front-page"
         manager="plone.rightcolumn"
         type="portlets.Classic"
         visible="True">
@@ -42,7 +42,7 @@
     <assignment
         name="portlet_to_be_preserved-pt"
         category="context"
-        key="/"
+        key="/front-page"
         manager="plone.rightcolumn"
         type="portlets.Classic"
         visible="True">
@@ -53,7 +53,7 @@
     <assignment
         name="portlet_late_analyses-pt"
         category="context"
-        key="/"
+        key="/front-page"
         manager="plone.rightcolumn"
         type="portlets.Classic"
         visible="True">
@@ -64,7 +64,7 @@
     <assignment
         name="portlet_pending_orders-pt"
         category="context"
-        key="/"
+        key="/front-page"
         manager="plone.rightcolumn"
         type="portlets.Classic"
         visible="True">
@@ -75,7 +75,7 @@
     <assignment
         name="portlet_sample_due-pt"
         category="context"
-        key="/"
+        key="/front-page"
         manager="plone.rightcolumn"
         type="portlets.Classic"
         visible="True">
@@ -85,7 +85,8 @@
 
     <assignment
         name="portlet_to_be_verified-pt"
-        category="context" key="/"
+        category="context"
+        key="/front-page"
         manager="plone.rightcolumn"
         type="portlets.Classic"
         visible="True">
@@ -96,7 +97,7 @@
     <assignment
         name="portlet_verified-pt"
         category="context"
-        key="/"
+        key="/front-page"
         manager="plone.rightcolumn"
         type="portlets.Classic"
         visible="True">

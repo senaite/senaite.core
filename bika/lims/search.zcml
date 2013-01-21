@@ -1,0 +1,23 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="bika">
+
+  <browser:page
+    name="search"
+    class=".search.SearchView"
+    permission="zope2.View"
+    for="*"
+    layer="bika.lims.interfaces.IBikaLIMSLayer"
+    />
+
+  <browser:page
+    name="updated_search"
+    class=".search.UpdatedSearchView"
+    permission="zope2.View"
+    for="Products.CMFCore.interfaces.IFolderish"
+    layer="bika.lims.interfaces.IBikaLIMSLayer"
+    />
+
+</configure>

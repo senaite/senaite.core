@@ -23,7 +23,7 @@ class AnalysisCategoriesView(BikaListingView):
         self.context_actions = {_('Add'):
                                 {'url': 'createObject?type_name=AnalysisCategory',
                                  'icon': '++resource++bika.lims.images/add.png'}}
-        self.icon = "++resource++bika.lims.images/category_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/category_big.png"
         self.title = _("Analysis Categories")
         self.description = ""
         self.show_sort_column = False
@@ -66,7 +66,7 @@ class AnalysisCategoriesView(BikaListingView):
                 continue
             obj = items[x]['obj']
             items[x]['Description'] = obj.Description()
-            items[x]['Department'] = obj.getDepartment().Title()
+            items[x]['Department'] = obj.getDepartment() and obj.getDepartment().Title() or ''
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                (items[x]['url'], items[x]['Title'])
 

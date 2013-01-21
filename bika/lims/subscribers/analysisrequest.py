@@ -62,9 +62,24 @@ def AfterTransitionEventHandler(instance, event):
             if not skip(analysis, action_id):
                 workflow.doActionFor(analysis.getObject(), 'receive')
 
+        # Possibly receive the AR's batch
+        batch = instance.getBatch()
+        if batch:
+            try:
+                workflow.doActionFor(batch, action_id)
+            except:
+                pass
+
     elif action_id == "submit":
         instance.reindexObject(idxs = ["review_state", ])
-        # Don't cascade. Shouldn't be submitting ARs directly for now.
+
+        # Possibly submit the AR's batch
+        batch = instance.getBatch()
+        if batch:
+            try:
+                workflow.doActionFor(batch, action_id)
+            except:
+                pass
 
     elif action_id == "retract":
         instance.reindexObject(idxs = ["review_state", ])
@@ -82,6 +97,14 @@ def AfterTransitionEventHandler(instance, event):
             analyses = instance.getAnalyses(review_state = 'to_be_verified')
             for analysis in analyses:
                 doActionFor(analysis.getObject(), "verify")
+
+        # Possibly verify the AR's batch
+        batch = instance.getBatch()
+        if batch:
+            try:
+                workflow.doActionFor(batch, action_id)
+            except:
+                pass
 
     elif action_id == "publish":
         instance.reindexObject(idxs = ["review_state", "getDatePublished", ])

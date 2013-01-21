@@ -12,3 +12,4 @@ Thumbs.db
 *.wpu
 *.project
 *.pydevproject
+.settings

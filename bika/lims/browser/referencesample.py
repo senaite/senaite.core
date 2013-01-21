@@ -21,7 +21,7 @@ class ViewView(BrowserView):
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
-        self.icon = "++resource++bika.lims.images/referencesample_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/referencesample_big.png"
 
     def __call__(self):
         rc = getToolByName(self.context, REFERENCE_CATALOG)
@@ -92,7 +92,7 @@ class ReferenceAnalysesView(AnalysesView):
             obj = items[x]['obj']
             service = obj.getService()
             items[x]['id'] = obj.getId()
-            items[x]['Category'] = service.getCategory().Title()
+            items[x]['category'] = service.getCategory().Title()
             items[x]['Service'] = service.Title()
             items[x]['Captured'] = self.ulocalized_time(obj.getResultCaptureDate())
             brefs = obj.getBackReferences("WorksheetAnalysis")
@@ -144,7 +144,7 @@ class ReferenceResultsView(BikaListingView):
         uc = getToolByName(self.context, 'uid_catalog')
         # not using <self.contentsMethod=bsc>
         for x in self.context.getReferenceResults():
-            service = uc(UID=x['uid'])[0]
+            service = uc(UID=x['uid'])[0].getObject()
             item = {
                 'obj': self.context,
                 'id': x['uid'],
@@ -152,8 +152,8 @@ class ReferenceResultsView(BikaListingView):
                 'result': x['result'],
                 'min': x['min'],
                 'max': x['max'],
-                'title': service.Title,
-                'Service': service.Title,
+                'title': service.Title(),
+                'Service': service.Title(),
                 'type_class': 'contenttype-ReferenceResult',
                 'url': service.absolute_url(),
                 'relative_url': service.absolute_url(),
@@ -167,7 +167,7 @@ class ReferenceResultsView(BikaListingView):
                 'allow_edit': [],
             }
             item['replace']['Service'] = "<a href='%s'>%s</a>" % \
-                (service.absolute_url(), service.Title)
+                (service.absolute_url(), service.Title())
             items.append(item)
 
         items = sorted(items, key = itemgetter('Service'))
@@ -179,7 +179,7 @@ class ReferenceSamplesView(BikaListingView):
     def __init__(self, context, request):
         super(ReferenceSamplesView, self).__init__(context, request)
         portal = getToolByName(context, 'portal_url').getPortalObject()
-        self.icon = "++resource++bika.lims.images/referencesample_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/referencesample_big.png"
         self.title = _("Reference Samples")
         self.description = _("All reference samples in the system are displayed here.")
         self.catalog = 'bika_catalog'

@@ -1,7 +1,0 @@
-<div tal:omit-tag="" i18n:domain="bika">
-	<div class="visualClear"><!-- --></div>
-	<dl class='portalMessage info'>
-		<dt>Info</dt>
-		<dd><ul tal:content="structure view/message"/></dd>
-	</dl>
-</div>

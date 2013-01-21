@@ -42,6 +42,8 @@ class WorkflowAction:
         # Save context UID for benefit of event subscribers.
         self.request['context_uid'] = hasattr(self.context, 'UID') and \
             self.context.UID() or ''
+        self.portal = getToolByName(self.context, 'portal_url').getPortalObject()
+        self.portal_url = self.portal.absolute_url()
 
     def _get_form_workflow_action(self):
         """ Retrieve the workflow action from the submitted form """
@@ -128,8 +130,8 @@ class WorkflowAction:
             self.context.plone_utils.addPortalMessage(message, 'info')
 
         # automatic label printing
-        if action == 'receive' and 'receive' in self.context.bika_setup.getAutoPrintLabels():
-            q = "/sticker?size=%s&items=" % (self.context.bika_setup.getAutoLabelSize())
+        if action == 'receive' and 'receive' in self.portal.bika_setup.getAutoPrintLabels():
+            q = "/sticker?size=%s&items=" % (self.portal.bika_setup.getAutoLabelSize())
             # selected_items is a list of UIDs (stickers for AR_add use IDs)
             q += ",".join([i.getId() for i in selected_items.values()])
             self.request.response.redirect(self.context.absolute_url() + q)
@@ -164,7 +166,8 @@ class BikaListingView(BrowserView):
     # when rendering multiple bika_listing tables, form_id must be unique
     form_id = "list"
     review_state = 'default'
-
+    show_categories = False
+    expand_all_categories = False
 
     """
      ### column definitions
@@ -229,7 +232,7 @@ class BikaListingView(BrowserView):
          },
     ]
 
-    def __init__(self, context, request):
+    def __init__(self, context, request, **kwargs):
         super(BikaListingView, self).__init__(context, request)
         path = hasattr(context, 'getPath') and context.getPath() \
             or "/".join(context.getPhysicalPath())
@@ -239,6 +242,12 @@ class BikaListingView(BrowserView):
         else:
             if not 'path' in self.contentFilter:
                 self.contentFilter = {'path': {"query": path, "level" : 0 }}
+
+        if 'show_categories' in kwargs:
+            self.show_categories = kwargs['show_categories']
+
+        if 'expand_all_categories' in kwargs:
+            self.expand_all_categories = kwargs['expand_all_categories']
 
         self.portal = getToolByName(context, 'portal_url').getPortalObject()
         self.portal_url = self.portal.absolute_url()
@@ -431,7 +440,7 @@ class BikaListingView(BrowserView):
         return toggle_cols
 
     def GET_url(self, **kwargs):
-        url = self.context.absolute_url()
+        url = self.request['URL'].split("?")[0]
         query = {}
         for x in "pagenumber", "pagesize", "review_state":
             if str(getattr(self, x)) != 'None':
@@ -455,11 +464,10 @@ class BikaListingView(BrowserView):
         """
         cats = []
         for item in items:
-            if 'selected' in item and \
-               'category' in item and \
-               item['selected'] and \
-               item['category'] not in cats:
-                cats.append(item['category'])
+            cat = item.get('category', 'None')
+            if item.get('selected', False) or self.expand_all_categories:
+                if cat not in cats:
+                    cats.append(cat)
         return cats
 
     def folderitems(self, full_objects = False):
@@ -581,6 +589,7 @@ class BikaListingView(BrowserView):
                 relative_url = relative_url,
                 view_url = url,
                 table_row_class = "",
+                category = 'None',
 
                 # a list of names of fields that may be edited on this item
                 allow_edit = [],

@@ -37,7 +37,7 @@
                 tal:attributes="href python: sm.checkPermission('BIKA: Edit Results', o) and o.aq_parent.absolute_url() + '/manage_results' or o.aq_parent.absolute_url();
                                 title python: o.aq_parent.getId();">
                 <img src="" height="16" width="16"
-                        tal:attributes="src string:${context/portal_url}++resource++bika.lims.images/analysisservice.png"/>
+                        tal:attributes="src string:${context/portal_url}/++resource++bika.lims.images/analysisservice.png"/>
                 <span tal:replace="o/Title|o/getId"/>
             </a>
 

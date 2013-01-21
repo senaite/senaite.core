@@ -168,6 +168,13 @@ schema = BikaFolderSchema.copy() + Schema((
                             "helpful when the list is long")
         ),
     ),
+    BooleanField('EnableAnalysisRemarks',
+        schemata = "Analyses",
+        default = False,
+        widget = BooleanWidget(
+            label = _("Add a remarks field to all analyses"),
+        ),
+    ),
     ReferenceField('DryMatterService',
         schemata = "Analyses",
         required = 0,
@@ -248,14 +255,15 @@ schema = BikaFolderSchema.copy() + Schema((
     PrefixesField('Prefixes',
         schemata = "ID Server",
         default = [{'portal_type': 'ARImport', 'prefix': 'B', 'padding': '3'},
+                   {'portal_type': 'AnalysisRequest', 'prefix': 'client', 'padding': '0'},
                    {'portal_type': 'Client', 'prefix': 'client', 'padding': '0'},
+                   {'portal_type': 'Batch', 'prefix': 'batch', 'padding': '0'},
                    {'portal_type': 'DuplicateAnalysis', 'prefix': 'DA', 'padding': '0'},
                    {'portal_type': 'Invoice', 'prefix': 'I', 'padding': '4'},
                    {'portal_type': 'ReferenceAnalysis', 'prefix': 'RA', 'padding': '4'},
                    {'portal_type': 'ReferenceSample', 'prefix': 'RS', 'padding': '4'},
                    {'portal_type': 'SupplyOrder', 'prefix': 'O', 'padding': '3'},
                    {'portal_type': 'Worksheet', 'prefix': 'WS', 'padding': '4'},
-                   {'portal_type': 'SamplePartition', 'prefix': 'part', 'padding': '0'},
                    ],
 #        fixedSize=8,
         widget=RecordsWidget(
@@ -356,5 +364,16 @@ class BikaSetup(folder.ATFolder):
                                    inactive_state = 'active')]
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
+
+    def getPrefixFor(self, portal_type):
+        """Return the prefix for a portal_type.
+        If not found, simply uses the portal_type itself
+        """
+        prefix = [p for p in self.getPrefixes() if p['portal_type'] == portal_type]
+        if prefix:
+            return prefix[0]['prefix']
+        else:
+            return portal_type
+
 
 registerType(BikaSetup, PROJECTNAME)

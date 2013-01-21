@@ -42,6 +42,9 @@ def initialize(context):
     from content.artemplate import ARTemplate
     from content.attachment import Attachment
     from content.attachmenttype import AttachmentType
+    from content.batch import Batch
+    from content.batchfolder import BatchFolder
+    from content.batchlabel import BatchLabel
     from content.bikaschema import BikaSchema
     from content.bikasetup import BikaSetup
     from content.calculation import Calculation
@@ -60,7 +63,6 @@ def initialize(context):
     from content.labcontact import LabContact
     from content.laboratory import Laboratory
     from content.labproduct import LabProduct
-    from content.logentry import LogEntry
     from content.method import Method
     from content.methods import Methods
     from content.organisation import Organisation
@@ -97,6 +99,7 @@ def initialize(context):
     from controlpanel.bika_analysisprofiles import AnalysisProfiles
     from controlpanel.bika_artemplates import ARTemplates
     from controlpanel.bika_attachmenttypes import AttachmentTypes
+    from controlpanel.bika_batchlabels import BatchLabels
     from controlpanel.bika_calculations import Calculations
     from controlpanel.bika_containers import Containers
     from controlpanel.bika_containertypes import ContainerTypes

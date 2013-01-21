@@ -53,6 +53,11 @@ div.bika_report {
     margin-bottom: 0 !important;
 }
 
+table.bika-report-parms {
+	border-collapse:collapse;
+	padding:0px;
+}
+
 .bika-report-parms td, th {
     padding:1px 10px;
 }
@@ -74,6 +79,10 @@ h3.bika-report-table-header {
 .bika-report-table {
     font-size: &dtml-fontBaseSize;;
     margin-bottom: 15px !important;
+}
+table.bika-report-table {
+	border-collapse:collapse;
+	padding:0px;
 }
 
 .bika-report-table a {
@@ -109,6 +118,10 @@ h3.bika-report-table-header {
 .bika-report-table td.Title,
 .bika-report-table td.ID {
     white-space:nowrap !important;
+}
+td.total_label {
+	font-weight:bold;
+	align:right;
 }
 
 /* </dtml-with> */

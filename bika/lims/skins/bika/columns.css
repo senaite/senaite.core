@@ -1,0 +1,86 @@
+/* The 16-column Deco Grid System.
+ * For the 12-column variant, see decogrids-12.css.
+ *
+ * Cells are 4% width, 1.125% left/right margin.
+ *
+ * If page width is fixed to 960px width:
+ * Cell will be equivalent to 40px, left/right margin will be 10px.
+ */
+
+div.row {
+  float: left;
+  width: 100%;
+  display: block;
+  position: relative;
+}
+div.cell {
+  position: relative;
+  float: left;
+  left: 100%;
+}
+/* IE8: keeps livesearch from falling behind content area,
+   and display menu from falling behind footer
+   Keeping float for IE7, so the portlets don't fall */
+.ie6 div.cell {
+    float: none;
+}
+
+/* Width classes.
+   For a given cell width, the calculation is: width: (6.25*n - 2.25)% */
+div.width-1  { width:  4%    }
+div.width-2  { width: 10.25% }
+div.width-3  { width: 16.5%  }
+div.width-4  { width: 22.75% }
+div.width-5  { width: 29%    }
+div.width-6  { width: 35.25% }
+div.width-7  { width: 41.5%  }
+div.width-8  { width: 47.75% }
+div.width-9  { width: 54%    }
+div.width-10 { width: 60.25% }
+div.width-11 { width: 66.5%  }
+div.width-12 { width: 72.75% }
+div.width-13 { width: 79%    }
+div.width-14 { width: 85.25% }
+div.width-15 { width: 91.5%  }
+div.width-16 { width: 97.75% }
+
+
+/* Positioning classes, these are subtracting from a rightmost
+   position, which is why they seem the wrong way around */
+/* For a given position, the calculation is margin-left: -100 + (6.25*n) + 1.125 */
+div.position-0  { margin-left: -98.875% }
+div.position-1  { margin-left: -92.625% }
+div.position-2  { margin-left: -86.375% }
+div.position-3  { margin-left: -80.125% }
+div.position-4  { margin-left: -73.875% }
+div.position-5  { margin-left: -67.625% }
+div.position-6  { margin-left: -61.375% }
+div.position-7  { margin-left: -55.125% }
+div.position-8  { margin-left: -48.875% }
+div.position-9  { margin-left: -42.625% }
+div.position-10 { margin-left: -36.375% }
+div.position-11 { margin-left: -30.125% }
+div.position-12 { margin-left: -23.875% }
+div.position-13 { margin-left: -17.625% }
+div.position-14 { margin-left: -11.375% }
+div.position-15 { margin-left:  -5.125% }
+
+/* End of the core Deco Grid System */
+
+/* Convenience classes — ¼, ½, ¾ widths and ¼, ½, ¾ positions.
+   Not strictly necessary. */
+div.width-1\3a 2 { width:    64.4% /*47.75%;*/ } /* .width-1:2 */
+div.width-1\3a 4 { width:    16.5% /*22.75%;*/ } /* .width-1:4 */
+div.width-3\3a 4 { width:   80.2% /*72.75%;*/ } /* .width-3:4 */
+div.width-full   { width:    97.75%  }
+div.position-1\3a 4 {margin-left:    -81.8%; /*-73.875%;*/ } /* .position-1:4 */
+div.position-1\3a 2 {margin-left:    -48.875%;} /* .position-1:2 */
+div.position-3\3a 4 {margin-left:    -16.855% /*-23.875%;*/ } /* .position-3:4 */
+
+
+/* Special classes for ⅓, ⅔ widths and ⅓, ⅔ positions.
+These do not strictly conform to the grid, but are useful for certain layouts. */
+div.width-1\3a 3 { width: 31.08%; } /* .width-1:3 */
+div.width-2\3a 3 { width: 64.42%; } /* .width-2:3 */
+div.position-1\3a 3 {margin-left: -65.545%;} /* .position-1:3 */
+div.position-2\3a 3 {margin-left: -32.205%;} /* .position-2:3 */

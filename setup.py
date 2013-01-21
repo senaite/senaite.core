@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '3.0rc1.1'
+version = '3.0rc2'
 
 setup(name='bika.lims',
       version=version,
@@ -34,12 +34,12 @@ setup(name='bika.lims',
           'collective.indexing>=2.0a3',
           'collective.js.jqueryui',
           'plone.app.z3cform',
-          'openpyxl',
+          'openpyxl==1.5.8',
           'plone.app.iterate',
           'xhtml2pdf',
           'magnitude',
           'gpw',
-          'jarn.jsi18n',
+          'jarn.jsi18n==0.3',
       ],
       extras_require = {
           'test': [

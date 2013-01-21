@@ -9,6 +9,7 @@ from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from Products.CMFEditions.ArchivistTool import ArchivistRetrieveError
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
@@ -95,6 +96,8 @@ schema = BikaSchema.copy() + Schema((
 
     StringField('Analyst',
     ),
+    TextField('Remarks',
+    ),
     ReferenceField('Instrument',
         required = 0,
         allowed_types = ('Instrument',),
@@ -163,12 +166,19 @@ class Analysis(BaseContent):
         return getCatalog(self)
 
     def Title(self):
-        """ Return the service title as title """
+        """ Return the service title as title.
+        Some silliness here, for premature indexing, when the service
+        is not yet configured.
+        """
         try:
             s = self.getService()
+            if s:
+                s = s.Title()
+            if not s:
+                s = ''
         except ArchivistRetrieveError:
-            return ""
-        if s: return s.Title()
+            s = ''
+        return safe_unicode(s).encode('utf-8')
 
     def updateDueDate(self):
         # set the max hours allowed

@@ -10,3 +10,4 @@ from coordinatewidget import CoordinateWidget
 from analysisprofileanalyseswidget import AnalysisProfileAnalysesWidget
 from artemplateanalyseswidget import ARTemplateAnalysesWidget
 from artemplatepartitionswidget import ARTemplatePartitionsWidget
+from addresswidget import AddressWidget

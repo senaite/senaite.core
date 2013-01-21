@@ -1,3 +1,31 @@
+3.0rc2
+======
+
+2013-01-21
+
+- Many many bugfixes.
+- Updated all translations and added Brazilian Portuguese
+- RecordsWidget: subfield_types include "date"
+- RecordsWidget: Automatic combogrid lookups
+- Added all bika types to Search and Live Search
+- Transition SamplePartition IDs to new format (SampleType-000?-P?
+- Always handle non-ASCII characters: UTF-8 encoding everywhere
+- Accept un-floatable (text) results for analyses
+- Hidden InterimFields in Calculations
+- Added InterimFields on AnalysisServices for overriding Calculation Interimfields.
+- Disable KSS inline-validation
+- Categorized analyses in AR views
+- Added remarks for individual analyses
+- Improved Javascript i18n handling
+- Improved default permissions
+- New reports
+    - Added 'Data entry day book' report
+    - Added 'Analysis summary per department' (merge of 'Analyses lab department weekly' and 'Analyses request summary by date range'
+    - Added 'Analyses performed as % of total' report
+    - Added Analyses per lab department report
+    - Added 'Samples received vs. samples reported' report
+    - Added Daily Samples Received report
+
 3.0rc1
 ======
 

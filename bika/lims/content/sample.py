@@ -15,6 +15,7 @@ from Products.Archetypes.references import HoldingReference
 from Products.CMFCore import permissions
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims.config import ManageBika, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.utils import sortable_title
@@ -179,6 +180,17 @@ schema = BikaSchema.copy() + Schema((
             label=_("Ad-Hoc"),
         ),
     ),
+    TextField('Remarks',
+        searchable=True,
+        default_content_type='text/x-web-intelligent',
+        allowable_content_types=('text/x-web-intelligent',),
+        default_output_type="text/html",
+        widget=TextAreaWidget(
+            macro="bika_widgets/remarks",
+            label=_('Remarks'),
+            append_only=True,
+        ),
+    ),
 ))
 
 schema['title'].required = False
@@ -200,7 +212,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
 
     def Title(self):
         """ Return the Sample ID as title """
-        return self.getId()
+        return safe_unicode(self.getId()).encode('utf-8')
 
     # Forms submit Title Strings which need
     # to be converted to objects somewhere along the way...
@@ -265,7 +277,8 @@ class Sample(BaseFolder, HistoryAwareMixin):
 
     def getLastARNumber(self):
         ARs = self.getBackReferences("AnalysisRequestSample")
-        ar_ids = [AR.id for AR in ARs]
+        prefix = self.getSampleType().getPrefix()
+        ar_ids = [AR.id for AR in ARs if AR.id.startswith(prefix)]
         ar_ids.sort()
         try:
             last_ar_number = int(ar_ids[-1].split("-")[-1])

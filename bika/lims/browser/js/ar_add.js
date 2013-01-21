@@ -67,12 +67,28 @@ function changeReportDryMatter(){
 }
 
 function deleteSampleButton(){
+
+	_ = jarn.i18n.MessageFactory('bika');
+	PMF = jarn.i18n.MessageFactory('plone');
+
+	var curDate = new Date();
+	var y = curDate.getFullYear();
+	var limitString = '1900:' + y;
+	var dateFormat = _("date_format_short_datepicker");
+
 	column = $(this).attr('column');
 	$("#ar_"+column+"_SampleID_button").val($("#ar_"+column+"_SampleID_default").val());
 	$("#ar_"+column+"_SampleID").val('');
 	$("#ar_"+column+"_ClientReference").val('').removeAttr("readonly");
 	$("#ar_"+column+"_SamplingDate")
-		.datepicker({'dateFormat': window.jsi18n_bika('date_format_short_datepicker'), showAnim: ''})
+		.datepicker({
+			showOn:'focus',
+			showAnim:'',
+			changeMonth:true,
+			changeYear:true,
+			dateFormat: dateFormat,
+			yearRange: limitString
+		})
 		.click(function(){$(this).attr('value', '');})
 		.attr('value', '');
 	$("#ar_"+column+"_ClientSampleID").val('').removeAttr("readonly");
@@ -98,7 +114,8 @@ function showSelectSample(){
 function showSelectCC(){
 	contact_uid = $('#primary_contact').val();
 	cc_uids = $('#cc_uids').attr('value');
-	window.open('ar_select_cc?hide_uids=' + contact_uid + '&selected_uids=' + cc_uids,
+	url = window.location.href.split("?")[0].replace("/ar_add", "").replace("/analysisrequests","")
+	window.open(url+'/ar_select_cc?hide_uids=' + contact_uid + '&selected_uids=' + cc_uids,
 		'ar_select_cc','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=550');
 }
 
@@ -578,7 +595,7 @@ function setARTemplate(){
 		P = template_data['Partitions'][pi];
 		partnr = parseInt(P['part_id'].split("-")[1], 10);
 		cu = P['container_uid'];
-		if(cu.length > 1 && cu[0] != ""){ cu = [cu]; }
+		if(cu != null && cu != undefined && cu.length > 1 && cu[0] != ""){ cu = [cu]; }
 		else { cu = []; }
 		pu = P['preservation_uid'];
 		if(pu != null && pu != undefined && pu.length > 1 && pu[0] != ""){
@@ -837,8 +854,13 @@ function clickAnalysisCategory(){
 
 $(document).ready(function(){
 
-	_ = window.jsi18n_bika;
-	PMF = window.jsi18n_plone;
+	_ = jarn.i18n.MessageFactory('bika');
+	PMF = jarn.i18n.MessageFactory('plone');
+
+	var curDate = new Date();
+	var y = curDate.getFullYear();
+	var limitString = '1900:' + y;
+	var dateFormat = _("date_format_short_datepicker");
 
 	// Sampling Date field is readonly to prevent invalid data entry, so
 	// clicking SamplingDate field clears existing values.
@@ -847,11 +869,25 @@ $(document).ready(function(){
 	if(e.length > 0){
 		if($($(e).parents('form').children('[name=came_from]')).val() == 'add'){
 			$(e)
-			.datepicker({'dateFormat': window.jsi18n_bika('date_format_short_datepicker'), showAnim: ''})
+			.datepicker({
+				showOn:'focus',
+				showAnim:'',
+				changeMonth:true,
+				changeYear:true,
+				dateFormat: dateFormat,
+				yearRange: limitString
+			})
 			.click(function(){$(this).attr('value', '');})
 		} else {
 			$(e)
-			.datepicker({'dateFormat': window.jsi18n_bika('date_format_short_datepicker'), showAnim: ''})
+			.datepicker({
+				showOn:'focus',
+				showAnim:'',
+				changeMonth:true,
+				changeYear:true,
+				dateFormat: dateFormat,
+				yearRange: limitString
+			})
 		}
 	}
 
@@ -881,12 +917,15 @@ $(document).ready(function(){
 
 	$(".ReportDryMatter").change(changeReportDryMatter);
 
-	// AR Add/Edit ajax form submits
+    // AR Add/Edit ajax form submits
 	ar_edit_form = $('#analysisrequest_edit_form');
 	if (ar_edit_form.ajaxForm != undefined){
 		var options = {
-			url: window.location.href.replace("/ar_add","/analysisrequest_submit").
-				 replace("/base_edit","/analysisrequest_submit"),
+			url: window.location.href
+				.split("?")[0]
+				.replace("/ar_add","")
+				.replace("/base_edit","")
+				.replace("analysisrequests", "") + "/analysisrequest_submit",
 			dataType: 'json',
 			data: {'_authenticator': $('input[name="_authenticator"]').val()},
 			beforeSubmit: function(formData, jqForm, options) {
@@ -895,16 +934,22 @@ $(document).ready(function(){
 			success: function(responseText, statusText, xhr, $form) {
 				if(responseText['success'] != undefined){
 					if(responseText['labels'] != undefined){
-						destination = window.location.href.replace("/ar_add","");
-						destination = destination.replace("/base_edit", "");
+						destination = window.location.href
+							.split("?")[0]
+							.replace("/ar_add","")
+							.replace("/analysisrequests", "")
+							.replace("/base_edit", "");
 						ars = responseText['labels'];
 						labelsize = responseText['labelsize'];
 						q = "/sticker?size="+labelsize+"&items=";
 						q = q + ars.join(",");
 						window.location.replace(destination+q);
 					} else {
-						destination = window.location.href.replace("/ar_add","");
-						destination = destination.replace("/base_edit", "/base_view");
+						destination = window.location.href
+							.split("?")[0]
+							.replace("/ar_add","")
+							.replace("/analysisrequests","")
+							.replace("/base_edit", "/base_view");
 						window.location.replace(destination);
 					}
 				} else {

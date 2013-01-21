@@ -25,7 +25,7 @@ class ReferenceDefinitionsView(BikaListingView):
         self.context_actions = {_('Add'):
                                 {'url': 'createObject?type_name=ReferenceDefinition',
                                  'icon': '++resource++bika.lims.images/add.png'}}
-        self.icon = "++resource++bika.lims.images/referencedefinition_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/referencedefinition_big.png"
         self.title = _("Reference Definitions")
         self.description = _("ReferenceDefinition represents a Reference Definition "
                              "or sample type used for quality control testing")
