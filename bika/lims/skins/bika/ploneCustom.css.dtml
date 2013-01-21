@@ -2,12 +2,13 @@
 <dtml-call "REQUEST.set('portal_url', portal_url())">
 */
 
-body {
+<!-- body {
   font-size: &dtml-fontBaseSize;
-}
-table {
-  /*font-size: 100%;*/
-}
+} -->
+
+<!-- table {
+  font-size: 100%;
+} -->
 
 #portal-breadcrumbs{
   border-bottom: 1px solid #DCDCDC;
@@ -54,9 +55,7 @@ dl.portlet dd {
 textarea#description,
 #content textarea {
   color:#111111 !important;
-  font-family: Arial,FreeSans,sans-serif !important;
   font-style: normal !important;
-  font-size: &dtml-fontSmallSize; !important;
   font-weight: normal !important;
 }
 
