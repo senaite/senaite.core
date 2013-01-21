@@ -1,3 +1,11 @@
+3.0rc2.1
+========
+
+2013-01-21
+
+- Fix bad HTML
+- Pin collective.js.jqueryui version to 1.8.16.9
+
 3.0rc2
 ======
 

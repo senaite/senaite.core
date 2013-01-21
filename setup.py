@@ -1,15 +1,12 @@
 from setuptools import setup, find_packages
 import os
 
-version = '3.0rc2'
+version = '3.0rc2.1'
 
 setup(name='bika.lims',
       version=version,
       description="Bika LIMS",
-      long_description=open("README.md").read() + "\n" +
-                       open(os.path.join("docs", "linux.md")).read() + "\n" +
-                       open(os.path.join("docs", "windows.md")).read() + "\n" +
-                       open(os.path.join("docs", "CHANGELOG.txt")).read(),
+      long_description=open("README.md").read(),
       # Get more strings from
       # http://pypi.python.org/pypi?:action=list_classifiers
       classifiers=[
