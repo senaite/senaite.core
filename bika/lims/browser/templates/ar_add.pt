@@ -205,7 +205,7 @@
                 </td>
             </tal:block>
         </tr>
-    </tal:got_no_client
+    </tal:got_no_client>
 
     <!-- Batch selector -->
     <tal:batch_context

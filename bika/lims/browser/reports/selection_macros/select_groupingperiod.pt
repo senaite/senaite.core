@@ -7,11 +7,11 @@
     <select name="GroupingPeriod:ignore_empty"
             id="GroupingPeriod"
             tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
-            
+
             <tal:groups tal:repeat="groupingperiod groups">
             	<option tal:attributes="
             				value python:groupingperiod;
-            				selected python:request.get('groupingperiod', '') == groupingperiod and 'selected' or ''""
+            				selected python:request.get('groupingperiod', '') == groupingperiod and 'selected' or ''"
             			tal:content="groupingperiod">
             	</option>
             </tal:groups>
