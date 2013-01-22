@@ -36,8 +36,8 @@ class Report(BrowserView):
 
         count_all = 0
         query = {'portal_type': 'Analysis'}
-        if self.request.form.has_key('getClientUID'):
-            client_uid = self.request.form['getClientUID']
+        if self.request.form.has_key('ClientUID'):
+            client_uid = self.request.form['ClientUID']
             query['getClientUID'] = client_uid
             client = rc.lookupObject(client_uid)
             client_title = client.Title()
@@ -53,10 +53,10 @@ class Report(BrowserView):
              'value': client_title,
              'type': 'text'})
 
-        date_query = formatDateQuery(self.context, 'st_DateRequested')
+        date_query = formatDateQuery(self.context, 'Requested')
         if date_query:
             query['created'] = date_query
-            requested = formatDateParms(self.context, 'st_DateRequested')
+            requested = formatDateParms(self.context, 'Requested')
         else:
             requested = 'Undefined'
         parms.append(
@@ -65,10 +65,10 @@ class Report(BrowserView):
              'type': 'text'})
 
         workflow = getToolByName(self.context, 'portal_workflow')
-        if self.request.form.has_key('review_state'):
-            query['review_state'] = self.request.form['review_state']
+        if self.request.form.has_key('bika_analysis_workflow'):
+            query['review_state'] = self.request.form['bika_analysis_workflow']
             review_state = workflow.getTitleForStateOnType(
-                        self.request.form['review_state'], 'Analysis')
+                        self.request.form['bika_analysis_workflow'], 'Analysis')
         else:
             review_state = 'Undefined'
         parms.append(
@@ -76,10 +76,10 @@ class Report(BrowserView):
              'value': review_state,
              'type': 'text'})
 
-        if self.request.form.has_key('cancellation_state'):
-            query['cancellation_state'] = self.request.form['cancellation_state']
+        if self.request.form.has_key('bika_cancellation_workflow'):
+            query['cancellation_state'] = self.request.form['bika_cancellation_workflow']
             cancellation_state = workflow.getTitleForStateOnType(
-                        self.request.form['cancellation_state'], 'Analysis')
+                        self.request.form['bika_cancellation_workflow'], 'Analysis')
         else:
             cancellation_state = 'Undefined'
         parms.append(
@@ -87,10 +87,10 @@ class Report(BrowserView):
              'value': cancellation_state,
              'type': 'text'})
 
-        if self.request.form.has_key('ws_review_state'):
-            query['worksheetanalysis_review_state'] = self.request.form['ws_review_state']
+        if self.request.form.has_key('bika_worksheetanalysis_workflow'):
+            query['worksheetanalysis_review_state'] = self.request.form['bika_worksheetanalysis_workflow']
             ws_review_state = workflow.getTitleForStateOnType(
-                        self.request.form['ws_review_state'], 'Analysis')
+                        self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
         else:
             ws_review_state = 'Undefined'
         parms.append(

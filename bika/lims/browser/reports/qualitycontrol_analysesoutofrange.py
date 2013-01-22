@@ -48,10 +48,10 @@ class Report(BrowserView):
              'value': spec,
              'type': 'text'})
 
-        date_query = formatDateQuery(self.context, 'c_DateReceived')
+        date_query = formatDateQuery(self.context, 'Received')
         if date_query:
             query['getDateReceived'] = date_query
-            received = formatDateParms(self.context, 'c_DateReceived')
+            received = formatDateParms(self.context, 'Received')
         else:
             received = 'Undefined'
         parms.append(
@@ -60,10 +60,10 @@ class Report(BrowserView):
              'type': 'text'})
 
         wf_tool = getToolByName(self.context, 'portal_workflow')
-        if self.request.form.has_key('review_state'):
-            query['review_state'] = self.request.form['review_state']
+        if self.request.form.has_key('bika_analysis_workflow'):
+            query['review_state'] = self.request.form['bika_analysis_workflow']
             review_state = wf_tool.getTitleForStateOnType(
-                        self.request.form['review_state'], 'Analysis')
+                        self.request.form['bika_analysis_workflow'], 'Analysis')
         else:
             review_state = 'Undefined'
         parms.append(
@@ -71,10 +71,10 @@ class Report(BrowserView):
              'value': review_state,
              'type': 'text'})
 
-        if self.request.form.has_key('cancellation_state'):
-            query['cancellation_state'] = self.request.form['cancellation_state']
+        if self.request.form.has_key('bika_cancellation_workflow'):
+            query['cancellation_state'] = self.request.form['bika_cancellation_workflow']
             cancellation_state = wf_tool.getTitleForStateOnType(
-                        self.request.form['cancellation_state'], 'Analysis')
+                        self.request.form['bika_cancellation_workflow'], 'Analysis')
         else:
             cancellation_state = 'Undefined'
         parms.append(
@@ -83,10 +83,10 @@ class Report(BrowserView):
              'type': 'text'})
 
 
-        if self.request.form.has_key('ws_review_state'):
-            query['worksheetanalysis_review_state'] = self.request.form['ws_review_state']
+        if self.request.form.has_key('bika_worksheetanalysis_workflow'):
+            query['worksheetanalysis_review_state'] = self.request.form['bika_worksheetanalysis_workflow']
             ws_review_state = wf_tool.getTitleForStateOnType(
-                        self.request.form['ws_review_state'], 'Analysis')
+                        self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
         else:
             ws_review_state = 'Undefined'
         parms.append(

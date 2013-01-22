@@ -45,10 +45,10 @@ class Report(BrowserView):
         count_all_analyses = 0
         query = {}
 
-        date_query = formatDateQuery(self.context, 'c_DateRequested')
+        date_query = formatDateQuery(self.context, 'Requested')
         if date_query:
             query['created'] = date_query
-            requested = formatDateParms(self.context, 'c_DateRequested')
+            requested = formatDateParms(self.context, 'Requested')
         else:
             requested = 'Undefined'
         parms.append(
@@ -57,57 +57,36 @@ class Report(BrowserView):
              'type': 'text'})
 
         workflow = getToolByName(self.context, 'portal_workflow')
-        if self.request.form.has_key('review_state'):
-            query['review_state'] = self.request.form['review_state']
-            review_state = workflow.getTitleForStateOnType(
-                        self.request.form['review_state'], 'Analysis')
-        else:
-            review_state = 'Undefined'
-        parms.append(
-            { 'title': _('Status'),
-             'value': review_state,
-             'type': 'text'})
+        if self.request.form.has_key('bika_analysis_workflow'):
+            query['review_state'] = self.request.form['bika_analysis_workflow']
+            review_state = workflow.getTitleForStateOnType(self.request.form['bika_analysis_workflow'], 'Analysis')
+            parms.append({'title': _('Status'), 'value': review_state, 'type': 'text'})
 
-        if self.request.form.has_key('cancellation_state'):
-            query['cancellation_state'] = self.request.form['cancellation_state']
+        if self.request.form.has_key('bika_cancellation_workflow'):
+            query['cancellation_state'] = self.request.form['bika_cancellation_workflow']
             cancellation_state = workflow.getTitleForStateOnType(
-                        self.request.form['cancellation_state'], 'Analysis')
-        else:
-            cancellation_state = 'Undefined'
-        parms.append(
-            { 'title': _('Active'),
-             'value': cancellation_state,
-             'type': 'text'})
+                        self.request.form['bika_cancellation_workflow'], 'Analysis')
+            parms.append({'title': _('Active'), 'value': cancellation_state, 'type': 'text'})
 
-
-        if self.request.form.has_key('ws_review_state'):
-            query['worksheetanalysis_review_state'] = self.request.form['ws_review_state']
+        if self.request.form.has_key('bika_worksheetanalysis_workflow'):
+            query['worksheetanalysis_review_state'] = self.request.form['bika_worksheetanalysis_workflow']
             ws_review_state = workflow.getTitleForStateOnType(
-                        self.request.form['ws_review_state'], 'Analysis')
-        else:
-            ws_review_state = 'Undefined'
-        parms.append(
-            { 'title': _('Assigned to worksheet'),
-             'value': ws_review_state,
-             'type': 'text'})
-
+                        self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
+            parms.append({'title': _('Assigned to worksheet'), 'value': ws_review_state, 'type': 'text'})
 
         # and now lets do the actual report lines
         formats = {'columns': 3,
-                   'col_heads': [ _('Client'), \
-                                  _('Number of requests'), \
+                   'col_heads': [ _('Client'),
+                                  _('Number of requests'),
                                   _('Number of analyses')],
-                   'class': '',
-                  }
+                   'class': ''}
 
         datalines = []
 
         if this_client:
-            c_proxies = pc(portal_type="Client",
-                           UID=this_client.UID())
+            c_proxies = pc(portal_type="Client", UID=this_client.UID())
         else:
-            c_proxies = pc(portal_type="Client",
-                        sort_on='sortable_title')
+            c_proxies = pc(portal_type="Client", sort_on='sortable_title')
 
         for client in c_proxies:
             query['getClientUID'] = client.UID

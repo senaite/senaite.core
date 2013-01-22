@@ -34,10 +34,9 @@ class Report(BrowserView):
         headings['header'] = _("Analyses per analysis service")
         headings['subheader'] = _("Number of analyses requested per analysis service")
 
-        count_all = 0
         query = {'portal_type': 'Analysis'}
-        if self.request.form.has_key('getClientUID'):
-            client_uid = self.request.form['getClientUID']
+        if self.request.form.has_key('ClientUID'):
+            client_uid = self.request.form['ClientUID']
             query['getClientUID'] = client_uid
             client = rc.lookupObject(client_uid)
             client_title = client.Title()
@@ -48,68 +47,37 @@ class Report(BrowserView):
                 query['getClientUID'] = client.UID()
             else:
                 client_title = _('All')
-        parms.append(
-            { 'title': _('Client'),
-             'value': client_title,
-             'type': 'text'})
+        parms.append({'title': _('Client'), 'value': client_title, 'type': 'text'})
 
-        date_query = formatDateQuery(self.context, 'DateRequested')
+        date_query = formatDateQuery(self.context, 'Requested')
         if date_query:
             query['created'] = date_query
-            requested = formatDateParms(self.context, 'DateRequested')
-            parms.append(
-                { 'title': _('Requested'),
-                  'value': requested,
-                  'type': 'text'})
+            requested = formatDateParms(self.context, 'Requested')
+            parms.append({'title': _('Requested'), 'value': requested, 'type': 'text'})
 
-        date_query = formatDateQuery(self.context, 'DatePublished')
+        date_query = formatDateQuery(self.context, 'Published')
         if date_query:
             query['getDatePublished'] = date_query
-            published = formatDateParms(self.context, 'DatePublished')
-        else:
-            published = 'Undefined'
-        parms.append(
-            { 'title': _('Published'),
-             'value': published,
-             'type': 'text'})
-
+            published = formatDateParms(self.context, 'Published')
+            parms.append({'title': _('Published'), 'value': published, 'type': 'text'})
 
         workflow = getToolByName(self.context, 'portal_workflow')
-        if self.request.form.has_key('review_state'):
-            query['review_state'] = self.request.form['review_state']
-            review_state = workflow.getTitleForStateOnType(
-                        self.request.form['review_state'], 'Analysis')
-        else:
-            review_state = 'Undefined'
-        parms.append(
-            { 'title': _('Status'),
-             'value': review_state,
-             'type': 'text'})
+        if self.request.form.has_key('bika_analysis_workflow'):
+            query['review_state'] = self.request.form['bika_analysis_workflow']
+            review_state = workflow.getTitleForStateOnType(self.request.form['bika_analysis_workflow'], 'Analysis')
+            parms.append({'title': _('Status'), 'value': review_state, 'type': 'text'})
 
-        if self.request.form.has_key('cancellation_state'):
-            query['cancellation_state'] = self.request.form['cancellation_state']
+        if self.request.form.has_key('bika_cancellation_workflow'):
+            query['cancellation_state'] = self.request.form['bika_cancellation_workflow']
             cancellation_state = workflow.getTitleForStateOnType(
-                        self.request.form['cancellation_state'], 'Analysis')
-        else:
-            cancellation_state = 'Undefined'
-        parms.append(
-            { 'title': _('Active'),
-             'value': cancellation_state,
-             'type': 'text'})
+                        self.request.form['bika_cancellation_workflow'], 'Analysis')
+            parms.append({'title': _('Active'), 'value': cancellation_state, 'type': 'text'})
 
-
-
-        if self.request.form.has_key('ws_review_state'):
-            query['worksheetanalysis_review_state'] = self.request.form['ws_review_state']
+        if self.request.form.has_key('bika_worksheetanalysis_workflow'):
+            query['worksheetanalysis_review_state'] = self.request.form['bika_worksheetanalysis_workflow']
             ws_review_state = workflow.getTitleForStateOnType(
-                        self.request.form['ws_review_state'], 'Analysis')
-        else:
-            ws_review_state = 'Undefined'
-        parms.append(
-            { 'title': _('Assigned to worksheet'),
-             'value': ws_review_state,
-             'type': 'text'})
-
+                        self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
+            parms.append({'title': _('Assigned to worksheet'), 'value': ws_review_state, 'type': 'text'})
 
         # and now lets do the actual report lines
         formats = {'columns': 2,
@@ -118,6 +86,7 @@ class Report(BrowserView):
                   }
 
         datalines = []
+        count_all = 0
         for cat in sc(portal_type="AnalysisCategory",
                         sort_on='sortable_title'):
             dataline = [{'value': cat.Title,
@@ -138,7 +107,6 @@ class Report(BrowserView):
 
                 dataline.append(dataitem)
 
-
                 datalines.append(dataline)
 
                 count_all += count_analyses
@@ -153,7 +121,6 @@ class Report(BrowserView):
         footline.append(footitem)
         footlines.append(footline)
 
-
         self.report_content = {
                 'headings': headings,
                 'parms': parms,
@@ -161,10 +128,6 @@ class Report(BrowserView):
                 'datalines': datalines,
                 'footings': footlines}
 
-
         title = self.context.translate(headings['header'])
         return {'report_title': title,
                 'report_data': self.template()}
-
-
-

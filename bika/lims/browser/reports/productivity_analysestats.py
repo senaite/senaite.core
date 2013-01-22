@@ -36,8 +36,8 @@ class Report(BrowserView):
 
         count_all = 0
         query = {'portal_type': 'Analysis'}
-        if self.request.form.has_key('getClientUID'):
-            client_uid = self.request.form['getClientUID']
+        if self.request.form.has_key('ClientUID'):
+            client_uid = self.request.form['ClientUID']
             query['getClientUID'] = client_uid
             client = rc.lookupObject(client_uid)
             client_title = client.Title()
@@ -53,10 +53,10 @@ class Report(BrowserView):
              'value': client_title,
              'type': 'text'})
 
-        date_query = formatDateQuery(self.context, 'DateReceived')
+        date_query = formatDateQuery(self.context, 'Received')
         if date_query:
             query['created'] = date_query
-            received = formatDateParms(self.context, 'DateReceived')
+            received = formatDateParms(self.context, 'Received')
         else:
             received = 'Undefined'
         parms.append(
@@ -66,18 +66,12 @@ class Report(BrowserView):
 
         query['review_state'] = 'published'
 
-        wf = getToolByName(self.context, 'portal_workflow')
-
-        if self.request.form.has_key('ws_review_state'):
-            query['worksheetanalysis_review_state'] = self.request.form['ws_review_state']
-            ws_review_state = wf.getTitleForStateOnType(
-                        self.request.form['ws_review_state'], 'Analysis')
-        else:
-            ws_review_state = 'Undefined'
-        parms.append(
-            { 'title': _('Assigned to worksheet'),
-             'value': ws_review_state,
-             'type': 'text'})
+        workflow = getToolByName(self.context, 'portal_workflow')
+        if self.request.form.has_key('bika_worksheetanalysis_workflow'):
+            query['worksheetanalysis_review_state'] = self.request.form['bika_worksheetanalysis_workflow']
+            ws_review_state = workflow.getTitleForStateOnType(
+                        self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
+            parms.append({'title': _('Assigned to worksheet'), 'value': ws_review_state, 'type': 'text'})
 
 
         # query all the analyses and increment the counts

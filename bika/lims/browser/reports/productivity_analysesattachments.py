@@ -36,8 +36,8 @@ class Report(BrowserView):
 
         count_all = 0
         query = {'portal_type': 'Attachment'}
-        if self.request.form.has_key('getClientUID'):
-            client_uid = self.request.form['getClientUID']
+        if self.request.form.has_key('ClientUID'):
+            client_uid = self.request.form['ClientUID']
             query['getClientUID'] = client_uid
             client = rc.lookupObject(client_uid)
             client_title = client.Title()
@@ -53,10 +53,10 @@ class Report(BrowserView):
              'value': client_title,
              'type': 'text'})
 
-        date_query = formatDateQuery(self.context, 'DateLoaded')
+        date_query = formatDateQuery(self.context, 'Loaded')
         if date_query:
             query['getDateLoaded'] = date_query
-            loaded = formatDateParms(self.context, 'DateLoaded')
+            loaded = formatDateParms(self.context, 'Loaded')
         else:
             loaded = 'Undefined'
         parms.append(
