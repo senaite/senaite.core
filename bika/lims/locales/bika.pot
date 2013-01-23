@@ -422,13 +422,12 @@ msgstr ""
 msgid "Analyses"
 msgstr ""
 #
-# File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 210
 # File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 337
 msgid "Analyses in error shoulder range"
 msgstr ""
 #
 # File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 29
-# File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 205
+# File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 206
 # File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 332
 msgid "Analyses out of range"
 msgstr ""
@@ -486,7 +485,7 @@ msgstr ""
 #
 # File: ../browser/analyses.py, line: 46
 # File: ../browser/late_analyses.py, line: 39
-# File: ../browser/reports/productivity_analysestats.py, line: 142
+# File: ../browser/reports/productivity_analysestats.py, line: 136
 msgid "Analysis"
 msgstr ""
 #
@@ -755,11 +754,11 @@ msgstr ""
 msgid "Average TAT"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysestats.py, line: 148
+# File: ../browser/reports/productivity_analysestats.py, line: 142
 msgid "Average early"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysestats.py, line: 146
+# File: ../browser/reports/productivity_analysestats.py, line: 140
 msgid "Average late"
 msgstr ""
 #
@@ -931,7 +930,7 @@ msgstr ""
 #
 # File: ../browser/analyses.py, line: 68
 # File: ../browser/referencesample.py, line: 62
-# File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 116
+# File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 112
 msgid "Captured"
 msgstr ""
 #
@@ -1209,7 +1208,7 @@ msgstr ""
 msgid "Copy from"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysestats.py, line: 143
+# File: ../browser/reports/productivity_analysestats.py, line: 137
 msgid "Count"
 msgstr ""
 #
@@ -1546,7 +1545,7 @@ msgstr ""
 msgid "Earliness"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysestats.py, line: 147
+# File: ../browser/reports/productivity_analysestats.py, line: 141
 msgid "Early"
 msgstr ""
 #
@@ -1959,7 +1958,7 @@ msgid "Last modified"
 msgstr ""
 #
 # File: ../browser/late_analyses.py, line: 49
-# File: ../browser/reports/productivity_analysestats.py, line: 145
+# File: ../browser/reports/productivity_analysestats.py, line: 139
 msgid "Late"
 msgstr ""
 #
@@ -2205,7 +2204,7 @@ msgstr ""
 #
 # File: ../browser/reports/productivity_analysesperdepartment.py, line: 47
 # File: ../browser/reports/productivity_analysesperformedpertotal.py, line: 37
-# File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 87
+# File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 75
 msgid "No analyses matched your query"
 msgstr ""
 #
@@ -2217,7 +2216,7 @@ msgstr ""
 msgid "No analyses were added to this worksheet."
 msgstr ""
 #
-# File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 59
+# File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 55
 # File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 77
 msgid "No analysis services were selected."
 msgstr ""
@@ -2260,7 +2259,7 @@ msgstr ""
 msgid "No of containers"
 msgstr ""
 #
-# File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 50
+# File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 45
 msgid "No reference sample was selected."
 msgstr ""
 #
@@ -2307,7 +2306,7 @@ msgstr ""
 #
 # File: ../browser/queries/invoices.py, line: 117
 # File: ../browser/queries/orders.py, line: 117
-# File: ../browser/reports/productivity_analysesperclient.py, line: 99
+# File: ../browser/reports/productivity_analysesperclient.py, line: 81
 msgid "Number of analyses"
 msgstr ""
 #
@@ -2343,7 +2342,7 @@ msgid ""
 "percentage of all analyses performed"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysesperclient.py, line: 98
+# File: ../browser/reports/productivity_analysesperclient.py, line: 80
 msgid "Number of requests"
 msgstr ""
 #
@@ -2736,7 +2735,7 @@ msgstr ""
 msgid "Reference Results"
 msgstr ""
 #
-# File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 53
+# File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 49
 # File: ../browser/reports/selection_macros/select_reference_sample.pt, line: 5
 msgid "Reference Sample"
 msgstr ""
@@ -2758,7 +2757,7 @@ msgstr ""
 msgid "Reference Type"
 msgstr ""
 #
-# File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 37
+# File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 31
 # File: ../browser/reports/templates/qualitycontrol.pt, line: 58
 msgid "Reference analysis QC"
 msgstr ""
@@ -2767,7 +2766,7 @@ msgstr ""
 msgid "Reference analysis quality control graphs"
 msgstr ""
 #
-# File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 38
+# File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 32
 msgid "Reference analysis quality control graphs "
 msgstr ""
 #
@@ -3680,7 +3679,7 @@ msgstr ""
 msgid "Total Price"
 msgstr ""
 #
-# File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 123
+# File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 126
 # File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 182
 msgid "Total analyses"
 msgstr ""
@@ -3724,7 +3723,7 @@ msgstr ""
 msgid "Uncertainty value"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysestats.py, line: 144
+# File: ../browser/reports/productivity_analysestats.py, line: 138
 msgid "Undefined"
 msgstr ""
 #
@@ -3974,7 +3973,7 @@ msgstr ""
 #
 # File: ../content/analysisservice.py, line: 285
 msgid ""
-"Values can be entered here which will override the defaultsspecified in the "
+"Values can be entered here which will override the defaults specified in the "
 "Calculation Interim Fields."
 msgstr ""
 #
