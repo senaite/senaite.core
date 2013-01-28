@@ -22,7 +22,7 @@ import Globals
 import re
 import xhtml2pdf.pisa as pisa
 
-class Publish(BrowserView):
+class doPublish(BrowserView):
     """Pre/Re/Publish analysis requests"""
     ar_results = ViewPageTemplateFile("mailtemplates/analysisrequest_results.pt")
 

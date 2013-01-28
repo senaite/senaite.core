@@ -9,7 +9,7 @@ from bika.lims.browser.batchfolder import BatchFolderContentsView
 from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction, \
     AnalysisRequestsView
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.browser.publish import Publish
+from bika.lims.browser.publish import doPublish
 from bika.lims.browser.sample import SamplesView
 from bika.lims.interfaces import IContacts
 from bika.lims.permissions import *
@@ -213,10 +213,10 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                     obj.setDatePublished(DateTime())
                     ARs_to_publish.append(obj)
 
-            transitioned = Publish(self.context,
+            transitioned = doPublish(self.context,
                                    self.request,
                                    action,
-                                   ARs_to_publish)
+                                   ARs_to_publish)()
 
             if len(transitioned) > 1:
                 message = _('${items} were published.',
