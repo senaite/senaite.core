@@ -216,7 +216,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
             transitioned = Publish(self.context,
                                    self.request,
                                    action,
-                                   ARs_to_publish)()
+                                   ARs_to_publish)
 
             if len(transitioned) > 1:
                 message = _('${items} were published.',
