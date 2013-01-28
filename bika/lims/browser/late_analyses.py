@@ -3,7 +3,6 @@ from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.browser.publish import Publish
 from bika.lims.utils import isActive
 from zope.component import getMultiAdapter
 import plone

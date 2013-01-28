@@ -9,7 +9,6 @@ from bika.lims.browser import BrowserView
 from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction, AnalysisRequestsView, AnalysisRequestAddView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.client import ClientAnalysisRequestsView, ClientSamplesView
-from bika.lims.browser.publish import Publish
 from bika.lims.browser.sample import SamplesView
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IContacts
