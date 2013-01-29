@@ -64,7 +64,7 @@
 			</th>
 		</tal:block>
 		<th tal:condition="widget/allowDelete">
-			<span i18n:translate=""id="delete_this_entry"></span>
+			<span i18n:translate="" id="delete_this_entry"></span>
 		</th>
 	</tr>
 
@@ -151,7 +151,7 @@
 					<!-- text -->
 
 					<tal:text condition="python: type == 'lines'">
-						<textarea name=""cols="30" rows="5" tabindex="#"
+						<textarea name="" cols="30" rows="5" tabindex="#"
 							tal:attributes="
 								class string:${required};
 								id string:${fieldName}-${key}-${repeat/idx/index};
