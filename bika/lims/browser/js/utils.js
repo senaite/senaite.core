@@ -372,9 +372,6 @@ $(document).ready(function(){
 	// Archetypes :int inputs get numeric class
 	$("input[name*='\\:int']").addClass('numeric');
 
-	// #336: focus searchGadget when page load completes
-	$("#searchGadget").focus();
-
 });
 }(jQuery));
 
