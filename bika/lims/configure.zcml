@@ -10,11 +10,13 @@
 
   <i18n:registerTranslations directory="locales" />
 
-  <include package="jarn.jsi18n" />
-  <include package="collective.indexing" />
-  <include package="plone.app.z3cform" />
-  <include package="Products.TinyMCE" />
-  <include package="Products.CMFCore" />
+<includeDependencies package="." />
+//  <include package="jarn.jsi18n" />
+//  <include package="collective.indexing" />
+//  <include package="plone.app.z3cform" />
+//  <include package="Products.TinyMCE" />
+//  <include package="Products.CMFCore" />
+//  <include package="collective.monkeypatcher" />
 
   <five:registerPackage package="." initialize=".initialize" />
 
@@ -33,9 +35,6 @@
   <i18n:registerTranslations directory="locales" />
 
   <cmf:registerDirectory name="skins" directory="skins" recursive="True" />
-
-  <!-- "Sometimes a monkey patch is a necessary evil." -->
-  <include package="collective.monkeypatcher" />
 
   <monkey:patch
       description="This adds the bika.lims category to controlpanel-overview."
