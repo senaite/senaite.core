@@ -27,6 +27,8 @@ class AnalysisSpecificationView(BikaListingView):
         self.show_select_column = False
         self.pagesize = 1000
         self.allow_edit = allow_edit
+        self.show_categories = True
+        # self.expand_all_categories = False
 
         self.specsresults = {}
         for specresults in fieldvalue:
