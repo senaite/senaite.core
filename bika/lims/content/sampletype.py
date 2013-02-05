@@ -4,6 +4,7 @@ from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
 from bika.lims.config import PROJECTNAME
@@ -99,6 +100,9 @@ class SampleType(BaseContent, HistoryAwareMixin):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
+
+    def Title(self):
+        return safe_unicode(self.getField('title').get(self)).encode('utf-8')
 
     def getJSMinimumVolume(self, **kw):
         """Try convert the MinimumVolume to 'ml' or 'g' so that JS has an

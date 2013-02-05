@@ -124,18 +124,18 @@ class ajax_SampleTypes(BrowserView):
                 # Items that start with A or AA
                 items = [s.getObject()
                          for s in items
-                         if s.Title.lower().startswith(term)]
+                         if s.title.lower().startswith(term)]
                 if not items:
                     # or, items that contain A or AA
                     items = [s.getObject()
                              for s in items
-                             if s.Title.lower().find(term) > -1]
+                             if s.title.lower().find(term) > -1]
             else:
                 # or, items that contain term.
                 items = [s.getObject()
                          for s in items
-                         if s.Title.lower().find(term) > -1]
+                         if s.title.lower().find(term) > -1]
 
-        items = [callable(s.Title) and s.Title() or s.Title
+        items = [callable(s.Title) and s.Title() or s.title
                  for s in items]
         return json.dumps(items)

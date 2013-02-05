@@ -4,6 +4,7 @@ from Products.Archetypes import atapi
 from Products.Archetypes.ArchetypeTool import registerType
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
@@ -107,20 +108,20 @@ class ajax_SamplePoints(BrowserView):
     def filter_list(self, items, searchterm):
         if searchterm and len(searchterm) < 3:
             # Items that start with A or AA
-            items = [s.getObject()
+            res = [s.getObject()
                      for s in items
-                     if s.Title.lower().startswith(searchterm)]
-            if not items:
+                     if s.title.lower().startswith(searchterm)]
+            if not res:
                 # or, items that contain A or AA
-                items = [s.getObject()
+                res = [s.getObject()
                          for s in items
-                         if s.Title.lower().find(searchterm) > -1]
+                         if s.title.lower().find(searchterm) > -1]
         else:
             # or, items that contain searchterm.
-            items = [s.getObject()
+            res = [s.getObject()
                      for s in items
-                     if s.Title.lower().find(searchterm) > -1]
-        return items
+                     if s.title.lower().find(searchterm) > -1]
+        return res
 
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
@@ -164,11 +165,12 @@ class ajax_SamplePoints(BrowserView):
                     inactive_state = 'active',
                     sort_on='sortable_title'))
 
-            client_items = [callable(s.Title) and s.Title() or s.Title
+            client_items = [callable(s.Title) and s.Title() or s.title
                      for s in self.filter_list(client_items, term)]
-            lab_items = [callable(s.Title) and s.Title() or s.Title
+            lab_items = [callable(s.Title) and s.Title() or s.title
                      for s in self.filter_list(lab_items, term)]
-            lab_items = ["%s: %s" % (_("Lab"), i) for i in lab_items]
+            lab_items = ["%s: %s" % (_("Lab"), safe_unicode(i))
+                         for i in lab_items]
 
             items = client_items + lab_items
 

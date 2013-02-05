@@ -3,6 +3,7 @@ from Products.Archetypes.public import *
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims.browser import BrowserView
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
@@ -86,6 +87,9 @@ class SamplePoint(BaseContent, HistoryAwareMixin):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
+
+    def Title(self):
+        return safe_unicode(self.getField('title').get(self)).encode('utf-8')
 
     def SampleTypesVocabulary(self):
         from bika.lims.content.sampletype import SampleTypes
