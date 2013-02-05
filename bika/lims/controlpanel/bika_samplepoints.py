@@ -128,7 +128,7 @@ class ajax_SamplePoints(BrowserView):
         term = self.request.get('term', '').lower()
         items = []
         if not term:
-            return items
+            return json.dumps(items)
         # Strip "Lab: " from sample point title
         term = term.replace("%s: " % _("Lab"), '')
         sampletype = self.request.get('sampletype', '')
