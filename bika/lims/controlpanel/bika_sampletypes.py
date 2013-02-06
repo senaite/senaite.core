@@ -4,6 +4,7 @@ from Products.Archetypes import atapi
 from Products.Archetypes.ArchetypeTool import registerType
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
@@ -101,11 +102,11 @@ class ajax_SampleTypes(BrowserView):
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        term = self.request.get('term', '').lower()
+        term = safe_unicode(self.request.get('term', '')).lower()
         items = []
         if not term:
             return json.dumps(items)
-        samplepoint = self.request.get('samplepoint', '')
+        samplepoint = safe_unicode(self.request.get('samplepoint', ''))
         # Strip "Lab: " from sample point titles
         samplepoint = samplepoint.replace("%s: " % _("Lab"), '')
         if samplepoint and len(samplepoint) > 1:
