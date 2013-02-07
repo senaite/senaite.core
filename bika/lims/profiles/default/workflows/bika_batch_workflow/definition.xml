@@ -116,14 +116,14 @@
    </state>
 
  <transition transition_id="receive"
-             title="Receive"
+             title="Receive sample"
              new_state="sample_received"
              trigger="USER"
              before_script=""
              after_script="default"
              i18n:attributes="title receive_transition_title">
   <description i18n:translate=""></description>
-<!--  <action url="" category="workflow" icon="" i18n:translate="receive_transition_title">Receive</action> -->
+<!--  <action url="" category="workflow" icon="" i18n:translate="receive_transition_title">Receive sample</action> -->
   <guard>
    <guard-permission>Modify portal content</guard-permission>
    <guard-expression>python:not hasattr(here, 'workflow_guard_receive') and True or here.workflow_guard_receive()</guard-expression>
@@ -146,14 +146,14 @@
   </transition>
 
  <transition transition_id="submit"
-             title="Submit"
+             title="Submit for verification"
              new_state="to_be_verified"
              trigger="USER"
              before_script=""
              after_script="default"
              i18n:attributes="title submit_transition_title">
   <description i18n:translate=""></description>
-  <!-- <action url="" category="workflow" icon="" i18n:translate="submit_transition_title">Submit</action> -->
+  <!-- <action url="" category="workflow" icon="" i18n:translate="submit_transition_title">Submit for verification</action> -->
   <guard>
    <guard-permission>Modify portal content</guard-permission>
    <guard-expression>python:not hasattr(here, 'workflow_guard_submit') and True or here.workflow_guard_submit()</guard-expression>
