@@ -12,10 +12,10 @@ modification_date: 2011/02/01 10:59:31.194263 GMT+2
 creators: admin
 contributors:
 rights:
-allowDiscussion: False
-excludeFromNav: True
-presentation: False
-tableContents: False
+allowDiscussion: 0
+excludeFromNav: 1
+presentation: 0
+tableContents: 0
 Content-Type: text/html
 
 <p><br /></p>

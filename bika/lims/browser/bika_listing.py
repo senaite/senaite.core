@@ -18,18 +18,29 @@ from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
 from bika.lims.utils import isActive
 from operator import itemgetter
-from plone.app.content.batching import Batch
 from plone.app.content.browser import tableview
 from plone.app.content.browser.foldercontents import FolderContentsView, FolderContentsTable
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.i18n.normalizer.interfaces import IIDNormalizer
-from zope.app.component.hooks import getSite
 from zope.component import getUtility
 from zope.component._api import getMultiAdapter
 from zope.i18n import translate
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implements
-import App, json, plone, re, transaction, urllib
+
+import App
+import json
+import pkg_resources
+import plone
+import re
+import transaction
+import urllib
+
+try:
+    from plone.batching import Batch
+except:
+    # Plone < 4.3
+    from plone.app.content.batching import Batch
 
 class WorkflowAction:
     """ Workflow actions taken in any Bika contextAnalysisRequest context

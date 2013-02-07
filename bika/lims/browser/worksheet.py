@@ -22,7 +22,6 @@ from bika.lims.utils import getUsers, isActive
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
-from zope.app.component.hooks import getSite
 from zope.component import getMultiAdapter
 from zope.interface import implements
 import plone, json

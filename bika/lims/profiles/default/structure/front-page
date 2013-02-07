@@ -12,10 +12,10 @@ modification_date: 2013/01/21 14:25:36.020815 GMT+2
 creators: admin
 contributors:
 rights:
-allowDiscussion: True
-excludeFromNav: True
-presentation: False
-tableContents: False
+allowDiscussion: 1
+excludeFromNav: 1
+presentation: 0
+tableContents: 0
 Content-Type: text/html
 
 <dl class="enableFormTabbing"> <dt id="fieldsetlegend-Access"> Access </dt> <dd id="fieldset-Access">

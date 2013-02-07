@@ -22,6 +22,7 @@ from Products.GenericSetup import EXTENSION, profile_registry
 
 allow_module('AccessControl')
 allow_module('bika.lims')
+allow_module('bika.lims.config')
 allow_module('bika.lims.permissions')
 allow_module('bika.lims.utils')
 allow_module('json')

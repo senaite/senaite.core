@@ -16,13 +16,21 @@ from openpyxl.reader.excel import load_workbook
 from os.path import join
 from pkg_resources import resource_listdir, resource_filename, ResourceManager
 from zipfile import ZipFile, ZIP_DEFLATED
-from zope.app.component.hooks import getSite
+
 import Globals
 import json
+import pkg_resources
 import re
 import tempfile
 import transaction
 import zope
+
+try:
+    from zope.component.hooks import getSite
+except:
+    # Plone < 4.3
+    from zope.app.component.hooks import getSite
+
 
 def _c(text):
     if text == None:

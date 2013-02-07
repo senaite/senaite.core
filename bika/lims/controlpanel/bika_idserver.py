@@ -1,4 +1,3 @@
-from zope.app.component.hooks import getSite
 from AccessControl import ClassSecurityInfo
 from App.class_init import InitializeClass
 from OFS.SimpleItem import SimpleItem
@@ -9,6 +8,12 @@ from bika.lims.interfaces import IIdServer
 from zope.interface.declarations import implements
 from hashlib import sha1
 import App,os,sys,random,time,urllib,hmac
+
+try:
+    from zope.component.hooks import getSite
+except:
+    # Plone < 4.3
+    from zope.app.component.hooks import getSite
 
 class IDServerUnavailable(Exception):
     pass

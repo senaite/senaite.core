@@ -26,11 +26,19 @@ from bika.lims.utils import sortable_title
 from decimal import Decimal
 from email.Utils import formataddr
 from types import ListType, TupleType
-from zope.app.component.hooks import getSite
 from zope.interface import implements
+from bika.lims import bikaMessageFactory as _
+
+import pkg_resources
 import sys
 import time
-from bika.lims import bikaMessageFactory as _
+
+try:
+    from zope.component.hooks import getSite
+except:
+    # Plone < 4.3
+    from zope.app.component.hooks import getSite
+
 
 schema = BikaSchema.copy() + Schema((
     StringField('RequestID',
