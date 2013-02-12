@@ -161,6 +161,26 @@
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
 
+  <type type_id="InstrumentCalibration"/>
+  <type type_id="InstrumentCertification"/>
+  <type type_id="InstrumentMaintenanceTask">
+  	<bound-workflow workflow_id="bika_one_state_workflow"/>
+    <bound-workflow workflow_id="bika_cancellation_workflow"/>
+  </type>
+  
+  <type type_id="InstrumentScheduledTask">
+  	<bound-workflow workflow_id="bika_one_state_workflow"/>
+    <bound-workflow workflow_id="bika_inactive_workflow"/>
+  </type>
+  
+  <type type_id="InstrumentTypes"/>
+  <type type_id="InstrumentType">
+   <bound-workflow workflow_id="bika_one_state_workflow"/>
+   <bound-workflow workflow_id="bika_inactive_workflow"/>
+  </type>
+  
+  <type type_id="InstrumentValidation"/>
+
   <type type_id="Invoice"/>
   <type type_id="InvoiceBatch"/>
   <type type_id="InvoiceFolder"/>
@@ -178,6 +198,12 @@
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
   <type type_id="LabProducts"/>
+  
+  <type type_id="Manufacturers"/>
+  <type type_id="Manufacturer">
+  	<bound-workflow workflow_id="bika_one_state_workflow"/>
+  	<bound-workflow workflow_id="bika_inactive_workflow"/>
+  </type>
 
   <type type_id="Methods"/>
   <type type_id="Method">
@@ -190,6 +216,12 @@
   </type>
 
   <type type_id="ReportFolder"/>
+
+  <type type_id="Suppliers"/>
+  <type type_id="Supplier">
+  	<bound-workflow workflow_id="bika_one_state_workflow"/>
+  	<bound-workflow workflow_id="bika_inactive_workflow"/>
+  </type>
 
   <type type_id="SupplyOrder">
    <bound-workflow workflow_id="bika_order_workflow"/>
@@ -224,26 +256,12 @@
 
   <type type_id="ReferenceDefinitions"/>
 
-  <type type_id="ReferenceManufacturer">
-   <bound-workflow workflow_id="bika_one_state_workflow"/>
-   <bound-workflow workflow_id="bika_inactive_workflow"/>
-  </type>
-
-  <type type_id="ReferenceManufacturers"/>
-
   <type type_id="ReferenceSample">
    <bound-workflow workflow_id="bika_referencesample_workflow"/>
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
 
   <type type_id="ReferenceSamplesFolder"/>
-
-  <type type_id="ReferenceSupplier">
-   <bound-workflow workflow_id="bika_one_state_workflow"/>
-   <bound-workflow workflow_id="bika_inactive_workflow"/>
-  </type>
-
-  <type type_id="ReferenceSuppliers"/>
 
   <type type_id="Sample">
    <bound-workflow workflow_id="bika_sample_workflow"/>

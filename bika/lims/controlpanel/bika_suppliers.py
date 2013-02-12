@@ -1,42 +1,37 @@
-"""ReferenceSuppliers is a container for ReferenceSupplier instances.
-"""
-
-from AccessControl.SecurityInfo import ClassSecurityInfo
+from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.Archetypes.ArchetypeTool import registerType
-from Products.Archetypes.public import *
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
-from ZODB.POSException import ConflictError
-from bika.lims import bikaMessageFactory as _
+from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
+from bika.lims import bikaMessageFactory as _
+from plone.app.layout.globals.interfaces import IViewView
 from bika.lims.content.bikaschema import BikaFolderSchema
-from bika.lims.interfaces import IReferenceSuppliers
-from bika.lims.interfaces import IHaveNoBreadCrumbs
-from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
-from plone.app.layout.globals.interfaces import IViewView
-from zope.interface import implements
+from bika.lims.interfaces import ISuppliers
+from zope.interface.declarations import implements
 
-class ReferenceSuppliersView(BikaListingView):
+class SuppliersView(BikaListingView):
     implements(IFolderContentsView, IViewView)
     def __init__(self, context, request):
-        super(ReferenceSuppliersView, self).__init__(context, request)
-        self.icon = self.portal_url + "/++resource++bika.lims.images/referencesupplier_big.png"
-        self.title = _("Reference Suppliers")
+        super(SuppliersView, self).__init__(context, request)
         self.catalog = 'bika_setup_catalog'
-        self.contentFilter = {'portal_type': 'ReferenceSupplier',
+        self.contentFilter = {'portal_type': 'Supplier', 
                               'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'):
-                                {'url': 'createObject?type_name=ReferenceSupplier',
+                                {'url': 'createObject?type_name=Supplier',
                                  'icon': '++resource++bika.lims.images/add.png'}}
+        self.title = _("Suppliers")
+        self.icon = "++resource++bika.lims.images/supplier_big.png"
+        self.description = ""
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
-        self.pagesize = 50
+        self.pagesize = 25
 
         self.columns = {
             'Name': {'title': _('Name'),
@@ -50,12 +45,19 @@ class ReferenceSuppliersView(BikaListingView):
         }
         self.review_states = [
             {'id':'default',
+             'title': _('Active'),
+             'contentFilter': {'inactive_state': 'active'},
+             'transitions': [{'id':'deactivate'}, ],
+             'columns': ['Name', 'Email', 'Phone', 'Fax']},
+            {'id':'inactive',
+             'title': _('Dormant'),
+             'contentFilter': {'inactive_state': 'inactive'},
+             'transitions': [{'id':'activate'}, ],
+             'columns': ['Name', 'Email', 'Phone', 'Fax']},
+            {'id':'all',
              'title': _('All'),
              'contentFilter':{},
-             'columns': ['Name',
-                         'Email',
-                         'Phone',
-                         'Fax']},
+             'columns': ['Name', 'Email', 'Phone', 'Fax']},
         ]
 
     def folderitems(self):
@@ -73,10 +75,10 @@ class ReferenceSuppliersView(BikaListingView):
         return items
 
 schema = ATFolderSchema.copy()
-class ReferenceSuppliers(ATFolder):
-    implements(IReferenceSuppliers)
+class Suppliers(ATFolder):
+    implements(ISuppliers)
     displayContentsTab = False
     schema = schema
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
-atapi.registerType(ReferenceSuppliers, PROJECTNAME)
+atapi.registerType(Suppliers, PROJECTNAME)

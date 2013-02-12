@@ -12,20 +12,21 @@ from plone.app.layout.globals.interfaces import IViewView
 from bika.lims.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
-from bika.lims.interfaces import IReferenceManufacturers
+from bika.lims.interfaces import IManufacturers
 from zope.interface.declarations import implements
 
-class ReferenceManufacturersView(BikaListingView):
+class ManufacturersView(BikaListingView):
     implements(IFolderContentsView, IViewView)
     def __init__(self, context, request):
-        super(ReferenceManufacturersView, self).__init__(context, request)
+        super(ManufacturersView, self).__init__(context, request)
         self.catalog = 'bika_setup_catalog'
-        self.contentFilter = {'portal_type': 'ReferenceManufacturer', 'sort_on': 'sortable_title'}
+        self.contentFilter = {'portal_type': 'Manufacturer', 
+                              'sort_on': 'sortable_title'}
         self.context_actions = {_('Add'):
-                                {'url': 'createObject?type_name=ReferenceManufacturer',
+                                {'url': 'createObject?type_name=Manufacturer',
                                  'icon': '++resource++bika.lims.images/add.png'}}
-        self.title = _("Reference Manufacturers")
-        self.icon = self.portal_url + "/++resource++bika.lims.images/referencemanufacturer_big.png"
+        self.title = _("Manufacturers")
+        self.icon = "++resource++bika.lims.images/manufacturer_big.png"
         self.description = ""
         self.show_sort_column = False
         self.show_select_row = False
@@ -68,10 +69,10 @@ class ReferenceManufacturersView(BikaListingView):
         return items
 
 schema = ATFolderSchema.copy()
-class ReferenceManufacturers(ATFolder):
-    implements(IReferenceManufacturers)
+class Manufacturers(ATFolder):
+    implements(IManufacturers)
     displayContentsTab = False
     schema = schema
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
-atapi.registerType(ReferenceManufacturers, PROJECTNAME)
+atapi.registerType(Manufacturers, PROJECTNAME)

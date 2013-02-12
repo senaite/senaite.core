@@ -15,7 +15,7 @@ class Tests(BikaFunctionalTestCase):
 
     baseurl = None
     browser = None
-    supurl  = "/bika_setup/bika_referencesuppliers/referencesupplier-1/"
+    supurl  = "/bika_setup/bika_suppliers/supplier-1/"
 
     def setUp(self):
         BikaFunctionalTestCase.setUp(self)
@@ -29,7 +29,7 @@ class Tests(BikaFunctionalTestCase):
         list_refdef = self.browser.getControl(name='ReferenceDefinition:list')
         check_blank = self.browser.getControl(name='Blank:boolean')
         check_hazard = self.browser.getControl(name='Hazardous:boolean')
-        list_manufc = self.browser.getControl(name='ReferenceManufacturer:list')
+        list_manufc = self.browser.getControl(name='Manufacturer:list')
         input_catnum = self.browser.getControl(name='CatalogueNumber')
         input_lotnum = self.browser.getControl(name='LotNumber')
         input_remark = self.browser.getControl(name='Remarks')
@@ -81,7 +81,7 @@ class Tests(BikaFunctionalTestCase):
         outrefdef = self.browser.getControl(name='ReferenceDefinition:list').value[0]
         outblank = bool(self.browser.getControl(name='Blank:boolean').value)
         outhazard = bool(self.browser.getControl(name='Hazardous:boolean').value)
-        outmanufc = self.browser.getControl(name='ReferenceManufacturer:list').value[0]
+        outmanufc = self.browser.getControl(name='Manufacturer:list').value[0]
         outcatnum = self.browser.getControl(name='CatalogueNumber').value
         outlotnum = self.browser.getControl(name='LotNumber').value
         outremark = self.browser.getControl(name='Remarks').value

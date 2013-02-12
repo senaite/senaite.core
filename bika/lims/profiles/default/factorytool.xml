@@ -22,21 +22,27 @@
   <type portal_type="ContainerType"/>
   <type portal_type="Department"/>
   <type portal_type="Instrument"/>
+  <type portal_type="InstrumentCalibration"/>
+  <type portal_type="InstrumentCertification"/>
+  <type portal_type="InstrumentMaintenanceTask"/>
+  <type portal_type="InstrumentScheduledTask"/>
+  <type portal_type="InstrumentType"/>
+  <type portal_type="InstrumentValidation"/>
   <type portal_type="LabContact"/>
   <type portal_type="LabProduct"/>
+  <type portal_type="Manufacturer"/>
   <type portal_type="Method"/>
   <type portal_type="SupplyOrder"/>
   <type portal_type="SupplyOrderItem"/>
   <type portal_type="Preservation"/>
   <type portal_type="ReferenceDefinition"/>
-  <type portal_type="ReferenceManufacturer"/>
   <type portal_type="ReferenceSample"/>
-  <type portal_type="ReferenceSupplier"/>
   <type portal_type="Sample"/>
   <type portal_type="SampleMatrix"/>
   <type portal_type="SamplePoint"/>
   <type portal_type="SampleType"/>
   <type portal_type="SamplingDeviation"/>
+  <type portal_type="Supplier"/>
   <type portal_type="WorksheetTemplate"/>
  </factorytypes>
 </object>

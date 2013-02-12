@@ -57,6 +57,12 @@ def initialize(context):
     from content.department import Department
     from content.duplicateanalysis import DuplicateAnalysis
     from content.instrument import Instrument
+    from content.instrumentcalibration import InstrumentCalibration
+    from content.instrumentcertification import InstrumentCertification
+    from content.instrumentmaintenancetask import InstrumentMaintenanceTask
+    from content.instrumentscheduledtask import InstrumentScheduledTask
+    from content.instrumentvalidation import InstrumentValidation
+    from content.instrumenttype import InstrumentType
     from content.invoice import Invoice
     from content.invoicebatch import InvoiceBatch
     from content.invoicefolder import InvoiceFolder
@@ -64,6 +70,7 @@ def initialize(context):
     from content.labcontact import LabContact
     from content.laboratory import Laboratory
     from content.labproduct import LabProduct
+    from content.manufacturer import Manufacturer
     from content.method import Method
     from content.methods import Methods
     from content.organisation import Organisation
@@ -74,10 +81,8 @@ def initialize(context):
     from content.pricelistlineitem import PricelistLineItem
     from content.referenceanalysis import ReferenceAnalysis
     from content.referencedefinition import ReferenceDefinition
-    from content.referencemanufacturer import ReferenceManufacturer
     from content.referencesample import ReferenceSample
     from content.referencesamplesfolder import ReferenceSamplesFolder
-    from content.referencesupplier import ReferenceSupplier
     from content.report import Report
     from content.reportfolder import ReportFolder
     from content.sample import Sample
@@ -87,6 +92,7 @@ def initialize(context):
     from content.samplesfolder import SamplesFolder
     from content.sampletype import SampleType
     from content.samplingdeviation import SamplingDeviation
+    from content.supplier import Supplier
     from content.suppliercontact import SupplierContact
     from content.supplyorder import SupplyOrder
     from content.supplyorderitem import SupplyOrderItem
@@ -106,16 +112,17 @@ def initialize(context):
     from controlpanel.bika_containertypes import ContainerTypes
     from controlpanel.bika_departments import Departments
     from controlpanel.bika_instruments import Instruments
+    from controlpanel.bika_instrumenttypes import InstrumentTypes
     from controlpanel.bika_labcontacts import LabContacts
     from controlpanel.bika_labproducts import LabProducts
+    from controlpanel.bika_manufacturers import Manufacturers
     from controlpanel.bika_preservations import Preservations
     from controlpanel.bika_referencedefinitions import ReferenceDefinitions
-    from controlpanel.bika_referencemanufacturers import ReferenceManufacturers
-    from controlpanel.bika_referencesuppliers import ReferenceSuppliers
     from controlpanel.bika_samplematrices import SampleMatrices
     from controlpanel.bika_samplepoints import SamplePoints
     from controlpanel.bika_sampletypes import SampleTypes
     from controlpanel.bika_samplingdeviations import SamplingDeviations
+    from controlpanel.bika_suppliers import Suppliers
     from controlpanel.bika_worksheettemplates import WorksheetTemplates
 
     content_types, constructors, ftis = process_types(

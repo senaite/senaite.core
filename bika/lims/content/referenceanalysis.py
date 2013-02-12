@@ -83,7 +83,7 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
-    ComputedField('ReferenceSupplierUID',
+    ComputedField('SupplierUID',
         expression = 'context.aq_parent.aq_parent.UID()',
         widget = ComputedWidget(
             visible = False,

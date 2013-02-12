@@ -38,6 +38,13 @@
  <object name="DuplicateAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Instrument" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Instruments" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="InstrumentCalibration" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="InstrumentCertification" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="InstrumentMaintenanceTask" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="InstrumentScheduledTask" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="InstrumentType" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="InstrumentTypes" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="InstrumentValidation" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Invoice" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="InvoiceBatch" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="InvoiceFolder" meta_type="Factory-based Type Information with dynamic views"/>
@@ -47,6 +54,8 @@
  <object name="LabProduct" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="LabProducts" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Laboratory" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Manufacturer" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Manufacturers" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Method" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Methods" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Preservation" meta_type="Factory-based Type Information with dynamic views"/>
@@ -57,12 +66,8 @@
  <object name="ReferenceAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceDefinition" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceDefinitions" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ReferenceManufacturer" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ReferenceManufacturers" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceSample" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceSamplesFolder" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ReferenceSupplier" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="ReferenceSuppliers" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReportFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Report" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Sample" meta_type="Factory-based Type Information with dynamic views"/>
@@ -76,6 +81,8 @@
  <object name="SampleTypes" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SamplingDeviation" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SamplingDeviations" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Supplier" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="Suppliers" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SupplierContact" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SupplyOrder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="SupplyOrderItem" meta_type="Factory-based Type Information with dynamic views"/>

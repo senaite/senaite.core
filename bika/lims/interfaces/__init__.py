@@ -76,12 +76,6 @@ class IReferenceSample(Interface):
 class IReferenceSamplesFolder(Interface):
     """Reference Samples Folder"""
 
-class IReferenceSupplier(Interface):
-    """Reference Supplier"""
-
-class IReferenceSuppliers(Interface):
-    """Reference Suppliers """
-
 class IReportsFolder(Interface):
     """Reports Folder"""
 
@@ -129,7 +123,13 @@ class IContainers(Interface):
     ""
 class IContainerTypes(Interface):
     ""
+class IInstrument(Interface):
+    ""
 class IInstruments(Interface):
+    ""
+class IInstrumentType(Interface):
+    ""
+class IInstrumentTypes(Interface):
     ""
 class IAnalysisSpecs(Interface):
     ""
@@ -141,6 +141,10 @@ class ILabContacts(Interface):
     ""
 class ILabContact(Interface):
     ""
+class IManufacturer(Interface):
+    ""
+class IManufacturers(Interface):
+    ""
 class IMethods(Interface):
     ""
 class ILabProducts(Interface):
@@ -149,9 +153,11 @@ class ISamplePoints(Interface):
     ""
 class ISampleTypes(Interface):
     ""
-class IPreservations(Interface):
+class ISupplier(Interface):
     ""
-class IReferenceManufacturers(Interface):
+class ISuppliers(Interface):
+    ""
+class IPreservations(Interface):
     ""
 class IReferenceDefinitions(Interface):
     ""

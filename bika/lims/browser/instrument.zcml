@@ -1,0 +1,46 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="bika">
+
+	<browser:page
+      for="bika.lims.interfaces.IInstrument"
+      name="schedule"
+      class="bika.lims.browser.instrument.InstrumentScheduleView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IInstrument"
+      name="maintenance"
+      class="bika.lims.browser.instrument.InstrumentMaintenanceView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+    
+    <browser:page
+      for="bika.lims.interfaces.IInstrument"
+      name="validations"
+      class="bika.lims.browser.instrument.InstrumentValidationsView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+    
+    <browser:page
+      for="bika.lims.interfaces.IInstrument"
+      name="calibrations"
+      class="bika.lims.browser.instrument.InstrumentCalibrationsView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+    
+    <browser:page
+      for="bika.lims.interfaces.IInstrument"
+      name="certifications"
+      class="bika.lims.browser.instrument.InstrumentCertificationsView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+</configure>

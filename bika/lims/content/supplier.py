@@ -1,18 +1,12 @@
-"""ReferenceSupplier.
-"""
-
 from AccessControl import ClassSecurityInfo
-from DateTime import DateTime
 from Products.Archetypes.public import *
-from Products.Archetypes.utils import DisplayList
-from Products.CMFCore import permissions
-from Products.CMFCore.permissions import ListFolderContents, ModifyPortalContent
-from Products.CMFCore.utils import getToolByName
-from bika.lims.config import PROJECTNAME, ManageReferenceSuppliers
-from bika.lims.content.organisation import Organisation
-from bika.lims.interfaces import IReferenceSupplier
-from zope.interface import implements
+from Products.CMFCore.permissions import View, ModifyPortalContent
 from bika.lims import bikaMessageFactory as _
+from bika.lims.config import PROJECTNAME, ManageSuppliers
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.content.organisation import Organisation
+from bika.lims.interfaces import ISupplier
+from zope.interface import implements
 
 schema = Organisation.schema.copy() + ManagedSchema((
     TextField('Remarks',
@@ -27,11 +21,10 @@ schema = Organisation.schema.copy() + ManagedSchema((
         ),
     ),
 ))
+schema['AccountNumber'].write_permission = ManageSuppliers
 
-schema['AccountNumber'].write_permission = ManageReferenceSuppliers
-
-class ReferenceSupplier(Organisation):
-    implements(IReferenceSupplier)
+class Supplier(Organisation):
+    implements(ISupplier)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -41,4 +34,4 @@ class ReferenceSupplier(Organisation):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-registerType(ReferenceSupplier, PROJECTNAME)
+registerType(Supplier, PROJECTNAME)

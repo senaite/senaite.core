@@ -9,12 +9,19 @@
  <property name="content_meta_type">Instrument</property>
  <property name="product">bika.lims</property>
  <property name="factory">addInstrument</property>
- <property name="add_view_expr"></property>
+ <property name="add_view_expr">string:${object/absolute_url}/base_edit</property>
  <property name="link_target"></property>
  <property name="global_allow">False</property>
- <property name="filter_content_types">False</property>
- <property name="allowed_content_types"/>
+ <property name="filter_content_types">True</property>
+ <property name="allowed_content_types">
+ 	<element value="InstrumentCalibration"/>
+ 	<element value="InstrumentCertification"/>
+ 	<element value="InstrumentMaintenanceTask"/>
+ 	<element value="InstrumentScheduledTask"/>
+ 	<element value="InstrumentValidation"/>
+ </property>
  <property name="allow_discussion">False</property>
+ <property name="immediate_view">base_edit</property>
  <property name="default_view_fallback">False</property>
 
  <alias from="(Default)" to="base_edit"/>
@@ -35,12 +42,76 @@
  <action title="Edit"
          action_id="edit"
          category="object"
-         condition_expr=""
-         url_expr="string:${object_url}/edit"
+         url_expr="string:${object_url}/base_edit"
          i18n:attributes="title"
          i18n:domain="plone"
-         visible="False">
+         visible="True">
   <permission value="Modify portal content"/>
  </action>
+ 
+ <action title="Maintenance"
+	 	action_id="maintenance"
+	 	category="object"
+	 	condition_expr=""
+	 	icon_expr="string:${portal_url}/images/instrumentmaintenance.png"
+	 	url_expr="string:${object_url}/maintenance"
+	 	i18n:attributes="title"
+	 	visible="True">
+ 	<permission value="Modify portal content"/>
+ </action>
+ 
+ <action title="Validations"
+	 	action_id="validation"
+	 	category="object"
+	 	condition_expr=""
+	 	icon_expr="string:${portal_url}/images/instrumentvalidation.png"
+	 	url_expr="string:${object_url}/validations"
+	 	i18n:attributes="title"
+	 	visible="True">
+ 	<permission value="Modify portal content"/>
+ </action>
 
+ <action title="Calibrations"
+	 	action_id="calibration"
+	 	category="object"
+	 	condition_expr=""
+	 	icon_expr="string:${portal_url}/images/instrumentcalibration.png"
+	 	url_expr="string:${object_url}/calibrations"
+	 	i18n:attributes="title"
+	 	visible="True">
+ 	<permission value="Modify portal content"/>
+ </action>
+ 
+  <action title="Certifications"
+	 	action_id="certification"
+	 	category="object"
+	 	condition_expr=""
+	 	icon_expr="string:${portal_url}/images/instrumentcertification.png"
+	 	url_expr="string:${object_url}/certifications"
+	 	i18n:attributes="title"
+	 	visible="True">
+ 	<permission value="Modify portal content"/>
+  </action>
+
+  <action title="Validations"
+	 	action_id="validation"
+	 	category="object"
+	 	condition_expr=""
+	 	icon_expr="string:${portal_url}/images/instrumentvalidation.png"
+	 	url_expr="string:${object_url}/validations"
+	 	i18n:attributes="title"
+	 	visible="True">
+ 	<permission value="Modify portal content"/>
+  </action>
+  
+  <action title="Schedule"
+	 	action_id="schedule"
+	 	category="object"
+	 	condition_expr=""
+	 	icon_expr="string:${portal_url}/images/instrumentschedule.png"
+	 	url_expr="string:${object_url}/schedule"
+	 	i18n:attributes="title"
+	 	visible="True">
+ 	<permission value="Modify portal content"/>
+  </action>
 </object>

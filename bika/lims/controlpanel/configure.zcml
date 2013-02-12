@@ -115,6 +115,14 @@
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
+    
+    <browser:page
+      for="bika.lims.interfaces.IInstrumentTypes"
+      name="folder_view"
+      class=".bika_instrumenttypes.InstrumentTypesView"
+      permission="bika.lims.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
 
     <browser:page
       for="bika.lims.interfaces.ICalculations"
@@ -155,6 +163,14 @@
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
+    
+    <browser:page
+      for="bika.lims.interfaces.IManufacturers"
+      name="folder_view"
+      class=".bika_manufacturers.ManufacturersView"
+      permission="bika.lims.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
 
     <browser:page
       for="bika.lims.interfaces.IReferenceDefinitions"
@@ -165,17 +181,9 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IReferenceManufacturers"
+      for="bika.lims.interfaces.ISuppliers"
       name="folder_view"
-      class=".bika_referencemanufacturers.ReferenceManufacturersView"
-      permission="bika.lims.ManageBika"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IReferenceSuppliers"
-      name="folder_view"
-      class=".bika_referencesuppliers.ReferenceSuppliersView"
+      class=".bika_suppliers.SuppliersView"
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

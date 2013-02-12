@@ -104,10 +104,10 @@ $(document).ready(function(){
 
 
 	// AJAX: Set ReferenceSamples dropdown when Supplier is selected
-	$("#ReferenceSupplierUID").change(function(){
+	$("#SupplierUID").change(function(){
 		val = $(this).val();
 		$.getJSON('referenceanalysisqc_samples',
-				{'ReferenceSupplierUID':val,
+				{'SupplierUID':val,
 				 '_authenticator': $('input[name="_authenticator"]').val()},
 				 function(data,textStatus){
 					 $("#ReferenceSampleUID").empty().append("<option value=''></option>");
@@ -140,7 +140,7 @@ $(document).ready(function(){
 	})
 
 	// Reference QC: reset the dropdowns on page reload
-	$("#ReferenceSupplierUID").val("");
+	$("#SupplierUID").val("");
 
 });
 });

@@ -51,8 +51,8 @@ schema = BikaSchema.copy() + Schema((
     ),
     ReferenceField('ReferenceManufacturer',
         schemata = 'Description',
-        allowed_types = ('ReferenceManufacturer',),
-        relationship = 'ReferenceSampleReferenceManufacturer',
+        allowed_types = ('Manufacturer',),
+        relationship = 'ReferenceSampleManufacturer',
         vocabulary = "getReferenceManufacturers",
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
@@ -136,7 +136,7 @@ schema = BikaSchema.copy() + Schema((
             label = _("Expected Results"),
         ),
     ),
-    ComputedField('ReferenceSupplierUID',
+    ComputedField('SupplierUID',
         expression = 'context.aq_parent.UID()',
         widget = ComputedWidget(
             visible = False,
@@ -198,7 +198,7 @@ class ReferenceSample(BaseFolder):
     def getReferenceManufacturers(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('','')] + [(o.UID, o.Title) for o in
-                               bsc(portal_type='ReferenceManufacturer',
+                               bsc(portal_type='Manufacturer',
                                    inactive_state = 'active')]
         o = self.getReferenceDefinition()
         if o and o.UID() not in [i[0] for i in items]:

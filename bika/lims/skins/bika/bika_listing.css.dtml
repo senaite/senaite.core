@@ -166,6 +166,9 @@ table.bika-listing-table {
   background-color: &dtml-cancelledBackgroundColor; !important;
   color: &dtml-cancelledTextColor; !important;
 }
+.bika-listing-table .state-cancelled a {
+  color: &dtml-cancelledTextColor; !important;
+}
 
 .bika-listing-table .state-inactive {
   background-color: &dtml-inactiveBackgroundColor; !important;

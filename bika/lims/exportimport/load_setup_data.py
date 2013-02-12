@@ -148,6 +148,8 @@ class LoadSetupData(BrowserView):
             self.load_preservations(sheets["Preservations"])
         if 'Containers' in sheets:
             self.load_containers(sheets["Containers"])
+        if 'InstrumentTypes' in sheets:
+            self.load_instrumenttypes(sheets['Instrument Types'])
         if 'Instruments' in sheets:
             self.load_instruments(sheets['Instruments'])
         if 'Sample Matrices' in sheets:
@@ -176,6 +178,8 @@ class LoadSetupData(BrowserView):
             self.load_sampling_deviations(sheets['Sampling Deviations'])
         if 'Reference Manufacturers' in sheets:
             self.load_reference_manufacturers(sheets['Reference Manufacturers'])
+        if 'Manufacturers' in sheets:
+            self.load_manufacturers(sheets['Manufacturers'])
 
         if 'Calculations' in sheets:
             self.load_calculations(sheets['Calculations'])
@@ -206,7 +210,11 @@ class LoadSetupData(BrowserView):
             self.load_reference_suppliers(sheets['Reference Suppliers'])
         if 'Reference Supplier Contacts' in sheets:
             self.load_reference_supplier_contacts(sheets['Reference Supplier Contacts'])
-
+        if 'Suppliers' in sheets:
+            self.load_reference_suppliers(sheets['Suppliers'])
+        if 'Supplier Contacts' in sheets:
+            self.load_reference_supplier_contacts(sheets['Supplier Contacts'])
+            
         if 'Worksheet Template Layouts' in sheets:
             self.load_wst_layouts(sheets['Worksheet Template Layouts'])
         if 'Worksheet Template Services' in sheets:
@@ -720,16 +728,66 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             _id = folder.invokeFactory('Instrument', id = 'tmp')
             obj = folder[_id]
-            obj.edit(title = _c(row.get('title', '')),
-                     description = _c(row.get('description', '')),
-                     Type = _c(row['Type']),
-                     Brand = _c(row['Brand']),
-                     Model = _c(str(row['Model'])),
-                     SerialNo = _c(str(row['SerialNo'])),
-                     CalibrationCertificate = _c(row['CalibrationCertificate']),
-                     CalibrationExpiryDate = row['CalibrationExpiryDate'],
+            
+            # Create the instrument type (from Type field) if not exists
+            itype_uid = ''
+            itype_title = unicode(row.get('Type',row.get('InstrumentType', 'Unknown')))
+            itype = self.bsc(portal_type='InstrumentType',
+                                        Title = itype_title)        
+            if len(itype) == 0:                
+                itfolder = self.context.bika_setup.bika_instrumenttypes
+                _itypeid = itfolder.invokeFactory('InstrumentType', id = 'tmp')
+                itypeobj = itfolder[_itypeid]
+                itypeobj.edit(title = itype_title,
+                         description = '')
+                itypeobj.unmarkCreationFlag()
+                itype_uid = itypeobj.UID()
+                renameAfterCreation(itypeobj)
+            else:
+                itype_uid = itype[0].getObject().UID()
+                
+            # Create Manufacturer (from Brand) if not exists
+            man_uid = ''
+            man_title = unicode(row.get('Brand',row.get('Manufacturer', 'Unknown')))
+            man = self.bsc(portal_type='Manufacturer',
+                                        Title = man_title)        
+            if len(man) == 0:
+                manfolder = self.context.bika_setup.bika_manufacturers
+                _manid = manfolder.invokeFactory('Manufacturer', id = 'tmp')
+                manobj = manfolder[_manid]
+                manobj.edit(title = man_title,
+                         description = '')
+                manobj.unmarkCreationFlag()
+                man_uid = manobj.UID()
+                renameAfterCreation(manobj)
+            else:
+                man_uid = man[0].getObject().UID()
+                
+            
+            # Create Supplier if not exists
+            sup_uid = ''
+            sup_title = unicode(row.get('Supplier','Unknown'))
+            sup = self.bsc(portal_type='Supplier',
+                                        Title = sup_title)        
+            if len(sup) == 0:
+                supfolder = self.context.bika_setup.bika_suppliers
+                _supid = supfolder.invokeFactory('Supplier', id = 'tmp')
+                supobj = supfolder[_supid]
+                supobj.edit(title = sup_title,
+                         description = '')
+                supobj.unmarkCreationFlag()
+                sup_uid = supobj.UID()
+                renameAfterCreation(supobj)
+            else:
+                sup_uid = sup[0].getObject().UID()   
+            
+            
                      DataInterface = row['DataInterface'])
-            self.instruments[row.get('title', '')] = obj
+                        
+            obj.setInstrumentType(itype_uid)
+            obj.setManufacturer(man_uid)
+            obj.setSupplier(sup_uid)       
+            self.instruments[row.get('title', '')] = obj   
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
 
@@ -1240,11 +1298,11 @@ class LoadSetupData(BrowserView):
         nr_cols = sheet.get_highest_column()
         rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
         fields = rows[0]
-        folder = self.context.bika_setup.bika_referencemanufacturers
+        folder = self.context.bika_setup.bika_manufacturers
         self.ref_manufacturers = {}
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            _id = folder.invokeFactory('ReferenceManufacturer', id = 'tmp')
+            _id = folder.invokeFactory('Manufacturer', id = 'tmp')
             obj = folder[_id]
             obj.edit(title = _c(row.get('title', '')),
                      description = _c(row.get('description', '')))
@@ -1257,11 +1315,11 @@ class LoadSetupData(BrowserView):
         nr_cols = sheet.get_highest_column()
         rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
         fields = rows[0]
-        folder = self.context.bika_setup.bika_referencesuppliers
+        folder = self.context.bika_setup.bika_suppliers
         self.ref_suppliers = {}
         for row in rows[3:]:
             row = dict(zip(fields, row))
-            _id = folder.invokeFactory('ReferenceSupplier', id = 'tmp')
+            _id = folder.invokeFactory('Supplier', id = 'tmp')
             obj = folder[_id]
             obj.edit(AccountNumber = _c(row['AccountNumber']),
                      Name = _c(row['Name']),
@@ -1281,7 +1339,7 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             if not row['ReferenceSupplier_Name']:
                 continue
-            folder = self.bsc(portal_type="ReferenceSupplier",
+            folder = self.bsc(portal_type="Supplier",
                               Title = row['ReferenceSupplier_Name'])
             if (len(folder) > 0):
                 folder = folder[0].getObject()
@@ -1779,4 +1837,81 @@ class LoadSetupData(BrowserView):
             self.set_wf_history(obj, row['workflow_history'])
             obj.unmarkCreationFlag()
 
+    def load_manufacturers(self, sheet):
+        nr_rows = sheet.get_highest_row()
+        nr_cols = sheet.get_highest_column()
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
+        fields = rows[0]
+        folder = self.context.bika_setup.bika_manufacturers
+        self.manufacturers = {}
+        for row in rows[3:]:
+            row = dict(zip(fields, row))
+            _id = folder.invokeFactory('Manufacturer', id = 'tmp')
+            obj = folder[_id]
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''))
+            obj.unmarkCreationFlag()
+            self.manufacturers[row['title']] = obj.UID()
+            renameAfterCreation(obj)
+    
+    def load_suppliers(self, sheet):
+        nr_rows = sheet.get_highest_row()
+        nr_cols = sheet.get_highest_column()
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
+        fields = rows[0]
+        folder = self.context.bika_setup.bika_suppliers
+        self.suppliers = {}
+        for row in rows[3:]:
+            row = dict(zip(fields, row))
+            _id = folder.invokeFactory('Supplier', id = 'tmp')
+            obj = folder[_id]
+            obj.edit(AccountNumber = unicode(row['AccountNumber']),
+                     Name = unicode(row['Name']),
+                     EmailAddress = unicode(row['EmailAddress']),
+                     Phone = unicode(row['Phone']),
+                     Fax = unicode(row['Fax']))
+            obj.unmarkCreationFlag()
+            self.suppliers[obj.Title()] = obj
+            renameAfterCreation(obj)
 
+    def load_supplier_contacts(self, sheet):
+        nr_rows = sheet.get_highest_row()
+        nr_cols = sheet.get_highest_column()
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
+        fields = rows[0]
+        for row in rows[3:]:
+            row = dict(zip(fields, row))
+            if not row['Supplier_Name']:
+                continue
+            folder = self.bsc(portal_type="Supplier",
+                              Title = row['Supplier_Name'])
+            if (len(folder) > 0):
+                folder = folder[0].getObject()
+                _id = folder.invokeFactory('SupplierContact', id = 'tmp')
+                obj = folder[_id]
+                obj.edit(
+                    Firstname = unicode(row['Firstname']),
+                    Surname = unicode(row['Surname']),
+                    EmailAddress = unicode(row['EmailAddress']))
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
+    
+                if 'Username' in row:
+                    obj.setUsername(unicode(row['Username']))
+
+    def load_instrumenttypes(self, sheet):
+        nr_rows = sheet.get_highest_row()
+        nr_cols = sheet.get_highest_column()
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
+        fields = rows[0]
+        folder = self.context.bika_setup.bika_instrumenttypes
+        self.instrumenttypes = {}
+        for row in rows[3:]:
+            row = dict(zip(fields, row))
+            _id = folder.invokeFactory('InstrumentType', id = 'tmp')
+            obj = folder[_id]
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''))
+            obj.unmarkCreationFlag()
+            self.instrumenttypes[row['title']] = obj.UID()
+            renameAfterCreation(obj)
