@@ -780,8 +780,15 @@ class LoadSetupData(BrowserView):
                 renameAfterCreation(supobj)
             else:
                 sup_uid = sup[0].getObject().UID()   
-            
-            
+                        
+            obj.edit(title = row.get('title', ''),
+                     description = row.get('description', ''),
+                     Type = unicode(row['Type']),
+                     Brand = unicode(row['Brand']),
+                     Model = unicode(row['Model']),
+                     SerialNo = unicode(row['SerialNo']),
+                     CalibrationCertificate = unicode(row['CalibrationCertificate']),
+                     CalibrationExpiryDate = unicode(row['CalibrationExpiryDate']),
                      DataInterface = row['DataInterface'])
                         
             obj.setInstrumentType(itype_uid)
