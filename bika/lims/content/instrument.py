@@ -1,16 +1,18 @@
 from AccessControl import ClassSecurityInfo
+from Products.ATContentTypes.content import schemata
+from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.atapi import *
+from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
+from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.widgets import DateTimeWidget
+from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema, BikaFolderSchema
 from bika.lims.interfaces import IInstrument
-from bika.lims.browser.widgets import DateTimeWidget
-from zope.interface import implements
-from Products.CMFCore.utils import getToolByName
 from plone.app.folder.folder import ATFolder
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes.references import HoldingReference
+from zope.interface import implements
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
                                      
@@ -81,7 +83,28 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
             label = _("Preventive maintenance procedure"),
             description = _("Instructions for regular preventive and maintenance routines intended for analysts"),
         ),
-    ),                  
+    ),   
+                                                               
+    StringField('DataInterface',
+        vocabulary = "getDataInterfacesList",
+        widget = ReferenceWidget(
+            checkbox_bound = 1,
+            label = _("Data Interface"),
+            description = _("Select an Import/Export interface for this instrument."),
+        ),
+    ),
+    RecordsField('DataInterfaceOptions',
+        type = 'interfaceoptions',
+        subfields = ('Key','Value'),
+        required_subfields = ('Key','Value'),
+        subfield_labels = {'OptionValue': _('Key'),
+                           'OptionText': _('Value'),},
+        widget = RecordsWidget(
+            label = _("Data Interface Options"),
+            description = _("Use this field to pass arbitrary parameters to the export/import "
+                            "modules."),
+        ),
+    ),               
 ))
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'

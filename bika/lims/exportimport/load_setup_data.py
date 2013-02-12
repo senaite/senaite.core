@@ -713,6 +713,60 @@ class LoadSetupData(BrowserView):
             row = dict(zip(fields, row))
             _id = folder.invokeFactory('Instrument', id = 'tmp')
             obj = folder[_id]
+            
+            # Create the instrument type (from Type field) if not exists
+            itype_uid = ''
+            itype_title = unicode(row.get('Type',row.get('InstrumentType', 'Unknown')))
+            itype = self.bsc(portal_type='InstrumentType',
+                                        Title = itype_title)        
+            if len(itype) == 0:                
+                itfolder = self.context.bika_setup.bika_instrumenttypes
+                _itypeid = itfolder.invokeFactory('InstrumentType', id = 'tmp')
+                itypeobj = itfolder[_itypeid]
+                itypeobj.edit(title = itype_title,
+                         description = '')
+                itypeobj.unmarkCreationFlag()
+                itype_uid = itypeobj.UID()
+                renameAfterCreation(itypeobj)
+            else:
+                itype_uid = itype[0].getObject().UID()
+                
+            # Create Manufacturer (from Brand) if not exists
+            man_uid = ''
+            man_title = unicode(row.get('Brand',row.get('Manufacturer', 'Unknown')))
+            man = self.bsc(portal_type='Manufacturer',
+                                        Title = man_title)        
+            if len(man) == 0:
+                manfolder = self.context.bika_setup.bika_manufacturers
+                _manid = manfolder.invokeFactory('Manufacturer', id = 'tmp')
+                manobj = manfolder[_manid]
+                manobj.edit(title = man_title,
+                         description = '')
+                manobj.unmarkCreationFlag()
+                man_uid = manobj.UID()
+                renameAfterCreation(manobj)
+            else:
+                man_uid = man[0].getObject().UID()
+                
+            
+            # Create Supplier if not exists
+            sup_uid = ''
+            sup_title = unicode(row.get('Supplier','Unknown'))
+            sup = self.bsc(portal_type='Supplier',
+                                        Title = sup_title)        
+            if len(sup) == 0:
+                supfolder = self.context.bika_setup.bika_suppliers
+                _supid = supfolder.invokeFactory('Supplier', id = 'tmp')
+                supobj = supfolder[_supid]
+                supobj.edit(title = sup_title,
+                         description = '')
+                supobj.unmarkCreationFlag()
+                sup_uid = supobj.UID()
+                renameAfterCreation(supobj)
+            else:
+                sup_uid = sup[0].getObject().UID()   
+            
+            
             obj.edit(title = row.get('title', ''),
                      description = row.get('description', ''),
                      Type = unicode(row['Type']),
@@ -722,7 +776,11 @@ class LoadSetupData(BrowserView):
                      CalibrationCertificate = unicode(row['CalibrationCertificate']),
                      CalibrationExpiryDate = unicode(row['CalibrationExpiryDate']),
                      DataInterface = row['DataInterface'])
-            self.instruments[row.get('title', '')] = obj
+                        
+            obj.setInstrumentType(itype_uid)
+            obj.setManufacturer(man_uid)
+            obj.setSupplier(sup_uid)       
+            self.instruments[row.get('title', '')] = obj   
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
 
