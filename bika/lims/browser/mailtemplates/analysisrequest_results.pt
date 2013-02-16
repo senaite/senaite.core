@@ -242,7 +242,7 @@
                 global out_of_range python:1 if not in_range[0] else out_of_range;">
 
               <td nowrap
-                tal:attributes="class out_of_range">
+                tal:attributes="class result_class">
                 <span tal:content="result">10.00</span>
                 <span tal:content="string:${analysis/Unit}"
                   tal:condition="analysis/Unit|nothing"/>
