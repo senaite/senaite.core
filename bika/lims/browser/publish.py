@@ -51,7 +51,7 @@ class doPublish(BrowserView):
         if not result:
             return ''
         try:
-            result = str('%%.%sf' % precision)%float(result)
+            return str('%%.%sf' % precision)%float(result)
         except:
             return result
 

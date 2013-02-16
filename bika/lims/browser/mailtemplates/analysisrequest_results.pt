@@ -232,17 +232,17 @@
             analysis python:analysis_found and ar[keyword];
             result analysis/getResult|nothing;
             precision python:analysis.getService().getPrecision();
-            result python: view.formattedResult(result, precision);
+            result python:str('%%.%sf' % precision)%float(result);
             uncertainty analysis/getUncertainty|nothing">
             <tal:result
               tal:condition="analysis_found"
               tal:define="
                 in_range python:analysis.result_in_range(None, 'client');
-                result_class python:in_range[0] and '' or 'out_of_range';
-                global out_of_range python:in_range[0] and out_of_range or 1;">
+                result_class python:'' if in_range[0] else 'out_of_range';
+                global out_of_range python:1 if not in_range[0] else out_of_range;">
 
               <td nowrap
-                tal:attributes="class result_class">
+                tal:attributes="class out_of_range">
                 <span tal:content="result">10.00</span>
                 <span tal:content="string:${analysis/Unit}"
                   tal:condition="analysis/Unit|nothing"/>
