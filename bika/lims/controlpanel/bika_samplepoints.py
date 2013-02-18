@@ -10,6 +10,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from plone.app.layout.globals.interfaces import IViewView
 from bika.lims import bikaMessageFactory as _
+from Products.Archetypes import PloneMessageFactory as _p
 from bika.lims.interfaces import ISamplePoints
 from bika.lims.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -44,6 +45,8 @@ class SamplePointsView(BikaListingView):
             'Description': {'title': _('Description'),
                             'index': 'description',
                             'toggle': True},
+            'Owner': {'title': _p('Owner'),
+                      'toggle': True},
             'getComposite': {'title': _('Composite'),
                              'toggle': True},
             'SampleTypes': {'title': _('Sample Types'),
@@ -55,16 +58,16 @@ class SamplePointsView(BikaListingView):
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
-             'columns': ['Title', 'Description', 'getComposite', 'SampleTypes']},
+             'columns': ['Title', 'Description', 'Owner', 'SampleTypes']},
             {'id':'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': [{'id':'activate'}, ],
-             'columns': ['Title', 'Description', 'getComposite', 'SampleTypes']},
+             'columns': ['Title', 'Description', 'Owner', 'SampleTypes']},
             {'id':'all',
              'title': _('All'),
              'contentFilter':{},
-             'columns': ['Title', 'Description', 'getComposite', 'SampleTypes']},
+             'columns': ['Title', 'Description', 'Owner', 'SampleTypes']},
         ]
 
     def folderitems(self):
@@ -72,10 +75,15 @@ class SamplePointsView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
-            items[x]['Description'] = obj.Description()
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
-            items[x]['SampleTypes'] = ",".join([st.Title() for st in obj.getSampleTypes()])
+            items[x]['Description'] = obj.Description()
+            titles = [st.Title() for st in obj.getSampleTypes()]
+            items[x]['SampleTypes'] = ",".join(titles)
+            if obj.aq_parent.portal_type == 'Client':
+                items[x]['Owner'] = obj.aq_parent.Title()
+            else:
+                items[x]['Owner'] = self.context.bika_setup.laboratory.Title()
         return items
 
 schema = ATFolderSchema.copy()
