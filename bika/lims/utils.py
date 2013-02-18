@@ -31,6 +31,14 @@ def to_utf8(text):
     else:
         return unicode(text).encode('utf-8')
 
+def to_unicode(text):
+    if text == None:
+        text = ''
+    if type(text) == str:
+        return text.decode('utf-8')
+    else:
+        return text
+
 # Wrapper for PortalTransport's sendmail - don't know why there sendmail
 # method is marked private
 ModuleSecurityInfo('Products.bika.utils').declarePublic('sendmail')

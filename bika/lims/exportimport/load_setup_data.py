@@ -290,7 +290,6 @@ class LoadSetupData(BrowserView):
                'hours': int(values['DefaultSampleLifetime_hours'] and values['DefaultSampleLifetime_hours'] or 0),
                'minutes': int(values['DefaultSampleLifetime_minutes'] and values['DefaultSampleLifetime_minutes'] or 0),
                }
-
         self.context.bika_setup.edit(
             PasswordLifetime = int(values['PasswordLifetime']),
             AutoLogOff = int(values['AutoLogOff']),
@@ -302,8 +301,8 @@ class LoadSetupData(BrowserView):
 ##            BatchFax = int(values['BatchFax']),
 ##            SMSGatewayAddress = values['SMSGatewayAddress'],
             SamplingWorkflowEnabled = values['SamplingWorkflowEnabled'],
-            CategoriseAnalysisServices = values['CategoriseAnalysisServices'],
-            EnableAnalysisRemarks = values.get('EnableAnalysisRemarks', ''),
+            CategoriseAnalysisServices = self.to_bool(values['CategoriseAnalysisServices']),
+            EnableAnalysisRemarks = self.to_bool(values.get('EnableAnalysisRemarks', '')),
             DryMatterService = self.services.get(values['DryMatterService'], ''),
             ARImportOption = values['ARImportOption'],
             ARAttachmentOption = values['ARAttachmentOption'][0].lower(),
@@ -311,10 +310,10 @@ class LoadSetupData(BrowserView):
             DefaultSampleLifetime = DSL,
             AutoPrintLabels = values['AutoPrintLabels'].lower(),
             AutoLabelSize = values['AutoLabelSize'].lower(),
-            YearInPrefix = values['YearInPrefix'],
+            YearInPrefix = self.to_bool(values['YearInPrefix']),
             SampleIDPadding = int(values['SampleIDPadding']),
             ARIDPadding = int(values['ARIDPadding']),
-            ExternalIDServer = values['ExternalIDServer'] and True or False,
+            ExternalIDServer = self.to_bool(values['ExternalIDServer']),
             IDServerURL = values['IDServerURL'],
         )
 
@@ -425,7 +424,7 @@ class LoadSetupData(BrowserView):
                 obj.edit(title = row['title'],
                          description = row.get('description', ''),
                          Capacity = row.get('Capacity',0),
-                         PrePreserved = row['PrePreserved'] and row['PrePreserved'] or False)
+                         PrePreserved = self.to_bool(row['PrePreserved']))
                 if row['ContainerType_title']:
                     obj.setContainerType(self.containertypes[row['ContainerType_title']])
                 if P:
@@ -459,7 +458,7 @@ class LoadSetupData(BrowserView):
             Name = values['Name'],
             LabURL = values['LabURL'],
             Confidence = values['Confidence'],
-            LaboratoryAccredited = values['LaboratoryAccredited'],
+            LaboratoryAccredited = self.to_bool(values['LaboratoryAccredited']),
             AccreditationBodyLong = values['AccreditationBodyLong'],
             AccreditationBody = values['AccreditationBody'],
             AccreditationBodyURL = values['AccreditationBodyURL'],
@@ -779,7 +778,7 @@ class LoadSetupData(BrowserView):
             obj = folder[_id]
             obj.edit(title = row['title'],
                      description = row.get('description', ''),
-                     Composite = row['Composite'] and True or False,
+                     Composite = self.to_bool(row['Composite']),
                      Elevation = row['Elevation'],
                      SampleTypes = row['SampleType_title'] and self.sampletypes[row['SampleType_title']] or []
                      )
@@ -799,7 +798,7 @@ class LoadSetupData(BrowserView):
                 obj.edit(title = row['title'],
                          description = row.get('description', ''),
                          RetentionPeriod = {'days':row['RetentionPeriod'] and row['RetentionPeriod'] or 0,'hours':0,'minutes':0},
-                         Hazardous = row['Hazardous'] and True or False,
+                         Hazardous = self.to_bool(row['Hazardous']),
                          SampleMatrix = row['SampleMatrix_title'] and self.samplematrices[row['SampleMatrix_title']] or None,
                          Prefix = row['Prefix'],
                          MinimumVolume = row['MinimumVolume'],
@@ -939,7 +938,7 @@ class LoadSetupData(BrowserView):
                 PointOfCapture = row['PointOfCapture'],
                 Category = self.cats[row['AnalysisCategory_title']].UID(),
                 Department = row['Department_title'] and self.departments[row['Department_title']].UID() or None,
-                ReportDryMatter = row['ReportDryMatter'] and True or False,
+                ReportDryMatter = self.to_bool(row['ReportDryMatter']),
                 AttachmentOption = row['Attachment'][0].lower(),
                 Unit = row['Unit'] and row['Unit'] or None,
                 Precision = row['Precision'] and str(row['Precision']) or '2',
@@ -951,7 +950,7 @@ class LoadSetupData(BrowserView):
                 Instrument = row['Instrument_title'] and self.instruments[row['Instrument_title']] or None,
                 Calculation = row['Calculation_title'] and self.calcs[row['Calculation_title']] or None,
                 DuplicateVariation = "%02f" % float(row['DuplicateVariation']),
-                Accredited = row['Accredited'] and True or False,
+                Accredited = self.to_bool(row['Accredited']),
                 InterimFields = hasattr(self,'service_interims') and self.service_interims.get(row['title'], []) or []
             )
             self.services[row['title']] = obj
@@ -1157,9 +1156,9 @@ class LoadSetupData(BrowserView):
                 obj = folder[_id]
                 obj.edit(title = row['title'],
                          description = row.get('description', ''),
-                         Blank = row['Blank'] and True or False,
+                         Blank = self.to_bool(row['Blank']),
                          ReferenceResults = self.ref_def_results.get(row['title'], []),
-                         Hazardous = row['Hazardous'] and True or False)
+                         Hazardous = self.to_bool(row['Hazardous']))
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
                 self.definitions[row['title']] = obj.UID()
@@ -1769,3 +1768,16 @@ class LoadSetupData(BrowserView):
             rowout = dict(zip(fields, rowout))
             rowsout.append(rowout)
         return rowsout
+    
+    def to_bool(self, value):
+        
+        """ Converts a sheet string value to a boolean value.
+            Needed because of utf-8 conversions
+        """
+        
+        if value is not None and (value == u'True' or value==u'true' \
+            or value=='True' or value=='true' \
+            or value==u'1' or value=='1' or value==1):
+            return True
+        else:
+            return False

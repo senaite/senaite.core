@@ -11,6 +11,7 @@ from Products.validation import validation
 from Products.validation.validators.RegexValidator import RegexValidator
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.utils import to_utf8 as _c
+from bika.lims.utils import to_unicode as _u
 from bika.lims.browser.widgets import *
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from bika.lims.browser.fields import *
@@ -80,6 +81,7 @@ def getContainers(instance,
     containertypes = dict([(ct.UID(), ct.Title())
                            for ct in containertypes if ct])
     for ctype_uid, ctype_title in containertypes.items():
+        ctype_title = _u(ctype_title)
         if show_container_types:
             items.append((ctype_uid, "%s: %s"%(cat_str, ctype_title)))
         if show_containers:
