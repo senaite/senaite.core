@@ -32,11 +32,6 @@ except:
     from zope.app.component.hooks import getSite
 
 
-def _c(text):
-    if text == None:
-        text = ''
-    return unicode(text).encode('utf-8')
-
 class LoadSetupData(BrowserView):
 
     def __init__(self, context, request):
@@ -91,7 +86,10 @@ class LoadSetupData(BrowserView):
             src_accessor = src_field.getAccessor(src_obj)
 
             tool = getToolByName(self.context, d['dest_catalog'])
-            proxies = tool(d['dest_query'])
+            try:
+                proxies = tool(d['dest_query'])
+            except:
+                continue
             if len(proxies) > 0:
                 obj = proxies[0].getObject()
                 if multiValued:
@@ -148,7 +146,13 @@ class LoadSetupData(BrowserView):
             self.load_preservations(sheets["Preservations"])
         if 'Containers' in sheets:
             self.load_containers(sheets["Containers"])
-        if 'InstrumentTypes' in sheets:
+        if 'Suppliers' in sheets:
+            self.load_suppliers(sheets['Suppliers'])
+        if 'Supplier Contacts' in sheets:
+            self.load_supplier_contacts(sheets['Supplier Contacts'])
+        if 'Manufacturers' in sheets:
+            self.load_manufacturers(sheets['Manufacturers'])
+        if 'Instrument Types' in sheets:
             self.load_instrumenttypes(sheets['Instrument Types'])
         if 'Instruments' in sheets:
             self.load_instruments(sheets['Instruments'])
@@ -178,9 +182,6 @@ class LoadSetupData(BrowserView):
             self.load_sampling_deviations(sheets['Sampling Deviations'])
         if 'Reference Manufacturers' in sheets:
             self.load_reference_manufacturers(sheets['Reference Manufacturers'])
-        if 'Manufacturers' in sheets:
-            self.load_manufacturers(sheets['Manufacturers'])
-
         if 'Calculations' in sheets:
             self.load_calculations(sheets['Calculations'])
         if 'Analysis Services' in sheets:
@@ -210,10 +211,6 @@ class LoadSetupData(BrowserView):
             self.load_reference_suppliers(sheets['Reference Suppliers'])
         if 'Reference Supplier Contacts' in sheets:
             self.load_reference_supplier_contacts(sheets['Reference Supplier Contacts'])
-        if 'Suppliers' in sheets:
-            self.load_reference_suppliers(sheets['Suppliers'])
-        if 'Supplier Contacts' in sheets:
-            self.load_reference_supplier_contacts(sheets['Supplier Contacts'])
             
         if 'Worksheet Template Layouts' in sheets:
             self.load_wst_layouts(sheets['Worksheet Template Layouts'])
@@ -283,13 +280,10 @@ class LoadSetupData(BrowserView):
         self.request.RESPONSE.redirect(portal.absolute_url())
 
     def load_bika_setup(self,sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Bika Setup...")
         values = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             values[row['Field']] = row['Value']
 
         DSL = {'days': int(values['DefaultSampleLifetime_days'] and values['DefaultSampleLifetime_days'] or 0),
@@ -325,13 +319,10 @@ class LoadSetupData(BrowserView):
         )
 
     def load_id_prefixes(self,sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading ID Prefixes...")
         prefixes = self.context.bika_setup.getPrefixes()
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             # remove existing prefix from list
             prefixes = [p for p in prefixes
                         if p['portal_type'] != row['portal_type']]
@@ -342,135 +333,113 @@ class LoadSetupData(BrowserView):
         self.context.bika_setup.setPrefixes(prefixes)
 
     def load_containertypes(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Container Types...")
         folder = self.context.bika_setup.bika_containertypes
         self.containertypes = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
-            _id = folder.invokeFactory('ContainerType', id = 'tmp')
-            obj = folder[_id]
-            obj.edit(title = _c(row.get('title', '')),
-                     description = _c(row.get('description', '')))
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            self.containertypes[row.get('title', '')] = obj
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if row['title']:
+                _id = folder.invokeFactory('ContainerType', id = 'tmp')
+                obj = folder[_id]
+                obj.edit(title = row['title'],
+                         description = row.get('description', ''))
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
+                self.containertypes[row['title']] = obj
 
     def load_BatchLabels(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Batch Labels...")
         folder = self.context.bika_setup.bika_batchlabels
-        self.containertypes = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
-            _id = folder.invokeFactory('BatchLabel', id = 'tmp')
-            obj = folder[_id]
-            obj.edit(title = _c(row.get('title', '')))
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            self.containertypes[row.get('title', '')] = obj
-
+        self.batchlabels = {}
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if row['title']:
+                _id = folder.invokeFactory('BatchLabel', id = 'tmp')
+                obj = folder[_id]
+                obj.edit(title = row['title'])
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
+                self.batchlabels[row['title']] = obj
 
     def load_CaseStatuses(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Batch Labels...")
         folder = self.context.bika_setup.bika_casestatuses
-        self.containertypes = {}
+        self.casestatuses = {}
+        rows = self.get_rows(sheet, 3)
         for row in rows[3:]:
-            row = dict(zip(fields, row))
-            _id = folder.invokeFactory('CaseStatus', id = 'tmp')
-            obj = folder[_id]
-            obj.edit(title = _c(row.get('title', '')),
-                     description = _c(row.get('description', '')))
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            self.containertypes[row.get('title', '')] = obj
-
+            if row['title']:
+                _id = folder.invokeFactory('CaseStatus', id = 'tmp')
+                obj = folder[_id]
+                obj.edit(title = row['title'],
+                         description = row.get('description', ''))
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
+                self.casestatuses[row['title']] = obj
 
     def load_CaseOutcomes(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Case Outcomes...")
         folder = self.context.bika_setup.bika_caseoutcomes
-        self.containertypes = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
-            _id = folder.invokeFactory('CaseOutcome', id = 'tmp')
-            obj = folder[_id]
-            obj.edit(title = _c(row.get('title', '')),
-                     description = _c(row.get('description', '')))
-            obj.unmarkCreationFlag()
-            # renameAfterCreation(obj)
-            self.containertypes[row.get('title', '')] = obj
-
+        self.caseoutcomes = {}
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if row['title']:
+                _id = folder.invokeFactory('CaseOutcome', id = 'tmp')
+                obj = folder[_id]
+                obj.edit(title = row['title'],
+                         description = row.get('description', ''))
+                obj.unmarkCreationFlag()
+                # renameAfterCreation(obj)
+                self.caseoutcomes[row['title']] = obj
 
     def load_preservations(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Preservations...")
         folder = self.context.bika_setup.bika_preservations
         self.preservations = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
-            _id = folder.invokeFactory('Preservation', id = 'tmp')
-            obj = folder[_id]
-            RP = {'days': int(row['RetentionPeriod_days'] and row['RetentionPeriod_days'] or 0),
-                  'hours': int(row['RetentionPeriod_hours'] and row['RetentionPeriod_hours'] or 0),
-                  'minutes': int(row['RetentionPeriod_minutes'] and row['RetentionPeriod_minutes'] or 0),
-                  }
-
-            obj.edit(title = _c(row.get('title', '')),
-                     description = _c(row.get('description', '')),
-                     RetentionPeriod = RP
-            )
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            self.preservations[row.get('title', '')] = obj
-
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if row['title']:
+                _id = folder.invokeFactory('Preservation', id = 'tmp')
+                obj = folder[_id]
+                RP = {'days': int(row['RetentionPeriod_days'] and row['RetentionPeriod_days'] or 0),
+                      'hours': int(row['RetentionPeriod_hours'] and row['RetentionPeriod_hours'] or 0),
+                      'minutes': int(row['RetentionPeriod_minutes'] and row['RetentionPeriod_minutes'] or 0),
+                      }
+    
+                obj.edit(title = row['title'],
+                         description = row.get('description', ''),
+                         RetentionPeriod = RP)
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
+                self.preservations[row['title']] = obj
 
     def load_containers(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Containers...")
         folder = self.context.bika_setup.bika_containers
         self.containers = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
-            _id = folder.invokeFactory('Container', id = 'tmp')
-            obj = folder[_id]
-            P = row['Preservation_title']
-            obj.edit(title = _c(row.get('title', '')),
-                     description = _c(row.get('description', '')),
-                     Capacity = _c(row['Capacity']),
-                     PrePreserved = row['PrePreserved'] and row['PrePreserved'] or False)
-            if row['ContainerType_title']:
-                obj.setContainerType(self.containertypes[row['ContainerType_title']])
-            if P:
-                obj.setPreservation(self.preservations[P])
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            self.containers[row.get('title', '')] = obj
-
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if row['title']:
+                _id = folder.invokeFactory('Container', id = 'tmp')
+                obj = folder[_id]
+                P = row['Preservation_title']
+                obj.edit(title = row['title'],
+                         description = row.get('description', ''),
+                         Capacity = row.get('Capacity',0),
+                         PrePreserved = row['PrePreserved'] and row['PrePreserved'] or False)
+                if row['ContainerType_title']:
+                    obj.setContainerType(self.containertypes[row['ContainerType_title']])
+                if P:
+                    obj.setPreservation(self.preservations[P])
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
+                self.containers[row['title']] = obj
 
     def load_lab_information(self, sheet):
-        self.departments = {}
+        logger.info("Loading Lab information...")
         laboratory = self.context.bika_setup.laboratory
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
         values = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             values[row['Field']] = row['Value']
 
         addresses = {}
@@ -480,70 +449,68 @@ class LoadSetupData(BrowserView):
                 addresses[add_type][key] = values["%s_%s" % (add_type, key)]
 
         if values['AccreditationBodyLogo']:
-            file_title = sortable_title(obj, values['AccreditationBodyLogo'])
             path = resource_filename("bika.lims","setupdata/%s/%s" \
-                                     % (self.dataset_name, row['AccreditationBodyLogo']))
+                                     % (self.dataset_name, values['AccreditationBodyLogo']))
             file_data = open(path, "rb").read()
         else:
             file_data = None
 
         laboratory.edit(
-            Name = _c(values['Name']),
-            LabURL = _c(values['LabURL']),
+            Name = values['Name'],
+            LabURL = values['LabURL'],
             Confidence = values['Confidence'],
             LaboratoryAccredited = values['LaboratoryAccredited'],
-            AccreditationBodyLong = _c(values['AccreditationBodyLong']),
-            AccreditationBody = _c(values['AccreditationBody']),
-            AccreditationBodyURL = _c(values['AccreditationBodyURL']),
-            Accreditation = _c(values['Accreditation']),
-            AccreditationReference = _c(values['AccreditationReference']),
+            AccreditationBodyLong = values['AccreditationBodyLong'],
+            AccreditationBody = values['AccreditationBody'],
+            AccreditationBodyURL = values['AccreditationBodyURL'],
+            Accreditation = values['Accreditation'],
+            AccreditationReference = values['AccreditationReference'],
             AccreditationBodyLogo = file_data,
-            TaxNumber = _c(values['TaxNumber']),
-            Phone = _c(values['Phone']),
-            Fax = _c(values['Fax']),
-            EmailAddress = _c(values['EmailAddress']),
+            TaxNumber = values['TaxNumber'],
+            Phone = values['Phone'],
+            Fax = values['Fax'],
+            EmailAddress = values['EmailAddress'],
             PhysicalAddress = addresses['Physical'],
             PostalAddress = addresses['Postal'],
             BillingAddress = addresses['Billing']
         )
 
     def load_lab_contacts(self, sheet):
+        logger.info("Loading Lab contacts...")
         self.lab_contacts = {}
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
         folder = self.context.bika_setup.bika_labcontacts
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
 
             ## Create LabContact
 
             if row['Signature']:
-                file_title = sortable_title(obj, row['Signature'])
                 path = resource_filename("bika.lims","setupdata/%s/%s" \
                                          % (self.dataset_name, row['Signature']))
                 file_data = open(path, "rb").read()
             else:
                 file_data = None
 
+            if not row['Firstname']:
+                continue
+
             _id = folder.invokeFactory('LabContact', id='tmp')
             obj = folder[_id]
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
-            Fullname = _c(row['Firstname']) + " " + _c(row['Surname'])
+            Fullname = row['Firstname'] + " " + row.get('Surname','')
             obj.edit(
-                title = _c(Fullname),
-                Salutation = _c(row['Salutation']),
-                Firstname = _c(row['Firstname']),
-                Surname = _c(row['Surname']),
-                EmailAddress = _c(row['EmailAddress']),
-                BusinessPhone = _c(row['BusinessPhone']),
-                BusinessFax = _c(row['BusinessFax']),
-                HomePhone = _c(row['HomePhone']),
-                MobilePhone = _c(row['MobilePhone']),
-                JobTitle = _c(row['JobTitle']),
-                Username = _c(row['Username']),
+                title = Fullname,
+                Salutation = row.get('Salutation', ''),
+                Firstname = row['Firstname'],
+                Surname = row.get('Surname',''),
+                EmailAddress = row.get('EmailAddress',''),
+                BusinessPhone = row.get('BusinessPhone',''),
+                BusinessFax = row.get('BusinessFax',''),
+                HomePhone = row.get('HomePhone',''),
+                MobilePhone = row.get('MobilePhone',''),
+                JobTitle = row.get('JobTitle',''),
+                Username = row.get('Username',''),
                 Signature = file_data
             )
             self.lab_contacts[Fullname] = obj
@@ -558,107 +525,100 @@ class LoadSetupData(BrowserView):
             ## Create Plone user
             if(row['Username']):
                 member = self.portal_registration.addMember(
-                    _c(row['Username']),
-                    _c(row['Password']),
+                    row['Username'],
+                    row['Password'],
                     properties = {
-                        'username': _c(row['Username']),
-                        'email': _c(row['EmailAddress']),
-                        'fullname': _c(Fullname)}
+                        'username': row['Username'],
+                        'email': row['EmailAddress'],
+                        'fullname': Fullname}
                     )
-                group_ids = [g.strip() for g in _c(row['Groups']).split(',')]
-                role_ids = [r.strip() for r in _c(row['Roles']).split(',')]
+                group_ids = [g.strip() for g in row['Groups'].split(',')]
+                role_ids = [r.strip() for r in row['Roles'].split(',')]
                 # Add user to all specified groups
                 for group_id in group_ids:
                     group = self.portal_groups.getGroupById(group_id)
                     if group:
-                        group.addMember(_c(row['Username']))
+                        group.addMember(row['Username'])
                 # Add user to all specified roles
                 for role_id in role_ids:
                     member._addRole(role_id)
                 # If user is in LabManagers, add Owner local role on clients folder
                 if 'LabManager' in group_ids:
-                    self.context.clients.manage_setLocalRoles(_c(row['Username']), ['Owner',] )
-
+                    self.context.clients.manage_setLocalRoles(row['Username'], ['Owner',] )
 
     def load_lab_departments(self, sheet):
+        logger.info("Loading Lab departments...")
         self.departments = {}
         lab_contacts = [o.getObject() for o in self.bsc(portal_type="LabContact")]
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
         folder = self.context.bika_setup.bika_departments
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
-            _id = folder.invokeFactory('Department', id = 'tmp')
-            obj = folder[_id]
-            obj.edit(title = _c(row.get('title', '')),
-                     description = _c(row.get('description', '')))
-            manager = None
-            for contact in lab_contacts:
-                if contact.getUsername() == _c(row['LabContact_Username']):
-                    manager = contact
-                    break
-            else:
-                message = "Department: lookup of '%s' in LabContacts/Username failed."%_c(row['LabContact_Username'])
-                logger.info(message)
-            if manager:
-                obj.setManager(manager.UID())
-            self.departments[row.get('title', '')] = obj
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if row['title']:
+                _id = folder.invokeFactory('Department', id = 'tmp')
+                obj = folder[_id]
+                obj.edit(title = row['title'],
+                         description = row.get('description', ''))
+                manager = None
+                for contact in lab_contacts:
+                    if contact.getUsername() == row['LabContact_Username']:
+                        manager = contact
+                        break
+                else:
+                    message = "Department: lookup of '%s' in LabContacts/Username failed."%row['LabContact_Username']
+                    logger.info(message)
+                if manager:
+                    obj.setManager(manager.UID())
+                self.departments[row['title']] = obj
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
 
     def load_clients(self, sheet):
+        logger.info("Loading Clients...")
         self.clients = {}
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
         folder = self.context.clients
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
-
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             addresses = {}
             for add_type in ['Physical', 'Postal', 'Billing']:
                 addresses[add_type] = {}
                 for key in ['Address', 'City', 'State', 'Zip', 'Country']:
-                    addresses[add_type][key] = _c(row["%s_%s" % (add_type, key)])
+                    addresses[add_type][key] = row["%s_%s" % (add_type, key)]
 
             _id = folder.invokeFactory('Client', id = 'tmp')
             obj = folder[_id]
+            if not row['Name']:
+                message = "Client %s has no Name"
+                raise Exception(message)
             if not row['ClientID']:
                 message = "Client %s has no Client ID"
                 raise Exception(message)
-            obj.edit(Name = _c(row['Name']),
-                     ClientID = _c(row['ClientID']),
+            obj.edit(Name = row['Name'],
+                     ClientID = row['ClientID'],
                      MemberDiscountApplies = row['MemberDiscountApplies'] and True or False,
                      BulkDiscount = row['BulkDiscount'] and True or False,
-                     TaxNumber = _c(row['TaxNumber']),
-                     Phone = _c(row['Phone']),
-                     Fax = _c(row['Fax']),
-                     EmailAddress = _c(row['EmailAddress']),
+                     TaxNumber = row.get('TaxNumber',''),
+                     Phone = row.get('Phone',''),
+                     Fax = row.get('Fax',''),
+                     EmailAddress = row.get('EmailAddress',''),
                      PhysicalAddress = addresses['Physical'],
                      PostalAddress = addresses['Postal'],
                      BillingAddress = addresses['Billing'],
-                     AccountNumber = row['AccountNumber']
+                     AccountNumber = row.get('AccountNumber','')
             )
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
-            self.clients[_c(row['Name'])] = obj
+            self.clients[row['Name']] = obj
 
     def load_client_contacts(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Client contacts...")
         folder = self.context.clients
         self.client_contacts = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             client = self.portal_catalog(portal_type = "Client",
-                                         Title = _c(row['Client_title']))
+                                         Title = row['Client_title'])
             if len(client) == 0:
-                raise IndexError("Client invalid: '%s'" % _c(row['Client_title']))
+                raise IndexError("Client invalid: '%s'" % row['Client_title'])
             client = client[0].getObject()
             _id = client.invokeFactory('Contact', id = 'tmp')
             contact = client[_id]
@@ -667,19 +627,19 @@ class LoadSetupData(BrowserView):
             for add_type in ['Physical', 'Postal']:
                 addresses[add_type] = {}
                 for key in ['Address', 'City', 'State', 'Zip', 'Country']:
-                    addresses[add_type][key] = _c(row["%s_%s" % (add_type, key)])
-            contact.edit(Salutation = _c(row['Salutation']),
-                         Firstname = _c(row['Firstname']),
-                         Surname = _c(row['Surname']),
-                         Username = _c(row['Username']),
-                         JobTitle = _c(row['JobTitle']),
-                         Department = _c(row['Department']),
-                         BusinessPhone = _c(row['BusinessPhone']),
-                         BusinessFax = _c(row['BusinessFax']),
-                         HomePhone = _c(row['HomePhone']),
-                         MobilePhone = _c(row['MobilePhone']),
-                         EmailAddress = _c(row['EmailAddress']),
-                         PublicationPreference = _c(row['PublicationPreference']).split(","),
+                    addresses[add_type][key] = row["%s_%s" % (add_type, key)]
+            contact.edit(Salutation = row.get('Salutation',''),
+                         Firstname = row.get('Firstname',''),
+                         Surname = row.get('Surname',''),
+                         Username = row.get('Username',''),
+                         JobTitle = row.get('JobTitle',''),
+                         Department = row.get('Department',''),
+                         BusinessPhone = row.get('BusinessPhone',''),
+                         BusinessFax = row.get('BusinessFax',''),
+                         HomePhone = row.get('HomePhone',''),
+                         MobilePhone = row.get('MobilePhone',''),
+                         EmailAddress = row.get('EmailAddress',''),
+                         PublicationPreference =  row.get('PublicationPreference','').split(","),
                          AttachmentsPermitted = row['AttachmentsPermitted'] and True or False,
                          PhysicalAddress = addresses['Physical'],
                          PostalAddress = addresses['Postal'],
@@ -702,114 +662,107 @@ class LoadSetupData(BrowserView):
             if(row['Username']):
                 try:
                     member = self.portal_registration.addMember(
-                        _c(row['Username']),
-                        _c(row['Password']),
+                        row['Username'],
+                        row['Password'],
                         properties = {
-                            'username': _c(row['Username']),
-                            'email': _c(row['EmailAddress']),
-                            'fullname': _c(fullname)}
+                            'username': row['Username'],
+                            'email': row['EmailAddress'],
+                            'fullname': fullname}
                         )
                 except:
                     logger.info("Error adding user (already exists?): %s" % row['Username'])
-                contact.aq_parent.manage_setLocalRoles(_c(row['Username']), ['Owner',] )
+                contact.aq_parent.manage_setLocalRoles(row['Username'], ['Owner',] )
                 # add user to Clients group
                 group = self.portal_groups.getGroupById('Clients')
                 group.addMember(row['Username'])
 
-
     def load_instruments(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Instruments...")
         folder = self.context.bika_setup.bika_instruments
         self.instruments = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        self.suppliers = {}
+        self.manufacturers = {}
+        self.instrumenttypes = {}
+        rows = self.get_rows(sheet, 3) 
+        for row in rows:
             _id = folder.invokeFactory('Instrument', id = 'tmp')
             obj = folder[_id]
-            
+
             # Create the instrument type (from Type field) if not exists
             itype_uid = ''
-            itype_title = unicode(row.get('Type',row.get('InstrumentType', 'Unknown')))
-            itype = self.bsc(portal_type='InstrumentType',
-                                        Title = itype_title)        
-            if len(itype) == 0:                
+            itype_title = row.get('Type', 'Unknown')
+            itype = self.bsc(portal_type='InstrumentType', Title = itype_title)
+            if len(itype) == 0:
                 itfolder = self.context.bika_setup.bika_instrumenttypes
                 _itypeid = itfolder.invokeFactory('InstrumentType', id = 'tmp')
                 itypeobj = itfolder[_itypeid]
-                itypeobj.edit(title = itype_title,
-                         description = '')
+                itypeobj.edit(title = itype_title, description = '')
                 itypeobj.unmarkCreationFlag()
-                itype_uid = itypeobj.UID()
+                self.instrumenttypes[itype_title] = itypeobj
                 renameAfterCreation(itypeobj)
+                itype_uid = itypeobj.UID()
             else:
                 itype_uid = itype[0].getObject().UID()
-                
+
             # Create Manufacturer (from Brand) if not exists
             man_uid = ''
-            man_title = unicode(row.get('Brand',row.get('Manufacturer', 'Unknown')))
-            man = self.bsc(portal_type='Manufacturer',
-                                        Title = man_title)        
+            man_title = row.get('Brand', 'Unknown')
+            man = self.bsc(portal_type='Manufacturer', Title = man_title)
             if len(man) == 0:
                 manfolder = self.context.bika_setup.bika_manufacturers
-                _manid = manfolder.invokeFactory('Manufacturer', id = 'tmp')
+                _manid = manfolder.invokeFactory('Manufacturer',id = 'tmp')
                 manobj = manfolder[_manid]
-                manobj.edit(title = man_title,
-                         description = '')
+                manobj.edit(title = man_title, description = '')
                 manobj.unmarkCreationFlag()
-                man_uid = manobj.UID()
+                self.manufacturers[man_title] = manobj
                 renameAfterCreation(manobj)
+                man_uid = manobj.UID()
             else:
                 man_uid = man[0].getObject().UID()
-                
-            
+
             # Create Supplier if not exists
             sup_uid = ''
-            sup_title = unicode(row.get('Supplier','Unknown'))
-            sup = self.bsc(portal_type='Supplier',
-                                        Title = sup_title)        
+            sup_title = row.get('Supplier', 'Unknown')
+            sup = self.bsc(portal_type='Supplier', Title = sup_title)
             if len(sup) == 0:
                 supfolder = self.context.bika_setup.bika_suppliers
-                _supid = supfolder.invokeFactory('Supplier', id = 'tmp')
+                _supid = supfolder.invokeFactory('Supplier',id = 'tmp')
                 supobj = supfolder[_supid]
-                supobj.edit(title = sup_title,
-                         description = '')
+                supobj.edit(Name = sup_title, description = '')
                 supobj.unmarkCreationFlag()
-                sup_uid = supobj.UID()
+                self.suppliers[sup_title] = supobj
                 renameAfterCreation(supobj)
+                sup_uid = supobj.UID()
             else:
-                sup_uid = sup[0].getObject().UID()   
-                        
-            obj.edit(title = row.get('title', ''),
+                sup_uid = sup[0].getObject().UID()
+
+            obj.edit(title = row.get('title', 'Unknown'),
                      description = row.get('description', ''),
-                     Type = unicode(row['Type']),
-                     Brand = unicode(row['Brand']),
-                     Model = unicode(row['Model']),
-                     SerialNo = unicode(row['SerialNo']),
-                     CalibrationCertificate = unicode(row['CalibrationCertificate']),
-                     CalibrationExpiryDate = unicode(row['CalibrationExpiryDate']),
-                     DataInterface = row['DataInterface'])
-                        
+                     Type = row['Type'],
+                     Brand = row['Brand'],
+                     Model = row['Model'],
+                     SerialNo = row.get('SerialNo', ''),
+                     CalibrationCertificate = row.get('CalibrationCertificate',''),
+                     CalibrationExpiryDate = row.get('CalibrationExpiryDate', ''),
+                     DataInterface = row.get('DataInterface', ''))
+
             obj.setInstrumentType(itype_uid)
             obj.setManufacturer(man_uid)
-            obj.setSupplier(sup_uid)       
-            self.instruments[row.get('title', '')] = obj   
+            obj.setSupplier(sup_uid)
+            self.instruments[row.get('title', '')] = obj
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
 
-
     def load_sample_points(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Sample points...")
         setup_folder = self.context.bika_setup.bika_samplepoints
         self.samplepoints = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
-            if 'Client_title' in fields and row['Client_title']:
-                client_title = _c(row['Client_title'])
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if not row['title']:
+                continue
+            if row['Client_title']:
+                client_title = row['Client_title']
                 client = self.portal_catalog(portal_type = "Client",
                                              Title = client_title)
                 if len(client) == 0:
@@ -824,47 +777,42 @@ class LoadSetupData(BrowserView):
 
             _id = folder.invokeFactory('SamplePoint', id = 'tmp')
             obj = folder[_id]
-            self.samplepoints[row['title']] = obj
-            obj.edit(title = _c(row.get('title', '')),
-                     description = _c(row.get('description', '')),
+            obj.edit(title = row['title'],
+                     description = row.get('description', ''),
                      Composite = row['Composite'] and True or False,
-                     Elevation = _c(row['Elevation']),
+                     Elevation = row['Elevation'],
                      SampleTypes = row['SampleType_title'] and self.sampletypes[row['SampleType_title']] or []
                      )
+            self.samplepoints[row['title']] = obj
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
 
     def load_sample_types(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Sample types...")
         folder = self.context.bika_setup.bika_sampletypes
         self.sampletypes = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
-            _id = folder.invokeFactory('SampleType', id = 'tmp')
-            obj = folder[_id]
-            obj.edit(title = _c(row.get('title', '')),
-                     description = _c(row.get('description', '')),
-                     RetentionPeriod = {'days':row['RetentionPeriod'] and row['RetentionPeriod'] or 0,'hours':0,'minutes':0},
-                     Hazardous = row['Hazardous'] and True or False,
-                     SampleMatrix = row['SampleMatrix_title'] and self.samplematrices[row['SampleMatrix_title']] or None,
-                     Prefix = _c(row['Prefix']),
-                     MinimumVolume = _c(row['MinimumVolume']),
-                     ContainerType = row['ContainerType_title'] and self.containertypes[row['ContainerType_title']] or None
-            )
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            self.sampletypes[row['title']] = obj
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if row['title']:
+                _id = folder.invokeFactory('SampleType', id = 'tmp')
+                obj = folder[_id]            
+                obj.edit(title = row['title'],
+                         description = row.get('description', ''),
+                         RetentionPeriod = {'days':row['RetentionPeriod'] and row['RetentionPeriod'] or 0,'hours':0,'minutes':0},
+                         Hazardous = row['Hazardous'] and True or False,
+                         SampleMatrix = row['SampleMatrix_title'] and self.samplematrices[row['SampleMatrix_title']] or None,
+                         Prefix = row['Prefix'],
+                         MinimumVolume = row['MinimumVolume'],
+                         ContainerType = row['ContainerType_title'] and self.containertypes[row['ContainerType_title']] or None
+                )
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
+                self.sampletypes[row['title']] = obj
 
     def link_samplepoint_sampletype(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        logger.info("Loading Sample point - sample types...")
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
 
             st = self.sampletypes[row['SampleType_title']]
             sp = self.samplepoints[row['SamplePoint_title']]
@@ -880,117 +828,103 @@ class LoadSetupData(BrowserView):
                 st.setSamplePoints(samplepoints)
 
     def load_sampling_deviations(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Sample deviations...")
         folder = self.context.bika_setup.bika_samplingdeviations
         self.samplingdeviations = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
-            _id = folder.invokeFactory('SamplingDeviation', id = 'tmp')
-            obj = folder[_id]
-            self.samplingdeviations[row['title']] = obj.UID()
-            obj.edit(title = _c(row.get('title', '')),
-                     description = _c(row.get('description', '')))
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if row['title']:
+                _id = folder.invokeFactory('SamplingDeviation', id = 'tmp')
+                obj = folder[_id]
+                self.samplingdeviations[row['title']] = obj.UID()
+                obj.edit(title = row['title'],
+                         description = row.get('description', ''))
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
 
     def load_sample_matrices(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Sample matrices...")
         folder = self.context.bika_setup.bika_samplematrices
         self.samplematrices = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
-            _id = folder.invokeFactory('SampleMatrix', id = 'tmp')
-            obj = folder[_id]
-            obj.edit(title = _c(row.get('title', '')),
-                     description = _c(row.get('description', '')))
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            self.samplematrices[row['title']] = obj
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if row['title']:
+                _id = folder.invokeFactory('SampleMatrix', id = 'tmp')
+                obj = folder[_id]
+                obj.edit(title = row['title'],
+                         description = row.get('description', ''))
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
+                self.samplematrices[row['title']] = obj
 
     def load_analysis_categories(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Analysis categories...")
         folder = self.context.bika_setup.bika_analysiscategories
         self.cats = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
-            _id = folder.invokeFactory('AnalysisCategory', id = 'tmp')
-            obj = folder[_id]
-            obj.edit(title = _c(row.get('title', '')),
-                     description = _c(row.get('description', '')))
-            if row['Department_title']:
-                obj.setDepartment(self.departments[_c(row['Department_title'])].UID())
-            self.cats[row.get('title', '')] = obj
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if row['title']:
+                _id = folder.invokeFactory('AnalysisCategory', id = 'tmp')
+                obj = folder[_id]
+                obj.edit(title = row['title'],
+                         description = row.get('description', ''))
+                if row['Department_title']:
+                    obj.setDepartment(self.departments[row['Department_title']].UID())
+                self.cats[row['title']] = obj
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
 
     def load_methods(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Methods...")
         folder = self.context.methods
         self.methods = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
-            _id = folder.invokeFactory('Method', id = 'tmp')
-            obj = folder[_id]
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if row['title']:
+                _id = folder.invokeFactory('Method', id = 'tmp')
+                obj = folder[_id]
 
-            obj.edit(title = _c(row.get('title', '')),
-                     description = _c(row.get('description', '')),
-                     Instructions = _c(row['Instructions']))
+                obj.edit(title = row['title'],
+                         description = row.get('description', ''),
+                         Instructions = row.get('Instructions',''))
 
-            if row['MethodDocument']:
-                file_title = sortable_title(obj, row['MethodDocument'])
-                path = resource_filename("bika.lims",
-                                         "setupdata/%s/%s" \
-                                         % (self.dataset_name, row['MethodDocument']))
-                #file_id = obj.invokeFactory("File", id=row['MethodDocument'])
-                #thisfile = obj[file_id]
-                file_data = open(path, "rb").read()
-                obj.setMethodDocument(file_data)
+                if row['MethodDocument']:
+                    path = resource_filename("bika.lims",
+                                             "setupdata/%s/%s" \
+                                             % (self.dataset_name, row['MethodDocument']))
+                    #file_id = obj.invokeFactory("File", id=row['MethodDocument'])
+                    #thisfile = obj[file_id]
+                    file_data = open(path, "rb").read()
+                    obj.setMethodDocument(file_data)
 
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            self.methods[row.get('title', '')] = obj
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
+                self.methods[row['title']] = obj
 
     def load_service_interims(self, sheet):
+        logger.info("Loading Analysis Service Interim fields...")
         # Read all InterimFields into self.service_interims
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
         self.service_interims = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             service_title = row['Service_title']
             if service_title not in self.service_interims.keys():
                 self.service_interims[service_title] = []
             self.service_interims[service_title].append({
-                'keyword': _c(row['keyword']),
-                'title': _c(row.get('title', '')),
+                'keyword': row['keyword'],
+                'title': row.get('title', ''),
                 'type': 'int',
-                'value': _c(row['value']),
-                'unit': _c(row['unit'] and row['unit'] or '')})
+                'value': row['value'],
+                'unit': row['unit'] and row['unit'] or ''})
 
     def load_analysis_services(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Analysis Services...")
         folder = self.context.bika_setup.bika_analysisservices
-        services = []
         self.services = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if not row['title']:
+                continue
 
             _id = folder.invokeFactory('AnalysisService', id = 'tmp')
             obj = folder[_id]
@@ -999,54 +933,45 @@ class LoadSetupData(BrowserView):
                    'minutes': int(row['MaxTimeAllowed_minutes'] and row['MaxTimeAllowed_minutes'] or 0),
                    }
             obj.edit(
-                title = _c(row.get('title', '')),
-                description = row['description'] and _c(row.get('description', '')) or '',
-                Keyword = _c(row['Keyword']),
-                PointOfCapture = _c(row['PointOfCapture']),
-                Category = self.cats[_c(row['AnalysisCategory_title'])].UID(),
-                Department = row['Department_title'] and self.departments[_c(row['Department_title'])].UID() or None,
+                title = row['title'],
+                description = row.get('description', ''),
+                Keyword = row['Keyword'],
+                PointOfCapture = row['PointOfCapture'],
+                Category = self.cats[row['AnalysisCategory_title']].UID(),
+                Department = row['Department_title'] and self.departments[row['Department_title']].UID() or None,
                 ReportDryMatter = row['ReportDryMatter'] and True or False,
                 AttachmentOption = row['Attachment'][0].lower(),
-                Unit = row['Unit'] and _c(row['Unit']) or None,
-                Precision = row['Precision'] and _c(str(row['Precision'])) or '2',
+                Unit = row['Unit'] and row['Unit'] or None,
+                Precision = row['Precision'] and str(row['Precision']) or '2',
                 MaxTimeAllowed = MTA,
                 Price = row['Price'] and "%02f"%(float(row['Price'])) or "0,00",
                 BulkPrice = row['BulkPrice'] and "%02f"%(float(row['BulkPrice'])) or "0.00",
                 VAT = row['VAT'] and "%02f"%(float(row['VAT'])) or "0.00",
-                Method = row['Method'] and self.methods[_c(row['Method'])] or None,
+                Method = row['Method'] and self.methods[row['Method']] or None,
                 Instrument = row['Instrument_title'] and self.instruments[row['Instrument_title']] or None,
                 Calculation = row['Calculation_title'] and self.calcs[row['Calculation_title']] or None,
                 DuplicateVariation = "%02f" % float(row['DuplicateVariation']),
                 Accredited = row['Accredited'] and True or False,
                 InterimFields = hasattr(self,'service_interims') and self.service_interims.get(row['title'], []) or []
             )
-            service_obj = obj
             self.services[row['title']] = obj
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
 
     def service_result_options(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
-        self.interim_fields = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        logger.info("Loading Analysis Service result options...")
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             service = self.services[row['Service_title']]
             sro = service.getResultOptions()
             sro.append({'ResultValue':row['ResultValue'],
-                        'ResultText':_c(row['ResultText'])})
+                        'ResultText':row['ResultText']})
             service.setResultOptions(sro)
 
     def service_uncertainties(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
-        self.interim_fields = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        logger.info("Loading Analysis Service uncertainities...")
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             service = self.services[row['Service_title']]
             sru = service.getUncertainties()
             sru.append({'intercept_min':row['Range Min'],
@@ -1055,39 +980,33 @@ class LoadSetupData(BrowserView):
             service.setUncertainties(sru)
 
     def load_interim_fields(self, sheet):
+        logger.info("Loading Calculations Interim fields...")
         # Read all InterimFields into self.interim_fields
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
         self.interim_fields = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             calc_title = row['Calculation_title']
             if calc_title not in self.interim_fields.keys():
                 self.interim_fields[calc_title] = []
             self.interim_fields[calc_title].append({
-                'keyword': _c(row['keyword']),
-                'title': _c(row.get('title', '')),
+                'keyword': row['keyword'],
+                'title': row.get('title', ''),
                 'type': 'int',
                 'hidden': ('hidden' in row and row['hidden']) and True or False,
                 'value': row['value'],
-                'unit': _c(row['unit'] and row['unit'] or '')})
+                'unit': row['unit'] and row['unit'] or ''})
 
     def load_calculations(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
-        calcs = []
+        logger.info("Loading Calculations...")
         self.calcs = {}
         folder = self.context.bika_setup.bika_calculations
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
-
-            calc_title = row.get('title', '')
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if not row['title']:
+                continue
+            calc_title = row['title']
             calc_interims = self.interim_fields.get(calc_title, [])
-            formula = _c(row['Formula'])
+            formula = row['Formula']
             # scan formula for dep services
             keywords = re.compile(r"\[([^\]]+)\]").findall(formula)
             # remove interims from deps
@@ -1096,8 +1015,8 @@ class LoadSetupData(BrowserView):
 
             _id = folder.invokeFactory('Calculation', id = 'tmp')
             obj = folder[_id]
-            obj.edit(title = _c(calc_title),
-                     description = _c(row.get('description', '')),
+            obj.edit(title = calc_title,
+                     description = row.get('description', ''),
                      InterimFields = calc_interims,
                      Formula = str(row['Formula']))
             for kw in dep_keywords:
@@ -1107,54 +1026,45 @@ class LoadSetupData(BrowserView):
                                       'dest_catalog': 'bika_setup_catalog',
                                       'dest_query': {'portal_type':'AnalysisService',
                                                      'getKeyword':kw}})
-            calc_obj = obj
             self.calcs[row['title']] = obj
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
 
     def load_analysis_profile_services(self, sheet):
+        logger.info("Loading Analysis Profile Services...")
         # Read the Analysis Profile Services into self.profile_services
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
         self.profile_services = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             if row['Profile'] not in self.profile_services.keys():
                 self.profile_services[row['Profile']] = []
             self.profile_services[row['Profile']].append(
                 self.services[row['Service']])
 
     def load_analysis_profiles(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Analysis Profiles...")
         folder = self.context.bika_setup.bika_analysisprofiles
         # Read the Analysis Profile Services into a dict
         self.profiles = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
-            _id = folder.invokeFactory('AnalysisProfile', id = 'tmp')
-            obj = folder[_id]
-            obj.edit(title = _c(row.get('title', '')),
-                     description = _c(row.get('description', '')),
-                     ProfileKey = _c(row['ProfileKey']))
-            obj.setService(self.profile_services[row['title']])
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            self.profiles[row.get('title', '')] = obj
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if row['title']:
+                _id = folder.invokeFactory('AnalysisProfile', id = 'tmp')
+                obj = folder[_id]
+                obj.edit(title = row['title'],
+                         description = row.get('description', ''),
+                         ProfileKey = row['ProfileKey'])
+                obj.setService(self.profile_services[row['title']])
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
+                self.profiles[row['title']] = obj
 
     def load_artemplate_analyses(self, sheet):
+        logger.info("Loading Analysis Request Template analyses...")
         # Read the AR Template Services into self.artemplate_analyses
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
         self.artemplate_analyses = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             if row['ARTemplate'] not in self.artemplate_analyses.keys():
                 self.artemplate_analyses[row['ARTemplate']] = []
             self.artemplate_analyses[row['ARTemplate']].append({
@@ -1162,14 +1072,11 @@ class LoadSetupData(BrowserView):
                 'partition': row['partition']})
 
     def load_artemplate_partitions(self, sheet):
+        logger.info("Loading Analysis Request Template partitions...")
         # Read the AR Template Partitions into self.artemplate_partitions
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
         self.artemplate_partitions = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             if row['ARTemplate'] not in self.artemplate_partitions.keys():
                 self.artemplate_partitions[row['ARTemplate']] = []
             self.artemplate_partitions[row['ARTemplate']].append({
@@ -1180,13 +1087,12 @@ class LoadSetupData(BrowserView):
                 and self.preservations[row['preservation']].UID() or row['preservation']})
 
     def load_artemplates(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Analysis Request Templates...")
         self.artemplates = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if not row['title']:
+                continue
             analyses = self.artemplate_analyses[row['title']]
             client_title = row['Client_title'] or 'lab'
             if row['title'] in self.artemplate_partitions:
@@ -1212,9 +1118,9 @@ class LoadSetupData(BrowserView):
 
             _id = folder.invokeFactory('ARTemplate', id = 'tmp')
             obj = folder[_id]
-            obj.edit(title = _c(row.get('title', '')),
-                     description = _c(row.get('description', '')),
-                     Remarks = _c(row['Remarks']),
+            obj.edit(title = row['title'],
+                     description = row.get('description', ''),
+                     Remarks = row.get('Remarks',''),
                      ReportDryMatter = bool(row['ReportDryMatter']))
             obj.setSampleType(sampletypes)
             obj.setSamplePoint(samplepoints)
@@ -1222,16 +1128,13 @@ class LoadSetupData(BrowserView):
             obj.setAnalyses(analyses)
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
-            self.artemplates[row.get('title', '')] = obj.UID()
+            self.artemplates[row['title']] = obj.UID()
 
     def load_reference_definition_results(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Reference definition results...")
         self.ref_def_results = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             if row['ReferenceDefinition_title'] \
                not in self.ref_def_results.keys():
                 self.ref_def_results[
@@ -1244,35 +1147,30 @@ class LoadSetupData(BrowserView):
                     'max': row['max']})
 
     def load_reference_definitions(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
+        logger.info("Loading Reference definitions...")
         self.definitions = {}
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
         folder = self.context.bika_setup.bika_referencedefinitions
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
-            _id = folder.invokeFactory('ReferenceDefinition', id = 'tmp')
-            obj = folder[_id]
-            obj.edit(title = _c(row.get('title', '')),
-                     description = _c(row.get('description', '')),
-                     Blank = row['Blank'] and True or False,
-                     ReferenceResults = self.ref_def_results.get(row['title'], []),
-                     Hazardous = row['Hazardous'] and True or False)
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            self.definitions[row.get('title', '')] = obj.UID()
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if row['title']:
+                _id = folder.invokeFactory('ReferenceDefinition', id = 'tmp')
+                obj = folder[_id]
+                obj.edit(title = row['title'],
+                         description = row.get('description', ''),
+                         Blank = row['Blank'] and True or False,
+                         ReferenceResults = self.ref_def_results.get(row['title'], []),
+                         Hazardous = row['Hazardous'] and True or False)
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
+                self.definitions[row['title']] = obj.UID()
 
     def load_analysis_specifications(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Analysis Specifications...")
         # First we sort the specs by client/sampletype
         #  { Client: { SampleType: { service, min, max, error }... }... }
         all_specs = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             client_title = row['Client_title'] or 'lab'
             sampletype_title = row['SampleType_title']
             if client_title not in all_specs:
@@ -1294,56 +1192,48 @@ class LoadSetupData(BrowserView):
                 _id = folder.invokeFactory('AnalysisSpec', id = 'tmp')
                 obj = folder[_id]
                 obj.edit(
-                         _c(title = sampletype.Title()),
+                         title = sampletype.Title(),
                          ResultsRange = resultsrange)
                 obj.setSampleType(sampletype.UID())
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
 
     def load_reference_manufacturers(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Reference Manufacturers...")
         folder = self.context.bika_setup.bika_manufacturers
         self.ref_manufacturers = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
-            _id = folder.invokeFactory('Manufacturer', id = 'tmp')
-            obj = folder[_id]
-            obj.edit(title = _c(row.get('title', '')),
-                     description = _c(row.get('description', '')))
-            obj.unmarkCreationFlag()
-            self.ref_manufacturers[row['title']] = obj.UID()
-            renameAfterCreation(obj)
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if row['title']:
+                _id = folder.invokeFactory('Manufacturer', id = 'tmp')
+                obj = folder[_id]
+                obj.edit(title = row['title'],
+                         description = row.get('description', ''))
+                obj.unmarkCreationFlag()
+                self.ref_manufacturers[row['title']] = obj.UID()
+                renameAfterCreation(obj)
 
     def load_reference_suppliers(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Reference Suppliers...")
         folder = self.context.bika_setup.bika_suppliers
         self.ref_suppliers = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             _id = folder.invokeFactory('Supplier', id = 'tmp')
             obj = folder[_id]
-            obj.edit(AccountNumber = _c(row['AccountNumber']),
-                     Name = _c(row['Name']),
-                     EmailAddress = _c(row['EmailAddress']),
-                     Phone = _c(row['Phone']),
-                     Fax = _c(row['Fax']))
+            obj.edit(AccountNumber = row['AccountNumber'],
+                     Name = row['Name'],
+                     EmailAddress = row['EmailAddress'],
+                     Phone = row['Phone'],
+                     Fax = row['Fax'])
             obj.unmarkCreationFlag()
             self.ref_suppliers[obj.Title()] = obj
             renameAfterCreation(obj)
 
     def load_reference_supplier_contacts(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        logger.info("Loading Reference Supplier Contacts...")
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             if not row['ReferenceSupplier_Name']:
                 continue
             folder = self.bsc(portal_type="Supplier",
@@ -1353,9 +1243,9 @@ class LoadSetupData(BrowserView):
                 _id = folder.invokeFactory('SupplierContact', id = 'tmp')
                 obj = folder[_id]
                 obj.edit(
-                    Firstname = _c(row['Firstname']),
-                    Surname = _c(row['Surname']),
-                    EmailAddress = _c(row['EmailAddress']))
+                    Firstname = row['Firstname'],
+                    Surname = row['Surname'],
+                    EmailAddress = row['EmailAddress'])
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
 
@@ -1372,17 +1262,14 @@ class LoadSetupData(BrowserView):
     ##                                 'email': _c(row['EmailAddress']),
     ##                                 'fullname': " ".join((row['Firstname'],
     ##                                                       row['Surname']))})
-                    obj.setUsername(_c(row['Username']))
+                    obj.setUsername(row['Username'])
 
     def load_reference_sample_results(self, sheet):
+        logger.info("Loading Reference Supplier Contacts...")
         # Read the Ref Sample Results into self.refsample_results
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
         self.refsample_results = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             refsample_id = row['ReferenceSample_id']
             if not self.refsample_results.has_key(refsample_id):
                 self.refsample_results[refsample_id] = []
@@ -1393,13 +1280,10 @@ class LoadSetupData(BrowserView):
                 'max': row['max']})
 
     def load_reference_samples(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Reference Samples...")
         self.ref_samples = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             supplier = self.ref_suppliers[row['ReferenceSupplier_title']]
             supplier.invokeFactory('ReferenceSample', id = row['id'])
             obj = supplier[row['id']]
@@ -1407,14 +1291,14 @@ class LoadSetupData(BrowserView):
             ref_def = ref_def and self.definitions[ref_def] or ''
             ref_man = row['ReferenceManufacturer_title']
             ref_man = ref_man and self.ref_manufacturers[ref_man] or ''
-            obj.edit(title = _c(row['id']),
-                     description = _c(row.get('description', '')),
+            obj.edit(title = row['id'],
+                     description = row.get('description', ''),
                      Blank = row['Blank'],
                      Hazardous = row['Hazardous'],
                      ReferenceResults = self.refsample_results[row['id']],
-                     CatalogueNumber = _c(row['CatalogueNumber']),
-                     LotNumber = _c(row['LotNumber']),
-                     Remarks = _c(row['Remarks']),
+                     CatalogueNumber = row['CatalogueNumber'],
+                     LotNumber = row['LotNumber'],
+                     Remarks = row['Remarks'],
                      ExpiryDate = row['ExpiryDate'],
                      DateSampled = row['DateSampled'],
                      DateReceived = row['DateReceived'],
@@ -1431,14 +1315,11 @@ class LoadSetupData(BrowserView):
             obj.unmarkCreationFlag()
 
     def load_reference_analyses_interims(self, sheet):
+        logger.info("Loading Reference Analyses Interim fields...")
         # Read the Ref Analyses interims self.refinterim_results
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
         self.refinterim_results = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             refanalysis_id = row['ReferenceAnalysis_id']
             if not self.refanalysis_results.has_key(refanalysis_id):
                 self.refanalysis_results[refanalysis_id] = []
@@ -1448,18 +1329,15 @@ class LoadSetupData(BrowserView):
                 'value': row['value']})
 
     def load_reference_analyses(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        logger.info("Loading Reference Analyses...")
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             service = self.services[row['AnalysisService_title']]
             # Analyses are keyed/named by service keyword
             sample = self.ref_samples[row['ReferenceSample_id']]
             sample.invokeFactory('ReferenceAnalysis', id = row['id'])
             obj = sample[row['id']]
-            obj.edit(title = _c(row['id']),
+            obj.edit(title = row['id'],
                      ReferenceType = row['ReferenceType'],
                      Result = row['Result'],
                      ResultDM = row['ResultDM'],
@@ -1474,47 +1352,39 @@ class LoadSetupData(BrowserView):
             obj.unmarkCreationFlag()
 
     def load_attachment_types(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Attachment Types...")
         folder = self.context.bika_setup.bika_attachmenttypes
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
-            _id = folder.invokeFactory('AttachmentType', id = 'tmp')
-            obj = folder[_id]
-            obj.edit(title = _c(row.get('title', '')),
-                     description = _c(row.get('description', '')))
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if row['title']:
+                _id = folder.invokeFactory('AttachmentType', id = 'tmp')
+                obj = folder[_id]
+                obj.edit(title = row['title'],
+                         description = row.get('description', ''))
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
 
     def load_lab_products(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Lab Products...")
         folder = self.context.bika_setup.bika_labproducts
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
-            _id = folder.invokeFactory('LabProduct', id = 'tmp')
-            obj = folder[_id]
-
-            obj.edit(title = _c(row.get('title', '')),
-                     description = _c(row.get('description', '')),
-                     Volume = _c(row['Volume']),
-                     Unit = _c(row['Unit'] and row['Unit'] or ''),
-                     Price = "%02f" % float(row['Price']))
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if row['title']:
+                _id = folder.invokeFactory('LabProduct', id = 'tmp')
+                obj = folder[_id]
+                obj.edit(title = row['title'],
+                         description = row.get('description', ''),
+                         Volume = row['Volume'],
+                         Unit = row.get('Unit',''),
+                         Price = "%02f" % float(row['Price']))
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
 
     def load_wst_layouts(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Worksheet Layouts...")
         self.wst_layouts = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             if row['WorksheetTemplate_title'] \
                not in self.wst_layouts.keys():
                 self.wst_layouts[
@@ -1522,19 +1392,16 @@ class LoadSetupData(BrowserView):
             self.wst_layouts[
                 row['WorksheetTemplate_title']].append({
                     'pos': row['pos'],
-                    'type': _c(row['type']),
-                    'blank_ref': _c(row['blank_ref']),
-                    'control_ref': _c(row['control_ref']),
+                    'type': row['type'],
+                    'blank_ref': row['blank_ref'],
+                    'control_ref': row['control_ref'],
                     'dup': row['dup']})
 
     def load_wst_services(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Worksheet Services...")
         self.wst_services = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             if row['WorksheetTemplate_title'] \
                not in self.wst_services.keys():
                 self.wst_services[
@@ -1544,32 +1411,26 @@ class LoadSetupData(BrowserView):
                     self.services[row['service']].UID())
 
     def load_worksheet_templates(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Worksheet Templates...")
         folder = self.context.bika_setup.bika_worksheettemplates
         self.wstemplates = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
-            _id = folder.invokeFactory('WorksheetTemplate', id = 'tmp')
-            obj = folder[_id]
-            obj.edit(title = _c(row.get('title', '')),
-                     description = _c(row.get('description', '')),
-                     Layout = self.wst_layouts[row['title']])
-            obj.setService(self.wst_services[row['title']])
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            self.wstemplates[row['title']] = obj.UID()
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if row['title']:
+                _id = folder.invokeFactory('WorksheetTemplate', id = 'tmp')
+                obj = folder[_id]
+                obj.edit(title = row['title'],
+                         description = row.get('description', ''),
+                         Layout = self.wst_layouts[row['title']])
+                obj.setService(self.wst_services[row['title']])
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
+                self.wstemplates[row['title']] = obj.UID()
 
     def load_partition_setup(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
-        folder = self.context.bika_setup.bika_analysisservices
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        logger.info("Loading Partition Setup...")
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             if not row['Analysis Service']: continue
             service = self.services[row['Analysis Service']]
             sampletype = self.sampletypes[row['Sample Type']]
@@ -1591,13 +1452,10 @@ class LoadSetupData(BrowserView):
             service.setPartitionSetup(ps)
 
     def load_samples(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Samples...")
         self.samples = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             folder = self.clients[row['Client_Name']]
             _id = folder.invokeFactory('Sample', id = row['id'])
             obj = folder[_id]
@@ -1632,28 +1490,22 @@ class LoadSetupData(BrowserView):
             part.reindexObject()
 
     def load_arccs(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Analysis Request CCs")
         self.arccs = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             if row['AnalysisRequest_id'] \
                not in self.arccs.keys():
                 self.arccs[row['AnalysisRequest_id']] = []
             self.arccs[row['AnalysisRequest_id']].append(row['Contact_Fullname'])
 
     def load_ars(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Analysis Requests")
         self.ars = {}
         # We apply the workflows -after- we add the analyses
         self.ar_workflows = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             folder = self.clients[row['Client_title']]
             _id = folder.invokeFactory('AnalysisRequest', id = row['id'])
             obj = folder[_id]
@@ -1685,13 +1537,11 @@ class LoadSetupData(BrowserView):
             obj.unmarkCreationFlag()
 
     def load_analyses_interims(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Analyses Interims...")
+        # Read the AR Template Services into self.artemplate_analyses
         self.interim_results = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             analysis_id = row['Analysis_id']
             if not self.interim_results.has_key(analysis_id):
                 self.interim_results[analysis_id] = []
@@ -1701,12 +1551,9 @@ class LoadSetupData(BrowserView):
                 'value': row['value']})
 
     def load_analyses(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        logger.info("Loading Analyses...")
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             service = self.services[row['Service_title']]
             # analyses are keyed/named by keyword
             keyword = service.getKeyword()
@@ -1745,14 +1592,11 @@ class LoadSetupData(BrowserView):
             obj.unmarkCreationFlag()
 
     def load_worksheet_layouts(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Worksheet Layouts...")
         self.ws_layouts = {}
         self.ws_analyses = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             if row['Worksheet_id'] not in self.ws_layouts.keys():
                 self.ws_layouts[row['Worksheet_id']] = []
                 self.ws_analyses[row['Worksheet_id']] = []
@@ -1769,7 +1613,7 @@ class LoadSetupData(BrowserView):
             self.ws_analyses[row['Worksheet_id']].append(analysis_uid)
             self.ws_layouts[row['Worksheet_id']].append({
                 'position': row['position'],
-                'type': _c(row['type']),
+                'type': row['type'],
                 'container_uid': container_uid,
                 'analysis_uid': analysis_uid,
             })
@@ -1782,17 +1626,13 @@ class LoadSetupData(BrowserView):
             ws.setAnalyses(wsa)
 
     def load_worksheets(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Worksheets...")
         self.worksheets = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
-            folder = self.context.worksheets
+        folder = self.context.worksheets
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             folder.invokeFactory('Worksheet', id = row['id'])
             obj = folder[row['id']]
-            analyses = []
             obj.edit(
                 Remarks = row['Remarks'],
                 Analyst = row['Analyst']
@@ -1806,13 +1646,10 @@ class LoadSetupData(BrowserView):
             obj.unmarkCreationFlag()
 
     def load_duplicate_interims(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Duplicate Interims...")
         self.d_interim_results = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             analysis_id = row['DuplicateAnalysis_id']
             if not self.d_interim_results.has_key(analysis_id):
                 self.d_interim_results[analysis_id] = []
@@ -1822,12 +1659,9 @@ class LoadSetupData(BrowserView):
                 'value': row['value']})
 
     def load_duplicate_analyses(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        logger.info("Loading Duplicate Analyses...")
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             ws = self.uc(UID=self.worksheets[row['Worksheet_id']])[0].getObject()
             ws.invokeFactory('DuplicateAnalysis', id = row['id'])
             obj = ws[row['id']]
@@ -1845,50 +1679,45 @@ class LoadSetupData(BrowserView):
             obj.unmarkCreationFlag()
 
     def load_manufacturers(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Manufacturers...")
         folder = self.context.bika_setup.bika_manufacturers
         self.manufacturers = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             _id = folder.invokeFactory('Manufacturer', id = 'tmp')
             obj = folder[_id]
-            obj.edit(title = row.get('title', ''),
-                     description = row.get('description', ''))
-            obj.unmarkCreationFlag()
-            self.manufacturers[row['title']] = obj.UID()
-            renameAfterCreation(obj)
-    
+            if row['title']:
+                obj.edit(title = row['title'],
+                         description = row.get('description', ''))
+                obj.unmarkCreationFlag()
+                self.manufacturers[row['title']] = obj.UID()
+                renameAfterCreation(obj)
+
     def load_suppliers(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
+        logger.info("Loading Suppliers...")
         folder = self.context.bika_setup.bika_suppliers
         self.suppliers = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             _id = folder.invokeFactory('Supplier', id = 'tmp')
             obj = folder[_id]
-            obj.edit(AccountNumber = unicode(row['AccountNumber']),
-                     Name = unicode(row['Name']),
-                     EmailAddress = unicode(row['EmailAddress']),
-                     Phone = unicode(row['Phone']),
-                     Fax = unicode(row['Fax']))
-            obj.unmarkCreationFlag()
-            self.suppliers[obj.Title()] = obj
-            renameAfterCreation(obj)
+            if row['Name']:
+                obj.edit(AccountNumber = row.get('AccountNumber', ''),
+                         Name = row['Name'],
+                         EmailAddress = row['EmailAddress'],
+                         Phone = row.get('Phone',''),
+                         Fax = row.get('Fax',''))
+                obj.unmarkCreationFlag()
+                self.suppliers[row['Name']] = obj
+                renameAfterCreation(obj)
 
     def load_supplier_contacts(self, sheet):
-        nr_rows = sheet.get_highest_row()
-        nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
-        fields = rows[0]
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
+        logger.info("Loading Supplier Contacts...")
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
             if not row['Supplier_Name']:
+                continue
+            if not row['Firstname']:
                 continue
             folder = self.bsc(portal_type="Supplier",
                               Title = row['Supplier_Name'])
@@ -1897,28 +1726,46 @@ class LoadSetupData(BrowserView):
                 _id = folder.invokeFactory('SupplierContact', id = 'tmp')
                 obj = folder[_id]
                 obj.edit(
-                    Firstname = unicode(row['Firstname']),
-                    Surname = unicode(row['Surname']),
-                    EmailAddress = unicode(row['EmailAddress']))
+                    Firstname = row['Firstname'],
+                    Surname = row.get('Surname',''),
+                    EmailAddress = row.get('EmailAddress',''))
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
-    
+
                 if 'Username' in row:
-                    obj.setUsername(unicode(row['Username']))
+                    obj.setUsername(row['Username'])
 
     def load_instrumenttypes(self, sheet):
+        logger.info("Loading Instrument Types...")
+        folder = self.context.bika_setup.bika_instrumenttypes
+        self.instrumenttypes = {}
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            _id = folder.invokeFactory('InstrumentType', id = 'tmp')
+            obj = folder[_id]
+            if row['title']:
+                obj.edit(title = row['title'],
+                         description = row.get('description', ''))
+                obj.unmarkCreationFlag()
+                self.instrumenttypes[row['title']] = obj.UID()
+                renameAfterCreation(obj)
+
+    def get_rows(self, sheet, startrow=3):
+
+        """ Returns an array with all the data from a sheet.
+            Each row contains a dictionary where the key is the value of the first
+            row of the sheet for each column. 
+            The data values are returned in utf-8 format.
+            Starts to consume data from startrow
+        """
+
+        rowsout = []
         nr_rows = sheet.get_highest_row()
         nr_cols = sheet.get_highest_column()
         rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
         fields = rows[0]
-        folder = self.context.bika_setup.bika_instrumenttypes
-        self.instrumenttypes = {}
-        for row in rows[3:]:
-            row = dict(zip(fields, row))
-            _id = folder.invokeFactory('InstrumentType', id = 'tmp')
-            obj = folder[_id]
-            obj.edit(title = row.get('title', ''),
-                     description = row.get('description', ''))
-            obj.unmarkCreationFlag()
-            self.instrumenttypes[row['title']] = obj.UID()
-            renameAfterCreation(obj)
+        for row in rows[startrow:]:
+            rowout = [_c(r).decode('utf-8') for r in row]
+            rowout = dict(zip(fields, rowout))
+            rowsout.append(rowout)
+        return rowsout

@@ -24,6 +24,8 @@ ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
 allow_module('csv')
 
 def to_utf8(text):
+    if text == None:
+        text = ''
     if type(text) == unicode:
         return text.encode('utf-8')
     else:
