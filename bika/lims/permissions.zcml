@@ -69,6 +69,8 @@
 <permission id="bika.lims.EditAR" title="BIKA: Edit AR"/>
 <permission id="bika.lims.EditWorksheet" title="BIKA: Edit Worksheet"/>
 
+<permission id="bika.lims.ImportInstrumentResults" title="BIKA: Import Instrument Results"/>
+
 <permission id="bika.lims.ResultsNotRequested" title="BIKA: Results not requested"/>
 <permission id="bika.lims.ManageInvoices" title="BIKA: Manage Invoices"/>
 

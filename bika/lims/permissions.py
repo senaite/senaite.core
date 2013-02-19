@@ -1,6 +1,6 @@
 """	All permissions are defined here.
-	They are also defined in permissions.zcml.
-	The two files must be kept in sync.
+    They are also defined in permissions.zcml.
+    The two files must be kept in sync.
 
     bika.lims.__init__ imports * from this file, so
     bika.lims.PermName or bika.lims.permissions.PermName are
@@ -63,6 +63,8 @@ ManageWorksheets = 'BIKA: Manage Worksheets'
 # this is for adding/editing/exporting analyses on worksheets
 EditWorksheet = 'BIKA: Edit Worksheet'
 RejectWorksheet = 'BIKA: Reject Worksheet'
+
+ImportInstrumentResults = "BIKA: Import Instrument Results"
 
 # New or changed permissions:
 # ---------------------------

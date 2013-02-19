@@ -223,6 +223,8 @@ class BikaGenerator:
         mp('Access contents information',  ['Authenticated'], 1)
         mp(permissions.View, ['Authenticated'], 1)
 
+        mp(ImportInstrumentResults, ['Manager', 'LabManager', 'Analyst'], 1)
+
         mp = portal.bika_setup.manage_permission
         mp('Access contents information',  ['Authenticated'], 1)
         mp(permissions.View, ['Authenticated'], 1)

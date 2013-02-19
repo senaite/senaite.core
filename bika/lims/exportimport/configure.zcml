@@ -10,7 +10,7 @@
     for="Products.CMFPlone.interfaces.IPloneSiteRoot"
     name="import"
     class="bika.lims.exportimport.import.ImportView"
-    permission="bika.lims.ManageAnalysisRequests"
+    permission="bika.lims.ImportInstrumentResults"
     layer="bika.lims.interfaces.IBikaLIMS"
   />
 

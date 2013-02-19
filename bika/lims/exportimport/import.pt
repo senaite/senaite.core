@@ -42,7 +42,8 @@
             <div id="intermediate" style="display:none"/>
 		</fieldset>
 
-        <fieldset id="fieldset-setupdata">
+        <fieldset id="fieldset-setupdata"
+            tal:condition="python:checkPermission('BIKA: Manage Bika', context)">
             <legend id="fieldsetlegend-setupdata" i18n:translate="">Load Setup Data</legend>
 		    <p></p>
             Submit a valid Open XML (.XLSX) file containing Bika setup records to continue.
