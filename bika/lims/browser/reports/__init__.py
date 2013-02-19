@@ -8,6 +8,8 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from bika.lims.interfaces import IReportFolder
 from bika.lims.utils import getUsers, logged_in_client
+from bika.lims.utils import to_utf8 as _c
+from bika.lims.utils import to_unicode as _u
 from cStringIO import StringIO
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -258,7 +260,7 @@ class SubmitForm(BrowserView):
         report.reindexObject()
 
         fn = "%s - %s" % (self.date.strftime(self.date_format_short),
-                          output['report_title'])
+                          _u(output['report_title']))
 
         # remove temporary files
         for f in self.request['to_remove']:
@@ -267,7 +269,7 @@ class SubmitForm(BrowserView):
         if not pdf.err:
             setheader = self.request.RESPONSE.setHeader
             setheader('Content-Type', 'application/pdf')
-            setheader("Content-Disposition", "attachment;filename=\"%s\""%fn)
+            setheader("Content-Disposition", "attachment;filename=\"%s\""%_c(fn))
             self.request.RESPONSE.write(result)
 
         return
