@@ -18,6 +18,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IReferenceSample
 from bika.lims.utils import sortable_title
+from bika.lims.utils import to_unicode as _u
 from zope.interface import implements
 import sys, time
 
@@ -181,7 +182,7 @@ class ReferenceSample(BaseFolder):
             if o.getHazardous():
                 title += " %s" % self.translate(_('(Hazardous)'))
 
-            return title
+            return _u(title)
 
         bsc = getToolByName(self, 'bika_setup_catalog')
         defs = [o.getObject() for o in
