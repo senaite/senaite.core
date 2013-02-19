@@ -209,5 +209,6 @@ class SelectionMacrosView(BrowserView):
             return res
         
     select_groupingperiod_pt = ViewPageTemplateFile("select_groupingperiod.pt")
-    def select_groupingperiod(self):
+    def select_groupingperiod(self, allow_blank=True, multiselect=False):
+        self.allow_blank = allow_blank
         return self.select_groupingperiod_pt()

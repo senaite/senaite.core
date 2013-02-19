@@ -78,7 +78,7 @@
         
 		<h2 i18n:translate="">Analyses summary per department</h2>
 		<h3 i18n:translate="">Number of analysis requested and published per department
-							  and expresed as a percentage of all analyses performed</h3>
+							  and expressed as a percentage of all analyses performed</h3>
 			
 		<!-- Summary -->
 		<table class="bika-report-parms" summary="Parameters">
@@ -92,7 +92,7 @@
 		<table class="bika-report-table" summary="Results">
 			<thead>
 				<tr>
-					<th i18n:translate="">Period</th>					
+					<th i18n:translate="" tal:condition="python:len(datalines.keys()[0])>0">Period</th>					
 					<th i18n:translate="">Department</th>
 					<th i18n:translate="">Requested</th>
 					<th i18n:translate="">Performed</th>
@@ -103,12 +103,12 @@
 			</thead>
 			<tbody>
 				<metal:block tal:repeat="key python:datalines.keys()">
-				<tr>
+				<tr tal:condition="python:len(key)>0">
 					<td tal:content="key" colspan="7"></td>
 				</tr>
 				<metal:block tal:repeat="department python:datalines[key]['Departments'].keys()">
 				<tr>
-					<td>&nbsp;</td>
+					<td tal:condition="python:len(key)>0">&nbsp;</td>
 					<td tal:content="python:datalines[key]['Departments'][department]['Department']" width="50%"></td>
 					<td tal:content="python:datalines[key]['Departments'][department]['Requested']"></td>	
 					<td tal:content="python:datalines[key]['Departments'][department]['Performed']"></td>	
@@ -117,7 +117,7 @@
 					<td tal:content="python:datalines[key]['Departments'][department]['PublishedPerformedRatioPercentage']"></td>
 				</tr>
 				</metal:block>
-				<tr>
+				<tr tal:condition="python:len(key)>0">
 					<td class='total_label' i18n:translate="" colspan="2" align="right">Subtotal</td>
 					<td tal:content="python:datalines[key]['Requested']"></td>
 					<td tal:content="python:datalines[key]['Performed']"></td>
@@ -129,7 +129,8 @@
 			</tbody>	
 			<tfoot>
 				<tr>
-					<td class='total_label' i18n:translate="" colspan="2" align="right">Total</td>
+					<td tal:condition="python:len(datalines.keys()[0])>0">&nbsp;</td>
+					<td class='total_label' i18n:translate="" align="right">Total</td>
 					<td tal:content="python:footlines['Total']['Requested']"></td>
 					<td tal:content="python:footlines['Total']['Performed']"></td>
 					<td tal:content="python:footlines['Total']['PerformedRequestedRatioPercentage']"></td>

@@ -93,7 +93,7 @@
 					                                          field_title='Date Received')"/>
 				    </fieldset>
 				    <input tabindex=""
-				        class="searchButton"
+				        class="searchButton allowMultiSubmit"
 				        type="submit"
 				        name="submit"
 				        value="Generate report"
@@ -120,7 +120,7 @@
 					                                          field_title='Date Received')"/>
 				    </fieldset>
 				    <input tabindex=""
-				        class="searchButton"
+				        class="searchButton allowMultiSubmit"
 				        type="submit"
 				        name="submit"
 				        value="Generate report"
@@ -165,7 +165,7 @@
 				                                               field_title='Worksheet state')"/>
 				    </fieldset>
 				    <input tabindex=""
-				        class="searchButton"
+				        class="searchButton allowMultiSubmit"
 				        type="submit"
 				        name="submit"
 				        value="Generate report"
@@ -203,7 +203,7 @@
 				                                               field_title='Worksheet state')"/>
 				    </fieldset>
 				    <input tabindex=""
-				        class="searchButton"
+				        class="searchButton allowMultiSubmit"
 				        type="submit"
 				        name="submit"
 				        value="Generate report"
@@ -250,7 +250,7 @@
 				                                               field_title='Worksheet state')"/>
 				    </fieldset>
 				    <input tabindex=""
-				           class="searchButton"
+				           class="searchButton allowMultiSubmit"
 				           type="submit"
 				           name="submit"
 				           value="Generate report"
@@ -280,7 +280,7 @@
 				                                               field_title='Worksheet state')"/>
 				    </fieldset>
 				    <input tabindex=""
-				           class="searchButton"
+				           class="searchButton allowMultiSubmit"
 				           type="submit"
 				           name="submit"
 				           value="Generate report"
@@ -311,7 +311,7 @@
 			                                                   field_title='Date Received')"/>
 			        </fieldset>
 			        <input tabindex=""
-			            class="searchButton"
+			            class="searchButton allowMultiSubmit"
 			            type="submit"
 			            name="submit"
 			            value="Generate report"
@@ -339,10 +339,11 @@
 				                                               workflow_id='bika_analysis_workflow',
 				                                               field_id='getAnalysisState',
 				                                               field_title='Analysis state')"/>
-				    	<tal:x content="structure python:view.selection_macros.select_groupingperiod()"/>
+				    	<tal:x content="structure python:view.selection_macros.select_groupingperiod(
+				    												allow_blank=True)"/>
 				    </fieldset>
 				    <input tabindex=""
-				        class="searchButton"
+				        class="searchButton allowMultiSubmit"
 				        type="submit"
 				        name="submit"
 				        value="Generate report"
@@ -367,10 +368,11 @@
 				        <tal:x content="structure python:view.selection_macros.select_daterange(
 				                                               field_id='getDateRequested',
 				                                               field_title='Date Requested')"/>
-					    <tal:x content="structure python:view.selection_macros.select_groupingperiod()"/>
+					    <tal:x content="structure python:view.selection_macros.select_groupingperiod(
+					    											allow_blank=True)"/>
 				    </fieldset>
 				    <input tabindex=""
-				        class="searchButton"
+				        class="searchButton allowMultiSubmit"
 				        type="submit"
 				        name="submit"
 				        value="Generate report"
@@ -398,7 +400,7 @@
 			                                                  field_title='Date Loaded')"/>
 			        </fieldset>
 			            <input tabindex=""
-			                class="searchButton"
+			                class="searchButton allowMultiSubmit"
 			                type="submit"
 			                name="submit"
 			                value="Generate report"
@@ -422,7 +424,7 @@
 					                                          field_title='Date Created')"/>
 				    </fieldset>
 				    <input tabindex=""
-				        class="searchButton"
+				        class="searchButton allowMultiSubmit"
 				        type="submit"
 				        name="submit"
 				        value="Generate report"

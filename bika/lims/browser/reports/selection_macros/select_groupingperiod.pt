@@ -7,7 +7,7 @@
     <select name="GroupingPeriod:ignore_empty"
             id="GroupingPeriod"
             tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
-
+			<option tal:condition="python:view.allow_blank" value=""/>			
             <tal:groups tal:repeat="groupingperiod groups">
             	<option tal:attributes="
             				value python:groupingperiod;

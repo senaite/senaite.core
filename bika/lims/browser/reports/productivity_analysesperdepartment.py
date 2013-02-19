@@ -40,7 +40,6 @@ class Report(BrowserView):
             parms.append(val['parms'])
             titles.append(val['titles'])
 
-
         # Query the catalog and store results in a dictionary
         analyses = self.bika_analysis_catalog(self.contentFilter)
         if not analyses:
@@ -48,17 +47,20 @@ class Report(BrowserView):
             self.context.plone_utils.addPortalMessage(message, "error")
             return self.default_template()
 
+        groupby = self.request.form.get('GroupingPeriod', '')
+        if (groupby != ''):
+            parms.append({"title": _("Grouping period"), "value": _(groupby)})
+
         datalines = {}
         footlines = {}
         totalcount = len(analyses)
         totalpublishedcount = 0
         totalperformedcount = 0
-        groupby = ('GroupingPeriod' in self.request.form) and self.request.form['GroupingPeriod'] or 'Day'
         for analysis in analyses:
             analysis = analysis.getObject()
             analysisservice = analysis.getService()
             department = analysisservice.getDepartment().Title()
-            daterequested = analysis.getDateReceived()
+            daterequested = analysis.created()
 
             group = ''
             if groupby == 'Day':
@@ -70,7 +72,7 @@ class Report(BrowserView):
             elif groupby == 'Year':
                 group = daterequested.strftime("%Y")
             else :
-                group = self.ulocalized_time(daterequested)
+                group = ''
 
             dataline = {'Group': group, 'Requested': 0, 'Performed': 0, 'Published': 0, 'Departments': {} }
             deptline = {'Department':department, 'Requested':0, 'Performed': 0, 'Published': 0 }
