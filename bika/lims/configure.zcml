@@ -12,7 +12,6 @@
 
 <includeDependencies package="." />
 //  <include package="jarn.jsi18n" />
-//  <include package="collective.indexing" />
 //  <include package="plone.app.z3cform" />
 //  <include package="Products.TinyMCE" />
 //  <include package="Products.CMFCore" />
