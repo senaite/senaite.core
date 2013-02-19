@@ -21,6 +21,8 @@ from bika.lims.subscribers import skip
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
+from bika.lims.utils import to_utf8 as _c
+from bika.lims.utils import to_unicode as _u
 from magnitude import mg
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -1576,17 +1578,17 @@ class ajaxAnalysisRequestSubmit():
                         error(field, column, self.context.translate(msg))
 
                 elif field == "SampleType":
-                    if not bsc(portal_type = 'SampleType', title = ar[field]):
+                    if not bsc(portal_type = 'SampleType', title = _u(ar[field])):
                         msg = _("${sampletype} is not a valid sample type",
-                                mapping={'sampletype':ar[field]})
+                                mapping={'sampletype':_u(ar[field])})
                         error(field, column, self.context.translate(msg))
 
                 elif field == "SamplePoint":
                     # Strip "Lab: " from sample point titles
-                    sp_str = ar[field].replace("%s: " % _("Lab"), '')
+                    sp_str = _u(ar[field]).replace("%s: " % _("Lab"), '')
                     if not bsc(portal_type = 'SamplePoint', title = sp_str):
                         msg = _("${samplepoint} is not a valid sample point",
-                                mapping={'samplepoint':ar[field]})
+                                mapping={'samplepoint':_u(ar[field])})
                         error(field, column, self.context.translate(msg))
 
         if errors:
@@ -1639,7 +1641,7 @@ class ajaxAnalysisRequestSubmit():
                 _id = client.invokeFactory('Sample', id = 'tmp')
                 sample = client[_id]
                 # Strip "Lab: " from sample point title
-                sp_str = values.get('SamplePoint', '').replace("%s: " % _("Lab"), '')
+                sp_str = _u(values.get('SamplePoint', '')).replace("%s: " % _("Lab"), '')
                 sample.edit(
                     ClientReference = values.get('ClientReference', ''),
                     ClientSampleID = values.get('ClientSampleID', ''),
