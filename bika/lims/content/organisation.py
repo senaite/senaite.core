@@ -140,12 +140,16 @@ class Organisation(ATFolder):
                 city_line += use_address['city'] + ' '
             if use_address['zip']:
                 city_line += use_address['zip'] + ' '
-            if use_address['state']:
-                city_line += use_address['state']
             if city_line:
                 address_lines.append(city_line)
+
+            statecountry_line = ''
+            if use_address['state']:
+                statecountry_line += use_address['state'] + ', '
             if use_address['country']:
-                address_lines.append(use_address['country'])
+                statecountry_line += use_address['country']
+            if statecountry_line:            
+                address_lines.append(statecountry_line)
 
 
         return address_lines

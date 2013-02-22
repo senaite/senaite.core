@@ -27,12 +27,25 @@ class Report(BrowserView):
         pc = getToolByName(self.context, 'portal_catalog')
         bac = getToolByName(self.context, 'bika_analysis_catalog')
         bc = getToolByName(self.context, 'bika_catalog')
+        rc = getToolByName(self.context, 'reference_catalog')
 
         self.report_content = {}
         parm_lines = {}
         parms = []
-        headings = {}
+        headings = {}        
+        count_all_ars = 0
+        count_all_analyses = 0
+        query = {}
+
         this_client = logged_in_client(self.context)
+
+        if not this_client and self.request.form.has_key('ClientUID'):
+            client_uid = self.request.form['ClientUID']
+            this_client = rc.lookupObject(client_uid)
+            parms.append(
+                { 'title': _('Client'),
+                 'value': this_client.Title(),
+                 'type': 'text'})
 
         if this_client:
             headings['header'] = _("Analysis requests and analyses")
@@ -40,10 +53,6 @@ class Report(BrowserView):
         else:
             headings['header'] = _("Analysis requests and analyses per client")
             headings['subheader'] = _("Number of Analysis requests and analyses per client")
-
-        count_all_ars = 0
-        count_all_analyses = 0
-        query = {}
 
         date_query = formatDateQuery(self.context, 'Requested')
         if date_query:
@@ -73,7 +82,13 @@ class Report(BrowserView):
             ws_review_state = workflow.getTitleForStateOnType(
                         self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
             parms.append({'title': _('Assigned to worksheet'), 'value': ws_review_state, 'type': 'text'})
-
+        
+        if self.request.form.has_key('bika_worksheetanalysis_workflow'):
+            query['worksheetanalysis_review_state'] = self.request.form['bika_worksheetanalysis_workflow']
+            ws_review_state = workflow.getTitleForStateOnType(
+                        self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
+            parms.append({'title': _('Assigned to worksheet'), 'value': ws_review_state, 'type': 'text'})
+        
         # and now lets do the actual report lines
         formats = {'columns': 3,
                    'col_heads': [ _('Client'),
