@@ -11,19 +11,19 @@ from Products.CMFCore.permissions import AddPortalContent
 
 # Add Permissions:
 # ----------------
-AddAnalysisProfile = 'BIKA: Add AnalysisProfile'
-AddARTemplate = 'BIKA: Add ARTemplate'
 AddAnalysis = 'BIKA: Add Analysis'
+AddAnalysisProfile = 'BIKA: Add AnalysisProfile'
 AddAnalysisRequest = 'BIKA: Add Analysis Request'
 AddAnalysisSpec = 'BIKA: Add AnalysisSpec'
+AddARTemplate = 'BIKA: Add ARTemplate'
 AddBatch = 'BIKA: Add Batch'
 AddClient = 'BIKA: Add Client'
 AddClientFolder = 'BIKA: Add ClientFolder'
 AddMethod = 'BIKA: Add Method'
 AddSample = 'BIKA: Add Sample'
-AddSamplePoint = 'BIKA: Add SamplePoint'
 AddSampleMatrix = 'BIKA: Add SampleMatrix'
 AddSamplePartition = 'BIKA: Add SamplePartition'
+AddSamplePoint = 'BIKA: Add SamplePoint'
 AddSamplingDeviation = 'BIKA: Add SamplingDeviation'
 
 # Default Archetypes Add Permission

@@ -18,22 +18,6 @@
     <depends name="content" />
   </genericsetup:importStep>
 
- <genericsetup:upgradeStep
-        title="Add BatchID and BatchUID to AnalysisRequest"
-        description="Batches were introduced; set the BatchID to None on all existing ARs."
-        source="*"
-        destination="1010"
-        handler="bika.lims.upgrade.to1010.addBatches"
-        sortkey="1"
-        profile="bika.lims:default"/>
-
- <genericsetup:upgradeStep
-        title="Add some bika types to portal_catalog"
-        description=""
-        source="*"
-        destination="1100"
-        handler="bika.lims.upgrade.to1100.upgrade"
-        sortkey="1"
-        profile="bika.lims:default"/>
+  <include package=".upgrade"/>
 
 </configure>
