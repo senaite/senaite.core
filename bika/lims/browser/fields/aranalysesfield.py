@@ -78,8 +78,23 @@ class ARAnalysesField(ObjectField):
             price = prices[service_uid]
             vat = Decimal(service.getVAT())
 
+            # analysis->InterimFields
             calc = service.getCalculation()
-            interim_fields = calc and calc.getInterimFields() or []
+            interim_fields = calc and list(calc.getInterimFields()) or []
+
+            # override defaults from service->InterimFields
+            service_interims = service.getInterimFields()
+            if service_interims:
+                sif = dict([[x['keyword'], x['value']]
+                            for x in service_interims])
+                for i, i_f in enumerate(interim_fields):
+                    if i_f['keyword'] in sif:
+                        interim_fields[i]['value'] = sif[i_f['keyword']]
+                        service_interims = [x for x in service_interims
+                                            if x['keyword'] != i_f['keyword']]
+                # Add remaining service interims to the analysis
+                for v in service_interims:
+                    interim_fields.append(v)
 
             #create the analysis if it doesn't exist
             if hasattr(instance, keyword):

@@ -135,3 +135,44 @@ class ajaxServicePopup(BrowserView):
 
         return self.template()
 
+
+class ajaxGetServiceInterimFields:
+    "Tries to fall back to Calculation for defaults"
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        plone.protect.PostOnly(self.request)
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        service_url = self.request['service_url']
+        service_id = service_url.split('/')[-1]
+        services = bsc(portal_type='AnalysisService', id=service_id)
+        if services:
+            service = services[0].getObject()
+            service_interims = service.getInterimFields()
+        else:
+            service_interims = []
+
+        calc = service.getCalculation()
+        if calc:
+            calc_interims = calc.getInterimFields()
+        else:
+            calc_interims = []
+
+        # overwrite existing fields in position
+        for s_i in service_interims:
+            placed = 0
+            for c_i in calc_interims:
+                if s_i['keyword'] == c_i['keyword']:
+                    c_i['value'] = s_i['value']
+                    placed = 1
+                    break
+            if placed:
+                continue
+            # otherwise, create new ones (last)
+            calc_interims.append(s_i)
+
+        return json.dumps(calc_interims)

@@ -5,6 +5,80 @@
 		_ = jarn.i18n.MessageFactory('bika');
 		PMF = jarn.i18n.MessageFactory('plone');
 
+		$("#Calculation\\:list").change(function(){
+
+			// no calculation selected
+			// clear and hide InterimFields widget completely
+			// No: The user needs this form to add unrelated service interims.
+			// if($(this).val() == ''){
+			// 	$("#InterimFields_more").click(); // blank last row
+			// 	var rows = $("tr.records_row_InterimFields") // Clear the rest
+			// 	if($(rows).length > 1){
+			// 		for (var i = $(rows).length - 2; i >= 0; i--) {
+			// 			$($(rows)[i]).remove()
+			// 		}
+			// 	}
+			// 	$("#archetypes-fieldname-InterimFields").hide();
+			// 	return
+			// }
+			// calc selected
+			// make sure the widget is visible
+			// $("#archetypes-fieldname-InterimFields").show();
+
+			// Get new widget data (json list of dict, via ajax)
+			// On first load: get service interims
+			if ($(this).attr("loaded") != "loaded") {
+				$(this).attr("loaded", "loaded");
+				url = "get_service_interim_fields";
+			} else {
+				url = "get_calculation_interim_fields";
+			}
+
+			options = {
+				url: window.portal_url + "/" + url,
+				type: 'POST',
+				data: {
+					'service_url': window.location.href,
+					'calc': $(this).val(),
+					'_authenticator': $('input[name="_authenticator"]').val()},
+				dataType: "json",
+				success: function( data, status, xhr ) {
+					// Clear rows
+					$("#InterimFields_more").click(); // blank last row
+					var rows = $("tr.records_row_InterimFields")
+					if($(rows).length > 1){
+						for (var i = $(rows).length - 2; i >= 0; i--) {
+							$($(rows)[i]).remove()
+						}
+					}
+					$("[id^='InterimFields-keyword-']").attr('id', 'InterimFields-keyword-0');
+					$("[id^='InterimFields-title-']").attr('id', 'InterimFields-title-0');
+					$("[id^='InterimFields-value-']").attr('id', 'InterimFields-value-0');
+					$("[id^='InterimFields-unit-']").attr('id', 'InterimFields-unit-0');
+					for (var i = 0; i < data.length; i++) {
+						row = data[i]
+						// the first (only) existing row should be blank
+						$("#InterimFields-keyword-"+i).val(row['keyword']);
+						$("#InterimFields-title-"+i).val(row['title']);
+						$("#InterimFields-value-"+i).val(row['value']);
+						$("#InterimFields-unit-"+i).val(row['unit']);
+						$("#InterimFields_more").click(); // blank last row
+					};
+					if ( xhr === self.xhr ) {
+						response( data );
+					}
+				},
+				error: function( xhr ) {
+					if ( xhr === self.xhr ) {
+						response( [] );
+					}
+				}
+			}
+			$.ajax(options);
+		});
+
+		$("#Calculation\\:list").change();
+
 		function updateContainers(target,requestdata){
 			$.ajax({
 				type: 'POST',
