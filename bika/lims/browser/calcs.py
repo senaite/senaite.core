@@ -1,11 +1,17 @@
-from zope.i18n import translate
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.PythonScripts.standard import html_quote
-from Products.CMFCore.utils import getToolByName
-import plone, json, sys, math, urllib
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.CMFCore.utils import getToolByName
+from Products.PythonScripts.standard import html_quote
+from zope.i18n import translate
+
 import App
+import json
+import math
+import plone
+import sys
+import urllib
+
 
 class ajaxCalculateAnalysisEntry():
     """ This view is called by javascript when an analysis' result or interim
@@ -333,3 +339,23 @@ class ajaxCalculateAnalysisEntry():
         return json.dumps({'alerts': self.alerts,
                            'uncertainties': self.uncertainties,
                            'results': results})
+
+
+class ajaxGetInterimFields:
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        plone.protect.PostOnly(self.request)
+        uc = getToolByName(self.context, 'uid_catalog')
+        calc = self.request['calc']
+        calcs = uc(UID=calc)
+        if calcs:
+            calc = calcs[0].getObject()
+        else:
+            return json.dumps([])
+
+        return json.dumps(calc.getInterimFields())

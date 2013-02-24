@@ -13,4 +13,12 @@
     layer="bika.lims.interfaces.IBikaLIMS"
   />
 
+  <browser:page
+    for="*"
+    name="get_interim_fields"
+    class="bika.lims.browser.calcs.ajaxGetInterimFields"
+    permission="zope.Public"
+    layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
 </configure>

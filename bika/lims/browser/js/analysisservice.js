@@ -5,6 +5,77 @@
 		_ = jarn.i18n.MessageFactory('bika');
 		PMF = jarn.i18n.MessageFactory('plone');
 
+		$("#InterimFields_more").hide();
+		$("#Calculation\\:list").change(function(){
+			// no calculation selected
+			// clear and hide InterimFields widget completely
+			if($(this).val() == ''){
+				$("#InterimFields_more").click(); // blank last row
+				var rows = $("tr.records_row_InterimFields") // Clear the rest
+				if($(rows).length > 1){
+					for (var i = $(rows).length - 2; i >= 0; i--) {
+						$($(rows)[i]).remove()
+					}
+				}
+				$("#archetypes-fieldname-InterimFields").hide();
+				return
+			}
+			// calc selected
+			// make sure the widget is visible
+			$("#archetypes-fieldname-InterimFields").show();
+			// Get new widget data (json list of dict, via ajax)
+			$.ajax({
+				url: window.portal_url + "/get_interim_fields",
+				type: 'POST',
+				data: {
+					'calc': $(this).val(),
+					'_authenticator': $('input[name="_authenticator"]').val()},
+				dataType: "json",
+				success: function( data, status, xhr ) {
+					// Clear rows
+					$("#InterimFields_more").click(); // blank last row
+					var rows = $("tr.records_row_InterimFields")
+					if($(rows).length > 1){
+						for (var i = $(rows).length - 2; i >= 0; i--) {
+							$($(rows)[i]).remove()
+						}
+					}
+					$("[id^='InterimFields-keyword-']").attr('id', 'InterimFields-keyword-0');
+					$("[id^='InterimFields-title-']").attr('id', 'InterimFields-title-0');
+					$("[id^='InterimFields-value-']").attr('id', 'InterimFields-value-0');
+					$("[id^='InterimFields-unit-']").attr('id', 'InterimFields-unit-0');
+					for (var i = 0; i < data.length; i++) {
+						row = data[i]
+						// the first (only) existing row should be blank
+						$("#InterimFields-keyword-"+i).val(row['keyword']);
+						$("#InterimFields-title-"+i).val(row['title']);
+						$("#InterimFields-value-"+i).val(row['value']);
+						$("#InterimFields-unit-"+i).val(row['unit']);
+						$("#InterimFields_more").click(); // blank last row
+					};
+					if ( xhr === self.xhr ) {
+						response( data );
+					}
+				},
+				error: function( xhr ) {
+					if ( xhr === self.xhr ) {
+						response( [] );
+					}
+				}
+			});
+		});
+		if($("#Calculation\\:list").val() == ''){
+			$("#InterimFields_more").click(); // blank last row
+			var rows = $("tr.records_row_InterimFields") // Clear the rest
+			if($(rows).length > 1){
+				for (var i = $(rows).length - 2; i >= 0; i--) {
+					$($(rows)[i]).remove()
+				}
+			}
+			$("#archetypes-fieldname-InterimFields").hide();
+			return
+		}
+
 		function updateContainers(target,requestdata){
 			$.ajax({
 				type: 'POST',
