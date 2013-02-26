@@ -41,9 +41,9 @@ Content-Type: text/html
 </ul>
 </td>
 <td style="text-align: left; ">
-<p style="text-align: center; "><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview/bikas-web-based-workflow"><img class="image-inline" src="workflow-diagram.png" /></a></p>
-<p style="text-align: center; "><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual/introduction-and-overview/bikas-web-based-workflow">Web based workflow</a></p>
-<p align="left"><img alt="Accredited lab analyses" src="++resource++bika.lims.images/warning.png" /> <b><a class="external-link" href="knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/system-defaults/bika-setup">Sampling</a> is [off] by default<br /></b></p>
+<p style="text-align: center; "><a class="external-link" href="http://demo.bikalabs.com/knowledge-centre/manual/bika-3-user-manual/introduction-and-overview/bikas-web-based-workflow"><img class="image-inline" src="workflow-diagram.png" /></a></p>
+<p style="text-align: center; "><a class="external-link" href="http://demo.bikalabs.com/knowledge-centre/manual/bika-3-user-manual/introduction-and-overview/bikas-web-based-workflow">Web based workflow</a></p>
+<p align="left"><img alt="Accredited lab analyses" src="++resource++bika.lims.images/warning.png" /> <b><a class="external-link" href="http://demo.bikalabs.com/knowledge-centre/manual/bika-3-user-manual/setup-and-configuration/system-defaults/bika-setup">Sampling</a> is [off] by default<br /></b></p>
 <p align="left">Labs will set sampling workflow maybe once  during the system life cycle. When enabled, the system enforces the sampling step, it gets logged and time stamped and field results captured</p>
 <p align="left"><b>Preservation<br /></b></p>
 <p align="left">When preservation was set up for a sample, the system enforces a preservation step in its workflow</p>
