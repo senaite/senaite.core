@@ -617,6 +617,7 @@ class AnalysisRequestViewView(BrowserView):
                         break
 
                 if row['id'] == 'SamplePoint':
+                    value = value.replace("%s: " % _("Lab"), '')
                     if value and \
                        not bsc(portal_type = 'SamplePoint', title = _u(value)):
                         message = _("${samplepoint} is not a valid sample point",
