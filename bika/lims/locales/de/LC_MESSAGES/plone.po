@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 msgid ""
 msgstr ""
@@ -501,7 +501,7 @@ msgid "Reference Manufacturers"
 msgstr "Referenz-Hersteller"
 
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
-msgid "Reference Results"
+msgid "Reference Values"
 msgstr "Referenz-Ergebnisse"
 
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
@@ -877,8 +877,8 @@ msgstr "Preferences"
 msgid "label_schema_Publication preference"
 msgstr "Publication preference"
 
-msgid "label_schema_Reference Results"
-msgstr "Reference Results"
+msgid "label_schema_Reference Values"
+msgstr "Reference Values"
 
 msgid "label_schema_Result Options"
 msgstr "Result Options"

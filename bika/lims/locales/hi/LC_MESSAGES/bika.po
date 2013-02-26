@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 msgid ""
 msgstr ""
@@ -1535,7 +1535,7 @@ msgid "Expected Result"
 msgstr ""
 
 # File: ../content/referencesample.py, line: 136
-msgid "Expected Results"
+msgid "Expected Values"
 msgstr ""
 
 # File: ../browser/referencesample.py, line: 240
@@ -2618,7 +2618,7 @@ msgstr ""
 
 # File: ../browser/referencesample.py, line: 108
 # File: ../content/referencedefinition.py, line: 27
-msgid "Reference Results"
+msgid "Reference Values"
 msgstr ""
 
 # File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 53
@@ -3791,7 +3791,7 @@ msgstr ""
 msgid "Value"
 msgstr ""
 
-# 
+#
 # File: ../content/analysisservice.py, line: 285
 msgid "Values can be entered here which will override the defaults specified in the Calculation Interim Fields."
 msgstr ""

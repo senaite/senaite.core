@@ -126,7 +126,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceResultsField('ReferenceResults',
-        schemata = 'Reference Results',
+        schemata = 'Reference Values',
         required = 1,
         subfield_validators = {
                     'result':'referencevalues_validator',
@@ -134,7 +134,7 @@ schema = BikaSchema.copy() + Schema((
                     'max':'referencevalues_validator',
                     'error':'referencevalues_validator'},
         widget = ReferenceResultsWidget(
-            label = _("Expected Results"),
+            label = _("Expected Values"),
         ),
     ),
     ComputedField('SupplierUID',

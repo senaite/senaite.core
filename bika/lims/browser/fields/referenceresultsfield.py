@@ -25,6 +25,6 @@ class ReferenceResultsField(RecordsField):
     security = ClassSecurityInfo()
 
 registerField(ReferenceResultsField,
-              title = "Reference Results",
+              title = "Reference Values",
               description = "Used for storing reference results",
               )
