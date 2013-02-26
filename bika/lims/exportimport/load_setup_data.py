@@ -689,76 +689,31 @@ class LoadSetupData(BrowserView):
         logger.info("Loading Instruments...")
         folder = self.context.bika_setup.bika_instruments
         self.instruments = {}
-        self.suppliers = {}
-        self.manufacturers = {}
-        self.instrumenttypes = {}
         rows = self.get_rows(sheet, 3) 
         for row in rows:
-            _id = folder.invokeFactory('Instrument', id = 'tmp')
+            if (not row['Type'] 
+                or not row['title'] 
+                or not row['Supplier']
+                or not row['Brand']):
+                continue
+
+            _id = folder.invokeFactory('Instrument', id='tmp')
             obj = folder[_id]
 
-            # Create the instrument type (from Type field) if not exists
-            itype_uid = ''
-            itype_title = row.get('Type', 'Unknown')
-            itype = self.bsc(portal_type='InstrumentType', Title = itype_title)
-            if len(itype) == 0:
-                itfolder = self.context.bika_setup.bika_instrumenttypes
-                _itypeid = itfolder.invokeFactory('InstrumentType', id = 'tmp')
-                itypeobj = itfolder[_itypeid]
-                itypeobj.edit(title = itype_title, description = '')
-                itypeobj.unmarkCreationFlag()
-                self.instrumenttypes[itype_title] = itypeobj
-                renameAfterCreation(itypeobj)
-                itype_uid = itypeobj.UID()
-            else:
-                itype_uid = itype[0].getObject().UID()
+            obj.edit(title=row['title'],
+                     description=row.get('description', ''),
+                     Type=row['Type'],
+                     Brand=row['Brand'],
+                     Model=row['Model'],
+                     SerialNo=row.get('SerialNo', ''),
+                     CalibrationCertificate=row.get('CalibrationCertificate', ''),
+                     CalibrationExpiryDate=row.get('CalibrationExpiryDate', ''),
+                     DataInterface=row.get('DataInterface', ''))
 
-            # Create Manufacturer (from Brand) if not exists
-            man_uid = ''
-            man_title = row.get('Brand', 'Unknown')
-            man = self.bsc(portal_type='Manufacturer', Title = man_title)
-            if len(man) == 0:
-                manfolder = self.context.bika_setup.bika_manufacturers
-                _manid = manfolder.invokeFactory('Manufacturer',id = 'tmp')
-                manobj = manfolder[_manid]
-                manobj.edit(title = man_title, description = '')
-                manobj.unmarkCreationFlag()
-                self.manufacturers[man_title] = manobj
-                renameAfterCreation(manobj)
-                man_uid = manobj.UID()
-            else:
-                man_uid = man[0].getObject().UID()
-
-            # Create Supplier if not exists
-            sup_uid = ''
-            sup_title = row.get('Supplier', 'Unknown')
-            sup = self.bsc(portal_type='Supplier', Title = sup_title)
-            if len(sup) == 0:
-                supfolder = self.context.bika_setup.bika_suppliers
-                _supid = supfolder.invokeFactory('Supplier',id = 'tmp')
-                supobj = supfolder[_supid]
-                supobj.edit(Name = sup_title, description = '')
-                supobj.unmarkCreationFlag()
-                self.suppliers[sup_title] = supobj
-                renameAfterCreation(supobj)
-                sup_uid = supobj.UID()
-            else:
-                sup_uid = sup[0].getObject().UID()
-
-            obj.edit(title = row.get('title', 'Unknown'),
-                     description = row.get('description', ''),
-                     Type = row['Type'],
-                     Brand = row['Brand'],
-                     Model = row['Model'],
-                     SerialNo = row.get('SerialNo', ''),
-                     CalibrationCertificate = row.get('CalibrationCertificate',''),
-                     CalibrationExpiryDate = row.get('CalibrationExpiryDate', ''),
-                     DataInterface = row.get('DataInterface', ''))
-
-            obj.setInstrumentType(itype_uid)
-            obj.setManufacturer(man_uid)
-            obj.setSupplier(sup_uid)
-            self.instruments[row.get('title', '')] = obj
+            obj.setInstrumentType(self.instrumenttypes[row['Type']])
+            obj.setManufacturer(self.manufacturers[row['Brand']])
+            obj.setSupplier(self.suppliers[row['Supplier']])
+            self.instruments[row['title']] = obj.UID()
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
 
@@ -1717,7 +1672,7 @@ class LoadSetupData(BrowserView):
                          Phone = row.get('Phone',''),
                          Fax = row.get('Fax',''))
                 obj.unmarkCreationFlag()
-                self.suppliers[row['Name']] = obj
+                self.suppliers[row['Name']] = obj.UID()
                 renameAfterCreation(obj)
 
     def load_supplier_contacts(self, sheet):
@@ -1766,8 +1721,7 @@ class LoadSetupData(BrowserView):
             if not row['instrument'] or not row['title']:
                 continue
 
-            folder = self.bsc(portal_type='Instrument',
-                              title=self.escape_query(row['instrument']))
+            folder = self.bsc(UID=self.instruments[row['instrument']])
             if len(folder) > 0:
                 folder = folder[0].getObject()
                 _id = folder.invokeFactory('InstrumentValidation', id='tmp')
@@ -1791,8 +1745,7 @@ class LoadSetupData(BrowserView):
             if not row['instrument'] or not row['title']:
                 continue
 
-            folder = self.bsc(portal_type='Instrument',
-                              title=self.escape_query(row['instrument']))
+            folder = self.bsc(UID=self.instruments[row['instrument']])
             if len(folder) > 0:
                 folder = folder[0].getObject()
                 _id = folder.invokeFactory('InstrumentCalibration', id='tmp')
@@ -1815,8 +1768,8 @@ class LoadSetupData(BrowserView):
         for row in rows:
             if not row['instrument'] or not row['title']:
                 continue
-            folder = self.bsc(portal_type='Instrument',
-                              title=self.escape_query(row['instrument']))
+
+            folder = self.bsc(UID=self.instruments[row['instrument']])
             if len(folder) > 0:
                 folder = folder[0].getObject()
                 _id = folder.invokeFactory('InstrumentCertification', id='tmp')
@@ -1839,8 +1792,7 @@ class LoadSetupData(BrowserView):
             if not row['instrument'] or not row['title'] or not row['type']:
                 continue
 
-            folder = self.bsc(portal_type='Instrument',
-                              title=self.escape_query(row['instrument']))
+            folder = self.bsc(UID=self.instruments[row['instrument']])
             if len(folder) > 0:
                 folder = folder[0].getObject()
                 _id = folder.invokeFactory('InstrumentMaintenanceTask',
@@ -1869,8 +1821,7 @@ class LoadSetupData(BrowserView):
             if not row['instrument'] or not row['title'] or not row['type']:
                 continue
 
-            folder = self.bsc(portal_type='Instrument',
-                              title=self.escape_query(row['instrument']))
+            folder = self.bsc(UID=self.instruments[row['instrument']])
             if len(folder) > 0:
                 folder = folder[0].getObject()
                 _id = folder.invokeFactory('InstrumentScheduledTask',
@@ -1929,10 +1880,3 @@ class LoadSetupData(BrowserView):
             return True
         else:
             return False
-
-    def escape_query(self, value):
-        """ Escapes ( and ) chars from string being used in Zope searches
-            Error rised: ParseError: Token 'EOF' required, u'(' found
-            http://marc.info/?l=zope-dev&m=119619370013927
-        """
-        return '"' + value + '"'
