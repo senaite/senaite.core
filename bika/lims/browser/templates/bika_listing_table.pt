@@ -497,7 +497,11 @@ Table cells for each column from in review_state's column list.
 		</span>
 	</span>
 
-	<tal:comment replace="nothing"><!-- unit for interim and result--></tal:comment>
+	<tal:comment replace="nothing"><!-- unit for Interim Fields --></tal:comment>
+	<em tal:content="python:type(item[column]) == type({}) and item[column].get('unit', None) or ''"
+		class="discreet" style="white-space:nowrap;"/>
+
+	<tal:comment replace="nothing"><!-- unit for Result --></tal:comment>
 	<em tal:condition="python:'Unit' in item and
 							(column == 'Result' or
 								'interim_fields' in item and column in item['interim_fields'])"
