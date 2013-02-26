@@ -220,17 +220,20 @@ class AnalysesView(BikaListingView):
                 items[i]['replace']['Method'] = "<a href='%s'>%s</a>" % \
                     (method.absolute_url(), method.Title())
 
-            # Show version number of out-of-date objects
             if checkPermission(ManageBika, self.context):
                 service_uid = service.UID()
                 latest = rc.lookupObject(service_uid).version_id
                 items[i]['Service'] = service.Title()
                 items[i]['class']['Service'] = "service_title"
-                if hasattr(obj, 'reference_versions') and \
-                   service_uid in obj.reference_versions and \
-                   latest != obj.reference_versions[service_uid]:
-                    items[i]['after']['Service'] = "(v%s)" % \
-                         (obj.reference_versions[service_uid])
+
+            # Show version number of out-of-date objects
+            # No: This should be done in another column, if at all.
+            # The (vX) value confuses some more fragile forms.
+            #     if hasattr(obj, 'reference_versions') and \
+            #        service_uid in obj.reference_versions and \
+            #        latest != obj.reference_versions[service_uid]:
+            #         items[i]['after']['Service'] = "(v%s)" % \
+            #              (obj.reference_versions[service_uid])
 
             # choices defined on Service apply to result fields.
             choices = service.getResultOptions()
