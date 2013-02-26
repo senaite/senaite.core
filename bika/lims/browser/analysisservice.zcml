@@ -12,6 +12,13 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="*"
+      name="get_service_interim_fields"
+      class="bika.lims.browser.analysisservice.ajaxGetServiceInterimFields"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
 
     <browser:page
       for="*"

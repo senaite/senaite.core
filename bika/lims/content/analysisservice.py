@@ -167,6 +167,9 @@ class PartitionSetupField(RecordsField):
 
 registerField(PartitionSetupField, title = "", description = "")
 
+## XXX When you modify this schema, be sure to edit the list of fields
+## to duplicate, in bika_analysisservices.py.
+
 schema = BikaSchema.copy() + Schema((
     StringField('Unit',
         schemata = "Description",

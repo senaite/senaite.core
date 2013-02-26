@@ -1845,7 +1845,7 @@ class ajaxAnalysisRequestSubmit():
         # won't print labels for Register on Secondary ARs
         new_ars = None
         if came_from == 'add':
-            new_ars = [ar for ar in ARs if ar.split("-")[-1] == '01']
+            new_ars = [ar for ar in ARs if ar[-2:] == '01']
         if 'register' in self.context.bika_setup.getAutoPrintLabels() and new_ars:
             return json.dumps({'success':message,
                                'labels':new_ars,

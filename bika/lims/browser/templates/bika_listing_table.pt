@@ -567,8 +567,7 @@ Table cells for each column from in review_state's column list.
 						uid item/uid;
 						keyword keyword;">
 
-			<td tal:condition="python:context.portal_type=='Worksheet'">&nbsp;</td>
-			<td tal:condition="python:context.portal_type!='Worksheet'"><span i18n:translate="">Remarks</span>:</td>
+			<td><span i18n:translate="">Remarks</span>:</td>
 
 			<td tal:attributes="colspan python:int(nr_cols)-1;">
 				<input

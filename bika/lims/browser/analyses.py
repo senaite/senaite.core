@@ -149,7 +149,8 @@ class AnalysesView(BikaListingView):
             items[i]['Uncertainty'] = ''
             items[i]['retested'] = obj.getRetested()
             items[i]['class']['retested'] = 'center'
-            items[i]['result_captured'] = self.ulocalized_time(obj.getResultCaptureDate())
+            items[i]['result_captured'] = self.ulocalized_time(
+                obj.getResultCaptureDate(), long_format=0)
             items[i]['calculation'] = calculation and True or False
             try:
                 items[i]['Partition'] = obj.getSamplePartition().getId()
@@ -159,9 +160,9 @@ class AnalysesView(BikaListingView):
                 items[i]['DueDate'] = ''
                 items[i]['CaptureDate'] = ''
             else:
-                items[i]['DueDate'] = self.ulocalized_time(obj.getDueDate(), long_format=1)
+                items[i]['DueDate'] = self.ulocalized_time(obj.getDueDate(), long_format=0)
                 cd = obj.getResultCaptureDate()
-                items[i]['CaptureDate'] = cd and self.ulocalized_time(cd, long_format=1) or ''
+                items[i]['CaptureDate'] = cd and self.ulocalized_time(cd, long_format=0) or ''
             items[i]['Attachments'] = ''
 
             # calculate specs
@@ -220,17 +221,20 @@ class AnalysesView(BikaListingView):
                 items[i]['replace']['Method'] = "<a href='%s'>%s</a>" % \
                     (method.absolute_url(), method.Title())
 
-            # Show version number of out-of-date objects
             if checkPermission(ManageBika, self.context):
                 service_uid = service.UID()
                 latest = rc.lookupObject(service_uid).version_id
                 items[i]['Service'] = service.Title()
                 items[i]['class']['Service'] = "service_title"
-                if hasattr(obj, 'reference_versions') and \
-                   service_uid in obj.reference_versions and \
-                   latest != obj.reference_versions[service_uid]:
-                    items[i]['after']['Service'] = "(v%s)" % \
-                         (obj.reference_versions[service_uid])
+
+            # Show version number of out-of-date objects
+            # No: This should be done in another column, if at all.
+            # The (vX) value confuses some more fragile forms.
+            #     if hasattr(obj, 'reference_versions') and \
+            #        service_uid in obj.reference_versions and \
+            #        latest != obj.reference_versions[service_uid]:
+            #         items[i]['after']['Service'] = "(v%s)" % \
+            #              (obj.reference_versions[service_uid])
 
             # choices defined on Service apply to result fields.
             choices = service.getResultOptions()

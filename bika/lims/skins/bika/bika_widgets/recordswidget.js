@@ -44,15 +44,11 @@ jQuery(function($){
         recordswidget_lookups();
 
         $('[combogrid_options]').live('focus', function(){
-            cgo = $(this).attr('combogrid_options');
-            if(cgo==''){
-                return;
-            }
-            // For inputs with combogrids, we want them to clear when focused
-            $(this).val('');
-            // We also want to clear all colModel->subfield completions
             var options = $.parseJSON($(this).attr('combogrid_options'));
             if(options != '' && options != undefined && options != null){
+                // For inputs with combogrids, we want them to clear when focused
+                $(this).val('');
+                // We also want to clear all colModel->subfield completions
                 var fieldName = $(this).attr('name').split(".")[0];
                 var key = $(this).attr('name').split(".")[1].split(":")[0];
                 var colModel = $.parseJSON($(this).attr('combogrid_options')).colModel;
