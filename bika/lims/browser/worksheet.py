@@ -83,7 +83,8 @@ class WorksheetWorkflowAction(WorkflowAction):
                     InterimFields = interimFields,
                     Retested = form.has_key('retested') and \
                                form['retested'].has_key(uid),
-                    Unit = unit and unit or '')
+                    Unit = unit and unit or '',
+                    Remarks = form['Remarks'][0][uid])
 
             # discover which items may be submitted
             submissable = []
