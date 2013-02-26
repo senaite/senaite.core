@@ -149,7 +149,8 @@ class AnalysesView(BikaListingView):
             items[i]['Uncertainty'] = ''
             items[i]['retested'] = obj.getRetested()
             items[i]['class']['retested'] = 'center'
-            items[i]['result_captured'] = self.ulocalized_time(obj.getResultCaptureDate())
+            items[i]['result_captured'] = self.ulocalized_time(
+                obj.getResultCaptureDate(), long_format=0)
             items[i]['calculation'] = calculation and True or False
             try:
                 items[i]['Partition'] = obj.getSamplePartition().getId()
@@ -159,9 +160,9 @@ class AnalysesView(BikaListingView):
                 items[i]['DueDate'] = ''
                 items[i]['CaptureDate'] = ''
             else:
-                items[i]['DueDate'] = self.ulocalized_time(obj.getDueDate(), long_format=1)
+                items[i]['DueDate'] = self.ulocalized_time(obj.getDueDate(), long_format=0)
                 cd = obj.getResultCaptureDate()
-                items[i]['CaptureDate'] = cd and self.ulocalized_time(cd, long_format=1) or ''
+                items[i]['CaptureDate'] = cd and self.ulocalized_time(cd, long_format=0) or ''
             items[i]['Attachments'] = ''
 
             # calculate specs
