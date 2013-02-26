@@ -156,6 +156,16 @@ class LoadSetupData(BrowserView):
             self.load_instrumenttypes(sheets['Instrument Types'])
         if 'Instruments' in sheets:
             self.load_instruments(sheets['Instruments'])
+        if 'Instrument Validations' in sheets:
+            self.load_instrumentvalidations(sheets['Instrument Validations'])
+        if 'Instrument Calibrations' in sheets:
+            self.load_instrumentcalibrations(sheets['Instrument Calibrations'])
+        if 'Instrument Certifications' in sheets:
+            self.load_instrumentcertifications(sheets['Instrument Certifications'])
+        if 'Instrument Maintenance Tasks' in sheets:
+            self.load_instrumentmaintenancetasks(sheets['Instrument Maintenance Tasks'])
+        if 'Instrument Schedule' in sheets:
+            self.load_instrumentschedule(sheets['Instrument Schedule'])
         if 'Sample Matrices' in sheets:
             self.load_sample_matrices(sheets['Sample Matrices'])
 
@@ -1719,15 +1729,15 @@ class LoadSetupData(BrowserView):
             if not row['Firstname']:
                 continue
             folder = self.bsc(portal_type="Supplier",
-                              Title = row['Supplier_Name'])
+                              Title=row['Supplier_Name'])
             if (len(folder) > 0):
                 folder = folder[0].getObject()
-                _id = folder.invokeFactory('SupplierContact', id = 'tmp')
+                _id = folder.invokeFactory('SupplierContact', id='tmp')
                 obj = folder[_id]
                 obj.edit(
-                    Firstname = row['Firstname'],
-                    Surname = row.get('Surname',''),
-                    EmailAddress = row.get('EmailAddress',''))
+                    Firstname=row['Firstname'],
+                    Surname=row.get('Surname', ''),
+                    EmailAddress=row.get('EmailAddress', ''))
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
 
@@ -1740,20 +1750,157 @@ class LoadSetupData(BrowserView):
         self.instrumenttypes = {}
         rows = self.get_rows(sheet, 3)
         for row in rows:
-            _id = folder.invokeFactory('InstrumentType', id = 'tmp')
-            obj = folder[_id]
             if row['title']:
-                obj.edit(title = row['title'],
-                         description = row.get('description', ''))
+                _id = folder.invokeFactory('InstrumentType', id='tmp')
+                obj = folder[_id]
+                obj.edit(title=row['title'],
+                         description=row.get('description', ''))
                 obj.unmarkCreationFlag()
                 self.instrumenttypes[row['title']] = obj.UID()
+                renameAfterCreation(obj)
+
+    def load_instrumentvalidations(self, sheet):
+        logger.info("Loading Instrument Validations...")
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if not row['instrument'] or not row['title']:
+                continue
+
+            folder = self.bsc(portal_type='Instrument',
+                              title=self.escape_query(row['instrument']))
+            if len(folder) > 0:
+                folder = folder[0].getObject()
+                _id = folder.invokeFactory('InstrumentValidation', id='tmp')
+                obj = folder[_id]
+                obj.edit(
+                         title=row['title'],
+                         DownFrom=row.get('downfrom', ''),
+                         DownTo=row.get('downto', ''),
+                         Validator=row.get('validator', ''),
+                         Considerations=row.get('considerations', ''),
+                         WorkPerformed=row.get('workperformed', ''),
+                         Remarks=row.get('remarks', '')
+                         )
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
+
+    def load_instrumentcalibrations(self, sheet):
+        logger.info("Loading Instrument Calibrations...")
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if not row['instrument'] or not row['title']:
+                continue
+
+            folder = self.bsc(portal_type='Instrument',
+                              title=self.escape_query(row['instrument']))
+            if len(folder) > 0:
+                folder = folder[0].getObject()
+                _id = folder.invokeFactory('InstrumentCalibration', id='tmp')
+                obj = folder[_id]
+                obj.edit(
+                         title=row['title'],
+                         DownFrom=row.get('downfrom', ''),
+                         DownTo=row.get('downto', ''),
+                         Calibrator=row.get('calibrator', ''),
+                         Considerations=row.get('considerations', ''),
+                         WorkPerformed=row.get('workperformed', ''),
+                         Remarks=row.get('remarks', '')
+                         )
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
+
+    def load_instrumentcertifications(self, sheet):
+        logger.info("Loading Instrument Certifications...")
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if not row['instrument'] or not row['title']:
+                continue
+            folder = self.bsc(portal_type='Instrument',
+                              title=self.escape_query(row['instrument']))
+            if len(folder) > 0:
+                folder = folder[0].getObject()
+                _id = folder.invokeFactory('InstrumentCertification', id='tmp')
+                obj = folder[_id]
+                obj.edit(
+                         title=row['title'],
+                         Date=row.get('date', ''),
+                         ValidFrom=row.get('validfrom', ''),
+                         ValidTo=row.get('validto', ''),
+                         Agency=row.get('agency', ''),
+                         Remarks=row.get('remarks', '')
+                         )
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
+
+    def load_instrumentmaintenancetasks(self, sheet):
+        logger.info("Loading Instrument Maintenance Tasks...")
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if not row['instrument'] or not row['title'] or not row['type']:
+                continue
+
+            folder = self.bsc(portal_type='Instrument',
+                              title=self.escape_query(row['instrument']))
+            if len(folder) > 0:
+                folder = folder[0].getObject()
+                _id = folder.invokeFactory('InstrumentMaintenanceTask',
+                                           id='tmp')
+                obj = folder[_id]
+                obj.edit(
+                         title=row['title'],
+                         description=row['description'],
+                         Type=row['type'],
+                         DownFrom=row.get('downfrom', ''),
+                         DownTo=row.get('downto', ''),
+                         Maintainer=row.get('maintaner', ''),
+                         Considerations=row.get('considerations', ''),
+                         WorkPerformed=row.get('workperformed', ''),
+                         Remarks=row.get('remarks', ''),
+                         Cost=row.get('cost', ''),
+                         Closed=self.to_bool(row.get('closed'))
+                         )
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
+
+    def load_instrumentschedule(self, sheet):
+        logger.info("Loading Instrument Schedule...")
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if not row['instrument'] or not row['title'] or not row['type']:
+                continue
+
+            folder = self.bsc(portal_type='Instrument',
+                              title=self.escape_query(row['instrument']))
+            if len(folder) > 0:
+                folder = folder[0].getObject()
+                _id = folder.invokeFactory('InstrumentScheduledTask',
+                                           id='tmp')
+                criteria = [{'fromenabled':row.get('date', None) is not None,
+                             'fromdate':row.get('date', ''),
+                             'repeatenabled':((row['numrepeats'] and
+                                               row['numrepeats'] > 1) or
+                                              (row['repeatuntil'] and
+                                               len(row['repeatuntil']) > 0)),
+                             'repeatunit':row.get('numrepeats', ''),
+                             'repeatperiod':row.get('periodicity', ''),
+                             'repeatuntilenabled':(row['repeatuntil'] and
+                                                len(row['repeatuntil']) > 0),
+                             'repeatuntil':row.get('repeatuntil')}]
+                obj = folder[_id]
+                obj.edit(
+                         title=row['title'],
+                         Type=row['type'],
+                         ScheduleCriteria=criteria,
+                         Considerations=row.get('considerations', ''),
+                         )
+                obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
 
     def get_rows(self, sheet, startrow=3):
 
         """ Returns an array with all the data from a sheet.
-            Each row contains a dictionary where the key is the value of the first
-            row of the sheet for each column. 
+            Each row contains a dictionary where the key is the value of the
+            first row of the sheet for each column.
             The data values are returned in utf-8 format.
             Starts to consume data from startrow
         """
@@ -1761,23 +1908,31 @@ class LoadSetupData(BrowserView):
         rowsout = []
         nr_rows = sheet.get_highest_row()
         nr_cols = sheet.get_highest_column()
-        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in range(nr_cols)] for row_nr in range(nr_rows)]
+        rows = [[sheet.cell(row=row_nr, column=col_nr).value for col_nr in
+                 range(nr_cols)] for row_nr in range(nr_rows)]
         fields = rows[0]
         for row in rows[startrow:]:
             rowout = [_c(r).decode('utf-8') for r in row]
             rowout = dict(zip(fields, rowout))
             rowsout.append(rowout)
         return rowsout
-    
+
     def to_bool(self, value):
-        
+
         """ Converts a sheet string value to a boolean value.
             Needed because of utf-8 conversions
         """
-        
-        if value is not None and (value == u'True' or value==u'true' \
-            or value=='True' or value=='true' \
-            or value==u'1' or value=='1' or value==1):
+
+        if value is not None and (value == u'True' or value == u'true' \
+            or value == 'True' or value == 'true' \
+            or value == u'1' or value == '1' or value == 1):
             return True
         else:
             return False
+
+    def escape_query(self, value):
+        """ Escapes ( and ) chars from string being used in Zope searches
+            Error rised: ParseError: Token 'EOF' required, u'(' found
+            http://marc.info/?l=zope-dev&m=119619370013927
+        """
+        return '"' + value + '"'
