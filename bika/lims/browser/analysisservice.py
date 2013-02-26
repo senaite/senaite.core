@@ -154,7 +154,8 @@ class ajaxGetServiceInterimFields:
             service = services[0].getObject()
             service_interims = service.getInterimFields()
         else:
-            service_interims = []
+            # portal_factory has no service
+            return
 
         calc = service.getCalculation()
         if calc:

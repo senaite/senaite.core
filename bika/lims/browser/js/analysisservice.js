@@ -38,7 +38,7 @@
 				url: window.portal_url + "/" + url,
 				type: 'POST',
 				data: {
-					'service_url': window.location.href,
+					'service_url': window.location.href.replace("/base_edit",""),
 					'calc': $(this).val(),
 					'_authenticator': $('input[name="_authenticator"]').val()},
 				dataType: "json",
@@ -82,7 +82,7 @@
 		function updateContainers(target,requestdata){
 			$.ajax({
 				type: 'POST',
-				url: window.location.href + "/getUpdatedContainers",
+				url: window.location.href.replace("/base_edit", "") + "/getUpdatedContainers",
 				data: requestdata,
 				success: function(data,textStatus,$XHR){
 					// keep the current selection if possible
