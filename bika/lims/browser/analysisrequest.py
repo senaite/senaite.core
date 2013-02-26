@@ -621,7 +621,7 @@ class AnalysisRequestViewView(BrowserView):
                     if value and \
                        not bsc(portal_type = 'SamplePoint', title = _u(value)):
                         message = _("${samplepoint} is not a valid sample point",
-                                    mapping={'sampletype':_u(value)})
+                                    mapping={'samplepoint':_u(value)})
                         break
 
                 values[row['id']] = _u(value)
