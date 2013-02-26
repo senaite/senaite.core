@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # Emil Cyraniak <cyrano30@epf.pl>, 2012.
 msgid ""
@@ -502,7 +502,7 @@ msgid "Reference Manufacturers"
 msgstr "Producenci materiałów odniesienia"
 
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
-msgid "Reference Results"
+msgid "Reference Values"
 msgstr "Wyniki materiału odniesienia"
 
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
@@ -878,8 +878,8 @@ msgstr "Preferences"
 msgid "label_schema_Publication preference"
 msgstr "Publication preference"
 
-msgid "label_schema_Reference Results"
-msgstr "Reference Results"
+msgid "label_schema_Reference Values"
+msgstr "Reference Values"
 
 msgid "label_schema_Result Options"
 msgstr "Result Options"

@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # <cyrano30@epf.pl>, 2012.
 # <cyrano30@epf.pl>, 2012.
@@ -1538,7 +1538,7 @@ msgid "Expected Result"
 msgstr "Oczekiwany wynik"
 
 # File: ../content/referencesample.py, line: 136
-msgid "Expected Results"
+msgid "Expected Values"
 msgstr "Oczekiwane wyniki"
 
 # File: ../browser/referencesample.py, line: 240
@@ -2621,7 +2621,7 @@ msgstr "Producent materiału odniesienia"
 
 # File: ../browser/referencesample.py, line: 108
 # File: ../content/referencedefinition.py, line: 27
-msgid "Reference Results"
+msgid "Reference Values"
 msgstr "Wynik materiału odniesienia"
 
 # File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 53
@@ -3794,7 +3794,7 @@ msgstr "Ważność"
 msgid "Value"
 msgstr "Wartość"
 
-# 
+#
 # File: ../content/analysisservice.py, line: 285
 msgid "Values can be entered here which will override the defaults specified in the Calculation Interim Fields."
 msgstr ""

@@ -16,7 +16,7 @@ from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     ReferenceResultsField('ReferenceResults',
-        schemata = 'Reference Results',
+        schemata = 'Reference Values',
         required = 1,
         subfield_validators = {
             'result':'referencevalues_validator',
@@ -24,7 +24,7 @@ schema = BikaSchema.copy() + Schema((
             'max':'referencevalues_validator',
             'error':'referencevalues_validator'},
         widget = ReferenceResultsWidget(
-            label = _("Reference Results"),
+            label = _("Reference Values"),
             description = _("Click on Analysis Categories (against shaded background) "
                             "to see Analysis Services in each category. Enter minimum "
                             "and maximum values to indicate a valid results range. "

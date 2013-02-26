@@ -61,7 +61,7 @@
     <permission value="View"/>
 </action>
 
-<action title="Reference Results"
+<action title="Reference Values"
         action_id="results"
         category="object"
         condition_expr=""

@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # Bonamour <nicolas.bonamour-du-tartre@parisdescartes.fr>, 2013.
 # <rodriguesdossantos.vincent@gmail.com>, 2012.
@@ -503,7 +503,7 @@ msgid "Reference Manufacturers"
 msgstr "Référence fabriquant"
 
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
-msgid "Reference Results"
+msgid "Reference Values"
 msgstr "Résultats références"
 
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
@@ -879,8 +879,8 @@ msgstr "Preferences"
 msgid "label_schema_Publication preference"
 msgstr "Publication preference"
 
-msgid "label_schema_Reference Results"
-msgstr "Reference Results"
+msgid "label_schema_Reference Values"
+msgstr "Reference Values"
 
 msgid "label_schema_Result Options"
 msgstr "Result Options"

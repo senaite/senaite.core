@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # Inus Scheepers <inus@animatica.co.za>, 2012.
 # Lemoene Smit <>, 2012.
@@ -1539,7 +1539,7 @@ msgid "Expected Result"
 msgstr "Verwagte Resultaat"
 
 # File: ../content/referencesample.py, line: 136
-msgid "Expected Results"
+msgid "Expected Values"
 msgstr "Verwagte Resultaats"
 
 # File: ../browser/referencesample.py, line: 240
@@ -2622,7 +2622,7 @@ msgstr "Verwysing Vervaardiger"
 
 # File: ../browser/referencesample.py, line: 108
 # File: ../content/referencedefinition.py, line: 27
-msgid "Reference Results"
+msgid "Reference Values"
 msgstr "Verwysing Resultate"
 
 # File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 53
@@ -3795,7 +3795,7 @@ msgstr "Geldigheid"
 msgid "Value"
 msgstr "Waarde"
 
-# 
+#
 # File: ../content/analysisservice.py, line: 285
 msgid "Values can be entered here which will override the defaults specified in the Calculation Interim Fields."
 msgstr ""

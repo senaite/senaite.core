@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # <bio.nanoparticle@gmail.com>, 2012.
 msgid ""
@@ -1536,7 +1536,7 @@ msgid "Expected Result"
 msgstr "单个期望结果"
 
 # File: ../content/referencesample.py, line: 136
-msgid "Expected Results"
+msgid "Expected Values"
 msgstr "多个期望结果"
 
 # File: ../browser/referencesample.py, line: 240
@@ -2619,7 +2619,7 @@ msgstr "参考制造商"
 
 # File: ../browser/referencesample.py, line: 108
 # File: ../content/referencedefinition.py, line: 27
-msgid "Reference Results"
+msgid "Reference Values"
 msgstr "参考结果"
 
 # File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 53
@@ -3792,7 +3792,7 @@ msgstr "有效性"
 msgid "Value"
 msgstr "值"
 
-# 
+#
 # File: ../content/analysisservice.py, line: 285
 msgid "Values can be entered here which will override the defaults specified in the Calculation Interim Fields."
 msgstr ""

@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # <majak@mailme.dk>, 2012.
 # <majak@mailme.dk>, 2012.
@@ -503,7 +503,7 @@ msgid "Reference Manufacturers"
 msgstr "reference Producenterv"
 
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
-msgid "Reference Results"
+msgid "Reference Values"
 msgstr "Reference Resulter"
 
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
@@ -879,8 +879,8 @@ msgstr "Preferences"
 msgid "label_schema_Publication preference"
 msgstr "Publication preference"
 
-msgid "label_schema_Reference Results"
-msgstr "Reference Results"
+msgid "label_schema_Reference Values"
+msgstr "Reference Values"
 
 msgid "label_schema_Result Options"
 msgstr "Result Options"

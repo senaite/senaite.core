@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # <>, 2012.
 # <>, 2012.
@@ -1543,7 +1543,7 @@ msgid "Expected Result"
 msgstr "Voraussichtliches Ergebnis"
 
 # File: ../content/referencesample.py, line: 136
-msgid "Expected Results"
+msgid "Expected Values"
 msgstr "Voraussichtliche Ergebnisse"
 
 # File: ../browser/referencesample.py, line: 240
@@ -2626,7 +2626,7 @@ msgstr "Referenz-Hersteller"
 
 # File: ../browser/referencesample.py, line: 108
 # File: ../content/referencedefinition.py, line: 27
-msgid "Reference Results"
+msgid "Reference Values"
 msgstr "Referenz-Ergebnisse"
 
 # File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 53
@@ -3799,7 +3799,7 @@ msgstr "Gültigkeit"
 msgid "Value"
 msgstr "Wert"
 
-# 
+#
 # File: ../content/analysisservice.py, line: 285
 msgid "Values can be entered here which will override the defaults specified in the Calculation Interim Fields."
 msgstr ""

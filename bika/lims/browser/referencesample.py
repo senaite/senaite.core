@@ -105,7 +105,7 @@ class ReferenceResultsView(BikaListingView):
     def __init__(self, context, request):
         super(ReferenceResultsView, self).__init__(context, request)
         bsc = getToolByName(context, 'bika_setup_catalog')
-        self.title = _("Reference Results")
+        self.title = _("Reference Values")
         self.description = _("Click on Analysis Categories (against shaded background) "
                              "to see Analysis Services in each category. Enter minimum "
                              "and maximum values to indicate a valid results range. "

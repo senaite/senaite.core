@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # Alberto De Boni <albertodeboni@gmail.com>, 2012.
 # <albertodeboni@gmail.com>, 2012.
@@ -1538,7 +1538,7 @@ msgid "Expected Result"
 msgstr "Risultato atteso"
 
 # File: ../content/referencesample.py, line: 136
-msgid "Expected Results"
+msgid "Expected Values"
 msgstr "Risultati attesi"
 
 # File: ../browser/referencesample.py, line: 240
@@ -2621,7 +2621,7 @@ msgstr "Produttori di riferimento"
 
 # File: ../browser/referencesample.py, line: 108
 # File: ../content/referencedefinition.py, line: 27
-msgid "Reference Results"
+msgid "Reference Values"
 msgstr "Risultati di riferimento"
 
 # File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 53
@@ -3794,7 +3794,7 @@ msgstr "Validità"
 msgid "Value"
 msgstr "Valore"
 
-# 
+#
 # File: ../content/analysisservice.py, line: 285
 msgid "Values can be entered here which will override the defaults specified in the Calculation Interim Fields."
 msgstr ""
