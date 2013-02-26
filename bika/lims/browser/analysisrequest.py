@@ -604,7 +604,6 @@ class AnalysisRequestViewView(BrowserView):
             }
             for row in [r for r in self.header_rows if r['allow_edit']]:
                 value = urllib.unquote_plus(form.get(row['id'], ''))
-
                 if row['id'] == 'SampleType':
                     if not value:
                         message = PMF(
@@ -612,19 +611,19 @@ class AnalysisRequestViewView(BrowserView):
                             default=u'${name} is required, please correct.',
                             mapping={'name': _('Sample Type')})
                         break
-                    if not bsc(portal_type = 'SampleType', title = value):
+                    if not bsc(portal_type = 'SampleType', title = _u(value)):
                         message = _("${sampletype} is not a valid sample type",
-                                    mapping={'sampletype':value})
+                                    mapping={'sampletype':_u(value)})
                         break
 
                 if row['id'] == 'SamplePoint':
                     if value and \
-                       not bsc(portal_type = 'SamplePoint', title = value):
+                       not bsc(portal_type = 'SamplePoint', title = _u(value)):
                         message = _("${samplepoint} is not a valid sample point",
-                                    mapping={'sampletype':value})
+                                    mapping={'sampletype':_u(value)})
                         break
 
-                values[row['id']] = value
+                values[row['id']] = _u(value)
 
             # boolean - checkboxes are 'true'/'on' or 'false'/missing in form.
             for row in [r for r in self.header_rows if r.get('type', '') == 'boolean']:
@@ -1649,7 +1648,7 @@ class ajaxAnalysisRequestSubmit():
                     ClientReference = values.get('ClientReference', ''),
                     ClientSampleID = values.get('ClientSampleID', ''),
                     SamplePoint = sp_str,
-                    SampleType = values['SampleType'],
+                    SampleType = _u(values['SampleType']),
                     SamplingDate = values['SamplingDate'],
                     SamplingDeviation = values.get('SamplingDeviation', ''),
                     Composite = values.get('Composite', False),
