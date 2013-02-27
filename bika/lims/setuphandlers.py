@@ -189,7 +189,7 @@ class BikaGenerator:
 
         mp(ApplyVersionControl, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'RegulatoryInspector'], 1)
         mp(SaveNewVersion, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'RegulatoryInspector'], 1)
-        mp(AccessPreviousVersions, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner', 'RegulatoryInspector'], 1)
+        mp(AccessPreviousVersions, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Owner','RegulatoryInspector'], 1)
 
         mp(DispatchOrder, ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(ManageARImport, ['Manager', 'LabManager', 'LabClerk'], 1)
