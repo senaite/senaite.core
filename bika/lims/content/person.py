@@ -25,6 +25,18 @@ schema = BikaSchema.copy() + Schema((
             label = _("Firstname"),
         ),
     ),
+    StringField('Middleinitial',
+        required = 0,
+        widget = StringWidget(
+            label = _("Middle initial"),
+        ),
+    ),
+    StringField('Middlename',
+        required = 0,
+        widget = StringWidget(
+            label = _("Middle name"),
+        ),
+    ),
     StringField('Surname',
         required = 1,
         widget = StringWidget(
@@ -115,22 +127,52 @@ class Person(BaseFolder):
     def getFullname(self):
         """ return Person's Fullname """
         fn = self.getFirstname()
+        mi = self.getMiddleinitial()
+        md = self.getMiddlename()
         sn = self.getSurname()
+        fullname = ''
         if fn or sn:
-            return '%s %s' % (self.getFirstname(), self.getSurname())
-        else:
-            return ''
+            if mi and md:
+                fullname = '%s %s %s %s' % (self.getFirstname(),
+                                        self.getMiddleinitial(),
+                                        self.getMiddlename(),
+                                        self.getSurname())
+            elif mi:
+                fullname = '%s %s %s' % (self.getFirstname(),
+                                        self.getMiddleinitial(),
+                                        self.getSurname())
+            elif md:
+                fullname = '%s %s %s' % (self.getFirstname(),
+                                        self.getMiddlename(),
+                                        self.getSurname())
+            else:
+                fullname = '%s %s' % (self.getFirstname(), self.getSurname())
+        return fullname.strip()
 
     def getListingname(self):
         """ return Person's Fullname as Surname, Firstname """
         fn = self.getFirstname()
+        mi = self.getMiddleinitial()
+        md = self.getMiddlename()
         sn = self.getSurname()
+        fullname = ''
         if fn and sn:
-            return '%s, %s' % (self.getSurname(), self.getFirstname())
+            fullname = '%s, %s' % (self.getSurname(), self.getFirstname())
         elif fn or sn:
-            return '%s %s' % (self.getSurname(), self.getFirstname())
+            fullname = '%s %s' % (self.getSurname(), self.getFirstname())
         else:
-            return ''
+            fullname = ''
+
+        if fullname != '':
+            if mi and md:
+                fullname = '%s %s %s' % (fullname, self.getMiddleinitial(),
+                                            self.getMiddlename())
+            elif mi:
+                fullname = '%s %s' % (fullname, self.getMiddleinitial())
+            elif md:
+                fullname = '%s %s' % (fullname, self.getMiddlename())
+
+        return fullname.strip()
 
     Title = getFullname
 
