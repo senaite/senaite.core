@@ -15,7 +15,8 @@ from Products.CMFEditions.Permissions import AccessPreviousVersions
 
 def upgrade(tool):
     """
-    Add RegulatoryInspectors group and RegulatoryInspector role
+    Add RegulatoryInspectors group and RegulatoryInspector role.
+    Fix permissions: LabClerks don't see analysis results
     """
 
     portal = aq_parent(aq_inner(tool))
@@ -35,14 +36,15 @@ def upgrade(tool):
     mp(ManageAnalysisRequests, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'RegulatoryInspector'], 1)
     mp(ManageSamples, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'RegulatoryInspector'], 1)
     mp(ManageWorksheets, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'RegulatoryInspector'], 1)
-    mp(ViewResults, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler','RegulatoryInspector'], 1)
+    mp(EditWorksheet, ['Manager', 'LabManager', 'Analyst'], 1)
+    mp(ViewResults, ['Manager', 'LabManager', 'Analyst', 'Sampler','RegulatoryInspector'], 1)
     portal.bika_setup.reindexObject()
 
     # /worksheets folder permissions
     mp = portal.worksheets.manage_permission
     mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'RegulatoryInspector'], 0)
-    mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'RegulatoryInspector'], 0)
-    mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'RegulatoryInspector'], 0)
+    mp(permissions.View, ['Manager', 'LabManager', 'Analyst', 'RegulatoryInspector'], 0)
+    mp('Access contents information', ['Manager', 'LabManager', 'Analyst', 'RegulatoryInspector'], 0)
     portal.worksheets.reindexObject()
 
     # /batches folder permissions
