@@ -49,7 +49,6 @@ class WorksheetWorkflowAction(WorkflowAction):
                         item_data[i] = d
             else:
                 item_data = json.loads(form['item_data'])
-
         if action == 'submit' and self.request.form.has_key("Result"):
             selected_analyses = WorkflowAction._get_selected_items(self)
             results = {}
@@ -217,6 +216,7 @@ class WorksheetAnalysesView(AnalysesView):
             'ResultDM': {'title': _('Dry')},
             'retested': {'title': "<img src='++resource++bika.lims.images/retested.png' title='%s'/>" % _('Retested'),
                          'type':'boolean'},
+            'Remarks': {'title':_('Remarks')},
             'Attachments': {'title': _('Attachments')},
             'state_title': {'title': _('State')},
         }
@@ -235,6 +235,7 @@ class WorksheetAnalysesView(AnalysesView):
                         'Uncertainty',
                         'DueDate',
                         'state_title',
+                        'Remarks',
                         'Attachments']
              },
         ]

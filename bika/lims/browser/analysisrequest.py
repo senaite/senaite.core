@@ -603,7 +603,7 @@ class AnalysisRequestViewView(BrowserView):
                 'CCContact':form.get('cc_uids','').split(",")
             }
             for row in [r for r in self.header_rows if r['allow_edit']]:
-                value = urllib.unquote_plus(form.get(row['id'], ''))
+                value = _u(urllib.unquote_plus(form.get(row['id'], '')))
                 if row['id'] == 'SampleType':
                     if not value:
                         message = PMF(
@@ -611,20 +611,20 @@ class AnalysisRequestViewView(BrowserView):
                             default=u'${name} is required, please correct.',
                             mapping={'name': _('Sample Type')})
                         break
-                    if not bsc(portal_type = 'SampleType', title = _u(value)):
+                    if not bsc(portal_type = 'SampleType', title = value):
                         message = _("${sampletype} is not a valid sample type",
-                                    mapping={'sampletype':_u(value)})
+                                    mapping={'sampletype':value})
                         break
 
                 if row['id'] == 'SamplePoint':
                     value = value.replace("%s: " % _("Lab"), '')
                     if value and \
-                       not bsc(portal_type = 'SamplePoint', title = _u(value)):
+                       not bsc(portal_type = 'SamplePoint', title = value):
                         message = _("${samplepoint} is not a valid sample point",
-                                    mapping={'sampletype':_u(value)})
+                                    mapping={'samplepoint': value})
                         break
 
-                values[row['id']] = _u(value)
+                values[row['id']] = value
 
             # boolean - checkboxes are 'true'/'on' or 'false'/missing in form.
             for row in [r for r in self.header_rows if r.get('type', '') == 'boolean']:
