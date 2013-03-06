@@ -1,20 +1,17 @@
 from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
-from Products.validation import validation
-from bika.lims.testing import BIKA_LIMS_INTEGRATION_TESTING
+from bika.lims.testing import BIKA_INTEGRATION_TESTING
 from DateTime import DateTime
 from bika.lims.tests.base import BikaIntegrationTestCase
-from Products.Archetypes.athistoryaware import ATHistoryAwareMixin
-from bika.lims.browser.fields import HistoryAwareReferenceField
 from plone.app.testing import *
-from plone.testing import z2
 import transaction
 import random
-import json
 import unittest
 
 
 class Tests(BikaIntegrationTestCase):
+
+    layer = BIKA_INTEGRATION_TESTING
 
     def setUp(self):
         BikaIntegrationTestCase.setUp(self)
@@ -132,8 +129,8 @@ class Tests(BikaIntegrationTestCase):
 
 
 
-def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(Tests))
-    suite.layer = BIKA_LIMS_INTEGRATION_TESTING
-    return suite
+# def test_suite():
+#     suite = unittest.TestSuite()
+#     suite.addTest(unittest.makeSuite(Tests))
+#     suite.layer = BIKA_INTEGRATION_TESTING
+#     return suite

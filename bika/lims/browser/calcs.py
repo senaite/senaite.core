@@ -341,7 +341,7 @@ class ajaxCalculateAnalysisEntry():
                            'results': results})
 
 
-class ajaxGetCalculationInterimFields:
+class ajaxGetInterimFields:
 
     def __init__(self, context, request):
         self.context = context

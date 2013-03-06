@@ -1,18 +1,19 @@
-from Products.validation import validation
 from Products.validation import validation as validationService
-from bika.lims.testing import BIKA_LIMS_INTEGRATION_TESTING
+from bika.lims.testing import BIKA_INTEGRATION_TESTING
 from bika.lims.tests.base import BikaIntegrationTestCase
-from plone.app.testing import *
-from plone.testing import z2
+from plone.app.testing import login
+from plone.app.testing import TEST_USER_NAME
 import unittest
 
 class Tests(BikaIntegrationTestCase):
+
+    layer = BIKA_INTEGRATION_TESTING
 
     def test_UniqueFieldValidator(self):
         login(self.portal, TEST_USER_NAME)
 
         clients = self.portal.clients
-        client1 = self.portal.clients['client-1']
+        client1 = clients['client-1']
         self.assertEqual(
             client1.schema.get('Name').validate('Norton Feeds', client1),
             u"Validation failed: 'Norton Feeds' is not unique")
@@ -216,5 +217,5 @@ class Tests(BikaIntegrationTestCase):
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(Tests))
-    suite.layer = BIKA_LIMS_INTEGRATION_TESTING
+    suite.layer = BIKA_INTEGRATION_TESTING
     return suite

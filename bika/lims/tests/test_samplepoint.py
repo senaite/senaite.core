@@ -1,74 +1,81 @@
 from Products.CMFCore.utils import getToolByName
-from Products.validation import validation
 from bika.lims.controlpanel.bika_samplepoints import ajax_SamplePoints
-from bika.lims.testing import BIKA_LIMS_INTEGRATION_TESTING
 from bika.lims.tests.base import BikaIntegrationTestCase
-from plone.app.testing import *
+from bika.lims.testing import BIKA_INTEGRATION_TESTING
+from plone.app.testing import login
+from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_NAME
+from plone.app.testing import TEST_USER_ID
 import json
-import plone.protect
-import unittest
+
 
 class Tests(BikaIntegrationTestCase):
 
+    def setUp(self):
+        super(Tests, self).setUp()
+
     def test_ajax_vocabulary(self):
-        login(self.portal, TEST_USER_NAME)
-        setRoles(self.portal, TEST_USER_ID, ['LabManager'])
+        wf = getToolByName(self.portal, "portal_workflow")
+        wf.setChainForPortalTypes(
+            'SamplePoint',
+            ('bika_one_state_workflow', 'bika_inactive_workflow'))
+        wf.setChainForPortalTypes(
+            'SampleType',
+            ('bika_one_state_workflow', 'bika_inactive_workflow'))
 
-        self.workflow.setChainForPortalTypes('SamplePoint', ('bika_one_state_workflow', 'bika_inactive_workflow',))
+        self.portal.clients.invokeFactory('Client', 'client1',
+                                          title="Client One")
+        c1 = self.portal.clients.client1
+        c1.unmarkCreationFlag()
+        c1.invokeFactory('SamplePoint', id='csp1', title="Client Point 1")
+        c1.csp1.unmarkCreationFlag()
+        samplepoints = self.portal.bika_setup.bika_samplepoints
+        samplepoints.invokeFactory('SamplePoint', id='sp1',
+                                   title="Point AAA 1")
+        samplepoints.invokeFactory('SamplePoint', id='sp2',
+                                   title="Point BBB 2")
+        samplepoints.sp1.unmarkCreationFlag()
+        samplepoints.sp2.unmarkCreationFlag()
+        sp1, sp2 = samplepoints.sp1, samplepoints.sp2
+        sampletypes = self.portal.bika_setup.bika_sampletypes
+        sampletypes.invokeFactory('SampleType', id='st1', title="Type AAA 1")
+        sampletypes.invokeFactory('SampleType', id='st2', title="Type BBB 2")
+        sampletypes.st1.unmarkCreationFlag()
+        sampletypes.st2.unmarkCreationFlag()
+        st1, st2 = sampletypes.st1, sampletypes.st2
 
-        bsc = getToolByName(self.portal, 'bika_setup_catalog')
+        sp1.setSampleTypes([st1])
+        st1.setSamplePoints([sp1])
 
-        lab_path = self.portal.bika_setup.bika_samplepoints
-        client_path = self.portal.clients['client-1'] # happy hills
+        self.request['_authenticator'] = self.getAuthenticator()
 
-        # If a SampleType is specified, then the returned SamplePoints
-        # will be filtered by the SamplePointSampleType relation:
-        sp = bsc(portal_type = "SamplePoint", title = "Borehole 12")[0].getObject()
-        st = bsc(portal_type = "SampleType", title = "Water")[0].getObject()
-        sp.setSampleTypes(st.UID())
-        st.setSamplePoints(sp.UID())
-
-        self.request['sampletype'] = 'Water'
-        self.request['term'] = "b"
-        vocabulary = ajax_SamplePoints(lab_path, self.request)
-        value = json.loads(vocabulary())
-        self.assertEqual(len(value), 1)
-
-        # Otherwise, all matching objects found are returned:
-        # (term with len of 1, return only values that start with term)
-        self.request['sampletype'] = ''
-        vocabulary = ajax_SamplePoints(lab_path, self.request)
-        value = json.loads(vocabulary())
-        self.assertEqual(len(value), 4)
-
-        # If term is two letters, also only return items which start with term.
-        self.request['term'] = "br"
-        vocabulary = ajax_SamplePoints(lab_path, self.request)
-        value = json.loads(vocabulary())
-        self.assertEqual(len(value), 2)
-
-        # Otherwise, all matching objects found are returned:
-        # This request is in lab context, so "happy hills borehole" is not returned.
-        self.request['term'] = "hole"
-        vocabulary = ajax_SamplePoints(lab_path, self.request)
-        value = json.loads(vocabulary())
-        self.assertEqual(len(value), 2)
-
-        # If the request happens in the context of a Client or an
-        # AnalysisRequest, objects contained inside the Client's folder
-        # will be returned along with lab samplepoints.
-        self.request['term'] = "hole"
-        vocabulary = ajax_SamplePoints(client_path, self.request)
-        value = json.loads(vocabulary())
+        # Without no search term, no objects are returned.
+        res = ajax_SamplePoints(samplepoints, self.request)()
+        value = json.loads(res)
+        self.assertEqual(len(value), 0)
+        # In Client context (or in subfolders of Client), Client samplepoints
+        # are included
+        self.request['term'] = "Point"
+        res = ajax_SamplePoints(c1, self.request)()
+        value = json.loads(res)
         self.assertEqual(len(value), 3)
 
-        # Only active items are returned.
-        self.workflow.doActionFor(sp, 'deactivate')
-        value = json.loads(vocabulary())
+        # One result linked to Type AAA 1 has 'AAA' in the titles
+        self.request['sampletype'] = 'Type AAA 1'
+        self.request['term'] = "AAA"
+        res = ajax_SamplePoints(samplepoints, self.request)()
+        value = json.loads(res)
+        self.assertEqual(len(value), 1)
+
+        self.request['sampletype'] = ''
+        self.request['term'] = "Po"
+        res = ajax_SamplePoints(samplepoints, self.request)()
+        value = json.loads(res)
         self.assertEqual(len(value), 2)
 
-def test_suite():
-    suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(Tests))
-    suite.layer = BIKA_LIMS_INTEGRATION_TESTING
-    return suite
+        # Only active items are returned.
+        wf.doActionFor(sp2, 'deactivate')
+        self.request['term'] = "Point"
+        res = ajax_SamplePoints(c1, self.request)()
+        value = json.loads(res)
+        self.assertEqual(len(value), 2)

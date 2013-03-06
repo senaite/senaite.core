@@ -81,12 +81,12 @@ class ARAnalysesField(ObjectField):
             # analysis->InterimFields
             calc = service.getCalculation()
             interim_fields = calc and list(calc.getInterimFields()) or []
-
             # override defaults from service->InterimFields
-            service_interims = service.getInterimFields()
-            if service_interims:
-                sif = dict([[x['keyword'], x['value']]
-                            for x in service_interims])
+            sif = dict([[x['keyword'], x['value']]
+                        for x in service.getInterimFields()])
+            for i,i_f in enumerate(interim_fields):
+                if i_f['keyword'] in sif:
+                    interim_fields[i]['value'] = sif[i_f['keyword']]
                 for i, i_f in enumerate(interim_fields):
                     if i_f['keyword'] in sif:
                         interim_fields[i]['value'] = sif[i_f['keyword']]

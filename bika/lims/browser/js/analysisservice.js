@@ -5,40 +5,29 @@
 		_ = jarn.i18n.MessageFactory('bika');
 		PMF = jarn.i18n.MessageFactory('plone');
 
+		$("#InterimFields_more").hide();
 		$("#Calculation\\:list").change(function(){
-
 			// no calculation selected
 			// clear and hide InterimFields widget completely
-			// No: The user needs this form to add unrelated service interims.
-			// if($(this).val() == ''){
-			// 	$("#InterimFields_more").click(); // blank last row
-			// 	var rows = $("tr.records_row_InterimFields") // Clear the rest
-			// 	if($(rows).length > 1){
-			// 		for (var i = $(rows).length - 2; i >= 0; i--) {
-			// 			$($(rows)[i]).remove()
-			// 		}
-			// 	}
-			// 	$("#archetypes-fieldname-InterimFields").hide();
-			// 	return
-			// }
+			if($(this).val() == ''){
+				$("#InterimFields_more").click(); // blank last row
+				var rows = $("tr.records_row_InterimFields") // Clear the rest
+				if($(rows).length > 1){
+					for (var i = $(rows).length - 2; i >= 0; i--) {
+						$($(rows)[i]).remove()
+					}
+				}
+				$("#archetypes-fieldname-InterimFields").hide();
+				return
+			}
 			// calc selected
 			// make sure the widget is visible
-			// $("#archetypes-fieldname-InterimFields").show();
-
+			$("#archetypes-fieldname-InterimFields").show();
 			// Get new widget data (json list of dict, via ajax)
-			// On first load: get service interims
-			if ($(this).attr("loaded") != "loaded") {
-				$(this).attr("loaded", "loaded");
-				url = "get_service_interim_fields";
-			} else {
-				url = "get_calculation_interim_fields";
-			}
-
-			options = {
-				url: window.portal_url + "/" + url,
+			$.ajax({
+				url: window.portal_url + "/get_interim_fields",
 				type: 'POST',
 				data: {
-					'service_url': window.location.href.replace("/base_edit",""),
 					'calc': $(this).val(),
 					'_authenticator': $('input[name="_authenticator"]').val()},
 				dataType: "json",
@@ -73,16 +62,24 @@
 						response( [] );
 					}
 				}
-			}
-			$.ajax(options);
+			});
 		});
-
-		$("#Calculation\\:list").change();
+		if($("#Calculation\\:list").val() == ''){
+			$("#InterimFields_more").click(); // blank last row
+			var rows = $("tr.records_row_InterimFields") // Clear the rest
+			if($(rows).length > 1){
+				for (var i = $(rows).length - 2; i >= 0; i--) {
+					$($(rows)[i]).remove()
+				}
+			}
+			$("#archetypes-fieldname-InterimFields").hide();
+			return
+		}
 
 		function updateContainers(target,requestdata){
 			$.ajax({
 				type: 'POST',
-				url: window.location.href.replace("/base_edit", "") + "/getUpdatedContainers",
+				url: window.location.href + "/getUpdatedContainers",
 				data: requestdata,
 				success: function(data,textStatus,$XHR){
 					// keep the current selection if possible

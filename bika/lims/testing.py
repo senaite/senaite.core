@@ -1,22 +1,25 @@
-from Products.CMFCore.utils import getToolByName
-from Testing.makerequest import makerequest
-from bika.lims.exportimport.load_setup_data import LoadSetupData
-from plone.app.testing import IntegrationTesting, FunctionalTesting
+# Testing layer to provide some of the features of PloneTestCase
+
+from plone.app.testing import FunctionalTesting
+from plone.app.testing import IntegrationTesting
+from plone.app.testing import login
+from plone.app.testing import logout
 from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import PloneSandboxLayer
-from plone.app.testing import TEST_USER_ID
-from plone.app.testing import TEST_USER_NAME
-from plone.app.testing import login
-from plone.app.testing import setRoles
-from plone.testing import Layer
+from plone.app.testing import SITE_OWNER_NAME
+from plone.app.testing import applyProfile
 from plone.testing import z2
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.setuphandlers import setupPortalContent
+
 import Products.ATExtensions
 import Products.PloneTestCase.setup
 import bika.lims
 import collective.js.jqueryui
 import plone.app.iterate
 
-class BikaLIMS(PloneSandboxLayer):
+
+class BikaTestLayer(PloneSandboxLayer):
 
     defaultBases = (PLONE_FIXTURE,)
 
@@ -31,33 +34,28 @@ class BikaLIMS(PloneSandboxLayer):
         z2.installProduct(app, 'Products.PythonScripts')
         z2.installProduct(app, 'bika.lims')
 
-        # Install product and call its initialize() function
-        z2.installProduct(app, 'bika.lims')
-
     def setUpPloneSite(self, portal):
-        # Install into Plone site using portal_setup
-        self.applyProfile(portal, 'bika.lims:default')
+        login(portal.aq_parent, SITE_OWNER_NAME)
 
-        login(portal, TEST_USER_NAME)
-        setRoles(portal, TEST_USER_ID, ['Member', 'Manager',])
-        self.request = makerequest(portal.aq_parent).REQUEST
+        wf = getToolByName(portal, 'portal_workflow')
+        wf.setDefaultChain('plone_workflow')
+        setupPortalContent(portal)
 
-        # initialise skins support
-        portal.clearCurrentSkin()
-        portal.setupCurrentSkin(self.request)
-        Products.PloneTestCase.setup._placefulSetUp(portal)
+        # make sure we have folder_listing as a template
+        portal.getTypeInfo().manage_changeProperties(
+            view_methods=['folder_listing'],
+            default_view='folder_listing')
 
-        self.applyProfile(portal, 'bika.lims:default')
+        applyProfile(portal, 'bika.lims:default')
 
-        self.request.form['setupexisting'] = 1
-        self.request.form['existing'] = "test"
-        lsd = LoadSetupData(portal, self.request)
-        lsd()
+        logout()
 
-    def tearDownZope(self, app):
-        # Uninstall product
-        z2.uninstallProduct(app, 'bika.lims')
+BIKA_TEST_FIXTURE = BikaTestLayer()
 
-BIKA_LIMS_FIXTURE = BikaLIMS()
-BIKA_LIMS_INTEGRATION_TESTING = IntegrationTesting(bases=(BIKA_LIMS_FIXTURE,), name="BikaLIMSIntegrationTesting")
-BIKA_LIMS_FUNCTIONAL_TESTING = FunctionalTesting(bases=(BIKA_LIMS_FIXTURE,), name="BikaLIMSFunctionalTesting")
+BIKA_INTEGRATION_TESTING = IntegrationTesting(
+    bases=(BIKA_TEST_FIXTURE,),
+    name="BikaTestingLayer:Integration")
+
+BIKA_FUNCTIONAL_TESTING = FunctionalTesting(
+    bases=(BIKA_TEST_FIXTURE,),
+    name="BikaTestingLayer:Functional")
