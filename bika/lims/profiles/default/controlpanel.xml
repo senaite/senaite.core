@@ -65,6 +65,15 @@
 	i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
+ 
+  <configlet title="Sample Conditions" action_id="bika_sampleconditions"
+    appId="bika.lims" category="bika" condition_expr=""
+    icon_expr="string:++resource++bika.lims.images/samplecondition.png"
+    url_expr="string:$portal_url/bika_setup/bika_sampleconditions"
+    visible="True"
+    i18n:attributes="title">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
 
  <configlet title="Sample Matrices" action_id="bika_samplematrices"
     appId="bika.lims" category="bika" condition_expr=""

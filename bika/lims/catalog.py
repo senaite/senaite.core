@@ -139,6 +139,7 @@ class BikaSetupCatalog(CatalogTool):
                                                  'AnalysisCategory',
                                                  'AnalysisService',
                                                  'AnalysisSpec',
+                                                 'SampleCondition',
                                                  'SampleMatrix',
                                                  'SampleType',
                                                  'SamplePoint',

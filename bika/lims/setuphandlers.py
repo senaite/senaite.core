@@ -73,6 +73,7 @@ class BikaGenerator:
                        'bika_labcontacts',
                        'bika_labproducts',
                        'bika_manufacturers',
+                       'bika_sampleconditions',
                        'bika_samplematrices',
                        'bika_samplingdeviations',
                        'bika_samplepoints',
@@ -567,6 +568,7 @@ class BikaGenerator:
         at.setCatalogsByType('AnalysisCategory', ['bika_setup_catalog', ])
         at.setCatalogsByType('AnalysisService', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('AnalysisSpec', ['bika_setup_catalog', ])
+        at.setCatalogsByType('SampleCondition', ['bika_setup_catalog'])
         at.setCatalogsByType('SampleMatrix', ['bika_setup_catalog', ])
         at.setCatalogsByType('SampleType', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('SamplePoint', ['bika_setup_catalog', 'portal_catalog'])
