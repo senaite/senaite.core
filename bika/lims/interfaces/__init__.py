@@ -46,6 +46,12 @@ class IReportFolder(Interface):
 class ISample(Interface):
     """Sample"""
 
+class ISampleCondition(Interface):
+    """Sample Condition"""
+
+class ISampleConditions(Interface):
+    """Sample Conditions"""
+
 class ISampleMatrix(Interface):
     """Sample Matrix"""
 
