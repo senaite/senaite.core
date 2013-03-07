@@ -70,9 +70,18 @@
  <genericsetup:upgradeStep
         title="Fix permissions"
         description="Add RegulatoryInspectors group and RegulatoryInspector role"
-        source="*"
+        source="1101"
         destination="1110"
         handler="bika.lims.upgrade.to1110.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+ 
+  <genericsetup:upgradeStep
+        title="New SampleCondition entity"
+        description="Add SampleCondition bika-setup entity"
+        source="1110"
+        destination="1111"
+        handler="bika.lims.upgrade.to1111.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
     

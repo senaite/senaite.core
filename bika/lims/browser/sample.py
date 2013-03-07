@@ -306,7 +306,7 @@ class SampleEdit(BrowserView):
             [(sd.UID, sd.title) for sd \
              in bsc(portal_type = 'SamplingDeviation',
                     inactive_state = 'active')])
-
+        
         sampleconditions = DisplayList(
             [(sc.UID, sd.title) for sc \
              in bsc(portal_type = 'SampleCondition',
