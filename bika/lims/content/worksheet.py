@@ -274,6 +274,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                        getServiceUID = wst_service_uids,
                        review_state = 'sample_received',
                        worksheetanalysis_review_state = 'unassigned',
+                       cancellation_state = 'active',
                        sort_on = 'getDueDate')
         # collect analyses from the first X ARs.
         ar_analyses = {} # ar_uid : [analyses]
