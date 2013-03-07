@@ -86,6 +86,7 @@ def initialize(context):
     from content.report import Report
     from content.reportfolder import ReportFolder
     from content.sample import Sample
+    from content.samplecondition import SampleCondition
     from content.samplematrix import SampleMatrix
     from content.samplepartition import SamplePartition
     from content.samplepoint import SamplePoint
@@ -118,6 +119,7 @@ def initialize(context):
     from controlpanel.bika_manufacturers import Manufacturers
     from controlpanel.bika_preservations import Preservations
     from controlpanel.bika_referencedefinitions import ReferenceDefinitions
+    from controlpanel.bika_sampleconditions import SampleConditions
     from controlpanel.bika_samplematrices import SampleMatrices
     from controlpanel.bika_samplepoints import SamplePoints
     from controlpanel.bika_sampletypes import SampleTypes

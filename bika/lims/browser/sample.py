@@ -306,7 +306,12 @@ class SampleEdit(BrowserView):
             [(sd.UID, sd.title) for sd \
              in bsc(portal_type = 'SamplingDeviation',
                     inactive_state = 'active')])
-
+        
+        sampleconditions = DisplayList(
+            [(sd.UID, sd.title) for sd \
+             in bsc(portal_type = 'SampleCondition',
+                    inactive_state = 'active')])
+        
         self.header_columns = 3
         self.header_rows = [
             {'id': 'ClientReference',
@@ -404,6 +409,14 @@ class SampleEdit(BrowserView):
              'formatted_value': sample.getSamplingDeviation() and sample.getSamplingDeviation().Title() or '',
              'condition':True,
              'vocabulary': samplingdeviations,
+             'type': 'choices'},
+            {'id': 'SampleCondition',
+             'title': _('Sample Condition'),
+             'allow_edit': self.allow_edit and allow_sample_edit,
+             'value': sample.getSampleCondition() and sample.getSampleCondition().UID() or '',
+             'formatted_value': sample.getSampleCondition() and sample.getSampleCondition().Title() or '',
+             'condition':True,
+             'vocabulary': sampleconditions,
              'type': 'choices'},
             {'id': 'DateReceived',
              'title': _('Date Received'),
