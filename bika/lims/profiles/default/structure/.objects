@@ -11,3 +11,4 @@ methods,Methods
 pricelists,PricelistFolder
 bika_setup,BikaSetup
 reports,ReportFolder
+queries,QueryFolder

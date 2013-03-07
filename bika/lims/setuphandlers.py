@@ -49,6 +49,7 @@ class BikaGenerator:
                        'referencesamples',
                        'samples',
                        'worksheets',
+                       'queries',
                        'reports',
                        ):
             obj = portal._getOb(obj_id)
@@ -283,6 +284,15 @@ class BikaGenerator:
         mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler'], 0)
         mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
         portal.analysisrequests.reindexObject()
+
+        # /queries folder permissions
+        mp = portal.queries.manage_permission
+        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+        mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+        mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
+        mp(permissions.DeleteObjects, ['Manager'], 0)
+        portal.queries.reindexObject()
 
         # /referencesamples folder permissions
         mp = portal.referencesamples.manage_permission

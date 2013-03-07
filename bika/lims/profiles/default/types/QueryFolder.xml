@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<object name="QueryFolder"
+        meta_type="Factory-based Type Information with dynamic views"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        i18n:domain="plone">
+ <property name="title" i18n:translate="">Queries</property>
+ <property name="description"></property>
+ <property name="content_icon">++resource++bika.lims.images/query.png</property>
+ <property name="content_meta_type">QueryFolder</property>
+ <property name="product">bika.lims</property>
+ <property name="factory">addQueryFolder</property>
+ <property name="add_view_expr"></property>
+ <property name="link_target"></property>
+ <property name="global_allow">False</property>
+ <property name="filter_content_types">True</property>
+ <property name="allowed_content_types">
+    <element value="Collection"/>
+    <element value="AnalysisRequestQuery"/>
+ </property>
+ <property name="allow_discussion">False</property>
+ <property name="default_view_fallback">False</property>
+ <property name="default_view">folder_listing</property>
+ <property name="view_methods">
+  <element value="folder_summary_view"/>
+<!--  <element value="folder_full_view"/> -->
+<!--  <element value="folder_tabular_view"/> -->
+<!--  <element value="atct_album_view"/> -->
+  <element value="folder_listing"/>
+ </property>
+ <alias from="(Default)" to="(dynamic view)"/>
+ <alias from="edit" to="atct_edit"/>
+ <alias from="sharing" to="@@sharing"/>
+ <alias from="view" to="(selected layout)"/>
+ <action title="View" action_id="view" category="object" condition_expr=""
+    url_expr="string:${folder_url}/" visible="True"
+    i18n:attributes="title">
+  <permission value="View"/>
+ </action>
+ <action title="Edit" action_id="edit" category="object" condition_expr="not:object/@@plone_lock_info/is_locked_for_current_user|python:True"
+    url_expr="string:${object_url}/edit" visible="True"
+    i18n:attributes="title">
+  <permission value="Modify portal content"/>
+ </action>
+ <action title="Folder Listing" action_id="folderlisting" category="folder"
+    condition_expr="object/isPrincipiaFolderish"
+    url_expr="string:${folder_url}/view" visible="False"
+    i18n:attributes="title">
+  <permission value="View"/>
+ </action>
+
+</object>

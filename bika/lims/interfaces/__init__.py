@@ -34,9 +34,6 @@ class IAnalysis(Interface):
 class IDuplicateAnalysis(Interface):
     """DuplicateAnalysis"""
 
-class IQueries(Interface):
-    """Query interface """
-
 class IReferenceAnalysis(Interface):
     """Reference Analyses """
 
@@ -78,6 +75,9 @@ class IReferenceSamplesFolder(Interface):
 
 class IReportsFolder(Interface):
     """Reports Folder"""
+
+class IQueryFolder(Interface):
+    """Queries Folder"""
 
 class IInvoice(Interface):
     """Invoice"""
