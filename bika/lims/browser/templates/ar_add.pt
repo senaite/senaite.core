@@ -522,7 +522,42 @@
             </div>
             </td>
         </tal:block>
-    </tr>
+    </tr>    
+    <!-- Sample condition -->
+    <tr tal:define="field_name string:SamplingDeviation">
+        <th colspan="2" style="white-space:nowrap" i18n:translate="">Sample Condition</th>
+        <td>
+            <img class="copyButton SampleConditionCopyButton"
+                 tal:condition="python:view.col_count > 1"
+                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
+        </td>
+        <tal:block repeat="column python:range(view.col_count)">
+            <td class="topborder ar_column" style="padding-top:2px;"
+                tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
+                input_id string:ar_${column}_${field_name}">
+            <div style="width:100px; border:none;text-align:left;padding-left:2px;">
+            <select
+                tal:attributes="
+                class field_name;
+                column column;
+                id input_id;
+                name input_name;"
+                style="width:96px; position:absolute; z-index:+1;"
+                onactivate="this.style.width='auto';"
+                onchange="this.blur();"
+                onblur="this.style.width='96px';">
+                <option value="" i18n:translate=""></option>
+                <tal:sampleconditions repeat="sc view/sampleconditions">
+                    <option
+                        tal:content="python:sc[0]"
+                        tal:attributes="
+                            value python:sc[1].UID();"></option>
+                </tal:sampleconditions>
+            </select>
+            </div>
+            </td>
+        </tal:block>
+    </tr>    
     <!-- Default Container Type -->
     <tr tal:define="field_name string:DefaultContainerType"
             tal:condition="python: context.portal_type != 'Batch'">

@@ -444,6 +444,11 @@ class AnalysisRequestViewView(BrowserView):
              in bsc(portal_type = 'SamplingDeviation',
                     inactive_state = 'active')])
 
+        sampleconditions = DisplayList(
+            [(sc.UID, sc.title) for sc \
+             in bsc(portal_type = 'SampleCondition',
+                    inactive_state = 'active')])
+
         batch = self.context.getBatch()
 
         self.header_columns = 3
@@ -560,6 +565,14 @@ class AnalysisRequestViewView(BrowserView):
              'formatted_value': sample.getSamplingDeviation() and sample.getSamplingDeviation().Title() or '',
              'condition':True,
              'vocabulary': samplingdeviations,
+             'type': 'choices'},
+            {'id': 'SampleCondition',
+             'title': _('Sample Condition'),
+             'allow_edit': allow_sample_edit,
+             'value': sample.getSampleCondition() and sample.getSampleCondition().UID() or '',
+             'formatted_value': sample.getSampleCondition() and sample.getSampleCondition().Title() or '',
+             'condition':True,
+             'vocabulary': sampleconditions,
              'type': 'choices'},
             {'id': 'DateReceived',
              'title': _('Date Received'),
@@ -749,6 +762,16 @@ class AnalysisRequestViewView(BrowserView):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         res = [(sd.getObject().Title(), sd.getObject()) \
                for sd in bsc(portal_type = 'SamplingDeviation',
+                             inactive_state = 'active')]
+        res.sort(lambda x,y:cmp(x[0], y[0]))
+        return res
+
+    def sampleconditions(self):
+        """ SampleConditions vocabulary for AR Add
+        """
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        res = [(sd.getObject().Title(), sd.getObject()) \
+               for sd in bsc(portal_type = 'SampleConditions',
                              inactive_state = 'active')]
         res.sort(lambda x,y:cmp(x[0], y[0]))
         return res
