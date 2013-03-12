@@ -6,9 +6,11 @@ from Products.Archetypes.utils import shasattr
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.permissions import ViewRetractedAnalyses
 from decimal import Decimal
 from types import ListType, TupleType, DictType
 import zope.event
+
 
 class ARAnalysesField(ObjectField):
 
@@ -20,20 +22,22 @@ class ARAnalysesField(ObjectField):
 
     _properties = Field._properties.copy()
     _properties.update({
-        'type' : 'analyses',
-        'default' : None,
-        })
+        'type': 'analyses',
+        'default': None,
+    })
 
     security = ClassSecurityInfo()
 
     security.declarePrivate('get')
+
     def get(self, instance, **kwargs):
         """ get() returns the list of contained analyses
             By default, return a list of catalog brains.
 
             If you want objects, pass full_objects = True
 
-            If you want to include "retracted" analyses, pass retracted = True
+            If you want to override "ViewRetractedAnalyses",
+            pass retracted=True
 
             other kwargs are passed to bika_analysis_catalog
 
@@ -44,16 +48,20 @@ class ARAnalysesField(ObjectField):
             full_objects = kwargs['full_objects']
             del kwargs['full_objects']
 
-        retracted = False
         if 'retracted' in kwargs:
             retracted = kwargs['retracted']
             del kwargs['retracted']
+        else:
+            mtool = getToolByName(instance, 'portal_membership')
+            retracted = mtool.checkPermission(ViewRetractedAnalyses,
+                                              instance)
 
-        contentFilter = kwargs
-        contentFilter['portal_type'] = "Analysis"
-        contentFilter['path'] = {'query':"/".join(instance.getPhysicalPath()),
-                                 'level':0}
         bac = getToolByName(instance, 'bika_analysis_catalog')
+        contentFilter = dict([(k, v) for k, v in kwargs.items()
+                              if k in bac.indexes()])
+        contentFilter['portal_type'] = "Analysis"
+        contentFilter['path'] = {'query': "/".join(instance.getPhysicalPath()),
+                                 'level': 0}
         analyses = bac(contentFilter)
         if not retracted:
             analyses = [a for a in analyses if a.review_state != 'retracted']
@@ -62,7 +70,8 @@ class ARAnalysesField(ObjectField):
         return analyses
 
     security.declarePrivate('set')
-    def set(self, instance, service_uids, prices = None, **kwargs):
+
+    def set(self, instance, service_uids, prices=None, **kwargs):
         """ service_uids are the services selected on the AR Add/Edit form.
             prices is a service_uid keyed dictionary containing the prices entered on the form.
         """
@@ -81,7 +90,7 @@ class ARAnalysesField(ObjectField):
                             'attachment_due', 'to_be_verified')
 
         bsc = getToolByName(instance, 'bika_setup_catalog')
-        services = bsc(UID = service_uids)
+        services = bsc(UID=service_uids)
 
         new_analyses = []
 
@@ -98,7 +107,7 @@ class ARAnalysesField(ObjectField):
             # override defaults from service->InterimFields
             sif = dict([[x['keyword'], x['value']]
                         for x in service.getInterimFields()])
-            for i,i_f in enumerate(interim_fields):
+            for i, i_f in enumerate(interim_fields):
                 if i_f['keyword'] in sif:
                     interim_fields[i]['value'] = sif[i_f['keyword']]
                 for i, i_f in enumerate(interim_fields):
@@ -110,16 +119,16 @@ class ARAnalysesField(ObjectField):
                 for v in service_interims:
                     interim_fields.append(v)
 
-            #create the analysis if it doesn't exist
+            # create the analysis if it doesn't exist
             if hasattr(instance, keyword):
                 analysis = instance._getOb(keyword)
             else:
-                instance.invokeFactory(id = keyword,
-                                       type_name = 'Analysis')
+                instance.invokeFactory(id=keyword,
+                                       type_name='Analysis')
                 analysis = instance._getOb(keyword)
-                analysis.edit(Service = service,
-                              InterimFields = interim_fields,
-                              MaxTimeAllowed = service.getMaxTimeAllowed())
+                analysis.edit(Service=service,
+                              InterimFields=interim_fields,
+                              MaxTimeAllowed=service.getMaxTimeAllowed())
                 analysis.unmarkCreationFlag()
                 zope.event.notify(ObjectInitializedEvent(analysis))
                 SamplingWorkflowEnabled = instance.bika_setup.getSamplingWorkflowEnabled()
@@ -137,22 +146,23 @@ class ARAnalysesField(ObjectField):
             if service_uid not in service_uids:
                 # If it is verified or published, don't delete it.
                 if workflow.getInfoFor(analysis, 'review_state') in ('verified', 'published'):
-                    continue # log it
+                    continue  # log it
                 # If it is assigned to a worksheet, unassign it before deletion.
                 elif workflow.getInfoFor(analysis, 'worksheetanalysis_review_state') == 'assigned':
                     ws = analysis.getBackReferences("WorksheetAnalysis")[0]
                     ws.removeAnalysis(analysis)
                 # Unset the partition reference
-                analysis.edit(SamplePartition = None)
+                analysis.edit(SamplePartition=None)
                 delete_ids.append(analysis.getId())
 
         if delete_ids:
             # Note: subscriber might promote the AR
-            instance.manage_delObjects(ids = delete_ids)
+            instance.manage_delObjects(ids=delete_ids)
         return new_analyses
 
     security.declarePublic('Vocabulary')
-    def Vocabulary(self, content_instance = None):
+
+    def Vocabulary(self, content_instance=None):
         """ Create a vocabulary from analysis services
         """
         vocab = []
@@ -161,16 +171,17 @@ class ARAnalysesField(ObjectField):
         return vocab
 
     security.declarePublic('Services')
+
     def Services(self):
         """ Return analysis services
         """
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         if not shasattr(self, '_v_services'):
-            self._v_services = [service.getObject() \
-                for service in bsc(portal_type = 'AnalysisService')]
+            self._v_services = [service.getObject()
+                                for service in bsc(portal_type='AnalysisService')]
         return self._v_services
 
 registerField(ARAnalysesField,
-              title = 'Analyses',
-              description = ('Used for Analysis instances')
+              title='Analyses',
+              description=('Used for Analysis instances')
               )

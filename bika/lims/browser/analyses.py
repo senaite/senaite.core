@@ -112,6 +112,19 @@ class AnalysesView(BikaListingView):
 
         items = super(AnalysesView, self).folderitems(full_objects = True)
 
+        # manually skim retracted analyses from the list
+        new_items = []
+        for i,item in enumerate(items):
+            # self.contentsMethod may return brains or objects.
+            obj = hasattr(items[i]['obj'], 'getObject') and \
+                items[i]['obj'].getObject() or \
+                items[i]['obj']
+            if workflow.getInfoFor(obj, 'review_state') == 'retracted' \
+                and not checkPermission(ViewRetractedAnalyses, self.context):
+                continue
+            new_items.append(item)
+        items = new_items
+
         self.interim_fields = {}
         self.interim_columns = {}
         self.specs = {}
@@ -120,6 +133,9 @@ class AnalysesView(BikaListingView):
             obj = hasattr(items[i]['obj'], 'getObject') and \
                 items[i]['obj'].getObject() or \
                 items[i]['obj']
+            if workflow.getInfoFor(obj, 'review_state') == 'retracted' \
+                and not checkPermission(ViewRetractedAnalyses, self.context):
+                continue
 
             result = obj.getResult()
             service = obj.getService()
