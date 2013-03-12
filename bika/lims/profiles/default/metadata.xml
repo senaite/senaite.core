@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
 <metadata>
+<<<<<<< HEAD
   <version>1110</version>
+=======
+  <version>1113</version>
+>>>>>>> Add "View Retracted Analyses" permission
   <dependencies>
     <dependency>profile-jarn.jsi18n:default</dependency>
     <dependency>profile-Products.ATExtensions:default</dependency>

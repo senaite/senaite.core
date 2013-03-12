@@ -38,7 +38,7 @@
         handler="bika.lims.upgrade.to1110.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
- 
+
   <genericsetup:upgradeStep
         title="New SampleCondition entity"
         description="Add SampleCondition bika-setup entity"
@@ -47,5 +47,28 @@
         handler="bika.lims.upgrade.to1111.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
+<<<<<<< HEAD
     
+=======
+
+ <genericsetup:upgradeStep
+        title="Retesting workflow"
+        description="Modifications for the new retesting workflow"
+        source="1111"
+        destination="1112"
+        handler="bika.lims.upgrade.to1112.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+        title="Retesting workflow - ViewRetractedAnalyses"
+        description="New permission for retesting workflow"
+        source="1112"
+        destination="1113"
+        handler="bika.lims.upgrade.to1113.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+
+>>>>>>> Add "View Retracted Analyses" permission
 </configure>
