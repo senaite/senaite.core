@@ -321,8 +321,8 @@ def AfterTransitionEventHandler(instance, event):
         zope.event.notify(ObjectInitializedEvent(analysis))
         changeWorkflowState(analysis,
                             'bika_analysis_workflow', 'sample_received')
+        analysis.reindexObject()
 
-        instance.reindexObject()
         # retract our dependencies
         if not "retract all dependencies" in instance.REQUEST['workflow_skiplist']:
             for dependency in instance.getDependencies():
@@ -357,6 +357,20 @@ def AfterTransitionEventHandler(instance, event):
                     if not "retract all analyses" in instance.REQUEST['workflow_skiplist']:
                         instance.REQUEST["workflow_skiplist"].append("retract all analyses")
                     wf.doActionFor(ws, 'retract')
+            # Add to worksheet Analyses
+            analyses = list(ws.getAnalyses())
+            analyses += [analysis, ]
+            ws.setAnalyses(analyses)
+            # Add to worksheet layout
+            layout = ws.getLayout()
+            pos = [x['position'] for x in layout
+                   if x['analysis_uid'] == instance.UID()][0]
+            slot = {'position':pos,
+                    'analysis_uid': analysis.UID(),
+                    'container_uid': analysis.aq_parent.UID(),
+                    'type': 'a'}
+            layout.append(slot)
+            ws.setLayout(layout)
 
     elif action_id == "verify":
         instance.reindexObject(idxs = ["review_state", ])
