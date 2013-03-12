@@ -1,0 +1,54 @@
+<configure xmlns="http://namespaces.zope.org/zope">
+
+  <utility
+    component="bika.lims.vocabularies.ClientVocabularyFactory"
+    name="bika.lims.vocabularies.Clients"
+    />
+
+  <utility
+    component="bika.lims.vocabularies.ClientContactVocabularyFactory"
+    name="bika.lims.vocabularies.ClientContacts"
+    />
+
+  <utility
+    component="bika.lims.vocabularies.AnalysisCategoryVocabularyFactory"
+    name="bika.lims.vocabularies.AnalysisCategories"
+    />
+
+  <utility
+    component="bika.lims.vocabularies.AnalysisProfileVocabularyFactory"
+    name="bika.lims.vocabularies.AnalysisProfiles"
+    />
+
+  <utility
+    component="bika.lims.vocabularies.AnalysisServiceVocabularyFactory"
+    name="bika.lims.vocabularies.AnalysisServices"
+    />
+
+  <utility
+    component="bika.lims.vocabularies.UserVocabularyFactory"
+    name="bika.lims.vocabularies.Users"
+    />
+
+  <utility
+    component="bika.lims.vocabularies.AnalystVocabularyFactory"
+    name="bika.lims.vocabularies.Analysts"
+    />
+
+  <utility
+    component="bika.lims.vocabularies.SamplePointVocabularyFactory"
+    name="bika.lims.vocabularies.SamplePoints"
+    />
+
+  <utility
+    component="bika.lims.vocabularies.SampleTypeVocabularyFactory"
+    name="bika.lims.vocabularies.SampleTypes"
+    />
+
+  <utility
+    component="bika.lims.vocabularies.AnalysisRequestWorkflowStateVocabularyFactory"
+    name="bika.lims.vocabularies.AnalysisRequestWorkflowStates"
+    />
+
+
+</configure>

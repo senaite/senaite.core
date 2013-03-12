@@ -187,6 +187,24 @@
   </permission-map>
  </state>
 
+ <state state_id="retracted" title="Retracted">
+  <description i18n:translate=""></description>
+  <permission-map name="BIKA: View Results" acquired="False">
+   <permission-role>Manager</permission-role>
+   <permission-role>LabManager</permission-role>
+   <permission-role>Analyst</permission-role>
+   <permission-role>Sampler</permission-role>
+   <permission-role>LabClerk</permission-role>
+   <permission-role>Verifier</permission-role>
+  </permission-map>
+  <permission-map name="BIKA: Edit Results" acquired="False">
+  </permission-map>
+  <permission-map name="BIKA: Edit Field Results" acquired="False">
+  </permission-map>
+  <permission-map name="BIKA: Cancel and reinstate" acquired="False">
+  </permission-map>
+ </state>
+
  <state state_id="verified" title="Verified" i18n:attributes="title">
   <description i18n:translate=""></description>
   <exit-transition transition_id="publish"/>

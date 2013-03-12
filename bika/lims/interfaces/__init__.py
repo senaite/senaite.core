@@ -18,12 +18,15 @@ class IBatchFolder(Interface):
 
 class IBatch(Interface):
     """Batch"""
-    
+
 class IBatchLabels(Interface):
     """Batch label"""
 
 class IAnalysisRequest(Interface):
     """Analysis Request"""
+
+class IAnalysisRequestQuery(Interface):
+    """Analysis Request query collections"""
 
 class IAnalysisRequestsFolder(Interface):
     """AnalysisRequests Folder"""

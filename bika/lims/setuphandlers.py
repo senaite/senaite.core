@@ -1,22 +1,44 @@
 
 """ Bika setup handlers. """
 
-from Products.Archetypes.event import ObjectInitializedEvent
-from Products.CMFCore import permissions
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone import PloneMessageFactory
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.config import *
-from bika.lims.permissions import *
 from bika.lims.interfaces import IHaveNoBreadCrumbs
-from zope.event import notify
-from zope.interface import alsoProvides
+from bika.lims.permissions import *
+from plone.app.registry.exportimport.handler import RegistryExporter
+from plone.app.registry.exportimport.handler import RegistryImporter
+from plone.registry.interfaces import IRegistry
+from Products.Archetypes.event import ObjectInitializedEvent
+from Products.CMFCore import permissions
+from Products.CMFCore.utils import getToolByName
+from Products.CMFEditions.Permissions import AccessPreviousVersions
 from Products.CMFEditions.Permissions import ApplyVersionControl
 from Products.CMFEditions.Permissions import SaveNewVersion
-from Products.CMFEditions.Permissions import AccessPreviousVersions
+from Products.CMFPlone import PloneMessageFactory
+from zope.component import queryUtility
+from zope.event import notify
+from zope.interface import alsoProvides
 
-class Empty: pass
+class Empty:
+    pass
+
+def create_lexicon():
+    # create lexicon
+    wordSplitter = Empty()
+    wordSplitter.group = 'Word Splitter'
+    wordSplitter.name = 'Unicode Whitespace splitter'
+    caseNormalizer = Empty()
+    caseNormalizer.group = 'Case Normalizer'
+    caseNormalizer.name = 'Unicode Case Normalizer'
+    stopWords = Empty()
+    stopWords.group = 'Stop Words'
+    stopWords.name = 'Remove listed and single char words'
+    elem = [wordSplitter, caseNormalizer, stopWords]
+    zc_extras = Empty()
+    zc_extras.index_type = 'Okapi BM25 Rank'
+    zc_extras.lexicon_id = 'Lexicon'
+    return elem, zc_extras
 
 class BikaGenerator:
 
@@ -379,20 +401,7 @@ class BikaGenerator:
             try:cat.addColumn(col)
             except:pass
 
-        # create lexicon
-        wordSplitter = Empty()
-        wordSplitter.group = 'Word Splitter'
-        wordSplitter.name = 'Unicode Whitespace splitter'
-        caseNormalizer = Empty()
-        caseNormalizer.group = 'Case Normalizer'
-        caseNormalizer.name = 'Unicode Case Normalizer'
-        stopWords = Empty()
-        stopWords.group = 'Stop Words'
-        stopWords.name = 'Remove listed and single char words'
-        elem = [wordSplitter, caseNormalizer, stopWords]
-        zc_extras = Empty()
-        zc_extras.index_type = 'Okapi BM25 Rank'
-        zc_extras.lexicon_id = 'Lexicon'
+        elem, zc_extras = create_lexicon()
 
         ### bika_analysis_catalog
 
@@ -510,6 +519,14 @@ class BikaGenerator:
         addIndex(bc, 'worksheetanalysis_review_state', 'FieldIndex')
         addIndex(bc, 'cancellation_state', 'FieldIndex')
 
+        addIndex(bc, 'getContactTitle', 'ZCTextIndex', zc_extras)
+        addIndex(bc, 'getClientTitle', 'ZCTextIndex', zc_extras)
+        addIndex(bc, 'getProfileTitle', 'ZCTextIndex', zc_extras)
+
+        addIndex(bc, 'getAnalysisCategory', 'KeywordIndex')
+        addIndex(bc, 'getAnalysisService', 'KeywordIndex')
+        addIndex(bc, 'getAnalysts', 'KeywordIndex')  # fold into getAnalyst
+
         addIndex(bc, 'getBatchUID', 'FieldIndex')
         addIndex(bc, 'getSampleID', 'FieldIndex')
         addIndex(bc, 'getSampleUID', 'FieldIndex')
@@ -538,7 +555,7 @@ class BikaGenerator:
         addIndex(bc, 'getSampler', 'FieldIndex')
         addIndex(bc, 'getWorksheetTemplateTitle', 'FieldIndex')
         addIndex(bc, 'getAnalyst', 'FieldIndex')
-        addIndex(bc, 'getInvoiced', 'FieldIndex')
+        addIndex(bc, 'getInvoiced', 'BooleanIndex')
 
         addColumn(bc, 'path')
         addColumn(bc, 'UID')
@@ -713,6 +730,7 @@ def setupVarious(context):
         return
 
     site = context.getSite()
+    setup = site.portal_setup
     gen = BikaGenerator()
     gen.setupGroupsAndRoles(site)
     gen.setupPortalContent(site)
@@ -727,6 +745,6 @@ def setupVarious(context):
     gen.setupCatalogs(site)
 
     # Plone's jQuery gets clobbered when jsregistry is loaded.
-    setup = site.portal_setup
     setup.runImportStepFromProfile('profile-plone.app.jquery:default', 'jsregistry')
     setup.runImportStepFromProfile('profile-plone.app.jquerytools:default', 'jsregistry')
+

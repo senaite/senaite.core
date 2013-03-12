@@ -30,6 +30,7 @@
   <include package=".search" />
 
   <include file="profiles.zcml" />
+  <include file="vocabularies.zcml" />
 
   <i18n:registerTranslations directory="locales" />
 

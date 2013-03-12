@@ -72,6 +72,18 @@ schema = BikaSchema.copy() + Schema((
         referenceClass=HoldingReference,
         relationship='AnalysisRequestContact',
     ),
+    ComputedField('ContactTitle',
+        expression='context.getContact() and context.getContact().Title() or None',
+        widget=ComputedWidget(
+            visible=False,
+        ),
+    ),
+    ComputedField('ClientTitle',
+        expression='context.aq_parent.Title()',
+        widget=ComputedWidget(
+            visible=False,
+        ),
+    ),
     ReferenceField('Sample',
         required=1,
         vocabulary_display_path_bound=sys.maxint,
@@ -117,6 +129,30 @@ schema = BikaSchema.copy() + Schema((
         allowed_types=('AnalysisProfile',),
         referenceClass=HoldingReference,
         relationship='AnalysisRequestAnalysisProfile',
+    ),
+    ComputedField('getProfileTitle',
+        expression="here.getProfile() and here.getProfile().Title() or ''",
+        widget=ComputedWidget(
+            visible=False,
+        ),
+    ),
+    ComputedField('AnalysisCategory',
+        expression="[a.getService().getCategory().Title() for a in here.objectValues('Analysis')]",
+        widget=ComputedWidget(
+            visible=False,
+        ),
+    ),
+    ComputedField('AnalysisService',
+        expression="[a.getService().Title() for a in here.objectValues('Analysis')]",
+        widget=ComputedWidget(
+            visible=False,
+        ),
+    ),
+    ComputedField('Analysts',
+        expression="[a.getAnalyst() for a in here.objectValues('Analysis') if a.getAnalyst()]",
+        widget=ComputedWidget(
+            visible=False,
+        ),
     ),
     ReferenceField('Template',
         allowed_types=('ARTemplate',),
@@ -220,12 +256,6 @@ schema = BikaSchema.copy() + Schema((
             visible=False,
         ),
     ),
-    ComputedField('ProfileUID',
-        expression='here.getProfile( and here.getProfile().UID()',
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
     ComputedField('Invoiced',
         expression='here.getInvoice() and True or False',
         default=False,
@@ -254,7 +284,9 @@ class AnalysisRequest(BaseFolder):
         return getCatalog(self)
 
     def Title(self):
-        """ Return the Request ID as title """
+        """ Return the Request ID as title
+        The AnalysisRequestQuery registry field expects this to be RequestID.
+        """
         return safe_unicode(self.getRequestID()).encode('utf-8')
 
     def Description(self):

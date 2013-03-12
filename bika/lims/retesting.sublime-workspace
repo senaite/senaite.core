@@ -1,0 +1,2104 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"pr",
+				"_properties  (variable)"
+			],
+			[
+				"Dis",
+				"DisplayList  (class)"
+			],
+			[
+				"analysisreq",
+				"analysisrequestquery"
+			],
+			[
+				"I",
+				"IRegistry"
+			],
+			[
+				"query",
+				"queryUtility"
+			],
+			[
+				"quer",
+				"querywidgetconfig_registry"
+			],
+			[
+				"for",
+				"for	for (…) {…}"
+			],
+			[
+				"getT",
+				"getToolByName"
+			],
+			[
+				"CM",
+				"CMFPloneTestCase"
+			],
+			[
+				"Sec",
+				"SecurityManagement"
+			],
+			[
+				"im",
+				"implements"
+			],
+			[
+				"Ana",
+				"AnalysisRequests"
+			],
+			[
+				"An",
+				"AnalysisRequestsView  (class)"
+			],
+			[
+				"ajax",
+				"ajaxAnalysisRequestSubmit"
+			],
+			[
+				"ren",
+				"renameAfterCreation  (function)"
+			],
+			[
+				"quick",
+				"quickInstallProduct"
+			],
+			[
+				"B",
+				"BIKA_INTEGRATION_TESTING  (variable)"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "vocabularies.py",
+			"settings":
+			{
+				"buffer_size": 10114,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "vocabularies.zcml",
+			"settings":
+			{
+				"buffer_size": 1438,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "content/analysisrequest.py",
+			"settings":
+			{
+				"buffer_size": 20435,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "setuphandlers.py",
+			"settings":
+			{
+				"buffer_size": 36396,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "profiles/default/registry.xml",
+			"settings":
+			{
+				"buffer_size": 14426,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "upgrade/to1102.py",
+			"settings":
+			{
+				"buffer_size": 3800,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n    \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n<head>\n  <meta name=\"generator\" content=\n  \"HTML Tidy for Linux (vers 25 March 2009), see www.w3.org\" />\n  <meta http-equiv=\"Content-Type\" content=\n  \"text/html; charset=us-ascii\" />\n\n  <title>FUNDCO - Payroll Deducted Loans and Employee\n  Benefits</title>\n  <link href=\"css/styles.css\" rel=\"stylesheet\" type=\"text/css\" />\n  <script type=\"text/javascript\" src=\n  \"scripts/swfobject/swfobject.js\">\n</script>\n  <script type=\"text/javascript\">\n//<![CDATA[\n      var flashvars = {};\n      flashvars.cssSource = \"piecemaker.css\";\n      flashvars.xmlSource = \"piecemaker.xml\";\n\n      var params = {};\n      params.play = \"true\";\n      params.menu = \"false\";\n      params.scale = \"showall\";\n      params.wmode = \"transparent\";\n      params.allowfullscreen = \"true\";\n      params.allowscriptaccess = \"always\";\n      params.allownetworking = \"all\";\n\n      swfobject.embedSWF('piecemaker.swf', 'piecemaker', '700', '500', '10', null, flashvars,\n      params, null);\n\n  //]]>\n  </script>\n  <script type=\"text/javascript\">\n//<![CDATA[\n  function MM_preloadImages() { //v3.0\n  var d=document; if(d.images){ if(!d.MM_p) d.MM_p=new Array();\n    var i,j=d.MM_p.length,a=MM_preloadImages.arguments; for(i=0; i<a.length; i++)\n    if (a[i].indexOf(\"#\")!=0){ d.MM_p[j]=new Image; d.MM_p[j++].src=a[i];}}\n  }\n  function MM_swapImgRestore() { //v3.0\n  var i,x,a=document.MM_sr; for(i=0;a&&i<a.length&&(x=a[i])&&x.oSrc;i++) x.src=x.oSrc;\n  }\n  function MM_findObj(n, d) { //v4.01\n  var p,i,x;  if(!d) d=document; if((p=n.indexOf(\"?\"))>0&&parent.frames.length) {\n    d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}\n  if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];\n  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=MM_findObj(n,d.layers[i].document);\n  if(!x && d.getElementById) x=d.getElementById(n); return x;\n  }\n\n  function MM_swapImage() { //v3.0\n  var i,j=0,x,a=MM_swapImage.arguments; document.MM_sr=new Array; for(i=0;i<(a.length-2);i+=3)\n   if ((x=MM_findObj(a[i]))!=null){document.MM_sr[j++]=x; if(!x.oSrc) x.oSrc=x.src; x.src=a[i+2];}\n  }\n  //]]>\n  </script>\n</head>\n\n<body onload=\n\"MM_preloadImages('images/navbuttons/home2.png','images/navbuttons/about2.png','images/navbuttons/benefits2.png','images/navbuttons/oppor2.png','images/navbuttons/contact2.png')\">\n<div align=\"center\">\n    <table width=\"1024\" border=\"0\">\n      <tr>\n        <td>\n          <div align=\"left\">\n            <table width=\"100%\" border=\"0\">\n              <tr>\n                <td width=\"639\" rowspan=\"2\"><img src=\n                \"images/fundco_logo.png\" width=\"565\" height=\"100\"\n                alt=\"FundCo\" /></td>\n\n                <td width=\"369\" height=\"47\">\n                  <div align=\"center\">\n                    <strong class=\"CreditFin\">Credit\n                    Finance</strong>\n                  </div>\n                </td>\n              </tr>\n\n              <tr>\n                <td>\n                  <div align=\"center\"><img src=\"images/number.gif\"\n                  width=\"262\" height=\"26\" /></div>\n                </td>\n              </tr>\n            </table>\n          </div>\n        </td>\n      </tr>\n    </table><br />\n\n    <table width=\"915\" border=\"0\">\n      <tr>\n        <td><img src=\"images/barleft.png\" width=\"3\" height=\"20\" /><a href=\"index.html\" onmouseout=\"MM_swapImgRestore()\" onmouseover=\"MM_swapImage('Home','','images/navbuttons/home2.png',1)\"><img src=\"images/navbuttons/home1.png\" name=\"Home\" width=\"180\" height=\"20\" border=\"0\" id=\"Home\" /></a><a href=\"about.html\" onmouseout=\"MM_swapImgRestore()\" onmouseover=\"MM_swapImage('About','','images/navbuttons/about2.png',1)\"><img src=\"images/navbuttons/about1.png\" name=\"About\" width=\"180\" height=\"20\" border=\"0\" id=\"About\" /></a><a href=\"benefits.html\" onmouseout=\"MM_swapImgRestore()\" onmouseover=\"MM_swapImage('Image6','','images/navbuttons/benefits2.png',1)\"><img src=\"images/navbuttons/benefits1.png\" name=\"Image6\" width=\"180\" height=\"20\" border=\"0\" id=\"Image6\" /></a><a href=\"oppor.html\" onmouseout=\"MM_swapImgRestore()\" onmouseover=\"MM_swapImage('Image7','','images/navbuttons/oppor2.png',1)\"><img src=\"images/navbuttons/oppor1.png\" name=\"Image7\" width=\"180\" height=\"20\" border=\"0\" id=\"Image7\" /></a><a href=\"contact.html\" onmouseout=\"MM_swapImgRestore()\" onmouseover=\"MM_swapImage('Image8','','images/navbuttons/contact2.png',1)\"><img src=\"images/navbuttons/contact1.png\" name=\"Image8\" width=\"180\" height=\"20\" border=\"0\" id=\"Image8\" /></a><img src=\"images/barright.png\" width=\"3\" height=\"20\" /></td>\n      </tr>\n    </table>\n    <br />\n    <br />\n\n    <table width=\"1024\" border=\"0\">\n      <tr>\n        <td class=\"tableTL\">\n          <table width=\"100%\" border=\"0\">\n            <tr>\n              <td width=\"64%\">\n                <div align=\"center\" id=\"piecemaker\">\n                  <p><img src=\"images/photo/photo002.png\" width=\n                  \"640\" height=\"480\" /></p>\n                </div>\n              </td>\n\n              <td width=\"36%\">\n                <p><span class=\"heading\">Welcome</span>, new and\n                returning visitors to the site of Fundco Credit\n                Finance. I look forward to welcoming you as a\n                client, whether you wish to <a href=\"oppor.html\">invest</a> \n                or make use of our extensive range of services</p>\n\n                <p><span class=\"heading\">The information</span> on\n                this site is aimed at informing you of the services\n                that we can offer, whether you are management or an\n                employee.</p>\n\n                <p>We welcome enquiries from individuals who wish\n                to make use of our services through their\n                employers. If you provide us with your employer's\n                details we will gladly contact them to offer our\n                services .</p>\n\n                <p>Click <a href=\"about.html\">here</a> to learn\n                more about us.</p>\n              </td>\n            </tr>\n          </table>\n        </td>\n      </tr>\n    </table>\n\n    <p><a href=\"http://www.tech-guru.co.za\" target=\"_blank\" class=\n    \"techguru\">Web Design by Tech-Guru</a></p>\n\n    <p>&nbsp;</p>\n  </div>\n</body>\n</html>\n",
+			"file": "/home/campbell/Fundco/index.html",
+			"file_size": 6380,
+			"file_write_time": 1363072988000000,
+			"settings":
+			{
+				"buffer_size": 6340,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "Packages/User/instancefg.sublime-build",
+	"command_palette":
+	{
+		"height": 392.0,
+		"selected_items":
+		[
+			[
+				":w",
+				":w - Save"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Install Package"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"Package Control: remove",
+				"Package Control: Remove Package"
+			],
+			[
+				":q",
+				"Set Syntax: SQL"
+			],
+			[
+				"package",
+				"Package Control: Remove Package"
+			]
+		],
+		"width": 537.0
+	},
+	"console":
+	{
+		"height": 395.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": true,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/campbell/Plone421/buildout-cache/eggs/plone.app.vocabularies-2.1.7-py2.7.egg/plone/app/vocabularies/users.py",
+		"/home/campbell/bika.lims/bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml",
+		"/tmp/fz3temp-1/index.html",
+		"/home/campbell/Fundco/asdf.html",
+		"/home/campbell/bika.lims/bika/lims/content/analysisrequestquery.py",
+		"/home/campbell/Downloads/House MD Season 1, 2, 3, 4, 5, 6 & 7 + Extras (Deleted Scenes, Interviews etc) DVDRip HDTV TSV/Season 7/House MD Season 7 Episode 14 - Recession Proof.avi.part",
+		"/home/campbell/bika.lims/bika/lims/exportimport/load_setup_data.py",
+		"/home/campbell/bika.lims/bika/lims/content/person.py",
+		"/home/campbell/.config/sublime-text-2/Packages/Default/Default (Linux).sublime-keymap",
+		"/home/campbell/bika.lims/bika/lims/vocabularies.zcml",
+		"/home/campbell/Plone421/buildout-cache/eggs/zope.schema-4.2.0-py2.7.egg/zope/schema/vocabulary.py",
+		"/home/campbell/Plone421/buildout-cache/eggs/Products.CMFDefault-2.2.2-py2.7.egg/Products/CMFDefault/formlib/vocabulary.py",
+		"/usr/local/pp/v/take it",
+		"/home/campbell/Plone421/buildout-cache/eggs/plone.app.vocabularies-2.1.7-py2.7.egg/plone/app/vocabularies/catalog.py",
+		"/home/campbell/Plone421/buildout-cache/eggs/plone.app.vocabularies-2.1.7-py2.7.egg/plone/app/vocabularies/terms.py",
+		"/home/campbell/Plone421/buildout-cache/eggs/Products.CMFPlone-4.2.1.1-py2.7.egg/Products/CMFPlone/patches/csrf.py",
+		"/home/campbell/Plone421/buildout-cache/eggs/plone.app.vocabularies-2.1.7-py2.7.egg/plone/app/vocabularies/workflow.py",
+		"/home/campbell/Plone421/buildout-cache/eggs/plone.app.vocabularies-2.1.7-py2.7.egg/plone/app/vocabularies/tests/base.py",
+		"/home/campbell/bika.lims/bika/lims/setuphandlers.py",
+		"/home/campbell/Plone421/buildout-cache/eggs/plone.app.vocabularies-2.1.7-py2.7.egg/plone/app/vocabularies/tests/test_vocabularies.py",
+		"/home/campbell/Plone421/buildout-cache/eggs/plone.app.discussion-2.1.7-py2.7.egg/plone/app/discussion/vocabularies.py",
+		"/home/campbell/Downloads/House MD Season 1, 2, 3, 4, 5, 6 & 7 + Extras (Deleted Scenes, Interviews etc) DVDRip HDTV TSV/Season 7/House MD Season 7 Episode 13 - Two Stories.avi.part",
+		"/home/campbell/Plone421/buildout-cache/eggs/plone.app.vocabularies-2.1.7-py2.7.egg/plone/app/vocabularies/configure.zcml",
+		"/home/campbell/bika.lims/bika/lims/browser/widgets/bcquerywidget.py",
+		"/home/campbell/Plone421/buildout-cache/eggs/sauna.reload-0.4.3-py2.7.egg/sauna/reload/__init__.py",
+		"/home/campbell/Plone421/buildout-cache/eggs/sauna.reload-0.4.3-py2.7.egg/sauna/reload/eventhandlers.py",
+		"/home/campbell/b/browser/js/utils.js",
+		"/home/campbell/repos/bika.lims/bika/lims/browser/fields/queryfield.py",
+		"/home/campbell/repos/bika.lims/bika/lims/browser/analysisrequestquery.zcml",
+		"/home/campbell/bika.lims/bika/lims/browser/queryparser.py",
+		"/home/campbell/Plone421/src/bika.lims/bika/lims/browser/analysisrequestquery.zcml",
+		"/home/campbell/bika.lims/bika/lims/querystring/registryreader.py",
+		"/home/campbell/bika.lims/bika/lims/querystring/querybuilder.py",
+		"/home/campbell/.config/sublime-text-2/Packages/User/Preferences.sublime-settings",
+		"/home/campbell/bika.lims/bika/lims/browser/js/bika_listing.js",
+		"/home/campbell/repos/bika.lims/bika/lims/profiles/default/jsregistry.xml",
+		"/home/campbell/bika.lims/bika/lims/browser/js/utils.js",
+		"/home/campbell/Plone421/buildout-cache/eggs/sauna.reload-0.5.0-py2.7.egg/sauna/reload/forkloop.py",
+		"/home/campbell/Plone421/buildout-cache/eggs/sauna.reload-0.4.3-py2.7.egg/sauna/reload/adapters.py",
+		"/home/campbell/bika.lims/bika/lims/browser/analysisrequestquery.py",
+		"/home/campbell/Plone421/buildout-cache/eggs/plone.app.collection-1.0.5-py2.7.egg/plone/app/collection/collection.py",
+		"/home/campbell/bika.lims/bika/lims/browser/js/querywidget.js",
+		"/home/campbell/Plone421/buildout-cache/eggs/plone.app.querystring-1.0.5-py2.7.egg/plone/app/querystring/queryparser.py",
+		"/home/campbell/Plone421/buildout-cache/eggs/archetypes.querywidget-1.0.4-py2.7.egg/archetypes/querywidget/querywidget.js",
+		"/home/campbell/Plone421/buildout-cache/eggs/plone.app.querystring-1.0.5-py2.7.egg/EGG-INFO/PKG-INFO",
+		"/home/campbell/repos/bika.lims/bika/lims/content/analysisrequestquery.py",
+		"/home/campbell/Plone421/buildout-cache/eggs/pdbpp-0.7.2-py2.7.egg/pdb.py",
+		"/home/campbell/bika.lims/bika/lims/skins/bika/querywidget.pt",
+		"/home/campbell/repos/bika.lims/bika/lims/browser/analysisrequestquery.py",
+		"/home/campbell/Plone421/buildout-cache/eggs/plone.app.jquerytools-1.3.2-py2.7.egg/plone/app/jquerytools/profiles/default/jsregistry.xml",
+		"/home/campbell/bika.lims/bika/lims/profiles/default/jsregistry.xml",
+		"/home/campbell/Downloads/House MD Season 1, 2, 3, 4, 5, 6 & 7 + Extras (Deleted Scenes, Interviews etc) DVDRip HDTV TSV/Season 7/House MD Season 7 Episode 12 - You Must Remember This.avi.part",
+		"/usr/local/pp/v/sharing the house",
+		"/home/campbell/Plone421/src/bika.lims/bika/lims/browser/js/querywidget.js",
+		"/home/campbell/repos/bika.lims/bika/lims/browser/fields/__init__.py",
+		"/home/campbell/Plone421/buildout-cache/eggs/plone.app.querystring-1.0.5-py2.7.egg/plone/app/querystring/registryreader.py",
+		"/home/campbell/repos/bika.lims/bika/lims/querystring/querybuilder.py",
+		"/home/campbell/Plone421/buildout-cache/eggs/plone.app.querystring-1.0.5-py2.7.egg/plone/app/querystring/querybuilder.py",
+		"/home/campbell/bika.lims/bika/lims/browser/querystring/querybuilder.py",
+		"/home/campbell/repos/bika.lims/bika/lims/browser/fields/bcqueryfield.py",
+		"/home/campbell/Plone421/buildout-cache/eggs/plone.app.querystring-1.0.5-py2.7.egg/plone/app/querystring/configure.zcml",
+		"/home/campbell/bika.lims/bika/lims/browser/analysisrequestquery.zcml",
+		"/home/campbell/bika.lims/bika/lims/browser/fields/bcqueryfield.py",
+		"/home/campbell/bika.lims/bika/lims/upgrade/to1102.py",
+		"/home/campbell/bika.lims/bika/lims/browser/bcquerybuilder.py",
+		"/home/campbell/repos/bika.lims/bika/lims/querybuilder.py",
+		"/home/campbell/repos/bika.lims/bika/lims/browser/bcquerybuilder.py",
+		"/home/campbell/b/browser/bcqueryparser.py",
+		"/home/campbell/b/browser/bcquerybuilder.py",
+		"/home/campbell/b/browser/widgets/__init__.py",
+		"/home/campbell/b/browser/fields/__init__.py",
+		"/home/campbell/b/browser/fields/bcqueryfield.py",
+		"/home/campbell/bika.lims/bika/lims/querybuilder.py",
+		"/home/campbell/b/browser/widgets/bc_querywidget.py",
+		"/home/campbell/b/querybuilder.py",
+		"/home/campbell/bika.lims/bika/lims/browser/fields/queryfield.py",
+		"/home/campbell/bika.lims/bika/lims/browser/widgets/bc_querywidget.py",
+		"/home/campbell/Plone421/src/bika.lims/bika/lims/browser/fields/queryfield.py",
+		"/home/campbell/b/browser/widgets/bika_catalog_querywidget.py",
+		"/home/campbell/Plone421/parts/omelette/plone/app/querystring/querybuilder.py",
+		"/home/campbell/bika.lims/bika/lims/profiles/default/registry.xml",
+		"/home/campbell/Plone421/parts/omelette/archetypes/querywidget/configure.zcml",
+		"/home/campbell/bika.lims/bika/lims/vocabularies.py",
+		"/home/campbell/Plone421/Python-2.7/lib/python2.7/bdb.py",
+		"/home/campbell/Plone421/parts/omelette/plone/app/collection/collection.py",
+		"/home/campbell/bika.lims/bika/lims/browser/widgets/querywidget.py",
+		"/home/campbell/Plone421/Python-2.7/lib/python2.7/site-packages/campbell/__init__.py",
+		"/home/campbell/Plone421/buildout-cache/eggs/archetypes.querywidget-1.0.4-py2.7.egg/archetypes/querywidget/configure.zcml",
+		"/home/campbell/Plone421/parts/omelette/plone/app/collection/configure.zcml",
+		"/home/campbell/Plone421/parts/omelette/plone/app/querystring/configure.zcml",
+		"/home/campbell/Downloads/House MD Season 1, 2, 3, 4, 5, 6 & 7 + Extras (Deleted Scenes, Interviews etc) DVDRip HDTV TSV/Season 7/House MD Season 7 Episode 09 - Larger Than Life.avi.part",
+		"/home/campbell/Plone421/buildout-cache/eggs/archetypes.querywidget-1.0.4-py2.7.egg/archetypes/querywidget/templates/multiple_selection_widget.pt",
+		"/home/campbell/.pdbrc.py",
+		"/home/campbell/Plone421/buildout-cache/eggs/Products.PDBDebugMode-1.3.1-py2.7.egg/Products/PDBDebugMode/pdblogging.py",
+		"/home/campbell/Plone421/Python-2.7/lib/python2.7/pdb.py",
+		"/home/campbell/Plone421/parts/omelette/Products/PDBDebugMode/runcall.py",
+		"/home/campbell/Plone421/buildout-cache/eggs/Products.PDBDebugMode-1.3.1-py2.7.egg/Products/PDBDebugMode/README.txt",
+		"/home/campbell/.rafkill2.rap",
+		"/home/campbell/.mr.igor.bak",
+		"/home/campbell/Plone421/parts/omelette/plone/app/querystring/profiles/default/registry.xml",
+		"/home/campbell/Plone421/buildout-cache/eggs/archetypes.querywidget-1.0.4-py2.7.egg/archetypes/querywidget/views.py",
+		"/home/campbell/Plone421/parts/omelette/plone/app/querystring/tests/testQueryBuilder.py",
+		"/home/campbell/bika.lims/bika/lims/content/analysisrequest.py",
+		"/home/campbell/Plone421/parts/omelette/archetypes/querywidget/field.py",
+		"/home/campbell/repos/bika.lims/bika/lims/vocabularies.py",
+		"/home/campbell/bika.lims/bika/lims/queryparser.py",
+		"/home/campbell/bika.lims/bika/lims/browser/contact.py",
+		"/home/campbell/bika.lims/bika/lims/browser/analysisrequest.py",
+		"/home/campbell/bika.lims/bika/lims/content/worksheet.py",
+		"/home/campbell/repos/bika.lims/bika/lims/setuphandlers.py",
+		"/home/campbell/repos/bika.lims/bika/lims/content/analysisrequest.py",
+		"/home/campbell/repos/bika.lims/bika/lims/profiles/default/registry.xml",
+		"/home/campbell/Plone421/src/bika.lims/bika/lims/queryparser.py",
+		"/home/campbell/Plone421/parts/omelette/archetypes/querywidget/widget.py",
+		"/home/campbell/Plone421/parts/omelette/plone/app/querystring/registryreader.py",
+		"/home/campbell/repos/bika.lims/bika/lims/queryparser.py",
+		"/home/campbell/Plone421/parts/omelette/Products/Archetypes/Widget.py",
+		"/home/campbell/Plone421/parts/omelette/Products/Archetypes/generator/widget.py",
+		"/home/campbell/Plone421/parts/omelette/ExtensionClass/_ExtensionClass.c",
+		"/home/campbell/Plone421/parts/omelette/ExtensionClass/_ExtensionClass.py",
+		"/home/campbell/Plone421/parts/omelette/Products/Archetypes/Field.py",
+		"/home/campbell/Plone421/parts/omelette/plone/app/querystring/interfaces.py",
+		"/home/campbell/.config/sublime-text-2/Packages/Default/Preferences.sublime-settings",
+		"/home/campbell/repos/bika.lims/bika/lims/browser/widgets/querywidget.py",
+		"/home/campbell/bika.lims/bika/lims/browser/js/analysisrequestquerywidget.js",
+		"/home/campbell/repos/bika.lims/.tags",
+		"/home/campbell/repos/bika.lims/.tags_sorted_by_file",
+		"/home/campbell/repos/bika.lims/bika.lims.egg-info/SOURCES.txt"
+	],
+	"find":
+	{
+		"height": 34.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+			"/home/campbell/repos/bika.lims",
+			"/home/campbell/Plone421/",
+			"*.zcml,/home/campbell/Plone421/",
+			"*.zcml/home/campbell/Plone421/",
+			"jsregistry.xml,/home/campbell/Plone421/",
+			"/home/campbell/repos/bika.lims",
+			"/home/campbell/Plone421/",
+			"/home/campbell/repos/bika.lims",
+			"*.zcml,/home/campbell/Plone421/",
+			"/home/campbell/repos/bika.lims",
+			"/home/campbell/Plone421/",
+			"/home/campbell/repos/bika.lims",
+			"/home/campbell/Plone421/",
+			"*.zcml,/home/campbell/Plone421/",
+			"/home/campbell/Plone421/",
+			"/home/campbell/repos/bika.lims",
+			"/home/campbell/Plone421/",
+			"/home/campbell/repos/bika.lims",
+			"/home/campbell/Plone421/",
+			"*.py,/home/campbell/Plone421/",
+			"/home/campbell/repos/bika.lims",
+			"/home/campbell/Plone421/",
+			"*.zcml,/home/campbell/Plone421/",
+			"/home/campbell/Plone421/",
+			"*.zcml,/home/campbell/Plone421/",
+			"/home/campbell/Plone421/",
+			"*.zcml,/home/campbell/Plone421/",
+			"/home/campbell/repos/bika.lims",
+			"/home/campbell/repos",
+			"*.zcml,/home/campbell/repos",
+			"/home/campbell/repos",
+			"/home/campbell/repos/bika.health",
+			"/home/campbell/repos/bika.lims",
+			"/home/campbell/repos",
+			"/home/campbell/repos/bika.lims",
+			"/home/campbell/repos/plonecoredev/",
+			"/home/campbell/repos/plonecoredev",
+			"/home/campbell/repos/bika.lims",
+			"*.xml,/home/campbell/repos/plonecoredev",
+			"/home/campbell/repos/",
+			"/home/campbell/repos/bika.lims",
+			"/home/campbell/repos",
+			"/home/campbell/repos/bika.lims",
+			"/home/campbell/repos/plonecoredev",
+			"/home/campbell/repos/bika.lims",
+			"/home/campbell/repos/plonecoredev",
+			"/home/campbell/repos/bika.lims",
+			"*.zcml,/home/campbell/repos/bika.lims",
+			"*.py,/home/campbell/repos/bika.lims",
+			"/home/campbell/repos/bika.lims",
+			"/home/campbell/repos/plonecoredev",
+			"*.zcml,/home/campbell/repos/plonecoredev",
+			"/home/campbell/repos/plonecoredev",
+			"*.zcml,/home/campbell/repos/plonecoredev",
+			"*.py,/home/campbell/repos/plonecoredev",
+			"*.py,/home/campbell/repos/bika.lims",
+			"/home/campbell/repos/bika.lims",
+			"*.py,/home/campbell/repos/plonecoredev",
+			"*.xml,/home/campbell/repos/plonecoredev",
+			"/home/campbell/repos/plonecoredev",
+			"/home/campbell/repos/bika.lims",
+			"/home/campbell/repos/plonecoredev",
+			"/home/campbell/repos/bika.lims",
+			"/home/campbell/repos/",
+			"/home/campbell/repos",
+			"/home/campbell/b/content",
+			"/home/campbell/repos/",
+			"/home/campbell/repos/bika.lims",
+			"/home/campbell/repos/",
+			"/home/campbell/repos/plonecoredev",
+			"/home/campbell/repos/bika.lims",
+			"*.js,/home/campbell/repos/bika.lims",
+			"*.pt,/home/campbell/repos/bika.lims",
+			"/home/campbell/repos/bika.dbw",
+			"*zcml,/home/campbell/repos/bika.lims",
+			"/home/campbell/repos/bika.lims",
+			"/home/campbell/repos/bika.purity",
+			"/home/campbell/repos/bika.lims",
+			"*ml,/home/campbell/repos/bika.health",
+			"*ml,/home/campbell/repos/bika.purity",
+			"/home/campbell/repos/bika.purity",
+			"/home/campbell/repos/bika.health",
+			"/home/campbell/repos/bika.purity/bika/purity",
+			"/home/campbell/repos/bika.purity",
+			"/home/campbell/bika.lims",
+			"/home/campbell/b",
+			"*.py,/home/campbell/b",
+			"*.zcml,/home/campbell/b",
+			"*.js,/home/campbell/b",
+			"*.p*,/home/campbell/b",
+			"/home/campbell/b",
+			"/home/campbell/repos/plonecoredev",
+			"/home/campbell/b",
+			"/home/campbell/repos/plonecoredev",
+			"/home/campbell/b",
+			"*.js,/home/campbell/b",
+			"/home/campbell/b",
+			"/home/campbell/Plone43",
+			"/home/campbell/b",
+			"*.xml,/home/campbell/b",
+			"/home/campbell/Plone43/",
+			"/home/campbell/bika.lims",
+			"*.py,/home/campbell/bika.lims",
+			"*.py,/home/campbell/repos/plonecoredev/src/Products.CMFPlone/Products/CMFPlone/tests",
+			"*older*,/home/campbell/repos/plonecoredev",
+			"/home/campbell/repos/plonecoredev",
+			"*.py,/home/campbell/bika.lims",
+			"/home/campbell/bika.lims",
+			"/home/campbell/b",
+			"/home/campbell/repos/plonecoredev",
+			"/home/campbell/repos/bika.lims",
+			"/home/campbell/repos/bika.lims/bika/lims/tests",
+			"/home/campbell/repos/bika.lims",
+			"/home/campbell/repos/plonecoredev",
+			"/home/campbell/repos/bika.lims/bika/lims/tests",
+			"/home/campbell/repos/plonecoredev",
+			"/home/campbell/repos/bika.lims",
+			"/home/campbell/repos/plonecoredev",
+			"*.zcml,/home/campbell/repos/plonecoredev",
+			"/home/campbell/repos/plonecoredev",
+			"*collection*,/home/campbell/repos/plonecoredev",
+			"*.py,/home/campbell/repos/plonecoredev",
+			"*.zcml,/home/campbell/repos/plonecoredev",
+			"*.py,/home/campbell/repos/plonecoredev",
+			"*.zcml,/home/campbell/repos/plonecoredev",
+			"*.py,/home/campbell/repos/plonecoredev",
+			"*.py,/home/campbell/repos/plonecoredev/src/Products.CMFPlone/Products/CMFPlone/tests",
+			"/home/campbell/repos/plonecoredev/src/Products.CMFPlone/Products/CMFPlone/tests"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"invest",
+			"getAnalyst",
+			"Analyst",
+			"review_state",
+			"BooleanIndex",
+			"Title",
+			"contact1",
+			"ctrl+shift",
+			"context",
+			"BikaVocabulary",
+			"AnalysisService",
+			"BikaSetupVocabulary",
+			"setRoles",
+			"wtool",
+			"states",
+			"view",
+			"user",
+			"states",
+			"layer['context']",
+			"vobjects",
+			"context",
+			"self.folder",
+			"category', ",
+			"getRequestID",
+			"querywidget.js",
+			"'):",
+			"_contains",
+			"queryparser",
+			"asdfasdfasdfasdfasdf",
+			"dateinput",
+			"bcquerywidget",
+			"addIndexButton",
+			"bcq",
+			"pdb",
+			"querybuilder",
+			"querbuilder",
+			"bcqueryfield",
+			"AnalysisRequestQueryBuilder",
+			"registryconfiguration",
+			"prefix",
+			"RegistryConfiguration",
+			"catalog",
+			"queryw",
+			"queryparser",
+			"BikaCatalogQuer",
+			"queryparser",
+			"catalog_name",
+			"queryparser",
+			"bika.lims.querybuilder",
+			"catalog_name",
+			"QueryBuilder",
+			"lims.*querybuilder.*QueryB",
+			"catalog_name",
+			"catalog",
+			"querybuilder_html_results",
+			"display_query_results",
+			"Requested",
+			"Date Created",
+			"getDateRequested",
+			"Requested",
+			"import camp",
+			"from campbell",
+			"campbell import",
+			"campbell",
+			"pdb",
+			"results",
+			"multipleselectionwidget",
+			"MultiSelectWidget",
+			"display_query_results",
+			"boom",
+			"runcall",
+			"Pdb",
+			"runcall",
+			"SamplePoint",
+			"samplepoint",
+			"SamplePoint",
+			"AnalysisCategory",
+			"WidgetTraverse",
+			"Analyst",
+			"user",
+			"users",
+			"user",
+			"IQueryField\" prefix=\"bika",
+			"reind",
+			"AnalysisCategoryTitles",
+			"service",
+			">\n",
+			"AnalysisCategoryTitles",
+			"getAnalysisCategory",
+			"catalog_name='portal_catalog'",
+			"Using empty query because there are no valid indexes used.",
+			"AnalysisRequestQuerystringRegistryReader",
+			"self.__dict__.get('registry_prefix', None)",
+			"_process_args",
+			"label",
+			"Base",
+			"process_form",
+			"analysisrequestquerywidget",
+			"AnalysisRequestQueryWidget",
+			"QueryWid",
+			"AnalysisRequestQueryWidget",
+			"_config",
+			"combogrid_options",
+			"allowDelete",
+			"helper_css",
+			"analysisrequestquerywidget",
+			"mult",
+			"liMs",
+			"Sampled",
+			"displaylist",
+			"def getmetadatadisplay",
+			"getmetadatadisplay",
+			"parseFormQuery",
+			"Using empty query because there are no valid indexes used.",
+			"QueryBuilder",
+			"Using empty query because there are no valid indexes used.",
+			".views.WidgetTraverse",
+			"WidgetTraverse",
+			"portal_url",
+			"debugger",
+			"field_config",
+			"pudb",
+			"light",
+			"bracket",
+			"prefix.*analysisrequestquer",
+			"prefix.*analysisrequestqyer",
+			"operations",
+			"clientreference"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"IQueryField\" \n           prefix=\"bika",
+			"AnalysisCategory",
+			"catalog_name='bika_catalog'",
+			"\n            ",
+			"QueryWidget",
+			"querywidget",
+			"bika.lims.browser.analysisrequestquery.AnalysisRequestWidgetTraverse",
+			"_p(",
+			"bika_querywidgetconfig_registry",
+			"BIKA_INTEGRATION_TESTING",
+			"BIKA_FUNCTIONAL_TESTING",
+			"queryfolder",
+			"QueryFolder",
+			"-",
+			"",
+			"IAnalysisRequestQuerystringRegistryReader",
+			"IAnalysisRequestQueryStringRegistryReader",
+			"_p(",
+			"AnalysisRequestQuery",
+			"",
+			"Reference Values",
+			"Expected Values",
+			"ajaxGetCalculationInterimFields",
+			"logger.info",
+			"",
+			"#",
+			"",
+			"i18n_domain=\"bika.dbw\"",
+			"dbw",
+			"bika.purity_various",
+			"from bika.purity.config import PROJECTNAME",
+			"from bika.health import bikaMessageFactory as _h\nfrom bika.purity import bikaMessageFactory as _\n",
+			"",
+			": ",
+			"Title",
+			"Referring Institution Patient ID(s)",
+			"Referring Institution Patient ID",
+			"Additional Notes",
+			"Case Status",
+			"Case Outcome",
+			"Type",
+			"types",
+			"+",
+			"getBrowser",
+			"::",
+			"|",
+			"BIKA_INTEGRATION_TESTING",
+			"BIKA_FUNCTIONAL_TESTING",
+			"> '\n... '",
+			"",
+			"> '\n... '",
+			">",
+			"self.folder",
+			">>> ptool = layer['portal'].",
+			"    >",
+			"Browser(layer['app'])",
+			"from plone.testing.z2 import Browser",
+			"layer['portal']",
+			"setRoles(",
+			"self.setRoles(self.portal, TEST_USER_ID, ",
+			"from Products.CMFPlone.tests.CMFPloneTestCase import CMFPloneTestCase",
+			"from Products.CMFPlone.tests.layers import PLONE_TEST_CASE_",
+			"    >",
+			"    \\>",
+			"from layers import PLONE_TEST_CASE_INTEGRATION_TESTING",
+			"PLONE_TEST_CASE_INTEGRATION_TESTING",
+			"setRoles(self.portal, TEST_USER_ID, ",
+			"setRoles(self.portal, TEST_USER_NAME, ",
+			"TEST_USER_NAME",
+			"setRoles",
+			"setRoles(self.portal, TEST_USER_ID, [",
+			"setRoles",
+			"self.request",
+			"self.layer['app']"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "vocabularies.py",
+					"settings":
+					{
+						"buffer_size": 10114,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1528,
+								1528
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"XXX",
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 0.2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 180.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "vocabularies.zcml",
+					"settings":
+					{
+						"buffer_size": 1438,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								743,
+								743
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"XXX",
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 0.2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 2,
+					"file": "content/analysisrequest.py",
+					"settings":
+					{
+						"buffer_size": 20435,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								7750,
+								7750
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"XXX",
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 0.2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2246.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "setuphandlers.py",
+					"settings":
+					{
+						"buffer_size": 36396,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6580,
+								6580
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"XXX",
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 0.2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1405.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "profiles/default/registry.xml",
+					"settings":
+					{
+						"buffer_size": 14426,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								9427,
+								9427
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"XXX",
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 0.2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/XML/XML.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1665.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "upgrade/to1102.py",
+					"settings":
+					{
+						"buffer_size": 3800,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1972,
+								1972
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"XXX",
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 0.2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 270.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 6,
+					"file": "/home/campbell/Fundco/index.html",
+					"settings":
+					{
+						"buffer_size": 6340,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1205,
+								1205
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"XXX",
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 0.2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 34.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
+			],
+			[
+				2,
+				0,
+				3,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			0.33,
+			0.66,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 354.0
+	},
+	"output.find_results":
+	{
+		"height": 188.0
+	},
+	"replace":
+	{
+		"height": 62.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"limsworkflow_anal",
+				"bika.lims/bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml"
+			],
+			[
+				"analysisrequestquery",
+				"bika.lims/bika/lims/content/analysisrequestquery.py"
+			],
+			[
+				"limscontentperson",
+				"bika.lims/bika/lims/content/person.py"
+			],
+			[
+				"plonevocabuser",
+				"eggs/plone.app.vocabularies-2.1.7-py2.7.egg/plone/app/vocabularies/users.py"
+			],
+			[
+				"1102",
+				"bika.lims/bika/lims/upgrade/to1102.py"
+			],
+			[
+				"limsvocabzcml",
+				"bika.lims/bika/lims/vocabularies.zcml"
+			],
+			[
+				"ploneappvocab",
+				"eggs/plone.app.vocabularies-2.1.7-py2.7.egg/plone/app/vocabularies/catalog.py"
+			],
+			[
+				"cmfplonecsrf",
+				"eggs/Products.CMFPlone-4.2.1.1-py2.7.egg/Products/CMFPlone/patches/csrf.py"
+			],
+			[
+				"plonevocabworkf",
+				"eggs/plone.app.vocabularies-2.1.7-py2.7.egg/plone/app/vocabularies/workflow.py"
+			],
+			[
+				"ploneappvocabularies.p",
+				"eggs/plone.app.vocabularies-2.1.7-py2.7.egg/plone/app/vocabularies/workflow.py"
+			],
+			[
+				"load_set",
+				"bika.lims/bika/lims/exportimport/load_setup_data.py"
+			],
+			[
+				"setuphandlers",
+				"bika.lims/bika/lims/setuphandlers.py"
+			],
+			[
+				"ploneappvocabtestbase",
+				"eggs/plone.app.vocabularies-2.1.7-py2.7.egg/plone/app/vocabularies/tests/base.py"
+			],
+			[
+				"ploneappvoca",
+				"eggs/plone.app.vocabularies-2.1.7-py2.7.egg/plone/app/vocabularies/tests/test_vocabularies.py"
+			],
+			[
+				"vocabzcml",
+				"eggs/plone.app.vocabularies-2.1.7-py2.7.egg/plone/app/vocabularies/configure.zcml"
+			],
+			[
+				"vocabularies",
+				"bika.lims/bika/lims/vocabularies.py"
+			],
+			[
+				"anal",
+				"bika.lims/bika/lims/content/analysisrequest.py"
+			],
+			[
+				"limsregistry",
+				"bika.lims/bika/lims/profiles/default/registry.xml"
+			],
+			[
+				"limsetuphandlers",
+				"bika.lims/bika/lims/setuphandlers.py"
+			],
+			[
+				"bika_listing.js",
+				"bika.lims/bika/lims/browser/js/bika_listing.js"
+			],
+			[
+				"utils.js",
+				"bika.lims/bika/lims/browser/js/utils.js"
+			],
+			[
+				"bcquerywidget",
+				"bika.lims/bika/lims/browser/widgets/bcquerywidget.py"
+			],
+			[
+				"contentanalysisreqq",
+				"bika.lims/bika/lims/content/analysisrequestquery.py"
+			],
+			[
+				"limsqueryparser",
+				"bika.lims/bika/lims/browser/queryparser.py"
+			],
+			[
+				"saunareload",
+				"eggs/sauna.reload-0.4.3-py2.7.egg/sauna/reload/eventhandlers.py"
+			],
+			[
+				"sauna.reload",
+				"eggs/sauna.reload-0.4.3-py2.7.egg/sauna/reload/adapters.py"
+			],
+			[
+				"browseranalysisrequestquery",
+				"bika.lims/bika/lims/browser/analysisrequestquery.py"
+			],
+			[
+				"plonequeryparser",
+				"eggs/plone.app.querystring-1.0.5-py2.7.egg/plone/app/querystring/queryparser.py"
+			],
+			[
+				"limsqueryjs",
+				"bika.lims/bika/lims/browser/js/querywidget.js"
+			],
+			[
+				"querywidgetjs",
+				"eggs/archetypes.querywidget-1.0.4-py2.7.egg/archetypes/querywidget/querywidget.js"
+			],
+			[
+				"queryparser",
+				"bika.lims/bika/lims/browser/queryparser.py"
+			],
+			[
+				"collection",
+				"eggs/plone.app.collection-1.0.5-py2.7.egg/plone/app/collection/collection.py"
+			],
+			[
+				"pdbppp",
+				"eggs/pdbpp-0.7.2-py2.7.egg/pdb.py"
+			],
+			[
+				"limsjsreg",
+				"bika.lims/bika/lims/profiles/default/jsregistry.xml"
+			],
+			[
+				"limsquerywidget",
+				"bika.lims/bika/lims/browser/js/querywidget.js"
+			],
+			[
+				"contentanquery",
+				"bika.lims/bika/lims/content/analysisrequestquery.py"
+			],
+			[
+				"analysisrequestquer",
+				"bika.lims/bika/lims/browser/analysisrequestquery.py"
+			],
+			[
+				"querywidget.pt",
+				"bika.lims/bika/lims/skins/bika/querywidget.pt"
+			],
+			[
+				"limsregistr",
+				"bika.lims/bika/lims/querystring/registryreader.py"
+			],
+			[
+				"querybuilder",
+				"bika.lims/bika/lims/querystring/querybuilder.py"
+			],
+			[
+				"querystringquerystringpy",
+				"eggs/plone.app.querystring-1.0.5-py2.7.egg/plone/app/querystring/registryreader.py"
+			],
+			[
+				"limsquerybuilder",
+				"bika.lims/bika/lims/browser/querystring/querybuilder.py"
+			],
+			[
+				"limsqueryb",
+				"bika.lims/bika/lims/browser/querystring/querybuilder.py"
+			],
+			[
+				"bcquerbuilder",
+				"bika.lims/bika/lims/browser/bcquerybuilder.py"
+			],
+			[
+				"jquerywidget",
+				"bika.lims/bika/lims/browser/js/querywidget.js"
+			],
+			[
+				"bcqueryfield",
+				"bika.lims/bika/lims/browser/fields/bcqueryfield.py"
+			],
+			[
+				"contentanquer",
+				"bika.lims/bika/lims/content/analysisrequestquery.py"
+			],
+			[
+				"anaquerzc",
+				"bika.lims/bika/lims/browser/analysisrequestquery.zcml"
+			],
+			[
+				"bcqueryb",
+				"bika.lims/bika/lims/browser/bcquerybuilder.py"
+			],
+			[
+				"contentanaq",
+				"bika.lims/bika/lims/content/analysisrequestquery.py"
+			],
+			[
+				"queryfield",
+				"bika.lims/bika/lims/browser/fields/queryfield.py"
+			],
+			[
+				"bcqueryw",
+				"bika.lims/bika/lims/browser/widgets/bc_querywidget.py"
+			],
+			[
+				"analysisrequestp",
+				"bika.lims/bika/lims/browser/analysisrequestquery.py"
+			],
+			[
+				"appquerybuilder",
+				"omelette/plone/app/querystring/querybuilder.py"
+			],
+			[
+				"limsquer",
+				"bika.lims/bika/lims/querybuilder.py"
+			],
+			[
+				"limsanalysisrequestqu",
+				"bika.lims/bika/lims/browser/analysisrequestquery.py"
+			],
+			[
+				"contentquery",
+				"bika.lims/bika/lims/content/analysisrequestquery.py"
+			],
+			[
+				"collectionp",
+				"omelette/plone/app/collection/collection.py"
+			],
+			[
+				"limsvocabularies",
+				"bika.lims/bika/lims/vocabularies.py"
+			],
+			[
+				"anaquerypy",
+				"bika.lims/bika/lims/browser/analysisrequestquery.py"
+			],
+			[
+				"queryzc",
+				"omelette/archetypes/querywidget/configure.zcml"
+			],
+			[
+				"colectionzcml",
+				"omelette/plone/app/collection/configure.zcml"
+			],
+			[
+				"querystringzcml",
+				"omelette/plone/app/querystring/configure.zcml"
+			],
+			[
+				"analysisrequestqueryzcml",
+				"bika.lims/bika/lims/browser/analysisrequestquery.zcml"
+			],
+			[
+				"limsquery",
+				"bika.lims/bika/lims/querybuilder.py"
+			],
+			[
+				"limsqueryzcml",
+				"bika.lims/bika/lims/browser/analysisrequestquery.zcml"
+			],
+			[
+				"queryb",
+				"bika.lims/bika/lims/querybuilder.py"
+			],
+			[
+				"runcall.p",
+				"omelette/Products/PDBDebugMode/runcall.py"
+			],
+			[
+				"limsvocab",
+				"bika.lims/bika/lims/vocabularies.py"
+			],
+			[
+				"vocablzcml",
+				"bika.lims/bika/lims/vocabularies.zcml"
+			],
+			[
+				"querystringqueryb",
+				"omelette/plone/app/querystring/querybuilder.py"
+			],
+			[
+				"analysisrequestqueryz",
+				"bika.lims/bika/lims/browser/analysisrequestquery.zcml"
+			],
+			[
+				"limsregistryxml",
+				"bika.lims/bika/lims/profiles/default/registry.xml"
+			],
+			[
+				"limsquerywpy",
+				"bika.lims/bika/lims/browser/widgets/querywidget.py"
+			],
+			[
+				"limsquerywid",
+				"bika.lims/bika/lims/browser/js/querywidget.js"
+			],
+			[
+				"field.py",
+				"omelette/archetypes/querywidget/field.py"
+			],
+			[
+				"stringregxml",
+				"omelette/plone/app/querystring/profiles/default/registry.xml"
+			],
+			[
+				"load_setup",
+				"bika.lims/bika/lims/exportimport/load_setup_data.py"
+			],
+			[
+				"contactpy",
+				"bika.lims/bika/lims/browser/contact.py"
+			],
+			[
+				"queryregistryx",
+				"omelette/plone/app/querystring/profiles/default/registry.xml"
+			],
+			[
+				"browseranalqq",
+				"bika.lims/bika/lims/browser/analysisrequestquery.py"
+			],
+			[
+				"browseranalyq",
+				"bika.lims/bika/lims/browser/analysisrequest.py"
+			],
+			[
+				"querystqueryb",
+				"omelette/plone/app/querystring/querybuilder.py"
+			],
+			[
+				"limsvocabzc",
+				"bika.lims/bika/lims/vocabularies.zcml"
+			],
+			[
+				"contentworksheet",
+				"bika.lims/bika/lims/content/worksheet.py"
+			],
+			[
+				"contentanalysisrequest",
+				"bika.lims/bika/lims/content/analysisrequest.py"
+			],
+			[
+				"analysisrequest",
+				"bika.lims/bika/lims/content/analysisrequest.py"
+			],
+			[
+				"limssetuphandlers",
+				"bika.lims/bika/lims/setuphandlers.py"
+			],
+			[
+				"limsqueryparse",
+				"bika.lims/bika/lims/queryparser.py"
+			],
+			[
+				"ploneappqueryregistry",
+				"omelette/plone/app/querystring/registryreader.py"
+			],
+			[
+				"extensionclass",
+				"omelette/ExtensionClass/_ExtensionClass.c"
+			],
+			[
+				"archqueryww",
+				"omelette/archetypes/querywidget/widget.py"
+			],
+			[
+				"querystringregistrreader",
+				"omelette/plone/app/querystring/registryreader.py"
+			],
+			[
+				"archetquerywwi",
+				"omelette/archetypes/querywidget/widget.py"
+			],
+			[
+				"limsquerywidget.pt",
+				"bika.lims/bika/lims/skins/bika/querywidget.pt"
+			],
+			[
+				"analysjs",
+				"bika.lims/bika/lims/browser/js/analysisrequestquerywidget.js"
+			],
+			[
+				"contentanreqq",
+				"bika.lims/bika/lims/content/analysisrequestquery.py"
+			],
+			[
+				"querywidgetviews",
+				"omelette/archetypes/querywidget/views.py"
+			],
+			[
+				"requestquerywpy",
+				"bika.lims/bika/lims/browser/widgets/analysisrequestquerywidget.py"
+			],
+			[
+				"querywidget",
+				"omelette/bika/lims/browser/widgets/analysisrequestquerywidget.py"
+			],
+			[
+				"analysisquerywid",
+				"bika.lims/bika/lims/browser/widgets/analysisrequestquerywidget.py"
+			],
+			[
+				"registryreader",
+				"omelette/plone/app/querystring/registryreader.py"
+			],
+			[
+				"limspropertiest",
+				"bika.lims/bika/lims/profiles/default/propertiestool.xml"
+			],
+			[
+				"archetypesquerywidgetpy",
+				"plonecoredev/eggs/archetypes.querywidget-1.0.7-py2.7.egg/archetypes/querywidget/widget.py"
+			],
+			[
+				"archetypesquerywidget",
+				"plonecoredev/eggs/archetypes.querywidget-1.0.6-py2.7.egg/archetypes/querywidget/skins/querywidget/querywidget.pt"
+			],
+			[
+				"analysisrequestqw",
+				"bika.lims/bika/lims/browser/widgets/analysisrequestquerywidget.py"
+			],
+			[
+				"ploneappquerystringinterfaces",
+				"plonecoredev/eggs/plone.app.querystring-1.0.7-py2.7.egg/plone/app/querystring/interfaces.py"
+			],
+			[
+				"limsinterfaces",
+				"bika.lims/bika/lims/interfaces/__init__.py"
+			],
+			[
+				"analysisrequest.zcml",
+				"bika.lims/bika/lims/browser/analysisrequestquery.zcml"
+			],
+			[
+				"analysisrequestq",
+				"bika.lims/bika/lims/browser/analysisrequestquery.py"
+			],
+			[
+				"bikaoverrides",
+				"bika.health/bika/health/browser/batch/overrides.zcml"
+			],
+			[
+				"analysisrequestqzc",
+				"bika.lims/bika/lims/browser/analysisrequestquery.zcml"
+			],
+			[
+				"ploneappregexpimpzcml",
+				"plonecoredev/eggs/plone.app.registry-1.2.2-py2.7.egg/plone/app/registry/exportimport/configure.zcml"
+			],
+			[
+				"plone.appregistzcm",
+				"plonecoredev/eggs/plone.app.registry-1.1-py2.7.egg/plone/app/registry/configure.zcml"
+			],
+			[
+				"ploneppregistryregistry",
+				"plonecoredev/eggs/plone.registry-1.0.1-py2.7.egg/plone/registry/registry.py"
+			],
+			[
+				"limstoolset",
+				"bika.lims/bika/lims/profiles/default/toolset.xml"
+			],
+			[
+				"registrycomponentregistry",
+				"plonecoredev/eggs/plone.app.registry-1.1-py2.7.egg/plone/app/registry/profiles/default/componentregistry.xml"
+			],
+			[
+				"componentregistry.xml",
+				"plonecoredev/src/Products.CMFDefault/Products/CMFDefault/profiles/default/componentregistry.xml"
+			],
+			[
+				"limscomponent",
+				"bika.lims/bika/lims/profiles/default/componentregistry.xml"
+			],
+			[
+				"analreqquerw",
+				"bika.lims/bika/lims/browser/widgets/analysisrequestquerywidget.py"
+			],
+			[
+				"workflowtoo",
+				"plonecoredev/eggs/Products.CMFCore-2.2.7-py2.7.egg/Products/CMFCore/WorkflowTool.py"
+			],
+			[
+				"workflowtool",
+				"plonecoredev/src/Products.CMFPlone/Products/CMFPlone/WorkflowTool.py"
+			],
+			[
+				"analysisservice",
+				"bika.lims/bika/lims/content/analysisservice.py"
+			],
+			[
+				"aranalyses",
+				"bika.lims/bika/lims/browser/fields/aranalysesfield.py"
+			],
+			[
+				"aranal",
+				"bika.lims/bika/lims/browser/fields/aranalysesfield.py"
+			],
+			[
+				"analysisrequest.p",
+				"bika.lims/bika/lims/content/analysisrequest.py"
+			],
+			[
+				"ika_lis",
+				"bika.lims/bika/lims/browser/bika_listing.py"
+			],
+			[
+				"registryrng",
+				"plonecoredev/eggs/Products.Archetypes-1.8.6-py2.7.egg/Products/Archetypes/www/registry.rng"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": false,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": false,
+	"side_bar_width": 253.0,
+	"status_bar_visible": true
+}

@@ -8,6 +8,7 @@
   <type portal_type="Analysis"/>
   <type portal_type="AnalysisCategory"/>
   <type portal_type="AnalysisRequest"/>
+  <type portal_type="AnalysisRequestQuery"/>
   <type portal_type="AnalysisService"/>
   <type portal_type="AnalysisSpec"/>
   <type portal_type="Attachment"/>

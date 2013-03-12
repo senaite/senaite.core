@@ -264,6 +264,7 @@ schema = BikaFolderSchema.copy() + Schema((
                    {'portal_type': 'ReferenceSample', 'prefix': 'RS', 'padding': '4'},
                    {'portal_type': 'SupplyOrder', 'prefix': 'O', 'padding': '3'},
                    {'portal_type': 'Worksheet', 'prefix': 'WS', 'padding': '4'},
+                   {'portal_type': 'AnalysisRequestQuery', 'prefix': 'query-', 'padding': '4'},
                    ],
 #        fixedSize=8,
         widget=RecordsWidget(

@@ -11,6 +11,7 @@
  <object name="AnalysisCategories" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisCategory" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisRequest" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="AnalysisRequestQuery" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisRequestsFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisService" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="AnalysisServices" meta_type="Factory-based Type Information with dynamic views"/>

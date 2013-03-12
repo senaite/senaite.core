@@ -39,6 +39,7 @@
     <element value="Analysis"/>
     <element value="AnalysisCategory"/>
     <element value="AnalysisRequest"/>
+    <element value="AnalysisRequestQuery"/>
     <element value="AnalysisService"/>
     <element value="AnalysisSpec"/>
     <element value="ARImport"/>

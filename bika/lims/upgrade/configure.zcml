@@ -30,4 +30,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+ <genericsetup:upgradeStep
+        title="Add QueryWidget indexes to bika_catalog"
+        description=""
+        source="*"
+        destination="1102"
+        handler="bika.lims.upgrade.to1102.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>

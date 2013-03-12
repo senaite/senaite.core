@@ -245,9 +245,9 @@ $(document).ready(function(){
 		positionTooltip(event);
 		return false;
 	});
-	$('*').click(function(){
-		$(".tooltip").remove();
-	});
+	// $('*').click(function(){
+	// 	$(".tooltip").remove();
+	// });
 
 	// show / hide columns - the action when a column is clicked in the menu
 	$('.contextmenu tr').live('click', function(event){

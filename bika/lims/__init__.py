@@ -34,6 +34,7 @@ def initialize(context):
     from content.analysis import Analysis
     from content.analysiscategory import AnalysisCategory
     from content.analysisrequest import AnalysisRequest
+    from content.analysisrequestquery import AnalysisRequestQuery
     from content.analysisrequestsfolder import AnalysisRequestsFolder
     from content.analysisservice import AnalysisService
     from content.analysisspec import AnalysisSpec
