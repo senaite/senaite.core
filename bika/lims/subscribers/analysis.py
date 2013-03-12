@@ -1,13 +1,16 @@
 from AccessControl import getSecurityManager
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Acquisition import aq_inner
-from DateTime import DateTime
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
+from bika.lims.utils import changeWorkflowState
+from DateTime import DateTime
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.event import ObjectInitializedEvent
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.WorkflowCore import WorkflowException
 import transaction
+import zope.event
 
 def ObjectInitializedEventHandler(instance, event):
 
@@ -290,7 +293,36 @@ def AfterTransitionEventHandler(instance, event):
             wf.doActionFor(instance, 'attach')
 
     elif action_id == "retract":
-        instance.reindexObject(idxs = ["review_state", ])
+        # Rename the analysis to make way for it's successor.
+        # Support multiple retractions by renaming to *-0, *-1, etc
+        parent = instance.aq_parent
+        analyses = [x for x in parent.objectValues('Analysis')
+                    if x.getId().split("-")[0] == instance.getKeyword()]
+        kw = instance.getKeyword()
+        parent.manage_renameObject(kw, "{0}-{1}".format(kw, len(analyses)))
+        # Create new analysis and copy values from retracted
+        parent.invokeFactory("Analysis", id=kw)
+        analysis = parent[kw]
+        analysis.edit(
+            Service=instance.getService(),
+            Calculation=instance.getCalculation(),
+            InterimFields=instance.getInterimFields(),
+            Result=instance.getResult(),
+            ResultDM=instance.getResultDM(),
+            Retested=True,  # True
+            MaxTimeAllowed=instance.getMaxTimeAllowed(),
+            DueDate=instance.getDueDate(),
+            Duration=instance.getDuration(),
+            ReportDryMatter=instance.getReportDryMatter(),
+            Analyst=instance.getAnalyst(),
+            Instrument=instance.getInstrument(),
+            SamplePartition=instance.getSamplePartition())
+        analysis.unmarkCreationFlag()
+        zope.event.notify(ObjectInitializedEvent(analysis))
+        changeWorkflowState(analysis,
+                            'bika_analysis_workflow', 'sample_received')
+
+        instance.reindexObject()
         # retract our dependencies
         if not "retract all dependencies" in instance.REQUEST['workflow_skiplist']:
             for dependency in instance.getDependencies():
@@ -303,7 +335,8 @@ def AfterTransitionEventHandler(instance, event):
             if not skip(dep, action_id, peek=True):
                 if wf.getInfoFor(dep, 'review_state') != 'sample_received':
                     instance.REQUEST["workflow_skiplist"].append("retract all dependencies")
-                    wf.doActionFor(dep, 'retract')
+                    # just return to "received" state, no cascade
+                    wf.doActionFor(dep, 'revert')
                     instance.REQUEST["workflow_skiplist"].remove("retract all dependencies")
         # Escalate action to the parent AR
         if not skip(ar, action_id, peek=True):
@@ -312,7 +345,7 @@ def AfterTransitionEventHandler(instance, event):
             else:
                 if not "retract all analyses" in instance.REQUEST['workflow_skiplist']:
                     instance.REQUEST["workflow_skiplist"].append("retract all analyses")
-                wf.doActionFor(ar, 'retract')
+                wf.doActionFor(ar, 'revert')
         # Escalate action to the Worksheet (if it's on one).
         ws = instance.getBackReferences('WorksheetAnalysis')
         if ws:

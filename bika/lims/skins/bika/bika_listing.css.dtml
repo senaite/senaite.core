@@ -162,6 +162,14 @@ table.bika-listing-table {
   color: &dtml-visibleTextColor; !important;
 }
 
+.bika-listing-table .state-retracted {
+  background-color: &dtml-retractedBackgroundColor; !important;
+  color: &dtml-retractedTextColor; !important;
+}
+.bika-listing-table .state-retracted a {
+  color: &dtml-retractedTextColor; !important;
+}
+
 .bika-listing-table .state-cancelled {
   background-color: &dtml-cancelledBackgroundColor; !important;
   color: &dtml-cancelledTextColor; !important;
