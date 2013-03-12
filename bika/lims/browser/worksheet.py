@@ -1051,7 +1051,7 @@ class ExportView(BrowserView):
 
         exim = getattr(instruments, exim)
         exporter = exim.Export(self.context, self.request)
-        data = exporter(self.context.getAnalyses())
+        data = exporter(self.context.getAnalyses(retracted=False))
         pass
 
 class ajaxGetServices(BrowserView):
