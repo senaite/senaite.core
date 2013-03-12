@@ -26,6 +26,9 @@ borderStyleAnnotations:string=dashed
 visibleTextColor:string=#205c90
 visibleBackgroundColor:string=transparent
 
+retractedTextColor:string=#939393
+retractedBackgroundColor:string=transparent
+
 cancelledTextColor:string=#adadad
 cancelledBackgroundColor:string=transparent
 

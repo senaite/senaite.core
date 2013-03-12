@@ -20,13 +20,13 @@ if workflow.getInfoFor(context, 'cancellation_state', 'active') == "cancelled":
 if checkPermission(Retract, context):
     return True
 
-if context.portal_type == "Worksheet":
+if context.portal_type == "AnalysisRequest":
 
-    # Allow automatic retract if any analysis is 'sample_received'
-    # or any duplicate or reference analysis is 'assigned'.
-    for analysis in context.getAnalyses():
+    # Allow automatic revert (Disregard permission)
+    # if any analysis is 'sample_due' or 'sample_received'.
+    for analysis in context.getAnalyses(full_objects = True):
         review_state = workflow.getInfoFor(analysis, 'review_state')
-        if review_state in ('sample_received', 'assigned'):
+        if review_state in ('sample_due', 'sample_received'):
             return True
 
 return False
