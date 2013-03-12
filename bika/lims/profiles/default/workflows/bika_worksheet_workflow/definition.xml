@@ -22,7 +22,7 @@
  <state state_id="attachment_due" title="Attachment Outstanding" i18n:attributes="title">
   <description i18n:translate=""></description>
   <exit-transition transition_id="attach"/>
-  <exit-transition transition_id="retract"/>
+  <exit-transition transition_id="revert"/>
   <exit-transition transition_id="reject"/>
   <permission-map name="BIKA: Edit Worksheet" acquired="False">
    <permission-role>Manager</permission-role>
@@ -35,7 +35,7 @@
  <state state_id="to_be_verified" title="To be verified" i18n:attributes="title">
   <description i18n:translate=""></description>
   <exit-transition transition_id="verify"/>
-  <exit-transition transition_id="retract"/>
+  <exit-transition transition_id="revert"/>
   <exit-transition transition_id="reject"/>
   <permission-map name="BIKA: Edit Worksheet" acquired="False">
    <permission-role>Manager</permission-role>
@@ -72,7 +72,7 @@
   </guard>
  </transition>
 
- <transition transition_id="retract"
+ <transition transition_id="revert"
              title="Retract worksheet"
              new_state="open"
              trigger="USER"
@@ -80,7 +80,7 @@
              after_script=""
              i18n:attributes="title retract_worksheet_transition_title">
   <description i18n:translate=""></description>
-  <action url="workflow_action?workflow_action=retract"
+  <action url="workflow_action?workflow_action=revert"
           category="workflow"
           icon=""
           i18n:translate="retract_worksheet_transition_title">Retract worksheet</action>
