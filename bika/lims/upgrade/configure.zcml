@@ -48,4 +48,14 @@
         sortkey="1"
         profile="bika.lims:default"/>
     
+ <genericsetup:upgradeStep
+        title="Retesting workflow"
+        description="Modifications for the new retesting workflow"
+        source="1111"
+        destination="1112"
+        handler="bika.lims.upgrade.to1112.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+        
 </configure>

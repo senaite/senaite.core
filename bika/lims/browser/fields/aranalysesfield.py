@@ -30,19 +30,33 @@ class ARAnalysesField(ObjectField):
     def get(self, instance, **kwargs):
         """ get() returns the list of contained analyses
             By default, return a list of catalog brains.
+
             If you want objects, pass full_objects = True
+
+            If you want to include "retracted" analyses, pass retracted = True
+
             other kwargs are passed to bika_analysis_catalog
+
         """
+
         full_objects = False
         if 'full_objects' in kwargs:
             full_objects = kwargs['full_objects']
             del kwargs['full_objects']
+
+        retracted = False
+        if 'retracted' in kwargs:
+            retracted = kwargs['retracted']
+            del kwargs['retracted']
+
         contentFilter = kwargs
         contentFilter['portal_type'] = "Analysis"
         contentFilter['path'] = {'query':"/".join(instance.getPhysicalPath()),
                                  'level':0}
         bac = getToolByName(instance, 'bika_analysis_catalog')
         analyses = bac(contentFilter)
+        if not retracted:
+            analyses = [a for a in analyses if a.review_state != 'retracted']
         if full_objects:
             analyses = [a.getObject() for a in analyses]
         return analyses
@@ -81,12 +95,12 @@ class ARAnalysesField(ObjectField):
             # analysis->InterimFields
             calc = service.getCalculation()
             interim_fields = calc and list(calc.getInterimFields()) or []
-
             # override defaults from service->InterimFields
-            service_interims = service.getInterimFields()
-            if service_interims:
-                sif = dict([[x['keyword'], x['value']]
-                            for x in service_interims])
+            sif = dict([[x['keyword'], x['value']]
+                        for x in service.getInterimFields()])
+            for i,i_f in enumerate(interim_fields):
+                if i_f['keyword'] in sif:
+                    interim_fields[i]['value'] = sif[i_f['keyword']]
                 for i, i_f in enumerate(interim_fields):
                     if i_f['keyword'] in sif:
                         interim_fields[i]['value'] = sif[i_f['keyword']]
