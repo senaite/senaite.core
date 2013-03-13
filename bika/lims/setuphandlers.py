@@ -208,6 +208,7 @@ class BikaGenerator:
         mp(CancelAndReinstate, ['Manager', 'LabManager'], 0)
 
         mp(VerifyOwnResults, ['Manager', ], 1)
+        mp(ViewRetractedAnalyses, ['Manager', 'LabManager', 'LabClerk', 'Analyst', ], 0)
 
         mp(SampleSample, ['Manager', 'LabManager', 'Sampler'], 0)
         mp(PreserveSample, ['Manager', 'LabManager', 'Preserver'], 0)

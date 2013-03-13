@@ -83,7 +83,7 @@ class WorksheetWorkflowAction(WorkflowAction):
                     Retested = form.has_key('retested') and \
                                form['retested'].has_key(uid),
                     Unit = unit and unit or '',
-                    Remarks = form['Remarks'][0][uid])
+                    Remarks = form['Remarks'][0].get(uid, ''))
 
             # discover which items may be submitted
             submissable = []
@@ -1051,7 +1051,7 @@ class ExportView(BrowserView):
 
         exim = getattr(instruments, exim)
         exporter = exim.Export(self.context, self.request)
-        data = exporter(self.context.getAnalyses())
+        data = exporter(self.context.getAnalyses(retracted=False))
         pass
 
 class ajaxGetServices(BrowserView):
