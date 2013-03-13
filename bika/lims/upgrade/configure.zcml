@@ -48,8 +48,11 @@
         sortkey="1"
         profile="bika.lims:default"/>
 <<<<<<< HEAD
+<<<<<<< HEAD
     
 =======
+=======
+>>>>>>> 69991a4a950df1044c97e1593ebaaabd5a26adb1
 
  <genericsetup:upgradeStep
         title="Retesting workflow"
@@ -70,5 +73,8 @@
         profile="bika.lims:default"/>
 
 
+<<<<<<< HEAD
 >>>>>>> Add "View Retracted Analyses" permission
+=======
+>>>>>>> 69991a4a950df1044c97e1593ebaaabd5a26adb1
 </configure>
