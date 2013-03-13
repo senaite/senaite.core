@@ -30,6 +30,9 @@ class IAnalysisRequestsFolder(Interface):
 
 class IAnalysis(Interface):
     """Analysis"""
+    
+class IAnalysisSpec(Interface):
+    """Analysis Specs"""
 
 class IDuplicateAnalysis(Interface):
     """DuplicateAnalysis"""
