@@ -12,9 +12,12 @@ from bika.lims.browser.client import ClientAnalysisRequestsView, ClientSamplesVi
 from bika.lims.browser.sample import SamplesView
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IContacts
+from bika.lims.interfaces import IBatch
+from bika.lims.interfaces import IDisplayListVocabulary
 from bika.lims.permissions import *
 from bika.lims.subscribers import doActionFor, skip
 from bika.lims.utils import isActive
+from bika.lims.vocabularies import CatalogVocabulary
 from cStringIO import StringIO
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -22,6 +25,8 @@ from plone.app.layout.globals.interfaces import IViewView
 from zope.cachedescriptors.property import Lazy as lazy_property
 from zope.i18n import translate
 from zope.interface import implements
+from zope.component import adapts
+
 import App
 import Globals
 import json
@@ -217,3 +222,12 @@ class BatchPublishView(BrowserView):
             setheader('Content-Type', 'application/pdf')
             setheader("Content-Disposition", "attachment;filename=\"%s\""%fn)
             self.request.RESPONSE.write(pdf_data)
+
+
+class ClientContactVocabularyFactory(CatalogVocabulary):
+
+    def __call__(self):
+        self.contentFilter = {
+            'portal_type': 'Contact',
+        }
+        return super(ClientContactVocabularyFactory, self).__call__()

@@ -1,37 +1,39 @@
 from AccessControl import getSecurityManager
-from DateTime import DateTime
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.public import DisplayList
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName
-from bika.lims.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import PMF
 from bika.lims import bikaMessageFactory as _
-from bika.lims import logger
+from bika.lims import PMF
+from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
-from bika.lims.browser.bika_listing import  WorkflowAction
+from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.publish import doPublish
 from bika.lims.browser.sample import SamplePartitionsView
 from bika.lims.config import POINTS_OF_CAPTURE
+from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IDisplayListVocabulary
 from bika.lims.permissions import *
 from bika.lims.subscribers import doActionFor
-from bika.lims.subscribers import skip
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
-from bika.lims.utils import to_utf8 as _c
 from bika.lims.utils import to_unicode as _u
+from bika.lims.vocabularies import CatalogVocabulary
+from bika.lims.browser.analyses import QCAnalysesView
+from DateTime import DateTime
 from magnitude import mg
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.public import DisplayList
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from zope.component import adapts
+from zope.component import queryAdapter
 from zope.i18n.locales import locales
-from zope.interface import implements, alsoProvides
-import App
+from zope.interface import implements
+
 import json
 import plone
-import re
 import urllib
 
 class AnalysisRequestWorkflowAction(WorkflowAction):
@@ -938,6 +940,26 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
     def __call__(self):
         return self.template()
 
+    def getContacts(self):
+        contacts = queryAdapter(self.context, name='getContacts')()
+        return contacts
+
+    def getCCsForContact(self, contact_uid, **kwargs):
+        """Get the default CCs for a particular client contact.  Used
+        once in form creation. #XXX search and destroy: cc_titles, cc_uids
+        """
+        uc = getToolByName(self.context, 'uid_catalog')
+        contact = uc(UID=contact_uid)
+        contacts = []
+        if contact:
+            contact = contact and contact[0].getObject() or None
+            contacts = [{'title': x.Title(), 'uid': x.UID()} for x in
+                        contact.getCCContact()]
+        if kwargs.get('json', ''):
+            return json.dumps(contacts)
+        else:
+            return contacts
+
     def partitioned_services(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         ps = []
@@ -1013,6 +1035,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                 }
                 templates[template.UID()] = t_dict
         return json.dumps(templates)
+
 
 class AnalysisRequestAnalysesView(BikaListingView):
     implements(IFolderContentsView, IViewView)

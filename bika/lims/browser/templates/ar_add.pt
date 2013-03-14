@@ -75,58 +75,62 @@
     cellpadding="0" cellspacing="0">
 <thead>
     <!-- Contact -->
-    <tr tal:define="client_contacts python:hasattr(context, 'getCCs')
-        and context.getCCs();
-    this_contact python:client_contacts and (type(client_contacts) in (list, tuple) and client_contacts[0]['uid'] or client_contacts['uid']) or '';
-    this_contact python:this_contact and
-        [c for c in client_contacts
-            if c['uid'] == this_contact][0] or '';">
+    <tr tal:define="client_contacts view/getContacts;
+                    this_contact python:client_contacts and client_contacts.keys()[0] or ''">
     <th colspan="2" class="rowheader" style="white-space:nowrap">
         <span i18n:translate="">Contact Person</span>
         &nbsp;<span class="fieldRequired">&nbsp;</span>
     </th>
+
     <td class="contact"
         tal:attributes="colspan python: view.col_count+2">
-    <tal:default_ccs
-        tal:repeat="item client_contacts">
-        <span
-            style="display:none"
-            tal:attributes="
-                uid python:item['uid'];
-                title python:item['title'];
-                ccs python:item['ccs_json'];
-                cc_titles python:','.join([x['title'] for x in item['ccs']]);
-                cc_uids python:','.join([x['uid'] for x in item['ccs']]);">
-    </span>
-    </tal:default_ccs>
-    <select
-        name="Contact"
-        id="primary_contact"
-        tal:attributes="tabindex tabindex/next;">
-        <tal:item
-            tal:repeat="item client_contacts">
-            <option
+
+        <tal:default_ccs
+            tal:repeat="key client_contacts">
+            <span
+                tal:define="value python: client_contacts.getValue(key);
+                            ccs python:view.getCCsForContact(contact_uid=key, json=False);"
+                style="display:none"
                 tal:attributes="
-                    value python:item['uid'];
-                    selected python:this_contact and item['uid'] == this_contact['uid']
-                        and 'selected' or '';"
-                tal:content="python:item['title']">
-            </option>
-        </tal:item>
-    </select>
-    <!-- Contact CCs-->
-    <input type="button"
-        id="open_cc_browser"
-        class="button"
-        style="padding-top:0px;padding-bottom:0px;"
-        value="CC"
-        i18n:attributes="value"
-        i18n:domain="bika"
-        tal:attributes="tabindex tabindex/next;"/>
-    <input DISABLED="1" id="cc_titles"
-        tal:attributes="value python:this_contact and ','.join([c['title'] for c in this_contact['ccs']]) or ''"/>
-    <input type="hidden" id="cc_uids" name="cc_uids"
-        tal:attributes="value python:this_contact and ','.join([c['uid'] for c in this_contact['ccs']]) or ''"/>
+                    uid python:key;
+                    title python:value;
+                    cc_titles python:','.join([x['title'] for x in ccs]);
+                    cc_uids python:','.join([x['uid'] for x in ccs]);">
+        </span>
+        </tal:default_ccs>
+
+        <select
+            name="Contact"
+            id="primary_contact"
+            tal:attributes="tabindex tabindex/next;">
+            <tal:term
+                tal:repeat="key client_contacts">
+                <option
+                    tal:define="value python:client_contacts.getValue(key);"
+                    tal:attributes="
+                        value value;
+                        selected python:this_contact and key == this_contact
+                            and 'selected' or '';"
+                    tal:content="python:value">
+                </option>
+            </tal:term>
+        </select>
+
+        <!-- Contact CCs-->
+        <tal:ccs define="ccs python:view.getCCsForContact(contact_uid=this_contact, json=False);">
+            <input type="button"
+                id="open_cc_browser"
+                class="button"
+                style="padding-top:0px;padding-bottom:0px;"
+                value="CC"
+                i18n:attributes="value"
+                i18n:domain="bika"
+                tal:attributes="tabindex tabindex/next;"/>
+            <input DISABLED="1" id="cc_titles"
+                tal:attributes="value python:this_contact and ','.join([c['title'] for c in ccs]) or ''"/>
+            <input type="hidden" id="cc_uids" name="cc_uids"
+                tal:attributes="value python:this_contact and ','.join([c['uid'] for c in ccs]) or ''"/>
+        </tal:ccs>
     </td>
     </tr>
 
@@ -518,6 +522,41 @@
                         tal:attributes="
                             value python:sd[1].UID();"></option>
                 </tal:samplingdeviations>
+            </select>
+            </div>
+            </td>
+        </tal:block>
+    </tr>
+    <!-- Sample condition -->
+    <tr tal:define="field_name string:SamplingDeviation">
+        <th colspan="2" style="white-space:nowrap" i18n:translate="">Sample Condition</th>
+        <td>
+            <img class="copyButton SampleConditionCopyButton"
+                 tal:condition="python:view.col_count > 1"
+                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
+        </td>
+        <tal:block repeat="column python:range(view.col_count)">
+            <td class="topborder ar_column" style="padding-top:2px;"
+                tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
+                input_id string:ar_${column}_${field_name}">
+            <div style="width:100px; border:none;text-align:left;padding-left:2px;">
+            <select
+                tal:attributes="
+                class field_name;
+                column column;
+                id input_id;
+                name input_name;"
+                style="width:96px; position:absolute; z-index:+1;"
+                onactivate="this.style.width='auto';"
+                onchange="this.blur();"
+                onblur="this.style.width='96px';">
+                <option value="" i18n:translate=""></option>
+                <tal:sampleconditions repeat="sc view/sampleconditions">
+                    <option
+                        tal:content="python:sc[0]"
+                        tal:attributes="
+                            value python:sc[1].UID();"></option>
+                </tal:sampleconditions>
             </select>
             </div>
             </td>

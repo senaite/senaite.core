@@ -11,15 +11,19 @@ from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction, \
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.publish import doPublish
 from bika.lims.browser.sample import SamplesView
+from bika.lims.interfaces import IDisplayListVocabulary
 from bika.lims.interfaces import IContacts
+from bika.lims.interfaces import IClient
 from bika.lims.permissions import *
 from bika.lims.subscribers import doActionFor, skip
 from bika.lims.utils import isActive
+from bika.lims.vocabularies import CatalogVocabulary
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.i18n import translate
 from zope.interface import implements
+from zope.component import adapts
 import plone
 
 class ClientWorkflowAction(AnalysisRequestWorkflowAction):
@@ -884,3 +888,13 @@ class ClientContactsView(BikaListingView):
                      (items[x]['getEmailAddress'], items[x]['getEmailAddress'])
 
         return items
+
+
+class ClientContactVocabularyFactory(CatalogVocabulary):
+
+    def __call__(self):
+        return super(ClientContactVocabularyFactory, self).__call__(
+            portal_type='Contact',
+            path={'query': "/".join(self.context.getPhysicalPath()),
+                  'level': 0}
+        )
