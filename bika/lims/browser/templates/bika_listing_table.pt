@@ -570,14 +570,16 @@ Table cells for each column from in review_state's column list.
 						id string:folder-contents-item-${item/uid};
 						uid item/uid;
 						keyword keyword;">
+            
+            <td></td>
 
-			<td><span i18n:translate="">Remarks</span>:</td>
-
-			<td tal:attributes="colspan python:int(nr_cols)-1;">
-				<input
-					type="text" style="font-size: 90%"
+			<td tal:attributes="colspan python:int(nr_cols)-1;"
+			     style="padding-right:10px;padding-bottom:5px;">
+			    <span i18n:translate="" style='color:#3f3f3f;font-size:0.95em;'>Remarks:</span>&nbsp;
+				<textarea
+					style="font-size: 0.9em;color:#3f3f3f;width:100%;display:block;"
 					autocomplete="off"
-					style="width:95%"
+					rows="1"
 					tal:condition="python:allow_edit"
 					tal:attributes="
 						class python:'listing_remarks';
@@ -586,11 +588,11 @@ Table cells for each column from in review_state's column list.
 						st_uid string:${item/st_uid|nothing};
 						objectId string:${item/id};
 						name string:Remarks.${item/uid}:records;
-						value python:item.get('Remarks', '');"/>
+						value python:item.get('Remarks', '');"></textarea>
 				<span
-					style="font-size: 90%"
+					style="font-size: 0.9em;color:#3f3f3f;"
 					autocomplete="off"
-					tal:condition="python:not allow_edit"
+					tal:condition="python:not allow_edit and item.get('Remarks', '')!=''"
 					tal:content="python:item.get('Remarks', '')"/>
 			</td>
 		</tr>

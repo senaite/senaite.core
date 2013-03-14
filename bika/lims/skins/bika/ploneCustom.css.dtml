@@ -61,7 +61,7 @@ textarea#description,
 
 #content a:link {
   border-bottom: 0;
-  color: &dtml-linkColor; !important;
+  color: &dtml-linkColor;;
   text-decoration:none;
 }
 

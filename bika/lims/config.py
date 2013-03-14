@@ -83,6 +83,12 @@ ADDRESS_TYPES = DisplayList((
     ('shipping', _('Shipping address')),
     ))
 
+QCANALYSIS_TYPES = DisplayList((
+    ('b', _('Blank QC analyses')),
+    ('c', _('Control QC analyses')),
+    ('d', _('Duplicate QC analyses'))
+))
+
 currencies = locales.getLocale('en').numbers.currencies.values()
 currencies.sort(lambda x,y:cmp(x.displayName, y.displayName))
 

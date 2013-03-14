@@ -76,7 +76,7 @@
 </div>
 
 <hr/>
-
+<h1 i18n:translate="">Summary</h1>
 <table class="main-table" cellpadding="2" cellspacing="0">
 
   <thead>
@@ -188,15 +188,17 @@
     </tr>
 
   </thead>
-
-  <tbody>
-
+  </table>
+  
     <tal:arcount
       tal:repeat="ar view/batch">
       <tal:ar
         tal:define="global columns python:ar.getReportDryMatter() and columns + 2 or columns + 1"/>
     </tal:arcount>
 
+  <h1 i18n:translate="">Results</h1>
+  <table class="main-table">
+  <tbody>
     <tal:poc tal:repeat="poc python:view.services.keys()">
 
     <tal:category tal:repeat="cat python:view.services[poc].keys()">
@@ -257,16 +259,15 @@
                   <br/>
                   <span tal:replace="python:in_range[0] and '' or 'valid range min: %(min)s, max: %(max)s'%(in_range[1])"/>
                 </span>
+                <p tal:condition="python:view.context.bika_setup.getEnableAnalysisRemarks() and analysis.getRemarks()!=''">
+                    <span i18n:translate="" style="font-weight:bold;font-size:0.9em;">Remarks</span><br/>
+                    <span tal:content="analysis/getRemarks"/>
+                </p>
               </td>
               <td tal:condition="ar/getReportDryMatter">
                 <span tal:condition="analysis/getResultDM"
                   tal:content="analysis/getResultDM">10</span>
               </td>
-              <tal:remarks tal:condition="python:view.context.bika_setup.getEnableAnalysisRemarks()">
-                <td tal:attributes="colspan python:ar.getReportDryMatter() and '2'or '1'"
-                  tal:content="analysis/getRemarks">
-                </td>
-              </tal:remarks>
             </tal:result>
             <tal:notanalysis tal:condition="python:not analysis_found">
               <td></td>
@@ -281,10 +282,51 @@
   </tbody>
 </table>
 
+<!-- Table for QC Results -->
+<tal:qctable tal:condition="python:len(view.qcservices)>0">
+    <h1 i18n:translate="">QC Results</h1>
+    <table class="main-table">
+        <tal:qctypes repeat="qctype python:sorted(view.qcservices.iterkeys())">            
+            <thead>
+                <tr>
+                    <th colspan="4" tal:condition="python:qctype=='b'" i18n:translate="">Blank analyses</th>
+                    <th colspan="4" tal:condition="python:qctype=='c'" i18n:translate="">Control analyses</th>
+                    <th colspan="3" tal:condition="python:qctype=='d'" i18n:translate="">Duplicate analyses</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tal:qcpocs tal:repeat="qcpoc python:view.qcservices[qctype].keys()">
+                <tal:qccats repeat="qccat python:view.qcservices[qctype][qcpoc].keys()">
+                    <tr class="category_heading">
+                       <th nowrap tal:content="string:${qcpoc} - ${qccat}"/>
+                       <th i18n:translate="">Result</th>
+                       <th tal:condition="python:qctype!='d'" i18n:translate="">Reference Sample</th>
+                       <th tal:condition="python:qctype!='d'" i18n:translate="">Worksheet</th>
+                    </tr> 
+                    <tal:qcservices tal:repeat="qc python:view.qcservices[qctype][qcpoc][qccat]">
+                        <tr>
+                            <td tal:content="python:qc['service'].Title()"/>
+                            <td tal:content="python:qc['analysis'].getResult()"/>    
+                            <td tal:content="python:'%s - %s'%(qc['analysis'].aq_parent.id, qc['analysis'].aq_parent.Title())" tal:condition="python:qctype!='d'"/>                            
+                            <td tal:define="ws python:qc['analysis'].getBackReferences('WorksheetAnalysis')">
+                                <a tal:condition="python: len(ws)>0"
+                                   tal:attributes="href python:ws[0].absolute_url"
+                                   tal:content="python:ws[0].id"/>
+                            </td>
+                        </tr>
+                    </tal:qcservices>
+                    <tr>
+                        <td colspan="3"></td>
+                    </tr>
+                </tal:qccats>
+                </tal:qcpocs>
+            </tbody>            
+        </tal:qctypes>
+    </table>
+</tal:qctable>
+
+<h1 i18n:translate="">Remarks</h1>
 <table class="main-table">
-  <tr>
-      <th colspan="2" i18n:translate="">Remarks</th>
-  </tr>
   <tal:repeat repeat="ar view/batch">
       <tr tal:define="remarks python:ar.getRemarks()"
           tal:condition="remarks">
@@ -295,11 +337,8 @@
   </tal:repeat>
 </table>
 
+<h1 i18n:translate="">Attachments</h1>
 <table class="main-table">
-  <tr>
-    <th colspan="2" i18n:translate="">Attachments
-    </th>
-  </tr>
   <tal:ar tal:repeat="ar view/batch">
     <tr tal:define="attachments ar/getAttachment"
       tal:condition="attachments">

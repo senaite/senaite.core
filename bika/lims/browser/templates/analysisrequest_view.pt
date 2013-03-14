@@ -109,6 +109,15 @@
 			</h3>
 			<span tal:replace="structure python: table[1]"/>
 		</tal:tables>
+		<br/>
+		
+		<!-- QC Analyses table -->
+		<h3 style="margin-top:1em;">
+	        <img title="QC Analyses"
+	             tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/referencesample.png">
+	        <span i18n:translate="">QC Analyses</span>
+	    </h3>
+	    <tal:parts replace="structure view/qctable"/>
 
     </form>
 

@@ -89,16 +89,15 @@ h4 {
 }
 
 .main-table tr {
-    padding:1px 10px;
 }
 
 .main-table th {
     color: &dtml-tableHeaderTextColor;;
     background-color: &dtml-tableHeaderBackgroundColor;;
-    padding:0px 4px;
+    padding:2px 4px;
     font-size: &dtml-tableHeaderFontBaseSize; !important;
     text-align:left;
-    vertical-align: middle !important;
+    vertical-align: top !important;
     border-top: 1px solid &dtml-tableHeaderBorderColor;;
     border-bottom: 1px solid &dtml-tableHeaderBorderColor;;
 }
@@ -107,8 +106,13 @@ h4 {
     font-size: &dtml-fontSmallSize; !important;
     vertical-align: middle !important;
     text-align:left !important;
-    padding:1px 4px;
+    padding:2px 4px;
     border-bottom: 1px solid &dtml-tableCellBackgroundColor;;
+}
+
+.main-table td p {
+    margin-top:5px;
+    margin-bottom:0px;
 }
 
 .main-table th.column,
