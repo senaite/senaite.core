@@ -564,20 +564,22 @@ class AnalysisRequest(BaseFolder):
 
         for an in ans:
             an = an.getObject()
-            ws = an.getBackReferences('WorksheetAnalysis')[0]
-            was = ws.getAnalyses()
-            for wa in was:
-                if wa.portal_type == 'DuplicateAnalysis' \
-                    and wa.getRequestID() == self.id \
-                    and wa not in qcanalyses \
-                    and (qctype == None or wa.getReferenceType() == qctype):
-                    qcanalyses.append(wa)
-
-                elif wa.portal_type == 'ReferenceAnalysis' \
-                    and wa.getServiceUID() in suids \
-                    and wa not in qcanalyses \
-                    and (qctype == None or wa.getReferenceType() == qctype):
-                    qcanalyses.append(wa)
+            br = an.getBackReferences('WorksheetAnalysis')
+            if (len(br) > 0):
+                ws = br[0]
+                was = ws.getAnalyses()
+                for wa in was:
+                    if wa.portal_type == 'DuplicateAnalysis' \
+                        and wa.getRequestID() == self.id \
+                        and wa not in qcanalyses \
+                        and (qctype == None or wa.getReferenceType() == qctype):
+                        qcanalyses.append(wa)
+    
+                    elif wa.portal_type == 'ReferenceAnalysis' \
+                        and wa.getServiceUID() in suids \
+                        and wa not in qcanalyses \
+                        and (qctype == None or wa.getReferenceType() == qctype):
+                        qcanalyses.append(wa)
 
         return qcanalyses
 

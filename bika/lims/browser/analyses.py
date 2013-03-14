@@ -386,12 +386,14 @@ class AnalysesView(BikaListingView):
                 if obj.portal_type in ['ReferenceAnalysis', 
                                        'DuplicateAnalysis'] or \
                    workflow.getInfoFor(obj, 'worksheetanalysis_review_state') == 'assigned':
-                    ws = obj.getBackReferences('WorksheetAnalysis')[0]
-                    items[i]['after']['state_title'] = \
-                         "<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='%s'/></a>" % \
-                         (ws.absolute_url(), self.context.translate(
-                             _("Assigned to: ${worksheet_id}",
-                               mapping={'worksheet_id':ws.id})))
+                    br = obj.getBackReferences('WorksheetAnalysis')
+                    if len(br) > 0:
+                        ws = br[0]
+                        items[i]['after']['state_title'] = \
+                             "<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='%s'/></a>" % \
+                             (ws.absolute_url(), self.context.translate(
+                                 _("Assigned to: ${worksheet_id}",
+                                   mapping={'worksheet_id':ws.id})))
 
 
         # the TAL requires values for all interim fields on all
