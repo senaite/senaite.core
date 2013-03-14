@@ -9,6 +9,7 @@ from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.config import QCANALYSIS_TYPES
 from bika.lims.permissions import *
 from bika.lims.utils import isActive
 from zope.component import getMultiAdapter
@@ -380,14 +381,18 @@ class AnalysesView(BikaListingView):
                     items[i]['table_row_class'] = "state-submitted-by-current-user"
 
             # add icon for assigned analyses in AR views
-            if self.context.portal_type == 'AnalysisRequest' and \
-               workflow.getInfoFor(items[i]['obj'], 'worksheetanalysis_review_state') == 'assigned':
-                ws = items[i]['obj'].getBackReferences('WorksheetAnalysis')[0]
-                items[i]['after']['state_title'] = \
-                     "<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='%s'/></a>" % \
-                     (ws.absolute_url(), self.context.translate(
-                         _("Assigned to: ${worksheet_id}",
-                           mapping={'worksheet_id':ws.id})))
+            if self.context.portal_type == 'AnalysisRequest':
+                obj = items[i]['obj']
+                if obj.portal_type in ['ReferenceAnalysis', 
+                                       'DuplicateAnalysis'] or \
+                   workflow.getInfoFor(obj, 'worksheetanalysis_review_state') == 'assigned':
+                    ws = obj.getBackReferences('WorksheetAnalysis')[0]
+                    items[i]['after']['state_title'] = \
+                         "<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='%s'/></a>" % \
+                         (ws.absolute_url(), self.context.translate(
+                             _("Assigned to: ${worksheet_id}",
+                               mapping={'worksheet_id':ws.id})))
+
 
         # the TAL requires values for all interim fields on all
         # items, so we set blank values in unused cells
@@ -461,4 +466,41 @@ class AnalysesView(BikaListingView):
         self.json_specs = json.dumps(self.specs)
         self.json_interim_fields = json.dumps(self.interim_fields)
 
+        return items
+
+
+class QCAnalysesView(AnalysesView):
+    """ Renders the table of QC Analyses performed related to an AR. Different
+        AR analyses can be achieved inside different worksheets, and each one
+        of these can have different QC Analyses. This table only lists the QC
+        Analyses performed in those worksheets in which the current AR has, at
+        least, one analysis assigned and if the QC analysis services match with
+        those from the current AR.
+    """
+
+    def __init__(self, context, request, **kwargs):
+        AnalysesView.__init__(self, context, request, **kwargs)
+        qcanalyses = context.getQCAnalyses()
+        asuids = [an.UID() for an in qcanalyses]
+        self.catalog = 'bika_analysis_catalog'
+        self.contentFilter = {'UID': asuids,
+                              'sort_on': 'sortable_title'}
+        self.icon = self.portal_url + \
+                    "/++resource++bika.lims.images/referencesample.png"
+
+    def folderitems(self):
+        items = AnalysesView.folderitems(self)
+        for i in range(len(items)):
+            obj = items[i]['obj']
+            imgtype = ""
+            if obj.portal_type == 'ReferenceAnalysis':
+                antype = QCANALYSIS_TYPES.getValue(obj.getReferenceType())
+                if obj.getReferenceType() == 'c':
+                    imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/control.png'/>&nbsp;" % (antype, self.context.absolute_url())
+                if obj.getReferenceType() == 'b':
+                    imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/blank.png'/>&nbsp;" % (antype, self.context.absolute_url())
+            elif obj.portal_type == 'DuplicateAnalysis':
+                antype = QCANALYSIS_TYPES.getValue('d')
+                imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/duplicate.png'/>&nbsp;" % (antype, self.context.absolute_url())
+            items[i]['before']['Service'] = imgtype
         return items

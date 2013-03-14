@@ -9,12 +9,12 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.browser.analyses import AnalysesView
+from bika.lims.browser.analyses import AnalysesView, QCAnalysesView
 from bika.lims.browser.bika_listing import  WorkflowAction
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.publish import doPublish
 from bika.lims.browser.sample import SamplePartitionsView
-from bika.lims.config import POINTS_OF_CAPTURE
+from bika.lims.config import POINTS_OF_CAPTURE, QCANALYSIS_TYPES
 from bika.lims.permissions import *
 from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
@@ -699,6 +699,20 @@ class AnalysisRequestViewView(BrowserView):
                    and poc == 'field':
                     t.review_states[0]['columns'].remove('DueDate')
                 self.tables[POINTS_OF_CAPTURE.getValue(poc)] = t.contents_table()
+
+        ## Create QC Analyses View for this AR
+        qcview = QCAnalysesView(ar,
+                                self.request,
+                                show_categories=True)
+        qcview.allow_edit = True
+        qcview.form_id = "%s_qcanalyses"
+        qcview.review_states[0]['transitions'] = [{'id':'submit'},
+                                                  {'id':'retract'},
+                                                  {'id':'verify'}]
+        qcview.show_workflow_action_buttons = True
+        qcview.show_select_column = True
+        self.qctable = qcview.contents_table()
+
         return self.template()
 
     def tabindex(self):
