@@ -102,6 +102,7 @@ class doPublish(BrowserView):
             # send batches of ARs to each contact
             for b in range(0, len(ars), batch_size):
                 self.batch = ars[b:b+batch_size]
+                self.qcservices = {}
                 self.any_accredited = False
                 self.any_drymatter = False
                 # get all services from all requests in this batch into a
@@ -114,7 +115,7 @@ class doPublish(BrowserView):
                 for ar in self.batch:
                     if ar.getReportDryMatter():
                         self.any_drymatter = True
-                    states = ("verified", "published")
+                    states = ("verified", "published") 
                     for analysis in ar.getAnalyses(full_objects=True,
                                                    review_state=states):
                         service = analysis.getService()
@@ -128,6 +129,28 @@ class doPublish(BrowserView):
                             self.services[poc][cat].append(service)
                         if (service.getAccredited()):
                             self.any_accredited = True
+
+                    for qcanalysis in ar.getQCAnalyses():
+                        service = qcanalysis.getService()
+                        qctype = ''
+                        if qcanalysis.portal_type == 'DuplicateAnalysis':
+                            qctype = "d"
+                        elif qcanalysis.portal_type == 'ReferenceAnalysis':
+                            qctype = qcanalysis.getReferenceType()
+                        else:
+                            continue
+
+                        if qctype not in self.qcservices:
+                            self.qcservices[qctype] = {}
+                        poc = POINTS_OF_CAPTURE.getValue(service.getPointOfCapture())
+                        if poc not in self.qcservices[qctype]:
+                            self.qcservices[qctype][poc] = {}
+                        cat = service.getCategoryTitle()
+                        if cat not in self.qcservices[qctype][poc]:
+                            self.qcservices[qctype][poc][cat] = []
+                        #if service not in self.qcservices[qctype][poc][cat]:
+                        self.qcservices[qctype][poc][cat].append({'service':service,
+                                                                 'analysis':qcanalysis})
 
                 # compose and send email
                 if 'email' in self.pub_pref:

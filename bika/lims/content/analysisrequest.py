@@ -545,4 +545,36 @@ class AnalysisRequest(BaseFolder):
         """ return current date """
         return DateTime()
 
+    def getQCAnalyses(self):
+        """ return the QC analyses performed in the worksheet in which, at 
+            least, one sample of this AR is present. Returns the analyses of:
+            - all Blank Reference Samples used in related worksheet/s
+            - all Control Reference Samples used in related worksheet/s
+            - duplicates only for samples contained in this AR
+        """
+        qcanalyses = []
+        suids = []
+        ans = self.getAnalyses()
+        for an in ans:
+            an = an.getObject()
+            if an.getServiceUID() not in suids:
+                suids.append(an.getServiceUID())
+
+        for an in ans:
+            an = an.getObject()
+            ws = an.getBackReferences('WorksheetAnalysis')[0]
+            was = ws.getAnalyses()
+            for wa in was:
+                if wa.portal_type == 'DuplicateAnalysis' \
+                    and wa.getRequestID() == self.id \
+                    and wa not in qcanalyses:
+                    qcanalyses.append(wa)
+
+                elif wa.portal_type == 'ReferenceAnalysis' \
+                    and wa.getServiceUID() in suids \
+                    and wa not in qcanalyses:
+                    qcanalyses.append(wa)
+
+        return qcanalyses
+
 atapi.registerType(AnalysisRequest, PROJECTNAME)
