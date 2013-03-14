@@ -18,7 +18,7 @@ class IBatchFolder(Interface):
 
 class IBatch(Interface):
     """Batch"""
-    
+
 class IBatchLabels(Interface):
     """Batch label"""
 
@@ -174,3 +174,8 @@ class IBikaCatalog(Interface):
     ""
 class IBikaSetupCatalog(Interface):
     ""
+
+class IDisplayListVocabulary(Interface):
+    "Return a DisplayList"
+    def __call__():
+        ""

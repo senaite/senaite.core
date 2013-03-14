@@ -4,6 +4,13 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
 
+    <adapter
+      factory="bika.lims.browser.batch.ClientContactVocabularyFactory"
+      for="bika.lims.interfaces.IBatch"
+      provides="bika.lims.interfaces.IDisplayListVocabulary"
+      name="getContacts"
+    />
+
     <browser:page
       for="bika.lims.interfaces.IBatch"
       name="base_view"
