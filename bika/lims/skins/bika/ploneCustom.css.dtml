@@ -761,9 +761,8 @@ dl.portlet dd ul.navTree li ul.navTreeLevel1 li {
 }
 
 dl.portlet dd ul.navTree li a {
-  /*font-size: 1.1em;*/
+    color: #436976 !important;
 }
-
 dl.portlet dd ul.navTree li a span {
   padding-left:5px;
 }
