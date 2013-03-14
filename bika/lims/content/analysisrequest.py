@@ -574,7 +574,7 @@ class AnalysisRequest(BaseFolder):
                         and wa not in qcanalyses \
                         and (qctype == None or wa.getReferenceType() == qctype):
                         qcanalyses.append(wa)
-    
+
                     elif wa.portal_type == 'ReferenceAnalysis' \
                         and wa.getServiceUID() in suids \
                         and wa not in qcanalyses \

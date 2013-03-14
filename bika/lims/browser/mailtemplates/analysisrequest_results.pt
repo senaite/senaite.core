@@ -289,9 +289,9 @@
         <tal:qctypes repeat="qctype python:sorted(view.qcservices.iterkeys())">            
             <thead>
                 <tr>
-                    <th colspan="3" tal:condition="python:qctype=='b'" i18n:translate="">Blank analyses</th>
-                    <th colspan="3" tal:condition="python:qctype=='c'" i18n:translate="">Control analyses</th>
-                    <th colspan="2" tal:condition="python:qctype=='d'" i18n:translate="">Duplicate analyses</th>
+                    <th colspan="4" tal:condition="python:qctype=='b'" i18n:translate="">Blank analyses</th>
+                    <th colspan="4" tal:condition="python:qctype=='c'" i18n:translate="">Control analyses</th>
+                    <th colspan="3" tal:condition="python:qctype=='d'" i18n:translate="">Duplicate analyses</th>
                 </tr>
             </thead>
             <tbody>
@@ -301,12 +301,18 @@
                        <th nowrap tal:content="string:${qcpoc} - ${qccat}"/>
                        <th i18n:translate="">Result</th>
                        <th tal:condition="python:qctype!='d'" i18n:translate="">Reference Sample</th>
+                       <th tal:condition="python:qctype!='d'" i18n:translate="">Worksheet</th>
                     </tr> 
                     <tal:qcservices tal:repeat="qc python:view.qcservices[qctype][qcpoc][qccat]">
                         <tr>
                             <td tal:content="python:qc['service'].Title()"/>
                             <td tal:content="python:qc['analysis'].getResult()"/>    
                             <td tal:content="python:'%s - %s'%(qc['analysis'].aq_parent.id, qc['analysis'].aq_parent.Title())" tal:condition="python:qctype!='d'"/>                            
+                            <td tal:define="ws python:qc['analysis'].getBackReferences('WorksheetAnalysis')">
+                                <a tal:condition="python: len(ws)>0"
+                                   tal:attributes="href python:ws[0].absolute_url"
+                                   tal:content="python:ws[0].id"/>
+                            </td>
                         </tr>
                     </tal:qcservices>
                     <tr>
