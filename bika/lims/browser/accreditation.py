@@ -1,5 +1,7 @@
 from bika.lims.controlpanel.bika_analysisservices import AnalysisServicesView
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import to_utf8 as _c
+from bika.lims.utils import to_unicode as _u
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
 
@@ -36,10 +38,10 @@ class AccreditationView(AnalysisServicesView):
         else:
             msg = _("The lab is not accredited, or accreditation has not "
                     "been configured. ")
-        self.description = context.translate(msg)
+        self.description = context.translate(_c(msg))
         msg = _("All Accredited analysis services are listed here.")
         self.description = "%s<p><br/>%s</p>"%(self.description,
-                                               context.translate(msg))
+                                               context.translate(_c(msg)))
 
         self.show_select_column = False
         request.set('disable_border', 1)
