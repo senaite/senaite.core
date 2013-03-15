@@ -108,7 +108,7 @@
                 <option
                     tal:define="value python:client_contacts.getValue(key);"
                     tal:attributes="
-                        value value;
+                        value key;
                         selected python:this_contact and key == this_contact
                             and 'selected' or '';"
                     tal:content="python:value">
@@ -143,19 +143,15 @@
                     tabindex tabindex/next;"/>
         </td>
     </tr>
-
-
+    
     <!-- Client selector for contexts with resolvable client -->
     <tal:got_client tal:condition="python:context.portal_type == 'Client' or hasattr(context, 'getClientID')"
                     tal:repeat="column python:range(view.col_count)"
                     tal:define="field_name string:ClientID">
         <tal:block repeat="column python:range(view.col_count)">
             <tal:define define="ClientID python:context.getClientID();
-                                ClientUID python:context.UID();
                                 input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                                input_id string:ar_${column}_${field_name};
-                                hidden_name string:ar.${column}.ClientUID:ignore_empty:record;
-                                hidden_id string:ar_${column}_ClientUID;">
+                                input_id string:ar_${column}_${field_name};">
                 <input
                     type="hidden"
                     tal:attributes="class field_name;
@@ -163,16 +159,10 @@
                                     id input_id;
                                     name input_name;
                                     value ClientID"/>
-                <input
-                    type="hidden"
-                    tal:attributes="class field_name;
-                                    column column;
-                                    id hidden_id;
-                                    name hidden_name;
-                                    value ClientUID"/>
             </tal:define>
         </tal:block>
     </tal:got_client>
+    
     <tal:got_no_client tal:condition="python:context.portal_type != 'Client'
                                              and not hasattr(context, 'getClientID')"
                        tal:define="field_name string:ClientID">
