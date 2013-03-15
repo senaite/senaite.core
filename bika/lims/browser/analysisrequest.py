@@ -18,7 +18,6 @@ from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
 from bika.lims.utils import to_unicode as _u
 from bika.lims.vocabularies import CatalogVocabulary
-from bika.lims.browser.analyses import QCAnalysesView
 from DateTime import DateTime
 from magnitude import mg
 from plone.app.content.browser.interfaces import IFolderContentsView
