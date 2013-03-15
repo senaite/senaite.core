@@ -1651,10 +1651,12 @@ class ajaxAnalysisRequestSubmit():
 
             if self.context.portal_type == 'Client':
                 client = self.context
+                values['ClientUID'] = client.UID()
             else:
                 ClientID = values['ClientID']
                 proxies = pc(portal_type = 'Client', getClientID = ClientID)
                 client = proxies[0].getObject()
+                values['ClientUID'] = client.UID()
             if values.has_key('SampleID'):
                 # Secondary AR
                 sample = bc(portal_type = 'Sample',
