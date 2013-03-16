@@ -92,7 +92,7 @@ class AnalysesView(BikaListingView):
         self.chosen_spec = request.get('specification', 'lab')
         super(AnalysesView, self).__init__(context,
                                            request,
-                                           show_categories=True,
+                                           show_categories=context.bika_setup.getCategoriseAnalysisServices(),
                                            expand_all_categories = True)
 
     def folderitems(self):
@@ -146,7 +146,7 @@ class AnalysesView(BikaListingView):
             precision = service.getPrecision()
 
             if self.show_categories:
-                cat = obj.getService().getCategory().Title()
+                cat = obj.getService().getCategoryTitle()
                 items[i]['category'] = cat
                 if cat not in self.categories:
                     self.categories.append(cat)

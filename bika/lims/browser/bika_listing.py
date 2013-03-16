@@ -476,7 +476,9 @@ class BikaListingView(BrowserView):
         cats = []
         for item in items:
             cat = item.get('category', 'None')
-            if item.get('selected', False) or self.expand_all_categories:
+            if item.get('selected', False) \
+                or self.expand_all_categories \
+                or not self.show_categories:
                 if cat not in cats:
                     cats.append(cat)
         return cats

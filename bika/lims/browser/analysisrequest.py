@@ -689,7 +689,7 @@ class AnalysisRequestViewView(BrowserView):
                 t = AnalysesView(ar,
                                  self.request,
                                  getPointOfCapture = poc,
-                                 show_categories=True)
+                                 show_categories=self.context.bika_setup.getCategoriseAnalysisServices())
                 t.allow_edit = True
                 t.form_id = "%s_analyses" % poc
                 t.review_states[0]['transitions'] = [{'id':'submit'},
@@ -705,7 +705,7 @@ class AnalysisRequestViewView(BrowserView):
         ## Create QC Analyses View for this AR
         qcview = QCAnalysesView(ar,
                                 self.request,
-                                show_categories=True)
+                                show_categories=self.context.bika_setup.getCategoriseAnalysisServices())
         qcview.allow_edit = True
         qcview.form_id = "%s_qcanalyses"
         qcview.review_states[0]['transitions'] = [{'id':'submit'},
@@ -1097,7 +1097,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         analyses = self.context.getAnalyses(full_objects=True)
         self.analyses = dict([(a.getServiceUID(), a) for a in analyses])
         self.selected = [a.getServiceUID() for a in analyses]
-        self.show_categories = True
+        self.show_categories = self.context.bika_setup.getCategoriseAnalysisServices()
         self.expand_all_categories = False
 
 
@@ -1164,7 +1164,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
 
-            cat = obj.getCategory().Title()
+            cat = obj.getCategoryTitle()
             items[x]['category'] = cat
             if cat not in self.categories:
                 self.categories.append(cat)
@@ -1260,7 +1260,7 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
                                      self.request,
                                      getPointOfCapture = poc,
                                      sort_on = 'getServiceTitle',
-                                     show_categories = True)
+                                     show_categories = self.context.bika_setup.getCategoriseAnalysisServices())
                     t.form_id = "ar_manage_results_%s" % poc
                     t.allow_edit = True
                     t.review_states[0]['transitions'] = [{'id':'submit'},

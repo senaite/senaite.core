@@ -189,7 +189,7 @@ Table data rows start here
 ********************************</tal:comment>
 <tal:cats
 	tal:repeat="cat python: view.bika_listing.categories + ['None',]">
-	<tr tal:condition="python: view.bika_listing.show_categories and cat and cat != 'None'">
+	<tr tal:condition="python: view.bika_listing.show_categories">
 		<th
 			style="text-align: left;"
 			tal:attributes="
@@ -203,7 +203,7 @@ Table data rows start here
 		tal:repeat="item view/batch">
 		<tr tal:condition="python:item.has_key('id') and item.get('category', 'None') == cat"
 			tal:define="keyword python:item.has_key('Keyword') and item['Keyword'] or '';
-						tmpstyle python:(cat != 'None' and not cat in selected_cats) and 'display:none;;' or '';
+						tmpstyle python:(not cat in selected_cats) and 'display:none;;' or '';
 						tmpstyle python:view.context.bika_setup.getEnableAnalysisRemarks() and tmpstyle + 'border-bottom:0 !important;;' or tmpstyle;"
 			tal:attributes="
 			     style tmpstyle;
