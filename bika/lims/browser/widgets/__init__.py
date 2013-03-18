@@ -3,6 +3,7 @@ from durationwidget import DurationWidget
 from partitionsetupwidget import PartitionSetupWidget
 from recordswidget import RecordsWidget
 from referenceresultswidget import ReferenceResultsWidget
+from referencewidget import ReferenceWidget
 from serviceswidget import ServicesWidget
 from analysisspecificationwidget import AnalysisSpecificationWidget
 from worksheettemplatelayoutwidget import WorksheetTemplateLayoutWidget

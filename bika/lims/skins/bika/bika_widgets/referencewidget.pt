@@ -1,0 +1,70 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone">
+  <head><title></title></head>
+  <body>
+
+    <!-- Reference Widget -->
+    <metal:view_macro define-macro="view"
+            tal:define="kssClassesView context/@@kss_field_decorator_view;
+                        getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;">
+        <span metal:define-macro="string-field-view"
+            tal:define="kss_class python:getKssClasses(fieldName,
+                              templateId='widgets/string', macro='string-field-view');
+                              uid context/UID|nothing"
+            tal:attributes="class kss_class;
+                            id string:parent-fieldname-$fieldName-$uid">
+            <span metal:define-slot="inside"
+                  tal:replace="accessor">reference</span>
+        </span>
+    </metal:view_macro>
+
+    <metal:define define-macro="edit">
+      <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
+        <metal:fill metal:fill-slot="widget_body">
+        <input
+               type="text"
+               name=""
+               id=""
+               uid=""
+               class="blurrable firstToFocus referencewidget"
+               value=""
+               size="30"
+               tal:define="val python:context.schema[fieldName].getAccessor(context)();"
+               tal:attributes="name fieldName;
+                               required python:context.Schema().getField(fieldName).required;
+                               id fieldName;
+                               value val/Title|nothing;
+                               uid val/UID|nothing;
+                               size widget/size;
+                               placeholder widget/placeholder|nothing;
+                               maxlength widget/maxlength;
+                               catalog_name widget/catalog_name;
+                               base_query python:widget.get_base_query(context, fieldName);
+                               search_query string:{};
+                               showOn widget/showOn;
+                               ui_item widget/ui_item;
+                               combogrid_options python:widget.get_combogrid_options(context, fieldName)"
+               />
+        <input
+               type="hidden"
+               name=""
+               value=""
+               tal:define="val python:context.schema[fieldName].getAccessor(context)();"
+               tal:attributes="name string:${fieldName}_uid;
+                               id string:${fieldName}_uid;
+                               value val/UID|nothing;"/>
+        </metal:fill>
+      </metal:use>
+    </metal:define>
+
+    <div metal:define-macro="search">
+      <div metal:use-macro="context/widgets/string/macros/edit">
+      </div>
+    </div>
+
+  </body>
+
+</html>
