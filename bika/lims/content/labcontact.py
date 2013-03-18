@@ -15,6 +15,14 @@ from bika.lims.interfaces import ILabContact
 import sys
 
 schema = Person.schema.copy() + Schema((
+    LinesField('PublicationPreference',
+        vocabulary = PUBLICATION_PREFS,
+        default = 'email',
+        schemata = 'Publication preference',
+        widget = MultiSelectionWidget(
+            label = _("Publication preference"),
+        ),
+    ),
     ImageField('Signature',
         widget = ImageWidget(
             label = _("Signature"),
