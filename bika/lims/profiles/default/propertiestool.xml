@@ -44,6 +44,7 @@
     <element value="ARImport"/>
     <element value="ARImportItem"/>
     <element value="AnalysisProfile"/>
+    <element value="ARReport"/>
     <element value="ARTemplate"/>
     <element value="Attachment"/>
     <element value="AttachmentType"/>

@@ -40,6 +40,7 @@ def initialize(context):
     from content.arimport import ARImport
     from content.arimportitem import ARImportItem
     from content.analysisprofile import AnalysisProfile
+    from content.arreport import ARReport
     from content.artemplate import ARTemplate
     from content.attachment import Attachment
     from content.attachmenttype import AttachmentType
