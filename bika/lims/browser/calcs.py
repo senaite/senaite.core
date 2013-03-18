@@ -1,3 +1,4 @@
+from bika.lims.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -13,7 +14,7 @@ import sys
 import urllib
 
 
-class ajaxCalculateAnalysisEntry():
+class ajaxCalculateAnalysisEntry(BrowserView):
     """ This view is called by javascript when an analysis' result or interim
         field value is entered. Returns a JSON dictionary, or None if no
         action is required or possible.
