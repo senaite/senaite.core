@@ -171,7 +171,7 @@
 							tal:attributes="href python:dep.absolute_url()"
 							tal:content="dep/Title"/>
 					</td>
-					<td tal:content="python:dep.getCategory() and dep.getCategory().Title() or ''"/>
+					<td tal:content="python:dep.getCategoryTitle()"/>
 					<td tal:content="python:dep.getKeyword()"/>
 					<td>
 						<a

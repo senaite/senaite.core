@@ -152,6 +152,7 @@ class doPublish(BrowserView):
                         self.qcservices[qctype][poc][cat].append({'service':service,
                                                                  'analysis':qcanalysis})
 
+
                 # compose and send email
                 if 'email' in self.pub_pref:
 
@@ -191,6 +192,26 @@ class doPublish(BrowserView):
                         part.set_payload( pdf_data )
                         Encoders.encode_base64(part)
                         mime_msg.attach(part)
+
+                        # Attach report to AR
+                        for ar in self.batch:
+                            reportid = self.context.generateUniqueId('ARReport')
+                            ar.invokeFactory(id=reportid, type_name="ARReport")
+                            report = ar._getOb(reportid)
+                            report.edit(
+                                AnalysisRequest=ar.UID(),
+                                Pdf=pdf_data,
+                                Html=ar_results,
+                                Recipients=[{'UID':self.contact.UID(),
+                                            'Username':self.contact.getUsername(),
+                                            'Fullname':self.contact.getFullname(),
+                                            'EmailAddress':self.contact.getEmailAddress(),
+                                            'PublicationModes': self.pub_pref
+                                            }]
+                                )
+                            report.unmarkCreationFlag()
+                            from bika.lims.idserver import renameAfterCreation
+                            renameAfterCreation(report)
 
                     try:
                         host = getToolByName(self.context, 'MailHost')

@@ -146,7 +146,7 @@
                     tabindex tabindex/next;"/>
         </td>
     </tr>
-
+    
     <!-- All edit fields with fields with add=visible -->
     <tr tal:repeat="fieldName python:view.getWidgetVisibility().get('add').get('visible')">
         <tal:def define="
@@ -170,6 +170,7 @@
                      tal:attributes="id string:${fieldName}_help"
                      i18n:translate="">Help </span>
                 </label>
+    
            </th>
             <td>
             <img tal:condition="python:view.col_count > 1"

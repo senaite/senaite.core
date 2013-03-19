@@ -28,7 +28,7 @@ class ViewView(BrowserView):
         self.results = {} # {category_title: listofdicts}
         for r in self.context.getReferenceResults():
             service = rc.lookupObject(r['uid'])
-            cat = service.getCategory().Title()
+            cat = service.getCategoryTitle()
             if cat not in self.results:
                 self.results[cat] = []
             r['service'] = service
@@ -92,7 +92,7 @@ class ReferenceAnalysesView(AnalysesView):
             obj = items[x]['obj']
             service = obj.getService()
             items[x]['id'] = obj.getId()
-            items[x]['category'] = service.getCategory().Title()
+            items[x]['category'] = service.getCategoryTitle()
             items[x]['Service'] = service.Title()
             items[x]['Captured'] = self.ulocalized_time(obj.getResultCaptureDate())
             brefs = obj.getBackReferences("WorksheetAnalysis")

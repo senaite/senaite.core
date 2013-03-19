@@ -310,7 +310,7 @@
                             <td tal:content="python:'%s - %s'%(qc['analysis'].aq_parent.id, qc['analysis'].aq_parent.Title())" tal:condition="python:qctype!='d'"/>                            
                             <td tal:define="ws python:qc['analysis'].getBackReferences('WorksheetAnalysis')">
                                 <a tal:condition="python: len(ws)>0"
-                                   tal:attributes="href python:ws[0].absolute_url"
+                                   tal:attributes="href python:ws[0].absolute_url()"
                                    tal:content="python:ws[0].id"/>
                             </td>
                         </tr>

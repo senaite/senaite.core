@@ -163,9 +163,9 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata = "Analyses",
         default = False,
         widget = BooleanWidget(
-            label = _("Categorise analysis services setup list"),
-            description = _("Group analysis services by category in the LIMS set-up, "
-                            "helpful when the list is long")
+            label = _("Categorise analysis services"),
+            description = _("Group analysis services by category in the LIMS "
+                            "tables, helpful when the list is long")
         ),
     ),
     BooleanField('EnableAnalysisRemarks',

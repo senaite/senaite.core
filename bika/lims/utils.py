@@ -345,8 +345,10 @@ class bika_browserdata(BrowserView):
                         if depserv_uid == uid:
                             continue
                         depserv = services[depserv_uid]
+                        cat = '_'
                         category = depserv.getCategory()
-                        cat = '%s_%s' % (category.UID(), category.Title())
+                        if category:
+                            cat = '%s_%s' % (category.UID(), category.Title())
                         poc = '%s_%s' % \
                             (depserv.getPointOfCapture(),
                              POINTS_OF_CAPTURE.getValue(depserv.getPointOfCapture()))

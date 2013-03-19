@@ -452,59 +452,64 @@ class AnalysisSpecificationsValidator:
        Percentage value must be between 0 and 100
        Values must be numbers
     """
-    
+
     implements(IValidator)
     name = "analysisspecs_validator"
 
     def __call__(self, value, *args, **kwargs):
-        
+
             instance = kwargs['instance']
-            fieldname = kwargs['field'].getName()
             request = kwargs.get('REQUEST', {})
-                        
+
             if instance.REQUEST.get('validated', '') == self.name:
                 return True
             else:
-                instance.REQUEST['validated'] = self.name    
-                
+                instance.REQUEST['validated'] = self.name
+
             ts = getToolByName(instance, 'translation_service').translate
-                            
-            mins   = request.get('min',{})[0]
-            maxs   = request.get('max',{})[0]
-            errors = request.get('error',{})[0]
-                        
+
+            mins = request.get('min', {})[0]
+            maxs = request.get('max', {})[0]
+            errors = request.get('error', {})[0]
+
             # Retrieve all AS uids
-            uids = mins.keys()
-            for uid in uids:
-                
+            for uid in mins.keys():
+
                 # Foreach AS, check spec. input values
-                min = mins[uid]
-                max = maxs[uid]
-                err = errors[uid]
-                
-                min = min == '' and '0' or min
-                max = max == '' and '0' or max
-                err = err == '' and '0' or err
-                
+                minv = mins.get(uid, '') == '' and '0' or mins[uid]
+                maxv = maxs.get(uid, '') == '' and '0' or maxs[uid]
+                err = errors.get(uid, '') == '' and '0' or errors[uid]
+
                 # Values must be numbers
-                try: min = float(min)
-                except: return ts(_("Validation failed: Min values must be numeric"))  
-                try: max = float(max)
-                except: return ts(_("Validation failed: Max values must be numeric"))                
-                try: err = float(err)
-                except: return ts(_("Validation failed: Percentage error values must be numeric"))    
-                            
+                try:
+                    minv = float(minv)
+                except:
+                    return ts(_("Validation failed: Min values must be "
+                                "numeric"))
+                try:
+                    maxv = float(maxv)
+                except:
+                    return ts(_("Validation failed: Max values must be "
+                                "numeric"))
+                try:
+                    err = float(err)
+                except:
+                    return ts(_("Validation failed: Percentage error values "
+                                "must be numeric"))
+
                 # Min value must be < max
-                if min > max :
-                    return ts(_("Validation failed: Max values must be greater than Min values"))   
-                
+                if minv > maxv:
+                    return ts(_("Validation failed: Max values must be "
+                                "greater than Min values"))
+
                 # Error percentage must be between 0 and 100
-                if err < 0 or err > 100 :
-                    return ts(_("Validation failed: Error percentage must be between 0 and 100"))
-                                
+                if err < 0 or err > 100:
+                    return ts(_("Validation failed: Error percentage must be "
+                                "between 0 and 100"))
+
             return True
-    
-validation.register(AnalysisSpecificationsValidator())   
+
+validation.register(AnalysisSpecificationsValidator())
 
 
 class ReferenceValuesValidator:
