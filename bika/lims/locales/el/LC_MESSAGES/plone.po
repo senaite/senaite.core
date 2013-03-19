@@ -1,9 +1,6 @@
 # 
 # Translators:
-# <campbell@bikalabs.com>, 2012.
-#   <campbell@bikalabs.com>, 2012.
-# Carlos Javier García Quintana <garciaquintana_carlos@yahoo.com.mx>, 2013.
-# Jordi Puiggené <jordi.puiggene@gmail.com>, 2012.
+#  <limstranslate@gmail.com>, 2013.
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
@@ -16,83 +13,83 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Domain: plone\n"
-"Language: es\n"
+"Language: el\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Preferred-Encodings: utf-8 latin1\n"
 
 msgid "label_schema_Accounting"
-msgstr "Accounting"
+msgstr "Λογιστική"
 
 msgid "label_schema_Address"
-msgstr "Address"
+msgstr "Διεύθυνση"
 
 msgid "label_schema_Bank details"
-msgstr "Bank details"
+msgstr "Λεπτομέρειες τράπεζας"
 
 msgid "label_schema_Calculation"
-msgstr "Calculation"
+msgstr "Υπολογισμός"
 
 msgid "label_schema_Dates"
-msgstr "Dates"
+msgstr "Ημερομηνίες"
 
 msgid "label_schema_Description"
-msgstr "Description"
+msgstr "Περιγραφή"
 
 msgid "label_schema_Email Telephone Fax"
-msgstr "Email Telephone Fax"
+msgstr "Email Τηλέφωνο Φαξ"
 
 msgid "label_schema_ID Server"
-msgstr "ID Server"
+msgstr ""
 
 msgid "label_schema_Labels"
-msgstr "Labels"
+msgstr "Ετικέτες"
 
 msgid "label_schema_Layout"
-msgstr "Layout"
+msgstr "Διάταξη"
 
 msgid "label_schema_Location"
-msgstr "Location"
+msgstr "Τοποθεσία"
 
 msgid "label_schema_Method"
-msgstr "Method"
+msgstr "Μέθοδος"
 
 msgid "label_schema_Container and Preservation"
-msgstr "Container and Preservation"
+msgstr ""
 
 msgid "label_schema_Preferences"
-msgstr "Preferences"
+msgstr "Προτιμήσεις"
 
 msgid "label_schema_Publication preference"
-msgstr "Publication preference"
+msgstr ""
 
 msgid "label_schema_Reference Values"
 msgstr ""
 
 msgid "label_schema_Result Options"
-msgstr "Result Options"
+msgstr "Επιλογές Αποτελέσματος"
 
 msgid "label_schema_Results Reports"
-msgstr "Results Reports"
+msgstr "Αναφορές Αποτελεσμάτων"
 
 msgid "label_schema_Security"
-msgstr "Security"
+msgstr "Ασφάλεια"
 
 msgid "label_schema_Uncertainties"
-msgstr "Uncertainties"
+msgstr "Αβεβαιότητες"
 
 msgid "label_schema_Sample Partitions"
-msgstr "Sample Partitions"
+msgstr ""
 
 msgid "label_schema_Analyses"
-msgstr "Analyses"
+msgstr "Αναλύσεις"
 
 #. Default: "Activate"
 # File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
 # line: -1
 msgid "activate_transition_title"
-msgstr "Activate"
+msgstr "Ενεργοποίηση"
 
 #. Default: "Assign"
 # File:
@@ -105,7 +102,7 @@ msgstr "Activate"
 # ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml,
 # line: -1
 msgid "assign_transition_title"
-msgstr "Assign"
+msgstr ""
 
 #. Default: "Add attachment"
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
@@ -116,32 +113,32 @@ msgstr "Assign"
 # ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
 # line: -1
 msgid "attach_transition_title"
-msgstr "Add attachment"
+msgstr "Προσθήκη συνημμένου"
 
 #. Default: "Cancel"
 # File:
 # ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
 # line: -1
 msgid "cancel_transition_title"
-msgstr "Cancel"
+msgstr "Ακύρωση"
 
 #. Default: "Close"
 # File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
 # line: -1
 msgid "close_transition_title"
-msgstr "Close"
+msgstr "Κλείσιμο"
 
 #. Default: "Deactivate"
 # File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
 # line: -1
 msgid "deactivate_transition_title"
-msgstr "Deactivate"
+msgstr "Απενεργοποίηση"
 
 #. Default: "Dispatch order"
 # File: ../profiles/default/workflows/bika_order_workflow/definition.xml,
 # line: -1
 msgid "dispatch_transition_title"
-msgstr "Dispatch order"
+msgstr ""
 
 #. Default: "Dispose"
 # File:
@@ -150,11 +147,11 @@ msgstr "Dispatch order"
 # File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
 # line: -1
 msgid "dispose_transition_title"
-msgstr "Dispose"
+msgstr ""
 
 #. Default: "Duplicate"
 msgid "duplicate_transition_title"
-msgstr "Duplicate"
+msgstr ""
 
 #. Default: "Expire"
 # File:
@@ -163,25 +160,25 @@ msgstr "Duplicate"
 # File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
 # line: -1
 msgid "expire_transition_title"
-msgstr "Expire"
+msgstr ""
 
 #. Default: "Import"
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
 msgid "import_transition_title"
-msgstr "Import"
+msgstr "Εισαγωγή"
 
 #. Default: "Open"
 # File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
 # line: -1
 msgid "open_transition_title"
-msgstr "Open"
+msgstr "Άνοιγμα"
 
 #. Default: "Prepublish"
 # File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
 # -1
 msgid "prepublish_transition_title"
-msgstr "Prepublish"
+msgstr ""
 
 #. Default: "Preserve"
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
@@ -191,7 +188,7 @@ msgstr "Prepublish"
 # File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
 # line: -1
 msgid "preserve_transition_title"
-msgstr "Preserve"
+msgstr ""
 
 #. Default: "Publish"
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
@@ -199,11 +196,11 @@ msgstr "Preserve"
 # File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
 # -1
 msgid "publish_transition_title"
-msgstr "Publish"
+msgstr ""
 
 #. Default: "Reassign"
 msgid "reassign_transition_title"
-msgstr "Reassign"
+msgstr ""
 
 #. Default: "Receive sample"
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
@@ -213,14 +210,14 @@ msgstr "Reassign"
 # File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
 # line: -1
 msgid "receive_transition_title"
-msgstr "Receive sample"
+msgstr "Παραλαβή δείγματος"
 
 #. Default: "Reinstate"
 # File:
 # ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
 # line: -1
 msgid "reinstate_transition_title"
-msgstr "Reinstate"
+msgstr ""
 
 #. Default: "Reject"
 # File:
@@ -232,13 +229,13 @@ msgstr "Reinstate"
 # File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml,
 # line: -1
 msgid "reject_transition_title"
-msgstr "Reject"
+msgstr ""
 
 #. Default: "Republish"
 # File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
 # -1
 msgid "republish_transition_title"
-msgstr "Republish"
+msgstr ""
 
 #. Default: "Retract"
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
@@ -249,13 +246,13 @@ msgstr "Republish"
 # ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
 # line: -1
 msgid "retract_transition_title"
-msgstr "Retract"
+msgstr "Ανάκληση"
 
 #. Default: "Retract worksheet"
 # File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml,
 # line: -1
 msgid "retract_worksheet_transition_title"
-msgstr "Retract worksheet"
+msgstr "Ανάκληση φύλλου εργασίας"
 
 #. Default: "Sample"
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
@@ -265,25 +262,25 @@ msgstr "Retract worksheet"
 # File: ../profiles/default/workflows/bika_sample_worflow/definition.xml,
 # line: -1
 msgid "sample_transition_title"
-msgstr "Sample"
+msgstr "Δείγμα"
 
 #. Default: "Save analyses"
 msgid "save_analyses_button_transition_title"
-msgstr "Save analyses"
+msgstr "Αποθήκευση αναλύσεων"
 
 #. Default: "Save partitions"
 msgid "save_partitions_button_transition_title"
-msgstr "Save partitions"
+msgstr ""
 
 #. Default: "Save selection"
 msgid "save_selection_button_transition_title"
-msgstr "Save selection"
+msgstr "Αποθήκευση επιλογής"
 
 #. Default: "Submit ARImport"
 # File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
 # line: -1
 msgid "submit_arimport_transition_title"
-msgstr "Submit ARImport"
+msgstr ""
 
 #. Default: "Submit for verification"
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
@@ -294,7 +291,7 @@ msgstr "Submit ARImport"
 # ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
 # line: -1
 msgid "submit_transition_title"
-msgstr "Submit for verification"
+msgstr ""
 
 #. Default: "Remove"
 # File:
@@ -307,7 +304,7 @@ msgstr "Submit for verification"
 # ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml,
 # line: -1
 msgid "unassign_transition_title"
-msgstr "Remove"
+msgstr "Αφαίρεση"
 
 #. Default: "Verify"
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
@@ -318,17 +315,17 @@ msgstr "Remove"
 # ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
 # line: -1
 msgid "verify_transition_title"
-msgstr "Verify"
+msgstr ""
 
 # File: ../profiles/default/types/ARTemplate.xml, line: -1
 msgid "AR Template"
-msgstr "Plantilla de solicitud de análisis"
+msgstr ""
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/ARTemplates.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "AR Templates"
-msgstr "Plantillas de solicitud de análisis"
+msgstr ""
 
 # File: ../profiles/default/types/ARReport.xml, line: -1
 msgid "ARReport"
@@ -342,84 +339,84 @@ msgstr ""
 # File: ../profiles/default/workflows/bika_one_state_workflow/definition.xml,
 # line: -1
 msgid "Active"
-msgstr "Activos"
+msgstr ""
 
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Add Analyses"
-msgstr "Añadir análisis"
+msgstr "Προσθήκη Αναλύσεων"
 
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Add Blank Reference"
-msgstr "Añadir blanco de referencia"
+msgstr ""
 
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Add Control Reference"
-msgstr "Añadir control de referencia"
+msgstr ""
 
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Add Duplicate"
-msgstr "Añadir duplicado"
+msgstr ""
 
 # File: ../profiles/default/types/ReportFolder.xml, line: -1
 msgid "Administration"
-msgstr "Administración"
+msgstr "Διαχείριση"
 
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
 # File: ../profiles/default/types/Sample.xml, line: -1
 msgid "Analyses"
-msgstr "Análisis"
+msgstr "Αναλύσεις"
 
 # File: ../profiles/default/types/Analysis.xml, line: -1
 msgid "Analysis"
-msgstr "Análisis"
+msgstr "Ανάλυση"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/AnalysisCategories.xml, line: -1
 msgid "Analysis Categories"
-msgstr "Categorías de análisis"
+msgstr "Κατηγορίες Ανάλυσης"
 
 # File: ../profiles/default/types/AnalysisCategory.xml, line: -1
 msgid "Analysis Category"
-msgstr "Categoría del análisis"
+msgstr "Κατηγορία Ανάλυσης"
 
 # File: ../profiles/default/types/AnalysisProfile.xml, line: -1
 msgid "Analysis Profile"
-msgstr "Perfil de solicitud de análisis"
+msgstr "Προφίλ Ανάλυσης"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/AnalysisProfiles.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Analysis Profiles"
-msgstr "Perfiles de solicitud de análisis"
+msgstr "Προφίλ Ανάλυσης"
 
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 msgid "Analysis Request"
-msgstr "Solicitud de análisis"
+msgstr ""
 
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/AnalysisRequestsFolder.xml, line: -1
 # File: ../profiles/default/types/Batch.xml, line: -1
 msgid "Analysis Requests"
-msgstr "Solicitudes de análisis"
+msgstr "Αιτήσεις Ανάλυσης"
 
 # File: ../profiles/default/types/AnalysisService.xml, line: -1
 msgid "Analysis Service"
-msgstr "Servicio de análisis"
+msgstr ""
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/AnalysisServices.xml, line: -1
 msgid "Analysis Services"
-msgstr "Servicios de análisis"
+msgstr ""
 
 # File: ../profiles/default/types/AnalysisSpec.xml, line: -1
 msgid "Analysis Specification"
-msgstr "Especificación de análisis"
+msgstr ""
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/AnalysisSpecs.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Analysis Specifications"
-msgstr "Especificaciones de análisis"
+msgstr ""
 
 # File:
 # ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
@@ -431,11 +428,11 @@ msgstr "Especificaciones de análisis"
 # ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml,
 # line: -1
 msgid "Assigned"
-msgstr "Asignado"
+msgstr ""
 
 # File: ../profiles/default/types/Attachment.xml, line: -1
 msgid "Attachment"
-msgstr "Fichero adjunto"
+msgstr "Συνημμένο"
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
@@ -445,54 +442,54 @@ msgstr "Fichero adjunto"
 # ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
 # line: -1
 msgid "Attachment Outstanding"
-msgstr "Adjunto destacado"
+msgstr ""
 
 # File: ../profiles/default/types/AttachmentType.xml, line: -1
 msgid "Attachment Type"
-msgstr "Tipo de fichero adjunto"
+msgstr "Είδος Συνημμένου"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/AttachmentTypes.xml, line: -1
 msgid "Attachment Types"
-msgstr "Tipos de ficheros adjuntos"
+msgstr "Είδη Συνημμένων"
 
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Attachments"
-msgstr "Ficheros adjuntos"
+msgstr "Συνημμένα"
 
 # File: ../profiles/default/types/Batch.xml, line: -1
 msgid "Batch"
-msgstr "Lote"
+msgstr ""
 
 # File: ../profiles/default/types/BatchLabel.xml, line: -1
 msgid "Batch Label"
-msgstr "Etiqueta del Lote"
+msgstr ""
 
 # File: ../profiles/default/types/BatchLabels.xml, line: -1
 msgid "Batch Labels"
-msgstr "Etiquetas del Lote"
+msgstr ""
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 msgid "Batch labels"
-msgstr "Etiquetas del lote"
+msgstr ""
 
 # File: ../profiles/default/types/BatchFolder.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Batches"
-msgstr "Lotes"
+msgstr ""
 
 # File: ../profiles/default/types/BikaSetup.xml, line: -1
 msgid "Bika Setup"
-msgstr "Configuración de Bika"
+msgstr "Ρυθμίσεις Bika"
 
 # File: ../profiles/default/types/Calculation.xml, line: -1
 msgid "Calculation"
-msgstr "Cálculo"
+msgstr "Υπολογισμός"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Calculations.xml, line: -1
 msgid "Calculations"
-msgstr "Cálculos"
+msgstr "Υπολογισμοί"
 
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Calibrations"
@@ -502,7 +499,7 @@ msgstr ""
 # ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
 # line: -1
 msgid "Cancelled"
-msgstr "Cancelado"
+msgstr ""
 
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Certifications"
@@ -510,17 +507,17 @@ msgstr ""
 
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Client"
-msgstr "Cliente"
+msgstr "Πελάτης"
 
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/ClientFolder.xml, line: -1
 msgid "Clients"
-msgstr "Clientes"
+msgstr "Πελάτες"
 
 # File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
 # line: -1
 msgid "Closed"
-msgstr "Cerrados"
+msgstr ""
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
@@ -529,49 +526,49 @@ msgstr "Cerrados"
 # File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
 # line: -1
 msgid "Comments about the last transition"
-msgstr "Comentarios respecto de la última transición"
+msgstr ""
 
 # File: ../profiles/default/types/Client.xml, line: -1
 # File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Contacts"
-msgstr "Contactos"
+msgstr "Επαφές"
 
 # File: ../profiles/default/types/Container.xml, line: -1
 msgid "Container"
-msgstr "Contenedor"
+msgstr "Δοχείο"
 
 # File: ../profiles/default/types/ContainerType.xml, line: -1
 msgid "Container Type"
-msgstr "Tipo de contenedor"
+msgstr "Είδος Δοχείου"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/ContainerTypes.xml, line: -1
 msgid "Container Types"
-msgstr "Tipos de contenedores"
+msgstr "Είδη Δοχείων"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Containers.xml, line: -1
 msgid "Containers"
-msgstr "Contenedores"
+msgstr "Δοχεία"
 
 # File:
 # ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
 # line: -1
 msgid "Current"
-msgstr "En curso"
+msgstr ""
 
 # File: ../profiles/default/types/Department.xml, line: -1
 msgid "Department"
-msgstr "Departamento"
+msgstr "Τμήμα"
 
 # File: ../profiles/default/types/Departments.xml, line: -1
 msgid "Departments"
-msgstr "Departamentos"
+msgstr "Τμήματα"
 
 # File: ../profiles/default/workflows/bika_order_workflow/definition.xml,
 # line: -1
 msgid "Dispatched"
-msgstr "Enviado"
+msgstr ""
 
 # File:
 # ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
@@ -579,15 +576,15 @@ msgstr "Enviado"
 # File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
 # line: -1
 msgid "Disposed"
-msgstr "Eliminados"
+msgstr ""
 
 # File: ../profiles/default/types/DuplicateAnalysis.xml, line: -1
 msgid "Duplicate Analysis"
-msgstr "Análisis duplicados"
+msgstr ""
 
 # File: ../profiles/default/types/Pricelist.xml, line: -1
 msgid "Email pricelist"
-msgstr "Lista de precios por correo electrónico"
+msgstr ""
 
 # File:
 # ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
@@ -595,37 +592,37 @@ msgstr "Lista de precios por correo electrónico"
 # File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
 # line: -1
 msgid "Expired"
-msgstr "Caducados"
+msgstr ""
 
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Export"
-msgstr "Exportar"
+msgstr "Εξαγωγή"
 
 # File: ../profiles/default/types/InvoiceBatch.xml, line: -1
 msgid "Export batch"
-msgstr "Exportar el lote"
+msgstr ""
 
 # File: ../profiles/default/actions.xml, line: -1
 msgid "Extracts"
-msgstr "Extractos"
+msgstr ""
 
 # File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
 # line: -1
 msgid "Imported"
-msgstr "Importados"
+msgstr ""
 
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Imports"
-msgstr "Importaciones"
+msgstr ""
 
 # File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
 # line: -1
 msgid "Inactive"
-msgstr "Inactivo"
+msgstr ""
 
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Instrument"
-msgstr "Equipo"
+msgstr ""
 
 # File: ../profiles/default/types/InstrumentType.xml, line: -1
 msgid "Instrument Type"
@@ -640,76 +637,76 @@ msgstr ""
 # File: ../profiles/default/types/InstrumentType.xml, line: -1
 # File: ../profiles/default/types/Instruments.xml, line: -1
 msgid "Instruments"
-msgstr "Equipos"
+msgstr ""
 
 # File: ../profiles/default/types/Invoice.xml, line: -1
 msgid "Invoice"
-msgstr "Factura"
+msgstr ""
 
 # File: ../profiles/default/types/InvoiceBatch.xml, line: -1
 msgid "Invoice batch"
-msgstr "Facturar el lote"
+msgstr ""
 
 # File: ../profiles/default/types/InvoiceFolder.xml, line: -1
 msgid "Invoice batches"
-msgstr "Facturar los lotes"
+msgstr ""
 
 # File: ../profiles/default/types/InvoiceBatch.xml, line: -1
 # File: ../profiles/default/types/InvoiceFolder.xml, line: -1
 msgid "Invoices"
-msgstr "Facturas"
+msgstr ""
 
 # File: ../profiles/default/types/LabContact.xml, line: -1
 msgid "Lab Contact"
-msgstr "Contacto del laboratorio"
+msgstr "Επαφή Εργαστηρίου"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/LabContacts.xml, line: -1
 msgid "Lab Contacts"
-msgstr "Contactos del laboratorio"
+msgstr "Επαφές Εργαστηρίου"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 msgid "Lab Departments"
-msgstr "Departamentos del laboratorio"
+msgstr "Τμήματα Εργαστηρίου"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/LabProducts.xml, line: -1
 msgid "Lab Products"
-msgstr "Productos del laboratorio"
+msgstr "Προϊόντα Εργαστηρίου"
 
 # File: ../profiles/default/types/Laboratory.xml, line: -1
 msgid "Laboratory"
-msgstr "Laboratorio"
+msgstr "Εργαστήριο"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 msgid "Laboratory Information"
-msgstr "Información del laboratorio"
+msgstr "Πληροφορίες Εργαστηρίου"
 
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Sample.xml, line: -1
 # File: ../profiles/default/types/SamplePartition.xml, line: -1
 msgid "Large Sticker"
-msgstr "Etiqueta grande"
+msgstr "Μεγάλο Αυτοκόλλητο"
 
 # File: ../profiles/default/types/AnalysisProfile.xml, line: -1
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/AnalysisService.xml, line: -1
 msgid "Log"
-msgstr "Registro"
+msgstr ""
 
 # File: ../profiles/default/types/Contact.xml, line: -1
 # File: ../profiles/default/types/LabContact.xml, line: -1
 msgid "Login details"
-msgstr "Detalles de acceso"
+msgstr "Λεπτομέρειες σύνδεσης"
 
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 msgid "Manage Analyses"
-msgstr "Administrar análisis"
+msgstr "Διαχείριση Αναλύσεων"
 
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Manage Results"
-msgstr "Administrar resultados"
+msgstr "Διαχείριση Αποτελεσμάτων"
 
 # File: ../profiles/default/types/Manufacturer.xml, line: -1
 msgid "Manufacturer"
@@ -722,75 +719,75 @@ msgstr ""
 
 # File: ../profiles/default/types/Method.xml, line: -1
 msgid "Method"
-msgstr "Método"
+msgstr "Μέθοδος"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Methods.xml, line: -1
 msgid "Methods"
-msgstr "Métodos"
+msgstr "Μέθοδοι"
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
 msgid "Not requested"
-msgstr "No solicitado"
+msgstr ""
 
 # File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
 # line: -1
 # File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml,
 # line: -1
 msgid "Open"
-msgstr "Abierto"
+msgstr "Άνοιγμα"
 
 # File: ../profiles/default/workflows/bika_order_workflow/definition.xml,
 # line: -1
 msgid "Order pending"
-msgstr "Pedido pendiente"
+msgstr ""
 
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Orders"
-msgstr "Pedidos"
+msgstr "Παραγγελίες"
 
 # File: ../profiles/default/types/Preservation.xml, line: -1
 msgid "Preservation"
-msgstr "Protocolo de conservación"
+msgstr ""
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Preservations.xml, line: -1
 msgid "Preservations"
-msgstr "Protocolos de conservación"
+msgstr ""
 
 # File: ../profiles/default/types/Pricelist.xml, line: -1
 msgid "Pricelist"
-msgstr "Lista de precios"
+msgstr "Τιμοκατάλογος"
 
 # File: ../profiles/default/types/PricelistFolder.xml, line: -1
 msgid "Pricelists"
-msgstr "Listas de precios"
+msgstr "Τιμοκατάλογοι"
 
 # File: ../profiles/default/actions.xml, line: -1
 msgid "Prices"
-msgstr "Precios"
+msgstr "Τιμές"
 
 # File: ../profiles/default/types/InvoiceBatch.xml, line: -1
 msgid "Print batch"
-msgstr "Imprimir el lote"
+msgstr ""
 
 # File: ../profiles/default/types/Invoice.xml, line: -1
 msgid "Print invoice"
-msgstr "Imprimir la factura"
+msgstr ""
 
 # File: ../profiles/default/types/SupplyOrder.xml, line: -1
 msgid "Print order"
-msgstr "Imprimir el pedido"
+msgstr "Εκτύπωση παραγγελίας"
 
 # File: ../profiles/default/types/Pricelist.xml, line: -1
 msgid "Print pricelist"
-msgstr "Imprimir la lista de precios"
+msgstr "Εκτύπωση τιμοκαταλόγου"
 
 # File: ../profiles/default/types/ReportFolder.xml, line: -1
 msgid "Productivity"
-msgstr "Productividad"
+msgstr "Παραγωγικότητα"
 
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 msgid "Published results"
@@ -798,41 +795,41 @@ msgstr ""
 
 # File: ../profiles/default/types/ReportFolder.xml, line: -1
 msgid "Quality Control"
-msgstr "Control de calidad"
+msgstr ""
 
 # File: ../profiles/default/actions.xml, line: -1
 msgid "Query"
-msgstr "Consulta"
+msgstr ""
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
 # File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
 # -1
 msgid "Received"
-msgstr "Recibida"
+msgstr ""
 
 # File: ../profiles/default/types/ReferenceAnalysis.xml, line: -1
 msgid "Reference Analysis"
-msgstr "Análisis de referencia"
+msgstr ""
 
 # File: ../profiles/default/types/ReferenceDefinition.xml, line: -1
 msgid "Reference Definition"
-msgstr "Definición de referencia"
+msgstr ""
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/ReferenceDefinitions.xml, line: -1
 msgid "Reference Definitions"
-msgstr "Definiciones de referencia"
+msgstr ""
 
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
 msgid "Reference Sample"
-msgstr "Muestra de referencia"
+msgstr "Δείγμα Αναφοράς"
 
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/ReferenceSamplesFolder.xml, line: -1
 # File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Reference Samples"
-msgstr "Muestras de referencia"
+msgstr "Δείγματα Αναφοράς"
 
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
 msgid "Reference Values"
@@ -845,24 +842,24 @@ msgstr ""
 # File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
 # line: -1
 msgid "Registered"
-msgstr "Registrado"
+msgstr ""
 
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/Report.xml, line: -1
 msgid "Report"
-msgstr "Informe"
+msgstr "Αναφορά"
 
 # File: ../profiles/default/types/ReportFolder.xml, line: -1
 msgid "Reports"
-msgstr "Informes"
+msgstr "Αναφορές"
 
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 msgid "Results not requested"
-msgstr "No se han solicitado resultados"
+msgstr ""
 
 # File: ../profiles/default/types/Sample.xml, line: -1
 msgid "Sample"
-msgstr "Muestra"
+msgstr "Δείγμα"
 
 # File: ../profiles/default/types/SampleCondition.xml, line: -1
 msgid "Sample Condition"
@@ -880,53 +877,53 @@ msgstr ""
 # File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
 # line: -1
 msgid "Sample Due"
-msgstr "Muestra pendiente"
+msgstr "Προθεσμία Δείγματος"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/SampleMatrices.xml, line: -1
 msgid "Sample Matrices"
-msgstr "Soportes de muestra"
+msgstr ""
 
 # File: ../profiles/default/types/SampleMatrix.xml, line: -1
 msgid "Sample Matrix"
-msgstr "Soporte de muestra"
+msgstr ""
 
 # File: ../profiles/default/types/SamplePartition.xml, line: -1
 msgid "Sample Partition"
-msgstr "Partición de muestras"
+msgstr ""
 
 # File: ../profiles/default/types/Sample.xml, line: -1
 msgid "Sample Partitions"
-msgstr "Particiones de muestras"
+msgstr ""
 
 # File: ../profiles/default/types/SamplePoint.xml, line: -1
 msgid "Sample Point"
-msgstr "Punto de muestreo"
+msgstr "Σημείο Δειγματοληψίας"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/SamplePoints.xml, line: -1
 msgid "Sample Points"
-msgstr "Puntos de muestreo"
+msgstr "Σημεία Δειγματοληψίας"
 
 # File: ../profiles/default/types/SampleType.xml, line: -1
 msgid "Sample Type"
-msgstr "Tipo de muestra"
+msgstr "Είδος Δείγματος"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/SampleTypes.xml, line: -1
 msgid "Sample Types"
-msgstr "Tipos de muestras"
+msgstr "Είδη Δείγματος"
 
 # File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
 # line: -1
 # File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
 # line: -1
 msgid "Sample received"
-msgstr "Muestra recibida"
+msgstr ""
 
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "SamplePoints"
-msgstr "Puntos de muestreo"
+msgstr "ΣημείαΔειγματοληψίας"
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
@@ -935,26 +932,26 @@ msgstr "Puntos de muestreo"
 # File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
 # line: -1
 msgid "Sampled"
-msgstr "Muestreado"
+msgstr ""
 
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/Batch.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Samples"
-msgstr "Muestras"
+msgstr "Δείγματα"
 
 # File: ../profiles/default/types/SamplesFolder.xml, line: -1
 msgid "SamplesFolder"
-msgstr "Directorio de muestras"
+msgstr ""
 
 # File: ../profiles/default/types/SamplingDeviation.xml, line: -1
 msgid "Sampling Deviation"
-msgstr "Desviación en el muestreo"
+msgstr ""
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/SamplingDeviations.xml, line: -1
 msgid "Sampling Deviations"
-msgstr "Desviaciones en el muestreo"
+msgstr ""
 
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Schedule"
@@ -964,16 +961,16 @@ msgstr ""
 # File: ../profiles/default/types/Sample.xml, line: -1
 # File: ../profiles/default/types/SamplePartition.xml, line: -1
 msgid "Small Sticker"
-msgstr "Etiqueta pequeña"
+msgstr "Μικρό Αυτοκόλλητο"
 
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
 msgid "Sticker"
-msgstr "Etiqueta"
+msgstr "Αυτοκόλλητο"
 
 # File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
 # line: -1
 msgid "Submitted"
-msgstr "Enviados"
+msgstr ""
 
 # File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Supplier"
@@ -983,11 +980,11 @@ msgstr ""
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Suppliers.xml, line: -1
 msgid "Suppliers"
-msgstr "Proveedores"
+msgstr "Προμηθευτές"
 
 # File: ../profiles/default/types/SupplyOrder.xml, line: -1
 msgid "Supply Order"
-msgstr "Pedido de proveedor"
+msgstr "Παραγγελία Προμηθειών"
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
@@ -996,7 +993,7 @@ msgstr "Pedido de proveedor"
 # File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
 # line: -1
 msgid "The last transition"
-msgstr "Última transición"
+msgstr ""
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
@@ -1005,7 +1002,7 @@ msgstr "Última transición"
 # File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
 # line: -1
 msgid "Time of the last transition"
-msgstr "Fecha y hora de la última transición"
+msgstr ""
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
@@ -1014,7 +1011,7 @@ msgstr "Fecha y hora de la última transición"
 # File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
 # line: -1
 msgid "To Be Preserved"
-msgstr "Por conservar"
+msgstr ""
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
@@ -1023,7 +1020,7 @@ msgstr "Por conservar"
 # File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
 # line: -1
 msgid "To Be Sampled"
-msgstr "Por muestrear"
+msgstr ""
 
 # File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
 # -1
@@ -1033,7 +1030,7 @@ msgstr "Por muestrear"
 # ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
 # line: -1
 msgid "To be verified"
-msgstr "Pendiente de verificación"
+msgstr ""
 
 # File:
 # ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
@@ -1045,7 +1042,7 @@ msgstr "Pendiente de verificación"
 # ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml,
 # line: -1
 msgid "Unassigned"
-msgstr "Sin asignar"
+msgstr ""
 
 # File:
 # ../profiles/default/workflows/bika_publication_workflow/definition.xml,
@@ -1064,22 +1061,22 @@ msgstr ""
 # File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
 # line: -1
 msgid "Verified"
-msgstr "Verificado"
+msgstr ""
 
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Worksheet"
-msgstr "Hoja de trabajo"
+msgstr "Φύλλο Εργασίας"
 
 # File: ../profiles/default/types/WorksheetTemplate.xml, line: -1
 msgid "Worksheet Template"
-msgstr "Plantilla para hoja de trabajo"
+msgstr "Πρότυπο Φύλλου Εργασίας"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/WorksheetTemplates.xml, line: -1
 msgid "Worksheet Templates"
-msgstr "Plantillas para hojas de trabajo"
+msgstr "Πρότυπα Φύλλου Εργασίας"
 
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/WorksheetFolder.xml, line: -1
 msgid "Worksheets"
-msgstr "Hojas de trabajo"
+msgstr "Φύλλα Εργασίας"

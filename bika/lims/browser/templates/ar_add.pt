@@ -146,7 +146,7 @@
                     tabindex tabindex/next;"/>
         </td>
     </tr>
-    
+
     <!-- All edit fields with fields with add=visible -->
     <tr tal:repeat="fieldName python:view.getWidgetVisibility().get('add').get('visible')">
         <tal:def define="
@@ -164,13 +164,14 @@
                       tal:condition="field/required"
                       title="Required"
                       i18n:attributes="title title_required;">&nbsp;</span>
-                 <span class="formHelp"
+                 <em style="display:block"
+                       class="discreet"
                      tal:define="description python:widget.Description(here)"
                      tal:content="structure description"
                      tal:attributes="id string:${fieldName}_help"
-                     i18n:translate="">Help </span>
+                     i18n:translate="">Help </em>
                 </label>
-    
+
            </th>
             <td>
             <img tal:condition="python:view.col_count > 1"

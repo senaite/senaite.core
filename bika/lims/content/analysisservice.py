@@ -191,7 +191,7 @@ schema = BikaSchema.copy() + Schema((
         default = False,
         widget = BooleanWidget(
             label = _("Report as Dry Matter"),
-            description = _("This result can be reported as dry matter"),
+            description = _("These results can be reported as dry matter"),
         ),
     ),
     StringField('AttachmentOption',

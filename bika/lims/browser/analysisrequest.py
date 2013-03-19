@@ -1408,7 +1408,7 @@ class AnalysisRequestSelectSampleView(BikaListingView):
         super(AnalysisRequestSelectSampleView, self).__init__(context, request)
         self.icon = self.portal_url + "/++resource++bika.lims.images/sample_big.png"
         self.title = _("Select Sample")
-        self.description = _("Click on a sample to create a secondary AR")
+        self.description = _("Select a sample to create a secondary AR")
         c = context.portal_type == 'AnalysisRequest' and context.aq_parent or context
         self.catalog = "bika_catalog"
         self.contentFilter = {'portal_type': 'Sample',
@@ -2505,7 +2505,7 @@ class AnalysisRequestPublishedResults(BikaListingView):
                     email = recipient['EmailAddress']
                     val = recipient['Fullname']
                     if email:
-                        val = "<a href='mailto:%s'>%s</a>" % (email, val)                    
+                        val = "<a href='mailto:%s'>%s</a>" % (email, val)
                     if len(recip) == 0:
                         recip = val
                     else:
