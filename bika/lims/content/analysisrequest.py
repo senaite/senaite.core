@@ -248,12 +248,28 @@ schema = BikaSchema.copy() + Schema((
             visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
         ),
     ),
+    # A sample field, listed here so that it can be accessed from ar add.
     ReferenceField('SamplingDeviation',
         allowed_types = ('SamplingDeviation',),
         relationship = 'AnalysisRequestSamplingDeviation',
         referenceClass = HoldingReference,
         widget=ReferenceWidget(
             label=_('Sampling Deviation'),
+            size=12,
+            render_own_label=True,
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
+            showOn=True,
+        ),
+    ),
+    # A sample field, listed here so that it can be accessed from ar add.
+    ReferenceField('SampleCondition',
+        allowed_types = ('SampleCondition',),
+        relationship = 'AnalysisRequestSampleCondition',
+        referenceClass = HoldingReference,
+        widget=ReferenceWidget(
+            label=_('Sample condition'),
             size=12,
             render_own_label=True,
             visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
@@ -466,10 +482,6 @@ class AnalysisRequest(BaseFolder):
                 return settings.getMemberDiscount()
             else:
                 return "0.00"
-
-    def setSamplingDate(self, value, **kw):
-        # The sample's mutator does for us.
-        return None
 
     security.declareProtected(View, 'getResponsible')
 
