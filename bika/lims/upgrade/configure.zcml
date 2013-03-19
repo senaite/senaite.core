@@ -65,7 +65,7 @@
         handler="bika.lims.upgrade.to1113.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
- 
+
  <genericsetup:upgradeStep
         title="New Published Results tab inside AR view"
         description="Add AR published results tab inside AR view"
@@ -74,4 +74,14 @@
         handler="bika.lims.upgrade.to1114.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+        title="Small updates to bika_catalog indexes"
+        description="change getSamplePointTitle and getSampleTypeTitle to KeywordIndex on bika_catalog"
+        source="1114"
+        destination="1115"
+        handler="bika.lims.upgrade.to1115.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
