@@ -67,14 +67,17 @@ $(document).ready(function(){
 		url = window.location.href
 			.replace("/add_blank", "")
 			.replace("/add_control", "") + "/getWorksheetReferences"
-		$("#worksheet_add_references").load(url,
-			{'service_uids': selected_service_uids.join(","),
-			 'control_type': control_type,
-			 '_authenticator': $('input[name="_authenticator"]').val()},
-			function(responseText, statusText, xhr, $form) {
-			}
-		);
-	}
+		element = $("#worksheet_add_references");
+		if(element.length > 0){
+			$(element).load(url,
+				{'service_uids': selected_service_uids.join(","),
+				 'control_type': control_type,
+				 '_authenticator': $('input[name="_authenticator"]').val()},
+				function(responseText, statusText, xhr, $form) {
+				}
+			);
+		};
+	};
 	$("#worksheet_services input[id*='_cb_']").live('click', function(){
 		get_updated_controls();
 	});

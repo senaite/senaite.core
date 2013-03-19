@@ -360,6 +360,7 @@ table.analysisrequest.edit td {
 }
 table.analysisrequest.add td.ar_column {
   width:8em;
+  padding 0px 5px 0 5px;
 }
 #cc_titles {
   width:60%;
@@ -520,6 +521,9 @@ table.analysisrequest input {
   border-left:none !important;
 }
 
+.template-ar_add .field{
+  margin:0;
+}
 .template-manage_results .bika-listing-table td {
   vertical-align:top;
 }
@@ -761,9 +765,8 @@ dl.portlet dd ul.navTree li ul.navTreeLevel1 li {
 }
 
 dl.portlet dd ul.navTree li a {
-  /*font-size: 1.1em;*/
+    color: #436976 !important;
 }
-
 dl.portlet dd ul.navTree li a span {
   padding-left:5px;
 }

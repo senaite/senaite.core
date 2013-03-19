@@ -4,7 +4,8 @@
 	<div class="visualClear"><!-- --></div>
 
 	<div class="documentActions"
-		tal:define="normalizeString nocall: context/@@plone/normalizeString">
+		tal:define="normalizeString nocall: context/@@plone/normalizeString"
+		tal:condition="python:'Request new analyses' not in context.id">
 
 	<tal:docactions tal:condition="view/actions|nothing">
 

@@ -10,10 +10,12 @@ from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction, \
     AnalysisRequestsView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.publish import doPublish
+from bika.lims.adapters.widgetvisibility import WidgetVisibility as _WV
+from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.browser.sample import SamplesView
-from bika.lims.interfaces import IDisplayListVocabulary
-from bika.lims.interfaces import IContacts
 from bika.lims.interfaces import IClient
+from bika.lims.interfaces import IContacts
+from bika.lims.interfaces import IDisplayListVocabulary
 from bika.lims.permissions import *
 from bika.lims.subscribers import doActionFor, skip
 from bika.lims.utils import isActive
@@ -21,9 +23,9 @@ from bika.lims.vocabularies import CatalogVocabulary
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
+from zope.component import adapts
 from zope.i18n import translate
 from zope.interface import implements
-from zope.component import adapts
 import plone
 
 class ClientWorkflowAction(AnalysisRequestWorkflowAction):
@@ -898,3 +900,10 @@ class ClientContactVocabularyFactory(CatalogVocabulary):
             path={'query': "/".join(self.context.getPhysicalPath()),
                   'level': 0}
         )
+
+
+class WidgetVisibility(_WV):
+    def __call__(self, **kwargs):
+        kwargs['schema'] = AnalysisRequestSchema
+        ret = super(WidgetVisibility, self).__call__(**kwargs)
+        return ret

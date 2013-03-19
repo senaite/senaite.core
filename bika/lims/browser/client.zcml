@@ -5,6 +5,13 @@
     i18n_domain="bika">
 
     <adapter
+      factory="bika.lims.browser.client.WidgetVisibility"
+      provides="bika.lims.interfaces.IWidgetVisibility"
+      for="bika.lims.interfaces.IClient"
+      name="getWidgetVisibility"
+    />
+
+    <adapter
       factory="bika.lims.browser.client.ClientContactVocabularyFactory"
       provides="bika.lims.interfaces.IDisplayListVocabulary"
       for="bika.lims.interfaces.IClient"

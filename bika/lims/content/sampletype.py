@@ -86,6 +86,13 @@ schema = BikaSchema.copy() + Schema((
                             "selected, then all sample points are available."),
         ),
     ),
+    ComputedField(
+        'SamplePointTitle',
+        expression="[o.Title() for o in context.getSamplePoints()]",
+        widget = ComputedWidget(
+            visibile=False,
+        )
+    ),
 ))
 
 schema['description'].schemata = 'default'

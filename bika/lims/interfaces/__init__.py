@@ -25,12 +25,15 @@ class IBatchLabels(Interface):
 class IAnalysisRequest(Interface):
     """Analysis Request"""
 
+class IAnalysisRequestAddView(Interface):
+    """ AR Add view """
+
 class IAnalysisRequestsFolder(Interface):
     """AnalysisRequests Folder"""
 
 class IAnalysis(Interface):
     """Analysis"""
-    
+
 class IAnalysisSpec(Interface):
     """Analysis Specs"""
 
@@ -178,7 +181,23 @@ class IBikaCatalog(Interface):
 class IBikaSetupCatalog(Interface):
     ""
 
+
 class IDisplayListVocabulary(Interface):
-    "Return a DisplayList"
+    """Make vocabulary from catalog query.
+    Return a DisplayList.
+    kwargs are added to contentFilter.
+    """
+    def __call__(**kwargs):
+        """
+        """
+
+
+class IWidgetVisibility(Interface):
+    """Adapter to modify the default list of fields to show on each view.
+    Returns a dictionary, the keys are the keys of any field's "visibility"
+    property dicts found in the schema, and the values are field names.
+        """
+
     def __call__():
-        ""
+        """
+        """

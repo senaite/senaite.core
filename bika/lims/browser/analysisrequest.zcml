@@ -4,6 +4,20 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
 
+    <adapter
+      factory="bika.lims.browser.analysisrequest.ClientContactVocabularyFactory"
+      provides="bika.lims.interfaces.IDisplayListVocabulary"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="getContacts"
+    />
+
+    <adapter
+      factory="bika.lims.browser.analysisrequest.WidgetVisibility"
+      provides="bika.lims.interfaces.IWidgetVisibility"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="getWidgetVisibility"
+    />
+
     <!-- main site/analysisrequests view -->
     <browser:page
       for="bika.lims.interfaces.IAnalysisRequestsFolder"
@@ -81,6 +95,14 @@
     />
 
     <browser:page
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="published_results"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestPublishedResults"
+      permission="bika.lims.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
       for="*"
       name="analysisrequest_analysisservices"
       class="bika.lims.browser.analysisrequest.ajaxExpandCategory"
@@ -93,14 +115,6 @@
       name="analysisrequest_submit"
       class="bika.lims.browser.analysisrequest.ajaxAnalysisRequestSubmit"
       permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="*"
-      name="ar_select_sample"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestSelectSampleView"
-      permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

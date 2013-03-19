@@ -35,6 +35,13 @@ schema = BikaSchema.copy() + Schema((
             label = _("Sample Point"),
         ),
     ),
+    ComputedField(
+        "SamplePointUID",
+        expression="context.Schema()['SamplePoint'].get(context) and context.Schema()['SamplePoint'].get(context).UID() or ''",
+        widget=ComputedWidget(
+            visible=False,
+        ),
+    ),
     ReferenceField('SampleType',
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('SampleType',),
@@ -45,6 +52,13 @@ schema = BikaSchema.copy() + Schema((
         mutator = 'setSampleType',
         widget = StringWidget(
             label = _("Sample Type"),
+        ),
+    ),
+    ComputedField(
+        "SampleTypeUID",
+        expression="context.Schema()['SampleType'].get(context) and context.Schema()['SampleType'].get(context).UID() or ''",
+        widget=ComputedWidget(
+            visible=False,
         ),
     ),
     BooleanField('ReportDryMatter',

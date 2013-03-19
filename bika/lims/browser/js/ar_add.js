@@ -1,5 +1,171 @@
 (function( $ ) {
 
+// Configure the widgets that archetypes built:
+// set id and name to ar-col-fieldName fornats
+// un-set the readonly attribute on the fields (so that we can search).
+function ar_rename_elements(){
+	elements = $('td[ar_add_column_widget]').find('input[type!=hidden]').not('[disabled]');
+	for (var i = elements.length - 1; i >= 0; i--) {
+		e = elements[i];
+		column = $($(e).parents('td')).attr('column');
+		// not :ignore_empty, widgets each get submitted to their own form handlers
+		$(e).attr('name', 'ar.'+column+'.'+$(e).attr('name')+":record");
+		e.id = 'ar_'+column+'_'+e.id;
+		$(e).removeAttr('required');
+	};
+	elements = $('td[ar_add_column_widget]').find('input[type=hidden]');
+	for (var i = elements.length - 1; i >= 0; i--) {
+		e = elements[i];
+		column = $($(e).parents('td')).attr('column');
+		e.id = 'ar_'+column+'_'+e.id;
+		// not :ignore_empty, widgets each get submitted to their own form handlers
+		$(e).attr('name', 'ar.'+column+'.'+$(e).attr('name')+":record");
+	};
+}
+
+// we do the referencewidget_lookups differently to the widget default.
+// We also include a bunch of ar_add specific on-change stuff, since the
+// popup widget takes over the .change event completely.
+function ar_referencewidget_lookups(elements){
+	_ = jarn.i18n.MessageFactory('bika');
+	PMF = jarn.i18n.MessageFactory('plone');
+    if(elements == undefined){
+        var inputs = $("input.referencewidget").not('.has_combogrid_widget');
+    } else {
+        var inputs = elements;
+    }
+    for (var i = inputs.length - 1; i >= 0; i--) {
+        var element = inputs[i];
+        var options = $.parseJSON($(element).attr('combogrid_options'));
+        if(options == '' || options == undefined || options == null){
+            continue;
+        }
+        options.select = function(event, ui){
+            event.preventDefault();
+
+            // Set form valuesvalue in activated element (must exist in colModel!)
+			var column = this.id.split("_")[1]; //"ar.0.fieldName"
+            var fieldName = $(this).attr('name').split(".")[2];
+            $(this).val(ui.item[$(this).attr('ui_item')]);
+            $(this).attr('uid', ui.item['UID']);
+
+            // split out the :ignore_empty:etc
+            var bits = fieldName.split(':');
+            $('input[name*=ar\\.'+column+'\\.'+bits[0]+'_uid]').val(ui.item['UID']);
+
+			// samplepoint <> sampletype relations
+			if(this.id.split('_')[2] == 'SampleType'){
+				element = $('#ar_'+column+'_SamplePoint');
+				element
+					.removeClass( "cg-autocomplete-input" )
+					.removeAttr( "autocomplete" )
+					.removeAttr( "role" )
+					.removeAttr( "aria-autocomplete" )
+					.removeAttr( "aria-haspopup" );
+				new_element = $(element[0]).clone();
+				parent = $(element).parent();
+				$(element).remove();
+				$(parent).append(new_element);
+				element = $('#ar_'+column+'_SamplePoint');
+		        // cut kwargs into the base_query
+		        base_query = $(element).attr('base_query');
+		    	base_query = $.parseJSON(base_query);
+		    	base_query = $.toJSON(base_query);
+			    search_query = {'getSampleTypeTitle': ui.item[$(this).attr('ui_item')]};
+		    	search_query = $.toJSON(search_query);
+		    	element.attr('search_query', search_query);
+				ar_referencewidget_lookups(element);
+			}
+			if(this.id.split('_')[2] == 'SamplePoint'){
+				element = $('#ar_'+column+'_SampleType');
+				element
+					.removeClass( "cg-autocomplete-input" )
+					.removeAttr( "autocomplete" )
+					.removeAttr( "role" )
+					.removeAttr( "aria-autocomplete" )
+					.removeAttr( "aria-haspopup" );
+				new_element = $(element[0]).clone();
+				parent = $(element).parent();
+				$(element).remove();
+				$(parent).append(new_element);
+				element = $('#ar_'+column+'_SampleType');
+		        // cut kwargs into the base_query
+		        base_query = $(element).attr('base_query');
+		    	base_query = $.parseJSON(base_query);
+		    	base_query = $.toJSON(base_query);
+			    search_query = {'getSamplePointTitle': ui.item[$(this).attr('ui_item')]};
+		    	search_query = $.toJSON(search_query);
+		    	element.attr('search_query', search_query);
+				ar_referencewidget_lookups(element);
+			}
+
+			// Selected a Profile
+		    if(this.id.split('_')[2] == 'Profile'){
+				unsetTemplate(column);
+				setAnalysisProfile(column, $(this).val());
+				calculate_parts(column);
+			}
+
+			// Selected a Template
+		    if(this.id.split('_')[2] == 'Template'){
+		    	setTemplate(column, $(this).val());
+		    }
+
+			// $("input[id*=_Template]").change(setTemplate);
+			// 	var curDate = new Date();
+			// 	var y = curDate.getFullYear();
+			// 	var limitString = '1900:' + y;
+			// 	var dateFormat = _("date_format_short_datepicker");
+			// 	column = $(this).attr('column');
+			// 	$("#ar_"+column+"_SampleID_button").val($("#ar_"+column+"_SampleID_default").val());
+			// 	$("#ar_"+column+"_SampleID").val('');
+			// 	$("#ar_"+column+"_ClientReference").val('').removeAttr("readonly");
+			// 	$("#ar_"+column+"_SamplingDate")
+			// 		.datepicker({
+			// 			showOn:'focus',
+			// 			showAnim:'',
+			// 			changeMonth:true,
+			// 			changeYear:true,
+			// 			dateFormat: dateFormat,
+			// 			yearRange: limitString
+			// 		})
+			// 		.click(function(){$(this).attr('value', '');})
+			// 		.attr('value', '');
+			// 	$("#ar_"+column+"_ClientSampleID").val('').removeAttr("readonly");
+			// 	$("#ar_"+column+"_SamplePoint").val('').removeAttr("readonly");
+			// 	$("#ar_"+column+"_SampleType").val('').removeAttr("readonly");
+			// 	$("#ar_"+column+"_SamplingDeviation").val('').removeAttr("disabled");
+			// 	$("#ar_"+column+"_Composite").attr('checked', false).removeAttr("disabled");
+			// 	$("#ar_"+column+"_AdHoc").attr('checked', false).removeAttr("disabled");
+			// 	$("#ar_"+column+"_DefaultContainerType").removeAttr("disabled");
+			// 	$("#deleteSampleButton_" + column).toggle(false);
+			// 	// uncheck and enable all visible service checkboxes
+			// 	$("input[id*='_"+column+"_']").filter(".cb").removeAttr('disabled').attr('checked', false);
+			// 	uncheck_partnrs(column);
+			// 	recalc_prices();
+
+			// Selected a SampleType
+		    if(this.id.split('_')[2] == 'SampleType'){
+				unsetTemplate(column);
+				unsetAnalysisProfile(column, $(this).val());
+				calculate_parts(column);
+		    }
+
+
+        }
+        if(window.location.href.search("ar_add") > -1){
+            options.url = window.location.href.split("/ar_add")[0] + "/" + options.url;
+        }
+        options.url = options.url + '?_authenticator=' + $('input[name="_authenticator"]').val();
+        options.url = options.url + '&catalog_name=' + $(element).attr('catalog_name');
+        options.url = options.url + '&base_query=' + $(element).attr('base_query');
+        options.url = options.url + '&search_query=' + $(element).attr('search_query');
+        $(element).combogrid(options);
+        $(element).addClass("has_combogrid_widget");
+        $(element).attr('search_query', '{}');
+    };
+};
+
 function recalc_prices(column){
 	if(column){
 		// recalculate just this column
@@ -58,7 +224,7 @@ function changeReportDryMatter(){
 		jQuery.ajaxSetup({async:false});
 		toggleCat(poc, cat, $(this).attr("column"), selectedservices=[uid], force_expand=true);
 		jQuery.ajaxSetup({async:true});
-		dryservice_cb = $("input[column="+$(this).attr("column")+"]:checkbox").filter("#"+uid);
+		dryservice_cb = $("input[column="+$(this).parents('td').attr("column")+"]:checkbox").filter("#"+uid);
 		$(dryservice_cb).attr("checked", true);
 		calcdependencies([$(dryservice_cb)], auto_yes = true);
 		calculate_parts(column);
@@ -66,55 +232,11 @@ function changeReportDryMatter(){
 	recalc_prices();
 }
 
-function deleteSampleButton(){
-
-	_ = jarn.i18n.MessageFactory('bika');
-	PMF = jarn.i18n.MessageFactory('plone');
-
-	var curDate = new Date();
-	var y = curDate.getFullYear();
-	var limitString = '1900:' + y;
-	var dateFormat = _("date_format_short_datepicker");
-
-	column = $(this).attr('column');
-	$("#ar_"+column+"_SampleID_button").val($("#ar_"+column+"_SampleID_default").val());
-	$("#ar_"+column+"_SampleID").val('');
-	$("#ar_"+column+"_ClientReference").val('').removeAttr("readonly");
-	$("#ar_"+column+"_SamplingDate")
-		.datepicker({
-			showOn:'focus',
-			showAnim:'',
-			changeMonth:true,
-			changeYear:true,
-			dateFormat: dateFormat,
-			yearRange: limitString
-		})
-		.click(function(){$(this).attr('value', '');})
-		.attr('value', '');
-	$("#ar_"+column+"_ClientSampleID").val('').removeAttr("readonly");
-	$("#ar_"+column+"_SamplePoint").val('').removeAttr("readonly");
-	$("#ar_"+column+"_SampleType").val('').removeAttr("readonly");
-	$("#ar_"+column+"_SamplingDeviation").val('').removeAttr("disabled");
-	$("#ar_"+column+"_Composite").attr('checked', false).removeAttr("disabled");
-	$("#ar_"+column+"_AdHoc").attr('checked', false).removeAttr("disabled");
-	$("#ar_"+column+"_DefaultContainerType").removeAttr("disabled");
-	$("#deleteSampleButton_" + column).toggle(false);
-	// uncheck and enable all visible service checkboxes
-	$("input[id*='_"+column+"_']").filter(".cb").removeAttr('disabled').attr('checked', false);
-	uncheck_partnrs(column);
-	recalc_prices();
-}
-
-function showSelectSample(){
-	column = this.id.split("_")[1];
-	window.open('ar_select_sample?column=' + column,
-		'ar_select_sample','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=550');
-}
 
 function showSelectCC(){
 	contact_uid = $('#primary_contact').val();
 	cc_uids = $('#cc_uids').attr('value');
-	url = window.location.href.split("?")[0].replace("/ar_add", "").replace("/analysisrequests","")
+	url = window.location.href.split("?")[0].split("/ar_add")[0].replace("/analysisrequests","")
 	window.open(url+'/ar_select_cc?hide_uids=' + contact_uid + '&selected_uids=' + cc_uids,
 		'ar_select_cc','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=550');
 }
@@ -129,40 +251,7 @@ function changePrimaryContact(){
 
 function copyButton(){
 	field_name = $(this).attr("name");
-	if ($(this).hasClass('ARTemplateCopyButton')){ // Template selector
-		first_val = $('#ar_0_ARTemplate').val();
-		for (col=1; col<parseInt($("#col_count").val()); col++) {
-			$("#ar_"+col+"_ARTemplate").val(first_val);
-		}
-		$("[id*=_ARTemplate]").change();
-	}
-	else if ($(this).hasClass('AnalysisProfileCopyButton')){ // Profile selector
-		first_val = $('#ar_0_AnalysisProfile').val();
-		for (col=1; col<parseInt($("#col_count").val()); col++) {
-			$("#ar_"+col+"_AnalysisProfile").val(first_val);
-		}
-		$("[id*=_AnalysisProfile]").change();
-	}
-	else if ($(this).hasClass('SampleTypeCopyButton')){ // SampleType - Must set partitions on copy
-		first_val = $('#ar_0_SampleType').val();
-		for (col=1; col<parseInt($("#col_count").val()); col++) {
-			$("#ar_"+col+"_SampleType").val(first_val);
-			$("#ar_"+col+"_SampleType").change();
-		}
-	}
-	else if ($(this).hasClass('SamplingDeviationCopyButton')){ // Sampling Deviation
-		first_val = $('#ar_0_SamplingDeviation').val();
-		for (col=1; col<parseInt($("#col_count").val()); col++) {
-			$("#ar_"+col+"_SamplingDeviation").val(first_val);
-		}
-	}
-	else if ($(this).hasClass('DefaultContainerTypeCopyButton')){ // Default Container Type
-		first_val = $('#ar_0_DefaultContainerType').val();
-		for (col=1; col<parseInt($("#col_count").val()); col++) {
-			$("#ar_"+col+"_DefaultContainerType").val(first_val);
-		}
-	}
-	else if ($(this).parent().attr('class') == 'service'){ // Analysis Service checkbox
+	if ($(this).parent().attr('class') == 'service'){ // Analysis Service checkbox
 		first_val = $('input[column="0"]').filter('#'+this.id).attr("checked");
 		affected_elements = [];
 		// 0 is the first column; we only want to change cols 1 onward.
@@ -247,7 +336,9 @@ function toggleCat(poc, category_uid, column, selectedservices,
 			'col_count': $("#col_count").attr('value'),
 			'poc': poc
 		};
-		$(tbody).load("analysisrequest_analysisservices", options,
+        // possibly remove the fake ar context
+        var url = window.location.href.split("/ar_add")[0] + "/analysisrequest_analysisservices";
+		$(tbody).load(url, options,
 			function(){
 				// analysis service checkboxes
 				$('input[name*="Analyses"]').unbind();
@@ -461,8 +552,8 @@ function calculate_parts(column){
 
 //	console.log("===================================");
 
-	// ARTemplate columns are not calculated
-	if ($("#ar_"+column+"_ARTemplate").val() != ''){
+	// Template columns are not calculated
+	if ($("#ar_"+column+"_Template").val() != ''){
 		return;
 	}
 
@@ -546,15 +637,15 @@ function uncheck_partnrs(column){
 	}
 }
 
-function unsetARTemplate(column){
-	if($("#ar_"+column+"_ARTemplate").val() != ""){
-		$("#ar_"+column+"_ARTemplate").val("");
+function unsetTemplate(column){
+	if($("#ar_"+column+"_Template").val() != ""){
+		$("#ar_"+column+"_Template").val("");
 	}
 }
 
 function unsetAnalysisProfile(column){
-	if($("#ar_"+column+"_AnalysisProfile").val() != ""){
-		$("#ar_"+column+"_AnalysisProfile").val("");
+	if($("#ar_"+column+"_Profile").val() != ""){
+		$("#ar_"+column+"_Profile").val("");
 	}
 }
 
@@ -566,10 +657,33 @@ function unsetAnalyses(column){
 	});
 }
 
+function resolve_uid(catalog, query){
+	var UID = '';
+	query = $.toJSON(query);
+	jQuery.ajaxSetup({async:false});
+	$.get(window.location.href.split("/ar_add")[0] + '/referencewidget_search?',
+		{'_authenticator': $('input[name="_authenticator"]').val(),
+	     'base_query': query,
+	     'catalog_name': catalog,
+	     'searchTerm':'',
+	     'page':1,
+	     'rows':10,
+	     'sidx':'',
+	     'sord':''
+	    },
+		function(data){
+			UID = data['rows'][0]['UID'];
+		},
+		dataType='json'
+	);
+	jQuery.ajaxSetup({async:true});
+	return UID;
+}
 
-function setARTemplate(){
-	templateUID = $(this).val();
-	column = $(this).attr("column");
+function setTemplate(column,template_title){
+	var templateUID = resolve_uid('bika_setup_catalog',
+		                          {'portal_type': 'ARTemplate',
+	                               'title': template_title});
 	if(templateUID == "") return;
 
 	template_data = $.parseJSON($("#template_data").val())[templateUID];
@@ -581,13 +695,21 @@ function setARTemplate(){
 	// set our template fields
 	// SampleType and SamplePoint are strings - the item's Title.
 	unsetAnalyses(column);
-	st = template_data['SampleType'];
-	$('#ar_'+column+'_SampleType').val(st);
-	sp = template_data['SamplePoint'];
-	$('#ar_'+column+'_SamplePoint').val(sp);
+
+	st_title = template_data['SampleType'];
+	st_uid = template_data['SampleType_uid'];
+	sp_title = template_data['SamplePoint'];
+	sp_uid = template_data['SamplePoint_uid'];
+	$('#ar_'+column+'_SampleType').val(st_title);
+	$('#ar_'+column+'_SampleType_uid').val(st_uid);
+	$('#ar_'+column+'_SamplePoint').val(sp_title);
+	$('#ar_'+column+'_SamplePoint_uid').val(sp_uid);
+
 	dm = template_data['ReportDryMatter'];
 	$('#ar_'+column+'_ReportDryMatter').attr('checked', dm);
-	$('#ar_'+column+'_AnalysisProfile').val(template_data['AnalysisProfile']);
+
+	$('#ar_'+column+'_Profile').val(template_data['Profile']);
+	$('#ar_'+column+'_Profile_uid').val(template_data['Profile_uid']);
 
 	// Apply Template analyses/parts
 	parts = []; // #parts[column] will contain this dictionary
@@ -657,8 +779,10 @@ function setARTemplate(){
 	recalc_prices(column);
 }
 
-function setAnalysisProfile(column){
-	profileUID = $("#ar_"+column+"_AnalysisProfile").val();
+function setAnalysisProfile(column, profile_title){
+	var profileUID = resolve_uid('bika_setup_catalog',
+		                          {'portal_type': 'AnalysisProfile',
+	                               'title': profile_title});
 	if(profileUID == "") return;
 	unsetAnalyses(column);
 
@@ -691,7 +815,7 @@ function service_checkbox_change(){
 	var column = $(this).attr("column");
 	var element = $(this);
 	unsetAnalysisProfile(column);
-	unsetARTemplate(column);
+	unsetTemplate(column);
 
 	// Unselecting Dry Matter Service unsets 'Report Dry Matter'
 	if ($(this).val() == $("#getDryMatterService").val()
@@ -710,136 +834,6 @@ function service_checkbox_change(){
 	calculate_parts(column);
 };
 
-function setupAutoCompleters(){
-	//Sample Type and SamplePoint autocompleters are strange things.
-
-	// .change() is triggered when the dropdown is rendered, and also when
-	//           an item from the dropdown is selected.
-	// .focus() is used to set window._ac_focus to 'this', for passing
-	//          extra ajax values in $.autocomplete 'success' handler.
-
-	// $.autocomplete must be called on each individual element in ar_add.
-	for (col=0; col<parseInt($("#col_count").val()); col++) {
-
-		$("#ar_"+col+"_SamplePoint").autocomplete({
-			minLength: 0,
-			source: function(request,callback){
-				$.getJSON('ajax_samplepoints',
-					{'term':request.term,
-					 'sampletype':$("#ar_"+window._ac_focus.id.split("_")[1]+"_SampleType").val(),
-					 '_authenticator': $('input[name="_authenticator"]').val()},
-					function(data,textStatus){
-						callback(data);
-					}
-				);
-			}
-		});
-		$("#ar_"+col+"_SampleType").autocomplete({
-			minLength: 0,
-			source: function(request,callback){
-				$.getJSON('ajax_sampletypes',
-					{'term':request.term,
-					 'samplepoint':$("#ar_"+window._ac_focus.id.split("_")[1]+"_SamplePoint").val(),
-					 '_authenticator': $('input[name="_authenticator"]').val()},
-					function(data,textStatus){
-						callback(data);
-					}
-				);
-			}
-		});
-	}
-
-	function set_st(e){
-		col = e.id.split("_")[1];
-		st_uids = window.bika_utils.data.st_uids;
-		match = false;
-		$.each(st_uids, function(title, obj){
-			if (match != false) { return; }
-			if (title.toLowerCase() == $(e).val().toLowerCase()){
-				$(e).val(title);
-				unsetARTemplate(col);
-				calculate_parts(col);
-				st = window.bika_utils.data.st_uids[title];
-				if (st['samplepoints'].length == 1) {
-					$("#ar_"+col+"_SamplePoint").val(st['samplepoints'][0]);
-				}
-				ct = st['containertype'];
-				disabled = $(e).attr('disabled');
-				if (ct != undefined && ct != null
-				    && (disabled == null || disabled == undefined)) {
-					$("#ar_"+col+"_DefaultContainerType").val(ct);
-				}
-				match = true;
-			}
-		});
-	}
-
-	function set_sp(e){
-		col = e.id.split("_")[1];
-		sp_uids = window.bika_utils.data.sp_uids;
-		match = false;
-		$.each(sp_uids, function(title, obj){
-			if (match != false) { return; }
-			if (title.toLowerCase() == $(e).val().toLowerCase()){
-				$(e).val(title);
-				unsetARTemplate(col);
-				sp = window.bika_utils.data.sp_uids[title];
-				if (sp['sampletypes'].length == 1) {
-					$("#ar_"+col+"_SampleType").val(sp['sampletypes'][0]);
-					calculate_parts(col);
-				}
-				$("#ar_"+col+"_Composite").attr("checked", sp['composite']);
-				match = true;
-			}
-		});
-	}
-
-	$(".sampletype").focus(function(){
-		//console.log('st focus ' + $(this).val());
-		window._ac_focus = this;
-	});
-	// also set on .change() though because sometimes we set these manually.
-	$(".sampletype").change( function(){
-		//console.log('st change ' + $(this).val());
-		column = this.id.split("_")[1];
-		st_title = $("#ar_"+column+"_SampleType").val();
-		st_uid = window.bika_utils.data.st_uids[st_title];
-		if (st_uid != undefined && st_uid != null){
-			set_st(this);
-		} else {
-			uncheck_partnrs(column);
-			$(this).val('');
-			return;
-		}
-	});
-  	$(".sampletype").blur(function(){
-		//console.log('st blur ' + $(this).val());
-		column = this.id.split("_")[1];
-		st_title = $("#ar_"+column+"_SampleType").val();
-		st_uid = window.bika_utils.data.st_uids[st_title];
-		if (st_uid != undefined && st_uid != null){
-			set_st(this);
-		} else {
-			uncheck_partnrs(column);
-			$(this).val('');
-			return;
-		}
-	});
-
-	$(".samplepoint").focus(function(){
-		//console.log('sp focus ' + $(this).val());
-		window._ac_focus = this;
-	});
-	$(".samplepoint").change(function(){
-		//console.log('sp change ' + $(this).val());
-		set_sp(this);
-	});
-	$(".samplepoint").blur(function(){
-		//console.log('sp blur ' + $(this).val());
-		set_sp(this);
-	});
-
-}
 
 function clickAnalysisCategory(){
 	toggleCat($(this).attr("poc"), $(this).attr("cat")); // cat is a category uid
@@ -861,6 +855,9 @@ $(document).ready(function(){
 	var y = curDate.getFullYear();
 	var limitString = '1900:' + y;
 	var dateFormat = _("date_format_short_datepicker");
+
+	ar_rename_elements();
+	ar_referencewidget_lookups();
 
 	// Sampling Date field is readonly to prevent invalid data entry, so
 	// clicking SamplingDate field clears existing values.
@@ -891,13 +888,15 @@ $(document).ready(function(){
 		}
 	}
 
-	setupAutoCompleters();
+	$("input[id*=_Template]").live('change', function(){
+		column = this.id.split('_')[1];
+		unsetAnalysisProfile(column);
+		setTemplate(column, $(this).val());
+	});
 
-	$("select[class='ARTemplate']").change(setARTemplate);
-
-	$("select[class='AnalysisProfile']").change(function(){
+	$("input[id*=_Profile").live('change', function(){
 		column = $(this).attr("column");
-		unsetARTemplate(column);
+		unsetTemplate(column,$(this).val());
 		setAnalysisProfile(column);
 		calculate_parts(column);
 	});
@@ -911,11 +910,8 @@ $(document).ready(function(){
 	$("input[name^='Price']").live('change', recalc_prices );
 
 	$('#open_cc_browser').click(showSelectCC);
-	$('input[id$="_SampleID_button"]').click(showSelectSample);
 
-	$(".deleteSampleButton").click(deleteSampleButton);
-
-	$(".ReportDryMatter").change(changeReportDryMatter);
+	$("input[id*=_ReportDryMatter]").change(changeReportDryMatter);
 
     // AR Add/Edit ajax form submits
 	ar_edit_form = $('#analysisrequest_edit_form');
@@ -923,8 +919,8 @@ $(document).ready(function(){
 		var options = {
 			url: window.location.href
 				.split("?")[0]
-				.replace("/ar_add","")
-				.replace("/base_edit","")
+				.split("/ar_add")[0]
+				.split("/base_edit")[0]
 				.replace("analysisrequests", "") + "/analysisrequest_submit",
 			dataType: 'json',
 			data: {'_authenticator': $('input[name="_authenticator"]').val()},
@@ -947,7 +943,7 @@ $(document).ready(function(){
 					} else {
 						destination = window.location.href
 							.split("?")[0]
-							.replace("/ar_add","")
+							.split("/ar_add")[0]
 							.replace("/analysisrequests","")
 							.replace("/base_edit", "/base_view");
 						window.location.replace(destination);

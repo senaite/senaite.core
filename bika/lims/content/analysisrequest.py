@@ -4,7 +4,7 @@ from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import delete_objects
 from DateTime import DateTime
 from Products.ATContentTypes.content import schemata
-from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
+from Products.ATExtensions.ateapi import DateTimeField
 from Products.ATExtensions.widget.records import RecordsWidget
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -15,14 +15,17 @@ from Products.CMFCore import permissions
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone import PloneMessageFactory as _p
 from Products.CMFPlone.utils import transaction_note
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims.browser.fields import ARAnalysesField
+from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.config import PROJECTNAME, \
     ManageInvoices
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.utils import sortable_title
+from bika.lims.browser.widgets import ReferenceWidget
 from decimal import Decimal
 from email.Utils import formataddr
 from types import ListType, TupleType
@@ -41,29 +44,18 @@ except:
 
 
 schema = BikaSchema.copy() + Schema((
-    StringField('RequestID',
+    StringField(
+        'RequestID',
         required=1,
         searchable=True,
         widget=StringWidget(
             label=_('Request ID'),
             description=_("The ID assigned to the client's request by the lab"),
-            visible={'edit':'hidden'},
+            visible={'edit': 'invisible', 'view': 'visible', 'add': 'invisible'},
         ),
     ),
-    ReferenceField('Batch',
-        allowed_types=('Batch',),
-        relationship='AnalysisRequestBatch',
-        widget=StringWidget(
-            visible=False,
-        )
-    ),
-    ComputedField('BatchUID',
-        expression='context.getBatch() and context.getBatch().UID() or None',
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
-    ReferenceField('Contact',
+    ReferenceField(
+        'Contact',
         required=1,
         vocabulary='getContacts',
         default_method='getContactUIDForUser',
@@ -71,30 +63,17 @@ schema = BikaSchema.copy() + Schema((
         allowed_types=('Contact',),
         referenceClass=HoldingReference,
         relationship='AnalysisRequestContact',
-    ),
-    ReferenceField('Sample',
-        required=1,
-        vocabulary_display_path_bound=sys.maxint,
-        allowed_types=('Sample',),
-        referenceClass=HoldingReference,
-        relationship='AnalysisRequestSample',
-    ),
-    ARAnalysesField('Analyses',
-        required=1,
-    ),
-    StringField('ClientOrderNumber',
-        searchable=True,
-        widget=StringWidget(
-            label=_('Client Order'),
+        widget=ReferenceWidget(
+            label=_("Contact"),
+            # we let this one alone, template does it separately.
+            visible={'edit': 'invisible', 'view': 'invisible', 'add': 'invisible'},
+            catalog_name='bika_catalog',
+            base_query={'inactive_state': 'active'},
+            showOn=True,
         ),
     ),
-    ReferenceField('Attachment',
-        multiValued=1,
-        allowed_types=('Attachment',),
-        referenceClass=HoldingReference,
-        relationship='AnalysisRequestAttachment',
-    ),
-    ReferenceField('CCContact',
+    ReferenceField(
+        'CCContact',
         multiValued=1,
         vocabulary='getContacts',
         vocabulary_display_path_bound=sys.maxint,
@@ -102,54 +81,270 @@ schema = BikaSchema.copy() + Schema((
         referenceClass=HoldingReference,
         relationship='AnalysisRequestCCContact',
     ),
-    StringField('CCEmails',
+    StringField(
+        'CCEmails',
         widget=StringWidget(
             label=_('CC Emails')
         ),
     ),
-    ReferenceField('Invoice',
+    ReferenceField(
+        'Client',
+        required=1,
+        allowed_types=('Client',),
+        relationship='AnalysisRequestClient',
+        widget=ReferenceWidget(
+            label=_("Client"),
+            size=12,
+            render_own_label=True,
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+            base_query={'inactive_state': 'active'},
+            showOn=True,
+        ),
+    ),
+    ReferenceField(
+        'Batch',
+        allowed_types=('Batch',),
+        relationship='AnalysisRequestBatch',
+        widget=ReferenceWidget(
+            label=_("Batch"),
+            size=12,
+            render_own_label=True,
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+            catalog_name='bika_catalog',
+            base_query={'review_state': 'open',
+                        'cancelled_state': 'active'},
+            showOn=True,
+        ),
+    ),
+    ComputedField(
+        'BatchUID',
+        expression='context.getBatch() and context.getBatch().UID() or None',
+        widget=ComputedWidget(
+            visible=False,
+        ),
+    ),
+    ReferenceField(
+        'Template',
+        allowed_types=('ARTemplate',),
+        referenceClass=HoldingReference,
+        relationship='AnalysisRequestARTemplate',
+        widget=ReferenceWidget(
+            label=_("Template"),
+            size=12,
+            render_own_label=True,
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
+            showOn=True,
+        ),
+    ),
+    ReferenceField(
+        'Profile',
+        allowed_types=('AnalysisProfile',),
+        referenceClass=HoldingReference,
+        relationship='AnalysisRequestAnalysisProfile',
+        widget=ReferenceWidget(
+            label=_("Profile"),
+            size=12,
+            render_own_label=True,
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
+            showOn=True,
+        ),
+    ),
+    ReferenceField(
+        'Sample',
+        vocabulary_display_path_bound=sys.maxint,
+        allowed_types=('Sample',),
+        referenceClass=HoldingReference,
+        relationship='AnalysisRequestSample',
+        widget=ReferenceWidget(
+            label=_("Sample"),
+            description=_(""),
+            size=12,
+            render_own_label=True,
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+            catalog_name='bika_catalog',
+            base_query={'cancelled_state': 'active'},
+            showOn=True,
+        ),
+    ),
+    # SamplingDate is set by the sample
+    # It's listed here so that it can be accessed from ar add.
+    DateTimeField(
+        'SamplingDate',
+        required=1,
+        widget = DateTimeWidget(
+            label=_("Sampling Date"),
+            size=12,
+            render_own_label=True,
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+        ),
+    ),
+    # A sample field, listed here so that it can be accessed from ar add.
+    ReferenceField(
+        'SampleType',
+        required=1,
+        allowed_types='SampleType',
+        relationship='AnalysisRequestSampleType',
+        widget=ReferenceWidget(
+            label=_("Sample Type"),
+            size=12,
+            render_own_label=True,
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
+            showOn=True,
+        ),
+    ),
+    # A sample field, listed here so that it can be accessed from ar add.
+    ReferenceField(
+        'SamplePoint',
+        allowed_types='SamplePoint',
+        relationship='AnalysisRequestSamplePoint',
+        widget=ReferenceWidget(
+            label=_("Sample Point"),
+            size=12,
+            render_own_label=True,
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
+            showOn=True,
+        ),
+    ),
+    StringField(
+        'ClientOrderNumber',
+        searchable=True,
+        widget=StringWidget(
+            label=_('Client Order'),
+            size=12,
+            render_own_label=True,
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+        ),
+    ),
+    # A sample field, listed here so that it can be accessed from ar add.
+    StringField(
+        'ClientReference',
+        searchable=True,
+        widget=StringWidget(
+            label=_('Client Reference'),
+            size=12,
+            render_own_label=True,
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+        ),
+    ),
+    # A sample field, listed here so that it can be accessed from ar add.
+    StringField(
+        'ClientSampleID',
+        searchable=True,
+        widget=StringWidget(
+            label=_('Client Sample ID'),
+            size=12,
+            render_own_label=True,
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+        ),
+    ),
+    ReferenceField('SamplingDeviation',
+        allowed_types = ('SamplingDeviation',),
+        relationship = 'AnalysisRequestSamplingDeviation',
+        referenceClass = HoldingReference,
+        widget=ReferenceWidget(
+            label = _('Sampling Deviation'),
+            size=12,
+            render_own_label=True,
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
+            showOn=True,
+        ),
+    ),
+    ReferenceField('DefaultContainerType',
+        allowed_types = ('ContainerType',),
+        relationship = 'AnalysisRequestContainerType',
+        referenceClass = HoldingReference,
+        widget=ReferenceWidget(
+            label = _('Default Container'),
+            size=12,
+            render_own_label=True,
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
+            showOn=True,
+        ),
+    ),
+    # A sample field, listed here so that it can be accessed from ar add.
+    BooleanField('AdHoc',
+        default=False,
+        widget=BooleanWidget(
+            label=_("Ad-Hoc"),
+            render_own_label=True,
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+        ),
+    ),
+    # A sample field, listed here so that it can be accessed from ar add.
+    BooleanField('Composite',
+        default=False,
+        widget=BooleanWidget(
+            label=_("Composite"),
+            render_own_label=True,
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+        ),
+    ),
+    BooleanField(
+        'ReportDryMatter',
+        default=False,
+        widget=BooleanWidget(
+            label=_('Report as Dry Matter'),
+            render_own_label=True,
+            description=_('This result can be reported as dry matter'),
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+        ),
+    ),
+    BooleanField(
+        'InvoiceExclude',
+        default=False,
+        widget=BooleanWidget(
+            label=_('Invoice Exclude'),
+            description=_('Select if analyses to be excluded from invoice'),
+            render_own_label=True,
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+        ),
+    ),
+    ARAnalysesField(
+        'Analyses',
+        required=1,
+    ),
+    ReferenceField(
+        'Attachment',
+        multiValued=1,
+        allowed_types=('Attachment',),
+        referenceClass=HoldingReference,
+        relationship='AnalysisRequestAttachment',
+    ),
+    ReferenceField(
+        'Invoice',
         vocabulary_display_path_bound=sys.maxint,
         allowed_types=('Invoice',),
         referenceClass=HoldingReference,
         relationship='AnalysisRequestInvoice',
     ),
-    ReferenceField('Profile',
-        allowed_types=('AnalysisProfile',),
-        referenceClass=HoldingReference,
-        relationship='AnalysisRequestAnalysisProfile',
-    ),
-    ReferenceField('Template',
-        allowed_types=('ARTemplate',),
-        referenceClass=HoldingReference,
-        relationship='AnalysisRequestARTemplate',
-    ),
-    BooleanField('InvoiceExclude',
-        default=False,
-        widget=BooleanWidget(
-            label=_('Invoice Exclude'),
-            description=_('Select if analyses to be excluded from invoice'),
-        ),
-    ),
-    BooleanField('ReportDryMatter',
-        default=False,
-        widget=BooleanWidget(
-            label=_('Report as Dry Matter'),
-            description=_('This result can be reported as dry matter'),
-        ),
-    ),
-    DateTimeField('DateReceived',
+    DateTimeField(
+        'DateReceived',
         widget=DateTimeWidget(
             label=_('Date Received'),
-            visible={'edit':'hidden'},
+            visible={'edit': 'invisible', 'view': 'visible', 'add': 'invisible'},
         ),
     ),
-    DateTimeField('DatePublished',
+    DateTimeField(
+        'DatePublished',
         widget=DateTimeWidget(
             label=_('Date Published'),
-            visible={'edit':'hidden'},
+            visible={'edit': 'invisible', 'view': 'visible', 'add': 'invisible'},
         ),
     ),
-    TextField('Remarks',
+    TextField(
+        'Remarks',
         searchable=True,
         default_content_type='text/x-web-intelligent',
         allowable_content_types=('text/x-web-intelligent',),
@@ -160,73 +355,61 @@ schema = BikaSchema.copy() + Schema((
             append_only=True,
         ),
     ),
-    FixedPointField('MemberDiscount',
+    FixedPointField(
+        'MemberDiscount',
         default_method='getDefaultMemberDiscount',
         widget=DecimalWidget(
             label=_('Member discount %'),
             description=_('Enter percentage value eg. 33.0'),
         ),
     ),
-    ComputedField('ClientUID',
+    ComputedField(
+        'ClientUID',
         searchable=True,
         expression='here.aq_parent.UID()',
         widget=ComputedWidget(
             visible=False,
         ),
     ),
-    ComputedField('ClientReference',
-        searchable=True,
-        expression='here.getSample() and here.getSample().getClientReference()' ,
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
-    ComputedField('SamplingDate',
-        expression='here.getSample() and here.getSample().getSamplingDate() or ""',
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
-    ComputedField('ClientSampleID',
-        searchable=True,
-        expression='here.getSample() and here.getSample().getClientSampleID()',
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
-    ComputedField('SampleTypeTitle',
+    ComputedField(
+        'SampleTypeTitle',
         searchable=True,
         expression="here.getSample() and here.getSample().getSampleType() and here.getSample().getSampleType().Title() or ''",
         widget=ComputedWidget(
             visible=False,
         ),
     ),
-    ComputedField('SamplePointTitle',
+    ComputedField(
+        'SamplePointTitle',
         searchable=True,
         expression="here.getSample() and here.getSample().getSamplePoint() and here.getSample().getSamplePoint().Title() or ''",
         widget=ComputedWidget(
             visible=False,
         ),
     ),
-    ComputedField('SampleUID',
+    ComputedField(
+        'SampleUID',
         expression='here.getSample() and here.getSample().UID()',
         widget=ComputedWidget(
             visible=False,
         ),
     ),
-    ComputedField('ContactUID',
+    ComputedField(
+        'ContactUID',
         expression='here.getContact() and here.getContact().UID()',
         widget=ComputedWidget(
             visible=False,
         ),
     ),
-    ComputedField('ProfileUID',
+    ComputedField(
+        'ProfileUID',
         expression='here.getProfile( and here.getProfile().UID()',
         widget=ComputedWidget(
             visible=False,
         ),
     ),
-    ComputedField('Invoiced',
+    ComputedField(
+        'Invoiced',
         expression='here.getInvoice() and True or False',
         default=False,
         widget=ComputedWidget(
@@ -262,6 +445,10 @@ class AnalysisRequest(BaseFolder):
         descr = " ".join((self.getRequestID(), self.aq_parent.Title()))
         return safe_unicode(descr).encode('utf-8')
 
+    def getClient(self):
+        if self.aq_parent.portal_type == 'Client':
+            return self.aq_parent
+
     def getDefaultMemberDiscount(self):
         """ compute default member discount if it applies """
         if hasattr(self, 'getMemberDiscountApplies'):
@@ -271,6 +458,10 @@ class AnalysisRequest(BaseFolder):
                 return settings.getMemberDiscount()
             else:
                 return "0.00"
+
+    def setSamplingDate(self, value, **kw):
+        # The sample's mutator does for us.
+        return None
 
     security.declareProtected(View, 'getResponsible')
     def getResponsible(self):
@@ -546,8 +737,8 @@ class AnalysisRequest(BaseFolder):
         return DateTime()
 
     def getQCAnalyses(self, qctype=None):
-        """ return the QC analyses performed in the worksheet in which, at 
-            least, one sample of this AR is present. 
+        """ return the QC analyses performed in the worksheet in which, at
+            least, one sample of this AR is present.
             Depending on qctype value, returns the analyses of:
             - 'b': all Blank Reference Samples used in related worksheet/s
             - 'c': all Control Reference Samples used in related worksheet/s

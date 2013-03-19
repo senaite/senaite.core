@@ -105,19 +105,17 @@ class ARAnalysesField(ObjectField):
             calc = service.getCalculation()
             interim_fields = calc and list(calc.getInterimFields()) or []
             # override defaults from service->InterimFields
+            service_interims = service.getInterimFields()
             sif = dict([[x['keyword'], x['value']]
-                        for x in service.getInterimFields()])
+                        for x in service_interims])
             for i, i_f in enumerate(interim_fields):
                 if i_f['keyword'] in sif:
                     interim_fields[i]['value'] = sif[i_f['keyword']]
-                for i, i_f in enumerate(interim_fields):
-                    if i_f['keyword'] in sif:
-                        interim_fields[i]['value'] = sif[i_f['keyword']]
-                        service_interims = [x for x in service_interims
-                                            if x['keyword'] != i_f['keyword']]
-                # Add remaining service interims to the analysis
-                for v in service_interims:
-                    interim_fields.append(v)
+                    service_interims = [x for x in service_interims
+                                        if x['keyword'] != i_f['keyword']]
+            # Add remaining service interims to the analysis
+            for v in service_interims:
+                interim_fields.append(v)
 
             # create the analysis if it doesn't exist
             if hasattr(instance, keyword):

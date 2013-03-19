@@ -10,6 +10,8 @@
         tal:define="portal context/@@plone_portal_state/portal;">
     <script type="text/javascript"
         tal:attributes="src python:portal.absolute_url() + '/++resource++bika.lims.js/ar_add.js'"></script>
+    <script type="text/javascript"
+        tal:attributes="src python:portal.absolute_url() + '/bika_widgets/datetimewidget.js'"></script>
     </metal:block>
 </head>
 
@@ -31,6 +33,7 @@
         currency python:context.bika_setup.getCurrency();
         checkPermission nocall: context/portal_membership/checkPermission;
         tabindex view/tabindex;
+        widget_visibility view/getWidgetVisibility;
         partitionable view/partitioned_services;">
 
 
@@ -108,7 +111,7 @@
                 <option
                     tal:define="value python:client_contacts.getValue(key);"
                     tal:attributes="
-                        value value;
+                        value key;
                         selected python:this_contact and key == this_contact
                             and 'selected' or '';"
                     tal:content="python:value">
@@ -144,554 +147,67 @@
         </td>
     </tr>
 
-
-    <!-- Client selector for contexts with resolvable client -->
-    <tal:got_client tal:condition="python:context.portal_type == 'Client' or hasattr(context, 'getClientID')"
-                    tal:repeat="column python:range(view.col_count)"
-                    tal:define="field_name string:ClientID">
-        <tal:block repeat="column python:range(view.col_count)">
-            <tal:define define="ClientID python:context.getClientID();
-                                ClientUID python:context.UID();
-                                input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                                input_id string:ar_${column}_${field_name};
-                                hidden_name string:ar.${column}.ClientUID:ignore_empty:record;
-                                hidden_id string:ar_${column}_ClientUID;">
-                <input
-                    type="hidden"
-                    tal:attributes="class field_name;
-                                    column column;
-                                    id input_id;
-                                    name input_name;
-                                    value ClientID"/>
-                <input
-                    type="hidden"
-                    tal:attributes="class field_name;
-                                    column column;
-                                    id hidden_id;
-                                    name hidden_name;
-                                    value ClientUID"/>
-            </tal:define>
-        </tal:block>
-    </tal:got_client>
-    <tal:got_no_client tal:condition="python:context.portal_type != 'Client'
-                                             and not hasattr(context, 'getClientID')"
-                       tal:define="field_name string:ClientID">
-        <!-- Client selector -->
-        <tr tal:define="field_name string:ClientID">
-            <th colspan="2" class="rowheader" style="white-space:nowrap">
-                <span i18n:translate="">Client</span>
-                &nbsp;<span class="fieldRequired">&nbsp;</span>
-            </th>
+    <!-- All edit fields with fields with add=visible -->
+    <tr tal:repeat="fieldName python:view.getWidgetVisibility().get('add').get('visible')">
+        <tal:def define="
+            field python:context.schema[fieldName];
+            field_macro here/widgets/field/macros/edit;
+            accessor python:field.getAccessor(context);
+            widget python:field.widget;
+            errors python:{};
+            mode string:edit;">
+            <th colspan="2" style="white-space:nowrap">
+                <label class="formQuestion">
+                <span tal:replace="python:widget.Label(here)"
+                      i18n:translate="" />
+                <span class="fieldRequired"
+                      tal:condition="field/required"
+                      title="Required"
+                      i18n:attributes="title title_required;">&nbsp;</span>
+                 <span class="formHelp"
+                     tal:define="description python:widget.Description(here)"
+                     tal:content="structure description"
+                     tal:attributes="id string:${fieldName}_help"
+                     i18n:translate="">Help </span>
+                </label>
+           </th>
             <td>
-                <img class="copyButton ClientIDCopyButton"
-                     tal:condition="python:view.col_count > 1"
-                     tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
+            <img tal:condition="python:view.col_count > 1"
+                 tal:attributes="name fieldName;
+                                 class string:copyButton ${fieldName}CopyButton;
+                                 src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
             </td>
-            <tal:block repeat="column python:range(view.col_count)">
-                <td class="topborder ar_column" style="padding-top:2px;"
-                    tal:define="
-                        input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                        input_id string:ar_${column}_${field_name};
-                        hidden_name string:ar.${column}.ClientUID:ignore_empty:record;
-                        hidden_id string:ar_${column}_ClientUID;">
-                <div style="width:100px; border:none;text-align:left;padding-left:2px;">
-                <input tal:attributes="
-                    class field_name;
-                    column column;
-                    id input_id;
-                    name input_name;"
-                    style="width:96px; position:absolute; z-index:+1;"/>
-                <input type="hidden" tal:attributes="
-                    column column;
-                    id hidden_id;
-                    name hidden_name;"/>
-                </div>
+            <tal:columns tal:repeat="column python:range(view.col_count)">
+                <td tal:attributes="column column;
+                                    ar_add_column_widget string:1">
+
+                   <metal:field use-macro="python:context.widget(fieldName, mode='edit')"/>
+
+                    <tal:hidden_def
+                        tal:repeat="hiddenfieldName python:view.getWidgetVisibility().get('add').get('hidden')"
+                        tal:define="index repeat/fieldName/index">
+                            <!-- All hidden fields -->
+                            <input
+                                tal:condition="python:index==1"
+                                type="hidden"
+                                tal:define="val python:context.schema[hiddenfieldName].getAccessor(context)();"
+                                tal:attributes="
+                                    name string:${hiddenfieldName};
+                                    id string:${hiddenfieldName};
+                                    value val/Title|nothing;"/>
+                             <input
+                                tal:condition="python:index==1"
+                                type="hidden"
+                                tal:define="val python:context.schema[hiddenfieldName].getAccessor(context)();"
+                                tal:attributes="
+                                    name string:${hiddenfieldName}_uid;
+                                    id string:${hiddenfieldName}_uid;
+                                    value val/UID|nothing;"/>
+                    </tal:hidden_def>
+
                 </td>
-            </tal:block>
-        </tr>
-    </tal:got_no_client>
-
-    <!-- Batch selector -->
-    <tal:batch_context
-        tal:condition="python:context.portal_type == 'Batch'"
-        tal:repeat="column python:range(view.col_count)"
-        tal:define="field_name string:BatchID">
-        <tal:x
-            tal:define="
-                input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                input_id string:ar_${column}_${field_name};
-                hidden_name string:ar.${column}.BatchUID:ignore_empty:record;
-                hidden_id string:ar_${column}_BatchUID;">
-        <input
-            tal:attributes="value python:context.getBatchID(); column column; id input_id; name input_name;"
-            type="hidden"
-            style="width:96px; position:absolute; z-index:+1;"/>
-        <input
-            tal:attributes="value python:context.UID(); column column; id hidden_id; name hidden_name;"
-            type="hidden"
-            style="width:96px; position:absolute; z-index:+1;"/>
-        </tal:x>
-    </tal:batch_context>
-    <tr tal:condition="python:checkPermission('BIKA: Add Batch', portal.batches) and context.portal_type != 'Batch'"
-        tal:define="field_name string:BatchID">
-        <th colspan="2" style="white-space:nowrap">
-            <span i18n:translate="">Batch</span>
-<!-- #435
-            <a style="border-bottom:none !important;margin-left:1em;"
-               class='add_batch'
-               tal:condition="python:context.portal_type != 'Batch'"
-               tal:attributes="href string:${portal/absolute_url}/batches/portal_factory/Batch/new/edit"
-               rel="#overlay">
-               <img style="padding-bottom:2px;" tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/add.png"/>
-            </a>
- -->
-         </th>
-        <td>
-            <img class="copyButton BatchIDCopyButton"
-                 tal:condition="python:context.portal_type != 'Batch' and view.col_count > 1"
-                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
-        </td>
-        <tal:block repeat="column python:range(view.col_count)">
-            <td class="topborder ar_column" style="padding-top:2px;"
-            tal:define="
-                input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                input_id string:ar_${column}_${field_name};
-                hidden_name string:ar.${column}.BatchUID:ignore_empty:record;
-                hidden_id string:ar_${column}_BatchUID;">
-            <div style="width:100px; border:none;text-align:left;padding-left:2px;">
-            <input
-                tal:attributes="class field_name; column column; id input_id; name input_name;"
-                tal:condition="python:context.portal_type != 'Batch'"
-                style="width:96px; position:absolute; z-index:+1;"/>
-            </div>
-            </td>
-        </tal:block>
-    </tr>
-
-    <!-- AR Template (only visible and useable for AR-Add-->
-    <tr tal:define="field_name string:ARTemplate">
-        <th colspan="2" style="white-space:nowrap" i18n:translate="">Template</th>
-        <td>
-            <img class="copyButton ARTemplateCopyButton"
-                 tal:condition="python:view.col_count > 1"
-                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
-        </td>
-        <tal:block repeat="column python:range(view.col_count)">
-            <td class="topborder ar_column" style="padding-top:2px;"
-                tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                input_id string:ar_${column}_${field_name}">
-            <div style="width:100px; border:none;text-align:left;padding-left:2px;">
-            <select tal:attributes="
-                class field_name;
-                column column;
-                id input_id;
-                name input_name;"
-                style="width:96px; position:absolute; z-index:+1;"
-                onactivate="this.style.width='auto';"
-                onchange="this.blur();"
-                onblur="this.style.width='96px';">
-                <option value="" i18n:translate=""></option>
-                <tal:template repeat="template view/artemplates">
-                    <option
-                        tal:content="python:template[0]"
-                        tal:attributes="
-                            value python:template[1].UID();"></option>
-                </tal:template>
-            </select>
-            </div>
-            </td>
-        </tal:block>
-    </tr>
-    <!-- Analysis Profile (only visible and useable for AR-Add-->
-    <tr tal:define="field_name string:AnalysisProfile">
-        <th colspan="2" style="white-space:nowrap" i18n:translate="">Profile</th>
-        <td>
-            <img class="copyButton AnalysisProfileCopyButton"
-                 tal:condition="python:view.col_count > 1"
-                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
-        </td>
-        <tal:block repeat="column python:range(view.col_count)">
-            <td class="topborder ar_column" style="padding-top:2px;"
-                tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                input_id string:ar_${column}_${field_name}">
-            <div style="width:100px; border:none;text-align:left;padding-left:2px;">
-            <select tal:attributes="
-                class field_name;
-                column column;
-                id input_id;
-                name input_name;"
-                style="width:96px; position:absolute; z-index:+1;"
-                onactivate="this.style.width='auto';"
-                onchange="this.blur();"
-                onblur="this.style.width='96px';">
-                <option value="" i18n:translate=""></option>
-                <tal:profile repeat="profile view/analysisprofiles">
-                    <option
-                        tal:content="python:profile[0]"
-                        tal:attributes="
-                            value python:profile[1].UID();"></option>
-                </tal:profile>
-            </select>
-            </div>
-            </td>
-        </tal:block>
-    </tr>
-
-    <!-- Sample -->
-    <tr tal:define="field_name string:SampleID">
-        <th colspan="2" style="white-space:nowrap" i18n:translate="">Secondary AR</th>
-        <td class="center">&nbsp;</td>
-        <tal:linksample repeat="column python:range(view.col_count)">
-            <td class="center"
-                tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                    input_id string:ar_${column}_${field_name}">
-                <!-- Contains translated button text for sample remove button js -->
-                <input type="hidden" value="Select Sample"
-                    i18n:attributes="value" i18n:domain="bika"
-                    tal:attributes="id string:${input_id}_default;"/>
-                <!-- Actual value for form is stored in hidden field -->
-                <input type="hidden"
-                    tal:attributes="id input_id;
-                        name input_name;"/>
-                <input type="button" value="Select Sample"
-                    i18n:attributes="value" i18n:domain="bika"
-                    tal:attributes="id string:${input_id}_button;
-                        name string:${input_name}_button;
-                        tabindex python:column*100+tabindex.next();"/>
-                <img class="deleteSampleButton"
-                    style="display:none"
-                    tal:attributes="
-                        id string:deleteSampleButton_${column};
-                        src string:${portal/absolute_url}/++resource++bika.lims.images/delete.png;
-                        column column"/>
-            </td>
-        </tal:linksample>
-    </tr>
-    <!-- Client Order -->
-    <tr tal:define="field_name string:ClientOrderNumber"
-        tal:condition="python: context.portal_type != 'Batch'">
-        <th colspan="2" style="white-space:nowrap" i18n:translate="">Client Order</th>
-        <td>
-            <img class="copyButton"
-                 tal:condition="python:view.col_count > 1"
-                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
-        </td>
-        <tal:block repeat="column python:range(view.col_count)">
-            <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                input_id string:ar_${column}_${field_name}">
-            <input size="10" type='text'
-                tal:attributes="
-                    id input_id;name input_name;
-                    column column;
-                    tabindex python:column*100+tabindex.next();
-                    value python: hasattr(context, 'getClientOrderNumber') and context.getClientOrderNumber() or ''"/>
-            </td>
-        </tal:block>
-    </tr>
-    <!-- Client Reference -->
-    <tr tal:define="field_name string:ClientReference"
-        tal:condition="python: context.portal_type != 'Batch'">
-        <th colspan="2" style="white-space:nowrap" i18n:translate="">Client Reference</th>
-        <td>
-            <img class="copyButton"
-                 tal:condition="python:view.col_count > 1"
-                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
-        </td>
-        <tal:block repeat="column python:range(view.col_count)">
-            <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                input_id string:ar_${column}_${field_name}">
-            <input size="10" type='text'
-                tal:attributes="
-                    id input_id;name input_name;
-                    column column;
-                    tabindex python:column*100+tabindex.next();
-                    value python:hasattr(context, 'getSample') and context.getSample().getClientReference() or ''"/>
-            </td>
-        </tal:block>
-    </tr>
-    <!-- Client SID -->
-    <tr tal:define="field_name string:ClientSampleID">
-        <th colspan="2" style="white-space:nowrap" i18n:translate="">Client SID</th>
-        <td>
-            <img class="copyButton"
-                 tal:condition="python:view.col_count > 1"
-                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
-        </td>
-        <tal:block repeat="column python:range(view.col_count)">
-            <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                input_id string:ar_${column}_${field_name}">
-            <input size="10" type='text'
-                tal:attributes="
-                    id input_id;name input_name;
-                    column column;
-                    tabindex python:column*100+tabindex.next();
-                    value python:hasattr(context, 'getSample') and context.getSample().getClientSampleID() or ''"/>
-            </td>
-        </tal:block>
-    </tr>
-    <!-- Sampling Date -->
-    <tr tal:define="field_name string:SamplingDate">
-        <th colspan="2">
-            <span style="white-space:nowrap" i18n:translate="">Sampling Date</span>&nbsp;
-            <span class="fieldRequired">&nbsp;</span>
-        </th>
-        <td>
-            <img class="copyButton"
-                 tal:condition="python:view.col_count > 1"
-                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
-        </td>
-        <tal:block repeat="column python:range(view.col_count)">
-            <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                input_id string:ar_${column}_${field_name}">
-            <input size="10" type='text' readonly="readonly" value=""
-                tal:attributes="
-                    id input_id;name input_name;
-                    column column;
-                    tabindex python:column*100+tabindex.next();"/>
-            </td>
-        </tal:block>
-    </tr>
-    <!-- Sample Point -->
-    <tr tal:define="field_name string:SamplePoint">
-        <th colspan="2"><span id="" style="white-space:nowrap" i18n:translate="">Sample Point</span></th>
-        <td>
-            <img class="copyButton"
-                 tal:condition="python:view.col_count > 1"
-                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
-        </td>
-        <tal:block repeat="column python:range(view.col_count)">
-            <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                input_id string:ar_${column}_${field_name}">
-            <input size="10" type='text' class="samplepoint" value=""
-                tal:attributes="
-                    id input_id;name input_name;
-                    column column;
-                    tabindex python:column*100+tabindex.next();"/>
-            </td>
-        </tal:block>
-    </tr>
-    <!-- Sample Type -->
-    <tr tal:define="field_name string:SampleType">
-        <th colspan="2">
-            <span id="" style="white-space:nowrap" i18n:translate="">Sample Type</span>
-            &nbsp;
-            <span class="fieldRequired">&nbsp;</span>
-        </th>
-        <td>
-            <img class="copyButton SampleTypeCopyButton"
-                 tal:condition="python:view.col_count > 1"
-                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
-        </td>
-        <tal:block repeat="column python:range(view.col_count)">
-            <td tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                input_id string:ar_${column}_${field_name}">
-            <input size="10" type='text' class='sampletype' value=""
-                tal:attributes="
-                    id input_id;name input_name;
-                    tabindex python:column*100+tabindex.next();"/>
-            </td>
-        </tal:block>
-    </tr>
-    <!-- Sampling Deviation -->
-    <tr tal:define="field_name string:SamplingDeviation">
-        <th colspan="2" style="white-space:nowrap" i18n:translate="">Sampling Deviation</th>
-        <td>
-            <img class="copyButton SamplingDeviationCopyButton"
-                 tal:condition="python:view.col_count > 1"
-                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
-        </td>
-        <tal:block repeat="column python:range(view.col_count)">
-            <td class="topborder ar_column" style="padding-top:2px;"
-                tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                input_id string:ar_${column}_${field_name}">
-            <div style="width:100px; border:none;text-align:left;padding-left:2px;">
-            <select
-                tal:attributes="
-                class field_name;
-                column column;
-                id input_id;
-                name input_name;"
-                style="width:96px; position:absolute; z-index:+1;"
-                onactivate="this.style.width='auto';"
-                onchange="this.blur();"
-                onblur="this.style.width='96px';">
-                <option value="" i18n:translate=""></option>
-                <tal:samplingdeviations repeat="sd view/samplingdeviations">
-                    <option
-                        tal:content="python:sd[0]"
-                        tal:attributes="
-                            value python:sd[1].UID();"></option>
-                </tal:samplingdeviations>
-            </select>
-            </div>
-            </td>
-        </tal:block>
-    </tr>
-    <!-- Sample condition -->
-    <tr tal:define="field_name string:SamplingDeviation">
-        <th colspan="2" style="white-space:nowrap" i18n:translate="">Sample Condition</th>
-        <td>
-            <img class="copyButton SampleConditionCopyButton"
-                 tal:condition="python:view.col_count > 1"
-                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
-        </td>
-        <tal:block repeat="column python:range(view.col_count)">
-            <td class="topborder ar_column" style="padding-top:2px;"
-                tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                input_id string:ar_${column}_${field_name}">
-            <div style="width:100px; border:none;text-align:left;padding-left:2px;">
-            <select
-                tal:attributes="
-                class field_name;
-                column column;
-                id input_id;
-                name input_name;"
-                style="width:96px; position:absolute; z-index:+1;"
-                onactivate="this.style.width='auto';"
-                onchange="this.blur();"
-                onblur="this.style.width='96px';">
-                <option value="" i18n:translate=""></option>
-                <tal:sampleconditions repeat="sc view/sampleconditions">
-                    <option
-                        tal:content="python:sc[0]"
-                        tal:attributes="
-                            value python:sc[1].UID();"></option>
-                </tal:sampleconditions>
-            </select>
-            </div>
-            </td>
-        </tal:block>
-    </tr>
-    <!-- Default Container Type -->
-    <tr tal:define="field_name string:DefaultContainerType"
-            tal:condition="python: context.portal_type != 'Batch'">
-        <th colspan="2" style="white-space:nowrap" i18n:translate="">Default Container Type</th>
-        <td>
-            <img class="copyButton DefaultContainerTypeCopyButton"
-                 tal:condition="python:view.col_count > 1"
-                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
-        </td>
-        <tal:block repeat="column python:range(view.col_count)">
-            <td class="topborder ar_column" style="padding-top:2px;"
-                tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                input_id string:ar_${column}_${field_name}">
-            <div style="width:100px; border:none;text-align:left;padding-left:2px;">
-            <select
-                tal:attributes="
-                class field_name;
-                column column;
-                id input_id;
-                name input_name;"
-                style="width:96px; position:absolute; z-index:+1;"
-                onactivate="this.style.width='auto';"
-                onchange="this.blur();"
-                onblur="this.style.width='96px';">
-                <option value="" i18n:translate=""></option>
-                <tal:containertypes repeat="o view/containertypes">
-                    <option
-                        tal:content="python:o[0]"
-                        tal:attributes="
-                            value python:o[1].UID();"></option>
-                </tal:containertypes>
-            </select>
-            </div>
-            </td>
-        </tal:block>
-    </tr>
-    <!-- Ad-Hoc -->
-    <tr tal:define="field_name string:AdHoc"
-        tal:condition="python: context.portal_type != 'Batch'">
-        <th colspan="2" style="white-space:nowrap" i18n:translate="">Ad-Hoc</th>
-        <td>
-            <img class="copyButton"
-                 tal:condition="python:view.col_count > 1"
-                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
-        </td>
-        <tal:block repeat="column python:range(view.col_count)">
-            <td class="cb"
-                tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                    input_id string:ar_${column}_${field_name}">
-            <input type="checkbox"
-                class="cb"
-                value="checked"
-                tal:attributes="
-                    column column;
-                    name input_name;
-                    id input_id;
-                    tabindex python:column*100+tabindex.next();"/>
-            </td>
-        </tal:block>
-    </tr>
-    <!-- Composite -->
-    <tr tal:define="field_name string:Composite">
-        <th colspan="2" style="white-space:nowrap" i18n:translate="">Composite</th>
-        <td>
-            <img class="copyButton"
-                 tal:condition="python:view.col_count > 1"
-                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
-        </td>
-        <tal:block repeat="column python:range(view.col_count)">
-            <td class="cb"
-                tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                    input_id string:ar_${column}_${field_name}">
-            <input type="checkbox"
-                class="cb"
-                value="checked"
-                tal:attributes="
-                    column column;
-                    name input_name;
-                    id input_id;
-                    tabindex python:column*100+tabindex.next();"/>
-            </td>
-        </tal:block>
-    </tr>
-    <!-- Dry Matter -->
-    <tr tal:define="field_name string:ReportDryMatter"
-        tal:condition="python:context.bika_setup.getDryMatterService()">
-        <th colspan="2" style="white-space:nowrap" i18n:translate="">Report as Dry Matter</th>
-        <td>
-            <img class="copyButton"
-                 tal:condition="python:view.col_count > 1"
-                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
-        </td>
-        <tal:block repeat="column python:range(view.col_count)">
-            <td class="cb"
-                tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                    input_id string:ar_${column}_${field_name}">
-            <input type="checkbox"
-                class="cb ReportDryMatter"
-                value="checked"
-                tal:attributes="
-                    column column;
-                    name input_name;
-                    id input_id;
-                    tabindex python:column*100+tabindex.next();"/>
-            </td>
-        </tal:block>
-    </tr>
-    <!-- Exclude from Invoice -->
-    <tr tal:define="field_name string:InvoiceExclude"
-        tal:condition="python:context.portal_type != 'Batch'">
-        <th colspan="2" style="white-space:nowrap" i18n:translate="">Exclude from invoice</th>
-        <td>
-            <img class="copyButton"
-                 tal:condition="python:view.col_count > 1"
-                 tal:attributes="name field_name;src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png"/>
-        </td>
-        <tal:block repeat="column python:range(view.col_count)">
-            <td class="cb"
-                tal:define="input_name string:ar.${column}.${field_name}:ignore_empty:record;
-                    input_id string:ar_${column}_${field_name}">
-            <input type="checkbox"
-                class="cb"
-                value="checked"
-                tal:attributes="
-                    name input_name;
-                    column column;
-                    id input_id;
-                    tabindex python:column*100+tabindex.next();"/>
-            </td>
-        </tal:block>
+            </tal:columns>
+        </tal:def>
     </tr>
 </thead>
 
@@ -770,7 +286,7 @@
         <input type="hidden"
             tal:attributes="
                 id input_id;
-                name string:${input_name}:ignore_empty:record;"/>
+                name string:${input_name}:record:ignore_empty;"/>
         </td>
     </tal:block>
 </tr>
@@ -788,7 +304,7 @@
         <input type="hidden"
             tal:attributes="
                 id input_id;
-                name string:${input_name}:ignore_empty:record;"/>
+                name string:${input_name}:record:ignore_empty;"/>
         </td>
     </tal:block>
 </tr>
@@ -807,7 +323,7 @@
         <input type="hidden"
             tal:attributes="
                 id input_id;
-                name string:${input_name}:ignore_empty:record;"/>
+                name string:${input_name}:record:ignore_empty;"/>
         </td>
     </tal:block>
 </tr>

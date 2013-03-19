@@ -8,8 +8,11 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.publish import doPublish
 from bika.lims.browser.sample import SamplePartitionsView
+from bika.lims.adapters.widgetvisibility import WidgetVisibility as _WV
+from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IAnalysisRequestAddView
 from bika.lims.interfaces import IDisplayListVocabulary
 from bika.lims.permissions import *
 from bika.lims.subscribers import doActionFor
@@ -26,9 +29,10 @@ from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import adapts
-from zope.component import queryAdapter
+from zope.component import getAdapter
 from zope.i18n.locales import locales
 from zope.interface import implements
 
@@ -689,7 +693,7 @@ class AnalysisRequestViewView(BrowserView):
                 t = AnalysesView(ar,
                                  self.request,
                                  getPointOfCapture = poc,
-                                 show_categories=True)
+                                 show_categories=self.context.bika_setup.getCategoriseAnalysisServices())
                 t.allow_edit = True
                 t.form_id = "%s_analyses" % poc
                 t.review_states[0]['transitions'] = [{'id':'submit'},
@@ -705,7 +709,7 @@ class AnalysisRequestViewView(BrowserView):
         ## Create QC Analyses View for this AR
         qcview = QCAnalysesView(ar,
                                 self.request,
-                                show_categories=True)
+                                show_categories=self.context.bika_setup.getCategoriseAnalysisServices())
         qcview.allow_edit = True
         qcview.form_id = "%s_qcanalyses"
         qcview.review_states[0]['transitions'] = [{'id':'submit'},
@@ -958,7 +962,7 @@ class AnalysisRequestViewView(BrowserView):
 class AnalysisRequestAddView(AnalysisRequestViewView):
     """ The main AR Add form
     """
-    implements(IViewView)
+    implements(IViewView, IAnalysisRequestAddView)
     template = ViewPageTemplateFile("templates/ar_add.pt")
 
     def __init__(self, context, request):
@@ -975,11 +979,24 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
             self.col_count == 6
 
     def __call__(self):
-        return self.template()
+        """Must make sure the context is an AR for TAL to render widgets.
+        """
+        self.request.set('disable_border', 1)
+        if self.context.portal_type != 'AnalysisRequest':
+            # A temporary AR for field context
+            title = 'Request new analyses'
+            _createObjectByType("AnalysisRequest", self.context, title)
+            saved_context = self.context
+            self.context = self.context[title]
+            result = self.template(self.context[title])
+            self.context = saved_context
+            self.context.manage_delObjects(title)
+        else:
+            result = self.template()
+        return result
 
     def getContacts(self):
-        contacts = queryAdapter(self.context, name='getContacts')()
-        return contacts
+        return getAdapter(self.context, name='getContacts')()
 
     def getCCsForContact(self, contact_uid, **kwargs):
         """Get the default CCs for a particular client contact.  Used
@@ -996,6 +1013,15 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
             return json.dumps(contacts)
         else:
             return contacts
+
+    def getWidgetVisibility(self):
+        adapter = getAdapter(self.context, name='getWidgetVisibility')
+        return adapter(schema=AnalysisRequestSchema)
+
+    def getAnalysisRequestSchema(self):
+        """In non-ar contexts, we need to force AR schema in the TAL.
+        """
+        return AnalysisRequestSchema
 
     def partitioned_services(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
@@ -1051,8 +1077,10 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                 title = context == self.context.bika_setup.bika_artemplates \
                     and "%s: %s" % (self.context.translate(_('Lab')), template.Title().decode('utf-8')) \
                     or template.Title()
-                sp_title = template.getSamplePoint()
-                st_title = template.getSampleType()
+                sp_title = template.getSamplePoint() and template.getSamplePoint()
+                st_title = template.getSampleType() and template.getSampleType()
+                sp_uid = template.getSamplePoint() and template.getSamplePointUID()
+                st_uid = template.getSampleType() and template.getSampleTypeUID()
                 profile = template.getAnalysisProfile()
                 Analyses = [{
                     'service_poc':bsc(UID=x['service_uid'])[0].getObject().getPointOfCapture(),
@@ -1063,9 +1091,12 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                 t_dict = {
                     'UID':template.UID(),
                     'Title':template.Title(),
-                    'AnalysisProfile':profile and profile.UID() or '',
+                    'Profile':profile and profile.UID() or '',
+                    'Profile_uid':profile and profile.UID() or '',
                     'SamplePoint':sp_title,
+                    'SamplePoint_uid':sp_uid,
                     'SampleType':st_title,
+                    'SampleType_uid':st_uid,
                     'Partitions':template.getPartitions(),
                     'Analyses':Analyses,
                     'ReportDryMatter':template.getReportDryMatter(),
@@ -1097,7 +1128,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         analyses = self.context.getAnalyses(full_objects=True)
         self.analyses = dict([(a.getServiceUID(), a) for a in analyses])
         self.selected = [a.getServiceUID() for a in analyses]
-        self.show_categories = True
+        self.show_categories = self.context.bika_setup.getCategoriseAnalysisServices()
         self.expand_all_categories = False
 
 
@@ -1164,7 +1195,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
 
-            cat = obj.getCategory().Title()
+            cat = obj.getCategoryTitle()
             items[x]['category'] = cat
             if cat not in self.categories:
                 self.categories.append(cat)
@@ -1260,7 +1291,7 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
                                      self.request,
                                      getPointOfCapture = poc,
                                      sort_on = 'getServiceTitle',
-                                     show_categories = True)
+                                     show_categories = self.context.bika_setup.getCategoriseAnalysisServices())
                     t.form_id = "ar_manage_results_%s" % poc
                     t.allow_edit = True
                     t.review_states[0]['transitions'] = [{'id':'submit'},
@@ -1555,11 +1586,13 @@ class ajaxAnalysisRequestSubmit():
         self.request = request
 
     def __call__(self):
+
         form = self.request.form
         plone.protect.CheckAuthenticator(self.request.form)
         plone.protect.PostOnly(self.request.form)
         came_from = form.has_key('came_from') and form['came_from'] or 'add'
         wftool = getToolByName(self.context, 'portal_workflow')
+        uc = getToolByName(self.context, 'uid_catalog')
         bc = getToolByName(self.context, 'bika_catalog')
         pc = getToolByName(self.context, 'portal_catalog')
         bsc = getToolByName(self.context, 'bika_setup_catalog')
@@ -1583,76 +1616,36 @@ class ajaxAnalysisRequestSubmit():
         # First make a list of non-empty columns
         columns = []
         for column in range(int(form['col_count'])):
-            formkey = "ar.%s" % column
-            # first time in, unused columns not in form
-            if not form.has_key(formkey):
+            if not form.has_key("ar.%s" % column):
                 continue
-            ar = form[formkey]
-            keys = ar.keys()
-            for k in ('subtotal', 'vat', 'total', 'ClientID', 'ClientUID', 'BatchID', 'BatchUID'):
-                if k in keys:
-                    keys.remove(k)
-            if len(keys) == 0:
+            ar = form["ar.%s" % column]
+            if 'Analyses' not in ar.keys():
                 continue
             columns.append(column)
 
         if len(columns) == 0:
-            error(message = self.context.translate(_("No data was entered")))
+            error(message = self.context.translate(_("No analyses have been selected")))
             return json.dumps({'errors':errors})
 
         # Now some basic validation
-        required_fields = ['SampleType', 'SamplingDate']
-        if self.context.portal_type == 'Batch':
-            required_fields.append('ClientID')
-        validated_fields = ('SampleID', 'SampleType', 'SamplePoint')
+        required_fields = [field.getName() for field
+                           in AnalysisRequestSchema.fields()
+                           if field.required]
 
         for column in columns:
             formkey = "ar.%s" % column
             ar = form[formkey]
-            if not ar.has_key("Analyses"):
-                error('Analyses',
-                      column,
-                      self.context.translate(
-                          _("No analyses have been selected")))
 
             # check that required fields have values
             for field in required_fields:
-                if not ar.has_key(field):
-                    error(field, column)
-
-            # validate field values
-            for field in validated_fields:
-                # ignore empty field values
-                if not ar.has_key(field):
+                if field in ['Contact', 'RequestID']:
+                    # These two are always special.  "Required" in the schema,
+                    # but the form has one Contact box for all ARs, and the
+                    # RequestID hasn't been generated yet.
                     continue
-
-                if field == "SampleID":
-                    valid = True
-                    try:
-                        if not bc(portal_type = 'Sample',
-                                  cancellation_state = 'active',
-                                  id = ar[field]):
-                            valid = False
-                    except:
-                        valid = False
-                    if not valid:
-                        msg = _("${id} is not a valid sample ID",
-                                mapping={'id':ar[field]})
-                        error(field, column, self.context.translate(msg))
-
-                elif field == "SampleType":
-                    if not bsc(portal_type = 'SampleType', title = _u(ar[field])):
-                        msg = _("${sampletype} is not a valid sample type",
-                                mapping={'sampletype':_u(ar[field])})
-                        error(field, column, self.context.translate(msg))
-
-                elif field == "SamplePoint":
-                    # Strip "Lab: " from sample point titles
-                    sp_str = _u(ar[field]).replace("%s: " % _("Lab"), '')
-                    if not bsc(portal_type = 'SamplePoint', title = sp_str):
-                        msg = _("${samplepoint} is not a valid sample point",
-                                mapping={'samplepoint':_u(ar[field])})
-                        error(field, column, self.context.translate(msg))
+                if (field+"_uid" in ar and not ar.get(field+"_uid", '')) \
+                    and not ar.get(field, ''):
+                    error(field, column)
 
         if errors:
             return json.dumps({'errors':errors})
@@ -1672,61 +1665,47 @@ class ajaxAnalysisRequestSubmit():
                 parts = []
             formkey = "ar.%s" % column
             values = form[formkey].copy()
-            profile = None
-            if (values.has_key('AnalysisProfile')):
-                profileUID = values['AnalysisProfile']
-                for proxy in bsc(portal_type = 'AnalysisProfile',
-                                 inactive_state = 'active',
-                                 UID = profileUID):
-                    profile = proxy.getObject()
-            template = None
-            if (values.has_key('ARTemplate')):
-                templateUID = values['ARTemplate']
-                for proxy in bsc(portal_type = 'ARTemplate',
-                                 inactive_state = 'active',
-                                 UID = templateUID):
-                    template = proxy.getObject()
 
-            if self.context.portal_type == 'Client':
-                client = self.context
-            else:
-                ClientID = values['ClientID']
-                proxies = pc(portal_type = 'Client', getClientID = ClientID)
-                client = proxies[0].getObject()
-            if values.has_key('SampleID'):
+            # resolved values is formatted as acceptable by archetypes
+            # widget machines
+            resolved_values = {}
+            for k,v in values.items():
+                # Analyses, we handle that specially.
+                if k == 'Analyses':
+                    continue
+                # Contact things, there's only one on the form, so we
+                # insert those values here manually.
+                resolved_values['Contact'] = form['Contact']
+                # resolved_values['Contact_uid'] = form['Contact']
+                resolved_values['CCContact'] = form['cc_uids'].split(",")
+                resolved_values['CCEmails'] = form['CCEmails']
+
+                if values.has_key("%s_uid" % k):
+                    resolved_values[k] = values["%s_uid"%k]
+                else:
+                    resolved_values[k] = values[k]
+
+            client = uc(UID = values['Client_uid'])[0].getObject()
+            if values.get('Sample_uid', ''):
                 # Secondary AR
-                sample = bc(portal_type = 'Sample',
-                            cancellation_state = 'active',
-                            id = values['SampleID'])[0].getObject()
+                sample = uc(UID=values['Sample_uid'])[0].getObject()
             else:
                 # Primary AR
-
                 _id = client.invokeFactory('Sample', id = 'tmp')
                 sample = client[_id]
-                # Strip "Lab: " from sample point title
-                sp_str = _u(values.get('SamplePoint', '')).replace("%s: " % _("Lab"), '')
-                sample.edit(
-                    ClientReference = values.get('ClientReference', ''),
-                    ClientSampleID = values.get('ClientSampleID', ''),
-                    SamplePoint = sp_str,
-                    SampleType = _u(values['SampleType']),
-                    SamplingDate = values['SamplingDate'],
-                    SamplingDeviation = values.get('SamplingDeviation', ''),
-                    Composite = values.get('Composite', False),
-                    AdHoc = values.get('AdHoc', False),
-                    SamplingWorkflowEnabled = SamplingWorkflowEnabled,
-                )
+                saved_form = self.request.form
+                self.request.form = resolved_values
                 sample.processForm()
+                self.request.form = saved_form
                 if SamplingWorkflowEnabled:
                     wftool.doActionFor(sample, 'sampling_workflow')
                 else:
                     wftool.doActionFor(sample, 'no_sampling_workflow')
-
                 # Object has been renamed
-                sample_id = sample.getId()
-                sample.edit(SampleID = sample_id)
+                sample.edit(SampleID = sample.getId())
 
-            sample_uid = sample.UID()
+            resolved_values['Sample'] = sample
+            resolved_values['Sample_uid'] = sample.UID()
 
             # Selecting a template sets the hidden 'parts' field to template values.
             # Selecting a profile will allow ar_add.js to fill in the parts field.
@@ -1739,7 +1718,7 @@ class ajaxAnalysisRequestSubmit():
 
             # Apply DefaultContainerType to partitions without a container
             d_clist = []
-            D_UID = values.get("DefaultContainerType", None)
+            D_UID = values.get("DefaultContainerType_uid", None)
             if D_UID:
                 d_clist = [c.UID for c in bsc(portal_type='Container')
                            if c.getObject().getContainerType().UID() == D_UID]
@@ -1747,32 +1726,18 @@ class ajaxAnalysisRequestSubmit():
                     if not parts[i].get('container', []):
                         parts[i]['container'] = d_clist
 
-            # resolve BatchID
-            batch_id = values.get('BatchID', '')
-            batch_uid = values.get('BatchUID', '')
-
             # create the AR
-
             Analyses = values['Analyses']
-            del values['Analyses']
 
-            _id = client.generateUniqueId('AnalysisRequest')
-            client.invokeFactory('AnalysisRequest', id = _id)
+            self.request.form = resolved_values
+            client.invokeFactory('AnalysisRequest', id = 'tmp')
             ar = client[_id]
-            # ar.edit() for some fields before firing the event
-            ar.edit(
-                Batch = batch_uid,
-                Contact = form['Contact'],
-                CCContact = form['cc_uids'].split(","),
-                CCEmails = form['CCEmails'],
-                Sample = sample_uid,
-                Profile = profile,
-                **dict(values)
-            )
+            ar.processForm()
+            self.request.form = saved_form
+            # Object has been renamed
+            ar.edit(RequestID = ar.getId())
 
             # Create sample partitions
-            # We do this before completing the AR processing because AR
-            # events affect partitions.
             parts_and_services = {}
             for _i in range(len(parts)):
                 p = parts[_i]
@@ -1822,16 +1787,12 @@ class ajaxAnalysisRequestSubmit():
                         wftool.doActionFor(part, 'no_sampling_workflow')
                     parts_and_services[part.id] = p['services']
 
-            ar.processForm()
             if SamplingWorkflowEnabled:
                 wftool.doActionFor(ar, 'sampling_workflow')
             else:
                 wftool.doActionFor(ar, 'no_sampling_workflow')
-            # Object has been renamed
-            ar_id = ar.getId()
-            ar.edit(RequestID = ar_id)
 
-            ARs.append(ar_id)
+            ARs.append(ar.getId())
 
             new_analyses = ar.setAnalyses(Analyses, prices = prices)
             ar_analyses = ar.objectValues('Analysis')
@@ -1869,7 +1830,7 @@ class ajaxAnalysisRequestSubmit():
                 doActionFor(ar, lowest_state)
 
             # receive secondary AR
-            if values.has_key('SampleID'):
+            if values.get('SampleID', ''):
                 if wftool.getInfoFor(sample, 'review_state') == 'sampled':
                     wftool.doActionFor(ar, 'sample_due')
                 if wftool.getInfoFor(sample, 'review_state') == 'sample_due':
@@ -2480,3 +2441,99 @@ class AnalysisRequestsView(BikaListingView):
         self.review_states = new_states
 
         return items
+
+
+class AnalysisRequestPublishedResults(BikaListingView):
+    """ View of published results
+        Prints the list of pdf files with each publication dates, the user
+        responsible of that publication, the emails of the addressees (and/or)
+        client contact names with the publication mode used (pdf, email, etc.)
+    """
+    implements(IViewView)
+
+    def __init__(self, context, request):
+        super(AnalysisRequestPublishedResults, self).__init__(context, request)
+        self.catalog = "bika_catalog"
+        self.contentFilter = {'portal_type': 'ARReport',
+                              'sort_order': 'reverse'}
+        self.context_actions = {}
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = True
+        self.show_workflow_action_buttons = False
+        self.pagesize = 50
+        self.form_id = 'published_results'
+        self.icon = self.portal_url + "/++resource++bika.lims.images/report_big.png"
+        self.title = _("Published results")
+        self.description = ""
+
+        self.columns = {
+            'Title': {'title': _('File')},
+            'FileSize': {'title': _('Size')},
+            'Date': {'title': _('Date')},
+            'PublishedBy': {'title': _('Published By')},
+            'Recipients': {'title': _('Recipients')},
+        }
+        self.review_states = [
+            {'id':'default',
+             'title':'All',
+             'contentFilter':{},
+             'columns': ['Title',
+                         'FileSize',
+                         'Date',
+                         'PublishedBy',
+                         'Recipients']},
+        ]
+
+    def contentsMethod(self, contentFilter):
+        return self.context.objectValues('ARReport')
+
+    def folderitems(self):
+        items = super(AnalysisRequestPublishedResults, self).folderitems()
+        for x in range(len(items)):
+            if 'obj' in items[x]:
+                obj = items[x]['obj']
+                obj_url = obj.absolute_url()
+                pdf = obj.getPdf()
+
+                items[x]['Title'] = "Download"
+                items[x]['FileSize'] = '%sKb' % (pdf.get_size() / 1024)
+                items[x]['Date'] = self.ulocalized_time(obj.created(), long_format=1)
+                items[x]['PublishedBy'] = obj.Creator()
+                recip=''
+                for recipient in obj.getRecipients():
+                    email = recipient['EmailAddress']
+                    val = recipient['Fullname']
+                    if email:
+                        val = "<a href='mailto:%s'>%s</a>" % (email, val)
+                    if len(recip) == 0:
+                        recip = val
+                    else:
+                        recip += (", " +val)
+
+                items[x]['replace']['Recipients'] = recip
+                items[x]['replace']['Title'] = \
+                     "<a href='%s/at_download/Pdf'>%s</a>" % \
+                     (obj_url, _("Download"))
+        return items
+
+class ClientContactVocabularyFactory(CatalogVocabulary):
+
+    def __call__(self):
+        parent = self.context.aq_parent
+        return super(ClientContactVocabularyFactory, self).__call__(
+            portal_type='Contact',
+            path={'query': "/".join(parent.getPhysicalPath()),
+                  'level': 0}
+        )
+
+class WidgetVisibility(_WV):
+    """For existing ARs
+    """
+
+    def __call__(self, **kwargs):
+        ret = super(WidgetVisibility, self).__call__(**kwargs)
+        if self.context.aq_parent.portal_type == 'Client':
+            ret['add']['visible'].remove('Client')
+            ret['add']['hidden'].append('Client')
+        return ret

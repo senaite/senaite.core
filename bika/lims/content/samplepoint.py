@@ -64,6 +64,13 @@ schema = BikaSchema.copy() + Schema((
                             "selected, then all sample types are available."),
         ),
     ),
+    ComputedField(
+        'SampleTypeTitle',
+        expression="[o.Title() for o in context.getSampleTypes()]",
+        widget = ComputedWidget(
+            visibile=False,
+        )
+    ),
     BooleanField('Composite',
         default=False,
         widget=BooleanWidget(

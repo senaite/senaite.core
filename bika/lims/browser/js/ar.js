@@ -72,26 +72,5 @@ $(document).ready(function(){
 	// Disable Plone UI for preserve transition
 	$("#workflow-transition-preserve").click(workflow_transition_preserve);
 
-	function autocomplete_sampletype(request,callback){
-		$.getJSON('ajax_sampletypes',
-			{'term':request.term,
-			 '_authenticator': $('input[name="_authenticator"]').val()},
-			function(data,textStatus){
-				callback(data);
-			}
-		);
-	}
-	function autocomplete_samplepoint(request,callback){
-		$.getJSON('ajax_samplepoints',
-			{'term':request.term,
-			 '_authenticator': $('input[name="_authenticator"]').val()},
-			function(data,textStatus){
-				callback(data);
-			}
-		);
-	}
-	$("#SampleType").autocomplete({ minLength: 0, source: autocomplete_sampletype});
-	$("#SamplePoint").autocomplete({ minLength: 0, source: autocomplete_samplepoint});
-
 });
 }(jQuery));

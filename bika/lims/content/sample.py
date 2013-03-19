@@ -217,25 +217,77 @@ class Sample(BaseFolder, HistoryAwareMixin):
     # Forms submit Title Strings which need
     # to be converted to objects somewhere along the way...
     def setSampleType(self, value, **kw):
-        """ convert SampleType title to UID
+        """ Accept Title or UID, and convert SampleType title to UID
+        before saving.
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
-        sampletype = bsc(portal_type = 'SampleType', title = value)
-        value = sampletype[0].UID
+        sampletypes = bsc(portal_type = 'SampleType', title = value)
+        if sampletypes:
+            value = sampletypes[0].UID
+        else:
+            sampletypes = bsc(portal_type = 'SampleType', UID = value)
+            if sampletypes:
+                value = sampletypes[0].UID
+            else:
+                value = None
+        for ar in self.getAnalysisRequests():
+            ar.Schema()['SampleType'].set(ar, value)
         return self.Schema()['SampleType'].set(self, value)
 
     # Forms submit Title Strings which need
     # to be converted to objects somewhere along the way...
     def setSamplePoint(self, value, **kw):
-        """ convert SamplePoint title to UID
+        """ Accept Title or UID, and convert SampleType title to UID
+        before saving.
         """
-        sp_uid = None
-        if value:
-            bsc = getToolByName(self, 'bika_setup_catalog')
-            samplepoints = bsc(portal_type = 'SamplePoint', title = value)
-            if samplepoints:
-                sp_uid = samplepoints[0].UID
-        return self.Schema()['SamplePoint'].set(self, sp_uid)
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        sampletypes = bsc(portal_type = 'SamplePoint', title = value)
+        if sampletypes:
+            value = sampletypes[0].UID
+        else:
+            sampletypes = bsc(portal_type = 'SamplePoint', UID = value)
+            if sampletypes:
+                value = sampletypes[0].UID
+            else:
+                value = None
+        for ar in self.getAnalysisRequests():
+            ar.Schema()['SamplePoint'].set(ar, value)
+        return self.Schema()['SamplePoint'].set(self, value)
+
+    def setSamplingDate(self, value, **kw):
+        """ Set the field on Analysis Requests.
+        """
+        for ar in self.getAnalysisRequests():
+            ar.Schema()['SamplingDate'].set(ar, value)
+        self.Schema()['SamplingDate'].set(self, value)
+
+    def setClientReference(self, value, **kw):
+        """ Set the field on Analysis Requests.
+        """
+        for ar in self.getAnalysisRequests():
+            ar.Schema()['ClientReference'].set(ar, value)
+        self.Schema()['ClientReference'].set(self, value)
+
+    def setClientSampleID(self, value, **kw):
+        """ Set the field on Analysis Requests.
+        """
+        for ar in self.getAnalysisRequests():
+            ar.Schema()['ClientSampleID'].set(ar, value)
+        self.Schema()['ClientSampleID'].set(self, value)
+
+    def setAdHoc(self, value, **kw):
+        """ Set the field on Analysis Requests.
+        """
+        for ar in self.getAnalysisRequests():
+            ar.Schema()['AdHoc'].set(ar, value)
+        self.Schema()['AdHoc'].set(self, value)
+
+    def setComposite(self, value, **kw):
+        """ Set the field on Analysis Requests.
+        """
+        for ar in self.getAnalysisRequests():
+            ar.Schema()['Composite'].set(ar, value)
+        self.Schema()['Composite'].set(self, value)
 
     security.declarePublic('getAnalysisRequests')
     def getAnalysisRequests(self):
