@@ -29,7 +29,6 @@ from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import adapts
 from zope.component import getAdapter
@@ -984,13 +983,14 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         self.request.set('disable_border', 1)
         if self.context.portal_type != 'AnalysisRequest':
             # A temporary AR for field context
-            title = 'Request new analyses'
-            _createObjectByType("AnalysisRequest", self.context, title)
+            title = self.context.translate(_('Request new analyses'))
+            tmp_id = self.context._findUniqueId('tmp')
+            self.context.invokeFactory("AnalysisRequest", tmp_id, title=title)
             saved_context = self.context
-            self.context = self.context[title]
-            result = self.template(self.context[title])
+            self.context = self.context[tmp_id]
+            result = self.template(self.context[tmp_id])
             self.context = saved_context
-            self.context.manage_delObjects(title)
+            self.context.manage_delObjects(tmp_id)
         else:
             result = self.template()
         return result
@@ -1016,12 +1016,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
 
     def getWidgetVisibility(self):
         adapter = getAdapter(self.context, name='getWidgetVisibility')
-        return adapter(schema=AnalysisRequestSchema)
-
-    def getAnalysisRequestSchema(self):
-        """In non-ar contexts, we need to force AR schema in the TAL.
-        """
-        return AnalysisRequestSchema
+        return adapter()
 
     def partitioned_services(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')

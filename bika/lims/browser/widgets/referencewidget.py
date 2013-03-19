@@ -50,9 +50,11 @@ class ReferenceWidget(StringWidget):
         """
         fieldName = field.getName()
         if fieldName+"_uid" in form:
-            uid = form[fieldName+"_uid"]
+            uid = form.get(fieldName+"_uid", '')
+        elif fieldName in form:
+            uid = form.get(fieldName, '')
         else:
-            uid = form[fieldName]
+            uid = None
         return uid, {}
 
     def get_combogrid_options(self, context, fieldName):

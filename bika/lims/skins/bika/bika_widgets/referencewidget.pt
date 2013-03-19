@@ -32,9 +32,9 @@
                class="blurrable firstToFocus referencewidget"
                value=""
                size="30"
-               tal:define="val python:context.schema[fieldName].getAccessor(context)();"
+               tal:define="val python:context.Schema()[fieldName].getAccessor(context)();"
                tal:attributes="name fieldName;
-                               required python:context.Schema().getField(fieldName).required;
+                               required python:context.Schema()[fieldName].required;
                                id fieldName;
                                value val/Title|nothing;
                                uid val/UID|nothing;
@@ -52,7 +52,7 @@
                type="hidden"
                name=""
                value=""
-               tal:define="val python:context.schema[fieldName].getAccessor(context)();"
+               tal:define="val python:context.Schema()[fieldName].getAccessor(context)();"
                tal:attributes="name string:${fieldName}_uid;
                                id string:${fieldName}_uid;
                                value val/UID|nothing;"/>

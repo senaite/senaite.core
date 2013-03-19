@@ -150,7 +150,7 @@
     <!-- All edit fields with fields with add=visible -->
     <tr tal:repeat="fieldName python:view.getWidgetVisibility().get('add').get('visible')">
         <tal:def define="
-            field python:context.schema[fieldName];
+            field python:context.Schema()[fieldName];
             field_macro here/widgets/field/macros/edit;
             accessor python:field.getAccessor(context);
             widget python:field.widget;
@@ -192,7 +192,7 @@
                             <input
                                 tal:condition="python:index==1"
                                 type="hidden"
-                                tal:define="val python:context.schema[hiddenfieldName].getAccessor(context)();"
+                                tal:define="val python:context.Schema()[hiddenfieldName].getAccessor(context)();"
                                 tal:attributes="
                                     name string:${hiddenfieldName};
                                     id string:${hiddenfieldName};
@@ -200,7 +200,7 @@
                              <input
                                 tal:condition="python:index==1"
                                 type="hidden"
-                                tal:define="val python:context.schema[hiddenfieldName].getAccessor(context)();"
+                                tal:define="val python:context.Schema()[hiddenfieldName].getAccessor(context)();"
                                 tal:attributes="
                                     name string:${hiddenfieldName}_uid;
                                     id string:${hiddenfieldName}_uid;

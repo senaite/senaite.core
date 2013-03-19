@@ -13,12 +13,15 @@ class WidgetVisibility(object):
         ret = {'view': {'visible': [], 'invisible': [], 'hidden': [], },
                'edit': {'visible': [], 'invisible': [], 'hidden': [], },
                'add': {'visible': [], 'invisible': [], 'hidden': []}}
+
         if 'schema' in kwargs:
-            fields = kwargs['schema'].fields()
+            fields = list(kwargs['schema'].fields())
         else:
-            fields = self.context.Schema().fields()
+            fields = list(self.context.Schema().fields())
+
         for field in fields:
             if field.widget.visible and isinstance(field.widget.visible, dict):
                 for k, v in field.widget.visible.items():
                     ret[k][v].append(field.getName())
+
         return ret
