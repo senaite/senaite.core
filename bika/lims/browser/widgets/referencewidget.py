@@ -2,6 +2,7 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.permissions import *
+from bika.lims.utils import to_unicode as _u
 from operator import itemgetter
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import StringWidget
@@ -102,8 +103,8 @@ class ajaxReferenceWidgetSearch(BrowserView):
 
         # lookup objects from ZODB
         catalog = getToolByName(self.context, self.request['catalog_name'])
-        base_query = json.loads(self.request['base_query'].encode('utf-8'))
-        search_query = json.loads(self.request.get('search_query', u"{}").encode('utf-8'))
+        base_query = json.loads(_u(self.request['base_query']))
+        search_query = json.loads(_u(self.request.get('search_query', "{}")))
 
         # first with all queries
         contentFilter = dict((k,v) for k,v in base_query.items())
