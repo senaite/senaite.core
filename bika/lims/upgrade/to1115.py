@@ -16,5 +16,4 @@ def upgrade(tool):
     bc.delIndex('getSamplePointTitle')
     bc.addIndex('getSampleTypeTitle', 'KeywordIndex')
     bc.addIndex('getSamplePointTitle', 'KeywordIndex')
-    for o in bc():
-        o.reindexObject(idxs=['getSampleTypeTitle', 'getSamplePointTitle'])
+    bc.clearFindAndRebuild()
