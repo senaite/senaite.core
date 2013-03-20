@@ -50,7 +50,10 @@ jQuery(function($){
                 $(this).val('');
                 // We also want to clear all colModel->subfield completions
                 var fieldName = $(this).attr('name').split(".")[0];
-                var key = $(this).attr('name').split(".")[1].split(":")[0];
+                var key = ''
+                if len($(this).attr('name').split(".")>0) {
+                	key = $(this).attr('name').split(".")[1].split(":")[0];
+                }
                 var colModel = $.parseJSON($(this).attr('combogrid_options')).colModel;
                 row_nr = parseInt(this.id.split("-")[2]);
                 for (var i = colModel.length - 1; i >= 0; i--) {

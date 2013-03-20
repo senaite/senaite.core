@@ -14,6 +14,7 @@ from bika.lims.utils import to_utf8 as _c
 from bika.lims.utils import to_unicode as _u
 from bika.lims.browser.widgets import *
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
+from bika.lims.browser.widgets.referencewidget import ReferenceWidget as RefWidget
 from bika.lims.browser.fields import *
 from bika.lims.config import ATTACHMENT_OPTIONS, PROJECTNAME, SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
@@ -339,10 +340,12 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisServiceAnalysisCategory',
         referenceClass = HoldingReference,
         vocabulary = 'getAnalysisCategories',
-        widget = ReferenceWidget(
+        widget = RefWidget(
             checkbox_bound = 1,
             label = _("Analysis Category"),
             description = _("The category the analysis service belongs to"),
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
         ),
     ),
     FixedPointField('Price',
@@ -405,10 +408,12 @@ schema = BikaSchema.copy() + Schema((
         vocabulary = 'getDepartments',
         relationship = 'AnalysisServiceDepartment',
         referenceClass = HoldingReference,
-        widget = ReferenceWidget(
+        widget = RefWidget(
             checkbox_bound = 1,
             label = _("Department"),
             description = _("The laboratory department"),
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
         ),
     ),
     ComputedField('DepartmentTitle',
