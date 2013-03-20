@@ -23,6 +23,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysis
 from decimal import Decimal
 from zope.interface import implements
+from bika.lims.utils import deprecated
 import datetime
 
 schema = BikaSchema.copy() + Schema((
@@ -247,6 +248,84 @@ class Analysis(BaseContent):
         self.setResultCaptureDate(DateTime())
         self.getField('Result').set(self, value, **kw)
 
+    def getAnalysisSpecs(self, specification=None):
+        """ Retrieves the analysis specs to be applied to this analysis.
+            Allowed values for specification= 'client', 'lab', None
+            If specification is None, client specification gets priority from
+            lab specification.
+            If no specification available for this analysis, returns None
+        """
+        sampletype = self.aq_parent.getSample().getSampleType()
+        sampletype_uid = sampletype and sampletype.UID() or ''
+        bsc = getToolByName(self, 'bika_setup_catalog')
+
+        # retrieves the desired specs if None specs defined
+        if not specification:
+            proxies = bsc(portal_type='AnalysisSpec',
+                          getClientUID=self.getClientUID(),
+                          getSampleTypeUID=sampletype_uid)
+
+            if len(proxies) == 0:
+                # No client specs available, retrieve lab specs
+                labspecsuid = self.bika_setup.bika_analysisspecs.UID()
+                proxies = bsc(portal_type='AnalysisSpec',
+                              getSampleTypeUID=sampletype_uid,
+                              getClientUID=labspecsuid)
+        else:
+            specuid = specification == "client" and self.getClientUID() or \
+                    self.bika_setup.bika_analysisspecs.UID()
+            proxies = bsc(portal_type='AnalysisSpec',
+                              getSampleTypeUID=sampletype_uid,
+                              getClientUID=specuid)
+
+        return (proxies and len(proxies) > 0) and proxies[0].getObject() or None
+
+    def isOutOfRange(self, result=None, specification=None):
+        """ Check if a result is "out of range".
+            if result is None, self.getResult() is called for the result value.
+            if specification is None, client specification gets priority from
+            lab specification
+            Return True, False, spec if out of range
+            Return True, True, spec if in shoulder (out, but acceptable)
+            Return False, None, None if in range
+        """
+        result = result and result or self.getResult()
+
+        # if analysis result is not a number, then we assume in range
+        try:
+            result = float(str(result))
+        except ValueError:
+            return False, None, None
+
+        specs = self.getAnalysisSpecs(specification)
+        if specs == None:
+            # No specs available, assume in range
+            return False, None, None
+
+        keyword = self.getService().getKeyword()
+        spec = specs.getResultsRangeDict()
+        if keyword in spec:
+            spec_min = float(spec[keyword]['min'])
+            spec_max = float(spec[keyword]['max'])
+
+            if spec_min <= result <= spec_max:
+                return False, None, None
+
+            """ check if in 'shoulder' error range - out of range,
+                but in acceptable error """
+            error_amount = (result / 100) * float(spec[keyword]['error'])
+            error_min = result - error_amount
+            error_max = result + error_amount
+            if ((result < spec_min) and (error_max >= spec_min)) or \
+               ((result > spec_max) and (error_min <= spec_max)):
+                return True, True, spec[keyword]
+            else:
+                return True, False, spec[keyword]
+
+        else:
+            # Analysis without specification values. Assume in range
+            return False, None, None
+
     def result_in_range(self, result = None, specification = "lab"):
         """ Check if a result is "in range".
             if result is None, self.getResult() is called for the result value.
@@ -254,49 +333,8 @@ class Analysis(BaseContent):
             Return True,None if in range
             return '1',None if in shoulder
         """
-
-        client_uid = specification == "client" and self.getClientUID() or \
-            self.bika_setup.bika_analysisspecs.UID()
-
-        result = result and result or self.getResult()
-
-        # if analysis result is not a number, then we assume in range
-        try:
-            result = float(str(result))
-        except ValueError:
-            return True, None
-
-        service = self.getService()
-        keyword = service.getKeyword()
-        sampletype = self.aq_parent.getSample().getSampleType()
-        sampletype_uid = sampletype and sampletype.UID() or ''
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        proxies = bsc(portal_type = 'AnalysisSpec',
-                      getSampleTypeUID = sampletype_uid)
-        a = [p for p in proxies if p.getClientUID == client_uid]
-        if a:
-            spec_obj = a[0].getObject()
-            spec = spec_obj.getResultsRangeDict()
-        else:
-            # if no range is specified we assume it is in range
-            return True, None
-
-        if spec.has_key(keyword):
-            spec_min = float(spec[keyword]['min'])
-            spec_max = float(spec[keyword]['max'])
-
-            if spec_min <= result <= spec_max:
-                return True, None
-
-            """ check if in 'shoulder' error range - out of range, but in acceptable error """
-            error_amount = (result / 100) * float(spec[keyword]['error'])
-            error_min = result - error_amount
-            error_max = result + error_amount
-            if ((result < spec_min) and (error_max >= spec_min)) or \
-               ((result > spec_max) and (error_min <= spec_max)):
-                return '1', spec[keyword]
-        else:
-            return True, None
-        return False, spec[keyword]
+        deprecated("Use isOutOfRange(result,specification) instead")
+        outofrange, acceptable, spec = self.isOutOfRange(result, specification)
+        return acceptable and '1' or not outofrange, spec
 
 atapi.registerType(Analysis, PROJECTNAME)

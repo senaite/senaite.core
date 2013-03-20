@@ -509,38 +509,20 @@ Table cells for each column from in review_state's column list.
 		style="white-space:nowrap;"
 		tal:content="python:item['Unit']"/>
 
-	<tal:comment replace="nothing"><!-- alert container --></tal:comment>
-	<span class="alert" tal:attributes="
-		uid python:item['uid'];
-		field column;">
-		<tal:comment replace="nothing"><!-- initial out-of-range indicators --></tal:comment>
-		<img
-			tal:condition="python:column == 'Result' and
-			                      item['Result'] and
-								  not item['result_in_range'][0]"
-			tal:attributes="
-				uid item/uid;
-				title python:'Result out of range (min: %(min)s, max: %(max)s)'%(item['result_in_range'][1]);
-				src string:${portal/absolute_url}/++resource++bika.lims.images/exclamation.png;"
-			icon="exclamation"/>
-		<img
-			tal:condition="python:column == 'Result' and
-									item['Result'] and
-									item['result_in_range'][0] == '1'"
-			tal:attributes="
-				uid item/uid;
-				title python:'Result out of range (min %(min)s, max %(max)s, error %(error)s%%)'%(item['result_in_range'][1]);
-				src string:${portal/absolute_url}/++resource++bika.lims.images/warning.png;"
-			icon="warning"/>
-		<img
-			tal:condition="python:column == 'Result' and item['Result']=='0/0'"
-			tal:attributes="
-				uid item/uid;
-				title python:'No valid result';
-				src string:${portal/absolute_url}/++resource++bika.lims.images/exclamation.png;"
-			icon="exclamation"/>
-	<tal:comment replace="nothing"><!-- shoulder --></tal:comment>
-	</span>
+	<tal:comment replace="nothing"><!-- alert container --></tal:comment>	
+	<tal:outofrange define="uid python:item['uid'];
+	                        alerts python:hasattr(view.bika_listing,'getOutOfRangeAlerts') and view.bika_listing.getOutOfRangeAlerts() or None"
+	                condition="python:column == 'Result' and item['Result']">
+	   <span class="alert"
+	         tal:condition="python: alerts and uid in alerts or False"
+	         tal:attributes="uid string:${uid};
+	                         field column;">
+	         <img tal:attributes="src python:(portal.absolute_url()+'/++resource++bika.lims.images/%s.png')%alerts[uid]['icon'];
+	                              title python:alerts[uid]['msg']"/>
+	         
+	   </span>
+	</tal:outofrange>	
+	
 	</span> <tal:comment replace="nothing"><!-- </span tal:condition="not:replace"> --></tal:comment>
 
 	<tal:comment replace="nothing"><!-- after structure --></tal:comment>

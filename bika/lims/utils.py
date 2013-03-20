@@ -19,6 +19,7 @@ import copy,re,urllib
 import json
 import plone.protect
 import transaction
+import warnings
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
 allow_module('csv')
@@ -38,6 +39,9 @@ def to_unicode(text):
         return text.decode('utf-8')
     else:
         return text
+
+def deprecated(message):
+    warnings.warn(message, DeprecationWarning, stacklevel=2)
 
 # Wrapper for PortalTransport's sendmail - don't know why there sendmail
 # method is marked private

@@ -9,6 +9,7 @@ from bika.lims.content.analysis import schema, Analysis
 from bika.lims.interfaces import IDuplicateAnalysis
 from zope.interface import implements
 from Products.Archetypes.references import HoldingReference
+from bika.lims.utils import deprecated
 
 schema = schema.copy() + Schema((
     ReferenceField('Analysis',
@@ -100,28 +101,37 @@ class DuplicateAnalysis(Analysis):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    def result_in_range(self, result = None, specification = "lab"):
-        """ Check if a result is "in range".
+    def isOutOfRange(self, result=None, specification=None):
+        """ Check if a result is "out of range". (overrides)
             if result is None, self.getResult() is called for the result value.
-            Return False,spec if out of range
-            Return True,None if in range
+            specification values allowed='client', 'lab', None
+            if specification is None, uses the specifications according this
+            priority: QC Duplicate specs > Client specs > Lab specs
+            Return True, False, spec if out of range
+            Return False, None, None if in range
         """
-
-        orig_result = self.getAnalysis().getResult()
-        # if analysis result is not a number, then we assume in range
-        try:
-            orig_result = float(str(orig_result))
-            result = float(str(result))
-        except ValueError:
-            return True, None
-        dup_variation = float(self.getService().getDuplicateVariation()) or 0
-        range_min = result - (orig_result * dup_variation / 100)
-        range_max = result + (orig_result * dup_variation / 100)
-        if range_min <= orig_result <= range_max:
-            return True, None
+        if specification == 'client' or specification == 'lab':
+            return super(DuplicateAnalysis, self).isOutOfRange(result,
+                                                               specification)
         else:
-            return False, {'min':range_min,
-                           'max':range_max,
-                           'error':dup_variation}
+            result = result and result or self.getResult()
+            orig_result = self.getResult()
+
+            # if analysis result is not a number, then we assume in range
+            try:
+                orig_result = float(str(orig_result))
+                result = float(str(result))
+            except ValueError:
+                return False, None, None
+
+            dup_var = float(self.getService().getDuplicateVariation()) or 0
+            range_min = result - (orig_result * dup_var / 100)
+            range_max = result + (orig_result * dup_var / 100)
+            if range_min <= orig_result <= range_max:
+                return False, None, None
+            else:
+                return True, False, {'min': range_min,
+                                     'max': range_max,
+                                     'error': dup_var}
 
 registerType(DuplicateAnalysis, PROJECTNAME)

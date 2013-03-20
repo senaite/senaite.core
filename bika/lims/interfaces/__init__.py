@@ -201,3 +201,14 @@ class IWidgetVisibility(Interface):
     def __call__():
         """
         """
+
+
+class IAnalysisRangeAlerts(Interface):
+    """ Adapter to retrieve the out-of-range values for analyses results.
+    Returns a dictionary: the keys are the Analyses UIDs and the values are
+    another dictionary with the keys 'result', 'icon', 'alertmessage'
+    """
+
+    def getOutOfRangeAlerts(self):
+        """
+        """
