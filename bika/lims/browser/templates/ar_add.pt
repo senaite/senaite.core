@@ -146,11 +146,11 @@
                     tabindex tabindex/next;"/>
         </td>
     </tr>
-    
+
     <!-- All edit fields with fields with add=visible -->
     <tr tal:repeat="fieldName python:view.getWidgetVisibility().get('add').get('visible')">
         <tal:def define="
-            field python:context.schema[fieldName];
+            field python:context.Schema()[fieldName];
             field_macro here/widgets/field/macros/edit;
             accessor python:field.getAccessor(context);
             widget python:field.widget;
@@ -164,13 +164,14 @@
                       tal:condition="field/required"
                       title="Required"
                       i18n:attributes="title title_required;">&nbsp;</span>
-                 <span class="formHelp"
+                 <em style="display:block"
+                       class="discreet"
                      tal:define="description python:widget.Description(here)"
                      tal:content="structure description"
                      tal:attributes="id string:${fieldName}_help"
-                     i18n:translate="">Help </span>
+                     i18n:translate="">Help </em>
                 </label>
-    
+
            </th>
             <td>
             <img tal:condition="python:view.col_count > 1"
@@ -191,7 +192,7 @@
                             <input
                                 tal:condition="python:index==1"
                                 type="hidden"
-                                tal:define="val python:context.schema[hiddenfieldName].getAccessor(context)();"
+                                tal:define="val python:context.Schema()[hiddenfieldName].getAccessor(context)();"
                                 tal:attributes="
                                     name string:${hiddenfieldName};
                                     id string:${hiddenfieldName};
@@ -199,7 +200,7 @@
                              <input
                                 tal:condition="python:index==1"
                                 type="hidden"
-                                tal:define="val python:context.schema[hiddenfieldName].getAccessor(context)();"
+                                tal:define="val python:context.Schema()[hiddenfieldName].getAccessor(context)();"
                                 tal:attributes="
                                     name string:${hiddenfieldName}_uid;
                                     id string:${hiddenfieldName}_uid;

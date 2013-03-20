@@ -94,6 +94,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestClient',
         widget=ReferenceWidget(
             label=_("Client"),
+            description=_("You must assign this request to a client"),
             size=12,
             render_own_label=True,
             visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
@@ -144,7 +145,7 @@ schema = BikaSchema.copy() + Schema((
         referenceClass=HoldingReference,
         relationship='AnalysisRequestAnalysisProfile',
         widget=ReferenceWidget(
-            label=_("Profile"),
+            label=_("Analysis Profile"),
             size=12,
             render_own_label=True,
             visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
@@ -161,7 +162,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestSample',
         widget=ReferenceWidget(
             label=_("Sample"),
-            description=_(""),
+            description=_("Select a sample to create a secondary AR"),
             size=12,
             render_own_label=True,
             visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
@@ -190,6 +191,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestSampleType',
         widget=ReferenceWidget(
             label=_("Sample Type"),
+            description=_("Create a new sample of this type"),
             size=12,
             render_own_label=True,
             visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
@@ -205,6 +207,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestSamplePoint',
         widget=ReferenceWidget(
             label=_("Sample Point"),
+            description=_("Location where sample was taken"),
             size=12,
             render_own_label=True,
             visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
@@ -217,7 +220,7 @@ schema = BikaSchema.copy() + Schema((
         'ClientOrderNumber',
         searchable=True,
         widget=StringWidget(
-            label=_('Client Order'),
+            label=_('Client Order Number'),
             size=12,
             render_own_label=True,
             visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
@@ -250,7 +253,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisRequestSamplingDeviation',
         referenceClass = HoldingReference,
         widget=ReferenceWidget(
-            label = _('Sampling Deviation'),
+            label=_('Sampling Deviation'),
             size=12,
             render_own_label=True,
             visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
@@ -264,7 +267,8 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisRequestContainerType',
         referenceClass = HoldingReference,
         widget=ReferenceWidget(
-            label = _('Default Container'),
+            label=_('Default Container'),
+            description=_('Default container for new sample partitions'),
             size=12,
             render_own_label=True,
             visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
@@ -297,7 +301,7 @@ schema = BikaSchema.copy() + Schema((
         widget=BooleanWidget(
             label=_('Report as Dry Matter'),
             render_own_label=True,
-            description=_('This result can be reported as dry matter'),
+            description=_('These results can be reported as dry matter'),
             visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
         ),
     ),
@@ -333,14 +337,16 @@ schema = BikaSchema.copy() + Schema((
         'DateReceived',
         widget=DateTimeWidget(
             label=_('Date Received'),
-            visible={'edit': 'invisible', 'view': 'visible', 'add': 'invisible'},
+            visible={'edit': 'invisible', 'view': 'visible',
+                'add': 'invisible'},
         ),
     ),
     DateTimeField(
         'DatePublished',
         widget=DateTimeWidget(
             label=_('Date Published'),
-            visible={'edit': 'invisible', 'view': 'visible', 'add': 'invisible'},
+            visible={'edit': 'invisible', 'view': 'visible',
+                'add': 'invisible'},
         ),
     ),
     TextField(
@@ -421,6 +427,7 @@ schema = BikaSchema.copy() + Schema((
 
 schema['title'].required = False
 
+
 class AnalysisRequest(BaseFolder):
     implements(IAnalysisRequest)
     security = ClassSecurityInfo()
@@ -428,6 +435,7 @@ class AnalysisRequest(BaseFolder):
     schema = schema
 
     _at_rename_after_creation = True
+
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
@@ -464,6 +472,7 @@ class AnalysisRequest(BaseFolder):
         return None
 
     security.declareProtected(View, 'getResponsible')
+
     def getResponsible(self):
         """ Return all manager info of responsible departments """
         managers = {}
@@ -480,12 +489,13 @@ class AnalysisRequest(BaseFolder):
             if manager is None:
                 continue
             manager_id = manager.getId()
-            if not managers.has_key(manager_id):
+            if manager_id not in managers:
                 managers[manager_id] = {}
                 managers[manager_id]['name'] = manager.getFullname()
                 managers[manager_id]['email'] = manager.getEmailAddress()
                 managers[manager_id]['phone'] = manager.getBusinessPhone()
-                managers[manager_id]['signature'] = '%s/Signature' % manager.absolute_url()
+                managers[manager_id][
+                    'signature'] = '%s/Signature' % manager.absolute_url()
                 managers[manager_id]['dept'] = ''
             mngr_dept = managers[manager_id]['dept']
             if mngr_dept:
@@ -500,6 +510,7 @@ class AnalysisRequest(BaseFolder):
         return mngr_info
 
     security.declareProtected(View, 'getResponsible')
+
     def getManagers(self):
         """ Return all managers of responsible departments """
         manager_ids = []
@@ -524,6 +535,7 @@ class AnalysisRequest(BaseFolder):
         return manager_list
 
     security.declareProtected(View, 'getLate')
+
     def getLate(self):
         """ return True if any analyses are late """
         workflow = getToolByName(self, 'portal_workflow')
@@ -542,6 +554,7 @@ class AnalysisRequest(BaseFolder):
         return False
 
     security.declareProtected(View, 'getBillableItems')
+
     def getBillableItems(self):
         """ Return all items except those in 'not_requested' state """
         workflow = getToolByName(self, 'portal_workflow')
@@ -553,19 +566,22 @@ class AnalysisRequest(BaseFolder):
         return items
 
     security.declareProtected(View, 'getSubtotal')
+
     def getSubtotal(self):
         """ Compute Subtotal
         """
         return sum(
-            [Decimal(obj.getService() and obj.getService().getPrice() or 0) \
+            [Decimal(obj.getService() and obj.getService().getPrice() or 0)
             for obj in self.getBillableItems()])
 
     security.declareProtected(View, 'getVAT')
+
     def getVAT(self):
         """ Compute VAT """
         return Decimal(self.getTotalPrice()) - Decimal(self.getSubtotal())
 
     security.declareProtected(View, 'getTotalPrice')
+
     def getTotalPrice(self):
         """ Compute TotalPrice """
         billable = self.getBillableItems()
@@ -581,6 +597,7 @@ class AnalysisRequest(BaseFolder):
     getTotal = getTotalPrice
 
     security.declareProtected(ManageInvoices, 'issueInvoice')
+
     def issueInvoice(self, REQUEST=None, RESPONSE=None):
         """ issue invoice
         """
@@ -615,9 +632,10 @@ class AnalysisRequest(BaseFolder):
         invoice_batch.createInvoice(client_uid, [self, ])
 
         RESPONSE.redirect(
-                '%s/analysisrequest_invoice' % self.absolute_url())
+            '%s/analysisrequest_invoice' % self.absolute_url())
 
     security.declarePublic('printInvoice')
+
     def printInvoice(self, REQUEST=None, RESPONSE=None):
         """ print invoice
         """
@@ -631,7 +649,7 @@ class AnalysisRequest(BaseFolder):
         workflow = getToolByName(self, 'portal_workflow')
 
         this_file = self.REQUEST.form['AttachmentFile_file']
-        if self.REQUEST.form.has_key('Analysis'):
+        if 'Analysis' in self.REQUEST.form:
             analysis_uid = self.REQUEST.form['Analysis']
         else:
             analysis_uid = None
@@ -667,16 +685,16 @@ class AnalysisRequest(BaseFolder):
             self.setAttachment(attachments)
 
         RESPONSE.redirect(
-                '%s/manage_results' % self.absolute_url())
+            '%s/manage_results' % self.absolute_url())
 
     def delARAttachment(self, REQUEST=None, RESPONSE=None):
         """ delete the attachment """
         tool = getToolByName(self, REFERENCE_CATALOG)
-        if self.REQUEST.form.has_key('ARAttachment'):
+        if 'ARAttachment' in self.REQUEST.form:
             attachment_uid = self.REQUEST.form['ARAttachment']
             attachment = tool.lookupObject(attachment_uid)
             parent = attachment.getRequest()
-        elif self.REQUEST.form.has_key('AnalysisAttachment'):
+        elif 'AnalysisAttachment' in self.REQUEST.form:
             attachment_uid = self.REQUEST.form['AnalysisAttachment']
             attachment = tool.lookupObject(attachment_uid)
             parent = attachment.getAnalysis()
@@ -692,9 +710,10 @@ class AnalysisRequest(BaseFolder):
         BaseFolder.manage_delObjects(client, ids, REQUEST)
 
         RESPONSE.redirect(
-                '%s/manage_results' % self.absolute_url())
+            '%s/manage_results' % self.absolute_url())
 
     security.declarePublic('get_verifier')
+
     def get_verifier(self):
         wtool = getToolByName(self, 'portal_workflow')
         mtool = getToolByName(self, 'portal_membership')
@@ -707,7 +726,7 @@ class AnalysisRequest(BaseFolder):
 
         if not review_history:
             return 'no history'
-        for items in  review_history:
+        for items in review_history:
             action = items.get('action')
             if action != 'verify':
                 continue
@@ -719,6 +738,7 @@ class AnalysisRequest(BaseFolder):
         return verifier
 
     security.declarePublic('getContactUIDForUser')
+
     def getContactUIDForUser(self):
         """ get the UID of the contact associated with the authenticated
             user
@@ -732,6 +752,7 @@ class AnalysisRequest(BaseFolder):
             return r[0].UID
 
     security.declarePublic('current_date')
+
     def current_date(self):
         """ return current date """
         return DateTime()
@@ -763,13 +784,13 @@ class AnalysisRequest(BaseFolder):
                     if wa.portal_type == 'DuplicateAnalysis' \
                         and wa.getRequestID() == self.id \
                         and wa not in qcanalyses \
-                        and (qctype == None or wa.getReferenceType() == qctype):
+                            and (qctype is None or wa.getReferenceType() == qctype):
                         qcanalyses.append(wa)
 
                     elif wa.portal_type == 'ReferenceAnalysis' \
                         and wa.getServiceUID() in suids \
                         and wa not in qcanalyses \
-                        and (qctype == None or wa.getReferenceType() == qctype):
+                            and (qctype is None or wa.getReferenceType() == qctype):
                         qcanalyses.append(wa)
 
         return qcanalyses

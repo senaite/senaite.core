@@ -11,7 +11,6 @@ from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction, \
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.publish import doPublish
 from bika.lims.adapters.widgetvisibility import WidgetVisibility as _WV
-from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.browser.sample import SamplesView
 from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IContacts
@@ -900,10 +899,3 @@ class ClientContactVocabularyFactory(CatalogVocabulary):
             path={'query': "/".join(self.context.getPhysicalPath()),
                   'level': 0}
         )
-
-
-class WidgetVisibility(_WV):
-    def __call__(self, **kwargs):
-        kwargs['schema'] = AnalysisRequestSchema
-        ret = super(WidgetVisibility, self).__call__(**kwargs)
-        return ret

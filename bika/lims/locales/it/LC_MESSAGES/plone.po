@@ -1,22 +1,320 @@
-#
+# 
 # Translators:
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
+"Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
 "POT-Creation-Date: 2012-10-20 09:21+0000\n"
-"PO-Revision-Date: 2013-01-21 09:42+0000\n"
+"PO-Revision-Date: 2013-03-19 20:20+0000\n"
 "Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Domain: plone\n"
+"Language: it\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Preferred-Encodings: utf-8 latin1\n"
-"Domain: plone\n"
-"Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
-"Language: it\n"
+
+msgid "label_schema_Accounting"
+msgstr "Accounting"
+
+msgid "label_schema_Address"
+msgstr "Address"
+
+msgid "label_schema_Bank details"
+msgstr "Bank details"
+
+msgid "label_schema_Calculation"
+msgstr "Calculation"
+
+msgid "label_schema_Dates"
+msgstr "Dates"
+
+msgid "label_schema_Description"
+msgstr "Description"
+
+msgid "label_schema_Email Telephone Fax"
+msgstr "Email Telephone Fax"
+
+msgid "label_schema_ID Server"
+msgstr "ID Server"
+
+msgid "label_schema_Labels"
+msgstr "Labels"
+
+msgid "label_schema_Layout"
+msgstr "Layout"
+
+msgid "label_schema_Location"
+msgstr "Location"
+
+msgid "label_schema_Method"
+msgstr "Method"
+
+msgid "label_schema_Container and Preservation"
+msgstr "Container and Preservation"
+
+msgid "label_schema_Preferences"
+msgstr "Preferences"
+
+msgid "label_schema_Publication preference"
+msgstr "Publication preference"
+
+msgid "label_schema_Reference Values"
+msgstr ""
+
+msgid "label_schema_Result Options"
+msgstr "Result Options"
+
+msgid "label_schema_Results Reports"
+msgstr "Results Reports"
+
+msgid "label_schema_Security"
+msgstr "Security"
+
+msgid "label_schema_Uncertainties"
+msgstr "Uncertainties"
+
+msgid "label_schema_Sample Partitions"
+msgstr "Sample Partitions"
+
+msgid "label_schema_Analyses"
+msgstr "Analyses"
+
+#. Default: "Activate"
+# File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
+# line: -1
+msgid "activate_transition_title"
+msgstr "Activate"
+
+#. Default: "Assign"
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+# File:
+# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
+# line: -1
+# File:
+# ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml,
+# line: -1
+msgid "assign_transition_title"
+msgstr "Assign"
+
+#. Default: "Add attachment"
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+msgid "attach_transition_title"
+msgstr "Add attachment"
+
+#. Default: "Cancel"
+# File:
+# ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
+# line: -1
+msgid "cancel_transition_title"
+msgstr "Cancel"
+
+#. Default: "Close"
+# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
+# line: -1
+msgid "close_transition_title"
+msgstr "Close"
+
+#. Default: "Deactivate"
+# File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
+# line: -1
+msgid "deactivate_transition_title"
+msgstr "Deactivate"
+
+#. Default: "Dispatch order"
+# File: ../profiles/default/workflows/bika_order_workflow/definition.xml,
+# line: -1
+msgid "dispatch_transition_title"
+msgstr "Dispatch order"
+
+#. Default: "Dispose"
+# File:
+# ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
+# line: -1
+msgid "dispose_transition_title"
+msgstr "Dispose"
+
+#. Default: "Duplicate"
+msgid "duplicate_transition_title"
+msgstr "Duplicate"
+
+#. Default: "Expire"
+# File:
+# ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
+# line: -1
+msgid "expire_transition_title"
+msgstr "Expire"
+
+#. Default: "Import"
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+msgid "import_transition_title"
+msgstr "Import"
+
+#. Default: "Open"
+# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
+# line: -1
+msgid "open_transition_title"
+msgstr "Open"
+
+#. Default: "Prepublish"
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+msgid "prepublish_transition_title"
+msgstr "Prepublish"
+
+#. Default: "Preserve"
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
+# line: -1
+msgid "preserve_transition_title"
+msgstr "Preserve"
+
+#. Default: "Publish"
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+msgid "publish_transition_title"
+msgstr "Publish"
+
+#. Default: "Reassign"
+msgid "reassign_transition_title"
+msgstr "Reassign"
+
+#. Default: "Receive sample"
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
+# line: -1
+msgid "receive_transition_title"
+msgstr "Receive sample"
+
+#. Default: "Reinstate"
+# File:
+# ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
+# line: -1
+msgid "reinstate_transition_title"
+msgstr "Reinstate"
+
+#. Default: "Reject"
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+# File:
+# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml,
+# line: -1
+msgid "reject_transition_title"
+msgstr "Reject"
+
+#. Default: "Republish"
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+msgid "republish_transition_title"
+msgstr "Republish"
+
+#. Default: "Retract"
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+msgid "retract_transition_title"
+msgstr "Retract"
+
+#. Default: "Retract worksheet"
+# File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml,
+# line: -1
+msgid "retract_worksheet_transition_title"
+msgstr "Retract worksheet"
+
+#. Default: "Sample"
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File: ../profiles/default/workflows/bika_sample_worflow/definition.xml,
+# line: -1
+msgid "sample_transition_title"
+msgstr "Sample"
+
+#. Default: "Save analyses"
+msgid "save_analyses_button_transition_title"
+msgstr "Save analyses"
+
+#. Default: "Save partitions"
+msgid "save_partitions_button_transition_title"
+msgstr "Save partitions"
+
+#. Default: "Save selection"
+msgid "save_selection_button_transition_title"
+msgstr "Save selection"
+
+#. Default: "Submit ARImport"
+# File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
+# line: -1
+msgid "submit_arimport_transition_title"
+msgstr "Submit ARImport"
+
+#. Default: "Submit for verification"
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+msgid "submit_transition_title"
+msgstr "Submit for verification"
+
+#. Default: "Remove"
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+# File:
+# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
+# line: -1
+# File:
+# ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml,
+# line: -1
+msgid "unassign_transition_title"
+msgstr "Remove"
+
+#. Default: "Verify"
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+msgid "verify_transition_title"
+msgstr "Verify"
 
 # File: ../profiles/default/types/ARTemplate.xml, line: -1
 msgid "AR Template"
@@ -26,6 +324,10 @@ msgstr ""
 # File: ../profiles/default/types/ARTemplates.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "AR Templates"
+msgstr ""
+
+# File: ../profiles/default/types/ARReport.xml, line: -1
+msgid "ARReport"
 msgstr ""
 
 # File:
@@ -188,11 +490,19 @@ msgstr "Calcoli"
 msgid "Calculations"
 msgstr "Calcoli"
 
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Calibrations"
+msgstr ""
+
 # File:
 # ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
 # line: -1
 msgid "Cancelled"
 msgstr "Cancellato"
+
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Certifications"
+msgstr ""
 
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Client"
@@ -218,7 +528,7 @@ msgid "Comments about the last transition"
 msgstr ""
 
 # File: ../profiles/default/types/Client.xml, line: -1
-# File: ../profiles/default/types/ReferenceSupplier.xml, line: -1
+# File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Contacts"
 msgstr "Contatti"
 
@@ -313,7 +623,17 @@ msgstr ""
 msgid "Instrument"
 msgstr "Strumento"
 
+# File: ../profiles/default/types/InstrumentType.xml, line: -1
+msgid "Instrument Type"
+msgstr ""
+
 # File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/InstrumentTypes.xml, line: -1
+msgid "Instrument Types"
+msgstr ""
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/InstrumentType.xml, line: -1
 # File: ../profiles/default/types/Instruments.xml, line: -1
 msgid "Instruments"
 msgstr "Strumenti"
@@ -385,6 +705,15 @@ msgstr ""
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Manage Results"
+msgstr ""
+
+# File: ../profiles/default/types/Manufacturer.xml, line: -1
+msgid "Manufacturer"
+msgstr ""
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/Manufacturers.xml, line: -1
+msgid "Manufacturers"
 msgstr ""
 
 # File: ../profiles/default/types/Method.xml, line: -1
@@ -459,12 +788,12 @@ msgstr ""
 msgid "Productivity"
 msgstr ""
 
-# File: ../profiles/default/types/ReportFolder.xml, line: -1
-msgid "Quality Control"
+# File: ../profiles/default/types/AnalysisRequest.xml, line: -1
+msgid "Published results"
 msgstr ""
 
-# File: ../profiles/default/actions.xml, line: -1
-msgid "Queries"
+# File: ../profiles/default/types/ReportFolder.xml, line: -1
+msgid "Quality Control"
 msgstr ""
 
 # File: ../profiles/default/actions.xml, line: -1
@@ -491,37 +820,19 @@ msgstr "Definizione di riferimento"
 msgid "Reference Definitions"
 msgstr "Definizioni di riferimento"
 
-# File: ../profiles/default/types/ReferenceManufacturer.xml, line: -1
-msgid "Reference Manufacturer"
-msgstr ""
-
-# File: ../profiles/default/controlpanel.xml, line: -1
-# File: ../profiles/default/types/ReferenceManufacturers.xml, line: -1
-msgid "Reference Manufacturers"
-msgstr "Produttori di riferimento"
-
-# File: ../profiles/default/types/ReferenceSample.xml, line: -1
-msgid "Reference Values"
-msgstr "Risultati di riferimento"
-
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
 msgid "Reference Sample"
 msgstr ""
 
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/ReferenceSamplesFolder.xml, line: -1
-# File: ../profiles/default/types/ReferenceSupplier.xml, line: -1
+# File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Reference Samples"
 msgstr "Campioni di riferimento"
 
-# File: ../profiles/default/types/ReferenceSupplier.xml, line: -1
-msgid "Reference Supplier"
+# File: ../profiles/default/types/ReferenceSample.xml, line: -1
+msgid "Reference Values"
 msgstr ""
-
-# File: ../profiles/default/controlpanel.xml, line: -1
-# File: ../profiles/default/types/ReferenceSuppliers.xml, line: -1
-msgid "Reference Suppliers"
-msgstr "Fornitori di riferimento"
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
@@ -548,6 +859,15 @@ msgstr ""
 # File: ../profiles/default/types/Sample.xml, line: -1
 msgid "Sample"
 msgstr "Campione"
+
+# File: ../profiles/default/types/SampleCondition.xml, line: -1
+msgid "Sample Condition"
+msgstr ""
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/SampleConditions.xml, line: -1
+msgid "Sample Conditions"
+msgstr ""
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
@@ -632,6 +952,10 @@ msgstr ""
 msgid "Sampling Deviations"
 msgstr ""
 
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Schedule"
+msgstr ""
+
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Sample.xml, line: -1
 # File: ../profiles/default/types/SamplePartition.xml, line: -1
@@ -647,7 +971,13 @@ msgstr ""
 msgid "Submitted"
 msgstr "Inoltrato"
 
+# File: ../profiles/default/types/Supplier.xml, line: -1
+msgid "Supplier"
+msgstr ""
+
 # File: ../profiles/default/actions.xml, line: -1
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/Suppliers.xml, line: -1
 msgid "Suppliers"
 msgstr ""
 
@@ -719,6 +1049,10 @@ msgstr "Non assegnati"
 msgid "Unpublished"
 msgstr ""
 
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Validations"
+msgstr ""
+
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
 # File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
@@ -745,302 +1079,3 @@ msgstr ""
 # File: ../profiles/default/types/WorksheetFolder.xml, line: -1
 msgid "Worksheets"
 msgstr ""
-
-# File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
-# line: -1
-#. Default: "Activate"
-msgid "activate_transition_title"
-msgstr "Activate"
-
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml,
-# line: -1
-#. Default: "Assign"
-msgid "assign_transition_title"
-msgstr "Assign"
-
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-#. Default: "Add attachment"
-msgid "attach_transition_title"
-msgstr "Add attachment"
-
-# File:
-# ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
-# line: -1
-#. Default: "Cancel"
-msgid "cancel_transition_title"
-msgstr "Cancel"
-
-# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
-# line: -1
-#. Default: "Close"
-msgid "close_transition_title"
-msgstr "Close"
-
-# File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
-# line: -1
-#. Default: "Deactivate"
-msgid "deactivate_transition_title"
-msgstr "Deactivate"
-
-# File: ../profiles/default/workflows/bika_order_workflow/definition.xml,
-# line: -1
-#. Default: "Dispatch order"
-msgid "dispatch_transition_title"
-msgstr "Dispatch order"
-
-# File:
-# ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
-# line: -1
-#. Default: "Dispose"
-msgid "dispose_transition_title"
-msgstr "Dispose"
-
-#. Default: "Duplicate"
-msgid "duplicate_transition_title"
-msgstr "Duplicate"
-
-# File:
-# ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
-# line: -1
-#. Default: "Expire"
-msgid "expire_transition_title"
-msgstr "Expire"
-
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-#. Default: "Import"
-msgid "import_transition_title"
-msgstr "Import"
-
-msgid "label_schema_Accounting"
-msgstr "Accounting"
-
-msgid "label_schema_Address"
-msgstr "Address"
-
-msgid "label_schema_Analyses"
-msgstr "Analyses"
-
-msgid "label_schema_Bank details"
-msgstr "Bank details"
-
-msgid "label_schema_Calculation"
-msgstr "Calculation"
-
-msgid "label_schema_Container and Preservation"
-msgstr "Container and Preservation"
-
-msgid "label_schema_Dates"
-msgstr "Dates"
-
-msgid "label_schema_Description"
-msgstr "Description"
-
-msgid "label_schema_Email Telephone Fax"
-msgstr "Email Telephone Fax"
-
-msgid "label_schema_ID Server"
-msgstr "ID Server"
-
-msgid "label_schema_Labels"
-msgstr "Labels"
-
-msgid "label_schema_Layout"
-msgstr "Layout"
-
-msgid "label_schema_Location"
-msgstr "Location"
-
-msgid "label_schema_Method"
-msgstr "Method"
-
-msgid "label_schema_Preferences"
-msgstr "Preferences"
-
-msgid "label_schema_Publication preference"
-msgstr "Publication preference"
-
-msgid "label_schema_Reference Values"
-msgstr "Reference Values"
-
-msgid "label_schema_Result Options"
-msgstr "Result Options"
-
-msgid "label_schema_Results Reports"
-msgstr "Results Reports"
-
-msgid "label_schema_Sample Partitions"
-msgstr "Sample Partitions"
-
-msgid "label_schema_Security"
-msgstr "Security"
-
-msgid "label_schema_Uncertainties"
-msgstr "Uncertainties"
-
-# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
-# line: -1
-#. Default: "Open"
-msgid "open_transition_title"
-msgstr "Open"
-
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-#. Default: "Prepublish"
-msgid "prepublish_transition_title"
-msgstr "Prepublish"
-
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
-# line: -1
-#. Default: "Preserve"
-msgid "preserve_transition_title"
-msgstr "Preserve"
-
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-#. Default: "Publish"
-msgid "publish_transition_title"
-msgstr "Publish"
-
-#. Default: "Reassign"
-msgid "reassign_transition_title"
-msgstr "Reassign"
-
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
-# line: -1
-#. Default: "Receive sample"
-msgid "receive_transition_title"
-msgstr "Receive sample"
-
-# File:
-# ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
-# line: -1
-#. Default: "Reinstate"
-msgid "reinstate_transition_title"
-msgstr "Reinstate"
-
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml,
-# line: -1
-#. Default: "Reject"
-msgid "reject_transition_title"
-msgstr "Reject"
-
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-#. Default: "Republish"
-msgid "republish_transition_title"
-msgstr "Republish"
-
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-#. Default: "Retract"
-msgid "retract_transition_title"
-msgstr "Retract"
-
-# File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml,
-# line: -1
-#. Default: "Retract worksheet"
-msgid "retract_worksheet_transition_title"
-msgstr "Retract worksheet"
-
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File: ../profiles/default/workflows/bika_sample_worflow/definition.xml,
-# line: -1
-#. Default: "Sample"
-msgid "sample_transition_title"
-msgstr "Sample"
-
-#. Default: "Save analyses"
-msgid "save_analyses_button_transition_title"
-msgstr "Save analyses"
-
-#. Default: "Save partitions"
-msgid "save_partitions_button_transition_title"
-msgstr "Save partitions"
-
-#. Default: "Save selection"
-msgid "save_selection_button_transition_title"
-msgstr "Save selection"
-
-# File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
-# line: -1
-#. Default: "Submit ARImport"
-msgid "submit_arimport_transition_title"
-msgstr "Submit ARImport"
-
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-#. Default: "Submit for verification"
-msgid "submit_transition_title"
-msgstr "Submit for verification"
-
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml,
-# line: -1
-#. Default: "Remove"
-msgid "unassign_transition_title"
-msgstr "Remove"
-
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-#. Default: "Verify"
-msgid "verify_transition_title"
-msgstr "Verify"
-
