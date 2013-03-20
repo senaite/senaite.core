@@ -5,7 +5,7 @@ jQuery(function($){
 
         function recordswidget_lookups(elements){
             if(elements == undefined){
-                var inputs = $("[combogrid_options]");
+                var inputs = $("[combogrid_options]").not('.has_combogrid_widget');
             } else {
                 var inputs = elements;
             }
@@ -19,8 +19,8 @@ jQuery(function($){
                     event.preventDefault();
                     // Set value in activated element (must exist in colModel!)
                     var fieldName = $(this).attr('name').split(".")[0];
-                    var key = '';
-                    if ($(this).attr('name').split(".").length>1) {
+                    var key = "";
+                    if ($(this).attr('name').split(".").length > 1) {
                     	key = $(this).attr('name').split(".")[1].split(":")[0];
                     }
                     row_nr = parseInt(this.id.split("-")[2]);
@@ -47,14 +47,17 @@ jQuery(function($){
         recordswidget_lookups();
 
         $('[combogrid_options]').live('focus', function(){
+        	/*if ($(this).hasClass('has_combogrid_widget')) {
+        		return;
+        	}*/
             var options = $.parseJSON($(this).attr('combogrid_options'));
             if(options != '' && options != undefined && options != null){
                 // For inputs with combogrids, we want them to clear when focused
                 $(this).val('');
                 // We also want to clear all colModel->subfield completions
                 var fieldName = $(this).attr('name').split(".")[0];
-                var key = '';
-                if ($(this).attr('name').split(".").length>1) {
+                var key = "";
+                if ($(this).attr('name').split(".").length > 1) {
                 	key = $(this).attr('name').split(".")[1].split(":")[0];
                 }
                 var colModel = $.parseJSON($(this).attr('combogrid_options')).colModel;

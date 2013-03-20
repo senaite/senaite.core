@@ -3,7 +3,12 @@ from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATExtensions.Extensions.utils import makeDisplayList
 from Products.ATExtensions.ateapi import RecordField, RecordsField
 from Products.Archetypes.Registry import registerField
-from Products.Archetypes.public import *
+from Products.Archetypes.public import DisplayList, ReferenceField, \
+                        ComputedField, ComputedWidget, BooleanField, \
+                        BooleanWidget, StringField, SelectionWidget, \
+                        FixedPointField, DecimalWidget, IntegerField, \
+                        IntegerWidget, StringWidget, BaseContent, \
+                        Schema, registerType
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
@@ -14,6 +19,7 @@ from bika.lims.utils import to_utf8 as _c
 from bika.lims.utils import to_unicode as _u
 from bika.lims.browser.widgets import *
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
+from bika.lims.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.browser.fields import *
 from bika.lims.config import ATTACHMENT_OPTIONS, PROJECTNAME, SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
@@ -231,6 +237,8 @@ schema = BikaSchema.copy() + Schema((
             checkbox_bound = 1,
             label = _("Method"),
             description = _("Select analysis method"),
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
         ),
     ),
     ReferenceField('Instrument',
@@ -270,6 +278,8 @@ schema = BikaSchema.copy() + Schema((
             description = _("If required, select a calculation for the analysis here. "
                             "Calculations can be configured under the calculations item "
                             "in the LIMS set-up"),
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
         ),
     ),
     ComputedField('CalculationTitle',
