@@ -19,7 +19,10 @@ jQuery(function($){
                     event.preventDefault();
                     // Set value in activated element (must exist in colModel!)
                     var fieldName = $(this).attr('name').split(".")[0];
-                    var key = $(this).attr('name').split(".")[1].split(":")[0];
+                    var key = '';
+                    if ($(this).attr('name').split(".").length>1) {
+                    	key = $(this).attr('name').split(".")[1].split(":")[0];
+                    }
                     row_nr = parseInt(this.id.split("-")[2]);
                     $(this).val(ui.item[key]);
                     // Set values if colModel matches recordswidget subfield name
@@ -50,8 +53,8 @@ jQuery(function($){
                 $(this).val('');
                 // We also want to clear all colModel->subfield completions
                 var fieldName = $(this).attr('name').split(".")[0];
-                var key = ''
-                if len($(this).attr('name').split(".")>0) {
+                var key = '';
+                if ($(this).attr('name').split(".").length>1) {
                 	key = $(this).attr('name').split(".")[1].split(":")[0];
                 }
                 var colModel = $.parseJSON($(this).attr('combogrid_options')).colModel;
