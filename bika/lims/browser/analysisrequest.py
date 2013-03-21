@@ -1303,7 +1303,7 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
             return self.template()
 
     def createAnalysesView(self, context, request, **kwargs):
-        return AnalysesView(self, context, request, **kwargs)
+        return AnalysesView(context, request, **kwargs)
 
 
 class AnalysisRequestResultsNotRequestedView(AnalysisRequestManageResultsView):
