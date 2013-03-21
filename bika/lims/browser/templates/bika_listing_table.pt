@@ -511,13 +511,13 @@ Table cells for each column from in review_state's column list.
 
 	<tal:comment replace="nothing"><!-- alert container --></tal:comment>	
 	<tal:outofrange define="uid python:item['uid'];
-	                        alerts python:hasattr(view.bika_listing,'getOutOfRangeAlerts') and view.bika_listing.getOutOfRangeAlerts() or None"
-	                condition="python:column == 'Result' and item['Result']">
+	                        alerts python:hasattr(view.bika_listing,'getOutOfRangeAlerts') and view.bika_listing.getOutOfRangeAlerts() or None">
 	   <span class="alert"
-	         tal:condition="python: alerts and uid in alerts or False"
 	         tal:attributes="uid string:${uid};
 	                         field column;">
-	         <img tal:attributes="src python:(portal.absolute_url()+'/++resource++bika.lims.images/%s.png')%alerts[uid]['icon'];
+	         <img 
+                tal:condition="python: (alerts and uid in alerts and column == 'Result' and item['Result']) or False"
+                tal:attributes="src python:(portal.absolute_url()+'/++resource++bika.lims.images/%s.png')%alerts[uid]['icon'];
 	                              title python:alerts[uid]['msg']"/>
 	         
 	   </span>
