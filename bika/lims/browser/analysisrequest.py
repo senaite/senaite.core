@@ -689,7 +689,7 @@ class AnalysisRequestViewView(BrowserView):
         self.tables = {}
         for poc in POINTS_OF_CAPTURE:
             if self.context.getAnalyses(getPointOfCapture = poc):
-                t = AnalysesView(ar,
+                t = self.createAnalysesView(ar,
                                  self.request,
                                  getPointOfCapture = poc,
                                  show_categories=self.context.bika_setup.getCategoriseAnalysisServices())
@@ -706,7 +706,7 @@ class AnalysisRequestViewView(BrowserView):
                 self.tables[POINTS_OF_CAPTURE.getValue(poc)] = t.contents_table()
 
         ## Create QC Analyses View for this AR
-        qcview = QCAnalysesView(ar,
+        qcview = self.createQCAnalyesView(ar,
                                 self.request,
                                 show_categories=self.context.bika_setup.getCategoriseAnalysisServices())
         qcview.allow_edit = True
@@ -719,6 +719,12 @@ class AnalysisRequestViewView(BrowserView):
         self.qctable = qcview.contents_table()
 
         return self.template()
+
+    def createAnalysesView(self, context, request, **kwargs):
+        return AnalysesView(context, request, **kwargs)
+
+    def createQCAnalyesView(self, context, request, **kwargs):
+        return QCAnalysesView(context, request, **kwargs)
 
     def tabindex(self):
         i = 0
@@ -1282,7 +1288,7 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
             self.tables = {}
             for poc in POINTS_OF_CAPTURE:
                 if self.context.getAnalyses(getPointOfCapture = poc):
-                    t = AnalysesView(ar,
+                    t = self.createAnalysesView(ar,
                                      self.request,
                                      getPointOfCapture = poc,
                                      sort_on = 'getServiceTitle',
@@ -1295,6 +1301,10 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
                     t.show_select_column = True
                     self.tables[POINTS_OF_CAPTURE.getValue(poc)] = t.contents_table()
             return self.template()
+
+    def createAnalysesView(self, context, request, **kwargs):
+        return AnalysesView(self, context, request, **kwargs)
+
 
 class AnalysisRequestResultsNotRequestedView(AnalysisRequestManageResultsView):
     implements(IViewView)
@@ -2512,80 +2522,6 @@ class AnalysisRequestPublishedResults(BikaListingView):
                      (obj_url, _("Download"))
         return items
 
-
-class AnalysisRequestPublishedResults(BikaListingView):
-    """ View of published results
-        Prints the list of pdf files with each publication dates, the user
-        responsible of that publication, the emails of the addressees (and/or)
-        client contact names with the publication mode used (pdf, email, etc.)
-    """
-    implements(IViewView)
-
-    def __init__(self, context, request):
-        super(AnalysisRequestPublishedResults, self).__init__(context, request)
-        self.catalog = "bika_catalog"
-        self.contentFilter = {'portal_type': 'ARReport',
-                              'sort_order': 'reverse'}
-        self.context_actions = {}
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_column = True
-        self.show_workflow_action_buttons = False
-        self.pagesize = 50
-        self.form_id = 'published_results'
-        self.icon = self.portal_url + "/++resource++bika.lims.images/report_big.png"
-        self.title = _("Published results")
-        self.description = ""
-
-        self.columns = {
-            'Title': {'title': _('File')},
-            'FileSize': {'title': _('Size')},
-            'Date': {'title': _('Date')},
-            'PublishedBy': {'title': _('Published By')},
-            'Recipients': {'title': _('Recipients')},
-        }
-        self.review_states = [
-            {'id':'default',
-             'title':'All',
-             'contentFilter':{},
-             'columns': ['Title',
-                         'FileSize',
-                         'Date',
-                         'PublishedBy',
-                         'Recipients']},
-        ]
-
-    def contentsMethod(self, contentFilter):
-        return self.context.objectValues('ARReport')
-
-    def folderitems(self):
-        items = super(AnalysisRequestPublishedResults, self).folderitems()
-        for x in range(len(items)):
-            if 'obj' in items[x]:
-                obj = items[x]['obj']
-                obj_url = obj.absolute_url()
-                pdf = obj.getPdf()
-
-                items[x]['Title'] = "Download"
-                items[x]['FileSize'] = '%sKb' % (pdf.get_size() / 1024)
-                items[x]['Date'] = self.ulocalized_time(obj.created(), long_format=1)
-                items[x]['PublishedBy'] = obj.Creator()
-                recip=''
-                for recipient in obj.getRecipients():
-                    email = recipient['EmailAddress']
-                    val = recipient['Fullname']
-                    if email:
-                        val = "<a href='mailto:%s'>%s</a>" % (email, val)
-                    if len(recip) == 0:
-                        recip = val
-                    else:
-                        recip += (", " +val)
-
-                items[x]['replace']['Recipients'] = recip
-                items[x]['replace']['Title'] = \
-                     "<a href='%s/at_download/Pdf'>%s</a>" % \
-                     (obj_url, _("Download"))
-        return items
 
 class ClientContactVocabularyFactory(CatalogVocabulary):
 
