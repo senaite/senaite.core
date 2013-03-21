@@ -333,7 +333,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
         ar_ids = [AR.id for AR in ARs if AR.id.startswith(prefix)]
         ar_ids.sort()
         try:
-            last_ar_number = int(ar_ids[-1].split("-")[-1])
+            last_ar_number = int(ar_ids[-1].split("-R")[-1])
         except:
             return 0
         return last_ar_number
