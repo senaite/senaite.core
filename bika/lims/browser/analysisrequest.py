@@ -2597,13 +2597,21 @@ class ClientContactVocabularyFactory(CatalogVocabulary):
                   'level': 0}
         )
 
-class WidgetVisibility(_WV):
-    """For existing ARs
-    """
 
-    def __call__(self, **kwargs):
-        ret = super(WidgetVisibility, self).__call__(**kwargs)
+class WidgetVisibility(_WV):
+
+    def __call__(self):
+        ret = super(WidgetVisibility, self).__call__()
+        if 'add' not in ret:
+            ret['add'] = {}
+        if 'visible' not in ret['add']:
+            ret['add']['visible'] = []
+        if 'hidden' not in ret['add']:
+            ret['add']['hidden'] = []
         if self.context.aq_parent.portal_type == 'Client':
             ret['add']['visible'].remove('Client')
             ret['add']['hidden'].append('Client')
+        if self.context.aq_parent.portal_type == 'Batch':
+            ret['add']['visible'].remove('Batch')
+            ret['add']['hidden'].append('Batch')
         return ret

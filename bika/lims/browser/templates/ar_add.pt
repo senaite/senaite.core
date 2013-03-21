@@ -148,7 +148,7 @@
     </tr>
 
     <!-- All edit fields with fields with add=visible -->
-    <tr tal:repeat="fieldName python:view.getWidgetVisibility().get('add').get('visible')">
+    <tr tal:repeat="fieldName python:widget_visibility.get('add', {}).get('visible', [])">
         <tal:def define="
             field python:context.Schema()[fieldName];
             field_macro here/widgets/field/macros/edit;
@@ -186,7 +186,7 @@
                    <metal:field use-macro="python:context.widget(fieldName, mode='edit')"/>
 
                     <tal:hidden_def
-                        tal:repeat="hiddenfieldName python:view.getWidgetVisibility().get('add').get('hidden')"
+                        tal:repeat="hiddenfieldName python:widget_visibility.get('add', {}).get('hidden', [])"
                         tal:define="index repeat/fieldName/index">
                             <!-- All hidden fields -->
                             <input
