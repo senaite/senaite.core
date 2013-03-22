@@ -17,7 +17,8 @@
             tal:attributes="class kss_class;
                             id string:parent-fieldname-$fieldName-$uid">
             <span metal:define-slot="inside"
-                  tal:replace="accessor">reference</span>
+                  tal:define="value accessor"
+                  tal:replace="python: value and value.Title() or ''">reference</span>
         </span>
     </metal:view_macro>
 
