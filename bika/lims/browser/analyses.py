@@ -13,10 +13,14 @@ from bika.lims.config import QCANALYSIS_TYPES
 from bika.lims.permissions import *
 from bika.lims.utils import isActive
 from zope.component import getMultiAdapter
+from zope.interface import implements
 import json
 import plone
+from bika.lims.interfaces import IAnalysisRangeAlerts
+
 
 class AnalysesView(BikaListingView):
+    implements(IAnalysisRangeAlerts)
     """ Displays a list of Analyses in a table.
         Visible InterimFields from all analyses are added to self.columns[].
         Keyword arguments are passed directly to bika_analysis_catalog.
@@ -467,8 +471,36 @@ class AnalysesView(BikaListingView):
 
         self.json_specs = json.dumps(self.specs)
         self.json_interim_fields = json.dumps(self.interim_fields)
+        self.items = items
 
         return items
+
+    def getOutOfRangeAlerts(self):
+        """ Declared by bika.lims.interfaces.IAnalysisRangeAlerts
+            Returns a dictionary: the keys are the Analysis UIDs and the
+            values are another dictionary with the keys 'result', 'icon', 'msg'
+        """
+        if not self.items:
+            self.items = self.folderitems()
+
+        alerts = {}
+        for item in self.items:
+            obj = item['obj']
+            outofrange, acceptable, spec = obj.isOutOfRange()
+            if outofrange:
+                rngstr = _("min") + " " + str(spec['min']) + ", " + \
+                         _("max") + " " + str(spec['max'])
+
+                if acceptable:
+                    message = _('Result in shoulder range') + " (%s)" % rngstr
+                else:
+                    message = _('Result out of range') + ' (%s)' % rngstr
+
+                alerts[obj.UID()] = {'result': obj.getResult(),
+                                     'icon': acceptable and 'warning' or \
+                                            'exclamation',
+                                     'msg': message}
+        return alerts
 
 
 class QCAnalysesView(AnalysesView):
