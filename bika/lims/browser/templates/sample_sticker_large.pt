@@ -138,7 +138,7 @@
 </metal:block>
 
 <p class="noPrint">
-    <a tal:attributes="href python:context.absolute_url()"
+    <a tal:attributes="href python:context.aq_parent.absolute_url()"
         i18n:translate="">Back to list</a>
 </p>
 

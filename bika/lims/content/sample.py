@@ -6,7 +6,6 @@ from datetime import timedelta
 from Products.ATContentTypes.content import schemata
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATContentTypes.utils import DT2dt,dt2DT
-from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
@@ -19,6 +18,7 @@ from Products.CMFPlone.utils import safe_unicode
 from bika.lims.config import ManageBika, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.utils import sortable_title
+from bika.lims.browser.widgets.datetimewidget import DateTimeWidget
 import sys
 import time
 from zope.interface import implements
@@ -253,13 +253,6 @@ class Sample(BaseFolder, HistoryAwareMixin):
         for ar in self.getAnalysisRequests():
             ar.Schema()['SamplePoint'].set(ar, value)
         return self.Schema()['SamplePoint'].set(self, value)
-
-    def setSamplingDate(self, value, **kw):
-        """ Set the field on Analysis Requests.
-        """
-        for ar in self.getAnalysisRequests():
-            ar.Schema()['SamplingDate'].set(ar, value)
-        self.Schema()['SamplingDate'].set(self, value)
 
     def setClientReference(self, value, **kw):
         """ Set the field on Analysis Requests.

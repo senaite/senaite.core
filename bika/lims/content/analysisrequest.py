@@ -4,7 +4,6 @@ from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import delete_objects
 from DateTime import DateTime
 from Products.ATContentTypes.content import schemata
-from Products.ATExtensions.ateapi import DateTimeField
 from Products.ATExtensions.widget.records import RecordsWidget
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -133,7 +132,8 @@ schema = BikaSchema.copy() + Schema((
             label=_("Template"),
             size=12,
             render_own_label=True,
-            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible',
+                     'secondary': 'invisible'},
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
             showOn=True,
@@ -180,7 +180,8 @@ schema = BikaSchema.copy() + Schema((
             label=_("Sampling Date"),
             size=12,
             render_own_label=True,
-            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible',
+                     'secondary': 'invisible'},
         ),
     ),
     # A sample field, listed here so that it can be accessed from ar add.
@@ -194,7 +195,8 @@ schema = BikaSchema.copy() + Schema((
             description=_("Create a new sample of this type"),
             size=12,
             render_own_label=True,
-            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible',
+                     'secondary': 'invisible'},
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
             showOn=True,
@@ -210,7 +212,8 @@ schema = BikaSchema.copy() + Schema((
             description=_("Location where sample was taken"),
             size=12,
             render_own_label=True,
-            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible',
+                     'secondary': 'invisible'},
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
             showOn=True,
@@ -234,7 +237,8 @@ schema = BikaSchema.copy() + Schema((
             label=_('Client Reference'),
             size=12,
             render_own_label=True,
-            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible',
+                     'secondary': 'invisible'},
         ),
     ),
     # A sample field, listed here so that it can be accessed from ar add.
@@ -245,7 +249,8 @@ schema = BikaSchema.copy() + Schema((
             label=_('Client Sample ID'),
             size=12,
             render_own_label=True,
-            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible',
+                     'secondary': 'invisible'},
         ),
     ),
     # A sample field, listed here so that it can be accessed from ar add.
@@ -257,7 +262,8 @@ schema = BikaSchema.copy() + Schema((
             label=_('Sampling Deviation'),
             size=12,
             render_own_label=True,
-            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible',
+                     'secondary': 'invisible'},
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
             showOn=True,
@@ -272,7 +278,8 @@ schema = BikaSchema.copy() + Schema((
             label=_('Sample condition'),
             size=12,
             render_own_label=True,
-            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible',
+                     'secondary': 'invisible'},
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
             showOn=True,
@@ -287,7 +294,8 @@ schema = BikaSchema.copy() + Schema((
             description=_('Default container for new sample partitions'),
             size=12,
             render_own_label=True,
-            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible',
+                     'secondary': 'invisible'},
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
             showOn=True,
@@ -299,7 +307,8 @@ schema = BikaSchema.copy() + Schema((
         widget=BooleanWidget(
             label=_("Ad-Hoc"),
             render_own_label=True,
-            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible',
+                     'secondary': 'invisible'},
         ),
     ),
     # A sample field, listed here so that it can be accessed from ar add.
@@ -308,7 +317,8 @@ schema = BikaSchema.copy() + Schema((
         widget=BooleanWidget(
             label=_("Composite"),
             render_own_label=True,
-            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible',
+                     'secondary': 'invisible'},
         ),
     ),
     BooleanField(

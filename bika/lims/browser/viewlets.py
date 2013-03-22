@@ -11,6 +11,9 @@ class DocumentActionsViewlet(ViewletBase):
     index = ViewPageTemplateFile("templates/document_actions.pt")
 
     def render(self):
+        portal_factory = getToolByName(self.context, 'portal_factory')
+        if portal_factory.isTemporary(self.context):
+            return self.index()
         self.actions = []
         portal_actions = getToolByName(self.context, 'portal_actions')
         actions = portal_actions.listFilteredActionsFor(self.context)

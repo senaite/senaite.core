@@ -4,8 +4,7 @@
 	<div class="visualClear"><!-- --></div>
 
 	<div class="documentActions"
-		tal:define="normalizeString nocall: context/@@plone/normalizeString"
-		tal:condition="python:'tmp' not in context.id">
+		tal:define="normalizeString nocall: context/@@plone/normalizeString">
 
 	<tal:docactions tal:condition="view/actions|nothing">
 

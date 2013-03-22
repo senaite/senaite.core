@@ -978,25 +978,12 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
             self.col_count == 6
 
     def __call__(self):
-        """Must make sure the context is an AR for TAL to render widgets.
-        """
         self.request.set('disable_border', 1)
-        if self.context.portal_type != 'AnalysisRequest':
-            # A temporary AR for field context
-            title = self.context.translate(_('Request new analyses'))
-            tmp_id = self.context._findUniqueId('tmp')
-            self.context.invokeFactory("AnalysisRequest", tmp_id, title=title)
-            saved_context = self.context
-            self.context = self.context[tmp_id]
-            result = self.template(self.context[tmp_id])
-            self.context = saved_context
-            self.context.manage_delObjects(tmp_id)
-        else:
-            result = self.template()
-        return result
+        return self.template()
 
     def getContacts(self):
-        return getAdapter(self.context, name='getContacts')()
+        adapter = getAdapter(self.context, name='getContacts')
+        return adapter()
 
     def getCCsForContact(self, contact_uid, **kwargs):
         """Get the default CCs for a particular client contact.  Used
@@ -1098,6 +1085,38 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                 }
                 templates[template.UID()] = t_dict
         return json.dumps(templates)
+
+
+class SecondaryARSampleInfo(BrowserView):
+    """Return fieldnames and pre-digested values for Sample fields which
+    javascript must disable/display while adding secondary ARs
+    """
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def __call__(self):
+        uid = self.request.get('Sample_uid')
+        uc = getToolByName(self.context, "uid_catalog")
+        sample = uc(UID=uid)[0].getObject()
+        sample_schema = sample.Schema()
+        adapter = getAdapter(self.context, name='getWidgetVisibility')
+        wv = adapter()
+        fieldnames = wv.get('secondary', {}).get('invisible', [])
+        ret = []
+        for fieldname in fieldnames:
+            if fieldname in sample_schema:
+                fieldvalue = sample_schema[fieldname].getAccessor(sample)()
+                if fieldvalue is None:
+                    fieldvalue = ''
+                if hasattr(fieldvalue, 'Title'):
+                    fieldvalue = fieldvalue.Title()
+                if hasattr(fieldvalue, 'year'):
+                    fieldvalue = fieldvalue.strftime(self.date_format_short)
+            else:
+                fieldvalue = ''
+            ret.append([fieldname, fieldvalue])
+        return json.dumps(ret)
 
 
 class AnalysisRequestAnalysesView(BikaListingView):
@@ -1631,15 +1650,18 @@ class ajaxAnalysisRequestSubmit():
             formkey = "ar.%s" % column
             ar = form[formkey]
 
+            # # Secondary ARs don't have sample fields present in the form data
+            # if 'Sample_uid' in ar and ar['Sample_uid']:
+            #     adapter = getAdapter(self.context, name='getWidgetVisibility')
+            #     wv = adapter().get('secondary', {}).get('invisible', [])
+            #     required_fields = [x for x in required_fields if x not in wv]
+
             # check that required fields have values
             for field in required_fields:
+                # These two are still special.
                 if field in ['Contact', 'RequestID']:
-                    # These two are always special.  "Required" in the schema,
-                    # but the form has one Contact box for all ARs, and the
-                    # RequestID hasn't been generated yet.
                     continue
-                if (field+"_uid" in ar and not ar.get(field+"_uid", '')) \
-                    and not ar.get(field, ''):
+                if (field in ar and not ar.get(field, '')):
                     error(field, column)
 
         if errors:
@@ -1671,7 +1693,6 @@ class ajaxAnalysisRequestSubmit():
                 # Contact things, there's only one on the form, so we
                 # insert those values here manually.
                 resolved_values['Contact'] = form['Contact']
-                # resolved_values['Contact_uid'] = form['Contact']
                 resolved_values['CCContact'] = form['cc_uids'].split(",")
                 resolved_values['CCEmails'] = form['CCEmails']
 
@@ -1724,9 +1745,10 @@ class ajaxAnalysisRequestSubmit():
             # create the AR
             Analyses = values['Analyses']
 
+            saved_form = self.request.form
             self.request.form = resolved_values
             client.invokeFactory('AnalysisRequest', id = 'tmp')
-            ar = client[_id]
+            ar = client['tmp']
             ar.processForm()
             self.request.form = saved_form
             # Object has been renamed
