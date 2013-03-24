@@ -371,10 +371,6 @@ $(document).ready(function(){
 
 	// Archetypes :int inputs get numeric class
 	$("input[name*='\\:int']").addClass('numeric');
-	
-	// Remove all required=false in input fields
-	$('input[required="False"]').removeAttr('required');
-	$('input[required="0"]').removeAttr('required');
 
 });
 }(jQuery));
