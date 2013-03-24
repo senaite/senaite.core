@@ -16,7 +16,7 @@ class InterimFieldsField(RecordsField):
                              'value': _('Default value'),
                              'unit': _('Unit'),
                              'hidden': _('Hidden Field')},
-        'subfield_types' : {'hidden': 'boolean'},
+        'subfield_types' : {'hidden': 'boolean', 'value': 'float'},
         'subfield_sizes' : {'keyword': 20,
                             'title': 20,
                             'value': 10,

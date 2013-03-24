@@ -83,7 +83,7 @@ class WorksheetWorkflowAction(WorkflowAction):
                     Retested = form.has_key('retested') and \
                                form['retested'].has_key(uid),
                     Unit = unit and unit or '',
-                    Remarks = form['Remarks'][0][uid])
+                    Remarks = form['Remarks'][0].get(uid, ''))
 
             # discover which items may be submitted
             submissable = []
@@ -336,11 +336,14 @@ class WorksheetAnalysesView(AnalysesView):
                 client = obj.getAnalysis().aq_parent.aq_parent
             elif parent.aq_parent.portal_type == "Supplier":
                 # we're a reference sample; get reference definition
-                client = obj.getReferenceDefinition()
+                # If reference sample has no ref definition, return 
+                # reference sample itself
+                client = obj.getReferenceDefinition() \
+                        and obj.getReferenceDefinition() or obj
             else:
                 client = parent.aq_parent
             pos_text = "<table class='worksheet-position' width='100%%' cellpadding='0' cellspacing='0' style='padding-bottom:5px;'><tr>" + \
-                       "<td class='pos' rowspan='3'>%s</td>" % pos
+                       "<td class='pos' rowspan='3'>%s</td>" % pos          
             pos_text += "<td class='pos_top'><a href='%s'>%s</a></td>" % \
                 (client.absolute_url(), client.Title())
             pos_text += "<td class='pos_top_icons' rowspan='3'>"
@@ -992,7 +995,8 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
             if ws_ref_services:
                 services = [rs.Title() for rs in ws_ref_services]
                 items[x]['nr_services'] = len(services)
-                items[x]['Definition'] = obj.getReferenceDefinition().Title()
+                items[x]['Definition'] = obj.getReferenceDefinition() and \
+                                    obj.getReferenceDefinition().Title() or '' 
                 services.sort()
                 items[x]['Services'] = ", ".join(services)
                 items[x]['replace'] = {}

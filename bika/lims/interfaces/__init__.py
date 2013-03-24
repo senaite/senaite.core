@@ -171,3 +171,8 @@ class IBikaCatalog(Interface):
     ""
 class IBikaSetupCatalog(Interface):
     ""
+
+class IDisplayListVocabulary(Interface):
+    "Return a DisplayList"
+    def __call__():
+        ""

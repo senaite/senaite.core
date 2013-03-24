@@ -121,17 +121,6 @@ schema = BikaSchema.copy() + Schema((
             visible = {'edit':'hidden'},
         ),
     ),
-    TextField('Remarks',
-        searchable = True,
-        default_content_type = 'text/x-web-intelligent',
-        allowable_content_types = ('text/x-web-intelligent',),
-        default_output_type="text/html",
-        widget = TextAreaWidget(
-            macro = "bika_widgets/remarks",
-            label = _('Remarks'),
-            append_only = True,
-        ),
-    ),
     ComputedField('ClientUID',
         expression = 'context.aq_parent.UID()',
         widget = ComputedWidget(
