@@ -62,7 +62,8 @@ schema['title'].widget.visible = False
 schema['description'].required = False
 schema['description'].widget.visible = True
 
-class Batch(BaseContent):
+
+class Batch(BaseFolder):
     implements(IBatch)
     security = ClassSecurityInfo()
     displayContentsTab = False

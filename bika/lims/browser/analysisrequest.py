@@ -988,7 +988,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         return self.template()
 
     def getContacts(self):
-        adapter = getAdapter(self.context, name='getContacts')
+        adapter = getAdapter(self.context.aq_parent, name='getContacts')
         return adapter()
 
     def getCCsForContact(self, contact_uid, **kwargs):

@@ -483,6 +483,14 @@ class AnalysisRequest(BaseFolder):
         if self.aq_parent.portal_type == 'Client':
             return self.aq_parent
 
+    def getBatch(self):
+        # The parent type may be "Batch" during ar_add.
+        # This function fills the hidden field in ar_add.pt
+        if self.aq_parent.portal_type == 'Batch':
+            return self.aq_parent
+        else:
+            return self.Schema()['Batch'].get(self)
+
     def getDefaultMemberDiscount(self):
         """ compute default member discount if it applies """
         if hasattr(self, 'getMemberDiscountApplies'):
