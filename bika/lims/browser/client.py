@@ -281,7 +281,8 @@ class ClientAnalysisRequestsView(AnalysisRequestsView):
             else:
                 if mtool.checkPermission(AddAnalysisRequest, self.context):
                     self.context_actions[self.context.translate(_('Add'))] = {
-                        'url':'ar_add',
+                        'url':self.context.absolute_url() + "/portal_factory/"
+                        "AnalysisRequest/Request new analyses/ar_add",
                         'icon': '++resource++bika.lims.images/add.png'}
         return super(ClientAnalysisRequestsView, self).__call__()
 

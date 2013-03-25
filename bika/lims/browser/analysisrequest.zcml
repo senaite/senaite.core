@@ -10,7 +10,6 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="getContacts"
     />
-
     <adapter
       factory="bika.lims.browser.analysisrequest.WidgetVisibility"
       provides="bika.lims.interfaces.IWidgetVisibility"
@@ -47,7 +46,7 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IClient"
+      for="bika.lims.interfaces.IAnalysisRequest"
       name="ar_add"
       class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
       permission="bika.lims.ManageAnalysisRequests"
@@ -55,10 +54,10 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.IBatch"
-      name="ar_add"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestAddView"
-      permission="bika.lims.ManageAnalysisRequests"
+      for="*"
+      name="secondary_ar_sample_info"
+      class="bika.lims.browser.analysisrequest.SecondaryARSampleInfo"
+      permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

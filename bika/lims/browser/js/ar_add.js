@@ -29,32 +29,32 @@ function ar_rename_elements(){
 function ar_referencewidget_lookups(elements){
 	_ = jarn.i18n.MessageFactory('bika');
 	PMF = jarn.i18n.MessageFactory('plone');
-    if(elements == undefined){
-        var inputs = $("input.referencewidget").not('.has_combogrid_widget');
-    } else {
-        var inputs = elements;
-    }
-    for (var i = inputs.length - 1; i >= 0; i--) {
-        var element = inputs[i];
-        var options = $.parseJSON($(element).attr('combogrid_options'));
-        if(options == '' || options == undefined || options == null){
-            continue;
-        }
-        options.select = function(event, ui){
-            event.preventDefault();
+	if(elements == undefined){
+		var inputs = $("input.referencewidget").not('.has_combogrid_widget');
+	} else {
+		var inputs = elements;
+	}
+	for (var i = inputs.length - 1; i >= 0; i--) {
+		var element = inputs[i];
+		var options = $.parseJSON($(element).attr('combogrid_options'));
+		if(options == '' || options == undefined || options == null){
+			continue;
+		}
+		options.select = function(event, ui){
+			event.preventDefault();
 
-            // Set form valuesvalue in activated element (must exist in colModel!)
+			// Set form valuesvalue in activated element (must exist in colModel!)
 			var column = this.id.split("_")[1]; //"ar.0.fieldName"
-            var fieldName = $(this).attr('name').split(".")[2];
-            $(this).val(ui.item[$(this).attr('ui_item')]);
-            $(this).attr('uid', ui.item['UID']);
+			var fieldName = $(this).attr('name').split(".")[2].split(":")[0];
+			$(this).val(ui.item[$(this).attr('ui_item')]);
+			$(this).attr('uid', ui.item['UID']);
 
-            // split out the :ignore_empty:etc
-            var bits = fieldName.split(':');
-            $('input[name*=ar\\.'+column+'\\.'+bits[0]+'_uid]').val(ui.item['UID']);
+			// split out the :ignore_empty:etc
+			var bits = fieldName.split(':');
+			$('input[name*=ar\\.'+column+'\\.'+bits[0]+'_uid]').val(ui.item['UID']);
 
 			// samplepoint <> sampletype relations
-			if(this.id.split('_')[2] == 'SampleType'){
+			if(fieldName == 'SampleType'){
 				element = $('#ar_'+column+'_SamplePoint');
 				element
 					.removeClass( "cg-autocomplete-input" )
@@ -67,16 +67,16 @@ function ar_referencewidget_lookups(elements){
 				$(element).remove();
 				$(parent).append(new_element);
 				element = $('#ar_'+column+'_SamplePoint');
-		        // cut kwargs into the base_query
-		        base_query = $(element).attr('base_query');
-		    	base_query = $.parseJSON(base_query);
-		    	base_query = $.toJSON(base_query);
-			    search_query = {'getSampleTypeTitle': ui.item[$(this).attr('ui_item')]};
-		    	search_query = $.toJSON(search_query);
-		    	element.attr('search_query', search_query);
+				// cut kwargs into the base_query
+				base_query = $(element).attr('base_query');
+				base_query = $.parseJSON(base_query);
+				base_query = $.toJSON(base_query);
+				search_query = {'getSampleTypeTitle': ui.item[$(this).attr('ui_item')]};
+				search_query = $.toJSON(search_query);
+				element.attr('search_query', search_query);
 				ar_referencewidget_lookups(element);
 			}
-			if(this.id.split('_')[2] == 'SamplePoint'){
+			if(fieldName == 'SamplePoint'){
 				element = $('#ar_'+column+'_SampleType');
 				element
 					.removeClass( "cg-autocomplete-input" )
@@ -89,81 +89,86 @@ function ar_referencewidget_lookups(elements){
 				$(element).remove();
 				$(parent).append(new_element);
 				element = $('#ar_'+column+'_SampleType');
-		        // cut kwargs into the base_query
-		        base_query = $(element).attr('base_query');
-		    	base_query = $.parseJSON(base_query);
-		    	base_query = $.toJSON(base_query);
-			    search_query = {'getSamplePointTitle': ui.item[$(this).attr('ui_item')]};
-		    	search_query = $.toJSON(search_query);
-		    	element.attr('search_query', search_query);
+				// cut kwargs into the base_query
+				base_query = $(element).attr('base_query');
+				base_query = $.parseJSON(base_query);
+				base_query = $.toJSON(base_query);
+				search_query = {'getSamplePointTitle': ui.item[$(this).attr('ui_item')]};
+				search_query = $.toJSON(search_query);
+				element.attr('search_query', search_query);
 				ar_referencewidget_lookups(element);
 			}
 
 			// Selected a Profile
-		    if(this.id.split('_')[2] == 'Profile'){
+			if(fieldName == 'Profile'){
 				unsetTemplate(column);
 				setAnalysisProfile(column, $(this).val());
 				calculate_parts(column);
 			}
 
 			// Selected a Template
-		    if(this.id.split('_')[2] == 'Template'){
-		    	setTemplate(column, $(this).val());
-		    }
+			if(fieldName == 'Template'){
+				setTemplate(column, $(this).val());
+			}
 
-			// $("input[id*=_Template]").change(setTemplate);
-			// 	var curDate = new Date();
-			// 	var y = curDate.getFullYear();
-			// 	var limitString = '1900:' + y;
-			// 	var dateFormat = _("date_format_short_datepicker");
-			// 	column = $(this).attr('column');
-			// 	$("#ar_"+column+"_SampleID_button").val($("#ar_"+column+"_SampleID_default").val());
-			// 	$("#ar_"+column+"_SampleID").val('');
-			// 	$("#ar_"+column+"_ClientReference").val('').removeAttr("readonly");
-			// 	$("#ar_"+column+"_SamplingDate")
-			// 		.datepicker({
-			// 			showOn:'focus',
-			// 			showAnim:'',
-			// 			changeMonth:true,
-			// 			changeYear:true,
-			// 			dateFormat: dateFormat,
-			// 			yearRange: limitString
-			// 		})
-			// 		.click(function(){$(this).attr('value', '');})
-			// 		.attr('value', '');
-			// 	$("#ar_"+column+"_ClientSampleID").val('').removeAttr("readonly");
-			// 	$("#ar_"+column+"_SamplePoint").val('').removeAttr("readonly");
-			// 	$("#ar_"+column+"_SampleType").val('').removeAttr("readonly");
-			// 	$("#ar_"+column+"_SamplingDeviation").val('').removeAttr("disabled");
-			// 	$("#ar_"+column+"_Composite").attr('checked', false).removeAttr("disabled");
-			// 	$("#ar_"+column+"_AdHoc").attr('checked', false).removeAttr("disabled");
-			// 	$("#ar_"+column+"_DefaultContainerType").removeAttr("disabled");
-			// 	$("#deleteSampleButton_" + column).toggle(false);
-			// 	// uncheck and enable all visible service checkboxes
-			// 	$("input[id*='_"+column+"_']").filter(".cb").removeAttr('disabled').attr('checked', false);
-			// 	uncheck_partnrs(column);
-			// 	recalc_prices();
+			// Selected a sample to create a secondary AR.
+			if(fieldName == 'Sample'){
+				// Install the handler which will undo the changes I am about to make
+				$(this).blur(function(){
+					if($(this).val() == ''){
+						// clear and un-disable everything
+						elements = $("[ar_add_column_widget] [id*=ar_"+column+"]:disabled");
+						$.each(elements, function(i,element){
+							$(element).removeAttr('disabled');
+							if($(element).attr('type') == 'checkbox'){
+								$(element).attr('checked', false);
+							} else {
+								$(element).val('');
+							}
+						});
+					}
+				});
+				// Then populate and disable sample fields
+				$.getJSON(window.location.href.replace("/ar_add","") + '/secondary_ar_sample_info',
+					{'Sample_uid': $(this).attr('uid'),
+					 '_authenticator': $('input[name="_authenticator"]').val()},
+					function(data,textStatus){
+						for (var i = data.length - 1; i >= 0; i--) {
+							fieldname = data[i][0];
+							fieldvalue = data[i][1];
+							uid_element = $("#ar_"+column+"_"+fieldname+"_uid");
+							$(uid_element).val('');
+							element = $("#ar_"+column+"_"+fieldname);
+							$(element).val('').attr('disabled', '1');
+							if($(element).attr('type') == 'checkbox' && fieldvalue){
+								$(element).attr('checked', true);
+							} else {
+								$(element).val(fieldvalue);
+							}
+						}
+					}
+				);
+			}
 
 			// Selected a SampleType
-		    if(this.id.split('_')[2] == 'SampleType'){
+			if(fieldName == 'SampleType'){
 				unsetTemplate(column);
 				unsetAnalysisProfile(column, $(this).val());
 				calculate_parts(column);
-		    }
+			}
 
-
-        }
-        if(window.location.href.search("ar_add") > -1){
-            options.url = window.location.href.split("/ar_add")[0] + "/" + options.url;
-        }
-        options.url = options.url + '?_authenticator=' + $('input[name="_authenticator"]').val();
-        options.url = options.url + '&catalog_name=' + $(element).attr('catalog_name');
-        options.url = options.url + '&base_query=' + $(element).attr('base_query');
-        options.url = options.url + '&search_query=' + $(element).attr('search_query');
-        $(element).combogrid(options);
-        $(element).addClass("has_combogrid_widget");
-        $(element).attr('search_query', '{}');
-    };
+		}
+		if(window.location.href.search("ar_add") > -1){
+			options.url = window.location.href.split("/ar_add")[0] + "/" + options.url;
+		}
+		options.url = options.url + '?_authenticator=' + $('input[name="_authenticator"]').val();
+		options.url = options.url + '&catalog_name=' + $(element).attr('catalog_name');
+		options.url = options.url + '&base_query=' + $(element).attr('base_query');
+		options.url = options.url + '&search_query=' + $(element).attr('search_query');
+		$(element).combogrid(options);
+		$(element).addClass("has_combogrid_widget");
+		$(element).attr('search_query', '{}');
+	};
 };
 
 function recalc_prices(column){
@@ -300,7 +305,7 @@ function copyButton(){
 }
 
 function toggleCat(poc, category_uid, column, selectedservices,
-                   force_expand, disable){
+				   force_expand, disable){
 	// selectedservices and column are optional.
 	// disable is used for field analyses - secondary ARs should not be able
 	// to select these
@@ -336,8 +341,8 @@ function toggleCat(poc, category_uid, column, selectedservices,
 			'col_count': $("#col_count").attr('value'),
 			'poc': poc
 		};
-        // possibly remove the fake ar context
-        var url = window.location.href.split("/ar_add")[0] + "/analysisrequest_analysisservices";
+		// possibly remove the fake ar context
+		var url = window.location.href.split("/ar_add")[0] + "/analysisrequest_analysisservices";
 		$(tbody).load(url, options,
 			function(){
 				// analysis service checkboxes
@@ -663,14 +668,14 @@ function resolve_uid(catalog, query){
 	jQuery.ajaxSetup({async:false});
 	$.get(window.location.href.split("/ar_add")[0] + '/referencewidget_search?',
 		{'_authenticator': $('input[name="_authenticator"]').val(),
-	     'base_query': query,
-	     'catalog_name': catalog,
-	     'searchTerm':'',
-	     'page':1,
-	     'rows':10,
-	     'sidx':'',
-	     'sord':''
-	    },
+		 'base_query': query,
+		 'catalog_name': catalog,
+		 'searchTerm':'',
+		 'page':1,
+		 'rows':10,
+		 'sidx':'',
+		 'sord':''
+		},
 		function(data){
 			UID = data['rows'][0]['UID'];
 		},
@@ -682,8 +687,8 @@ function resolve_uid(catalog, query){
 
 function setTemplate(column,template_title){
 	var templateUID = resolve_uid('bika_setup_catalog',
-		                          {'portal_type': 'ARTemplate',
-	                               'title': template_title});
+								  {'portal_type': 'ARTemplate',
+								   'title': template_title});
 	if(templateUID == "") return;
 
 	template_data = $.parseJSON($("#template_data").val())[templateUID];
@@ -781,8 +786,8 @@ function setTemplate(column,template_title){
 
 function setAnalysisProfile(column, profile_title){
 	var profileUID = resolve_uid('bika_setup_catalog',
-		                          {'portal_type': 'AnalysisProfile',
-	                               'title': profile_title});
+								  {'portal_type': 'AnalysisProfile',
+								   'title': profile_title});
 	if(profileUID == "") return;
 	unsetAnalyses(column);
 
@@ -819,7 +824,7 @@ function service_checkbox_change(){
 
 	// Unselecting Dry Matter Service unsets 'Report Dry Matter'
 	if ($(this).val() == $("#getDryMatterService").val()
-	    && $(this).attr("checked") == false) {
+		&& $(this).attr("checked") == false) {
 		$("#ar_"+column+"_ReportDryMatter").attr("checked", false);
 	}
 
@@ -913,15 +918,11 @@ $(document).ready(function(){
 
 	$("input[id*=_ReportDryMatter]").change(changeReportDryMatter);
 
-    // AR Add/Edit ajax form submits
+	// AR Add/Edit ajax form submits
 	ar_edit_form = $('#analysisrequest_edit_form');
 	if (ar_edit_form.ajaxForm != undefined){
 		var options = {
-			url: window.location.href
-				.split("?")[0]
-				.split("/ar_add")[0]
-				.split("/base_edit")[0]
-				.replace("analysisrequests", "") + "/analysisrequest_submit",
+			url: window.location.href.split("/portal_factory")[0] + "/analysisrequest_submit",
 			dataType: 'json',
 			data: {'_authenticator': $('input[name="_authenticator"]').val()},
 			beforeSubmit: function(formData, jqForm, options) {
@@ -931,10 +932,7 @@ $(document).ready(function(){
 				if(responseText['success'] != undefined){
 					if(responseText['labels'] != undefined){
 						destination = window.location.href
-							.split("?")[0]
-							.replace("/ar_add","")
-							.replace("/analysisrequests", "")
-							.replace("/base_edit", "");
+							.split("/portal_factory")[0];
 						ars = responseText['labels'];
 						labelsize = responseText['labelsize'];
 						q = "/sticker?size="+labelsize+"&items=";
@@ -942,10 +940,7 @@ $(document).ready(function(){
 						window.location.replace(destination+q);
 					} else {
 						destination = window.location.href
-							.split("?")[0]
-							.split("/ar_add")[0]
-							.replace("/analysisrequests","")
-							.replace("/base_edit", "/base_view");
+							.split("/portal_factory")[0];
 						window.location.replace(destination);
 					}
 				} else {

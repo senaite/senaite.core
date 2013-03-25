@@ -50,8 +50,9 @@ class BatchAnalysisRequestsView(AnalysisRequestsView, AnalysisRequestAddView):
         if isActive(self.context):
             if mtool.checkPermission(AddAnalysisRequest, self.portal):
                 self.context_actions[self.context.translate(_('Add new'))] = {
-                    'url':self.context.absolute_url() + '/ar_add?col_count=1',
-                    'icon': '++resource++bika.lims.images/add.png'}
+                    'url': self.context.absolute_url() + "/portal_factory/"
+                    "AnalysisRequest/Request new analyses/ar_add?col_count=1",
+                    'icon': '++resource++bika.lims.images/ad0d.png'}
         return super(BatchAnalysisRequestsView, self).__call__()
 
     @lazy_property
@@ -227,7 +228,6 @@ class BatchPublishView(BrowserView):
 class ClientContactVocabularyFactory(CatalogVocabulary):
 
     def __call__(self):
-        self.contentFilter = {
-            'portal_type': 'Contact',
-        }
-        return super(ClientContactVocabularyFactory, self).__call__()
+        return super(ClientContactVocabularyFactory, self).__call__(
+            portal_type='Contact'
+        )
