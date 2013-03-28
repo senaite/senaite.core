@@ -435,7 +435,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'ProfileUID',
-        expression='here.getProfile( and here.getProfile().UID()',
+        expression='here.getProfile() and here.getProfile().UID()',
         widget=ComputedWidget(
             visible=False,
         ),
