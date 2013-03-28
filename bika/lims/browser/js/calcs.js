@@ -57,11 +57,12 @@ $(document).ready(function(){
 				// put new alerts
 				for(i=0;i<$(data['alerts']).length;i++){
 					lert = $(data['alerts'])[i];
+					product = lert.product ? lert.product : 'bika.lims';
 					$("span[uid='"+lert.uid+"']")
 					  .filter("span[field='"+lert.field+"']")
 					  .empty()
 					  .append("<img src='"+
-					    window.portal_url+"/++resource++bika.lims.images/" +
+					    window.portal_url+"/++resource++"+product+".images/" +
 						lert.icon +".png' title='"+
 						lert.msg+"' uid='"+
 						lert.uid+"' icon='"+
