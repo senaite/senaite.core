@@ -514,10 +514,11 @@ Table cells for each column from in review_state's column list.
 	                        alerts python:hasattr(view.bika_listing,'getOutOfRangeAlerts') and view.bika_listing.getOutOfRangeAlerts() or None">
 	   <span class="alert"
 	         tal:attributes="uid string:${uid};
-	                         field column;">
+	                         field column;"
+	         tal:define="product python:(alerts and uid in alerts and 'product' in alerts[uid]) and alerts[uid]['product'] or 'bika.lims';">
 	         <img 
                 tal:condition="python: (alerts and uid in alerts and column == 'Result' and item['Result']) or False"
-                tal:attributes="src python:(portal.absolute_url()+'/++resource++bika.lims.images/%s.png')%alerts[uid]['icon'];
+                tal:attributes="src python:(portal.absolute_url()+'/++resource++'+product+'.images/%s.png')%alerts[uid]['icon'];
 	                              title python:alerts[uid]['msg']"/>
 	         
 	   </span>
