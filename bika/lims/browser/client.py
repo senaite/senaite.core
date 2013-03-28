@@ -25,7 +25,7 @@ from plone.app.layout.globals.interfaces import IViewView
 from zope.component import adapts
 from zope.i18n import translate
 from zope.interface import implements
-import plone
+import plone, json
 
 class ClientWorkflowAction(AnalysisRequestWorkflowAction):
     """ This function is called to do the worflow actions
@@ -243,6 +243,12 @@ class ClientBatchesView(BatchFolderContentsView):
     def __init__(self, context, request):
         super(ClientBatchesView, self).__init__(context, request)
         self.view_url = self.context.absolute_url() + "/batches"
+
+    def __call__(self):
+        self.context_actions[_('Add')] = \
+                {'url': '../../batches/createObject?type_name=Batch',
+                 'icon': self.portal.absolute_url() + '/++resource++bika.lims.images/add.png'}
+        return BatchFolderContentsView.__call__(self)
 
     def contentsMethod(self, contentFilter):
         bc = getToolByName(self.context, "bika_catalog")
@@ -900,3 +906,15 @@ class ClientContactVocabularyFactory(CatalogVocabulary):
             path={'query': "/".join(self.context.getPhysicalPath()),
                   'level': 0}
         )
+
+class ajaxGetClientInfo(BrowserView):
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        client = self.context
+        ret = {'ClientTitle': self.context.Title(),
+               'ClientID': self.context.getClientID(),
+               'ClientSysID': self.context.id,
+               'ClientUID': self.context.UID()
+               }
+
+        return json.dumps(ret)

@@ -116,4 +116,11 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="bika.lims.interfaces.IClient"
+      name="getClientInfo"
+      class="bika.lims.browser.client.ajaxGetClientInfo"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
 </configure>
