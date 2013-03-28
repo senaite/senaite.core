@@ -52,7 +52,7 @@ class BatchAnalysisRequestsView(AnalysisRequestsView, AnalysisRequestAddView):
                 self.context_actions[self.context.translate(_('Add new'))] = {
                     'url': self.context.absolute_url() + "/portal_factory/"
                     "AnalysisRequest/Request new analyses/ar_add?col_count=1",
-                    'icon': '++resource++bika.lims.images/ad0d.png'}
+                    'icon': '++resource++bika.lims.images/add.png'}
         return super(BatchAnalysisRequestsView, self).__call__()
 
     @lazy_property
