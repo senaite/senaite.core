@@ -9,7 +9,7 @@
   <browser:page
     for="Products.CMFPlone.interfaces.IPloneSiteRoot"
     name="import"
-    class="bika.lims.exportimport.import.ImportView"
+    class="bika.lims.exportimport.dataimport.ImportView"
     permission="bika.lims.ImportInstrumentResults"
     layer="bika.lims.interfaces.IBikaLIMS"
   />
@@ -17,7 +17,7 @@
   <browser:page
     for="*"
     name="getImportTemplate"
-    class="bika.lims.exportimport.import.ajaxGetImportTemplate"
+    class="bika.lims.exportimport.dataimport.ajaxGetImportTemplate"
     permission="zope.Public"
     layer="bika.lims.interfaces.IBikaLIMS"
   />

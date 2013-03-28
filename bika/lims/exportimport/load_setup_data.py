@@ -103,26 +103,7 @@ class LoadSetupData(BrowserView):
         self.deferred = unsolved
         return len(unsolved)
 
-    def __call__(self):
-        form = self.request.form
-
-        portal = getSite()
-
-        wb = None
-        if 'setupexisting' in form and 'existing' in form and form['existing']:
-                fn = form['existing']
-                self.dataset_name = fn
-                filename = resource_filename("bika.lims", "setupdata/%s/%s.xlsx" % (fn, fn))
-                wb = load_workbook(filename = filename)
-        elif 'setupfile' in form and 'file' in form and form['file']:
-                tmp = tempfile.mktemp()
-                file_content = form['file'].read()
-                open(tmp, 'wb').write(file_content)
-                wb = load_workbook(filename=tmp)
-                self.dataset_name = 'uploaded'
-
-        assert(wb != None)
-
+    def load_sheets(self, wb):
         sheets = {}
         self.nr_rows = 0
         for sheetname in wb.get_sheet_names():
@@ -265,6 +246,28 @@ class LoadSetupData(BrowserView):
             self.load_id_prefixes(sheets['ID Prefixes'])
         if 'Attachment Types' in sheets:
             self.load_attachment_types(sheets['Attachment Types'])
+        
+    def __call__(self):
+        form = self.request.form
+
+        portal = getSite()
+
+        wb = None
+        if 'setupexisting' in form and 'existing' in form and form['existing']:
+                fn = form['existing']
+                self.dataset_name = fn
+                filename = resource_filename("bika.lims", "setupdata/%s/%s.xlsx" % (fn, fn))
+                wb = load_workbook(filename = filename)
+        elif 'setupfile' in form and 'file' in form and form['file']:
+                tmp = tempfile.mktemp()
+                file_content = form['file'].read()
+                open(tmp, 'wb').write(file_content)
+                wb = load_workbook(filename=tmp)
+                self.dataset_name = 'uploaded'
+
+        assert(wb != None)
+
+        self.load_sheets(wb)
 
         check = len(self.deferred)
         while len(self.deferred) > 0:
@@ -369,36 +372,6 @@ class LoadSetupData(BrowserView):
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
                 self.batchlabels[row['title']] = obj
-
-    def load_CaseStatuses(self, sheet):
-        logger.info("Loading Batch Labels...")
-        folder = self.context.bika_setup.bika_casestatuses
-        self.casestatuses = {}
-        rows = self.get_rows(sheet, 3)
-        for row in rows[3:]:
-            if row['title']:
-                _id = folder.invokeFactory('CaseStatus', id = 'tmp')
-                obj = folder[_id]
-                obj.edit(title = row['title'],
-                         description = row.get('description', ''))
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
-                self.casestatuses[row['title']] = obj
-
-    def load_CaseOutcomes(self, sheet):
-        logger.info("Loading Case Outcomes...")
-        folder = self.context.bika_setup.bika_caseoutcomes
-        self.caseoutcomes = {}
-        rows = self.get_rows(sheet, 3)
-        for row in rows:
-            if row['title']:
-                _id = folder.invokeFactory('CaseOutcome', id = 'tmp')
-                obj = folder[_id]
-                obj.edit(title = row['title'],
-                         description = row.get('description', ''))
-                obj.unmarkCreationFlag()
-                # renameAfterCreation(obj)
-                self.caseoutcomes[row['title']] = obj
 
     def load_preservations(self, sheet):
         logger.info("Loading Preservations...")
@@ -896,12 +869,15 @@ class LoadSetupData(BrowserView):
                    'hours': int(row['MaxTimeAllowed_days'] and row['MaxTimeAllowed_days'] or 0),
                    'minutes': int(row['MaxTimeAllowed_minutes'] and row['MaxTimeAllowed_minutes'] or 0),
                    }
+            cat = self.cats.get(row.get('AnalysisCategory_title',''), '')
+            cat = (cat and cat != '') and cat.UID() or None
+
             obj.edit(
                 title = row['title'],
                 description = row.get('description', ''),
                 Keyword = row['Keyword'],
                 PointOfCapture = row['PointOfCapture'],
-                Category = self.cats[row['AnalysisCategory_title']].UID(),
+                Category = cat,
                 Department = row['Department_title'] and self.departments[row['Department_title']].UID() or None,
                 ReportDryMatter = self.to_bool(row['ReportDryMatter']),
                 AttachmentOption = row['Attachment'][0].lower(),
