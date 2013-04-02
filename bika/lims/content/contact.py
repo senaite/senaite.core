@@ -13,6 +13,7 @@ from bika.lims.content.person import Person
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.interfaces import IContact
 from zope.interface import implements
+from bika.lims.utils import isActive
 
 schema = Person.schema.copy() + Schema((
     LinesField('PublicationPreference',
@@ -68,5 +69,16 @@ class Contact(Person):
         """ check if contact has user """
         return self.portal_membership.getMemberById(
             self.getUsername()) is not None
+
+    def getContacts(self, dl=True):
+        pairs = []
+        objects = []
+        for contact in self.aq_parent.objectValues('Contact'):
+            if isActive(contact) and contact.UID() != self.UID():
+                pairs.append((contact.UID(), contact.Title()))
+                if not dl:
+                    objects.append(contact)
+        pairs.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
+        return dl and DisplayList(pairs) or objects
 
 atapi.registerType(Contact, PROJECTNAME)
