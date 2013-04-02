@@ -289,7 +289,7 @@ class Analysis(BaseContent):
             Return True, True, spec if in shoulder (out, but acceptable)
             Return False, None, None if in range
         """
-        result = result and result or self.getResult()
+        result = result is not None and str(result) or self.getResult()
 
         # if analysis result is not a number, then we assume in range
         try:
@@ -305,19 +305,50 @@ class Analysis(BaseContent):
         keyword = self.getService().getKeyword()
         spec = specs.getResultsRangeDict()
         if keyword in spec:
-            spec_min = float(spec[keyword]['min'])
-            spec_max = float(spec[keyword]['max'])
+            spec_min = None
+            spec_max = None
+            try:
+                spec_min = float(spec[keyword]['min'])
+            except:
+                spec_min = None
+                pass
 
-            if spec_min <= result <= spec_max:
+            try:
+                spec_max = float(spec[keyword]['max'])
+            except:
+                spec_max = None
+                pass
+
+            if (not spec_min and not spec_max):
+                # No min and max values defined
+                return False, None, None
+
+            elif spec_min and spec_max \
+                and spec_min <= result <= spec_max:
+                # min and max values defined
+                return False, None, None
+
+            elif spec_min and not spec_max and spec_min <= result:
+                # max value not defined
+                return False, None, None
+
+            elif not spec_min and spec_max and spec_max >= result:
+                # min value not defined
                 return False, None, None
 
             """ check if in 'shoulder' error range - out of range,
                 but in acceptable error """
-            error_amount = (result / 100) * float(spec[keyword]['error'])
+            error = 0
+            try:
+                error = float(spec[keyword].get('error', '0'))
+            except:
+                error = 0
+                pass
+            error_amount = (result / 100) * error
             error_min = result - error_amount
             error_max = result + error_amount
-            if ((result < spec_min) and (error_max >= spec_min)) or \
-               ((result > spec_max) and (error_min <= spec_max)):
+            if (spec_min and result < spec_min and error_max >= spec_min) or \
+               (spec_max and result > spec_max and error_min <= spec_max):
                 return True, True, spec[keyword]
             else:
                 return True, False, spec[keyword]
