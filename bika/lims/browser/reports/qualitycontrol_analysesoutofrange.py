@@ -161,7 +161,13 @@ class Report(BrowserView):
             # check if in shoulder: out of range, but in acceptable
             #     error percentage
             shoulder = False
-            error_amount = (result / 100) * float(spec[keyword]['error'])
+            error = 0
+            try:
+                error = float(spec[keyword].get('error', '0'))
+            except:
+                error = 0
+                pass
+            error_amount = (result / 100) * error
             error_min = result - error_amount
             error_max = result + error_amount
             if ((result < spec_min) and (error_max >= spec_min)) or \
