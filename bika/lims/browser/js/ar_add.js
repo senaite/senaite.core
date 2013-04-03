@@ -255,14 +255,14 @@ function changePrimaryContact(){
 }
 
 function copyButton(){
-	field_name = $(this).attr("name");
+	var field_name = $(this).attr("name");
 	if ($(this).parent().attr('class') == 'service'){ // Analysis Service checkbox
-		first_val = $('input[column="0"]').filter('#'+this.id).attr("checked");
-		affected_elements = [];
+		var first_val = $('input[column="0"]').filter('#'+this.id).attr("checked");
+		var affected_elements = [];
 		// 0 is the first column; we only want to change cols 1 onward.
-		for (col=1; col<parseInt($("#col_count").val()); col++) {
-			other_elem = $('input[column="'+col+'"]').filter('#'+this.id);
-			disabled = other_elem.attr('disabled');
+		for (var col=1; col<parseInt($("#col_count").val()); col++) {
+			var other_elem = $('input[column="'+col+'"]').filter('#'+this.id);
+			var disabled = other_elem.attr('disabled');
 			// For some browsers, `attr` is undefined; for others, its false.  Check for both.
 			if (typeof disabled !== 'undefined' && disabled !== false) {
 				disabled = true;
@@ -280,10 +280,10 @@ function copyButton(){
 	}
 	else if ($('input[name^="ar\\.0\\.'+field_name+'"]').attr("type") == "checkbox") {
 		// other checkboxes
-		first_val = $('input[name^="ar\\.0\\.'+field_name+'"]').attr("checked");
+		var first_val = $('input[name^="ar\\.0\\.'+field_name+'"]').attr("checked");
 		// col starts at 1 here; we don't copy into the the first row
-		for (col=1; col<parseInt($("#col_count").val()); col++) {
-			other_elem = $('#ar_' + col + '_' + field_name);
+		for (var col=1; col<parseInt($("#col_count").val()); col++) {
+			var other_elem = $('#ar_' + col + '_' + field_name);
 			if (!(other_elem.attr("checked")==first_val)) {
 				other_elem.attr("checked", first_val?true:false);
 			}
@@ -291,13 +291,19 @@ function copyButton(){
 		$('[id*=_' + field_name + "]").change();
 	}
 	else{
-		first_val = $('input[name^="ar\\.0\\.'+field_name+'"]').val();
+		var first_val = $('input[name^="ar\\.0\\.'+field_name+'"]').val();
+		// Reference fields have a hidden *_uid field
+		var first_uid = $('input[name^="ar\\.0\\.'+field_name+'_uid"]').val();
 		// col starts at 1 here; we don't copy into the the first row
-		for (col=1; col<parseInt($("#col_count").val()); col++) {
-			other_elem = $('#ar_' + col + '_' + field_name);
+		for (var col=1; col<parseInt($("#col_count").val()); col++) {
+			var other_elem = $('#ar_' + col + '_' + field_name);
 			if (!(other_elem.attr("disabled"))) {
 				if(field_name == 'SampleType'){ calculate_parts(col); }
 				other_elem.val(first_val);
+			}
+			var other_uid_elem = $('#ar_' + col + '_' + field_name + "_uid");
+			if (first_uid != undefined && first_uid != null){
+				other_uid_elem.val(first_uid);
 			}
 		}
 		$('[id*=_' + field_name + "]").change();
