@@ -115,9 +115,11 @@ class doPublish(BrowserView):
                 for ar in self.batch:
                     if ar.getReportDryMatter():
                         self.any_drymatter = True
-                    states = ("verified", "published") 
-                    for analysis in ar.getAnalyses(full_objects=True,
-                                                   review_state=states):
+                    states = ("verified", "published")
+                    analyses = ar.getAnalyses(full_objects=True,
+                                              review_state=states)
+                    analyses.sort(lambda x, y: cmp(x.Title(), y.Title()))
+                    for analysis in analyses:
                         service = analysis.getService()
                         poc = POINTS_OF_CAPTURE.getValue(service.getPointOfCapture())
                         cat = service.getCategoryTitle()

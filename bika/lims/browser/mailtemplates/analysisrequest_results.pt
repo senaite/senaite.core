@@ -16,14 +16,15 @@
 </head>
 
 <body tal:define="
-  plone_view python:view.context.restrictedTraverse('@@plone');
-  portal python:context.portal_url.getPortalObject();
-  lab_accredited view/laboratory/getLaboratoryAccredited;
-  global columns python:0;
-  pub_pref view/pub_pref;
-  accredited python:lab_accredited and view.any_accredited;
-  global invoice_exclude python:False;
-  global out_of_range python:0;">
+      plone_view python:view.context.restrictedTraverse('@@plone');
+      portal python:context.portal_url.getPortalObject();
+      lab_accredited view/laboratory/getLaboratoryAccredited;
+      global columns python:0;
+      pub_pref view/pub_pref;
+      accredited python:lab_accredited and view.any_accredited;
+      global invoice_exclude python:False;
+      global out_of_range python:0;"
+  style="font-size:90%;">
 
 <table class="logo-table">
 <tr>
@@ -44,12 +45,27 @@
 
 <table class="address-table">
   <tr>
-    <td>
+    <td style="padding-right:50px;">
       <span tal:content="view/contact/getFullname"/>
       <br/>
       <span tal:content="view/client/Title"/>
       <br/>
       <span tal:content="structure view/client_address"/>
+      <br/>
+      <tal:reporter tal:condition="view/reporter">
+          <span i18n:translate="">Published by</span>
+          &nbsp;
+          <span tal:content="view/reporter"/>
+          <tal:email tal:condition="view/reporter_email">
+              (<a tal:define="email view/reporter_email"
+                 tal:content="email"
+                 tal:attributes="href string:mailto:${email}"/>)
+          </tal:email>
+          <tal:signature tal:condition="view/reporter_signature">
+              <br/>
+              <img tal:attributes="src view/reporter_signature"/>
+          </tal:signature>
+      </tal:reporter>
     </td>
     <td>
       <span tal:content="view/laboratory/Title"/>
@@ -58,23 +74,6 @@
     </td>
   </tr>
 </table>
-
-<div>
-    <tal:reporter tal:condition="view/reporter">
-        <span i18n:translate="">Published by</span>
-        &nbsp;
-        <span tal:content="view/reporter"/>
-        <tal:email tal:condition="view/reporter_email">
-            (<a tal:define="email view/reporter_email"
-               tal:content="email"
-               tal:attributes="href string:mailto:${email}"/>)
-        </tal:email>
-        <tal:signature tal:condition="view/reporter_signature">
-            <br/>
-            <img tal:attributes="src view/reporter_signature"/>
-        </tal:signature>
-    </tal:reporter>
-</div>
 
 <hr/>
 <h1 i18n:translate="">Summary</h1>
