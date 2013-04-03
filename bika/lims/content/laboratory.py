@@ -106,7 +106,7 @@ class Laboratory(UniqueObject, Organisation):
         return self.schema
 
     def Title(self):
-        title = self.title and self.title or _("Laboratory")
+        title = self.getName() and self.getName() or _("Laboratory")
         return safe_unicode(title).encode('utf-8')
 
 registerType(Laboratory, PROJECTNAME)

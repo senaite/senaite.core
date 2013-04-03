@@ -28,7 +28,7 @@
 <table class="logo-table">
 <tr>
     <td>
-      <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/logo_email.png"/>
+      <img tal:attributes="src string:${portal/absolute_url}/logo_results_pdf.png"/>
     </td>
     <td tal:condition="accredited"
         tal:define="logo python:context.bika_setup.laboratory.getAccreditationBodyLogo()">
@@ -61,7 +61,8 @@
 
 <div>
     <tal:reporter tal:condition="view/reporter">
-        <span i18n:translate="">Created by:</span>
+        <span i18n:translate="">Published by</span>
+        &nbsp;
         <span tal:content="view/reporter"/>
         <tal:email tal:condition="view/reporter_email">
             (<a tal:define="email view/reporter_email"
@@ -189,7 +190,7 @@
 
   </thead>
   </table>
-  
+
     <tal:arcount
       tal:repeat="ar view/batch">
       <tal:ar
@@ -261,7 +262,7 @@
                 </span>
                 <p tal:condition="python:view.context.bika_setup.getEnableAnalysisRemarks() and analysis.getRemarks()!=''">
                     <span i18n:translate="" style="font-weight:bold;font-size:0.9em;">Remarks</span><br/>
-                    <span tal:content="analysis/getRemarks"/>
+                    <span tal:content="structure analysis/getRemarks"/>
                 </p>
               </td>
               <td tal:condition="ar/getReportDryMatter">
@@ -286,7 +287,7 @@
 <tal:qctable tal:condition="python:len(view.qcservices)>0">
     <h1 i18n:translate="">QC Results</h1>
     <table class="main-table">
-        <tal:qctypes repeat="qctype python:sorted(view.qcservices.iterkeys())">            
+        <tal:qctypes repeat="qctype python:sorted(view.qcservices.iterkeys())">
             <thead>
                 <tr>
                     <th colspan="4" tal:condition="python:qctype=='b'" i18n:translate="">Blank analyses</th>
@@ -302,12 +303,12 @@
                        <th i18n:translate="">Result</th>
                        <th tal:condition="python:qctype!='d'" i18n:translate="">Reference Sample</th>
                        <th tal:condition="python:qctype!='d'" i18n:translate="">Worksheet</th>
-                    </tr> 
+                    </tr>
                     <tal:qcservices tal:repeat="qc python:view.qcservices[qctype][qcpoc][qccat]">
                         <tr>
                             <td tal:content="python:qc['service'].Title()"/>
-                            <td tal:content="python:qc['analysis'].getResult()"/>    
-                            <td tal:content="python:'%s - %s'%(qc['analysis'].aq_parent.id, qc['analysis'].aq_parent.Title())" tal:condition="python:qctype!='d'"/>                            
+                            <td tal:content="python:qc['analysis'].getResult()"/>
+                            <td tal:content="python:'%s - %s'%(qc['analysis'].aq_parent.id, qc['analysis'].aq_parent.Title())" tal:condition="python:qctype!='d'"/>
                             <td tal:define="ws python:qc['analysis'].getBackReferences('WorksheetAnalysis')">
                                 <a tal:condition="python: len(ws)>0"
                                    tal:attributes="href python:ws[0].absolute_url()"
@@ -320,7 +321,7 @@
                     </tr>
                 </tal:qccats>
                 </tal:qcpocs>
-            </tbody>            
+            </tbody>
         </tal:qctypes>
     </table>
 </tal:qctable>
@@ -330,9 +331,8 @@
   <tal:repeat repeat="ar view/batch">
       <tr tal:define="remarks python:ar.getRemarks()"
           tal:condition="remarks">
-          <td width="10%"
-              tal:content="string:${ar/getRequestID}:">AR:</td>
-          <td tal:content="remarks">Remarks</td>
+          <td tal:content="string:${ar/getRequestID}:">AR:</td>
+          <td tal:content="structure remarks">Remarks</td>
       </tr>
   </tal:repeat>
 </table>
