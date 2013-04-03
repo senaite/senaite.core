@@ -441,14 +441,11 @@ class AnalysesView(BikaListingView):
             self.show_select_column = True
 
         # Dry Matter.
-        # The Dry Matter column is always enabled for worksheets,
-        # never enabled for reference sample contexts, and refers to
-        # getReportDryMatter in ARs.
-        # XXX It should be enabled only if any of the ARs present asked for DM.
+        # The Dry Matter column is never enabled for reference sample contexts
+        # and refers to getReportDryMatter in ARs.
         if items and \
-           (self.context.portal_type == 'Worksheet' or \
             (hasattr(self.context, 'getReportDryMatter') and \
-             self.context.getReportDryMatter())):
+             self.context.getReportDryMatter()):
 
             # look through all items
             # if the item's Service supports ReportDryMatter, add getResultDM().

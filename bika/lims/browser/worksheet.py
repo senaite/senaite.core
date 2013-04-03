@@ -213,10 +213,8 @@ class WorksheetAnalysesView(AnalysesView):
                        'input_class': 'ajax_calculate numeric',
                        'sortable': False},
             'Uncertainty': {'title': _('+-')},
-            'ResultDM': {'title': _('Dry')},
             'retested': {'title': "<img src='++resource++bika.lims.images/retested.png' title='%s'/>" % _('Retested'),
                          'type':'boolean'},
-            'Remarks': {'title':_('Remarks')},
             'Attachments': {'title': _('Attachments')},
             'state_title': {'title': _('State')},
         }
@@ -235,7 +233,6 @@ class WorksheetAnalysesView(AnalysesView):
                         'Uncertainty',
                         'DueDate',
                         'state_title',
-                        'Remarks',
                         'Attachments']
              },
         ]
@@ -244,6 +241,7 @@ class WorksheetAnalysesView(AnalysesView):
         self.analyst = self.context.getAnalyst().strip()
         self.instrument = self.context.getInstrument()
         self.contentsMethod = self.context.getFolderContents
+        remarks_enabled = self.context.bika_setup.getEnableAnalysisRemarks()
         items = AnalysesView.folderitems(self)
         layout = self.context.getLayout()
         highest_position = 0
@@ -323,8 +321,15 @@ class WorksheetAnalysesView(AnalysesView):
             if pos in empties:
                 continue
 
+            # Factor the Remarks-field rows into the length of pos_items
+            # to correctly stretch the Pos column's rowspan
+            rowspan = len(pos_items)
+            if remarks_enabled:
+                for item in pos_items:
+                    if items[x]['allow_edit']:
+                        rowspan += 1
             # set Pos column for this row, to have a rowspan
-            items[x]['rowspan'] = {'Pos': len(pos_items)}
+            items[x]['rowspan'] = {'Pos': rowspan}
 
             # fill the rowspan with a little table
             obj = items[x]['obj']
