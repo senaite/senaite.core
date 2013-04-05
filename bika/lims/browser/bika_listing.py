@@ -283,25 +283,14 @@ class BikaListingView(BrowserView):
         if form_id not in self.request.get('table_only', form_id):
             return ''
 
-        ## review_state_selector
-        cookie = json.loads(self.request.get("review_state", '{}'))
-        cookie_key = "%s%s" % (self.context.portal_type, form_id)
-        # first check POST
-        selected_state = self.request.get("%s_review_state"%form_id, '')
-        if not selected_state:
-            # then check cookie
-            selected_state = cookie.get(cookie_key, 'default')
+        ## review_state_selector - value can be specified in request
+        selected_state = self.request.get("%s_review_state" % form_id,
+                                          'default')
         # get review_state id=selected_state
         states = [r for r in self.review_states if r['id'] == selected_state]
         review_state = states and states[0] or self.review_states[0]
-        # set request and cookie to currently selected state id
-        if not selected_state:
-            selected_state = self.review_states[0]['id']
-
-        self.review_state = cookie[cookie_key] = selected_state
-        cookie = json.dumps(cookie)
-        self.request['review_state'] = cookie
-        self.request.response.setCookie('review_state', cookie, path="/")
+        # set selected review_state ('default'?) to request
+        self.request['review_state'] = review_state['id']
 
         # contentFilter is expected in every review_state.
         for k, v in review_state['contentFilter'].items():
@@ -734,14 +723,9 @@ class BikaListingTable(tableview.Table):
         workflow = getToolByName(self.context, 'portal_workflow')
 
 
-        cookie = json.loads(self.request.get("review_state", '{}'))
-        cookie_key = "%s%s" % (self.context.portal_type,
-                               self.form_id)
-        # first check POST
-        selected_state = self.request.get("%s_review_state"%self.form_id, '')
-        if not selected_state:
-            # then check cookie
-            selected_state = cookie.get(cookie_key, '')
+        # check POST for a specified review_state selection
+        selected_state = self.request.get("%s_review_state"%self.form_id,
+                                          'default')
         # get review_state id=selected_state
         states = [r for r in self.bika_listing.review_states
                   if r['id'] == selected_state]

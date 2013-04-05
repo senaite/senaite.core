@@ -10,6 +10,7 @@ from bika.lims import PMF, logger
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.utils import getUsers
+from bika.lims.utils import to_utf8 as _c
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
 import plone
@@ -39,6 +40,7 @@ class WorksheetFolderWorkflowAction(WorkflowAction):
                     # Double-check the state first
                     if workflow.getInfoFor(worksheet, 'review_state') == 'open':
                         worksheet.setAnalyst(form['Analyst'][0][uid])
+                        worksheet.reindexObject(idxs=['getAnalyst'])
                         changes = True
 
                 if changes:
@@ -231,25 +233,9 @@ class WorksheetFolderListingView(BikaListingView):
         pm = getToolByName(self.context, "portal_membership")
 
         member = pm.getAuthenticatedMember()
-        # Only show "my" worksheets
-        # this cannot be setup in contentFilter,
-        # because AuthenticatedMember is not available in __init__
-        cookie = json.loads(self.request.get("review_state", '{}'))
-        cookie_key = "%s%s" % (self.context.portal_type, self.form_id)
-        # POST
-        selected_state = self.request.get("%s_review_state"%self.form_id, '')
-        if not selected_state:
-            # cookie
-            selected_state = cookie.get(cookie_key, '')
-        if selected_state == 'mine':
-            # modify contentFolter for current state
-            new_review_states = []
-            for state in self.review_states:
-                if state['id'] == 'mine':
-                    state['contentFilter']['getAnalyst'] = member.getId()
-                else:
-                    new_review_states.append(state)
-            self.review_states = new_review_states
+
+        selected_state = self.request.get("%s_review_state"%self.form_id,
+                                          'default')
 
         items = BikaListingView.folderitems(self)
         new_items = []
@@ -266,10 +252,16 @@ class WorksheetFolderListingView(BikaListingView):
 
             obj = items[x]['obj']
 
-            review_state = wf.getInfoFor(obj, 'review_state')
-
             analyst = obj.getAnalyst().strip()
             creator = obj.Creator().strip()
+
+            # Only show "my" worksheets
+            # this cannot be setup in contentFilter,
+            # because AuthenticatedMember is not available in __init__
+            if selected_state == 'mine':
+                this_analyst = _c(member.getId())
+                if analyst != this_analyst:
+                    continue
 
             items[x]['Analyst'] = analyst
 
