@@ -84,4 +84,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+ <genericsetup:upgradeStep
+        title="issue #1116: Cannot edit Sampling deviations"
+        description="Set default action to base_edit"
+        source="1115"
+        destination="1116"
+        handler="bika.lims.upgrade.to1116.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
