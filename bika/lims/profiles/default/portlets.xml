@@ -3,108 +3,124 @@
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
     i18n:domain="plone">
 
- <assignment name="accreditation-pt" category="context" key="/"
-    manager="plone.leftcolumn" type="portlets.Classic" visible="True">
-  <property name="macro">portlet</property>
-  <property name="template">portlet_accreditation</property>
- </assignment>
+    <assignment
+        name="accreditation-pt"
+        category="context"
+        key="/"
+        manager="plone.leftcolumn"
+        type="portlets.Classic"
+        visible="True">
+    <property name="macro">portlet</property>
+    <property name="template">portlet_accreditation</property>
+    </assignment>
 
- <assignment name="login" category="context" key="/"
-    manager="plone.leftcolumn" type="portlets.Login" visible="True"/>
+    <assignment
+        name="login"
+        category="context"
+        key="/"
+        manager="plone.leftcolumn"
+        type="portlets.Login"
+        visible="True"/>
 
- <assignment name="navigation" category="context" key="/"
-    manager="plone.leftcolumn" type="portlets.Navigation" visible="True">
-  <property name="topLevel">0</property>
-  <property name="currentFolderOnly">False</property>
-  <property name="name">Navigation</property>
-  <property name="includeTop">True</property>
-  <property name="bottomLevel">0</property>
-  <property name="root">/</property>
- </assignment>
+    <assignment
+        name="navigation"
+        category="context"
+        key="/"
+        manager="plone.leftcolumn"
+        type="portlets.Navigation"
+        visible="True">
+    <property name="topLevel">0</property>
+    <property name="currentFolderOnly">False</property>
+    <property name="name">Navigation</property>
+    <property name="includeTop">True</property>
+    <property name="bottomLevel">0</property>
+    <property name="root">/</property>
+    </assignment>
 
-
-
-    <assignment name="Calendar" category="context" key="/front-page"
-        manager="plone.rightcolumn" type="portlets.Calendar" visible="True">
+    <assignment
+        name="Calendar"
+        category="context"
+        key="/"
+        manager="plone.rightcolumn"
+        type="portlets.Calendar"
+        visible="True">
     </assignment>
 
     <assignment
         name="portlet_to_be_sampled-pt"
         category="context"
-        key="/front-page"
+        key="/"
         manager="plone.rightcolumn"
         type="portlets.Classic"
         visible="True">
-      <property name="macro">portlet</property>
-      <property name="template">portlet_to_be_sampled</property>
+    <property name="macro">portlet</property>
+    <property name="template">portlet_to_be_sampled</property>
     </assignment>
 
     <assignment
         name="portlet_to_be_preserved-pt"
         category="context"
-        key="/front-page"
+        key="/"
         manager="plone.rightcolumn"
         type="portlets.Classic"
         visible="True">
-      <property name="macro">portlet</property>
-      <property name="template">portlet_to_be_preserved</property>
+    <property name="macro">portlet</property>
+    <property name="template">portlet_to_be_preserved</property>
     </assignment>
 
     <assignment
         name="portlet_late_analyses-pt"
         category="context"
-        key="/front-page"
+        key="/"
         manager="plone.rightcolumn"
         type="portlets.Classic"
         visible="True">
-      <property name="macro">portlet</property>
-      <property name="template">portlet_late_analyses</property>
+    <property name="macro">portlet</property>
+    <property name="template">portlet_late_analyses</property>
     </assignment>
 
     <assignment
         name="portlet_pending_orders-pt"
         category="context"
-        key="/front-page"
+        key="/"
         manager="plone.rightcolumn"
         type="portlets.Classic"
         visible="True">
-      <property name="macro">portlet</property>
-      <property name="template">portlet_pending_orders</property>
+    <property name="macro">portlet</property>
+    <property name="template">portlet_pending_orders</property>
     </assignment>
 
     <assignment
         name="portlet_sample_due-pt"
         category="context"
-        key="/front-page"
+        key="/"
         manager="plone.rightcolumn"
         type="portlets.Classic"
         visible="True">
-      <property name="macro">portlet</property>
-      <property name="template">portlet_sample_due</property>
+    <property name="macro">portlet</property>
+    <property name="template">portlet_sample_due</property>
     </assignment>
 
     <assignment
         name="portlet_to_be_verified-pt"
         category="context"
-        key="/front-page"
+        key="/"
         manager="plone.rightcolumn"
         type="portlets.Classic"
         visible="True">
-      <property name="macro">portlet</property>
-      <property name="template">portlet_to_be_verified</property>
+    <property name="macro">portlet</property>
+    <property name="template">portlet_to_be_verified</property>
     </assignment>
 
     <assignment
         name="portlet_verified-pt"
         category="context"
-        key="/front-page"
+        key="/"
         manager="plone.rightcolumn"
         type="portlets.Classic"
         visible="True">
-      <property name="macro">portlet</property>
-      <property name="template">portlet_verified</property>
+    <property name="macro">portlet</property>
+    <property name="template">portlet_verified</property>
     </assignment>
-
-
 
 </portlets>

@@ -85,11 +85,20 @@
         profile="bika.lims:default"/>
 
  <genericsetup:upgradeStep
-        title="issue #1116: Cannot edit Sampling deviations"
+        title="issue #668: Cannot edit Sampling deviations"
         description="Set default action to base_edit"
         source="1115"
         destination="1116"
         handler="bika.lims.upgrade.to1116.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+        title="issue #695: Portlets not displayed"
+        description="Enable portlets for key=/ (re-import portlets.xml)"
+        source="1116"
+        destination="1117"
+        handler="bika.lims.upgrade.to1117.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
 
