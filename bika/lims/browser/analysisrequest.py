@@ -1079,7 +1079,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                 t_dict = {
                     'UID':template.UID(),
                     'Title':template.Title(),
-                    'Profile':profile and profile.UID() or '',
+                    'Profile':profile and profile.Title() or '',
                     'Profile_uid':profile and profile.UID() or '',
                     'SamplePoint':sp_title,
                     'SamplePoint_uid':sp_uid,
