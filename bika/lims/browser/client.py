@@ -255,7 +255,7 @@ class ClientBatchesView(BatchFolderContentsView):
         state = [x for x in self.review_states if x['id'] == self.review_state][0]
         batches = {}
         for ar in bc(portal_type = 'AnalysisRequest',
-                     ClientUID = self.context.UID()):
+                     getClientUID = self.context.UID()):
             ar = ar.getObject()
             if ar.getBatchUID():
                 batches[ar.getBatchUID()] = ar.getBatch()
