@@ -76,6 +76,7 @@ schema = BikaFolderSchema.copy() + Schema((
             label = _("Currency"),
             description = _("Select the currency the site will use to display "
                             "prices."),
+            format='select',
         )
     ),
     FixedPointField('MemberDiscount',
@@ -208,6 +209,7 @@ schema = BikaFolderSchema.copy() + Schema((
             description = _("The system wide default configuration to indicate "
                             "whether file attachments are required, permitted or not "
                             "per analysis request"),
+            format='select',
         )
     ),
     StringField('AnalysisAttachmentOption',
@@ -219,6 +221,7 @@ schema = BikaFolderSchema.copy() + Schema((
             description = _("Same as the above, but sets the default on analysis services. "
                             "This setting can be set per individual analysis on its "
                             "own configuration"),
+            format='select',
         )
     ),
     DurationField('DefaultSampleLifetime',

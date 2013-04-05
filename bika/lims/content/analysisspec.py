@@ -73,7 +73,7 @@ Schema((
                            'max': _('Max'),
                            'error': _('% Error')},
         widget = AnalysisSpecificationWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _("Specifications"),
             description = _("Click on Analysis Categories (against shaded background) "
                             "to see Analysis Services in each category. Enter minimum "

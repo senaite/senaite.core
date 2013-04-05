@@ -17,7 +17,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'ContainerContainerType',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _("Container Type"),
         ),
     ),
@@ -47,7 +47,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'ContainerPreservation',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _("Preservation"),
             description = _("If this container is pre-preserved, then the preservation "
                             "method could be selected here."),

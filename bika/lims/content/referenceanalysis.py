@@ -27,6 +27,7 @@ schema = BikaSchema.copy() + Schema((
     StringField('ReferenceType',
         vocabulary = STD_TYPES,
         widget = SelectionWidget(
+            format='select',
             label = _("Reference Type"),
         ),
     ),

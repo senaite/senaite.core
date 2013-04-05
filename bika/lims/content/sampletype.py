@@ -41,7 +41,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'SampleTypeSampleMatrix',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _('Sample Matrix'),
         ),
     ),
@@ -64,7 +64,7 @@ schema = BikaSchema.copy() + Schema((
         vocabulary = 'ContainerTypesVocabulary',
         relationship = 'SampleTypeContainerType',
         widget = ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _("Default Container Type"),
             description = _("The default container type. New sample partitions "
                             "are automatically assigned a container of this "
@@ -79,7 +79,7 @@ schema = BikaSchema.copy() + Schema((
         vocabulary = 'SamplePointsVocabulary',
         relationship = 'SampleTypeSamplePoint',
         widget = ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _("Sample Points"),
             description = _("The list of sample points from which this sample "
                             "type can be collected.  If no sample points are "

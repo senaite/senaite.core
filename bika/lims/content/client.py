@@ -60,7 +60,7 @@ schema = Organisation.schema.copy() + atapi.Schema((
         allowed_types = ('AnalysisCategory',),
         relationship = 'ClientDefaultCategories',
         widget = atapi.ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _("Default categories"),
             description = _("Always expand the selected categories in client views"),
         ),
@@ -75,7 +75,7 @@ schema = Organisation.schema.copy() + atapi.Schema((
         allowed_types = ('AnalysisCategory',),
         relationship = 'ClientRestrictedCategories',
         widget = atapi.ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _("Restrict categories"),
             description = _("Show only selected categories in client views"),
         ),

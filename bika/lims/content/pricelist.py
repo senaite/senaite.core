@@ -14,6 +14,7 @@ schema = BikaSchema.copy() + Schema((
         required = 1,
         vocabulary = PRICELIST_TYPES,
         widget = SelectionWidget(
+            format='select',
             label = _("Pricelist for"),
         ),
     ),

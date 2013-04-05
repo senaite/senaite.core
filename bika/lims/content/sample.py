@@ -64,7 +64,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'SampleSampleType',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _("Sample Type"),
         ),
     ),
@@ -81,7 +81,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'SampleSamplePoint',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _("Sample Point"),
         ),
     ),
@@ -111,7 +111,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'SampleSamplingDeviation',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _('Sampling Deviation'),
         ),
     ),
@@ -122,7 +122,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'SampleSampleCondition',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _("Sample Condition"),
         ),
     ),

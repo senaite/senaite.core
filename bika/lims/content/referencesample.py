@@ -30,7 +30,7 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         vocabulary = "getReferenceDefinitions",
         widget = ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _("Reference Definition"),
         ),
     ),
@@ -57,7 +57,7 @@ schema = BikaSchema.copy() + Schema((
         vocabulary = "getReferenceManufacturers",
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _("Manufacturer"),
         ),
     ),

@@ -105,7 +105,7 @@ schema = BikaSchema.copy() + Schema((
         vocabulary = 'AnalysisProfiles',
         relationship = 'ARTemplateAnalysisProfile',
         widget = ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _("Analysis Profile"),
             description = _("The Analysis Profile selection for this template"),
         ),

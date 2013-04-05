@@ -22,7 +22,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisCategoryDepartment',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _('Department'),
             description = _("The laboratory department"),
         ),

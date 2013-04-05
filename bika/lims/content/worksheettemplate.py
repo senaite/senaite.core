@@ -55,7 +55,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'WorksheetTemplateInstrument',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _("Instrument"),
             description = _("Select the preferred instrument"),
         ),

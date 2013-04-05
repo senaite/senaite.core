@@ -57,7 +57,7 @@ schema = BikaSchema.copy() + Schema((
         vocabulary = 'SampleTypesVocabulary',
         relationship = 'SamplePointSampleType',
         widget = ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _("Sample Types"),
             description = _("The list of sample types that can be collected "
                             "at this sample point.  If no sample types are "

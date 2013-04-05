@@ -209,6 +209,7 @@ schema = BikaSchema.copy() + Schema((
             description = _("Indicates whether file attachments, e.g. microscope images, "
                             "are required for this analysis and whether file upload function "
                             "will be available for it on data capturing screens"),
+            format='select',
         ),
     ),
     StringField('Keyword',
@@ -234,7 +235,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisServiceMethod',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _("Method"),
             description = _("Select analysis method"),
             catalog_name='bika_setup_catalog',
@@ -251,7 +252,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisServiceInstrument',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _("Instrument"),
             description = _("Select the preferred instrument"),
             catalog_name='bika_setup_catalog',
@@ -273,7 +274,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisServiceCalculation',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _("Calculation"),
             description = _("If required, select a calculation for the analysis here. "
                             "Calculations can be configured under the calculations item "
@@ -352,7 +353,7 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         vocabulary = 'getAnalysisCategories',
         widget = ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _("Analysis Category"),
             description = _("The category the analysis service belongs to"),
             catalog_name='bika_setup_catalog',
@@ -420,7 +421,7 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisServiceDepartment',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _("Department"),
             description = _("The laboratory department"),
             catalog_name='bika_setup_catalog',
@@ -493,7 +494,7 @@ schema = BikaSchema.copy() + Schema((
         required=0,
         multiValued=1,
         widget = ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _('Default Preservation'),
             description = _("Select a default preservation for this "
                             "analysis service. If the preservation depends on "
@@ -512,7 +513,7 @@ schema = BikaSchema.copy() + Schema((
         required=0,
         multiValued=1,
         widget = ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _('Default Container'),
             description = _("Select the default container to be used for this "
                             "analysis service. If the container to be used "

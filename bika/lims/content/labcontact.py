@@ -38,7 +38,7 @@ schema = Person.schema.copy() + Schema((
         vocabulary = 'getDepartments',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            checkbox_bound = 1,
+            checkbox_bound = 0,
             label = _("Department"),
             description = _("The laboratory department"),
         ),
