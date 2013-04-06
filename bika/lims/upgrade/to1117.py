@@ -9,4 +9,5 @@ def upgrade(tool):
     portal = aq_parent(aq_inner(tool))
     setup = portal.portal_setup
 
-    setup.runImportStepFromProfile('profile-bika.lims:default', 'portlets')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'portlets',
+                                   run_dependencies=False)
