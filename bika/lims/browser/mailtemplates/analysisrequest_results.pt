@@ -350,8 +350,6 @@
           filename file/filename | nothing;
           filesize file/get_size | python:file and len(file) or 0;
           icon file/getBestIcon | nothing">
-          <img tal:condition="icon"
-            tal:attributes="src string:${here/portal_url}/$icon"/>
           <a title="Click to download"
             tal:attributes="href string:${attachment/absolute_url}/at_download/AttachmentFile"
             tal:content=filename>Filename</a>
