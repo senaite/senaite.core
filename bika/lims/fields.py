@@ -4,14 +4,58 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Acquisition import Implicit
 from Acquisition import ImplicitAcquisitionWrapper
-from archetypes.schemaextender.field import ExtensionField
-from archetypes.schemaextender.field import ExtensionField
 from archetypes.schemaextender.interfaces import IExtensionField
 from Products.Archetypes.public import *
 from Products.ATExtensions.ateapi import DateTimeField
 from Products.ATExtensions.ateapi import RecordField, RecordsField
 from zope.interface import implements
+from zope.site.hooks import getSite
 
+class ExtensionField(object):
+
+    """Mix-in class to make Archetypes fields not depend on generated
+    accessors and mutators, and use AnnotationStorage by default.
+
+    """
+
+    implements(IExtensionField)
+
+    storage = AnnotationStorage()
+
+    def getAccessor(self, instance):
+        def accessor():
+            if self.getType().endswith('ReferenceField'):
+                return self.get(instance.__of__(getSite()))
+            else:
+                return self.get(instance)
+        return accessor
+
+    def getEditAccessor(self, instance):
+        def edit_accessor():
+            if self.getType().endswith('ReferenceField'):
+                return self.getRaw(instance.__of__(getSite()))
+            else:
+                return self.getRaw(instance)
+        return edit_accessor
+
+    def getMutator(self, instance):
+        def mutator(value, **kw):
+            if self.getType().endswith('ReferenceField'):
+                self.set(instance.__of__(getSite()), value)
+            else:
+                self.set(instance, value)
+        return mutator
+
+    def getIndexAccessor(self, instance):
+        name = getattr(self, 'index_method', None)
+        if name is None or name == '_at_accessor':
+            return self.getAccessor(instance)
+        elif name == '_at_edit_accessor':
+            return self.getEditAccessor(instance)
+        elif not isinstance(name, basestring):
+            raise ValueError('Bad index accessor value: %r', name)
+        else:
+            return getattr(instance, name)
 
 class ExtBooleanField(ExtensionField, BooleanField):
 
@@ -62,40 +106,45 @@ class ExtTextField(ExtensionField, TextField):
 
     "Field extender"
 
-#
-# Method Initialization
-# apply default getters and setters to schemaextender fields.
-#
+# #
+# # Method Initialization
+# # apply default getters and setters to schemaextender fields.
+# #
 
+# def generateMethods(context, fields):
+#     for field in fields:
+#         name = field.getName()
+#         if getattr(context, 'get'+name, None) is None:
+#             if field.getType().find("Reference") > -1:
+#                 setattr(context, 'get'+name,
+#                         context.Schema()[name].getAccessor(
+#                                                     context.__of__(getSite())))
+#             else:
+#                 setattr(context, 'get'+name,
+#                         context.Schema()[name].getMutator(context))
+#         if getattr(context, 'set'+name, None) is None:
+#             if field.getType().find("Reference") > -1:
+#                 setattr(context, 'set'+name,
+#                         context.Schema()[name].getMutator(
+#                                                     context.__of__(getSite())))
+#             else:
+#                 setattr(context, 'set'+name,
+#                         context.Schema()[name].getMutator(context))
+#         if field.getType().find("Reference") > -1:
+#             setattr(context, name, atapi.ATReferenceFieldProperty(fieldname))
+#         else:
+#             setattr(context, name, atapi.ATFieldProperty(fieldname))
 
-def apply_default_methods(context):
+# class field_getter:
+#     def __init__(self, context, fieldname):
+#         self.context = context
+#         self.fieldname = fieldname
+#     def __call__(self, **kwargs):
+#         return self.context.Schema()[self.fieldname].getAccessor(self.context)(**kwargs)
 
-    for field in context.schema.fields():
-        fieldname = field.getName()
-        if getattr(context, 'get'+fieldname, None) is None:
-            setattr(context, 'get'+fieldname, field_getter(context, fieldname))
-        if getattr(context, 'set'+fieldname, None) is None:
-            setattr(context, 'set'+fieldname, field_setter(context, fieldname))
-
-
-class field_getter:
-
-    def __init__(self, context, fieldname, **kwargs):
-        self.context = context
-        self.fieldname = fieldname
-
-    def __call__(self):
-        return self.context.Schema()[self.fieldname].getAccessor(self.context)(**kwargs)
-
-
-class field_setter:
-
-    def __init__(self, context, fieldname):
-        self.context = context
-        self.fieldname = fieldname
-
-    def __call__(self, value, **kwargs):
-        return self.context.Schema()[self.fieldname].getMutator(self.context)(value, **kwargs)
-
-
-
+# class field_setter:
+#     def __init__(self, context, fieldname):
+#         self.context = context
+#         self.fieldname = fieldname
+#     def __call__(self, value, **kwargs):
+#         return self.context.Schema()[self.fieldname].getMutator(self.context)(value, **kwargs)
