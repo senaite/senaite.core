@@ -101,6 +101,8 @@ class ajaxReferenceWidgetSearch(BrowserView):
         nr_rows = self.request['rows']
         sord = self.request['sord']
         sidx = self.request['sidx']
+        combogrid_options = \
+            json.loads(_u(self.request.get('combogrid_options', '{}')))
         rows = []
 
         # lookup objects from ZODB
@@ -128,9 +130,13 @@ class ajaxReferenceWidgetSearch(BrowserView):
                         brains = _brains
 
         for p in brains:
-            rows.append({'Title': p.Title,
-                         'UID': p.UID,
-                         'Description': p.Description})
+            row = {'UID': getattr(p, 'UID'),
+                   'Title': getattr(p, 'Title')}
+            other_fields = [x for x in combogrid_options['colModel']
+                            if x['columnName'] not in row.keys()]
+            for field in other_fields:
+                row[field['columnName']] = getattr(p, field['columnName'])
+            rows.append(row)
 
         rows = sorted(rows, cmp=lambda x, y: cmp(
             x.lower(), y.lower()), key=itemgetter(sidx and sidx or 'Title'))
