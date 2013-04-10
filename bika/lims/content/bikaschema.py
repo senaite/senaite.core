@@ -1,5 +1,5 @@
 from Products.Archetypes.public import BaseSchema
-from plone.app.folder.folder import ATFolder, ATFolderSchema
+from plone.app.folder.folder import ATFolderSchema
 
 BikaSchema = BaseSchema.copy()
 BikaSchema['id'].widget.visible = False
@@ -35,6 +35,13 @@ BikaFolderSchema['expirationDate'].widget.visible = False
 BikaFolderSchema['subject'].widget.visible = False
 BikaFolderSchema['language'].widget.visible = False
 BikaFolderSchema['location'].widget.visible = False
+BikaFolderSchema['locallyAllowedTypes'].schemata = 'settings'
+BikaFolderSchema['immediatelyAddableTypes'].schemata = 'settings'
+BikaFolderSchema['constrainTypesMode'].schemata = 'settings'
+BikaFolderSchema['locallyAllowedTypes'].widget.visible = False
+BikaFolderSchema['immediatelyAddableTypes'].widget.visible = False
+BikaFolderSchema['constrainTypesMode'].widget.visible = False
+
 
 BikaFolderSchema['title'].validators = ('uniquefieldvalidator',)
 # Update the validation layer after change the validator in runtime

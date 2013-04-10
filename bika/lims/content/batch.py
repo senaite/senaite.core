@@ -9,17 +9,18 @@ from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
 from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IBatch
 from bika.lims.utils import isActive
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import skip
 from datetime import timedelta
+from plone.app.folder.folder import ATFolder
 from zope.interface import implements
 import json
 import plone
 
-schema = BikaSchema.copy() + Schema((
+schema = BikaFolderSchema.copy() + Schema((
     StringField('BatchID',
         searchable=True,
         required=0,
@@ -63,7 +64,7 @@ schema['description'].required = False
 schema['description'].widget.visible = True
 
 
-class Batch(BaseFolder):
+class Batch(ATFolder):
     implements(IBatch)
     security = ClassSecurityInfo()
     displayContentsTab = False
