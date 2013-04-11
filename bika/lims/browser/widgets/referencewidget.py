@@ -135,7 +135,14 @@ class ajaxReferenceWidgetSearch(BrowserView):
             other_fields = [x for x in combogrid_options['colModel']
                             if x['columnName'] not in row.keys()]
             for field in other_fields:
-                row[field['columnName']] = getattr(p, field['columnName'])
+                fieldname = field['columnName']
+                value = getattr(p, fieldname, None)
+                if value is None:
+                    instance = p.getObject()
+                    schema = instance.Schema()
+                    if fieldname in schema:
+                        value = schema[fieldname].get(instance)
+                row[fieldname] = value and value or ''
             rows.append(row)
 
         rows = sorted(rows, cmp=lambda x, y: cmp(
