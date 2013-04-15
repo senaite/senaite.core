@@ -574,7 +574,7 @@ class BikaListingView(BrowserView):
 
             results_dict = dict(
                 obj = obj,
-                id = obj.getId,
+                id = obj.getId(),
                 title = title,
                 uid = uid,
                 path = path,
