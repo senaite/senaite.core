@@ -178,8 +178,9 @@ class AnalysesView(BikaListingView):
             except AttributeError:
                 items[i]['Partition'] = ''
             if obj.portal_type == "ReferenceAnalysis":
-                items[i]['DueDate'] = ''
-                items[i]['CaptureDate'] = ''
+                items[i]['DueDate'] = self.ulocalized_time(obj.aq_parent.getExpiryDate(), long_format=0)
+                items[i]['CaptureDate'] = obj.aq_parent.getDateSampled() \
+                    and self.ulocalized_time(obj.aq_parent.getDateSampled(), long_format=0) or '' 
             else:
                 items[i]['DueDate'] = self.ulocalized_time(obj.getDueDate(), long_format=0)
                 cd = obj.getResultCaptureDate()
@@ -483,20 +484,21 @@ class AnalysesView(BikaListingView):
         alerts = {}
         for item in self.items:
             obj = item['obj']
-            outofrange, acceptable, spec = obj.isOutOfRange()
-            if outofrange:
-                rngstr = _("min") + " " + str(spec['min']) + ", " + \
-                         _("max") + " " + str(spec['max'])
+            if hasattr(obj, 'isOutOfRange') and obj.isOutOfRange():
+                outofrange, acceptable, spec = obj.isOutOfRange()
+                if outofrange:
+                    rngstr = _("min") + " " + str(spec['min']) + ", " + \
+                             _("max") + " " + str(spec['max'])
 
-                if acceptable:
-                    message = _('Result in shoulder range') + " (%s)" % rngstr
-                else:
-                    message = _('Result out of range') + ' (%s)' % rngstr
+                    if acceptable:
+                        message = _('Result in shoulder range') + " (%s)" % rngstr
+                    else:
+                        message = _('Result out of range') + ' (%s)' % rngstr
 
-                alerts[obj.UID()] = {'result': obj.getResult(),
-                                     'icon': acceptable and 'warning' or \
-                                            'exclamation',
-                                     'msg': message}
+                    alerts[obj.UID()] = {'result': obj.getResult(),
+                                         'icon': acceptable and 'warning' or \
+                                                'exclamation',
+                                         'msg': message}
         return alerts
 
 

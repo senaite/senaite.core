@@ -259,7 +259,7 @@ class WorksheetAnalysesView(AnalysesView):
             items[x]['class']['Service'] = 'service_title'
             items[x]['Category'] = service.getCategoryTitle()
             if obj.portal_type == "ReferenceAnalysis":
-                items[x]['DueDate'] = ''
+                items[x]['DueDate'] = self.ulocalized_time(obj.aq_parent.getExpiryDate(), long_format=0)
             else:
                 items[x]['DueDate'] = self.ulocalized_time(obj.getDueDate())
 
@@ -304,7 +304,6 @@ class WorksheetAnalysesView(AnalysesView):
 
         items = sorted(items, key = itemgetter('Service'))
         items = sorted(items, key = itemgetter('Pos'))
-
         slot_items = {} # pos:[item_nrs]
         for x in range(len(items)):
             p = items[x]['Pos']
@@ -326,7 +325,9 @@ class WorksheetAnalysesView(AnalysesView):
             rowspan = len(pos_items)
             if remarks_enabled:
                 for item in pos_items:
-                    if items[x]['allow_edit']:
+                    if (items[x]['allow_edit'] \
+                        and hasattr(items[x]['obj'], 'portal_type') \
+                        and items[x]['obj'].portal_type=='Analysis'):
                         rowspan += 1
             # set Pos column for this row, to have a rowspan
             items[x]['rowspan'] = {'Pos': rowspan}
@@ -341,16 +342,21 @@ class WorksheetAnalysesView(AnalysesView):
                 client = obj.getAnalysis().aq_parent.aq_parent
             elif parent.aq_parent.portal_type == "Supplier":
                 # we're a reference sample; get reference definition
-                # If reference sample has no ref definition, return 
-                # reference sample itself
-                client = obj.getReferenceDefinition() \
-                        and obj.getReferenceDefinition() or obj
+                client = obj.getReferenceDefinition()
             else:
                 client = parent.aq_parent
             pos_text = "<table class='worksheet-position' width='100%%' cellpadding='0' cellspacing='0' style='padding-bottom:5px;'><tr>" + \
-                       "<td class='pos' rowspan='3'>%s</td>" % pos          
-            pos_text += "<td class='pos_top'><a href='%s'>%s</a></td>" % \
-                (client.absolute_url(), client.Title())
+                       "<td class='pos' rowspan='3'>%s</td>" % pos
+
+            if client:
+                pos_text += "<td class='pos_top'><a href='%s'>%s</a></td>" % \
+                    (client.absolute_url(), client.Title())
+            elif obj.portal_type == 'ReferenceAnalysis':
+                pos_text += "<td class='pos_top'><a href='%s'>%s</a></td>" % \
+                    (obj.aq_parent.absolute_url(), obj.aq_parent.id)
+            else:
+                pos_text += "<td class='pos_top'>&nbsp;</td>"
+
             pos_text += "<td class='pos_top_icons' rowspan='3'>"
             if obj.portal_type == 'DuplicateAnalysis':
                 pos_text += "<img title='%s' src='%s/++resource++bika.lims.images/duplicate.png'/>" % (_("Duplicate"), self.context.absolute_url())
