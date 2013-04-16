@@ -79,3 +79,16 @@ class BikaFunctionalTestCase(Functional, BikaTestCase):
             browser.getControl('Log in').click()
             self.assertTrue('You are now logged in' in browser.contents)
         return browser
+
+
+class Keywords(object):
+
+    """Robot Framework keyword library
+    """
+
+    def set_trace(self):
+        import sys
+        import pdb
+        for attr in ('stdin', 'stdout', 'stderr'):
+            setattr(sys, attr, getattr(sys, '__%s__' % attr))
+        pdb.set_trace()

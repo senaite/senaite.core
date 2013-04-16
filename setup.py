@@ -1,5 +1,4 @@
 from setuptools import setup, find_packages
-import os
 
 version = '3.0rc2.3'
 
@@ -10,9 +9,9 @@ setup(name='bika.lims',
       # Get more strings from
       # http://pypi.python.org/pypi?:action=list_classifiers
       classifiers=[
-        "Framework :: Plone",
-        "Programming Language :: Python",
-        ],
+      "Framework :: Plone",
+      "Programming Language :: Python",
+      ],
       keywords='Bika Open Source LIMS',
       author='Bika Laboratory Systems',
       author_email='support@bikalabs.com',
@@ -39,10 +38,12 @@ setup(name='bika.lims',
           'gpw',
           'jarn.jsi18n==0.3',
       ],
-      extras_require = {
+      extras_require={
           'test': [
-                  'plone.app.testing',
-              ]
+              'plone.app.testing',
+              'robotsuite',
+              'robotframework-selenium2library',
+          ]
       },
       entry_points="""
       [z3c.autoinclude.plugin]

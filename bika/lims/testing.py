@@ -59,3 +59,7 @@ BIKA_INTEGRATION_TESTING = IntegrationTesting(
 BIKA_FUNCTIONAL_TESTING = FunctionalTesting(
     bases=(BIKA_TEST_FIXTURE,),
     name="BikaTestingLayer:Functional")
+
+BIKA_ROBOT_TESTING = FunctionalTesting(
+    bases=(BIKA_TEST_FIXTURE, z2.ZSERVER_FIXTURE),
+    name="BikaTestingLayer:Robot")
