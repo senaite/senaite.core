@@ -188,7 +188,7 @@ Colum Headers
 Table data rows start here
 ********************************</tal:comment>
 <tal:cats
-	tal:repeat="cat python: view.bika_listing.categories + ['None',]">
+	tal:repeat="cat python: view.bika_listing.categories">
 	<tr tal:condition="python: view.bika_listing.show_categories">
 		<th
 			style="text-align: left;"
@@ -509,21 +509,21 @@ Table cells for each column from in review_state's column list.
 		style="white-space:nowrap;"
 		tal:content="python:item['Unit']"/>
 
-	<tal:comment replace="nothing"><!-- alert container --></tal:comment>	
+	<tal:comment replace="nothing"><!-- alert container --></tal:comment>
 	<tal:outofrange define="uid python:item['uid'];
 	                        alerts python:hasattr(view.bika_listing,'getOutOfRangeAlerts') and view.bika_listing.getOutOfRangeAlerts() or None">
 	   <span class="alert"
 	         tal:attributes="uid string:${uid};
 	                         field column;"
 	         tal:define="product python:(alerts and uid in alerts and 'product' in alerts[uid]) and alerts[uid]['product'] or 'bika.lims';">
-	         <img 
+	         <img
                 tal:condition="python: (alerts and uid in alerts and column == 'Result' and item['Result']) or False"
                 tal:attributes="src python:(portal.absolute_url()+'/++resource++'+product+'.images/%s.png')%alerts[uid]['icon'];
 	                              title python:alerts[uid]['msg']"/>
-	         
+
 	   </span>
-	</tal:outofrange>	
-	
+	</tal:outofrange>
+
 	</span> <tal:comment replace="nothing"><!-- </span tal:condition="not:replace"> --></tal:comment>
 
 	<tal:comment replace="nothing"><!-- after structure --></tal:comment>
@@ -553,7 +553,7 @@ Table cells for each column from in review_state's column list.
 						id string:folder-contents-item-${item/uid};
 						uid item/uid;
 						keyword keyword;">
-            
+
             <td></td>
 
 			<td tal:attributes="colspan python:int(nr_cols)-1;"

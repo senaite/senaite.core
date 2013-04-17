@@ -464,7 +464,9 @@ class BikaListingView(BrowserView):
         """
         cats = []
         for item in items:
-            cat = item.get('category', 'None')
+            cat = item.get('category', None)
+            if not cat:
+                continue
             if item.get('selected', False) \
                 or self.expand_all_categories \
                 or not self.show_categories:
@@ -591,7 +593,6 @@ class BikaListingView(BrowserView):
                 relative_url = relative_url,
                 view_url = url,
                 table_row_class = "",
-                category = 'None',
 
                 # a list of names of fields that may be edited on this item
                 allow_edit = [],
