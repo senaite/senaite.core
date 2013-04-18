@@ -102,4 +102,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+ <genericsetup:upgradeStep
+        title="issue #759: Fix workflow permissions for ReferenceSample"
+        description=""
+        source="1117"
+        destination="1118"
+        handler="bika.lims.upgrade.to1118.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
