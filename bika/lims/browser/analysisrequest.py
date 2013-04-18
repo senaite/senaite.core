@@ -288,15 +288,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 if not analysis:
                     # ignore result if analysis object no longer exists
                     continue
-                # Shouldn't happen - better have an actual error
-                # if not checkPermission(EditResults, analysis) \
-                #    and not checkPermission(EditFieldResults, analysis):
-                #     mtool = getToolByName(self.context, 'portal_membership')
-                #     username = mtool.getAuthenticatedMember().getUserName()
-                #     path = "/".join(self.context.getPhysicalPath())
-                #     logger.info("Changes no longer allowed (user: %s, object: %s)" % \
-                #                 (username, path))
-                #     continue
                 results[uid] = result
                 service = analysis.getService()
                 interimFields = item_data[uid]
@@ -308,19 +299,20 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 retested = form.has_key('retested') and form['retested'].has_key(uid)
                 remarks = form.get('Remarks', [{},])[0].get(uid, '')
                 # Don't save uneccessary things
+                # https://github.com/bikalabs/Bika-LIMS/issues/766:
+                #    Somehow, using analysis.edit() fails silently when
+                #    logged in as Analyst.
                 if analysis.getInterimFields() != interimFields or \
                    analysis.getRetested() != retested or \
                    analysis.getRemarks() != remarks:
-                    analysis.edit(
-                        InterimFields = interimFields,
-                        Retested = retested,
-                        Remarks = remarks)
+                    analysis.setInterimFields(interimFields)
+                    analysis.setRetested(retested)
+                    analysis.setRemarks(remarks)
                 # save results separately, otherwise capture date is rewritten
                 if analysis.getResult() != result or \
                    analysis.getResultDM() != dry_result:
-                    analysis.edit(
-                        ResultDM = dry_result,
-                        Result = result)
+                    analysis.setResultDM(dry_result)
+                    analysis.setResult(result)
 
             # discover which items may be submitted
             # guard_submit does a lot of the same stuff, too.
