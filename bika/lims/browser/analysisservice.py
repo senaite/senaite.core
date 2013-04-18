@@ -44,22 +44,6 @@ class ajaxGetContainers(BrowserView):
 
         return json.dumps(containers)
 
-class ajaxGetPreservations(BrowserView):
-    """ajax Preservations - for pre-preserved containers
-    """
-    def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        container_uid = self.request.get('container_uid', [])
-        container = bsc(UID=container_uid)
-        if container:
-            container = container[0].getObject()
-            if container.getPrePreserved():
-                preservation = container.getPreservation()
-                if preservation:
-                    return preservation.UID()
-        return ''
-
 class ajaxServicePopup(BrowserView):
 
     template = ViewPageTemplateFile("templates/analysisservice_popup.pt")

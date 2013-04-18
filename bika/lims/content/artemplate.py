@@ -13,6 +13,7 @@ from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.browser.widgets import ARTemplatePartitionsWidget
 from bika.lims.browser.widgets import ARTemplateAnalysesWidget
+from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from zope.interface import Interface, implements
@@ -83,19 +84,42 @@ schema = BikaSchema.copy() + Schema((
         schemata = 'Sample Partitions',
         required = 0,
         type = 'artemplate_parts',
-        subfields = ('part_id', 'container_uid', 'preservation_uid'),
+        subfields = ('part_id',
+                     'Container',
+                     'Preservation'),
         subfield_labels = {'part_id': _('Partition'),
-                           'container_uid': _('Container'),
-                           'preservation_uid': _('Preservation')},
+                           'Container': _('Container'),
+                           'Preservation': _('Preservation')},
+        subfield_sizes = {'part_id': 15,
+                           'Container': 35,
+                           'Preservation': 35},
         default = [{'part_id':'part-1',
-                    'container_uid':'',
-                    'preservation_uid':''}],
-        widget = ARTemplatePartitionsWidget(
+                    'Container':'',
+                    'Preservation':''}],
+        widget=RecordsWidget(
             label = _("Sample Partitions"),
             description = _("Configure the sample partitions and preservations "
                             "for this template. Assign analyses to the different "
                             "partitions on the template's Analyses tab"),
-        )
+            combogrid_options={
+                'Container': {
+                    'colModel': [
+                        {'columnName':'Container', 'width':'30', 'label':_('Container')},
+                        {'columnName':'Description', 'width':'70', 'label':_('Description')}],
+                    'url': 'getcontainers',
+                    'showOn': False,
+                    'width': '550px'
+                },
+                'Preservation': {
+                    'colModel': [
+                        {'columnName':'Preservation', 'width':'30', 'label':_('Preservation')},
+                        {'columnName':'Description', 'width':'70', 'label':_('Description')}],
+                    'url': 'getpreservations',
+                    'showOn': False,
+                    'width': '550px'
+                },
+            },
+         ),
     ),
     ReferenceField('AnalysisProfile',
         schemata = 'Analyses',
