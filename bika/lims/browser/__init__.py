@@ -20,8 +20,9 @@ class BrowserView(BrowserView):
 
     security.declarePublic('ulocalized_time')
     def ulocalized_time(self, time, long_format=None, time_only=None):
-        return ulocalized_time(time, long_format, time_only, self.context,
-                               'bika', self.request)
+        if time:
+            return ulocalized_time(time, long_format, time_only, self.context,
+                                   'bika', self.request)
 
     @lazy_property
     def portal(self):
