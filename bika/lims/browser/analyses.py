@@ -190,6 +190,9 @@ class AnalysesView(BikaListingView):
             # calculate specs
             if obj.portal_type == 'ReferenceAnalysis':
                 items[i]['st_uid'] = obj.aq_parent.UID()
+            elif obj.portal_type == 'DuplicateAnalysis' and \
+                obj.getAnalysis().portal_type == 'ReferenceAnalysis':
+                items[i]['st_uid'] = obj.aq_parent.UID()
             else:
                 if self.context.portal_type == 'AnalysisRequest':
                     sample = self.context.getSample()

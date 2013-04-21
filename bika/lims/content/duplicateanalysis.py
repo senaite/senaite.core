@@ -1,15 +1,15 @@
 """DuplicateAnalysis
 """
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.public import *
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.analysis import schema, Analysis
 from bika.lims.interfaces import IDuplicateAnalysis
-from zope.interface import implements
+from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from bika.lims.utils import deprecated
+from Products.CMFPlone.utils import safe_unicode
+from zope.interface import implements
 
 schema = schema.copy() + Schema((
     ReferenceField('Analysis',
@@ -43,46 +43,46 @@ schema = schema.copy() + Schema((
     ),
 
     ComputedField('SamplePartition',
-        expression = 'context.getAnalysis() and context.getAnalysis().getSamplePartition()',
+        expression = 'context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getSamplePartition()',
     ),
     ComputedField('ClientOrderNumber',
-        expression = 'context.getAnalysis() and context.getAnalysis().getClientOrderNumber()',
+        expression = 'context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getClientOrderNumber()',
     ),
     ComputedField('Service',
-        expression = 'context.getAnalysis() and context.getAnalysis().getService()',
+        expression = 'context.getAnalysis() and context.getAnalysis().getService() or ""',
     ),
     ComputedField('ServiceUID',
         expression = 'context.getAnalysis() and context.getAnalysis().getServiceUID()',
     ),
     ComputedField('CategoryUID',
-        expression = 'context.getAnalysis() and context.getAnalysis().getCategoryUID()',
+        expression = 'context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getCategoryUID()',
     ),
     ComputedField('Calculation',
-        expression = 'context.getAnalysis() and context.getAnalysis().getCalculation()',
+        expression = 'context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getCalculation()',
     ),
     ComputedField('ReportDryMatter',
-        expression = 'context.getAnalysis() and context.getAnalysis().getReportDryMatter()',
+        expression = 'context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getReportDryMatter()',
     ),
     ComputedField('DateReceived',
-        expression = 'context.getAnalysis() and context.getAnalysis().getDateReceived()',
+        expression = 'context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getDateReceived()',
     ),
     ComputedField('MaxTimeAllowed',
-        expression = 'context.getAnalysis() and context.getAnalysis().getMaxTimeAllowed()',
+        expression = 'context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getMaxTimeAllowed()',
     ),
     ComputedField('DueDate',
-        expression = 'context.getAnalysis() and context.getAnalysis().getDueDate()',
+        expression = 'context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getDueDate()',
     ),
     ComputedField('Duration',
-        expression = 'context.getAnalysis() and context.getAnalysis().getDuration()',
+        expression = 'context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getDuration()',
     ),
     ComputedField('Earliness',
-        expression = 'context.getAnalysis() and context.getAnalysis().getEarliness()',
+        expression = 'context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getEarliness()',
     ),
     ComputedField('ClientUID',
-        expression = 'context.getAnalysis() and context.getAnalysis().getClientUID()',
+        expression = 'context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getClientUID()',
     ),
     ComputedField('RequestID',
-        expression = 'context.getAnalysis() and context.getAnalysis().getRequestID()',
+        expression = 'context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getRequestID() or ""',
     ),
     ComputedField('PointOfCapture',
         expression = 'context.getAnalysis() and context.getAnalysis().getPointOfCapture()',
@@ -101,37 +101,28 @@ class DuplicateAnalysis(Analysis):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    def isOutOfRange(self, result=None, specification=None):
-        """ Check if a result is "out of range". (overrides)
+    def result_in_range(self, result = None, specification = "lab"):
+        """ Check if a result is "in range".
             if result is None, self.getResult() is called for the result value.
-            specification values allowed='client', 'lab', None
-            if specification is None, uses the specifications according this
-            priority: QC Duplicate specs > Client specs > Lab specs
-            Return True, False, spec if out of range
-            Return False, None, None if in range
+            Return False,spec if out of range
+            Return True,None if in range
         """
-        if specification == 'client' or specification == 'lab':
-            return super(DuplicateAnalysis, self).isOutOfRange(result,
-                                                               specification)
+
+        orig_result = self.getAnalysis().getResult()
+        # if analysis result is not a number, then we assume in range
+        try:
+            orig_result = float(str(orig_result))
+            result = float(str(result))
+        except ValueError:
+            return True, None
+        dup_variation = float(self.getService().getDuplicateVariation()) or 0
+        range_min = result - (orig_result * dup_variation / 100)
+        range_max = result + (orig_result * dup_variation / 100)
+        if range_min <= orig_result <= range_max:
+            return True, None
         else:
-            result = result and result or self.getResult()
-            orig_result = self.getResult()
-
-            # if analysis result is not a number, then we assume in range
-            try:
-                orig_result = float(str(orig_result))
-                result = float(str(result))
-            except ValueError:
-                return False, None, None
-
-            dup_var = float(self.getService().getDuplicateVariation()) or 0
-            range_min = result - (orig_result * dup_var / 100)
-            range_max = result + (orig_result * dup_var / 100)
-            if range_min <= orig_result <= range_max:
-                return False, None, None
-            else:
-                return True, False, {'min': range_min,
-                                     'max': range_max,
-                                     'error': dup_var}
+            return False, {'min':range_min,
+                           'max':range_max,
+                           'error':dup_variation}
 
 registerType(DuplicateAnalysis, PROJECTNAME)
