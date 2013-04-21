@@ -121,6 +121,11 @@ class ReferenceAnalysis(BaseContent):
         """
         return self.getService().getUncertainty(result and result or self.getResult())
 
+    def getSample(self, result = None):
+        """ Conform to Analysis
+        """
+        return self.aq_parent
+
     def result_in_range(self, result = None, specification = 'lab'):
         """ Check if the result is in range for the Analysis' service.
             if result is None, self.getResult() is called for the result value.

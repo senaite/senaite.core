@@ -49,6 +49,7 @@ class WorksheetWorkflowAction(WorkflowAction):
                         item_data[i] = d
             else:
                 item_data = json.loads(form['item_data'])
+
         if action == 'submit' and self.request.form.has_key("Result"):
             selected_analyses = WorkflowAction._get_selected_items(self)
             results = {}
@@ -83,7 +84,7 @@ class WorksheetWorkflowAction(WorkflowAction):
                     Retested = form.has_key('retested') and \
                                form['retested'].has_key(uid),
                     Unit = unit and unit or '',
-                    Remarks = form['Remarks'][0].get(uid, ''))
+                    Remarks = form['Remarks'][0].get(uid, '')))
 
             # discover which items may be submitted
             submissable = []
@@ -216,7 +217,6 @@ class WorksheetAnalysesView(AnalysesView):
             'ResultDM': {'title': _('Dry')},
             'retested': {'title': "<img src='++resource++bika.lims.images/retested.png' title='%s'/>" % _('Retested'),
                          'type':'boolean'},
-            'Remarks': {'title':_('Remarks')},
             'Attachments': {'title': _('Attachments')},
             'state_title': {'title': _('State')},
         }
@@ -235,7 +235,6 @@ class WorksheetAnalysesView(AnalysesView):
                         'Uncertainty',
                         'DueDate',
                         'state_title',
-                        'Remarks',
                         'Attachments']
              },
         ]
@@ -261,7 +260,7 @@ class WorksheetAnalysesView(AnalysesView):
             items[x]['class']['Service'] = 'service_title'
             items[x]['Category'] = service.getCategory().Title()
             if obj.portal_type == "ReferenceAnalysis":
-                items[x]['DueDate'] = ''
+                items[x]['DueDate'] = self.ulocalized_time(obj.aq_parent.getExpiryDate(), long_format=0)
             else:
                 items[x]['DueDate'] = self.ulocalized_time(obj.getDueDate())
 
@@ -334,18 +333,25 @@ class WorksheetAnalysesView(AnalysesView):
             if parent.aq_parent.portal_type == "WorksheetFolder":
                 # we're a duplicate; get original object's client
                 client = obj.getAnalysis().aq_parent.aq_parent
-            elif parent.aq_parent.portal_type == "Supplier":
+            elif parent.aq_parent.portal_type == "ReferenceSupplier":
                 # we're a reference sample; get reference definition
-                # If reference sample has no ref definition, return 
-                # reference sample itself
-                client = obj.getReferenceDefinition() \
-                        and obj.getReferenceDefinition() or obj
+                client = obj.getReferenceDefinition()
             else:
                 client = parent.aq_parent
             pos_text = "<table class='worksheet-position' width='100%%' cellpadding='0' cellspacing='0' style='padding-bottom:5px;'><tr>" + \
-                       "<td class='pos' rowspan='3'>%s</td>" % pos          
-            pos_text += "<td class='pos_top'><a href='%s'>%s</a></td>" % \
-                (client.absolute_url(), client.Title())
+                       "<td class='pos' rowspan='3'>%s</td>" % pos
+
+            if obj.portal_type == 'ReferenceAnalysis' or \
+                (obj.portal_type == 'DuplicateAnalysis' and \
+                 obj.getAnalysis().portal_type == 'ReferenceAnalysis'):
+                pos_text += "<td class='pos_top'><a href='%s'>%s</a></td>" % \
+                    (obj.aq_parent.absolute_url(), obj.aq_parent.id)
+            elif client:
+                pos_text += "<td class='pos_top'><a href='%s'>%s</a></td>" % \
+                    (client.absolute_url(), client.Title())
+            else:
+                pos_text += "<td class='pos_top'>&nbsp;</td>"
+
             pos_text += "<td class='pos_top_icons' rowspan='3'>"
             if obj.portal_type == 'DuplicateAnalysis':
                 pos_text += "<img title='%s' src='%s/++resource++bika.lims.images/duplicate.png'/>" % (_("Duplicate"), self.context.absolute_url())
@@ -375,7 +381,9 @@ class WorksheetAnalysesView(AnalysesView):
             pos_text += "<tr><td>"
             if obj.portal_type == 'Analysis':
                 pos_text += obj.aq_parent.getSample().getSampleType().Title()
-            elif obj.portal_type == 'ReferenceAnalysis':
+            elif obj.portal_type == 'ReferenceAnalysis' or \
+                (obj.portal_type == 'DuplicateAnalysis' and \
+                 obj.getAnalysis().portal_type == 'ReferenceAnalysis'):
                 pos_text += "" #obj.aq_parent.getReferenceDefinition().Title()
             elif obj.portal_type == 'DuplicateAnalysis':
                 pos_text += obj.getAnalysis().aq_parent.getSample().getSampleType().Title()
@@ -500,7 +508,7 @@ class ManageResultsView(BrowserView):
         o = self.context.getInstrument()
         if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))
-        items.sort(lambda x, y: cmp(x[1], y[1]))
+        items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
         return DisplayList(list(items))
 
 class AddAnalysesView(BikaListingView):
@@ -939,7 +947,7 @@ class WorksheetServicesView(BikaListingView):
             items.append(item)
 
         items = sorted(items, key = itemgetter('Service'))
-        self.categories.sort()
+        self.categories.sort(lambda x, y: cmp(x.lower(), y.lower()))
 
         return items
 
@@ -995,9 +1003,8 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
             if ws_ref_services:
                 services = [rs.Title() for rs in ws_ref_services]
                 items[x]['nr_services'] = len(services)
-                items[x]['Definition'] = obj.getReferenceDefinition() and \
-                                    obj.getReferenceDefinition().Title() or '' 
-                services.sort()
+                items[x]['Definition'] = (obj.getReferenceDefinition() and obj.getReferenceDefinition().Title()) or ''
+                services.sort(lambda x, y: cmp(x.lower(), y.lower()))
                 items[x]['Services'] = ", ".join(services)
                 items[x]['replace'] = {}
 
@@ -1078,7 +1085,7 @@ class ajaxAttachAnalyses(BrowserView):
     """
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
-        searchTerm = self.request['searchTerm'].lower()
+        searchTerm = 'searchTerm' in self.request and self.request['searchTerm'].lower() or ''
         page = self.request['page']
         nr_rows = self.request['rows']
         sord = self.request['sord']
@@ -1124,7 +1131,7 @@ class ajaxAttachAnalyses(BrowserView):
                 if matches:
                     rows.append(row)
 
-        rows = sorted(rows, cmp=lambda x,y: cmp(x.lower(), y.lower()), key = itemgetter(sidx and sidx or 'slot'))
+        rows = sorted(rows, cmp=lambda x,y: cmp(x, y), key = itemgetter(sidx and sidx or 'slot'))
         if sord == 'desc':
             rows.reverse()
         pages = len(rows) / int(nr_rows)

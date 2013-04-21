@@ -242,7 +242,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             if calc and calc.getDependentServices():
                 continue
             service = analysis.getService()
-            _id = self.invokeFactory('DuplicateAnalysis', id = 'tmp')
+            _id = self._findUniqueId(service.getKeyword())
+            self.invokeFactory('DuplicateAnalysis', id = _id)
             duplicate = self[_id]
             duplicate.setAnalysis(analysis)
             duplicate.processForm()
