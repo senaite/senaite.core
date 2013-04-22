@@ -23,6 +23,8 @@ jQuery(function($){
                     $(this).val(ui.item[$(this).attr('ui_item')]);
                     $(this).attr('uid', ui.item['UID']);
                     $('input[name='+fieldName+'_uid]').val(ui.item['UID']);
+                    $(this).trigger("selected", ui.item['UID']);
+                    $(this).next('input').focus();
                 }
                 if(window.location.href.search("portal_factory") > -1){
                     options.url = window.location.href.split("/portal_factory")[0] + "/" + options.url;
