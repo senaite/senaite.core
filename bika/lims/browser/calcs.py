@@ -286,7 +286,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
             dependents = []
         else:
             dependents = analysis.getDependents()
-        if dependents and not Result['result'] == form_result:
+        if dependents:
             for dependent in dependents:
                 dependent_uid = dependent.UID()
                 # ignore analyses that no longer exist.
