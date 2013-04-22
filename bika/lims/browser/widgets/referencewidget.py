@@ -28,8 +28,8 @@ class ReferenceWidget(StringWidget):
 
         # columnName must contain valid index names
         'colModel': [
-            {'columnName': 'Title', 'width': '30', 'label': _('Title')},
-            {'columnName': 'Description', 'width': '70', 'label': _('Description')},
+            {'columnName': 'Title', 'width': '30', 'label': _('Title'), 'align': 'left'},
+            {'columnName': 'Description', 'width': '70', 'label': _('Description'), 'align': 'left'},
             # UID is required in colModel
             {'columnName': 'UID', 'hidden': True},
         ],
@@ -39,6 +39,8 @@ class ReferenceWidget(StringWidget):
 
         'popup_width': '550px',
         'showOn': 'false',
+        'sord': 'asc',
+        'sidx': 'Title'
     })
     security = ClassSecurityInfo()
 
@@ -66,6 +68,8 @@ class ReferenceWidget(StringWidget):
             'colModel': colModel,
             'showOn': self.showOn,
             'width': self.popup_width,
+            'sord': self.sord,
+            'sidx': self.sidx
         }
         return json.dumps(options)
 
