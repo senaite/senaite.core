@@ -81,10 +81,9 @@ class WorksheetWorkflowAction(WorkflowAction):
                 analysis.edit(
                     Result = result,
                     InterimFields = interimFields,
-                    Retested = form.has_key('retested') and \
-                               form['retested'].has_key(uid),
+                    Retested = 'retested' in form and uid in form['retested'],
                     Unit = unit and unit or '',
-                    Remarks = form['Remarks'][0].get(uid, '')))
+                    Remarks = form['Remarks'][0].get(uid, ''))
 
             # discover which items may be submitted
             submissable = []
