@@ -257,7 +257,7 @@ class WorksheetAnalysesView(AnalysesView):
             items[x]['Service'] = service.Title()
             items[x]['Method'] = method and method.Title() or ''
             items[x]['class']['Service'] = 'service_title'
-            items[x]['Category'] = service.getCategory().Title()
+            items[x]['Category'] = service.getCategory() and service.getCategory().Title() or ''
             if obj.portal_type == "ReferenceAnalysis":
                 items[x]['DueDate'] = self.ulocalized_time(obj.aq_parent.getExpiryDate(), long_format=0)
             else:
@@ -625,7 +625,7 @@ class AddAnalysesView(BikaListingView):
                 items[x]['after']['DueDate'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                     (self.context.absolute_url(),
                      self.context.translate(_("Late Analysis")))
-            items[x]['CategoryTitle'] = service.getCategory().Title()
+            items[x]['CategoryTitle'] = service.getCategory() and service.getCategory().Title() or ''
 
             if getSecurityManager().checkPermission(EditResults, obj.aq_parent):
                 url = obj.aq_parent.absolute_url() + "/manage_results"
