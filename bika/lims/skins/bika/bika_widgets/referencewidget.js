@@ -16,6 +16,24 @@ jQuery(function($){
                 if(options == '' || options == undefined || options == null){
                     continue;
                 }
+                
+                // Prevent from saving previous record when input value is empty
+                // By default, a recordwidget input element gets an empty value 
+                // when receives the focus, so the underneath values must be
+                // cleared too.
+                var elName = $(element).attr('name');
+                $('input[name='+elName+']').live('focusin', function(){
+                	var fieldName = $(this).attr('name');
+                	if($(this).val() || $(this).val().length==0){
+                		var val = $(this).val();
+                		var uid = $(this).attr('uid');
+                		$(this).val('');
+                		$(this).attr('uid', '');
+	                    $('input[name='+fieldName+'_uid]').val('');
+	                    $(this).trigger("unselected", [val,uid]);
+                	}
+            	});
+                
                 options.select = function(event, ui){
                     event.preventDefault();
                     // Set value in activated element (must exist in colModel!)
