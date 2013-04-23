@@ -2295,32 +2295,16 @@ class AnalysisRequestsView(BikaListingView):
             else:
                 url = obj.absolute_url()
 
-            # Sanitize the list: If the user does not have local Owner role on the object's
-            # parent, then some fields are not displayed
-            if member.id in obj.aq_parent.users_with_local_role('Owner'):
-                items[x]['Client'] = obj.aq_parent.Title()
-                items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
-                    (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
-                items[x]['Creator'] = self.user_fullname(obj.Creator())
-                items[x]['getRequestID'] = obj.getRequestID()
-                items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
-                     (url, items[x]['getRequestID'])
-                items[x]['getSample'] = sample
-                items[x]['replace']['getSample'] = \
-                    "<a href='%s'>%s</a>" % (sample.absolute_url(), sample.Title())
-            else:
-                items[x]['Client'] = ''
-                items[x]['Creator'] = ''
-                items[x]['getSample'] = sample.getSampleID()
-                items[x]['replace']['getSample'] = "<a href='%s'>%s</a>" % (sample.absolute_url(), items[x]['getSample'])
-                items[x]['getRequestID'] = obj.getRequestID()
-                items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % (obj.absolute_url(), items[x]['getRequestID'])
-                sp = sample.getSamplePoint()
-                if sp and sp.aq_parent != self.portal.bika_setup.bika_samplepoints:
-                    items[x]['replace']['getSamplePointTitle'] = ''
-                items[x]['getClientOrderNumber'] = ''
-                items[x]['getClientReference'] = ''
-                items[x]['getClientSampleID'] = ''
+            items[x]['Client'] = obj.aq_parent.Title()
+            items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
+                (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
+            items[x]['Creator'] = self.user_fullname(obj.Creator())
+            items[x]['getRequestID'] = obj.getRequestID()
+            items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
+                 (url, items[x]['getRequestID'])
+            items[x]['getSample'] = sample
+            items[x]['replace']['getSample'] = \
+                "<a href='%s'>%s</a>" % (sample.absolute_url(), sample.Title())
 
             batch = obj.getBatch()
             if batch:
