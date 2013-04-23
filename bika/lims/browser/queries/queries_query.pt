@@ -35,7 +35,7 @@
 </span>
 </p>
 
-<p>
+<!-- p>
 <a  href="#"
     id="orders_selector"
     i18n:translate=""
@@ -55,7 +55,7 @@
 <span i18n:translate="">
     Query invoices on client, invoice date and description
 </span>
-</p>
+</p -->
 
 </fieldset>
 

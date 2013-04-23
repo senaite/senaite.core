@@ -1,6 +1,7 @@
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.controlpanel.bika_instruments import InstrumentsView
 from bika.lims import bikaMessageFactory as _
+from Products.CMFCore.utils import getToolByName
 
 class SupplierInstrumentsView(InstrumentsView):
 
@@ -153,9 +154,23 @@ class ReferenceSamplesView(BikaListingView):
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
+        outitems = []
+        workflow = getToolByName(self.context, 'portal_workflow')
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
+            if workflow.getInfoFor(obj, 'review_state') == 'current':
+                # Check expiry date
+                from Products.ATContentTypes.utils import DT2dt
+                from datetime import datetime
+                expirydate = DT2dt(obj.getExpiryDate()).replace(tzinfo=None)
+                if (datetime.today() > expirydate):
+                    workflow.doActionFor(obj, 'expire')
+                    items[x]['review_state'] = 'expired'
+                    items[x]['obj'] = obj
+                    if 'review_state' in self.contentFilter \
+                        and self.contentFilter['review_state'] == 'current':
+                        continue
             items[x]['ID'] = obj.id
             items[x]['Manufacturer'] = obj.getReferenceManufacturer() and \
                  obj.getReferenceManufacturer().Title() or ''
@@ -181,8 +196,8 @@ class ReferenceSamplesView(BikaListingView):
                                 _('Hazardous')))
             items[x]['replace']['ID'] = "<a href='%s/base_view'>%s</a>&nbsp;%s" % \
                  (items[x]['url'], items[x]['ID'], after_icons)
-
-        return items
+            outitems.append(items[x])
+        return outitems
 
 
 class ContactsView(BikaListingView):

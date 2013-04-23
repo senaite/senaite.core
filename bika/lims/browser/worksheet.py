@@ -257,7 +257,7 @@ class WorksheetAnalysesView(AnalysesView):
             items[x]['Service'] = service.Title()
             items[x]['Method'] = method and method.Title() or ''
             items[x]['class']['Service'] = 'service_title'
-            items[x]['Category'] = service.getCategory().Title()
+            items[x]['Category'] = service.getCategory() and service.getCategory().Title() or ''
             if obj.portal_type == "ReferenceAnalysis":
                 items[x]['DueDate'] = self.ulocalized_time(obj.aq_parent.getExpiryDate(), long_format=0)
             else:
@@ -625,7 +625,7 @@ class AddAnalysesView(BikaListingView):
                 items[x]['after']['DueDate'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                     (self.context.absolute_url(),
                      self.context.translate(_("Late Analysis")))
-            items[x]['CategoryTitle'] = service.getCategory().Title()
+            items[x]['CategoryTitle'] = service.getCategory() and service.getCategory().Title() or ''
 
             if getSecurityManager().checkPermission(EditResults, obj.aq_parent):
                 url = obj.aq_parent.absolute_url() + "/manage_results"
@@ -977,7 +977,7 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
         self.review_states = [
             {'id':'default',
              'title': _('All'),
-             'contentFilter':{},
+             'contentFilter':{'review_state':'current'},
              'columns': ['ID',
                          'Title',
                          'Definition',
@@ -988,7 +988,7 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
 
     def folderitems(self):
         translate = self.context.translate
-
+        workflow = getToolByName(self.context, 'portal_workflow')
         items = super(ajaxGetWorksheetReferences, self).folderitems()
         new_items = []
         for x in range(len(items)):
@@ -1000,6 +1000,8 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
             ws_ref_services = [rs for rs in ref_services if
                                rs.UID() in self.service_uids]
             if ws_ref_services:
+                if workflow.getInfoFor(obj, 'review_state') != 'current':
+                    continue
                 services = [rs.Title() for rs in ws_ref_services]
                 items[x]['nr_services'] = len(services)
                 items[x]['Definition'] = (obj.getReferenceDefinition() and obj.getReferenceDefinition().Title()) or ''
