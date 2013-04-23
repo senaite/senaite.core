@@ -977,7 +977,7 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
         self.review_states = [
             {'id':'default',
              'title': _('All'),
-             'contentFilter':{},
+             'contentFilter':{'review_state':'current'},
              'columns': ['ID',
                          'Title',
                          'Definition',
@@ -988,7 +988,7 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
 
     def folderitems(self):
         translate = self.context.translate
-
+        workflow = getToolByName(self.context, 'portal_workflow')
         items = super(ajaxGetWorksheetReferences, self).folderitems()
         new_items = []
         for x in range(len(items)):
@@ -1000,6 +1000,8 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
             ws_ref_services = [rs for rs in ref_services if
                                rs.UID() in self.service_uids]
             if ws_ref_services:
+                if workflow.getInfoFor(obj, 'review_state') != 'current':
+                    continue
                 services = [rs.Title() for rs in ws_ref_services]
                 items[x]['nr_services'] = len(services)
                 items[x]['Definition'] = (obj.getReferenceDefinition() and obj.getReferenceDefinition().Title()) or ''
