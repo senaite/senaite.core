@@ -537,9 +537,11 @@ Table cells for each column from in review_state's column list.
 	</tr>
 
      <!-- Row Remarks field (for Analyses) -->
-     <tal:remarks_condition tal:define="allow_edit python:(view.bika_listing.allow_edit
-												and 'Remarks' in item['allow_edit'])
-												or item.get('calculation', None);">
+     <tal:remarks_condition
+     	tal:condition="python:item.has_key('id')"
+     	tal:define="allow_edit python:(view.bika_listing.allow_edit
+										and 'Remarks' in item['allow_edit'])
+										or item.get('calculation', None);">
 
 		<tr	tal:condition="python:view.context.bika_setup.getEnableAnalysisRemarks()
 			                     and item.has_key('id')
