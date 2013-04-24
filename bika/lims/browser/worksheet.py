@@ -84,7 +84,7 @@ class WorksheetWorkflowAction(WorkflowAction):
                     Retested = form.has_key('retested') and \
                                form['retested'].has_key(uid),
                     Unit = unit and unit or '',
-                    Remarks = form['Remarks'][0].get(uid, '')))
+                    Remarks = form['Remarks'][0].get(uid, ''))
 
             # discover which items may be submitted
             submissable = []
