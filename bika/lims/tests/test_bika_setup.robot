@@ -86,7 +86,7 @@ Setup
 *** Keywords ***
 
 Start browser
-    Open browser  http://localhost:55001/plone/login_form
+    Open browser  http://localhost:55001/plone/login_form  ie
     Set selenium speed  ${SELENIUM_SPEED}
 
 Create LabContact
@@ -108,7 +108,7 @@ Create LabContact
     Input Text  Surname  ${surname}
     Input Text  JobTitle  ${jobtitle}
     Select from list  Department:list  ${department}
-    Click Link  Email Telephone Fax
+    Click Link  Email telephone fax
     Wait Until Page Contains Element  EmailAddress
     Input Text  EmailAddress  ${email}
     Input Text  BusinessPhone  ${businessphone}
@@ -220,23 +220,10 @@ Create AnalysisTemplate
     Input Text  description  ${description}
     Run Keyword Unless  '${samplepoint}' == ''  Input Text  SamplePoint  ${samplepoint}
     Run Keyword Unless  '${sampletype}' == ''  Input Text  SampleType  ${sampletype}
+    Click Link  Analyses
     Run Keyword Unless  '${analysisprofile}' == ''  Select From List  AnalysisProfile:list  ${analysisprofile}
     Click Button  Save
     Page should contain  ${title}
-
-Set AnalysisTemplate Services
-    [Arguments]    ${template}
-    ...            @{services}
-    Go to  http://localhost:55001/plone
-    Input Text  searchGadget  ${template}
-    sleep  0.5
-    Click Link  //a[@title='${template}']
-    Wait Until Page Contains  ${template}
-    Click Link  Analyses
-    :FOR  ${service}  IN  @{services}
-      \   Select Checkbox  xpath=//input[@item_title='${service}']
-    Click Button  Save
-    Page should contain  ${sampletype}
 
 Create AnalysisService
     [Arguments]    ${title}=
