@@ -369,6 +369,11 @@ Table cells for each column from in review_state's column list.
 					st_uid string:${item/st_uid|nothing};
 					field python:column;
 					value python:item[column]['value'];"/>
+			<tal:comment replace="nothing"><!-- unit for interim field--></tal:comment>
+			<em tal:condition="python:'unit' in item[column]"
+				class="discreet"
+				style="white-space:nowrap;"
+				tal:content="python:item[column]['unit']"/>
 		</span>
 		<tal:comment replace="nothing"><!-- regular field --></tal:comment>
 		<span tal:omit-tag="python:True"
@@ -497,14 +502,8 @@ Table cells for each column from in review_state's column list.
 		</span>
 	</span>
 
-	<tal:comment replace="nothing"><!-- unit for Interim Fields --></tal:comment>
-	<em tal:content="python:type(item[column]) == type({}) and item[column].get('unit', None) or ''"
-		class="discreet" style="white-space:nowrap;"/>
-
-	<tal:comment replace="nothing"><!-- unit for Result --></tal:comment>
-	<em tal:condition="python:'Unit' in item and
-							(column == 'Result' or
-								'interim_fields' in item and column in item['interim_fields'])"
+	<tal:comment replace="nothing"><!-- unit for result--></tal:comment>
+	<em tal:condition="python:'Unit' in item and column == 'Result'"
 		class="discreet"
 		style="white-space:nowrap;"
 		tal:content="python:item['Unit']"/>
