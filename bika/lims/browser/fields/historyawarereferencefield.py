@@ -129,8 +129,6 @@ class HistoryAwareReferenceField(ReferenceField):
 
         pm = getToolByName(instance, "portal_membership")
         member = pm.getAuthenticatedMember()
-        canAccessPreviousVersions =\
-            pm.checkPermission(AccessPreviousVersions, instance)
 
         pr = getToolByName(instance, 'portal_repository')
 
@@ -148,7 +146,10 @@ class HistoryAwareReferenceField(ReferenceField):
 
                 version_id = instance.reference_versions[uid]
                 try:
-                    o = pr.retrieve(r, selector=version_id).object
+                    o = pr._retrieve(r,
+                                     selector=version_id,
+                                     preserve=(),
+                                     countPurged=True).object
                 except ArchivistRetrieveError:
                     o = r
             else:
