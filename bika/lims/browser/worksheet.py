@@ -78,13 +78,13 @@ class WorksheetWorkflowAction(WorkflowAction):
                 else:
                     hasInterims[uid] = False
                 unit = service.getUnit()
-                analysis.edit(
-                    Result = result,
-                    InterimFields = interimFields,
-                    Retested = form.has_key('retested') and \
-                               form['retested'].has_key(uid),
-                    Unit = unit and unit or '',
-                    Remarks = form['Remarks'][0].get(uid, ''))
+                analysis.setResult(result)
+                analysis.setInterimFields(interimFields)
+                retested = 'retested' in form and uid in form['retested']
+                analysis.setRetested(retested)
+                remarks = 'Remarks' in form and \
+                    form['Remarks'][0].get(uid, '') or ''
+                analysis.setRemarks(remarks)
 
             # discover which items may be submitted
             submissable = []
