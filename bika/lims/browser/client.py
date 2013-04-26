@@ -1,6 +1,7 @@
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF, logger, bikaMessageFactory as _
@@ -18,6 +19,7 @@ from bika.lims.interfaces import IContacts
 from bika.lims.interfaces import IDisplayListVocabulary
 from bika.lims.permissions import *
 from bika.lims.subscribers import doActionFor, skip
+from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import isActive
 from bika.lims.utils import tmpID
 from bika.lims.vocabularies import CatalogVocabulary
@@ -28,6 +30,7 @@ from zope.component import adapts
 from zope.i18n import translate
 from zope.interface import implements
 import plone, json
+import zope.event
 
 class ClientWorkflowAction(AnalysisRequestWorkflowAction):
     """ This function is called to do the worflow actions
@@ -287,22 +290,45 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                     Remarks=ar.getRemarks(),
                     MemberDiscount=ar.getMemberDiscount()
                 )
-                services = [an.getObject().getService() \
-                            for an in ar.getAnalyses()]
-                analyses = [s.UID() for s in services]
-                prices = {s.UID(): s.getPrice() for s in services}
-                newar.setAnalyses(analyses, prices=prices)
+                # Set the results for each AR analysis
+                ans = ar.getAnalyses(full_objects=True)
+                for an in ans:
+                    newar.invokeFactory("Analysis", id=an.getKeyword())
+                    nan = newar[an.getKeyword()]
+                    nan.edit(
+                        Service=an.getService(),
+                        Calculation=an.getCalculation(),
+                        InterimFields=an.getInterimFields(),
+                        Result=an.getResult(),
+                        ResultDM=an.getResultDM(),
+                        Retested=False,
+                        MaxTimeAllowed=an.getMaxTimeAllowed(),
+                        DueDate=an.getDueDate(),
+                        Duration=an.getDuration(),
+                        ReportDryMatter=an.getReportDryMatter(),
+                        Analyst=an.getAnalyst(),
+                        Instrument=an.getInstrument(),
+                        SamplePartition=an.getSamplePartition())
+                    nan.unmarkCreationFlag()
+                    zope.event.notify(ObjectInitializedEvent(nan))
+                    changeWorkflowState(nan, 'bika_analysis_workflow', 
+                                        'sample_received')
+                    nan.reindexObject()
 
                 newar.reindexObject()
                 newar.aq_parent.reindexObject()
                 renameAfterCreation(newar)
                 newar.edit(RequestID = newar.getId())
 
+                if hasattr(ar, 'setChildAnalysisRequest'):
+                    ar.setChildAnalysisRequest(newar)
+                newar.setParentAnalysisRequest(ar)
+
                 # 3. The old AR gets status 'invalid'
                 workflow.doActionFor(ar, 'retract_ar')
 
                 # 4. The new AR copy opens in status 'to be verified'
-                # workflow.doActionFor(newar, "submit")
+                changeWorkflowState(newar, 'bika_ar_workflow', 'to_be_verified')
                 transitioned.append(ar.RequestID)
                 newars.append(newar.RequestID)
 

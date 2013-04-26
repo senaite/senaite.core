@@ -29,11 +29,13 @@ from magnitude import mg
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.event import ObjectInitializedEvent
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import adapts
 from zope.component import getAdapter
+import zope.event
 from zope.i18n.locales import locales
 from zope.interface import implements
 
@@ -428,22 +430,46 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 Remarks=ar.getRemarks(),
                 MemberDiscount=ar.getMemberDiscount()
             )
-            services = [an.getObject().getService() \
-                        for an in ar.getAnalyses()]
-            analyses = [s.UID() for s in services]
-            prices = {s.UID(): s.getPrice() for s in services}
-            newar.setAnalyses(analyses, prices=prices)
+
+            # Set the results for each AR analysis
+            ans = ar.getAnalyses(full_objects=True)
+            for an in ans:
+                newar.invokeFactory("Analysis", id=an.getKeyword())
+                nan = newar[an.getKeyword()]
+                nan.edit(
+                    Service=an.getService(),
+                    Calculation=an.getCalculation(),
+                    InterimFields=an.getInterimFields(),
+                    Result=an.getResult(),
+                    ResultDM=an.getResultDM(),
+                    Retested=False,
+                    MaxTimeAllowed=an.getMaxTimeAllowed(),
+                    DueDate=an.getDueDate(),
+                    Duration=an.getDuration(),
+                    ReportDryMatter=an.getReportDryMatter(),
+                    Analyst=an.getAnalyst(),
+                    Instrument=an.getInstrument(),
+                    SamplePartition=an.getSamplePartition())
+                nan.unmarkCreationFlag()
+                zope.event.notify(ObjectInitializedEvent(nan))
+                changeWorkflowState(nan, 'bika_analysis_workflow', 
+                                    'sample_received')
+                nan.reindexObject()
 
             newar.reindexObject()
             newar.aq_parent.reindexObject()
             renameAfterCreation(newar)
-            newar.edit(RequestID = newar.getId())
+            newar.edit(RequestID=newar.getId())
+
+            if hasattr(ar, 'setChildAnalysisRequest'):
+                ar.setChildAnalysisRequest(newar)
+            newar.setParentAnalysisRequest(ar)
 
             # 3. The old AR gets status 'invalid'
             workflow.doActionFor(ar, 'retract_ar')
 
             # 4. The new AR copy opens in status 'to be verified'
-            #  workflow.doActionFor(newar, "submit")
+            changeWorkflowState(newar, 'bika_ar_workflow', 'to_be_verified')
             message = self.context.translate('${items} retracted.',
                                 mapping = {'items': ar.RequestID})
             self.context.plone_utils.addPortalMessage(message, 'info')
@@ -781,6 +807,48 @@ class AnalysisRequestViewView(BrowserView):
         qcview.show_workflow_action_buttons = True
         qcview.show_select_column = True
         self.qctable = qcview.contents_table()
+
+        # If is a retracted AR, show the link to child AR and show a warn msg
+        if workflow.getInfoFor(ar, 'review_state') == 'invalid':
+            childar = hasattr(ar, 'getChildAnalysisRequest') \
+                        and ar.getChildAnalysisRequest() or None
+            anchor = childar and ("<a href='%s'>%s</a>"%(childar.absolute_url(),childar.getRequestID())) or None
+            if anchor:
+                self.header_rows.append(
+                        {'id': 'ChildAR',
+                         'title': 'Newly created Analysis Request',
+                         'allow_edit': False,
+                         'value': anchor,
+                         'condition': True,
+                         'type': 'text'})
+
+                message = self.context.translate(_('This Analysis Request has been '
+                                                   'retracted and the Analysis Request '
+                                                   '%s has been automatically created.'
+                                                   ) % childar.getRequestID())
+            else:
+                message = self.context.translate(_('This Analysis Request has been '
+                                                   'retracted. '))
+            self.context.plone_utils.addPortalMessage(message, 'warn')
+
+        # If is an AR automatically generated due to a Retraction, show it's
+        # parent AR information
+        if hasattr(ar, 'getParentAnalysisRequest') \
+            and ar.getParentAnalysisRequest():
+            par = ar.getParentAnalysisRequest()
+            anchor = "<a href='%s'>%s</a>" % (par.absolute_url(), par.getRequestID())
+            self.header_rows.append(
+                        {'id': 'ParentAR',
+                         'title': 'Parent Analysis Request',
+                         'allow_edit': False,
+                         'value': anchor,
+                         'condition': True,
+                         'type': 'text'})
+            message = self.context.translate(_('This Analysis Request has been '
+                                               'generated automatically due to '
+                                               'the retraction of the Analysis '
+                                               'Request %s.') % par.getRequestID())
+            self.context.plone_utils.addPortalMessage(message, 'warn')
 
         return self.template()
 
