@@ -196,6 +196,22 @@ class doPublish(BrowserView):
 
         return [ar.RequestID for ar in self.analysis_requests]
 
+    def getResult(self, analysis):
+        result = analysis.getResult()
+        service = analysis.getService()
+        choices = service.getResultOptions()
+        for choice in choices:
+            if choice['ResultValue'] == result:
+                return choice['ResultText']
+
+        precision = service.getPrecision()
+        try:
+            result = str('%%.%sf' % precision) % float(result)
+        except:
+            pass
+
+        return result
+
     def get_managers_from_requests(self):
         ## Script (Python) "get_managers_from_requests"
         ##bind container=container
