@@ -170,6 +170,14 @@ table.bika-listing-table {
   color: &dtml-retractedTextColor; !important;
 }
 
+.bika-listing-table .state-invalid {
+  background-color: &dtml-retractedBackgroundColor; !important;
+  color: &dtml-retractedTextColor; !important;
+}
+.bika-listing-table .state-invalid a {
+  color: &dtml-retractedTextColor; !important;
+}
+
 .bika-listing-table .state-cancelled {
   background-color: &dtml-cancelledBackgroundColor; !important;
   color: &dtml-cancelledTextColor; !important;

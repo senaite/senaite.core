@@ -12,12 +12,14 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.publish import doPublish
 from bika.lims.adapters.widgetvisibility import WidgetVisibility as _WV
 from bika.lims.browser.sample import SamplesView
+from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IContacts
 from bika.lims.interfaces import IDisplayListVocabulary
 from bika.lims.permissions import *
 from bika.lims.subscribers import doActionFor, skip
 from bika.lims.utils import isActive
+from bika.lims.utils import tmpID
 from bika.lims.vocabularies import CatalogVocabulary
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -236,6 +238,86 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
             self.request.response.redirect(self.destination_url)
+
+        elif action == 'retract_ar':
+            # AR should be retracted
+            transitioned = []
+            newars =  []
+            objects = AnalysisRequestWorkflowAction._get_selected_items(self) 
+            for ar_uid, ar in objects.items():
+
+                # can't transition inactive ARs
+                if not isActive(ar):
+                    continue
+
+                # 1. The system immediately alerts the client 
+                # contacts who ordered the results, per email and SMS, that a 
+                # possible mistake has been picked up and is under investigation
+
+                # 2. Copies the AR linking the original one and viceversa
+                _id = self.context.invokeFactory('AnalysisRequest', id=tmpID())
+                newar = self.context[_id]
+                newar.edit(
+                    title=ar.title,
+                    description=ar.description,
+                    RequestID=newar.getId(),
+                    Contact=ar.getContact(),
+                    CCContact=ar.getCCContact(),
+                    CCEmails=ar.getCCEmails(),
+                    Batch=ar.getBatch(),
+                    Template=ar.getTemplate(),
+                    Profile=ar.getProfile(),
+                    Sample=ar.getSample(),
+                    SamplingDate=ar.getSamplingDate(),
+                    SampleType=ar.getSampleType(),
+                    SamplePoint=ar.getSamplePoint(),
+                    ClientOrderNumber=ar.getClientOrderNumber(),
+                    ClientReference=ar.getClientReference(),
+                    ClientSampleID=ar.getClientSampleID(),
+                    SamplingDeviation=ar.getSamplingDeviation(),
+                    SampleCondition=ar.getSampleCondition(),
+                    DefaultContainerType=ar.getDefaultContainerType(),
+                    AdHoc=ar.getAdHoc(),
+                    Composite=ar.getComposite(),
+                    ReportDryMatter=ar.getReportDryMatter(),
+                    InvoiceExclude=ar.getInvoiceExclude(),
+                    Attachment=ar.getAttachment(),
+                    Invoice=ar.getInvoice(),
+                    DateReceived=ar.getDateReceived(),
+                    Remarks=ar.getRemarks(),
+                    MemberDiscount=ar.getMemberDiscount()
+                )
+                services = [an.getObject().getService() \
+                            for an in ar.getAnalyses()]
+                analyses = [s.UID() for s in services]
+                prices = {s.UID(): s.getPrice() for s in services}
+                newar.setAnalyses(analyses, prices=prices)
+
+                newar.reindexObject()
+                newar.aq_parent.reindexObject()
+                renameAfterCreation(newar)
+                newar.edit(RequestID = newar.getId())
+
+                # 3. The old AR gets status 'invalid'
+                workflow.doActionFor(ar, 'retract_ar')
+
+                # 4. The new AR copy opens in status 'to be verified'
+                # workflow.doActionFor(newar, "submit")
+                transitioned.append(ar.RequestID)
+                newars.append(newar.RequestID)
+
+            if len(transitioned) > 0:
+                message = _('${items} were retracted. ${newitems} were created',
+                mapping={'items': ', '.join(transitioned),
+                         'newitems': ', '.join(newars)})
+            else:
+                message = _('No items were retracted')
+            message = self.context.translate(message)
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            self.destination_url = self.request.get_header("referer",
+                                   self.context.absolute_url())
+            self.request.response.redirect(self.destination_url)
+
         else:
             AnalysisRequestWorkflowAction.__call__(self)
 

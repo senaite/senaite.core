@@ -11,6 +11,7 @@ from bika.lims.browser.sample import SamplePartitionsView
 from bika.lims.adapters.widgetvisibility import WidgetVisibility as _WV
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.config import POINTS_OF_CAPTURE
+from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestAddView
 from bika.lims.interfaces import IDisplayListVocabulary
@@ -20,6 +21,7 @@ from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
 from bika.lims.utils import to_unicode as _u
+from bika.lims.utils import tmpID
 from bika.lims.vocabularies import CatalogVocabulary
 from bika.lims.browser.analyses import QCAnalysesView
 from DateTime import DateTime
@@ -378,6 +380,76 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             # default bika_listing.py/WorkflowAction, but then go to view screen.
             self.destination_url = self.context.absolute_url()
             WorkflowAction.__call__(self)
+
+        elif action == 'retract_ar':
+            # AR should be retracted
+            # Can't transition inactive ARs
+            if not isActive(self.context):
+                message = self.context.translate(_('Item is inactive.'))
+                self.context.plone_utils.addPortalMessage(message, 'info')
+                self.request.response.redirect(self.context.absolute_url())
+                return
+
+            # 1. The system immediately alerts the client 
+            # contacts who ordered the results, per email and SMS, that a 
+            # possible mistake has been picked up and is under investigation
+
+            # 2. Copies the AR linking the original one and viceversa
+            ar = self.context
+            _id = ar.aq_parent.invokeFactory('AnalysisRequest', id=tmpID())
+            newar = ar.aq_parent[_id]
+            newar.edit(
+                title=ar.title,
+                description=ar.description,
+                RequestID=newar.getId(),
+                Contact=ar.getContact(),
+                CCContact=ar.getCCContact(),
+                CCEmails=ar.getCCEmails(),
+                Batch=ar.getBatch(),
+                Template=ar.getTemplate(),
+                Profile=ar.getProfile(),
+                Sample=ar.getSample(),
+                SamplingDate=ar.getSamplingDate(),
+                SampleType=ar.getSampleType(),
+                SamplePoint=ar.getSamplePoint(),
+                ClientOrderNumber=ar.getClientOrderNumber(),
+                ClientReference=ar.getClientReference(),
+                ClientSampleID=ar.getClientSampleID(),
+                SamplingDeviation=ar.getSamplingDeviation(),
+                SampleCondition=ar.getSampleCondition(),
+                DefaultContainerType=ar.getDefaultContainerType(),
+                AdHoc=ar.getAdHoc(),
+                Composite=ar.getComposite(),
+                ReportDryMatter=ar.getReportDryMatter(),
+                InvoiceExclude=ar.getInvoiceExclude(),
+                Attachment=ar.getAttachment(),
+                Invoice=ar.getInvoice(),
+                DateReceived=ar.getDateReceived(),
+                Remarks=ar.getRemarks(),
+                MemberDiscount=ar.getMemberDiscount()
+            )
+            services = [an.getObject().getService() \
+                        for an in ar.getAnalyses()]
+            analyses = [s.UID() for s in services]
+            prices = {s.UID(): s.getPrice() for s in services}
+            newar.setAnalyses(analyses, prices=prices)
+
+            newar.reindexObject()
+            newar.aq_parent.reindexObject()
+            renameAfterCreation(newar)
+            newar.edit(RequestID = newar.getId())
+
+            # 3. The old AR gets status 'invalid'
+            workflow.doActionFor(ar, 'retract_ar')
+
+            # 4. The new AR copy opens in status 'to be verified'
+            #  workflow.doActionFor(newar, "submit")
+            message = self.context.translate('${items} retracted.',
+                                mapping = {'items': ar.RequestID})
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            self.destination_url = self.request.get_header("referer",
+                                   self.context.absolute_url())
+            self.request.response.redirect(self.destination_url)
 
         else:
             # default bika_listing.py/WorkflowAction for other transitions
@@ -2010,6 +2082,7 @@ class AnalysisRequestsView(BikaListingView):
                              {'id':'prepublish'},
                              {'id':'publish'},
                              {'id':'republish'},
+                             {'id':'retract_ar'},
                              {'id':'cancel'},
                              {'id':'reinstate'}],
              'columns':['getRequestID',
@@ -2150,6 +2223,7 @@ class AnalysisRequestsView(BikaListingView):
              'contentFilter': {'review_state': 'published',
                                'sort_on':'created',
                                'sort_order': 'reverse'},
+             'transitions': [{'id':'retract_ar'}],
              'columns':['getRequestID',
                         'getSample',
                         'BatchID',
