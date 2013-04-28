@@ -14,5 +14,5 @@ def ObjectModifiedEventHandler(obj, event):
         for i, service in enumerate(backrefs):
             service = uc(UID=service.UID())[0].getObject()
             pr.save(obj=service, comment="Calculation updated to version %s"%
-                obj.version_id+1)
+                (obj.version_id+1,))
             service.reference_versions[obj.UID()] = obj.version_id + 1
