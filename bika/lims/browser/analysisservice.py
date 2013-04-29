@@ -87,7 +87,7 @@ class ajaxServicePopup(BrowserView):
         else:
             self.log = []
 
-        brains = bsc(portal_type="AnalysisService", Title=service_title)
+        brains = bsc(portal_type="AnalysisService", title=service_title)
         if not brains:
             return ''
 
