@@ -323,7 +323,12 @@ class WorksheetAnalysesView(AnalysesView):
                 continue
 
             # set Pos column for this row, to have a rowspan
-            items[x]['rowspan'] = {'Pos': len(pos_items)}
+            # It gets doubled if we have Remarks rows enabled
+            if self.context.bika_setup.getEnableAnalysisRemarks():
+                rowspan = len(pos_items) * 2
+            else:
+                rowspan = len(pos_items)
+            items[x]['rowspan'] = {'Pos': rowspan}
 
             # fill the rowspan with a little table
             obj = items[x]['obj']
