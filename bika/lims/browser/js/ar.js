@@ -55,6 +55,26 @@ function workflow_transition_preserve(event){
 	window.bika_utils.portalMessage(message);
 }
 
+function workflow_transition_retract_ar(event) {
+	event.preventDefault();
+	$("body").append(
+		"<div id='arretractmsgbox' style='display:none' title='" + _("AR retraction") + "'>"+
+		_("<p>If you retract/invalidate this Analysis Request, a new Analysis Request will be created automatically with 'To be verified' state and an email will be sent to the contacts who ordered the results.</p>" +
+				"<p>Are you sure?</p>")+"</div>");
+	yes = _("Yes");
+	no = _("No");
+	$("#arretractmsgbox").dialog({width:450, resizable:false, closeOnEscape: false, buttons:{
+		yes: function(){
+			$(this).dialog("close");
+			href = window.location.href+"/workflow_action?workflow_action=retract_ar";
+			window.location.href = href;
+		},
+		no:function(){
+			$(this).dialog("close");
+		}
+	}});
+}
+
 $(document).ready(function(){
 
 	_ = jarn.i18n.MessageFactory('bika');
@@ -71,6 +91,9 @@ $(document).ready(function(){
 
 	// Disable Plone UI for preserve transition
 	$("#workflow-transition-preserve").click(workflow_transition_preserve);
+	
+	// Show email message box when AR gets retracted/invalidated
+	$("#workflow-transition-retract_ar").click(workflow_transition_retract_ar);
 
 });
 }(jQuery));
