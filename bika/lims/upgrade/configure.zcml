@@ -129,4 +129,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+ <genericsetup:upgradeStep
+        title="Retracted ARs status renamed to Invalid"
+        description=""
+        source="1120"
+        destination="1121"
+        handler="bika.lims.upgrade.to1121.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>

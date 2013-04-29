@@ -316,7 +316,7 @@
   </permission-map>
  </state>
 
- <state state_id="invalid" title="Retracted" i18n:attributes="title">
+ <state state_id="invalid" title="Invalid" i18n:attributes="title">
   <permission-map name="BIKA: Add Analysis" acquired="False">
   </permission-map>
   <permission-map name="BIKA: Edit AR" acquired="False">
@@ -581,7 +581,7 @@
  </transition>
  
  <transition transition_id="retract_ar"
-             title="Retract"
+             title="Invalidate"
              new_state="invalid"
              trigger="USER"
              before_script=""
@@ -591,7 +591,7 @@
   <action url="workflow_action?workflow_action=retract_ar"
           category="workflow"
           icon=""
-          i18n:translate="retract_transition_title">Retract</action>
+          i18n:translate="retract_transition_title">Invalidate</action>
   <guard>
    <guard-permission>BIKA: Retract</guard-permission>
    <guard-expression>python:here.guard_cancelled_object()</guard-expression>

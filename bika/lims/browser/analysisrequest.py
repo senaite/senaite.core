@@ -392,9 +392,15 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 self.request.response.redirect(self.context.absolute_url())
                 return
 
-            # 1. The system immediately alerts the client 
-            # contacts who ordered the results, per email and SMS, that a 
-            # possible mistake has been picked up and is under investigation
+            # 1. The system immediately alerts the client contacts who ordered 
+            # the results, per email and SMS, that a possible mistake has been 
+            # picked up and is under investigation.
+            # A much possible information is provided in the email, linking 
+            # to the AR online.
+            # The system offers the labmanager a free text entry field to 
+            # include remarks to be added in the email.
+
+
 
             # 2. Copies the AR linking the original one and viceversa
             ar = self.context
@@ -452,8 +458,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     SamplePartition=an.getSamplePartition())
                 nan.unmarkCreationFlag()
                 zope.event.notify(ObjectInitializedEvent(nan))
-                changeWorkflowState(nan, 'bika_analysis_workflow', 
-                                    'sample_received')
+                changeWorkflowState(nan, 'bika_analysis_workflow',
+                                    'to_be_verified')
                 nan.reindexObject()
 
             newar.reindexObject()
@@ -465,8 +471,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 ar.setChildAnalysisRequest(newar)
             newar.setParentAnalysisRequest(ar)
 
-            # 3. The old AR gets status 'invalid'
-            workflow.doActionFor(ar, 'retract_ar')
+            # 3. The old AR gets a status of 'invalid'
+            #workflow.doActionFor(ar, 'retract_ar')
 
             # 4. The new AR copy opens in status 'to be verified'
             changeWorkflowState(newar, 'bika_ar_workflow', 'to_be_verified')
@@ -2150,7 +2156,6 @@ class AnalysisRequestsView(BikaListingView):
                              {'id':'prepublish'},
                              {'id':'publish'},
                              {'id':'republish'},
-                             {'id':'retract_ar'},
                              {'id':'cancel'},
                              {'id':'reinstate'}],
              'columns':['getRequestID',
@@ -2288,10 +2293,11 @@ class AnalysisRequestsView(BikaListingView):
                         'getDateReceived']},
             {'id':'published',
              'title': _('Published'),
-             'contentFilter': {'review_state': 'published',
+             'contentFilter': {'review_state': ('published','invalid'),
                                'sort_on':'created',
                                'sort_order': 'reverse'},
-             'transitions': [{'id':'retract_ar'}],
+             'transitions': [{'id':'republish'},
+                             {'id':'retract_ar'}],
              'columns':['getRequestID',
                         'getSample',
                         'BatchID',
@@ -2343,6 +2349,32 @@ class AnalysisRequestsView(BikaListingView):
                         'getDateReceived',
                         'getDatePublished',
                         'state_title']},
+            {'id':'invalid',
+             'title': _('Invalid'),
+             'contentFilter': {'review_state': 'invalid',
+                               'sort_on':'created',
+                               'sort_order': 'reverse'},
+             'transitions': [],
+             'columns':['getRequestID',
+                        'getSample',
+                        'BatchID',
+                        'Client',
+                        'Creator',
+                        'Created',
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'ClientContact',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle',
+                        'SamplingDeviation',
+                        'AdHoc',
+                        'getDateSampled',
+                        'getSampler',
+                        'getDatePreserved',
+                        'getPreserver',
+                        'getDateReceived',
+                        'getDatePublished']},
             {'id':'assigned',
              'title': "<img title='%s'\
                        src='%s/++resource++bika.lims.images/assigned.png'/>" % (
