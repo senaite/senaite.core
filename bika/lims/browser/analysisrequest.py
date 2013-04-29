@@ -500,7 +500,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 uemail = user.getProperty('email')
                 ufull = user.getProperty('fullname')
                 to.append(formataddr((encode_header(ufull), uemail)))
-                
+
             mime_msg['To'] = ','.join(to)
             aranchor = "<a href='%s'>%s</a>" % (ar.absolute_url(),
                                                 ar.getRequestID())

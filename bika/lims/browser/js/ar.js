@@ -71,8 +71,10 @@ function workflow_transition_retract_ar(event) {
 		},
 		no:function(){
 			$(this).dialog("close");
+			$('#portal-columns').fadeTo('slow', 1)
 		}
 	}});
+	$('#portal-columns').fadeTo('slow', 0.3)
 }
 
 $(document).ready(function(){
