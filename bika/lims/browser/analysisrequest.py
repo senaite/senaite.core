@@ -401,7 +401,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             # include remarks to be added in the email.
 
 
-
             # 2. Copies the AR linking the original one and viceversa
             ar = self.context
             _id = ar.aq_parent.invokeFactory('AnalysisRequest', id=tmpID())
@@ -472,16 +471,14 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             newar.setParentAnalysisRequest(ar)
 
             # 3. The old AR gets a status of 'invalid'
-            #workflow.doActionFor(ar, 'retract_ar')
+            workflow.doActionFor(ar, 'retract_ar')
 
             # 4. The new AR copy opens in status 'to be verified'
             changeWorkflowState(newar, 'bika_ar_workflow', 'to_be_verified')
-            message = self.context.translate('${items} retracted.',
+            message = self.context.translate('${items} invalidated.',
                                 mapping = {'items': ar.RequestID})
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            self.destination_url = self.request.get_header("referer",
-                                   self.context.absolute_url())
-            self.request.response.redirect(self.destination_url)
+            self.context.plone_utils.addPortalMessage(message, 'warn')
+            self.request.response.redirect(newar.absolute_url())
 
         else:
             # default bika_listing.py/WorkflowAction for other transitions

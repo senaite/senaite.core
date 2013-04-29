@@ -312,7 +312,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                     nan.unmarkCreationFlag()
                     zope.event.notify(ObjectInitializedEvent(nan))
                     changeWorkflowState(nan, 'bika_analysis_workflow', 
-                                        'sample_received')
+                                        'to_be_verified')
                     nan.reindexObject()
 
                 newar.reindexObject()
@@ -333,11 +333,11 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                 newars.append(newar.RequestID)
 
             if len(transitioned) > 0:
-                message = _('${items} were retracted. ${newitems} were created',
+                message = _('${items} were invalidated. ${newitems} were created',
                 mapping={'items': ', '.join(transitioned),
                          'newitems': ', '.join(newars)})
             else:
-                message = _('No items were retracted')
+                message = _('No items were invalidated')
             message = self.context.translate(message)
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
