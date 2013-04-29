@@ -22,9 +22,13 @@ from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
 from bika.lims.utils import to_unicode as _u
 from bika.lims.utils import tmpID
+from bika.lims.utils import encode_header
 from bika.lims.vocabularies import CatalogVocabulary
 from bika.lims.browser.analyses import QCAnalysesView
 from DateTime import DateTime
+from email.Utils import formataddr
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from magnitude import mg
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -32,6 +36,7 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import adapts
 from zope.component import getAdapter
@@ -392,16 +397,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 self.request.response.redirect(self.context.absolute_url())
                 return
 
-            # 1. The system immediately alerts the client contacts who ordered 
-            # the results, per email and SMS, that a possible mistake has been 
-            # picked up and is under investigation.
-            # A much possible information is provided in the email, linking 
-            # to the AR online.
-            # The system offers the labmanager a free text entry field to 
-            # include remarks to be added in the email.
-
-
-            # 2. Copies the AR linking the original one and viceversa
+            # 1. Copies the AR linking the original one and viceversa
             ar = self.context
             _id = ar.aq_parent.invokeFactory('AnalysisRequest', id=tmpID())
             newar = ar.aq_parent[_id]
@@ -470,14 +466,71 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 ar.setChildAnalysisRequest(newar)
             newar.setParentAnalysisRequest(ar)
 
-            # 3. The old AR gets a status of 'invalid'
+            # 2. The old AR gets a status of 'invalid'
             workflow.doActionFor(ar, 'retract_ar')
 
-            # 4. The new AR copy opens in status 'to be verified'
+            # 3. The new AR copy opens in status 'to be verified'
             changeWorkflowState(newar, 'bika_ar_workflow', 'to_be_verified')
+
+            # 4. The system immediately alerts the client contacts who ordered
+            # the results, per email and SMS, that a possible mistake has been
+            # picked up and is under investigation.
+            # A much possible information is provided in the email, linking
+            # to the AR online.
+            laboratory = self.context.bika_setup.laboratory
+            lab_address = "<br/>".join(laboratory.getPrintAddress())
+            mime_msg = MIMEMultipart('related')
+            mime_msg['Subject'] = _("Erroneus result publication from %s") % \
+                                    ar.getRequestID()
+            mime_msg['From'] = formataddr(
+                (encode_header(laboratory.getName()),
+                 laboratory.getEmailAddress()))
+            to = []
+            contact = ar.getContact()
+            if contact:
+                to.append(formataddr((encode_header(contact.Title()),
+                                       contact.getEmailAddress())))
+            for cc in ar.getCCContact():
+                to.append(formataddr((encode_header(cc.Title()),
+                                       cc.getEmailAddress())))
+
+            managers = self.context.portal_groups.getGroupMembers('LabManagers')
+            for bcc in managers:
+                user = self.portal.acl_users.getUser(bcc)
+                uemail = user.getProperty('email')
+                ufull = user.getProperty('fullname')
+                to.append(formataddr((encode_header(ufull), uemail)))
+                
+            mime_msg['To'] = ','.join(to)
+            aranchor = "<a href='%s'>%s</a>" % (ar.absolute_url(),
+                                                ar.getRequestID())
+            naranchor = "<a href='%s'>%s</a>" % (newar.absolute_url(),
+                                                 newar.getRequestID())
+            body = _("Some errors have been detected in the results report "
+                     "published from the Analysis Request %s. The Analysis "
+                     "Request %s has been created automatically and the "
+                     "previous has been invalidated.<br/>The possible mistake "
+                     "has been picked up and is under investigation.<br/><br/>"
+                     "%s"
+                     ) % (aranchor, naranchor, lab_address)
+
+            msg_txt = MIMEText(safe_unicode(body).encode('utf-8'),
+                               _subtype='html')
+            mime_msg.preamble = 'This is a multi-part MIME message.'
+            mime_msg.attach(msg_txt)
+            try:
+                host = getToolByName(self.context, 'MailHost')
+                host.send(mime_msg.as_string(), immediate=True)
+            except Exception, msg:
+                message = self.context.translate(
+                        _('Unable to send an email to alert lab '
+                          'client contacts that the Analysis Request has been '
+                          'retracted: %s')) % msg
+                self.context.plone_utils.addPortalMessage(message, 'warning')
+
             message = self.context.translate('${items} invalidated.',
-                                mapping = {'items': ar.RequestID})
-            self.context.plone_utils.addPortalMessage(message, 'warn')
+                                mapping={'items': ar.getRequestID()})
+            self.context.plone_utils.addPortalMessage(message, 'warning')
             self.request.response.redirect(newar.absolute_url())
 
         else:
