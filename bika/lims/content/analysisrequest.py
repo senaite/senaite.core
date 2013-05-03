@@ -448,6 +448,24 @@ schema = BikaSchema.copy() + Schema((
             visible=False,
         ),
     ),
+    ReferenceField(
+        'ChildAnalysisRequest',
+        allowed_types = ('AnalysisRequest',),
+        relationship = 'AnalysisRequestChildAnalysisRequest',
+        referenceClass = HoldingReference,
+        widget=ReferenceWidget(
+            visible=False,
+        ),
+    ),
+    ReferenceField(
+        'ParentAnalysisRequest',
+        allowed_types = ('AnalysisRequest',),
+        relationship = 'AnalysisRequestParentAnalysisRequest',
+        referenceClass = HoldingReference,
+        widget=ReferenceWidget(
+            visible=False,
+        ),
+    )
 )
 )
 

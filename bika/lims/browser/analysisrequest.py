@@ -11,6 +11,7 @@ from bika.lims.browser.sample import SamplePartitionsView
 from bika.lims.adapters.widgetvisibility import WidgetVisibility as _WV
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.config import POINTS_OF_CAPTURE
+from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestAddView
 from bika.lims.interfaces import IDisplayListVocabulary
@@ -20,18 +21,26 @@ from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
 from bika.lims.utils import to_unicode as _u
+from bika.lims.utils import tmpID
+from bika.lims.utils import encode_header
 from bika.lims.vocabularies import CatalogVocabulary
 from bika.lims.browser.analyses import QCAnalysesView
 from DateTime import DateTime
+from email.Utils import formataddr
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from magnitude import mg
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.event import ObjectInitializedEvent
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import adapts
 from zope.component import getAdapter
+import zope.event
 from zope.i18n.locales import locales
 from zope.interface import implements
 
@@ -379,6 +388,151 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             self.destination_url = self.context.absolute_url()
             WorkflowAction.__call__(self)
 
+        elif action == 'retract_ar':
+            # AR should be retracted
+            # Can't transition inactive ARs
+            if not isActive(self.context):
+                message = self.context.translate(_('Item is inactive.'))
+                self.context.plone_utils.addPortalMessage(message, 'info')
+                self.request.response.redirect(self.context.absolute_url())
+                return
+
+            # 1. Copies the AR linking the original one and viceversa
+            ar = self.context
+            _id = ar.aq_parent.invokeFactory('AnalysisRequest', id=tmpID())
+            newar = ar.aq_parent[_id]
+            newar.edit(
+                title=ar.title,
+                description=ar.description,
+                RequestID=newar.getId(),
+                Contact=ar.getContact(),
+                CCContact=ar.getCCContact(),
+                CCEmails=ar.getCCEmails(),
+                Batch=ar.getBatch(),
+                Template=ar.getTemplate(),
+                Profile=ar.getProfile(),
+                Sample=ar.getSample(),
+                SamplingDate=ar.getSamplingDate(),
+                SampleType=ar.getSampleType(),
+                SamplePoint=ar.getSamplePoint(),
+                ClientOrderNumber=ar.getClientOrderNumber(),
+                ClientReference=ar.getClientReference(),
+                ClientSampleID=ar.getClientSampleID(),
+                SamplingDeviation=ar.getSamplingDeviation(),
+                SampleCondition=ar.getSampleCondition(),
+                DefaultContainerType=ar.getDefaultContainerType(),
+                AdHoc=ar.getAdHoc(),
+                Composite=ar.getComposite(),
+                ReportDryMatter=ar.getReportDryMatter(),
+                InvoiceExclude=ar.getInvoiceExclude(),
+                Attachment=ar.getAttachment(),
+                Invoice=ar.getInvoice(),
+                DateReceived=ar.getDateReceived(),
+                Remarks=ar.getRemarks(),
+                MemberDiscount=ar.getMemberDiscount()
+            )
+
+            # Set the results for each AR analysis
+            ans = ar.getAnalyses(full_objects=True)
+            for an in ans:
+                newar.invokeFactory("Analysis", id=an.getKeyword())
+                nan = newar[an.getKeyword()]
+                nan.edit(
+                    Service=an.getService(),
+                    Calculation=an.getCalculation(),
+                    InterimFields=an.getInterimFields(),
+                    Result=an.getResult(),
+                    ResultDM=an.getResultDM(),
+                    Retested=False,
+                    MaxTimeAllowed=an.getMaxTimeAllowed(),
+                    DueDate=an.getDueDate(),
+                    Duration=an.getDuration(),
+                    ReportDryMatter=an.getReportDryMatter(),
+                    Analyst=an.getAnalyst(),
+                    Instrument=an.getInstrument(),
+                    SamplePartition=an.getSamplePartition())
+                nan.unmarkCreationFlag()
+                zope.event.notify(ObjectInitializedEvent(nan))
+                changeWorkflowState(nan, 'bika_analysis_workflow',
+                                    'to_be_verified')
+                nan.reindexObject()
+
+            newar.reindexObject()
+            newar.aq_parent.reindexObject()
+            renameAfterCreation(newar)
+            newar.edit(RequestID=newar.getId())
+
+            if hasattr(ar, 'setChildAnalysisRequest'):
+                ar.setChildAnalysisRequest(newar)
+            newar.setParentAnalysisRequest(ar)
+
+            # 2. The old AR gets a status of 'invalid'
+            workflow.doActionFor(ar, 'retract_ar')
+
+            # 3. The new AR copy opens in status 'to be verified'
+            changeWorkflowState(newar, 'bika_ar_workflow', 'to_be_verified')
+
+            # 4. The system immediately alerts the client contacts who ordered
+            # the results, per email and SMS, that a possible mistake has been
+            # picked up and is under investigation.
+            # A much possible information is provided in the email, linking
+            # to the AR online.
+            laboratory = self.context.bika_setup.laboratory
+            lab_address = "<br/>".join(laboratory.getPrintAddress())
+            mime_msg = MIMEMultipart('related')
+            mime_msg['Subject'] = _("Erroneus result publication from %s") % \
+                                    ar.getRequestID()
+            mime_msg['From'] = formataddr(
+                (encode_header(laboratory.getName()),
+                 laboratory.getEmailAddress()))
+            to = []
+            contact = ar.getContact()
+            if contact:
+                to.append(formataddr((encode_header(contact.Title()),
+                                       contact.getEmailAddress())))
+            for cc in ar.getCCContact():
+                to.append(formataddr((encode_header(cc.Title()),
+                                       cc.getEmailAddress())))
+
+            managers = self.context.portal_groups.getGroupMembers('LabManagers')
+            for bcc in managers:
+                user = self.portal.acl_users.getUser(bcc)
+                uemail = user.getProperty('email')
+                ufull = user.getProperty('fullname')
+                to.append(formataddr((encode_header(ufull), uemail)))
+
+            mime_msg['To'] = ','.join(to)
+            aranchor = "<a href='%s'>%s</a>" % (ar.absolute_url(),
+                                                ar.getRequestID())
+            naranchor = "<a href='%s'>%s</a>" % (newar.absolute_url(),
+                                                 newar.getRequestID())
+            body = _("Some errors have been detected in the results report "
+                     "published from the Analysis Request %s. The Analysis "
+                     "Request %s has been created automatically and the "
+                     "previous has been invalidated.<br/>The possible mistake "
+                     "has been picked up and is under investigation.<br/><br/>"
+                     "%s"
+                     ) % (aranchor, naranchor, lab_address)
+
+            msg_txt = MIMEText(safe_unicode(body).encode('utf-8'),
+                               _subtype='html')
+            mime_msg.preamble = 'This is a multi-part MIME message.'
+            mime_msg.attach(msg_txt)
+            try:
+                host = getToolByName(self.context, 'MailHost')
+                host.send(mime_msg.as_string(), immediate=True)
+            except Exception, msg:
+                message = self.context.translate(
+                        _('Unable to send an email to alert lab '
+                          'client contacts that the Analysis Request has been '
+                          'retracted: %s')) % msg
+                self.context.plone_utils.addPortalMessage(message, 'warning')
+
+            message = self.context.translate('${items} invalidated.',
+                                mapping={'items': ar.getRequestID()})
+            self.context.plone_utils.addPortalMessage(message, 'warning')
+            self.request.response.redirect(newar.absolute_url())
+
         else:
             # default bika_listing.py/WorkflowAction for other transitions
             WorkflowAction.__call__(self)
@@ -709,6 +863,48 @@ class AnalysisRequestViewView(BrowserView):
         qcview.show_workflow_action_buttons = True
         qcview.show_select_column = True
         self.qctable = qcview.contents_table()
+
+        # If is a retracted AR, show the link to child AR and show a warn msg
+        if workflow.getInfoFor(ar, 'review_state') == 'invalid':
+            childar = hasattr(ar, 'getChildAnalysisRequest') \
+                        and ar.getChildAnalysisRequest() or None
+            anchor = childar and ("<a href='%s'>%s</a>"%(childar.absolute_url(),childar.getRequestID())) or None
+            if anchor:
+                self.header_rows.append(
+                        {'id': 'ChildAR',
+                         'title': 'Newly created Analysis Request',
+                         'allow_edit': False,
+                         'value': anchor,
+                         'condition': True,
+                         'type': 'text'})
+
+                message = self.context.translate(_('This Analysis Request has been '
+                                                   'retracted and the Analysis Request '
+                                                   '%s has been automatically created.'
+                                                   ) % childar.getRequestID())
+            else:
+                message = self.context.translate(_('This Analysis Request has been '
+                                                   'retracted. '))
+            self.context.plone_utils.addPortalMessage(message, 'warn')
+
+        # If is an AR automatically generated due to a Retraction, show it's
+        # parent AR information
+        if hasattr(ar, 'getParentAnalysisRequest') \
+            and ar.getParentAnalysisRequest():
+            par = ar.getParentAnalysisRequest()
+            anchor = "<a href='%s'>%s</a>" % (par.absolute_url(), par.getRequestID())
+            self.header_rows.append(
+                        {'id': 'ParentAR',
+                         'title': 'Parent Analysis Request',
+                         'allow_edit': False,
+                         'value': anchor,
+                         'condition': True,
+                         'type': 'text'})
+            message = self.context.translate(_('This Analysis Request has been '
+                                               'generated automatically due to '
+                                               'the retraction of the Analysis '
+                                               'Request %s.') % par.getRequestID())
+            self.context.plone_utils.addPortalMessage(message, 'warn')
 
         return self.template()
 
@@ -2147,9 +2343,10 @@ class AnalysisRequestsView(BikaListingView):
                         'getDateReceived']},
             {'id':'published',
              'title': _('Published'),
-             'contentFilter': {'review_state': 'published',
+             'contentFilter': {'review_state': ('published','invalid'),
                                'sort_on':'created',
                                'sort_order': 'reverse'},
+             'transitions': [{'id':'republish'}],
              'columns':['getRequestID',
                         'getSample',
                         'BatchID',
@@ -2201,6 +2398,32 @@ class AnalysisRequestsView(BikaListingView):
                         'getDateReceived',
                         'getDatePublished',
                         'state_title']},
+            {'id':'invalid',
+             'title': _('Invalid'),
+             'contentFilter': {'review_state': 'invalid',
+                               'sort_on':'created',
+                               'sort_order': 'reverse'},
+             'transitions': [],
+             'columns':['getRequestID',
+                        'getSample',
+                        'BatchID',
+                        'Client',
+                        'Creator',
+                        'Created',
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'ClientContact',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle',
+                        'SamplingDeviation',
+                        'AdHoc',
+                        'getDateSampled',
+                        'getSampler',
+                        'getDatePreserved',
+                        'getPreserver',
+                        'getDateReceived',
+                        'getDatePublished']},
             {'id':'assigned',
              'title': "<img title='%s'\
                        src='%s/++resource++bika.lims.images/assigned.png'/>" % (

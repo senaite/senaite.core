@@ -1,6 +1,7 @@
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF, logger, bikaMessageFactory as _
@@ -12,12 +13,15 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.publish import doPublish
 from bika.lims.adapters.widgetvisibility import WidgetVisibility as _WV
 from bika.lims.browser.sample import SamplesView
+from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IClient
 from bika.lims.interfaces import IContacts
 from bika.lims.interfaces import IDisplayListVocabulary
 from bika.lims.permissions import *
 from bika.lims.subscribers import doActionFor, skip
+from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import isActive
+from bika.lims.utils import tmpID
 from bika.lims.vocabularies import CatalogVocabulary
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -26,6 +30,7 @@ from zope.component import adapts
 from zope.i18n import translate
 from zope.interface import implements
 import plone, json
+import zope.event
 
 class ClientWorkflowAction(AnalysisRequestWorkflowAction):
     """ This function is called to do the worflow actions
@@ -236,6 +241,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
             self.request.response.redirect(self.destination_url)
+
         else:
             AnalysisRequestWorkflowAction.__call__(self)
 

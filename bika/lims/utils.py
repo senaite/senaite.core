@@ -287,6 +287,10 @@ def changeWorkflowState(content, wf_id, state_id, acquire_permissions=False,
     content.reindexObject(idxs=['allowedRolesAndUsers', 'review_state'])
     return
 
+def tmpID():
+    import os, binascii
+    return binascii.hexlify(os.urandom(16))
+
 class bika_bsc_counter(BrowserView):
     def __call__(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
