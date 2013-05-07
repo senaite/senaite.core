@@ -50,6 +50,7 @@ class BikaGenerator:
                        'samples',
                        'worksheets',
                        'reports',
+                       'queries',
                        ):
             obj = portal._getOb(obj_id)
             obj.unmarkCreationFlag()
@@ -322,6 +323,16 @@ class BikaGenerator:
         mp('ATContentTypes: Add Image', ['Manager', 'Labmanager', 'LabClerk', 'Member',], 0)
         mp('ATContentTypes: Add File', ['Manager', 'Labmanager', 'LabClerk', 'Member',], 0)
         portal.reports.reindexObject()
+
+        # /queries folder permissions
+        mp = portal.queries.manage_permission
+        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', ], 0)
+        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member'], 0)
+        mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Owner'], 0)
+        mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Member'], 0)
+        mp('ATContentTypes: Add Image', ['Manager', 'Labmanager', 'LabClerk', 'Member',], 0)
+        mp('ATContentTypes: Add File', ['Manager', 'Labmanager', 'LabClerk', 'Member',], 0)
+        portal.queries.reindexObject()
 
         # /invoices folder permissions
         mp = portal.invoices.manage_permission

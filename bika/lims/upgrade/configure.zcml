@@ -138,4 +138,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+ <genericsetup:upgradeStep
+        title="Add QueryFolder type"
+        description=""
+        source="1121"
+        destination="1122"
+        handler="bika.lims.upgrade.to1122.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
