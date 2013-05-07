@@ -124,5 +124,28 @@ h4 {
     white-space:nowrap !important;
 }
 
+div.alertpanel {
+    border: none;
+    /*padding-top:20px;*/
+    padding-right:20px;
+    padding-left:20px;
+    padding-bottom:10px;
+    background-color: #ffe297;
+  /*  background: #ffe297 url(&dtml-portal_url;/++resource++bika.lims.images/exclamation_big.png) no-repeat 25px 20px;*/
+}
+div.alertpanel h1 {
+    color:#7b0c00;
+    margin:0px;
+    padding:0px;
+    padding-top:20px;
+    padding-left:20px;
+    padding-bottom:10px;
+    margin-bottom:0px;
+}
+div.alertpanel span,
+div.alertpanel a {
+    padding-bottom:0px;
+    margin-bottom:0px;
+}
 /* </dtml-with> */
 

@@ -75,6 +75,28 @@
   </tr>
 </table>
 
+  <div tal:condition="python:view.containsInvalidARs()" 
+        tal:repeat="ar view/batch"
+        class="alertpanel">
+    <span tal:omit-tag="" tal:condition="repeat/ar/start">
+    <h1 i18n:translate=""
+        tal:condition="python:len(view.batch)&gt;1">
+        The following Analysis Requests has been invalidated due to erroneously published results
+    </h1>
+    </span>
+    <h1 i18n:translate=""
+        tal:condition="python:len(view.batch)==1">
+        This Analysis Request has been invalidated due to erroneously published results
+    </h1>        
+    <tal:invalidreport tal:condition="python:ar.isInvalid() and ar.getChildAnalysisRequest()">
+        <a tal:attributes="href python:ar.absolute_url();" 
+            tal:content="ar/RequestID"></a>&nbsp;
+        <span i18n:translate="">has been replaced by</span>&nbsp;
+        <a tal:attributes="href python:ar.getLastChild().absolute_url()"
+            tal:content="python:ar.getLastChild().getRequestID()"></a>
+    </tal:invalidreport>
+  </div>
+
 <hr/>
 <h1 i18n:translate="">Summary</h1>
 <table class="main-table" cellpadding="2" cellspacing="0">
@@ -113,8 +135,16 @@
       <th i18n:translate="">Request ID</th>
       <td tal:repeat="ar view/batch"
         tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1">
-        <a href="" tal:content="ar/getRequestID"
-          tal:attributes="href ar/absolute_url">AR-00001</a>
+       <a href="" tal:content="ar/getRequestID"
+          tal:attributes="href ar/absolute_url;
+                         style python:ar.isInvalid() and 'text-decoration:line-through' or '';">AR-00001</a>           
+       <span tal:condition="python:ar.isInvalid()" tal:omit-tag="">
+          <br/><span i18n:translate="" style="color:#7b0c00;font-weight:bold;">Invalid, refer to</span>&nbsp;
+          <a tal:attributes="href python:ar.getLastChild().absolute_url()"
+             tal:content="python: ar.getLastChild().getRequestID()"
+             tal:condition="python: ar.getLastChild()"></a>
+       </span>  
+          
         <tal:exclude tal:condition="ar/getInvoiceExclude">
           <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/invoice_exclude.png"
             tal:define="global invoice_exclude python:1">
@@ -244,7 +274,8 @@
                 global out_of_range python:1 if not in_range[0] else out_of_range;">
 
               <td nowrap
-                tal:attributes="class result_class">
+                tal:attributes="class result_class;
+                    style python:ar.isInvalid() and 'text-decoration:line-through' or '';">
                 <span tal:content="result">10.00</span>
                 <span tal:content="string:${analysis/Unit}"
                   tal:condition="analysis/Unit|nothing"/>

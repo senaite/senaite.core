@@ -843,4 +843,18 @@ class AnalysisRequest(BaseFolder):
 
         return qcanalyses
 
+    def isInvalid(self):
+        """ return if the Analysis Request has been invalidated
+        """
+        workflow = getToolByName(self, 'portal_workflow')
+        return workflow.getInfoFor(self, 'review_state') == 'invalid'
+
+    def getLastChild(self):
+        """ return the last child Request due to invalidation
+        """
+        child = self.getChildAnalysisRequest()
+        while (child and child.getChildAnalysisRequest()):
+            child = child.getChildAnalysisRequest()
+        return child
+    
 atapi.registerType(AnalysisRequest, PROJECTNAME)

@@ -258,6 +258,12 @@ class doPublish(BrowserView):
 
         return result
 
+    def containsInvalidARs(self):
+        for ar in self.batch:
+            if ar.isInvalid():
+                return True
+        return False
+
     def get_managers_from_requests(self):
         ## Script (Python) "get_managers_from_requests"
         ##bind container=container
