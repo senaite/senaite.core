@@ -399,72 +399,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
             # 1. Copies the AR linking the original one and viceversa
             ar = self.context
-            _id = ar.aq_parent.invokeFactory('AnalysisRequest', id=tmpID())
-            newar = ar.aq_parent[_id]
-            newar.edit(
-                title=ar.title,
-                description=ar.description,
-                RequestID=newar.getId(),
-                Contact=ar.getContact(),
-                CCContact=ar.getCCContact(),
-                CCEmails=ar.getCCEmails(),
-                Batch=ar.getBatch(),
-                Template=ar.getTemplate(),
-                Profile=ar.getProfile(),
-                Sample=ar.getSample(),
-                SamplingDate=ar.getSamplingDate(),
-                SampleType=ar.getSampleType(),
-                SamplePoint=ar.getSamplePoint(),
-                ClientOrderNumber=ar.getClientOrderNumber(),
-                ClientReference=ar.getClientReference(),
-                ClientSampleID=ar.getClientSampleID(),
-                SamplingDeviation=ar.getSamplingDeviation(),
-                SampleCondition=ar.getSampleCondition(),
-                DefaultContainerType=ar.getDefaultContainerType(),
-                AdHoc=ar.getAdHoc(),
-                Composite=ar.getComposite(),
-                ReportDryMatter=ar.getReportDryMatter(),
-                InvoiceExclude=ar.getInvoiceExclude(),
-                Attachment=ar.getAttachment(),
-                Invoice=ar.getInvoice(),
-                DateReceived=ar.getDateReceived(),
-                Remarks=ar.getRemarks(),
-                MemberDiscount=ar.getMemberDiscount()
-            )
-
-            # Set the results for each AR analysis
-            ans = ar.getAnalyses(full_objects=True)
-            for an in ans:
-                newar.invokeFactory("Analysis", id=an.getKeyword())
-                nan = newar[an.getKeyword()]
-                nan.edit(
-                    Service=an.getService(),
-                    Calculation=an.getCalculation(),
-                    InterimFields=an.getInterimFields(),
-                    Result=an.getResult(),
-                    ResultDM=an.getResultDM(),
-                    Retested=False,
-                    MaxTimeAllowed=an.getMaxTimeAllowed(),
-                    DueDate=an.getDueDate(),
-                    Duration=an.getDuration(),
-                    ReportDryMatter=an.getReportDryMatter(),
-                    Analyst=an.getAnalyst(),
-                    Instrument=an.getInstrument(),
-                    SamplePartition=an.getSamplePartition())
-                nan.unmarkCreationFlag()
-                zope.event.notify(ObjectInitializedEvent(nan))
-                changeWorkflowState(nan, 'bika_analysis_workflow',
-                                    'to_be_verified')
-                nan.reindexObject()
-
-            newar.reindexObject()
-            newar.aq_parent.reindexObject()
-            renameAfterCreation(newar)
-            newar.edit(RequestID=newar.getId())
-
-            if hasattr(ar, 'setChildAnalysisRequest'):
-                ar.setChildAnalysisRequest(newar)
-            newar.setParentAnalysisRequest(ar)
+            newar = self.cloneAR(ar)
 
             # 2. The old AR gets a status of 'invalid'
             workflow.doActionFor(ar, 'retract_ar')
@@ -493,14 +428,14 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             for cc in ar.getCCContact():
                 to.append(formataddr((encode_header(cc.Title()),
                                        cc.getEmailAddress())))
-
+    
             managers = self.context.portal_groups.getGroupMembers('LabManagers')
             for bcc in managers:
                 user = self.portal.acl_users.getUser(bcc)
                 uemail = user.getProperty('email')
                 ufull = user.getProperty('fullname')
                 to.append(formataddr((encode_header(ufull), uemail)))
-
+    
             mime_msg['To'] = ','.join(to)
             aranchor = "<a href='%s'>%s</a>" % (ar.absolute_url(),
                                                 ar.getRequestID())
@@ -513,7 +448,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                      "has been picked up and is under investigation.<br/><br/>"
                      "%s"
                      ) % (aranchor, naranchor, lab_address)
-
+    
             msg_txt = MIMEText(safe_unicode(body).encode('utf-8'),
                                _subtype='html')
             mime_msg.preamble = 'This is a multi-part MIME message.'
@@ -527,7 +462,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                           'client contacts that the Analysis Request has been '
                           'retracted: %s')) % msg
                 self.context.plone_utils.addPortalMessage(message, 'warning')
-
+    
             message = self.context.translate('${items} invalidated.',
                                 mapping={'items': ar.getRequestID()})
             self.context.plone_utils.addPortalMessage(message, 'warning')
@@ -536,6 +471,75 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         else:
             # default bika_listing.py/WorkflowAction for other transitions
             WorkflowAction.__call__(self)
+
+    def cloneAR(self, ar):
+        _id = ar.aq_parent.invokeFactory('AnalysisRequest', id=tmpID())
+        newar = ar.aq_parent[_id]
+        newar.edit(
+            title=ar.title,
+            description=ar.description,
+            RequestID=newar.getId(),
+            Contact=ar.getContact(),
+            CCContact=ar.getCCContact(),
+            CCEmails=ar.getCCEmails(),
+            Batch=ar.getBatch(),
+            Template=ar.getTemplate(),
+            Profile=ar.getProfile(),
+            Sample=ar.getSample(),
+            SamplingDate=ar.getSamplingDate(),
+            SampleType=ar.getSampleType(),
+            SamplePoint=ar.getSamplePoint(),
+            ClientOrderNumber=ar.getClientOrderNumber(),
+            ClientReference=ar.getClientReference(),
+            ClientSampleID=ar.getClientSampleID(),
+            SamplingDeviation=ar.getSamplingDeviation(),
+            SampleCondition=ar.getSampleCondition(),
+            DefaultContainerType=ar.getDefaultContainerType(),
+            AdHoc=ar.getAdHoc(),
+            Composite=ar.getComposite(),
+            ReportDryMatter=ar.getReportDryMatter(),
+            InvoiceExclude=ar.getInvoiceExclude(),
+            Attachment=ar.getAttachment(),
+            Invoice=ar.getInvoice(),
+            DateReceived=ar.getDateReceived(),
+            Remarks=ar.getRemarks(),
+            MemberDiscount=ar.getMemberDiscount()
+        )
+
+        # Set the results for each AR analysis
+        ans = ar.getAnalyses(full_objects=True)
+        for an in ans:
+            newar.invokeFactory("Analysis", id=an.getKeyword())
+            nan = newar[an.getKeyword()]
+            nan.edit(
+                Service=an.getService(),
+                Calculation=an.getCalculation(),
+                InterimFields=an.getInterimFields(),
+                Result=an.getResult(),
+                ResultDM=an.getResultDM(),
+                Retested=False,
+                MaxTimeAllowed=an.getMaxTimeAllowed(),
+                DueDate=an.getDueDate(),
+                Duration=an.getDuration(),
+                ReportDryMatter=an.getReportDryMatter(),
+                Analyst=an.getAnalyst(),
+                Instrument=an.getInstrument(),
+                SamplePartition=an.getSamplePartition())
+            nan.unmarkCreationFlag()
+            zope.event.notify(ObjectInitializedEvent(nan))
+            changeWorkflowState(nan, 'bika_analysis_workflow',
+                                'to_be_verified')
+            nan.reindexObject()
+
+        newar.reindexObject()
+        newar.aq_parent.reindexObject()
+        renameAfterCreation(newar)
+        newar.edit(RequestID=newar.getId())
+
+        if hasattr(ar, 'setChildAnalysisRequest'):
+            ar.setChildAnalysisRequest(newar)
+        newar.setParentAnalysisRequest(ar)
+        return newar
 
 class AnalysisRequestViewView(BrowserView):
     """ AR View form
