@@ -428,14 +428,14 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             for cc in ar.getCCContact():
                 to.append(formataddr((encode_header(cc.Title()),
                                        cc.getEmailAddress())))
-    
+
             managers = self.context.portal_groups.getGroupMembers('LabManagers')
             for bcc in managers:
                 user = self.portal.acl_users.getUser(bcc)
                 uemail = user.getProperty('email')
                 ufull = user.getProperty('fullname')
                 to.append(formataddr((encode_header(ufull), uemail)))
-    
+
             mime_msg['To'] = ','.join(to)
             aranchor = "<a href='%s'>%s</a>" % (ar.absolute_url(),
                                                 ar.getRequestID())
@@ -462,7 +462,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                           'client contacts that the Analysis Request has been '
                           'retracted: %s')) % msg
                 self.context.plone_utils.addPortalMessage(message, 'warning')
-    
+
             message = self.context.translate('${items} invalidated.',
                                 mapping={'items': ar.getRequestID()})
             self.context.plone_utils.addPortalMessage(message, 'warning')
