@@ -210,4 +210,13 @@
               inline="False"
               insert-after="*"/>
 
-</object>
+  <javascript cacheable="True"
+              compression="none"
+              cookable="True"
+              enabled="True"
+              id="++resource++plone.app.jquerytools.dateinput.js"
+              inline="False"
+              expression=""
+              insert-after="++resource++plone.app.jquerytools.js"/>
+
+  </object>

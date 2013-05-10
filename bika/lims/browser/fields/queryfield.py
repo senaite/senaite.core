@@ -13,6 +13,7 @@ from zope.site.hooks import getSite
 from archetypes.querywidget.field import QueryField as _QueryField
 from bika.lims.querystring.querybuilder import QueryBuilder
 
+
 class QueryField(_QueryField):
     """QueryField for storing query"""
 
@@ -21,6 +22,7 @@ class QueryField(_QueryField):
     _properties.update({
         'catalog_name': 'portal_catalog',
         'registry_prefix': '',
+        'config': {},
     })
 
     security = ClassSecurityInfo()
@@ -32,8 +34,10 @@ class QueryField(_QueryField):
         if raw:
             # We actually wanted the raw value, should have called getRaw
             return value
-        querybuilder = QueryBuilder(instance, getSite().REQUEST)
-        querybuilder.catalog_name = self.catalog_name
+        request = getSite().REQUEST
+        request['catalog_name'] = self.catalog_name
+        querybuilder = QueryBuilder(instance, request,
+                                    catalog_name=self.catalog_name)
 
         sort_on = kwargs.get('sort_on', instance.getSort_on())
         sort_order = 'reverse' if instance.getSort_reversed() else 'ascending'

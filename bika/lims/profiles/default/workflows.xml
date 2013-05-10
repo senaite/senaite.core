@@ -211,6 +211,7 @@
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
 
+  <type type_id="Query"/>
   <type type_id="QueryFolder"/>
 
   <type type_id="Report">

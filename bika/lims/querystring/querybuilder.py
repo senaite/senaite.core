@@ -9,21 +9,33 @@ from Products.CMFPlone.browser.navtree import getNavigationRoot
 from Products.CMFPlone.PloneBatch import Batch
 from zope.component import getMultiAdapter
 from zope.component import getUtility
+from zope.i18n import translate
 from zope.publisher.browser import BrowserView
 
 import json
 
 
+class ContentListingView(BrowserView):
+
+    """BrowserView for displaying query results"""
+
+    def __call__(self, **kw):
+        return self.index(**kw)
+
+
 class QueryBuilder(querybuilder.QueryBuilder):
+
     """ This view is used by the javascripts,
     fetching configuration or results.
     In this copy we have catalog_name. """
 
-    catalog_name = 'portal_catalog'
     contentFilter = {}
 
-    def __init__(self, context, request):
-        querybuilder.QueryBuilder.__init__(context, request)
+    def __init__(self, context, request, catalog_name='portal_catalog'):
+        self.context = context
+        self.request = request
+        self.catalog_name = request.get('catalog_name', catalog_name)
+        querybuilder.QueryBuilder.__init__(self, context, request)
 
     def __call__(self, query, batch=False, b_start=0, b_size=30,
                  sort_on=None, sort_order=None, limit=0, brains=False):
@@ -80,16 +92,17 @@ class QueryBuilder(querybuilder.QueryBuilder):
         return results
 
 
-class BCQueryBuilder(QueryBuilder):
-    catalog_name = "bika_catalog"
-
-
 class RegistryConfiguration(BrowserView):
+
     """Combine default operations from plone.app.query, with
     fields from registry key in prefix
     """
 
-    prefix = 'plone.app.querystring'
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+        self.catalog_name = self.request.get('catalog_name', 'portal_catalog')
+        self.prefix = "bika.lims.%s_query" % self.catalog_name
 
     def __call__(self):
         """Return the registry configuration in JSON format"""

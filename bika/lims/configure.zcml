@@ -27,8 +27,10 @@
   <include package=".controlpanel" />
   <include package=".exportimport" />
   <include package=".locales" />
-  <include package=".subscribers" />
+  <include package=".querystring" />
   <include package=".search" />
+  <include package=".subscribers" />
+  <include package=".vocabularies" />
 
   <include file="profiles.zcml" />
 

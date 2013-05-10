@@ -155,7 +155,8 @@
         //     base_url = base_url.split("/").slice(0, -2).join("/");
         // }
         var query = base_url + "/@@querybuilder_html_results?";
-        var querylist  = [];
+        catalog_name = $("#querywidget_catalog_name").val();
+        var querylist  = ['catalog_name='+catalog_name];
         var items = $('.ArchetypesQueryWidget .queryindex');
         if (!items.length) {
             return;
@@ -241,7 +242,9 @@
         $.querywidget.initialized = true;
 
         // Get configuration
-        $.getJSON($("base").attr("href") + '/@@querybuilderjsonconfig', function (data) {
+        catalog_name = $("#querywidget_catalog_name").val();
+        var querylist  = [];
+        $.getJSON($("base").attr("href") + '/@@querybuilderjsonconfig?catalog_name='+catalog_name, function (data) {
             $.querywidget.config = data;
 
             // Find querywidgets

@@ -1,0 +1,246 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone">
+
+    <head><title></title></head>
+
+    <body>
+        <metal:view_macro define-macro="view">
+            <div class="previewresults" tal:content="structure python:widget.SearchResults(request, context, accessor)">
+            </div>
+        </metal:view_macro>
+
+        <metal:view_macro define-macro="tabular">
+            tabular view
+            <div class="previewresults" tal:content="structure python:widget.SearchResults(request, context, accessor)">
+            </div>
+        </metal:view_macro>
+
+        <metal:edit_macro define-macro="edit">
+            <metal:use use-macro="field_macro | here/widgets/field/macros/edit">
+
+                <div metal:fill-slot="widget_body">
+
+                    <div tal:define="config widget/getConfig;
+                         indexes config/indexes;
+                         catalog_name widget/catalog_name;
+                         rows python:request.get('query',accessor(raw=True));
+                         sortable_indexes config/sortable_indexes;
+                         addindexselected python:request.has_key('addindex') and request.addindex != '';
+                         addoperatorselected python:request.has_key('addoperator') and request.addoperator != ''">
+
+                        <input type="hidden" id="querywidget_catalog_name"
+                              tal:attributes="value catalog_name"/>
+
+                        <tal:counter tal:define="dummy python:request.set('querystringwidgetcounter', 0)"/>
+                        <tal:catalog_name tal:define="dummy python:request.set('catalog_name', field.catalog_name)"/>
+                        <tal:row repeat="row rows">
+                            <div class="criteria"
+                                 tal:condition="python:not request.has_key('removecriteria.%s' % repeat['row'].index)"
+                                 tal:define="widget_name python:indexes[row['i']]['operators'][row['o']]['widget'];">
+                                <div class="queryindex">
+                                    <input type="hidden" name="query.i:records"
+                                           tal:attributes="name python:str(fieldName)+'.i:records'; value row/i" />
+                                    <span tal:content="python:indexes[row['i']]['title']"/>
+                                </div>
+
+                                <div class="queryoperator">
+                                    <input type="hidden" name="query.o:records"
+                                           tal:attributes="name python:str(fieldName)+'.o:records'; value row/o" />
+                                    <span tal:content="python:indexes[row['i']]['operators'][row['o']]['title']"/>
+                                </div>
+
+
+                                <tal:widget tal:condition="python:widget_name == 'StringWidget'">
+                                     <tal:value tal:define="value python:row.get('v')">
+                                         <metal:field use-macro="context/@@archetypes-querywidget-stringwidget/macros/widget" />
+                                     </tal:value>
+                                </tal:widget>
+
+                                <tal:widget tal:condition="python:widget_name == 'MultipleSelectionWidget'">
+                                     <tal:value tal:define="value python:row.get('v');
+                                                            index python:row['i'];">
+                                        <metal:field use-macro="context/@@archetypes-querywidget-multipleselectionwidget/macros/widget" />
+                                     </tal:value>
+                                </tal:widget>
+
+                                <tal:widget tal:condition="python:widget_name == 'ReferenceWidget'">
+                                    <tal:value tal:define="value python:row.get('v')">
+                                         <metal:field use-macro="context/@@archetypes-querywidget-referencewidget/macros/widget" />
+                                    </tal:value>
+                                </tal:widget>
+
+                                <tal:widget tal:condition="python:widget_name == 'DateWidget'">
+                                     <tal:value tal:define="value python:row.get('v')">
+                                         <metal:field use-macro="context/@@archetypes-querywidget-datewidget/macros/widget" />
+                                     </tal:value>
+                                </tal:widget>
+
+                                <tal:widget tal:condition="python:widget_name == 'DateRangeWidget'">
+                                    <tal:value tal:define="value python:row.get('v')">
+                                         <metal:field use-macro="context/@@archetypes-querywidget-daterangewidget/macros/widget" />
+                                    </tal:value>
+                                </tal:widget>
+
+                                <tal:widget tal:condition="python:widget_name == 'RelativeDateWidget'">
+                                     <tal:value tal:define="value python:row.get('v')">
+                                         <metal:field use-macro="context/@@archetypes-querywidget-relativedatewidget/macros/widget" />
+                                     </tal:value>
+                                </tal:widget>
+
+                                <tal:widget tal:condition="python:widget_name == 'RelativePathWidget'">
+                                    <tal:value tal:define="value python:row.get('v')">
+                                        <metal:field use-macro="context/@@archetypes-querywidget-relativepathwidget/macros/widget" />
+                                    </tal:value>
+                                </tal:widget>
+
+                                <tal:widget tal:condition="python:widget_name == None">
+                                    <metal:field use-macro="context/@@archetypes-querywidget-emptywidget/macros/widget" />
+                                </tal:widget>
+
+                                <input type="submit" class="removecriteria discreet" value="Remove line"
+                                       i18n:attributes="value"
+                                       tal:attributes="name python:'removecriteria.%s' % request.get('querystringwidgetcounter')"/>
+                                <tal:counter tal:define="dummy python:request.set('querystringwidgetcounter', request.get('querystringwidgetcounter') + 1)"/>
+                            </div>
+                        </tal:row>
+
+                        <tal:row tal:condition="python: addindexselected and addoperatorselected">
+                            <div class="criteria"
+                                 tal:define="widget_name python:indexes[request.form['addindex']]['operators'][request.form['addoperator']]['widget']">
+                                <div class="queryindex">
+                                    <input type="hidden" name="query.i:records"
+                                           tal:attributes="name python:str(fieldName)+'.i:records'; value context/REQUEST/form/addindex" />
+                                    <span tal:content="python:indexes[request.form['addindex']]['title']"/>
+                                </div>
+
+                                <div class="queryoperator">
+                                    <input type="hidden" name="query.o:records"
+                                           tal:attributes="name python:str(fieldName)+'.o:records';value context/REQUEST/form/addoperator" />
+                                    <span tal:content="python:indexes[request.form['addindex']]['operators'][request.form['addoperator']]['title']"/>
+                                </div>
+
+                                <tal:widget tal:condition="python:widget_name == 'StringWidget'">
+                                     <tal:value tal:define="value nothing">
+                                         <metal:field use-macro="context/@@archetypes-querywidget-stringwidget/macros/widget" />
+                                     </tal:value>
+                                </tal:widget>
+
+                                <tal:widget tal:condition="python:widget_name == 'MultipleSelectionWidget'">
+                                     <tal:value tal:define="value nothing;
+                                                    potential_values python:indexes[request.form['addindex']]['values']">
+                                        <metal:field use-macro="context/@@archetypes-querywidget-multipleselectionwidget/macros/widget" />
+                                     </tal:value>
+                                </tal:widget>
+
+                                <tal:widget tal:condition="python:widget_name == 'ReferenceWidget'">
+                                    <tal:value tal:define="value python:row.get('v')">
+                                         <metal:field use-macro="context/@@archetypes-querywidget-referencewidget/macros/widget" />
+                                    </tal:value>
+                                </tal:widget>
+
+                                <tal:widget tal:condition="python:widget_name == 'DateWidget'">
+                                     <tal:value tal:define="value python:row.get('v')">
+                                         <metal:field use-macro="context/@@archetypes-querywidget-datewidget/macros/widget" />
+                                     </tal:value>
+                                </tal:widget>
+
+                                <tal:widget tal:condition="python:widget_name == 'DateRangeWidget'">
+                                    <tal:value tal:define="value python:row.get('v')">
+                                         <metal:field use-macro="context/@@archetypes-querywidget-daterangewidget/macros/widget" />
+                                    </tal:value>
+                                </tal:widget>
+
+                                <tal:widget tal:condition="python:widget_name == 'RelativeDateWidget'">
+                                     <tal:value tal:define="value python:row.get('v')">
+                                         <metal:field use-macro="context/@@archetypes-querywidget-relativedatewidget/macros/widget" />
+                                     </tal:value>
+                                </tal:widget>
+
+                                <tal:widget tal:condition="python:widget_name == 'RelativePathWidget'">
+                                    <tal:value tal:define="value python:row.get('v')">
+                                        <metal:field use-macro="context/@@archetypes-querywidget-relativepathwidget/macros/widget" />
+                                    </tal:value>
+                                </tal:widget>
+
+                                <tal:widget tal:condition="python:widget_name == None">
+                                    <metal:field use-macro="context/@@archetypes-querywidget-emptywidget/macros/widget" />
+                                </tal:widget>
+
+                                <input type="submit" name="removecriteria" class="removecriteria discreet"
+                                       i18n:attributes="value"
+                                       value="Remove line">
+                            </div>
+                        </tal:row>
+
+                        <div class="criteria">
+                            <label for="addindex" class="hiddenStructure" i18n:translate="">Add criterion</label>
+
+                            <select class="addIndex" name="addindex" tal:condition="python: not(addindexselected) or addoperatorselected">
+                                <option value="" selected="selected" i18n:translate="">Select&hellip;</option>
+                                <tal:index repeat="groupName python:config['groupedIndexes'].keys()">
+                                    <optgroup tal:attributes="label python:groupName">
+                                        <option tal:repeat="index python:config['groupedIndexes'][groupName]"
+                                                tal:content="python:index[0]"
+                                                tal:attributes="value python:index[1]"/>
+                                    </optgroup>
+                                </tal:index>
+                            </select>
+
+                            <div class="addIndex" tal:condition="python: addindexselected and not(addoperatorselected)">
+                                <input type="hidden" name="addindex"
+                                      tal:attributes="value context/REQUEST/form/addindex"/>
+
+                                <span tal:content="python:indexes[request.form['addindex']]['title']"/>
+                            </div>
+
+                            <select class="addOperator" name="addoperator" tal:condition="python: addindexselected and not(addoperatorselected)">
+                                <option value="" selected="selected">Select&hellip;</option>
+                                <tal:index repeat="index python:indexes[request.form['addindex']]['operators'].keys()">
+                                    <option tal:attributes="value index;"
+                                            tal:content="python:indexes[request.form['addindex']]['operators'][index]['title']">Index</option>
+                                </tal:index>
+                            </select>
+
+                            <input type="submit" value="Add" i18n:attributes="value" name="form.button.addcriteria" class="context addIndexButton"/>
+                        </div>
+
+                        <div class="sortingField">
+                            <div class="formHelp"><!-- --></div>
+                            <label for="sort_on" i18n:translate="">
+                            Sort on
+                            </label>
+                            <select name="sort_on" id="sort_on"
+                                    tal:define="current request/sort_on|context/getSort_on|nothing">
+                                <tal:index repeat="index python:sortable_indexes.keys()">
+                                    <option tal:attributes="value index;
+                                        selected python:'selected' if current == index else nothing"
+                                            tal:content="python:sortable_indexes[index]['title']">Index</option>
+                                </tal:index>
+                            </select>
+
+                            <input class="noborder" type="checkbox" value="on" name="sort_reversed:boolean" id="sort_order"
+                                   tal:attributes="checked request/sort_reversed|context/getSort_reversed|nothing"/>
+                            <input type="hidden" value="" name="sort_reversed:boolean:default" />
+
+                            <label for="sort_order" i18n:translate="">Reversed order</label>
+                        </div>
+
+                        <label class="previewresultsLabel" i18n:translate="">
+                            Preview
+                        </label>
+
+                        <div class="formHelp" i18n:translate="">Preview of at most 10 items.</div>
+
+                        <div class="previewresults" tal:content="structure python:widget.SearchResults(request, context, accessor)">
+                        </div>
+                    </div>
+                </div>
+            </metal:use>
+        </metal:edit_macro>
+
+
+    </body>
+</html>

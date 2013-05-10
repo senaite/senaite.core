@@ -12,7 +12,7 @@ from Products.CMFCore.utils import getToolByName
 from zope.component import getUtility
 from zope.dottedname.resolve import resolve
 
-logger = logging.getLogger('plone.app.querystring')
+logger = logging.getLogger('bika.lims.querystring')
 
 Row = namedtuple('Row', ['index', 'operator', 'values'])
 
@@ -66,7 +66,5 @@ def parseFormquery(context, formquery, sort_on=None, sort_order=None,
     # And also, add whatever kwargs have been passed - some querybuilder
     # may want to add defaults here.
     query.update(kwargs)
-
-    print query
 
     return query

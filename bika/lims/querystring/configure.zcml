@@ -1,0 +1,129 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="plone">
+
+    <adapter
+        factory="bika.lims.querystring.registryreader.QuerystringRegistryReader"
+        for="bika.lims.interfaces.IQuery"
+        provides="plone.app.querystring.interfaces.IQuerystringRegistryReader"
+     />
+
+    <browser:page
+      name="display_query_results"
+      class="bika.lims.querystring.querybuilder.ContentListingView"
+      permission="zope2.View"
+      for="bika.lims.interfaces.IQuery"
+      template="results.pt"
+    />
+
+    <browser:page
+        name="querybuilderresults"
+        class="bika.lims.querystring.querybuilder.QueryBuilder"
+        permission="zope2.View"
+        for="bika.lims.interfaces.IQuery"
+    />
+
+    <browser:page
+        name="querybuilder_html_results"
+        class="bika.lims.querystring.querybuilder.QueryBuilder"
+        permission="zope2.View"
+        attribute="html_results"
+        for="bika.lims.interfaces.IQuery"
+    />
+
+    <browser:page
+        name="querybuildernumberofresults"
+        class="bika.lims.querystring.querybuilder.QueryBuilder"
+        permission="zope2.View"
+        attribute="number_of_results"
+        for="bika.lims.interfaces.IQuery"
+    />
+
+    <browser:page
+        name="querybuilderjsonconfig"
+        class="bika.lims.querystring.registryreader.QueryRegistryConfiguration"
+        permission="zope2.View"
+        for="bika.lims.interfaces.IQuery"
+    />
+
+    <!-- Re-register original widgets with our own field configuration -->
+
+    <configure package="archetypes.querywidget">
+
+        <browser:page
+          name="archetypes-querywidget-emptywidget"
+          permission="zope2.View"
+          for="bika.lims.interfaces.IQuery"
+          template="templates/empty_widget.pt"
+          class="bika.lims.browser.widgets.querywidget.WidgetTraverse"
+          allowed_attributes="macros"
+          />
+
+        <browser:page
+          name="archetypes-querywidget-stringwidget"
+          permission="zope2.View"
+          for="bika.lims.interfaces.IQuery"
+          template="templates/string_widget.pt"
+          class="bika.lims.browser.widgets.querywidget.WidgetTraverse"
+          allowed_attributes="macros"
+          />
+
+        <browser:page
+          name="archetypes-querywidget-datewidget"
+          permission="zope2.View"
+          for="bika.lims.interfaces.IQuery"
+          template="templates/date_widget.pt"
+          class="bika.lims.browser.widgets.querywidget.WidgetTraverse"
+          allowed_attributes="macros"
+          />
+
+        <browser:page
+          name="archetypes-querywidget-daterangewidget"
+          permission="zope2.View"
+          for="bika.lims.interfaces.IQuery"
+          template="templates/date_range_widget.pt"
+          class="bika.lims.browser.widgets.querywidget.WidgetTraverse"
+          allowed_attributes="macros"
+          />
+
+        <browser:page
+          name="archetypes-querywidget-multipleselectionwidget"
+          permission="zope2.View"
+          for="bika.lims.interfaces.IQuery"
+          template="templates/multiple_selection_widget.pt"
+          class="bika.lims.browser.widgets.querywidget.MultiSelectWidget"
+          allowed_attributes="macros"
+          />
+
+        <browser:page
+          name="archetypes-querywidget-referencewidget"
+          permission="zope2.View"
+          for="bika.lims.interfaces.IQuery"
+          template="templates/reference_widget.pt"
+          class="bika.lims.browser.widgets.querywidget.WidgetTraverse"
+          allowed_attributes="macros"
+          />
+
+        <browser:page
+          name="archetypes-querywidget-relativedatewidget"
+          permission="zope2.View"
+          for="bika.lims.interfaces.IQuery"
+          template="templates/relative_date_widget.pt"
+          class="bika.lims.browser.widgets.querywidget.WidgetTraverse"
+          allowed_attributes="macros"
+          />
+
+        <browser:page
+          name="archetypes-querywidget-relativepathwidget"
+          permission="zope2.View"
+          for="bika.lims.interfaces.IQuery"
+          template="templates/relative_path_widget.pt"
+          class="bika.lims.browser.widgets.querywidget.WidgetTraverse"
+          allowed_attributes="macros"
+          />
+
+    </configure>
+
+</configure>
