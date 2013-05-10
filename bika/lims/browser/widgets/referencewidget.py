@@ -36,7 +36,7 @@ class ReferenceWidget(StringWidget):
 
         # Default field to put back into input elements
         'ui_item': 'Title',
-
+        'search_fields': ('Title',),
         'popup_width': '550px',
         'showOn': 'false',
         'sord': 'asc',
@@ -70,7 +70,8 @@ class ReferenceWidget(StringWidget):
             'showOn': self.showOn,
             'width': self.popup_width,
             'sord': self.sord,
-            'sidx': self.sidx
+            'sidx': self.sidx,
+            'search_fields': self.search_fields,
         }
         return json.dumps(options)
 
@@ -108,6 +109,9 @@ class ajaxReferenceWidgetSearch(BrowserView):
         sord = self.request['sord']
         sidx = self.request['sidx']
         colModel = json.loads(_u(self.request.get('colModel', '[]')))
+        searchFields = 'search_fields' in self.request \
+            and json.loads(_u(self.request.get('search_fields', '[]'))) \
+            or ('Title',)
         rows = []
 
         # lookup objects from ZODB
@@ -120,10 +124,26 @@ class ajaxReferenceWidgetSearch(BrowserView):
         contentFilter.update(search_query)
         brains = catalog(contentFilter)
         if brains and searchTerm:
-            _brains = [p for p in brains
-                       if p.Title.lower().find(searchTerm) > -1]
-            if _brains:
-                brains = _brains
+            _brains = []
+            if len(searchFields) == 0 \
+                or (len(searchFields) == 1 and searchFields[0] == 'Title'):
+                _brains = [p for p in brains
+                           if p.Title.lower().find(searchTerm) > -1]
+            else:
+                for p in brains:
+                    for fieldname in searchFields:
+                        value = getattr(p, fieldname, None)
+                        if not value:
+                            instance = p.getObject()
+                            schema = instance.Schema()
+                            if fieldname in schema:
+                                value = schema[fieldname].get(instance)
+                        if value and value.lower().find(searchTerm) > -1:
+                            _brains.append(p)
+                            break;
+
+            brains = _brains
+
         # Then just base_query alone ("show all if no match")
         if not brains:
             if search_query:
