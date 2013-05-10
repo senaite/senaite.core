@@ -170,6 +170,7 @@ function ar_referencewidget_lookups(elements){
 		options.url = options.url + '&search_query=' + $(element).attr('search_query');
         options.url = options.url + '&colModel=' + $.toJSON( $.parseJSON($(element).attr('combogrid_options'))["colModel"] );
         options.url = options.url + '&search_fields=' + $.toJSON($.parseJSON($(element).attr('combogrid_options'))["search_fields"]);
+        options.url = options.url + '&discard_empty=' + $.toJSON($.parseJSON($(element).attr('combogrid_options'))["discard_empty"]);
 		$(element).combogrid(options);
 		$(element).addClass("has_combogrid_widget");
 		$(element).attr('search_query', '{}');

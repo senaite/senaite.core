@@ -37,6 +37,7 @@ class ReferenceWidget(StringWidget):
         # Default field to put back into input elements
         'ui_item': 'Title',
         'search_fields': ('Title',),
+        'discard_empty': [],
         'popup_width': '550px',
         'showOn': 'false',
         'sord': 'asc',
@@ -72,6 +73,7 @@ class ReferenceWidget(StringWidget):
             'sord': self.sord,
             'sidx': self.sidx,
             'search_fields': self.search_fields,
+            'discard_empty': self.discard_empty,
         }
         return json.dumps(options)
 
@@ -118,6 +120,7 @@ class ajaxReferenceWidgetSearch(BrowserView):
         catalog = getToolByName(self.context, self.request['catalog_name'])
         base_query = json.loads(_u(self.request['base_query']))
         search_query = json.loads(_u(self.request.get('search_query', "{}")))
+        discard_empty = json.loads(_u(self.request.get('discard_empty', "[]")))
 
         # first with all queries
         contentFilter = dict((k,v) for k,v in base_query.items())
@@ -159,6 +162,7 @@ class ajaxReferenceWidgetSearch(BrowserView):
                    'Title': getattr(p, 'Title')}
             other_fields = [x for x in colModel
                             if x['columnName'] not in row.keys()]
+            discard = False
             for field in other_fields:
                 fieldname = field['columnName']
                 value = getattr(p, fieldname, None)
@@ -167,10 +171,16 @@ class ajaxReferenceWidgetSearch(BrowserView):
                     schema = instance.Schema()
                     if fieldname in schema:
                         value = schema[fieldname].get(instance)
+                if fieldname in discard_empty and not value:
+                    discard = True
+                    break
+
                 # '&nbsp;' instead of '' because empty div fields don't render 
                 # correctly in combo results table
                 row[fieldname] = value and value or '&nbsp;'
-            rows.append(row)
+
+            if discard == False:
+                rows.append(row)
 
         rows = sorted(rows, cmp=lambda x, y: cmp(
             x.lower(), y.lower()), key=itemgetter(sidx and sidx or 'Title'))
