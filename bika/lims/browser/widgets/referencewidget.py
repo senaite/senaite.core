@@ -40,7 +40,8 @@ class ReferenceWidget(StringWidget):
         'popup_width': '550px',
         'showOn': 'false',
         'sord': 'asc',
-        'sidx': 'Title'
+        'sidx': 'Title',
+        'portal_types': {}
     })
     security = ClassSecurityInfo()
 
@@ -82,12 +83,13 @@ class ReferenceWidget(StringWidget):
 
         # portal_type: use field allowed types
         field = context.Schema().getField(fieldName)
-        allowed_types = field.allowed_types
+        allowed_types = getattr(field, 'allowed_types', None)
         allowed_types_method = getattr(field, 'allowed_types_method', None)
         if allowed_types_method:
             meth = getattr(content_instance, allowed_types_method)
             allowed_types = meth(field)
-        base_query['portal_type'] = allowed_types and allowed_types or {}
+        # If field has no allowed_types defined, use widget's portal_type prop
+        base_query['portal_type'] = allowed_types and allowed_types or self.portal_types
 
         return json.dumps(self.base_query)
 
@@ -140,12 +142,14 @@ class ajaxReferenceWidgetSearch(BrowserView):
             for field in other_fields:
                 fieldname = field['columnName']
                 value = getattr(p, fieldname, None)
-                if value is None:
+                if not value:
                     instance = p.getObject()
                     schema = instance.Schema()
                     if fieldname in schema:
                         value = schema[fieldname].get(instance)
-                row[fieldname] = value and value or ''
+                # '&nbsp;' instead of '' because empty div fields don't render 
+                # correctly in combo results table
+                row[fieldname] = value and value or '&nbsp;'
             rows.append(row)
 
         rows = sorted(rows, cmp=lambda x, y: cmp(
