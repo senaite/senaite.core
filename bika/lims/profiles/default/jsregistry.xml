@@ -221,7 +221,7 @@
               inline="False"
               insert-after="*"/>
 
-  <javascript authenticated="True"
+  <javascript authenticated="False"
               id="++resource++bika.lims.js/ar_add.js"
               cacheable="True"
               compression="safe"
