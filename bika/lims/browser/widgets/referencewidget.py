@@ -36,11 +36,13 @@ class ReferenceWidget(StringWidget):
 
         # Default field to put back into input elements
         'ui_item': 'Title',
-
+        'search_fields': ('Title',),
+        'discard_empty': [],
         'popup_width': '550px',
         'showOn': 'false',
         'sord': 'asc',
-        'sidx': 'Title'
+        'sidx': 'Title',
+        'portal_types': {}
     })
     security = ClassSecurityInfo()
 
@@ -69,7 +71,9 @@ class ReferenceWidget(StringWidget):
             'showOn': self.showOn,
             'width': self.popup_width,
             'sord': self.sord,
-            'sidx': self.sidx
+            'sidx': self.sidx,
+            'search_fields': self.search_fields,
+            'discard_empty': self.discard_empty,
         }
         return json.dumps(options)
 
@@ -82,12 +86,13 @@ class ReferenceWidget(StringWidget):
 
         # portal_type: use field allowed types
         field = context.Schema().getField(fieldName)
-        allowed_types = field.allowed_types
+        allowed_types = getattr(field, 'allowed_types', None)
         allowed_types_method = getattr(field, 'allowed_types_method', None)
         if allowed_types_method:
             meth = getattr(content_instance, allowed_types_method)
             allowed_types = meth(field)
-        base_query['portal_type'] = allowed_types and allowed_types or {}
+        # If field has no allowed_types defined, use widget's portal_type prop
+        base_query['portal_type'] = allowed_types and allowed_types or self.portal_types
 
         return json.dumps(self.base_query)
 
@@ -106,22 +111,42 @@ class ajaxReferenceWidgetSearch(BrowserView):
         sord = self.request['sord']
         sidx = self.request['sidx']
         colModel = json.loads(_u(self.request.get('colModel', '[]')))
+        searchFields = 'search_fields' in self.request \
+            and json.loads(_u(self.request.get('search_fields', '[]'))) \
+            or ('Title',)
         rows = []
 
         # lookup objects from ZODB
         catalog = getToolByName(self.context, self.request['catalog_name'])
         base_query = json.loads(_u(self.request['base_query']))
         search_query = json.loads(_u(self.request.get('search_query', "{}")))
+        discard_empty = json.loads(_u(self.request.get('discard_empty', "[]")))
 
         # first with all queries
         contentFilter = dict((k,v) for k,v in base_query.items())
         contentFilter.update(search_query)
         brains = catalog(contentFilter)
         if brains and searchTerm:
-            _brains = [p for p in brains
-                       if p.Title.lower().find(searchTerm) > -1]
-            if _brains:
-                brains = _brains
+            _brains = []
+            if len(searchFields) == 0 \
+                or (len(searchFields) == 1 and searchFields[0] == 'Title'):
+                _brains = [p for p in brains
+                           if p.Title.lower().find(searchTerm) > -1]
+            else:
+                for p in brains:
+                    for fieldname in searchFields:
+                        value = getattr(p, fieldname, None)
+                        if not value:
+                            instance = p.getObject()
+                            schema = instance.Schema()
+                            if fieldname in schema:
+                                value = schema[fieldname].get(instance)
+                        if value and value.lower().find(searchTerm) > -1:
+                            _brains.append(p)
+                            break;
+
+            brains = _brains
+
         # Then just base_query alone ("show all if no match")
         if not brains:
             if search_query:
@@ -137,16 +162,25 @@ class ajaxReferenceWidgetSearch(BrowserView):
                    'Title': getattr(p, 'Title')}
             other_fields = [x for x in colModel
                             if x['columnName'] not in row.keys()]
+            discard = False
             for field in other_fields:
                 fieldname = field['columnName']
                 value = getattr(p, fieldname, None)
-                if value is None:
+                if not value:
                     instance = p.getObject()
                     schema = instance.Schema()
                     if fieldname in schema:
                         value = schema[fieldname].get(instance)
-                row[fieldname] = value and value or ''
-            rows.append(row)
+                if fieldname in discard_empty and not value:
+                    discard = True
+                    break
+
+                # '&nbsp;' instead of '' because empty div fields don't render 
+                # correctly in combo results table
+                row[fieldname] = value and value or '&nbsp;'
+
+            if discard == False:
+                rows.append(row)
 
         rows = sorted(rows, cmp=lambda x, y: cmp(
             x.lower(), y.lower()), key=itemgetter(sidx and sidx or 'Title'))

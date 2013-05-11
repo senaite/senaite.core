@@ -139,7 +139,7 @@
         profile="bika.lims:default"/>
 
  <genericsetup:upgradeStep
-        title="Add QueryFolder type"
+        title="Move ar_add.js from ar_add.pt to jsregistry"
         description=""
         source="1121"
         destination="1122"
@@ -147,8 +147,8 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
- <genericsetup:upgradeStep
-        title="Add Query type"
+<genericsetup:upgradeStep
+        title="Add QueryFolder, Query, and QueryWidget types and configuration"
         description=""
         source="1122"
         destination="1123"

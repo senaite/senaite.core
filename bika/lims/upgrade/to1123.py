@@ -1,14 +1,18 @@
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from Products.CMFCore.utils import getToolByName
 from bika.lims.permissions import *
+from Products.CMFCore import permissions
+from Products.CMFCore.utils import getToolByName
+
 
 class Empty:
     pass
 
+
 def upgrade(tool):
     portal = aq_parent(aq_inner(tool))
     setup = portal.portal_setup
+    typestool = getToolByName(portal, 'portal_types')
 
     # update affected tools
     setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
@@ -19,6 +23,31 @@ def upgrade(tool):
                                    'propertiestool')
     setup.runImportStepFromProfile('profile-bika.lims:default',
                                    'plone.app.registry')
+
+    # Add the QueryFolder at /queries
+    typestool.constructContent(type_name="QueryFolder",
+                               container=portal,
+                               id='queries',
+                               title='Queries')
+    obj = portal['queries']
+    obj.unmarkCreationFlag()
+    obj.reindexObject()
+
+    # /queries folder permissions
+    mp = portal.queries.manage_permission
+    mp(permissions.ListFolderContents, [
+       'Manager', 'LabManager', 'Member', 'LabClerk', ], 0)
+    mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member'], 0)
+    mp('Access contents information', [
+       'Manager', 'LabManager', 'Member', 'LabClerk', 'Owner'], 0)
+    mp(permissions.AddPortalContent, [
+       'Manager', 'LabManager', 'LabClerk', 'Owner', 'Member'], 0)
+    mp('ATContentTypes: Add Image', [
+       'Manager', 'Labmanager', 'LabClerk', 'Member', ], 0)
+    mp('ATContentTypes: Add File', [
+       'Manager', 'Labmanager', 'LabClerk', 'Member', ], 0)
+    mp(AddQuery, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 0)
+    portal.queries.reindexObject()
 
     # Changes to the catalogs
     # create lexicon
@@ -67,8 +96,5 @@ def upgrade(tool):
     types.append("AnalysisRequestQuery")
     types.append("QueryFolder")
     ntp.manage_changeProperties(MetaTypesNotToQuery=types)
-
-    mp = portal.queries.manage_permission
-    mp(AddQuery, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 0)
 
     return True

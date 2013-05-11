@@ -210,6 +210,17 @@
               inline="False"
               insert-after="*"/>
 
+  <javascript authenticated="False"
+              id="++resource++bika.lims.js/ar_add.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression="python:request['URL'].find('/ar_add')>0"
+              inline="False"
+              insert-after="*"/>
+
   <javascript cacheable="True"
               compression="none"
               cookable="True"
@@ -219,4 +230,4 @@
               expression=""
               insert-after="++resource++plone.app.jquerytools.js"/>
 
-  </object>
+</object>
