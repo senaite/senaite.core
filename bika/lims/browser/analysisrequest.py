@@ -887,7 +887,7 @@ class AnalysisRequestViewView(BrowserView):
             if anchor:
                 self.header_rows.append(
                         {'id': 'ChildAR',
-                         'title': 'Newly created Analysis Request',
+                         'title': 'AR for retested results',
                          'allow_edit': False,
                          'value': anchor,
                          'condition': True,
@@ -910,7 +910,7 @@ class AnalysisRequestViewView(BrowserView):
             anchor = "<a href='%s'>%s</a>" % (par.absolute_url(), par.getRequestID())
             self.header_rows.append(
                         {'id': 'ParentAR',
-                         'title': 'Parent Analysis Request',
+                         'title': 'Invalid AR retested',
                          'allow_edit': False,
                          'value': anchor,
                          'condition': True,
