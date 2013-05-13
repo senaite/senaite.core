@@ -166,6 +166,8 @@ class ILabProducts(Interface):
     ""
 class ISamplePoints(Interface):
     ""
+class ISampleType(Interface):
+    ""
 class ISampleTypes(Interface):
     ""
 class ISupplier(Interface):
