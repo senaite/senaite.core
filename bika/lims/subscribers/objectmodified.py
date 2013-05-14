@@ -5,10 +5,10 @@ def ObjectModifiedEventHandler(obj, event):
     """
     if not hasattr(obj, 'portal_type'):
         return
-    pr = getToolByName(obj, 'portal_repository')
-    uc = getToolByName(obj, 'uid_catalog')
 
     if obj.portal_type == 'Calculation':
+        pr = getToolByName(obj, 'portal_repository')
+        uc = getToolByName(obj, 'uid_catalog')
         obj = uc(UID=obj.UID())[0].getObject()
         backrefs = obj.getBackReferences('AnalysisServiceCalculation')
         for i, service in enumerate(backrefs):

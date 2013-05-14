@@ -1,29 +1,32 @@
 """Sample represents a physical sample submitted for testing
 """
 from AccessControl import ClassSecurityInfo
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.widgets.datetimewidget import DateTimeWidget
+from bika.lims.config import ManageBika, PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import ISample
+from bika.lims.interfaces import IBikaCatalog
+from bika.lims.utils import sortable_title
 from DateTime import DateTime
 from datetime import timedelta
+from plone.indexer.decorator import indexer
+from Products.Archetypes import atapi
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.public import *
+from Products.Archetypes.references import HoldingReference
 from Products.ATContentTypes.content import schemata
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATContentTypes.utils import DT2dt,dt2DT
-from Products.Archetypes import atapi
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
-from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
 from Products.CMFCore import permissions
-from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims.config import ManageBika, PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.utils import sortable_title
-from bika.lims.browser.widgets.datetimewidget import DateTimeWidget
+from zope.interface import implements
+
 import sys
 import time
-from zope.interface import implements
-from bika.lims.interfaces import ISample
-from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
     StringField('SampleID',
@@ -193,7 +196,9 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
+
 schema['title'].required = False
+
 
 class Sample(BaseFolder, HistoryAwareMixin):
     implements(ISample)
@@ -213,6 +218,52 @@ class Sample(BaseFolder, HistoryAwareMixin):
     def Title(self):
         """ Return the Sample ID as title """
         return safe_unicode(self.getId()).encode('utf-8')
+
+    def getContactTitle(self):
+        return ""
+
+    def getClientTitle(self):
+        proxies = self.getAnalysisRequests()
+        if not proxies:
+            return ""
+        value = proxies[0].aq_parent.Title()
+        return value
+
+    def getProfileTitle(self):
+        return ""
+
+    def getAnalysisCategory(self):
+        analyses = []
+        for ar in self.getAnalysisRequests():
+            analyses += list(ar.getAnalyses(full_objects=True))
+        value = []
+        for analysis in analyses:
+            val = analysis.getCategoryTitle()
+            if val not in value:
+                value.append(val)
+        return value
+
+    def getAnalysisService(self):
+        analyses = []
+        for ar in self.getAnalysisRequests():
+            analyses += list(ar.getAnalyses(full_objects=True))
+        value = []
+        for analysis in analyses:
+            val = analysis.getServiceTitle()
+            if val not in value:
+                value.append(val)
+        return value
+
+    def getAnalysts(self):
+        analyses = []
+        for ar in self.getAnalysisRequests():
+            analyses += list(ar.getAnalyses(full_objects=True))
+        value = []
+        for analysis in analyses:
+            val = analysis.getAnalyst()
+            if val not in value:
+                value.append(val)
+        return value
 
     # Forms submit Title Strings which need
     # to be converted to objects somewhere along the way...

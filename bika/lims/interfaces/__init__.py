@@ -40,8 +40,11 @@ class IAnalysisSpec(Interface):
 class IDuplicateAnalysis(Interface):
     """DuplicateAnalysis"""
 
-class IQueries(Interface):
-    """Query interface """
+class IQueryFolder(Interface):
+    """Queries Folder"""
+
+class IQuery(Interface):
+    """Query collection object"""
 
 class IReferenceAnalysis(Interface):
     """Reference Analyses """
@@ -163,6 +166,8 @@ class ILabProducts(Interface):
     ""
 class ISamplePoints(Interface):
     ""
+class ISampleType(Interface):
+    ""
 class ISampleTypes(Interface):
     ""
 class ISupplier(Interface):
@@ -177,9 +182,13 @@ class IWorksheetTemplates(Interface):
     ""
 
 class IBikaCatalog(Interface):
-    ""
+    "Marker interface for custom catalog"
+
+class IBikaAnalysisCatalog(Interface):
+    "Marker interface for custom catalog"
+
 class IBikaSetupCatalog(Interface):
-    ""
+    "Marker interface for custom catalog"
 
 
 class IDisplayListVocabulary(Interface):

@@ -167,18 +167,18 @@
   	<bound-workflow workflow_id="bika_one_state_workflow"/>
     <bound-workflow workflow_id="bika_cancellation_workflow"/>
   </type>
-  
+
   <type type_id="InstrumentScheduledTask">
   	<bound-workflow workflow_id="bika_one_state_workflow"/>
     <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
-  
+
   <type type_id="InstrumentTypes"/>
   <type type_id="InstrumentType">
    <bound-workflow workflow_id="bika_one_state_workflow"/>
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
-  
+
   <type type_id="InstrumentValidation"/>
 
   <type type_id="Invoice"/>
@@ -198,7 +198,7 @@
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
   <type type_id="LabProducts"/>
-  
+
   <type type_id="Manufacturers"/>
   <type type_id="Manufacturer">
   	<bound-workflow workflow_id="bika_one_state_workflow"/>
@@ -210,6 +210,9 @@
    <bound-workflow workflow_id="bika_one_state_workflow"/>
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+
+  <type type_id="Query"/>
+  <type type_id="QueryFolder"/>
 
   <type type_id="Report">
    <bound-workflow workflow_id="bika_one_state_workflow"/>
@@ -267,7 +270,7 @@
    <bound-workflow workflow_id="bika_sample_workflow"/>
    <bound-workflow workflow_id="bika_cancellation_workflow"/>
   </type>
-  
+
   <type type_id="SampleConditions"/>
   <type type_id="SampleCondition">
    <bound-workflow workflow_id="bika_one_state_workflow"/>

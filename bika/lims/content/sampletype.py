@@ -11,6 +11,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.fields import DurationField
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import ISampleType
 from magnitude import mg, MagnitudeError
 from zope.interface import implements
 import json
@@ -99,6 +100,8 @@ schema['description'].schemata = 'default'
 schema['description'].widget.visible = True
 
 class SampleType(BaseContent, HistoryAwareMixin):
+
+    implements(ISampleType)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

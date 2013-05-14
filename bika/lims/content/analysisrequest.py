@@ -23,10 +23,12 @@ from bika.lims.config import PROJECTNAME, \
     ManageInvoices
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IBikaCatalog
 from bika.lims.utils import sortable_title
 from bika.lims.browser.widgets import ReferenceWidget
 from decimal import Decimal
 from email.Utils import formataddr
+from plone.indexer.decorator import indexer
 from types import ListType, TupleType
 from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
@@ -396,6 +398,13 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField(
+        'DateSampled',
+        expression="here.getSample() and here.getSample().getDateSampled() or ''",
+        widget=ComputedWidget(
+            visible=False,
+        ),
+    ),
+    ComputedField(
         'ClientUID',
         searchable=True,
         expression='here.aq_parent.UID()',
@@ -421,21 +430,28 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'SampleUID',
-        expression='here.getSample() and here.getSample().UID()',
+        expression="here.getSample() and here.getSample().UID() or ''",
+        widget=ComputedWidget(
+            visible=False,
+        ),
+    ),
+    ComputedField(
+        'SampleID',
+        expression="here.getSample() and here.getSample().getId() or ''",
         widget=ComputedWidget(
             visible=False,
         ),
     ),
     ComputedField(
         'ContactUID',
-        expression='here.getContact() and here.getContact().UID()',
+        expression="here.getContact() and here.getContact().UID() or ''",
         widget=ComputedWidget(
             visible=False,
         ),
     ),
     ComputedField(
         'ProfileUID',
-        expression='here.getProfile() and here.getProfile().UID()',
+        expression="here.getProfile() and here.getProfile().UID() or ''",
         widget=ComputedWidget(
             visible=False,
         ),
@@ -469,8 +485,8 @@ schema = BikaSchema.copy() + Schema((
 )
 )
 
-schema['title'].required = False
 
+schema['title'].required = False
 
 class AnalysisRequest(BaseFolder):
     implements(IAnalysisRequest)
@@ -500,6 +516,53 @@ class AnalysisRequest(BaseFolder):
     def getClient(self):
         if self.aq_parent.portal_type == 'Client':
             return self.aq_parent
+
+    def getClientTitle(self):
+        client = self.getClient()
+        if client:
+            return client.Title()
+        else:
+            return ""
+
+    def getContactTitle(self):
+        value = self.getContact().Title() if self.getContact() else ''
+        return value
+
+    def getClientTitle(self):
+        value = self.aq_parent.Title()
+        return value
+
+    def getProfileTitle(self):
+        value = self.getProfile().Title() if self.getProfile() else ''
+        return value
+
+    def getAnalysisCategory(self):
+        proxies = self.getAnalyses(full_objects=True)
+        value = []
+        for proxy in proxies:
+            val = proxy.getCategoryTitle()
+            if val not in value:
+                value.append(val)
+        return value
+
+    def getAnalysisService(self):
+        proxies = self.getAnalyses(full_objects=True)
+        value = []
+        for proxy in proxies:
+            val = proxy.getServiceTitle()
+            if val not in value:
+                value.append(val)
+        return value
+
+    def getAnalysts(self):
+        proxies = self.getAnalyses(full_objects=True)
+        value = []
+        for proxy in proxies:
+            val = proxy.getAnalyst()
+            if val not in value:
+                value.append(val)
+        return value
+
 
     def getBatch(self):
         # The parent type may be "Batch" during ar_add.
@@ -856,5 +919,5 @@ class AnalysisRequest(BaseFolder):
         while (child and child.getChildAnalysisRequest()):
             child = child.getChildAnalysisRequest()
         return child
-    
+
 atapi.registerType(AnalysisRequest, PROJECTNAME)

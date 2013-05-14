@@ -11,12 +11,15 @@ from bika.lims.browser.fields import DurationField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IBatch
+from bika.lims.interfaces import IBikaCatalog
 from bika.lims.utils import isActive
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import skip
 from datetime import timedelta
 from plone.app.folder.folder import ATFolder
+from plone.indexer.decorator import indexer
 from zope.interface import implements
+
 import json
 import plone
 
@@ -58,6 +61,7 @@ schema = BikaFolderSchema.copy() + Schema((
 )
 )
 
+
 schema['title'].required = False
 schema['title'].widget.visible = False
 schema['description'].required = False
@@ -82,6 +86,54 @@ class Batch(ATFolder):
     def Title(self):
         """ Return the BatchID or id as title """
         return safe_unicode(self.getBatchID()).encode('utf-8')
+
+    def getClientTitle(self):
+        schema = self.Schema()
+        value = ""
+        if 'Client' in schema:
+            value = ['Client'].get(self)
+            if value:
+                return value.Title()
+        return value
+
+    def getContactTitle(self):
+        return ""
+
+    def getProfileTitle(self):
+        return ""
+
+    def getAnalysisCategory(self):
+        analyses = []
+        for ar in self.getAnalysisRequests():
+            analyses += list(ar.getAnalyses(full_objects=True))
+        value = []
+        for analysis in analyses:
+            val = analysis.getCategoryTitle()
+            if val not in value:
+                value.append(val)
+        return value
+
+    def getAnalysisService(self):
+        analyses = []
+        for ar in self.getAnalysisRequests():
+            analyses += list(ar.getAnalyses(full_objects=True))
+        value = []
+        for analysis in analyses:
+            val = analysis.getServiceTitle()
+            if val not in value:
+                value.append(val)
+        return value
+
+    def getAnalysts(self):
+        analyses = []
+        for ar in self.getAnalysisRequests():
+            analyses += list(ar.getAnalyses(full_objects=True))
+        value = []
+        for analysis in analyses:
+            val = analysis.getAnalyst()
+            if val not in value:
+                value.append(val)
+        return value
 
     security.declarePublic('getBatchID')
     def getBatchID(self):

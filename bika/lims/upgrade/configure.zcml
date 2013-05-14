@@ -146,4 +146,14 @@
         handler="bika.lims.upgrade.to1122.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Add QueryFolder, Query, and QueryWidget types and configuration"
+        description=""
+        source="1122"
+        destination="1123"
+        handler="bika.lims.upgrade.to1123.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>

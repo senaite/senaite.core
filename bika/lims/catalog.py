@@ -1,25 +1,24 @@
 from AccessControl import ClassSecurityInfo
-from Acquisition import aq_inner
-from Acquisition import aq_parent
 from App.class_init import InitializeClass
 from Products.CMFCore.permissions import ManagePortal
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.CatalogTool import CatalogTool
-from Products.CMFPlone.utils import base_hasattr
-from Products.CMFPlone.utils import safe_callable
 from Products.ZCatalog.ZCatalog import ZCatalog
-from bika.lims.subscribers import skip
-from zope.component import getUtility
-from zope.interface import Interface, implements
+from bika.lims.interfaces import IBikaCatalog
+from bika.lims.interfaces import IBikaAnalysisCatalog
+from bika.lims.interfaces import IBikaSetupCatalog
+from zope.interface import implements
 
-def getCatalog(instance, field = 'UID'):
+
+def getCatalog(instance, field='UID'):
     """ Return the catalog which indexes objects of instance's type.
     If an object is indexed by more than one catalog, the first match
     will be returned.
     """
-    uid = self.UID()
-    if 'workflow_skiplist' in self.REQUEST \
-         and [x for x in self.REQUEST['workflow_skiplist'] if x.find(uid) > -1]:
+    uid = instance.UID()
+    if 'workflow_skiplist' in instance.REQUEST and \
+        [x for x in instance.REQUEST['workflow_skiplist']
+         if x.find(uid) > -1]:
         return None
     else:
         # grab the first catalog we are indexed in.
@@ -31,15 +30,15 @@ def getCatalog(instance, field = 'UID'):
         catalog = getToolByName(plone, catalog_name)
         return catalog
 
+
 class BikaCatalog(CatalogTool):
-    """ Catalog for various transactional types:
-    AnalysisRequest
-    Sample
-    SamplePartition
-    Report
-    """
+
+    """Catalog for various transactional types"""
+
+    implements(IBikaCatalog)
+
     security = ClassSecurityInfo()
-    _properties = ({'id':'title', 'type': 'string', 'mode':'w'},)
+    _properties = ({'id': 'title', 'type': 'string', 'mode': 'w'},)
 
     title = 'Bika Catalog'
     id = 'bika_catalog'
@@ -50,6 +49,7 @@ class BikaCatalog(CatalogTool):
         ZCatalog.__init__(self, self.id)
 
     security.declareProtected(ManagePortal, 'clearFindAndRebuild')
+
     def clearFindAndRebuild(self):
         """
         """
@@ -60,24 +60,28 @@ class BikaCatalog(CatalogTool):
         self.manage_catalogClear()
         portal = getToolByName(self, 'portal_url').getPortalObject()
         portal.ZopeFindAndApply(portal,
-                                obj_metatypes = ('AnalysisRequest',
-                                                 'Batch',
-                                                 'Sample',
-                                                 'SamplePartition',
-                                                 'ReferenceSample',
-                                                 'Report',
-                                                 'Worksheet',
-                                                 ),
+                                obj_metatypes=('AnalysisRequest',
+                                               'Batch',
+                                               'Sample',
+                                               'SamplePartition',
+                                               'ReferenceSample',
+                                               'Report',
+                                               'Worksheet',
+                                               ),
                                 search_sub = True,
                                 apply_func = indexObject)
 
 InitializeClass(BikaCatalog)
 
+
 class BikaAnalysisCatalog(CatalogTool):
-    """ Catalog for analysis types
-    """
+
+    """Catalog for analysis types"""
+
+    implements(IBikaAnalysisCatalog)
+
     security = ClassSecurityInfo()
-    _properties = ({'id':'title', 'type': 'string', 'mode':'w'},)
+    _properties = ({'id': 'title', 'type': 'string', 'mode': 'w'},)
 
     title = 'Bika Analysis Catalog'
     id = 'bika_analysis_catalog'
@@ -88,6 +92,7 @@ class BikaAnalysisCatalog(CatalogTool):
         ZCatalog.__init__(self, self.id)
 
     security.declareProtected(ManagePortal, 'clearFindAndRebuild')
+
     def clearFindAndRebuild(self):
         """
         """
@@ -98,20 +103,24 @@ class BikaAnalysisCatalog(CatalogTool):
         self.manage_catalogClear()
         portal = getToolByName(self, 'portal_url').getPortalObject()
         portal.ZopeFindAndApply(portal,
-                                obj_metatypes = ('Analysis',
-                                                 'ReferenceAnalysis',
-                                                 'DuplicateAnalysis',
-                                                 ),
+                                obj_metatypes=('Analysis',
+                                               'ReferenceAnalysis',
+                                               'DuplicateAnalysis',
+                                               ),
                                 search_sub = True,
                                 apply_func = indexObject)
 
 InitializeClass(BikaAnalysisCatalog)
 
+
 class BikaSetupCatalog(CatalogTool):
-    """ Catalog for all bika_setup objects
-    """
+
+    """Catalog for all bika_setup objects"""
+
+    implements(IBikaSetupCatalog)
+
     security = ClassSecurityInfo()
-    _properties = ({'id':'title', 'type': 'string', 'mode':'w'},)
+    _properties = ({'id': 'title', 'type': 'string', 'mode': 'w'},)
 
     title = 'Bika Setup Catalog'
     id = 'bika_setup_catalog'
@@ -122,6 +131,7 @@ class BikaSetupCatalog(CatalogTool):
         ZCatalog.__init__(self, self.id)
 
     security.declareProtected(ManagePortal, 'clearFindAndRebuild')
+
     def clearFindAndRebuild(self):
         """
         """
@@ -132,31 +142,31 @@ class BikaSetupCatalog(CatalogTool):
         self.manage_catalogClear()
         portal = getToolByName(self, 'portal_url').getPortalObject()
         portal.ZopeFindAndApply(portal,
-                                obj_metatypes = ('Container',
-                                                 'ContainerType',
-                                                 'Preservation',
-                                                 'Department',
-                                                 'AnalysisCategory',
-                                                 'AnalysisService',
-                                                 'AnalysisSpec',
-                                                 'SampleCondition',
-                                                 'SampleMatrix',
-                                                 'SampleType',
-                                                 'SamplePoint',
-                                                 'SamplingDeviation',
-                                                 'Instrument',
-                                                 'Manufacturer',
-                                                 'Method',
-                                                 'AttachmentType',
-                                                 'Calculation',
-                                                 'AnalysisProfile',
-                                                 'ARTemplate',
-                                                 'LabContact',
-                                                 'LabProduct',
-                                                 'Supplier',
-                                                 'ReferenceDefinition',
-                                                 'BatchLabel',
-                                                 'WorksheetTemplate'),
+                                obj_metatypes=('Container',
+                                               'ContainerType',
+                                               'Preservation',
+                                               'Department',
+                                               'AnalysisCategory',
+                                               'AnalysisService',
+                                               'AnalysisSpec',
+                                               'SampleCondition',
+                                               'SampleMatrix',
+                                               'SampleType',
+                                               'SamplePoint',
+                                               'SamplingDeviation',
+                                               'Instrument',
+                                               'Manufacturer',
+                                               'Method',
+                                               'AttachmentType',
+                                               'Calculation',
+                                               'AnalysisProfile',
+                                               'ARTemplate',
+                                               'LabContact',
+                                               'LabProduct',
+                                               'Supplier',
+                                               'ReferenceDefinition',
+                                               'BatchLabel',
+                                               'WorksheetTemplate'),
                                 search_sub = True,
                                 apply_func = indexObject)
 
