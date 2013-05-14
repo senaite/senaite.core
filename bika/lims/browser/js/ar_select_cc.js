@@ -14,12 +14,24 @@ $(document).ready(function(){
 	$('[transition=save_selection_button]').click(function(){
 		uids = [];
 		titles = [];
+		emails = [];
 		$.each($("[name='uids:list']").filter(":checked"), function(i, e){
 			uids.push($(e).val());
 			titles.push($(e).attr('item_title'));
+			email = "";
+			emailfieldid = "[name='EmailAddress."+$(e).val()+":records']";
+			if ($(emailfieldid).length > 0){
+				emailaddress = $($(emailfieldid)[0]).val();
+				email = $(e).attr('item_title') 
+					+" &lt;<a href='mailto:"+emailaddress+"'>"
+					+emailaddress+"</a>&gt;"
+			} else {
+				email = $(e).attr('item_title');
+			}
+			emails.push(email);			
 		});
 		window.opener.$("#cc_titles").attr('value', titles.join('; '));
-		window.opener.$("span[id=cc_titles]").empty().append(titles.join('; '));
+		window.opener.$("span[id=cc_titles]").empty().append(emails.join('<br/>'));
 		window.opener.$("#cc_uids").attr('value', uids.join(','));
 
 		window.close();

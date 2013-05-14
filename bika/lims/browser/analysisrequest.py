@@ -571,6 +571,12 @@ class AnalysisRequestViewView(BrowserView):
         contacts = []
         for cc in self.context.getCCContact():
             contacts.append(cc)
+        if contact in contacts:
+            contacts.remove(contact)
+        ccemails = []
+        for cc in contacts:
+            ccemails.append("%s &lt;<a href='mailto:%s'>%s</a>&gt;" \
+                % (cc.Title(), cc.getEmailAddress(), cc.getEmailAddress()))
         cc_uids = [c.UID() for c in contacts]
         cc_titles = [c.Title() for c in contacts]
         emails = self.context.getCCEmails()
@@ -625,12 +631,17 @@ class AnalysisRequestViewView(BrowserView):
                       (self.context.translate(_('Contact Person'))),
              'allow_edit': False,
              'value': "<input name='cc_uids' type='hidden' id='cc_uids' value='%s'/>\
-                       <span name='primary_contact' id='primary_contact' value='%s'>%s</span>;\
-                       <span name='cc_titles' id='cc_titles' value='%s'>%s</span>\
-                       <span name='cc_emails' id='cc_emails' value='%s'>%s</span>"\
+                       <a href='%s'><span name='primary_contact' id='primary_contact' value='%s'>%s</span></a>\
+                       &lt;<a href='mailto:%s'>%s</a>&gt;<br/>\
+                       <span name='cc_titles' id='cc_titles' value='%s'>%s</span>"\
                        %(",".join(cc_uids),
-                         contact.UID(), contact.Title(), "; ".join(cc_titles),"; ".join(cc_titles),
-                         "; ".join(cc_emails),"; ".join(cc_hrefs)),
+                         contact.absolute_url(),
+                         contact.UID(), 
+                         contact.Title(), 
+                         contact.getEmailAddress(),
+                         contact.getEmailAddress(),
+                         "; ".join(cc_titles),
+                         "<br/> ".join(ccemails)),
              'condition':True,
              'type': 'text'},
             {'id': 'ClientSampleID',
@@ -876,7 +887,7 @@ class AnalysisRequestViewView(BrowserView):
             if anchor:
                 self.header_rows.append(
                         {'id': 'ChildAR',
-                         'title': 'Newly created Analysis Request',
+                         'title': 'AR for retested results',
                          'allow_edit': False,
                          'value': anchor,
                          'condition': True,
@@ -899,7 +910,7 @@ class AnalysisRequestViewView(BrowserView):
             anchor = "<a href='%s'>%s</a>" % (par.absolute_url(), par.getRequestID())
             self.header_rows.append(
                         {'id': 'ParentAR',
-                         'title': 'Parent Analysis Request',
+                         'title': 'Invalid AR retested',
                          'allow_edit': False,
                          'value': anchor,
                          'condition': True,
