@@ -896,7 +896,7 @@ class AnalysisRequestViewView(BrowserView):
                          'value': anchor,
                          'condition': True,
                          'type': 'text'})
-                message = (message + "%s.") % childar.getRequestID()
+                message = (message + " %s.") % childar.getRequestID()
             else:
                 message = message + "."
 
@@ -2576,6 +2576,9 @@ class AnalysisRequestsView(BikaListingView):
             if state == 'assigned':
                 after_icons += "<img src='%s/++resource++bika.lims.images/worksheet.png' title='%s'/>" % \
                     (self.portal_url, self.context.translate(_("All analyses assigned")))
+            if workflow.getInfoFor(obj, 'review_state') == 'invalid':
+                after_icons += "<img src='%s/++resource++bika.lims.images/delete.png' title='%s'/>" % \
+                    (self.portal_url, self.context.translate(_("Results have been withdrawn")))                      
             if obj.getLate():
                 after_icons += "<img src='%s/++resource++bika.lims.images/late.png' title='%s'>" % \
                     (self.portal_url, self.context.translate(_("Late Analyses")))
