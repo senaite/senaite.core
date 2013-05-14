@@ -655,13 +655,18 @@ class AnalysisRequest(BaseFolder):
                             'sample_due', 'published']:
             return False
 
-        now = DateTime()
         for analysis in self.objectValues('Analysis'):
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if review_state == 'published':
                 continue
-            if analysis.getDueDate() < analysis.getResultCaptureDate():
-                return True
+            calculation = analysis.getService().getCalculation()
+            if not calculation \
+                or (calculation and not calculation.getDependentServices()):
+                resultdate = analysis.getResultCaptureDate()
+                duedate = analysis.getDueDate()
+                if (resultdate and resultdate > duedate) \
+                    or (not resultdate and DateTime() > duedate):
+                    return True
         return False
 
     security.declareProtected(View, 'getBillableItems')

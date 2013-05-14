@@ -360,18 +360,36 @@ class AnalysesView(BikaListingView):
 
             # check if this analysis is late/overdue
             if items[i]['obj'].portal_type != "DuplicateAnalysis":
-                if (not calculation or (calculation and not calculation.getDependentServices())):
-                   if items[i]['review_state'] not in ['to_be_sampled', 'to_be_preserved', 'sample_due', 'published'] \
-                       and (
-                            items[i]['result_captured'] > items[i]['DueDate'] \
-                            or not items[i]['result_captured']
-                            ):
-                       DueDate = self.ulocalized_time(item['DueDate'], long_format=1)
-                       items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
-                            (DueDate, self.portal_url, self.context.translate(_("Late Analysis")))
-                else:
-                    items[i]['replace']['DueDate'] = self.ulocalized_time(
-                        item['DueDate'], long_format=1)
+
+                if (not calculation  or (calculation \
+                        and not calculation.getDependentServices())):
+
+                    resultdate = obj.aq_parent.getDateSampled() \
+                        if obj.portal_type == 'ReferenceAnalysis' \
+                        else obj.getResultCaptureDate()
+
+                    duedate = obj.aq_parent.getExpiryDate() \
+                        if obj.portal_type == 'ReferenceAnalysis' \
+                        else obj.getDueDate()
+
+                    items[i]['replace']['DueDate'] = \
+                        self.ulocalized_time(duedate, long_format=1)
+
+                    if items[i]['review_state'] not in ['to_be_sampled',
+                                                        'to_be_preserved',
+                                                        'sample_due',
+                                                        'published']:
+
+                        if (resultdate and resultdate > duedate) \
+                            or (not resultdate and DateTime() > duedate):
+
+                            items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
+                                (self.ulocalized_time(duedate, long_format=1),
+                                 self.portal_url, 
+                                 self.context.translate(_("Late Analysis")))
+
+                elif calculation:
+                    items[i]['DueDate'] = ''
 
             # Submitting user may not verify results (admin can though)
             if items[i]['review_state'] == 'to_be_verified' and \
