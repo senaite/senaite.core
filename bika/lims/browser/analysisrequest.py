@@ -448,7 +448,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                      "has been picked up and is under investigation.<br/><br/>"
                      "%s"
                      ) % (aranchor, naranchor, lab_address)
-    
+
             msg_txt = MIMEText(safe_unicode(body).encode('utf-8'),
                                _subtype='html')
             mime_msg.preamble = 'This is a multi-part MIME message.'
@@ -549,6 +549,7 @@ class AnalysisRequestViewView(BrowserView):
     implements(IViewView)
     template = ViewPageTemplateFile("templates/analysisrequest_view.pt")
     header_table = ViewPageTemplateFile("templates/header_table.pt")
+    messages = []
 
     def __init__(self, context, request):
         super(AnalysisRequestViewView, self).__init__(context, request)
@@ -884,6 +885,9 @@ class AnalysisRequestViewView(BrowserView):
             childar = hasattr(ar, 'getChildAnalysisRequest') \
                         and ar.getChildAnalysisRequest() or None
             anchor = childar and ("<a href='%s'>%s</a>"%(childar.absolute_url(),childar.getRequestID())) or None
+            message = _('These results have been withdrawn and are '
+                        'listed here for trace-ability purposes. Please follow '
+                        'the link to the retest')
             if anchor:
                 self.header_rows.append(
                         {'id': 'ChildAR',
@@ -892,15 +896,11 @@ class AnalysisRequestViewView(BrowserView):
                          'value': anchor,
                          'condition': True,
                          'type': 'text'})
-
-                message = self.context.translate(_('This Analysis Request has been '
-                                                   'retracted and the Analysis Request '
-                                                   '%s has been automatically created.'
-                                                   ) % childar.getRequestID())
+                message = (message + "%s.") % childar.getRequestID()
             else:
-                message = self.context.translate(_('This Analysis Request has been '
-                                                   'retracted. '))
-            self.context.plone_utils.addPortalMessage(message, 'warn')
+                message = message + "."
+
+            self.addMessage(message, 'warning')
 
         # If is an AR automatically generated due to a Retraction, show it's
         # parent AR information
@@ -915,13 +915,22 @@ class AnalysisRequestViewView(BrowserView):
                          'value': anchor,
                          'condition': True,
                          'type': 'text'})
-            message = self.context.translate(_('This Analysis Request has been '
-                                               'generated automatically due to '
-                                               'the retraction of the Analysis '
-                                               'Request %s.') % par.getRequestID())
-            self.context.plone_utils.addPortalMessage(message, 'warn')
+            message = _('This Analysis Request has been '
+                        'generated automatically due to '
+                        'the retraction of the Analysis '
+                        'Request %s.') % par.getRequestID()
+            self.addMessage(message, 'warning')
 
+        self.renderMessages()
         return self.template()
+
+    def addMessage(self, message, type='info'):
+        self.messages.append({'message':message, 'type':type})
+
+    def renderMessages(self):
+        for message in self.messages:
+            self.context.plone_utils.addPortalMessage(
+                self.context.translate(message['message']), 'warning')
 
     def createAnalysesView(self, context, request, **kwargs):
         return AnalysesView(context, request, **kwargs)
