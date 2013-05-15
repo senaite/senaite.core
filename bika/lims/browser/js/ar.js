@@ -82,18 +82,15 @@ function workflow_transition_retract_ar(event) {
 		buttons:{
 			yes: function(){
 				// Set the additional remarks to the AR
+				href = $("#workflow-transition-retract_ar").attr("href");
 				addremarks = $.trim($("#arretractmsgbox_addremarks").val());
 				if (addremarks && addremarks!='') {
 					$("#Remarks").val(addremarks);
-					$('.saveRemarks').click();
-					
-					href = $("#workflow-transition-retract_ar").attr("href");
+					$('.saveRemarks').click();					
 					href += "&addremarks=1";
-					$(this).dialog("close");
-					location.href = href;
-				} else {
-					$(this).dialog("close");
 				}
+				$(this).dialog("close");
+				window.location.href = href;
 			},
 			no:function(){
 				$(this).dialog("close");
