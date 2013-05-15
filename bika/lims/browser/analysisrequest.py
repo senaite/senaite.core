@@ -441,13 +441,22 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                                                 ar.getRequestID())
             naranchor = "<a href='%s'>%s</a>" % (newar.absolute_url(),
                                                  newar.getRequestID())
+            addremarks = ('addremarks' in self.request \
+                          and ar.getRemarks()) \
+                        and ("<br/><br/>"
+                             + _("Additional remarks:")
+                             + "<br/>"
+                             + ar.getRemarks().split("===")[1].strip()
+                             + "<br/><br/>") \
+                        or ''
+
             body = _("Some errors have been detected in the results report "
                      "published from the Analysis Request %s. The Analysis "
                      "Request %s has been created automatically and the "
                      "previous has been invalidated.<br/>The possible mistake "
                      "has been picked up and is under investigation.<br/><br/>"
-                     "%s"
-                     ) % (aranchor, naranchor, lab_address)
+                     "%s%s"
+                     ) % (aranchor, naranchor, addremarks, lab_address)
 
             msg_txt = MIMEText(safe_unicode(body).encode('utf-8'),
                                _subtype='html')
@@ -502,7 +511,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             Attachment=ar.getAttachment(),
             Invoice=ar.getInvoice(),
             DateReceived=ar.getDateReceived(),
-            Remarks=ar.getRemarks(),
             MemberDiscount=ar.getMemberDiscount()
         )
 
@@ -554,6 +562,7 @@ class AnalysisRequestViewView(BrowserView):
     def __init__(self, context, request):
         super(AnalysisRequestViewView, self).__init__(context, request)
         self.icon = self.portal_url + "/++resource++bika.lims.images/analysisrequest_big.png"
+        self.messages = []
 
     def __call__(self):
         form = self.request.form
@@ -919,18 +928,18 @@ class AnalysisRequestViewView(BrowserView):
                         'generated automatically due to '
                         'the retraction of the Analysis '
                         'Request %s.') % par.getRequestID()
-            self.addMessage(message, 'warning')
+            self.addMessage(message, 'info')
 
         self.renderMessages()
         return self.template()
 
-    def addMessage(self, message, type='info'):
-        self.messages.append({'message':message, 'type':type})
+    def addMessage(self, message, msgtype='info'):
+        self.messages.append({'message': message, 'msgtype': msgtype})
 
     def renderMessages(self):
         for message in self.messages:
             self.context.plone_utils.addPortalMessage(
-                self.context.translate(message['message']), 'warning')
+                self.context.translate(message['message']), message['msgtype'])
 
     def createAnalysesView(self, context, request, **kwargs):
         return AnalysesView(context, request, **kwargs)

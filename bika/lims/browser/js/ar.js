@@ -59,22 +59,51 @@ function workflow_transition_retract_ar(event) {
 	event.preventDefault();
 	$("body").append(
 		"<div id='arretractmsgbox' style='display:none' title='" + _("AR retraction") + "'>"+
-		_("<p>If you retract/invalidate this Analysis Request, a new Analysis Request will be created automatically with 'To be verified' state and an email will be sent to the contacts who ordered the results.</p>" +
-				"<p>Are you sure?</p>")+"</div>");
+			"<p>" +
+				_("If you retract/invalidate this Analysis Request, a new Analysis " +
+				"Request will be created automatically with 'To be verified' " +
+				"state and an email will be sent to the contacts who ordered " +
+				"the results.") +
+			"</p>" +
+			"<p>&nbsp;</p><p>" +
+				_("Use the following box for additional remarks:") +
+			"<br/></p>" +
+			"<textarea rows='3' cols='35' " +
+			"	id='arretractmsgbox_addremarks' " +
+			"	name='arretractmsgbox_addremarks'></textarea>" +
+			"<p>&nbsp;</p><p>" +
+				_("Are you sure?") +
+			"</p>" +
+		"</div>");
+		
 	yes = _("Yes");
 	no = _("No");
-	$("#arretractmsgbox").dialog({width:450, resizable:false, closeOnEscape: false, buttons:{
-		yes: function(){
-			$(this).dialog("close");
-			href = window.location.href+"/workflow_action?workflow_action=retract_ar";
-			window.location.href = href;
+	$("#arretractmsgbox").dialog({width:450, resizable:false, closeOnEscape: false, 
+		buttons:{
+			yes: function(){
+				// Set the additional remarks to the AR
+				addremarks = $.trim($("#arretractmsgbox_addremarks").val());
+				if (addremarks && addremarks!='') {
+					$("#Remarks").val(addremarks);
+					$('.saveRemarks').click();
+					
+					href = $("#workflow-transition-retract_ar").attr("href");
+					href += "&addremarks=1";
+					$(this).dialog("close");
+					location.href = href;
+				} else {
+					$(this).dialog("close");
+				}
+			},
+			no:function(){
+				$(this).dialog("close");
+			}
 		},
-		no:function(){
-			$(this).dialog("close");
-			$('#portal-columns').fadeTo('slow', 1)
+		close:function(){
+			$('#portal-columns').fadeTo('slow', 1);
 		}
-	}});
-	$('#portal-columns').fadeTo('slow', 0.3)
+	});
+	$('#portal-columns').fadeTo('slow', 0.3);
 }
 
 $(document).ready(function(){
