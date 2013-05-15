@@ -162,20 +162,23 @@ class ajaxReferenceWidgetSearch(BrowserView):
                    'Title': getattr(p, 'Title')}
             other_fields = [x for x in colModel
                             if x['columnName'] not in row.keys()]
+            instance = schema = None
             discard = False
+            # This will be faster if the columnNames are catalog indexes
             for field in other_fields:
                 fieldname = field['columnName']
                 value = getattr(p, fieldname, None)
                 if not value:
-                    instance = p.getObject()
-                    schema = instance.Schema()
+                    if instance is None:
+                        instance = p.getObject()
+                        schema = instance.Schema()
                     if fieldname in schema:
                         value = schema[fieldname].get(instance)
                 if fieldname in discard_empty and not value:
                     discard = True
                     break
 
-                # '&nbsp;' instead of '' because empty div fields don't render 
+                # '&nbsp;' instead of '' because empty div fields don't render
                 # correctly in combo results table
                 row[fieldname] = value and value or '&nbsp;'
 
