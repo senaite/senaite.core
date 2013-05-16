@@ -66,12 +66,18 @@ def upgrade(tool):
 
     # then add indexes
     bc = getToolByName(portal, 'bika_catalog')
-    bc.addIndex('getContactTitle', 'FieldIndex')
-    bc.addIndex('getClientTitle', 'FieldIndex')
-    bc.addIndex('getProfileTitle', 'FieldIndex')
-    bc.addIndex('getAnalysisCategory', 'KeywordIndex')
-    bc.addIndex('getAnalysisService', 'KeywordIndex')
-    bc.addIndex('getAnalysts', 'KeywordIndex')
+    if 'getContactTitle' not in bc.indexes():
+        bc.addIndex('getContactTitle', 'FieldIndex')
+    if 'getClientTitle' not in bc.indexes():
+        bc.addIndex('getClientTitle', 'FieldIndex')
+    if 'getProfileTitle' not in bc.indexes():
+        bc.addIndex('getProfileTitle', 'FieldIndex')
+    if 'getAnalysisCategory' not in bc.indexes():
+        bc.addIndex('getAnalysisCategory', 'KeywordIndex')
+    if 'getAnalysisService' not in bc.indexes():
+        bc.addIndex('getAnalysisService', 'KeywordIndex')
+    if 'getAnalysts' not in bc.indexes():
+        bc.addIndex('getAnalysts', 'KeywordIndex')
     bc.addColumn('created')
     bc.addColumn('Creator')
     bc.addColumn('getAnalysts')
