@@ -30,16 +30,6 @@ def getCatalog(instance, field='UID'):
         catalog = getToolByName(plone, catalog_name)
         return catalog
 
-BikaCatalogTypes = (
-    'AnalysisRequest',
-    'Batch',
-    'Sample',
-    'SamplePartition',
-    'ReferenceSample',
-    'Report',
-    'Worksheet',
-)
-
 
 class BikaCatalog(CatalogTool):
 
@@ -67,21 +57,18 @@ class BikaCatalog(CatalogTool):
         def indexObject(obj, path):
             self.reindexObject(obj)
 
+        at = getToolByName(self, 'archetype_tool')
+        types = [k for k, v in at.catalog_map.items()
+                 if self.id in v]
+
         self.manage_catalogClear()
         portal = getToolByName(self, 'portal_url').getPortalObject()
         portal.ZopeFindAndApply(portal,
-                                obj_metatypes=BikaCatalogTypes,
+                                obj_metatypes=types,
                                 search_sub=True,
                                 apply_func=indexObject)
 
 InitializeClass(BikaCatalog)
-
-
-BikaAnalysisCatalogTypes = (
-    'Analysis',
-    'ReferenceAnalysis',
-    'DuplicateAnalysis',
-)
 
 
 class BikaAnalysisCatalog(CatalogTool):
@@ -110,42 +97,18 @@ class BikaAnalysisCatalog(CatalogTool):
         def indexObject(obj, path):
             self.reindexObject(obj)
 
+        at = getToolByName(self, 'archetype_tool')
+        types = [k for k, v in at.catalog_map.items()
+                 if self.id in v]
+
         self.manage_catalogClear()
         portal = getToolByName(self, 'portal_url').getPortalObject()
         portal.ZopeFindAndApply(portal,
-                                obj_metatypes=BikaAnalysisCatalogTypes,
+                                obj_metatypes=types,
                                 search_sub=True,
                                 apply_func=indexObject)
 
 InitializeClass(BikaAnalysisCatalog)
-
-BikaSetupCatalogTypes = (
-    'Container',
-    'ContainerType',
-    'Preservation',
-    'Department',
-    'AnalysisCategory',
-    'AnalysisService',
-    'AnalysisSpec',
-    'SampleCondition',
-    'SampleMatrix',
-    'SampleType',
-    'SamplePoint',
-    'SamplingDeviation',
-    'Instrument',
-    'Manufacturer',
-    'Method',
-    'AttachmentType',
-    'Calculation',
-    'AnalysisProfile',
-    'ARTemplate',
-    'LabContact',
-    'LabProduct',
-    'Supplier',
-    'ReferenceDefinition',
-    'BatchLabel',
-    'WorksheetTemplate',
-)
 
 
 class BikaSetupCatalog(CatalogTool):
@@ -174,10 +137,14 @@ class BikaSetupCatalog(CatalogTool):
         def indexObject(obj, path):
             self.reindexObject(obj)
 
+        at = getToolByName(self, 'archetype_tool')
+        types = [k for k, v in at.catalog_map.items()
+                 if self.id in v]
+
         self.manage_catalogClear()
         portal = getToolByName(self, 'portal_url').getPortalObject()
         portal.ZopeFindAndApply(portal,
-                                obj_metatypes=BikaSetupCatalogTypes,
+                                obj_metatypes=types,
                                 search_sub=True,
                                 apply_func=indexObject)
 
