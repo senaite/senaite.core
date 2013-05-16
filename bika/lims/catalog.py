@@ -30,6 +30,16 @@ def getCatalog(instance, field='UID'):
         catalog = getToolByName(plone, catalog_name)
         return catalog
 
+BikaCatalogTypes = (
+    'AnalysisRequest',
+    'Batch',
+    'Sample',
+    'SamplePartition',
+    'ReferenceSample',
+    'Report',
+    'Worksheet',
+)
+
 
 class BikaCatalog(CatalogTool):
 
@@ -60,18 +70,18 @@ class BikaCatalog(CatalogTool):
         self.manage_catalogClear()
         portal = getToolByName(self, 'portal_url').getPortalObject()
         portal.ZopeFindAndApply(portal,
-                                obj_metatypes=('AnalysisRequest',
-                                               'Batch',
-                                               'Sample',
-                                               'SamplePartition',
-                                               'ReferenceSample',
-                                               'Report',
-                                               'Worksheet',
-                                               ),
-                                search_sub = True,
-                                apply_func = indexObject)
+                                obj_metatypes=BikaCatalogTypes,
+                                search_sub=True,
+                                apply_func=indexObject)
 
 InitializeClass(BikaCatalog)
+
+
+BikaAnalysisCatalogTypes = (
+    'Analysis',
+    'ReferenceAnalysis',
+    'DuplicateAnalysis',
+)
 
 
 class BikaAnalysisCatalog(CatalogTool):
@@ -103,14 +113,39 @@ class BikaAnalysisCatalog(CatalogTool):
         self.manage_catalogClear()
         portal = getToolByName(self, 'portal_url').getPortalObject()
         portal.ZopeFindAndApply(portal,
-                                obj_metatypes=('Analysis',
-                                               'ReferenceAnalysis',
-                                               'DuplicateAnalysis',
-                                               ),
-                                search_sub = True,
-                                apply_func = indexObject)
+                                obj_metatypes=BikaAnalysisCatalogTypes,
+                                search_sub=True,
+                                apply_func=indexObject)
 
 InitializeClass(BikaAnalysisCatalog)
+
+BikaSetupCatalogTypes = (
+    'Container',
+    'ContainerType',
+    'Preservation',
+    'Department',
+    'AnalysisCategory',
+    'AnalysisService',
+    'AnalysisSpec',
+    'SampleCondition',
+    'SampleMatrix',
+    'SampleType',
+    'SamplePoint',
+    'SamplingDeviation',
+    'Instrument',
+    'Manufacturer',
+    'Method',
+    'AttachmentType',
+    'Calculation',
+    'AnalysisProfile',
+    'ARTemplate',
+    'LabContact',
+    'LabProduct',
+    'Supplier',
+    'ReferenceDefinition',
+    'BatchLabel',
+    'WorksheetTemplate',
+)
 
 
 class BikaSetupCatalog(CatalogTool):
@@ -142,32 +177,8 @@ class BikaSetupCatalog(CatalogTool):
         self.manage_catalogClear()
         portal = getToolByName(self, 'portal_url').getPortalObject()
         portal.ZopeFindAndApply(portal,
-                                obj_metatypes=('Container',
-                                               'ContainerType',
-                                               'Preservation',
-                                               'Department',
-                                               'AnalysisCategory',
-                                               'AnalysisService',
-                                               'AnalysisSpec',
-                                               'SampleCondition',
-                                               'SampleMatrix',
-                                               'SampleType',
-                                               'SamplePoint',
-                                               'SamplingDeviation',
-                                               'Instrument',
-                                               'Manufacturer',
-                                               'Method',
-                                               'AttachmentType',
-                                               'Calculation',
-                                               'AnalysisProfile',
-                                               'ARTemplate',
-                                               'LabContact',
-                                               'LabProduct',
-                                               'Supplier',
-                                               'ReferenceDefinition',
-                                               'BatchLabel',
-                                               'WorksheetTemplate'),
-                                search_sub = True,
-                                apply_func = indexObject)
+                                obj_metatypes=BikaSetupCatalogTypes,
+                                search_sub=True,
+                                apply_func=indexObject)
 
 InitializeClass(BikaSetupCatalog)
