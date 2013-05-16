@@ -67,8 +67,9 @@ class SelectionMacrosView(BrowserView):
         return self.select_analyst_pt()
     
     select_user_pt = ViewPageTemplateFile("select_user.pt")
-    def select_user(self):
-        self.users = getUsers(self.context, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Verifier'])
+    def select_user(self, allow_blank=True):
+        self.allow_blank = allow_blank
+        self.users = getUsers(self.context, None, allow_blank)
         return self.select_user_pt()
 
     select_client_pt = ViewPageTemplateFile("select_client.pt")

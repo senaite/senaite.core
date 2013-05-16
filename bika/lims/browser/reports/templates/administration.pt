@@ -103,7 +103,7 @@
 	                                                 field_title='Cancellation state')"/>
 	              </fieldset>
 	              <input tabindex=""
-	                     class="searchButton"
+	                     class="searchButton allowMultiSubmit"
 	                     type="submit"
 	                     name="submit"
 	                     value="Report"
@@ -126,12 +126,12 @@
 	              <input type="hidden" name="report_id" value="administration_usershistory" />
 	              <fieldset>
 	                <tal:x content="structure python:view.selection_macros.select_daterange(
-	                                                 field_id='getDateCreated',
-	                                                 field_title='Date Created')"/>
-	                <tal:x content="structure context/@@selection_macros/select_user"/>
+	                                                 field_id='getModificationDate',
+	                                                 field_title='Modification date')"/>
+	                <tal:x content="structure python:view.selection_macros.select_user(allow_blank=True)"/>
 	              </fieldset>
 	              <input tabindex=""
-	                     class="searchButton"
+	                     class="searchButton allowMultiSubmit"
 	                     type="submit"
 	                     name="submit"
 	                     value="Report"

@@ -71,8 +71,8 @@
 			<thead>
 				<tr>
 					<th i18n:translate="">Date</th>
-					<th i18n:translate="">UserID</th>
-					<th i18n:translate="">User</th>				
+					<th i18n:translate="">User</th>		
+					<th i18n:translate="">Workflow</th>		
 					<th i18n:translate="">Action</th>
 					<th i18n:translate="">Type</th>
 					<th i18n:translate="">Entity</th>
@@ -82,9 +82,9 @@
 			<tbody>
 				<metal:block tal:repeat="line python:datalines">
 				<tr>
-					<td tal:content="python:line['ActionDateStr']"></td>					
-					<td tal:content="python:line['ActionActor']"></td>
+					<td tal:content="python:line['ActionDateStr']"></td>	
 					<td tal:content="python:line['ActionActorFullName']"></td>
+					<td tal:content="python:line['Workflow']"></td>
 					<td tal:content="python:line['Action']"></td>
 					<td tal:content="python:line['EntityType']"></td>
 					<td>

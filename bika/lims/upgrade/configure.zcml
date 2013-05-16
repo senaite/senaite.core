@@ -156,4 +156,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="New policy maps for entities versioning"
+        description=""
+        source="1123"
+        destination="1124"
+        handler="bika.lims.upgrade.to1124.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
