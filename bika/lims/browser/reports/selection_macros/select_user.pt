@@ -4,7 +4,7 @@
     <label i18n:translate="">User</label>
     <br/>
 
-    <select name="User:ignore_empty"
+    <select name="User"
             id="User"
             tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
 
