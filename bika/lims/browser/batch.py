@@ -1,9 +1,4 @@
 from AccessControl import getSecurityManager
-from DateTime import DateTime
-from Products.AdvancedQuery import Or, MatchRegexp, Between
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF, logger, bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction, AnalysisRequestsView, AnalysisRequestAddView
@@ -11,21 +6,27 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.client import ClientAnalysisRequestsView, ClientSamplesView
 from bika.lims.browser.sample import SamplesView
 from bika.lims.idserver import renameAfterCreation
-from bika.lims.interfaces import IContacts
 from bika.lims.interfaces import IBatch
+from bika.lims.interfaces import IContacts
 from bika.lims.interfaces import IDisplayListVocabulary
 from bika.lims.permissions import *
 from bika.lims.subscribers import doActionFor, skip
 from bika.lims.utils import isActive
 from bika.lims.vocabularies import CatalogVocabulary
 from cStringIO import StringIO
+from DateTime import DateTime
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
+from plone.indexer.decorator import indexer
+from Products.AdvancedQuery import Or, MatchRegexp, Between
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.cachedescriptors.property import Lazy as lazy_property
+from zope.component import adapts
 from zope.i18n import translate
 from zope.interface import implements
-from zope.component import adapts
 
 import App
 import Globals
@@ -33,6 +34,13 @@ import json
 import os
 import plone
 import xhtml2pdf.pisa as pisa
+
+
+@indexer(IBatch)
+def Title(instance):
+    value = instance.Schema()['BatchID'].get(instance)
+    return safe_unicode(value).encode('utf-8')
+
 
 class BatchAnalysisRequestsView(AnalysisRequestsView, AnalysisRequestAddView):
     template = ViewPageTemplateFile("templates/analysisrequests.pt")

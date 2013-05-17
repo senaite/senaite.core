@@ -83,10 +83,6 @@ class Batch(ATFolder):
         from bika.lims.catalog import getCatalog
         return getCatalog(self)
 
-    def Title(self):
-        """ Return the BatchID or id as title """
-        return safe_unicode(self.getBatchID()).encode('utf-8')
-
     def getClientTitle(self):
         schema = self.Schema()
         value = ""
