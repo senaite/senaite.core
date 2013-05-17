@@ -579,25 +579,25 @@
    <guard-expression>python:here.guard_cancelled_object()</guard-expression>
   </guard>
  </transition>
- 
+
  <transition transition_id="retract_ar"
              title="Invalidate"
              new_state="invalid"
              trigger="USER"
              before_script=""
              after_script=""
-             i18n:attributes="title retract_transition_title">
+             i18n:attributes="title invalidate_transition_title">
   <description i18n:translate=""></description>
   <action url="workflow_action?workflow_action=retract_ar"
           category="workflow"
           icon=""
-          i18n:translate="retract_transition_title">Invalidate</action>
+          i18n:translate="invalidate_transition_title">Invalidate</action>
   <guard>
    <guard-permission>BIKA: Retract</guard-permission>
    <guard-expression>python:here.guard_cancelled_object()</guard-expression>
   </guard>
  </transition>
-             
+
 
  <variable variable_id="action" for_catalog="False" for_status="True" update_always="True">
   <description i18n:translate="">The last transition</description>

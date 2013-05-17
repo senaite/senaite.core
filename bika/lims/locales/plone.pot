@@ -198,6 +198,17 @@ msgstr "Republish"
 msgid "retract_transition_title"
 msgstr "Retract"
 #
+# This is for the "revert" transition, which is meant to look like a
+# "retract".
+#. Default: "Retract"
+msgid "revert_transition_title"
+msgstr "Retract"
+#
+# This is for the "retract_ar" transition, to invalidate a published AR.
+#. Default: "Invalidate"
+msgid "invalidate_transition_title"
+msgstr "Invalidate"
+#
 #. Default: "Retract worksheet"
 # File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml, line: -1
 msgid "retract_worksheet_transition_title"
@@ -539,6 +550,10 @@ msgstr ""
 msgid "Instruments"
 msgstr ""
 #
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line: -1
+msgid "Invalid"
+msgstr ""
+#
 # File: ../profiles/default/types/Invoice.xml, line: -1
 msgid "Invoice"
 msgstr ""
@@ -693,7 +708,12 @@ msgstr ""
 msgid "Quality Control"
 msgstr ""
 #
+# File: ../profiles/default/types/QueryFolder.xml, line: -1
+msgid "Queries"
+msgstr ""
+#
 # File: ../profiles/default/actions.xml, line: -1
+# File: ../profiles/default/types/Query.xml, line: -1
 msgid "Query"
 msgstr ""
 #

@@ -371,6 +371,11 @@ msgid "Instruments"
 msgstr ""
 
 # 
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line: -1
+msgid "Invalid"
+msgstr ""
+
+# 
 # File: ../profiles/default/types/Invoice.xml, line: -1
 msgid "Invoice"
 msgstr ""
@@ -560,7 +565,13 @@ msgid "Quality Control"
 msgstr ""
 
 # 
+# File: ../profiles/default/types/QueryFolder.xml, line: -1
+msgid "Queries"
+msgstr ""
+
+# 
 # File: ../profiles/default/actions.xml, line: -1
+# File: ../profiles/default/types/Query.xml, line: -1
 msgid "Query"
 msgstr ""
 
@@ -925,6 +936,12 @@ msgid "import_transition_title"
 msgstr "Import"
 
 # 
+# This is for the "retract_ar" transition, to invalidate a published AR.
+#. Default: "Invalidate"
+msgid "invalidate_transition_title"
+msgstr "Invalidate"
+
+# 
 msgid "label_schema_Accounting"
 msgstr "Accounting"
 
@@ -1085,6 +1102,13 @@ msgstr "Retract"
 #. Default: "Retract worksheet"
 msgid "retract_worksheet_transition_title"
 msgstr "Retract worksheet"
+
+# 
+# This is for the "revert" transition, which is meant to look like a
+# "retract".
+#. Default: "Retract"
+msgid "revert_transition_title"
+msgstr "Retract"
 
 # 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml, line: -1

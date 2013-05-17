@@ -1,10 +1,9 @@
 # 
 # Translators:
-#  <limstranslate@gmail.com>, 2013.
+# <limstranslate@gmail.com>, 2013.
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
 "POT-Creation-Date: 2012-10-20 09:21+0000\n"
 "PO-Revision-Date: 2013-03-19 20:20+0000\n"
 "Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
@@ -12,310 +11,13 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Domain: plone\n"
-"Language: el\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Preferred-Encodings: utf-8 latin1\n"
-
-msgid "label_schema_Accounting"
-msgstr "Λογιστική"
-
-msgid "label_schema_Address"
-msgstr "Διεύθυνση"
-
-msgid "label_schema_Bank details"
-msgstr "Λεπτομέρειες τράπεζας"
-
-msgid "label_schema_Calculation"
-msgstr "Υπολογισμός"
-
-msgid "label_schema_Dates"
-msgstr "Ημερομηνίες"
-
-msgid "label_schema_Description"
-msgstr "Περιγραφή"
-
-msgid "label_schema_Email Telephone Fax"
-msgstr "Email Τηλέφωνο Φαξ"
-
-msgid "label_schema_ID Server"
-msgstr ""
-
-msgid "label_schema_Labels"
-msgstr "Ετικέτες"
-
-msgid "label_schema_Layout"
-msgstr "Διάταξη"
-
-msgid "label_schema_Location"
-msgstr "Τοποθεσία"
-
-msgid "label_schema_Method"
-msgstr "Μέθοδος"
-
-msgid "label_schema_Container and Preservation"
-msgstr ""
-
-msgid "label_schema_Preferences"
-msgstr "Προτιμήσεις"
-
-msgid "label_schema_Publication preference"
-msgstr ""
-
-msgid "label_schema_Reference Values"
-msgstr ""
-
-msgid "label_schema_Result Options"
-msgstr "Επιλογές Αποτελέσματος"
-
-msgid "label_schema_Results Reports"
-msgstr "Αναφορές Αποτελεσμάτων"
-
-msgid "label_schema_Security"
-msgstr "Ασφάλεια"
-
-msgid "label_schema_Uncertainties"
-msgstr "Αβεβαιότητες"
-
-msgid "label_schema_Sample Partitions"
-msgstr ""
-
-msgid "label_schema_Analyses"
-msgstr "Αναλύσεις"
-
-#. Default: "Activate"
-# File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
-# line: -1
-msgid "activate_transition_title"
-msgstr "Ενεργοποίηση"
-
-#. Default: "Assign"
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml,
-# line: -1
-msgid "assign_transition_title"
-msgstr ""
-
-#. Default: "Add attachment"
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-msgid "attach_transition_title"
-msgstr "Προσθήκη συνημμένου"
-
-#. Default: "Cancel"
-# File:
-# ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
-# line: -1
-msgid "cancel_transition_title"
-msgstr "Ακύρωση"
-
-#. Default: "Close"
-# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
-# line: -1
-msgid "close_transition_title"
-msgstr "Κλείσιμο"
-
-#. Default: "Deactivate"
-# File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
-# line: -1
-msgid "deactivate_transition_title"
-msgstr "Απενεργοποίηση"
-
-#. Default: "Dispatch order"
-# File: ../profiles/default/workflows/bika_order_workflow/definition.xml,
-# line: -1
-msgid "dispatch_transition_title"
-msgstr ""
-
-#. Default: "Dispose"
-# File:
-# ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
-# line: -1
-msgid "dispose_transition_title"
-msgstr ""
-
-#. Default: "Duplicate"
-msgid "duplicate_transition_title"
-msgstr ""
-
-#. Default: "Expire"
-# File:
-# ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
-# line: -1
-msgid "expire_transition_title"
-msgstr ""
-
-#. Default: "Import"
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-msgid "import_transition_title"
-msgstr "Εισαγωγή"
-
-#. Default: "Open"
-# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
-# line: -1
-msgid "open_transition_title"
-msgstr "Άνοιγμα"
-
-#. Default: "Prepublish"
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-msgid "prepublish_transition_title"
-msgstr ""
-
-#. Default: "Preserve"
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
-# line: -1
-msgid "preserve_transition_title"
-msgstr ""
-
-#. Default: "Publish"
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-msgid "publish_transition_title"
-msgstr ""
-
-#. Default: "Reassign"
-msgid "reassign_transition_title"
-msgstr ""
-
-#. Default: "Receive sample"
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
-# line: -1
-msgid "receive_transition_title"
-msgstr "Παραλαβή δείγματος"
-
-#. Default: "Reinstate"
-# File:
-# ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
-# line: -1
-msgid "reinstate_transition_title"
-msgstr ""
-
-#. Default: "Reject"
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml,
-# line: -1
-msgid "reject_transition_title"
-msgstr ""
-
-#. Default: "Republish"
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-msgid "republish_transition_title"
-msgstr ""
-
-#. Default: "Retract"
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-msgid "retract_transition_title"
-msgstr "Ανάκληση"
-
-#. Default: "Retract worksheet"
-# File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml,
-# line: -1
-msgid "retract_worksheet_transition_title"
-msgstr "Ανάκληση φύλλου εργασίας"
-
-#. Default: "Sample"
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File: ../profiles/default/workflows/bika_sample_worflow/definition.xml,
-# line: -1
-msgid "sample_transition_title"
-msgstr "Δείγμα"
-
-#. Default: "Save analyses"
-msgid "save_analyses_button_transition_title"
-msgstr "Αποθήκευση αναλύσεων"
-
-#. Default: "Save partitions"
-msgid "save_partitions_button_transition_title"
-msgstr ""
-
-#. Default: "Save selection"
-msgid "save_selection_button_transition_title"
-msgstr "Αποθήκευση επιλογής"
-
-#. Default: "Submit ARImport"
-# File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
-# line: -1
-msgid "submit_arimport_transition_title"
-msgstr ""
-
-#. Default: "Submit for verification"
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-msgid "submit_transition_title"
-msgstr ""
-
-#. Default: "Remove"
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml,
-# line: -1
-msgid "unassign_transition_title"
-msgstr "Αφαίρεση"
-
-#. Default: "Verify"
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-msgid "verify_transition_title"
-msgstr ""
+"Domain: plone\n"
+"Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
+"Language: el\n"
 
 # File: ../profiles/default/types/ARTemplate.xml, line: -1
 msgid "AR Template"
@@ -639,6 +341,11 @@ msgstr ""
 msgid "Instruments"
 msgstr ""
 
+# 
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line: -1
+msgid "Invalid"
+msgstr ""
+
 # File: ../profiles/default/types/Invoice.xml, line: -1
 msgid "Invoice"
 msgstr ""
@@ -795,6 +502,11 @@ msgstr ""
 
 # File: ../profiles/default/types/ReportFolder.xml, line: -1
 msgid "Quality Control"
+msgstr ""
+
+# 
+# File: ../profiles/default/types/QueryFolder.xml, line: -1
+msgid "Queries"
 msgstr ""
 
 # File: ../profiles/default/actions.xml, line: -1
@@ -1080,3 +792,315 @@ msgstr "Πρότυπα Φύλλου Εργασίας"
 # File: ../profiles/default/types/WorksheetFolder.xml, line: -1
 msgid "Worksheets"
 msgstr "Φύλλα Εργασίας"
+
+# File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
+# line: -1
+#. Default: "Activate"
+msgid "activate_transition_title"
+msgstr "Ενεργοποίηση"
+
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+# File:
+# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
+# line: -1
+# File:
+# ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml,
+# line: -1
+#. Default: "Assign"
+msgid "assign_transition_title"
+msgstr ""
+
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+#. Default: "Add attachment"
+msgid "attach_transition_title"
+msgstr "Προσθήκη συνημμένου"
+
+# File:
+# ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
+# line: -1
+#. Default: "Cancel"
+msgid "cancel_transition_title"
+msgstr "Ακύρωση"
+
+# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
+# line: -1
+#. Default: "Close"
+msgid "close_transition_title"
+msgstr "Κλείσιμο"
+
+# File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
+# line: -1
+#. Default: "Deactivate"
+msgid "deactivate_transition_title"
+msgstr "Απενεργοποίηση"
+
+# File: ../profiles/default/workflows/bika_order_workflow/definition.xml,
+# line: -1
+#. Default: "Dispatch order"
+msgid "dispatch_transition_title"
+msgstr ""
+
+# File:
+# ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
+# line: -1
+#. Default: "Dispose"
+msgid "dispose_transition_title"
+msgstr ""
+
+#. Default: "Duplicate"
+msgid "duplicate_transition_title"
+msgstr ""
+
+# File:
+# ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
+# line: -1
+#. Default: "Expire"
+msgid "expire_transition_title"
+msgstr ""
+
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+#. Default: "Import"
+msgid "import_transition_title"
+msgstr "Εισαγωγή"
+
+# 
+# This is for the "retract_ar" transition, to invalidate a published AR.
+#. Default: "Invalidate"
+msgid "invalidate_transition_title"
+msgstr "Invalidate"
+
+msgid "label_schema_Accounting"
+msgstr "Λογιστική"
+
+msgid "label_schema_Address"
+msgstr "Διεύθυνση"
+
+msgid "label_schema_Analyses"
+msgstr "Αναλύσεις"
+
+msgid "label_schema_Bank details"
+msgstr "Λεπτομέρειες τράπεζας"
+
+msgid "label_schema_Calculation"
+msgstr "Υπολογισμός"
+
+msgid "label_schema_Container and Preservation"
+msgstr ""
+
+msgid "label_schema_Dates"
+msgstr "Ημερομηνίες"
+
+msgid "label_schema_Description"
+msgstr "Περιγραφή"
+
+msgid "label_schema_Email Telephone Fax"
+msgstr "Email Τηλέφωνο Φαξ"
+
+msgid "label_schema_ID Server"
+msgstr ""
+
+msgid "label_schema_Labels"
+msgstr "Ετικέτες"
+
+msgid "label_schema_Layout"
+msgstr "Διάταξη"
+
+msgid "label_schema_Location"
+msgstr "Τοποθεσία"
+
+msgid "label_schema_Method"
+msgstr "Μέθοδος"
+
+msgid "label_schema_Preferences"
+msgstr "Προτιμήσεις"
+
+msgid "label_schema_Publication preference"
+msgstr ""
+
+msgid "label_schema_Reference Values"
+msgstr ""
+
+msgid "label_schema_Result Options"
+msgstr "Επιλογές Αποτελέσματος"
+
+msgid "label_schema_Results Reports"
+msgstr "Αναφορές Αποτελεσμάτων"
+
+msgid "label_schema_Sample Partitions"
+msgstr ""
+
+msgid "label_schema_Security"
+msgstr "Ασφάλεια"
+
+msgid "label_schema_Uncertainties"
+msgstr "Αβεβαιότητες"
+
+# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
+# line: -1
+#. Default: "Open"
+msgid "open_transition_title"
+msgstr "Άνοιγμα"
+
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+#. Default: "Prepublish"
+msgid "prepublish_transition_title"
+msgstr ""
+
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
+# line: -1
+#. Default: "Preserve"
+msgid "preserve_transition_title"
+msgstr ""
+
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+#. Default: "Publish"
+msgid "publish_transition_title"
+msgstr ""
+
+#. Default: "Reassign"
+msgid "reassign_transition_title"
+msgstr ""
+
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
+# line: -1
+#. Default: "Receive sample"
+msgid "receive_transition_title"
+msgstr "Παραλαβή δείγματος"
+
+# File:
+# ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
+# line: -1
+#. Default: "Reinstate"
+msgid "reinstate_transition_title"
+msgstr ""
+
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+# File:
+# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml,
+# line: -1
+#. Default: "Reject"
+msgid "reject_transition_title"
+msgstr ""
+
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+#. Default: "Republish"
+msgid "republish_transition_title"
+msgstr ""
+
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+#. Default: "Retract"
+msgid "retract_transition_title"
+msgstr "Ανάκληση"
+
+# File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml,
+# line: -1
+#. Default: "Retract worksheet"
+msgid "retract_worksheet_transition_title"
+msgstr "Ανάκληση φύλλου εργασίας"
+
+# 
+# This is for the "revert" transition, which is meant to look like a
+# "retract".
+#. Default: "Retract"
+msgid "revert_transition_title"
+msgstr "Retract"
+
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File: ../profiles/default/workflows/bika_sample_worflow/definition.xml,
+# line: -1
+#. Default: "Sample"
+msgid "sample_transition_title"
+msgstr "Δείγμα"
+
+#. Default: "Save analyses"
+msgid "save_analyses_button_transition_title"
+msgstr "Αποθήκευση αναλύσεων"
+
+#. Default: "Save partitions"
+msgid "save_partitions_button_transition_title"
+msgstr ""
+
+#. Default: "Save selection"
+msgid "save_selection_button_transition_title"
+msgstr "Αποθήκευση επιλογής"
+
+# File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
+# line: -1
+#. Default: "Submit ARImport"
+msgid "submit_arimport_transition_title"
+msgstr ""
+
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+#. Default: "Submit for verification"
+msgid "submit_transition_title"
+msgstr ""
+
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+# File:
+# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
+# line: -1
+# File:
+# ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml,
+# line: -1
+#. Default: "Remove"
+msgid "unassign_transition_title"
+msgstr "Αφαίρεση"
+
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+#. Default: "Verify"
+msgid "verify_transition_title"
+msgstr ""
+

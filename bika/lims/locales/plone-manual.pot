@@ -199,6 +199,17 @@ msgstr "Republish"
 msgid "retract_transition_title"
 msgstr "Retract"
 
+#. Default: "Retract"
+# This is for the "revert" transition, which is meant to look like a
+# "retract".
+msgid "revert_transition_title"
+msgstr "Retract"
+
+#. Default: "Invalidate"
+# This is for the "retract_ar" transition, to invalidate a published AR.
+msgid "invalidate_transition_title"
+msgstr "Invalidate"
+
 #. Default: "Retract worksheet"
 #: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
 msgid "retract_worksheet_transition_title"
