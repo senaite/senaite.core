@@ -597,7 +597,7 @@ Workflow Actions
 ********************************</tal:comment>
 		<td class="workflow_actions">
 			<span class="workflow_action_buttons"
-				tal:define="actions view/get_workflow_actions">
+				tal:define="actions view/bika_listing/get_workflow_actions">
 				<span tal:omit-tag="python:True" tal:repeat="action actions"
 					tal:condition="view/bika_listing/show_workflow_action_buttons">
 					<input

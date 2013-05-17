@@ -665,6 +665,59 @@ class BikaListingView(BrowserView):
         table = BikaListingTable(bika_listing = self, table_only = table_only)
         return table.render(self)
 
+    def get_workflow_actions(self):
+        """ Compile a list of possible workflow transitions for items
+            in this Table.
+        """
+
+        # cbb return empty list if we are unable to select items
+        if not self.show_select_column:
+            return []
+
+        workflow = getToolByName(self.context, 'portal_workflow')
+
+
+        # check POST for a specified review_state selection
+        selected_state = self.request.get("%s_review_state"%self.form_id,
+                                          'default')
+        # get review_state id=selected_state
+        states = [r for r in self.review_states
+                  if r['id'] == selected_state]
+        review_state = states and states[0] \
+            or self.review_states[0]
+
+        # get all transitions for all items.
+        transitions = {}
+        actions = []
+        for obj in [i.get('obj', '') for i in self.items]:
+            obj = hasattr(obj, 'getObject') and obj.getObject() or obj
+            for t in workflow.getTransitionsFor(obj):
+                transitions[t['id']] = t
+
+        # the list is restricted to and ordered by these transitions.
+        if 'transitions' in review_state:
+            for transition_dict in review_state['transitions']:
+                if transition_dict['id'] in transitions:
+                    actions.append(transitions[transition_dict['id']])
+        else:
+            actions = transitions.values()
+
+        # and these are removed
+        if 'hide_transitions' in review_state:
+            actions = [a for a in actions
+                       if a['id'] not in review_state['hide_transitions']]
+
+        # if there is a review_state['some_state']['custom_actions'] attribute
+        # on the BikaListingView, add these actions to the list.
+        if 'custom_actions' in review_state:
+            for action in review_state['custom_actions']:
+                actions.append(action)
+
+        for a,action in enumerate(actions):
+            actions[a]['title'] = \
+                self.translate(PMF(actions[a]['id'] + "_transition_title"))
+        return actions
+
 class BikaListingTable(tableview.Table):
 
     render = ViewPageTemplateFile("templates/bika_listing_table.pt")
@@ -675,6 +728,7 @@ class BikaListingTable(tableview.Table):
         self.bika_listing = bika_listing
         self.pagesize = bika_listing.pagesize
         folderitems = bika_listing.folderitems()
+        bika_listing.items = folderitems
 
         if hasattr(self.bika_listing, 'manual_sort_on') \
            and self.bika_listing.manual_sort_on:
@@ -710,56 +764,3 @@ class BikaListingTable(tableview.Table):
         while True:
             i += 1
             yield i
-
-    def get_workflow_actions(self):
-        """ Compile a list of possible workflow transitions for items
-            in this Table.
-        """
-
-        # return empty list if selecting checkboxes are disabled
-        if not self.show_select_column:
-            return []
-
-        workflow = getToolByName(self.context, 'portal_workflow')
-
-
-        # check POST for a specified review_state selection
-        selected_state = self.request.get("%s_review_state"%self.form_id,
-                                          'default')
-        # get review_state id=selected_state
-        states = [r for r in self.bika_listing.review_states
-                  if r['id'] == selected_state]
-        review_state = states and states[0] \
-            or self.bika_listing.review_states[0]
-
-        # get all transitions for all items.
-        transitions = {}
-        actions = []
-        for obj in [i.get('obj', '') for i in self.items]:
-            obj = hasattr(obj, 'getObject') and obj.getObject() or obj
-            for t in workflow.getTransitionsFor(obj):
-                transitions[t['id']] = t
-
-        # the list is restricted to and ordered by these transitions.
-        if 'transitions' in review_state:
-            for transition_dict in review_state['transitions']:
-                if transition_dict['id'] in transitions:
-                    actions.append(transitions[transition_dict['id']])
-        else:
-            actions = transitions.values()
-
-        # and these are removed
-        if 'hide_transitions' in review_state:
-            actions = [a for a in actions
-                       if a['id'] not in review_state['hide_transitions']]
-
-        # if there is a review_state['some_state']['custom_actions'] attribute
-        # on the BikaListingView, append these actions to the list.
-        if 'custom_actions' in review_state:
-            for action in review_state['custom_actions']:
-                actions.append(action)
-
-        for a,action in enumerate(actions):
-            actions[a]['title'] = \
-                self.bika_listing.translate(PMF(actions[a]['id'] + "_transition_title"))
-        return actions
