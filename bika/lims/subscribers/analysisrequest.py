@@ -90,6 +90,15 @@ def AfterTransitionEventHandler(instance, event):
             for analysis in analyses:
                 doActionFor(analysis.getObject(), 'retract')
 
+    elif action_id == "revert":
+        instance.reindexObject(idxs = ["review_state", ])
+        if not "retract all analyses" in instance.REQUEST['workflow_skiplist']:
+            # revert all analyses in this AR.
+            # (NB: don't revert if it's verified)
+            analyses = instance.getAnalyses(review_state = ('attachment_due', 'to_be_verified',))
+            for analysis in analyses:
+                doActionFor(analysis.getObject(), 'retract')
+
     elif action_id == "verify":
         instance.reindexObject(idxs = ["review_state", ])
         if not "verify all analyses" in instance.REQUEST['workflow_skiplist']:

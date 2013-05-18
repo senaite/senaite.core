@@ -292,6 +292,16 @@ def AfterTransitionEventHandler(instance, event):
         if can_attach:
             wf.doActionFor(instance, 'attach')
 
+    elif action_id == "revert":
+        # Escalate action to the parent AR
+        if not skip(ar, action_id, peek=True):
+            if wf.getInfoFor(ar, 'review_state') == 'sample_received':
+                skip(ar, action_id)
+            else:
+                if not "retract all analyses" in instance.REQUEST['workflow_skiplist']:
+                    instance.REQUEST["workflow_skiplist"].append("retract all analyses")
+                wf.doActionFor(ar, 'revert')
+
     elif action_id == "retract":
         # Rename the analysis to make way for it's successor.
         # Support multiple retractions by renaming to *-0, *-1, etc
