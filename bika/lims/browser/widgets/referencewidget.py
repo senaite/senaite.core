@@ -3,6 +3,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.permissions import *
 from bika.lims.utils import to_unicode as _u
+from bika.lims.utils import to_utf8 as _c
 from operator import itemgetter
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import StringWidget
@@ -104,8 +105,7 @@ class ajaxReferenceWidgetSearch(BrowserView):
     """
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
-        searchTerm = 'searchTerm' in self.request and self.request[
-            'searchTerm'].lower() or ''
+        searchTerm = _c(self.request.get('searchTerm', '')).lower()
         page = self.request['page']
         nr_rows = self.request['rows']
         sord = self.request['sord']
@@ -117,10 +117,11 @@ class ajaxReferenceWidgetSearch(BrowserView):
         rows = []
 
         # lookup objects from ZODB
-        catalog = getToolByName(self.context, self.request['catalog_name'])
-        base_query = json.loads(_u(self.request['base_query']))
-        search_query = json.loads(_u(self.request.get('search_query', "{}")))
-        discard_empty = json.loads(_u(self.request.get('discard_empty', "[]")))
+        catalog_name = _c(self.request.get('catalog_name', 'portal_catalog'))
+        catalog = getToolByName(self.context, catalog_name)
+        base_query = json.loads(_c(self.request['base_query']))
+        search_query = json.loads(_c(self.request.get('search_query', "{}")))
+        discard_empty = json.loads(_c(self.request.get('discard_empty', "[]")))
 
         # first with all queries
         contentFilter = dict((k,v) for k,v in base_query.items())
