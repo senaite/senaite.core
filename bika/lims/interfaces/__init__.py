@@ -164,6 +164,8 @@ class IMethods(Interface):
     ""
 class ILabProducts(Interface):
     ""
+class ISamplePoint(Interface):
+    ""
 class ISamplePoints(Interface):
     ""
 class ISampleType(Interface):
