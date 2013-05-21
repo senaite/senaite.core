@@ -32,8 +32,8 @@ function check_service(service_uid){
 		'name="Partition.'+service_uid+':records" '+
 		'field="Partition" uid="'+service_uid+'" '+
 		'style="font-size: 100%">';
-	$.each($('#partitions td.part_id'), function(i,v){
-		partid = $($(v).children()[1]).text();
+	$.each(($('#Partitions_table td input').filter("[id^='Partitions-part_id']")), function(i,v) {
+		partid = $($(v)).val();
 		select = select + '<option value="'+partid+'">'+partid+
 			'</option>';
 	});
