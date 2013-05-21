@@ -176,13 +176,13 @@ class ReferenceSample(BaseFolder):
             # definition is selected (./js/referencesample.js)
             if not o:
                 return ''
-            title = o.Title()
+            title = _u(o.Title())
             if o.getBlank():
                 title += " %s" % self.translate(_('(Blank)'))
             if o.getHazardous():
                 title += " %s" % self.translate(_('(Hazardous)'))
 
-            return _u(title)
+            return title
 
         bsc = getToolByName(self, 'bika_setup_catalog')
         defs = [o.getObject() for o in
