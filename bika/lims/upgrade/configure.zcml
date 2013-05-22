@@ -165,4 +165,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Add jquery-timepicker.js to jsregistry"
+        description=""
+        source="1124"
+        destination="1125"
+        handler="bika.lims.upgrade.to1125.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>

@@ -40,7 +40,8 @@
                            id fieldName;
                            value python: value and widget.ulocalized_time(value, long_format=0, context=context) or '';
                            size widget/size|nothing;
-                           DatePicker string:1;
+                           datepicker python:1 if not widget.show_time else 0;
+                           datetimepicker python:1 if widget.show_time else 0;
                            maxlength widget/maxlength|nothing;"/>
   </metal:use>
 </metal:edit_macro>

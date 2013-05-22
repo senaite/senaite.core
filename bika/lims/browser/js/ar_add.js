@@ -156,7 +156,7 @@ function ar_referencewidget_lookups(elements){
 				unsetAnalysisProfile(column, $(this).val());
 				calculate_parts(column);
 			}
-			
+
 			// Triggers 'selected' event (as reference widget)
 			$(this).trigger("selected", ui.item['UID']);
 
@@ -875,35 +875,6 @@ $(document).ready(function(){
 
 	ar_rename_elements();
 	ar_referencewidget_lookups();
-
-	// Sampling Date field is readonly to prevent invalid data entry, so
-	// clicking SamplingDate field clears existing values.
-	// clear date widget values if the page is reloaded.
-	e = $('input[id$="_SamplingDate"]');
-	if(e.length > 0){
-		if($($(e).parents('form').children('[name=came_from]')).val() == 'add'){
-			$(e)
-			.datepicker({
-				showOn:'focus',
-				showAnim:'',
-				changeMonth:true,
-				changeYear:true,
-				dateFormat: dateFormat,
-				yearRange: limitString
-			})
-			.click(function(){$(this).attr('value', '');})
-		} else {
-			$(e)
-			.datepicker({
-				showOn:'focus',
-				showAnim:'',
-				changeMonth:true,
-				changeYear:true,
-				dateFormat: dateFormat,
-				yearRange: limitString
-			})
-		}
-	}
 
 	$("input[id*=_Template]").live('change', function(){
 		column = this.id.split('_')[1];

@@ -708,7 +708,7 @@ class AnalysisRequestViewView(BrowserView):
              'title': _('Sampling Date'),
              'allow_edit': allow_sample_edit,
              'value': self.ulocalized_time(
-                sample.getSamplingDate()),
+                sample.getSamplingDate(), long_format=1),
              'formatted_value': self.ulocalized_time(
                 self.context.getSamplingDate()),
              'condition':True,
@@ -2571,7 +2571,7 @@ class AnalysisRequestsView(BikaListingView):
                 items[x]['BatchID'] = ''
 
             samplingdate = obj.getSample().getSamplingDate()
-            items[x]['SamplingDate'] = self.ulocalized_time(samplingdate)
+            items[x]['SamplingDate'] = self.ulocalized_time(samplingdate, long_format=1)
             items[x]['getDateReceived'] = self.ulocalized_time(obj.getDateReceived())
             items[x]['getDatePublished'] = self.ulocalized_time(obj.getDatePublished())
 

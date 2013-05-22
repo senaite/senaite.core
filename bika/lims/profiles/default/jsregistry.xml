@@ -199,6 +199,17 @@
               inline="False"
               insert-after="*"/>
 
+  <javascript authenticated="False"
+              id="++resource++bika.lims.js/jquery-timepicker.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
   <javascript authenticated="True"
               id="++resource++bika.lims.js/attachments.js"
               cacheable="True"
