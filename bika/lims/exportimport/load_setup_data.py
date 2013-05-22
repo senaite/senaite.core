@@ -8,7 +8,7 @@ from bika.lims import PMF
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.idserver import renameAfterCreation
-from bika.lims.utils import changeWorkflowState
+from bika.lims.utils import changeWorkflowState, tmpID
 from bika.lims.utils import sortable_title
 from bika.lims.utils import to_utf8 as _c
 from cStringIO import StringIO
@@ -159,6 +159,8 @@ class LoadSetupData(BrowserView):
             self.load_sample_points(sheets['Sample Points'])
         if 'Sample Point Sample Types' in sheets:
             self.link_samplepoint_sampletype(sheets['Sample Point Sample Types'])
+        if 'Sample Conditions' in sheets:
+            self.load_sample_conditions(sheets['Sample Conditions'])
         if 'Analysis Categories' in sheets:
             self.load_analysis_categories(sheets['Analysis Categories'])
         if 'Methods' in sheets:
@@ -351,7 +353,7 @@ class LoadSetupData(BrowserView):
         rows = self.get_rows(sheet, 3)
         for row in rows:
             if row['title']:
-                _id = folder.invokeFactory('ContainerType', id = 'tmp')
+                _id = folder.invokeFactory('ContainerType', id=tmpID())
                 obj = folder[_id]
                 obj.edit(title = row['title'],
                          description = row.get('description', ''))
@@ -366,7 +368,7 @@ class LoadSetupData(BrowserView):
         rows = self.get_rows(sheet, 3)
         for row in rows:
             if row['title']:
-                _id = folder.invokeFactory('BatchLabel', id = 'tmp')
+                _id = folder.invokeFactory('BatchLabel', id=tmpID())
                 obj = folder[_id]
                 obj.edit(title = row['title'])
                 obj.unmarkCreationFlag()
@@ -380,7 +382,7 @@ class LoadSetupData(BrowserView):
         rows = self.get_rows(sheet, 3)
         for row in rows:
             if row['title']:
-                _id = folder.invokeFactory('Preservation', id = 'tmp')
+                _id = folder.invokeFactory('Preservation', id=tmpID())
                 obj = folder[_id]
                 RP = {'days': int(row['RetentionPeriod_days'] and row['RetentionPeriod_days'] or 0),
                       'hours': int(row['RetentionPeriod_hours'] and row['RetentionPeriod_hours'] or 0),
@@ -401,7 +403,7 @@ class LoadSetupData(BrowserView):
         rows = self.get_rows(sheet, 3)
         for row in rows:
             if row['title']:
-                _id = folder.invokeFactory('Container', id = 'tmp')
+                _id = folder.invokeFactory('Container', id=tmpID())
                 obj = folder[_id]
                 P = row['Preservation_title']
                 obj.edit(title = row['title'],
@@ -476,7 +478,7 @@ class LoadSetupData(BrowserView):
             if not row['Firstname']:
                 continue
 
-            _id = folder.invokeFactory('LabContact', id='tmp')
+            _id = folder.invokeFactory('LabContact', id=tmpID())
             obj = folder[_id]
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
@@ -536,7 +538,7 @@ class LoadSetupData(BrowserView):
         rows = self.get_rows(sheet, 3)
         for row in rows:
             if row['title']:
-                _id = folder.invokeFactory('Department', id = 'tmp')
+                _id = folder.invokeFactory('Department', id=tmpID())
                 obj = folder[_id]
                 obj.edit(title = row['title'],
                          description = row.get('description', ''))
@@ -566,7 +568,7 @@ class LoadSetupData(BrowserView):
                 for key in ['Address', 'City', 'State', 'Zip', 'Country']:
                     addresses[add_type][key] = row["%s_%s" % (add_type, key)]
 
-            _id = folder.invokeFactory('Client', id = 'tmp')
+            _id = folder.invokeFactory('Client', id=tmpID())
             obj = folder[_id]
             if not row['Name']:
                 message = "Client %s has no Name"
@@ -602,7 +604,7 @@ class LoadSetupData(BrowserView):
             if len(client) == 0:
                 raise IndexError("Client invalid: '%s'" % row['Client_title'])
             client = client[0].getObject()
-            _id = client.invokeFactory('Contact', id = 'tmp')
+            _id = client.invokeFactory('Contact', id=tmpID())
             contact = client[_id]
             fullname = "%(Firstname)s %(Surname)s" % row
             addresses = {}
@@ -670,7 +672,7 @@ class LoadSetupData(BrowserView):
                 or not row['Brand']):
                 continue
 
-            _id = folder.invokeFactory('Instrument', id='tmp')
+            _id = folder.invokeFactory('Instrument', id=tmpID())
             obj = folder[_id]
 
             obj.edit(title=row['title'],
@@ -712,7 +714,7 @@ class LoadSetupData(BrowserView):
             if row['Latitude']: logger.log("Ignored SamplePoint Latitude", 'error')
             if row['Longitude']: logger.log("Ignored SamplePoint Longitude", 'error')
 
-            _id = folder.invokeFactory('SamplePoint', id = 'tmp')
+            _id = folder.invokeFactory('SamplePoint', id=tmpID())
             obj = folder[_id]
             obj.edit(title = row['title'],
                      description = row.get('description', ''),
@@ -731,7 +733,7 @@ class LoadSetupData(BrowserView):
         rows = self.get_rows(sheet, 3)
         for row in rows:
             if row['title']:
-                _id = folder.invokeFactory('SampleType', id = 'tmp')
+                _id = folder.invokeFactory('SampleType', id=tmpID())
                 obj = folder[_id]            
                 obj.edit(title = row['title'],
                          description = row.get('description', ''),
@@ -771,7 +773,7 @@ class LoadSetupData(BrowserView):
         rows = self.get_rows(sheet, 3)
         for row in rows:
             if row['title']:
-                _id = folder.invokeFactory('SamplingDeviation', id = 'tmp')
+                _id = folder.invokeFactory('SamplingDeviation', id=tmpID())
                 obj = folder[_id]
                 self.samplingdeviations[row['title']] = obj.UID()
                 obj.edit(title = row['title'],
@@ -786,7 +788,7 @@ class LoadSetupData(BrowserView):
         rows = self.get_rows(sheet, 3)
         for row in rows:
             if row['title']:
-                _id = folder.invokeFactory('SampleMatrix', id = 'tmp')
+                _id = folder.invokeFactory('SampleMatrix', id=tmpID())
                 obj = folder[_id]
                 obj.edit(title = row['title'],
                          description = row.get('description', ''))
@@ -794,6 +796,21 @@ class LoadSetupData(BrowserView):
                 renameAfterCreation(obj)
                 self.samplematrices[row['title']] = obj
 
+    def load_sample_conditions(self, sheet):
+        logger.info("Loading Sample conditions...")
+        folder = self.context.bika_setup.bika_sampleconditions
+        self.sampleconditions = {}
+        rows = self.get_rows(sheet, 3)
+        for row in rows:
+            if row['Title']:
+                _id = folder.invokeFactory('SampleCondition', id=tmpID())
+                obj = folder[_id]
+                obj.edit(title = row['Title'],
+                         description = row.get('Description', ''))
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
+                self.sampleconditions[row['Title']] = obj
+    
     def load_analysis_categories(self, sheet):
         logger.info("Loading Analysis categories...")
         folder = self.context.bika_setup.bika_analysiscategories
@@ -801,7 +818,7 @@ class LoadSetupData(BrowserView):
         rows = self.get_rows(sheet, 3)
         for row in rows:
             if row['title']:
-                _id = folder.invokeFactory('AnalysisCategory', id = 'tmp')
+                _id = folder.invokeFactory('AnalysisCategory', id=tmpID())
                 obj = folder[_id]
                 obj.edit(title = row['title'],
                          description = row.get('description', ''))
@@ -818,7 +835,7 @@ class LoadSetupData(BrowserView):
         rows = self.get_rows(sheet, 3)
         for row in rows:
             if row['title']:
-                _id = folder.invokeFactory('Method', id = 'tmp')
+                _id = folder.invokeFactory('Method', id=tmpID())
                 obj = folder[_id]
 
                 obj.edit(title = row['title'],
@@ -863,7 +880,7 @@ class LoadSetupData(BrowserView):
             if not row['title']:
                 continue
 
-            _id = folder.invokeFactory('AnalysisService', id = 'tmp')
+            _id = folder.invokeFactory('AnalysisService', id=tmpID())
             obj = folder[_id]
             MTA = {'days': int(row['MaxTimeAllowed_days'] and row['MaxTimeAllowed_days'] or 0),
                    'hours': int(row['MaxTimeAllowed_days'] and row['MaxTimeAllowed_days'] or 0),
@@ -953,7 +970,7 @@ class LoadSetupData(BrowserView):
             interim_keys = [k['keyword'] for k in calc_interims]
             dep_keywords = [k for k in keywords if k not in interim_keys]
 
-            _id = folder.invokeFactory('Calculation', id = 'tmp')
+            _id = folder.invokeFactory('Calculation', id=tmpID())
             obj = folder[_id]
             obj.edit(title = calc_title,
                      description = row.get('description', ''),
@@ -989,7 +1006,7 @@ class LoadSetupData(BrowserView):
         rows = self.get_rows(sheet, 3)
         for row in rows:
             if row['title']:
-                _id = folder.invokeFactory('AnalysisProfile', id = 'tmp')
+                _id = folder.invokeFactory('AnalysisProfile', id=tmpID())
                 obj = folder[_id]
                 obj.edit(title = row['title'],
                          description = row.get('description', ''),
@@ -1056,7 +1073,7 @@ class LoadSetupData(BrowserView):
             else:
                 samplepoints = None
 
-            _id = folder.invokeFactory('ARTemplate', id = 'tmp')
+            _id = folder.invokeFactory('ARTemplate', id=tmpID())
             obj = folder[_id]
             obj.edit(title = row['title'],
                      description = row.get('description', ''),
@@ -1093,7 +1110,7 @@ class LoadSetupData(BrowserView):
         rows = self.get_rows(sheet, 3)
         for row in rows:
             if row['title']:
-                _id = folder.invokeFactory('ReferenceDefinition', id = 'tmp')
+                _id = folder.invokeFactory('ReferenceDefinition', id=tmpID())
                 obj = folder[_id]
                 obj.edit(title = row['title'],
                          description = row.get('description', ''),
@@ -1129,7 +1146,7 @@ class LoadSetupData(BrowserView):
                 folder = self.clients[client]
             for sampletype_title, resultsrange in client_specs.items():
                 sampletype = self.sampletypes[sampletype_title]
-                _id = folder.invokeFactory('AnalysisSpec', id = 'tmp')
+                _id = folder.invokeFactory('AnalysisSpec', id=tmpID())
                 obj = folder[_id]
                 obj.edit(
                          title = sampletype.Title(),
@@ -1145,7 +1162,7 @@ class LoadSetupData(BrowserView):
         rows = self.get_rows(sheet, 3)
         for row in rows:
             if row['title']:
-                _id = folder.invokeFactory('Manufacturer', id = 'tmp')
+                _id = folder.invokeFactory('Manufacturer', id=tmpID())
                 obj = folder[_id]
                 obj.edit(title = row['title'],
                          description = row.get('description', ''))
@@ -1159,7 +1176,7 @@ class LoadSetupData(BrowserView):
         self.ref_suppliers = {}
         rows = self.get_rows(sheet, 3)
         for row in rows:
-            _id = folder.invokeFactory('Supplier', id = 'tmp')
+            _id = folder.invokeFactory('Supplier', id=tmpID())
             obj = folder[_id]
             obj.edit(AccountNumber = row['AccountNumber'],
                      Name = row['Name'],
@@ -1180,7 +1197,7 @@ class LoadSetupData(BrowserView):
                               Title = row['ReferenceSupplier_Name'])
             if (len(folder) > 0):
                 folder = folder[0].getObject()
-                _id = folder.invokeFactory('SupplierContact', id = 'tmp')
+                _id = folder.invokeFactory('SupplierContact', id=tmpID())
                 obj = folder[_id]
                 obj.edit(
                     Firstname = row['Firstname'],
@@ -1297,7 +1314,7 @@ class LoadSetupData(BrowserView):
         rows = self.get_rows(sheet, 3)
         for row in rows:
             if row['title']:
-                _id = folder.invokeFactory('AttachmentType', id = 'tmp')
+                _id = folder.invokeFactory('AttachmentType', id=tmpID())
                 obj = folder[_id]
                 obj.edit(title = row['title'],
                          description = row.get('description', ''))
@@ -1310,7 +1327,7 @@ class LoadSetupData(BrowserView):
         rows = self.get_rows(sheet, 3)
         for row in rows:
             if row['title']:
-                _id = folder.invokeFactory('LabProduct', id = 'tmp')
+                _id = folder.invokeFactory('LabProduct', id=tmpID())
                 obj = folder[_id]
                 obj.edit(title = row['title'],
                          description = row.get('description', ''),
@@ -1357,7 +1374,7 @@ class LoadSetupData(BrowserView):
         rows = self.get_rows(sheet, 3)
         for row in rows:
             if row['title']:
-                _id = folder.invokeFactory('WorksheetTemplate', id = 'tmp')
+                _id = folder.invokeFactory('WorksheetTemplate', id=tmpID())
                 obj = folder[_id]
                 obj.edit(title = row['title'],
                          description = row.get('description', ''),
@@ -1624,7 +1641,7 @@ class LoadSetupData(BrowserView):
         self.manufacturers = {}
         rows = self.get_rows(sheet, 3)
         for row in rows:
-            _id = folder.invokeFactory('Manufacturer', id = 'tmp')
+            _id = folder.invokeFactory('Manufacturer', id=tmpID())
             obj = folder[_id]
             if row['title']:
                 obj.edit(title = row['title'],
@@ -1639,7 +1656,7 @@ class LoadSetupData(BrowserView):
         self.suppliers = {}
         rows = self.get_rows(sheet, 3)
         for row in rows:
-            _id = folder.invokeFactory('Supplier', id = 'tmp')
+            _id = folder.invokeFactory('Supplier', id=tmpID())
             obj = folder[_id]
             if row['Name']:
                 obj.edit(AccountNumber = row.get('AccountNumber', ''),
@@ -1663,7 +1680,7 @@ class LoadSetupData(BrowserView):
                               Title=row['Supplier_Name'])
             if (len(folder) > 0):
                 folder = folder[0].getObject()
-                _id = folder.invokeFactory('SupplierContact', id='tmp')
+                _id = folder.invokeFactory('SupplierContact', id=tmpID())
                 obj = folder[_id]
                 obj.edit(
                     Firstname=row['Firstname'],
@@ -1682,7 +1699,7 @@ class LoadSetupData(BrowserView):
         rows = self.get_rows(sheet, 3)
         for row in rows:
             if row['title']:
-                _id = folder.invokeFactory('InstrumentType', id='tmp')
+                _id = folder.invokeFactory('InstrumentType', id=tmpID())
                 obj = folder[_id]
                 obj.edit(title=row['title'],
                          description=row.get('description', ''))
@@ -1700,7 +1717,7 @@ class LoadSetupData(BrowserView):
             folder = self.bsc(UID=self.instruments[row['instrument']])
             if len(folder) > 0:
                 folder = folder[0].getObject()
-                _id = folder.invokeFactory('InstrumentValidation', id='tmp')
+                _id = folder.invokeFactory('InstrumentValidation', id=tmpID())
                 obj = folder[_id]
                 obj.edit(
                          title=row['title'],
@@ -1724,7 +1741,7 @@ class LoadSetupData(BrowserView):
             folder = self.bsc(UID=self.instruments[row['instrument']])
             if len(folder) > 0:
                 folder = folder[0].getObject()
-                _id = folder.invokeFactory('InstrumentCalibration', id='tmp')
+                _id = folder.invokeFactory('InstrumentCalibration', id=tmpID())
                 obj = folder[_id]
                 obj.edit(
                          title=row['title'],
@@ -1748,7 +1765,7 @@ class LoadSetupData(BrowserView):
             folder = self.bsc(UID=self.instruments[row['instrument']])
             if len(folder) > 0:
                 folder = folder[0].getObject()
-                _id = folder.invokeFactory('InstrumentCertification', id='tmp')
+                _id = folder.invokeFactory('InstrumentCertification', id=tmpID())
                 obj = folder[_id]
                 obj.edit(
                          title=row['title'],
@@ -1772,7 +1789,7 @@ class LoadSetupData(BrowserView):
             if len(folder) > 0:
                 folder = folder[0].getObject()
                 _id = folder.invokeFactory('InstrumentMaintenanceTask',
-                                           id='tmp')
+                                           id=tmpID())
                 obj = folder[_id]
                 obj.edit(
                          title=row['title'],
@@ -1801,7 +1818,7 @@ class LoadSetupData(BrowserView):
             if len(folder) > 0:
                 folder = folder[0].getObject()
                 _id = folder.invokeFactory('InstrumentScheduledTask',
-                                           id='tmp')
+                                           id=tmpID())
                 criteria = [{'fromenabled':row.get('date', None) is not None,
                              'fromdate':row.get('date', ''),
                              'repeatenabled':((row['numrepeats'] and
