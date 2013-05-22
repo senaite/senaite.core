@@ -1768,9 +1768,9 @@ class AnalysisRequestSelectSampleView(BikaListingView):
                 'column': self.request.get('column', None),
             })
             items[x]['DateReceived'] = obj.getDateReceived() and \
-                 self.ulocalized_time(obj.getDateReceived()) or ''
+                 self.ulocalized_time(obj.getDateReceived(), long_format=1) or ''
             items[x]['SamplingDate'] = obj.getSamplingDate() and \
-                 self.ulocalized_time(obj.getSamplingDate()) or ''
+                 self.ulocalized_time(obj.getSamplingDate(), long_format=1) or ''
         return items
 
     def FieldAnalyses(self, sample):

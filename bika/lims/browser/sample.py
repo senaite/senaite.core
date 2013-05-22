@@ -380,8 +380,8 @@ class SampleEdit(BrowserView):
             {'id': 'SamplingDate',
              'title': _('Sampling Date'),
              'allow_edit': self.allow_edit and allow_sample_edit,
-             'value': self.ulocalized_time(self.context.getSamplingDate()),
-             'formatted_value': self.ulocalized_time(self.context.getSamplingDate()),
+             'value': self.ulocalized_time(self.context.getSamplingDate(), long_format=1),
+             'formatted_value': self.ulocalized_time(self.context.getSamplingDate(), long_format=1),
              'condition':True,
              'class': 'datepicker',
              'type': 'text'},
@@ -838,7 +838,7 @@ class SamplesView(BikaListingView):
             items[x]['Created'] = self.ulocalized_time(obj.created())
 
             samplingdate = obj.getSamplingDate()
-            items[x]['getSamplingDate'] = self.ulocalized_time(samplingdate)
+            items[x]['getSamplingDate'] = self.ulocalized_time(samplingdate, long_format=1)
 
             after_icons = ''
             if obj.getSampleType().getHazardous():
