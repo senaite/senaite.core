@@ -11,8 +11,8 @@ class DateTimeWidget(TypesWidget):
         'ulocalized_time': ulocalized_time,
         'show_time': False,
         'macro': "bika_widgets/datetimewidget",
-        'helper_js': ("bika_widgets/datetimewidget.js"),
-        'helper_css': ("bika_widgets/datetimewidget.css"),
+        'helper_js': ("bika_widgets/datetimewidget.js",),
+        'helper_css': ("bika_widgets/datetimewidget.css",),
     })
 
     security = ClassSecurityInfo()

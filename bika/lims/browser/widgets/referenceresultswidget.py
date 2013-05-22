@@ -170,7 +170,7 @@ class ReferenceResultsWidget(TypesWidget):
     _properties.update({
         'macro': "bika_widgets/referenceresultswidget",
         'helper_js': ("bika_widgets/referenceresultswidget.js",),
-        'helper_css': ("bika_widgets/referenceresultswidget.css",),
+        'helper_css': ("bika_widgets/referenceresultswidget.css",)
     })
 
     security = ClassSecurityInfo()
