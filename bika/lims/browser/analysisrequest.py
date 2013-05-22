@@ -368,7 +368,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
             # publish entire AR.
             self.context.setDatePublished(DateTime())
-            transitioned = doPublish(self.context,
+            transitioned = self.doPublish(self.context,
                                    self.request,
                                    action,
                                    [self.context, ])()
@@ -480,6 +480,9 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         else:
             # default bika_listing.py/WorkflowAction for other transitions
             WorkflowAction.__call__(self)
+
+    def doPublish(self, context, request, action, analysis_requests):
+        return doPublish(context, request, action, analysis_requests)
 
     def cloneAR(self, ar):
         _id = ar.aq_parent.invokeFactory('AnalysisRequest', id=tmpID())
@@ -2169,10 +2172,10 @@ class AnalysisRequestsView(BikaListingView):
                              'index': 'getRequestID'},
             'getClientOrderNumber': {'title': _('Client Order'),
                                      'index': 'getClientOrderNumber',
-                                     'toggle': False},
+                                     'toggle': True},
             'Creator': {'title': PMF('Creator'),
                                      'index': 'Creator',
-                                     'toggle': False},
+                                     'toggle': True},
             'Created': {'title': PMF('Date Created'),
                         'index': 'created',
                         'toggle': False},
@@ -2183,10 +2186,10 @@ class AnalysisRequestsView(BikaListingView):
                        'toggle': True},
             'getClientReference': {'title': _('Client Ref'),
                                    'index': 'getClientReference',
-                                   'toggle': False},
+                                   'toggle': True},
             'getClientSampleID': {'title': _('Client SID'),
                                   'index': 'getClientSampleID',
-                                  'toggle': False},
+                                  'toggle': True},
             'ClientContact': {'title': _('Contact'),
                                  'toggle': False},
             'getSampleTypeTitle': {'title': _('Sample Type'),

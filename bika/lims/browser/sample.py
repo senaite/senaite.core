@@ -291,6 +291,7 @@ class SampleEdit(BrowserView):
              for ar in ars])
         sp = self.context.getSamplePoint()
         st = self.context.getSampleType()
+        sc = self.context.getSampleCondition()
         if workflow.getInfoFor(self.context, 'cancellation_state') == "cancelled":
             allow_sample_edit = False
         else:
@@ -308,7 +309,7 @@ class SampleEdit(BrowserView):
                     inactive_state = 'active')])
 
         sampleconditions = DisplayList(
-            [(sc.UID, sd.title) for sc \
+            [(sc.UID, sc.title) for sc \
              in bsc(portal_type = 'SampleCondition',
                     inactive_state = 'active')])
 
@@ -604,7 +605,7 @@ class SamplesView(BikaListingView):
                        'toggle': True,},
             'Creator': {'title': PMF('Creator'),
                         'index': 'Creator',
-                        'toggle': False},
+                        'toggle': True},
             'Created': {'title': PMF('Date Created'),
                         'index': 'created',
                         'toggle': False},
@@ -613,10 +614,10 @@ class SamplesView(BikaListingView):
                          'toggle': False},
             'getClientReference': {'title': _('Client Ref'),
                                    'index': 'getClientReference',
-                                   'toggle': False},
+                                   'toggle': True},
             'getClientSampleID': {'title': _('Client SID'),
                                   'index': 'getClientSampleID',
-                                  'toggle': False},
+                                  'toggle': True},
             'getSampleTypeTitle': {'title': _('Sample Type'),
                                    'index': 'getSampleTypeTitle'},
             'getSamplePointTitle': {'title': _('Sample Point'),

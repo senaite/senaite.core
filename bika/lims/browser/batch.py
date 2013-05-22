@@ -27,6 +27,7 @@ from zope.cachedescriptors.property import Lazy as lazy_property
 from zope.component import adapts
 from zope.i18n import translate
 from zope.interface import implements
+from Products.CMFPlone.utils import safe_unicode
 
 import App
 import Globals

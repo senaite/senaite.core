@@ -223,7 +223,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                     obj.setDatePublished(DateTime())
                     ARs_to_publish.append(obj)
 
-            transitioned = doPublish(self.context,
+            transitioned = self.doPublish(self.context,
                                    self.request,
                                    action,
                                    ARs_to_publish)()
@@ -244,6 +244,10 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
 
         else:
             AnalysisRequestWorkflowAction.__call__(self)
+
+    def doPublish(self, context, request, action, analysis_requests):
+        return doPublish(context, request, action, analysis_requests)
+
 
 class ClientBatchesView(BatchFolderContentsView):
     def __init__(self, context, request):
