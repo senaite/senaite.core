@@ -372,15 +372,19 @@ class bika_browserdata(BrowserView):
             ## Get partition setup records for this service
             separate = service.getSeparate()
             containers = service.getContainer()
-            if not isinstance(containers, (list, tuple)):
+            if containers and not isinstance(containers, (list, tuple)):
                 containers = [containers,]
+            else:
+                containers = []
             containers.sort(lambda a,b:cmp(
                 int(a.getJSCapacity() and a.getJSCapacity().split(" ")[0] or '0'),
                 int(b.getJSCapacity() and b.getJSCapacity().split(" ")[0] or '0')
             ))
             preservations = service.getPreservation()
-            if not isinstance(preservations, (list, tuple)):
+            if preservations and not isinstance(preservations, (list, tuple)):
                 preservations = [preservations,]
+            else:
+                preservations = []
             partsetup = service.getPartitionSetup()
 
             # Single values become lists here
