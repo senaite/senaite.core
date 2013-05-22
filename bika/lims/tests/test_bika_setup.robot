@@ -1129,8 +1129,6 @@ Create Suppliers
     Input Text  PostalAddress.address  ${Postal Address}
     Select From List  BillingAddress.selection  PostalAddress
 
-    #following variables not via arguments
-
     Click link  Bank details
     Input Text  AccountType  ${AccountType}
     Input Text  AccountName  ${AccountName}
@@ -1140,6 +1138,8 @@ Create Suppliers
 
     Click Button  Save
     Page should contain  Changes saved.
+
+    #following variables not via arguments
 
     Click link  Reference Samples
     Wait Until Page Contains Element  Remarks
