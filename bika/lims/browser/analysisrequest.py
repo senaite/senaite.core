@@ -368,7 +368,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
             # publish entire AR.
             self.context.setDatePublished(DateTime())
-            transitioned = doPublish(self.context,
+            transitioned = self.doPublish(self.context,
                                    self.request,
                                    action,
                                    [self.context, ])()
@@ -480,6 +480,9 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         else:
             # default bika_listing.py/WorkflowAction for other transitions
             WorkflowAction.__call__(self)
+
+    def doPublish(self, context, request, action, analysis_requests):
+        return doPublish(context, request, action, analysis_requests)
 
     def cloneAR(self, ar):
         _id = ar.aq_parent.invokeFactory('AnalysisRequest', id=tmpID())

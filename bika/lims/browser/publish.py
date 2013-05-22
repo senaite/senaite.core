@@ -4,6 +4,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.utils import sendmail, encode_header
@@ -178,7 +179,7 @@ class doPublish(BrowserView):
                              "wb").write(pdf_data)
 
                     mime_msg = MIMEMultipart('related')
-                    mime_msg['Subject'] = self.get_mail_subject()
+                    mime_msg['Subject'] = self.get_mail_subject()[0]
                     mime_msg['From'] = formataddr(
                         (encode_header(laboratory.getName()),
                          laboratory.getEmailAddress()))
@@ -301,7 +302,6 @@ class doPublish(BrowserView):
 
         return managers
 
-
     def get_mail_subject(self):
         client = self.batch[0].aq_parent
         subject_items = client.getEmailSubject()
@@ -345,31 +345,30 @@ class doPublish(BrowserView):
         tot_line = ''
         if ais:
             ais.sort()
-            ar_line = 'ARs: %s' % ', '.join(ais)
+            ar_line = _('ARs: %s') % ', '.join(ais)
             tot_line = ar_line
         if cos:
             cos.sort()
-            cos_line = 'Orders: %s' % ', '.join(cos)
+            cos_line = _('Orders: %s') % ', '.join(cos)
             if tot_line:
                 tot_line += ' '
             tot_line += cos_line
         if crs:
             crs.sort()
-            crs_line = 'Refs: %s' % ', '.join(crs)
+            crs_line = _('Refs: %s') % ', '.join(crs)
             if tot_line:
                 tot_line += ' '
             tot_line += crs_line
         if css:
             css.sort()
-            css_line = 'Samples: %s' % ', '.join(css)
+            css_line = _('Samples: %s') % ', '.join(css)
             if tot_line:
                 tot_line += ' '
             tot_line += css_line
         if tot_line:
-            subject = 'Analysis results for %s' % tot_line
+            subject = _('Analysis results for %s') % tot_line
             if blanks_found:
-                subject += ' and others'
+                subject += (' ' + _('and others'))
         else:
-            subject = 'Analysis results'
-        return subject
-
+            subject = _('Analysis results')
+        return subject, tot_line
