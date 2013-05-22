@@ -291,6 +291,7 @@ class SampleEdit(BrowserView):
              for ar in ars])
         sp = self.context.getSamplePoint()
         st = self.context.getSampleType()
+        sc = self.context.getSampleCondition()
         if workflow.getInfoFor(self.context, 'cancellation_state') == "cancelled":
             allow_sample_edit = False
         else:
@@ -308,7 +309,7 @@ class SampleEdit(BrowserView):
                     inactive_state = 'active')])
 
         sampleconditions = DisplayList(
-            [(sc.UID, sd.title) for sc \
+            [(sc.UID, sc.title) for sc \
              in bsc(portal_type = 'SampleCondition',
                     inactive_state = 'active')])
 
