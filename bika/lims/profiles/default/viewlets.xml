@@ -34,6 +34,12 @@
 -->
   </order>
 
+  <order manager="plone.portalfooter" skinname="bika"
+         based-on="Plone Default">
+    <viewlet name="bika.lims.authenticator" insert-before="plone.colophon" />
+  </order>
+
+
   <hidden manager="plone.portalheader" skinname="bika">
 <!-- EXAMPLE (UNCOMMENT TO MAKE AVAILABLE):
     <viewlet name="plone.global_sections" />

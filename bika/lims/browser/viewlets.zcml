@@ -78,4 +78,12 @@
         layer="bika.lims.interfaces.IBikaLIMS"
         permission="zope2.View"
     />
+
+    <browser:viewlet
+        name="bika.lims.authenticator"
+        manager="plone.app.layout.viewlets.interfaces.IPortalFooter"
+        class=".viewlets.AuthenticatorViewlet"
+        permission="zope2.View"
+        />
+
 </configure>

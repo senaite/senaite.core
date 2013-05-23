@@ -174,4 +174,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Add Authenticator viewlet to all pages"
+        description="the hidden authenticator element must be present everywhere."
+        source="1125"
+        destination="1126"
+        handler="bika.lims.upgrade.to1126.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>

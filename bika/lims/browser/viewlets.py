@@ -1,11 +1,11 @@
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import bikaMessageFactory as _
-from bika.lims import logger
 from plone.app.layout.viewlets.common import ViewletBase
 from zope.component import getMultiAdapter
 
+
 class DocumentActionsViewlet(ViewletBase):
+
     """Overload the default to print pretty icons """
 
     index = ViewPageTemplateFile("templates/document_actions.pt")
@@ -22,6 +22,7 @@ class DocumentActionsViewlet(ViewletBase):
                 self.actions.append(action)
         return self.index()
 
+
 class PathBarViewlet(ViewletBase):
     index = ViewPageTemplateFile('templates/path_bar.pt')
 
@@ -33,3 +34,7 @@ class PathBarViewlet(ViewletBase):
         breadcrumbs_view = getMultiAdapter((self.context, self.request),
                                            name='breadcrumbs_view')
         self.breadcrumbs = breadcrumbs_view.breadcrumbs()
+
+
+class AuthenticatorViewlet(ViewletBase):
+    index = ViewPageTemplateFile('templates/authenticator.pt')
