@@ -1,6 +1,5 @@
 *** Settings ***
 
-Documentation  test_bika_setup_adf_final.robot
 
 Library  Selenium2Library  timeout=10  implicit_wait=0.5
 Library  bika.lims.tests.base.Keywords
@@ -18,6 +17,10 @@ ${SELENIUM_SPEED}  0
 ${Manager Firstname}  Manager Firstname
 ${Manager Surname}  Manager Surname
 
+#following are used to locate Analysis Service when defining an Analysis Profile
+${AnalysisServices_global_Title}  Analysis Services Title
+${AnalysisServices_locator}  Select ${AnalysisServices_global_Title}
+
 
 *** Test Cases ***
 
@@ -29,8 +32,8 @@ Setup
     #Attachment Types
 #Test Attachment Types Cancel <- write code
 
-    Create Attachment Types  Title=Container Types Title
-    ...    Description=Container Types Description
+    Create Attachment Types  Title=Attachment Types Title
+    ...    Description=Attachment Types Description
 
     Test Attachment Types Workflow
 
@@ -67,6 +70,20 @@ Setup
     ...    Description=Container Types Description
 
     Test Container Types Workflow
+
+    #Preservations
+    Test Preservations Cancel  Title=Preservations Title
+    ...    Description=Preservations Description
+
+
+    Create Preservations  Title=Preservations Title
+    ...    Description=Preservations Description
+    ...    Days=5
+    ...    Hours=10
+    ...    Minutes=15
+
+    Test Preservations Workflow
+
 
     #Lab Products
     Test Lab Products Cancel  Title=Lab Products Title
@@ -118,19 +135,6 @@ Setup
     ...    Change note=Methods Change note
 
     Test Methods Workflow
-
-    #Preservations
-    Test Preservations Cancel  Title=Preservations Title
-    ...    Description=Preservations Description
-
-
-    Create Preservations  Title=Preservations Title
-    ...    Description=Preservations Description
-    ...    Days=5
-    ...    Hours=10
-    ...    Minutes=15
-
-    Test Preservations Workflow
 
 
     #Sample Conditions
@@ -248,6 +252,82 @@ Setup
     #signature upload not tested
 
     #end LabContact
+
+    #Suppliers - dependent on Manufacturer, Instrument Type and Instrument
+
+    Test Suppliers Cancel  Name=Supplier Name
+    ...    VAT number=VAT number
+    ...    Phone=Phone
+    ...    Fax=Fax
+
+    Create Suppliers  Name=Suppliers Name
+    ...    VAT number=VAT number
+    ...    Phone=Phone
+    ...    Fax=Fax
+    ...    Email=info@supplier.com
+    ...    Country=South Africa
+    ...    State=Gauteng
+           #District is on auto select last entry    
+    ...    City=City Name
+    ...    ZIP=12345
+    ...    Physical Address=Foo House\nFoo Street 20\nFoo Town
+    ...    Postal Address=Post Box 25\nFoo Town
+    ...    AccountType=Account Type
+    ...    AccountName=Account Name
+    ...    AccountNumber=Account Number
+    ...    BankName=Bank Name
+    ...    BankBranch=Bank Branch
+    ...    Salutation=Mr
+    ...    Firstname=Contact Firstname
+    ...    Middleinitial=Contact Middleinitial
+    ...    Middlename=Contact Middlename
+    ...    Surname=Contact Surname
+    ...    Jobtitle=Sales Representative
+    ...    Department=Sales Department
+    ...    ManufacturerTitle=Manufacturer Title
+    ...    ManufacturerDescription=Manufacturer Description
+    ...    InstrumentTypeTitle=Instrument Type Title
+    ...    Instrument=Instrument Name
+    ...    Change note=Instrument Change note
+
+    #end Supplier
+
+    #Containers - dependant on Container Types and Preservations
+
+    Create Containers  Title=Containers Title
+    ...    Description=Containers Description
+    ...    Change note=Containers Change note
+
+
+    #end Containers
+
+
+    #Sample Types
+    Create SampleTypes  Title=Sample Types Title
+    ...    Description=Sample Types description
+    ...    Days=5
+    ...    Hours=10
+    ...    Minutes=15
+
+    #end Sample Types
+
+    #Analysis Categories - requires lab department
+    Create AnalysisCategories  Title=Analysis Category Title
+    ...    Description=Analysis Category description
+
+    #end Analysis Categories
+
+    #Analysis Services - requires Analysis Categories, Methods, Instruments, Calculations, ..... 
+    #Analysis Services <- note the use of global variable as title - also used by Analysis Profile
+    Create AnalysisServices  Description=Analysis Services description
+
+    #end Analysis Services
+
+    #Analysis Profile <- note the use of global variable Analysis Service title
+    Create AnalysisProfiles  Title=Analysis Profiles Title
+    ...    Description=Analysis Profiles description
+
+    #end Analysis Profile
 
 
 
@@ -432,6 +512,60 @@ Test Container Types Workflow
     Click Button  activate_transition
     Page should contain  Changes saved
 
+
+
+#Preservations
+Test Preservations Cancel
+    [Arguments]  ${Title}=
+    ...          ${Description}=
+
+    Go to  http://localhost:55001/plone/bika_setup/bika_preservations
+    Click link  Add
+    Wait Until Page Contains Element  title
+    Input Text  title  ${Title}
+    Input Text  description  ${Description}
+    Select Radio Button  Category  field
+    Select Radio Button  Category  lab
+    Click Button  Cancel
+    Page should contain  Add New Item operation was cancelled.
+
+
+Create Preservations
+    [Arguments]  ${Title}=
+    ...          ${Description}=
+    ...          ${Days}=
+    ...          ${Hours}=
+    ...          ${Minutes}=
+
+    Go to  http://localhost:55001/plone/bika_setup/bika_preservations
+    Click link  Add
+    Wait Until Page Contains Element  title
+    Input Text  title  ${Title}
+    Input Text  description  ${Description}
+    Select Radio Button  Category  field
+    Select Radio Button  Category  lab
+    Input Text  RetentionPeriod.days:record:ignore_empty  ${Days}
+    Input Text  RetentionPeriod.hours:record:ignore_empty  ${Hours}
+    Input Text  RetentionPeriod.minutes:record:ignore_empty  ${Minutes}
+
+    Click Button  Save
+    Page should contain  Changes saved
+
+
+Test Preservations Workflow
+    Go to  http://localhost:55001/plone/bika_setup/bika_preservations
+    Select Checkbox  list_select_all
+    Click Button  deactivate_transition
+    Page should contain  Changes saved
+    Click link  all
+    Select Checkbox  list_select_all
+    Click Button  activate_transition
+    Page should contain  Changes saved
+
+
+#Containers - uses Container Types and Preservations
+
+
 #Lab Products
 Test Lab Products Cancel
     [Arguments]  ${Title}=
@@ -604,54 +738,6 @@ Test Methods Workflow
     Click Button  activate_transition
     Page should contain  Changes saved
 
-
-#Preservations
-Test Preservations Cancel
-    [Arguments]  ${Title}=
-    ...          ${Description}=
-
-    Go to  http://localhost:55001/plone/bika_setup/bika_preservations
-    Click link  Add
-    Wait Until Page Contains Element  title
-    Input Text  title  ${Title}
-    Input Text  description  ${Description}
-    Select Radio Button  Category  field
-    Select Radio Button  Category  lab
-    Click Button  Cancel
-    Page should contain  Add New Item operation was cancelled.
-
-
-Create Preservations
-    [Arguments]  ${Title}=
-    ...          ${Description}=
-    ...          ${Days}=
-    ...          ${Hours}=
-    ...          ${Minutes}=
-
-    Go to  http://localhost:55001/plone/bika_setup/bika_preservations
-    Click link  Add
-    Wait Until Page Contains Element  title
-    Input Text  title  ${Title}
-    Input Text  description  ${Description}
-    Select Radio Button  Category  field
-    Select Radio Button  Category  lab
-    Input Text  RetentionPeriod.days:record:ignore_empty  ${Days}
-    Input Text  RetentionPeriod.hours:record:ignore_empty  ${Hours}
-    Input Text  RetentionPeriod.minutes:record:ignore_empty  ${Minutes}
-
-    Click Button  Save
-    Page should contain  Changes saved
-
-
-Test Preservations Workflow
-    Go to  http://localhost:55001/plone/bika_setup/bika_preservations
-    Select Checkbox  list_select_all
-    Click Button  deactivate_transition
-    Page should contain  Changes saved
-    Click link  all
-    Select Checkbox  list_select_all
-    Click Button  activate_transition
-    Page should contain  Changes saved
 
 
 #Sample Conditions
@@ -969,6 +1055,465 @@ Create LabContact
     Page should contain  Changes saved.
 
 #end LabContact
+
+
+#Suppliers
+
+Test Suppliers Cancel
+    [Arguments]  ${Name}=
+    ...          ${VAT number}=
+    ...          ${Phone}=
+    ...          ${Fax}=
+
+    Go to  http://localhost:55001/plone/bika_setup/bika_suppliers
+    Click link  Add
+    Input Text  Name  ${Name}
+    Input Text  TaxNumber  ${VAT number}
+    Input Text  Phone  ${Phone}
+    Input Text  Fax  ${Fax}
+    Click Button  Cancel
+#page returns to Edit Bika Setup which is an odd place to end up on!!!
+    Page should contain  Add New Item operation was cancelled.
+
+Create Suppliers
+    [Arguments]  ${Name}=
+    ...          ${VAT number}=
+    ...          ${Phone}=
+    ...          ${Fax}=
+    ...          ${Email}=
+    ...          ${Country}=
+    ...          ${State}=
+    ...          ${City}=
+    ...          ${ZIP}=
+    ...          ${Physical Address}=
+    ...          ${Postal Address}=
+    ...          ${AccountType}=
+    ...          ${AccountName}=
+    ...          ${AccountNumber}=
+    ...          ${BankName}=
+    ...          ${BankBranch}=
+    ...          ${Salutation}=
+    ...          ${Firstname}=
+    ...          ${Middleinitial}=
+    ...          ${Middlename}=
+    ...          ${Surname}=
+    ...          ${Jobtitle}=
+    ...          ${Department}=
+    ...          ${ManufacturerTitle}=
+    ...          ${ManufacturerDescription}=
+    ...          ${InstrumentTypeTitle}=
+    ...          ${Instrument}=
+    ...          ${Change note}=
+
+
+    Go to  http://localhost:55001/plone/bika_setup/bika_suppliers
+    Page should contain  Suppliers
+    Click link  Add
+    #Wait Until Page Contains Element  Name
+    Wait Until Page Contains Element  TaxNumber
+    Input Text  Name  ${Name}
+    Input Text  TaxNumber  ${VAT number}
+    Input Text  Phone  ${Phone}
+    Input Text  Fax  ${Fax}
+
+    Click link  Address
+    Input Text  EmailAddress  ${Email}
+    Select From List  PhysicalAddress.country:record  ${Country}
+    Select From List  PhysicalAddress.state:record  ${State}
+    #district is on autoselect last entry
+    Select From List  PhysicalAddress.district:record
+    Input Text  PhysicalAddress.city  ${City}
+    Input Text  PhysicalAddress.zip  ${ZIP}
+    Input Text  PhysicalAddress.address  ${Physical Address}
+    Select From List  PostalAddress.selection  PhysicalAddress
+    Input Text  PostalAddress.address  ${Postal Address}
+    Select From List  BillingAddress.selection  PostalAddress
+
+    Click link  Bank details
+    Input Text  AccountType  ${AccountType}
+    Input Text  AccountName  ${AccountName}
+    Input Text  AccountNumber  ${AccountNumber}
+    Input Text  BankName  ${BankName}
+    Input Text  BankBranch  ${BankBranch}
+
+    Click Button  Save
+    Page should contain  Changes saved.
+
+    #following variables not via arguments
+
+    Click link  Reference Samples
+    Wait Until Page Contains Element  Remarks
+    Input Text  Remarks  Reference Sample Remarks
+    Click button  Save remarks
+    Click link  Add
+    Wait Until Page Contains Element  title
+    Input Text  title  Reference Samples Title
+    Select From List  ReferenceDefinition:list
+    Select Checkbox  Blank
+    Select Checkbox  Hazardous
+    Select From List  ReferenceManufacturer:list
+    Input Text  CatalogueNumber  Catalogue Number
+    Input Text  LotNumber  Lot Number
+
+    Click Link  Dates
+    Wait Until Page Contains Element  DateSampled
+    Click Element  DateSampled
+    sleep  0.5
+    Click link  1
+    Click Element  DateReceived
+    sleep  0.5
+    Click link  3
+    Click Element  DateOpened
+    sleep  0.5
+    Click link  4
+    Click Element  ExpiryDate
+    sleep  0.5
+    Click link  16
+
+    Click Link  Reference Values
+    Wait Until Page Contains  Expected Values
+    Click Button  Save
+    Page should contain  Changes saved.
+
+    #now test Contacts
+    Go to  http://localhost:55001/plone/bika_setup/bika_suppliers
+    Click link  ${Name}
+
+    Wait Until Page Contains Element  Remarks
+    Click link  Contacts
+    Wait Until Page Contains Element  Remarks
+
+    Input Text  Remarks  Contacts Remarks
+    Click button  Save remarks
+    Click link  Add
+    Wait Until Page Contains Element  Salutation
+    Input Text  Salutation  ${Salutation}
+    Input Text  Firstname  ${Firstname}
+    Input Text  Middleinitial  ${Middleinitial}
+    Input Text  Middlename  ${Middlename}
+    Input Text  Surname  ${Surname}
+    Input Text  JobTitle  ${Jobtitle}    
+    Input Text  Department  ${Department}  
+
+    Click Button  Save
+    Page should contain  Changes saved.
+
+    Click link  Edit
+    Click link  Email Telephone Fax
+    Input Text  EmailAddress  info@supplier.com
+    Input Text  BusinessPhone  021 234 567
+    Input Text  BusinessFax  021 234 568
+    Input Text  HomePhone  021 123 456
+    Input Text  MobilePhone  082 1234 567
+
+    Click Button  Save
+    Page should contain  Changes saved.
+
+    Click link  Edit
+    Click link  Address
+    Wait Until Page Contains Element  PhysicalAddress.country
+    Select From List  PhysicalAddress.country:record  ${Country}
+    Select From List  PhysicalAddress.state:record  ${State}
+    #district is on autoselect last entry
+    Select From List  PhysicalAddress.district:record
+    Input Text  PhysicalAddress.city  ${City}
+    Input Text  PhysicalAddress.zip  ${ZIP}
+    Input Text  PhysicalAddress.address  ${Physical Address}
+    Select From List  PostalAddress.selection  PhysicalAddress
+    Input Text  PostalAddress.address  ${Postal Address}
+
+    Click Button  Save
+    Page should contain  Changes saved.
+
+    #now test Instruments
+    #for that you need a supplier,manufacturer, instrument type and instrument - defined in that order
+    #got supplier - so start with basic def of Manufacturer
+
+    Go to  http://localhost:55001/plone/bika_setup/bika_manufacturers
+    Page should contain  Manufacturers
+    Click link  Add
+    Wait Until Page Contains Element  title
+    Input Text  title  ${ManufacturerTitle}
+    Input Text  description  ${ManufacturerDescription}
+    Click Button  Save
+    Page should contain  Changes saved.
+
+    #now define an Instrument Type
+
+    Go to  http://localhost:55001/plone/bika_setup/bika_instrumenttypes
+    Page should contain  Instrument Types
+    Click link  Add
+    Wait Until Page Contains Element  title
+    Input Text  title  ${InstrumentTypeTitle}
+    Input Text  description  Instrument Type Description
+    Click Button  Save
+    Page should contain  Changes saved.
+
+
+    #Click link  Instruments
+#saving Instruments (from within) causes system to throw exception
+#Approach instrument from another angle - go direct to URL
+
+    Go to   http://localhost:55001/plone/bika_setup/bika_instruments
+    Page should contain  Instruments
+    Click link  Add
+    Wait Until Page Contains Element  title
+    Input Text  title  Instrument Title
+    Input Text  description  Instrument Description
+    Select From List  InstrumentType
+    Select From List  Manufacturer
+    Select From List  Supplier
+
+    Input Text  Model  Instrument Model
+    Input Text  SerialNo  Instrument Serial Number 123
+
+    Select From List  DataInterface:list
+    Input Text  DataInterfaceOptions-Key-0  Data Interface Options Key
+    Input Text  DataInterfaceOptions-Value-0  Data Interface Options Value
+    Input Text  cmfeditions_version_comment  ${Change note}
+
+    Click Button  Save
+
+    Click link  Procedures
+    Wait Until Page Contains Element  InlabCalibrationProcedure
+    Input Text  InlabCalibrationProcedure  Inlab Calibration Procedure
+    Input Text  PreventiveMaintenanceProcedure  Preventive Maintenance Procedure
+
+    Click Button  Save
+    Page should contain  Changes saved.  
+
+#At this stage numerous seletion options have appeared on a seperate bar Mainteneance etc
+#test at later stage
+
+    #Click link  Maintenance
+
+    #Click link  Validations
+
+    #Click link  Calibrations
+
+    #Click link  Certifications
+
+    #Click link  Schedule
+
+    #end Suppliers
+
+
+#Containers
+
+Create Containers
+    [Arguments]  ${Title}=
+    ...          ${Description}=
+    ...          ${Change note}=
+    Go to  http://localhost:55001/plone/bika_setup/bika_containers
+    Page should contain  Containers
+    Click link  Add
+    Wait Until Page Contains Element  title
+    Input Text  title  ${Title}
+    Input Text  description  ${Description}
+    Select From List   ContainerType:list
+    Input Text  Capacity  20 ml
+    Select From List   Preservation:list
+    Select Checkbox  PrePreserved
+    Input Text  cmfeditions_version_comment  ${Change note}
+    Click Button  Save
+    Page should contain  Changes saved
+
+
+    #end Containers
+
+#Sample Types
+Create SampleTypes
+    [Arguments]  ${Title}=
+    ...          ${Description}=
+    ...          ${Days}=
+    ...          ${Hours}=
+    ...          ${Minutes}=
+
+    Go to  http://localhost:55001/plone/bika_setup/bika_sampletypes
+    Click link  Add
+    Wait Until Page Contains Element  title
+    Input Text  title  ${Title}
+    Input Text  description  ${Description}
+
+    Input Text  RetentionPeriod.days:record:ignore_empty  ${Days}
+    Input Text  RetentionPeriod.hours:record:ignore_empty  ${Hours}
+    Input Text  RetentionPeriod.minutes:record:ignore_empty  ${Minutes}
+
+    Select Checkbox  Hazardous
+
+    #Click Element  SampleMatrix:list
+    Select from list  SampleMatrix:list
+
+    Input Text  Prefix  Prefix
+    Input Text  MinimumVolume  20 ml
+
+    #Click Element  ContainerType:list
+    Select from list  ContainerType:list
+    sleep  3
+    Click Button  Save
+    Page should contain  Changes saved.
+
+    #end Sample Types
+
+
+#Analysis Categories
+Create AnalysisCategories
+    [Arguments]  ${Title}=
+    ...          ${Description}=
+
+    Go to  http://localhost:55001/plone/bika_setup/bika_analysiscategories
+    Wait Until Page Contains  Analysis Categories
+    Click link  Add
+    Wait Until Page Contains Element  title
+    Input Text  title  ${Title}
+    Input Text  description  ${Description}
+    Select From List  Department:list
+
+    Click Button  Save
+    Page should contain  Changes saved.
+
+    #end Analysis Categories
+
+#Analysis Services
+Create AnalysisServices
+    [Arguments]  ${Description}=
+
+    Go to  http://localhost:55001/plone/bika_setup/bika_analysisservices
+    Wait Until Page Contains  Analysis Services
+    Click link  Add
+    Wait Until Page Contains Element  title
+    Input Text  title  ${AnalysisServices_global_Title}
+    Input Text  description  ${Description}
+    Input Text  Unit  measurement Unit
+    Input Text  Keyword  AnalysisKeyword
+    Select Radio Button  PointOfCapture  lab
+    Select Radio Button  PointOfCapture  field
+
+    Click Element  Category
+    #if you know the category name, another option is to:
+    #Input Text  Category  Analysis
+    sleep  0.5
+    Run Keyword And Continue On Failure  Select First Option in Dropdown
+
+    Input Text  Price  50.23
+    Input Text  BulkPrice  30.00
+    Input Text  VAT  15.00
+    Click Element  Department
+    #Input Text  Department  Lab
+    sleep  0.5
+    Run Keyword And Continue On Failure  Select First Option in Dropdown
+    #sleep  2
+    #Click Button  Save
+
+    #now move on to Analysis without saving
+    Click link  Analysis
+    Wait Until Page Contains Element  Precision
+    Input Text  Precision  3
+    Select Checkbox  ReportDryMatter
+    Select From List  AttachmentOption  n
+    Input Text  MaxTimeAllowed.days:record:ignore_empty  3
+    Input Text  MaxTimeAllowed.hours:record:ignore_empty  3
+    Input Text  MaxTimeAllowed.minutes:record:ignore_empty  3
+    #sleep  2
+    #Click Button  Save
+
+    #now move on to Analysis without saving
+    Click link  Method
+    Wait Until Page Contains Element  Instrument
+    Click Element  Method
+    #following because in small test files this info is not available
+    Run Keyword And Continue On Failure  Select First Option in Dropdown
+    Click Element  Instrument
+    Run Keyword And Continue On Failure  Select First Option in Dropdown
+    Click Element  Calculation
+    Run Keyword And Continue On Failure  Select First Option in Dropdown
+
+    Input Text  InterimFields-keyword-0  Keyword
+    Input Text  InterimFields-title-0  Field Title
+    Input Text  InterimFields-value-0  Default Value
+    Input Text  InterimFields-unit-0  Unit
+
+    Select Checkbox  InterimFields-hidden-0
+
+    Input Text  DuplicateVariation  5
+    Select Checkbox  Accredited
+
+
+    #sleep  2
+    #Click Button  Save
+
+    #now move on to Uncertainties without saving
+    Click link  Uncertainties
+
+    Input Text  Uncertainties-intercept_min-0  2
+    Input Text  Uncertainties-intercept_max-0  9
+    Input Text  Uncertainties-errorvalue-0  3.8
+
+    Click Button  Uncertainties_more
+    Input Text  Uncertainties-intercept_min-1  0
+    Input Text  Uncertainties-intercept_max-1  10
+    Input Text  Uncertainties-errorvalue-1  5.5
+
+    #sleep  2
+    #Click Button  Save
+
+    #now move on to Result Options without saving
+    Click link  Result Options
+
+    Input Text  ResultOptions-ResultValue-0  10
+    Input Text  ResultOptions-ResultText-0  Result Text 0
+    Click Button  ResultOptions_more
+    Input Text  ResultOptions-ResultValue-1  2
+    Input Text  ResultOptions-ResultText-1  Result Text 1
+
+
+    #now move on to Container and Preservation without saving
+    Click link  Container and Preservation
+    Select Checkbox  Separate
+
+    Click Element  Preservation
+    Run Keyword And Continue On Failure  Select First Option in Dropdown
+    Click Element  Container
+    Run Keyword And Continue On Failure  Select First Option in Dropdown
+
+    Select From List  PartitionSetup-sampletype-0
+    Click Element  PartitionSetup-separate-0
+    Select From List  PartitionSetup-preservation-0
+    Select From List  PartitionSetup-container-0
+    Input Text  PartitionSetup-vol-0  Volume 123
+
+    Click Button  Save
+    Page should contain  Changes saved.
+
+
+    #end Analysis Services
+
+
+
+#Analysis Profiles
+Create AnalysisProfiles
+    [Arguments]  ${Title}=
+    ...          ${Description}=
+
+    Go to    http://localhost:55001/plone/bika_setup/bika_analysisprofiles
+    Wait Until Page Contains  Analysis Profile
+    Click link  Add Profile
+    Wait Until Page Contains Element  title
+    Input Text  title  ${Title}
+    Input Text  description  ${Description}
+    Input Text  ProfileKey  Profile Key
+
+    Click link  Analyses
+    Page should contain  Profile Analyses
+
+    Select Checkbox  xpath=//input[@alt='${AnalysisServices_locator}']
+    #above is the variable version of the hardcoded version below
+    #Select Checkbox  xpath=//input[@alt='Select Analysis Services Title']
+
+    Click Button  Save
+    Page should contain  Changes saved.
+
+    #end Analysis Profiles
 
 
 
