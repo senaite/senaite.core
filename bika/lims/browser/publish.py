@@ -7,7 +7,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
-from bika.lims.utils import sendmail, encode_header
+from bika.lims.utils import sendmail, encode_header, createPdf, attachPdf
 from cStringIO import StringIO
 from email.Utils import formataddr
 from email.mime.image import MIMEImage
@@ -25,49 +25,36 @@ import xhtml2pdf.pisa as pisa
 
 class doPublish(BrowserView):
     """Pre/Re/Publish analysis requests"""
-    ar_results = ViewPageTemplateFile("mailtemplates/analysisrequest_results.pt")
+    template = ViewPageTemplateFile("mailtemplates/analysisrequest_results.pt")
 
     def __init__(self, context, request, action, analysis_requests):
         self.context = context
         self.request = request
+
         # the workflow transition that invoked us
         self.action = action
 
         # the list of ARs that we will process.
         # Filter them here so we only publish those with verified analyses.
         workflow = getToolByName(self.context, 'portal_workflow')
-        ARs_to_publish = []
+        self.analysis_requests = []
+        self.publish_states = ['verified', 'published']
         for ar in analysis_requests:
-            if workflow.getInfoFor(ar, 'review_state') in ['verified', 'published']:
-                ARs_to_publish.append(ar)
-            else:
-                if ar.getAnalyses(review_state='verified'):
-                    ARs_to_publish.append(ar)
-                else:
-                    if ar.getAnalyses(review_state='published'):
-                        ARs_to_publish.append(ar)
-        self.analysis_requests = ARs_to_publish
-
-    def formattedResult(self, result, precision=2):
-        if not result:
-            return ''
-        try:
-            return str('%%.%sf' % precision)%float(result)
-        except:
-            return result
+            if workflow.getInfoFor(ar, 'review_state') in self.publish_states \
+                or ar.getAnalyses(review_state=self.publish_states):
+                self.analysis_requests.append(ar)
 
     def __call__(self):
 
-        rc = getToolByName(self.context, REFERENCE_CATALOG)
+        debug_mode = App.config.getConfiguration().debug_mode
+        out_path = join(Globals.INSTANCE_HOME, 'var') if debug_mode else None
         workflow = getToolByName(self.context, 'portal_workflow')
 
-        BatchEmail = self.context.bika_setup.getBatchEmail()
-
-        username = self.context.portal_membership.getAuthenticatedMember().getUserName()
+        # reporting user
+        member = self.context.portal_membership.getAuthenticatedMember()
+        username = member.getUserName()
         self.reporter = self.user_fullname(username)
         self.reporter_email = self.user_email(username)
-
-        # signature image
         self.reporter_signature = ""
         c = [x for x in self.bika_setup_catalog(portal_type='LabContact')
              if x.getObject().getUsername() == username]
@@ -78,108 +65,125 @@ class doPublish(BrowserView):
 
         # lab address
         self.laboratory = laboratory = self.context.bika_setup.laboratory
-        self.lab_address = "<br/>".join(laboratory.getPrintAddress())
+        lab_address = laboratory.getPostalAddress() \
+            or laboratory.getBillingAddress() \
+            or laboratory.getPhysicalAddress()
+        if lab_address:
+            _keys = ['address', 'city', 'state', 'zip', 'country']
+            _list = [lab_address.get(v) for v in _keys if lab_address.get(v)]
+            self.lab_address = "<br/>".join(_list).replace("\n", "<br/>")
+        else:
+            self.lab_address = None
 
-        # group/publish analysis requests by contact
-        ARs_by_contact = {}
         for ar in self.analysis_requests:
-            contact_uid = ar.getContact().UID()
-            if contact_uid not in ARs_by_contact:
-                ARs_by_contact[contact_uid] = []
-            ARs_by_contact[contact_uid].append(ar)
-
-        for contact_uid, ars in ARs_by_contact.items():
-            ars.sort()
-            self.contact = ars[0].getContact()
+            self.ar = ar
+            self.contact = ar.getContact()
             self.pub_pref = self.contact.getPublicationPreference()
-            batch_size = 'email' in self.pub_pref and BatchEmail or 5
 
             # client address
-            self.client = ars[0].aq_parent
-            self.client_address = "<br/>".join(self.client.getPrintAddress())
+            self.client = ar.aq_parent
+            client_address = self.client.getPostalAddress() \
+                or self.contact.getBillingAddress() \
+                or self.contact.getPhysicalAddress()
+            if client_address:
+                _keys = ['address', 'city', 'state', 'zip', 'country']
+                _list = [client_address.get(v) for v in _keys
+                         if client_address.get(v)]
+                addr = "<br/>".join(_list).replace("\n", "<br/>")
+                self.client_address = addr
+            else:
+                self.client_address = None
 
             self.Footer = self.context.bika_setup.getResultFooter()
 
-            # send batches of ARs to each contact
-            for b in range(0, len(ars), batch_size):
-                self.batch = ars[b:b+batch_size]
-                self.qcservices = {}
-                self.any_accredited = False
-                self.any_drymatter = False
-                # get all services from all requests in this batch into a
-                # dictionary:
-                #   {'Point Of Capture': {'Category': [service,service,...]}}
-                self.services = {}
+            self.any_drymatter = ar.getReportDryMatter()
+            self.any_accredited = False
 
-                out_fn = "_".join([ar.Title() for ar in self.batch])
+            out_fn = ar.Title()
 
-                for ar in self.batch:
-                    if ar.getReportDryMatter():
-                        self.any_drymatter = True
-                    states = ("verified", "published")
-                    analyses = ar.getAnalyses(full_objects=True,
-                                              review_state=states)
-                    analyses.sort(lambda x, y: cmp(x.Title(), y.Title()))
-                    for analysis in analyses:
-                        service = analysis.getService()
-                        poc = POINTS_OF_CAPTURE.getValue(service.getPointOfCapture())
-                        cat = service.getCategoryTitle()
-                        if poc not in self.services:
-                            self.services[poc] = {}
-                        if cat not in self.services[poc]:
-                            self.services[poc][cat] = []
-                        if service not in self.services[poc][cat]:
-                            self.services[poc][cat].append(service)
-                        if (service.getAccredited()):
-                            self.any_accredited = True
+            analyses = ar.getAnalyses(full_objects=True,
+                                      review_state=self.publish_states)
+            analyses.sort(
+                lambda x, y: cmp(x.Title().lower(), y.Title().lower()))
 
-                    for qcanalysis in ar.getQCAnalyses():
-                        service = qcanalysis.getService()
-                        qctype = ''
-                        if qcanalysis.portal_type == 'DuplicateAnalysis':
-                            qctype = "d"
-                        elif qcanalysis.portal_type == 'ReferenceAnalysis':
-                            qctype = qcanalysis.getReferenceType()
-                        else:
-                            continue
+            self.services = {}
+            self.qcservices = {}
 
-                        if qctype not in self.qcservices:
-                            self.qcservices[qctype] = {}
-                        poc = POINTS_OF_CAPTURE.getValue(service.getPointOfCapture())
-                        if poc not in self.qcservices[qctype]:
-                            self.qcservices[qctype][poc] = {}
-                        cat = service.getCategoryTitle()
-                        if cat not in self.qcservices[qctype][poc]:
-                            self.qcservices[qctype][poc][cat] = []
-                        #if service not in self.qcservices[qctype][poc][cat]:
-                        self.qcservices[qctype][poc][cat].append({'service':service,
-                                                                 'analysis':qcanalysis})
+            for analysis in analyses:
+                service = analysis.getService()
+                poc = POINTS_OF_CAPTURE.getValue(service.getPointOfCapture())
+                cat = service.getCategoryTitle()
+                if poc not in self.services:
+                    self.services[poc] = {}
+                if cat not in self.services[poc]:
+                    self.services[poc][cat] = []
+                if service not in self.services[poc][cat]:
+                    self.services[poc][cat].append(service)
+                if (service.getAccredited()):
+                    self.any_accredited = True
 
+            for qcanalysis in ar.getQCAnalyses():
+                service = qcanalysis.getService()
+                qctype = ''
+                if qcanalysis.portal_type == 'DuplicateAnalysis':
+                    qctype = "d"
+                elif qcanalysis.portal_type == 'ReferenceAnalysis':
+                    qctype = qcanalysis.getReferenceType()
+                else:
+                    continue
+
+                if qctype not in self.qcservices:
+                    self.qcservices[qctype] = {}
+                poc = POINTS_OF_CAPTURE.getValue(service.getPointOfCapture())
+                if poc not in self.qcservices[qctype]:
+                    self.qcservices[qctype][poc] = {}
+                cat = service.getCategoryTitle()
+                if cat not in self.qcservices[qctype][poc]:
+                    self.qcservices[qctype][poc][cat] = []
+                #if service not in self.qcservices[qctype][poc][cat]:
+                self.qcservices[qctype][poc][cat].append({'service': service,
+                                                         'analysis': qcanalysis})
+
+            # Create the html report
+            ar_results = safe_unicode(self.template()).encode('utf-8')
+            if out_path:
+                open(join(out_path, out_fn + ".html"), "w").write(ar_results)
+
+            # Create the pdf report (will always be attached to the AR)
+            pdf_results = ar_results.replace(r"analysisrequest_results.css",
+                                             r"analysisrequest_results_pdf.css")
+            pdf_outfile = join(out_path, out_fn + ".pdf") if out_path else None
+            pdf_report = createPdf(pdf_results, pdf_outfile)
+            if pdf_report:
+                reportid = self.context.generateUniqueId('ARReport')
+                ar.invokeFactory(id=reportid, type_name="ARReport")
+                report = ar._getOb(reportid)
+                report.edit(
+                    AnalysisRequest=ar.UID(),
+                    Pdf=pdf_report,
+                    Html=ar_results,
+                    Recipients=[{'UID':self.contact.UID(),
+                                'Username':self.contact.getUsername(),
+                                'Fullname':self.contact.getFullname(),
+                                'EmailAddress':self.contact.getEmailAddress(),
+                                'PublicationModes': self.pub_pref
+                                }]
+                    )
+                report.unmarkCreationFlag()
+                from bika.lims.idserver import renameAfterCreation
+                renameAfterCreation(report)
+
+                # Set status to published
+                if self.action == 'publish':
+                    try:
+                        workflow.doActionFor(ar, 'publish')
+                    except WorkflowException:
+                        pass
 
                 # compose and send email
                 if 'email' in self.pub_pref:
-
-                    # render template
-                    ar_results = self.ar_results()
-                    ar_results = safe_unicode(ar_results).encode('utf-8')
-
-                    debug_mode = App.config.getConfiguration().debug_mode
-                    if debug_mode:
-                        open(join(Globals.INSTANCE_HOME,'var', out_fn + ".html"),
-                             "w").write(ar_results)
-
-                    pisa.showLogging()
-                    ramdisk = StringIO()
-                    pdf = pisa.CreatePDF(ar_results, ramdisk)
-                    pdf_data = ramdisk.getvalue()
-                    ramdisk.close()
-
-                    if debug_mode:
-                        open(join(Globals.INSTANCE_HOME,'var', out_fn + ".pdf"),
-                             "wb").write(pdf_data)
-
                     mime_msg = MIMEMultipart('related')
-                    mime_msg['Subject'] = self.get_mail_subject()[0]
+                    mime_msg['Subject'] = self.get_mail_subject(ar)[0]
                     mime_msg['From'] = formataddr(
                         (encode_header(laboratory.getName()),
                          laboratory.getEmailAddress()))
@@ -189,32 +193,10 @@ class doPublish(BrowserView):
                     mime_msg.preamble = 'This is a multi-part MIME message.'
                     msg_txt = MIMEText(ar_results, _subtype='html')
                     mime_msg.attach(msg_txt)
-                    if not pdf.err:
-                        part = MIMEBase('application', "application/pdf")
-                        part.add_header('Content-Disposition', 'attachment; filename="%s.pdf"' % out_fn)
-                        part.set_payload( pdf_data )
-                        Encoders.encode_base64(part)
-                        mime_msg.attach(part)
 
-                        # Attach report to AR
-                        for ar in self.batch:
-                            reportid = self.context.generateUniqueId('ARReport')
-                            ar.invokeFactory(id=reportid, type_name="ARReport")
-                            report = ar._getOb(reportid)
-                            report.edit(
-                                AnalysisRequest=ar.UID(),
-                                Pdf=pdf_data,
-                                Html=ar_results,
-                                Recipients=[{'UID':self.contact.UID(),
-                                            'Username':self.contact.getUsername(),
-                                            'Fullname':self.contact.getFullname(),
-                                            'EmailAddress':self.contact.getEmailAddress(),
-                                            'PublicationModes': self.pub_pref
-                                            }]
-                                )
-                            report.unmarkCreationFlag()
-                            from bika.lims.idserver import renameAfterCreation
-                            renameAfterCreation(report)
+                    # Attach the pdf to the email if requested
+                    if pdf_report and 'pdf' in self.pub_pref:
+                        attachPdf(mime_msg, pdf_report, out_fn)
 
                     try:
                         host = getToolByName(self.context, 'MailHost')
@@ -225,35 +207,36 @@ class doPublish(BrowserView):
                     except SMTPRecipientsRefused, msg:
                         raise WorkflowException(str(msg))
 
-                    if self.action == 'publish':
-                        for ar in self.batch:
-                            try:
-                                workflow.doActionFor(ar, 'publish')
-                            except WorkflowException:
-                                pass
-
-##                    if not pdf.err:
-##                        setheader = self.request.RESPONSE.setHeader
-##                        setheader('Content-Type', 'application/pdf')
-##                        setheader("Content-Disposition", "attachment;filename=\"%s.pdf\"" % out_fn)
-##                        self.request.RESPONSE.write(pdf_data)
-
                 else:
                     raise Exception, "XXX pub_pref %s" % self.pub_pref
 
         return [ar.RequestID for ar in self.analysis_requests]
 
-    def getResult(self, analysis):
+    def formattedResult(self, analysis):
+        """Formatted result:
+        1. Print ResultText of matching ResulOptions
+        2. If the result is floatable, render it to the correct precision
+        If analysis is None, returns empty string
+        """
+        if analysis is None:
+            return ''
+
         result = analysis.getResult()
         service = analysis.getService()
         choices = service.getResultOptions()
-        for choice in choices:
-            if choice['ResultValue'] == result:
-                return choice['ResultText']
 
+        # 1. Print ResultText of mathching ResulOptions
+        match = [x['ResultText'] for x in choices
+                 if str(x['ResultValue']) == str(result)]
+        if match:
+            return match[0]
+
+        # 2. If the result is floatable, render it to the correct precision
         precision = service.getPrecision()
+        if not precision:
+            precision = ''
         try:
-            result = str('%%.%sf' % precision) % float(result)
+            result = str("%%.%sf" % precision) % float(result)
         except:
             pass
 
@@ -265,31 +248,20 @@ class doPublish(BrowserView):
                 return True
         return False
 
-    def get_managers_from_requests(self):
-        ## Script (Python) "get_managers_from_requests"
-        ##bind container=container
-        ##bind context=context
-        ##bind namespace=
-        ##bind script=script
-        ##bind subpath=traverse_subpath
-        ##parameters=batch
-        ##title=Get services from requests
-        ##
-        managers = {'ids': [],
-                    'dict': {}}
+    def get_managers_from_request(self, ar):
+        managers = {'ids': [], 'dict': {}}
         departments = {}
-        for ar in self.batch:
-            ar_mngrs = ar.getResponsible()
-            for id in ar_mngrs['ids']:
-                new_depts = ar_mngrs['dict'][id]['dept'].split(',')
-                if id in managers['ids']:
-                    for dept in new_depts:
-                        if dept not in departments[id]:
-                            departments[id].append(dept)
-                else:
-                    departments[id] = new_depts
-                    managers['ids'].append(id)
-                    managers['dict'][id] = ar_mngrs['dict'][id]
+        ar_mngrs = ar.getResponsible()
+        for id in ar_mngrs['ids']:
+            new_depts = ar_mngrs['dict'][id]['departments'].split(',')
+            if id in managers['ids']:
+                for dept in new_depts:
+                    if dept not in departments[id]:
+                        departments[id].append(dept)
+            else:
+                departments[id] = new_depts
+                managers['ids'].append(id)
+                managers['dict'][id] = ar_mngrs['dict'][id]
 
         mngrs = departments.keys()
         for mngr in mngrs:
@@ -298,12 +270,12 @@ class doPublish(BrowserView):
                 if final_depts:
                     final_depts += ', '
                 final_depts += dept
-            managers['dict'][mngr]['dept'] = final_depts
+            managers['dict'][mngr]['departments'] = final_depts
 
         return managers
 
-    def get_mail_subject(self):
-        client = self.batch[0].aq_parent
+    def get_mail_subject(self, ar):
+        client = ar.aq_parent
         subject_items = client.getEmailSubject()
         ai = co = cr = cs = False
         if 'ar' in subject_items:
@@ -319,29 +291,28 @@ class doPublish(BrowserView):
         crs = []
         css = []
         blanks_found = False
-        for ar in self.batch:
-            if ai:
-                ais.append(ar.getRequestID())
-            if co:
-                if ar.getClientOrderNumber():
-                    if not ar.getClientOrderNumber() in cos:
-                        cos.append(ar.getClientOrderNumber())
-                else:
-                    blanks_found = True
-            if cr or cs:
-                sample = ar.getSample()
-            if cr:
-                if sample.getClientReference():
-                    if not sample.getClientReference() in crs:
-                        crs.append(sample.getClientReference())
-                else:
-                    blanks_found = True
-            if cs:
-                if sample.getClientSampleID():
-                    if not sample.getClientSampleID() in css:
-                        css.append(sample.getClientSampleID())
-                else:
-                    blanks_found = True
+        if ai:
+            ais.append(ar.getRequestID())
+        if co:
+            if ar.getClientOrderNumber():
+                if not ar.getClientOrderNumber() in cos:
+                    cos.append(ar.getClientOrderNumber())
+            else:
+                blanks_found = True
+        if cr or cs:
+            sample = ar.getSample()
+        if cr:
+            if sample.getClientReference():
+                if not sample.getClientReference() in crs:
+                    crs.append(sample.getClientReference())
+            else:
+                blanks_found = True
+        if cs:
+            if sample.getClientSampleID():
+                if not sample.getClientSampleID() in css:
+                    css.append(sample.getClientSampleID())
+            else:
+                blanks_found = True
         tot_line = ''
         if ais:
             ais.sort()
@@ -372,3 +343,8 @@ class doPublish(BrowserView):
         else:
             subject = _('Analysis results')
         return subject, tot_line
+
+    def get_titles_for_uids(self, *uids):
+        uc = getToolByName(self.context, 'uid_catalog')
+        return [p.getObject().Title() for p in uc(UID=uids)]
+

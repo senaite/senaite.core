@@ -23,13 +23,13 @@
       pub_pref view/pub_pref;
       accredited python:lab_accredited and view.any_accredited;
       global invoice_exclude python:False;
-      global out_of_range python:0;"
-  style="font-size:90%;">
+      global out_of_range python:0;
+      ar nocall:view/ar;">
 
 <table class="logo-table">
 <tr>
     <td>
-      <img tal:attributes="src string:${portal/absolute_url}/logo_results_pdf.png"/>
+      <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/logo_email.png"/>
     </td>
     <td tal:condition="accredited"
         tal:define="logo python:context.bika_setup.laboratory.getAccreditationBodyLogo()">
@@ -45,27 +45,22 @@
 
 <table class="address-table">
   <tr>
-    <td style="padding-right:50px;">
+    <td>
       <span tal:content="view/contact/getFullname"/>
       <br/>
       <span tal:content="view/client/Title"/>
       <br/>
       <span tal:content="structure view/client_address"/>
       <br/>
-      <tal:reporter tal:condition="view/reporter">
-          <span i18n:translate="">Published by</span>
-          &nbsp;
-          <span tal:content="view/reporter"/>
-          <tal:email tal:condition="view/reporter_email">
-              (<a tal:define="email view/reporter_email"
-                 tal:content="email"
-                 tal:attributes="href string:mailto:${email}"/>)
-          </tal:email>
-          <tal:signature tal:condition="view/reporter_signature">
-              <br/>
-              <img tal:attributes="src view/reporter_signature"/>
-          </tal:signature>
-      </tal:reporter>
+      <span tal:condition="python:view.client.getPhone()"
+            i18n:translate="">Phone</span>:
+      <span tal:condition="python:view.client.getPhone()"
+            tal:content="python:view.client.getPhone()"/>
+      <br/>
+      <span tal:condition="python:view.client.getFax()"
+            i18n:translate="">Fax</span>:
+      <span tal:condition="python:view.client.getFax()"
+            tal:content="python:view.client.getFax()"/>
     </td>
     <td>
       <span tal:content="view/laboratory/Title"/>
@@ -75,66 +70,59 @@
   </tr>
 </table>
 
-  <div tal:condition="python:view.containsInvalidARs()" 
-        tal:repeat="ar view/batch"
-        class="alertpanel">
-    <span tal:omit-tag="" tal:condition="repeat/ar/start">
-    <h1 i18n:translate=""
-        tal:condition="python:len(view.batch)&gt;1">
-        The following Analysis Requests has been invalidated due to erroneously published results
-    </h1>
-    </span>
-    <h1 i18n:translate=""
-        tal:condition="python:len(view.batch)==1">
-        This Analysis Request has been invalidated due to erroneously published results
-    </h1>        
-    <tal:invalidreport tal:condition="python:ar.isInvalid() and ar.getChildAnalysisRequest()">
-        <a tal:attributes="href python:ar.absolute_url();" 
-            tal:content="ar/RequestID"></a>&nbsp;
-        <span i18n:translate="">has been replaced by</span>&nbsp;
-        <a tal:attributes="href python:ar.getLastChild().absolute_url()"
-            tal:content="python:ar.getLastChild().getRequestID()"></a>
-    </tal:invalidreport>
-  </div>
+<div>
+      <tal:reporter tal:condition="view/reporter">
+          <span i18n:translate="">Published by</span>:&nbsp;
+          <span tal:content="view/reporter"/>
+          <tal:email tal:condition="view/reporter_email">
+              (<a tal:define="email view/reporter_email"
+                 tal:content="email"
+                 tal:attributes="href string:mailto:${email}"/>)
+          </tal:email>
+<!--
+          <tal:signature tal:condition="view/reporter_signature">
+              <br/>
+              <img tal:attributes="src view/reporter_signature"/>
+          </tal:signature>
+-->
+      </tal:reporter>
+</div>    
+  
+<div tal:condition="python:ar.isInvalid()" class="alertpanel">
+  <h1 i18n:translate="">
+      This Analysis Request has been invalidated due to erroneously published results
+  </h1>        
+  <tal:invalidreport tal:condition="python:ar.getChildAnalysisRequest()">
+      <a tal:attributes="href python:ar.absolute_url();" 
+          tal:content="ar/RequestID"></a>&nbsp;
+      <span i18n:translate="">has been replaced by</span>&nbsp;
+      <a tal:attributes="href python:ar.getLastChild().absolute_url()"
+          tal:content="python:ar.getLastChild().getRequestID()"></a>
+  </tal:invalidreport>
+</div>
 
 <hr/>
 <h1 i18n:translate="">Summary</h1>
 <table class="main-table" cellpadding="2" cellspacing="0">
 
   <thead>
-
+<!--
     <tr>
-      <th i18n:translate="">Client Order</th>
-      <td tal:repeat="ar view/batch"
-        tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1"
-        tal:content="ar/getClientOrderNumber">123</td>
+      <td i18n:translate="" class="parameter_label">Client Order</td>
+      <td tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1"
+          tal:content="ar/getClientOrderNumber">123</td>
     </tr>
 
     <tr>
-      <th i18n:translate="">Client Reference</th>
-      <td tal:repeat="ar view/batch"
-        tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1"
-        tal:content="python:ar.getSample().getClientReference()">T01</td>
+      <td i18n:translate="" class="parameter_label">Client Reference</td>
+      <td tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1"
+          tal:content="python:ar.getSample().getClientReference()">T01</td>
     </tr>
+-->
 
     <tr>
-      <th i18n:translate="">Client SID</th>
-      <td tal:repeat="ar view/batch"
-        tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1"
-        tal:content="python:ar.getSample().getClientSampleID()">S01</td>
-    </tr>
-
-    <tr>
-      <th i18n:translate="">Sampling Deviation</th>
-      <td tal:repeat="ar view/batch"
-        tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1"
-        tal:content="python:ar.getSample().getSamplingDeviation()">None</td>
-    </tr>
-
-    <tr>
-      <th i18n:translate="">Request ID</th>
-      <td tal:repeat="ar view/batch"
-        tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1">
+      <td i18n:translate="" class="parameter_label">Request ID</td>
+      <td tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1">
        <a href="" tal:content="ar/getRequestID"
           tal:attributes="href ar/absolute_url;
                          style python:ar.isInvalid() and 'text-decoration:line-through' or '';">AR-00001</a>           
@@ -143,8 +131,7 @@
           <a tal:attributes="href python:ar.getLastChild().absolute_url()"
              tal:content="python: ar.getLastChild().getRequestID()"
              tal:condition="python: ar.getLastChild()"></a>
-       </span>  
-          
+       </span>
         <tal:exclude tal:condition="ar/getInvoiceExclude">
           <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/invoice_exclude.png"
             tal:define="global invoice_exclude python:1">
@@ -157,74 +144,111 @@
     </tr>
 
     <tr>
-      <th i18n:translate="">Sample ID</th>
-      <td tal:repeat="ar view/batch"
-        tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1">
+      <td i18n:translate="" class="parameter_label">Sample ID</td>
+      <td tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1">
       <a href=""
         tal:define="sample ar/getSample"
         tal:content="sample/getSampleID"
         tal:attributes="href sample/absolute_url">S-00001</a>
       </td>
     </tr>
-
+    
     <tr>
-      <th i18n:translate="">Client</th>
-      <td tal:repeat="ar view/batch"
-        tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1"
-        tal:content="ar/aq_parent/Title">Lab client</td>
+      <td i18n:translate="" class="parameter_label">Batch ID</td>
+      <td tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1">
+        <a tal:condition="python: ar.getBatch()"
+          href="" tal:content="python: ar.getBatch().getBatchID()"
+          tal:attributes="href python:ar.getBatch().absolute_url()">C12-00001</a>
+      </td>
+    </tr>
+    
+    <tr tal:condition="python:ar.getBatch() and ar.getBatch().getClientBatchID()">
+      <td i18n:translate="" class="parameter_label">Client Batch ID</td>
+      <td tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1"
+          tal:content="python:ar.getBatch() and ar.getBatch().getClientBatchID() or ''">        
+      </td>
+    </tr>
+    
+    <tr tal:condition="python:ar.getBatch() and view.ulocalized_time(ar.getBatch().getOnsetDate())">
+        <td i18n:translate="" class="parameter_label">Onset Date</td>
+        <td tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1"
+            tal:content="python:ar.getBatch() and view.ulocalized_time(ar.getBatch().getOnsetDate()) or ''">
+        </td>
+    </tr>    
+    
+    <tr>
+      <td i18n:translate="" class="parameter_label">Client</td>
+      <td tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1"
+          tal:content="ar/aq_parent/Title">Lab client</td>
+    </tr>
+    
+    <tr>
+      <td i18n:translate="" class="parameter_label">Client SID</td>
+      <td tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1"
+          tal:content="python:ar.getSample().getClientSampleID()">S01</td>
     </tr>
 
     <tr>
-      <th i18n:translate="">Sample Type</th>
-      <td tal:repeat="ar view/batch"
-        tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1"
-        tal:content="python:ar.getSample().getSampleType().Title()">SampleType</td>
+      <td i18n:translate="" class="parameter_label">Sample Type</td>
+      <td tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1"
+          tal:content="python:ar.getSample().getSampleType().Title()">SampleType</td>
     </tr>
-
+    
+<!--
     <tr>
-      <th i18n:translate="">Sample Point</th>
-      <td tal:repeat="ar view/batch"
-        tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1">
+      <td i18n:translate="" class="parameter_label">Sample Point</td>
+      <td tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1">
         <span
           tal:define="samplepoint python:ar.getSample().getSamplePoint()"
           tal:content="samplepoint/Title|nothing">SamplePoint</span>
       </td>
     </tr>
+-->
 
     <tr>
-      <th i18n:translate="">Date Received</th>
-      <td tal:repeat="ar view/batch"
-        tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1"
-        tal:content="python:view.ulocalized_time(ar.getDateReceived(), long_format=1)"
-        >2005-01-01 10:00</td>
-    </tr>
-
-    <tr>
-      <th i18n:translate="">Date Published</th>
-      <td tal:repeat="ar view/batch"
-        tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1"
-        tal:content="python:view.ulocalized_time(ar.getDatePublished(), long_format=1)"
-        >2005-01-01 10:00</td>
-    </tr>
-
-    <tr>
-      <th i18n:translate="">Verified by</th>
-      <td tal:repeat="ar view/batch"
-        tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1">
-        <span
-          tal:define="verifier python:ar.get_verifier()"
-          tal:content="verifier"/>
+      <td i18n:translate="" class="parameter_label">Date Received</td>
+      <td tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1"
+          tal:content="python:view.ulocalized_time(ar.getDateReceived(), long_format=1)">
+          2005-01-01 10:00
       </td>
     </tr>
 
-  </thead>
+<!--
+    <tr>
+      <td i18n:translate="" class="parameter_label">Date Published</td>
+      <td tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1"
+          tal:content="python:view.ulocalized_time(ar.getDatePublished(), long_format=1)">
+          2005-01-01 10:00
+      </td>
+    </tr>
+    
+    <tr>
+      <td i18n:translate="" class="parameter_label">Sampling Deviation</td>
+      <td tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1"
+          tal:content="python:ar.getSample().getSamplingDeviation()">None</td>
+    </tr>
+
+    <tr>
+      <td i18n:translate="" class="parameter_label">Verified by</td>
+      <td tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1;"
+          tal:content="python:ar.get_verifier();">
+      </td>
+    </tr>
+-->
+    
+    <tal:x define="value python:ar.getBatch() and ar.getBatch().getBatchLabels() or [];"
+           condition="value">
+     <tr>
+       <td class="parameter_label" i18n:translate="">Batch Labels</td>
+       <td tal:attributes="colspan python:ar.getReportDryMatter() and 2 or 1"
+           tal:content="structure python:', '.join(view.get_titles_for_uids(*value))"></td>
+     </tr>
+    </tal:x>
+   
+  </thead> 
   </table>
 
-    <tal:arcount
-      tal:repeat="ar view/batch">
-      <tal:ar
-        tal:define="global columns python:ar.getReportDryMatter() and columns + 2 or columns + 1"/>
-    </tal:arcount>
+  <tal:ar tal:define="global columns python:ar.getReportDryMatter() and columns + 2 or columns + 1"/>
 
   <h1 i18n:translate="">Results</h1>
   <table class="main-table">
@@ -233,80 +257,68 @@
 
     <tal:category tal:repeat="cat python:view.services[poc].keys()">
       <tr class="category_heading">
-        <th
-          tal:content="string:${poc} - ${cat}"/>
-        <tal:results tal:repeat="ar view/batch">
-          <tal:drymatter tal:condition="ar/getReportDryMatter">
-            <th i18n:translate="">Result</th>
-            <th i18n:translate="">Dry Result</th>
-          </tal:drymatter>
-          <tal:notdrymatter tal:condition="not:ar/getReportDryMatter">
-            <th i18n:translate="">Result</th>
-          </tal:notdrymatter>
-        </tal:results>
+        <th tal:content="string:${cat}"></th>
+        <tal:drymatter tal:condition="ar/getReportDryMatter">
+          <th i18n:translate="" class='analysis_results_header'>Result</th>
+          <th i18n:translate="" class='analysis_results_header'>Dry Result</th>
+        </tal:drymatter>
+        <tal:notdrymatter tal:condition="not:ar/getReportDryMatter">
+          <th i18n:translate="" class='analysis_results_header'>Result</th>
+        </tal:notdrymatter>
       </tr>
 
     <tal:service tal:repeat="service python:view.services[poc][cat]">
+      <tal:analysis tal:define="
+            service_id service/getId;
+            keyword python:service.getKeyword();
+            analysis_found python:keyword in ar;
+			analysis python:ar[keyword] if analysis_found else None;
+			result python: view.formattedResult(analysis);
+			uncertainty analysis/getUncertainty|nothing;
+			in_range python:analysis.result_in_range(None, 'client');
+			result_class python:in_range[0] and 'analysis_result' or 'analysis_result out_of_range';
+			global out_of_range python:in_range[0] and out_of_range or 1;">
+            
       <tr>
-        <th nowrap>
+        <td style="white-space:nowrap;" class="service_title">
           <span tal:content="service/Title">Alcohol</span>
           <em tal:content="service/getUnit|nothing">ml</em>
           <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/dry_grey.png"
             tal:condition="python:view.any_drymatter and service.getReportDryMatter()">
           <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/accredited.png"
             tal:condition="python:accredited and service.getAccredited()">
-        </th>
-        <tal:ars repeat="ar view/batch">
-          <div tal:define="
-            service_id service/getId;
-            keyword python:service.getKeyword();
-            analysis_found python:keyword in ar;
-            analysis python:analysis_found and ar[keyword];
-            result analysis/getResult|nothing;
-            precision python:analysis.getService().getPrecision();
-            result python:view.getResult(analysis);
-            uncertainty analysis/getUncertainty|nothing">
-            <tal:result
-              tal:condition="analysis_found"
-              tal:define="
-                in_range python:analysis.result_in_range(None, 'client');
-                result_class python:'' if in_range[0] else 'out_of_range';
-                global out_of_range python:1 if not in_range[0] else out_of_range;">
-
-              <td nowrap
-                tal:attributes="class result_class;
-                    style python:ar.isInvalid() and 'text-decoration:line-through' or '';">
-                <span tal:content="result">10.00</span>
-                <span tal:content="string:${analysis/Unit}"
-                  tal:condition="analysis/Unit|nothing"/>
-                <span tal:content="string:[+/- $uncertainty]"
-                  tal:condition="uncertainty"/>
-                <div class="retested"
-                  tal:condition="analysis/getRetested"
-                  i18n:translate="">Retested</div>
-                <span tal:condition="python:not in_range[0]">
-                  <img tal:condition="python:not in_range[0]"
-                    tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/exclamation.png"/>
-                  <br/>
-                  <span tal:replace="python:in_range[0] and '' or 'valid range min: %(min)s, max: %(max)s'%(in_range[1])"/>
-                </span>
-                <p tal:condition="python:view.context.bika_setup.getEnableAnalysisRemarks() and analysis.getRemarks()!=''">
-                    <span i18n:translate="" style="font-weight:bold;font-size:0.9em;">Remarks</span><br/>
-                    <span tal:content="structure analysis/getRemarks"/>
-                </p>
-              </td>
-              <td tal:condition="ar/getReportDryMatter">
-                <span tal:condition="analysis/getResultDM"
-                  tal:content="analysis/getResultDM">10</span>
-              </td>
-            </tal:result>
-            <tal:notanalysis tal:condition="python:not analysis_found">
-              <td></td>
-              <td tal:condition="ar/getReportDryMatter"></td>
-            </tal:notanalysis>
-          </div>
-        </tal:ars>
+        </td>
+        <td nowrap
+          tal:attributes="class result_class;
+              style python:ar.isInvalid() and 'text-decoration:line-through' or '';">
+          <span tal:content="result">10.00</span>
+          <span tal:content="string:${analysis/Unit}"
+            tal:condition="analysis/Unit|nothing"/>
+          <span tal:content="string:[+/- $uncertainty]"
+            tal:condition="uncertainty"/>
+          <div class="retested"
+            tal:condition="analysis/getRetested"
+            i18n:translate="">Retested</div>
+          <span tal:condition="python:not in_range[0]">
+            <img tal:condition="python:not in_range[0]"
+              tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/exclamation.png"/>
+              &nbsp;&nbsp;
+            <br/>
+            <span tal:replace="python:in_range[0] and '' or 'valid range min: %(min)s, max: %(max)s'%(in_range[1])"/>
+          </span>
+          <p tal:condition="python:view.context.bika_setup.getEnableAnalysisRemarks() and analysis.getRemarks()!=''">
+              <span i18n:translate="" style="font-weight:bold;font-size:0.9em;">Remarks</span><br/>
+              <span tal:content="structure analysis/getRemarks"/>
+          </p>
+        </td>
+        <td tal:attributes="class result_class"
+            tal:condition="ar/getReportDryMatter">
+          <span class="analysis_result"
+                tal:condition="analysis/getResultDM"
+                tal:content="analysis/getResultDM">10</span>
+        </td>
       </tr>
+    </tal:analysis>
     </tal:service>
     </tal:category>
     </tal:poc>
@@ -358,22 +370,18 @@
 
 <h1 i18n:translate="">Remarks</h1>
 <table class="main-table">
-  <tal:repeat repeat="ar view/batch">
-      <tr tal:define="remarks python:ar.getRemarks()"
-          tal:condition="remarks">
-          <td tal:content="string:${ar/getRequestID}:">AR:</td>
-          <td tal:content="structure remarks">Remarks</td>
-      </tr>
-  </tal:repeat>
+    <tr tal:define="remarks python:ar.getRemarks()"
+        tal:condition="remarks">
+        <td  width="10%" tal:content="string:${ar/getRequestID}:">AR:</td>
+        <td tal:content="structure remarks">Remarks</td>
+    </tr>
 </table>
 
 <h1 i18n:translate="">Attachments</h1>
 <table class="main-table">
-  <tal:ar tal:repeat="ar view/batch">
     <tr tal:define="attachments ar/getAttachment"
       tal:condition="attachments">
-      <td width="10%"
-          tal:content="string:${ar/getRequestID}:">AR:</td>
+      <td width="10%" tal:content="string:${ar/getRequestID}:">AR:</td>
       <td>
         <tal:attachment tal:repeat="attachment attachments">
         <div tal:define="
@@ -381,6 +389,9 @@
           filename file/filename | nothing;
           filesize file/get_size | python:file and len(file) or 0;
           icon file/getBestIcon | nothing">
+          <img tal:condition="icon"
+            tal:attributes="src string:${here/portal_url}/$icon"/>
+            &nbsp;&nbsp;
           <a title="Click to download"
             tal:attributes="href string:${attachment/absolute_url}/at_download/AttachmentFile"
             tal:content=filename>Filename</a>
@@ -403,6 +414,7 @@
               icon file/getBestIcon | nothing">
               <img tal:condition="icon"
                 tal:attributes="src string:${here/portal_url}/$icon"/>
+              &nbsp;&nbsp;
               <a title="Click to download"
                 tal:attributes="href string:${attachment/absolute_url}/at_download/AttachmentFile"
                 tal:content=filename>Filename</a>
@@ -414,11 +426,10 @@
         </tal:attachment>
       </tal:attachments>
     </tal:analyses>
-  </tal:ar>
 </table>
 
 <div tal:repeat="manager mngr_ids"
-  tal:define="mngr_info python:view.get_managers_from_requests();
+  tal:define="mngr_info python:view.get_managers_from_request(ar);
     mngr_ids python:mngr_info['ids'];
     managers python:mngr_info['dict']">
   <tal:manager
@@ -427,20 +438,26 @@
     <img
       tal:condition="signature"
       tal:define="signature python:managers[manager]['signature']"
-      tal:attributes="src string:${signature}">
+      tal:attributes="src string:${signature}" style="height:75px">
     <br>
+    <span i18n:translate="">Department:</span>
+    <span tal:content="python:managers[manager]['departments']">Chemistry</span>
+    &nbsp;&nbsp;
     <span tal:content="python:managers[manager]['name']">Joe Blogs</span>
-    <span tal:condition="phone">&nbsp&nbsp</span>
+    <span tal:condition="phone">&nbsp;&nbsp</span>
     <img
       tal:condition="phone"
-      tal:attributes="src string:${portal/absolute_url}/telephone.png">
+      tal:attributes="src string:${portal/absolute_url}/images/telephone.png">
+      &nbsp;&nbsp;
     <span tal:content="phone">011 555 1112</span>
-    <span tal:condition="email">&nbsp&nbsp</span>
+    <span tal:condition="email">&nbsp;&nbsp</span>
     <img
       tal:condition="email"
-      tal:attributes="src string:${portal/absolute_url}/email.png">
+      tal:attributes="src string:${portal/absolute_url}/images/email.png">
+      &nbsp;&nbsp;
     <a tal:attributes="href string:mailto:${email}"
       tal:content="email">a@b.com</a>
+    &nbsp;
   </tal:manager>
 </div>
 
