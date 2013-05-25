@@ -90,16 +90,20 @@ class ClientFolderContentsView(BikaListingView):
 
         clients = []
         for client in self.context.objectValues("Client"):
-            if not mtool.checkPermission(ManageAnalysisRequests, client):
+            perm = mtool.checkPermission(ManageAnalysisRequests, client)
+            if not perm:
                 continue
-            if self.review_state != 'all':
-                state = wf.getInfoFor(client, 'inactive_state')
-                if self.review_state == 'default' and state != 'active':
-                    continue
-                if self.review_state == 'inactive' and state != 'inactive':
-                    continue
-            clients.append(client)
-        clients.sort(lambda x,y: cmp(x.Title(),y.Title()))
+            state = wf.getInfoFor(client, 'inactive_state')
+            accept_states = []
+            if self.review_state == 'default':
+                accept_states = ['active', ]
+            elif self.review_state == 'inactive':
+                accept_states = ['inactive', ]
+            elif self.review_state == 'all':
+                accept_states = ['active', 'inactive', ]
+            if state in accept_states:
+                clients.append(client)
+        clients.sort(lambda x, y: cmp(x.Title().lower(), y.Title().lower()))
         return clients
 
     def folderitems(self):
