@@ -649,8 +649,8 @@ class AnalysisRequestViewView(BrowserView):
                        <span name='cc_titles' id='cc_titles' value='%s'>%s</span>"\
                        %(",".join(cc_uids),
                          contact.absolute_url(),
-                         contact.UID(), 
-                         contact.Title(), 
+                         contact.UID(),
+                         contact.Title(),
                          contact.getEmailAddress(),
                          contact.getEmailAddress(),
                          "; ".join(cc_titles),
@@ -2081,16 +2081,20 @@ class ajaxAnalysisRequestSubmit():
                 doActionFor(ar, lowest_state)
 
             # receive secondary AR
-            if values.get('SampleID', ''):
-                if wftool.getInfoFor(sample, 'review_state') == 'sampled':
-                    wftool.doActionFor(ar, 'sample_due')
-                if wftool.getInfoFor(sample, 'review_state') == 'sample_due':
-                    wftool.doActionFor(ar, 'receive')
+            if values.get('Sample_uid', ''):
+
+                doActionFor(ar, 'sampled')
+                doActionFor(ar, 'sample_due')
+                not_receive = ['to_be_sampled', 'sample_due', 'sampled',
+                               'to_be_preserved']
+                sample_state = wftool.getInfoFor(sample, 'review_state')
+                if sample_state not in not_receive:
+                    doActionFor(ar, 'receive')
                 for analysis in ar.getAnalyses(full_objects=1):
-                    if wftool.getInfoFor(analysis, 'review_state') == 'sampled':
-                        wftool.doActionFor(analysis, 'sample_due')
-                    if wftool.getInfoFor(analysis, 'review_state') == 'sample_due':
-                        wftool.doActionFor(analysis, 'receive')
+                    doActionFor(analysis, 'sampled')
+                    doActionFor(analysis, 'sample_due')
+                    if sample_state not in not_receive:
+                        doActionFor(analysis, 'receive')
 
             # Transition pre-preserved partitions.
             for p in parts:
@@ -2590,7 +2594,7 @@ class AnalysisRequestsView(BikaListingView):
                     (self.portal_url, self.context.translate(_("All analyses assigned")))
             if workflow.getInfoFor(obj, 'review_state') == 'invalid':
                 after_icons += "<img src='%s/++resource++bika.lims.images/delete.png' title='%s'/>" % \
-                    (self.portal_url, self.context.translate(_("Results have been withdrawn")))                      
+                    (self.portal_url, self.context.translate(_("Results have been withdrawn")))
             if obj.getLate():
                 after_icons += "<img src='%s/++resource++bika.lims.images/late.png' title='%s'>" % \
                     (self.portal_url, self.context.translate(_("Late Analyses")))
