@@ -20,6 +20,12 @@ import json
 import plone.protect
 import transaction
 import warnings
+from email.MIMEBase import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email import Encoders
+import xhtml2pdf.pisa as pisa
+from cStringIO import StringIO
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
 allow_module('csv')
@@ -287,9 +293,34 @@ def changeWorkflowState(content, wf_id, state_id, acquire_permissions=False,
     content.reindexObject(idxs=['allowedRolesAndUsers', 'review_state'])
     return
 
+
 def tmpID():
     import os, binascii
     return binascii.hexlify(os.urandom(16))
+
+
+def createPdf(htmlreport, outfile=None):
+    pisa.showLogging()
+    ramdisk = StringIO()
+    pdf = pisa.CreatePDF(htmlreport, ramdisk)
+    pdf_data = ramdisk.getvalue()
+    ramdisk.close()
+
+    if not pdf.err:
+        if outfile:
+            open(outfile, "w").write(pdf_data)
+        return pdf_data
+    return None
+
+
+def attachPdf(mimemultipart, pdfreport, filename=None):
+    part = MIMEBase('application', "application/pdf")
+    part.add_header('Content-Disposition',
+                    'attachment; filename="%s.pdf"' % (filename or tmpID()))
+    part.set_payload(pdfreport)
+    Encoders.encode_base64(part)
+    mimemultipart.attach(part)
+
 
 class bika_bsc_counter(BrowserView):
     def __call__(self):
