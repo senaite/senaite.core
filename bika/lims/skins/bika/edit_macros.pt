@@ -83,16 +83,17 @@
 
     <div metal:define-macro="body"
          tal:condition="not:isLocked"
-         tal:define="portal_type portal_type|string:unknowntype">
+         tal:define="portal_type portal_type|string:unknowntype;
+                     eup python:'' if '55001' in request['URL'] else 'enableUnloadProtection';">
       <form name="edit_form"
             method="post"
             enctype="multipart/form-data"
-            class="enableUnloadProtection enableAutoFocus atBaseEditForm"
+            class="enableAutoFocus atBaseEditForm"
             action=""
             id=""
             tal:attributes="action python:context.absolute_url()+'/'+template.id;
                             id string:${portal_type}-base-edit;
-                            class python:test(path('allow_tabbing|nothing'), 'enableUnloadProtection enableAutoFocus enableFormTabbing enableUnlockProtection', 'enableUnloadProtection enableAutoFocus enableUnlockProtection');">
+                            class python:test(path('allow_tabbing|nothing'), '%s enableAutoFocus enableFormTabbing enableUnlockProtection'%eup, '%s enableAutoFocus enableUnlockProtection'%eup);">
           <metal:block define-slot="extra_top" />
 
           <metal:block define-slot="widgets">
