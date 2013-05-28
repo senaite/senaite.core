@@ -308,7 +308,7 @@ validation.register(CoordinateValidator())
 
 class ResultOptionsValidator:
     """Validating AnalysisService ResultOptions field.
-        XXX Applied as a subfield validator but validates 
+        XXX Applied as a subfield validator but validates
         for x in range(len(interim_fields)):
             row = interim_fields[x]
             keys = row.keys()
@@ -328,12 +328,19 @@ class ResultOptionsValidator:
         ts = getToolByName(instance, 'translation_service').translate
         bsc = getToolByName(instance, 'bika_setup_catalog')
 
+        if instance.REQUEST.get(self.name, ''):
+            return True
+        else:
+            instance.REQUEST[self.name] = True
+
         # ResultValue must always be a number
         for field in form_value:
             try:
                 f = float(field['ResultValue'])
             except:
                 return ts(_("Validation failed: Result Values must be numbers"))
+            if 'ResultText' not in field:
+                return ts(_("Validation failed: Result Text cannot be blank"))
 
         return True
 
@@ -445,7 +452,7 @@ class StandardIDValidator:
         return True
 
 validation.register(StandardIDValidator())
-  
+
 
 class AnalysisSpecificationsValidator:
     """Min value must be below max value
@@ -512,71 +519,158 @@ class AnalysisSpecificationsValidator:
 validation.register(AnalysisSpecificationsValidator())
 
 
+class UncertaintiesValidator:
+    """All entries must be numbers.
+    Min value must be below max value.
+    Uncertainty must not be < 0.
+    """
+
+    implements(IValidator)
+    name = "uncertainties_validator"
+
+    def __call__(self, subf_value, *args, **kwargs):
+
+        instance = kwargs['instance']
+        request = kwargs.get('REQUEST', {})
+        fieldname = kwargs['field'].getName()
+        ts = getToolByName(instance, 'translation_service').translate
+
+        if instance.REQUEST.get(self.name, ''):
+            return True
+        else:
+            instance.REQUEST[self.name] = True
+
+        for i, value in enumerate(request[fieldname]):
+
+            # Values must be numbers
+            try:
+                minv = float(value['intercept_min'])
+            except:
+                return ts(_("Validation failed: Min values must be "
+                            "numeric"))
+            try:
+                maxv = float(value['intercept_max'])
+            except:
+                return ts(_("Validation failed: Max values must be "
+                            "numeric"))
+            try:
+                err = float(value['errorvalue'])
+            except:
+                return ts(_("Validation failed: Error values "
+                            "must be numeric"))
+
+            # Min value must be < max
+            if minv > maxv:
+                return ts(_("Validation failed: Max values must be "
+                            "greater than Min values"))
+
+            # Error values must be >-1
+            if err < 0:
+                return ts(_("Validation failed: Error value must be 0 or "
+                            "greater"))
+
+        return True
+
+validation.register(UncertaintiesValidator())
+
+
+class DurationValidator:
+    """Simple stuff - just checking for integer values.
+    """
+
+    implements(IValidator)
+    name = "duration_validator"
+
+    def __call__(self, value, *args, **kwargs):
+
+        instance = kwargs['instance']
+        request = kwargs.get('REQUEST', {})
+        fieldname = kwargs['field'].getName()
+        ts = getToolByName(instance, 'translation_service').translate
+
+        if instance.REQUEST.get(self.name, ''):
+            return True
+        else:
+            instance.REQUEST[self.name] = True
+
+        ts = getToolByName(instance, 'translation_service').translate
+
+        value = request[fieldname]
+        for v in value.values():
+            try:
+                int(v)
+            except:
+                return ts(_("Validation failed: Values must be numbers"))
+        return True
+
+validation.register(DurationValidator())
+
+
 class ReferenceValuesValidator:
     """Min value must be below max value
        Percentage value must be between 0 and 100
        Values must be numbers
        Expected values must be between min and max values
     """
-    
+
     implements(IValidator)
     name = "referencevalues_validator"
 
     def __call__(self, value, *args, **kwargs):
-        
+
             instance = kwargs['instance']
             fieldname = kwargs['field'].getName()
             request = kwargs.get('REQUEST', {})
-                        
+
             if instance.REQUEST.get('validated', '') == self.name:
                 return True
             else:
-                instance.REQUEST['validated'] = self.name    
-                
+                instance.REQUEST['validated'] = self.name
+
             ts = getToolByName(instance, 'translation_service').translate
-            
+
             ress   = request.get('result',{})[0]
             mins   = request.get('min',{})[0]
             maxs   = request.get('max',{})[0]
             errors = request.get('error',{})[0]
-                        
+
             # Retrieve all AS uids
             uids = ress.keys()
             for uid in uids:
-                
+
                 # Foreach AS, check spec. input values
                 res = ress[uid]
                 min = mins[uid]
                 max = maxs[uid]
                 err = errors[uid]
-                
+
                 res = res == '' and '0' or res
                 min = min == '' and '0' or min
                 max = max == '' and '0' or max
                 err = err == '' and '0' or err
-                
+
                 # Values must be numbers
                 try: res = float(res)
                 except: return ts(_("Validation failed: Expected values must be numeric"))
                 try: min = float(min)
-                except: return ts(_("Validation failed: Min values must be numeric"))  
+                except: return ts(_("Validation failed: Min values must be numeric"))
                 try: max = float(max)
-                except: return ts(_("Validation failed: Max values must be numeric"))                
+                except: return ts(_("Validation failed: Max values must be numeric"))
                 try: err = float(err)
-                except: return ts(_("Validation failed: Percentage error values must be numeric"))    
-                
+                except: return ts(_("Validation failed: Percentage error values must be numeric"))
+
                 # Min value must be < max
                 if min > max :
-                    return ts(_("Validation failed: Max values must be greater than Min values"))   
-                
+                    return ts(_("Validation failed: Max values must be greater than Min values"))
+
                 # Expected result must be between min and max
                 if res < min or res > max:
                     return ts(_("Validation failed: Expected values must be between Min and Max values"))
-                                
+
                 # Error percentage must be between 0 and 100
                 if err < 0 or err > 100 :
                     return ts(_("Validation failed: Percentage error values must be between 0 and 100"))
-                                
+
             return True
-    
-validation.register(ReferenceValuesValidator()) 
+
+validation.register(ReferenceValuesValidator())
