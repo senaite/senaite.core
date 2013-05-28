@@ -86,6 +86,7 @@
 				tal:condition="python:col_count > 1"
 				tal:attributes="
 					id string:${service/UID};
+                    name string:${service/Title};
 					src string:${view/portal_url}/++resource++bika.lims.images/copy.png"/>
 		</td>
 		<tal:i define="serviceUID service/UID;serviceTitle service/title">
