@@ -1538,6 +1538,7 @@ Create AnalysisServices
     Input Text  ResultOptions-ResultValue-1  2
     Input Text  ResultOptions-ResultText-1  Result Text 1
 
+    Log  !! BUG ALERT: Container and Preservations field selection follows  WARN
 
     #now move on to Container and Preservation without saving
     Click link  Container and Preservation
@@ -1558,6 +1559,7 @@ Create AnalysisServices
     sleep  2
     #this page often seems to kick up a dialog - sleeping a little seems to help
     Wait Until Page Contains  Changes saved.
+    sleep  2
     #end Analysis Services
 
 
@@ -1662,10 +1664,14 @@ Create WorksheetTemplate
     Click link  Layout
     Wait Until Page Contains  Worksheet Layout
     Input Text  NoOfPositions  3
-    #Click Button  Reset
+
+    Log  !! BUG ALERT: System Crash on Clicking RESET  WARN
+
+    Click Button  Reset
+
 #system crash on reset
 #!!!!!!!!!!!!!!!!!!
-    Log  !! System Crash on Clicking RESET: - to be addressed  WARN
+
 
 
     sleep  1
@@ -1705,6 +1711,8 @@ Create ARTemplates
 
     Click link  Sample Partitions
     Wait Until Page Contains  Sample Partitions
+
+    Log  !! Sample Partitions - no tests conducted  WARN
 
     Click link  Analyses
     Wait Until Page Contains  Analysis Profile
@@ -1846,9 +1854,8 @@ Create ClientContact
     Select from list  PublicationPreference:list  ${Preference}
     Select Checkbox  AttachmentsPermitted
 
+    Log  No tests done on: archetypes-fieldname-CCContact  WARN
 
-#what is this supposed to do??
-#add more clients
     #Click Element  archetypes-fieldname-CCContact
 
     Click Button  Save
@@ -1868,52 +1875,57 @@ Create ClientContact
 
     Click Element  ar_0_Batch
     Run Keyword And Continue On Failure  Select First Option in Dropdown
-    #sleep  2
     Click Element  ar_0_Template
     Run Keyword And Continue On Failure  Select First Option in Dropdown
-    #sleep  2
     Click Element  ar_0_Profile
     Run Keyword And Continue On Failure  Select First Option in Dropdown
-    #sleep  2
     Click Element  ar_0_Sample
     Run Keyword And Continue On Failure  Select First Option in Dropdown
-    #sleep  2
     Click Element  ar_0_SamplingDate
     Click link  12
-    #sleep  2
     Click Element  ar_0_SampleType
     Run Keyword And Continue On Failure  Select First Option in Dropdown
-    #sleep  1
     Click Element  ar_0_SamplePoint
     Run Keyword And Continue On Failure  Select First Option in Dropdown
-    #sleep  1
     Click Element  ar_0_ClientOrderNumber
     Run Keyword And Continue On Failure  Select First Option in Dropdown
-    #sleep  1
     Click Element  ar_0_ClientReference
     Run Keyword And Continue On Failure  Select First Option in Dropdown
-    #sleep  1
     Click Element  ar_0_ClientSampleID
     Run Keyword And Continue On Failure  Select First Option in Dropdown
-    #sleep  1
     Click Element  ar_0_SamplingDeviation
     Run Keyword And Continue On Failure  Select First Option in Dropdown
-    #sleep  1
     Click Element  ar_0_SampleCondition
     Run Keyword And Continue On Failure  Select First Option in Dropdown
-    #sleep  1
     Click Element  ar_0_DefaultContainerType
     Run Keyword And Continue On Failure  Select First Option in Dropdown
-    #sleep  1
-
 
     Select Checkbox  ar_0_AdHoc
-
     Select Checkbox  ar_0_Composite
-
     Select Checkbox  ar_0_ReportDryMatter
-
     Select Checkbox  ar_0_InvoiceExclude
+
+    Log  AR: Copy Across Testing  WARN
+
+    Click Element  Batch
+    Click Element  Template
+    Click Element  Profile
+    Click Element  Sample
+    Click Element  SamplingDate
+    Click Element  SampleType
+    Click Element  SamplePoint
+    Click Element  ClientOrderNumber
+    Click Element  ClientReference
+    Click Element  ClientSampleID
+    Click Element  SamplingDeviation
+    Click Element  SampleCondition
+    Click Element  DefaultContainerType
+    Click Element  AdHoc
+    Click Element  Composite
+    Click Element  ReportDryMatter
+    Click Element  InvoiceExclude
+
+    sleep  1
 
     Click Button  Save
     Wait Until Page Contains  was successfully created.
@@ -1925,45 +1937,44 @@ Create ClientContact
     Click link  Active
     sleep  1
     Click link  Due
-    sleep  2
+    sleep  1
     Click link  Received
-    sleep  2
+    sleep  1
     Click link  To be verified
-    sleep  2
+    sleep  1
     Click link  Verified
-    sleep  2
+    sleep  1
     Click link  Published
-    sleep  2
+    sleep  1
     Click link  Cancelled
-    sleep  2
+    sleep  1
     Click link  Invalid
-    sleep  2
+    sleep  1
     Click link  assigned
-    sleep  2
+    sleep  1
     Click link  unassigned
-    sleep  2
+    sleep  1
 
     Click link  Edit
-    sleep  2
+    sleep  1
     Click link  Contacts
-    sleep  2
+    sleep  1
     Click link  Samples
-    sleep  2
+    sleep  1
     Click link  SamplePoints
-    sleep  2
+    sleep  1
     Click link  Batches
-    sleep  2
+    sleep  1
     Click link  Analysis Requests
-    sleep  2
+    sleep  1
     Click link  Analysis Profiles
-    sleep  2
+    sleep  1
     Click link  AR Templates
-    sleep  2
+    sleep  1
     Click link  Analysis Specifications
-    sleep  2
+    sleep  1
     Click link  Attachments
-    sleep  2
-
+    sleep  1
 
 
 
