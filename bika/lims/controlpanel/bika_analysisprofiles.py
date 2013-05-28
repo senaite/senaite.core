@@ -52,7 +52,7 @@ class ProfilesView(BikaListingView):
                          'Description',
                          'ProfileKey']},
             {'id':'inactive',
-             'title': _('Inactive'),
+             'title': _('Dormant'),
              'contentFilter': {'inactive_state':'inactive'},
              'columns': ['Title',
                          'Description',

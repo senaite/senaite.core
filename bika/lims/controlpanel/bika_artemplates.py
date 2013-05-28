@@ -50,7 +50,7 @@ class TemplatesView(BikaListingView):
              'columns': ['Title',
                          'Description']},
             {'id':'inactive',
-             'title': _('Inactive'),
+             'title': _('Dormant'),
              'contentFilter': {'inactive_state':'inactive'},
              'columns': ['Title',
                          'Description']},

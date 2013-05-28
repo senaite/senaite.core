@@ -49,7 +49,7 @@ class AnalysisCategoriesView(BikaListingView):
              'transitions': [{'id':'deactivate'}, ],
              'columns': ['Title', 'Description', 'Department']},
             {'id':'inactive',
-             'title': _('Inactive'),
+             'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': [{'id':'activate'}, ],
              'columns': ['Title', 'Description', 'Department']},
