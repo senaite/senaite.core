@@ -5,7 +5,7 @@ jQuery(function($){
 
         function recordswidget_lookups(elements){
             if(elements == undefined){
-                var inputs = $("[combogrid_options]").not('.has_combogrid_widget');
+                var inputs = $(".ArchetypesRecordsWidget [combogrid_options]").not('.has_combogrid_widget');
             } else {
                 var inputs = elements;
             }
@@ -46,7 +46,7 @@ jQuery(function($){
         }
         recordswidget_lookups();
 
-        $('[combogrid_options]').live('focus', function(){
+        $('.ArchetypesRecordsWidget [combogrid_options]').live('focus', function(){
         	/*if ($(this).hasClass('has_combogrid_widget')) {
         		return;
         	}*/
