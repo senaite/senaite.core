@@ -99,16 +99,22 @@ schema = BikaSchema.copy() + Schema((
         type = 'artemplate_parts',
         subfields = ('part_id',
                      'Container',
-                     'Preservation'),
+                     'Preservation',
+                     'container_uid',
+                     'preservation_uid'),
         subfield_labels = {'part_id': _('Partition'),
                            'Container': _('Container'),
                            'Preservation': _('Preservation')},
         subfield_sizes = {'part_id': 15,
                            'Container': 35,
                            'Preservation': 35},
+        subfield_hidden = {'preservation_uid': True,
+                           'container_uid': True},
         default = [{'part_id':'part-1',
                     'Container':'',
-                    'Preservation':''}],
+                    'Preservation':'',
+                    'container_uid':'',
+                    'preservation_uid':''}],
         widget=ARTemplatePartitionsWidget(
             label = _("Sample Partitions"),
             description = _("Configure the sample partitions and preservations "
@@ -117,6 +123,7 @@ schema = BikaSchema.copy() + Schema((
             combogrid_options={
                 'Container': {
                     'colModel': [
+                        {'columnName':'container_uid', 'hidden':True},
                         {'columnName':'Container', 'width':'30', 'label':_('Container')},
                         {'columnName':'Description', 'width':'70', 'label':_('Description')}],
                     'url': 'getcontainers',
@@ -125,6 +132,7 @@ schema = BikaSchema.copy() + Schema((
                 },
                 'Preservation': {
                     'colModel': [
+                        {'columnName':'preservation_uid', 'hidden':True},
                         {'columnName':'Preservation', 'width':'30', 'label':_('Preservation')},
                         {'columnName':'Description', 'width':'70', 'label':_('Description')}],
                     'url': 'getpreservations',

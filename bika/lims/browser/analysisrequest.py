@@ -1289,10 +1289,14 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                 title = context == self.context.bika_setup.bika_artemplates \
                     and "%s: %s" % (self.context.translate(_('Lab')), template.Title().decode('utf-8')) \
                     or template.Title()
-                sp_title = template.getSamplePoint() and template.getSamplePoint()
-                st_title = template.getSampleType() and template.getSampleType()
-                sp_uid = template.getSamplePoint() and template.getSamplePointUID()
-                st_uid = template.getSampleType() and template.getSampleTypeUID()
+                sp_title = template.getSamplePoint().Title() \
+                    if template.getSamplePoint() else ''
+                st_title = template.getSampleType().Title() \
+                    if template.getSampleType() else ''
+                sp_uid = template.getSamplePoint().UID() \
+                    if template.getSamplePoint() else ''
+                st_uid = template.getSampleType().UID() \
+                    if template.getSampleType() else ''
                 profile = template.getAnalysisProfile()
                 Analyses = [{
                     'service_poc':bsc(UID=x['service_uid'])[0].getObject().getPointOfCapture(),
