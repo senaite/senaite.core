@@ -36,7 +36,6 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             label=_("Sample Point"),
             description=_("Location where sample was taken"),
-            size=12,
             visible={'edit': 'visible', 'view': 'visible', 'add': 'visible',
                      'secondary': 'invisible'},
             catalog_name='bika_setup_catalog',
@@ -62,7 +61,6 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             label=_("Sample Type"),
             description=_("Create a new sample of this type"),
-            size=12,
             visible={'edit': 'visible', 'view': 'visible', 'add': 'visible',
                      'secondary': 'invisible'},
             catalog_name='bika_setup_catalog',
@@ -146,7 +144,6 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             label = _("Analysis Profile"),
             description = _("The Analysis Profile selection for this template"),
-            size=12,
             visible={'edit': 'visible', 'view': 'visible', 'add': 'visible',
                      'secondary': 'invisible'},
             catalog_name='bika_setup_catalog',
