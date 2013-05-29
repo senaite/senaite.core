@@ -369,8 +369,12 @@ $(document).ready(function(){
 		}
 	});
 
-	// Archetypes :int inputs get numeric class
-	$("input[name*='\\:int']").addClass('numeric');
+	// Archetypes :int and IntegerWidget inputs get filtered
+	$("input[name*='\\:int'], .ArchetypesIntegerWidget input").keyup(function(e) {
+	    if (/\D/g.test(this.value)) {
+	        this.value = this.value.replace(/\D/g, '');
+	    }
+	});
 
 });
 }(jQuery));

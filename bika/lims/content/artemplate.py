@@ -14,6 +14,7 @@ from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.browser.widgets import ARTemplatePartitionsWidget
 from bika.lims.browser.widgets import ARTemplateAnalysesWidget
 from bika.lims.browser.widgets import RecordsWidget
+from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from zope.interface import Interface, implements
@@ -32,8 +33,15 @@ schema = BikaSchema.copy() + Schema((
         accessor = 'getSamplePoint',
         edit_accessor = 'getSamplePoint',
         mutator = 'setSamplePoint',
-        widget = StringWidget(
-            label = _("Sample Point"),
+        widget=ReferenceWidget(
+            label=_("Sample Point"),
+            description=_("Location where sample was taken"),
+            size=12,
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible',
+                     'secondary': 'invisible'},
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
+            showOn=True,
         ),
     ),
     ComputedField(
@@ -51,8 +59,15 @@ schema = BikaSchema.copy() + Schema((
         accessor = 'getSampleType',
         edit_accessor = 'getSampleType',
         mutator = 'setSampleType',
-        widget = StringWidget(
-            label = _("Sample Type"),
+        widget=ReferenceWidget(
+            label=_("Sample Type"),
+            description=_("Create a new sample of this type"),
+            size=12,
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible',
+                     'secondary': 'invisible'},
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
+            showOn=True,
         ),
     ),
     ComputedField(

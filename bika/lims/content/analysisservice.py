@@ -448,6 +448,10 @@ schema = BikaSchema.copy() + Schema((
                            'intercept_max': _('Range max'),
                            'errorvalue': _('Uncertainty value'),
                            },
+        subfield_validators = {'intercept_min': 'uncertainties_validator',
+                               'intercept_max': 'uncertainties_validator',
+                               'errorvalue': 'uncertainties_validator',
+                               },
         widget = RecordsWidget(
             label = _("Uncertainty"),
             description = _("Specify the uncertainty value for a given range, e.g. for results "
@@ -464,7 +468,8 @@ schema = BikaSchema.copy() + Schema((
         required_subfields = ('ResultValue','ResultText'),
         subfield_labels = {'ResultValue': _('Result Value'),
                            'ResultText': _('Display Value'),},
-        subfield_validators = {'ResultValue': 'resultoptionsvalidator'},
+        subfield_validators = {'ResultValue': 'resultoptionsvalidator',
+                               'ResultText': 'resultoptionsvalidator'},
         subfield_sizes = {'ResultValue': 5,
                            'ResultText': 25,
                            },
