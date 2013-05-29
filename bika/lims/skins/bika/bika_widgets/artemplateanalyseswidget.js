@@ -202,56 +202,6 @@ function calcdependencies(elements, auto_yes) {
 	}
 }
 
-//////////////////////////////////////
-function addPart(container,preservation){
-	if(container == null || container == undefined){
-		container = '';
-	} else {
-		container = container[0];
-	}
-	if(preservation == null || preservation == undefined){
-		preservation = '';
-	} else {
-		preservation = preservation[0];
-	}
-	highest_part = '';
-	from_tr = '';
-	$.each($('#partitions td.part_id'), function(i,v){
-		partid = $($(v).children()[1]).text();
-		if (partid > highest_part){
-			from_tr = $(v).parent();
-			highest_part = partid;
-		}
-	});
-	highest_part = highest_part.split("-")[1];
-	next_part = parseInt(highest_part,10) + 1;
-
-	// copy and re-format new partition table row
-	uid	= $(from_tr).attr('uid');
-	to_tr = $(from_tr).clone();
-	$(to_tr).attr('id', 'folder-contents-item-part-'+next_part);
-	$(to_tr).attr('uid', 'part-'+next_part);
-	$(to_tr).find("#"+uid+"_row_data").attr('id', "part-"+next_part+"_row_data").attr('name', "row_data."+next_part+":records");
-	$(to_tr).find("#"+uid).attr('id', 'part-'+next_part);
-	$(to_tr).find("input[value='"+uid+"']").attr('value', 'part-'+next_part);
-	$(to_tr).find("[uid='"+uid+"']").attr('uid', 'part-'+next_part);
-	$(to_tr).find("span[uid='"+uid+"']").attr('uid', 'part-'+next_part);
-	$(to_tr).find("input[name^='part_id']").attr('name', "part_id.part-"+next_part+":records").attr('value', 'part-'+next_part);
-	$(to_tr).find("select[field='container_uid']").attr('name', "container_uid.part-"+next_part+":records");
-	$(to_tr).find("select[field='preservation_uid']").attr('name', "preservation_uid.part-"+next_part+":records");
-	$($($(to_tr).children('td')[0]).children()[1]).empty().append('part-'+next_part);
-
-	// set part and container values
-	$(to_tr).find("select[field='container_uid']").val(container);
-	$(to_tr).find("select[field='preservation_uid']").val(preservation);
-	$($("#partitions tbody")[0]).append($(to_tr));
-
-	// add this part to Partition selectors in Analyses tab
-	$.each($('select[name^="Partition\\."]'), function(i,v){
-		$(v).append($("<option value='part-"+next_part+"'>part-"+next_part+"</option>"));
-	});
-}
-
 ////////////////////////////////////////
 function calculate_parts(){
 
@@ -285,7 +235,7 @@ function calculate_parts(){
 ////////////////////////////////////////
 function setAnalysisProfile(){
 	// get profile services list
-	analysisprofiles = $.parseJSON($("#AnalysisProfiles").attr('value'));
+	var analysisprofiles = $.parseJSON($("#AnalysisProfiles").attr('value'));
 	// clear existing selection
 	$('input[id^=analyses_cb_]').filter(":checked").attr("checked", false);
 	$.each($("select[name^=Partition]"), function(i,element){
@@ -296,8 +246,8 @@ function setAnalysisProfile(){
 	});
 
 	// select individual services
-	profile_uid = $(this).val();
-	service_uids = analysisprofiles[profile_uid];
+	var profile_uid = $(this).attr('uid');
+	var service_uids = analysisprofiles[profile_uid];
 	if (service_uids != undefined && service_uids != null) {
 		$.each(service_uids, function(i,service_uid){
 			check_service(service_uid);
@@ -305,69 +255,61 @@ function setAnalysisProfile(){
 		});
 	}
 	// calculate automatic partitions
-	parts = calculate_parts();
+	var parts = calculate_parts();
+
 	// reset partition table
-	$.each($('#partitions td.part_id'), function(i,v){
-		partid = $($(v).children()[1]).text();
-		if (partid != 'part-1'){
-			// remove part TR from partition table
-			$("tr[uid="+partid+"]").remove();
-			// remove part from Partition selectors
-			$.each($('select[name^="Partition\\."]'), function(i,v){
-				$(v).find("option[value='"+partid+"']").remove();
-			});
-		}
-	});
+	for (var i = $(".records_row_Partitions").length - 1; i >= 1; i--) {
+		e = $(".records_row_Partitions")[i];
+		// remove part from Partition selector dropdowns
+		part = $($(e).find("input[id*='Partitions-part_id']")[0]).val();
+		$('select[name^="Partition\\."]').find("option[value='"+part+"']").remove();
+		// remove row from partition list
+		$(e).remove();
+	};
 
-	// set container and preservation of first part
-	if (parts.length > 0){
-		first_tr = $($('#partitions td.part_id')[0]).parent();
-		if(parts[0]['container'] != undefined
-		   && parts[0]['container'] != null){
-			container = parts[0]['container'][0];
-
-			// if container is defined, but not in bika_utils.data, then it's
-			// a container type.
+	function setPartitionFields(part_nr, part_data) {
+		var first_part_row = $(".records_row_Partitions")[part_nr];
+		var container = '';
+		var container_title = '';
+		if(part_data['container'] != undefined && part_data['container'] != null){
+			container = part_data['container'][0];
+			// if container is not in bika_utils.data, it's a container type.
+			// resolve to a container.
 			if (!(container in window.bika_utils.data['containers'])){
 				for(c in window.bika_utils.data['containers']){
 					c_obj = window.bika_utils.data['containers'][c];
 					if(c_obj['containertype'] == container){
-						container = c_obj['uid'];
+						container = c_obj.uid;
 						break
 					}
 				}
 			}
-			if (!(container in window.bika_utils.data['containers'])){
-				// no match
-				container = '';
+			if(container != ''){
+				container_title = window.bika_utils.data['containers'][container].title;
 			}
-		} else {
-			container = '';
 		}
-		$(first_tr).find("select[field='container_uid']").val(container);
+		$(first_part_row).find("input[id*='Partitions-Container']").val(container_title);
 
-		if(parts[0]['preservation'] != undefined
-		    && parts[0]['preservation'] != null){
-			preservation = parts[0]['preservation'][0];
-		} else {
-			preservation = '';
+        var preservation = '';
+        var preservation_title = '';
+		if(part_data['preservation'] != undefined && part_data['preservation'] != null){
+			preservation = part_data['preservation'][0];
+			preservation_title = window.bika_utils.data['preservations'][preservation].title;
 		}
-		$(first_tr).find("select[field='preservation_uid']").val(preservation);
+		$(first_part_row).find("input[id*='Partitions-Preservation']").val(preservation_title);
 	}
 
-	// set container and preservation of part-2 and up
+    // Edit existing first row
+	if (parts.length > 0){
+		setPartitionFields(0, parts[0])
+	}
+
+	// Add rows and set container and preservation of part-2 and up
 	nr_parts = parts.length;
 	for(i=1;i<parts.length;i++){
-		part = parts[i];
-		addPart(part['container'], part['preservation']);
+		$("#Partitions_more").click();
+		setPartitionFields(i, parts[i]);
 	}
-	// Set new part numbers
-	$.each(parts, function(p,part){
-		$.each(part['services'], function(s,service_uid){
-			partnr = p+1;
-			$("[name=Partition."+service_uid+":records]").val('part-'+partnr);
-		});
-	});
 }
 
 ////////////////////////////////////////
@@ -379,7 +321,7 @@ function click_uid_checkbox(){
 	} else {
 		uncheck_service(service_uid);
 	}
-	$("#AnalysisProfile\\:list").val('');
+	$("#AnalysisProfile").val('');
 }
 
 $(document).ready(function(){
@@ -389,7 +331,7 @@ $(document).ready(function(){
 
 	$("[name='uids:list']").live('click', click_uid_checkbox);
 
-	$("#AnalysisProfile\\:list").change(setAnalysisProfile);
+	$("#AnalysisProfile").bind('selected', setAnalysisProfile);
 
 });
 }(jQuery));

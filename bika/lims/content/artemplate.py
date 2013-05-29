@@ -109,7 +109,7 @@ schema = BikaSchema.copy() + Schema((
         default = [{'part_id':'part-1',
                     'Container':'',
                     'Preservation':''}],
-        widget=RecordsWidget(
+        widget=ARTemplatePartitionsWidget(
             label = _("Sample Partitions"),
             description = _("Configure the sample partitions and preservations "
                             "for this template. Assign analyses to the different "
@@ -196,51 +196,5 @@ class ARTemplate(BaseContent):
             items.append((p.UID(), title))
         items = [['','']] + list(items)
         return DisplayList(items)
-
-    def setSampleType(self, value, **kw):
-        """ convert object title to UID
-        """
-        uid = None
-        if value:
-            bsc = getToolByName(self, 'bika_setup_catalog')
-            items = bsc(portal_type = 'SampleType', title = value)
-            if not items:
-                msg = _("${sampletype} is not a valid sample type",
-                        mapping={'sampletype':value})
-                self.plone_utils.addPortalMessage(msg, 'error')
-                self.REQUEST.response.redirect(self.absolute_url())
-                return False
-            uid = items[0].UID
-        return self.Schema()['SampleType'].set(self, uid)
-
-    def getSampleType(self, **kw):
-        """ retrieve referenced object and return it's title
-        """
-        item = self.Schema()['SampleType'].get(self)
-        return item and item.Title() or ''
-
-    def setSamplePoint(self, value, **kw):
-        """ convert object title to UID
-        """
-        uid = None
-        if value:
-            # Strip "Lab: " from sample point title
-            value = value.replace("%s: " % _("Lab"), '')
-            bsc = getToolByName(self, 'bika_setup_catalog')
-            items = bsc(portal_type = 'SamplePoint', title = value)
-            if not items:
-                msg = _("${samplepoint} is not a valid sample point",
-                        mapping={'samplepoint':value})
-                self.plone_utils.addPortalMessage(msg, 'error')
-                self.REQUEST.response.redirect(self.absolute_url())
-                return False
-            uid = items[0].UID
-        return self.Schema()['SamplePoint'].set(self, uid)
-
-    def getSamplePoint(self, **kw):
-        """ retrieve referenced object and return it's title
-        """
-        item = self.Schema()['SamplePoint'].get(self)
-        return item and item.Title() or ''
 
 registerType(ARTemplate, PROJECTNAME)
