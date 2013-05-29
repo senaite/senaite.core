@@ -122,7 +122,7 @@ schema = BikaSchema.copy() + Schema((
                         {'columnName':'Container', 'width':'30', 'label':_('Container')},
                         {'columnName':'Description', 'width':'70', 'label':_('Description')}],
                     'url': 'getcontainers',
-                    'showOn': False,
+                    'showOn': True,
                     'width': '550px'
                 },
                 'Preservation': {
@@ -130,7 +130,7 @@ schema = BikaSchema.copy() + Schema((
                         {'columnName':'Preservation', 'width':'30', 'label':_('Preservation')},
                         {'columnName':'Description', 'width':'70', 'label':_('Description')}],
                     'url': 'getpreservations',
-                    'showOn': False,
+                    'showOn': True,
                     'width': '550px'
                 },
             },
@@ -143,10 +143,15 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('AnalysisProfile',),
         vocabulary = 'AnalysisProfiles',
         relationship = 'ARTemplateAnalysisProfile',
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
+        widget=ReferenceWidget(
             label = _("Analysis Profile"),
             description = _("The Analysis Profile selection for this template"),
+            size=12,
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible',
+                     'secondary': 'invisible'},
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
+            showOn=True,
         ),
     ),
     RecordsField('Analyses',
