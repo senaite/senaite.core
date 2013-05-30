@@ -6,7 +6,7 @@ jQuery(function($){
         function referencewidget_lookups(elements){
             // Any reference widgets that don't already have combogrid widgets
             if(elements == undefined){
-                var inputs = $("[combogrid_options]").not('.has_combogrid_widget');
+                var inputs = $(".ArchetypesReferenceWidget [combogrid_options]").not('.has_combogrid_widget');
             } else {
                 var inputs = elements;
             }
@@ -16,9 +16,9 @@ jQuery(function($){
                 if(options == '' || options == undefined || options == null){
                     continue;
                 }
-                
+
                 // Prevent from saving previous record when input value is empty
-                // By default, a recordwidget input element gets an empty value 
+                // By default, a recordwidget input element gets an empty value
                 // when receives the focus, so the underneath values must be
                 // cleared too.
                 var elName = $(element).attr('name');
@@ -33,7 +33,7 @@ jQuery(function($){
 	                    $(this).trigger("unselected", [val,uid]);
                 	}
             	});
-                
+
                 options.select = function(event, ui){
                     event.preventDefault();
                     // Set value in activated element (must exist in colModel!)
