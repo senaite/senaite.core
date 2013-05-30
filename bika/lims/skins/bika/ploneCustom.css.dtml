@@ -328,6 +328,26 @@ th.expanded {
   padding-left:1.25em;
 }
 
+/*
+ * Header tables (header_table.pt)
+ */
+.header_table .field{
+   margin-bottom:0;
+}
+.header_table td.key{
+  height:1em !important;
+  padding: 2px 1em 2px 2px;
+}
+.header_table td.value{
+  height:1em !important;
+  padding: 2px 2em 2px 2px;
+}
+.header_table .odd {
+  background-color:transparent;
+}
+.header_table .even {
+  background-color:#efefef;
+}
 
 /*
  * Analysis Request tables

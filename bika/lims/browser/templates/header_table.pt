@@ -1,137 +1,51 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:tal="http://xml.zope.org/namespaces/tal"
-	xmlns:metal="http://xml.zope.org/namespaces/metal"
-	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-	i18n:domain="bika">
-<head>
-</head>
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  i18n:domain="bika">
 
-<body
-	tal:condition="view/header_rows"
-	tal:define="
-		columns python:hasattr(view, 'header_columns') and view.header_columns or 3;
-		header_rows python:[row for row in view.header_rows if row['condition']];
-		header_rows python: [ header_rows[x:x+columns]
-		                      for x in range(0, len(header_rows), columns)];
-		empty_cells python:columns - len(header_rows[-1]);
-		portal context/@@plone_portal_state/portal;
-		global edit_enabled python:False;">
+  <head tal:define="portal context/@@plone_portal_state/portal;">
+      <script type="text/javascript"
+          tal:attributes="src python:portal.absolute_url() + '/bika_widgets/datetimewidget.js'"></script>
+      <script type="text/javascript"
+          tal:attributes="src python:portal.absolute_url() + '/bika_widgets/referencewidget.js'"></script>
+  </head>
 
-	<form method="post" name="header_form">
-	<input type="hidden" name="header_submitted" value="1" />
-	<span tal:replace="structure context/@@authenticator/authenticator"/>
-	<table class="header_table" cellpadding="0" cellspacing="0">
-
-		<tal:row repeat="row header_rows">
-		<tr>
-
-		<tal:item repeat="item row">
-			<th
-				style="white-space:nowrap;"
-				tal:attributes="class python:repeat['item'].index > 0 and 'column_padding' or ''">
-				<span tal:content="structure item/title"/>
-				<span
-					tal:condition="python: item['allow_edit'] and item.get('required', False)"
-					class="fieldRequired">&nbsp;</span>
-			</th>
-			<td class="left"
-				tal:attributes="style python:item['type'] == 'choices' and 'vertical-align:top' or '';">
-
-				<tal:view
-					condition="not:item/allow_edit"
-					tal:define="value python:item.get('formatted_value', item.get('value'));">
-					<!-- VIEW for text / date / choices -->
-					<span
-						tal:condition="python:item['type'] in ('text','date','choices')"
-						tal:replace="structure value"/>
-					<!-- VIEW for boolean -->
-					<input
-						style="font-size: 100%"
-						tal:condition="python:item['type'] in ('boolean')"
-						type="checkbox"
-						disabled="disabled"
-						tal:attributes="
-							checked python:value and 'checked' or '';"/>
-				</tal:view>
-
-				<tal:edit condition="item/allow_edit">
-					<tal:define define="global edit_enabled python:True"/>
-					<!-- EDIT for text -->
-					<input
-						style="font-size: 100%"
-						tal:condition="python:item['type'] == 'text'"
-						type="text"
-						size="20"
-						tal:attributes="
-							class python:item.get('class', '');
-							name item/id;
-							id item/id;
-							value item/value;"/>
-					<!-- EDIT for choices -->
-		            <div style="width:130px; border:none;text-align:left;">
-					<select
-						style="width:126px; position:absolute; z-index:+1;font-size: 100%"
-						onactivate="this.style.width='auto';"
-						onchange="this.blur();"
-						onblur="this.style.width='126px';"
-						tal:condition="python:item['type'] == 'choices'"
-						tal:attributes="
-							class python:item.get('class', '');
-							name item/id;
-							id item/id;">
-						<option
-							tal:condition="python: (item.get('required', False) and not item.get('value', ''))
-							                        or not item.get('required', False)"
-							tal:attributes="id python:'%s_empty_option'%(item['id']);"
-							value=""></option>
-						<tal:options tal:repeat="option python:item['vocabulary'].keys()">
-							<option
-								tal:attributes="
-									value python:option;
-									selected python:item['value'] == option and 'selected' or '';"
-								tal:content="python:item['vocabulary'].getValue(option)">
-							</option>
-						</tal:options>
-					</select>
-					</div>
-					<!-- EDIT for boolean -->
-					<input
-						style="font-size: 100%"
-						tal:condition="python:item['type'] in ('boolean')"
-						type="checkbox"
-						tal:attributes="
-							name item/id;
-							id item/id;
-							checked python:item['value'] and 'checked' or '';"/>
-
-				</tal:edit>
-
-			</td>
-		</tal:item>
-		<tal:e tal:condition="repeat/row/end" tal:repeat="e python:range(empty_cells)">
-			<th>&nbsp;</th>
-			<td>&nbsp;</td>
-		</tal:e>
-		</tr>
-		</tal:row>
-
-	</table>
-
-	<span style="padding-left:8px;">
-	<tal:buttons
-		repeat="button view/header_buttons"
-		tal:condition="edit_enabled">
-		<input
-			class="context workflow_action_button action_button allowMultiSubmit"
-			type="submit"
-			tal:attributes="
-				value button/title;
-				name button/name;"/>
-	</tal:buttons>
-	</span>
-
-	</form>
-
-</body>
+  <body
+    tal:define="portal context/@@plone_portal_state/portal;
+                sublists python:view.sublists('edit');
+                errors view/errors"
+    tal:condition="sublists">
+    <form method="post" name="header_form">
+      <input type="hidden" name="header_table_submitted" value="1" />
+      <span tal:replace="structure context/@@authenticator/authenticator"/>
+      <table class="header_table">
+        <tr tal:repeat="row_nr python:range(len(sublists[0]))">
+          <tal:repeat repeat="col_nr python:range(3)">
+            <tal:print_blanks condition="python:len(sublists[col_nr]) <= row_nr">
+              <td tal:attributes="class python:row_nr%2 and 'key odd' or 'key even'">&nbsp;</td>
+              <td tal:attributes="class python:row_nr%2 and 'value odd' or 'value even'">&nbsp;</td>
+            </tal:print_blanks>
+            <tal:skip_blanks condition="python:len(sublists[col_nr]) > row_nr">
+              <tal:action define='action python:sublists[col_nr][row_nr]'>
+                <td tal:attributes="class python:row_nr%2 and 'key odd' or 'key even'">
+                  <span
+                    tal:replace="python:action['widget'].label"/>&nbsp;
+                  <span class="fieldRequired"
+                        tal:condition="python:action['field'].required and action['mode'] == 'edit'"
+                        title="Required"
+                        i18n:attributes="title title_required;"> </span>
+                </td>
+                <td tal:attributes="class python:row_nr%2 and 'value odd' or 'value even'">
+                  <metal:field use-macro="python:context.widget(
+                                                     action['field'].getName(),
+                                                     mode=action['mode'])"/>
+                </td>
+              </tal:action>
+            </tal:skip_blanks>
+          </tal:repeat>
+        </tr>
+      </table>
+    </form>
+  </body>
 </html>
-
