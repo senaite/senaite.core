@@ -80,6 +80,7 @@ class ajaxGetPreservations:
             or brains
 
         rows = [{'UID': p.UID,
+                 'preservation_uid': p.UID,
                  'Preservation': p.Title,
                  'Description': p.Description}
                 for p in brains]

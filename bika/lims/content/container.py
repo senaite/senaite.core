@@ -145,6 +145,7 @@ class ajaxGetContainers:
             or brains
 
         rows = [{'UID': p.UID,
+                 'container_uid': p.UID,
                  'Container': p.Title,
                  'Description': p.Description}
                 for p in brains]

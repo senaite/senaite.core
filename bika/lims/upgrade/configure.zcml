@@ -183,4 +183,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Changes to the way ARTemplate stores partition information"
+        description="Adds title subfields."
+        source="1126"
+        destination="1127"
+        handler="bika.lims.upgrade.to1127.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>

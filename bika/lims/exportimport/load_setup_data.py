@@ -204,7 +204,7 @@ class LoadSetupData(BrowserView):
             self.load_reference_suppliers(sheets['Reference Suppliers'])
         if 'Reference Supplier Contacts' in sheets:
             self.load_reference_supplier_contacts(sheets['Reference Supplier Contacts'])
-            
+
         if 'Worksheet Template Layouts' in sheets:
             self.load_wst_layouts(sheets['Worksheet Template Layouts'])
         if 'Worksheet Template Services' in sheets:
@@ -248,7 +248,7 @@ class LoadSetupData(BrowserView):
             self.load_id_prefixes(sheets['ID Prefixes'])
         if 'Attachment Types' in sheets:
             self.load_attachment_types(sheets['Attachment Types'])
-        
+
     def __call__(self):
         form = self.request.form
 
@@ -388,7 +388,7 @@ class LoadSetupData(BrowserView):
                       'hours': int(row['RetentionPeriod_hours'] and row['RetentionPeriod_hours'] or 0),
                       'minutes': int(row['RetentionPeriod_minutes'] and row['RetentionPeriod_minutes'] or 0),
                       }
-    
+
                 obj.edit(title = row['title'],
                          description = row.get('description', ''),
                          RetentionPeriod = RP)
@@ -664,10 +664,10 @@ class LoadSetupData(BrowserView):
         logger.info("Loading Instruments...")
         folder = self.context.bika_setup.bika_instruments
         self.instruments = {}
-        rows = self.get_rows(sheet, 3) 
+        rows = self.get_rows(sheet, 3)
         for row in rows:
-            if (not row['Type'] 
-                or not row['title'] 
+            if (not row['Type']
+                or not row['title']
                 or not row['Supplier']
                 or not row['Brand']):
                 continue
@@ -734,7 +734,7 @@ class LoadSetupData(BrowserView):
         for row in rows:
             if row['title']:
                 _id = folder.invokeFactory('SampleType', id=tmpID())
-                obj = folder[_id]            
+                obj = folder[_id]
                 obj.edit(title = row['title'],
                          description = row.get('description', ''),
                          RetentionPeriod = {'days':row['RetentionPeriod'] and row['RetentionPeriod'] or 0,'hours':0,'minutes':0},
@@ -810,7 +810,7 @@ class LoadSetupData(BrowserView):
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
                 self.sampleconditions[row['Title']] = obj
-    
+
     def load_analysis_categories(self, sheet):
         logger.info("Loading Analysis categories...")
         folder = self.context.bika_setup.bika_analysiscategories
@@ -1036,12 +1036,16 @@ class LoadSetupData(BrowserView):
         for row in rows:
             if row['ARTemplate'] not in self.artemplate_partitions.keys():
                 self.artemplate_partitions[row['ARTemplate']] = []
+            container = self.containers[row['container']] \
+                if row['container'] else []
+            preservation = self.preservations[row['preservation']] \
+                if row['preservation'] else []
             self.artemplate_partitions[row['ARTemplate']].append({
                 'part_id': row['part_id'],
-                'container_uid': row['container']
-                and self.containers[row['container']].UID() or [],
-                'preservation_uid': row['preservation']
-                and self.preservations[row['preservation']].UID() or row['preservation']})
+                'Container': container.Title(),
+                'container_uid': container.UID(),
+                'Preservation': preservation.Title(),
+                'preservation_uid': preservation.UID()})
 
     def load_artemplates(self, sheet):
         logger.info("Loading Analysis Request Templates...")
@@ -1064,14 +1068,8 @@ class LoadSetupData(BrowserView):
             else:
                 folder = self.clients[client_title]
 
-            if row['SampleType_title']:
-                sampletypes = row['SampleType_title']
-            else:
-                sampletypes = None
-            if row['SamplePoint_title']:
-                samplepoints = row['SamplePoint_title']
-            else:
-                samplepoints = None
+            sampletype = self.sampletypes.get(row['SampleType_title'], None)
+            samplepoint = self.sampletypes.get(row['SamplePoint_title'], None)
 
             _id = folder.invokeFactory('ARTemplate', id=tmpID())
             obj = folder[_id]
@@ -1079,8 +1077,8 @@ class LoadSetupData(BrowserView):
                      description = row.get('description', ''),
                      Remarks = row.get('Remarks',''),
                      ReportDryMatter = bool(row['ReportDryMatter']))
-            obj.setSampleType(sampletypes)
-            obj.setSamplePoint(samplepoints)
+            obj.setSampleType(sampletype)
+            obj.setSamplePoint(samplepoint)
             obj.setPartitions(partitions)
             obj.setAnalyses(analyses)
             obj.unmarkCreationFlag()

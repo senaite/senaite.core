@@ -50,12 +50,11 @@
 
 	<tr class="header">
 		<tal:block repeat="key python:field.getSubfields()">
-			<th>
+			<th tal:condition="python:
+				field.testSubfieldCondition(key,here,portal,template)
+				and (not hasattr(field, 'subfield_hidden')
+				     or field.subfield_hidden.get(key, False) == False)">
 				<span
-					tal:condition="python:
-						field.testSubfieldCondition(key,here,portal,template)
-						and (not hasattr(field, 'subfield_hidden')
-						     or field.subfield_hidden.get(key, False) == False)"
 					tal:content="structure python:
 						here.translate(domain=i18n_domain,
 						               msgid=field.getSubfieldLabel(key), default=field.getSubfieldLabel(key))">
@@ -64,8 +63,8 @@
 				<span tal:condition="python:key in field.required_subfields" class="fieldRequired">&nbsp;</span>
 			</th>
 		</tal:block>
-		<th tal:condition="widget/allowDelete">
-			<span i18n:translate="" id="delete_this_entry"></span>
+		<th>
+			<span tal:condition="widget/allowDelete" i18n:translate="" id="delete_this_entry"></span>
 		</th>
 	</tr>
 
@@ -237,29 +236,31 @@
 
 				</tal:block>
 
-				<!-- Hidden fields -->
-
-				<tal:hidden condition="python:hasattr(field, 'subfield_hidden') and field.subfield_hidden.get(key, False) == True">
-					<input type="hidden"
-						name=""
-						value=""
-						tal:attributes="
-								id string:${fieldName}-${key}-${repeat/idx/index};
-								name string:${fieldName}.${key}:records:ignore_empty;
-								value python:field.getSubfieldValue(values, idx, key);"/>
-				</tal:hidden>
-
 			</td>
 
 		</tal:keys>
 
-		<!-- delete -->
 
-		<td tal:condition="widget/allowDelete">
-			<img class="rw_deletebtn"
+		<td>
+		<!-- delete -->
+			<img tal:condition="widget/allowDelete"
+				class="rw_deletebtn"
 				tal:attributes="
 						id string:delete-row-${repeat/idx/index};
 						src string:${portal/absolute_url}/++resource++bika.lims.images/delete.png"/>
+
+			<!-- Hidden fields -->
+			<tal:keys tal:repeat="key python:field.getSubfields()">
+				<input type="hidden"
+					tal:condition="python:hasattr(field, 'subfield_hidden')
+					               and field.subfield_hidden.get(key, False) == True"
+					name=""
+					value=""
+					tal:attributes="
+							id string:${fieldName}-${key}-${repeat/idx/index};
+							name string:${fieldName}.${key}:records:ignore_empty;
+							value python:field.getSubfieldValue(values, idx, key);"/>
+			</tal:keys>
 		</td>
 
 	</tr>
