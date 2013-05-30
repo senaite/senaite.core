@@ -1,0 +1,7 @@
+
+    <p></p>
+	<label for='xml_file'>File</label>&nbsp;
+    <input type="file" name="xml_file" id="xml_file"/>
+    &nbsp;&nbsp;
+	<input name="firstsubmit" type="submit" value="Submit" i18n:attributes="value"/>
+    <p></p>

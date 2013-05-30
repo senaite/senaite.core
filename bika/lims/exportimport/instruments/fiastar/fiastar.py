@@ -99,7 +99,7 @@ def Import(context,request):
 
     template = "fiastar_import.pt"
 
-    csvfile = request.form['file']
+    csvfile = request.form['fiastar_file']
 
     bac = getToolByName(context, 'bika_analysis_catalog')
     uc = getToolByName(context, 'uid_catalog')
@@ -171,6 +171,9 @@ def Import(context,request):
         rows.append(row)
 
     log = []
+    if len(rows) == 0:
+        res['log'].append(context.translate(_("No valid file or format")))
+
     for row in rows:
         param = row['Parameter']
         service = kw_map[param]

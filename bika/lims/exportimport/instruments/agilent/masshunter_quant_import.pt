@@ -1,0 +1,12 @@
+    <p></p>
+    
+    <label for='amhq_file'>File</label>&nbsp;
+    <input type="file" name="amhq_file" id="amhq_file"/>
+    &nbsp;&nbsp;
+    <label for='amhq_format'>Format</label>&nbsp;    
+    <select name="amhq_format" id="amhq_format">
+        <option value='csv'>CSV</option>
+    </select>
+    &nbsp;&nbsp;
+    <input name="firstsubmit" type="submit" value="Submit" i18n:attributes="value"/>
+    <p></p>

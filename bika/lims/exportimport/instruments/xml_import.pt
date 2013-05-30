@@ -1,4 +1,0 @@
-
-    <p></p>
-	<input type="file" name="file"/>
-	<input name="firstsubmit" type="submit" value="Submit" i18n:attributes="value"/>

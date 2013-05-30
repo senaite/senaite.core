@@ -115,7 +115,7 @@ def getDataInterfaces(context):
     from bika.lims.exportimport import instruments
     exims = [('',context.translate(_('None')))]
     for exim_id in instruments.__all__:
-        exim = getattr(instruments, exim_id)
+        exim = instruments.getExim(exim_id)
         exims.append((exim_id, exim.title))
     return DisplayList(exims)
 

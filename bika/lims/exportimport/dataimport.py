@@ -46,7 +46,7 @@ class ImportView(BrowserView):
                 lsd = LoadSetupData(self.context, self.request)
                 return lsd()
             else:
-                exim = getattr(instruments, self.request['exim'])
+                exim = instruments.getExim(self.request['exim'])
                 return exim.Import(self.context, self.request)
         else:
             return self.template()
@@ -54,5 +54,5 @@ class ImportView(BrowserView):
 class ajaxGetImportTemplate(BrowserView):
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
-        exim = self.request.get('exim')
+        exim = self.request.get('exim').replace(".", "/")
         return ViewPageTemplateFile("instruments/%s_import.pt" % exim)(self)

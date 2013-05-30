@@ -1,0 +1,13 @@
+
+    <p></p>
+    
+    <label for='fiastar_file'>File</label>&nbsp;
+	<input type="file" name="fiastar_file" id="fiastar_file"/>
+    &nbsp;&nbsp;
+    <label for='fiastar_format'>Format</label>&nbsp;    
+    <select name="fiastar_format" id="fiastar_format">
+        <option value='csv'>CSV</option>
+    </select>
+    &nbsp;&nbsp;
+    <input name="firstsubmit" type="submit" value="Submit" i18n:attributes="value"/>
+    <p></p>

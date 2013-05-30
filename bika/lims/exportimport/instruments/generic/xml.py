@@ -1,5 +1,6 @@
 """ General XML Worksheet exporter and instrument importer
 """
+import json
 
 title = "Generic XML"
 
@@ -10,8 +11,15 @@ def Export(analyses):
     """
     return "aaa"
 
-def Import(xmlstr):
+def Import(context, request):
     """ Read analysis results from an XML string
     """
-    return "aaa"
+    errors = []
+    logs = []
+
+    # Do import stuff here
+    logs.append("Generic XML Import is not available")
+
+    results = {'errors': errors, 'log': logs}
+    return json.dumps(results)
 

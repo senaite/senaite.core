@@ -42,17 +42,22 @@ $(document).ready(function(){
 			data: form.formToArray(),
 			dataType: 'json',
 			success: function(responseText, statusText, xhr, $form){
-
+				$("#intermediate").empty()
 				if(responseText['errors'].length > 0){
-					portalMessage(responseText['errors']);
+					str = "<h3>"+ _("Errors found") + "</h3><ul class='errors'>"					
+					$.each(responseText['errors'], function(i,v){
+						str = str + "<li>" + v + "</li>";
+					});
+					str = str + "</ul>";
+					$("#intermediate").append(str).toggle(true);
 				}
 				if(responseText['log'].length > 0){
-					str = "<ul>"
+					str = "<h3>"+ _("Log trace") + "</h3><ul>"
 					$.each(responseText['log'], function(i,v){
 						str = str + "<li>" + v + "</li>";
 					});
 					str = str + "</ul>";
-					$("#intermediate").empty().append(str).toggle(true);
+					$("#intermediate").append(str).toggle(true);
 				}
 			}
 		}
