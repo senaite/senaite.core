@@ -21,7 +21,7 @@ def upgrade(tool):
     mp = portal.manage_permission
     mp(AddAnalysisSpec, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
     mp(AddSamplingDeviation, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
-    mp(AddSamplingMatrix, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
+    mp(AddSampleMatrix, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
     portal.reindexObject()
 
     return True
