@@ -9,8 +9,10 @@ from bika.lims.browser.analyses import QCAnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.log import LogView
+from bika.lims.browser.header_table import HeaderTableView
 from bika.lims.browser.publish import doPublish
 from bika.lims.browser.sample import SamplePartitionsView
+from bika.lims.browser.header_table import HeaderTableView
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.idserver import renameAfterCreation
@@ -608,7 +610,6 @@ class AnalysisRequestViewView(BrowserView):
 
     implements(IViewView)
     template = ViewPageTemplateFile("templates/analysisrequest_view.pt")
-    header_table = ViewPageTemplateFile("templates/header_table.pt")
     messages = []
 
     def __init__(self, context, request):
@@ -623,11 +624,6 @@ class AnalysisRequestViewView(BrowserView):
         checkPermission = self.context.portal_membership.checkPermission
         getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
         workflow = getToolByName(self.context, 'portal_workflow')
-
-        ## Create header_table data rows
-        sample = self.context.getSample()
-        sp = sample.getSamplePoint()
-        st = sample.getSampleType()
 
         contact = self.context.getContact()
         contacts = []
@@ -649,280 +645,8 @@ class AnalysisRequestViewView(BrowserView):
             cc_emails.append(cc)
             cc_hrefs.append("<a href='mailto:%s'>%s</a>"%(cc, cc))
 
-        # Some sample fields are editable here
-        if workflow.getInfoFor(sample, 'cancellation_state') == "cancelled":
-            allow_sample_edit = False
-            allow_ar_edit = False
-        else:
-            edit_states = ['to_be_sampled', 'to_be_preserved', 'sample_due']
-            ar_edit_states = ['sample_registered', 'to_be_sampled', 'sampled',
-                              'to_be_preserved', 'sample_due', 'attachment_due',
-                              'sample_received', 'to_be_verified']
-            allow_sample_edit = checkPermission(EditSample, sample) \
-                and workflow.getInfoFor(sample, 'review_state') in edit_states
-            allow_ar_edit = checkPermission(EditAR, self.context) \
-                and workflow.getInfoFor(self.context, 'review_state') in ar_edit_states \
-                and workflow.getInfoFor(self.context, 'cancellation_state') == 'active'
-
-        SamplingWorkflowEnabled =\
-            self.context.bika_setup.getSamplingWorkflowEnabled()
-        samplers = getUsers(sample, ['Sampler', 'LabManager', 'Manager'])
-
-        samplingdeviations = DisplayList(
-            [(sd.UID, sd.title) for sd \
-             in bsc(portal_type = 'SamplingDeviation',
-                    inactive_state = 'active')])
-
-        sampleconditions = DisplayList(
-            [(sc.UID, sc.title) for sc \
-             in bsc(portal_type = 'SampleCondition',
-                    inactive_state = 'active')])
-
-        batch = self.context.getBatch()
-        if allow_ar_edit:
-            contactlabel = "<a href='#' id='open_cc_browser'>%s</a>" % \
-                          (self.context.translate(_('Contact Person')))
-        else:
-            contactlabel = self.context.translate(_('Contact Person'))
-
-        self.header_columns = 3
-        self.header_rows = [
-            {'id': 'SampleID',
-             'title': _('Sample ID'),
-             'allow_edit': False,
-             'value': "<a href='%s'>%s</a>"%(sample.absolute_url(), sample.id),
-             'condition':True,
-             'type': 'text'},
-            {'id': 'BatchID',
-             'title': _('Batch ID'),
-             'allow_edit': False,
-             'value': batch and batch.getBatchID() or '',
-             'condition':True,
-             'type': 'text'},
-            {'id': 'Contact',
-             'title': contactlabel,
-             'allow_edit': False,
-             'value': "<a href='%s'><span name='primary_contact' id='primary_contact' value='%s'>%s</span></a>\
-                       &lt;<a href='mailto:%s'>%s</a>&gt;" % (
-                        contact.absolute_url(),
-                        contact.UID(),
-                        contact.Title(),
-                        contact.getEmailAddress(),
-                        contact.getEmailAddress()),
-             'condition':True,
-             'type': 'text'},
-            {'id': 'ClientSampleID',
-             'title': _('Client SID'),
-             'allow_edit': allow_ar_edit,
-             'value': sample.getClientSampleID(),
-             'condition':True,
-             'type': 'text'},
-            {'id': 'ClientReference',
-             'title': _('Client Reference'),
-             'allow_edit': allow_ar_edit,
-             'value': sample.getClientReference(),
-             'condition':True,
-             'type': 'text'},
-            {'id': 'ClientOrderNumber',
-             'title': _('Client Order'),
-             'allow_edit': allow_ar_edit,
-             'value': self.context.getClientOrderNumber(),
-             'condition':True,
-             'type': 'text'},
-            {'id': 'SampleType',
-             'title': _('Sample Type'),
-             'allow_edit': allow_sample_edit,
-             'value': st and st.Title() or '',
-             'condition':True,
-             'type': 'text',
-             'required': True},
-            {'id': 'SampleMatrix',
-             'title': _('Sample Matrix'),
-             'allow_edit': allow_sample_edit,
-             'value': st.getSampleMatrix() and st.getSampleMatrix().Title() or '',
-             'condition':True,
-             'type': 'text'},
-            {'id': 'SamplePoint',
-             'title': _('Sample Point'),
-             'allow_edit': allow_sample_edit,
-             'value': sp and sp.Title() or '',
-             'condition':True,
-             'type': 'text'},
-            {'id': 'Creator',
-             'title': PMF('Creator'),
-             'allow_edit': False,
-             'value': self.user_fullname(self.context.Creator()),
-             'condition':True,
-             'type': 'text'},
-            {'id': 'DateCreated',
-             'title': PMF('Date Created'),
-             'allow_edit': False,
-             'value': self.context.created(),
-             'condition':True,
-             'formatted_value': self.ulocalized_time(self.context.created()),
-             'type': 'text'},
-            {'id': 'SamplingDate',
-             'title': _('Sampling Date'),
-             'allow_edit': allow_sample_edit,
-             'value': self.ulocalized_time(
-                sample.getSamplingDate(), long_format=1),
-             'formatted_value': self.ulocalized_time(
-                self.context.getSamplingDate()),
-             'condition':True,
-             'class': 'datepicker',
-             'type': 'text'},
-            {'id': 'DateSampled',
-             'title': _('Date Sampled'),
-             'allow_edit': allow_sample_edit,
-             'value': sample.getDateSampled() and self.ulocalized_time(
-                sample.getDateSampled()) or '',
-             'formatted_value': sample.getDateSampled() and self.ulocalized_time(
-                sample.getDateSampled()) or '',
-             'condition':SamplingWorkflowEnabled,
-             'class': 'datepicker',
-             'type': 'text',
-             'required': True},
-            {'id': 'Sampler',
-             'title': _('Sampler'),
-             'allow_edit': allow_sample_edit,
-             'value': sample.getSampler(),
-             'formatted_value': sample.getSampler(),
-             'condition':SamplingWorkflowEnabled,
-             'vocabulary': samplers,
-             'type': 'choices',
-             'required': True},
-            {'id': 'SamplingDeviation',
-             'title': _('Sampling Deviation'),
-             'allow_edit': allow_sample_edit,
-             'value': sample.getSamplingDeviation() and sample.getSamplingDeviation().UID() or '',
-             'formatted_value': sample.getSamplingDeviation() and sample.getSamplingDeviation().Title() or '',
-             'condition':True,
-             'vocabulary': samplingdeviations,
-             'type': 'choices'},
-            {'id': 'SampleCondition',
-             'title': _('Sample Condition'),
-             'allow_edit': allow_sample_edit,
-             'value': sample.getSampleCondition() and sample.getSampleCondition().UID() or '',
-             'formatted_value': sample.getSampleCondition() and sample.getSampleCondition().Title() or '',
-             'condition':True,
-             'vocabulary': sampleconditions,
-             'type': 'choices'},
-            {'id': 'DateReceived',
-             'title': _('Date Received'),
-             'allow_edit': False,
-             'value': self.context.getDateReceived(),
-             'formatted_value': self.ulocalized_time(self.context.getDateReceived()),
-             'condition':True,
-             'type': 'text'},
-            {'id': 'Composite',
-             'title': _('Composite'),
-             'allow_edit': allow_sample_edit,
-             'value': sample.getComposite(),
-             'condition':True,
-             'type': 'boolean'},
-            {'id': 'AdHoc',
-             'title': _('Ad-Hoc'),
-             'allow_edit': allow_sample_edit,
-             'value': sample.getAdHoc(),
-             'condition':True,
-             'type': 'boolean'},
-            {'id': 'InvoiceExclude',
-             'title': _('Invoice Exclude'),
-             'allow_edit': allow_ar_edit,
-             'value': self.context.getInvoiceExclude(),
-             'condition':True,
-             'type': 'boolean'},
-            {'id': 'ReportDryMatter',
-             'title': _('Report as Dry Matter'),
-             'allow_edit': allow_sample_edit,
-             'value': self.context.getReportDryMatter(),
-             'condition':self.context.bika_setup.getDryMatterService(),
-             'type': 'boolean'},
-        ]
-        if allow_sample_edit or allow_ar_edit:
-            self.header_buttons = [{'name':'save_button', 'title':_('Save')}]
-
-        ## handle_header table submit
-        if form.get('header_submitted', None):
-            plone.protect.CheckAuthenticator(form)
-            message = None
-            values = {
-            }
-            for row in [r for r in self.header_rows if r['allow_edit']]:
-                value = _u(urllib.unquote_plus(form.get(row['id'], '')))
-                if row['id'] == 'SampleType':
-                    if not value:
-                        message = PMF(
-                            u'error_required',
-                            default=u'${name} is required, please correct.',
-                            mapping={'name': _('Sample Type')})
-                        break
-                    st = bsc(portal_type='SampleType', title=value)
-                    if st and len(st) == 1:
-                        value = st[0].UID
-                    else:
-                        message = _("${sampletype} is not a valid sample type",
-                                    mapping={'sampletype':value})
-                        break
-
-                elif row['id'] == 'SamplePoint':
-                    value = value.replace("%s: " % _("Lab"), '')
-                    if value:
-                        sp = bsc(portal_type='SamplePoint', title=value)
-                        if sp and len(sp) == 1:
-                            value = sp[0].UID
-                        else:
-                            message = _("${samplepoint} is not a valid sample point",
-                                        mapping={'samplepoint': value})
-                            break
-
-                elif row['id'] == 'SamplingDeviation':
-                    if value:
-                        sd = bsc(portal_type='SamplingDeviation', title=value)
-                        if sd and len(sd) == 1:
-                            value = sd[0].UID
-                        else:
-                            message = _("${samplingdeviation} is not a valid sample point",
-                                        mapping={'samplingdeviation': value})
-                            break
-
-                values[row['id']] = value
-
-            # boolean - checkboxes are 'true'/'on' or 'false'/missing in form.
-            for row in [r for r in self.header_rows if r.get('type', '') == 'boolean']:
-                value = form.get(row['id'], 'false')
-                values[row['id']] = value == 'true' and True or value == 'on' and True or False
-
-            if not message:
-                self.context.edit(**values)
-                self.context.reindexObject()
-                sample.edit(**values)
-                sample.reindexObject()
-                ars = sample.getAnalysisRequests()
-                # Analyses and AnalysisRequets have calculated fields
-                # that are indexed; re-index all these objects.
-                for ar in ars:
-                    ar.reindexObject()
-                    analyses = sample.getAnalyses({'review_state':'to_be_sampled'})
-                    for a in analyses:
-                        a.getObject().reindexObject()
-                message = PMF("Changes saved.")
-
-            # If this sample was "To Be Sampled", and the
-            # Sampler and DateSampled fields were completed,
-            # do the Sampled transition.
-            if workflow.getInfoFor(sample, "review_state") == "to_be_sampled" \
-               and form.get("Sampler", None) \
-               and form.get("DateSampled", None):
-                # This transition does not invoke the regular WorkflowAction
-                # in analysisrequest.py
-                workflow.doActionFor(sample, "sample")
-                sample.reindexObject()
-
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            url = self.context.absolute_url().split("?")[0]
-            if len(url) > 1:
-                self.request.RESPONSE.redirect(url)
+        ## render header table
+        self.header_table = HeaderTableView(self.context, self.request)
 
         ## Create Partitions View for this ARs sample
         p = SamplePartitionsView(self.context.getSample(), self.request)
@@ -1846,6 +1570,7 @@ class ajaxAnalysisRequestSubmit():
             self.request.form = resolved_values
             client.invokeFactory('AnalysisRequest', id = 'tmp')
             ar = client['tmp']
+            ar.setSample(sample)
             ar.processForm()
             self.request.form = saved_form
             # Object has been renamed
@@ -2749,18 +2474,157 @@ class WidgetVisibility(_WV):
 
     def __call__(self):
         ret = super(WidgetVisibility, self).__call__()
+
+        workflow = getToolByName(self.context, 'portal_workflow')
+        state = workflow.getInfoFor(self.context, 'review_state')
+
         if 'add' not in ret:
             ret['add'] = {}
         if 'visible' not in ret['add']:
             ret['add']['visible'] = []
         if 'hidden' not in ret['add']:
             ret['add']['hidden'] = []
+
         if self.context.aq_parent.portal_type == 'Client':
             ret['add']['visible'].remove('Client')
             ret['add']['hidden'].append('Client')
         if self.context.aq_parent.portal_type == 'Batch':
             ret['add']['visible'].remove('Batch')
             ret['add']['hidden'].append('Batch')
+
+        # header_table default visible fields
+        ret['header_table'] = {
+            'prominent': ['Contact', 'CCContact', 'CCEmails'],
+            'visible': [
+                'Sample',
+                'Batch',
+                'Template',
+                'Profile',
+                'SamplingDate',
+                'SampleType',
+                'SamplePoint',
+                'ClientOrderNumber',
+                'ClientReference',
+                'ClientSampleID',
+                'SamplingDeviation',
+                'SampleCondition',
+                'DateSampled',
+                'DateReceived',
+                'DatePublished',
+                'ReportDryMatter',
+                'AdHoc',
+                'Composite',
+                'MemberDiscount',
+                'InvoiceExclude']}
+
+        # Edit and View widgets are displayed/hidden in different workflow
+        # states.  The widget.visible is used as a default.  This is placed
+        # here to manage the header_table display.
+        if state in ('to_be_sampled', 'to_be_preserved', 'sample_due', ):
+            ret['header_table']['visible'].remove('DateReceived')
+            ret['header_table']['visible'].remove('DatePublished')
+            ret['edit']['visible'] = [
+                'Contact',
+                'CCContact',
+                'CCEmails',
+                'AdHoc',
+                'Batch',
+                'ClientOrderNumber',
+                'ClientReference',
+                'ClientSampleID',
+                'Composite',
+                'InvoiceExclude'
+                'SampleCondition',
+                'SamplingDate',
+                'SamplingDeviation',
+            ]
+            ret['view']['visible'] = [
+                'DateSampled',
+                'MemberDiscount',
+                'Profile',
+                'ReportDryMatter',
+                'Sample',
+                'SamplePoint',
+                'SampleType',
+                'Template',
+            ]
+        elif state in ('sample_received', ):
+            ret['header_table']['visible'].remove('DatePublished')
+            ret['edit']['visible'] = [
+                'Contact',
+                'CCContact',
+                'CCEmails',
+                'Batch',
+                'ClientOrderNumber',
+                'ClientReference',
+                'ClientSampleID',
+                'InvoiceExclude',
+            ]
+            ret['view']['visible'] = [
+                'AdHoc',
+                'Composite',
+                'DateReceived',
+                'MemberDiscount',
+                'Profile',
+                'ReportDryMatter',
+                'Sample',
+                'SampleCondition',
+                'SamplePoint',
+                'SampleType',
+                'SamplingDate',
+                'SamplingDeviation',
+                'Template',
+            ]
+        elif state in ('to_be_verified', 'verified', ):
+            ret['header_table']['visible'].remove('DatePublished')
+            ret['edit']['visible'] = []
+            ret['view']['visible'] = [
+                'Contact',
+                'CCContact',
+                'CCEmails',
+                'AdHoc',
+                'Batch',
+                'ClientOrderNumber',
+                'ClientReference',
+                'ClientSampleID',
+                'Composite',
+                'DateReceived',
+                'InvoiceExclude',
+                'MemberDiscount',
+                'Profile',
+                'ReportDryMatter',
+                'Sample',
+                'SampleCondition',
+                'SamplePoint',
+                'SampleType',
+                'SamplingDate',
+                'SamplingDeviation',
+                'Template',
+            ]
+        elif state in ('published', ):
+            ret['edit']['visible'] = []
+            ret['view']['visible'] = [
+                'AdHoc',
+                'Batch',
+                'ClientOrderNumber',
+                'ClientReference',
+                'ClientSampleID',
+                'Composite',
+                'DatePublished',
+                'DateReceived',
+                'InvoiceExclude'
+                'MemberDiscount',
+                'Profile',
+                'ReportDryMatter',
+                'Sample',
+                'SampleCondition',
+                'SamplePoint',
+                'SampleType',
+                'SamplingDate',
+                'SamplingDeviation',
+                'Template',
+            ]
+
         return ret
 
 

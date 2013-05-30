@@ -316,6 +316,7 @@ th.expanded {
  */
 .header_table {
   margin-bottom:2px !important;
+  border-bottom:1px solid #efefef;
 }
 
 .header_table td,

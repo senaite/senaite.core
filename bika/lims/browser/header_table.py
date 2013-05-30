@@ -4,6 +4,8 @@ view and edit screens.
 
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.CMFPlone import PloneMessageFactory as _p
+from zope.component import getAdapter
 
 
 class HeaderTableView(BrowserView):
@@ -13,9 +15,21 @@ class HeaderTableView(BrowserView):
     def __call__(self):
         self.errors = {}
         if 'header_table_submitted' in self.request:
-            pass
-        else:
-            return self.template()
+            schema = self.context.Schema()
+            fields = schema.fields()
+            form = self.request.form
+            for field in fields:
+                fieldname = field.getName()
+                if fieldname in form:
+                    if fieldname + "_uid" in form:
+                        # references (process_form would normally do *_uid trick)
+                        field.getMutator(self.context)(form[fieldname + "_uid"])
+                    else:
+                        # other fields
+                        field.getMutator(self.context)(form[fieldname])
+            message = _p("Changes saved.")
+            self.context.plone_utils.addPortalMessage(message, 'info')
+        return self.template()
 
     def three_column_list(self, input_list):
         list_len = len(input_list)
@@ -30,28 +44,31 @@ class HeaderTableView(BrowserView):
         # Generate only filled columns
         final = []
         for i in range(3):
-            column = input_list[i*sublist_len:_list_end(i)]
+            column = input_list[i * sublist_len:_list_end(i)]
             if len(column) > 0:
                 final.append(column)
         return final
 
     def sublists(self, mode):
         ret = []
-        schema = self.context.Schema()
-        fields = list(schema.fields())
-        for field in fields:
-            fieldname = field.getName()
-            widget = field.widget
-            visible = schema[fieldname].widget.visible
-            if visible and isinstance(visible, dict):
-                if 'edit' in visible and visible['edit'] == 'visible':
-                    ret.append({'field': field,
-                                'widget': widget,
-                                'mode': 'edit'})
-                    continue
-                if 'view' in visible and visible['view'] == 'visible':
-                    ret.append({'field': field,
-                                'widget': widget,
-                                'mode': 'view'})
-                    continue
-        return self.three_column_list(ret)
+        prominent = []
+        adapter = getAdapter(self.context, name='getWidgetVisibility')
+        wv = adapter()
+        edit = wv.get('edit', {}).get('visible', [])
+        view = wv.get('view', {}).get('visible', [])
+
+        fieldnames = wv.get('header_table', {}).get('prominent', [])
+        for fieldname in fieldnames:
+            if fieldname in view:
+                prominent.append({'fieldName': fieldname, 'mode': 'view'})
+            elif fieldname in edit:
+                prominent.append({'fieldName': fieldname, 'mode': 'edit'})
+
+        fieldnames = wv.get('header_table', {}).get('visible', [])
+        for fieldname in fieldnames:
+            if fieldname in edit:
+                ret.append({'fieldName': fieldname, 'mode': 'edit'})
+            elif fieldname in view:
+                ret.append({'fieldName': fieldname, 'mode': 'view'})
+
+        return prominent, self.three_column_list(ret)

@@ -93,6 +93,9 @@
 <permission id="bika.lims.Assign" title="BIKA: Assign analyses"/>
 <permission id="bika.lims.Unassign" title="BIKA: Unassign analyses"/>
 
+<!-- Field permissions -->
+<permission id="bika.lims.EditARContact" title="BIKA: Edit AR Contact"/>
+
 # Edit AR
 # -----------------------------------------------------------------------------
 # Allows to set values for AR fields in AR view

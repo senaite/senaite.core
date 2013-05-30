@@ -22,9 +22,7 @@
 	specification python:request.get('specification', view.getDefaultSpec());
 	mtool here/portal_membership;">
 
-	<span tal:condition="view/header_table"
-	      tal:replace="structure view/header_table">
-	</span>
+    <span tal:replace="structure view/header_table"/>
 
     <h3 tal:condition="view/tables"
 	    style="margin-top:2em;">
