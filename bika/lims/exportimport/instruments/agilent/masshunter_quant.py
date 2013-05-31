@@ -560,6 +560,10 @@ class MasshunterQuantImporter(LogErrorReportable):
                         analysis = an
 
                     if not analysis:
+                        self.err(_("There's no Analysis %s without result "
+                                     "in Analysis Request %s. Discarding "
+                                     "result for sample %s") %
+                                     (acode, ar.id, sampleid))
                         continue
 
                     # If analysis has interim fields, check with agilent's 
