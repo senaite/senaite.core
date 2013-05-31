@@ -499,12 +499,6 @@ class MasshunterQuantImporter(LogErrorReportable):
             # 3. Foreach Data File, retrieve the result line from Quant results
             for acode, results in quantitationresults.iteritems():
 
-                #HACK
-                if acode == '25-OH D3+PTAD+MA':
-                    acode = 'D3'
-                elif acode == '25-OH D2+PTAD+MA':
-                    acode = 'D2'
-
                 service = self.bsc(getKeyword=acode)
                 if not service:
                     self.err(_('Service keyword %s not found') % acode)
