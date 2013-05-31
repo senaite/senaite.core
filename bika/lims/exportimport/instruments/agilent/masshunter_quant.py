@@ -1,6 +1,5 @@
 """ Agilent's 'Masshunter Quant'
 """
-from datetime import datetime
 from DateTime import DateTime
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
@@ -8,8 +7,11 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser import BrowserView
+from bika.lims.idserver import renameAfterCreation
 from bika.lims.utils import changeWorkflowState
+from bika.lims.utils import tmpID
 from cStringIO import StringIO
+from datetime import datetime
 from operator import itemgetter
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from zope.component import getUtility
@@ -39,7 +41,7 @@ def Import(context, request):
 
     if parser:
         # Load the importer
-        importer = MasshunterQuantImporter(parser)
+        importer = MasshunterQuantImporter(parser, context)
         importer.process()
         errors = importer.errors
         logs = importer.logs
@@ -206,7 +208,7 @@ class MasshunterQuantCSVParser(MasshunterQuantParser):
                 return -1
             return 0
 
-        splitted = line.split(',')
+        splitted = [token.strip() for token in line.split(',')]
 
         # Batch Info,2013-03-20T07:11:09.9053262-07:00,2013-03-20T07:12:55.5280967-07:00,2013-03-20T07:11:07.1047817-07:00,,,,,,,,,,,,,,
         if splitted[0] == self.HEADERKEY_BATCHINFO:
@@ -329,7 +331,7 @@ class MasshunterQuantCSVParser(MasshunterQuantParser):
 
         # Data File,Sample Name,Position,Inj Vol,Level,Sample Type,Acq Method File,,,,,,,,,,,
         if line.startswith(self.SEQUENCETABLE_HEADER_DATAFILE):
-            self._sequencesheader = [token for token in line.split(',') if token]
+            self._sequencesheader = [token.strip() for token in line.split(',') if token.strip()]
             return 0
 
         # post_respchk.d,post_respchk,Vial 3,-1.00,,Sample,120824_VitD_MAPTAD_1D_MRM_practice.m,,,,,,,,,,,
@@ -348,7 +350,7 @@ class MasshunterQuantCSVParser(MasshunterQuantParser):
             return 2
 
         # DSS_Nist_L1.d,DSS_Nist_L1,P1-A2,-1.00,,Sample,120824_VitD_MAPTAD_1D_MRM_practice.m,,,,,,,,,,,
-        splitted = line.split(',')
+        splitted = [token.strip() for token in line.split(',')]
         sequence = {}
         for colname in self._sequencesheader:
             sequence[colname] = ''
@@ -418,13 +420,13 @@ class MasshunterQuantCSVParser(MasshunterQuantParser):
 
         # Data File,Compound,ISTD,Resp,ISTD Resp,Resp Ratio, Final Conc,Exp Conc,Accuracy,,,,,,,,,
         if line.startswith(self.QUANTITATIONRESULTS_HEADER_DATAFILE):
-            self._quantitationresultsheader = [token for token in line.split(',') if token]
+            self._quantitationresultsheader = [token.strip() for token in line.split(',') if token.strip()]
             return 0
 
         # Target Compound,25-OH D3+PTAD+MA,,,,,,,,,,,,,,,,
         if line.startswith(self.QUANTITATIONRESULTS_TARGETCOMPOUND):
             # New set of Quantitation Results
-            splitted = line.split(',')
+            splitted = [token.strip() for token in line.split(',')]
             if splitted[1]:
                 self._quantitationresults[splitted[1]] = []
             else:
@@ -432,7 +434,7 @@ class MasshunterQuantCSVParser(MasshunterQuantParser):
             return 0
 
         # DSS_Nist_L1.d,25-OH D2+PTAD+MA,25-OH D3d3+PTAD+MA,1252,139562,0.0090,0.7909,,,,,,,,,,,
-        splitted = line.split(',')
+        splitted = [token.strip() for token in line.split(',')]
         quantitation = {}
         for colname in self._quantitationresultsheader:
             quantitation[colname] = ''
@@ -467,8 +469,9 @@ class MasshunterQuantCSVParser(MasshunterQuantParser):
 
 class MasshunterQuantImporter(LogErrorReportable):
 
-    def __init__(self, masshunterquantparser):
+    def __init__(self, masshunterquantparser, context):
         self._parser = masshunterquantparser
+        self.context = context
 
     def getParser(self):
         return self._parser
@@ -477,6 +480,12 @@ class MasshunterQuantImporter(LogErrorReportable):
         parsed = self._parser.parse()
         self._errors = self._parser.errors
         self._logs = self._parser.logs
+        self.bsc = getToolByName(self.context, 'bika_setup_catalog')
+        self.bac = getToolByName(self.context, 'bika_analysis_catalog')
+        self.pc = getToolByName(self.context, 'portal_catalog')
+        self.bc = getToolByName(self.context, 'bika_catalog')
+        resultfield = 'Final Conc'
+        attached = []
 
         if parsed:
 
@@ -484,11 +493,180 @@ class MasshunterQuantImporter(LogErrorReportable):
             header = self._parser.getHeader()
             sequences = self._parser.getSequences()
             quantitationresults = self._parser.getQuantitationResults()
-            
-            return True
+
+            # 1. Foreach Sample in sequences, obtain the Sample Name
+            # 2. Foreach Sequence, retrieve the Data File
+            # 3. Foreach Data File, retrieve the result line from Quant results
+            for acode, results in quantitationresults.iteritems():
+
+                #HACK
+                if acode == '25-OH D3+PTAD+MA':
+                    acode = 'D3'
+                elif acode == '25-OH D2+PTAD+MA':
+                    acode = 'D2'
+
+                service = self.bsc(getKeyword=acode)
+                if not service:
+                    self.err(_('Service keyword %s not found') % acode)
+                    continue
+
+                for resline in results:
+                    datafile = resline.get('Data File', '')
+                    if not datafile:
+                        self.err(_("No Data File found for quantitation result %s") % str(resline))
+                        continue
+
+                    # get the sequences for each quantitative result
+                    seqs = [sequence for sequence in sequences \
+                            if sequence.get('Data File', '') == \
+                            resline.get('Data File', '')]
+
+                    if len(seqs) == 0:
+                        self.err(_("No sample found for quantitative result %s") % datafile)
+                        continue
+                    elif len(seqs) > 1:
+                        self.err(_("More than one sequence found for quantitative result %s") % datafile)
+                        continue
+
+                    # Find the sample for that sequence
+                    sampleid = seqs[0].get("Sample Name", "")
+                    if not sampleid:
+                        self.err(_("No Sample Name found for sequence %s") % str(seqs[0]))
+                        continue
+
+                    ar = self._findAnalysisRequest(sampleid)
+                    if not ar:
+                        continue
+
+                    # Look for the desired analysis in the AR
+                    analyses = ar.getAnalyses()
+                    analyses = [analysis.getObject() for analysis in ar.getAnalyses() \
+                                if analysis.getObject().getKeyword() == acode]
+                    if len(analyses) == 0:
+                        self.error(_("Analysis %s not found in Analysis "
+                                     "Request %s. Discarding result for sample"
+                                     "%s") % (acode, ar.id, sampleid))
+                        continue
+
+                    analysis = None
+                    for an in analyses:
+                        if (an.getResult()):
+                            self.warn(_("Analysis %s from Analysis Request %s "
+                                       "already have results. Discarding "
+                                       "result for sample %s") %
+                                     (acode, ar.id, sampleid))
+                            continue
+
+                        analysis = an
+
+                    if not analysis:
+                        self.error(_("There's no Analysis %s without result "
+                                     "in Analysis Request %s. Discarding "
+                                     "result for sample %s") %
+                                     (acode, ar.id, sampleid))
+                        continue
+
+                    # If analysis has interim fields, check with agilent's 
+                    # columns
+                    interimsout = []
+                    interims = analysis.getInterimFields()
+                    for interim in interims:
+                        keyword = interims['keyword']
+                        if resline.get(keyword, ''):
+                            interimsout.append({'keyword': interims['keyword'],
+                                                'value':resline.get(keyword)})
+                        else:
+                            interimsout.append(interim)
+                    if interimsout:
+                        analysis.setInterimFields(interimsout)
+
+                    elif resline.get(resultfield, ''):
+                        # set the result
+                        analysis.setResult(resline.get(resultfield))
+
+                    else:
+                        self.warn(_("Empty '%s' result for sample %s.") %
+                                  (resultfield, sampleid))
+                        continue
+
+                    # Attach the file to the AR
+                    if ar.UID() not in attached:
+
+                        # Create the AttachmentType for CSV if not exists
+                        attachmentType = self.bsc(portal_type="AttachmentType", title="CSV")
+                        if len(attachmentType) == 0:
+                            folder = self.context.bika_setup.bika_attachmenttypes
+                            _id = folder.invokeFactory('AttachmentType', id=tmpID())
+                            obj = folder[_id]
+                            obj.edit(title="CSV",
+                                     description="Comma Separated Values file")
+                            obj.unmarkCreationFlag()
+                            renameAfterCreation(obj)
+                            attuid = obj.UID()
+                        else:
+                            attuid = attachmentType[0].UID
+
+                        attachmentid = ar.generateUniqueId('Attachment')
+                        ar.aq_parent.invokeFactory(id=attachmentid, type_name="Attachment")
+                        attachment = ar.aq_parent._getOb(attachmentid)
+                        attachment.edit(
+                            AttachmentFile=self._parser.getInputFile().read(),
+                            AttachmentType=attuid,
+                            AttachmentKeys="Agilent - Masshunter Quant")
+                        attachment.reindexObject()
+
+                        others = ar.getAttachment()
+                        attachments = []
+                        for other in others:
+                            attachments.append(other.UID())
+                        attachments.append(attachment.UID())
+                        ar.setAttachment(attachments)
+                        attached.append(ar.UID())
+
+                    return True
 
         else:
             self.err(_("Unable to import data. Parser finished with errors"))
             return False
 
-        
+    def _findAnalysisRequest(self, sampleid):
+        """ Searches for an analysis request.
+            Looks for analysis requests which have a sample with a SampleID,
+            UID or ClientSampleID that matches with the argument sampleid.
+            Only retrieves the AR if its status is 'sample_received',
+            'attachment_due' or 'to_be_verified'
+            If no AR found, returns None
+            If more than one AR found, returns None
+        """
+
+        # Get the AR from the sample
+        # review_state: sample_registered, to_be_sampled, sampled,
+        # to_be_preserved, sample_due, sample_received,
+        # attachment_due, to_be_verified, verified, published, invalid
+        allowed_states = ['sample_received', 'attachment_due',
+                          'to_be_verified']
+        ars = self.bc(portal_type='AnalysisRequest',
+                      getSampleID=sampleid,
+                      review_state=allowed_states)
+        if len(ars) == 0:
+            ars = self.bc(portal_type='AnalysisRequest',
+                          getSampleUID=sampleid,
+                          review_state=allowed_states)
+
+            if len(ars) == 0:
+                ars = self.bc(portal_type='AnalysisRequest',
+                              getClientSampleID=sampleid,
+                              review_state=allowed_states)
+
+                if len(ars) == 0:
+                    self.err(_("No Analysis Request with '%s' states "
+                               "found for sample %s") %
+                             (str(allowed_states), sampleid))
+                    return None
+
+        if len(ars) > 1:
+            self.err(_("More than one Analysis Request found for sample %s")
+                     % sampleid)
+            return None
+
+        return ars[0].getObject()
