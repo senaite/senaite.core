@@ -31,12 +31,15 @@ def Import(context, request):
     fileformat = request.form['amhq_format']
     artoapply = request.form['amhq_artoapply']
     override = request.form['amhq_override']
+    sample = request.form['amhq_sample']
     errors = []
     logs = []
 
     # Load the most suitable parser according to file extension/options/etc...
     parser = None
-    if fileformat == 'csv':
+    if not hasattr(infile, 'name'):
+        errors.append(_("No file selected"))
+    elif fileformat == 'csv':
         parser = MasshunterQuantCSVParser(infile)
     else:
         errors.append(_("Unrecognized file format '%s'") % fileformat)
@@ -55,7 +58,15 @@ def Import(context, request):
             over = [True, False]
         elif override == 'overrideempty':
             over = [True, True]
-        importer = MasshunterQuantImporter(parser, context, status, over)
+        sam = ['getSampleID', 'getClientSampleID']
+        if sample == 'sampleid':
+            sam = ['getSampleID']
+        elif sample == 'clientsid':
+            sam = ['getClientSampleID']
+        elif sample == 'sample_clientsid':
+            sam = ['getSampleID', 'getClientSampleID']
+
+        importer = MasshunterQuantImporter(parser, context, status, over, sam)
         importer.process()
         errors = importer.errors
         logs = importer.logs
@@ -489,11 +500,12 @@ class MasshunterQuantCSVParser(MasshunterQuantParser):
 
 class MasshunterQuantImporter(LogErrorReportable):
 
-    def __init__(self, masshunterquantparser, context, allowed_states, override):
+    def __init__(self, masshunterquantparser, context, allowed_states, override, samplesearch):
         self._parser = masshunterquantparser
         self.context = context
         self.allowed_states = allowed_states
         self.override = override
+        self.samplesearch = samplesearch
 
     def getParser(self):
         return self._parser
@@ -674,24 +686,25 @@ class MasshunterQuantImporter(LogErrorReportable):
         # review_state: sample_registered, to_be_sampled, sampled,
         # to_be_preserved, sample_due, sample_received,
         # attachment_due, to_be_verified, verified, published, invalid
-        ars = self.bc(portal_type='AnalysisRequest',
-                      getSampleID=sampleid,
-                      review_state=self.allowed_states)
+        ars = []
+        if 'getSampleID' in self.samplesearch:
+            ars = self.bc(portal_type='AnalysisRequest',
+                          getSampleID=sampleid,
+                          review_state=self.allowed_states)
+
+        if len(ars) == 0 and 'getClientSampleID' in self.samplesearch:
+            ars = self.bc(portal_type='AnalysisRequest',
+                          getClientSampleID=sampleid,
+                          review_state=self.allowed_states)
+
         if len(ars) == 0:
             ars = self.bc(portal_type='AnalysisRequest',
                           getSampleUID=sampleid,
                           review_state=self.allowed_states)
-
-            if len(ars) == 0:
-                ars = self.bc(portal_type='AnalysisRequest',
-                              getClientSampleID=sampleid,
-                              review_state=self.allowed_states)
-
-                if len(ars) == 0:
-                    self.err(_("No Analysis Request with '%s' states "
-                               "found for sample %s") %
-                             (str(self.allowed_states), sampleid))
-                    return None
+            self.err(_("No Analysis Request with '%s' states "
+                       "found for sample %s") %
+                     (str(self.allowed_states), sampleid))
+            return None
 
         if len(ars) > 1:
             self.err(_("More than one Analysis Request found for sample %s")
