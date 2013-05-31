@@ -29,6 +29,8 @@ def Import(context, request):
     """
     infile = request.form['amhq_file']
     fileformat = request.form['amhq_format']
+    artoapply = request.form['amhq_artoapply']
+    override = request.form['amhq_override']
     errors = []
     logs = []
 
@@ -41,7 +43,19 @@ def Import(context, request):
 
     if parser:
         # Load the importer
-        importer = MasshunterQuantImporter(parser, context)
+        status = ['sample_received', 'attachment_due', 'to_be_verified']
+        if artoapply == 'received':
+            status = ['sample_received']
+        elif artoapply == 'received_tobeverified':
+            status = ['sample_received', 'attachment_due', 'to_be_verified']
+        over = [False, False]
+        if override == 'nooverride':
+            over = [False, False]
+        elif override == 'override':
+            over = [True, False]
+        elif override == 'overrideempty':
+            over = [True, True]
+        importer = MasshunterQuantImporter(parser, context, status, over)
         importer.process()
         errors = importer.errors
         logs = importer.logs
@@ -179,11 +193,17 @@ class MasshunterQuantCSVParser(MasshunterQuantParser):
             else:
                 jump = self.parse_quantitationesultsline(line)
 
-        self.log(_("End of file reached"))
         if (len(self._quantitationresults) == 0):
             self.err(_("No quantitation results found"))
             return False
-
+        else:
+            cntsequences = len(self._sequences)
+            cntanalyses = len(self._quantitationresults)
+            cntresults = 0
+            for acode, results in self._quantitationresults.iteritems():
+                cntresults += len(results)
+            self.log(_("End of file reached successfully: %s sequences, %s analyses, %s results") %
+                     (str(cntsequences), str(cntanalyses), str(cntresults)))
         return True
 
     def parse_headerline(self, line):
@@ -469,9 +489,11 @@ class MasshunterQuantCSVParser(MasshunterQuantParser):
 
 class MasshunterQuantImporter(LogErrorReportable):
 
-    def __init__(self, masshunterquantparser, context):
+    def __init__(self, masshunterquantparser, context, allowed_states, override):
         self._parser = masshunterquantparser
         self.context = context
+        self.allowed_states = allowed_states
+        self.override = override
 
     def getParser(self):
         return self._parser
@@ -486,6 +508,9 @@ class MasshunterQuantImporter(LogErrorReportable):
         self.bc = getToolByName(self.context, 'bika_catalog')
         resultfield = 'Final Conc'
         attached = []
+
+        cntars = 0
+        cntresults = 0
 
         if parsed:
 
@@ -544,7 +569,7 @@ class MasshunterQuantImporter(LogErrorReportable):
 
                     analysis = None
                     for an in analyses:
-                        if (an.getResult()):
+                        if (an.getResult() and self.override[0] == False):
                             self.warn(_("Analysis %s from Analysis Request %s "
                                        "already have results. Discarding "
                                        "result for sample %s") %
@@ -567,16 +592,24 @@ class MasshunterQuantImporter(LogErrorReportable):
                     for interim in interims:
                         keyword = interims['keyword']
                         if resline.get(keyword, ''):
+                            res = resline.get(keyword)
+                            self.log(_("Result for '%s:%s', AR '%s' and sample '%s': '%s'") %
+                                 (acode, keyword, ar.id, sampleid, str(res)))
                             interimsout.append({'keyword': interims['keyword'],
-                                                'value':resline.get(keyword)})
+                                                'value':res})
                         else:
                             interimsout.append(interim)
                     if interimsout:
                         analysis.setInterimFields(interimsout)
+                        cntresults += 1
 
-                    elif resline.get(resultfield, ''):
+                    elif resline.get(resultfield, '') or self.override[1] == True:
                         # set the result
-                        analysis.setResult(resline.get(resultfield))
+                        res = resline.get(resultfield, '')
+                        self.log(_("Result for '%s', AR '%s' and sample '%s': '%s'") %
+                                 (acode, ar.id, sampleid, str(res)))
+                        analysis.setResult(res)
+                        cntresults += 1
 
                     else:
                         self.warn(_("Empty '%s' result for sample %s.") %
@@ -617,6 +650,10 @@ class MasshunterQuantImporter(LogErrorReportable):
                         ar.setAttachment(attachments)
                         attached.append(ar.UID())
 
+                        cntars += 1
+
+            self.log(_("Import finished successfully: %s ARs and %s results updated") %
+                     (str(cntars), str(cntresults)))
             return True
 
         else:
@@ -637,25 +674,23 @@ class MasshunterQuantImporter(LogErrorReportable):
         # review_state: sample_registered, to_be_sampled, sampled,
         # to_be_preserved, sample_due, sample_received,
         # attachment_due, to_be_verified, verified, published, invalid
-        allowed_states = ['sample_received', 'attachment_due',
-                          'to_be_verified']
         ars = self.bc(portal_type='AnalysisRequest',
                       getSampleID=sampleid,
-                      review_state=allowed_states)
+                      review_state=self.allowed_states)
         if len(ars) == 0:
             ars = self.bc(portal_type='AnalysisRequest',
                           getSampleUID=sampleid,
-                          review_state=allowed_states)
+                          review_state=self.allowed_states)
 
             if len(ars) == 0:
                 ars = self.bc(portal_type='AnalysisRequest',
                               getClientSampleID=sampleid,
-                              review_state=allowed_states)
+                              review_state=self.allowed_states)
 
                 if len(ars) == 0:
                     self.err(_("No Analysis Request with '%s' states "
                                "found for sample %s") %
-                             (str(allowed_states), sampleid))
+                             (str(self.allowed_states), sampleid))
                     return None
 
         if len(ars) > 1:
