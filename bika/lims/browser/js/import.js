@@ -35,6 +35,9 @@ $(document).ready(function(){
 	$("[name='firstsubmit']").live('click',  function(event){
 		event.preventDefault();
 		$('.portalMessage').remove();
+		if ($("#intermediate").length == 0) { 
+			$("#import_form").after("<div id='intermediate'></div>"); 
+		} 
 		$("#intermediate").toggle(false);
 		form = $(this).parents('form');
 		options = {
