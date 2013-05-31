@@ -543,7 +543,7 @@ class MasshunterQuantImporter(LogErrorReportable):
                     analyses = [analysis.getObject() for analysis in ar.getAnalyses() \
                                 if analysis.getObject().getKeyword() == acode]
                     if len(analyses) == 0:
-                        self.error(_("Analysis %s not found in Analysis "
+                        self.err(_("Analysis %s not found in Analysis "
                                      "Request %s. Discarding result for sample"
                                      "%s") % (acode, ar.id, sampleid))
                         continue
@@ -560,10 +560,6 @@ class MasshunterQuantImporter(LogErrorReportable):
                         analysis = an
 
                     if not analysis:
-                        self.error(_("There's no Analysis %s without result "
-                                     "in Analysis Request %s. Discarding "
-                                     "result for sample %s") %
-                                     (acode, ar.id, sampleid))
                         continue
 
                     # If analysis has interim fields, check with agilent's 
@@ -623,7 +619,7 @@ class MasshunterQuantImporter(LogErrorReportable):
                         ar.setAttachment(attachments)
                         attached.append(ar.UID())
 
-                    return True
+            return True
 
         else:
             self.err(_("Unable to import data. Parser finished with errors"))
