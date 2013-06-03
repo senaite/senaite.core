@@ -61,9 +61,9 @@ class BikaTestLayer(PloneSandboxLayer):
                      'RegulatoryInspector'):
             for user_nr in range(2):
                 if user_nr == 0:
-                    username = "test_" + role.lower()
+                    username = "test_%s" % (role.lower())
                 else:
-                    username = "test_" + role.lower() + user_nr
+                    username = "test_%s%s" % (role.lower(), user_nr)
                 member = portal.portal_registration.addMember(
                     username,
                     username,
