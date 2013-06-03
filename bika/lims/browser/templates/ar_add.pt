@@ -236,6 +236,7 @@
             <th tal:content="python:cat[1]"
                 tal:define="add_prefill python:cat[0] in view.DefaultCategories();"
                 tal:attributes="
+                    id python:'cat_%s_%s'%(poc, cat[1]);
                     colspan python:view.col_count + 3;
                     poc poc;
                     cat python:cat[0];
