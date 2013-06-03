@@ -59,25 +59,29 @@ class BikaTestLayer(PloneSandboxLayer):
                      'Member',
                      'Reviewer',
                      'RegulatoryInspector'):
-            username = "test_" + role.lower()
-            member = portal.portal_registration.addMember(
-                username,
-                username,
-                properties={
-                    'username': username,
-                    'email': username + "@example.com",
-                    'fullname': username}
-            )
-            # Add user to all specified groups
-            group_id = role + "s"
-            group = portal.portal_groups.getGroupById(group_id)
-            if group:
-                group.addMember(username)
-            # Add user to all specified roles
-            member._addRole(role)
-            # If user is in LabManagers, add Owner local role on clients folder
-            if role == 'LabManager':
-                portal.clients.manage_setLocalRoles(username, ['Owner', ])
+            for user_nr in range(2):
+                if user_nr == 0:
+                    username = "test_" + role.lower()
+                else:
+                    username = "test_" + role.lower() + user_nr
+                member = portal.portal_registration.addMember(
+                    username,
+                    username,
+                    properties={
+                        'username': username,
+                        'email': username + "@example.com",
+                        'fullname': username}
+                )
+                # Add user to all specified groups
+                group_id = role + "s"
+                group = portal.portal_groups.getGroupById(group_id)
+                if group:
+                    group.addMember(username)
+                # Add user to all specified roles
+                member._addRole(role)
+                # If user is in LabManagers, add Owner local role on clients folder
+                if role == 'LabManager':
+                    portal.clients.manage_setLocalRoles(username, ['Owner', ])
 
         logout()
 
