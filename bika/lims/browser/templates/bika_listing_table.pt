@@ -347,6 +347,7 @@ Table cells for each column from in review_state's column list.
 				autocomplete="off"
 				tal:condition="python:allow_edit"
 				tal:attributes="
+				    selector string:${column}_${item/id};
 					class python:'listing_string_entry %s' % input_class;
 					tabindex tabindex/next;
 					size input_width;
@@ -364,6 +365,7 @@ Table cells for each column from in review_state's column list.
 				type="hidden"
 				tal:condition="python:not allow_edit"
 				tal:attributes="
+				    selector string:${column}_${item/id};
 					size input_width;
 					uid string:${item/uid};
 					st_uid string:${item/st_uid|nothing};
@@ -385,6 +387,7 @@ Table cells for each column from in review_state's column list.
 				autocomplete="off"
 				tal:condition="python:allow_edit"
 				tal:attributes="
+				    selector string:${column}_${item/id};
 					class python:'listing_string_entry %s' % input_class;
 					tabindex tabindex/next;
 					size input_width;
@@ -408,6 +411,7 @@ Table cells for each column from in review_state's column list.
 				type="hidden"
 				tal:condition="python:not allow_edit"
 				tal:attributes="
+				    selector string:${column}_${item/id};
 					size input_width;
 					uid string:${item/uid};
 					st_uid string:${item/st_uid|nothing};
@@ -430,6 +434,7 @@ Table cells for each column from in review_state's column list.
 			<input
 				type="hidden"
 				tal:attributes="
+				    selector string:${column}_${item/id};
 					uid string:${item/uid};
 					st_uid string:${item/st_uid|nothing};
 					objectId string:${item/id};
@@ -447,6 +452,7 @@ Table cells for each column from in review_state's column list.
 			type="checkbox" style="font-size: 100%"
 			tal:condition="allow_edit"
 			tal:attributes="
+			    selector string:${column}_${item/id};
 				class item/state_class;
 				uid string:${item/uid};
 				id python:'%s-%s' % (item['uid'], column);
@@ -458,6 +464,7 @@ Table cells for each column from in review_state's column list.
 			tal:condition="python:not allow_edit and item.get(column)"
 			disabled="disabled"
 			tal:attributes="
+			    selector string:${column}_${item/id};
 				class item/state_class;
 				checked python:item.get(column) and 'yes' or '';"/>
 	</span>
@@ -469,6 +476,7 @@ Table cells for each column from in review_state's column list.
 			<select class="listing_select_entry" style="font-size: 100%"
 				tal:condition="python:column in item['choices']"
 				tal:attributes="
+				    selector string:${column}_${item/id};
 					tabindex tabindex/next;
 					field column;
 					name string:${column}.${item/uid}:records;
