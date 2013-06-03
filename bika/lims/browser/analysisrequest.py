@@ -879,6 +879,12 @@ class AnalysisRequestViewView(BrowserView):
                     t.review_states[0]['columns'].remove('DueDate')
                 self.tables[POINTS_OF_CAPTURE.getValue(poc)] = t.contents_table()
 
+        # Un-captured field analyses may cause confusion
+        if ar.getAnalyses(getPointOfCapture='field',
+                          review_state=['sampled','sample_due']):
+            message = _("There are field analyses without submitted results.")
+            self.addMessage(message, 'info')
+
         ## Create QC Analyses View for this AR
         qcview = self.createQCAnalyesView(ar,
                                 self.request,
