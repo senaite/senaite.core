@@ -7,6 +7,9 @@ class IBikaLIMS(Interface):
        "bika" theme, this interface must be its layer
     """
 
+class IHaveNoBreadCrumbs(Interface):
+    """Items which do not display breadcrumbs"""
+
 class IClientFolder(Interface):
     """Client folder"""
 
@@ -103,17 +106,9 @@ class IInvoiceBatch(Interface):
 class IInvoiceFolder(Interface):
     """Invoices Folder"""
 
-class IHaveNoBreadCrumbs(Interface):
-    """Items which do not display breadcrumbs"""
-
-class IIdServer(Interface):
-    """ Interface for ID server """
-    def generate_id(self, portal_type, batch_size = None):
-        """ Generate a new id for 'portal_type' """
 
 class IBikaSetup(Interface):
     ""
-
 class IAnalysisCategory(Interface):
     ""
 class IAnalysisCategories(Interface):
@@ -193,6 +188,12 @@ class IBikaSetupCatalog(Interface):
     "Marker interface for custom catalog"
 
 
+class IIdServer(Interface):
+    """ Interface for ID server """
+    def generate_id(self, portal_type, batch_size = None):
+        """ Generate a new id for 'portal_type' """
+
+
 class IDisplayListVocabulary(Interface):
     """Make vocabulary from catalog query.
     Return a DisplayList.
@@ -207,7 +208,7 @@ class IWidgetVisibility(Interface):
     """Adapter to modify the default list of fields to show on each view.
     Returns a dictionary, the keys are the keys of any field's "visibility"
     property dicts found in the schema, and the values are field names.
-        """
+    """
 
     def __call__():
         """
@@ -224,6 +225,12 @@ class IAnalysisRangeAlerts(Interface):
         """
         """
 
+class ISetupDataSetList(Interface):
+    """Allow products to register distributed setup datasets (xlsx files).
+    """
+
+
 class ISetupDataImporter(Interface):
     """ISetupDataImporter adapters are responsible for importing sections of
-    the load_setup_data xlsx spreadsheets."""
+    the load_setup_data xlsx spreadsheets.
+    """

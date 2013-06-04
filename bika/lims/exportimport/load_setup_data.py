@@ -7,6 +7,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.interfaces import ISetupDataImporter
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.utils import changeWorkflowState, tmpID
 from bika.lims.utils import sortable_title
@@ -16,6 +17,7 @@ from openpyxl.reader.excel import load_workbook
 from os.path import join
 from pkg_resources import resource_listdir, resource_filename, ResourceManager
 from zipfile import ZipFile, ZIP_DEFLATED
+from zope.component import getAdapters
 
 import Globals
 import json
@@ -105,7 +107,7 @@ class LoadSetupData(BrowserView):
         return len(unsolved)
 
     def load_import_adapters(self, wb):
-        adapters = list(getAdapters((self.context, ), "ISetupDataImporter"))
+        adapters = list(getAdapters((self.context, ), ISetupDataImporter))
         for name, adapter in adapters:
             adapter(self, wb)
 
@@ -262,10 +264,14 @@ class LoadSetupData(BrowserView):
 
         wb = None
         if 'setupexisting' in form and 'existing' in form and form['existing']:
-                fn = form['existing']
-                self.dataset_name = fn
-                filename = resource_filename("bika.lims", "setupdata/%s/%s.xlsx" % (fn, fn))
+                fn = form['existing'].split(":")
+                self.dataset_project = fn[0]
+                self.dataset_name = fn[1]
+                path = 'setupdata/%s/%s.xlsx' % \
+                    (self.dataset_name, self.dataset_name)
+                filename = resource_filename(self.dataset_project, path)
                 wb = load_workbook(filename = filename)
+
         elif 'setupfile' in form and 'file' in form and form['file']:
                 tmp = tempfile.mktemp()
                 file_content = form['file'].read()
@@ -441,8 +447,11 @@ class LoadSetupData(BrowserView):
                 addresses[add_type][key] = values["%s_%s" % (add_type, key)]
 
         if values['AccreditationBodyLogo']:
-            path = resource_filename("bika.lims","setupdata/%s/%s" \
-                                     % (self.dataset_name, values['AccreditationBodyLogo']))
+            path = resource_filename(
+                self.dataset_project,
+                "setupdata/%s/%s" % (self.dataset_name,
+                                     values['AccreditationBodyLogo'])
+            )
             file_data = open(path, "rb").read()
         else:
             file_data = None
@@ -477,8 +486,11 @@ class LoadSetupData(BrowserView):
             ## Create LabContact
 
             if row['Signature']:
-                path = resource_filename("bika.lims","setupdata/%s/%s" \
-                                         % (self.dataset_name, row['Signature']))
+                path = resource_filename(
+                    self.dataset_project,
+                    "setupdata/%s/%s" % (self.dataset_name,
+                                         row['Signature'])
+                )
                 file_data = open(path, "rb").read()
             else:
                 file_data = None
@@ -851,9 +863,11 @@ class LoadSetupData(BrowserView):
                          Instructions = row.get('Instructions',''))
 
                 if row['MethodDocument']:
-                    path = resource_filename("bika.lims",
-                                             "setupdata/%s/%s" \
-                                             % (self.dataset_name, row['MethodDocument']))
+                    path = resource_filename(
+                        self.dataset_project,
+                        "setupdata/%s/%s" % (self.dataset_name,
+                                             row['MethodDocument'])
+                    )
                     #file_id = obj.invokeFactory("File", id=row['MethodDocument'])
                     #thisfile = obj[file_id]
                     file_data = open(path, "rb").read()

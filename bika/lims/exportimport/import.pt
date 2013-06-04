@@ -63,8 +63,8 @@
 				        name="existing"
 				        id="existing">
 				        <tal:options tal:repeat="option view/getSetupDatas">
-				            <option tal:attributes="value option">
-				                <span tal:content="option"/>
+				            <option tal:attributes="value python:'%(projectname)s:%(dataset)s'%(option)">
+				                <span tal:content="python:'%(projectname)s: %(dataset)s'%(option)"/>
 				            </option>
 				        </tal:options>
 				    </select>
