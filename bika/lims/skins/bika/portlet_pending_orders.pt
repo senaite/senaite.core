@@ -29,7 +29,8 @@
             <a href="#"
                 class="marker"
                 tal:attributes="href string:${o/absolute_url};
-                                title o/Description">
+                                title o/Description;
+                                id python:'pending_order_'+o.Title()">
                 <img src="" height="16" width="16"
                         tal:attributes="src string:${here/portal_url}/${o/getIcon};
                                         title o/Type;" />
