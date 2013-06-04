@@ -223,3 +223,7 @@ class IAnalysisRangeAlerts(Interface):
     def getOutOfRangeAlerts(self):
         """
         """
+
+class ISetupDataImporter(Interface):
+    """ISetupDataImporter adapters are responsible for importing sections of
+    the load_setup_data xlsx spreadsheets."""

@@ -75,9 +75,10 @@ class LoadSetupData(BrowserView):
                                     set_permissions=set_permissions,
                                     portal_workflow=self.wf, **state)
 
-    def solve_deferred(self):
+    def solve_deferred(self, deferred=None):
         # walk through self.deferred, linking ReferenceFields as we go
         unsolved = []
+        deferred = deferred if deferred else self.deferred
         for d in self.deferred:
             src_obj = d['src_obj']
             src_field = src_obj.getField(d['src_field'])
@@ -102,6 +103,11 @@ class LoadSetupData(BrowserView):
                 unsolved.append(d)
         self.deferred = unsolved
         return len(unsolved)
+
+    def load_import_adapters(self, wb):
+        adapters = list(getAdapters((self.context, ), "ISetupDataImporter"))
+        for name, adapter in adapters:
+            adapter(self, wb)
 
     def load_sheets(self, wb):
         sheets = {}
@@ -270,6 +276,8 @@ class LoadSetupData(BrowserView):
         assert(wb != None)
 
         self.load_sheets(wb)
+
+        self.load_import_adapters(wb)
 
         check = len(self.deferred)
         while len(self.deferred) > 0:
