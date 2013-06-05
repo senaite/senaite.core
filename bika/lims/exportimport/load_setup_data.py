@@ -933,7 +933,7 @@ class LoadSetupData(BrowserView):
                 Accredited = self.to_bool(row['Accredited']),
                 InterimFields = hasattr(self,'service_interims') and self.service_interims.get(row['title'], []) or []
             )
-            self.services[row['title']] = obj
+            self.services[row['title']] = self.services[row['Keyword']] = obj
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
 
