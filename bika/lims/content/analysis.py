@@ -255,7 +255,8 @@ class Analysis(BaseContent):
             lab specification.
             If no specification available for this analysis, returns None
         """
-        sampletype = self.aq_parent.getSample().getSampleType()
+
+        sampletype = self.getSample().getSampleType()
         sampletype_uid = sampletype and sampletype.UID() or ''
         bsc = getToolByName(self, 'bika_setup_catalog')
 
@@ -368,4 +369,7 @@ class Analysis(BaseContent):
         outofrange, acceptable, spec = self.isOutOfRange(result, specification)
         return acceptable and '1' or not outofrange, spec
 
+    def getSample(self):
+        return self.aq_parent.getSample();
+    
 atapi.registerType(Analysis, PROJECTNAME)

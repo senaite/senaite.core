@@ -125,4 +125,7 @@ class DuplicateAnalysis(Analysis):
                            'max':range_max,
                            'error':dup_variation}
 
+    def getSample(self):
+        return self.getAnalysis().aq_parent.getSample()
+
 registerType(DuplicateAnalysis, PROJECTNAME)

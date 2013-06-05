@@ -321,16 +321,21 @@ class WorksheetAnalysesView(AnalysesView):
             if pos in empties:
                 continue
 
+            obj = items[x]['obj']
             # set Pos column for this row, to have a rowspan
             # It gets doubled if we have Remarks rows enabled
-            if self.context.bika_setup.getEnableAnalysisRemarks():
+            # Analysis Remarks only allowed for Analysis types
+            if self.context.bika_setup.getEnableAnalysisRemarks() \
+                and obj.portal_type=='Analysis' \
+                and (items[x].get('Remarks') \
+                     or (self.allow_edit \
+                         and 'Remarks' in items[x].get('allow_edit',[]))):
                 rowspan = len(pos_items) * 2
             else:
                 rowspan = len(pos_items)
             items[x]['rowspan'] = {'Pos': rowspan}
 
             # fill the rowspan with a little table
-            obj = items[x]['obj']
             # parent is either an AR, a Worksheet, or a
             # ReferenceSample (analysis parent).
             parent = obj.aq_parent
