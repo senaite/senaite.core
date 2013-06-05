@@ -326,7 +326,10 @@ class WorksheetAnalysesView(AnalysesView):
             # It gets doubled if we have Remarks rows enabled
             # Analysis Remarks only allowed for Analysis types
             if self.context.bika_setup.getEnableAnalysisRemarks() \
-                and obj.portal_type=='Analysis':
+                and obj.portal_type=='Analysis' \
+                and (items[x].get('Remarks') \
+                     or (self.allow_edit \
+                         and 'Remarks' in items[x].get('allow_edit',[]))):
                 rowspan = len(pos_items) * 2
             else:
                 rowspan = len(pos_items)
