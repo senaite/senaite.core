@@ -426,16 +426,19 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 to.append(formataddr((encode_header(contact.Title()),
                                        contact.getEmailAddress())))
             for cc in ar.getCCContact():
-                to.append(formataddr((encode_header(cc.Title()),
-                                       cc.getEmailAddress())))
+                formatted = formataddr((encode_header(cc.Title()),
+                                       cc.getEmailAddress()))
+                if formatted not in to:
+                    to.append(formatted)
 
             managers = self.context.portal_groups.getGroupMembers('LabManagers')
             for bcc in managers:
                 user = self.portal.acl_users.getUser(bcc)
                 uemail = user.getProperty('email')
                 ufull = user.getProperty('fullname')
-                to.append(formataddr((encode_header(ufull), uemail)))
-
+                formatted = formataddr((encode_header(ufull), uemail))
+                if formatted not in to:
+                    to.append(formatted)
             mime_msg['To'] = ','.join(to)
             aranchor = "<a href='%s'>%s</a>" % (ar.absolute_url(),
                                                 ar.getRequestID())
