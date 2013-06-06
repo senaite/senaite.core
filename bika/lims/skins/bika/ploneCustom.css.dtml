@@ -2,13 +2,17 @@
 <dtml-call "REQUEST.set('portal_url', portal_url())">
 */
 
-<!-- body {
+/*
+body {
   font-size: &dtml-fontBaseSize;
-} -->
+}
+*/
 
-<!-- table {
+/*
+table {
   font-size: 100%;
-} -->
+}
+*/
 
 #portal-breadcrumbs{
   border-bottom: 1px solid #DCDCDC;
@@ -83,25 +87,34 @@ textarea#description,
   color: &dtml-footerTextColor;;
 }
 
-
-.kss-spinner {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  margin-left: -50px; /* half width of the spinner gif */
-  margin-top: -50px; /* half height of the spinner gif */
-  padding:10px;
-  background-color:#fff;
-  border:1px solid #bbb;
-  border-radius: .5em;
-  text-align:center;
-  z-index:1234;
-  overflow: auto;
+.bika-spinner {
+    display:    none;
+    position:   fixed;
+    z-index:    1000;
+    top:        1px;
+    left:       50%;
+    height:     2em;
+    width:      2em;
+    border: 1px solid #777;
+    border-radius: .2em;
+    background: rgba( 255, 255, 255, .90 )
+                url(&dtml-portal_url;/spinner.gif)
+                50% 50%
+                no-repeat;
+    opacity: 0.90;
+    -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity = 90);
+    filter: alpha(opacity = 90);
 }
 
-.kss-spinner img {
-  height:20px;
-  width:20px;
+/* When the body has the loading class, we turn
+   the scrollbar off with overflow:hidden */
+body.loading {
+    overflow: hidden;
+}
+/* Anytime the body has the loading class, our
+   bika-spinner element will be visible */
+body.loading .bika-spinner {
+    display: block;
 }
 
 /* edit-bar */
