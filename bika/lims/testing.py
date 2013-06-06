@@ -1,5 +1,6 @@
 # Testing layer to provide some of the features of PloneTestCase
 
+from bika.lims.exportimport.load_setup_data import LoadSetupData
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import IntegrationTesting
 from plone.app.testing import login
@@ -11,6 +12,7 @@ from plone.app.testing import applyProfile
 from plone.testing import z2
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.setuphandlers import setupPortalContent
+from Testing.makerequest import makerequest
 
 import Products.ATExtensions
 import Products.PloneTestCase.setup
@@ -82,6 +84,13 @@ class BikaTestLayer(PloneSandboxLayer):
                 # If user is in LabManagers, add Owner local role on clients folder
                 if role == 'LabManager':
                     portal.clients.manage_setLocalRoles(username, ['Owner', ])
+
+        # load test data
+        self.request = makerequest(portal.aq_parent).REQUEST
+        self.request.form['setupexisting'] = 1
+        self.request.form['existing'] = "bika.lims:test"
+        lsd = LoadSetupData(portal, self.request)
+        lsd()
 
         logout()
 
