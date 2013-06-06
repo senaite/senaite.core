@@ -67,6 +67,14 @@ schema = BikaFolderSchema.copy() + Schema((
                             "0 disables automatic log-off"),
         )
     ),
+    BooleanField(
+        'ShowPrices',
+        schemata="Accounting",
+        default=True,
+        widget=BooleanWidget(
+            label=_("Include and display pricing information"),
+        )
+    ),
     StringField('Currency',
         schemata = "Accounting",
         required = 1,

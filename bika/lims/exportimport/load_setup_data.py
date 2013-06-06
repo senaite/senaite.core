@@ -322,6 +322,7 @@ class LoadSetupData(BrowserView):
         self.context.bika_setup.edit(
             PasswordLifetime = int(values['PasswordLifetime']),
             AutoLogOff = int(values['AutoLogOff']),
+            ShowPricing = values.get('ShowPricing', True),
             Currency = values['Currency'],
             MemberDiscount = str(float(values['MemberDiscount'])),
             VAT = str(float(values['VAT'])),

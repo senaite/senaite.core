@@ -7,7 +7,8 @@
 		categoryUID python:view.request['categoryUID'];
 		poc python:view.request['poc'];
 		col_count python:int(view.request.get('col_count', 1));
-		portal context/@@plone_portal_state/portal">
+		portal context/@@plone_portal_state/portal;
+        ShowPrices python:context.bika_setup.getShowPrices();">
 	<tr tal:repeat="service python:view.Services(poc, categoryUID)"
 		tal:attributes="id service/UID">
         <tal:service tal:define="service_obj python:service.getObject()">
@@ -27,7 +28,7 @@
 				tal:condition="python:service_obj.getReportDryMatter()"
 				tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/dry.png"/>
 		</td>
-        <td tal:condition="python:context.portal_type == 'Client'"
+        <td tal:condition="python:context.portal_type == 'Client' and ShowPrices"
             style="white-space:nowrap;"
             tal:define="analysis python: hasattr(here, service.id) and here[service.id] or None;
                 vat python:service_obj.getVAT()">
@@ -59,7 +60,7 @@
                     id string:${service/UID}_vat;
                     name string:VAT.${service/UID}:record;"/>
         </td>
-        <td tal:condition="python:context.portal_type != 'Client'"
+        <td tal:condition="python:context.portal_type != 'Client' and ShowPrices"
             style="white-space:nowrap;"
             tal:define="analysis python: hasattr(here, service.id) and here[service.id] or None;
                 vat python:service_obj.getVAT()">
@@ -80,7 +81,7 @@
                     id string:${service/UID}_vat;
                     name string:VAT.${service/UID}:record;"/>
         </td>
-		<td class="service">
+		<td class="service" tal:attributes="colspan python:'1' if ShowPrices else '2';">
 			<image
 				class="copyButton"
 				tal:condition="python:col_count > 1"

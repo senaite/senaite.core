@@ -32,7 +32,8 @@
         checkPermission nocall: context/portal_membership/checkPermission;
         tabindex view/tabindex;
         widget_visibility view/getWidgetVisibility;
-        partitionable view/partitioned_services;">
+        partitionable view/partitioned_services;
+        ShowPrices python:context.bika_setup.getShowPrices();">
 
 
 <form id="analysisrequest_edit_form"
@@ -253,81 +254,82 @@
 </tal:i>
 </tal:i>
 
-<!-- Pretty blank row -->
-<thead class="pointofcapture"><tr><th tal:attributes="colspan python:view.col_count + 3">&nbsp;</th></tr></thead>
 
-<tfoot>
+<tfoot tal:condition="ShowPrices">
 
-<tr tal:condition="view/getMemberDiscountApplies">
-    <th class="topborder" colspan="2">
-        <b i18n:translate="">Discount</b>
-        <span class="discreet">(<tal:i content="here/bika_setup/getMemberDiscount"/>%)</span>
-    </th>
-    <th class="topborder noleftborder" style="text-align:center">
-        <span tal:replace="python:currencies[currency].symbol"/>
-    </th>
-    <tal:block repeat="column python:range(view.col_count)">
-        <td class="topborder" tal:define="input_id string:ar_${column}_discount;">
+    <!-- Pretty blank row -->
+    <thead class="pointofcapture"><tr><th tal:attributes="colspan python:view.col_count + 3">&nbsp;</th></tr></thead>
+
+    <tr tal:condition="python:view.getMemberDiscountApplies() and ShowPrices">
+        <th class="topborder" colspan="2">
+            <b i18n:translate="">Discount</b>
+            <span class="discreet">(<tal:i content="here/bika_setup/getMemberDiscount"/>%)</span>
+        </th>
+        <th class="topborder noleftborder" style="text-align:center">
+            <span tal:replace="python:currencies[currency].symbol"/>
+        </th>
+        <tal:block repeat="column python:range(view.col_count)">
+            <td class="topborder" tal:define="input_id string:ar_${column}_discount;">
+                <input class="price noborder" size="10" disabled="disabled" value="0.00"
+                    tal:attributes="id input_id;" />
+            </td>
+        </tal:block>
+    </tr>
+
+    <tr>
+        <th class="topborder" colspan="2"><b i18n:translate="">Subtotal</b></th>
+        <th class="topborder noleftborder" style="text-align:center">
+            <span tal:replace="python:currencies[currency].symbol"/>
+        </th>
+        <tal:block repeat="column python:range(view.col_count)">
+            <td class="topborder" tal:define="input_id string:ar_${column}_subtotal;
+                input_name string:ar.${column}.subtotal">
             <input class="price noborder" size="10" disabled="disabled" value="0.00"
-                tal:attributes="id input_id;" />
-        </td>
-    </tal:block>
-</tr>
+                tal:attributes="id string:${input_id}_display;"/>
+            <input type="hidden"
+                tal:attributes="
+                    id input_id;
+                    name string:${input_name}:record:ignore_empty;"/>
+            </td>
+        </tal:block>
+    </tr>
 
-<tr>
-    <th class="topborder" colspan="2"><b i18n:translate="">Subtotal</b></th>
-    <th class="topborder noleftborder" style="text-align:center">
-        <span tal:replace="python:currencies[currency].symbol"/>
-    </th>
-    <tal:block repeat="column python:range(view.col_count)">
-        <td class="topborder" tal:define="input_id string:ar_${column}_subtotal;
-            input_name string:ar.${column}.subtotal">
-        <input class="price noborder" size="10" disabled="disabled" value="0.00"
-            tal:attributes="id string:${input_id}_display;"/>
-        <input type="hidden"
-            tal:attributes="
-                id input_id;
-                name string:${input_name}:record:ignore_empty;"/>
-        </td>
-    </tal:block>
-</tr>
+    <tr>
+        <th colspan="2" class="topborder"><b i18n:translate="">VAT</b></th>
+        <th class="topborder noleftborder" style="text-align:center">
+            <span tal:replace="python:currencies[currency].symbol"/>
+        </th>
+        <tal:block repeat="column python:range(view.col_count)">
+            <td class="topborder" tal:define="input_id string:ar_${column}_vat;
+                input_name string:ar.${column}.vat">
+            <input class="price noborder" size="10" disabled="disabled" value="0.00"
+                tal:attributes="id string:${input_id}_display;"/>
+            <input type="hidden"
+                tal:attributes="
+                    id input_id;
+                    name string:${input_name}:record:ignore_empty;"/>
+            </td>
+        </tal:block>
+    </tr>
 
-<tr>
-    <th colspan="2" class="topborder"><b i18n:translate="">VAT</b></th>
-    <th class="topborder noleftborder" style="text-align:center">
-        <span tal:replace="python:currencies[currency].symbol"/>
-    </th>
-    <tal:block repeat="column python:range(view.col_count)">
-        <td class="topborder" tal:define="input_id string:ar_${column}_vat;
-            input_name string:ar.${column}.vat">
-        <input class="price noborder" size="10" disabled="disabled" value="0.00"
-            tal:attributes="id string:${input_id}_display;"/>
-        <input type="hidden"
-            tal:attributes="
-                id input_id;
-                name string:${input_name}:record:ignore_empty;"/>
-        </td>
-    </tal:block>
-</tr>
-
-<tr>
-    <th class="topborder" colspan="2"><b i18n:translate="">Total</b></th>
-    <th class="topborder noleftborder" style="text-align:center">
-        <span tal:replace="python:currencies[currency].symbol"/>
-    </th>
-    <tal:block repeat="column python:range(view.col_count)">
-        <td class="topborder" tal:define="
-            input_id string:ar_${column}_total;
-            input_name string:ar.${column}.total">
-        <input class="price noborder" size="10" disabled="disabled" value="0.00"
-            tal:attributes="id string:${input_id}_display;"/>
-        <input type="hidden"
-            tal:attributes="
-                id input_id;
-                name string:${input_name}:record:ignore_empty;"/>
-        </td>
-    </tal:block>
-</tr>
+    <tr>
+        <th class="topborder" colspan="2"><b i18n:translate="">Total</b></th>
+        <th class="topborder noleftborder" style="text-align:center">
+            <span tal:replace="python:currencies[currency].symbol"/>
+        </th>
+        <tal:block repeat="column python:range(view.col_count)">
+            <td class="topborder" tal:define="
+                input_id string:ar_${column}_total;
+                input_name string:ar.${column}.total">
+            <input class="price noborder" size="10" disabled="disabled" value="0.00"
+                tal:attributes="id string:${input_id}_display;"/>
+            <input type="hidden"
+                tal:attributes="
+                    id input_id;
+                    name string:${input_name}:record:ignore_empty;"/>
+            </td>
+        </tal:block>
+    </tr>
 </tfoot>
 </table>
 

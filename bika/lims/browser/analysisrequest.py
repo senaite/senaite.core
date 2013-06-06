@@ -137,7 +137,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 self.request.response.redirect(self.destination_url)
                 return
 
-            new = ar.setAnalyses(objects.keys(), prices = form['Price'][0])
+            prices = form.get('Price', [None])[0]
+            new = ar.setAnalyses(objects.keys(), prices = prices)
 
             # link analyses and partitions
             for service_uid, service in objects.items():
@@ -1396,14 +1397,15 @@ class AnalysisRequestAnalysesView(BikaListingView):
                           'sortable': False,},
         }
 
+        ShowPrices = self.context.bika_setup.getShowPrices()
+        columns = ['Title', 'Price', 'Partition'] if ShowPrices \
+            else ['Title', 'Partition']
+
         self.review_states = [
             {'id':'default',
              'title': _('All'),
              'contentFilter':{},
-             'columns': ['Title',
-                         'Price',
-                         'Partition',
-                         ],
+             'columns': columns,
              'transitions': [{'id':'empty'}, ], # none
              'custom_actions':[{'id': 'save_analyses_button',
                                 'title': _('Save')}, ],
@@ -1911,7 +1913,7 @@ class ajaxAnalysisRequestSubmit():
         if errors:
             return json.dumps({'errors':errors})
 
-        prices = form['Prices']
+        prices = form.get('Prices', None)
         ARs = []
 
         # if a new profile is created automatically,

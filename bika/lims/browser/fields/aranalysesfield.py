@@ -98,7 +98,8 @@ class ARAnalysesField(ObjectField):
             service_uid = service.UID
             service = service.getObject()
             keyword = service.getKeyword()
-            price = prices[service_uid]
+            price = prices[service_uid] if prices and service_uid in prices \
+                else service.getPrice()
             vat = Decimal(service.getVAT())
 
             # analysis->InterimFields

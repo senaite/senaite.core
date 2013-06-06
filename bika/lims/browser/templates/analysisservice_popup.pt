@@ -3,7 +3,8 @@
 	tal:define="portal_state context/@@plone_portal_state;
 				portal_url portal_state/portal_url;
 				locale portal_state/locale;
-				currency python:context.bika_setup.getCurrency()">
+				currency python:context.bika_setup.getCurrency();
+		        ShowPrices python:context.bika_setup.getShowPrices();">
 <head>
 
 	<style>
@@ -162,7 +163,7 @@
 					<th i18n:translate="">Category</th>
 					<th i18n:translate="">Keyword</th>
 					<th i18n:translate="">Method</th>
-					<th i18n:translate="">Price</th>
+					<th i18n:translate="" tal:condition="ShowPrices">Price</th>
 				</tr>
 				<tr tal:repeat="dep deps">
 					<td>
@@ -180,7 +181,7 @@
 							tal:attributes="href python:m.absolute_url()"
 							tal:content="m/Title"/>
 					</td>
-					<td>
+					<td tal:condition="ShowPrices">
 						<span tal:replace="python:currencies[currency].symbol"/>
 						<span tal:replace="python:'%.02f'%dep.getTotalPrice()"/>
 					</td>
