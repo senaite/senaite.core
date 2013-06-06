@@ -25,7 +25,7 @@ import xhtml2pdf.pisa as pisa
 
 class doPublish(BrowserView):
     """Pre/Re/Publish analysis requests"""
-    template = ViewPageTemplateFile("mailtemplates/analysisrequest_results.pt")
+    template = ViewPageTemplateFile("mailtemplates/ar_results.pt")
 
     def __init__(self, context, request, action, analysis_requests):
         self.context = context
@@ -153,7 +153,8 @@ class doPublish(BrowserView):
             pdf_results = ar_results.replace(r"analysisrequest_results.css",
                                              r"analysisrequest_results_pdf.css")
             pdf_outfile = join(out_path, out_fn + ".pdf") if out_path else None
-            pdf_report = createPdf(pdf_results, pdf_outfile)
+            pdf_report = createPdf(pdf_results, pdf_outfile, 
+                                   css=join(out_path, "analysisrequest_results.css"))
             if pdf_report:
                 reportid = self.context.generateUniqueId('ARReport')
                 ar.invokeFactory(id=reportid, type_name="ARReport")
