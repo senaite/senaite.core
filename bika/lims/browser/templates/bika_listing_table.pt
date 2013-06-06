@@ -188,8 +188,8 @@ Colum Headers
 Table data rows start here
 ********************************</tal:comment>
 <tal:cats
-	tal:repeat="cat python: view.bika_listing.categories if view.bika_listing.categories else ['None',]">
-	<tr tal:condition="python: view.bika_listing.show_categories">
+	tal:repeat="cat python: view.bika_listing.categories+['None', ] if view.bika_listing.categories else ['None', ]">
+	<tr tal:condition="python: view.bika_listing.show_categories and cat != 'None'">
 		<th
 			style="text-align: left;"
 			tal:attributes="
