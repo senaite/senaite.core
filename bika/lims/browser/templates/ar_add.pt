@@ -212,6 +212,19 @@
     </tr>
 </thead>
 
+<thead class="pointofcapture">
+    <tr>
+        <th style='padding-left:0;'
+            tal:attributes="colspan python:view.col_count + 3">
+            <input class="context button allowMultiSubmit"
+                type="submit"
+                name="save_button"
+                i18n:attributes="value"
+                value="Save"/>
+        </th>
+    </tr>
+</thead>
+
 <!-- Analyses -->
 <tal:i define="
     cats view/Categories;
