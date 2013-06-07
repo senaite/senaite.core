@@ -34,7 +34,7 @@
     </style>
 </head>
 
-<body style="margin: 0; padding: 0" onload="this.print()">
+<body style="margin: 0; padding: 0" onload="this.print();document.getElementById('goback').click();">
 
 <metal:block tal:repeat="part view/items">
 
@@ -60,7 +60,7 @@
     barcode_str  python:part.getId();
     analyses     python:part.getBackReferences('AnalysisSamplePartition');
     field_analyses python:[analysis for analysis in analyses if analysis.getService().getPointOfCapture()=='field'];
-    smart_id	 python:part.getId();
+    smart_id     python:part.getId();
     ">
 <thead>
 
@@ -137,9 +137,14 @@
 <p style="page-break-after: always"/>
 </metal:block>
 
-<p class="noPrint">
-    <a tal:attributes="href python:context.aq_parent.absolute_url()"
-        i18n:translate="">Back to list</a>
+<p class="noPrint" tal:define="
+    portal_type  python:context.portal_type;
+    anchor_self  python:('Client','AnalysisRequest', 'AnalysisRequestsFolder', 'Batch');
+    ">
+    <a tal:attributes="href python:context.aq_parent.absolute_url()" id='goback'
+        i18n:translate="" tal:condition="python:portal_type not in anchor_self">Back to list</a>
+    <a tal:attributes="href python:context.absolute_url()" id='goback'
+        i18n:translate="" tal:condition="python:portal_type in anchor_self">Back to list</a>
 </p>
 
 </body>
