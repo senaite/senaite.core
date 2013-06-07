@@ -179,12 +179,10 @@ class AnalysesView(BikaListingView):
                 items[i]['Partition'] = ''
             if obj.portal_type == "ReferenceAnalysis":
                 items[i]['DueDate'] = self.ulocalized_time(obj.aq_parent.getExpiryDate(), long_format=0)
-                items[i]['CaptureDate'] = obj.aq_parent.getDateSampled() \
-                    and self.ulocalized_time(obj.aq_parent.getDateSampled(), long_format=0) or '' 
             else:
-                items[i]['DueDate'] = self.ulocalized_time(obj.getDueDate(), long_format=0)
-                cd = obj.getResultCaptureDate()
-                items[i]['CaptureDate'] = cd and self.ulocalized_time(cd, long_format=0) or ''
+                items[i]['DueDate'] = self.ulocalized_time(obj.getDueDate(), long_format=1)
+            cd = obj.getResultCaptureDate()
+            items[i]['CaptureDate'] = cd and self.ulocalized_time(cd, long_format=1) or ''
             items[i]['Attachments'] = ''
 
             # calculate specs

@@ -134,7 +134,7 @@ div.alertpanel {
     padding-left:20px;
     padding-bottom:10px;
     background-color: #ffe297;
-  /*  background: #ffe297 url(&dtml-portal_url;/++resource++bika.lims.images/exclamation_big.png) no-repeat 25px 20px;*/
+  /* background: #ffe297 url(&dtml-portal_url;/++resource++bika.lims.images/exclamation_big.png) no-repeat 25px 20px;*/
 }
 div.alertpanel h1 {
     color:#7b0c00;
@@ -170,4 +170,3 @@ div.alertpanel a {
 }
  
 /* </dtml-with> */
-

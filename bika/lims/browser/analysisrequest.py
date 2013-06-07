@@ -427,16 +427,19 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 to.append(formataddr((encode_header(contact.Title()),
                                        contact.getEmailAddress())))
             for cc in ar.getCCContact():
-                to.append(formataddr((encode_header(cc.Title()),
-                                       cc.getEmailAddress())))
+                formatted = formataddr((encode_header(cc.Title()),
+                                       cc.getEmailAddress()))
+                if formatted not in to:
+                    to.append(formatted)
 
             managers = self.context.portal_groups.getGroupMembers('LabManagers')
             for bcc in managers:
                 user = self.portal.acl_users.getUser(bcc)
                 uemail = user.getProperty('email')
                 ufull = user.getProperty('fullname')
-                to.append(formataddr((encode_header(ufull), uemail)))
-
+                formatted = formataddr((encode_header(ufull), uemail))
+                if formatted not in to:
+                    to.append(formatted)
             mime_msg['To'] = ','.join(to)
             aranchor = "<a href='%s'>%s</a>" % (ar.absolute_url(),
                                                 ar.getRequestID())
@@ -789,7 +792,7 @@ class AnalysisRequestViewView(BrowserView):
         self.header_buttons = [{'name':'save_button', 'title':_('Save')}]
 
         ## handle_header table submit
-        if form.get('header_submitted', None):
+        if form.get('header_submitted', None):            
             plone.protect.CheckAuthenticator(form)
             message = None
             values = {
@@ -804,18 +807,34 @@ class AnalysisRequestViewView(BrowserView):
                             default=u'${name} is required, please correct.',
                             mapping={'name': _('Sample Type')})
                         break
-                    if not bsc(portal_type = 'SampleType', title = value):
+                    st = bsc(portal_type='SampleType', title=value)
+                    if st and len(st) == 1:
+                        value = st[0].UID
+                    else:
                         message = _("${sampletype} is not a valid sample type",
                                     mapping={'sampletype':value})
                         break
 
-                if row['id'] == 'SamplePoint':
+                elif row['id'] == 'SamplePoint':
                     value = value.replace("%s: " % _("Lab"), '')
-                    if value and \
-                       not bsc(portal_type = 'SamplePoint', title = value):
-                        message = _("${samplepoint} is not a valid sample point",
-                                    mapping={'samplepoint': value})
-                        break
+                    if value:
+                        sp = bsc(portal_type='SamplePoint', title=value)
+                        if sp and len(sp) == 1:
+                            value = sp[0].UID
+                        else:
+                            message = _("${samplepoint} is not a valid sample point",
+                                        mapping={'samplepoint': value})
+                            break
+
+                elif row['id'] == 'SamplingDeviation':
+                    if value:
+                        sd = bsc(portal_type='SamplingDeviation', title=value)
+                        if sd and len(sd) == 1:
+                            value = sd[0].UID
+                        else:
+                            message = _("${samplingdeviation} is not a valid sample point",
+                                        mapping={'samplingdeviation': value})
+                            break
 
                 values[row['id']] = value
 
@@ -852,8 +871,8 @@ class AnalysisRequestViewView(BrowserView):
 
             self.context.plone_utils.addPortalMessage(message, 'info')
             url = self.context.absolute_url().split("?")[0]
-            self.request.RESPONSE.redirect(url)
-            return
+            if len(url) > 1:
+                self.request.RESPONSE.redirect(url)
 
         ## Create Partitions View for this ARs sample
         p = SamplePartitionsView(self.context.getSample(), self.request)

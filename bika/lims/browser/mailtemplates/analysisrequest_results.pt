@@ -29,7 +29,7 @@
 <table class="logo-table">
 <tr>
     <td>
-      <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/logo_email.png"/>
+      <img tal:attributes="src string:${portal/absolute_url}/logo.png"/>
     </td>
     <td tal:condition="accredited"
         tal:define="logo python:context.bika_setup.laboratory.getAccreditationBodyLogo()">
