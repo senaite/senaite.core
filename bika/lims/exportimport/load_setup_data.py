@@ -716,7 +716,6 @@ class LoadSetupData(BrowserView):
     def load_sample_points(self, sheet):
         logger.info("Loading Sample points...")
         setup_folder = self.context.bika_setup.bika_samplepoints
-        self.samplepoints = {}
         rows = self.get_rows(sheet, 3)
         for row in rows:
             if not row['title']:
@@ -737,20 +736,21 @@ class LoadSetupData(BrowserView):
 
             _id = folder.invokeFactory('SamplePoint', id=tmpID())
             obj = folder[_id]
+            sampletype = self.bsc(portal_type='SampleType',
+                                  title=row['SampleType_title'])
+            sampletype = sampletype[0].getObject() if sampletype else None
             obj.edit(title = row['title'],
                      description = row.get('description', ''),
                      Composite = self.to_bool(row['Composite']),
                      Elevation = row['Elevation'],
-                     SampleTypes = row['SampleType_title'] and self.sampletypes[row['SampleType_title']] or []
+                     SampleTypes = sampletype
                      )
-            self.samplepoints[row['title']] = obj
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
 
     def load_sample_types(self, sheet):
         logger.info("Loading Sample types...")
         folder = self.context.bika_setup.bika_sampletypes
-        self.sampletypes = {}
         rows = self.get_rows(sheet, 3)
         for row in rows:
             if row['title']:
@@ -767,25 +767,28 @@ class LoadSetupData(BrowserView):
                 )
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
-                self.sampletypes[row['title']] = obj
 
     def link_samplepoint_sampletype(self, sheet):
         logger.info("Loading Sample point - sample types...")
         rows = self.get_rows(sheet, 3)
         for row in rows:
 
-            st = self.sampletypes[row['SampleType_title']]
-            sp = self.samplepoints[row['SamplePoint_title']]
+            sampletype = self.bsc(portal_type='SampleType',
+                                  title=row['SampleType_title'])
+            sampletype = sampletype[0].getObject() if sampletype else None
+            samplepoint = self.bsc(portal_type='SamplePoint',
+                                  title=row['SamplePoint_title'])
+            samplepoint = samplepoint[0].getObject() if samplepoint else None
 
-            sampletypes = sp.getSampleTypes()
-            if st not in sampletypes:
-                sampletypes.append(st)
-                sp.setSampleTypes(sampletypes)
+            sampletypes = samplepoint.getSampleTypes()
+            if sampletype not in sampletypes:
+                sampletypes.append(sampletype)
+                samplepoint.setSampleTypes(sampletypes)
 
-            samplepoints = st.getSamplePoints()
-            if sp not in samplepoints:
-                samplepoints.append(sp)
-                st.setSamplePoints(samplepoints)
+            samplepoints = sampletype.getSamplePoints()
+            if samplepoint not in samplepoints:
+                samplepoints.append(samplepoint)
+                sampletype.setSamplePoints(samplepoints)
 
     def load_sampling_deviations(self, sheet):
         logger.info("Loading Sample deviations...")
@@ -1091,8 +1094,12 @@ class LoadSetupData(BrowserView):
             else:
                 folder = self.clients[client_title]
 
-            sampletype = self.sampletypes.get(row['SampleType_title'], None)
-            samplepoint = self.sampletypes.get(row['SamplePoint_title'], None)
+            sampletype = self.bsc(portal_type='SampleType',
+                                  title=row['SampleType_title'])
+            sampletype = sampletype[0].getObject() if sampletype else None
+            samplepoint = self.bsc(portal_type='SamplePoint',
+                                  title=row['SamplePoint_title'])
+            samplepoint = samplepoint[0].getObject() if samplepoint else None
 
             _id = folder.invokeFactory('ARTemplate', id=tmpID())
             obj = folder[_id]
@@ -1148,9 +1155,15 @@ class LoadSetupData(BrowserView):
         #  { Client: { SampleType: { service, min, max, error }... }... }
         all_specs = {}
         rows = self.get_rows(sheet, 3)
+        sampletype_title = ''
+        client_title = 'lab'
         for row in rows:
-            client_title = row['Client_title'] or 'lab'
-            sampletype_title = row['SampleType_title']
+            client_title = row['Client_title'] \
+                if row['Client_title'] \
+                else 'lab'
+            sampletype_title = row['SampleType_title'] \
+                if row['SampleType_title'] \
+                else sampletype_title
             if client_title not in all_specs:
                 all_specs[client_title] = {}
             if sampletype_title not in all_specs[client_title]:
@@ -1166,12 +1179,14 @@ class LoadSetupData(BrowserView):
             else:
                 folder = self.clients[client]
             for sampletype_title, resultsrange in client_specs.items():
-                sampletype = self.sampletypes[sampletype_title]
+                sampletype = self.bsc(portal_type='SampleType',
+                                      title=row['SampleType_title'])
+                sampletype = sampletype[0].getObject() if sampletype else None
                 _id = folder.invokeFactory('AnalysisSpec', id=tmpID())
                 obj = folder[_id]
                 obj.edit(
-                         title = sampletype.Title(),
-                         ResultsRange = resultsrange)
+                     title = sampletype.Title(),
+                     ResultsRange = resultsrange)
                 obj.setSampleType(sampletype.UID())
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
@@ -1411,7 +1426,9 @@ class LoadSetupData(BrowserView):
         for row in rows:
             if not row['Analysis Service']: continue
             service = self.services[row['Analysis Service']]
-            sampletype = self.sampletypes[row['Sample Type']]
+            sampletype = self.bsc(portal_type='SampleType',
+                                  title=row['Sample Type'])
+            sampletype = sampletype[0].getObject() if sampletype else None
             ps = service.getPartitionSetup()
             containers = []
             if row['Container']:
