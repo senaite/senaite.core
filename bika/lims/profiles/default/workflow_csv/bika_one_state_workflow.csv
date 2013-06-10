@@ -1,0 +1,18 @@
+[Workflow],,,,,,,,,
+Id:,bika_one_state_workflow,,,,,,,,
+Title:,Bika Single State Workflow,,,,,,,,
+Description:,,,,,,,,,
+Initial state:,active,,,,,,,,
+Type:,Workflow,,,,,,,,
+State variable:,review_state,,,,,,,,
+,,,,,,,,,
+[State],,,,,,,,,
+Id:,active,,,,,,,,
+Title:,Active,,,,,,,,
+Description:,,,,,,,,,
+Transitions,,,,,,,,,
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,LabManager,Site Administrator
+Access contents information,N,Y,N,N,N,N,N,N,N
+View,N,Y,N,N,N,N,N,N,N
+Modify portal content,N,N,Y,Y,N,Y,N,Y,Y
+Change portal events,N,N,Y,Y,N,Y,N,Y,Y

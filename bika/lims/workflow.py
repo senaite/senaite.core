@@ -1,10 +1,5 @@
-from DateTime import DateTime
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
-from bika.lims import bikaMessageFactory as _
-from bika.lims import logger
-import App
-import transaction
 
 
 def skip(instance, action, peek=False, unskip=False):
@@ -40,3 +35,13 @@ def doActionFor(instance, action_id):
             workflow.doActionFor(instance, action_id)
         except WorkflowException:
             pass
+
+
+def default(self, state_info):
+    # Delegate to action on instance
+    action_id = state_info['transition'].getId()
+    prefix = 'workflow_script_'
+    method_id = prefix + action_id
+    method = getattr(state_info['object'], method_id, None)
+    if method is not None:
+        method(state_info)
