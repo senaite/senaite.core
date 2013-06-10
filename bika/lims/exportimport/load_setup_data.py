@@ -1180,7 +1180,7 @@ class LoadSetupData(BrowserView):
                 folder = self.clients[client]
             for sampletype_title, resultsrange in client_specs.items():
                 sampletype = self.bsc(portal_type='SampleType',
-                                      title=row['SampleType_title'])
+                                      title=sampletype_title)
                 sampletype = sampletype[0].getObject() if sampletype else None
                 _id = folder.invokeFactory('AnalysisSpec', id=tmpID())
                 obj = folder[_id]
