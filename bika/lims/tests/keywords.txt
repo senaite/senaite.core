@@ -1,0 +1,14 @@
+*** Settings ***
+#More resource files can be loaded from here ie:
+#Resource  resource_filename
+
+#to include this file in another file - place the following line in the other file
+#Resource  src/bika.lims/bika/lims/tests/keywords.txt
+
+*** Keywords ***
+
+
+Test Keyword
+    Log  Hallo World from keywords.txt  WARN
+
+
