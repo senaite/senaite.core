@@ -104,9 +104,6 @@ class Client(Organisation):
         """ Return the Organisation's Name as its title """
         return safe_unicode(self.getField('Name').get(self)).encode('utf-8')
 
-    def setTitle(self, value):
-        return self.setName(value)
-
     security.declarePublic('getContactFromUsername')
     def getContactFromUsername(self, username):
         for contact in self.objectValues('Contact'):

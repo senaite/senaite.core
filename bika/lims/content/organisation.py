@@ -117,6 +117,9 @@ class Organisation(ATFolder):
         field = field and field.get(self) or ''
         return safe_unicode(field).encode('utf-8')
 
+    def setTitle(self, value):
+        return self.setName(value)
+
     def getPossibleAddresses(self):
         return ['PhysicalAddress', 'PostalAddress', 'BillingAddress']
 
@@ -148,7 +151,7 @@ class Organisation(ATFolder):
                 statecountry_line += use_address['state'] + ', '
             if use_address['country']:
                 statecountry_line += use_address['country']
-            if statecountry_line:            
+            if statecountry_line:
                 address_lines.append(statecountry_line)
 
 

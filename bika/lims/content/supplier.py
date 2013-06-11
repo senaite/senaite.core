@@ -30,7 +30,6 @@ class Supplier(Organisation):
     displayContentsTab = False
     schema = schema
 
-
     def Title(self):
         """ Return the Organisation's Name as its title """
         return safe_unicode(self.getField('Name').get(self)).encode('utf-8')
