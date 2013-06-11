@@ -1412,7 +1412,7 @@ class Setup(WorksheetImporter):
                           title=values['DryMatterService']) \
             if values.get('DryMatterService', None) else None
         if not dry_service:
-            raise Exception("Dry Matter service '%s' does not exist".format(
+            raise Exception("Dry Matter service '{0}' does not exist".format(
                 values['DryMatterService']))
         dry_uid = dry_service[0].UID
         self.context.bika_setup.edit(
