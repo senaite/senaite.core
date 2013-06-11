@@ -207,6 +207,12 @@
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
 
     <adapter
+      name="AR_Templates"
+      factory="bika.lims.exportimport.setupdata.AR_Templates"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
       name="Reference_Definitions"
       factory="bika.lims.exportimport.setupdata.Reference_Definitions"
       provides="bika.lims.interfaces.ISetupDataImporter"
