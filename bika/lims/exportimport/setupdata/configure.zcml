@@ -1,0 +1,239 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser">
+
+    <adapter
+      name="Lab_Information"
+      factory="bika.lims.exportimport.setupdata.Lab_Information"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Lab_Contacts"
+      factory="bika.lims.exportimport.setupdata.Lab_Contacts"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Lab_Departments"
+      factory="bika.lims.exportimport.setupdata.Lab_Departments"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Clients"
+      factory="bika.lims.exportimport.setupdata.Clients"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Client_Contacts"
+      factory="bika.lims.exportimport.setupdata.Client_Contacts"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Container_Types"
+      factory="bika.lims.exportimport.setupdata.Container_Types"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Preservations"
+      factory="bika.lims.exportimport.setupdata.Preservations"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Containers"
+      factory="bika.lims.exportimport.setupdata.Containers"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Suppliers"
+      factory="bika.lims.exportimport.setupdata.Suppliers"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Supplier_Contacts"
+      factory="bika.lims.exportimport.setupdata.Supplier_Contacts"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Manufacturers"
+      factory="bika.lims.exportimport.setupdata.Manufacturers"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Instrument_Types"
+      factory="bika.lims.exportimport.setupdata.Instrument_Types"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Instruments"
+      factory="bika.lims.exportimport.setupdata.Instruments"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Instrument_Validations"
+      factory="bika.lims.exportimport.setupdata.Instrument_Validations"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Instrument_Calibrations"
+      factory="bika.lims.exportimport.setupdata.Instrument_Calibrations"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Instrument_Certifications"
+      factory="bika.lims.exportimport.setupdata.Instrument_Certifications"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Instrument_Maintenance_Tasks"
+      factory="bika.lims.exportimport.setupdata.Instrument_Maintenance_Tasks"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Instrument_Schedule"
+      factory="bika.lims.exportimport.setupdata.Instrument_Schedule"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Sample_Matrices"
+      factory="bika.lims.exportimport.setupdata.Sample_Matrices"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Batch_Labels"
+      factory="bika.lims.exportimport.setupdata.Batch_Labels"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Sample_Types"
+      factory="bika.lims.exportimport.setupdata.Sample_Types"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Sample_Points"
+      factory="bika.lims.exportimport.setupdata.Sample_Points"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Sample_Point_Sample_Types"
+      factory="bika.lims.exportimport.setupdata.Sample_Point_Sample_Types"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Sample_Conditions"
+      factory="bika.lims.exportimport.setupdata.Sample_Conditions"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Analysis_Categories"
+      factory="bika.lims.exportimport.setupdata.Analysis_Categories"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Methods"
+      factory="bika.lims.exportimport.setupdata.Methods"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Sampling_Deviations"
+      factory="bika.lims.exportimport.setupdata.Sampling_Deviations"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Reference_Manufacturers"
+      factory="bika.lims.exportimport.setupdata.Reference_Manufacturers"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Reference_Suppliers"
+      factory="bika.lims.exportimport.setupdata.Reference_Suppliers"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Reference_Supplier_Contacts"
+      factory="bika.lims.exportimport.setupdata.Reference_Supplier_Contacts"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Calculations"
+      factory="bika.lims.exportimport.setupdata.Calculations"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Analysis_Services"
+      factory="bika.lims.exportimport.setupdata.Analysis_Services"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Analysis_Specifications"
+      factory="bika.lims.exportimport.setupdata.Analysis_Specifications"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Analysis_Profiles"
+      factory="bika.lims.exportimport.setupdata.Analysis_Profiles"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Reference_Definitions"
+      factory="bika.lims.exportimport.setupdata.Reference_Definitions"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Worksheet_Templates"
+      factory="bika.lims.exportimport.setupdata.Worksheet_Templates"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Setup"
+      factory="bika.lims.exportimport.setupdata.Setup"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="ID_Prefixes"
+      factory="bika.lims.exportimport.setupdata.ID_Prefixes"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Attachment_Types"
+      factory="bika.lims.exportimport.setupdata.Attachment_Types"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+</configure>

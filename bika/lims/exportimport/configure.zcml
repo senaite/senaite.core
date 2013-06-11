@@ -6,6 +6,8 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
 
+  <include package=".setupdata"/>
+
   <browser:page
     for="Products.CMFPlone.interfaces.IPloneSiteRoot"
     name="import"

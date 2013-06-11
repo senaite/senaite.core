@@ -227,10 +227,12 @@ class IAnalysisRangeAlerts(Interface):
 
 class ISetupDataSetList(Interface):
     """Allow products to register distributed setup datasets (xlsx files).
+    Each ISetupDataSetList adapter returns a list of values to be included in
+    the load_setup_data view
     """
 
 
 class ISetupDataImporter(Interface):
     """ISetupDataImporter adapters are responsible for importing sections of
-    the load_setup_data xlsx spreadsheets.
+    the load_setup_data xlsx workbooks.
     """
