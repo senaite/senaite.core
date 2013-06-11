@@ -553,7 +553,7 @@ class Instruments(WorksheetImporter):
                 if row.get('Brand', '') else None
             obj.setManufacturer(manufacturer)
             supplier = bsc(portal_type='Supplier',
-                           title=row['Supplier'])[0].getObject() \
+                           getName=row['Supplier'])[0].getObject() \
                 if row.get('Supplier', '') else None
             obj.setSupplier(supplier)
             obj.unmarkCreationFlag()
