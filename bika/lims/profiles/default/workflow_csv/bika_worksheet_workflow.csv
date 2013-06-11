@@ -10,7 +10,7 @@ State variable:,review_state,,,,,,,,,
 Id:,attachment_due,,,,,,,,,
 Title:,Attachment Outstanding,,,,,,,,,
 Description:,,,,,,,,,,
-Transitions,attach, revert, reject,,,,,,,
+Transitions,"attach, revert, reject",,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager
 BIKA: Edit Worksheet,N,N,Y,N,N,N,N,Y,Y,Y
 ,,,,,,,,,,
@@ -26,7 +26,7 @@ BIKA: Edit Worksheet,N,N,Y,N,N,N,N,Y,Y,Y
 Id:,to_be_verified,,,,,,,,,
 Title:,To be verified,,,,,,,,,
 Description:,,,,,,,,,,
-Transitions,verify, revert, reject,,,,,,,
+Transitions,"verify, revert, reject",,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager
 BIKA: Edit Worksheet,N,N,Y,N,N,N,N,Y,Y,Y
 ,,,,,,,,,,

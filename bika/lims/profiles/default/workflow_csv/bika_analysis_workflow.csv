@@ -10,7 +10,7 @@ State variable:,review_state,,,,,,,,,,,,
 Id:,attachment_due,,,,,,,,,,,,
 Title:,Attachment Outstanding,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
-Transitions,attach, retract,,,,,,,,,,,
+Transitions,"attach, retract",,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier
 BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,N,Y,N,N,N
 BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N
@@ -54,7 +54,7 @@ BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,N,Y,Y
 Id:,sample_due,,,,,,,,,,,,
 Title:,Sample Due,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
-Transitions,import, receive, submit,,,,,,,,,,
+Transitions,"import, receive, submit",,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier
 BIKA: Cancel and reinstate,N,N,Y,Y,N,N,N,N,N,Y,N,N,N
 BIKA: Edit Field Results,N,N,Y,N,N,N,N,N,Y,Y,N,Y,N
@@ -77,14 +77,14 @@ BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,N,N,N
 Id:,sample_registered,,,,,,,,,,,,
 Title:,Registered,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
-Transitions,sampling_workflow, no_sampling_workflow,,,,,,,,,,,
+Transitions,"sampling_workflow, no_sampling_workflow",,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier
 ,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,
 Id:,sampled,,,,,,,,,,,,
 Title:,Sampled,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
-Transitions,auto_preservation_required, auto_no_preservation_required, to_be_preserved, sample_due,,,,,,,,,
+Transitions,"auto_preservation_required, auto_no_preservation_required, to_be_preserved, sample_due",,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier
 ,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,
@@ -105,7 +105,7 @@ BIKA: Sample Sample,N,N,N,N,N,N,N,N,N,N,N,N,N
 Id:,to_be_sampled,,,,,,,,,,,,
 Title:,To Be Sampled,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
-Transitions,sample,,,,,,,,,,,,
+Transitions,"sample",,,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier
 BIKA: Cancel and reinstate,N,N,Y,Y,N,N,N,N,Y,Y,N,N,N
 BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N
@@ -116,7 +116,7 @@ BIKA: Sample Sample,N,N,Y,N,N,N,N,N,N,Y,N,Y,N
 Id:,to_be_verified,,,,,,,,,,,,
 Title:,To be verified,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
-Transitions,verify, retract, revert,,,,,,,,,,
+Transitions,"verify, retract, revert",,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier
 BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,N,Y,N,N,N
 BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N

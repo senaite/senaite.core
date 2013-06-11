@@ -119,7 +119,7 @@ Setup
     ...    Email=info@lab.com
     ...    Country=South Africa
     ...    State=Gauteng
-           #District is on auto select last entry    
+           #District is on auto select last entry
     ...    City=City Name
     ...    ZIP=12345
     ...    Physical Address=Foo House\nFoo Street 20\nFoo Town
@@ -246,7 +246,7 @@ Setup
     ...    Mobilephone=098 765 432
     ...    Country=South Africa
     ...    State=Gauteng
-           #District is on auto select last entry    
+           #District is on auto select last entry
     ...    City=City Name
     ...    ZIP=12345
     ...    Physical Address=Foo House\nFoo Street 20\nFoo Town
@@ -269,7 +269,7 @@ Setup
     ...    Email=info@supplier.com
     ...    Country=South Africa
     ...    State=Gauteng
-           #District is on auto select last entry    
+           #District is on auto select last entry
     ...    City=City Name
     ...    ZIP=12345
     ...    Physical Address=Foo House\nFoo Street 20\nFoo Town
@@ -312,7 +312,7 @@ Setup
     Create AnalysisCategories  Description=Analysis Category description
     #end Analysis Categories
 
-    #Analysis Services - requires Analysis Categories, Methods, Instruments, Calculations, ..... 
+    #Analysis Services - requires Analysis Categories, Methods, Instruments, Calculations, .....
     #Analysis Services <- note the use of global variable as title - also used by Analysis Profile
     Create AnalysisServices  Description=Analysis Services description
     #end Analysis Services
@@ -333,20 +333,20 @@ Setup
     ...    Description=ReferenceDefinition description
     #endReference Definition
 
-    #Worksheet Template 
+    #Worksheet Template
     Create WorksheetTemplate  Title= Reference DefinitionTitle
     ...    Description=ReferenceDefinition description
-    #end Worksheet Template 
+    #end Worksheet Template
 
 
     Create ARTemplates  Title=Reference DefinitionTitle
     ...    Description=ReferenceDefinition description
-    #end AR Templates 
+    #end AR Templates
 
     Create AddClients  ID=987654321
     ...    Country=South Africa
     ...    State=Gauteng
-           #District is on auto select last entry    
+           #District is on auto select last entry
     ...    City=City Name
     ...    ZIP=12345
     ...    Physical Address=Client House\nClient Street 20\nClient Town
@@ -369,7 +369,7 @@ Setup
     ...    Mobilephone=098 567 432
     ...    Country=South Africa
     ...    State=Gauteng
-           #District is on auto select last entry    
+           #District is on auto select last entry
     ...    City=City Name
     ...    ZIP=12345
     ...    Physical Address=Client House\nClient Street 20\nClient Town
@@ -442,7 +442,7 @@ Create Batch Labels
     Input Text  title  ${Title}
     Click Button  Save
     #portalMessage info
-    Wait Until Page Contains  Changes saved.    
+    Wait Until Page Contains  Changes saved.
 
 
 #specifically test the Deactivate and Activate options
@@ -1063,7 +1063,7 @@ Create LabDepartment
     Input Text  description  ${Description}
     Select from list  Manager:list  ${Manager}
     Click Button  Save
-    Wait Until Page Contains  Changes saved.  
+    Wait Until Page Contains  Changes saved.
 
     #Lab Contact
     Log  Lab Contact  WARN
@@ -1097,7 +1097,7 @@ Create LabContact
     Input Text  Middleinitial  ${Middleinitial}
     Input Text  Middlename  ${Middlename}
     Input Text  Surname  ${Surname}
-    Input Text  JobTitle  ${Jobtitle}    
+    Input Text  JobTitle  ${Jobtitle}
     Select from list  Department:list  ${Department}
     #sleep  2
 
@@ -1129,7 +1129,7 @@ Create LabContact
     #sleep  2
 
     Click Button  Save
-    Wait Until Page Contains  Changes saved.  
+    Wait Until Page Contains  Changes saved.
 
 #end LabContact
 
@@ -1215,7 +1215,7 @@ Create Suppliers
     Input Text  BankBranch  ${BankBranch}
 
     Click Button  Save
-    Wait Until Page Contains  Changes saved.  
+    Wait Until Page Contains  Changes saved.
 
     #following variables not via arguments
 
@@ -1251,7 +1251,7 @@ Create Suppliers
     Click Link  Reference Values
     Wait Until Page Contains  Expected Values
     Click Button  Save
-    Wait Until Page Contains  Changes saved.  
+    Wait Until Page Contains  Changes saved.
 
     #now test Contacts
     Go to  http://localhost:55001/plone/bika_setup/bika_suppliers
@@ -1270,11 +1270,11 @@ Create Suppliers
     Input Text  Middleinitial  ${Middleinitial}
     Input Text  Middlename  ${Middlename}
     Input Text  Surname  ${Surname}
-    Input Text  JobTitle  ${Jobtitle}    
-    Input Text  Department  ${Department}  
+    Input Text  JobTitle  ${Jobtitle}
+    Input Text  Department  ${Department}
 
     Click Button  Save
-    Wait Until Page Contains  Changes saved.  
+    Wait Until Page Contains  Changes saved.
 
     Click link  Edit
     Click link  Email Telephone Fax
@@ -1285,7 +1285,7 @@ Create Suppliers
     Input Text  MobilePhone  082 1234 567
 
     Click Button  Save
-    Wait Until Page Contains  Changes saved.  
+    Wait Until Page Contains  Changes saved.
 
     Click link  Edit
     Click link  Address
@@ -1301,7 +1301,7 @@ Create Suppliers
     Input Text  PostalAddress.address  ${Postal Address}
 
     Click Button  Save
-    Wait Until Page Contains  Changes saved.  
+    Wait Until Page Contains  Changes saved.
 
     #now test Instruments
     #for that you need a supplier,manufacturer, instrument type and instrument - defined in that order
@@ -1314,7 +1314,7 @@ Create Suppliers
     Input Text  title  ${ManufacturerTitle}
     Input Text  description  ${ManufacturerDescription}
     Click Button  Save
-    Wait Until Page Contains  Changes saved.  
+    Wait Until Page Contains  Changes saved.
 
     #now define an Instrument Type
     Log  Instrument Types  WARN
@@ -1326,7 +1326,7 @@ Create Suppliers
     Input Text  title  ${InstrumentTypeTitle}
     Input Text  description  Instrument Type Description
     Click Button  Save
-    Wait Until Page Contains  Changes saved.  
+    Wait Until Page Contains  Changes saved.
 
 
     #Click link  Instruments
@@ -1361,7 +1361,7 @@ Create Suppliers
     Input Text  PreventiveMaintenanceProcedure  Preventive Maintenance Procedure
 
     Click Button  Save
-    Wait Until Page Contains  Changes saved.    
+    Wait Until Page Contains  Changes saved.
 
 #At this stage numerous seletion options have appeared on a seperate bar Mainteneance etc
 #test at later stage
@@ -1581,7 +1581,7 @@ Create AnalysisProfiles
     ...          ${Description}=
 
     Go to    http://localhost:55001/plone/bika_setup/bika_analysisprofiles
-    Wait Until Page Contains  Analysis Profile 
+    Wait Until Page Contains  Analysis Profile
     Click link  Add Profile
     Wait Until Page Contains Element  title
     Input Text  title  ${Title}
@@ -1739,7 +1739,7 @@ Create ARTemplates
 
     Click Button  Save
     sleep  0.5
-    Wait Until Page Contains  Changes saved.  
+    Wait Until Page Contains  Changes saved.
 
     #end AR Templates
 
@@ -1800,7 +1800,7 @@ Create AddClients
     Select From List  RestrictedCategories:list
 
     Click Button  Save
-    Wait Until Page Contains  Changes saved.  
+    Wait Until Page Contains  Changes saved.
 
     #end Clients
 
@@ -1845,7 +1845,7 @@ Create ClientContact
     Input Text  Middleinitial  ${Middleinitial}
     Input Text  Middlename  ${Middlename}
     Input Text  Surname  ${Surname}
-    Input Text  JobTitle  ${Jobtitle}    
+    Input Text  JobTitle  ${Jobtitle}
     Input Text  Department  ${Department}
 
     Click Link  Email Telephone Fax
@@ -1878,7 +1878,7 @@ Create ClientContact
     #Click Element  archetypes-fieldname-CCContact
 
     Click Button  Save
-    Wait Until Page Contains  Changes saved.  
+    Wait Until Page Contains  Changes saved.
 
     #end LabContact
 
@@ -2009,21 +2009,21 @@ Select First Option in Dropdown
 
 Log in
     [Arguments]  ${userid}  ${password}
-
-    Go to  http://localhost:55001/plone/login_form
-    Page should contain element  __ac_name
-    Page should contain element  __ac_password
-    Page should contain button  Log in
-    Input text  __ac_name  ${userid}
-    Input text  __ac_password  ${password}
-    Click Button  Log in
-
-Log in as test user
+    Log out
+    Go to                          http://localhost:55001/plone/login_form
+    Page should contain element    __ac_name
+    Page should contain element    __ac_password
+    Page should contain button     Log in
+    Input text  __ac_name          ${userid}
+    Input text  __ac_password      ${password}
+    Click Button                   Log in
+    Wait until page contains       You are now logged in
 
 Log in as
     [Arguments]  ${user}
     Log in  test_${user}  test_${user}
 
+Log in as test user
     Log in  ${TEST_USER_NAME}  ${TEST_USER_PASSWORD}
 
 Log in as site owner
@@ -2033,5 +2033,5 @@ Log in as test user with role
     [Arguments]  ${usrid}  ${role}
 
 Log out
-    Go to  http://localhost:55001/plone/logout
-    Page should contain  logged out
+    Go to                          http://localhost:55001/plone/logout
+    Wait until page contains       You are now logged out

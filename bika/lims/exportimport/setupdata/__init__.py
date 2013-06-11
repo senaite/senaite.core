@@ -1192,8 +1192,14 @@ class Analysis_Profiles(WorksheetImporter):
         for row in self.get_rows(3, worksheet=worksheet):
             if row['Profile'] not in self.profile_services.keys():
                 self.profile_services[row['Profile']] = []
+            # Here we match againts Keyword or Title.
+            # XXX We need a utility for this kind of thing.
             service = bsc(portal_type='AnalysisService',
-                          title=row['Service'])[0].getObject()
+                          title=row['Service'])
+            if not service:
+                service = bsc(portal_type='AnalysisService',
+                              getKeyword=row['Service'])
+            service = service[0].getObject()
             self.profile_services[row['Profile']].append(service)
 
     def Import(self):

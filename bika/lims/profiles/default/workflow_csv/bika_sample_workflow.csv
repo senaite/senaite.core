@@ -26,7 +26,7 @@ BIKA: Edit Sample,N,N,N,N,N,N,N,N,N,N,N,N
 Id:,sample_due,,,,,,,,,,,
 Title:,Sample Due,,,,,,,,,,,
 Description:,,,,,,,,,,,,
-Transitions,sample, preserve, receive,,,,,,,,,
+Transitions,"sample, preserve, receive",,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler
 BIKA: Cancel and reinstate,N,N,Y,Y,N,N,N,N,Y,Y,N,N
 BIKA: Edit Field Results,N,N,Y,N,N,N,N,Y,Y,Y,N,Y
@@ -54,14 +54,14 @@ BIKA: Sample Sample,N,N,N,N,N,N,N,N,N,N,N,N
 Id:,sample_registered,,,,,,,,,,,
 Title:,Registered,,,,,,,,,,,
 Description:,,,,,,,,,,,,
-Transitions,sampling_workflow, no_sampling_workflow,,,,,,,,,,
+Transitions,"sampling_workflow, no_sampling_workflow",,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler
 ,,,,,,,,,,,,
 [State],,,,,,,,,,,,
 Id:,sampled,,,,,,,,,,,
 Title:,Sampled,,,,,,,,,,,
 Description:,,,,,,,,,,,,
-Transitions,auto_preservation_required, auto_no_preservation_required, to_be_preserved, sample_due,,,,,,,,
+Transitions,"auto_preservation_required, auto_no_preservation_required, to_be_preserved, sample_due",,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler
 ,,,,,,,,,,,,
 [State],,,,,,,,,,,,

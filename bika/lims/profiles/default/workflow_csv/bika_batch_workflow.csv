@@ -30,7 +30,7 @@ BIKA: Publish,N,N,N,N,N,N,N,N,N,N,N,N
 Id:,sample_received,,,,,,,,,,,
 Title:,Sample received,,,,,,,,,,,
 Description:,,,,,,,,,,,,
-Transitions,open, submit,,,,,,,,,,
+Transitions,"open, submit",,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,LabTechnician,Publisher
 View,N,N,Y,Y,N,N,N,Y,Y,Y,N,N
 Modify portal content,N,N,Y,Y,N,N,N,N,Y,Y,Y,N
@@ -40,7 +40,7 @@ BIKA: Publish,N,N,N,N,N,N,N,N,N,N,N,N
 Id:,to_be_verified,,,,,,,,,,,
 Title:,To be verified,,,,,,,,,,,
 Description:,,,,,,,,,,,,
-Transitions,open, receive, verify,,,,,,,,,
+Transitions,"open, receive, verify",,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,LabTechnician,Publisher
 View,N,N,Y,Y,N,N,N,Y,Y,Y,N,N
 Modify portal content,N,N,Y,N,N,N,N,N,N,Y,N,N
