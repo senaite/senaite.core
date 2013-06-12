@@ -157,66 +157,70 @@ table.bika-listing-table {
   border-left: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
 }
 
-.bika-listing-table a.state-visible  {
-  background-color: &dtml-visibleBackgroundColor;
-  color: &dtml-visibleTextColor; !important;
+.bika-listing-table .state-sample_due {
+  background-color: &dtml-sample_due_BackgroundColor;;
+  color: &dtml-sample_due_TextColor; !important;
+}
+
+.bika-listing-table .state-sample_received {
+  background-color: &dtml-sample_received_BackgroundColor;;
+  color: &dtml-sample_received_TextColor; !important;
+}
+
+.bika-listing-table .state-to_be_verified {
+  background-color: &dtml-to_be_verified_BackgroundColor;;
+  color: &dtml-to_be_verified_TextColor; !important;
+}
+
+.bika-listing-table .state-published {
+  background-color: &dtml-published_BackgroundColor;;
+  color: &dtml-published_TextColor; !important;
+}
+
+.bika-listing-table .state-open {
+  background-color: &dtml-open_BackgroundColor;;
+  color: &dtml-open_TextColor; !important;
 }
 
 .bika-listing-table .state-retracted {
-  background-color: &dtml-retractedBackgroundColor; !important;
-  color: &dtml-retractedTextColor; !important;
-}
-.bika-listing-table .state-retracted a {
-  color: &dtml-retractedTextColor; !important;
-}
-
-.bika-listing-table .state-invalid {
-  background-color: &dtml-retractedBackgroundColor; !important;
-  color: &dtml-retractedTextColor; !important;
-}
-.bika-listing-table .state-invalid a {
-  color: &dtml-retractedTextColor; !important;
+  background-color: &dtml-retracted_BackgroundColor;;
+  color: &dtml-retracted_TextColor; !important;
 }
 
 .bika-listing-table .state-cancelled {
-  background-color: &dtml-cancelledBackgroundColor; !important;
-  color: &dtml-cancelledTextColor; !important;
-}
-.bika-listing-table .state-cancelled a {
-  color: &dtml-cancelledTextColor; !important;
+  background-color: &dtml-cancelled_BackgroundColor;;
+  color: &dtml-cancelled_TextColor; !important;
 }
 
 .bika-listing-table .state-inactive {
-  background-color: &dtml-inactiveBackgroundColor; !important;
-  color: &dtml-inactiveTextColor; !important;
+  background-color: &dtml-inactive_BackgroundColor;;
+  color: &dtml-inactive_TextColor; !important;
+}
+
+.bika-listing-table .state-invalid {
+  background-color: &dtml-invalid_BackgroundColor;;
+  color: &dtml-invalid_TextColor; !important;
+}
+
+.bika-listing-table .state-invalid a {
+  color: &dtml-invalid_TextColor; !important;
 }
 
 .bika-listing-table .state-submitted-by-current-user td {
-  background-color: &dtml-submittedbycurrentuserBackgroundColor; !important;
-  color: &dtml-submittedbycurrentuserTextColor; !important;
-}
-
-.bika-listing-table .state-sample_due {
-  background-color: &dtml-sampleDueBackgroundColor;
-  color: &dtml-sampleDueTextColor; !important;
-}
-
-.bika-listing-table .state-recieved,
-.bika-listing-table .state-sample_received {
-  background-color: &dtml-sampleReceivedBackgroundColor;
-  color: &dtml-sampleReceivedTextColor; !important;
+  background-color: &dtml-submitted_by_current_user_BackgroundColor; !important;
+  color: &dtml-submitted_by_current_user_TextColor; !important;
 }
 
 /* empty worksheets in worksheet folder listing */
 .bika-listing-table .state-empty-worksheet {
-  background-color: &dtml-emptyBackgroundColor; !important;
-  color: &dtml-emptyTextColor; !important;
+  background-color: &dtml-empty_BackgroundColor; !important;
+  color: &dtml-empty_TextColor; !important;
 }
 
 /* empty rows in ws manage results */
 .bika-listing-table .state-empty {
-  background-color: &dtml-wsEmptyPositionBackgroundColor; !important;
-  color: &dtml-wsEmptyPositionTextColor; !important;
+  background-color: &dtml-empty_BackgroundColor; !important;
+  color: &dtml-empty_TextColor; !important;
   vertical-align:middle !important;
   padding:5px;
 }
