@@ -25,6 +25,7 @@ from decimal import Decimal
 from zope.interface import implements
 from bika.lims.utils import deprecated
 import datetime
+import math
 
 schema = BikaSchema.copy() + Schema((
     HistoryAwareReferenceField('Service',
@@ -370,6 +371,104 @@ class Analysis(BaseContent):
         return acceptable and '1' or not outofrange, spec
 
     def getSample(self):
-        return self.aq_parent.getSample();
-    
+        return self.aq_parent.getSample()
+
+    def calculateResult(self, override=False, cascade=False):
+        """ Calculates the result for the current analysis if it depends of
+            other analysis/interim fields. Otherwise, do nothing
+        """
+
+        if self.getResult() and override == False:
+            return False
+
+        calculation = self.getService().getCalculation()
+        if not calculation:
+            return False
+
+        mapping = {}
+
+        # Add interims to mapping
+        for interimuid, interimdata in self.getInterimFields():
+            for i in interimdata:
+                try:
+                    ivalue = float(i['value'])
+                    mapping[i['keyword']] = ivalue
+                except:
+                    # Interim not float, abort
+                    return False
+
+        # Add calculation's hidden interim fields to mapping
+        for field in calculation.getInterimFields():
+            if field['keyword'] not in mapping.keys():
+                if field.get('hidden', False):
+                    try:
+                        ivalue = float(field['value'])
+                        mapping[field['keyword']] = ivalue
+                    except:
+                        return False
+
+        # Add Analysis Service interim defaults to mapping
+        service = self.getService()
+        for field in service.getInterimFields():
+            if field['keyword'] not in mapping.keys():
+                if field.get('hidden', False):
+                    try:
+                        ivalue = float(field['value'])
+                        mapping[field['keyword']] = ivalue
+                    except:
+                        return False
+
+        # Add dependencies results to mapping
+        dependencies = self.getDependencies()
+        for dependency in dependencies:
+            result = dependency.getResult()
+            if not result:
+                # Dependency without results found
+                if cascade:
+                    # Try to calculate the dependency result
+                    dependency.calculateResult(override, cascade)
+                    result = dependency.getResult()
+                    if result:
+                        try:
+                            result = float(str(result))
+                            mapping[dependency.getKeyword()] = result
+                        except:
+                            return False
+                else:
+                    return False
+            else:
+                # Result must be float
+                try:
+                    result = float(str(result))
+                    mapping[dependency.getKeyword()] = result
+                except: 
+                    return False
+
+        # Calculate
+        formula = calculation.getFormula()
+        formula = formula.replace('[', '%(').replace(']', ')f')
+        try:
+            formula = eval("'%s'%%mapping" % formula,
+                               {"__builtins__":None,
+                                'math':math,
+                                'context':self},
+                               {'mapping': mapping})
+            result = eval(formula)
+        except TypeError:
+            self.setResult("NA")
+            return True
+        except ZeroDivisionError:
+            self.setResult('0/0')
+            return True
+        except KeyError, e:
+            self.setResult("NA")
+            return True
+
+        precision = service.getPrecision()
+        result = (precision and result) \
+            and str("%%.%sf" % precision) % result \
+            or result
+        self.setResult(result)
+        return True
+
 atapi.registerType(Analysis, PROJECTNAME)

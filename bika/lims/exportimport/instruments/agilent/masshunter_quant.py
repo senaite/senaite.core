@@ -20,6 +20,8 @@ import json
 import plone
 import zope
 import zope.event
+from bika.lims.exportimport.instruments.resultsimport import InstrumentCSVResultsFileParser,\
+    AnalysisResultsImporter
 
 title = "Agilent - Masshunter Quant"
 
@@ -31,7 +33,7 @@ def Import(context, request):
     fileformat = request.form['amhq_format']
     artoapply = request.form['amhq_artoapply']
     override = request.form['amhq_override']
-    sample = request.form['amhq_sample']
+    sample = request.form.get('amhq_sample', 'requestid')
     errors = []
     logs = []
 
@@ -51,6 +53,7 @@ def Import(context, request):
             status = ['sample_received']
         elif artoapply == 'received_tobeverified':
             status = ['sample_received', 'attachment_due', 'to_be_verified']
+
         over = [False, False]
         if override == 'nooverride':
             over = [False, False]
@@ -58,7 +61,10 @@ def Import(context, request):
             over = [True, False]
         elif override == 'overrideempty':
             over = [True, True]
-        sam = ['getSampleID', 'getClientSampleID']
+
+        sam = ['getRequestID', 'getSampleID', 'getClientSampleID']
+        if sample =='requestid':
+            sam = ['getRequestID']
         if sample == 'sampleid':
             sam = ['getSampleID']
         elif sample == 'clientsid':
@@ -66,7 +72,12 @@ def Import(context, request):
         elif sample == 'sample_clientsid':
             sam = ['getSampleID', 'getClientSampleID']
 
-        importer = MasshunterQuantImporter(parser, context, status, over, sam)
+        importer = MasshunterQuantImporter(parser=parser,
+                                           context=context, 
+                                           idsearchcriteria=sam,
+                                           allowed_ar_states=status,
+                                           allowed_analysis_states=None,
+                                           override=over)
         importer.process()
         errors = importer.errors
         logs = importer.logs
@@ -76,70 +87,7 @@ def Import(context, request):
     return json.dumps(results)
 
 
-class LogErrorReportable:
-
-    def __init__(self):
-        self._errors = []
-        self._logs = []
-
-    def err(self, msg, numline=None, line=None):
-        self.msg(self._errors, msg, numline, line)
-        self.msg(self._logs, _("[ERROR] ") + msg, numline, line)
-
-    def warn(self, msg, numline=None, line=None):
-        self.msg(self._logs, _("[WARN] ") + msg, numline, line)
-
-    def log(self, msg, numline=None, line=None):
-        self.msg(self._logs, msg, numline, line)
-
-    def msg(self, array, msg, numline=None, line=None):
-        prefix = ''
-        suffix = ''
-        if numline:
-            prefix = "[%s] " % numline
-        if line:
-            suffix = ": %s" % line
-        array.append(prefix + msg + suffix)
-
-    @property
-    def errors(self):
-        """ Return an array with the errors thrown during the file processing
-        """
-        return self._errors
-
-    @property
-    def logs(self):
-        """ Return an array with logs generated during the file processing
-        """
-        return self._logs
-
-
-class MasshunterQuantParser(LogErrorReportable):
-
-    def __init__(self, infile):
-        LogErrorReportable.__init__(self)
-        self._infile = infile
-        self._header = {}
-        self._sequences = []
-        self._quantitationresults = {}
-
-    def getInputFile(self):
-        return self._infile
-
-    def parse(self):
-        raise NotImplementedError
-
-    def getHeader(self):
-        return self._header
-
-    def getSequences(self):
-        return self._sequences
-
-    def getQuantitationResults(self):
-        return self._quantitationresults
-
-
-class MasshunterQuantCSVParser(MasshunterQuantParser):
+class MasshunterQuantCSVParser(InstrumentCSVResultsFileParser):
 
     HEADERKEY_BATCHINFO = 'Batch Info'
     HEADERKEY_BATCHDATAPATH = 'Batch Data Path'
@@ -151,6 +99,7 @@ class MasshunterQuantCSVParser(MasshunterQuantParser):
     HEADERKEY_BATCHSTATE = 'Batch State'
     SEQUENCETABLE_KEY = 'Sequence Table'
     SEQUENCETABLE_HEADER_DATAFILE = 'Data File'
+    SEQUENCETABLE_HEADER_SAMPLENAME = 'Sample Name'
     SEQUENCETABLE_PRERUN = 'prerunrespchk.d'
     SEQUENCETABLE_MIDRUN = 'mid_respchk.d'
     SEQUENCETABLE_POSTRUN = 'post_respchk.d'
@@ -164,58 +113,24 @@ class MasshunterQuantCSVParser(MasshunterQuantParser):
     QUANTITATIONRESULTS_NUMERICHEADERS = ('Resp', 'ISTD Resp', 'Resp Ratio',
                                           'Final Conc', 'Exp Conc', 'Accuracy')
     QUANTITATIONRESULTS_COMPOUNDCOLUMN = 'Compound'
-    COMMAS = ',,,,,,,,,,,,,,,,,'
+    COMMAS = ','
 
     def __init__(self, csv):
-        MasshunterQuantParser.__init__(self, csv)
+        InstrumentCSVResultsFileParser.__init__(self, csv)
         self._end_header = False
         self._end_sequencetable = False
+        self._sequences = []
         self._sequencesheader = []
         self._quantitationresultsheader = []
         self._numline = 0
 
-    def parse(self):
-        """ Processes the input CSV file
-        """
-        infile = self.getInputFile()
-        self.log(_("Parsing file ") + " %s (%s)" % (infile.filename, infile.name))
-        jump = 0
-        for line in infile.readlines():
-            self._numline += 1
-            if jump == -1:
-                # Something went wrong. Finish
-                self.err(_("File processing finished due to critical errors"))
-                return False
-            if jump > 0:
-                # Jump some lines
-                jump -= 1
-                continue
-
-            if not line or not line.strip():
-                continue
-
-            line = line.strip()
-            if self._end_header == False:
-                jump = self.parse_headerline(line)
-
-            elif self._end_sequencetable == False:
-                jump = self.parse_sequencetableline(line)
-
-            else:
-                jump = self.parse_quantitationesultsline(line)
-
-        if (len(self._quantitationresults) == 0):
-            self.err(_("No quantitation results found"))
-            return False
+    def _parseline(self, line):
+        if self._end_header == False:
+            return self.parse_headerline(line)
+        elif self._end_sequencetable == False:
+            return self.parse_sequencetableline(line)
         else:
-            cntsequences = len(self._sequences)
-            cntanalyses = len(self._quantitationresults)
-            cntresults = 0
-            for acode, results in self._quantitationresults.iteritems():
-                cntresults += len(results)
-            self.log(_("End of file reached successfully: %s sequences, %s analyses, %s results") %
-                     (str(cntsequences), str(cntanalyses), str(cntresults)))
-        return True
+            return self.parse_quantitationesultsline(line)
 
     def parse_headerline(self, line):
         """ Parses header lines
@@ -458,9 +373,7 @@ class MasshunterQuantCSVParser(MasshunterQuantParser):
         if line.startswith(self.QUANTITATIONRESULTS_TARGETCOMPOUND):
             # New set of Quantitation Results
             splitted = [token.strip() for token in line.split(',')]
-            if splitted[1]:
-                self._quantitationresults[splitted[1]] = []
-            else:
+            if not splitted[1]:
                 self.warn(_("No Target Compound found"), self._numline, line)
             return 0
 
@@ -484,231 +397,43 @@ class MasshunterQuantCSVParser(MasshunterQuantParser):
                 else:
                     quantitation[colname] = token
             elif token:
-                self.err(_("Orphan value in column % (%s)") % (str(i+1), token),
+                self.err(_("Orphan value in column %s (%s)") % (str(i+1), token),
                            self._numline, line)
 
         if self.QUANTITATIONRESULTS_COMPOUNDCOLUMN in quantitation:
             compound = quantitation[self.QUANTITATIONRESULTS_COMPOUNDCOLUMN]
-            if compound not in self._quantitationresults.keys():
-                self._quantitationresults[compound] = []
-            self._quantitationresults[compound].append(quantitation)
+
+            # Look for sequence matches and populate rawdata
+            datafile = quantitation.get(self.QUANTITATIONRESULTS_HEADER_DATAFILE, '')
+            if not datafile:
+                self.err(_("No Data File found for quantitation result"), self.num_line, line)
+            else:
+                seqs = [sequence for sequence in self._sequences \
+                        if sequence.get('Data File', '') == datafile]
+                if len(seqs) == 0:
+                    self.err(_("No sample found for quntitative result %s") % datafile, self.num_line, line)
+                elif len(seqs) > 1:
+                    self.err(_("More than one sequence found for quantitative result %s") % datafile, self._numline, line)
+                else:
+                    objid = seqs[0].get(self.SEQUENCETABLE_HEADER_SAMPLENAME, '')
+                    if objid:
+                        quantitation['DefaultResult'] = 'Final Conc'
+                        quantitation['Remarks'] = _("Autoimport")
+                        raw = self.getRawResults().get(objid, {})
+                        raw[compound] = quantitation
+                        self._addRawResult(objid, raw, True)
+                    else:
+                        self.err(_("No valid sequence for %s " % datafile, self._numline, line))
         else:
             self.err(_("Value for column '%s' not found") \
                      % self.QUANTITATIONRESULTS_COMPOUNDCOLUMN,
                      self._numline, line)
 
 
-class MasshunterQuantImporter(LogErrorReportable):
+class MasshunterQuantImporter(AnalysisResultsImporter):
 
-    def __init__(self, masshunterquantparser, context, allowed_states, override, samplesearch):
-        self._parser = masshunterquantparser
-        self.context = context
-        self.allowed_states = allowed_states
-        self.override = override
-        self.samplesearch = samplesearch
-
-    def getParser(self):
-        return self._parser
-
-    def process(self):
-        parsed = self._parser.parse()
-        self._errors = self._parser.errors
-        self._logs = self._parser.logs
-        self.bsc = getToolByName(self.context, 'bika_setup_catalog')
-        self.bac = getToolByName(self.context, 'bika_analysis_catalog')
-        self.pc = getToolByName(self.context, 'portal_catalog')
-        self.bc = getToolByName(self.context, 'bika_catalog')
-        resultfield = 'Final Conc'
-        attached = []
-
-        cntars = 0
-        cntresults = 0
-
-        if parsed:
-
-            # Process the parsed data
-            header = self._parser.getHeader()
-            sequences = self._parser.getSequences()
-            quantitationresults = self._parser.getQuantitationResults()
-
-            # 1. Foreach Sample in sequences, obtain the Sample Name
-            # 2. Foreach Sequence, retrieve the Data File
-            # 3. Foreach Data File, retrieve the result line from Quant results
-            for acode, results in quantitationresults.iteritems():
-
-                service = self.bsc(getKeyword=acode)
-                if not service:
-                    self.err(_('Service keyword %s not found') % acode)
-                    continue
-
-                for resline in results:
-                    datafile = resline.get('Data File', '')
-                    if not datafile:
-                        self.err(_("No Data File found for quantitation result %s") % str(resline))
-                        continue
-
-                    # get the sequences for each quantitative result
-                    seqs = [sequence for sequence in sequences \
-                            if sequence.get('Data File', '') == \
-                            resline.get('Data File', '')]
-
-                    if len(seqs) == 0:
-                        self.err(_("No sample found for quantitative result %s") % datafile)
-                        continue
-                    elif len(seqs) > 1:
-                        self.err(_("More than one sequence found for quantitative result %s") % datafile)
-                        continue
-
-                    # Find the sample for that sequence
-                    sampleid = seqs[0].get("Sample Name", "")
-                    if not sampleid:
-                        self.err(_("No Sample Name found for sequence %s") % str(seqs[0]))
-                        continue
-
-                    ar = self._findAnalysisRequest(sampleid)
-                    if not ar:
-                        continue
-
-                    # Look for the desired analysis in the AR
-                    analyses = ar.getAnalyses()
-                    analyses = [analysis.getObject() for analysis in ar.getAnalyses() \
-                                if analysis.getObject().getKeyword() == acode]
-                    if len(analyses) == 0:
-                        self.err(_("Analysis %s not found in Analysis "
-                                     "Request %s. Discarding result for sample"
-                                     "%s") % (acode, ar.id, sampleid))
-                        continue
-
-                    analysis = None
-                    for an in analyses:
-                        if (an.getResult() and self.override[0] == False):
-                            self.warn(_("Analysis %s from Analysis Request %s "
-                                       "already have results. Discarding "
-                                       "result for sample %s") %
-                                     (acode, ar.id, sampleid))
-                            continue
-
-                        analysis = an
-
-                    if not analysis:
-                        self.err(_("There's no Analysis %s without result "
-                                     "in Analysis Request %s. Discarding "
-                                     "result for sample %s") %
-                                     (acode, ar.id, sampleid))
-                        continue
-
-                    # If analysis has interim fields, check with agilent's 
-                    # columns
-                    interimsout = []
-                    interims = analysis.getInterimFields()
-                    for interim in interims:
-                        keyword = interims['keyword']
-                        if resline.get(keyword, ''):
-                            res = resline.get(keyword)
-                            self.log(_("Result for '%s:%s', AR '%s' and sample '%s': '%s'") %
-                                 (acode, keyword, ar.id, sampleid, str(res)))
-                            interimsout.append({'keyword': interims['keyword'],
-                                                'value':res})
-                        else:
-                            interimsout.append(interim)
-                    if interimsout:
-                        analysis.setInterimFields(interimsout)
-                        cntresults += 1
-
-                    elif resline.get(resultfield, '') or self.override[1] == True:
-                        # set the result
-                        res = resline.get(resultfield, '')
-                        self.log(_("Result for '%s', AR '%s' and sample '%s': '%s'") %
-                                 (acode, ar.id, sampleid, str(res)))
-                        analysis.setResult(res)
-                        cntresults += 1
-
-                    else:
-                        self.warn(_("Empty '%s' result for sample %s.") %
-                                  (resultfield, sampleid))
-                        continue
-
-                    # Attach the file to the AR
-                    if ar.UID() not in attached:
-
-                        # Create the AttachmentType for CSV if not exists
-                        attachmentType = self.bsc(portal_type="AttachmentType", title="CSV")
-                        if len(attachmentType) == 0:
-                            folder = self.context.bika_setup.bika_attachmenttypes
-                            _id = folder.invokeFactory('AttachmentType', id=tmpID())
-                            obj = folder[_id]
-                            obj.edit(title="CSV",
-                                     description="Comma Separated Values file")
-                            obj.unmarkCreationFlag()
-                            renameAfterCreation(obj)
-                            attuid = obj.UID()
-                        else:
-                            attuid = attachmentType[0].UID
-
-                        attachmentid = ar.generateUniqueId('Attachment')
-                        ar.aq_parent.invokeFactory(id=attachmentid, type_name="Attachment")
-                        attachment = ar.aq_parent._getOb(attachmentid)
-                        attachment.edit(
-                            AttachmentFile=self._parser.getInputFile().read(),
-                            AttachmentType=attuid,
-                            AttachmentKeys="Agilent - Masshunter Quant")
-                        attachment.reindexObject()
-
-                        others = ar.getAttachment()
-                        attachments = []
-                        for other in others:
-                            attachments.append(other.UID())
-                        attachments.append(attachment.UID())
-                        ar.setAttachment(attachments)
-                        attached.append(ar.UID())
-
-                        cntars += 1
-
-            self.log(_("Import finished successfully: %s ARs and %s results updated") %
-                     (str(cntars), str(cntresults)))
-            return True
-
-        else:
-            self.err(_("Unable to import data. Parser finished with errors"))
-            return False
-
-    def _findAnalysisRequest(self, sampleid):
-        """ Searches for an analysis request.
-            Looks for analysis requests which have a sample with a SampleID,
-            UID or ClientSampleID that matches with the argument sampleid.
-            Only retrieves the AR if its status is 'sample_received',
-            'attachment_due' or 'to_be_verified'
-            If no AR found, returns None
-            If more than one AR found, returns None
-        """
-
-        # Get the AR from the sample
-        # review_state: sample_registered, to_be_sampled, sampled,
-        # to_be_preserved, sample_due, sample_received,
-        # attachment_due, to_be_verified, verified, published, invalid
-        ars = []
-        if 'getSampleID' in self.samplesearch:
-            ars = self.bc(portal_type='AnalysisRequest',
-                          getSampleID=sampleid,
-                          review_state=self.allowed_states)
-
-        if len(ars) == 0 and 'getClientSampleID' in self.samplesearch:
-            ars = self.bc(portal_type='AnalysisRequest',
-                          getClientSampleID=sampleid,
-                          review_state=self.allowed_states)
-
-        if len(ars) == 0:
-            ars = self.bc(portal_type='AnalysisRequest',
-                          getSampleUID=sampleid,
-                          review_state=self.allowed_states)
-            self.err(_("No Analysis Request with '%s' states "
-                       "found for sample %s") %
-                     (str(self.allowed_states), sampleid))
-            return None
-
-        if len(ars) > 1:
-            self.err(_("More than one Analysis Request found for sample %s")
-                     % sampleid)
-            return None
-
-        return ars[0].getObject()
+    def __init__(self, parser, context, idsearchcriteria, override,
+                 allowed_ar_states=None, allowed_analysis_states=None):
+        AnalysisResultsImporter.__init__(self, parser, context, idsearchcriteria,
+                                         override, allowed_ar_states,
+                                         allowed_analysis_states)
