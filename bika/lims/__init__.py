@@ -141,9 +141,9 @@ def initialize(context):
         kind = "%s: Add %s" % (config.PROJECTNAME, atype.portal_type)
         perm = ADD_CONTENT_PERMISSIONS.get(atype.portal_type,
                                            ADD_CONTENT_PERMISSION)
-        utils.ContentInit(kind,
-                          content_types      = (atype,),
-                          permission         = perm,
-                          extra_constructors = (constructor,),
-                          fti                = ftis,
-                          ).initialize(context)
+        ContentInit(kind,
+                    content_types      = (atype,),
+                    permission         = perm,
+                    extra_constructors = (constructor,),
+                    fti                = ftis,
+                    ).initialize(context)

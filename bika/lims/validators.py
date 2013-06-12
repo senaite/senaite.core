@@ -1,16 +1,15 @@
-from Products.CMFCore.utils import getToolByName
 from Acquisition import aq_parent
-from Products.Archetypes.interfaces import IObjectPostValidation
-from Products.validation.interfaces.IValidator import IValidator
-from Products.validation import validation
-from bika.lims.utils import sortable_title
-from zope.interface import Interface, implements
-from zope.site.hooks import getSite
-from zExceptions import Redirect
-import sys,re
 from bika.lims import bikaMessageFactory as _
+from Products.CMFCore.utils import getToolByName
+from Products.validation import validation
+from Products.validation.interfaces.IValidator import IValidator
+from zope.interface import implements
+
+import re
+
 
 class UniqueFieldValidator:
+
     """ Verifies that a field value is unique for items
     if the same type in this location """
 
@@ -20,8 +19,8 @@ class UniqueFieldValidator:
     def __call__(self, value, *args, **kwargs):
         instance = kwargs['instance']
         fieldname = kwargs['field'].getName()
-        request = kwargs.get('REQUEST', {})
-        form = request.get('form', {})
+        # request = kwargs.get('REQUEST', {})
+        # form = request.get('form', {})
 
         ts = getToolByName(instance, 'translation_service').translate
 
@@ -32,13 +31,15 @@ class UniqueFieldValidator:
             if hasattr(item, 'UID') and item.UID() != instance.UID() and \
                item.schema.get(fieldname).getAccessor(item)() == value:
                 msg = _("Validation failed: '${value}' is not unique",
-                        mapping = {'value': value})
+                        mapping={'value': value})
                 return ts(msg)
         return True
 
 validation.register(UniqueFieldValidator())
 
+
 class ServiceKeywordValidator:
+
     """Validate AnalysisService Keywords
     must match isUnixLikeName
     may not be the same as another service keyword
@@ -50,9 +51,9 @@ class ServiceKeywordValidator:
 
     def __call__(self, value, *args, **kwargs):
         instance = kwargs['instance']
-        fieldname = kwargs['field'].getName()
-        request = kwargs.get('REQUEST', {})
-        form = request.get('form', {})
+        # fieldname = kwargs['field'].getName()
+        # request = kwargs.get('REQUEST', {})
+        # form = request.get('form', {})
 
         ts = getToolByName(instance, 'translation_service').translate
 
@@ -63,16 +64,16 @@ class ServiceKeywordValidator:
         # this has to be done from catalog so we don't
         # clash with ourself
         bsc = getToolByName(instance, 'bika_setup_catalog')
-        services = bsc(portal_type='AnalysisService', getKeyword = value)
+        services = bsc(portal_type='AnalysisService', getKeyword=value)
         for service in services:
             if service.UID != instance.UID():
-                msg = _("Validation failed: '${title}': "
-                        "This keyword is already in use by service '${used_by}'",
-                        mapping = {'title': value, 'used_by': service.Title})
+                msg = _("Validation failed: '${title}': This keyword "
+                        "is already in use by service '${used_by}'",
+                        mapping={'title': value, 'used_by': service.Title})
                 return ts(msg)
 
         calc = hasattr(instance, 'getCalculation') and \
-             instance.getCalculation() or None
+            instance.getCalculation() or None
         our_calc_uid = calc and calc.UID() or ''
 
         # check the value against all Calculation Interim Field ids
@@ -80,25 +81,28 @@ class ServiceKeywordValidator:
         for calc in calcs:
             calc = calc.getObject()
             interim_fields = calc.getInterimFields()
-            if not interim_fields: continue
+            if not interim_fields:
+                continue
             for field in interim_fields:
                 if field['keyword'] == value and our_calc_uid != calc.UID():
-                    msg = _("Validation failed: '${title}': " \
-                            "This keyword is already in use by calculation '${used_by}'",
-                            mapping = {'title': value, 'used_by': calc.Title()})
+                    msg = _("Validation failed: '${title}': This keyword "
+                            "is already in use by calculation '${used_by}'",
+                            mapping={'title': value, 'used_by': calc.Title()})
                     return ts(msg)
         return True
 
 validation.register(ServiceKeywordValidator())
 
+
 class InterimFieldsValidator:
+
     """Validating InterimField keywords.
         XXX Applied as a subfield validator but validates entire field.
         keyword must match isUnixLikeName
         keyword may not be the same as any service keyword.
         keyword must be unique in this InterimFields field
-        keyword must be unique for all interimfields which share the same title.
-        title must be unique for all interimfields which share the same keyword.
+        keyword must be unique for interimfields which share the same title.
+        title must be unique for interimfields which share the same keyword.
     """
 
     implements(IValidator)
@@ -118,7 +122,6 @@ class InterimFieldsValidator:
             return True
         else:
             instance.REQUEST['validated'] = fieldname
-
 
         for x in range(len(interim_fields)):
             row = interim_fields[x]
@@ -147,19 +150,19 @@ class InterimFieldsValidator:
                     titles[field['title']] = 1
         for k in [k for k in keywords.keys() if keywords[k] > 1]:
             msg = _("Validation failed: '${keyword}': duplicate keyword",
-                    mapping = {'keyword': k})
+                    mapping={'keyword': k})
             return ts(msg)
         for t in [t for t in titles.keys() if titles[t] > 1]:
             msg = _("Validation failed: '${title}': duplicate title",
-                    mapping = {'title': t})
+                    mapping={'title': t})
             return ts(msg)
 
         # check all keywords against all AnalysisService keywords for dups
-        services = bsc(portal_type='AnalysisService', getKeyword = value)
+        services = bsc(portal_type='AnalysisService', getKeyword=value)
         if services:
-            msg = _("Validation failed: '${title}': "\
+            msg = _("Validation failed: '${title}': "
                     "This keyword is already in use by service '${used_by}'",
-                    mapping = {'title': value, 'used_by': services[0].Title})
+                    mapping={'title': value, 'used_by': services[0].Title})
             return ts(msg)
 
         # any duplicated interimfield titles must share the same keyword
@@ -198,7 +201,9 @@ class InterimFieldsValidator:
 
 validation.register(InterimFieldsValidator())
 
+
 class FormulaValidator:
+
     """ Validate keywords in calculation formula entry
     """
     implements(IValidator)
@@ -209,7 +214,7 @@ class FormulaValidator:
             return True
 
         instance = kwargs['instance']
-        fieldname = kwargs['field'].getName()
+        # fieldname = kwargs['field'].getName()
         request = kwargs.get('REQUEST', {})
         form = request.form
         interim_fields = form.get('InterimFields')
@@ -217,7 +222,7 @@ class FormulaValidator:
         ts = getToolByName(instance, 'translation_service').translate
         bsc = getToolByName(instance, 'bika_setup_catalog')
         interim_keywords = interim_fields and \
-                               [f['keyword'] for f in interim_fields] or []
+            [f['keyword'] for f in interim_fields] or []
         keywords = re.compile(r"\[([^\]]+)\]").findall(value)
 
         for keyword in keywords:
@@ -226,13 +231,15 @@ class FormulaValidator:
             if not dep_service and \
                not keyword in interim_keywords:
                 msg = _("Validation failed: Keyword '${keyword}' is invalid",
-                        mapping = {'keyword': keyword})
+                        mapping={'keyword': keyword})
                 return ts(msg)
         return True
 
 validation.register(FormulaValidator())
 
+
 class CoordinateValidator:
+
     """ Validate latitude or longitude field values
     """
     implements(IValidator)
@@ -255,7 +262,7 @@ class CoordinateValidator:
         form_value = form.get(fieldname)
 
         ts = getToolByName(instance, 'translation_service').translate
-        bsc = getToolByName(instance, 'bika_setup_catalog')
+        # bsc = getToolByName(instance, 'bika_setup_catalog')
 
         try:
             degrees = int(form_value['degrees'])
@@ -285,9 +292,11 @@ class CoordinateValidator:
                 return ts(_("Validation failed: degrees must be 0 - 90"))
             if degrees == 90:
                 if minutes != 0:
-                    return ts(_("Validation failed: degrees is 90; minutes must be zero"))
+                    return ts(_("Validation failed: degrees is 90; "
+                                "minutes must be zero"))
                 if seconds != 0:
-                    return ts(_("Validation failed: degrees is 90; seconds must be zero"))
+                    return ts(_("Validation failed: degrees is 90; "
+                                "seconds must be zero"))
             if bearing.lower() not in 'sn':
                 return ts(_("Validation failed: Bearing must be N/S"))
 
@@ -296,9 +305,11 @@ class CoordinateValidator:
                 return ts(_("Validation failed: degrees must be 0 - 180"))
             if degrees == 180:
                 if minutes != 0:
-                    return ts(_("Validation failed: degrees is 180; minutes must be zero"))
+                    return ts(_("Validation failed: degrees is 180; "
+                                "minutes must be zero"))
                 if seconds != 0:
-                    return ts(_("Validation failed: degrees is 180; seconds must be zero"))
+                    return ts(_("Validation failed: degrees is 180; "
+                                "seconds must be zero"))
             if bearing.lower() not in 'ew':
                 return ts(_("Validation failed: Bearing must be E/W"))
 
@@ -306,7 +317,9 @@ class CoordinateValidator:
 
 validation.register(CoordinateValidator())
 
+
 class ResultOptionsValidator:
+
     """Validating AnalysisService ResultOptions field.
         XXX Applied as a subfield validator but validates
         for x in range(len(interim_fields)):
@@ -326,7 +339,7 @@ class ResultOptionsValidator:
         form_value = form.get(fieldname)
 
         ts = getToolByName(instance, 'translation_service').translate
-        bsc = getToolByName(instance, 'bika_setup_catalog')
+        # bsc = getToolByName(instance, 'bika_setup_catalog')
 
         if instance.REQUEST.get(self.name, ''):
             return True
@@ -336,9 +349,10 @@ class ResultOptionsValidator:
         # ResultValue must always be a number
         for field in form_value:
             try:
-                f = float(field['ResultValue'])
+                float(field['ResultValue'])
             except:
-                return ts(_("Validation failed: Result Values must be numbers"))
+                return ts(_("Validation failed: "
+                            "Result Values must be numbers"))
             if 'ResultText' not in field:
                 return ts(_("Validation failed: Result Text cannot be blank"))
 
@@ -346,7 +360,9 @@ class ResultOptionsValidator:
 
 validation.register(ResultOptionsValidator())
 
+
 class RestrictedCategoriesValidator:
+
     """ Verifies that client Restricted categories include all categories
     required by service dependencies. """
 
@@ -355,13 +371,13 @@ class RestrictedCategoriesValidator:
 
     def __call__(self, value, *args, **kwargs):
         instance = kwargs['instance']
-        fieldname = kwargs['field'].getName()
-        request = kwargs.get('REQUEST', {})
-        form = request.get('form', {})
+        # fieldname = kwargs['field'].getName()
+        # request = kwargs.get('REQUEST', {})
+        # form = request.get('form', {})
 
         ts = getToolByName(instance, 'translation_service').translate
         bsc = getToolByName(instance, 'bika_setup_catalog')
-        uc = getToolByName(instance, 'uid_catalog')
+        # uc = getToolByName(instance, 'uid_catalog')
 
         failures = []
 
@@ -389,7 +405,9 @@ class RestrictedCategoriesValidator:
 
 validation.register(RestrictedCategoriesValidator())
 
+
 class PrePreservationValidator:
+
     """ Validate PrePreserved Containers.
         User must select a Preservation.
     """
@@ -402,19 +420,19 @@ class PrePreservationValidator:
             return True
 
         instance = kwargs['instance']
-        fieldname = kwargs['field'].getName()
+        # fieldname = kwargs['field'].getName()
         request = kwargs.get('REQUEST', {})
         form = request.form
         preservation = form.get('Preservation')
 
-        if type(preservation) in (list,tuple):
+        if type(preservation) in (list, tuple):
             preservation = preservation[0]
 
         if preservation:
             return True
 
         ts = getToolByName(instance, 'translation_service').translate
-        bsc = getToolByName(instance, 'bika_setup_catalog')
+        # bsc = getToolByName(instance, 'bika_setup_catalog')
 
         if not preservation:
             msg = _("Validation failed: PrePreserved containers "
@@ -425,6 +443,7 @@ validation.register(PrePreservationValidator())
 
 
 class StandardIDValidator:
+
     """Matches against regular expression:
        [^A-Za-z\w\d\-\_]
     """
@@ -437,9 +456,9 @@ class StandardIDValidator:
         regex = r"[^A-Za-z\w\d\-\_]"
 
         instance = kwargs['instance']
-        fieldname = kwargs['field'].getName()
-        request = kwargs.get('REQUEST', {})
-        form = request.get('form', {})
+        # fieldname = kwargs['field'].getName()
+        # request = kwargs.get('REQUEST', {})
+        # form = request.get('form', {})
 
         ts = getToolByName(instance, 'translation_service').translate
 
@@ -455,6 +474,7 @@ validation.register(StandardIDValidator())
 
 
 class AnalysisSpecificationsValidator:
+
     """Min value must be below max value
        Percentage value must be between 0 and 100
        Values must be numbers
@@ -520,6 +540,7 @@ validation.register(AnalysisSpecificationsValidator())
 
 
 class UncertaintiesValidator:
+
     """All entries must be numbers.
     Min value must be below max value.
     Uncertainty must not be < 0.
@@ -575,6 +596,7 @@ validation.register(UncertaintiesValidator())
 
 
 class DurationValidator:
+
     """Simple stuff - just checking for integer values.
     """
 
@@ -607,6 +629,7 @@ validation.register(DurationValidator())
 
 
 class ReferenceValuesValidator:
+
     """Min value must be below max value
        Percentage value must be between 0 and 100
        Values must be numbers
@@ -619,7 +642,7 @@ class ReferenceValuesValidator:
     def __call__(self, value, *args, **kwargs):
 
             instance = kwargs['instance']
-            fieldname = kwargs['field'].getName()
+            # fieldname = kwargs['field'].getName()
             request = kwargs.get('REQUEST', {})
 
             if instance.REQUEST.get('validated', '') == self.name:
@@ -629,38 +652,41 @@ class ReferenceValuesValidator:
 
             ts = getToolByName(instance, 'translation_service').translate
 
-            ress   = request.get('result',{})[0]
-            mins   = request.get('min',{})[0]
-            maxs   = request.get('max',{})[0]
-            errors = request.get('error',{})[0]
+            ress = request.get('result', {})[0]
+            mins = request.get('min', {})[0]
+            maxs = request.get('max', {})[0]
+            errs = request.get('error', {})[0]
 
             # Retrieve all AS uids
             uids = ress.keys()
             for uid in uids:
 
                 # Foreach AS, check spec. input values
-                res = ress[uid]
-                min = mins[uid]
-                max = maxs[uid]
-                err = errors[uid]
-
-                res = res == '' and '0' or res
-                min = min == '' and '0' or min
-                max = max == '' and '0' or max
-                err = err == '' and '0' or err
+                res = ress[uid] if ress[uid] else '0'
+                min = mins[uid] if mins[uid] else '0'
+                max = maxs[uid] if maxs[uid] else '0'
+                err = errs[uid] if errs[uid] else '0'
 
                 # Values must be numbers
-                try: res = float(res)
-                except: return ts(_("Validation failed: Expected values must be numeric"))
-                try: min = float(min)
-                except: return ts(_("Validation failed: Min values must be numeric"))
-                try: max = float(max)
-                except: return ts(_("Validation failed: Max values must be numeric"))
-                try: err = float(err)
-                except: return ts(_("Validation failed: Percentage error values must be numeric"))
+                try:
+                    res = float(res)
+                except:
+                    return ts(_("Validation failed: Expected values must be numeric"))
+                try:
+                    min = float(min)
+                except:
+                    return ts(_("Validation failed: Min values must be numeric"))
+                try:
+                    max = float(max)
+                except:
+                    return ts(_("Validation failed: Max values must be numeric"))
+                try:
+                    err = float(err)
+                except:
+                    return ts(_("Validation failed: Percentage error values must be numeric"))
 
                 # Min value must be < max
-                if min > max :
+                if min > max:
                     return ts(_("Validation failed: Max values must be greater than Min values"))
 
                 # Expected result must be between min and max
@@ -668,7 +694,7 @@ class ReferenceValuesValidator:
                     return ts(_("Validation failed: Expected values must be between Min and Max values"))
 
                 # Error percentage must be between 0 and 100
-                if err < 0 or err > 100 :
+                if err < 0 or err > 100:
                     return ts(_("Validation failed: Percentage error values must be between 0 and 100"))
 
             return True

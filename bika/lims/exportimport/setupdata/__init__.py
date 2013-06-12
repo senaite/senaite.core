@@ -1134,21 +1134,37 @@ class Analysis_Services(WorksheetImporter):
 
 class Analysis_Specifications(WorksheetImporter):
 
-    def write_bucket(self, bucket):
-        # write existing bucket record
+    def Import(self):
+        s_t = ''
+        c_t = 'lab'
+        bucket = {}
         pc = getToolByName(self.context, 'portal_catalog')
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        for client_title in bucket.keys():
-            if client_title == 'lab':
+        # collect up all values into the bucket
+        for row in self.get_rows(3):
+            c_t = row['Client_title'] if row['Client_title'] else 'lab'
+            if c_t not in bucket:
+                bucket[c_t] = {}
+            s_t = row['SampleType_title'] if row['SampleType_title'] else s_t
+            if s_t not in bucket[c_t]:
+                bucket[c_t][s_t] = []
+            service = bsc(portal_type='AnalysisService', title=row['service'])
+            service = service[0].getObject()
+            bucket[c_t][s_t].append({
+                'keyword': service.getKeyword(),
+                'min': row['min'] if row['min'] else '0',
+                'max': row['max'] if row['max'] else '0',
+                'error': row['error'] if row['error'] else '0'
+            })
+        # write objects.
+        for c_t in bucket:
+            if c_t == 'lab':
                 folder = self.context.bika_setup.bika_analysisspecs
             else:
-                folder = pc(portal_type='Client',
-                            title=client_title)[0].getObject()
-            for st_title in bucket[client_title]:
-                resultsrange = bucket[client_title][st_title]
-
-                sampletype = bsc(portal_type='SampleType',
-                                 title=st_title)[0]
+                folder = pc(portal_type='Client', title=c_t)[0].getObject()
+            for s_t in bucket[c_t]:
+                resultsrange = bucket[c_t][s_t]
+                sampletype = bsc(portal_type='SampleType', title=s_t)[0]
                 _id = folder.invokeFactory('AnalysisSpec', id=tmpID())
                 obj = folder[_id]
                 obj.edit(
@@ -1157,27 +1173,6 @@ class Analysis_Specifications(WorksheetImporter):
                 obj.setSampleType(sampletype.UID)
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
-
-    def Import(self):
-        bucket = {}
-        sampletype_title = ''
-        client_title = 'lab'
-        for row in self.get_rows(3):
-            sampletype_title = row['SampleType_title'] \
-                if row['SampleType_title'] \
-                else sampletype_title
-            if bucket and sampletype_title not in bucket:
-                # For every new sampletype, write the old one
-                self.write_bucket(bucket)
-                bucket = {}
-            client_title = row['Client_title'] \
-                if row['Client_title'] \
-                else 'lab'
-            # insert new bucket record
-            bucket[client_title] = {}
-            bucket[client_title][sampletype_title] = []
-        if bucket:
-            self.write_bucket(bucket)
 
 
 class Analysis_Profiles(WorksheetImporter):
@@ -1317,18 +1312,16 @@ class Reference_Definitions(WorksheetImporter):
             return
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for row in self.get_rows(3, worksheet=worksheet):
-            if row['ReferenceDefinition_title'] \
-               not in self.results.keys():
-                self.results[
-                    row['ReferenceDefinition_title']] = []
+            if row['ReferenceDefinition_title'] not in self.results.keys():
+                self.results[row['ReferenceDefinition_title']] = []
             service = bsc(portal_type='AnalysisService',
                           title=row['service'])[0].getObject()
             self.results[
                 row['ReferenceDefinition_title']].append({
                     'uid': service.UID(),
-                    'result': row['result'],
-                    'min': row['min'],
-                    'max': row['max']})
+                    'result': row['result'] if row['result'] else '0',
+                    'min': row['min'] if row['min'] else '0',
+                    'max': row['max'] if row['max'] else '0'})
 
     def Import(self):
         self.load_reference_definition_results()

@@ -1,13 +1,14 @@
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.Registry import registerWidget, registerPropertyType
+from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import TypesWidget
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-import json
+
 
 class ReferenceResultsView(BikaListingView):
+
     """ bika listing to display reference results for a
         Reference Sample's widget
 
@@ -44,19 +45,19 @@ class ReferenceResultsView(BikaListingView):
             'max': {'title': _('Max')}
         }
         self.review_states = [
-            {'id':'default',
+            {'id': 'default',
              'title': _('All'),
-             'contentFilter':{},
+             'contentFilter': {},
              'transitions': [],
-             'columns':['service', 'result', 'error', 'min', 'max'],
-            },
+             'columns': ['service', 'result', 'error', 'min', 'max'],
+             },
         ]
 
     def folderitems(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         self.categories = []
-        services = bsc(portal_type = 'AnalysisService',
-                       sort_on = 'sortable_title')
+        services = bsc(portal_type='AnalysisService',
+                       sort_on='sortable_title')
         items = []
         for service in services:
             service = service.getObject()
@@ -67,38 +68,39 @@ class ReferenceResultsView(BikaListingView):
                 refres = self.referenceresults[service.UID()]
             else:
                 refres = {'uid': service.UID(),
-                          'result':'',
-                          'min':'',
-                          'max':''}
+                          'result': '',
+                          'min': '',
+                          'max': ''}
 
-            after_icons = ' <span class="discreet">(%s)</span>&nbsp;&nbsp;' % service.getKeyword()
+            after_icons = '<span class="discreet">(%s)</span>&nbsp;&nbsp;' % \
+                service.getKeyword()
             if service.getAccredited():
                 after_icons += "<img\
                 src='%s/++resource++bika.lims.images/accredited.png'\
-                title='%s'>"%(self.context.absolute_url(),
-                              _("Accredited"))
+                title='%s'>" % (self.context.absolute_url(),
+                                _("Accredited"))
             if service.getReportDryMatter():
                 after_icons += "<img\
                 src='%s/++resource++bika.lims.images/dry.png'\
-                title='%s'>"%(self.context.absolute_url(),
-                              _("Can be reported as dry matter"))
+                title='%s'>" % (self.context.absolute_url(),
+                                _("Can be reported as dry matter"))
             if service.getAttachmentOption() == 'r':
                 after_icons += "<img\
                 src='%s/++resource++bika.lims.images/attach_reqd.png'\
-                title='%s'>"%(self.context.absolute_url(),
-                              _("Attachment required"))
+                title='%s'>" % (self.context.absolute_url(),
+                                _("Attachment required"))
             if service.getAttachmentOption() == 'n':
                 after_icons += "<img\
                 src='%s/++resource++bika.lims.images/attach_no.png'\
-                title='%s'>"%(self.context.absolute_url(),
-                              _('Attachment not permitted'))
+                title='%s'>" % (self.context.absolute_url(),
+                                _('Attachment not permitted'))
 
             workflow = getToolByName(self.context, 'portal_workflow')
             state = workflow.getInfoFor(service, 'inactive_state', '')
 
             unit = service.getUnit()
             unitspan = unit and "<span class='discreet'>%s</span>" % unit or ''
-            percspan = "<span class='discreet'>%</span>";
+            percspan = "<span class='discreet'>%</span>"
 
             # this folderitems doesn't subclass from the bika_listing.py
             # so we create items from scratch
@@ -120,15 +122,15 @@ class ReferenceResultsView(BikaListingView):
                 'max': refres['max'],
                 'replace': {},
                 'before': {},
-                'after': {'service':after_icons,
-                          'result':unitspan,
-                          'min':unitspan,
-                          'max':unitspan,
+                'after': {'service': after_icons,
+                          'result': unitspan,
+                          'min': unitspan,
+                          'max': unitspan,
                           'error': percspan},
-                'choices':{},
+                'choices': {},
                 'class': "state-%s" % state,
                 'state_class': 'state-%s' % state,
-                'allow_edit': ['result', 'error','min', 'max'],
+                'allow_edit': ['result', 'error', 'min', 'max'],
             }
             items.append(item)
 
@@ -136,13 +138,15 @@ class ReferenceResultsView(BikaListingView):
 
         return items
 
+
 class TableRenderShim(BrowserView):
+
     """ This view renders the actual table.
         It's in it's own view so that we can tie it to a URL
         for javascript to re-render the table during ReferenceSample edit.
     """
 
-    def __init__(self, context, request, fieldvalue = {}, allow_edit = True):
+    def __init__(self, context, request, fieldvalue={}, allow_edit=True):
         """ If uid is in request, we use that reference definition's reference
             results value.  Otherwise the parameter specified here.
         """
@@ -150,7 +154,8 @@ class TableRenderShim(BrowserView):
         self.allow_edit = allow_edit
         if 'uid' in request:
             uc = getToolByName(context, 'uid_catalog')
-            refres = uc(UID=request['uid'])[0].getObject().getReferenceResults()
+            refres = uc(UID=request['uid'])[
+                0].getObject().getReferenceResults()
             self.fieldvalue = refres
         else:
             self.fieldvalue = fieldvalue
@@ -161,9 +166,10 @@ class TableRenderShim(BrowserView):
         """
         view = ReferenceResultsView(self.context,
                                     self.request,
-                                    fieldvalue = self.fieldvalue,
-                                    allow_edit = self.allow_edit)
-        return view.contents_table(table_only = True)
+                                    fieldvalue=self.fieldvalue,
+                                    allow_edit=self.allow_edit)
+        return view.contents_table(table_only=True)
+
 
 class ReferenceResultsWidget(TypesWidget):
     _properties = TypesWidget._properties.copy()
@@ -176,39 +182,45 @@ class ReferenceResultsWidget(TypesWidget):
     security = ClassSecurityInfo()
 
     security.declarePublic('process_form')
-    def process_form(self, instance, field, form, empty_marker = None, emptyReturnsMarker = False):
+
+    def process_form(self, instance, field, form,
+                     empty_marker=None, emptyReturnsMarker=False):
         """ Return a list of dictionaries fit for ReferenceResultsField
             consumption.  Only services which have float()able entries in
             result,min and max field will be included.
+            Blank values are treated as "0".
         """
         value = []
         if 'service' in form:
             for uid, service in form['service'][0].items():
-                try:
-                    float(form['result'][0][uid])
-                    float(form['min'][0][uid])
-                    float(form['max'][0][uid])
-                except:
-                    continue
-                value.append({'uid':uid,
-                              'result':form['result'][0][uid],
-                              'min':form['min'][0][uid],
-                              'max':form['max'][0][uid]})
+
+                result = form['result'][0][uid]
+                result = result if result else "0"
+                Min = form['min'][0][uid]
+                Min = Min if Min else "0"
+                Max = form['max'][0][uid]
+                Max = Max if Max else "0"
+
+                value.append({'uid': uid,
+                              'result': result,
+                              'min': Min,
+                              'max': Max})
         return value, {}
 
     security.declarePublic('ReferenceResults')
-    def ReferenceResults(self, field, allow_edit = False):
+
+    def ReferenceResults(self, field, allow_edit=False):
         """ Prints a bika listing with categorized services.
             field contains the archetypes field with a list of services in it
         """
         fieldvalue = getattr(field, field.accessor)()
         view = TableRenderShim(self,
                                self.REQUEST,
-                               fieldvalue = fieldvalue,
-                               allow_edit = allow_edit)
+                               fieldvalue=fieldvalue,
+                               allow_edit=allow_edit)
         return view()
 
 registerWidget(ReferenceResultsWidget,
-               title = 'Reference definition results',
-               description = ('Reference definition results.'),
+               title='Reference definition results',
+               description=('Reference definition results.'),
                )
