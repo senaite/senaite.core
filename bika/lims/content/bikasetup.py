@@ -168,6 +168,15 @@ schema = BikaFolderSchema.copy() + Schema((
             description = _("Select this to activate the sample collection workflow steps.")
         ),
     ),
+    BooleanField(
+        'ShowPartitions',
+        schemata = "Analyses",
+        default = True,
+        widget = BooleanWidget(
+            label = _("Display individual sample partitions "),
+            description = _("Turn this on if you want to work with sample partitions")
+        ),
+    ),
     BooleanField('CategoriseAnalysisServices',
         schemata = "Analyses",
         default = False,

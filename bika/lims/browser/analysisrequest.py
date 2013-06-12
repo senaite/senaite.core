@@ -792,7 +792,7 @@ class AnalysisRequestViewView(BrowserView):
         self.header_buttons = [{'name':'save_button', 'title':_('Save')}]
 
         ## handle_header table submit
-        if form.get('header_submitted', None):            
+        if form.get('header_submitted', None):
             plone.protect.CheckAuthenticator(form)
             message = None
             values = {
@@ -1413,7 +1413,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
             'Price': {'title': _('Price'),
                       'sortable': False,},
             'Partition': {'title': _('Partition'),
-                          'sortable': False,},
+                          'sortable': False, },
         }
 
         ShowPrices = self.context.bika_setup.getShowPrices()
@@ -1421,13 +1421,13 @@ class AnalysisRequestAnalysesView(BikaListingView):
             else ['Title', 'Partition']
 
         self.review_states = [
-            {'id':'default',
+            {'id': 'default',
              'title': _('All'),
-             'contentFilter':{},
+             'contentFilter': {},
              'columns': columns,
-             'transitions': [{'id':'empty'}, ], # none
-             'custom_actions':[{'id': 'save_analyses_button',
-                                'title': _('Save')}, ],
+             'transitions': [{'id': 'empty'}, ],  # none
+             'custom_actions': [{'id': 'save_analyses_button',
+                                 'title': _('Save')}, ],
              },
         ]
 
@@ -1437,19 +1437,21 @@ class AnalysisRequestAnalysesView(BikaListingView):
         p.table_only = True
         p.allow_edit = False
         p.show_select_column = False
-        p.review_states[0]['transitions'] = [{'id':'empty'},] # none
+        p.review_states[0]['transitions'] = [{'id': 'empty'}, ]  # none
         p.review_states[0]['custom_actions'] = []
         p.review_states[0]['columns'] = ['PartTitle',
                                          'getContainer',
                                          'getPreservation',
                                          'state_title']
 
+        if not context.bika_setup.getShowPartitions():
+            self.review_states[0]['columns'].remove('Partition')
+
         self.parts = p.contents_table()
 
     def folderitems(self):
         self.categories = []
 
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
         wf = getToolByName(self.context, 'portal_workflow')
         mtool = getToolByName(self.context, 'portal_membership')
         member = mtool.getAuthenticatedMember()

@@ -51,7 +51,7 @@
 
 <metal:content-core fill-slot="content-core">
 
-<h3 style="margin-top:1em;">
+<h3 style="margin-top:1em;" tal:condition="python:context.bika_setup.getShowPartitions()">
 	<img
 		i18n:attributes="title"
 		title="Partitions"
@@ -86,7 +86,7 @@
 		tal:attributes="st_title python:context.getSample().getSampleType().Title()">
 	</span>
 
-	<span id="partitions">
+	<span id="partitions" tal:condition="python:context.bika_setup.getShowPartitions()">
 		<tal:parts replace="structure view/parts"/>
 	</span>
 

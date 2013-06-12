@@ -191,13 +191,22 @@
         handler="bika.lims.upgrade.to1127.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
-        
+
 <genericsetup:upgradeStep
         title="Added new indexes"
         description="Adds new indexes for the catalog."
         source="1127"
         destination="1128"
         handler="bika.lims.upgrade.to1128.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Modified Sample XML"
+        description="Re-imports the portal_types."
+        source="1128"
+        destination="1129"
+        handler="bika.lims.upgrade.to1129.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
 

@@ -1,14 +1,42 @@
 *** Settings ***
-#More resource files can be loaded from here ie:
-#Resource  resource_filename
 
-#to include this file in another file - place the following line in the other file
-#Resource  src/bika.lims/bika/lims/tests/keywords.txt
+Documentation    Generally useful keywords for Bika tests.
+...              To include this file, use this:
+...              *** settings ***
+...              Resource  keywords.txt
 
 *** Keywords ***
-
 
 Test Keyword
     Log  Hallo World from keywords.txt  WARN
 
 
+Log in
+    [Arguments]  ${userid}  ${password}
+
+    Go to                       http://localhost:55001/plone/login_form
+    Page should contain element  __ac_name
+    Page should contain element  __ac_password
+    Page should contain button   Log in
+    Input text                   __ac_name      ${userid}
+    Input text                   __ac_password  ${password}
+    Click Button  Log in
+
+
+Log out
+    Go to                          http://localhost:55001/plone/logout
+    Wait until page contains       You are now logged out
+
+
+Select from combogrid
+    [Arguments]  ${locator}
+    ...          ${search_text}=
+    ...          ${item_number}=1
+    Input text   ${locator}  ${search_text}
+    sleep  0.6
+    Click Element  xpath=//div[contains(@class,'cg-DivItem')][${item_number}]
+
+
+Select First Option in Dropdown
+    sleep  0.5
+    Click Element  xpath=//div[contains(@class,'cg-DivItem')]

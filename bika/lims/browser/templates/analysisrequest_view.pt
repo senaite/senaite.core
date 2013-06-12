@@ -55,14 +55,17 @@
 
 	<span tal:replace="structure view/header_table"/>
 
-	<h3 style="margin-top:2em;">
+	<h3 style="margin-top:2em;"
+        tal:condition="python:context.bika_setup.getShowPartitions()">
 		<img
 			i18n:attributes="title"
 			title="Partitions"
 			src="++resource++bika.lims.images/samplepartition.png"/>
 		<span i18n:translate="">Sample Partitions</span>
 	</h3>
-	<tal:parts replace="structure view/parts"/>
+	<tal:parts
+        tal:condition="python:context.bika_setup.getShowPartitions()"
+        replace="structure view/parts"/>
 
     <form
         id="analysisrequest_edit_form"
@@ -114,7 +117,7 @@
 			<span tal:replace="structure python: table[1]"/>
 		</tal:tables>
 		<br/>
-		
+
 		<!-- QC Analyses table -->
 		<h3 style="margin-top:1em;">
 	        <img title="QC Analyses"

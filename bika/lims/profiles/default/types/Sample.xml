@@ -49,6 +49,7 @@
  <action title="Sample Partitions"
          action_id="partitions"
          category="object"
+         condition_expr="python:context.bika_setup.getShowPartitions()"
          icon_expr=""
          link_target=""
          url_expr="string:${object_url}/partitions"

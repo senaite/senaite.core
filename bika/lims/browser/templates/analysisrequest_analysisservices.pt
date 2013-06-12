@@ -121,7 +121,11 @@
 							value serviceUID;
 							title serviceTitle;
 							checked python:(selected.find(serviceUID)>-1 or request.get(input_name, [])) and 'checked' or None;"/>
-					<em class="discreet" tal:attributes="class python:'partnr_'+serviceUID;column column;" />
+					<em class="discreet"
+                        tal:attributes="
+                            class python:'partnr_'+serviceUID;
+                            column column;
+                            style python:'' if context.bika_setup.getShowPartitions() else 'display:none';"/>
 				</td>
 			</tal:i>
 		</tal:i>

@@ -79,25 +79,28 @@ class AnalysesView(BikaListingView):
         }
 
         self.review_states = [
-            {'id':'default',
-             'title': _('All'),
-             'contentFilter':{},
-             'columns':['Service',
-                        'Partition',
-                        'Method',
-                        'Result',
-                        'Uncertainty',
-                        'CaptureDate',
-                        'DueDate',
-                        'state_title',
-                        'Attachments'],
+            {'id': 'default',
+             'title':  _('All'),
+             'contentFilter': {},
+             'columns': ['Service',
+                         'Partition',
+                         'Method',
+                         'Result',
+                         'Uncertainty',
+                         'CaptureDate',
+                         'DueDate',
+                         'state_title',
+                         'Attachments'],
              },
         ]
+        if not context.bika_setup.getShowPartitions():
+            self.review_states[0]['columns'].remove('Partition')
+
         self.chosen_spec = request.get('specification', 'lab')
         super(AnalysesView, self).__init__(context,
                                            request,
                                            show_categories=context.bika_setup.getCategoriseAnalysisServices(),
-                                           expand_all_categories = True)
+                                           expand_all_categories=True)
 
     def folderitems(self):
         rc = getToolByName(self.context, REFERENCE_CATALOG)
@@ -383,7 +386,7 @@ class AnalysesView(BikaListingView):
 
                             items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                                 (self.ulocalized_time(duedate, long_format=1),
-                                 self.portal_url, 
+                                 self.portal_url,
                                  self.context.translate(_("Late Analysis")))
 
                 elif calculation:
@@ -407,7 +410,7 @@ class AnalysesView(BikaListingView):
             # add icon for assigned analyses in AR views
             if self.context.portal_type == 'AnalysisRequest':
                 obj = items[i]['obj']
-                if obj.portal_type in ['ReferenceAnalysis', 
+                if obj.portal_type in ['ReferenceAnalysis',
                                        'DuplicateAnalysis'] or \
                    workflow.getInfoFor(obj, 'worksheetanalysis_review_state') == 'assigned':
                     br = obj.getBackReferences('WorksheetAnalysis')
