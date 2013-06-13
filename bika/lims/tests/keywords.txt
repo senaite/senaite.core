@@ -28,15 +28,18 @@ Log out
     Wait until page contains       You are now logged out
 
 
-Select from combogrid
-    [Arguments]  ${locator}
-    ...          ${search_text}=
-    ...          ${item_number}=1
-    Input text   ${locator}  ${search_text}
-    sleep  0.6
-    Click Element  xpath=//div[contains(@class,'cg-DivItem')][${item_number}]
+Select from dropdown
+    [Arguments]        ${locator}
+    ...                ${search_text}=
+    ...                ${item_number}=1
+    Input text         ${locator}  ${search_text}
+    sleep              1
+    Click Element      xpath=//div[contains(@class,'cg-DivItem')][${item_number}]
 
 
-Select First Option in Dropdown
-    sleep  0.5
-    Click Element  xpath=//div[contains(@class,'cg-DivItem')]
+Select from datepicker
+    [Documentation]    this doesn't do any tricks yet, just clicks the link.
+    [Arguments]        ${locator}
+    ...                ${number}
+    Click Element      ${locator}
+    Click link         ${number}
