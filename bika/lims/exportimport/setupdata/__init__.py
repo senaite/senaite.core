@@ -1149,6 +1149,9 @@ class Analysis_Specifications(WorksheetImporter):
             if s_t not in bucket[c_t]:
                 bucket[c_t][s_t] = []
             service = bsc(portal_type='AnalysisService', title=row['service'])
+            if not service:
+                service = bsc(portal_type='AnalysisService',
+                              getKeyword=row['service'])
             service = service[0].getObject()
             bucket[c_t][s_t].append({
                 'keyword': service.getKeyword(),
