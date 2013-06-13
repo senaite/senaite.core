@@ -37,9 +37,49 @@ Select from dropdown
     Click Element      xpath=//div[contains(@class,'cg-DivItem')][${item_number}]
 
 
+Select First From Dropdown
+    [Arguments]  ${elementName}
+    sleep  0.5
+    #select the first item in the dropdown and return status
+    ${STATUS}  Run Keyword And Return Status  Click Element  xpath=//div[contains(@class,'cg-DivItem')]
+    #if no content in dropdown output warning and continue
+    Run Keyword If  '${STATUS}' == 'False'  Log  No items found in dropdown: ${elementName}  WARN
+
+
 Select from datepicker
     [Documentation]    this doesn't do any tricks yet, just clicks the link.
     [Arguments]        ${locator}
     ...                ${number}
     Click Element      ${locator}
     Click link         ${number}
+
+SelectDate
+    [Arguments]  ${Element}=
+    ...          ${Date}=
+
+    Click Element  ${Element}
+    Click Link  ${Date}
+
+SelectPrevMonthDate
+    [Arguments]  ${Element}=
+    ...          ${Date}=
+
+    Click Element        ${Element}
+    sleep                0.5
+    Click Element        xpath=//a[@title='Prev']
+    sleep                0.5
+    Click Link           ${Date}
+
+SelectNextMonthDate
+    [Arguments]  ${Element}=
+    ...          ${Date}=
+
+    Click Element        ${Element}
+    sleep                0.5
+    Click Element        xpath=//a[@title='Next']
+    sleep                0.5
+    Click Link           ${Date}
+
+
+
+
