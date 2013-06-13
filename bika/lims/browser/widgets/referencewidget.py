@@ -7,9 +7,7 @@ from bika.lims.utils import to_utf8 as _c
 from operator import itemgetter
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import StringWidget
-from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
-from zope.component import getMultiAdapter
 import json
 import plone
 
@@ -29,8 +27,10 @@ class ReferenceWidget(StringWidget):
 
         # columnName must contain valid index names
         'colModel': [
-            {'columnName': 'Title', 'width': '30', 'label': _('Title'), 'align': 'left'},
-            {'columnName': 'Description', 'width': '70', 'label': _('Description'), 'align': 'left'},
+            {'columnName': 'Title', 'width': '30', 'label': _(
+                'Title'), 'align': 'left'},
+            {'columnName': 'Description', 'width': '70', 'label': _(
+                'Description'), 'align': 'left'},
             # UID is required in colModel
             {'columnName': 'UID', 'hidden': True},
         ],
@@ -54,8 +54,8 @@ class ReferenceWidget(StringWidget):
         """Return a UID so that ReferenceField understands.
         """
         fieldName = field.getName()
-        if fieldName+"_uid" in form:
-            uid = form.get(fieldName+"_uid", '')
+        if fieldName + "_uid" in form:
+            uid = form.get(fieldName + "_uid", '')
         elif fieldName in form:
             uid = form.get(fieldName, '')
         else:
@@ -93,7 +93,9 @@ class ReferenceWidget(StringWidget):
             meth = getattr(content_instance, allowed_types_method)
             allowed_types = meth(field)
         # If field has no allowed_types defined, use widget's portal_type prop
-        base_query['portal_type'] = allowed_types and allowed_types or self.portal_types
+        base_query['portal_type'] = allowed_types \
+            if allowed_types \
+            else self.portal_types
 
         return json.dumps(self.base_query)
 
@@ -101,6 +103,7 @@ registerWidget(ReferenceWidget, title='Reference Widget')
 
 
 class ajaxReferenceWidgetSearch(BrowserView):
+
     """ Source for jquery combo dropdown box
     """
     def __call__(self):
@@ -124,13 +127,13 @@ class ajaxReferenceWidgetSearch(BrowserView):
         discard_empty = json.loads(_c(self.request.get('discard_empty', "[]")))
 
         # first with all queries
-        contentFilter = dict((k,v) for k,v in base_query.items())
+        contentFilter = dict((k, v) for k, v in base_query.items())
         contentFilter.update(search_query)
         brains = catalog(contentFilter)
         if brains and searchTerm:
             _brains = []
             if len(searchFields) == 0 \
-                or (len(searchFields) == 1 and searchFields[0] == 'Title'):
+                    or (len(searchFields) == 1 and searchFields[0] == 'Title'):
                 _brains = [p for p in brains
                            if p.Title.lower().find(searchTerm) > -1]
             else:
@@ -144,7 +147,7 @@ class ajaxReferenceWidgetSearch(BrowserView):
                                 value = schema[fieldname].get(instance)
                         if value and value.lower().find(searchTerm) > -1:
                             _brains.append(p)
-                            break;
+                            break
 
             brains = _brains
 
@@ -183,18 +186,21 @@ class ajaxReferenceWidgetSearch(BrowserView):
                 # correctly in combo results table
                 row[fieldname] = value and value or '&nbsp;'
 
-            if discard == False:
+            if discard is False:
                 rows.append(row)
 
         rows = sorted(rows, cmp=lambda x, y: cmp(
-            x.lower(), y.lower()), key=itemgetter(sidx and sidx or 'Title'))
+            str(x).lower(), str(y).lower()),
+            key=itemgetter(sidx and sidx or 'Title'))
         if sord == 'desc':
             rows.reverse()
         pages = len(rows) / int(nr_rows)
         pages += divmod(len(rows), int(nr_rows))[1] and 1 or 0
+        start = (int(page) - 1) * int(nr_rows)
+        end = int(page) * int(nr_rows)
         ret = {'page': page,
                'total': pages,
                'records': len(rows),
-               'rows': rows[(int(page) - 1) * int(nr_rows): int(page) * int(nr_rows)]}
+               'rows': rows[start:end]}
 
         return json.dumps(ret)
