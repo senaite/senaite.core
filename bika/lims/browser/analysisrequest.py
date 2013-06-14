@@ -461,7 +461,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                      "has been picked up and is under investigation.<br/><br/>"
                      "%s%s"
                      ) % (aranchor, naranchor, addremarks, lab_address)
-
             msg_txt = MIMEText(safe_unicode(body).encode('utf-8'),
                                _subtype='html')
             mime_msg.preamble = 'This is a multi-part MIME message.'
