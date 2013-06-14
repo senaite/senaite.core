@@ -26,6 +26,8 @@ from email.mime.text import MIMEText
 from email import Encoders
 import xhtml2pdf.pisa as pisa
 from cStringIO import StringIO
+import urllib2
+import Globals
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
 allow_module('csv')
@@ -299,10 +301,26 @@ def tmpID():
     return binascii.hexlify(os.urandom(16))
 
 
-def createPdf(htmlreport, outfile=None):
+def createPdf(htmlreport, outfile=None, css=None):
+    css_def = '';
+    if css:
+        if css.startswith("http://") or css.startswith("https://"):
+            # Download css file in temp dir
+            u = urllib2.urlopen(css)
+            _cssfile = Globals.INSTANCE_HOME + '/var/' + tmpID() + '.css'
+            localFile = open(_cssfile, 'w')
+            localFile.write(u.read())
+            localFile.close()
+        else:
+            _cssfile=css
+        cssfile= open(_cssfile, 'r')
+        css_def = cssfile.read()
     pisa.showLogging()
     ramdisk = StringIO()
-    pdf = pisa.CreatePDF(htmlreport, ramdisk)
+    if css:
+        pdf = pisa.CreatePDF(htmlreport, ramdisk, default_css=css_def)
+    else:
+        pdf = pisa.CreatePDF(htmlreport, ramdisk)
     pdf_data = ramdisk.getvalue()
     ramdisk.close()
 
