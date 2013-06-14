@@ -210,4 +210,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Modified Sample XML"
+        description="Re-imports workflow-csv."
+        source="1129"
+        destination="1130"
+        handler="bika.lims.upgrade.to1130.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
