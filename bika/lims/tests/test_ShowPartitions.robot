@@ -99,18 +99,3 @@ Disable ShowPartitions
     Unselect Checkbox  ShowPartitions
     Click Button       Save
     Wait Until Page Contains  Changes saved.
-
-Select from dropdown
-    [Arguments]        ${locator}
-    ...                ${search_text}=
-    ...                ${item_number}=1
-    Input text         ${locator}  ${search_text}
-    sleep              1
-    Click Element      xpath=//div[contains(@class,'cg-DivItem')][${item_number}]
-
-Select from datepicker
-    [Documentation]    this doesn't do any tricks yet, just clicks the link.
-    [Arguments]        ${locator}
-    ...                ${number}
-    Click Element      ${locator}
-    Click link         ${number}
