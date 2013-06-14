@@ -153,7 +153,8 @@ class doPublish(BrowserView):
             pdf_results = ar_results.replace(r"analysisrequest_results.css",
                                              r"analysisrequest_results_pdf.css")
             pdf_outfile = join(out_path, out_fn + ".pdf") if out_path else None
-            pdf_report = createPdf(pdf_results, pdf_outfile)
+            pdf_css = self.context.portal_url() + "/analysisrequest_results_pdf.css"
+            pdf_report = createPdf(pdf_results, pdf_outfile, css=pdf_css)
             if pdf_report:
                 reportid = self.context.generateUniqueId('ARReport')
                 ar.invokeFactory(id=reportid, type_name="ARReport")

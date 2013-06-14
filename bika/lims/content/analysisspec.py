@@ -194,4 +194,17 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
 
         return DisplayList(available_sampletypes)
 
+    def getAnalysisSpecsStr(self, keyword):
+        specstr = ''
+        specs = self.getResultsRangeDict()
+        if keyword in specs.keys():
+            specs = specs[keyword]
+            if specs['min'] and specs['max']:
+                specstr = '%s - %s' % (specs['min'], specs['max'])
+            elif specs['min']:
+                specstr = '> %s' % specs['min']
+            elif specs['max']:
+                specstr = '< %s' % specs['max']
+        return specstr
+
 atapi.registerType(AnalysisSpec, PROJECTNAME)
