@@ -43,6 +43,7 @@ class ReferenceWidget(StringWidget):
         'showOn': 'false',
         'sord': 'asc',
         'sidx': 'Title',
+        'force_all': 'true',
         'portal_types': {}
     })
     security = ClassSecurityInfo()
@@ -73,6 +74,7 @@ class ReferenceWidget(StringWidget):
             'width': self.popup_width,
             'sord': self.sord,
             'sidx': self.sidx,
+            'force_all': self.force_all,
             'search_fields': self.search_fields,
             'discard_empty': self.discard_empty,
         }
@@ -113,6 +115,7 @@ class ajaxReferenceWidgetSearch(BrowserView):
         nr_rows = self.request['rows']
         sord = self.request['sord']
         sidx = self.request['sidx']
+        force_all = self.request.get('force_all', 'true')
         colModel = json.loads(_u(self.request.get('colModel', '[]')))
         searchFields = 'search_fields' in self.request \
             and json.loads(_u(self.request.get('search_fields', '[]'))) \
@@ -150,9 +153,8 @@ class ajaxReferenceWidgetSearch(BrowserView):
                             break
 
             brains = _brains
-
         # Then just base_query alone ("show all if no match")
-        if not brains:
+        if not brains and force_all.lower() == 'true':
             if search_query:
                 brains = catalog(base_query)
                 if brains and searchTerm:
