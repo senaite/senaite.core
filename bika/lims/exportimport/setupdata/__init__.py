@@ -1413,10 +1413,10 @@ class Setup(WorksheetImporter):
         dry_service = bsc(portal_type='AnalysisService',
                           title=values['DryMatterService']) \
             if values.get('DryMatterService', None) else None
-        if not dry_service:
-            raise Exception("Dry Matter service '{0}' does not exist".format(
-                values['DryMatterService']))
-        dry_uid = dry_service[0].UID
+        dry_uid = dry_service[0].UID if dry_service else None
+        if not dry_uid:
+            print "DryMatter service does not exist {0}".format(
+                values['DryMatterService'])
         self.context.bika_setup.edit(
             PasswordLifetime=int(values['PasswordLifetime']),
             AutoLogOff=int(values['AutoLogOff']),
