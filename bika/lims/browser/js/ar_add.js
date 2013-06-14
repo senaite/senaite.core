@@ -113,6 +113,9 @@ function ar_referencewidget_lookups(elements){
 
 			// Selected a sample to create a secondary AR.
 			if(fieldName == 'Sample'){
+				var e = $('input[name^="ar\\.'+column+'\\.'+fieldName+'"]');
+				var Sample = $('input[name^="ar\\.'+column+'\\.'+fieldName+'"]').val();
+				var Sample_uid = $('input[name^="ar\\.'+column+'\\.'+fieldName+'_uid"]').val();
 				// Install the handler which will undo the changes I am about to make
 				$(this).blur(function(){
 					if($(this).val() == ''){
@@ -153,7 +156,6 @@ function ar_referencewidget_lookups(elements){
 			// Selected a SampleType
 			if(fieldName == 'SampleType'){
 				unsetTemplate(column);
-				unsetAnalysisProfile(column, $(this).val());
 				calculate_parts(column);
 			}
 
@@ -261,8 +263,11 @@ function changePrimaryContact(){
 }
 
 function copyButton(){
-	var field_name = $(this).attr("name");
-	if ($(this).parent().attr('class') == 'service'){ // Analysis Service checkbox
+	var fieldName = $(this).attr("name");
+
+    // Analysis Service checkbox
+
+	if ($(this).parent().attr('class') == 'service'){
 		var first_val = $('input[column="0"]').filter('#'+this.id).attr("checked");
 		var affected_elements = [];
 		// 0 is the first column; we only want to change cols 1 onward.
@@ -284,35 +289,59 @@ function copyButton(){
 		calcdependencies(affected_elements, true);
 		recalc_prices();
 	}
-	else if ($('input[name^="ar\\.0\\.'+field_name+'"]').attr("type") == "checkbox") {
-		// other checkboxes
-		var first_val = $('input[name^="ar\\.0\\.'+field_name+'"]').attr("checked");
+
+	// other checkboxes
+
+	else if ($('input[name^="ar\\.0\\.'+fieldName+'"]').attr("type") == "checkbox") {
+		var first_val = $('input[name^="ar\\.0\\.'+fieldName+'"]').attr("checked");
 		// col starts at 1 here; we don't copy into the the first row
 		for (var col=1; col<parseInt($("#col_count").val()); col++) {
-			var other_elem = $('#ar_' + col + '_' + field_name);
+			var other_elem = $('#ar_' + col + '_' + fieldName);
 			if (!(other_elem.attr("checked")==first_val)) {
 				other_elem.attr("checked", first_val?true:false);
+				other_elem.trigger('change');
 			}
 		}
-		$('[id*=_' + field_name + "]").change();
+		$('[id*=_' + fieldName + "]").change();
 	}
+
+	// Anything else
+
 	else{
-		var first_val = $('input[name^="ar\\.0\\.'+field_name+'"]').val();
+		var first_val = $('input[name^="ar\\.0\\.'+fieldName+'"]').filter('[type=text]').val();
 		// Reference fields have a hidden *_uid field
-		var first_uid = $('input[name^="ar\\.0\\.'+field_name+'_uid"]').val();
+		var first_uid = $('input[name^="ar\\.0\\.'+fieldName+'_uid"]').val();
 		// col starts at 1 here; we don't copy into the the first row
-		for (var col=1; col<parseInt($("#col_count").val()); col++) {
-			var other_elem = $('#ar_' + col + '_' + field_name);
-			if (!(other_elem.attr("disabled"))) {
-				if(field_name == 'SampleType'){ calculate_parts(col); }
-				other_elem.val(first_val);
-			}
-			var other_uid_elem = $('#ar_' + col + '_' + field_name + "_uid");
+		for (var column=1; column<parseInt($("#col_count").val()); column++) {
+			var other_uid_elem = $('#ar_' + column + '_' + fieldName + "_uid");
 			if (first_uid != undefined && first_uid != null){
 				other_uid_elem.val(first_uid);
 			}
+			var other_elem = $('#ar_' + column + '_' + fieldName);
+			if (!(other_elem.attr("disabled"))) {
+				other_elem.val(first_val);
+				other_elem.trigger('change');
+
+						// Selected a Profile
+						if(fieldName == 'Profile'){
+							unsetTemplate(column);
+							setAnalysisProfile(column, first_val);
+							calculate_parts(column);
+						}
+
+						// Selected a Template
+						if(fieldName == 'Template'){
+							setTemplate(column, first_val);
+						}
+
+						// Selected a SampleType
+						if(fieldName == 'SampleType'){
+							unsetTemplate(column);
+							calculate_parts(column);
+						}
+			}
 		}
-		$('[id*=_' + field_name + "]").change();
+		$('[id*=_' + fieldName + "]").change();
 	}
 }
 
