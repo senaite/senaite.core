@@ -405,94 +405,94 @@ tfoot td.batching a {
    with these same ideas.
 */
 
-.state-sample_due {
+.bika-listing-table .state-sample_due {
   background-color: &dtml-sample_due_BackgroundColor; !important;
   color: &dtml-sample_due_TextColor; !important;
 }
-.state-sample_due a:link {color: &dtml-sample_due_LinkColor; !important;}
-.state-sample_due a:visited {color: &dtml-sample_due_LinkColor; !important;}
+.bika-listing-table .state-sample_due a:link {color: &dtml-sample_due_LinkColor; !important;}
+.bika-listing-table .state-sample_due a:visited {color: &dtml-sample_due_LinkColor; !important;}
 
-.state-sample_received {
+.bika-listing-table .state-sample_received {
   background-color: &dtml-sample_received_BackgroundColor; !important;
   color: &dtml-sample_received_TextColor; !important;
 }
-.state-sample_received a:link {color: &dtml-sample_received_LinkColor; !important;}
-.state-sample_received a:visited {color: &dtml-sample_received_LinkColor; !important;}
+.bika-listing-table .state-sample_received a:link {color: &dtml-sample_received_LinkColor; !important;}
+.bika-listing-table .state-sample_received a:visited {color: &dtml-sample_received_LinkColor; !important;}
 
-.state-to_be_verified {
+.bika-listing-table .state-to_be_verified {
   background-color: &dtml-to_be_verified_BackgroundColor; !important;
   color: &dtml-to_be_verified_TextColor; !important;
 }
-.state-to_be_verified a:link {color: &dtml-to_be_verified_LinkColor; !important;}
-.state-to_be_verified a:visited {color: &dtml-to_be_verified_LinkColor; !important;}
+.bika-listing-table .state-to_be_verified a:link {color: &dtml-to_be_verified_LinkColor; !important;}
+.bika-listing-table .state-to_be_verified a:visited {color: &dtml-to_be_verified_LinkColor; !important;}
 
-.state-verified {
+.bika-listing-table .state-verified {
   background-color: &dtml-verified_BackgroundColor; !important;
   color: &dtml-verified_TextColor; !important;
 }
-.state-verified a:link {color: &dtml-verified_LinkColor; !important;}
-.state-verified a:visited {color: &dtml-verified_LinkColor; !important;}
+.bika-listing-table .state-verified a:link {color: &dtml-verified_LinkColor; !important;}
+.bika-listing-table .state-verified a:visited {color: &dtml-verified_LinkColor; !important;}
 
-.state-published {
+.bika-listing-table .state-published {
   background-color: &dtml-published_BackgroundColor; !important;
   color: &dtml-published_TextColor; !important;
 }
-.state-published a:link {color: &dtml-published_LinkColor; !important;}
-.state-published a:visited {color: &dtml-published_LinkColor; !important;}
+.bika-listing-table .state-published a:link {color: &dtml-published_LinkColor; !important;}
+.bika-listing-table .state-published a:visited {color: &dtml-published_LinkColor; !important;}
 
-.state-open {
+.bika-listing-table .state-open {
   background-color: &dtml-open_BackgroundColor; !important;
   color: &dtml-open_TextColor; !important;
 }
-.state-open a:link {color: &dtml-open_LinkColor; !important;}
-.state-open a:visited {color: &dtml-open_LinkColor; !important;}
+.bika-listing-table .state-open a:link {color: &dtml-open_LinkColor; !important;}
+.bika-listing-table .state-open a:visited {color: &dtml-open_LinkColor; !important;}
 
-.state-retracted {
+.bika-listing-table .state-retracted {
   background-color: &dtml-retracted_BackgroundColor; !important;
   color: &dtml-retracted_TextColor; !important;
 }
-.state-retracted a:link {color: &dtml-retracted_LinkColor; !important;}
-.state-retracted a:visited {color: &dtml-retracted_LinkColor; !important;}
+.bika-listing-table .state-retracted a:link {color: &dtml-retracted_LinkColor; !important;}
+.bika-listing-table .state-retracted a:visited {color: &dtml-retracted_LinkColor; !important;}
 
-.state-cancelled {
+.bika-listing-table .state-cancelled {
   background-color: &dtml-cancelled_BackgroundColor; !important;
   color: &dtml-cancelled_TextColor; !important;
 }
-.state-cancelled a:link {color: &dtml-cancelled_LinkColor; !important;}
-.state-cancelled a:visited {color: &dtml-cancelled_LinkColor; !important;}
+.bika-listing-table .state-cancelled a:link {color: &dtml-cancelled_LinkColor; !important;}
+.bika-listing-table .state-cancelled a:visited {color: &dtml-cancelled_LinkColor; !important;}
 
-.state-inactive {
+.bika-listing-table .state-inactive {
   background-color: &dtml-inactive_BackgroundColor; !important;
   color: &dtml-inactive_TextColor; !important;
 }
-.state-inactive a:link {color: &dtml-inactive_LinkColor; !important;}
-.state-inactive a:visited {color: &dtml-inactive_LinkColor; !important;}
+.bika-listing-table .state-inactive a:link {color: &dtml-inactive_LinkColor; !important;}
+.bika-listing-table .state-inactive a:visited {color: &dtml-inactive_LinkColor; !important;}
 
-.state-invalid {
+.bika-listing-table .state-invalid {
   background-color: &dtml-invalid_BackgroundColor; !important;
   color: &dtml-invalid_TextColor; !important;
 }
-.state-invalid a:link {color: &dtml-invalid_LinkColor; !important;}
-.state-invalid a:visited {color: &dtml-invalid_LinkColor; !important;}
+.bika-listing-table .state-invalid a:link {color: &dtml-invalid_LinkColor; !important;}
+.bika-listing-table .state-invalid a:visited {color: &dtml-invalid_LinkColor; !important;}
 
-.state-submitted-by-current-user td {
+.bika-listing-table .state-submitted-by-current-user td {
   background-color: &dtml-submitted_by_current_user_BackgroundColor; !important;
   color: &dtml-submitted_by_current_user_TextColor; !important;
 }
-.state-submitted_by_current_user a:link {color: &dtml-submitted_by_current_user_LinkColor; !important;}
-.state-submitted_by_current_user a:visited {color: &dtml-submitted_by_current_user_LinkColor; !important;}
+.bika-listing-table .state-submitted_by_current_user a:link {color: &dtml-submitted_by_current_user_LinkColor; !important;}
+.bika-listing-table .state-submitted_by_current_user a:visited {color: &dtml-submitted_by_current_user_LinkColor; !important;}
 
 /* empty worksheets in worksheet folder listing */
 /* Empty rows in worksheet layouts */
-.state-empty-worksheet,
-.state-empty {
+.bika-listing-table .state-empty-worksheet,
+.bika-listing-table .state-empty {
   background-color: &dtml-empty_BackgroundColor; !important;
   color: &dtml-empty_TextColor; !important;
 }
-.state-empty-worksheet a:link,
-.state-empty a:link,
-.state-empty-worksheet a:visited,
-.state-empty a:visited {
+.bika-listing-table .state-empty-worksheet a:link,
+.bika-listing-table .state-empty a:link,
+.bika-listing-table .state-empty-worksheet a:visited,
+.bika-listing-table .state-empty a:visited {
     color: &dtml-empty_LinkColor; !important;
 }
 
