@@ -85,8 +85,8 @@ function workflow_transition_retract_ar(event) {
 				href = $("#workflow-transition-retract_ar").attr("href");
 				addremarks = $.trim($("#arretractmsgbox_addremarks").val());
 				if (addremarks && addremarks!='') {
-					$("#Remarks").val(addremarks);
-					$('.saveRemarks').click();					
+					$("#archetypes-fieldname-Remarks #Remarks").val(addremarks);
+					$("#archetypes-fieldname-Remarks input[type=submit]").click();					
 					href += "&addremarks=1";
 				}
 				$(this).dialog("close");
