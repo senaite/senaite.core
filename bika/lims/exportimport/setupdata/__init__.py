@@ -1085,21 +1085,41 @@ class Analysis_Services(WorksheetImporter):
                 'hours': int(row['MaxTimeAllowed_days'] and row['MaxTimeAllowed_days'] or 0),
                 'minutes': int(row['MaxTimeAllowed_minutes'] and row['MaxTimeAllowed_minutes'] or 0),
             }
-            category = bsc(portal_type='AnalysisCategory',
-                           title=row.get('AnalysisCategory_title', ''))[0].getObject() \
-                if row.get('AnalysisCategory_title', '') else None
-            department = bsc(portal_type='Department',
-                             title=row.get('Department_title', ''))[0].getObject() \
-                if row.get('Department_title', '') else None
-            method = bsc(portal_type='Method',
-                         title=row.get('Method', ''))[0].getObject() \
-                if row.get('Method', '') else None
-            instrument = bsc(portal_type='Instrument',
-                             title=row.get('Instrument_title', ''))[0].getObject() \
-                if row.get('Instrument_title', '') else None
-            calculation = bsc(portal_type='Calculation',
-                              title=row.get('Calculation_title', ''))[0].getObject() \
-                if row.get('Calculation_title', '') else None
+            category = bsc(
+                portal_type='AnalysisCategory',
+                title=row.get('AnalysisCategory_title', ''))[0].getObject() \
+                if row.get('AnalysisCategory_title', '') \
+                else None
+            department = bsc(
+                portal_type='Department',
+                title=row.get('Department_title', ''))[0].getObject() \
+                if row.get('Department_title', '') \
+                else None
+            method = bsc(
+                portal_type='Method',
+                title=row.get('Method', ''))[0].getObject() \
+                if row.get('Method', '') \
+                else None
+            instrument = bsc(
+                portal_type='Instrument',
+                title=row.get('Instrument_title', ''))[0].getObject() \
+                if row.get('Instrument_title', '') \
+                else None
+            calculation = bsc(
+                portal_type='Calculation',
+                title=row.get('Calculation_title', ''))[0].getObject() \
+                if row.get('Calculation_title', '') \
+                else None
+            container = bsc(
+                portal_type='Container',
+                title=row.get('Container_title', ''))[0].getObject() \
+                if row.get('Container_title', '') \
+                else None
+            preservation = bsc(
+                portal_type='Preservation',
+                title=row.get('Preservation_title', ''))[0].getObject() \
+                if row.get('Preservation_title', '') \
+                else None
 
             obj.edit(
                 title=row['title'],
@@ -1124,7 +1144,10 @@ class Analysis_Services(WorksheetImporter):
                 DuplicateVariation="%02f" % float(row['DuplicateVariation']),
                 Accredited=self.to_bool(row['Accredited']),
                 InterimFields=hasattr(self, 'service_interims') and self.service_interims.get(
-                    row['title'], []) or []
+                    row['title'], []) or [],
+                Separate=self.to_bool(row.get('Separate', False)),
+                Container=container,
+                Preservation=preservation
             )
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
