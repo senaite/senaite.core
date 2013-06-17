@@ -2845,6 +2845,13 @@ class AnalysisRequestPublishedResults(BikaListingView):
 
     def folderitems(self):
         items = super(AnalysisRequestPublishedResults, self).folderitems()
+        pm = getToolByName(self.context, "portal_membership")
+        member = pm.getAuthenticatedMember()
+        roles = member.getRoles()
+        if 'Manager' not in roles \
+            and 'LabManager' not in roles:
+            return []
+
         for x in range(len(items)):
             if 'obj' in items[x]:
                 obj = items[x]['obj']
@@ -2889,7 +2896,7 @@ class AnalysisRequestLog(LogView):
                         % (childid or '')
             self.context.plone_utils.addPortalMessage(
                 self.context.translate(message), 'warning')
-        
+
         # If is an AR automatically generated due to a Retraction, show it's
         # parent AR information
         if hasattr(ar, 'getParentAnalysisRequest') \
@@ -2901,7 +2908,7 @@ class AnalysisRequestLog(LogView):
                         'Request %s.') % par.getRequestID()
             self.context.plone_utils.addPortalMessage(
                 self.context.translate(message), 'info')
-        
+
         template = LogView.__call__(self)
         return template
 
