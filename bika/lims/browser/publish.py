@@ -188,9 +188,18 @@ class doPublish(BrowserView):
                     mime_msg['From'] = formataddr(
                         (encode_header(laboratory.getName()),
                          laboratory.getEmailAddress()))
-                    mime_msg['To'] = formataddr(
-                        (encode_header(self.contact.getFullname()),
-                         self.contact.getEmailAddress()))
+
+                    to = []
+                    contact = ar.getContact()
+                    if contact:
+                        to.append(formataddr((encode_header(contact.Title()),
+                                               contact.getEmailAddress())))
+                    for cc in ar.getCCContact():
+                        formatted = formataddr((encode_header(cc.Title()),
+                                               cc.getEmailAddress()))
+                        if formatted not in to:
+                            to.append(formatted)
+                    mime_msg['To'] = ','.join(to)
                     mime_msg.preamble = 'This is a multi-part MIME message.'
                     msg_txt = MIMEText(ar_results, _subtype='html')
                     mime_msg.attach(msg_txt)
