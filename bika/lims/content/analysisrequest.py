@@ -926,4 +926,31 @@ class AnalysisRequest(BaseFolder):
             child = child.getChildAnalysisRequest()
         return child
 
+    def guard_unassign_transition(self):
+        """Allow or disallow transition depending on our children's states
+        """
+        workflow = getToolByName(self, 'portal_workflow')
+        # Can't do anything to the object if it's cancelled
+        if workflow.getInfoFor(self, 'cancellation_state', '') == "cancelled":
+            return False
+        if self.getAnalyses(worksheetanalysis_review_state='unassigned'):
+            return True
+        if not self.getAnalyses(worksheetanalysis_review_state='assigned'):
+            return True
+        return False
+
+    def guard_assign_transition(self):
+        """Allow or disallow transition depending on our children's states
+        """
+        workflow = getToolByName(self, 'portal_workflow')
+        # Can't do anything to the object if it's cancelled
+        if workflow.getInfoFor(self, 'cancellation_state', '') == "cancelled":
+            return False
+        if not self.getAnalyses(worksheetanalysis_review_state='assigned'):
+            return False
+        if self.getAnalyses(worksheetanalysis_review_state='unassigned'):
+            return False
+        return True
+
+
 atapi.registerType(AnalysisRequest, PROJECTNAME)

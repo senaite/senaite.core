@@ -211,10 +211,20 @@
         profile="bika.lims:default"/>
 
 <genericsetup:upgradeStep
-        title="Modified Sample XML"
+        title="Updated workflows"
         description="Re-imports workflow-csv."
         source="1129"
         destination="1130"
+        handler="bika.lims.upgrade.to1130.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<!-- Yes, this refers to 1130 py -->
+<genericsetup:upgradeStep
+        title="Updated workflows"
+        description="Re-imports workflow-csv."
+        source="1130"
+        destination="1131"
         handler="bika.lims.upgrade.to1130.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
