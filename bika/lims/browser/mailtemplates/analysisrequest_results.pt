@@ -418,7 +418,7 @@
                            mngr_ids python:mngr_info['ids'];
                            managers python:mngr_info['dict'];"
                 tal:repeat="manager mngr_ids">
-            <tal:manager tal:define="rownum repeat/item/number;
+            <tal:manager tal:define="rownum repeat/manager/number;
                                      email python:managers[manager]['email'];
                                      phone python:managers[manager]['phone'];
                                      department python:managers[manager]['departments'];">
