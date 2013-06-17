@@ -88,7 +88,7 @@ class WorksheetWorkflowAction(WorkflowAction):
             # discover which items may be submitted
             submissable = []
             for uid, analysis in selected_analyses.items():
-                if uid not in results:
+                if uid not in results or not results[uid]:
                     continue
                 can_submit = True
                 if hasattr(analysis, 'getDependencies'):
