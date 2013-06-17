@@ -97,6 +97,12 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
+    StringField('ReferenceAnalysesGroupID',
+        widget = StringWidget(
+            label = _("ReferenceAnalysesGroupID"),
+            visible = False,
+        ),
+    ),
 ),
 )
 

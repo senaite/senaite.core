@@ -17,6 +17,7 @@ from bika.lims.interfaces import IWorksheet
 from bika.lims import bikaMessageFactory as _
 from Products.Archetypes.references import HoldingReference
 from bika.lims import logger
+from operator import itemgetter
 
 schema = BikaSchema.copy() + Schema((
     HistoryAwareReferenceField('WorksheetTemplate',
@@ -179,6 +180,17 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                     highest_existing_position = pos
             position = highest_existing_position + 1
 
+        postfix = 1
+        for refa in reference.getReferenceAnalyses():
+            grid = refa.getReferenceAnalysesGroupID()
+            try:
+                cand = int(grid.split('-')[2])
+                if cand >= postfix:
+                    postfix = cand + 1
+            except:
+                pass
+        postfix = str(postfix).zfill(int(3))
+        refgid = '%s-%s' % (reference.id, postfix)
         for service_uid in service_uids:
             # services with dependents don't belong in references
             service = rc.lookupObject(service_uid)
@@ -187,6 +199,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 continue
             ref_uid = reference.addReferenceAnalysis(service_uid, ref_type)
             ref_analysis = rc.lookupObject(ref_uid)
+
+            # Set ReferenceAnalysesGroupID (same id for the analyses from
+            # the same Reference Sample and same Worksheet)
+            # https://github.com/bikalabs/Bika-LIMS/issues/931
+            ref_analysis.setReferenceAnalysesGroupID(refgid)
 
             # copy the interimfields
             calculation = service.getCalculation()
@@ -233,6 +250,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                         for slot in layout if \
                         int(slot['position']) == int(dest_slot)]
 
+        refgid = None
         for analysis in src_analyses:
             if analysis.UID() in dest_analyses:
                 continue
@@ -246,6 +264,22 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             self.invokeFactory('DuplicateAnalysis', id = _id)
             duplicate = self[_id]
             duplicate.setAnalysis(analysis)
+
+            # Set ReferenceAnalysesGroupID (same id for the analyses from
+            # the same Reference Sample and same Worksheet)
+            # https://github.com/bikalabs/Bika-LIMS/issues/931
+            if not refgid:
+                part = analysis.getSamplePartition().id
+                dups = [an.getReferenceAnalysesGroupID() \
+                        for an in self.getAnalyses() \
+                        if an.portal_type == 'DuplicateAnalysis' \
+                            and an.getSamplePartition().id == part]
+                dups = list(set(dups))
+                postfix = dups and len(dups) + 1 or 1
+                postfix = str(postfix).zfill(int(2))
+                refgid = '%s-D%s' % (part, postfix)
+            duplicate.setReferenceAnalysesGroupID(refgid)
+
             duplicate.processForm()
             if calc:
                 duplicate.setInterimFields(calc.getInterimFields())
