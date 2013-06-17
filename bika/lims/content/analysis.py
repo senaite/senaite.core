@@ -441,7 +441,7 @@ class Analysis(BaseContent):
                 try:
                     result = float(str(result))
                     mapping[dependency.getKeyword()] = result
-                except: 
+                except:
                     return False
 
         # Calculate
@@ -470,5 +470,17 @@ class Analysis(BaseContent):
             or result
         self.setResult(result)
         return True
+
+    def guard_unassign_transition(self):
+        """If the workflow state is available, we always allow this transition
+        """
+        return True
+
+    def guard_assign_transition(self):
+        """If the workflow state is available, we always allow this transition
+        """
+        return True
+
+
 
 atapi.registerType(Analysis, PROJECTNAME)
