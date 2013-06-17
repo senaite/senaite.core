@@ -100,6 +100,14 @@
       permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
+    
+    <browser:page
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="log"
+      class="bika.lims.browser.analysisrequest.AnalysisRequestLog"
+      permission="bika.lims.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
 
     <browser:page
       for="*"

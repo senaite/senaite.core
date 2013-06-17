@@ -47,6 +47,7 @@ from zope.interface import implements
 import json
 import plone
 import urllib
+from bika.lims.browser.log import LogView
 
 class AnalysisRequestWorkflowAction(WorkflowAction):
     """Workflow actions taken in AnalysisRequest context.
@@ -1589,6 +1590,29 @@ class AnalysisRequestResultsNotRequestedView(AnalysisRequestManageResultsView):
         ar = self.context
         workflow = getToolByName(ar, 'portal_workflow')
 
+        # If is a retracted AR, show the link to child AR and show a warn msg
+        if workflow.getInfoFor(ar, 'review_state') == 'invalid':
+            childar = hasattr(ar, 'getChildAnalysisRequest') \
+                        and ar.getChildAnalysisRequest() or None
+            childid = childar and childar.getRequestID() or None
+            message = _('This Analysis Request has been withdrawn and is shown '
+                        'for trace-ability purposes only. Retest: %s.') \
+                        % (childid or '')
+            self.context.plone_utils.addPortalMessage(
+                self.context.translate(message), 'warning')
+
+        # If is an AR automatically generated due to a Retraction, show it's
+        # parent AR information
+        if hasattr(ar, 'getParentAnalysisRequest') \
+            and ar.getParentAnalysisRequest():
+            par = ar.getParentAnalysisRequest()
+            message = _('This Analysis Request has been '
+                        'generated automatically due to '
+                        'the retraction of the Analysis '
+                        'Request %s.') % par.getRequestID()
+            self.context.plone_utils.addPortalMessage(
+                self.context.translate(message), 'info')
+
         if workflow.getInfoFor(ar, 'cancellation_state') == "cancelled":
             self.request.response.redirect(ar.absolute_url())
         elif not(getSecurityManager().checkPermission(ResultsNotRequested, ar)):
@@ -2786,6 +2810,36 @@ class AnalysisRequestPublishedResults(BikaListingView):
                          'Recipients']},
         ]
 
+    def __call__(self):
+        ar = self.context
+        workflow = getToolByName(ar, 'portal_workflow')
+
+        # If is a retracted AR, show the link to child AR and show a warn msg
+        if workflow.getInfoFor(ar, 'review_state') == 'invalid':
+            childar = hasattr(ar, 'getChildAnalysisRequest') \
+                        and ar.getChildAnalysisRequest() or None
+            childid = childar and childar.getRequestID() or None
+            message = _('This Analysis Request has been withdrawn and is shown '
+                        'for trace-ability purposes only. Retest: %s.') \
+                        % (childid or '')
+            self.context.plone_utils.addPortalMessage(
+                self.context.translate(message), 'warning')
+
+        # If is an AR automatically generated due to a Retraction, show it's
+        # parent AR information
+        if hasattr(ar, 'getParentAnalysisRequest') \
+            and ar.getParentAnalysisRequest():
+            par = ar.getParentAnalysisRequest()
+            message = _('This Analysis Request has been '
+                        'generated automatically due to '
+                        'the retraction of the Analysis '
+                        'Request %s.') % par.getRequestID()
+            self.context.plone_utils.addPortalMessage(
+                self.context.translate(message), 'info')
+
+        template = BikaListingView.__call__(self)
+        return template
+
     def contentsMethod(self, contentFilter):
         return self.context.objectValues('ARReport')
 
@@ -2817,6 +2871,39 @@ class AnalysisRequestPublishedResults(BikaListingView):
                      "<a href='%s/at_download/Pdf'>%s</a>" % \
                      (obj_url, _("Download"))
         return items
+
+
+class AnalysisRequestLog(LogView):
+
+    def __call__(self):
+        ar = self.context
+        workflow = getToolByName(ar, 'portal_workflow')
+
+        # If is a retracted AR, show the link to child AR and show a warn msg
+        if workflow.getInfoFor(ar, 'review_state') == 'invalid':
+            childar = hasattr(ar, 'getChildAnalysisRequest') \
+                        and ar.getChildAnalysisRequest() or None
+            childid = childar and childar.getRequestID() or None
+            message = _('This Analysis Request has been withdrawn and is shown '
+                        'for trace-ability purposes only. Retest: %s.') \
+                        % (childid or '')
+            self.context.plone_utils.addPortalMessage(
+                self.context.translate(message), 'warning')
+        
+        # If is an AR automatically generated due to a Retraction, show it's
+        # parent AR information
+        if hasattr(ar, 'getParentAnalysisRequest') \
+            and ar.getParentAnalysisRequest():
+            par = ar.getParentAnalysisRequest()
+            message = _('This Analysis Request has been '
+                        'generated automatically due to '
+                        'the retraction of the Analysis '
+                        'Request %s.') % par.getRequestID()
+            self.context.plone_utils.addPortalMessage(
+                self.context.translate(message), 'info')
+        
+        template = LogView.__call__(self)
+        return template
 
 
 class ClientContactVocabularyFactory(CatalogVocabulary):
