@@ -28,9 +28,9 @@
   <include package=".locales" />
   <include package=".subscribers" />
   <include package=".search" />
+  <include package=".vocabularies" />
 
   <include file="profiles.zcml" />
-  <include file="vocabularies.zcml" />
 
   <i18n:registerTranslations directory="locales" />
 
