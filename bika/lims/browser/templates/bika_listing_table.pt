@@ -263,6 +263,7 @@ Item select checkboxes.
 				item_title item/title;
 				alt     python:view.msg_select_item(item);
 				tabindex string:1000;
+				selector python:str(item['obj'].aq_parent.id if hasattr(item.get('obj', ''), 'aq_parent') else '') + '_' + item['id'];
 				checked python:item.has_key('selected') and item['selected'] and 'yes' or '';"/>
 		<input type="hidden"
 			name="selected_obj_uids:list"
