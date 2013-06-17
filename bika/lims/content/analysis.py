@@ -482,5 +482,4 @@ class Analysis(BaseContent):
         return True
 
 
-
 atapi.registerType(Analysis, PROJECTNAME)

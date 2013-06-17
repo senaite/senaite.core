@@ -5,7 +5,7 @@ Documentation  Worksheets - creating ARs
 Library  Selenium2Library  timeout=10  implicit_wait=0.5
 Library  bika.lims.tests.base.Keywords
 Library  Collections
-Resource  src/bika.lims/bika/lims/tests/keywords.txt
+Resource  keywords.txt
 
 
 
@@ -357,7 +357,7 @@ CreateWorksheet
     Log  Unable to select Worksheet via NAVIGATION menu - using URL!!  WARN
     Go to  http://localhost:55001/plone/worksheets
     Wait Until Page Contains  Worksheets
-    
+
     Select From List  xpath=//select[@class='analyst']  Lab Analyst 1
     Click Button  Add
     Wait Until Page Contains  Add Analyses
@@ -406,7 +406,7 @@ CreateWorksheet
     TestResultsRange  xpath=//input[@selector='Result_Na'][1]  8  10
     TestSampleState   xpath=//input[@selector='state_title_Na']  Na  Received
 
-    
+
     TestResultsRange  xpath=//input[@selector='Result_Cu'][1]  8  11
     TestSampleState   xpath=//input[@selector='state_title_Cu']  Cu  Received
 
@@ -596,7 +596,7 @@ SelectPrevMonthDate
 
     Click Element        ${Element}
     sleep                0.5
-    #Click Element        xpath=//a[@title='Prev']  
+    #Click Element        xpath=//a[@title='Prev']
     Click Element        xpath=//div[@id='ui-datepicker-div']/div/a[@title='Prev']
     sleep                0.5
     #Click Link          ${Date}
@@ -674,7 +674,7 @@ Create SampleTypes
     Select from list  ContainerType:list
     Click Button  Save
     Wait Until Page Contains  Changes saved.
- 
+
 
 Create LabDepartment
     [Arguments]  ${Title}=
@@ -800,7 +800,7 @@ Create AnalysisServices
 
 
     Log  AnalysisServices: Preservation fields NOT selected for DEBUG  WARN
-    #Log  AnalysisServices: Preservation fields ARE selected  WARN    
+    #Log  AnalysisServices: Preservation fields ARE selected  WARN
 
     #now move on to Container and Preservation without saving
     Click link  Container and Preservation
@@ -926,7 +926,7 @@ Create ClientContact
     Input Text  Middleinitial  ${Middleinitial}
     Input Text  Middlename  ${Middlename}
     Input Text  Surname  ${Surname}
-    Input Text  JobTitle  ${Jobtitle}    
+    Input Text  JobTitle  ${Jobtitle}
     Input Text  Department  ${Department}
 
     Click Link  Email Telephone Fax
@@ -1051,7 +1051,7 @@ Create ClientContact
     Wait Until Page Contains  Changes saved.
 
     ${VALUE}  Get Value  xpath=//input[@selector='state_title_${Prefix_global}-0001-R01']
-    Should Be Equal  ${VALUE}  Received  Workflow States incorrect: Expected: Received -  
+    Should Be Equal  ${VALUE}  Received  Workflow States incorrect: Expected: Received -
     Click Link  ${Prefix_global}-0001-R01
     Wait Until Page Contains  ${Prefix_global}-0001-R01
 

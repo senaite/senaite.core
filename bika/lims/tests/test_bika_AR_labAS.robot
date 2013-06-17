@@ -4,9 +4,7 @@ Documentation  AR with Workflow disabled, Lab sample AS and 2 users
 
 Library  Selenium2Library  timeout=10  implicit_wait=0.5
 Library  bika.lims.tests.base.Keywords
-Resource  src/bika.lims/bika/lims/tests/keywords.txt
-
-
+Resource  keywords.txt
 
 Variables  plone/app/testing/interfaces.py
 
@@ -71,7 +69,7 @@ AnalysisRequest
     Create AddClients  ID=987654321
     ...    Country=South Africa
     ...    State=Gauteng
-           #District is on auto select last entry    
+           #District is on auto select last entry
     ...    City=City Name
     ...    ZIP=12345
     ...    Physical Address=Client House\nClient Street 20\nClient Town
@@ -93,7 +91,7 @@ AnalysisRequest
     ...    Mobilephone=098 567 432
     ...    Country=South Africa
     ...    State=Gauteng
-           #District is on auto select last entry    
+           #District is on auto select last entry
     ...    City=City Name
     ...    ZIP=12345
     ...    Physical Address=Client House\nClient Street 20\nClient Town
@@ -168,7 +166,7 @@ Create SampleTypes
     Select from list  ContainerType:list
     Click Button  Save
     Wait Until Page Contains  Changes saved.
- 
+
 
 Create LabDepartment
     [Arguments]  ${Title}=
@@ -294,7 +292,7 @@ Create AnalysisServices
 
 
     Log  AnalysisServices: Preservation fields NOT selected for DEBUG  WARN
-    #Log  AnalysisServices: Preservation fields ARE selected  WARN    
+    #Log  AnalysisServices: Preservation fields ARE selected  WARN
 
     #now move on to Container and Preservation without saving
     Click link  Container and Preservation
@@ -419,7 +417,7 @@ Create ClientContact
     Input Text  Middleinitial  ${Middleinitial}
     Input Text  Middlename  ${Middlename}
     Input Text  Surname  ${Surname}
-    Input Text  JobTitle  ${Jobtitle}    
+    Input Text  JobTitle  ${Jobtitle}
     Input Text  Department  ${Department}
 
     Click Link  Email Telephone Fax
@@ -545,7 +543,7 @@ Create ClientContact
     #select all
     #Select Checkbox  analysisrequests_select_all
     #select specific
-    Select Checkbox  xpath=//input[@alt='Select ${AR_name}'] 
+    Select Checkbox  xpath=//input[@alt='Select ${AR_name}']
 
     #test for Workflow State Change
     ${VALUE}  Get Value  xpath=//input[@selector='state_title_${AR_name}']
@@ -557,7 +555,7 @@ Create ClientContact
     Wait Until Page Contains  Changes saved.
 
     ${VALUE}  Get Value  xpath=//input[@selector='state_title_${AR_name}']
-    Should Be Equal  ${VALUE}  Received  Workflow States incorrect: Expected: Received -  
+    Should Be Equal  ${VALUE}  Received  Workflow States incorrect: Expected: Received -
 
     Click Link  ${AR_name}
     Wait Until Page Contains  ${AR_name}
@@ -573,7 +571,7 @@ Verify AR
 
     Log  Sleeping for 300  WARN
     sleep  300
-    #Portlets have changed and AR not available when selecting AR 
+    #Portlets have changed and AR not available when selecting AR
 
     Click Link  to_be_verified_${AR_name}
 

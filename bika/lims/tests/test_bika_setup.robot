@@ -3,6 +3,7 @@
 
 Library  Selenium2Library  timeout=10  implicit_wait=0.5
 Library  bika.lims.tests.base.Keywords
+Resource  keywords.txt
 
 Variables  plone/app/testing/interfaces.py
 
