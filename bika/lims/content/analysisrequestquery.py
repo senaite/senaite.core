@@ -10,12 +10,9 @@ from plone.app.collection import PloneMessageFactory as _p
 from plone.app.collection.collection import Collection
 from plone.app.collection.collection import CollectionSchema
 from Products.Archetypes.atapi import DisplayList
-from plone.app.collection.config import ATCT_TOOLNAME
 from Products.Archetypes import atapi
-from Products.Archetypes.atapi import IntDisplayList
 from Products.ATContentTypes.content import schemata
 from Products.CMFCore.permissions import ModifyPortalContent, View
-from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
 from Products.Archetypes.atapi import (BooleanField,
                                        BooleanWidget,
@@ -90,7 +87,7 @@ QuerySchema = CollectionSchema.copy() + atapi.Schema((
                        u"Select which fields to display when "
                        u"'Tabular view' is selected in the display menu.")
                ),
-   ),
+               ),
 ))
 
 
@@ -101,6 +98,7 @@ schemata.finalizeATCTSchema(
 
 
 class AnalysisRequestQuery(Collection):
+
     """ Query form and results for Analysis Requests
     """
 
@@ -147,10 +145,6 @@ class AnalysisRequestQuery(Collection):
             sort_on = self.getSort_on()
         if b_size is None:
             b_size = self.getLimit()
-
-        import os
-        os.system("play /home/campbell/schwop.wav")
-        import pdb;pdb.set_trace()
 
         return self.getQuery(batch=batch,
                              b_start=b_start,

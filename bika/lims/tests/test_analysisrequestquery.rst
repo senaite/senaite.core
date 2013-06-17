@@ -42,5 +42,4 @@ form.
 
   >>> browser.open("http://nohost/plone/queries/q1/edit")
   >>> import pdb
-  >>> pdb.set_trace()
 

@@ -16,7 +16,6 @@ class QuerystringRegistryReader(_QuerystringRegistryReader):
 
     def __call__(self):
         """Return the registry configuration in JSON format"""
-        import pdb;pdb.set_trace()
         registry = getUtility(IRegistry)
         # First grab the base config, so we can use the operations
         registryreader = IQuerystringRegistryReader(registry)

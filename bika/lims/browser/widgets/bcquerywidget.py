@@ -3,8 +3,6 @@ from archetypes.querywidget.widget import QueryWidget as _QueryWidget
 from plone.app.querystring.interfaces import IQuerystringRegistryReader
 from plone.registry.interfaces import IRegistry
 from Products.Archetypes.Registry import registerWidget
-from Products.Archetypes.Widget import TypesWidget
-from Products.CMFCore.permissions import ModifyPortalContent, View
 from zope.component import getMultiAdapter
 from zope.component import getUtility
 
@@ -72,7 +70,6 @@ class BCQueryWidget(_QueryWidget):
         options = dict(original_context=context)
         res = getMultiAdapter((accessor(), request),
                               name='display_query_results')
-        import pdb;pdb.set_trace()
         return res(**options)
 
 registerWidget(BCQueryWidget, title='Query',
