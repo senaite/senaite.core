@@ -103,6 +103,9 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
+    ComputedField('Keyword',
+        expression = "context.getService() and context.getService().getKeyword() or ''",
+    ),
 ),
 )
 

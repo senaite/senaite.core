@@ -93,6 +93,9 @@ schema = schema.copy() + Schema((
             visible = False,
         ),
     ),
+    ComputedField('Keyword',
+        expression = "context.getAnalysis().getKeyword()",
+    ),
 ),
 )
 
