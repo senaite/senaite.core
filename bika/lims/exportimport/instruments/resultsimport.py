@@ -314,7 +314,7 @@ class AnalysisResultsImporter(Logger):
                     continue
 
                 elif len(ans) == 0:
-                    self.err(_("No analyses found for %s and %s") % 
+                    self.err(_("No analyses found for %s and %s") %
                              (objid, acode))
                     continue
 
@@ -424,23 +424,52 @@ class AnalysisResultsImporter(Logger):
                         review_state=allowed_ar_states)
 
         if len(ars) == 0:
-            self.err(_("No Analysis Request with '%s' states found for %s") %
-                     (', '.join(allowed_ar_states_msg), objid))
+            # Look for QC Analyses
+            refans = self.bac(portal_type=['ReferenceAnalysis',
+                                           'DuplicateAnalysis'],
+                                getReferenceAnalysesGroupID=objid)
 
-            # TODO: Check if matches as ReferenceAnalysis
+            if len(refans) == 0:
+                refans = self.bac(portal_type=['ReferenceAnalysis',
+                                               'DuplicateAnalysis'], id=objid)
+                if len(refans) == 0:
+                    refans = self.bac(portal_type=['ReferenceAnalysis',
+                                                   'DuplicateAnalysis'], UID=objid)
 
-        elif len(ars) > 1:
-            self.err(_("More than one Analysis Request found for %s") % objid)
-            return []
+                if len(refans) == 0:
+                    self.err(_("No Analysis Request with '%s' states neither QC"
+                               " analyses found for %s") %
+                             (', '.join(allowed_ar_states_msg), objid))
+                    return []
+
+                else:
+                    an = refans[0].getObject()
+                    wss = an.getBackReferences('WorksheetAnalysis')
+                    if wss and len(wss) > 0:
+                        analyses = [an for an in wss.getAnalyses() \
+                                    if (an.portal_type == 'ReferenceAnalysis' \
+                                        or an.portal_type == 'DuplicateAnalysis')
+                                    and an.getReferenceAnalysesGroupID() \
+                                        == refans.getReferenceAnalysesGroupID()]
+                    else:
+                        analyses = [an.getObject() for an in refans]
+            else:
+                analyses = [an.getObject() for an in refans]
 
         else:
-            ar = ars[0].getObject()
-            analyses = [analysis.getObject() for analysis in ar.getAnalyses()]
+            if len(ars) > 1:
+                self.err(_("More than one Analysis Request found for %s") % objid)
+                return []
+
+            else:
+                ar = ars[0].getObject()
+                analyses = [analysis.getObject() for analysis in ar.getAnalyses()]
 
         # Discard analyses that don't match with allowed_an_states
         analyses = [analysis for analysis in analyses \
-                    if self.wf.getInfoFor(analysis, 'review_state') \
-                    in allowed_an_states]
+                    if analysis.portal_type != 'Analysis' \
+                        or self.wf.getInfoFor(analysis, 'review_state') \
+                        in allowed_an_states]
 
         if len(analyses) == 0:
             self.err(_("No analyses '%s' states found for %s") %
@@ -453,7 +482,8 @@ class AnalysisResultsImporter(Logger):
         acode = analysis.getKeyword()
         defresultkey = values.get("DefaultResult", "")
         interimsout = []
-        interims = analysis.getInterimFields()
+        interims = hasattr(analysis, 'getInterimFields') \
+                    and analysis.getInterimFields() or []
         for interim in interims:
             keyword = interims['keyword']
             if values.get(keyword, ''):

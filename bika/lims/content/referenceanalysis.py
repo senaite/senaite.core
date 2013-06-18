@@ -97,6 +97,15 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
+    StringField('ReferenceAnalysesGroupID',
+        widget = StringWidget(
+            label = _("ReferenceAnalysesGroupID"),
+            visible = False,
+        ),
+    ),
+    ComputedField('Keyword',
+        expression = "context.getService() and context.getService().getKeyword() or ''",
+    ),
 ),
 )
 

@@ -87,6 +87,15 @@ schema = schema.copy() + Schema((
     ComputedField('PointOfCapture',
         expression = 'context.getAnalysis() and context.getAnalysis().getPointOfCapture()',
     ),
+    StringField('ReferenceAnalysesGroupID',
+        widget = StringWidget(
+            label = _("ReferenceAnalysesGroupID"),
+            visible = False,
+        ),
+    ),
+    ComputedField('Keyword',
+        expression = "context.getAnalysis().getKeyword()",
+    ),
 ),
 )
 

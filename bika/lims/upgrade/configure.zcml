@@ -229,4 +229,22 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Add ReferenceAnalysesGroupID"
+        description="Adds an additional Identifier to WS-groups of QC Analyses"
+        source="1131"
+        destination="1132"
+        handler="bika.lims.upgrade.to1132.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Add ReferenceAnalysesGroupID index in bika analysis catalog"
+        description="Adds an additional Identifier to WS-groups of QC Analyses"
+        source="1132"
+        destination="1133"
+        handler="bika.lims.upgrade.to1133.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
