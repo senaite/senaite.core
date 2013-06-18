@@ -336,6 +336,7 @@ class WorksheetAnalysesView(AnalysesView):
                     rowspan += 1
             items[x]['rowspan'] = {'Pos': rowspan}
 
+            obj = items[x]['obj']
             # fill the rowspan with a little table
             # parent is either an AR, a Worksheet, or a
             # ReferenceSample (analysis parent).
