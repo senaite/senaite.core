@@ -2,7 +2,7 @@
 
 Documentation  Worksheets - creating ARs
 
-Library  Selenium2Library  timeout=10  implicit_wait=0.5
+Library  Selenium2Library  timeout=10  implicit_wait=0
 Library  bika.lims.tests.base.Keywords
 Library  Collections
 Resource  keywords.txt
@@ -367,7 +367,7 @@ CreateWorksheet
     Log  Unable to select Worksheet via NAVIGATION menu - using URL!!  WARN
     Go to  http://localhost:55001/plone/worksheets
     Wait Until Page Contains  Worksheets
-    
+
     Select From List  xpath=//select[@class='analyst']  Lab Analyst 1
     Click Button  Add
     Wait Until Page Contains  Add Analyses
@@ -392,7 +392,7 @@ CreateWorksheet
     #check page state is open
     Page Should Contain Element  xpath=//span[@class='state-open']
 
-    #Note: if the order in which Referencees, Duplicates and Blanks are added the further testing will fail 
+    #Note: if the order in which Referencees, Duplicates and Blanks are added the further testing will fail
 
     Click Link  Add Control Reference
     Wait Until Page Contains  Add Control Reference
@@ -418,7 +418,7 @@ CreateWorksheet
 
     TestResultsRange  xpath=//input[@selector='Result_Na'][1]  8  10
     TestSampleState   xpath=//input[@selector='state_title_Na']  Na  Received
- 
+
     TestResultsRange  xpath=//input[@selector='Result_Cu'][1]  8  11
     TestSampleState   xpath=//input[@selector='state_title_Cu']  Cu  Received
 
@@ -529,16 +529,20 @@ CreateWorksheet
     #DUPLICATES
     #interim hack
 
-    Input Text  xpath=//input[@selector='Result_D-13-005'][1]  10
-    TestSampleState   xpath=//input[@selector='state_title_D-13-005']  D-13-005  Assigned
-    Input Text  xpath=//input[@selector='Result_D-13-006'][1]  10
-    TestSampleState   xpath=//input[@selector='state_title_D-13-006']  D-13-006  Assigned
-    Input Text  xpath=//input[@selector='Result_D-13-002'][1]  10
-    TestSampleState   xpath=//input[@selector='state_title_D-13-002']  D-13-002  Assigned
-    Input Text  xpath=//input[@selector='Result_D-13-004'][1]  10
-    TestSampleState   xpath=//input[@selector='state_title_D-13-004']  D-13-004  Assigned
-    Input Text  xpath=//input[@selector='Result_D-13-007'][1]  10
-    TestSampleState   xpath=//input[@selector='state_title_D-13-007']  D-13-007  Assigned
+    Input Text        xpath=//tr[@keyword='Ca']//input[contains(@objectid, 'D-13')]  10
+    TestSampleState   xpath=//tr[@keyword='Ca']//input[contains(@selector, 'state_title_D-13')]  D-13(Calcium)  Assigned
+    Input Text        xpath=//tr[@keyword='Cu']//input[contains(@objectid, 'D-13')]  10
+    TestSampleState   xpath=//tr[@keyword='Cu']//input[contains(@selector, 'state_title_D-13')]  D-13(Copper)  Assigned
+    Input Text        xpath=//tr[@keyword='Fe']//input[contains(@objectid, 'D-13')]  10
+    TestSampleState   xpath=//tr[@keyword='Fe']//input[contains(@selector, 'state_title_D-13')]  D-13(Iron)  Assigned
+    Input Text        xpath=//tr[@keyword='Mg']//input[contains(@objectid, 'D-13')]  10
+    TestSampleState   xpath=//tr[@keyword='Mg']//input[contains(@selector, 'state_title_D-13')]  D-13(Magnesium)  Assigned
+    Input Text        xpath=//tr[@keyword='Mn']//input[contains(@objectid, 'D-13')]  10
+    TestSampleState   xpath=//tr[@keyword='Mn']//input[contains(@selector, 'state_title_D-13')]  D-13(Manganese)  Assigned
+    Input Text        xpath=//tr[@keyword='Na']//input[contains(@objectid, 'D-13')]  10
+    TestSampleState   xpath=//tr[@keyword='Na']//input[contains(@selector, 'state_title_D-13')]  D-13(Sodium)  Assigned
+    Input Text        xpath=//tr[@keyword='Zn']//input[contains(@objectid, 'D-13')]  10
+    TestSampleState   xpath=//tr[@keyword='Zn']//input[contains(@selector, 'state_title_D-13')]  D-13(Zinc)  Assigned
 
 
     #BLANKS
@@ -568,11 +572,13 @@ CreateWorksheet
     TestSampleState   xpath=//input[@selector='state_title_SA-13-004']  SA-13-004  To be verified
     TestSampleState   xpath=//input[@selector='state_title_SA-13-006']  SA-13-006  To be verified
 
-    TestSampleState   xpath=//input[@selector='state_title_D-13-005']  D-13-005  To be verified
-    TestSampleState   xpath=//input[@selector='state_title_D-13-006']  D-13-006  To be verified
-    TestSampleState   xpath=//input[@selector='state_title_D-13-002']  D-13-002  To be verified
-    TestSampleState   xpath=//input[@selector='state_title_D-13-004']  D-13-004  To be verified
-    TestSampleState   xpath=//input[@selector='state_title_D-13-007']  D-13-007  To be verified
+    TestSampleState   xpath=//tr[@keyword='Ca']//input[contains(@selector, 'state_title_D-13')]  D-13(Calcium)    To be verified
+    TestSampleState   xpath=//tr[@keyword='Cu']//input[contains(@selector, 'state_title_D-13')]  D-13(Copper)     To be verified
+    TestSampleState   xpath=//tr[@keyword='Fe']//input[contains(@selector, 'state_title_D-13')]  D-13(Iron)       To be verified
+    TestSampleState   xpath=//tr[@keyword='Mg']//input[contains(@selector, 'state_title_D-13')]  D-13(Magnesium)  To be verified
+    TestSampleState   xpath=//tr[@keyword='Mn']//input[contains(@selector, 'state_title_D-13')]  D-13(Manganese)  To be verified
+    TestSampleState   xpath=//tr[@keyword='Na']//input[contains(@selector, 'state_title_D-13')]  D-13(Sodium)     To be verified
+    TestSampleState   xpath=//tr[@keyword='Zn']//input[contains(@selector, 'state_title_D-13')]  D-13(Zinc)       To be verified
 
     TestSampleState   xpath=//input[@selector='state_title_SA-13-008']  SA-13-008  To be verified
     TestSampleState   xpath=//input[@selector='state_title_SA-13-010']  SA-13-010  To be verified
@@ -706,7 +712,7 @@ SelectPrevMonthDate
 
     Click Element        ${Element}
     sleep                0.5
-    #Click Element        xpath=//a[@title='Prev']  
+    #Click Element        xpath=//a[@title='Prev']
     Click Element        xpath=//div[@id='ui-datepicker-div']/div/a[@title='Prev']
     sleep                0.5
     #Click Link          ${Date}
@@ -778,7 +784,7 @@ Create SampleTypes
     Select from list  ContainerType:list
     Click Button  Save
     Wait Until Page Contains  Changes saved.
- 
+
 
 Create LabDepartment
     [Arguments]  ${Title}=
@@ -904,7 +910,7 @@ Create AnalysisServices
 
 
     Log  AnalysisServices: Preservation fields NOT selected for DEBUG  WARN
-    #Log  AnalysisServices: Preservation fields ARE selected  WARN    
+    #Log  AnalysisServices: Preservation fields ARE selected  WARN
 
     #now move on to Container and Preservation without saving
     Click link  Container and Preservation
@@ -1030,7 +1036,7 @@ Create ClientContact
     Input Text  Middleinitial  ${Middleinitial}
     Input Text  Middlename  ${Middlename}
     Input Text  Surname  ${Surname}
-    Input Text  JobTitle  ${Jobtitle}    
+    Input Text  JobTitle  ${Jobtitle}
     Input Text  Department  ${Department}
 
     Click Link  Email Telephone Fax
@@ -1155,7 +1161,7 @@ Create ClientContact
     Wait Until Page Contains  Changes saved.
 
     ${VALUE}  Get Value  xpath=//input[@selector='state_title_${Prefix_global}-0001-R01']
-    Should Be Equal  ${VALUE}  Received  Workflow States incorrect: Expected: Received -  
+    Should Be Equal  ${VALUE}  Received  Workflow States incorrect: Expected: Received -
     Click Link  ${Prefix_global}-0001-R01
     Wait Until Page Contains  ${Prefix_global}-0001-R01
 
@@ -1247,5 +1253,5 @@ Log out
     #Click Element  xpath=//th[@cat='${AnalysisCategory_global_Title}']
     #Select Checkbox  xpath=//input[@alt='${AnalysisServices_locator}']
 
-            
+
 
