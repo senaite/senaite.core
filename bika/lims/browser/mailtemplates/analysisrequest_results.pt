@@ -461,7 +461,7 @@
             <li i18n:translate="">Analysis results relate only to the samples tested.</li>
             <li i18n:translate="">This document shall not be reproduced except in full, without the written approval of <tal:block replace="view/laboratory/Title" i18n:name="name_lab"/></li>
             <li tal:condition="confidence_level" i18n:translate="">Test results are at a <tal:block replace="confidence_level" i18n:name="lab_confidence"/>% confidence level</li>
-            <li tal:condition="python:'email' in pub_pref" i18n:translate="">Methods of analysis available by clicking on the "Request" link</li>
+            <li tal:condition="python:'email' in pub_pref" i18n:translate="">Methods of analysis available by clicking on the 'Request' link</li>
         </ol>
     </div>
     <!--div id="footer">
