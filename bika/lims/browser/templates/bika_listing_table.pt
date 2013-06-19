@@ -546,16 +546,13 @@ Table cells for each column from in review_state's column list.
 
      <!-- Row Remarks field (for Analyses) -->
      <tal:remarks_condition
-     	tal:define="allow_edit python:item.has_key('allow_edit')
-     	                                and
-     	                                (view.bika_listing.allow_edit and 'Remarks' in item['allow_edit'])">
+     	tal:define="remarksenabled python:view.context.bika_setup.getEnableAnalysisRemarks();
+     	            isanalysis python:item['obj'].portal_type == 'Analysis';
+     	            hasremarks python:True if item.get('Remarks','') else False;
+     	            remarksedit python: remarksenabled and 'Remarks' in item.get('allowedit',[]);
+     	            showremarks python:isanalysis and (hasremarks or remarksedit);">
 
-		<tr	tal:condition="python:view.context.bika_setup.getEnableAnalysisRemarks()
-			                     and item.has_key('id')
-			                     and item.get('category', 'None') == cat
-			                     and hasattr(item['obj'], 'portal_type') and item['obj'].portal_type == 'Analysis' and (
-			                     	allow_edit or item.get('Remarks')
-			                     )"
+		<tr	tal:condition="showremarks"
 			tal:define="keyword python:item.has_key('Keyword') and item['Keyword'] or '';"
 			tal:attributes="cat cat;
 						class item/table_row_class;
@@ -572,7 +569,7 @@ Table cells for each column from in review_state's column list.
 					style="font-size: 0.9em;color:#3f3f3f;width:100%;display:block;"
 					autocomplete="off"
 					rows="1"
-					tal:condition="python:allow_edit"
+					tal:condition="python:remarksedit==True"
 					tal:attributes="
 						class python:'listing_remarks';
 						tabindex tabindex/next;
@@ -584,7 +581,7 @@ Table cells for each column from in review_state's column list.
 				<span
 					style="font-size: 0.9em;color:#3f3f3f;"
 					autocomplete="off"
-					tal:condition="python:not allow_edit and item.get('Remarks', '')!=''"
+					tal:condition="python:remarksedit==False"
 					tal:content="python:item.get('Remarks', '')"/>
 			</td>
 		</tr>
