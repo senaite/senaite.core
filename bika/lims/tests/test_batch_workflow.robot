@@ -15,46 +15,46 @@ Test Batch-AR workflow dependencies
     Batch state should be  open
     Add AR
     Batch state should be  open
-    Receive AR  FN-0001-R01
+    Receive AR  AP13-0001-R01
     Batch state should be  sample_received
     Add AR
     Batch state should be  open
-    Receive AR  FN-0002-R01
+    Receive AR  AP13-0002-R01
     Batch state should be  sample_received
-    Submit AR  FN-0001-R01
-    Submit AR  FN-0002-R01
+    Submit AR  AP13-0001-R011
+    Submit AR  AP13-0002-R01
     Batch state should be  to_be_verified
     Add AR
     Batch state should be  open
-    Receive AR  FN-0003-R01
+    Receive AR  AP13-0003-R01
     Batch state should be  sample_received
-    Submit AR  FN-0003-R01
+    Submit AR  AP13-0003-R01
     Batch state should be  to_be_verified
-    Retract AR  FN-0001-R01
+    Retract AR  AP13-0001-R01
     Batch state should be  sample_received
-    Submit AR  FN-0001-R01
+    Submit AR  AP13-0001-R01
     Batch state should be  to_be_verified
     Log out
     Log in  test_labmanager1  test_labmanager1
-    Verify AR  FN-0001-R01
-    Verify AR  FN-0002-R01
-    Verify AR  FN-0003-R01
+    Verify AR  AP13-0001-R01
+    Verify AR  AP13-0002-R01
+    Verify AR  AP13-0003-R01
     Batch state should be  verified
 
 
 *** Keywords ***
 
 Start browser
-    Open browser         http://localhost:55001/plone/
+    Open browser         http://localhost:55001/plone/login
     Set selenium speed   0
 
 Add Batch
     Go to                        http://localhost:55001/plone/batches
     Wait until page contains     Add
     Click Link                   Add
-    Wait until page contains     Add Case
+    Wait until page contains     Add Batch
     Input text                   description  Just a regular batch
-    # Select from dropdown         ClientID   Happy    1
+    # Select from dropdown       ClientID   Happy    1
     Click Button                 xpath=//input[@value="Save"]
     Wait until page contains     saved
 
@@ -70,9 +70,10 @@ Add AR
     Select from list             col_count  1
     click Link                   Add new
     Wait until page contains     Request new analyses
-    Input text                   ar_0_SampleType              Fingernails
-    Select from list             ar_0_AnalysisProfile         Lab: Micro-Bio Counts
-    Select from datepicker       ar_0_SamplingDate            1
+    Select from dropdown         ar_0_SampleType         Apple
+    Select from dropdown         ar_0_Client             Happy
+    Select from dropdown         ar_0_Profile            Counts
+    Select from datepicker       ar_0_SamplingDate       1
     Click Button                 Save
     Wait until page contains     created
 

@@ -34,7 +34,7 @@ Select from dropdown
     ...                ${item_number}=1
     Input text         ${locator}  ${search_text}
     sleep              1
-    Click Element      xpath=//div[contains(@class,'cg-DivItem')][${item_number}]
+    Click Element      xpath=//div[contains(@class,'cg-colItem')][${item_number}]
 
 
 Select First From Dropdown
