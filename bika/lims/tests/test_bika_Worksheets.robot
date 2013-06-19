@@ -7,6 +7,8 @@ Library  bika.lims.tests.base.Keywords
 Library  Collections
 Resource  keywords.txt
 
+
+
 Variables  plone/app/testing/interfaces.py
 
 #file location -> /Applications/Plone/buildout-cache/eggs/plone.app.testing-4.2.2-py2.7.egg/plone/app/testing/interfaces.py
@@ -47,7 +49,11 @@ ${WS_DUPLICATE_LIST_2}
 
 CreateWorksheets
 
-    Log in as  ${user-labmanager}
+    #test availability ofkeywords in resource keywords.txt
+    Test Keyword
+
+    #Log in as  ${user-labmanager}
+    Log in as site owner
 
     #LoadData
 
@@ -74,7 +80,7 @@ CreateWorksheets
 
     CreateWorksheet
 
-    RetractAnalysis
+    #RetractAnalysis
 
     Hang
 
@@ -361,7 +367,7 @@ CreateWorksheet
     Log  Unable to select Worksheet via NAVIGATION menu - using URL!!  WARN
     Go to  http://localhost:55001/plone/worksheets
     Wait Until Page Contains  Worksheets
-
+    
     Select From List  xpath=//select[@class='analyst']  Lab Analyst 1
     Click Button  Add
     Wait Until Page Contains  Add Analyses
@@ -384,14 +390,9 @@ CreateWorksheet
     Wait Until Page Contains Element  submit_transition
 
     #check page state is open
-    Page Should Contain Element  xpath=//dl[@id='plone-contentmenu-workflow']/dt/span/span[@class='state-open']
+    Page Should Contain Element  xpath=//span[@class='state-open']
 
-    #Click Link  Add Blank Reference
-    #Wait Until Page Contains  Add Blank Reference
-    Log  NOT Adding Blank  WARN
-
-    #Click Element  xpath=//span[@id='worksheet_add_references']/form/div/table/tbody/tr[1]
-    #Wait Until Page Contains Element  submit_transition
+    #Note: if the order in which Referencees, Duplicates and Blanks are added the further testing will fail 
 
     Click Link  Add Control Reference
     Wait Until Page Contains  Add Control Reference
@@ -404,17 +405,20 @@ CreateWorksheet
     Click Element  xpath=//span[@id='worksheet_add_duplicate_ars']/form/div/table/tbody/tr[1]
     Wait Until Page Contains Element  submit_transition
 
+    Click Link  Add Blank Reference
+    Wait Until Page Contains  Add Blank Reference
+    Click Element  xpath=//span[@id='worksheet_add_references']/form/div/table/tbody/tr[1]
+    Wait Until Page Contains Element  submit_transition
 
-    #Value ranges: 0, 8.5, 8.95, 9, 10, 11, 11.05, 12
-    #Result_Ca, Result_Na, Result_Cu, Result_Zn, Result_Fe, Result_Mg, Result_Mn
+    #Value range testing: badValue followed by goodValue
 
+    #ANALYSIS
     TestResultsRange  xpath=//input[@selector='Result_Ca'][1]  0  9
     TestSampleState   xpath=//input[@selector='state_title_Cu']  Cu  Received
 
     TestResultsRange  xpath=//input[@selector='Result_Na'][1]  8  10
     TestSampleState   xpath=//input[@selector='state_title_Na']  Na  Received
-
-
+ 
     TestResultsRange  xpath=//input[@selector='Result_Cu'][1]  8  11
     TestSampleState   xpath=//input[@selector='state_title_Cu']  Cu  Received
 
@@ -430,7 +434,7 @@ CreateWorksheet
     TestResultsRange  xpath=//input[@selector='Result_Mn'][1]  7  9.8
     TestSampleState   xpath=//input[@selector='state_title_Mn']  Mn  Received
 
-    #CONTROLS
+    #REFERENCE
     #Copper: Result_SA-13-002
     TestResultsRange  xpath=//input[@selector='Result_SA-13-002'][1]  17  10.1
     TestSampleState   xpath=//input[@selector='state_title_SA-13-002']  SA-13-002  Assigned
@@ -446,6 +450,7 @@ CreateWorksheet
     #TestResultsRange  xpath=//input[@selector='Result_D-13-003'][1]  15  10.2
 
     Log  Not testing Duplicate range values - no images  WARN
+    Log  Hope the first entry is not incidently selected  WARN
 
     #interim hack
     Input Text  xpath=//input[@selector='Result_D-13-001'][1]  10
@@ -466,15 +471,24 @@ CreateWorksheet
     #click mouse out of input fields
     Click Element  xpath=//div[@id='content-core']
 
+    #BLANKS (array selection range 8 to 14)
+    TestResultsRange  xpath=//input[@selector='Result_SA-13-009'][1]  2  0
+    TestSampleState   xpath=//input[@selector='state_title_SA-13-009']  SA-13-009  Assigned
+    TestResultsRange  xpath=//input[@selector='Result_SA-13-013'][1]  20  0
+    TestSampleState   xpath=//input[@selector='state_title_SA-13-013']  SA-13-013  Assigned
+
+    #click mouse out of input fields
+    Click Element  xpath=//div[@id='content-core']
+
     Click Element  submit_transition
     Wait Until Page Contains  Changes saved.
 
     #check page stte is still open
-    Page Should Contain Element  xpath=//dl[@id='plone-contentmenu-workflow']/dt/span/span[@class='state-open']
+    Page Should Contain Element  xpath=//span[@class='state-open']
 
     #all entries with results should have a state: to be verified
 
-    TestSampleState   xpath=//input[@selector='state_title_Cu']  Cu  To be verified
+    TestSampleState   xpath=//input[@selector='state_title_Ca']  Ca  To be verified
     TestSampleState   xpath=//input[@selector='state_title_Na']  Na  To be verified
     TestSampleState   xpath=//input[@selector='state_title_Cu']  Cu  To be verified
     TestSampleState   xpath=//input[@selector='state_title_Zn']  Zn  To be verified
@@ -488,8 +502,13 @@ CreateWorksheet
     TestSampleState   xpath=//input[@selector='state_title_D-13-001']  D-13-001  To be verified
     TestSampleState   xpath=//input[@selector='state_title_D-13-003']  D-13-003  To be verified
 
+    TestSampleState   xpath=//input[@selector='state_title_SA-13-009']  SA-13-009  To be verified
+    TestSampleState   xpath=//input[@selector='state_title_SA-13-013']  SA-13-013  To be verified
+
+
     #now fill in the remaining results
 
+    #REFERENCE
     #Calcium: Result_SA-13-001
     TestResultsRange  xpath=//input[@selector='Result_SA-13-001'][1]  3  10
     TestSampleState   xpath=//input[@selector='state_title_SA-13-001']  SA-13-001  Assigned
@@ -507,7 +526,9 @@ CreateWorksheet
     TestSampleState   xpath=//input[@selector='state_title_SA-13-007']  SA-13-007  Assigned
 
 
+    #DUPLICATES
     #interim hack
+
     Input Text  xpath=//input[@selector='Result_D-13-005'][1]  10
     TestSampleState   xpath=//input[@selector='state_title_D-13-005']  D-13-005  Assigned
     Input Text  xpath=//input[@selector='Result_D-13-006'][1]  10
@@ -518,6 +539,23 @@ CreateWorksheet
     TestSampleState   xpath=//input[@selector='state_title_D-13-004']  D-13-004  Assigned
     Input Text  xpath=//input[@selector='Result_D-13-007'][1]  10
     TestSampleState   xpath=//input[@selector='state_title_D-13-007']  D-13-007  Assigned
+
+
+    #BLANKS
+    TestResultsRange  xpath=//input[@selector='Result_SA-13-008'][1]  12  0
+    TestSampleState   xpath=//input[@selector='state_title_SA-13-008']  SA-13-008  Assigned
+
+    TestResultsRange  xpath=//input[@selector='Result_SA-13-010'][1]  40  0
+    TestSampleState   xpath=//input[@selector='state_title_SA-13-010']  SA-13-010  Assigned
+
+    TestResultsRange  xpath=//input[@selector='Result_SA-13-011'][1]  20  0
+    TestSampleState   xpath=//input[@selector='state_title_SA-13-011']  SA-13-011  Assigned
+
+    TestResultsRange  xpath=//input[@selector='Result_SA-13-012'][1]  8  0
+    TestSampleState   xpath=//input[@selector='state_title_SA-13-012']  SA-13-012  Assigned
+
+    TestResultsRange  xpath=//input[@selector='Result_SA-13-014'][1]  2  0
+    TestSampleState   xpath=//input[@selector='state_title_SA-13-014']  SA-13-014  Assigned
 
     #click mouse out of input fields
     Click Element  xpath=//div[@id='content-core']
@@ -536,13 +574,22 @@ CreateWorksheet
     TestSampleState   xpath=//input[@selector='state_title_D-13-004']  D-13-004  To be verified
     TestSampleState   xpath=//input[@selector='state_title_D-13-007']  D-13-007  To be verified
 
+    TestSampleState   xpath=//input[@selector='state_title_SA-13-008']  SA-13-008  To be verified
+    TestSampleState   xpath=//input[@selector='state_title_SA-13-010']  SA-13-010  To be verified
+    TestSampleState   xpath=//input[@selector='state_title_SA-13-011']  SA-13-011  To be verified
+    TestSampleState   xpath=//input[@selector='state_title_SA-13-012']  SA-13-012  To be verified
+    TestSampleState   xpath=//input[@selector='state_title_SA-13-014']  SA-13-014  To be verified
+
     #check page has changed state
-    Page Should Contain Element  xpath=//dl[@id='plone-contentmenu-workflow']/dt/a/span[@class='state-to_be_verified']
+    Page Should Contain Element  xpath=//span[@class='state-to_be_verified']
+
+    Log  IF YOU GET THIS FAR THE RANDOM DUPLICATE WARNING IMAGE BUG DID NOT APPEAR - RUN TEST AGAIN  WARN
 
 
 RetractAnalysis
     #continue on existing page
     Log  ...testing Retracting  WARN
+
 
     #selector="H2O13-0001-R01_Mg
     #selector="QC-13-002_SA-13-004 and sometimes selector="QC-13-003_SA-13-004
@@ -556,12 +603,13 @@ RetractAnalysis
 
     Log  Retracting analysis: H2O13-0001-R01_Mg  WARN
     Select Checkbox  xpath=//input[@selector='H2O13-0001-R01_Mg']
+
     Click Element  retract_transition
     Wait Until Page Contains  Changes saved.
-    #TestSampleState   xpath=//input[@selector='state_title_Mg']  Mg  Assigned
+    TestSampleState   xpath=//input[@selector='state_title_Mg-1']  Mg  Retracted
 
     #check page has changed state from 'To be verified' to 'Open'???
-    #Page Should Contain Element  xpath=//dl[@id='plone-contentmenu-workflow']/dt/a/span[@class='state-open']
+    Page Should Contain Element  xpath=//span[@class='state-open']
 
     #retract reference
     Log  Retracting reference: QC-13-002_SA-13-004  WARN
@@ -571,7 +619,7 @@ RetractAnalysis
     TestSampleState   xpath=//input[@selector='state_title_SA-13-004']  SA-13-004  Assigned
 
     #check page state remains Open
-    Page Should Contain Element  xpath=//dl[@id='plone-contentmenu-workflow']/dt/a/span[@class='state-open']
+    Page Should Contain Element  xpath=//span[@class='state-open']
 
     #retract duplicate
     Log  Retracting duplicate: WS-13-001_D-13-002  WARN
@@ -581,7 +629,7 @@ RetractAnalysis
     TestSampleState   xpath=//input[@selector='state_title_D-13-002']  D-13-002  Assigned
 
     #check page remains Open
-    Page Should Contain Element  xpath=//dl[@id='plone-contentmenu-workflow']/dt/a/span[@class='state-open']
+    Page Should Contain Element  xpath=//span[@class='state-open']
 
     Log  Re-assigning Analysis, Reference and Duplicates etc.  WARN
     TestResultsRange  xpath=//input[@selector='Result_Mg'][1]  13  9.5
@@ -603,7 +651,7 @@ RetractAnalysis
     TestSampleState   xpath=//input[@selector='state_title_D-13-002']  D-13-002  To be verified
 
     check page has changed state
-    Page Should Contain Element  xpath=//dl[@id='plone-contentmenu-workflow']/dt/a/span[@class='state-to_be_verified']
+    Page Should Contain Element  xpath=//span[@class='state-to_be_verified']
 
 #remove item
 #unassign_transition
@@ -613,6 +661,7 @@ TestResultsRange
     ...          ${badResult}=
     ...          ${goodResult}=
 
+    Log  Testing Result Range for ${element} -:- values: ${badResult} and ${goodResult}  WARN
     Input Text  ${element}  ${badResult}
     #pres the tab key to move out the field
     Press Key  ${element}  \t
@@ -657,7 +706,7 @@ SelectPrevMonthDate
 
     Click Element        ${Element}
     sleep                0.5
-    #Click Element        xpath=//a[@title='Prev']
+    #Click Element        xpath=//a[@title='Prev']  
     Click Element        xpath=//div[@id='ui-datepicker-div']/div/a[@title='Prev']
     sleep                0.5
     #Click Link          ${Date}
@@ -729,7 +778,7 @@ Create SampleTypes
     Select from list  ContainerType:list
     Click Button  Save
     Wait Until Page Contains  Changes saved.
-
+ 
 
 Create LabDepartment
     [Arguments]  ${Title}=
@@ -855,7 +904,7 @@ Create AnalysisServices
 
 
     Log  AnalysisServices: Preservation fields NOT selected for DEBUG  WARN
-    #Log  AnalysisServices: Preservation fields ARE selected  WARN
+    #Log  AnalysisServices: Preservation fields ARE selected  WARN    
 
     #now move on to Container and Preservation without saving
     Click link  Container and Preservation
@@ -981,7 +1030,7 @@ Create ClientContact
     Input Text  Middleinitial  ${Middleinitial}
     Input Text  Middlename  ${Middlename}
     Input Text  Surname  ${Surname}
-    Input Text  JobTitle  ${Jobtitle}
+    Input Text  JobTitle  ${Jobtitle}    
     Input Text  Department  ${Department}
 
     Click Link  Email Telephone Fax
@@ -1106,7 +1155,7 @@ Create ClientContact
     Wait Until Page Contains  Changes saved.
 
     ${VALUE}  Get Value  xpath=//input[@selector='state_title_${Prefix_global}-0001-R01']
-    Should Be Equal  ${VALUE}  Received  Workflow States incorrect: Expected: Received -
+    Should Be Equal  ${VALUE}  Received  Workflow States incorrect: Expected: Received -  
     Click Link  ${Prefix_global}-0001-R01
     Wait Until Page Contains  ${Prefix_global}-0001-R01
 
@@ -1198,5 +1247,5 @@ Log out
     #Click Element  xpath=//th[@cat='${AnalysisCategory_global_Title}']
     #Select Checkbox  xpath=//input[@alt='${AnalysisServices_locator}']
 
-
+            
 
