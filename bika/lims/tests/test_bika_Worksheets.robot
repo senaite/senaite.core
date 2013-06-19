@@ -529,20 +529,20 @@ CreateWorksheet
     #DUPLICATES
     #interim hack
 
-    Input Text        xpath=//tr[@keyword='Ca']//input[contains(@objectid, 'D-13')]  10
-    TestSampleState   xpath=//tr[@keyword='Ca']//input[contains(@selector, 'state_title_D-13')]  D-13(Calcium)  Assigned
-    Input Text        xpath=//tr[@keyword='Cu']//input[contains(@objectid, 'D-13')]  10
-    TestSampleState   xpath=//tr[@keyword='Cu']//input[contains(@selector, 'state_title_D-13')]  D-13(Copper)  Assigned
-    Input Text        xpath=//tr[@keyword='Fe']//input[contains(@objectid, 'D-13')]  10
-    TestSampleState   xpath=//tr[@keyword='Fe']//input[contains(@selector, 'state_title_D-13')]  D-13(Iron)  Assigned
-    Input Text        xpath=//tr[@keyword='Mg']//input[contains(@objectid, 'D-13')]  10
-    TestSampleState   xpath=//tr[@keyword='Mg']//input[contains(@selector, 'state_title_D-13')]  D-13(Magnesium)  Assigned
-    Input Text        xpath=//tr[@keyword='Mn']//input[contains(@objectid, 'D-13')]  10
-    TestSampleState   xpath=//tr[@keyword='Mn']//input[contains(@selector, 'state_title_D-13')]  D-13(Manganese)  Assigned
-    Input Text        xpath=//tr[@keyword='Na']//input[contains(@objectid, 'D-13')]  10
-    TestSampleState   xpath=//tr[@keyword='Na']//input[contains(@selector, 'state_title_D-13')]  D-13(Sodium)  Assigned
-    Input Text        xpath=//tr[@keyword='Zn']//input[contains(@objectid, 'D-13')]  10
-    TestSampleState   xpath=//tr[@keyword='Zn']//input[contains(@selector, 'state_title_D-13')]  D-13(Zinc)  Assigned
+    Input Text        xpath=//tr[@keyword='Ca']//input[contains(@objectid, 'D-13')][@field='Result']  10
+    TestSampleState   xpath=//tr[@keyword='Ca']//input[contains(@objectid, 'D-13')][@field='state_title']  D-13(Calcium)    Assigned
+    Input Text        xpath=//tr[@keyword='Cu']//input[contains(@objectid, 'D-13')][@field='Result']  10
+    TestSampleState   xpath=//tr[@keyword='Cu']//input[contains(@objectid, 'D-13')][@field='state_title']  D-13(Copper)     Assigned
+    Input Text        xpath=//tr[@keyword='Fe']//input[contains(@objectid, 'D-13')][@field='Result']  10
+    TestSampleState   xpath=//tr[@keyword='Fe']//input[contains(@objectid, 'D-13')][@field='state_title']  D-13(Iron)       Assigned
+    Input Text        xpath=//tr[@keyword='Mg']//input[contains(@objectid, 'D-13')][@field='Result']  10
+    TestSampleState   xpath=//tr[@keyword='Mg']//input[contains(@objectid, 'D-13')][@field='state_title']  D-13(Magnesium)  Assigned
+    Input Text        xpath=//tr[@keyword='Mn']//input[contains(@objectid, 'D-13')][@field='Result']  10
+    TestSampleState   xpath=//tr[@keyword='Mn']//input[contains(@objectid, 'D-13')][@field='state_title']  D-13(Manganese)  Assigned
+    Input Text        xpath=//tr[@keyword='Na']//input[contains(@objectid, 'D-13')][@field='Result']  10
+    TestSampleState   xpath=//tr[@keyword='Na']//input[contains(@objectid, 'D-13')][@field='state_title']  D-13(Sodium)     Assigned
+    Input Text        xpath=//tr[@keyword='Zn']//input[contains(@objectid, 'D-13')][@field='Result']  10
+    TestSampleState   xpath=//tr[@keyword='Zn']//input[contains(@objectid, 'D-13')][@field='state_title']  D-13(Zinc)       Assigned
 
 
     #BLANKS
@@ -572,13 +572,13 @@ CreateWorksheet
     TestSampleState   xpath=//input[@selector='state_title_SA-13-004']  SA-13-004  To be verified
     TestSampleState   xpath=//input[@selector='state_title_SA-13-006']  SA-13-006  To be verified
 
-    TestSampleState   xpath=//tr[@keyword='Ca']//input[contains(@selector, 'state_title_D-13')]  D-13(Calcium)    To be verified
-    TestSampleState   xpath=//tr[@keyword='Cu']//input[contains(@selector, 'state_title_D-13')]  D-13(Copper)     To be verified
-    TestSampleState   xpath=//tr[@keyword='Fe']//input[contains(@selector, 'state_title_D-13')]  D-13(Iron)       To be verified
-    TestSampleState   xpath=//tr[@keyword='Mg']//input[contains(@selector, 'state_title_D-13')]  D-13(Magnesium)  To be verified
-    TestSampleState   xpath=//tr[@keyword='Mn']//input[contains(@selector, 'state_title_D-13')]  D-13(Manganese)  To be verified
-    TestSampleState   xpath=//tr[@keyword='Na']//input[contains(@selector, 'state_title_D-13')]  D-13(Sodium)     To be verified
-    TestSampleState   xpath=//tr[@keyword='Zn']//input[contains(@selector, 'state_title_D-13')]  D-13(Zinc)       To be verified
+    TestSampleState   xpath=//tr[@keyword='Ca']//[contains(@objectid, 'D-13')][@field='state_title']  D-13(Calcium)    To be verified
+    TestSampleState   xpath=//tr[@keyword='Cu']//[contains(@objectid, 'D-13')][@field='state_title']  D-13(Copper)     To be verified
+    TestSampleState   xpath=//tr[@keyword='Fe']//[contains(@objectid, 'D-13')][@field='state_title']  D-13(Iron)       To be verified
+    TestSampleState   xpath=//tr[@keyword='Mg']//[contains(@objectid, 'D-13')][@field='state_title']  D-13(Magnesium)  To be verified
+    TestSampleState   xpath=//tr[@keyword='Mn']//[contains(@objectid, 'D-13')][@field='state_title']  D-13(Manganese)  To be verified
+    TestSampleState   xpath=//tr[@keyword='Na']//[contains(@objectid, 'D-13')][@field='state_title']  D-13(Sodium)     To be verified
+    TestSampleState   xpath=//tr[@keyword='Zn']//[contains(@objectid, 'D-13')][@field='state_title']  D-13(Zinc)       To be verified
 
     TestSampleState   xpath=//input[@selector='state_title_SA-13-008']  SA-13-008  To be verified
     TestSampleState   xpath=//input[@selector='state_title_SA-13-010']  SA-13-010  To be verified
