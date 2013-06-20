@@ -160,7 +160,7 @@ class DuplicateAnalysis(Analysis):
 
         range_min = orig - (orig * variation / 100)
         range_max = orig + (orig * variation / 100)
-        if range_min <= orig <= range_max:
+        if range_min <= result <= range_max:
             return True, None
         else:
             return False, {'min': range_min,
