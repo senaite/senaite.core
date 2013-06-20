@@ -87,11 +87,6 @@ Create Worksheets
     Check worksheet state       to_be_verified
 
 
-    #RetractAnalysis
-
-    Hang
-
-
 *** Keywords ***
 
 Start browser
@@ -248,77 +243,6 @@ Add worksheet duplicate
     Wait Until Page Contains Element  submit_transition
 
 
-RetractAnalysis
-    #continue on existing page
-    Log  ...testing Retracting  WARN
-
-
-    #selector="H2O13-0001-R01_Mg
-    #selector="QC-13-002_SA-13-004 and sometimes selector="QC-13-003_SA-13-004
-    #selector="WS-13-001_D-13-002
-
-    #WS-13-001
-
-    #get page header
-    ${VALUE}  Get Text  xpath=//div[@id='content']/h1/span
-    #Log  Text Header: ${VALUE}  WARN
-
-    Log  Retracting analysis: H2O13-0001-R01_Mg  WARN
-    Select Checkbox  xpath=//input[@selector='H2O13-0001-R01_Mg']
-
-    Click Element  retract_transition
-    Wait Until Page Contains  Changes saved.
-    TestSampleState   xpath=//input[@selector='state_title_Mg-1']  Mg  Retracted
-
-    #check page has changed state from 'To be verified' to 'Open'???
-    Page Should Contain Element  xpath=//span[@class='state-open']
-
-    #retract reference
-    Log  Retracting reference: QC-13-002_SA-13-004  WARN
-    Select Checkbox  xpath=//input[@selector='QC-13-002_SA-13-004']
-    Click Element  retract_transition
-    Wait Until Page Contains  Changes saved.
-    TestSampleState   xpath=//input[@selector='state_title_SA-13-004']  SA-13-004  Assigned
-
-    #check page state remains Open
-    Page Should Contain Element  xpath=//span[@class='state-open']
-
-    #retract duplicate
-    Log  Retracting duplicate: WS-13-001_D-13-002  WARN
-    Select Checkbox  xpath=//input[@selector='WS-13-001_D-13-002']
-    Click Element  retract_transition
-    Wait Until Page Contains  Changes saved.
-    TestSampleState   xpath=//input[@selector='state_title_D-13-002']  D-13-002  Assigned
-
-    #check page remains Open
-    Page Should Contain Element  xpath=//span[@class='state-open']
-
-    Log  Re-assigning Analysis, Reference and Duplicates etc.  WARN
-    TestResultsRange  xpath=//input[@selector='Result_Mg'][1]  13  9.5
-    TestSampleState   xpath=//input[@selector='state_title_Mg']  Mg  Received
-
-    TestResultsRange  xpath=//input[@selector='Result_SA-13-004'][1]  3  10
-    TestSampleState   xpath=//input[@selector='state_title_SA-13-004']  SA-13-004  Assigned
-
-    Input Text  xpath=//input[@selector='Result_D-13-002'][1]  10
-    #click mouse out of input fields - remember direct text input is still a temp hack due to missing images
-    Click Element  xpath=//div[@id='content-core']
-    TestSampleState   xpath=//input[@selector='state_title_D-13-002']  D-13-002  Assigned
-
-    Click Element  submit_transition
-    Wait Until Page Contains  Changes saved.
-
-    TestSampleState   xpath=//input[@selector='state_title_Mg']  Mg  To be verified
-    TestSampleState   xpath=//input[@selector='state_title_SA-13-004']  SA-13-004  To be verified
-    TestSampleState   xpath=//input[@selector='state_title_D-13-002']  D-13-002  To be verified
-
-    check page has changed state
-    Page Should Contain Element  xpath=//span[@class='state-to_be_verified']
-
-#remove item
-#unassign_transition
-
-
 TestResultsRange
     [Arguments]  ${selector}=
     ...          ${badResult}=
@@ -327,10 +251,10 @@ TestResultsRange
     Log  Testing Result Range for ${selector} -:- values: ${badResult} and ${goodResult}  WARN
 
     Input Text          xpath=//input[@selector='${selector}'][1]  ${badResult}
-    Press Key           xpath=//input[@selector='${selector}'][1]  \t
+    Focus               css=.analyst
     Expect exclamation
     Input Text          xpath=//input[@selector='${selector}'][1]  ${goodResult}
-    Press Key           xpath=//input[@selector='${selector}'][1]  \t
+    Focus               css=.analyst
     Expect no exclamation
 
 
@@ -352,8 +276,3 @@ TestSampleState
     ${VALUE}  Get Value  xpath=//input[@selector='${selector}'][1]
     Should Be Equal  ${VALUE}  ${expectedState}  ${sample} Workflow States incorrect: Expected: ${expectedState} -
     Log  Testing Sample State for ${sample}: ${expectedState} -:- ${VALUE}  WARN
-
-Hang
-    sleep  600
-    Log  Hang Timeout Expired  WARN
-

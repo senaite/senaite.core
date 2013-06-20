@@ -29,17 +29,6 @@ ${Prefix_global}  PREFIX
 ${user-labmanager}  labmanager
 ${user-labmanager1}  labmanager1
 
-#general purpose variable
-${VALUE}
-#general status variable
-${STATUS}
-
-${AR_name}
-#hack in for year 2013 -> shoud be dynamic
-${YEAR}  13
-
-
-
 *** Test Cases ***
 
 AnalysisRequest
@@ -71,7 +60,7 @@ AnalysisRequest
     Create AddClients  ID=987654321
     ...    Country=South Africa
     ...    State=Gauteng
-           #District is on auto select last entry    
+           #District is on auto select last entry
     ...    City=City Name
     ...    ZIP=12345
     ...    Physical Address=Client House\nClient Street 20\nClient Town
@@ -93,7 +82,7 @@ AnalysisRequest
     ...    Mobilephone=098 567 432
     ...    Country=South Africa
     ...    State=Gauteng
-           #District is on auto select last entry    
+           #District is on auto select last entry
     ...    City=City Name
     ...    ZIP=12345
     ...    Physical Address=Client House\nClient Street 20\nClient Town
@@ -169,7 +158,7 @@ Create SampleTypes
     Select from list  ContainerType:list
     Click Button  Save
     Wait Until Page Contains  Changes saved.
- 
+
 
 Create LabDepartment
     [Arguments]  ${Title}=
@@ -293,7 +282,7 @@ Create AnalysisServices
     #Click Button  Save
 
     Log  AnalysisServices: Preservation fields NOT selected for DEBUG  WARN
-    #Log  AnalysisServices: Preservation fields ARE selected  WARN    
+    #Log  AnalysisServices: Preservation fields ARE selected  WARN
 
     #now move on to Container and Preservation without saving
     Click link  Container and Preservation
@@ -418,7 +407,7 @@ Create ClientContact
     Input Text  Middleinitial  ${Middleinitial}
     Input Text  Middlename  ${Middlename}
     Input Text  Surname  ${Surname}
-    Input Text  JobTitle  ${Jobtitle}    
+    Input Text  JobTitle  ${Jobtitle}
     Input Text  Department  ${Department}
 
     Click Link  Email Telephone Fax
@@ -532,7 +521,7 @@ Create ClientContact
     Wait Until Page Contains  was successfully created.
 
     #build AR name
-    ${AR_name}=  Set Variable  ${Prefix_global}${YEAR}-0001-R01
+    ${AR_name}=  Set Variable  ${Prefix_global}-0001-R01
     Log  Using AR with Name: ${AR_name}  WARN
     #this selects the actual AR detail - that wil be a later test
     #Click Link  ${AR_name}
@@ -541,7 +530,7 @@ Create ClientContact
     #select all
     #Select Checkbox  analysisrequests_select_all
     #select specific
-    Select Checkbox  xpath=//input[@alt='Select ${AR_name}'] 
+    Select Checkbox  xpath=//input[@alt='Select ${AR_name}']
 
     #test for Workflow State Change
     ${VALUE}  Get Value  xpath=//input[@selector='state_title_${AR_name}']
@@ -555,7 +544,7 @@ Create ClientContact
     Wait Until Page Contains  Changes saved.
 
     ${VALUE}  Get Value  xpath=//input[@selector='state_title_${AR_name}']
-    Should Be Equal  ${VALUE}  Received  Workflow States incorrect: Expected: Received -  
+    Should Be Equal  ${VALUE}  Received  Workflow States incorrect: Expected: Received -
     #check page status
 
     Click Link  ${AR_name}
@@ -569,7 +558,7 @@ Create ClientContact
 
     TestSampleState  xpath=//input[@selector='state_title_AnalysisKeyword']  Analysis Services Title  Received
 
-    Checkbox Should Be Selected  xpath=//input[@selector='PREFIX13-0001-R01_AnalysisKeyword']
+    Checkbox Should Be Selected  xpath=//input[@selector='PREFIX-0001-R01_AnalysisKeyword']
     Log  Checkbox has been selected!  WARN
 
     Click Element  submit_transition
@@ -577,7 +566,7 @@ Create ClientContact
 
     #AR status must have changed to: To be verified
     TestSampleState  xpath=//input[@selector='state_title_AnalysisKeyword']  Analysis Services Title  To be verified
-    
+
     #Log  Bypassing state bug on AR - Received - should be To be verified  WARN
     #TestSampleState  xpath=//input[@selector='state_title_AnalysisKeyword']  Analysis Services Title  Received
 
@@ -638,7 +627,7 @@ Verify AR
 
     #!!!!!
     sleep  300
-    #Portlets have changed and AR not available when selecting AR 
+    #Portlets have changed and AR not available when selecting AR
 
     Click Link  to_be_verified_${AR_name}
 
