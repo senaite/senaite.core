@@ -493,6 +493,10 @@ tfoot td.batching a {
   background-color: &dtml-submitted_by_current_user_BackgroundColor; !important;
   color: &dtml-submitted_by_current_user_TextColor; !important;
 }
+.bika-listing-table .state-invalid img {
+  opacity:0.5;
+  filter:alpha(opacity=50);
+}
 .bika-listing-table .state-submitted_by_current_user a:link {color: &dtml-submitted_by_current_user_LinkColor; !important;}
 .bika-listing-table .state-submitted_by_current_user a:visited {color: &dtml-submitted_by_current_user_LinkColor; !important;}
 
