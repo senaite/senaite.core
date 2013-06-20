@@ -4,7 +4,9 @@ Documentation  AR with Workflow disabled, Lab sample AS and 2 users
 
 Library  Selenium2Library  timeout=10  implicit_wait=0.5
 Library  bika.lims.tests.base.Keywords
+#Resource  src/bika.lims/bika/lims/tests/keywords.txt
 Resource  keywords.txt
+
 
 Variables  plone/app/testing/interfaces.py
 
@@ -69,7 +71,7 @@ AnalysisRequest
     Create AddClients  ID=987654321
     ...    Country=South Africa
     ...    State=Gauteng
-           #District is on auto select last entry
+           #District is on auto select last entry    
     ...    City=City Name
     ...    ZIP=12345
     ...    Physical Address=Client House\nClient Street 20\nClient Town
@@ -91,7 +93,7 @@ AnalysisRequest
     ...    Mobilephone=098 567 432
     ...    Country=South Africa
     ...    State=Gauteng
-           #District is on auto select last entry
+           #District is on auto select last entry    
     ...    City=City Name
     ...    ZIP=12345
     ...    Physical Address=Client House\nClient Street 20\nClient Town
@@ -101,13 +103,13 @@ AnalysisRequest
     #signature upload not tested
     #end ClientContact
 
-    Log out as  ${user-labmanager}
+    #Log out as  ${user-labmanager}
 
-    Log in as  ${user-labmanager1}
+    #Log in as  ${user-labmanager1}
 
-    Verify AR
+    #Verify AR
 
-    ShowTime
+    #ShowTime
 
 
 *** Keywords ***
@@ -124,6 +126,7 @@ ShowTime
 
 
 RunBikaSetup
+
     Go to  http://localhost:55001/plone/bika_setup/edit
     #Click link  Analyses
     #Select Checkbox  SamplingWorkflowEnabled
@@ -166,7 +169,7 @@ Create SampleTypes
     Select from list  ContainerType:list
     Click Button  Save
     Wait Until Page Contains  Changes saved.
-
+ 
 
 Create LabDepartment
     [Arguments]  ${Title}=
@@ -236,7 +239,7 @@ Create AnalysisServices
     Input Text  MaxTimeAllowed.days:record:ignore_empty  3
     Input Text  MaxTimeAllowed.hours:record:ignore_empty  3
     Input Text  MaxTimeAllowed.minutes:record:ignore_empty  3
-    #sleep  2
+
     #Click Button  Save
 
     #now move on to Analysis without saving
@@ -260,22 +263,22 @@ Create AnalysisServices
     Input Text  DuplicateVariation  5
     Select Checkbox  Accredited
 
-    #sleep  2
     #Click Button  Save
 
     #now move on to Uncertainties without saving
     Click link  Uncertainties
 
-    Input Text  Uncertainties-intercept_min-0  2
-    Input Text  Uncertainties-intercept_max-0  9
-    Input Text  Uncertainties-errorvalue-0  3.8
+    Log  Not enetering uncertainties  WARN
 
-    Click Button  Uncertainties_more
-    Input Text  Uncertainties-intercept_min-1  0
-    Input Text  Uncertainties-intercept_max-1  10
-    Input Text  Uncertainties-errorvalue-1  5.5
+    #Input Text  Uncertainties-intercept_min-0  2
+    #Input Text  Uncertainties-intercept_max-0  9
+    #Input Text  Uncertainties-errorvalue-0  3.8
 
-    #sleep  2
+    #Click Button  Uncertainties_more
+    #Input Text  Uncertainties-intercept_min-1  0
+    #Input Text  Uncertainties-intercept_max-1  10
+    #Input Text  Uncertainties-errorvalue-1  5.5
+
     #Click Button  Save
 
     #now move on to Result Options without saving
@@ -287,12 +290,10 @@ Create AnalysisServices
     Input Text  ResultOptions-ResultValue-1  2
     Input Text  ResultOptions-ResultText-1  Result Text 1
 
-    #sleep  2
     #Click Button  Save
 
-
     Log  AnalysisServices: Preservation fields NOT selected for DEBUG  WARN
-    #Log  AnalysisServices: Preservation fields ARE selected  WARN
+    #Log  AnalysisServices: Preservation fields ARE selected  WARN    
 
     #now move on to Container and Preservation without saving
     Click link  Container and Preservation
@@ -417,7 +418,7 @@ Create ClientContact
     Input Text  Middleinitial  ${Middleinitial}
     Input Text  Middlename  ${Middlename}
     Input Text  Surname  ${Surname}
-    Input Text  JobTitle  ${Jobtitle}
+    Input Text  JobTitle  ${Jobtitle}    
     Input Text  Department  ${Department}
 
     Click Link  Email Telephone Fax
@@ -482,8 +483,6 @@ Create ClientContact
     Input Text  ar_0_SampleType  Sample Types Title
     Select First From Dropdown  ar_0_SampleType
 
-
-
     Click Element  ar_0_SamplePoint
     Select First From Dropdown  ar_0_SamplePoint
     Click Element  ar_0_ClientOrderNumber
@@ -532,7 +531,6 @@ Create ClientContact
     Click Button  Save
     Wait Until Page Contains  was successfully created.
 
-
     #build AR name
     ${AR_name}=  Set Variable  ${Prefix_global}${YEAR}-0001-R01
     Log  Using AR with Name: ${AR_name}  WARN
@@ -543,35 +541,104 @@ Create ClientContact
     #select all
     #Select Checkbox  analysisrequests_select_all
     #select specific
-    Select Checkbox  xpath=//input[@alt='Select ${AR_name}']
+    Select Checkbox  xpath=//input[@alt='Select ${AR_name}'] 
 
     #test for Workflow State Change
     ${VALUE}  Get Value  xpath=//input[@selector='state_title_${AR_name}']
     #Log  VALUE = ${VALUE}  WARN
 
     Should Be Equal  ${VALUE}  Sample Due  Workflow States incorrect: Expected: Sample Due -
+    #check page status
+
 
     Click Element  receive_transition
     Wait Until Page Contains  Changes saved.
 
     ${VALUE}  Get Value  xpath=//input[@selector='state_title_${AR_name}']
-    Should Be Equal  ${VALUE}  Received  Workflow States incorrect: Expected: Received -
+    Should Be Equal  ${VALUE}  Received  Workflow States incorrect: Expected: Received -  
+    #check page status
 
     Click Link  ${AR_name}
     Wait Until Page Contains  ${AR_name}
 
-    Select From List  xpath=//select[@selector='Result_AnalysisKeyword']
+    #select a result
+    #Select From List  xpath=//select[@selector='Result_AnalysisKeyword']
+    Select From List  xpath=//tr[@cat='Analysis Category Title']/td/span/select[@selector='Result_AnalysisKeyword']
+    #click mouse out of input fields
+    Click Element  xpath=//div[@id='content-core']
+
+    TestSampleState  xpath=//input[@selector='state_title_AnalysisKeyword']  Analysis Services Title  Received
+
+    Checkbox Should Be Selected  xpath=//input[@selector='PREFIX13-0001-R01_AnalysisKeyword']
+    Log  Checkbox has been selected!  WARN
 
     Click Element  submit_transition
     Page should contain  Changes saved.
+
+    #AR status must have changed to: To be verified
+    TestSampleState  xpath=//input[@selector='state_title_AnalysisKeyword']  Analysis Services Title  To be verified
+    
+    #Log  Bypassing state bug on AR - Received - should be To be verified  WARN
+    #TestSampleState  xpath=//input[@selector='state_title_AnalysisKeyword']  Analysis Services Title  Received
+
+    #Page Status should be: ????
+    #Now enter some results for the other AR's
+
+    Select From List  xpath=//tr[@keyword='Clos']/td/span/select[@selector='Result_Clos']
+    TestSampleState  xpath=//input[@selector='state_title_Clos']  Clostridia  Received
+
+    Select From List  xpath=//tr[@keyword='Ecoli']/td/span/select[@selector='Result_Ecoli']
+    TestSampleState  xpath=//input[@selector='state_title_Ecoli']  Ecoli  Received
+
+    Click Element  submit_transition
+    Page should contain  Changes saved.
+
+    #test if changes to state have occurred
+    TestSampleState  xpath=//input[@selector='state_title_Clos']  Clostridia  To be verified
+    TestSampleState  xpath=//input[@selector='state_title_Ecoli']  Ecoli  To be verified
+
+    #Now enter remaining results
+
+    Select From List  xpath=//tr[@keyword='Entero']/td/span/select[@selector='Result_Entero']
+    TestSampleState  xpath=//input[@selector='state_title_Entero']  Enterococcus  Received
+
+    Select From List  xpath=//tr[@keyword='Salmon']/td/span/select[@selector='Result_Salmon']
+    TestSampleState  xpath=//input[@selector='state_title_Salmon']  Salmonella  Received
+
+    Log  No Result Fields for Dry Matter  WARN
+
+    Input Text  xpath=//input[@selector='GM_Moist']  10
+    Input Text  xpath=//input[@selector='NM_Moist']  10
+    Input Text  xpath=//input[@selector='VM_Moist']  10
+    #click mouse out of input fields
+    Click Element  xpath=//div[@id='content-core']
+    Page Should Contain Image  http://localhost:55001/plone/++resource++bika.lims.images/exclamation.png
+
+    Input Text  xpath=//input[@selector='GM_Moist']  4
+    Input Text  xpath=//input[@selector='NM_Moist']  5
+    Input Text  xpath=//input[@selector='VM_Moist']  6
+    #click mouse out of input fields
+    Click Element  xpath=//div[@id='content-core']
+    Page Should Not Contain Image  http://localhost:55001/plone/++resource++bika.lims.images/exclamation.png
+
+    TestSampleState  xpath=//input[@selector='state_title_Moist']  Moisture  Received
+
+    Click Element  submit_transition
+    Page should contain  Changes saved.
+
+    TestSampleState  xpath=//input[@selector='state_title_Entero']  Enterococcus  To be verified
+    TestSampleState  xpath=//input[@selector='state_title_Salmon']  Salmonella  To be verified
+    TestSampleState  xpath=//input[@selector='state_title_Moist']  Moisture  To be verified
+
+    Shleep  600  Hanging
 
 
 
 Verify AR
 
-    Log  Sleeping for 300  WARN
+    #!!!!!
     sleep  300
-    #Portlets have changed and AR not available when selecting AR
+    #Portlets have changed and AR not available when selecting AR 
 
     Click Link  to_be_verified_${AR_name}
 
@@ -590,6 +657,15 @@ Verify AR
     Wait Until Page Contains Element  workflow-transition-publish
     #Click Link  workflow-transition-publish
     Log  Publish NOT clicked - no way of testing result  WARN
+
+
+
+
+
+
+
+
+
 
 
 Select First Option in Dropdown
@@ -644,10 +720,39 @@ Log out
     Page should contain  logged out
 
 
+Shleep
+    [Arguments]  ${amount}=
+    ...          ${comment}=
 
-#stuff hereafter
+    Log  Sleeping ${amount}: ${comment}  WARN
+    sleep  ${amount}
 
-    #xpath examples
-    #Click Element  xpath=//th[@cat='${AnalysisCategory_global_Title}']
-    #Select Checkbox  xpath=//input[@alt='${AnalysisServices_locator}']
+
+TestResultsRange
+    [Arguments]  ${element}=
+    ...          ${badResult}=
+    ...          ${goodResult}=
+
+    Log  Testing Result Range for ${element} -:- values: ${badResult} and ${goodResult}  WARN
+    Input Text  ${element}  ${badResult}
+    #pres the tab key to move out the field
+    Press Key  ${element}  \t
+    #Warning img -> http://localhost:55001/plone/++resource++bika.lims.images/warning.png
+    sleep  0.5
+    Page Should Contain Image  http://localhost:55001/plone/++resource++bika.lims.images/exclamation.png
+    Input Text  ${element}  ${goodResult}
+    Press Key  ${element}  \t
+    sleep  0.5
+    Page Should Not Contain Image  http://localhost:55001/plone/++resource++bika.lims.images/exclamation.png
+
+
+
+TestSampleState
+    [Arguments]  ${element}=
+    ...          ${sample}=
+    ...          ${expectedState}=
+
+    ${VALUE}  Get Value  ${element}
+    Should Be Equal  ${VALUE}  ${expectedState}  ${sample} Workflow States incorrect: Expected: ${expectedState} -
+    Log  Testing Sample State for ${sample}: ${expectedState} -:- ${VALUE}  WARN
 
