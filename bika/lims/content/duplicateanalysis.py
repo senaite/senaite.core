@@ -8,96 +8,121 @@ from bika.lims.content.analysis import schema, Analysis
 from bika.lims.interfaces import IDuplicateAnalysis
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
 
 schema = schema.copy() + Schema((
-    ReferenceField('Analysis',
-        required = 1,
-        allowed_types = ('Analysis',),
-        referenceClass = HoldingReference,
-        relationship = 'DuplicateAnalysisAnalysis',
+    ReferenceField(
+        'Analysis',
+    required=1,
+    allowed_types=('Analysis',),
+        referenceClass=HoldingReference,
+        relationship='DuplicateAnalysisAnalysis',
     ),
-    InterimFieldsField('InterimFields',
+    InterimFieldsField(
+        'InterimFields',
     ),
-    StringField('Result',
+    StringField(
+        'Result',
     ),
-    StringField('ResultDM',
+    StringField(
+        'ResultDM',
     ),
-    BooleanField('Retested',
+    BooleanField(
+        'Retested',
     ),
-    ReferenceField('Attachment',
-        multiValued = 1,
-        allowed_types = ('Attachment',),
-        referenceClass = HoldingReference,
-        relationship = 'DuplicateAnalysisAttachment',
-    ),
-
-    StringField('Analyst',
-    ),
-    ReferenceField('Instrument',
-        required = 0,
-        allowed_types = ('Instrument',),
-        relationship = 'WorksheetInstrument',
-        referenceClass = HoldingReference,
+    ReferenceField(
+        'Attachment',
+        multiValued=1,
+        allowed_types=('Attachment',),
+        referenceClass=HoldingReference,
+        relationship='DuplicateAnalysisAttachment',
     ),
 
-    ComputedField('SamplePartition',
-        expression = 'context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getSamplePartition()',
+    StringField(
+        'Analyst',
     ),
-    ComputedField('ClientOrderNumber',
-        expression = 'context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getClientOrderNumber()',
+    ReferenceField(
+        'Instrument',
+        required=0,
+        allowed_types=('Instrument',),
+        relationship='WorksheetInstrument',
+        referenceClass=HoldingReference,
     ),
-    ComputedField('Service',
-        expression = 'context.getAnalysis() and context.getAnalysis().getService() or ""',
+
+    ComputedField(
+        'SamplePartition',
+        expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getSamplePartition()',
     ),
-    ComputedField('ServiceUID',
-        expression = 'context.getAnalysis() and context.getAnalysis().getServiceUID()',
+    ComputedField(
+        'ClientOrderNumber',
+        expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getClientOrderNumber()',
     ),
-    ComputedField('CategoryUID',
-        expression = 'context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getCategoryUID()',
+    ComputedField(
+        'Service',
+        expression='context.getAnalysis() and context.getAnalysis().getService() or ""',
     ),
-    ComputedField('Calculation',
-        expression = 'context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getCalculation()',
+    ComputedField(
+        'ServiceUID',
+        expression='context.getAnalysis() and context.getAnalysis().getServiceUID()',
     ),
-    ComputedField('ReportDryMatter',
-        expression = 'context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getReportDryMatter()',
+    ComputedField(
+        'CategoryUID',
+        expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getCategoryUID()',
     ),
-    ComputedField('DateReceived',
-        expression = 'context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getDateReceived()',
+    ComputedField(
+        'Calculation',
+        expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getCalculation()',
     ),
-    ComputedField('MaxTimeAllowed',
-        expression = 'context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getMaxTimeAllowed()',
+    ComputedField(
+        'ReportDryMatter',
+        expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getReportDryMatter()',
     ),
-    ComputedField('DueDate',
-        expression = 'context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getDueDate()',
+    ComputedField(
+        'DateReceived',
+        expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getDateReceived()',
     ),
-    ComputedField('Duration',
-        expression = 'context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getDuration()',
+    ComputedField(
+        'MaxTimeAllowed',
+        expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getMaxTimeAllowed()',
     ),
-    ComputedField('Earliness',
-        expression = 'context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getEarliness()',
+    ComputedField(
+        'DueDate',
+        expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getDueDate()',
     ),
-    ComputedField('ClientUID',
-        expression = 'context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getClientUID()',
+    ComputedField(
+        'Duration',
+        expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getDuration()',
     ),
-    ComputedField('RequestID',
-        expression = 'context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getRequestID() or ""',
+    ComputedField(
+        'Earliness',
+        expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getEarliness()',
     ),
-    ComputedField('PointOfCapture',
-        expression = 'context.getAnalysis() and context.getAnalysis().getPointOfCapture()',
+    ComputedField(
+        'ClientUID',
+        expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getClientUID()',
     ),
-    StringField('ReferenceAnalysesGroupID',
-        widget = StringWidget(
-            label = _("ReferenceAnalysesGroupID"),
-            visible = False,
+    ComputedField(
+        'RequestID',
+        expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getRequestID() or ""',
+    ),
+    ComputedField(
+        'PointOfCapture',
+        expression='context.getAnalysis() and context.getAnalysis().getPointOfCapture()',
+    ),
+    StringField(
+        'ReferenceAnalysesGroupID',
+        widget=StringWidget(
+            label=_("ReferenceAnalysesGroupID"),
+            visible=False,
         ),
     ),
-    ComputedField('Keyword',
-        expression = "context.getAnalysis().getKeyword()",
+    ComputedField(
+        'Keyword',
+        expression="context.getAnalysis().getKeyword()",
     ),
 ),
 )
+
 
 class DuplicateAnalysis(Analysis):
     implements(IDuplicateAnalysis)
@@ -106,33 +131,41 @@ class DuplicateAnalysis(Analysis):
     schema = schema
 
     _at_rename_after_creation = True
+
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    def result_in_range(self, result = None, specification = "lab"):
+    def result_in_range(self, result=None, specification="lab",
+                        orig=None):
         """ Check if a result is "in range".
             if result is None, self.getResult() is called for the result value.
+
+            if orig is specified, it is used as the original value,
+            rather than the value currently in the database.  This allows the
+            worksheet forms to validate against current form values.
+
             Return False,spec if out of range
             Return True,None if in range
         """
 
-        orig_result = self.getAnalysis().getResult()
-        # if analysis result is not a number, then we assume in range
+        orig = orig if orig else self.getAnalysis().getResult()
+        # if any of our requirements are not floatable, then: in_range
         try:
-            orig_result = float(str(orig_result))
+            orig = float(str(orig))
             result = float(str(result))
+            variation = float(self.getService().getDuplicateVariation())
         except ValueError:
             return True, None
-        dup_variation = float(self.getService().getDuplicateVariation()) or 0
-        range_min = result - (orig_result * dup_variation / 100)
-        range_max = result + (orig_result * dup_variation / 100)
-        if range_min <= orig_result <= range_max:
+
+        range_min = orig - (orig * variation / 100)
+        range_max = orig + (orig * variation / 100)
+        if range_min <= orig <= range_max:
             return True, None
         else:
-            return False, {'min':range_min,
-                           'max':range_max,
-                           'error':dup_variation}
+            return False, {'min': range_min,
+                           'max': range_max,
+                           'error': variation}
 
     def getSample(self):
         return self.getAnalysis().aq_parent.getSample()

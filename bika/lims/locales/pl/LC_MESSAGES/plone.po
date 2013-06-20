@@ -33,16 +33,6 @@ msgstr "Szablony AR"
 msgid "ARReport"
 msgstr ""
 
-# File:
-# ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_one_state_workflow/definition.xml,
-# line: -1
-msgid "Active"
-msgstr "Aktywne"
-
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Add Analyses"
 msgstr "Dodaj analizy"
@@ -120,31 +110,9 @@ msgstr "Specyfikacja analizy"
 msgid "Analysis Specifications"
 msgstr "Specyfikacje analiz"
 
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml,
-# line: -1
-msgid "Assigned"
-msgstr "Przydzielony"
-
 # File: ../profiles/default/types/Attachment.xml, line: -1
 msgid "Attachment"
 msgstr "Załącznik"
-
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-msgid "Attachment Outstanding"
-msgstr "Załącznik Zaległe"
 
 # File: ../profiles/default/types/AttachmentType.xml, line: -1
 msgid "Attachment Type"
@@ -197,12 +165,6 @@ msgstr "Obliczenia"
 msgid "Calibrations"
 msgstr ""
 
-# File:
-# ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
-# line: -1
-msgid "Cancelled"
-msgstr "Anulowane"
-
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Certifications"
 msgstr ""
@@ -215,20 +177,6 @@ msgstr "Klient"
 # File: ../profiles/default/types/ClientFolder.xml, line: -1
 msgid "Clients"
 msgstr "Klienci"
-
-# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
-# line: -1
-msgid "Closed"
-msgstr "Zamknięte"
-
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
-# line: -1
-msgid "Comments about the last transition"
-msgstr "Komentarze dotyczące ostatniej zmiany"
 
 # File: ../profiles/default/types/Client.xml, line: -1
 # File: ../profiles/default/types/Supplier.xml, line: -1
@@ -253,12 +201,6 @@ msgstr "Typy pojemników"
 msgid "Containers"
 msgstr "Pojemniki"
 
-# File:
-# ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
-# line: -1
-msgid "Current"
-msgstr "Bieżące"
-
 # File: ../profiles/default/types/Department.xml, line: -1
 msgid "Department"
 msgstr "Dział"
@@ -267,19 +209,6 @@ msgstr "Dział"
 msgid "Departments"
 msgstr "Działy"
 
-# File: ../profiles/default/workflows/bika_order_workflow/definition.xml,
-# line: -1
-msgid "Dispatched"
-msgstr "Wysłane"
-
-# File:
-# ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
-# line: -1
-msgid "Disposed"
-msgstr "Usunięte"
-
 # File: ../profiles/default/types/DuplicateAnalysis.xml, line: -1
 msgid "Duplicate Analysis"
 msgstr "Analiza podwójna"
@@ -287,14 +216,6 @@ msgstr "Analiza podwójna"
 # File: ../profiles/default/types/Pricelist.xml, line: -1
 msgid "Email pricelist"
 msgstr "Email pricelist"
-
-# File:
-# ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
-# line: -1
-msgid "Expired"
-msgstr "Przedawnione"
 
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Export"
@@ -308,19 +229,9 @@ msgstr "Export batch"
 msgid "Extracts"
 msgstr "Extracts"
 
-# File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
-# line: -1
-msgid "Imported"
-msgstr "Zaimportowane"
-
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Imports"
 msgstr "Imports"
-
-# File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
-# line: -1
-msgid "Inactive"
-msgstr "Nieaktywny"
 
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Instrument"
@@ -340,11 +251,6 @@ msgstr ""
 # File: ../profiles/default/types/Instruments.xml, line: -1
 msgid "Instruments"
 msgstr "Przyrządy"
-
-# 
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line: -1
-msgid "Invalid"
-msgstr ""
 
 # File: ../profiles/default/types/Invoice.xml, line: -1
 msgid "Invoice"
@@ -433,23 +339,6 @@ msgstr "Metoda"
 msgid "Methods"
 msgstr "Metody"
 
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-msgid "Not requested"
-msgstr "Nie wymagane"
-
-# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml,
-# line: -1
-msgid "Open"
-msgstr "Otwarte"
-
-# File: ../profiles/default/workflows/bika_order_workflow/definition.xml,
-# line: -1
-msgid "Order pending"
-msgstr "Zamówienie oczekujące"
-
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Orders"
@@ -513,13 +402,6 @@ msgstr ""
 msgid "Query"
 msgstr "Wyszukiwanie"
 
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-msgid "Received"
-msgstr "Dostarczone"
-
 # File: ../profiles/default/types/ReferenceAnalysis.xml, line: -1
 msgid "Reference Analysis"
 msgstr "Reference Analysis"
@@ -547,15 +429,6 @@ msgstr "Materiały odniesienia"
 msgid "Reference Values"
 msgstr ""
 
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
-# line: -1
-msgid "Registered"
-msgstr "Zarejestrowane"
-
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/Report.xml, line: -1
 msgid "Report"
@@ -581,15 +454,6 @@ msgstr ""
 # File: ../profiles/default/types/SampleConditions.xml, line: -1
 msgid "Sample Conditions"
 msgstr ""
-
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
-# line: -1
-msgid "Sample Due"
-msgstr "Próbka przypisana"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/SampleMatrices.xml, line: -1
@@ -626,25 +490,9 @@ msgstr "Rodzaj próbki"
 msgid "Sample Types"
 msgstr "Rodzaje próbek"
 
-# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
-# line: -1
-msgid "Sample received"
-msgstr "Próbka dostarczona"
-
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "SamplePoints"
 msgstr "SamplePoints"
-
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
-# line: -1
-msgid "Sampled"
-msgstr "Pobrane"
 
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/Batch.xml, line: -1
@@ -679,11 +527,6 @@ msgstr "Mała naklejka"
 msgid "Sticker"
 msgstr "Naklejka"
 
-# File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
-# line: -1
-msgid "Submitted"
-msgstr "Wysłane"
-
 # File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Supplier"
 msgstr ""
@@ -698,82 +541,9 @@ msgstr "Dostawcy"
 msgid "Supply Order"
 msgstr "Supply Order"
 
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
-# line: -1
-msgid "The last transition"
-msgstr "Ostatnia zmiana"
-
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
-# line: -1
-msgid "Time of the last transition"
-msgstr "Czas ostatniej zmiany"
-
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
-# line: -1
-msgid "To Be Preserved"
-msgstr "Do utrwalenia"
-
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
-# line: -1
-msgid "To Be Sampled"
-msgstr "Do pobrania"
-
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-msgid "To be verified"
-msgstr "Do sprawdzenia"
-
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml,
-# line: -1
-msgid "Unassigned"
-msgstr "Nieprzydzielone"
-
-# File:
-# ../profiles/default/workflows/bika_publication_workflow/definition.xml,
-# line: -1
-msgid "Unpublished"
-msgstr ""
-
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Validations"
 msgstr ""
-
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
-# line: -1
-msgid "Verified"
-msgstr "Sprawdzone"
 
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Worksheet"

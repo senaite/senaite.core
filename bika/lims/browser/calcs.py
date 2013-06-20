@@ -10,8 +10,6 @@ import App
 import json
 import math
 import plone
-import sys
-import urllib
 
 
 class ajaxCalculateAnalysisEntry(BrowserView):
@@ -24,7 +22,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         self.context = context
         self.request = request
 
-    def calculate(self, uid = None):
+    def calculate(self, uid=None):
 
         analysis = self.analyses[uid]
         form_result = self.current_results[uid]
@@ -103,7 +101,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 return None
 
             # Add all interims to mapping
-            for i_uid,i_data in self.item_data.items():
+            for i_uid, i_data in self.item_data.items():
                 for i in i_data:
                     # if this interim belongs to current analysis and is blank,
                     # return an empty result for this analysis.
@@ -123,8 +121,8 @@ class ajaxCalculateAnalysisEntry(BrowserView):
 
                     # all interims are ServiceKeyword.InterimKeyword
                     if i_uid in deps:
-                        key = "%s.%s"%(deps[i_uid].getService().getKeyword(),
-                                       i['keyword'])
+                        key = "%s.%s" % (deps[i_uid].getService().getKeyword(),
+                                         i['keyword'])
                         mapping[key] = i['value']
                     # this analysis' interims get extra reference
                     # without service keyword prefix
@@ -157,9 +155,9 @@ class ajaxCalculateAnalysisEntry(BrowserView):
 
             try:
                 formula = eval("'%s'%%mapping" % formula,
-                               {"__builtins__":None,
-                                'math':math,
-                                'context':self.context},
+                               {"__builtins__": None,
+                                'math': math,
+                                'context': self.context},
                                {'mapping': mapping})
                 # calculate
                 result = eval(formula)
@@ -192,10 +190,10 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 self.current_results[uid] = '0/0'
                 self.alerts.append(
                     {'uid': uid,
-                    'field': 'Result',
-                    'icon': 'exclamation',
-                    'msg': "Division by zero: " + html_quote(str(e.args[0])) + "("+formula+")"
-                    })
+                     'field': 'Result',
+                     'icon': 'exclamation',
+                     'msg': "Division by zero: " + html_quote(str(e.args[0])) + "("+formula+")"
+                     })
                 self.results.append(Result)
                 return None
             except KeyError, e:
@@ -252,24 +250,32 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                                                 Result))
 
         self.uncertainties.append({'uid': uid,
-                                   'uncertainty':analysis.getUncertainty(
+                                   'uncertainty': analysis.getUncertainty(
                                        Result['result'])})
 
         # alert if the result is not in spec
         # for a normal analysis I check against results specificitions
         # for a reference analysis I check the analysis' ReferenceResults
+        # for a duplicate, calculate against the service allowed variation
         if analysis.portal_type == 'ReferenceAnalysis':
             in_range = analysis.result_in_range(Result['result'])
+        elif analysis.portal_type == 'DuplicateAnalysis':
+            original = analysis.getAnalysis()
+            original_uid = original.UID()
+            orig_result = self.current_results[original_uid]
+            in_range = analysis.result_in_range(
+                Result['result'],
+                orig=orig_result)
         else:
             in_range = analysis.result_in_range(Result['result'], self.spec)
-        if in_range[0] == False:
+        if in_range[0] is False:
             range_str = _("min") + " " + str(in_range[1]['min']) + ", " + \
                         _("max") + " " + str(in_range[1]['max'])
             self.alerts.append({'uid': uid,
                                 'field': 'Result',
                                 'icon': 'exclamation',
-                                'msg': _("Result out of range") + \
-                                       " (%s)"%range_str})
+                                'msg': _("Result out of range") +
+                                       " (%s)" % range_str})
         # shoulder
         if in_range[0] == '1':
             range_str = _("min") + " " + str(in_range[1]['min']) + ", " + \
@@ -278,8 +284,8 @@ class ajaxCalculateAnalysisEntry(BrowserView):
             self.alerts.append({'uid': uid,
                                 'field': 'Result',
                                 'icon': 'warning',
-                                'msg': _("Result out of range") + \
-                                       " (%s)"%range_str})
+                                'msg': _("Result out of range") +
+                                       " (%s)" % range_str})
 
         # maybe a service who depends on us must be recalculated.
         if analysis.portal_type == 'ReferenceAnalysis':

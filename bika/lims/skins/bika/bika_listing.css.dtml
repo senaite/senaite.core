@@ -405,6 +405,20 @@ tfoot td.batching a {
    with these same ideas.
 */
 
+.bika-listing-table .state-attachment_due {
+  background-color: &dtml-attachment_due_BackgroundColor; !important;
+  color: &dtml-attachment_due_TextColor; !important;
+}
+.bika-listing-table .state-attachment_due a:link {color: &dtml-attachment_due_LinkColor; !important;}
+.bika-listing-table .state-attachment_due a:visited {color: &dtml-attachment_due_LinkColor; !important;}
+
+.bika-listing-table .state-unassigned {
+  background-color: &dtml-unassigned_BackgroundColor; !important;
+  color: &dtml-unassigned_TextColor; !important;
+}
+.bika-listing-table .state-unassigned a:link {color: &dtml-unassigned_LinkColor; !important;}
+.bika-listing-table .state-unassigned a:visited {color: &dtml-unassigned_LinkColor; !important;}
+
 .bika-listing-table .state-sample_due {
   background-color: &dtml-sample_due_BackgroundColor; !important;
   color: &dtml-sample_due_TextColor; !important;
@@ -478,6 +492,10 @@ tfoot td.batching a {
 .bika-listing-table .state-submitted-by-current-user td {
   background-color: &dtml-submitted_by_current_user_BackgroundColor; !important;
   color: &dtml-submitted_by_current_user_TextColor; !important;
+}
+.bika-listing-table .state-invalid img {
+  opacity:0.5;
+  filter:alpha(opacity=50);
 }
 .bika-listing-table .state-submitted_by_current_user a:link {color: &dtml-submitted_by_current_user_LinkColor; !important;}
 .bika-listing-table .state-submitted_by_current_user a:visited {color: &dtml-submitted_by_current_user_LinkColor; !important;}
