@@ -508,7 +508,7 @@ def AfterTransitionEventHandler(instance, event):
                 instance.REQUEST['workflow_skiplist'] = ['retract all analyses', ]
             else:
                 instance.REQUEST["workflow_skiplist"].append('retract all analyses')
-            wf.doActionFor(ws, 'retract')
+            wf.doActionFor(ws, 'revert')
 
         # If all analyses in this AR have been assigned,
         # escalate the action to the parent AR
@@ -577,7 +577,7 @@ def AfterTransitionEventHandler(instance, event):
                 skip(ws, action_id, unskip=True)
         else:
             if wf.getInfoFor(ws, 'review_state') != 'open':
-                wf.doActionFor(ws, 'retract')
-                skip(ws, 'retract', unskip=True)
+                wf.doActionFor(ws, 'revert')
+                skip(ws, 'revert', unskip=True)
 
     return
