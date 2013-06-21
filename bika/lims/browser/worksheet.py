@@ -163,6 +163,8 @@ class WorksheetWorkflowAction(WorkflowAction):
                     continue
                 self.context.removeAnalysis(analysis)
 
+            message = PMF("Changes saved.")
+            self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.context.absolute_url()
             self.request.response.redirect(self.destination_url)
         ## verify
