@@ -4,8 +4,8 @@ Documentation  AR with Workflow disabled, Lab sample AS and 2 users
 
 Library  Selenium2Library  timeout=10  implicit_wait=0.5
 Library  bika.lims.tests.base.Keywords
-#Resource  src/bika.lims/bika/lims/tests/keywords.txt
-Resource  keywords.txt
+Resource  src/bika.lims/bika/lims/tests/keywords.txt
+#Resource  keywords.txt
 
 
 Variables  plone/app/testing/interfaces.py
@@ -20,14 +20,30 @@ Suite Setup      Start browser
 # higher speed variablr slows process down ie 0.1, 0.3 etc in seconds
 ${SELENIUM_SPEED}  0
 
-#use following to locate Analysis Service when defining an Analysis Profile
 ${AnalysisServices_global_Title}  Analysis Services Title
 ${AnalysisServices_locator}  Select ${AnalysisServices_global_Title}
 ${AnalysisCategory_global_Title}  Analysis Category Title
+${SampleTypesTitle}  Sample Types Title
+
 ${ClientName_global}  Client Name
 ${Prefix_global}  PREFIX
+
+#AR name is created at runtime
+${AR_name_global}
+
 ${user-labmanager}  labmanager
 ${user-labmanager1}  labmanager1
+
+#general purpose variable
+${VALUE}
+#general status variable
+${STATUS}
+
+#empty string variable contained in AR name  <- just in case it returns
+#use 'Set Global Variable' when setting
+${YEAR}  
+
+
 
 *** Test Cases ***
 
@@ -44,11 +60,14 @@ AnalysisRequest
     RunBikaSetup
 
     #Sample Types
-    Create SampleTypes  Title=Sample Types Title
+    Create SampleTypes  Title=${SampleTypesTitle}
     ...    Description=Sample Types description
     ...    Days=5
     ...    Hours=10
     ...    Minutes=15
+
+    #spec for metals
+    Create AnalysisSpecification  SampleType=${SampleTypesTitle}
 
     Create LabDepartment  Title=Lab department
     ...    Description=Lab department description
@@ -60,7 +79,7 @@ AnalysisRequest
     Create AddClients  ID=987654321
     ...    Country=South Africa
     ...    State=Gauteng
-           #District is on auto select last entry
+           #District is on auto select last entry    
     ...    City=City Name
     ...    ZIP=12345
     ...    Physical Address=Client House\nClient Street 20\nClient Town
@@ -82,7 +101,7 @@ AnalysisRequest
     ...    Mobilephone=098 567 432
     ...    Country=South Africa
     ...    State=Gauteng
-           #District is on auto select last entry
+           #District is on auto select last entry    
     ...    City=City Name
     ...    ZIP=12345
     ...    Physical Address=Client House\nClient Street 20\nClient Town
@@ -92,13 +111,13 @@ AnalysisRequest
     #signature upload not tested
     #end ClientContact
 
-    #Log out as  ${user-labmanager}
+    Log out as  ${user-labmanager}
 
-    #Log in as  ${user-labmanager1}
+    Log in as  ${user-labmanager1}
 
-    #Verify AR
+    Verify AR
 
-    #ShowTime
+    ShowTime
 
 
 *** Keywords ***
@@ -156,9 +175,37 @@ Create SampleTypes
 
     #Click Element  ContainerType:list
     Select from list  ContainerType:list
+
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
+
+Create AnalysisSpecification
+    [Arguments]  ${SampleType}=
+
+
+    Go to  http://localhost:55001/plone/bika_setup/bika_analysisspecs
+    Click link  Add
+    Wait Until Page Contains Element  SampleType:list
+    Select From List  SampleType:list  ${SampleType}
+    Input Text  description  Setting Samples specs for later range testing
+
+    Click Link  Specifications
+    Wait Until Page Contains Element  xpath=//th[@cat='Metals']
+
+    Click Element  xpath=//th[@cat='Metals']
+    #Calcium
+    Input Text  xpath=//input[@selector='min_analysisservice-3']  9
+    Input Text  xpath=//input[@selector='max_analysisservice-3']  11
+    Input Text  xpath=//input[@selector='error_analysisservice-3']  10
+
+    #Phosphorus
+    Input Text  xpath=//input[@selector='min_analysisservice-11']  11
+    Input Text  xpath=//input[@selector='max_analysisservice-11']  13
+    Input Text  xpath=//input[@selector='error_analysisservice-11']  10
+
+    Click Button  Save
+    Wait Until Page Contains  Changes saved.
 
 Create LabDepartment
     [Arguments]  ${Title}=
@@ -223,7 +270,10 @@ Create AnalysisServices
     Click link  Analysis
     Wait Until Page Contains Element  Precision
     Input Text  Precision  3
-    Select Checkbox  ReportDryMatter
+
+    Log  Not Selecting dry matter  WARN
+    #Select Checkbox  ReportDryMatter
+
     Select From List  AttachmentOption  n
     Input Text  MaxTimeAllowed.days:record:ignore_empty  3
     Input Text  MaxTimeAllowed.hours:record:ignore_empty  3
@@ -239,14 +289,18 @@ Create AnalysisServices
     Select First From Dropdown  Method
     Click Element  Instrument
     Select First From Dropdown  Instrument
-    Click Element  Calculation
-    Select First From Dropdown  Calculation
 
+    Log  Specifically not selecting Dry Matter Calculation  WARN
+    SelectSpecificFromDropdown  Calculation  Residual
+
+    #Click Element  Calculation
+    #Select First From Dropdown  Calculation
+
+    Log  Selecting interim fields  WARN
     Input Text  InterimFields-keyword-0  Keyword
     Input Text  InterimFields-title-0  Field Title
     Input Text  InterimFields-value-0  Default Value
     Input Text  InterimFields-unit-0  Unit
-
     Select Checkbox  InterimFields-hidden-0
 
     Input Text  DuplicateVariation  5
@@ -257,16 +311,16 @@ Create AnalysisServices
     #now move on to Uncertainties without saving
     Click link  Uncertainties
 
-    Log  Not enetering uncertainties  WARN
+    Log  Enetering uncertainties  WARN
 
-    #Input Text  Uncertainties-intercept_min-0  2
-    #Input Text  Uncertainties-intercept_max-0  9
-    #Input Text  Uncertainties-errorvalue-0  3.8
+    Input Text  Uncertainties-intercept_min-0  2
+    Input Text  Uncertainties-intercept_max-0  9
+    Input Text  Uncertainties-errorvalue-0  3.8
 
-    #Click Button  Uncertainties_more
-    #Input Text  Uncertainties-intercept_min-1  0
-    #Input Text  Uncertainties-intercept_max-1  10
-    #Input Text  Uncertainties-errorvalue-1  5.5
+    Click Button  Uncertainties_more
+    Input Text  Uncertainties-intercept_min-1  0
+    Input Text  Uncertainties-intercept_max-1  10
+    Input Text  Uncertainties-errorvalue-1  5.5
 
     #Click Button  Save
 
@@ -282,7 +336,7 @@ Create AnalysisServices
     #Click Button  Save
 
     Log  AnalysisServices: Preservation fields NOT selected for DEBUG  WARN
-    #Log  AnalysisServices: Preservation fields ARE selected  WARN
+    #Log  AnalysisServices: Preservation fields ARE selected  WARN    
 
     #now move on to Container and Preservation without saving
     Click link  Container and Preservation
@@ -407,7 +461,7 @@ Create ClientContact
     Input Text  Middleinitial  ${Middleinitial}
     Input Text  Middlename  ${Middlename}
     Input Text  Surname  ${Surname}
-    Input Text  JobTitle  ${Jobtitle}
+    Input Text  JobTitle  ${Jobtitle}    
     Input Text  Department  ${Department}
 
     Click Link  Email Telephone Fax
@@ -435,11 +489,8 @@ Create ClientContact
     Select from list  PublicationPreference:list  ${Preference}
     Select Checkbox  AttachmentsPermitted
 
-    Log  What does archetypes-fieldname-CCContact field do??  WARN
-
-#what is this supposed to do??
-#add more clients
-    #Click Element  archetypes-fieldname-CCContact
+    Log  No archetypes-fieldname-CCContact field selected  WARN
+    #Click Element  no archetypes-fieldname-CCContact
 
     Click Button  Save
     Page should contain  Changes saved.
@@ -456,41 +507,49 @@ Create ClientContact
     Click Link  Add
     Wait Until Page Contains  Request new analyses
 
-    Click Element  ar_0_Batch
-    Select First From Dropdown  ar_0_Batch
-    Click Element  ar_0_Template
-    Select First From Dropdown  ar_0_Template
-    Click Element  ar_0_Profile
-    Select First From Dropdown  ar_0_Profile
-    Click Element  ar_0_Sample
-    Select First From Dropdown  ar_0_Sample
-    Click Element  ar_0_SamplingDate
-    Click link  1
+    #Click Element  ar_0_Batch
+    #Select First From Dropdown  ar_0_Batch
 
+    Log  No Template or Profile selected  WARN
+    #Click Element  ar_0_Template
+    #Select First From Dropdown  ar_0_Template
 
-    Click Element  ar_0_SampleType
-    Input Text  ar_0_SampleType  Sample Types Title
+    #Click Element  ar_0_Profile
+    #Select First From Dropdown  ar_0_Profile
+
+    #Click Element  ar_0_Profile
+    #Input Text  ar_0_Profile  Micro
+    #Select First From Dropdown  ar_0_Profile
+
+    #Click Element  ar_0_Sample
+    #Select First From Dropdown  ar_0_Sample
+
+    SelectPrevMonthDate  ar_0_SamplingDate  1
+
+    #Must select Sample Type otherwise the AR name changes and no end to end testing is possible
+    #Click Element  ar_0_SampleType
+    Input Text  ar_0_SampleType  ${Sample Types Title}
     Select First From Dropdown  ar_0_SampleType
 
-    Click Element  ar_0_SamplePoint
-    Select First From Dropdown  ar_0_SamplePoint
-    Click Element  ar_0_ClientOrderNumber
-    Select First From Dropdown  ar_0_ClientOrderNumber
-    Click Element  ar_0_ClientReference
-    Select First From Dropdown  ar_0_ClientReference
-    Click Element  ar_0_ClientSampleID
-    Select First From Dropdown  ar_0_ClientSampleID
-    Click Element  ar_0_SamplingDeviation
-    Select First From Dropdown  ar_0_SamplingDeviation
-    Click Element  ar_0_SampleCondition
-    Select First From Dropdown  ar_0_SampleCondition
-    Click Element  ar_0_DefaultContainerType
-    Select First From Dropdown  ar_0_DefaultContainerType
+    #Click Element  ar_0_SamplePoint
+    #Select First From Dropdown  ar_0_SamplePoint
+    #Click Element  ar_0_ClientOrderNumber
+    #Select First From Dropdown  ar_0_ClientOrderNumber
+    #Click Element  ar_0_ClientReference
+    #Select First From Dropdown  ar_0_ClientReference
+    #Click Element  ar_0_ClientSampleID
+    #Select First From Dropdown  ar_0_ClientSampleID
+    #Click Element  ar_0_SamplingDeviation
+    #Select First From Dropdown  ar_0_SamplingDeviation
+    #Click Element  ar_0_SampleCondition
+    #Select First From Dropdown  ar_0_SampleCondition
+    #Click Element  ar_0_DefaultContainerType
+    #Select First From Dropdown  ar_0_DefaultContainerType
 
-    Select Checkbox  ar_0_AdHoc
-    Select Checkbox  ar_0_Composite
-    Select Checkbox  ar_0_ReportDryMatter
-    Select Checkbox  ar_0_InvoiceExclude
+    #Select Checkbox  ar_0_AdHoc
+    #Select Checkbox  ar_0_Composite
+    #Select Checkbox  ar_0_ReportDryMatter
+    #Select Checkbox  ar_0_InvoiceExclude
 
     Log  AR: NO Copy Across Testing  WARN
     #Log  AR: Copy Across Testing  WARN
@@ -514,26 +573,43 @@ Create ClientContact
     #Click Element  InvoiceExclude
 
     #first select analysis category then service
-    Click Element  cat_lab_${AnalysisCategory_global_Title}
-    Select Checkbox  ar.0.Analyses:list:ignore_empty:record
+    Click Element  xpath=//th[@id='cat_lab_${AnalysisCategory_global_Title}']
+    Select Checkbox  xpath=//input[@title='${AnalysisServices_global_Title}' and @name='ar.0.Analyses:list:ignore_empty:record']
+
+    #Log  For some reason the Metals table is already open when a Profile is selected  WARN
+    Click Element  xpath=//th[@id='cat_lab_Metals']
+    Select Checkbox  xpath=//input[@title='Calcium' and @name='ar.0.Analyses:list:ignore_empty:record']
+    Select Checkbox  xpath=//input[@title='Phosphorus' and @name='ar.0.Analyses:list:ignore_empty:record']
+
+    Click Element  xpath=//th[@id='cat_lab_Microbiology']
+    Select Checkbox  xpath=//input[@title='Clostridia' and @name='ar.0.Analyses:list:ignore_empty:record']
+    Select Checkbox  xpath=//input[@title='Ecoli' and @name='ar.0.Analyses:list:ignore_empty:record']
+    Select Checkbox  xpath=//input[@title='Enterococcus' and @name='ar.0.Analyses:list:ignore_empty:record']
+    Select Checkbox  xpath=//input[@title='Salmonella' and @name='ar.0.Analyses:list:ignore_empty:record']
+
+
+    #Log  For some reason the Water table is not open when profile selected  WARN
+    Click Element  xpath=//th[@id='cat_lab_Water Chemistry']
+    Select Checkbox  xpath=//input[@title='Moisture' and @name='ar.0.Analyses:list:ignore_empty:record']
 
     Click Button  Save
     Wait Until Page Contains  was successfully created.
 
     #build AR name
-    ${AR_name}=  Set Variable  ${Prefix_global}-0001-R01
-    Log  Using AR with Name: ${AR_name}  WARN
+    Set Global Variable  ${AR_name_global}  ${Prefix_global}${YEAR}-0001-R01
+    Log  Using AR with Name: ${AR_name_global}  WARN
+
     #this selects the actual AR detail - that wil be a later test
-    #Click Link  ${AR_name}
+    #Click Link  ${AR_name_global}
 
     #just select the AR checkbox
     #select all
     #Select Checkbox  analysisrequests_select_all
     #select specific
-    Select Checkbox  xpath=//input[@alt='Select ${AR_name}']
+    Select Checkbox  xpath=//input[@alt='Select ${AR_name_global}'] 
 
     #test for Workflow State Change
-    ${VALUE}  Get Value  xpath=//input[@selector='state_title_${AR_name}']
+    ${VALUE}  Get Value  xpath=//input[@selector='state_title_${AR_name_global}']
     #Log  VALUE = ${VALUE}  WARN
 
     Should Be Equal  ${VALUE}  Sample Due  Workflow States incorrect: Expected: Sample Due -
@@ -543,12 +619,12 @@ Create ClientContact
     Click Element  receive_transition
     Wait Until Page Contains  Changes saved.
 
-    ${VALUE}  Get Value  xpath=//input[@selector='state_title_${AR_name}']
-    Should Be Equal  ${VALUE}  Received  Workflow States incorrect: Expected: Received -
+    ${VALUE}  Get Value  xpath=//input[@selector='state_title_${AR_name_global}']
+    Should Be Equal  ${VALUE}  Received  Workflow States incorrect: Expected: Received -  
     #check page status
 
-    Click Link  ${AR_name}
-    Wait Until Page Contains  ${AR_name}
+    Click Link  ${AR_name_global}
+    Wait Until Page Contains  ${AR_name_global}
 
     #select a result
     #Select From List  xpath=//select[@selector='Result_AnalysisKeyword']
@@ -556,19 +632,18 @@ Create ClientContact
     #click mouse out of input fields
     Click Element  xpath=//div[@id='content-core']
 
-    TestSampleState  xpath=//input[@selector='state_title_AnalysisKeyword']  Analysis Services Title  Received
+    TestSampleState  xpath=//input[@selector='state_title_AnalysisKeyword']  ${AnalysisServices_global_Title}  Received
 
-    Checkbox Should Be Selected  xpath=//input[@selector='PREFIX-0001-R01_AnalysisKeyword']
-    Log  Checkbox has been selected!  WARN
+    Checkbox Should Be Selected  xpath=//input[@selector='${AR_name_global}_AnalysisKeyword']
 
     Click Element  submit_transition
     Page should contain  Changes saved.
 
     #AR status must have changed to: To be verified
-    TestSampleState  xpath=//input[@selector='state_title_AnalysisKeyword']  Analysis Services Title  To be verified
-
+    TestSampleState  xpath=//input[@selector='state_title_AnalysisKeyword']  ${AnalysisServices_global_Title}  To be verified
+    
     #Log  Bypassing state bug on AR - Received - should be To be verified  WARN
-    #TestSampleState  xpath=//input[@selector='state_title_AnalysisKeyword']  Analysis Services Title  Received
+    #TestSampleState  xpath=//input[@selector='state_title_AnalysisKeyword']  ${AnalysisServices_global_Title}  Received
 
     #Page Status should be: ????
     #Now enter some results for the other AR's
@@ -594,8 +669,9 @@ Create ClientContact
     Select From List  xpath=//tr[@keyword='Salmon']/td/span/select[@selector='Result_Salmon']
     TestSampleState  xpath=//input[@selector='state_title_Salmon']  Salmonella  Received
 
-    Log  No Result Fields for Dry Matter  WARN
+    Log  No Result Fields for Dry Matter  WARN     
 
+    #Moisture
     Input Text  xpath=//input[@selector='GM_Moist']  10
     Input Text  xpath=//input[@selector='NM_Moist']  10
     Input Text  xpath=//input[@selector='VM_Moist']  10
@@ -612,24 +688,33 @@ Create ClientContact
 
     TestSampleState  xpath=//input[@selector='state_title_Moist']  Moisture  Received
 
+    #Metals
+    TestResultsRange  xpath=//input[@selector='Result_Ca']  2  10
+    TestResultsRange  xpath=//input[@selector='Result_Phos']  20  11
+
+
+    TestSampleState  xpath=//input[@selector='state_title_Ca']  Calcium  Received
+    TestSampleState  xpath=//input[@selector='state_title_Phos']  Phosphorus  Received
+
     Click Element  submit_transition
     Page should contain  Changes saved.
 
     TestSampleState  xpath=//input[@selector='state_title_Entero']  Enterococcus  To be verified
     TestSampleState  xpath=//input[@selector='state_title_Salmon']  Salmonella  To be verified
     TestSampleState  xpath=//input[@selector='state_title_Moist']  Moisture  To be verified
+    TestSampleState  xpath=//input[@selector='state_title_Ca']  Calcium  To be verified
+    TestSampleState  xpath=//input[@selector='state_title_Phos']  Phosphorus  To be verified
 
-    Shleep  600  Hanging
-
+    Log  Construction of AR: ${AR_name_global} complete  WARN
 
 
 Verify AR
 
-    #!!!!!
-    sleep  300
-    #Portlets have changed and AR not available when selecting AR
+    Log  Verifying AR: ${AR_name_global} by different user  WARN
 
-    Click Link  to_be_verified_${AR_name}
+    #Why does this not work??
+    #Click Link  ${AR_name_global}
+    Click Element  xpath=//a[@id='to_be_verified_${AR_name_global}']
 
     Wait Until Page Contains Element  xpath=//a[@title='Change the state of this item']/span[@class='state-to_be_verified']
 
@@ -639,16 +724,26 @@ Verify AR
     Wait Until Page Contains Element  workflow-transition-verify
     Click Link  workflow-transition-verify
 
+    #Check page status
     Wait Until Page Contains Element  xpath=//a[@title='Change the state of this item']/span[@class='state-verified']
     Element Should Contain  xpath=//a[@title='Change the state of this item']/span[@class='state-verified']  Verified
+
+    #Check content status
+    TestSampleState  xpath=//input[@selector='state_title_AnalysisKeyword']  ${AnalysisServices_global_Title}  Verified
+    TestSampleState  xpath=//input[@selector='state_title_Clos']  Clostridia  Verified
+    TestSampleState  xpath=//input[@selector='state_title_Ecoli']  Ecoli  Verified   
+    TestSampleState  xpath=//input[@selector='state_title_Entero']  Enterococcus  Verified
+    TestSampleState  xpath=//input[@selector='state_title_Salmon']  Salmonella  Verified
+    TestSampleState  xpath=//input[@selector='state_title_Moist']  Moisture  Verified
+    TestSampleState  xpath=//input[@selector='state_title_Ca']  Calcium  Verified
+    TestSampleState  xpath=//input[@selector='state_title_Phos']  Phosphorus  Verified
 
     Click Link  xpath=//a[@title='Change the state of this item']
     Wait Until Page Contains Element  workflow-transition-publish
     #Click Link  workflow-transition-publish
     Log  Publish NOT clicked - no way of testing result  WARN
 
-
-
+    Log  Process Complete.  WARN
 
 
 
@@ -669,6 +764,15 @@ Select First From Dropdown
     ${STATUS}  Run Keyword And Return Status  Click Element  xpath=//div[contains(@class,'cg-DivItem')]
     #if no content in dropdown output warning and continue
     Run Keyword If  '${STATUS}' == 'False'  Log  No items found in dropdown: ${elementName}  WARN
+
+
+SelectSpecificFromDropdown
+    [Arguments]  ${Element}=
+    ...          ${Option}=
+
+    Click Element  ${Element}
+    Input Text  ${Element}  ${Option}
+    Select First From Dropdown  ${Element}
 
 
 Log in
@@ -715,6 +819,40 @@ Shleep
 
     Log  Sleeping ${amount}: ${comment}  WARN
     sleep  ${amount}
+
+
+
+SelectDate
+    [Arguments]  ${Element}=
+    ...          ${Date}=
+
+    Click Element  ${Element}
+    Click Link  ${Date}
+
+SelectPrevMonthDate
+    [Arguments]  ${Element}=
+    ...          ${Date}=
+
+    Click Element        ${Element}
+    sleep                0.5
+    #Click Element        xpath=//a[@title='Prev']  
+    Click Element        xpath=//div[@id='ui-datepicker-div']/div/a[@title='Prev']
+    sleep                0.5
+    #Click Link          ${Date}
+    Click Link           xpath=//div[@id='ui-datepicker-div']/table/tbody/tr/td/a[contains (text(),'${Date}')]
+
+
+SelectNextMonthDate
+    [Arguments]  ${Element}=
+    ...          ${Date}=
+
+    Click Element        ${Element}
+    sleep                0.5
+    Click Element        xpath=//a[@title='Next']
+    sleep                0.5
+    Click Link           ${Date}
+
+
 
 
 TestResultsRange
