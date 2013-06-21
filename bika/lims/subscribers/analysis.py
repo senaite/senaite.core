@@ -303,6 +303,11 @@ def AfterTransitionEventHandler(instance, event):
                 wf.doActionFor(ar, 'revert')
 
     elif action_id == "retract":
+        # We'll assign the new analysis to this same worksheet, if any.
+        ws = instance.getBackReferences("WorksheetAnalysis")
+        if ws:
+            ws = ws[0]
+
         # Rename the analysis to make way for it's successor.
         # Support multiple retractions by renaming to *-0, *-1, etc
         parent = instance.aq_parent
@@ -331,6 +336,7 @@ def AfterTransitionEventHandler(instance, event):
         zope.event.notify(ObjectInitializedEvent(analysis))
         changeWorkflowState(analysis,
                             'bika_analysis_workflow', 'sample_received')
+        ws.addAnalysis(analysis)
         analysis.reindexObject()
 
         # retract our dependencies
