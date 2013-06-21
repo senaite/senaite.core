@@ -147,17 +147,20 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """ delete an analyses from the worksheet and un-assign it
         """
         wf = getToolByName(self, 'portal_workflow')
+
+        # overwrite saved context UID for event subscriber
+        self.REQUEST['context_uid'] = self.UID()
+        wf.doActionFor(analysis, 'unassign')
+        # Note: subscriber might unassign the AR and/or promote the worksheet
+
+        # remove analysis from context.Analyses *after* unassign,
+        # (doActionFor requires worksheet in analysis.getBackReferences)
         Analyses = self.getAnalyses()
         if analysis in Analyses:
             Analyses.remove(analysis)
             self.setAnalyses(Analyses)
         layout = [slot for slot in self.getLayout() if slot['analysis_uid'] != analysis.UID()]
         self.setLayout(layout)
-
-        # overwrite saved context UID for event subscriber
-        self.REQUEST['context_uid'] = self.UID()
-        wf.doActionFor(analysis, 'unassign')
-        # Note: subscriber might unassign the AR and/or promote the worksheet
 
         if analysis.portal_type == "DuplicateAnalysis":
             self._delObject(analysis.id)

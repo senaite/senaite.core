@@ -16,6 +16,7 @@ from bika.lims import logger
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.fields import InterimFieldsField
+from bika.lims.permissions import Unassign
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.config import PROJECTNAME
@@ -472,12 +473,22 @@ class Analysis(BaseContent):
         return True
 
     def guard_unassign_transition(self):
-        """If the workflow state is available, we always allow this transition
+        """ Check permission against parent worksheet
         """
-        return True
+        wf = getToolByName(self, 'portal_workflow')
+        mtool = getToolByName(self, 'portal_membership')
+        ws = self.getBackReferences('WorksheetAnalysis')
+        if not ws:
+            return False
+        ws = ws[0]
+        if wf.getInfoFor(ws, 'cancellation_state', '') == "cancelled":
+            return False
+        if mtool.checkPermission(Unassign, ws):
+            return True
+        return False
 
     def guard_assign_transition(self):
-        """If the workflow state is available, we always allow this transition
+        """
         """
         return True
 

@@ -86,5 +86,8 @@
 
 <permission id="bika.lims.ManageLoginDetails" title="BIKA: Manage Login Details"/>
 
+<permission id="bika.lims.Assign" title="BIKA: Assign analyses"/>
+<permission id="bika.lims.Unassign" title="BIKA: Unassign analyses"/>
+
 
 </configure>

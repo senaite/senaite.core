@@ -84,6 +84,8 @@ Create Worksheets
     Click Element  submit_transition
     Wait Until Page Contains  Changes saved.
 
+
+
     Check worksheet state       to_be_verified
 
 
@@ -229,17 +231,17 @@ Add worksheet control
 
 Add worksheet blank
     Go to                       http://localhost:55001/plone/worksheets/WS-001
-    Click Link                  Add Duplicate
-    Wait Until Page Contains    Add Duplicate
-    Click Element               xpath=//span[@id='worksheet_add_duplicate_ars']//tbody//tr[1]
+    Click Link                  Add Blank Reference
+    Wait Until Page Contains    Add Blank Reference
+    Click Element               xpath=//span[@id='worksheet_add_references']//tbody//tr[1]
     Wait Until Page Contains Element  submit_transition
 
 
 Add worksheet duplicate
     Go to                       http://localhost:55001/plone/worksheets/WS-001
-    Click Link                  Add Blank Reference
-    Wait Until Page Contains    Add Blank Reference
-    Click Element               xpath=//span[@id='worksheet_add_references']//tbody//tr[1]
+    Click Link                  Add Duplicate
+    Wait Until Page Contains    Add Duplicate
+    Click Element               xpath=//span[@id='worksheet_add_duplicate_ars']//tbody//tr[1]
     Wait Until Page Contains Element  submit_transition
 
 
