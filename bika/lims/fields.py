@@ -72,6 +72,11 @@ class ExtDateTimeField(ExtensionField, DateTimeField):
     "Field extender"
 
 
+class ExtFloatField(ExtensionField, FloatField):
+
+    "Field extender"
+
+
 class ExtIntegerField(ExtensionField, IntegerField):
 
     "Field extender"

@@ -14,3 +14,5 @@ from artemplateanalyseswidget import ARTemplateAnalysesWidget
 from artemplatepartitionswidget import ARTemplatePartitionsWidget
 from addresswidget import AddressWidget
 from scheduleinputwidget import ScheduleInputWidget
+from integer import IntegerWidget
+from decimal import DecimalWidget

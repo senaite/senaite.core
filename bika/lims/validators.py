@@ -700,3 +700,33 @@ class ReferenceValuesValidator:
             return True
 
 validation.register(ReferenceValuesValidator())
+
+
+class PercentValidator:
+
+    """ Floatable, >=0, <=100. """
+
+    implements(IValidator)
+    name = "percentvalidator"
+
+    def __call__(self, value, *args, **kwargs):
+        instance = kwargs['instance']
+        # fieldname = kwargs['field'].getName()
+        # request = kwargs.get('REQUEST', {})
+        # form = request.get('form', {})
+
+        ts = getToolByName(instance, 'translation_service').translate
+
+        try:
+            value = float(value)
+        except:
+            msg = _("Validation failed: percent values must be numbers")
+            return ts(msg)
+
+        if value < 0 or value > 100:
+            msg = _("Validation failed: percent values must be between 0 and 100")
+            return ts(msg)
+
+        return True
+
+validation.register(PercentValidator())
