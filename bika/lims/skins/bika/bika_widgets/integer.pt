@@ -24,7 +24,7 @@
 
     <metal:define metal:define-macro="edit">
       <metal:use metal:use-macro="field_macro | context/widgets/field/macros/edit">
-        <span metal:fill-slot="widget_body"
+        <span metal:fill-slot="widget_body">
           <input
                class="blurrable firstToFocus"
                type="text"
