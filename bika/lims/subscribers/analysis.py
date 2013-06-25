@@ -336,7 +336,8 @@ def AfterTransitionEventHandler(instance, event):
         zope.event.notify(ObjectInitializedEvent(analysis))
         changeWorkflowState(analysis,
                             'bika_analysis_workflow', 'sample_received')
-        ws.addAnalysis(analysis)
+        if ws:
+            ws.addAnalysis(analysis)
         analysis.reindexObject()
 
         # retract our dependencies
