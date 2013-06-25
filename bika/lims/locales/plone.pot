@@ -316,6 +316,10 @@ msgstr ""
 msgid "Analysis Request"
 msgstr ""
 #
+# File: ../profiles/default/types/AnalysisRequestQuery.xml, line: -1
+msgid "Analysis Request Query"
+msgstr ""
+#
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/AnalysisRequestsFolder.xml, line: -1
 # File: ../profiles/default/types/Batch.xml, line: -1
@@ -404,8 +408,16 @@ msgstr ""
 msgid "Calculations"
 msgstr ""
 #
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Calibrations"
+msgstr ""
+#
 # File: ../profiles/default/workflows/bika_cancellation_workflow/definition.xml, line: -1
 msgid "Cancelled"
+msgstr ""
+#
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Certifications"
 msgstr ""
 #
 # File: ../profiles/default/types/Client.xml, line: -1
@@ -428,7 +440,7 @@ msgid "Comments about the last transition"
 msgstr ""
 #
 # File: ../profiles/default/types/Client.xml, line: -1
-# File: ../profiles/default/types/ReferenceSupplier.xml, line: -1
+# File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Contacts"
 msgstr ""
 #
@@ -512,7 +524,17 @@ msgstr ""
 msgid "Instrument"
 msgstr ""
 #
+# File: ../profiles/default/types/InstrumentType.xml, line: -1
+msgid "Instrument Type"
+msgstr ""
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/InstrumentTypes.xml, line: -1
+msgid "Instrument Types"
+msgstr ""
+#
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/InstrumentType.xml, line: -1
 # File: ../profiles/default/types/Instruments.xml, line: -1
 msgid "Instruments"
 msgstr ""
@@ -584,6 +606,15 @@ msgstr ""
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Manage Results"
+msgstr ""
+#
+# File: ../profiles/default/types/Manufacturer.xml, line: -1
+msgid "Manufacturer"
+msgstr ""
+#
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/Manufacturers.xml, line: -1
+msgid "Manufacturers"
 msgstr ""
 #
 # File: ../profiles/default/types/Method.xml, line: -1
@@ -658,12 +689,16 @@ msgstr ""
 msgid "Quality Control"
 msgstr ""
 #
-# File: ../profiles/default/actions.xml, line: -1
+# File: ../profiles/default/types/QueryFolder.xml, line: -1
 msgid "Queries"
 msgstr ""
 #
 # File: ../profiles/default/actions.xml, line: -1
 msgid "Query"
+msgstr ""
+#
+# File: ../profiles/default/types/AnalysisRequestQuery.xml, line: -1
+msgid "Query analysis requests on various criteria"
 msgstr ""
 #
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml, line: -1
@@ -684,36 +719,18 @@ msgstr ""
 msgid "Reference Definitions"
 msgstr ""
 #
-# File: ../profiles/default/types/ReferenceManufacturer.xml, line: -1
-msgid "Reference Manufacturer"
-msgstr ""
-#
-# File: ../profiles/default/controlpanel.xml, line: -1
-# File: ../profiles/default/types/ReferenceManufacturers.xml, line: -1
-msgid "Reference Manufacturers"
-msgstr ""
-#
-# File: ../profiles/default/types/ReferenceSample.xml, line: -1
-msgid "Reference Values"
-msgstr ""
-#
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
 msgid "Reference Sample"
 msgstr ""
 #
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/ReferenceSamplesFolder.xml, line: -1
-# File: ../profiles/default/types/ReferenceSupplier.xml, line: -1
+# File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Reference Samples"
 msgstr ""
 #
-# File: ../profiles/default/types/ReferenceSupplier.xml, line: -1
-msgid "Reference Supplier"
-msgstr ""
-#
-# File: ../profiles/default/controlpanel.xml, line: -1
-# File: ../profiles/default/types/ReferenceSuppliers.xml, line: -1
-msgid "Reference Suppliers"
+# File: ../profiles/default/types/ReferenceSample.xml, line: -1
+msgid "Reference Values"
 msgstr ""
 #
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml, line: -1
@@ -814,6 +831,10 @@ msgstr ""
 msgid "Sampling Deviations"
 msgstr ""
 #
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Schedule"
+msgstr ""
+#
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Sample.xml, line: -1
 # File: ../profiles/default/types/SamplePartition.xml, line: -1
@@ -828,7 +849,13 @@ msgstr ""
 msgid "Submitted"
 msgstr ""
 #
+# File: ../profiles/default/types/Supplier.xml, line: -1
+msgid "Supplier"
+msgstr ""
+#
 # File: ../profiles/default/actions.xml, line: -1
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/Suppliers.xml, line: -1
 msgid "Suppliers"
 msgstr ""
 #
@@ -874,6 +901,10 @@ msgstr ""
 #
 # File: ../profiles/default/workflows/bika_publication_workflow/definition.xml, line: -1
 msgid "Unpublished"
+msgstr ""
+#
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Validations"
 msgstr ""
 #
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml, line: -1

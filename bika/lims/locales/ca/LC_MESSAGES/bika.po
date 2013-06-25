@@ -1,4 +1,4 @@
-#
+# 
 # Translators:
 # Jordi Puiggené <jordi.puiggene@gmail.com>, 2012.
 msgid ""
@@ -179,10 +179,6 @@ msgstr "<p>Pel servei ${service} és necessari que també seleccioni els serveis
 msgid "<p>The following services depend on ${service}, and will be unselected if you continue:</p><br/><p>${deps}</p><br/><p>Do you want to remove these selections now?</p>"
 msgstr "<p>El serveis que es llisten a continuació depenen del servei ${service} i es desmarcaran si cotinueu:</p><br/><p>${deps}</p><br/><p>Voleu desmarcar-los ara?</p>"
 
-# File: ../browser/queries/analysisrequests.py, line: 112
-msgid "AR"
-msgstr "Sol·licitud d'anàlisi"
-
 # File: ../content/bikasetup.py, line: 207
 msgid "AR Attachment Option"
 msgstr "Opcions de fitxers adjunts en sol·licituds d'anàlisi"
@@ -320,6 +316,12 @@ msgstr "Afegeix els dos dígits de l'any després del prefix de l'identificador"
 msgid "Administrative Reports"
 msgstr "Informes administratius"
 
+# 
+# File: ../browser/instrument.py, line: 193
+# File: ../content/instrumentcertification.py, line: 29
+msgid "Agency"
+msgstr ""
+
 # File: ../browser/accreditation.py, line: 62
 # File: ../browser/analyses.py, line: 78
 # File: ../browser/analysisrequest.py, line: 1051
@@ -353,6 +355,11 @@ msgstr "Expandeix sempre les categories seleccionades a les vistes de client"
 # File: ../browser/reports/administration_arsnotinvoiced.py, line: 71
 msgid "Amount"
 msgstr "Quantitat"
+
+# 
+# File: ../profiles/default/registry.xml, line: -1
+msgid "An item's workflow state (e.g.published)"
+msgstr ""
 
 # File: ../browser/reports/templates/productivity_dataentrydaybook.pt, line:
 # 97
@@ -471,6 +478,11 @@ msgstr "Perfil d'anàlisi"
 msgid "Analysis Profiles"
 msgstr "Perfils de sol·licitud d'anàlisi"
 
+# 
+# File: ../profiles/default/registry.xml, line: -1
+msgid "Analysis Request"
+msgstr ""
+
 # File: ../config.py, line: 68
 msgid "Analysis Request ID"
 msgstr "Identificador de la sol·licitud d'anàlisi"
@@ -530,10 +542,6 @@ msgstr "La sol·licitud d'anàlisi ${AR} s'ha creat satisfactòriament"
 msgid "Analysis request ${service} was successfully created."
 msgstr "La sol·licitud d'anàlisi ${service} s'ha creat amb èxit."
 
-# File: ../browser/queries/queries_query.pt, line: 28
-msgid "Analysis requests"
-msgstr "Sol·licituds d'anàlisi"
-
 # File: ../browser/analysisrequest.py, line: 1828
 msgid "Analysis requests ${ARs} were successfully created."
 msgstr "Les sol·licituds d'anàlisi ${ARs} s'han creat satisfactòriament"
@@ -552,6 +560,16 @@ msgstr "Sol·licituds d'anàlisi i anàlisis per client"
 # File: ../browser/reports/templates/administration.pt, line: 84
 msgid "Analysis requests not invoiced"
 msgstr "Sol·licituds d'anàlisi no facturades"
+
+# 
+# File: ../profiles/default/registry.xml, line: -1
+msgid "Analysis requests will be selected if any of their analyses have this analysis service selected."
+msgstr ""
+
+# 
+# File: ../profiles/default/registry.xml, line: -1
+msgid "Analysis requests will be selected if any of their analyses' services are in this category."
+msgstr ""
 
 # File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 232
 msgid "Analysis result within error range"
@@ -835,13 +853,16 @@ msgstr "Càlcul: cap"
 msgid "Calculations"
 msgstr "Càlculs"
 
-# File: ../content/instrument.py, line: 39
-msgid "Calibration Certificate"
-msgstr "Certificat de calibratge"
+# 
+# File: ../content/instrumentscheduledtask.py, line: 83
+msgid "Calibration"
+msgstr ""
 
-# File: ../content/instrument.py, line: 47
-msgid "Calibration Expiry Date"
-msgstr "Data d'expiració del calibratge"
+# 
+# File: ../browser/instrument.py, line: 138
+# File: ../content/instrumentcalibration.py, line: 47
+msgid "Calibrator"
+msgstr ""
 
 # File: ../browser/analysisrequest.py, line: 1159
 # File: ../browser/templates/analysisservice_popup.pt, line: 67
@@ -892,6 +913,11 @@ msgstr "Categoria"
 # File: ../subscribers/analysiscategory.py, line: 23
 msgid "Category cannot be deactivated because it contains Analysis Services"
 msgstr "No es pot desactivar la categoria, ja que té serveis d'anàlisi associats"
+
+# 
+# File: ../browser/instrument.py, line: 191
+msgid "Certification Num"
+msgstr ""
 
 # File: ../content/analysisservice.py, line: 311
 msgid "Check this box if the analysis service is included in the laboratory's schedule of accredited analyses"
@@ -980,10 +1006,6 @@ msgstr "Nom del client"
 msgid "Client Order"
 msgstr "Comanda de client"
 
-# File: ../browser/queries/queries_query.pt, line: 83
-msgid "Client Order ID"
-msgstr "ID de comanda de client"
-
 # File: ../content/arimport.py, line: 38
 msgid "Client Phone"
 msgstr "Telèfon del client"
@@ -1018,18 +1040,6 @@ msgstr "ID de mostra assignat pel client"
 msgid "Client contact required before request may be submitted"
 msgstr "Per a poder tramitar una sol·licitud d'anàlisi, és necessari que el client tingui donat d'alta, com a mínim, un contacte"
 
-# File: ../browser/queries/analysisrequests.py, line: 123
-msgid "Client order number"
-msgstr "Número de comanda del client"
-
-# File: ../browser/queries/analysisrequests.py, line: 134
-msgid "Client reference"
-msgstr "Referència del client"
-
-# File: ../browser/queries/analysisrequests.py, line: 145
-msgid "Client sample ID"
-msgstr "ID de la mostra del client"
-
 # File: ../browser/clientfolder.py, line: 26
 msgid "Clients"
 msgstr "Clients"
@@ -1059,6 +1069,13 @@ msgstr "Configuració de les particions de mostres i mètodes de conservació as
 # File: ../browser/templates/login_details.pt, line: 81
 msgid "Confirm password"
 msgstr "Confirmeu la paraula de pas"
+
+# 
+# File: ../content/instrumentcalibration.py, line: 57
+# File: ../content/instrumentmaintenancetask.py, line: 72
+# File: ../content/instrumentscheduledtask.py, line: 54
+msgid "Considerations"
+msgstr ""
 
 # File: ../browser/analysisrequest.py, line: 1916
 # File: ../browser/late_analyses.py, line: 44
@@ -1141,6 +1158,11 @@ msgstr "País"
 msgid "Created"
 msgstr "Creat"
 
+# 
+# File: ../browser/instrument.py, line: 315
+msgid "Created by"
+msgstr ""
+
 # File: ../browser/mailtemplates/analysisrequest_results.pt, line: 64
 # File: ../browser/reports/templates/report_frame.pt, line: 40
 msgid "Created by:"
@@ -1149,6 +1171,12 @@ msgstr "Creat per:"
 # File: ../browser/reports/templates/productivity_dataentrydaybook.pt, line:
 # 99
 msgid "Creator"
+msgstr ""
+
+# 
+# File: ../browser/instrument.py, line: 314
+# File: ../content/instrumentscheduledtask.py, line: 45
+msgid "Criteria"
 msgstr ""
 
 # File: ../content/bikasetup.py, line: 76
@@ -1258,9 +1286,46 @@ msgstr "Data de mostreig"
 msgid "Date Submitted"
 msgstr "Data de registre"
 
+# 
+# File: ../content/instrumentcertification.py, line: 46
+msgid "Date from which the certification is valid"
+msgstr ""
+
+# 
+# File: ../content/instrumentcalibration.py, line: 32
+msgid "Date from which the instrument is under calibration"
+msgstr ""
+
+# 
+# File: ../content/instrumentmaintenancetask.py, line: 45
+msgid "Date from which the instrument is under maintenance"
+msgstr ""
+
+# 
+# File: ../content/instrumentvalidation.py, line: 17
+msgid "Date from which the instrument is under validation"
+msgstr ""
+
 # File: ../browser/reports/templates/productivity_dailysamplesreceived.pt,
 # line: 58
 msgid "Date received"
+msgstr ""
+
+# 
+# File: ../content/instrumentcertification.py, line: 55
+msgid "Date until the certification is valid"
+msgstr ""
+
+# 
+# File: ../content/instrumentcalibration.py, line: 41
+# File: ../content/instrumentmaintenancetask.py, line: 55
+# File: ../content/instrumentvalidation.py, line: 26
+msgid "Date until the instrument will not be available"
+msgstr ""
+
+# 
+# File: ../content/instrumentcertification.py, line: 37
+msgid "Date when the certification was granted"
 msgstr ""
 
 # File: ../browser/fields/durationfield.py, line: 19
@@ -1319,6 +1384,11 @@ msgstr "Indiqueu el número de decimals del resultat"
 msgid "Define the prefixes for the unique sequential IDs the system issues for objects. In the 'Padding' field, indicate with how many leading zeros the numbers must be padded. E.g. a prefix of WS for worksheets with padding of 4, will see them numbered from WS-0001 to WS-9999. NB: Note that samples and analysis requests are prefixed with sample type abbreviations and are not configured in this table - their padding can be set in the specified fields below"
 msgstr "Definició dels prefixes per als identificadors únics seqüencials que utilitza el sistema per gestionar els elements. El camp de 'Mida de l'identificador' indica el número de zeros que s'han d'afegir al principi. Per exemple, per a un prefix d'una fulla de treball amb un valor de 4 pel camp 'Mida de l'identificador', el sistema generarà el rang de codis entre WS-0001 i WS-9999. Tingueu present que el prefix de les mostres i les sol·licituds d'anàlisi correspon a les abreviacions i no es poden configurar des d'aquesta taula - podeu establir la seva mida als camps de sota."
 
+# 
+# File: ../content/analysisrequestquery.py, line: 33
+msgid "Define the search terms for the items you want to list by choosing what to match on. The list of results will be dynamically updated."
+msgstr ""
+
 # File: ../browser/fields/coordinatefield.py, line: 20
 msgid "Degrees"
 msgstr "Graus"
@@ -1348,6 +1418,21 @@ msgstr "Descripció del mètode en llenguatge planer. Aquesta informació estar�
 # File: ../browser/log.py, line: 44
 msgid "Description"
 msgstr "Descripció"
+
+# 
+# File: ../content/instrumentcalibration.py, line: 68
+msgid "Description of the actions made during the calibration"
+msgstr ""
+
+# 
+# File: ../content/instrumentmaintenancetask.py, line: 83
+msgid "Description of the actions made during the maintenance process"
+msgstr ""
+
+# 
+# File: ../content/instrumentvalidation.py, line: 53
+msgid "Description of the actions made during the validation"
+msgstr ""
 
 # File: ../browser/templates/sample_sticker_large.pt, line: 89
 msgid "Deviation"
@@ -1389,6 +1474,16 @@ msgstr "Regió"
 msgid "Dormant"
 msgstr "Inactius"
 
+# 
+# File: ../browser/instrument.py, line: 38
+msgid "Down from"
+msgstr ""
+
+# 
+# File: ../browser/instrument.py, line: 39
+msgid "Down to"
+msgstr ""
+
 # File: ../browser/analyses.py, line: 58
 # File: ../browser/worksheet.py, line: 215
 msgid "Dry"
@@ -1412,10 +1507,6 @@ msgstr "Venciment"
 # File: ../browser/referencesample.py, line: 64
 msgid "Due Date"
 msgstr "Data de venciment"
-
-# File: ../content/instrument.py, line: 48
-msgid "Due Date for next calibration"
-msgstr "Data de venciment pel pròxim calibrat"
 
 # File: ../browser/accreditation.py, line: 56
 # File: ../controlpanel/bika_analysisservices.py, line: 130
@@ -1487,6 +1578,12 @@ msgstr "Assumpte"
 # File: ../content/bikasetup.py, line: 158
 msgid "Enable the Sampling workflow"
 msgstr "Activa el flux de treball per al mostreig"
+
+# 
+# File: ../content/instrumentmaintenancetask.py, line: 143
+# File: ../content/instrumentscheduledtask.py, line: 84
+msgid "Enhancement"
+msgstr ""
 
 # File: ../browser/templates/login_details.pt, line: 54
 msgid "Enter a user name, usually something like 'jsmith'. No spaces or special characters. Usernames and passwords are case sensitive, make sure the caps lock key is not enabled. This is the name used to log in."
@@ -1599,6 +1696,11 @@ msgstr "Fitxer"
 msgid "Filename"
 msgstr "Nom del fitxer"
 
+# 
+# File: ../profiles/default/registry.xml, line: -1
+msgid "Find items which have been invoiced."
+msgstr ""
+
 # File: ../content/person.py, line: 25
 msgid "Firstname"
 msgstr "Nom"
@@ -1637,6 +1739,12 @@ msgstr "Podeu agrupar els serveis d'anàlisi per categories des de la pàgina de
 
 # File: ../browser/reports/selection_macros/select_groupingperiod.pt, line: 4
 msgid "Group by"
+msgstr ""
+
+# 
+# File: ../browser/reports/productivity_analysesperdepartment.py, line: 52
+# File: ../browser/reports/productivity_analysesperformedpertotal.py, line: 43
+msgid "Grouping period"
 msgstr ""
 
 # File: ../browser/analysisrequest.py, line: 1405
@@ -1697,6 +1805,11 @@ msgstr "Opció d'importació"
 msgid "Imported"
 msgstr "Importats"
 
+# 
+# File: ../content/instrument.py, line: 73
+msgid "In-lab calibration procedure"
+msgstr ""
+
 # File: ../controlpanel/bika_analysiscategories.py, line: 52
 # File: ../controlpanel/bika_analysisprofiles.py, line: 55
 # File: ../controlpanel/bika_analysisspecs.py, line: 48
@@ -1730,15 +1843,55 @@ msgstr "Indica si és necessari l'adjunció de documents per aquest anàlisi i, 
 msgid "Initial revision"
 msgstr "Revisió inicial"
 
+# 
+# File: ../content/instrument.py, line: 74
+msgid "Instructions for in-lab regular calibration routines intended for analysts"
+msgstr ""
+
+# 
+# File: ../content/instrument.py, line: 84
+msgid "Instructions for regular preventive and maintenance routines intended for analysts"
+msgstr ""
+
 # File: ../browser/accreditation.py, line: 52
 # File: ../browser/reports/productivity_analysestats_overtime.py, line: 72
 # File: ../browser/reports/selection_macros/select_instrument.pt, line: 3
 msgid "Instrument"
 msgstr "Equip"
 
+# 
+# File: ../browser/instrument.py, line: 130
+msgid "Instrument Calibrations"
+msgstr ""
+
+# 
+# File: ../browser/instrument.py, line: 187
+msgid "Instrument Certifications"
+msgstr ""
+
 # File: ../exportimport/import.pt, line: 32
 msgid "Instrument Import"
 msgstr "Importació des d'equip"
+
+# 
+# File: ../browser/instrument.py, line: 30
+msgid "Instrument Maintenance"
+msgstr ""
+
+# 
+# File: ../browser/instrument.py, line: 307
+msgid "Instrument Scheduled Tasks"
+msgstr ""
+
+# 
+# File: ../controlpanel/bika_instrumenttypes.py, line: 28
+msgid "Instrument Types"
+msgstr ""
+
+# 
+# File: ../browser/instrument.py, line: 247
+msgid "Instrument Validations"
+msgstr ""
 
 # File: ../browser/worksheet.py, line: 1044
 msgid "Instrument exporter not found"
@@ -1765,9 +1918,11 @@ msgstr "Exclòs de facturació"
 msgid "Invoice number"
 msgstr "Número de factura"
 
-# File: ../browser/queries/queries_query.pt, line: 50
-msgid "Invoices"
-msgstr "Factures"
+# 
+# File: ../content/analysisrequestquery.py, line: 122
+# File: ../profiles/default/registry.xml, line: -1
+msgid "Invoiced"
+msgstr ""
 
 # File: ../browser/analysisrequest.py, line: 257
 # File: ../browser/bika_listing.py, line: 99
@@ -1872,6 +2027,11 @@ msgstr "Anàlisi amb retard"
 msgid "Latitude"
 msgstr "Latitud"
 
+# 
+# File: ../content/analysisrequestquery.py, line: 72
+msgid "Limit Search Results"
+msgstr ""
+
 # File: ../content/sample.py, line: 57
 msgid "Linked Sample"
 msgstr "Mostra enllaçada"
@@ -1923,6 +2083,18 @@ msgstr "Número de lot"
 msgid "Mailing address"
 msgstr "Adreça d'enviament de correus electrònics"
 
+# 
+# File: ../browser/instrument.py, line: 40
+# File: ../content/instrumentmaintenancetask.py, line: 62
+msgid "Maintainer"
+msgstr ""
+
+# 
+# File: ../content/instrumentmaintenancetask.py, line: 34
+#. Default: "Type"
+msgid "Maintenance type"
+msgstr ""
+
 # File: ../config.py, line: 75
 msgid "Male"
 msgstr "Home"
@@ -1945,6 +2117,11 @@ msgstr "Telèfon del responsable"
 # File: ../browser/templates/referencesample_view.pt, line: 60
 msgid "Manufacturer"
 msgstr "Fabricant"
+
+# 
+# File: ../controlpanel/bika_manufacturers.py, line: 28
+msgid "Manufacturers"
+msgstr ""
 
 # File: ../browser/fields/referenceresultsfield.py, line: 23
 # File: ../browser/referencesample.py, line: 130
@@ -1983,6 +2160,11 @@ msgstr "% de descompte per a clients habituals"
 # File: ../content/client.py, line: 42
 msgid "Member discount applies"
 msgstr "Aplicar descompte de client habitual"
+
+# 
+# File: ../profiles/default/registry.xml, line: -1
+msgid "Metadata"
+msgstr ""
 
 # File: ../browser/analyses.py, line: 50
 # File: ../browser/batch.py, line: 161
@@ -2226,6 +2408,11 @@ msgstr "Número d'anàlisis reprocessats per periode"
 msgid "Number of analysis requested and published per department and expresed as a percentage of all analyses performed"
 msgstr ""
 
+# 
+# File: ../browser/reports/templates/productivity_analysesperdepartment.pt, line: 80
+msgid "Number of analysis requested and published per department and expressed as a percentage of all analyses performed"
+msgstr ""
+
 # File: ../browser/reports/productivity_analysesperclient.py, line: 98
 msgid "Number of requests"
 msgstr "Número de sol·licituds"
@@ -2268,6 +2455,11 @@ msgstr "Número de comanda"
 msgid "Orders"
 msgstr "Comandes"
 
+# 
+# File: ../content/instrumentcertification.py, line: 30
+msgid "Organization responsible of granting the certification"
+msgstr ""
+
 # File: ../browser/reports/templates/productivity.pt, line: 383
 msgid "Other productivity reports"
 msgstr ""
@@ -2275,14 +2467,6 @@ msgstr ""
 # File: ../config.py, line: 22
 msgid "PDF"
 msgstr "PDF"
-
-# File: ../browser/queries/analysisrequests.py, line: 304
-msgid "Parameters not defined"
-msgstr "No heu definit cap paràmetre"
-
-# File: ../browser/queries/analysisrequests.py, line: 52
-msgid "Parameters undefined"
-msgstr "No heu definit cap paràmetre"
 
 msgid "Parent"
 msgstr "Pare"
@@ -2441,6 +2625,17 @@ msgstr "Conservacions"
 msgid "Preserver"
 msgstr "Conservant"
 
+# 
+# File: ../content/instrumentmaintenancetask.py, line: 141
+# File: ../content/instrumentscheduledtask.py, line: 85
+msgid "Preventive"
+msgstr ""
+
+# 
+# File: ../content/instrument.py, line: 83
+msgid "Preventive maintenance procedure"
+msgstr ""
+
 # File: ../browser/accreditation.py, line: 54
 # File: ../browser/analysisrequest.py, line: 1043
 # File: ../browser/templates/analysisservice_popup.pt, line: 165
@@ -2530,26 +2725,6 @@ msgstr "Informes de Control de Qualitat"
 msgid "Quantity"
 msgstr "Quantitat"
 
-# File: ../browser/queries/queries_query.pt, line: 10
-msgid "Queries"
-msgstr "Preguntes"
-
-# File: ../browser/queries/queries_query.pt, line: 26
-msgid "Query"
-msgstr "Consulta"
-
-# File: ../browser/queries/queries_query.pt, line: 33
-msgid "Query analysis requests on various criteria"
-msgstr "Consulta de sol·licituds d'anàlisi per múltiples criteris de cerca"
-
-# File: ../browser/queries/queries_query.pt, line: 55
-msgid "Query invoices on client, invoice date and description"
-msgstr "Consulta de les factures d'un client, data de factura i descripció"
-
-# File: ../browser/queries/queries_query.pt, line: 44
-msgid "Query orders on client, order data, product and status"
-msgstr "Sol·licitud de comandes del client, dates de comanda, productes i estat"
-
 # File: ../content/arimport.py, line: 110
 msgid "QuoteID"
 msgstr "QuoteID"
@@ -2613,15 +2788,6 @@ msgstr "Definició de referència"
 msgid "Reference Definitions"
 msgstr "Definicions de referència"
 
-# File: ../controlpanel/bika_referencemanufacturers.py, line: 27
-msgid "Reference Manufacturers"
-msgstr "Fabricants de referència"
-
-# File: ../browser/referencesample.py, line: 108
-# File: ../content/referencedefinition.py, line: 27
-msgid "Reference Values"
-msgstr "Resultats de referència"
-
 # File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 53
 # File: ../browser/reports/selection_macros/select_reference_sample.pt, line:
 # 5
@@ -2638,13 +2804,14 @@ msgstr "Mostres de referència"
 msgid "Reference Supplier"
 msgstr "Proveïdor de mostres de referència"
 
-# File: ../controlpanel/bika_referencesuppliers.py, line: 29
-msgid "Reference Suppliers"
-msgstr "Proveïdors de referència"
-
 # File: ../content/referenceanalysis.py, line: 30
 msgid "Reference Type"
 msgstr "Tipus de referència"
+
+# File: ../browser/referencesample.py, line: 108
+# File: ../content/referencedefinition.py, line: 27
+msgid "Reference Values"
+msgstr "Resultats de referència"
 
 # File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 37
 # File: ../browser/reports/templates/qualitycontrol.pt, line: 58
@@ -2681,6 +2848,32 @@ msgstr "Registre"
 # File: ../browser/templates/bika_listing_table.pt, line: 571
 msgid "Remarks"
 msgstr "Comentaris"
+
+# 
+# File: ../content/instrumentcalibration.py, line: 58
+msgid "Remarks to take into account before calibration"
+msgstr ""
+
+# 
+# File: ../content/instrumentscheduledtask.py, line: 55
+msgid "Remarks to take into account before performing the task"
+msgstr ""
+
+# 
+# File: ../content/instrumentvalidation.py, line: 43
+msgid "Remarks to take into account before validation"
+msgstr ""
+
+# 
+# File: ../content/instrumentmaintenancetask.py, line: 73
+msgid "Remarks to take into account for maintenance process"
+msgstr ""
+
+# 
+# File: ../content/instrumentmaintenancetask.py, line: 142
+# File: ../content/instrumentscheduledtask.py, line: 86
+msgid "Repair"
+msgstr ""
 
 # File: ../browser/reports/templates/qualitycontrol.pt, line: 42
 msgid "Repeated analyses"
@@ -2816,6 +3009,11 @@ msgstr "Període de retenció"
 msgid "Retested"
 msgstr "Prova repetida"
 
+# 
+# File: ../profiles/default/registry.xml, line: -1
+msgid "Review state"
+msgstr ""
+
 # File: ../config.py, line: 24
 msgid "SMS"
 msgstr "SMS"
@@ -2835,6 +3033,11 @@ msgstr "Com en el cas anterior, però estableix el valor per defecte en serveis 
 # File: ../content/arimportitem.py, line: 16
 msgid "Sample"
 msgstr "Mostra"
+
+# 
+# File: ../browser/templates/ar_add.pt, line: 522
+msgid "Sample Condition"
+msgstr ""
 
 # File: ../content/arimportitem.py, line: 41
 msgid "Sample Date"
@@ -2920,10 +3123,6 @@ msgstr ""
 msgid "Sample type"
 msgstr "Tipus de mostra"
 
-# File: ../browser/queries/analysisrequests.py, line: 183
-msgid "Sampled"
-msgstr "Mostrejat"
-
 # File: ../browser/analysisrequest.py, line: 546
 # File: ../browser/sample.py, line: 392
 # File: ../browser/templates/sample_sticker_large.pt, line: 77
@@ -2985,13 +3184,19 @@ msgstr "Guarda"
 msgid "Save remarks"
 msgstr "Guarda els comentaris"
 
+# 
+# File: ../browser/instrument.py, line: 311
+msgid "Scheduled task"
+msgstr ""
+
 # File: ../browser/templates/worksheet_add_analyses.pt, line: 109
 msgid "Search"
 msgstr "Cerca"
 
-# File: ../browser/queries/query_frame.pt, line: 15
-msgid "Search results"
-msgstr "Resultats de la cerca"
+# 
+# File: ../content/analysisrequestquery.py, line: 32
+msgid "Search terms"
+msgstr ""
 
 # File: ../browser/templates/ar_add.pt, line: 338
 msgid "Secondary AR"
@@ -3059,6 +3264,11 @@ msgstr "Indiqueu si cal incloure les descripcions"
 msgid "Select instrument"
 msgstr "Selecciona l'equip"
 
+# 
+# File: ../profiles/default/registry.xml, line: -1
+msgid "Select only analysis requests where one or more analyses were analyzed by this user."
+msgstr ""
+
 # File: ../browser/worksheet.py, line: 668
 msgid "Select services in the left column to locate reference samples. Select a reference by clicking it. "
 msgstr "Seleccioneu els serveis de la columna de l'esquerra per trobar mostres de referència. Podreu seleccionar-les fent clic a sobre."
@@ -3097,13 +3307,10 @@ msgstr "Marqueu la casella per activa el flux de treball per a la recol·lecció
 msgid "Select which Analyses should be included on the Worksheet"
 msgstr "Seleccioneu quins anàlisis voleu incloure a la fulla de treball."
 
-# File: ../browser/queries/analysisrequests.py, line: 51
-msgid "Selected on the following criteria"
-msgstr "Selecció en base al criteri següent"
-
-# File: ../browser/queries/queries_query.pt, line: 70
-msgid "Selection criteria"
-msgstr "Criteri de selecció"
+# 
+# File: ../content/analysisrequestquery.py, line: 86
+msgid "Select which fields to display when 'Tabular view' is selected in the display menu."
+msgstr ""
 
 # File: ../browser/templates/analysisservice_popup.pt, line: 262
 msgid "Separate"
@@ -3145,6 +3352,11 @@ msgstr "Serveis"
 msgid "Services ${services} were successfully created."
 msgstr "Els serveis ${services} s'han creat amb èxit."
 
+# 
+# File: ../content/instrumentmaintenancetask.py, line: 107
+msgid "Set the maintenance task as closed."
+msgstr ""
+
 # File: ../content/bikasetup.py, line: 117
 msgid "Set the maximum number of analysis requests per results email. Too many columns per email are difficult to read for some clients who prefer fewer results per email"
 msgstr "Número màxim de resultats de sol·licituds d'anàlisi per correu electrònic. Tingueu en compte que massa columnes de resultats en un correu electrònic pot comprometre la llegibilitat."
@@ -3183,6 +3395,16 @@ msgstr "Slot"
 msgid "Small"
 msgstr "Petit"
 
+# 
+# File: ../content/analysisrequestquery.py, line: 48
+msgid "Sort the collection on this index"
+msgstr ""
+
+# 
+# File: ../content/analysisrequestquery.py, line: 60
+msgid "Sort the results in reversed order"
+msgstr ""
+
 # File: ../config.py, line: 65
 msgid "Special"
 msgstr "Especial"
@@ -3194,6 +3416,11 @@ msgstr "Especificació"
 # File: ../content/analysisspec.py, line: 76
 msgid "Specifications"
 msgstr "Especificacions"
+
+# 
+# File: ../content/analysisrequestquery.py, line: 73
+msgid "Specify the maximum number of items to show."
+msgstr ""
 
 # File: ../content/worksheettemplate.py, line: 30
 msgid "Specify the size of the Worksheet, e.g. corresponding to a specific instrument's tray size. Then select an Analysis 'type' per Worksheet position. Where QC samples are selected, also select which Reference Sample should be used. If a duplicate analysis is selected, indicate which sample position it should be a duplicate of"
@@ -3232,9 +3459,31 @@ msgstr "Subtotal"
 msgid "Supplier"
 msgstr "Proveïdor"
 
+# 
+# File: ../controlpanel/bika_suppliers.py, line: 28
+msgid "Suppliers"
+msgstr ""
+
 # File: ../content/person.py, line: 31
 msgid "Surname"
 msgstr "Cognoms"
+
+# 
+# File: ../content/analysisrequestquery.py, line: 85
+msgid "Table Columns"
+msgstr ""
+
+# 
+# File: ../browser/instrument.py, line: 35
+msgid "Task"
+msgstr ""
+
+# 
+# File: ../browser/instrument.py, line: 37
+# File: ../content/instrumentscheduledtask.py, line: 36
+#. Default: "Type"
+msgid "Task type"
+msgstr ""
 
 # File: ../content/method.py, line: 21
 msgid "Technical description and instructions intended for analysts"
@@ -3282,6 +3531,21 @@ msgstr "Anàlisis del perfil, agrupats per categoria"
 msgid "The analysis to be used for determining dry matter."
 msgstr "L'anàlisi que cal utilitzar per determinar la matèria seca"
 
+# 
+# File: ../content/instrumentcalibration.py, line: 48
+msgid "The analyst or agent responsible of the calibration"
+msgstr ""
+
+# 
+# File: ../content/instrumentmaintenancetask.py, line: 63
+msgid "The analyst or agent responsible of the maintenance"
+msgstr ""
+
+# 
+# File: ../content/instrumentvalidation.py, line: 33
+msgid "The analyst responsible of the validation"
+msgstr ""
+
 # File: ../browser/reports/productivity_analysesattachments.py, line: 35
 # File: ../browser/reports/templates/productivity.pt, line: 388
 msgid "The attachments linked to analysis requests and analyses"
@@ -3290,10 +3554,6 @@ msgstr "Els fitxers adjunts enllaçats a les sol·licituds d'anàlisi i a les an
 # File: ../content/analysisservice.py, line: 340
 msgid "The category the analysis service belongs to"
 msgstr "Categoria a la que pertany el servei d'anàlisi"
-
-# File: ../content/instrument.py, line: 22
-msgid "The commercial 'make' of the instrument"
-msgstr "Marca comercial de l'equip"
 
 # File: ../content/sampletype.py, line: 68
 msgid "The default container type. New sample partitions are automatically assigned a container of this type, unless it has been specified in more details per analysis service"
@@ -3310,10 +3570,6 @@ msgstr "L'adreça URL completa: http://URL/ruta:port"
 # File: ../content/samplepoint.py, line: 41
 msgid "The height or depth at which the sample has to be taken"
 msgstr "Alçada o profunditat de mostreig"
-
-# File: ../content/instrument.py, line: 40
-msgid "The instrument's calibration certificate and number"
-msgstr "Certificat i número de calibrat de l'equip"
 
 # File: ../content/instrument.py, line: 28
 msgid "The instrument's model number"
@@ -3388,6 +3644,11 @@ msgstr "El número de sol·licituds i d'anàlisis per client"
 # File: ../content/sampletype.py, line: 25
 msgid "The period for which un-preserved samples of this type can be kept before they expire and cannot be analysed any further"
 msgstr "Període de temps durant el qual es poden mantenir les mostres en un estat de no conservació abans que no caduquin i no puguin ser analitzades."
+
+# 
+# File: ../profiles/default/registry.xml, line: -1
+msgid "The person that created an item"
+msgstr ""
 
 # File: ../content/analysisservice.py, line: 356
 msgid "The price charged per analysis for clients who qualify for bulk discounts"
@@ -3481,6 +3742,13 @@ msgstr "Amb aquesta acció eliminarà totes les especificacions d'anàlisis de c
 # File: ../browser/referencesample.py, line: 203
 msgid "Title"
 msgstr "Títol"
+
+# 
+# File: ../content/instrumentcalibration.py, line: 40
+# File: ../content/instrumentcertification.py, line: 54
+# File: ../content/instrumentmaintenancetask.py, line: 54
+msgid "To"
+msgstr ""
 
 # File: ../skins/bika/portlet_to_be_preserved.pt, line: 22
 msgid "To Be Preserved"
@@ -3640,9 +3908,19 @@ msgstr "CIF"
 msgid "Valid from"
 msgstr "Vàlid des de"
 
+# 
+# File: ../browser/instrument.py, line: 196
+msgid "Valid to"
+msgstr ""
+
 # File: ../content/pricelist.py, line: 53
 msgid "Valid until"
 msgstr "Vàlid fins"
+
+# 
+# File: ../content/instrumentscheduledtask.py, line: 87
+msgid "Validation"
+msgstr ""
 
 # File: ../validators.py, line: 149
 msgid "Validation failed: '${keyword}': duplicate keyword"
@@ -3784,6 +4062,12 @@ msgstr "Error de validació: els segons han de ser de tipus numèric"
 msgid "Validation failed: title is required"
 msgstr "Error de validació: no heu indicat el títol"
 
+# 
+# File: ../browser/instrument.py, line: 255
+# File: ../content/instrumentvalidation.py, line: 32
+msgid "Validator"
+msgstr ""
+
 # File: ../browser/client.py, line: 322
 msgid "Validity"
 msgstr "Validesa"
@@ -3792,7 +4076,7 @@ msgstr "Validesa"
 msgid "Value"
 msgstr "Valor"
 
-#
+# 
 # File: ../content/analysisservice.py, line: 285
 msgid "Values can be entered here which will override the defaults specified in the Calculation Interim Fields."
 msgstr ""
@@ -3828,6 +4112,13 @@ msgstr "Adreça de correu electrònic de l'entitat acreditadora"
 # File: ../content/analysisservice.py, line: 301
 msgid "When the results of duplicate analyses on worksheets, carried out on the same sample, differ with more than this percentage, an alert is raised"
 msgstr "Si la diferència percentual entre els resultats d'una rèplica d'anàlisis en la fulla de treball per a la mateixa mostra i anàlisis, el sistema ho notificarà mitjançant una alerta"
+
+# 
+# File: ../content/instrumentcalibration.py, line: 67
+# File: ../content/instrumentmaintenancetask.py, line: 82
+# File: ../content/instrumentvalidation.py, line: 52
+msgid "Work Performed"
+msgstr ""
 
 # File: ../browser/referencesample.py, line: 60
 # File: ../browser/worksheetfolder.py, line: 112
@@ -3954,6 +4245,16 @@ msgstr "min."
 msgid "range"
 msgstr "rang"
 
+# 
+# File: ../content/instrumentscheduledtask.py, line: 99
+msgid "repeating every"
+msgstr ""
+
+# 
+# File: ../content/instrumentscheduledtask.py, line: 99
+msgid "repeatperiod"
+msgstr ""
+
 # File: ../browser/templates/bika_listing_table.pt, line: 91
 #. Default: "Content listing"
 msgid "summary_content_listing"
@@ -3983,4 +4284,9 @@ msgstr "title_move_item_up"
 # File: ../browser/reports/selection_macros/select_daterange.pt, line: 28
 msgid "to"
 msgstr "fins"
+
+# 
+# File: ../content/instrumentscheduledtask.py, line: 101
+msgid "until"
+msgstr ""
 

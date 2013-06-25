@@ -1,4 +1,4 @@
-#
+# 
 # Translators:
 # Inus Scheepers <inus@animatica.co.za>, 2012.
 # Lemoene Smit <>, 2012.
@@ -91,6 +91,11 @@ msgstr "Ontledingsprofiele"
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 msgid "Analysis Request"
 msgstr "Ontledingsversoek"
+
+# 
+# File: ../profiles/default/types/AnalysisRequestQuery.xml, line: -1
+msgid "Analysis Request Query"
+msgstr ""
 
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/AnalysisRequestsFolder.xml, line: -1
@@ -190,11 +195,21 @@ msgstr "Berekening"
 msgid "Calculations"
 msgstr "Berekeninge"
 
+# 
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Calibrations"
+msgstr ""
+
 # File:
 # ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
 # line: -1
 msgid "Cancelled"
 msgstr "Gekanselleer"
+
+# 
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Certifications"
+msgstr ""
 
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Client"
@@ -315,6 +330,17 @@ msgstr "Dormant"
 msgid "Instrument"
 msgstr "Instrument"
 
+# 
+# File: ../profiles/default/types/InstrumentType.xml, line: -1
+msgid "Instrument Type"
+msgstr ""
+
+# 
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/InstrumentTypes.xml, line: -1
+msgid "Instrument Types"
+msgstr ""
+
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Instruments.xml, line: -1
 msgid "Instruments"
@@ -388,6 +414,17 @@ msgstr "Hanteer ontledings"
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Manage Results"
 msgstr "Hanteer uitslae"
+
+# 
+# File: ../profiles/default/types/Manufacturer.xml, line: -1
+msgid "Manufacturer"
+msgstr ""
+
+# 
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/Manufacturers.xml, line: -1
+msgid "Manufacturers"
+msgstr ""
 
 # File: ../profiles/default/types/Method.xml, line: -1
 msgid "Method"
@@ -473,6 +510,11 @@ msgstr "Navrae"
 msgid "Query"
 msgstr "Navraag"
 
+# 
+# File: ../profiles/default/types/AnalysisRequestQuery.xml, line: -1
+msgid "Query analysis requests on various criteria"
+msgstr ""
+
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
 # File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
@@ -493,19 +535,6 @@ msgstr "Verwysingsdefinisie"
 msgid "Reference Definitions"
 msgstr "Verwysingsdefinisies"
 
-# File: ../profiles/default/types/ReferenceManufacturer.xml, line: -1
-msgid "Reference Manufacturer"
-msgstr "Verwysingsvervaardiger"
-
-# File: ../profiles/default/controlpanel.xml, line: -1
-# File: ../profiles/default/types/ReferenceManufacturers.xml, line: -1
-msgid "Reference Manufacturers"
-msgstr "Verwysingsvervaardigers"
-
-# File: ../profiles/default/types/ReferenceSample.xml, line: -1
-msgid "Reference Values"
-msgstr "Verwysingsuitslae"
-
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
 msgid "Reference Sample"
 msgstr "Verwysingsmonster"
@@ -516,14 +545,9 @@ msgstr "Verwysingsmonster"
 msgid "Reference Samples"
 msgstr "Verwysingsmonsters"
 
-# File: ../profiles/default/types/ReferenceSupplier.xml, line: -1
-msgid "Reference Supplier"
-msgstr "Verwysingsverskaffer"
-
-# File: ../profiles/default/controlpanel.xml, line: -1
-# File: ../profiles/default/types/ReferenceSuppliers.xml, line: -1
-msgid "Reference Suppliers"
-msgstr "Verwysingsverskaffers"
+# File: ../profiles/default/types/ReferenceSample.xml, line: -1
+msgid "Reference Values"
+msgstr "Verwysingsuitslae"
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
@@ -634,6 +658,11 @@ msgstr "Monsterafwyking"
 msgid "Sampling Deviations"
 msgstr "Monsterafwykings"
 
+# 
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Schedule"
+msgstr ""
+
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Sample.xml, line: -1
 # File: ../profiles/default/types/SamplePartition.xml, line: -1
@@ -648,6 +677,11 @@ msgstr "Plakker"
 # line: -1
 msgid "Submitted"
 msgstr "Ingehandig"
+
+# 
+# File: ../profiles/default/types/Supplier.xml, line: -1
+msgid "Supplier"
+msgstr ""
 
 # File: ../profiles/default/actions.xml, line: -1
 msgid "Suppliers"
@@ -719,6 +753,11 @@ msgstr "Nie toegewys"
 # ../profiles/default/workflows/bika_publication_workflow/definition.xml,
 # line: -1
 msgid "Unpublished"
+msgstr ""
+
+# 
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Validations"
 msgstr ""
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,

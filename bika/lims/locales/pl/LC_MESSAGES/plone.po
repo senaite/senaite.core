@@ -1,4 +1,4 @@
-#
+# 
 # Translators:
 # Emil Cyraniak <cyrano30@epf.pl>, 2012.
 msgid ""
@@ -90,6 +90,11 @@ msgstr "Profile analizy"
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 msgid "Analysis Request"
 msgstr "Zestaw analiz"
+
+# 
+# File: ../profiles/default/types/AnalysisRequestQuery.xml, line: -1
+msgid "Analysis Request Query"
+msgstr ""
 
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/AnalysisRequestsFolder.xml, line: -1
@@ -189,11 +194,21 @@ msgstr "Obliczanie"
 msgid "Calculations"
 msgstr "Obliczenia"
 
+# 
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Calibrations"
+msgstr ""
+
 # File:
 # ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
 # line: -1
 msgid "Cancelled"
 msgstr "Anulowane"
+
+# 
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Certifications"
+msgstr ""
 
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Client"
@@ -314,6 +329,17 @@ msgstr "Nieaktywny"
 msgid "Instrument"
 msgstr "Przyrząd"
 
+# 
+# File: ../profiles/default/types/InstrumentType.xml, line: -1
+msgid "Instrument Type"
+msgstr ""
+
+# 
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/InstrumentTypes.xml, line: -1
+msgid "Instrument Types"
+msgstr ""
+
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Instruments.xml, line: -1
 msgid "Instruments"
@@ -387,6 +413,17 @@ msgstr "Zarządzaj analizami"
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Manage Results"
 msgstr "Zarządzanie wynikami"
+
+# 
+# File: ../profiles/default/types/Manufacturer.xml, line: -1
+msgid "Manufacturer"
+msgstr ""
+
+# 
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/Manufacturers.xml, line: -1
+msgid "Manufacturers"
+msgstr ""
 
 # File: ../profiles/default/types/Method.xml, line: -1
 msgid "Method"
@@ -472,6 +509,11 @@ msgstr "Wyszukiwania"
 msgid "Query"
 msgstr "Wyszukiwanie"
 
+# 
+# File: ../profiles/default/types/AnalysisRequestQuery.xml, line: -1
+msgid "Query analysis requests on various criteria"
+msgstr ""
+
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
 # File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
@@ -492,19 +534,6 @@ msgstr "Charakterystyka materiału odniesienia"
 msgid "Reference Definitions"
 msgstr "Charakterystyki materiałów odniesienia"
 
-# File: ../profiles/default/types/ReferenceManufacturer.xml, line: -1
-msgid "Reference Manufacturer"
-msgstr "Producent materiałów odniesienia"
-
-# File: ../profiles/default/controlpanel.xml, line: -1
-# File: ../profiles/default/types/ReferenceManufacturers.xml, line: -1
-msgid "Reference Manufacturers"
-msgstr "Producenci materiałów odniesienia"
-
-# File: ../profiles/default/types/ReferenceSample.xml, line: -1
-msgid "Reference Values"
-msgstr "Wyniki materiału odniesienia"
-
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
 msgid "Reference Sample"
 msgstr "Materiał odniesienia"
@@ -515,14 +544,9 @@ msgstr "Materiał odniesienia"
 msgid "Reference Samples"
 msgstr "Materiały odniesienia"
 
-# File: ../profiles/default/types/ReferenceSupplier.xml, line: -1
-msgid "Reference Supplier"
-msgstr "Dostawca materiałów odniesienia"
-
-# File: ../profiles/default/controlpanel.xml, line: -1
-# File: ../profiles/default/types/ReferenceSuppliers.xml, line: -1
-msgid "Reference Suppliers"
-msgstr "Dostawcy materiałów odniesienia"
+# File: ../profiles/default/types/ReferenceSample.xml, line: -1
+msgid "Reference Values"
+msgstr "Wyniki materiału odniesienia"
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
@@ -633,6 +657,11 @@ msgstr "Odstępstwo w pobieraniu próbki"
 msgid "Sampling Deviations"
 msgstr "Odstępstwa w pobieraniu próbek"
 
+# 
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Schedule"
+msgstr ""
+
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Sample.xml, line: -1
 # File: ../profiles/default/types/SamplePartition.xml, line: -1
@@ -647,6 +676,11 @@ msgstr "Naklejka"
 # line: -1
 msgid "Submitted"
 msgstr "Wysłane"
+
+# 
+# File: ../profiles/default/types/Supplier.xml, line: -1
+msgid "Supplier"
+msgstr ""
 
 # File: ../profiles/default/actions.xml, line: -1
 msgid "Suppliers"
@@ -718,6 +752,11 @@ msgstr "Nieprzydzielone"
 # ../profiles/default/workflows/bika_publication_workflow/definition.xml,
 # line: -1
 msgid "Unpublished"
+msgstr ""
+
+# 
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Validations"
 msgstr ""
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
