@@ -167,7 +167,7 @@ $(document).ready(function(){
 		}
 		$.ajax({
 		  type: 'POST',
-		  url: window.location.href.replace("manage_results", "setAnalyst"),
+		  url: window.location.href.replace("/manage_results", "") + "/setAnalyst",
 		  data: {'value': $(this).val(),
 				  '_authenticator': $('input[name="_authenticator"]').val()}
 		});
@@ -179,7 +179,7 @@ $(document).ready(function(){
 		}
 		$.ajax({
 		  type: 'POST',
-		  url: window.location.href.replace("manage_results", "setInstrument"),
+		  url: window.location.href.replace("/manage_results", "") + "/setInstrument",
 		  data: {'value': $(this).val(),
 				  '_authenticator': $('input[name="_authenticator"]').val()}
 		});
