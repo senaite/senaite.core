@@ -4,8 +4,8 @@ Documentation  AR with Workflow disabled, Lab sample AS and 2 users
 
 Library  Selenium2Library  timeout=10  implicit_wait=0.5
 Library  bika.lims.tests.base.Keywords
-Resource  src/bika.lims/bika/lims/tests/keywords.txt
-#Resource  keywords.txt
+#Resource  src/bika.lims/bika/lims/tests/keywords.txt
+Resource  keywords.txt
 
 
 Variables  plone/app/testing/interfaces.py
@@ -135,6 +135,7 @@ ShowTime
 
 RunBikaSetup
 
+    Log  Run Bika Setup  WARN
     Go to  http://localhost:55001/plone/bika_setup/edit
     #Click link  Analyses
     #Select Checkbox  SamplingWorkflowEnabled
@@ -154,6 +155,7 @@ Create SampleTypes
     ...          ${Hours}=
     ...          ${Minutes}=
 
+    Log  Create Sample Types  WARN
     Go to  http://localhost:55001/plone/bika_setup/bika_sampletypes
 
     Click link  Add
@@ -183,7 +185,7 @@ Create SampleTypes
 Create AnalysisSpecification
     [Arguments]  ${SampleType}=
 
-
+    Log  Create Analysis Specification  WARN
     Go to  http://localhost:55001/plone/bika_setup/bika_analysisspecs
     Click link  Add
     Wait Until Page Contains Element  SampleType:list
@@ -211,6 +213,7 @@ Create LabDepartment
     [Arguments]  ${Title}=
     ...          ${Description}=
 
+    Log  Create Lab Department  WARN
     Go to  http://localhost:55001/plone/bika_setup/bika_departments
     Click link  Add
     Wait Until Page Contains Element  title
@@ -223,6 +226,7 @@ Create LabDepartment
 Create AnalysisCategories
     [Arguments]  ${Description}=
 
+    Log  Create Analysis Categories  WARN
     Go to  http://localhost:55001/plone/bika_setup/bika_analysiscategories
     Wait Until Page Contains  Analysis Categories
     Click link  Add
@@ -237,9 +241,12 @@ Create AnalysisCategories
 Create AnalysisServices
     [Arguments]  ${Description}=
 
+    Log  Create Analysis Services  WARN
     Go to  http://localhost:55001/plone/bika_setup/bika_analysisservices
     Wait Until Page Contains  Analysis Services
+
     Click link  Add
+
     Wait Until Page Contains Element  title
     Input Text  title  ${AnalysisServices_global_Title}
     Input Text  description  ${Description}
@@ -376,7 +383,7 @@ Create AddClients
     ...          ${Physical Address}=
     ...          ${Postal Address}=
 
-
+    Log  Add Clients  WARN
     Go to  http://localhost:55001/plone/clients
     Wait Until Page Contains  Clients
     Click link  Add
@@ -449,6 +456,7 @@ Create ClientContact
     ...          ${Postal Address}=
     ...          ${Preference}=
 
+    Log  Create Client Contacts  WARN
     Go to  http://localhost:55001/plone/clients
 
     Click link  ${ClientName_global}
@@ -499,7 +507,7 @@ Create ClientContact
 #end LabContact
 
     #now continue with AR
-
+    Log  Create Analysis Request  WARN
     Go to  http://localhost:55001/plone/clients
     Wait Until Page Contains  Clients
     Click Link  ${ClientName_global}
@@ -745,8 +753,7 @@ Verify AR
 
     Log  Process Complete.  WARN
 
-
-
+    Shleep  600  Check out retracting
 
 
 
