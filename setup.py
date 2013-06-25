@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '3.0rc2.3'
+version = '3.0rc3'
 
 setup(name='bika.lims',
       version=version,
@@ -28,7 +28,6 @@ setup(name='bika.lims',
           'Products.CMFEditions',
           'Products.AdvancedQuery',
           'Products.TinyMCE',
-          #'collective.indexing>=2.0a3',
           'collective.js.jqueryui==1.8.16.9',
           'collective.monkeypatcher',
           'plone.app.z3cform',

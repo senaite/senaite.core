@@ -1,31 +1,40 @@
-3.0rc2.3
-========
+3.0rc3 (2013-06-25)
+-------------------
 
-2013-01-29
+- Many instrument management improvements! (Merge branch 'imm')
+- Removed ReferenceManufacturer (use of generic Manufacturer instead)
+- Removed ReferenceSupplier (use Supplier instead)
+- Improve service/calculation interim field widgets
+  Allows service to include custom fields (without calculation selected)
+- Fix services display table categorisation in Analysis Specification views
+- Stop focusing the search gadget input when page load completes. (revert)
+- Limit access to Import tab (BIKA: Manage Bika)
+- New permission: "BIKA: Import Instrument Results"
+- New permission: "BIKA: Manage Login Details" - edit contact login details
+- Some late changes to better handle the updates to ID creation
+- Plone 4.3 compatibility (incomplete)
+- Use Collections as a base for Queries (incomplete)
+- Many many bugfixes.
+
+3.0rc2.3 (2013-01-29)
+-------------------
 
 - Fix bad HTML
 
-3.0rc2.2
-========
-
-2013-01-28
+3.0rc2.2 (2013-01-28)
+-------------------
 
 - Fix an error during AR Publish
 
-3.0rc2.1
-========
-
-2013-01-21
+3.0rc2.1 (2013-01-21)
+-------------------
 
 - Fix bad HTML
 - Pin collective.js.jqueryui version to 1.8.16.9
 
-3.0rc2
-======
+3.0rc2 (2013-01-21)
+-------------------
 
-2013-01-21
-
-- Many many bugfixes.
 - Updated all translations and added Brazilian Portuguese
 - RecordsWidget: subfield_types include "date"
 - RecordsWidget: Automatic combogrid lookups
@@ -41,19 +50,16 @@
 - Improved Javascript i18n handling
 - Improved default permissions
 - New reports
-    - Added 'Data entry day book' report
     - Added 'Analysis summary per department' (merge of 'Analyses lab department weekly' and 'Analyses request summary by date range'
     - Added 'Analyses performed as % of total' report
     - Added Analyses per lab department report
     - Added 'Samples received vs. samples reported' report
     - Added Daily Samples Received report
+- Many many bugfixes.
 
-3.0rc1
-======
+3.0rc1 (2012-10-01)
+-------------------
 
-2012-10-01
-
-Bug fixes
 
 - Removed Bika Health data from released egg
 - Remove remarks from portal_factory screens
@@ -61,12 +67,10 @@ Bug fixes
 - ClientFolder default sorting.
 - Date formats for jquery datepicker
 - Don't overwrite the Title specified in @@plone-addsite
+- Bug fixes
 
-3.0rc1
-======
-
-2012-09-25
-----------
+3.0rc1 (2012-09-25)
+-------------------
 
 ### Changes
 
@@ -93,8 +97,6 @@ Bug fixes
 2012-06-21
 ----------
 
-#### Changes
-
 - Partitioning & Preservation automation
 - Reports
 - Sample point & types relations in UI
@@ -113,8 +115,6 @@ Bug fixes
 2012-04-23
 ----------
 
-#### Changes
-
 - Optional sampling and preservation workflows and roles.
 - Sample partitioning.
 - AR templates - Sample point & Sample type restrictions.
@@ -130,11 +130,8 @@ Bug fixes
 - Store the date of capture for analysis results
 - Append only remarks fields on more objects.
 
-
 2012-01-23
 ----------
-
-#### Changes
 
  - Made Bika compatible with Plone 4.1
  - Sampler and Preserver roles, users and permissions
@@ -167,17 +164,13 @@ Bug fixes
  - CustomRecordsWidget
 
 2.3.3 Bug fix release
-=====================
-
-#### Bugs fixed
+---------------------
 
  - Inclusion of BikaMembers 0.0.3. No changes to bika code, version bumped
    to facilitate release of new BikaMembers version.
 
 2.3
-===
-
-#### Changes
+---
 
  - Analysis categories introduced
  - Analysis service result restrictions - specification of possible results
@@ -200,8 +193,6 @@ Bug fixes
  - ATSchemaEditor removed
  - Significant performance improvements
 
-#### Bugs fixed
-
  - Resolve client action conflicts
  - Sampled date validation
  - Drymatter formatting on output corrected
@@ -210,9 +201,7 @@ Bug fixes
  - Pricelist prints blank for analysis service with price not defined
 
 2.2
-===
-
-#### Changes
+---
 
  - Attachments permitted on analysis requests and analyses
  - Worksheet resequencing, and sort order for worksheet analysis selection
@@ -225,9 +214,7 @@ Bug fixes
  - Progress bar introduced for long running processes
 
 2.1.1
-=====
-
-#### Changes
+-----
 
  - Disposal Date for Samples and Retention Period per Sample Type added.
  - Various new search criteria added.
@@ -244,9 +231,7 @@ Bug fixes
  - Documents may be uploaded for Methods.
 
 2.1
-===
-
-#### Changes
+---
 
  - Sample object and workflow introduced
  - Results specifications, lab and per client
@@ -268,9 +253,8 @@ Bug fixes
  - Many reports including Turn around, analyses repeated and out of spec
 
 1.2.1
-=====
+-----
 
-#### Bugs fixed
 
  - Removed invoice line item descriptions from core code to allow skin
    integration
@@ -278,9 +262,7 @@ Bug fixes
  - More language translations
 
 1.2.0
-=====
-
-#### Changes
+-----
 
  - Statements renamed to Invoices
  - Jobcards renamed to Worksheets
@@ -303,8 +285,6 @@ Bug fixes
    Permit analysis parent (sample) to be in 'released' state.
    Reference SampleID on AnalysisRequest-
 
-#### Bugs fixed
-
  - 1566324: Logged in page redirected to welcome page.
  - 1573299: LiveSearch - Added permissions to InvoiceLineItem.
  - 1573083: Status Drop Down - Invoicing
@@ -317,7 +297,7 @@ Bug fixes
  - 1532796: AR edit - allow change of contact
 
 1.1.3
-=====
+-----
 
  This is a bug fix release. Migration from older versions has also
  been improved greatly.
@@ -328,7 +308,6 @@ Bug fixes
  script and the *validate_analysisrequest_add_form.vpy* validation
  script.
 
-#### Bugs fixed
 
  - 1423182: IndexError on surfing to LIMS pages without being logged on
  - 1423238: Orders - Dispatch date
@@ -341,25 +320,17 @@ Bug fixes
  - 1418473: Updated start-id-server.bat for Win2K & Win XP
 
 1.1.2
-=====
-
-#### Features added
+-----
 
  - 1423205: Show logs to labmanager set-up
  - 1291750: Added default ID prefixes for Order and Statement
-
-#### Bugs fixed
-
  - 1424589: Late analysis alert to be calulated on date received
 
 1.1.1
-=====
+-----
 
-#### Changes
 
  - Updated portlets with Plone 2.1 style definition list markup
-
-#### Bugs fixed:
 
  - 1423179: Clients must not see JobCard links on Analysis Requests
  - 1423182: IndexError on surfing to LIMS pages without being logged on
@@ -374,9 +345,8 @@ Bug fixes
  - 1423386: Email publication error
 
 1.1.0
-=====
+-----
 
-#### Changes
  - Made Bika compatibable with Plone 2.1
  - Added Spanish translation contributed by Luis Espinoza
  - Added Italian translation contributed by Pierpaolo Baldan
@@ -396,9 +366,7 @@ Bug fixes
    AnalysisRequest and Jobcard.
 
 1.0.1
-=====
-
-#### Changes
+-----
 
  - Updated 'skins/bika/date_components_support.py' with latest
    version of script in Plone 2.0.5
