@@ -10,11 +10,11 @@ Thumbs.db
 *.log
 *.wpr
 *.wpu
-*.project
-*.pydevproject
 .settings
 log.html
 output.xml
 report.html
 selenium-screenshot*
+*project
+*workspace
 
