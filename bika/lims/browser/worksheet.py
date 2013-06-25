@@ -1113,7 +1113,7 @@ class ajaxAttachAnalyses(BrowserView):
         analysis_to_slot = {}
         for s in self.context.getLayout():
             analysis_to_slot[s['analysis_uid']] = int(s['position'])
-        analyses = list(self.context.getAnalyses(full_objects = True))
+        analyses = list(self.context.getAnalyses(full_objects=True))
         # Duplicates belong to the worksheet, so we must add them individually
         for i in self.context.objectValues():
             if i.portal_type == 'DuplicateAnalysis':
@@ -1149,15 +1149,17 @@ class ajaxAttachAnalyses(BrowserView):
                 if matches:
                     rows.append(row)
 
-        rows = sorted(rows, cmp=lambda x,y: cmp(x, y, key = itemgetter(sidx and sidx or 'slot')))
+        rows = sorted(rows, cmp=lambda x, y: cmp(x, y), key=itemgetter(sidx and sidx or 'slot'))
         if sord == 'desc':
             rows.reverse()
         pages = len(rows) / int(nr_rows)
         pages += divmod(len(rows), int(nr_rows))[1] and 1 or 0
-        ret = {'page':page,
-               'total':pages,
-               'records':len(rows),
-               'rows':rows[ (int(page)-1)*int(nr_rows) : int(page)*int(nr_rows) ]}
+        start = (int(page)-1) * int(nr_rows)
+        end = int(page) * int(nr_rows)
+        ret = {'page': page,
+               'total': pages,
+               'records': len(rows),
+               'rows': rows[start:end]}
 
         return json.dumps(ret)
 
