@@ -5,6 +5,12 @@ Documentation    Generally useful keywords for Bika tests.
 ...              *** settings ***
 ...              Resource  keywords.txt
 
+
+*** Variables ***
+
+${saveTime}
+
+
 *** Keywords ***
 
 Test Keyword
@@ -22,11 +28,35 @@ Log in
     Input text                   __ac_password  ${password}
     Click Button  Log in
 
+Log in as
+    [Arguments]  ${user}
+    Log in  test_${user}  test_${user}
+
+Log in as test user
+    Log in  ${TEST_USER_NAME}  ${TEST_USER_PASSWORD}
+
+Log in as site owner
+    Log in  ${SITE_OWNER_NAME}  ${SITE_OWNER_PASSWORD}
+
+Log in as test user with role
+    [Arguments]  ${usrid}  ${role}
+
+Log out as
+    [Arguments]  ${user}=
+    Click Link  test_${user}
+    sleep  0.5
+    Click Link  Log out
+    Log  User ${user} logging out!  WARN
+    Wait Until Page Contains  Log in
 
 Log out
     Go to                          http://localhost:55001/plone/logout
     Wait until page contains       You are now logged out
 
+
+Select First Option in Dropdown
+    sleep  0.5
+    Click Element  xpath=//div[contains(@class,'cg-DivItem')]
 
 Select from dropdown
     [Arguments]        ${locator}
@@ -38,12 +68,24 @@ Select from dropdown
 
 
 Select First From Dropdown
-    [Arguments]  ${elementName}
+    [Arguments]  ${Element}
+    
+    Click Element  ${Element}
     sleep  0.5
     #select the first item in the dropdown and return status
     ${STATUS}  Run Keyword And Return Status  Click Element  xpath=//div[contains(@class,'cg-DivItem')]
-    #if no content in dropdown output warning and continue
-    Run Keyword If  '${STATUS}' == 'False'  Log  No items found in dropdown: ${elementName}  WARN
+    #if error or no content in dropdown output warning and continue
+    Run Keyword If  '${STATUS}' == 'False'  Log  Error in attemting to select first item in dropdown - could also be empty: ${Element}  WARN
+
+SelectSpecificFromDropdown
+    [Arguments]  ${Element}=
+    ...          ${Option}=
+    Input Text  ${Element}  ${Option}
+    sleep  0.5
+    #select the first item in the dropdown and return status
+    ${STATUS}  Run Keyword And Return Status  Click Element  xpath=//div[contains(@class,'cg-DivItem')]
+    #if error or no content in dropdown output warning and continue
+    Run Keyword If  '${STATUS}' == 'False'  Log  Error in attemting to select first specific item in dropdown - could also be empty: ${Element}  WARN
 
 
 Select from datepicker
@@ -56,30 +98,74 @@ Select from datepicker
 SelectDate
     [Arguments]  ${Element}=
     ...          ${Date}=
-
     Click Element  ${Element}
+    Wait Until Page Contains Element  ui-datepicker-div
     Click Link  ${Date}
+
 
 SelectPrevMonthDate
     [Arguments]  ${Element}=
     ...          ${Date}=
-
     Click Element        ${Element}
-    sleep                0.5
-    Click Element        xpath=//a[@title='Prev']
+    Wait Until Page Contains Element  ui-datepicker-div
+    Click Element        xpath=//div[@id='ui-datepicker-div']//a[@title='Prev']
     sleep                0.5
     Click Link           ${Date}
 
 SelectNextMonthDate
     [Arguments]  ${Element}=
     ...          ${Date}=
-
     Click Element        ${Element}
-    sleep                0.5
-    Click Element        xpath=//a[@title='Next']
+    Wait Until Page Contains Element  ui-datepicker-div
+    Click Element        xpath=//div[@id='ui-datepicker-div']//a[@title='Next']
     sleep                0.5
     Click Link           ${Date}
 
+Shleep
+    [Arguments]  ${amount}=
+    ...          ${comment}=
+    Log  Sleeping ${amount}: ${comment}  WARN
+    sleep  ${amount}
+
+ShowAndSaveTime
+    ${time}  GetTime
+    Set Global Variable  ${saveTime}  ${time}
+    Log  ${saveTime}  WARN
+
+DiffTime
+    [Arguments]  ${someTime}=
+    ${time}  GetTime
+    Log  start: ${someTime}  WARN
+    Log  __end: ${time}  WARN
 
 
+ShowTime
+    ${time}  GetTime
+    Log  ${time}  WARN
+
+
+TestResultsRange
+    [Arguments]  ${element}=
+    ...          ${badResult}=
+    ...          ${goodResult}=
+    Log  Testing Result Range for ${element} -:- values: ${badResult} and ${goodResult}  WARN
+    Input Text  ${element}  ${badResult}
+    #pres the tab key to move out the field
+    Press Key  ${element}  \t
+    #Warning img -> http://localhost:55001/plone/++resource++bika.lims.images/warning.png
+    sleep  0.5
+    Page Should Contain Image  http://localhost:55001/plone/++resource++bika.lims.images/exclamation.png
+    Input Text  ${element}  ${goodResult}
+    Press Key  ${element}  \t
+    sleep  0.5
+    Page Should Not Contain Image  http://localhost:55001/plone/++resource++bika.lims.images/exclamation.png
+
+
+TestSampleState
+    [Arguments]  ${element}=
+    ...          ${sample}=
+    ...          ${expectedState}=
+    ${VALUE}  Get Value  ${element}
+    Should Be Equal  ${VALUE}  ${expectedState}  ${sample} Workflow States incorrect: Expected: ${expectedState} -
+    Log  Testing Sample State for ${sample}: ${expectedState} -:- ${VALUE}  WARN
 
