@@ -4,7 +4,7 @@ Documentation  AR with Workflow disabled, Lab sample AS and 2 users
 
 Library  Selenium2Library  timeout=10  implicit_wait=0.5
 Library  bika.lims.tests.base.Keywords
-#Resource  src/bika.lims/bika/lims/tests/keywords.txt
+
 Resource  keywords.txt
 
 
@@ -27,6 +27,7 @@ ${SampleTypesTitle}  Sample Types Title
 
 ${ClientName_global}  Client Name
 ${Prefix_global}  PREFIX
+${AS_Keyword}  AnalysisKeyword
 
 #AR name is created at runtime
 ${AR_name_global}
@@ -48,8 +49,6 @@ ${YEAR}
 *** Test Cases ***
 
 AnalysisRequest
-
-    ShowTime
 
     #test availability ofkeywords in resource keywords.txt
     Test Keyword
@@ -106,7 +105,7 @@ AnalysisRequest
     ...    ZIP=12345
     ...    Physical Address=Client House\nClient Street 20\nClient Town
     ...    Postal Address=Post Box 25\nClient Town
-    ...    Preference=print
+    ...    Preference=Email
 
     #signature upload not tested
     #end ClientContact
@@ -117,12 +116,13 @@ AnalysisRequest
 
     Verify AR
 
-    ShowTime
+    DiffTime  ${saveTime}
 
 
 *** Keywords ***
 
 Start browser
+    ShowAndSaveTime
     Open browser  http://localhost:55001/plone/login_form
     Set selenium speed  ${SELENIUM_SPEED}
 
@@ -251,23 +251,19 @@ Create AnalysisServices
     Input Text  title  ${AnalysisServices_global_Title}
     Input Text  description  ${Description}
     Input Text  Unit  measurement Unit
-    Input Text  Keyword  AnalysisKeyword
+    Input Text  Keyword  ${AS_Keyword}
 
     Log  AS: Lab Sample selected  WARN
 
     Select Radio Button  PointOfCapture  lab
     #Select Radio Button  PointOfCapture  field
 
-    Click Element  Category
-    #if you know the category name, another option is to:
-    #Input Text  Category  Analysis
     Select First From Dropdown  Category
 
     Input Text  Price  50.23
     Input Text  BulkPrice  30.00
     Input Text  VAT  15.00
-    Click Element  Department
-    #Input Text  Department  Lab
+
     Select First From Dropdown  Department
 
     #sleep  2
@@ -291,20 +287,17 @@ Create AnalysisServices
     #now move on to Analysis without saving
     Click link  Method
     Wait Until Page Contains Element  Instrument
-    Click Element  Method
-    #following because in small test files this info is not available
+
     Select First From Dropdown  Method
-    Click Element  Instrument
     Select First From Dropdown  Instrument
 
     Log  Specifically not selecting Dry Matter Calculation  WARN
     SelectSpecificFromDropdown  Calculation  Residual
 
-    #Click Element  Calculation
     #Select First From Dropdown  Calculation
 
     Log  Selecting interim fields  WARN
-    Input Text  InterimFields-keyword-0  Keyword
+    Input Text  InterimFields-keyword-0  IF-Keyword
     Input Text  InterimFields-title-0  Field Title
     Input Text  InterimFields-value-0  Default Value
     Input Text  InterimFields-unit-0  Unit
@@ -318,7 +311,7 @@ Create AnalysisServices
     #now move on to Uncertainties without saving
     Click link  Uncertainties
 
-    Log  Enetering uncertainties  WARN
+    Log  Entering uncertainties  WARN
 
     Input Text  Uncertainties-intercept_min-0  2
     Input Text  Uncertainties-intercept_max-0  9
@@ -342,29 +335,20 @@ Create AnalysisServices
 
     #Click Button  Save
 
-    Log  AnalysisServices: Preservation fields NOT selected for DEBUG  WARN
-    #Log  AnalysisServices: Preservation fields ARE selected  WARN    
+    Log  AnalysisServices: Selecting Preservation fields  WARN    
 
     #now move on to Container and Preservation without saving
     Click link  Container and Preservation
     Wait Until Page Contains Element  Preservation
-    #Select Checkbox  Separate
 
-    #Click Element  Preservation
-    #Select First From Dropdown  Preservation
-
-    #Click Element  Container
-    #Select First From Dropdown  Container
-
-    #Select From List  PartitionSetup-sampletype-0
-
-    #Click Element  PartitionSetup-separate-0
-
-    #Select From List  PartitionSetup-preservation-0
-
-    #Select From List  PartitionSetup-container-0
-
-    #Input Text  PartitionSetup-vol-0  Volume 123
+    Select Checkbox  Separate
+    Select First From Dropdown  Preservation
+    Select First From Dropdown  Container
+    Select From List  PartitionSetup-sampletype-0  Water
+    Click Element  PartitionSetup-separate-0
+    Select From List  PartitionSetup-preservation-0  Any
+    Select From List  PartitionSetup-container-0  Any
+    Input Text  PartitionSetup-vol-0  Volume 123
 
     #sleep  2
 
@@ -504,7 +488,7 @@ Create ClientContact
     Page should contain  Changes saved.
 
 
-#end LabContact
+    #end LabContact
 
     #now continue with AR
     Log  Create Analysis Request  WARN
@@ -515,43 +499,28 @@ Create ClientContact
     Click Link  Add
     Wait Until Page Contains  Request new analyses
 
-    #Click Element  ar_0_Batch
     #Select First From Dropdown  ar_0_Batch
 
     Log  No Template or Profile selected  WARN
-    #Click Element  ar_0_Template
     #Select First From Dropdown  ar_0_Template
-
-    #Click Element  ar_0_Profile
     #Select First From Dropdown  ar_0_Profile
 
-    #Click Element  ar_0_Profile
-    #Input Text  ar_0_Profile  Micro
     #Select First From Dropdown  ar_0_Profile
+    #Select Specific From Dropdown  ar_0_Profile  Micro
 
-    #Click Element  ar_0_Sample
     #Select First From Dropdown  ar_0_Sample
 
     SelectPrevMonthDate  ar_0_SamplingDate  1
 
     #Must select Sample Type otherwise the AR name changes and no end to end testing is possible
-    #Click Element  ar_0_SampleType
-    Input Text  ar_0_SampleType  ${Sample Types Title}
-    Select First From Dropdown  ar_0_SampleType
+    Select Specific From Dropdown  ar_0_SampleType  ${Sample Types Title}
 
-    #Click Element  ar_0_SamplePoint
     #Select First From Dropdown  ar_0_SamplePoint
-    #Click Element  ar_0_ClientOrderNumber
     #Select First From Dropdown  ar_0_ClientOrderNumber
-    #Click Element  ar_0_ClientReference
     #Select First From Dropdown  ar_0_ClientReference
-    #Click Element  ar_0_ClientSampleID
     #Select First From Dropdown  ar_0_ClientSampleID
-    #Click Element  ar_0_SamplingDeviation
     #Select First From Dropdown  ar_0_SamplingDeviation
-    #Click Element  ar_0_SampleCondition
     #Select First From Dropdown  ar_0_SampleCondition
-    #Click Element  ar_0_DefaultContainerType
     #Select First From Dropdown  ar_0_DefaultContainerType
 
     #Select Checkbox  ar_0_AdHoc
@@ -595,8 +564,6 @@ Create ClientContact
     Select Checkbox  xpath=//input[@title='Enterococcus' and @name='ar.0.Analyses:list:ignore_empty:record']
     Select Checkbox  xpath=//input[@title='Salmonella' and @name='ar.0.Analyses:list:ignore_empty:record']
 
-
-    #Log  For some reason the Water table is not open when profile selected  WARN
     Click Element  xpath=//th[@id='cat_lab_Water Chemistry']
     Select Checkbox  xpath=//input[@title='Moisture' and @name='ar.0.Analyses:list:ignore_empty:record']
 
@@ -611,49 +578,77 @@ Create ClientContact
     #Click Link  ${AR_name_global}
 
     #just select the AR checkbox
-    #select all
-    #Select Checkbox  analysisrequests_select_all
-    #select specific
     Select Checkbox  xpath=//input[@alt='Select ${AR_name_global}'] 
 
-    #test for Workflow State Change
-    ${VALUE}  Get Value  xpath=//input[@selector='state_title_${AR_name_global}']
-    #Log  VALUE = ${VALUE}  WARN
+    #check AS state - To be preserved
+    TestSampleState  xpath=//input[@selector='state_title_${AR_name_global}']  state_title_${AR_name_global}  To Be Preserved
 
-    Should Be Equal  ${VALUE}  Sample Due  Workflow States incorrect: Expected: Sample Due -
-    #check page status
+    #check page state - Active
+    TestPageState  xpath=//dl[@id='plone-contentmenu-workflow']//span[@class='state-active']  Active
 
+    Log  Preserve Sample  WARN
+    Click Link  ${AR_name_global}
+    Wait Until Page Contains Element  xpath=//input[@selector='PREFIX-0001_PREFIX-0001-P1']
 
+    #There are 2 partitions since a seperate sample partition was requested
+    Select Checkbox  xpath=//input[@selector='PREFIX-0001_PREFIX-0001-P1']
+    #now select 2nd partition and enter values
+    Select Checkbox  xpath=//input[@selector='PREFIX-0001_PREFIX-0001-P2']
+    Select From List  xpath=//select[@selector='getContainer_PREFIX-0001-P2'] 
+    Select From List  xpath=//select[@selector='getPreservation_PREFIX-0001-P2'] 
+
+    Log  BUG: AR Preservation Converting unpreserved partition in sample due status and saving should move the partition status to to be preserved but leaves it incorrectly in sample due  WARN
+
+    Log  Saving partitions before preserving  WARN
+    Click Element  xpath=//input[@id='save_partitions_button_transition']
+    #Nothing to check on page that changes have occurred - sleep
+    sleep  1
+
+    Select Checkbox  xpath=//input[@selector='PREFIX-0001_PREFIX-0001-P1']
+    Select Checkbox  xpath=//input[@selector='PREFIX-0001_PREFIX-0001-P2']
+
+    Click Element  xpath=//input[@id='preserve_transition']
+    Wait Until Page Contains  PREFIX-0001-P1 is waiting to be received
+
+    #check page state - Sample due
+    TestPageState  xpath=//dl[@id='plone-contentmenu-workflow']//span[@class='state-sample_due']  Sample Due
+    TestSampleState  xpath=//input[@selector='state_title_PREFIX-0001-P1']  state_title_PREFIX-0001-P1  Sample Due
+    TestSampleState  xpath=//input[@selector='state_title_PREFIX-0001-P2']  state_title_PREFIX-0001-P2  Sample Due
+    TestSampleState  xpath=//input[@selector='state_title_${AS_Keyword}']  state_title_${AS_Keyword}  Sample Due
+
+    Log  Receive Sample  WARN
+    Select Checkbox  xpath=//input[@selector='PREFIX-0001_PREFIX-0001-P1']
+    Select Checkbox  xpath=//input[@selector='PREFIX-0001_PREFIX-0001-P2']
     Click Element  receive_transition
     Wait Until Page Contains  Changes saved.
 
-    ${VALUE}  Get Value  xpath=//input[@selector='state_title_${AR_name_global}']
-    Should Be Equal  ${VALUE}  Received  Workflow States incorrect: Expected: Received -  
-    #check page status
+    TestPageState  xpath=//dl[@id='plone-contentmenu-workflow']//span[@class='state-sample_received']  Received
+    #check 2 partitions states - Sample received
+    TestSampleState  xpath=//input[@selector='state_title_PREFIX-0001-P1']  state_title_PREFIX-0001-P1  Sample received
+    TestSampleState  xpath=//input[@selector='state_title_PREFIX-0001-P2']  state_title_PREFIX-0001-P2  Sample received
+    #check AS state - Received
+    TestSampleState  xpath=//input[@selector='state_title_${AS_Keyword}']  state_title_${AS_Keyword}  Received
 
-    Click Link  ${AR_name_global}
-    Wait Until Page Contains  ${AR_name_global}
 
+    Log  Entering results  WARN
     #select a result
-    #Select From List  xpath=//select[@selector='Result_AnalysisKeyword']
-    Select From List  xpath=//tr[@cat='Analysis Category Title']/td/span/select[@selector='Result_AnalysisKeyword']
+    Select From List  xpath=//tr[@cat='Analysis Category Title']/td/span/select[@selector='Result_${AS_Keyword}']
     #click mouse out of input fields
     Click Element  xpath=//div[@id='content-core']
 
-    TestSampleState  xpath=//input[@selector='state_title_AnalysisKeyword']  ${AnalysisServices_global_Title}  Received
+    TestSampleState  xpath=//input[@selector='state_title_${AS_Keyword}']  ${AnalysisServices_global_Title}  Received
 
-    Checkbox Should Be Selected  xpath=//input[@selector='${AR_name_global}_AnalysisKeyword']
+    Checkbox Should Be Selected  xpath=//input[@selector='${AR_name_global}_${AS_Keyword}']
 
     Click Element  submit_transition
     Page should contain  Changes saved.
 
-    #AR status must have changed to: To be verified
-    TestSampleState  xpath=//input[@selector='state_title_AnalysisKeyword']  ${AnalysisServices_global_Title}  To be verified
-    
-    #Log  Bypassing state bug on AR - Received - should be To be verified  WARN
-    #TestSampleState  xpath=//input[@selector='state_title_AnalysisKeyword']  ${AnalysisServices_global_Title}  Received
+    #page status remains Received
+    TestPageState  xpath=//dl[@id='plone-contentmenu-workflow']//span[@class='state-sample_received']  Received
 
-    #Page Status should be: ????
+    #AR status must have changed to: To be verified
+    TestSampleState  xpath=//input[@selector='state_title_${AS_Keyword}']  ${AnalysisServices_global_Title}  To be verified
+    
     #Now enter some results for the other AR's
 
     Select From List  xpath=//tr[@keyword='Clos']/td/span/select[@selector='Result_Clos']
@@ -677,7 +672,7 @@ Create ClientContact
     Select From List  xpath=//tr[@keyword='Salmon']/td/span/select[@selector='Result_Salmon']
     TestSampleState  xpath=//input[@selector='state_title_Salmon']  Salmonella  Received
 
-    Log  No Result Fields for Dry Matter  WARN     
+    Log  Not selecting Dry Matter - selecting Moisture  WARN     
 
     #Moisture
     Input Text  xpath=//input[@selector='GM_Moist']  10
@@ -700,12 +695,13 @@ Create ClientContact
     TestResultsRange  xpath=//input[@selector='Result_Ca']  2  10
     TestResultsRange  xpath=//input[@selector='Result_Phos']  20  11
 
-
     TestSampleState  xpath=//input[@selector='state_title_Ca']  Calcium  Received
     TestSampleState  xpath=//input[@selector='state_title_Phos']  Phosphorus  Received
 
     Click Element  submit_transition
     Page should contain  Changes saved.
+
+    TestPageState  xpath=//dl[@id='plone-contentmenu-workflow']//span[@class='state-to_be_verified']  To be verified
 
     TestSampleState  xpath=//input[@selector='state_title_Entero']  Enterococcus  To be verified
     TestSampleState  xpath=//input[@selector='state_title_Salmon']  Salmonella  To be verified
@@ -714,6 +710,7 @@ Create ClientContact
     TestSampleState  xpath=//input[@selector='state_title_Phos']  Phosphorus  To be verified
 
     Log  Construction of AR: ${AR_name_global} complete  WARN
+
 
 
 Verify AR
@@ -725,19 +722,17 @@ Verify AR
     Click Element  xpath=//a[@id='to_be_verified_${AR_name_global}']
 
     Wait Until Page Contains Element  xpath=//a[@title='Change the state of this item']/span[@class='state-to_be_verified']
-
-    Element Should Contain  xpath=//a[@title='Change the state of this item']/span[@class='state-to_be_verified']  To be verified
+    TestPageState  xpath=//a[@title='Change the state of this item']/span[@class='state-to_be_verified']  To be verified
 
     Click Link  xpath=//a[@title='Change the state of this item']
     Wait Until Page Contains Element  workflow-transition-verify
     Click Link  workflow-transition-verify
 
-    #Check page status
     Wait Until Page Contains Element  xpath=//a[@title='Change the state of this item']/span[@class='state-verified']
-    Element Should Contain  xpath=//a[@title='Change the state of this item']/span[@class='state-verified']  Verified
+    TestPageState  xpath=//a[@title='Change the state of this item']/span[@class='state-verified']  Verified
 
     #Check content status
-    TestSampleState  xpath=//input[@selector='state_title_AnalysisKeyword']  ${AnalysisServices_global_Title}  Verified
+    TestSampleState  xpath=//input[@selector='state_title_${AS_Keyword}']  ${AnalysisServices_global_Title}  Verified
     TestSampleState  xpath=//input[@selector='state_title_Clos']  Clostridia  Verified
     TestSampleState  xpath=//input[@selector='state_title_Ecoli']  Ecoli  Verified   
     TestSampleState  xpath=//input[@selector='state_title_Entero']  Enterococcus  Verified
@@ -746,147 +741,6 @@ Verify AR
     TestSampleState  xpath=//input[@selector='state_title_Ca']  Calcium  Verified
     TestSampleState  xpath=//input[@selector='state_title_Phos']  Phosphorus  Verified
 
-    Click Link  xpath=//a[@title='Change the state of this item']
-    Wait Until Page Contains Element  workflow-transition-publish
-    #Click Link  workflow-transition-publish
-    Log  Publish NOT clicked - no way of testing result  WARN
-
     Log  Process Complete.  WARN
 
-    Shleep  600  Check out retracting
-
-
-
-
-
-Select First Option in Dropdown
-    #sleep  0.5
-    #Click Element  xpath=//div[contains(@class,'cg-DivItem')]
-    Select First From Dropdown  UNKNOWN
-
-Select First From Dropdown
-    [Arguments]  ${elementName}
-    sleep  0.5
-    #select the first item in the dropdown and return status
-    ${STATUS}  Run Keyword And Return Status  Click Element  xpath=//div[contains(@class,'cg-DivItem')]
-    #if no content in dropdown output warning and continue
-    Run Keyword If  '${STATUS}' == 'False'  Log  No items found in dropdown: ${elementName}  WARN
-
-
-SelectSpecificFromDropdown
-    [Arguments]  ${Element}=
-    ...          ${Option}=
-
-    Click Element  ${Element}
-    Input Text  ${Element}  ${Option}
-    Select First From Dropdown  ${Element}
-
-
-Log in
-    [Arguments]  ${userid}  ${password}
-
-    Go to  http://localhost:55001/plone/login_form
-    Page should contain element  __ac_name
-    Page should contain element  __ac_password
-    Page should contain button  Log in
-    Input text  __ac_name  ${userid}
-    Input text  __ac_password  ${password}
-    Click Button  Log in
-
-Log in as
-    [Arguments]  ${user}
-    Log in  test_${user}  test_${user}
-
-Log in as test user
-    Log in  ${TEST_USER_NAME}  ${TEST_USER_PASSWORD}
-
-Log in as site owner
-    Log in  ${SITE_OWNER_NAME}  ${SITE_OWNER_PASSWORD}
-
-Log in as test user with role
-    [Arguments]  ${usrid}  ${role}
-
-Log out as
-    [Arguments]  ${user}=
-
-    Click Link  test_${user}
-    sleep  0.5
-    Click Link  Log out
-    Log  User ${user} logging out!  WARN
-    Wait Until Page Contains  Log in
-
-Log out
-    Go to  http://localhost:55001/plone/logout
-    Page should contain  logged out
-
-
-Shleep
-    [Arguments]  ${amount}=
-    ...          ${comment}=
-
-    Log  Sleeping ${amount}: ${comment}  WARN
-    sleep  ${amount}
-
-
-
-SelectDate
-    [Arguments]  ${Element}=
-    ...          ${Date}=
-
-    Click Element  ${Element}
-    Click Link  ${Date}
-
-SelectPrevMonthDate
-    [Arguments]  ${Element}=
-    ...          ${Date}=
-
-    Click Element        ${Element}
-    sleep                0.5
-    #Click Element        xpath=//a[@title='Prev']  
-    Click Element        xpath=//div[@id='ui-datepicker-div']/div/a[@title='Prev']
-    sleep                0.5
-    #Click Link          ${Date}
-    Click Link           xpath=//div[@id='ui-datepicker-div']/table/tbody/tr/td/a[contains (text(),'${Date}')]
-
-
-SelectNextMonthDate
-    [Arguments]  ${Element}=
-    ...          ${Date}=
-
-    Click Element        ${Element}
-    sleep                0.5
-    Click Element        xpath=//a[@title='Next']
-    sleep                0.5
-    Click Link           ${Date}
-
-
-
-
-TestResultsRange
-    [Arguments]  ${element}=
-    ...          ${badResult}=
-    ...          ${goodResult}=
-
-    Log  Testing Result Range for ${element} -:- values: ${badResult} and ${goodResult}  WARN
-    Input Text  ${element}  ${badResult}
-    #pres the tab key to move out the field
-    Press Key  ${element}  \t
-    #Warning img -> http://localhost:55001/plone/++resource++bika.lims.images/warning.png
-    sleep  0.5
-    Page Should Contain Image  http://localhost:55001/plone/++resource++bika.lims.images/exclamation.png
-    Input Text  ${element}  ${goodResult}
-    Press Key  ${element}  \t
-    sleep  0.5
-    Page Should Not Contain Image  http://localhost:55001/plone/++resource++bika.lims.images/exclamation.png
-
-
-
-TestSampleState
-    [Arguments]  ${element}=
-    ...          ${sample}=
-    ...          ${expectedState}=
-
-    ${VALUE}  Get Value  ${element}
-    Should Be Equal  ${VALUE}  ${expectedState}  ${sample} Workflow States incorrect: Expected: ${expectedState} -
-    Log  Testing Sample State for ${sample}: ${expectedState} -:- ${VALUE}  WARN
 

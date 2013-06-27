@@ -169,3 +169,14 @@ TestSampleState
     Should Be Equal  ${VALUE}  ${expectedState}  ${sample} Workflow States incorrect: Expected: ${expectedState} -
     Log  Testing Sample State for ${sample}: ${expectedState} -:- ${VALUE}  WARN
 
+
+TestPageState
+    [Arguments]  ${element}=
+    ...          ${expectedState}=
+    ${Text}  Get Text  ${element}
+    Should Be Equal  ${Text}  ${expectedState}  Page States incorrect: Expected: ${expectedState} -
+    Log  Testing Page State: ${expectedState} -:- ${Text}  WARN
+
+
+
+
