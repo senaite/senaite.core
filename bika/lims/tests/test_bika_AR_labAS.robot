@@ -32,18 +32,12 @@ ${AS_Keyword}  AnalysisKeyword
 #AR name is created at runtime
 ${AR_name_global}
 
-${user-labmanager}  labmanager
-${user-labmanager1}  labmanager1
-
-#general purpose variable
-${VALUE}
-#general status variable
-${STATUS}
-
+${YEAR} 
 #empty string variable contained in AR name  <- just in case it returns
 #use 'Set Global Variable' when setting
-${YEAR}  
-
+ 
+${user-labmanager}  labmanager
+${user-labmanager1}  labmanager1
 
 
 *** Test Cases ***
@@ -722,14 +716,14 @@ Verify AR
     Click Element  xpath=//a[@id='to_be_verified_${AR_name_global}']
 
     Wait Until Page Contains Element  xpath=//a[@title='Change the state of this item']/span[@class='state-to_be_verified']
-    TestPageState  xpath=//a[@title='Change the state of this item']/span[@class='state-to_be_verified']  To be verified
+    TestPageState  xpath=//dl[@id='plone-contentmenu-workflow']//span[@class='state-to_be_verified']  To be verified
 
     Click Link  xpath=//a[@title='Change the state of this item']
     Wait Until Page Contains Element  workflow-transition-verify
     Click Link  workflow-transition-verify
 
     Wait Until Page Contains Element  xpath=//a[@title='Change the state of this item']/span[@class='state-verified']
-    TestPageState  xpath=//a[@title='Change the state of this item']/span[@class='state-verified']  Verified
+    TestPageState  xpath=//dl[@id='plone-contentmenu-workflow']//span[@class='state-verified']  Verified
 
     #Check content status
     TestSampleState  xpath=//input[@selector='state_title_${AS_Keyword}']  ${AnalysisServices_global_Title}  Verified
