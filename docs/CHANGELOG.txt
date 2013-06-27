@@ -1,8 +1,7 @@
-3.0rc4 (unreleased)
--------------------
+3.0rc3.1 (2013-06-27)
+---------------------
 
-- Nothing changed yet.
-
+- Fix permission name in upgrade step
 
 3.0rc3 (2013-06-25)
 -------------------
