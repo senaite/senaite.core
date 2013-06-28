@@ -1,4 +1,4 @@
-3.0rc3.2 (unreleased)
+3.0rc3.2 (2013-06-28)
 ---------------------
 
 - Fix site-error displaying upgraded instruments
