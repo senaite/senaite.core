@@ -17,4 +17,6 @@ report.html
 selenium-screenshot*
 *project
 *workspace
+*.tags*
+
 
