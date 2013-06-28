@@ -554,7 +554,8 @@ table.analysisrequest input {
   vertical-align:middle;
 }
 .template-manage_results .bika-listing-table td table td.pos {
-  /* font-size:120%; */
+  font-size:120%;
+  font-weight:bold;
   width:1ex;
   padding:5px;
   vertical-align:top;
