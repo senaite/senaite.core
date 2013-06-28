@@ -241,7 +241,7 @@
                     <td class="dryresult"
                         tal:condition="python: dry==True and analysis_result_dm"
                         tal:content="analysis_result_dm">23</td>
-                    <td class="units" tal:content="service/Unit">ng/ml</td>
+                    <td class="units" tal:content="service/Unit|nothing">ng/ml</td>
                     <td class="specs">
                         <span tal:condition="analysis_uncertainty"
                               tal:replace="string:[+/- $analysis_uncertainty] "></span>
