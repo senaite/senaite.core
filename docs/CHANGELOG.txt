@@ -1,7 +1,7 @@
 3.0rc3.2 (unreleased)
 ---------------------
 
-- Nothing changed yet.
+- Fix site-error displaying upgraded instruments
 
 
 3.0rc3.1 (2013-06-27)
