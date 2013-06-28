@@ -1,8 +1,12 @@
-3.0rc3.2 (unreleased)
+3.0rc3.2 (2013-06-28)
 ---------------------
 
-- Nothing changed yet.
-
+- Fix site-error displaying upgraded instruments
+- Fix spinner (KSS is not always enabled)
+- Add extra save button in ar_add
+- Label Printing: "Return to list" uses browser history
+- Bold worksheet position indicators
+- Remove version.txt (use only setup.py for version)
 
 3.0rc3.1 (2013-06-27)
 ---------------------

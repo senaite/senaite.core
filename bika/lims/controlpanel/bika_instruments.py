@@ -77,8 +77,10 @@ class InstrumentsView(BikaListingView):
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
-            items[x]['Type'] = obj.getInstrumentType().Title()
-            items[x]['Brand'] = obj.getManufacturer().Title()
+            itype = obj.getInstrumentType()
+            items[x]['Type'] = itype.Title() if itype else ''
+            iman = obj.getManufacturer()
+            items[x]['Brand'] = iman.Title() if iman else ''
             items[x]['Model'] = obj.Model
 #            items[x]['ExpiryDate'] = obj.CalibrationExpiryDate and \
 #                obj.CalibrationExpiryDate.asdatetime().strftime(self.date_format_short) or ''

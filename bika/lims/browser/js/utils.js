@@ -332,24 +332,26 @@ $(document).ready(function(){
 			});
 	});
 
-	$('#kss-spinner')
-		.hide()  // hide it initially
+    function clearTimer(){
+		if(window.bika_spinner != undefined && window.bika_spinner != null) {
+			clearTimeout(window.bika_spinner);
+		}
+	}
+	$('body')
+		.append("<div class='bika-spinner'/>")
 		.ajaxStart(function() {
-			window.bika_spinner = setTimeout(function(){$('#kss-spinner').show()},500);
+			// We don't want the spinner to stutter, so we wait a half second
+			clearTimer();
+			window.bika_spinner = setTimeout(function(){
+				$('body').addClass('loading'); },500);
 		})
 		.ajaxStop(function() {
-			if(window.bika_spinner != undefined &&
-			   window.bika_spinner != null) {
-				clearTimeout(bika_spinner);
-			}
-			$(this).hide();
+			clearTimer();
+			$('body').removeClass('loading');
 		})
 		.ajaxComplete(function() {
-			if(window.bika_spinner != undefined &&
-			   window.bika_spinner != null) {
-				clearTimeout(bika_spinner);
-			}
-			$(this).hide();
+			clearTimer();
+			$('body').removeClass('loading');
 		});
 
 	$(".numeric").live('keypress', function(event) {
