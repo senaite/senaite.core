@@ -302,6 +302,7 @@ def tmpID():
 
 
 def createPdf(htmlreport, outfile=None, css=None):
+    # XXX css must be a local file - urllib fails under robotframework tests.
     css_def = '';
     if css:
         if css.startswith("http://") or css.startswith("https://"):

@@ -32,10 +32,10 @@ ${AS_Keyword}  AnalysisKeyword
 #AR name is created at runtime
 ${AR_name_global}
 
-${YEAR} 
+${YEAR}
 #empty string variable contained in AR name  <- just in case it returns
 #use 'Set Global Variable' when setting
- 
+
 ${user-labmanager}  labmanager
 ${user-labmanager1}  labmanager1
 
@@ -72,7 +72,7 @@ AnalysisRequest
     Create AddClients  ID=987654321
     ...    Country=South Africa
     ...    State=Gauteng
-           #District is on auto select last entry    
+           #District is on auto select last entry
     ...    City=City Name
     ...    ZIP=12345
     ...    Physical Address=Client House\nClient Street 20\nClient Town
@@ -94,7 +94,7 @@ AnalysisRequest
     ...    Mobilephone=098 567 432
     ...    Country=South Africa
     ...    State=Gauteng
-           #District is on auto select last entry    
+           #District is on auto select last entry
     ...    City=City Name
     ...    ZIP=12345
     ...    Physical Address=Client House\nClient Street 20\nClient Town
@@ -329,7 +329,7 @@ Create AnalysisServices
 
     #Click Button  Save
 
-    Log  AnalysisServices: Selecting Preservation fields  WARN    
+    Log  AnalysisServices: Selecting Preservation fields  WARN
 
     #now move on to Container and Preservation without saving
     Click link  Container and Preservation
@@ -447,7 +447,7 @@ Create ClientContact
     Input Text  Middleinitial  ${Middleinitial}
     Input Text  Middlename  ${Middlename}
     Input Text  Surname  ${Surname}
-    Input Text  JobTitle  ${Jobtitle}    
+    Input Text  JobTitle  ${Jobtitle}
     Input Text  Department  ${Department}
 
     Click Link  Email Telephone Fax
@@ -572,7 +572,7 @@ Create ClientContact
     #Click Link  ${AR_name_global}
 
     #just select the AR checkbox
-    Select Checkbox  xpath=//input[@alt='Select ${AR_name_global}'] 
+    Select Checkbox  xpath=//input[@alt='Select ${AR_name_global}']
 
     #check AS state - To be preserved
     TestSampleState  xpath=//input[@selector='state_title_${AR_name_global}']  state_title_${AR_name_global}  To Be Preserved
@@ -588,8 +588,8 @@ Create ClientContact
     Select Checkbox  xpath=//input[@selector='PREFIX-0001_PREFIX-0001-P1']
     #now select 2nd partition and enter values
     Select Checkbox  xpath=//input[@selector='PREFIX-0001_PREFIX-0001-P2']
-    Select From List  xpath=//select[@selector='getContainer_PREFIX-0001-P2'] 
-    Select From List  xpath=//select[@selector='getPreservation_PREFIX-0001-P2'] 
+    Select From List  xpath=//select[@selector='getContainer_PREFIX-0001-P2']
+    Select From List  xpath=//select[@selector='getPreservation_PREFIX-0001-P2']
 
     Log  BUG: AR Preservation Converting unpreserved partition in sample due status and saving should move the partition status to to be preserved but leaves it incorrectly in sample due  WARN
 
@@ -642,7 +642,7 @@ Create ClientContact
 
     #AR status must have changed to: To be verified
     TestSampleState  xpath=//input[@selector='state_title_${AS_Keyword}']  ${AnalysisServices_global_Title}  To be verified
-    
+
     #Now enter some results for the other AR's
 
     Select From List  xpath=//tr[@keyword='Clos']/td/span/select[@selector='Result_Clos']
@@ -666,7 +666,7 @@ Create ClientContact
     Select From List  xpath=//tr[@keyword='Salmon']/td/span/select[@selector='Result_Salmon']
     TestSampleState  xpath=//input[@selector='state_title_Salmon']  Salmonella  Received
 
-    Log  Not selecting Dry Matter - selecting Moisture  WARN     
+    Log  Not selecting Dry Matter - selecting Moisture  WARN
 
     #Moisture
     Input Text  xpath=//input[@selector='GM_Moist']  10
@@ -728,13 +728,17 @@ Verify AR
     #Check content status
     TestSampleState  xpath=//input[@selector='state_title_${AS_Keyword}']  ${AnalysisServices_global_Title}  Verified
     TestSampleState  xpath=//input[@selector='state_title_Clos']  Clostridia  Verified
-    TestSampleState  xpath=//input[@selector='state_title_Ecoli']  Ecoli  Verified   
+    TestSampleState  xpath=//input[@selector='state_title_Ecoli']  Ecoli  Verified
     TestSampleState  xpath=//input[@selector='state_title_Entero']  Enterococcus  Verified
     TestSampleState  xpath=//input[@selector='state_title_Salmon']  Salmonella  Verified
     TestSampleState  xpath=//input[@selector='state_title_Moist']  Moisture  Verified
     TestSampleState  xpath=//input[@selector='state_title_Ca']  Calcium  Verified
     TestSampleState  xpath=//input[@selector='state_title_Phos']  Phosphorus  Verified
 
+    Click Link  xpath=//a[@title='Change the state of this item']
+    Wait Until Page Contains Element  workflow-transition-publish
+    Click Link  workflow-transition-publish
+    Wait Until Page Contains Element  xpath=//a[@title='Change the state of this item']
+    TestPageState  xpath=//dl[@id='plone-contentmenu-workflow']//span[@class='state-verified']  Published
+
     Log  Process Complete.  WARN
-
-

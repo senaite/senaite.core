@@ -1,6 +1,7 @@
 # Testing layer to provide some of the features of PloneTestCase
 
 from bika.lims.exportimport.load_setup_data import LoadSetupData
+from plone.app.testing import applyProfile
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import IntegrationTesting
 from plone.app.testing import login
@@ -8,17 +9,17 @@ from plone.app.testing import logout
 from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import SITE_OWNER_NAME
-from plone.app.testing import applyProfile
 from plone.testing import z2
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.setuphandlers import setupPortalContent
 from Testing.makerequest import makerequest
 
-import Products.ATExtensions
-import Products.PloneTestCase.setup
 import bika.lims
 import collective.js.jqueryui
 import plone.app.iterate
+import Products.ATExtensions
+import Products.PloneTestCase.setup
+import transaction
 
 
 class BikaTestLayer(PloneSandboxLayer):
@@ -84,6 +85,10 @@ class BikaTestLayer(PloneSandboxLayer):
                 # If user is in LabManagers, add Owner local role on clients folder
                 if role == 'LabManager':
                     portal.clients.manage_setLocalRoles(username, ['Owner', ])
+
+        # This I will use to detect that code is running under test.
+        portal.robotframework = True
+        transaction.commit()
 
         # load test data
         self.request = makerequest(portal.aq_parent).REQUEST

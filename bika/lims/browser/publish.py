@@ -1,29 +1,25 @@
-from DateTime import DateTime
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
-from bika.lims.utils import sendmail, encode_header, createPdf, attachPdf
-from cStringIO import StringIO
-from email.Utils import formataddr
-from email.mime.image import MIMEImage
-from email.MIMEBase import MIMEBase
+from bika.lims.utils import encode_header, createPdf, attachPdf
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email import Encoders
+from email.Utils import formataddr
 from os.path import join
+from pkg_resources import resource_filename
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFPlone.utils import safe_unicode
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from smtplib import SMTPRecipientsRefused
 from smtplib import SMTPServerDisconnected
+
 import App
 import Globals
-import re
-import xhtml2pdf.pisa as pisa
+
 
 class doPublish(BrowserView):
+
     """Pre/Re/Publish analysis requests"""
     template = ViewPageTemplateFile("mailtemplates/analysisrequest_results.pt")
 
@@ -41,7 +37,7 @@ class doPublish(BrowserView):
         self.publish_states = ['verified', 'published']
         for ar in analysis_requests:
             if workflow.getInfoFor(ar, 'review_state') in self.publish_states \
-                or ar.getAnalyses(review_state=self.publish_states):
+                    or ar.getAnalyses(review_state=self.publish_states):
                 self.analysis_requests.append(ar)
 
     def __call__(self):
@@ -110,6 +106,7 @@ class doPublish(BrowserView):
             self.qcservices = {}
 
             for analysis in analyses:
+
                 service = analysis.getService()
                 poc = POINTS_OF_CAPTURE.getValue(service.getPointOfCapture())
                 cat = service.getCategoryTitle()
@@ -140,9 +137,10 @@ class doPublish(BrowserView):
                 cat = service.getCategoryTitle()
                 if cat not in self.qcservices[qctype][poc]:
                     self.qcservices[qctype][poc][cat] = []
-                #if service not in self.qcservices[qctype][poc][cat]:
-                self.qcservices[qctype][poc][cat].append({'service': service,
-                                                         'analysis': qcanalysis})
+                # if service not in self.qcservices[qctype][poc][cat]:
+                self.qcservices[qctype][poc][cat].append(
+                    {'service': service,
+                     'analysis': qcanalysis})
 
             # Create the html report
             ar_results = safe_unicode(self.template()).encode('utf-8')
@@ -150,11 +148,13 @@ class doPublish(BrowserView):
                 open(join(out_path, out_fn + ".html"), "w").write(ar_results)
 
             # Create the pdf report (will always be attached to the AR)
-            pdf_results = ar_results.replace(r"analysisrequest_results.css",
-                                             r"analysisrequest_results_pdf.css")
             pdf_outfile = join(out_path, out_fn + ".pdf") if out_path else None
-            pdf_css = self.context.portal_url() + "/analysisrequest_results_pdf.css"
-            pdf_report = createPdf(pdf_results, pdf_outfile, css=pdf_css)
+            pdf_css = resource_filename(
+                "bika.lims", "skins/bika/analysisrequest_results_pdf.css")
+            ar_css = join(self.portal_url, "analysisrequest_results.css")
+            ar_results = ar_results.replace(ar_css, pdf_css)
+            pdf_report = createPdf(ar_results, pdf_outfile, css=pdf_css)
+
             if pdf_report:
                 reportid = self.context.generateUniqueId('ARReport')
                 ar.invokeFactory(id=reportid, type_name="ARReport")
@@ -163,13 +163,13 @@ class doPublish(BrowserView):
                     AnalysisRequest=ar.UID(),
                     Pdf=pdf_report,
                     Html=ar_results,
-                    Recipients=[{'UID':self.contact.UID(),
-                                'Username':self.contact.getUsername(),
-                                'Fullname':self.contact.getFullname(),
-                                'EmailAddress':self.contact.getEmailAddress(),
+                    Recipients=[{'UID': self.contact.UID(),
+                                'Username': self.contact.getUsername(),
+                                'Fullname': self.contact.getFullname(),
+                                'EmailAddress': self.contact.getEmailAddress(),
                                 'PublicationModes': self.pub_pref
-                                }]
-                    )
+                                 }]
+                )
                 report.unmarkCreationFlag()
                 from bika.lims.idserver import renameAfterCreation
                 renameAfterCreation(report)
@@ -193,7 +193,7 @@ class doPublish(BrowserView):
                     contact = ar.getContact()
                     if contact:
                         to.append(formataddr((encode_header(contact.Title()),
-                                               contact.getEmailAddress())))
+                                              contact.getEmailAddress())))
                     for cc in ar.getCCContact():
                         formatted = formataddr((encode_header(cc.Title()),
                                                cc.getEmailAddress()))
@@ -208,17 +208,21 @@ class doPublish(BrowserView):
                     if pdf_report and 'pdf' in self.pub_pref:
                         attachPdf(mime_msg, pdf_report, out_fn)
 
+                    # For now, I will simply ignore mail send under test.
+                    if hasattr(self.portal, 'robotframework'):
+                        continue
+
                     try:
                         host = getToolByName(self.context, 'MailHost')
                         host.send(mime_msg.as_string(), immediate=True)
-                    except SMTPServerDisconnected, msg:
+                    except SMTPServerDisconnected as msg:
                         if not debug_mode:
                             raise SMTPServerDisconnected(msg)
-                    except SMTPRecipientsRefused, msg:
+                    except SMTPRecipientsRefused as msg:
                         raise WorkflowException(str(msg))
 
                 else:
-                    raise Exception, "XXX pub_pref %s" % self.pub_pref
+                    raise Exception("XXX pub_pref %s" % self.pub_pref)
 
         return [ar.RequestID for ar in self.analysis_requests]
 
@@ -357,4 +361,3 @@ class doPublish(BrowserView):
     def get_titles_for_uids(self, *uids):
         uc = getToolByName(self.context, 'uid_catalog')
         return [p.getObject().Title() for p in uc(UID=uids)]
-
