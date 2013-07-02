@@ -71,7 +71,8 @@ class LoadSetupData(BrowserView):
                     (self.dataset_name, self.dataset_name)
                 filename = resource_filename(self.dataset_project, path)
                 workbook = load_workbook(filename=filename)  # , use_iterators=True)
-        elif 'setupfile' in form and 'file' in form and form['file']:
+        elif 'setupfile' in form and 'file' in form and form['file'] and 'projectname' in form and form['projectname']:
+                self.dataset_project = form['projectname']
                 tmp = tempfile.mktemp()
                 file_content = form['file'].read()
                 open(tmp, 'workbook').write(file_content)
