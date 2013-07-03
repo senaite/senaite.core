@@ -104,9 +104,28 @@ class SamplePartitionsView(BikaListingView):
                 {'url': sample.absolute_url() + \
                         '/createSamplePartition',
                  'icon': '++resource++bika.lims.images/add.png'}
+
         return super(SamplePartitionsView, self).__call__()
 
     def folderitems(self, full_objects = False):
+        mtool = getToolByName(self.context, 'portal_membership')
+        workflow = getToolByName(self.context, 'portal_workflow')
+        checkPermission = mtool.checkPermission
+        edit_states = ['sample_registered', 'to_be_sampled', 'sampled',
+                       'to_be_preserved', 'sample_due', 'attachment_due',
+                       'sample_received', 'to_be_verified']
+        if self.context.portal_type == 'AnalysisRequest':
+            sample = self.context.getSample()
+        else:
+            sample = self.context
+
+        self.allow_edit = checkPermission(EditSamplePartition, sample) \
+                    and workflow.getInfoFor(sample, 'review_state') in edit_states \
+                    and workflow.getInfoFor(sample, 'cancellation_state') == 'active'
+        self.show_select_column = self.allow_edit
+        if self.allow_edit == False:
+            self.review_states[0]['custom_actions'] = []
+
         items = BikaListingView.folderitems(self)
 
         bsc = getToolByName(self.context, 'bika_setup_catalog')
@@ -159,7 +178,8 @@ class SamplePartitionsView(BikaListingView):
             samplingdate = obj.getSamplingDate()
 
             # inline edits for Container and Preservation
-            items[x]['allow_edit'] = ['getContainer', 'getPreservation']
+            if self.allow_edit:
+                items[x]['allow_edit'] = ['getContainer', 'getPreservation']
             items[x]['choices']['getPreservation'] = preservations
             items[x]['choices']['getContainer'] = containers
 
@@ -186,7 +206,8 @@ class SamplePartitionsView(BikaListingView):
             checkPermission = self.context.portal_membership.checkPermission
             if checkPermission(PreserveSample, obj):
                 items[x]['required'] += ['getPreserver', 'getDatePreserved']
-                items[x]['allow_edit'] += ['getPreserver', 'getDatePreserved']
+                if self.allow_edit:
+                    items[x]['allow_edit'] += ['getPreserver', 'getDatePreserved']
                 preservers = getUsers(obj, ['Preserver', 'LabManager', 'Manager'])
                 getAuthenticatedMember = obj.portal_membership.getAuthenticatedMember
                 username = getAuthenticatedMember().getUserName()
@@ -296,7 +317,7 @@ class SampleEdit(BrowserView):
             allow_sample_edit = False
         else:
             edit_states = ['to_be_sampled', 'to_be_preserved', 'sample_due']
-            allow_sample_edit = checkPermission(ManageSamples, self.context) \
+            allow_sample_edit = checkPermission(EditSample, self.context) \
                 and workflow.getInfoFor(self.context, 'review_state') in edit_states
 
         SamplingWorkflowEnabled =\
@@ -794,6 +815,11 @@ class SamplesView(BikaListingView):
         mtool = getToolByName(self.context, 'portal_membership')
         member = mtool.getAuthenticatedMember()
         translate = self.context.translate
+        roles = member.getRoles()
+        hideclientlink = 'RegulatoryInspector' in roles \
+            and 'Manager' not in roles \
+            and 'LabManager' not in roles \
+            and 'LabClerk' not in roles
 
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
@@ -805,8 +831,9 @@ class SamplesView(BikaListingView):
                 ["<a href='%s'>%s</a>" % (o.absolute_url(), o.Title())
                  for o in obj.getAnalysisRequests()])
             items[x]['Client'] = obj.aq_parent.Title()
-            items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
-                (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
+            if hideclientlink == False:
+                items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
+                    (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
             items[x]['Creator'] = self.user_fullname(obj.Creator())
 
             items[x]['DateReceived'] = self.ulocalized_time(obj.getDateReceived())

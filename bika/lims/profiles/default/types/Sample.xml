@@ -44,6 +44,7 @@
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">
+    <permission value="BIKA: Edit Sample"/>
  </action>
 
  <action title="Sample Partitions"

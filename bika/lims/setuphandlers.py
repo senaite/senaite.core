@@ -158,7 +158,7 @@ class BikaGenerator:
 
         if 'RegulatoryInspectors' not in portal_groups.listGroupIds():
             portal_groups.addGroup('RegulatoryInspectors', title = "Regulatory Inspectors",
-                roles = ['Member', 'RegulatoryInspector', ])
+                roles = ['Member', 'RegulatoryInspector'])
 
     def setupPermissions(self, portal):
         """ Set up some suggested role to permission mappings.
@@ -222,7 +222,7 @@ class BikaGenerator:
         mp(Retract, ['Manager', 'LabManager', 'Verifier'], 1)
         mp(Verify, ['Manager', 'LabManager', 'Verifier'], 1)
         mp(Publish, ['Manager', 'LabManager', 'Publisher'], 1)
-        mp(EditSample, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler'], 1)
+        mp(EditSample, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 1)
         mp(EditAR, ['Manager', 'LabManager', 'LabClerk', 'Sampler'], 1)
         mp(EditWorksheet, ['Manager', 'LabManager', 'Analyst'], 1)
         mp(ResultsNotRequested, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
@@ -231,6 +231,8 @@ class BikaGenerator:
         mp(EditResults, ['Manager', 'LabManager', 'Analyst'], 1)
         mp(EditFieldResults, ['Manager', 'LabManager', 'Sampler'], 1)
         mp(CancelAndReinstate, ['Manager', 'LabManager', 'Owner'], 1)
+        mp(EditSamplePartition, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 1)
+        mp(EditClient, ['Manager', 'LabManager', 'LabClerk'], 1)
 
         mp('Access contents information',  ['Authenticated'], 1)
         mp(permissions.View, ['Authenticated'], 1)

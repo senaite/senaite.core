@@ -11,45 +11,45 @@ Id:,assigned,,,,,,,,,
 Title:,Assigned,,,,,,,,,
 Description:,,,,,,,,,,
 Transitions,"submit, unassign",,,,,,,,
-Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager
-BIKA: Edit Results,N,N,Y,N,N,N,N,Y,N,Y
-BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,RegulatoryInspector
+BIKA: Edit Results,N,N,Y,N,N,N,N,Y,N,Y,N
+BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,Y
 ,,,,,,,,,,
 [State],,,,,,,,,,
 Id:,attachment_due,,,,,,,,,
 Title:,Attachment Outstanding,,,,,,,,,
 Description:,,,,,,,,,,
 Transitions,"attach, retract, reject, unassign",,,,,,
-Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager
-BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N
-BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,RegulatoryInspector
+BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N
+BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,Y
 ,,,,,,,,,,
 [State],,,,,,,,,,
 Id:,to_be_verified,,,,,,,,,
 Title:,To be verified,,,,,,,,,
 Description:,,,,,,,,,,
 Transitions,"verify, retract, reject, unassign",,,,,,
-Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager
-BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N
-BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,RegulatoryInspector
+BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N
+BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,Y
 ,,,,,,,,,,
 [State],,,,,,,,,,
 Id:,unassigned,,,,,,,,,
 Title:,Unassigned,,,,,,,,,
 Description:,,,,,,,,,,
 Transitions,assign,,,,,,,,,
-Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager
-BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N
-BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,RegulatoryInspector
+BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N
+BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,Y
 ,,,,,,,,,,
 [State],,,,,,,,,,
 Id:,verified,,,,,,,,,
 Title:,Verified,,,,,,,,,
 Description:,,,,,,,,,,
 Transitions,unassign,,,,,,,,,
-Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager
-BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N
-BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,RegulatoryInspector
+BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N
+BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,Y
 ,,,,,,,,,,
 [Transition],,,,,,,,,,
 Id:,assign,,,,,,,,,

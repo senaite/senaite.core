@@ -39,7 +39,7 @@
 				<span class="fieldRequired" style="margin-left: 5px"/>
 			</th>
 			<td>
-				<span class="context_action_dropdown">
+				<span class="context_action_dropdown" tal:condition="view/isAssignmentAllowed">
 					<select class='analyst' style="font-size: 100%;margin-left: 1em"
 						tal:define="alist view/getAnalysts">
 						<tal:options repeat="option alist">
@@ -51,11 +51,13 @@
 						</tal:options>
 					</select>
 				</span>
+				<span tal:condition="python:not view.isAssignmentAllowed()" 
+				      tal:content="python:view.getAnalysts().getValue(context.getAnalyst())"></span>
 			</td>
 			<th i18n:translate="">Instrument</th>
-			<td>
+			<td tal:define="instrument python:context.getInstrument()">
 				<span class="context_action_dropdown"
-					tal:define="instrument python:context.getInstrument()">
+				    tal:condition="view/isAssignmentAllowed">
 					<select class='instrument' style="font-size: 100%"
 						tal:define="instrlist view/getInstruments">
 						<tal:options repeat="option instrlist">
@@ -67,6 +69,13 @@
 						</tal:options>
 					</select>
 				</span>
+				<tal:instrumentlabel tal:condition="python:not view.isAssignmentAllowed()">
+				    <span tal:condition="python:instrument" 
+                        tal:content="python:view.getInstruments().getValue(instrument.UID())"></span>
+                    <span tal:condition="python:not instrument"
+                        i18n:translate="">Not defined</span>
+				</tal:instrumentlabel>
+				
 			</td>
 		</tr>
 	</table>

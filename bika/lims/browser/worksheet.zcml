@@ -17,7 +17,7 @@
       for="bika.lims.interfaces.IWorksheet"
       name="manage_results"
       class="bika.lims.browser.worksheet.ManageResultsView"
-      permission="bika.lims.EditWorksheet"
+      permission="bika.lims.ViewResults"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

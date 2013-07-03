@@ -527,6 +527,14 @@ class ManageResultsView(BrowserView):
         items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
         return DisplayList(list(items))
 
+    def isAssignmentAllowed(self):
+        checkPermission = self.context.portal_membership.checkPermission
+        workflow = getToolByName(self.context, 'portal_workflow')
+        review_state = workflow.getInfoFor(self.context, 'review_state', '')
+        edit_states = ['open', 'attachment_due', 'to_be_verified']
+        return review_state in edit_states \
+            and checkPermission(EditWorksheet, self.context)
+
 class AddAnalysesView(BikaListingView):
     implements(IViewView)
     template = ViewPageTemplateFile("templates/worksheet_add_analyses.pt")
@@ -627,6 +635,14 @@ class AddAnalysesView(BikaListingView):
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
+        mtool = getToolByName(self.context, 'portal_membership')
+        member = mtool.getAuthenticatedMember()
+        roles = member.getRoles()
+        hideclientlink = 'RegulatoryInspector' in roles \
+            and 'Manager' not in roles \
+            and 'LabManager' not in roles \
+            and 'LabClerk' not in roles
+
         for x in range(len(items)):
             if not items[x].has_key('obj'):
                 continue
@@ -653,8 +669,9 @@ class AddAnalysesView(BikaListingView):
                  (url, items[x]['getRequestID'])
 
             items[x]['Client'] = client.Title()
-            items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
-                 (client.absolute_url(), client.Title())
+            if hideclientlink == False:
+                items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
+                    (client.absolute_url(), client.Title())
         return items
 
     def getServices(self):

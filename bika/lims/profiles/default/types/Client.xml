@@ -51,7 +51,7 @@
          url_expr="string:${object_url}/contacts"
          i18n:attributes="title"
          visible="True">
-  <permission value="BIKA: Manage Clients"/>
+  <permission value="BIKA: Edit Client"/>
  </action>
 
  <action title="Samples"
