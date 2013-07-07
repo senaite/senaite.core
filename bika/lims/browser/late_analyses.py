@@ -64,6 +64,14 @@ class LateAnalysesView(BikaListingView):
 
     def folderitems(self):
         items = super(LateAnalysesView, self).folderitems()
+        mtool = getToolByName(self.context, 'portal_membership')
+        member = mtool.getAuthenticatedMember()
+        roles = member.getRoles()
+        hideclientlink = 'RegulatoryInspector' in roles \
+            and 'Manager' not in roles \
+            and 'LabManager' not in roles \
+            and 'LabClerk' not in roles
+
         for x in range(len(items)):
             if not items[x].has_key('obj'):
                 continue
@@ -77,8 +85,9 @@ class LateAnalysesView(BikaListingView):
             items[x]['replace']['RequestID'] = "<a href='%s'>%s</a>" % \
                  (ar.absolute_url(), ar.Title())
             items[x]['Client'] = ''
-            items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
-                 (client.absolute_url(), client.Title())
+            if hideclientlink == False:
+                items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
+                     (client.absolute_url(), client.Title())
             items[x]['Contact'] = ''
             items[x]['replace']['Contact'] = "<a href='mailto:%s'>%s</a>" % \
                  (contact.getEmailAddress(), contact.getFullname())

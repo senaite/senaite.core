@@ -11,54 +11,54 @@ Id:,open,,,,,,,,,,
 Title:,Open,,,,,,,,,,
 Description:,Some of the samples have not been received,,,,,,,,,,
 Transitions,receive,,,,,,,,,,
-Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Publisher,Reader,Editor,Contributor,Anonymous
-View,N,N,Y,Y,Y,Y,N,N,N,N,N
-Modify portal content,N,N,Y,Y,Y,N,N,N,N,N,N
-BIKA: Publish,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Add Analysis Request,N,N,Y,Y,Y,N,N,N,N,N,N
+Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Publisher,Reader,Editor,Contributor,Anonymous,RegulatoryInspector
+View,N,N,Y,Y,Y,Y,N,N,N,N,N,Y
+Modify portal content,N,N,Y,Y,Y,N,N,N,N,N,N,N
+BIKA: Publish,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Add Analysis Request,N,N,Y,Y,Y,N,N,N,N,N,N,N
 ,,,,,,,,,,,
 [State],,,,,,,,,,,
 Id:,sample_received,,,,,,,,,,
 Title:,Sample received,,,,,,,,,,
 Description:,All ARs have advanced at least to sample_received state,,,,,,,,,,
 Transitions,"open, submit",,,,,,,,,,
-Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Publisher,Reader,Editor,Contributor,Anonymous
-View,N,N,Y,Y,Y,Y,N,N,N,N,N
-Modify portal content,N,N,Y,Y,Y,N,N,N,N,N,N
-BIKA: Publish,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Add Analysis Request,N,N,Y,Y,Y,N,N,N,N,N,N
+Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Publisher,Reader,Editor,Contributor,Anonymous,RegulatoryInspector
+View,N,N,Y,Y,Y,Y,N,N,N,N,N,Y
+Modify portal content,N,N,Y,Y,Y,N,N,N,N,N,N,N
+BIKA: Publish,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Add Analysis Request,N,N,Y,Y,Y,N,N,N,N,N,N,N
 ,,,,,,,,,,,
 [State],,,,,,,,,,,
 Id:,to_be_verified,,,,,,,,,,
 Title:,To be verified,,,,,,,,,,
 Description:,All ARs have advanced at least to to_be_verfied state,,,,,,,,,,
 Transitions,"open, receive, verify",,,,,,,,,,
-Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Publisher,Reader,Editor,Contributor,Anonymous
-View,N,N,Y,Y,Y,Y,N,N,N,N,N
-Modify portal content,N,N,Y,Y,Y,N,N,N,N,N,N
-BIKA: Publish,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Add Analysis Request,N,N,N,N,N,N,N,N,N,N,N
+Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Publisher,Reader,Editor,Contributor,Anonymous,RegulatoryInspector
+View,N,N,Y,Y,Y,Y,N,N,N,N,N,Y
+Modify portal content,N,N,Y,Y,Y,N,N,N,N,N,N,N
+BIKA: Publish,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Add Analysis Request,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,
 [State],,,,,,,,,,,
 Id:,verified,,,,,,,,,,
 Title:,Verified,,,,,,,,,,
 Description:,All ARs have advanced at least to verified state,,,,,,,,,,
 Transitions,close,,,,,,,,,,
-Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Publisher,Reader,Editor,Contributor,Anonymous
-View,N,N,Y,Y,Y,Y,N,N,N,N,N
-Modify portal content,N,N,Y,Y,N,N,N,N,N,N,N
-BIKA: Publish,N,N,Y,Y,N,N,Y,N,N,N,N
-BIKA: Add Analysis Request,N,N,N,N,N,N,N,N,N,N,N
+Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Publisher,Reader,Editor,Contributor,Anonymous,RegulatoryInspector
+View,N,N,Y,Y,Y,Y,N,N,N,N,N,Y
+Modify portal content,N,N,Y,Y,N,N,N,N,N,N,N,N
+BIKA: Publish,N,N,Y,Y,N,N,Y,N,N,N,N,N
+BIKA: Add Analysis Request,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,
 [State],,,,,,,,,,,
 Id:,closed,,,,,,,,,,
 Title:,Closed,,,,,,,,,,
 Description:,,,,,,,,,,,
 Transitions,,,,,,,,,,,
-Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Publisher,Reader,Editor,Contributor,Anonymous
-View,N,N,Y,Y,Y,Y,N,N,N,N,N
-Modify portal content,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Publish,N,N,Y,Y,N,N,Y,N,N,N,N
+Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Publisher,Reader,Editor,Contributor,Anonymous,RegulatoryInspector
+View,N,N,Y,Y,Y,Y,N,N,N,N,N,Y
+Modify portal content,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Publish,N,N,Y,Y,N,N,Y,N,N,N,N,N
 ,,,,,,,,,,,
 [Transition],,,,,,,,,,,
 Id:,open,,,,,,,,,,

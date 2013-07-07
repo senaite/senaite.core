@@ -116,7 +116,8 @@ class AnalysesView(BikaListingView):
                 can_edit_analyses = checkPermission(EditFieldResults, self.context)
             else:
                 can_edit_analyses = checkPermission(EditResults, self.context)
-
+            self.allow_edit = can_edit_analyses
+        self.show_select_column = self.allow_edit
         context_active = isActive(self.context)
 
         items = super(AnalysesView, self).folderitems(full_objects = True)

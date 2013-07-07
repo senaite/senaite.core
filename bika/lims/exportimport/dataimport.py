@@ -58,6 +58,13 @@ class ImportView(BrowserView):
             datasets.extend(adapter())
         return datasets
 
+    def getProjectName(self):
+        adapters = getAdapters((self.context, ), ISetupDataSetList)
+        productnames = [name for name, adapter in adapters]
+        if len(productnames) == 1:
+            productnames[0] = 'bika.lims'
+        return productnames[len(productnames) - 1]
+
     def __call__(self):
         if 'submitted' in self.request:
             if 'setupfile' in self.request.form or \

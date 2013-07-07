@@ -71,6 +71,7 @@
                     <input name="setupexisting" type="submit" value="Submit" i18n:attributes="value"/>
                 </div>
 			</div>
+			<input type="hidden" name="projectname" tal:attributes="value view/getProjectName"/>
 		</fieldset>
 
 	</form>

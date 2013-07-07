@@ -22,7 +22,7 @@
 	<span class="documentFirstHeading" tal:content="structure view/title"/>
 	</h1>
 
-	<div class="worksheet_add_controls">
+	<div class="worksheet_add_controls" tal:condition="view/isEditionAllowed">
 		<form name="worksheet-add-form" action="worksheet_add" method="POST">
 
 		<span class="context_action_dropdown">

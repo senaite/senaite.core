@@ -11,36 +11,36 @@ Id:,open,,,,,,,,,
 Title:,Open,,,,,,,,,
 Description:,,,,,,,,,,
 Transitions,submit,,,,,,,,,
-Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager
-BIKA: Edit Worksheet,N,N,Y,N,N,N,N,Y,Y,Y
-BIKA: Assign analyses,N,N,Y,N,N,N,N,N,Y,Y
-BIKA: Unassign analyses,N,N,Y,N,N,N,N,N,Y,Y
-View,N,N,Y,N,N,N,N,Y,Y,Y
-Modify portal content,N,N,Y,N,N,N,N,Y,Y,Y
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,RegulatoryInspector
+BIKA: Edit Worksheet,N,N,Y,N,N,N,N,Y,Y,Y,N
+BIKA: Assign analyses,N,N,Y,N,N,N,N,N,Y,Y,N
+BIKA: Unassign analyses,N,N,Y,N,N,N,N,N,Y,Y,N
+View,N,N,Y,N,N,N,N,Y,Y,Y,Y
+Modify portal content,N,N,Y,N,N,N,N,Y,Y,Y,N
 ,,,,,,,,,,
 [State],,,,,,,,,,
 Id:,attachment_due,,,,,,,,,
 Title:,Attachment Outstanding,,,,,,,,,
 Description:,,,,,,,,,,
 Transitions,"attach, revert, reject",,,,,,,,,
-Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager
-BIKA: Edit Worksheet,N,N,Y,N,N,N,N,Y,Y,Y
-BIKA: Assign analyses,N,N,Y,N,N,N,N,N,Y,Y
-BIKA: Unassign analyses,N,N,Y,N,N,N,N,N,Y,Y
-View,N,N,Y,N,N,N,N,Y,Y,Y
-Modify portal content,N,N,Y,N,N,N,N,Y,Y,Y
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,RegulatoryInspector
+BIKA: Edit Worksheet,N,N,Y,N,N,N,N,Y,Y,Y,N
+BIKA: Assign analyses,N,N,Y,N,N,N,N,N,Y,Y,N
+BIKA: Unassign analyses,N,N,Y,N,N,N,N,N,Y,Y,N
+View,N,N,Y,N,N,N,N,Y,Y,Y,Y
+Modify portal content,N,N,Y,N,N,N,N,Y,Y,Y,N
 ,,,,,,,,,,
 [State],,,,,,,,,,
 Id:,to_be_verified,,,,,,,,,
 Title:,To be verified,,,,,,,,,
 Description:,,,,,,,,,,
 Transitions,"verify, revert, reject",,,,,,,,,
-Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager
-BIKA: Edit Worksheet,N,N,Y,N,N,N,N,Y,Y,Y
-BIKA: Assign analyses,N,N,Y,N,N,N,N,N,Y,Y
-BIKA: Unassign analyses,N,N,Y,N,N,N,N,N,Y,Y
-View,N,N,Y,N,N,N,N,Y,Y,Y
-Modify portal content,N,N,Y,N,N,N,N,Y,Y,Y
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,RegulatoryInspector
+BIKA: Edit Worksheet,N,N,Y,N,N,N,N,Y,Y,Y,N
+BIKA: Assign analyses,N,N,Y,N,N,N,N,N,Y,Y,N
+BIKA: Unassign analyses,N,N,Y,N,N,N,N,N,Y,Y,N
+View,N,N,Y,N,N,N,N,Y,Y,Y,Y
+Modify portal content,N,N,Y,N,N,N,N,Y,Y,Y,N
 ,,,,,,,,,,
 [State],,,,,,,,,,
 Id:,verified,,,,,,,,,

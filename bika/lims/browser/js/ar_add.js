@@ -796,9 +796,13 @@ function setTemplate(column,template_title){
 				$.each($("input[column='"+column+"']").filter("#"+uid), function(x, e){
 					$(e).attr('checked', true);
 					partnr = template_parts[uid].split("-")[1];
+					if (partnr != null) {
+						partnr = parseInt(partnr,10);						
+					} else {
+						partnr = 1;
+					}
 					$(".partnr_"+uid).filter("[column="+column+"]")
-						.empty().append(partnr);
-					partnr = parseInt(partnr,10);
+					.empty().append(partnr);
 					parts[partnr-1]['services'].push(uid);
 				});
 			});
@@ -809,8 +813,13 @@ function setTemplate(column,template_title){
 			jQuery.ajaxSetup({async:true});
 			$.each(selectedservices, function(i,uid){
 				partnr = template_parts[uid].split("-")[1];
+				if (partnr != null) {
+					partnr = parseInt(partnr,10);						
+				} else {
+					partnr = 1;
+				}
 				$(".partnr_"+uid).filter("[column="+column+"]")
-					.empty().append(partnr);
+				.empty().append(partnr);
 				partnr = parseInt(partnr,10);
 				parts[partnr-1]['services'].push(uid);
 			});

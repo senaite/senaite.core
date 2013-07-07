@@ -12,10 +12,12 @@ from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.utils import getUsers
 from bika.lims.utils import to_utf8 as _c
 from plone.app.content.browser.interfaces import IFolderContentsView
+from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 import plone
 import json
 import zope
+from bika.lims.permissions import EditWorksheet
 
 class WorksheetFolderWorkflowAction(WorkflowAction):
     """ Workflow actions taken in the WorksheetFolder
@@ -57,7 +59,7 @@ class WorksheetFolderWorkflowAction(WorkflowAction):
 
 class WorksheetFolderListingView(BikaListingView):
 
-    implements(IFolderContentsView)
+    implements(IFolderContentsView, IViewView)
 
     template = ViewPageTemplateFile("templates/worksheetfolder.pt")
 
@@ -227,6 +229,11 @@ class WorksheetFolderListingView(BikaListingView):
                         'state_title']},
         ]
 
+    def isEditionAllowed(self):
+        pm = getToolByName(self.context, "portal_membership")
+        checkPermission = self.context.portal_membership.checkPermission
+        return checkPermission(EditWorksheet, self.context)
+
     def folderitems(self):
         wf = getToolByName(self, 'portal_workflow')
         rc = getToolByName(self, REFERENCE_CATALOG)
@@ -244,6 +251,7 @@ class WorksheetFolderListingView(BikaListingView):
             analyst_choices.append({'ResultValue': a,
                                     'ResultText': self.analysts.getValue(a)})
         can_reassign = False
+        self.allow_edit = self.isEditionAllowed()
 
         for x in range(len(items)):
             if not items[x].has_key('obj'):
@@ -361,7 +369,8 @@ class WorksheetFolderListingView(BikaListingView):
             items[x]['QC'] = ""
             items[x]['replace']['QC'] = " ".join(blanks + controls)
 
-            if items[x]['review_state'] == 'open':
+            if items[x]['review_state'] == 'open' \
+                and self.allow_edit:
                 items[x]['allow_edit'] = ['Analyst', ]
                 items[x]['required'] = ['Analyst', ]
                 can_reassign = True
@@ -373,6 +382,9 @@ class WorksheetFolderListingView(BikaListingView):
             for x in range(len(self.review_states)):
                 if self.review_states[x]['id'] in ['default', 'mine', 'open']:
                     self.review_states[x]['custom_actions'] = [{'id': 'reassign', 'title': _('Reassign')}, ]
+
+        self.show_select_column = can_reassign
+        self.show_workflow_action_buttons = can_reassign
 
         return new_items
 

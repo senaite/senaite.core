@@ -247,4 +247,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Permissions revision"
+        description="Permissions revision for AR views, Sample views, etc."
+        source="1133"
+        destination="1134"
+        handler="bika.lims.upgrade.to1134.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
