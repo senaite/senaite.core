@@ -356,15 +356,19 @@ class AnalysesView(BikaListingView):
                not checkPermission(VerifyOwnResults, obj):
                 user_id = getSecurityManager().getUser().getId()
                 self_submitted = False
-                review_history = list(workflow.getInfoFor(obj, 'review_history'))
-                review_history.reverse()
-                for event in review_history:
-                    if event.get('action') == 'submit':
-                        if event.get('actor') == user_id:
-                            self_submitted = True
-                        break
-                if self_submitted:
-                    items[i]['table_row_class'] = "state-submitted-by-current-user"
+                try:
+                    review_history = list(workflow.getInfoFor(obj, 'review_history'))
+                    review_history.reverse()
+                    for event in review_history:
+                        if event.get('action') == 'submit':
+                            if event.get('actor') == user_id:
+                                self_submitted = True
+                            break
+                    if self_submitted:
+                        items[i]['table_row_class'] = "state-submitted-by-current-user"
+                except WorkflowException:
+                    # Some analyses may have no review_history
+                    pass
 
             # add icon for assigned analyses in AR views
             if self.context.portal_type == 'AnalysisRequest' and \
