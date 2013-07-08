@@ -16,6 +16,7 @@ BIKA: Edit Worksheet,N,N,Y,N,N,N,N,Y,Y,Y
 BIKA: Assign analyses,N,N,Y,N,N,N,N,Y,Y,Y
 BIKA: Unassign analyses,N,N,Y,N,N,N,N,Y,Y,Y
 View,N,N,Y,N,N,N,N,Y,Y,Y
+BIKA: Retract,N,N,N,N,N,N,N,Y,Y,Y
 Modify portal content,N,N,Y,N,N,N,N,Y,Y,Y
 ,,,,,,,,,,
 [State],,,,,,,,,,
@@ -28,6 +29,7 @@ BIKA: Edit Worksheet,N,N,Y,N,N,N,N,Y,Y,Y
 BIKA: Assign analyses,N,N,Y,N,N,N,N,Y,Y,Y
 BIKA: Unassign analyses,N,N,Y,N,N,N,N,Y,Y,Y
 View,N,N,Y,N,N,N,N,Y,Y,Y
+BIKA: Retract,N,N,N,N,N,N,N,Y,Y,Y
 Modify portal content,N,N,Y,N,N,N,N,Y,Y,Y
 ,,,,,,,,,,
 [State],,,,,,,,,,
@@ -40,6 +42,7 @@ BIKA: Edit Worksheet,N,N,Y,N,N,N,N,Y,Y,Y
 BIKA: Assign analyses,N,N,Y,N,N,N,N,Y,Y,Y
 BIKA: Unassign analyses,N,N,Y,N,N,N,N,Y,Y,Y
 View,N,N,Y,N,N,N,N,Y,Y,Y
+BIKA: Retract,N,N,N,N,N,N,N,Y,Y,Y
 Modify portal content,N,N,Y,N,N,N,N,Y,Y,Y
 ,,,,,,,,,,
 [State],,,,,,,,,,
@@ -52,6 +55,7 @@ BIKA: Edit Worksheet,N,N,Y,N,N,N,N,N,N,N
 BIKA: Assign analyses,N,N,N,N,N,N,N,N,N,N
 BIKA: Unassign analyses,N,N,N,N,N,N,N,N,N,N
 View,N,N,Y,N,N,N,N,Y,Y,Y
+BIKA: Retract,N,N,N,N,N,N,N,N,N,N
 Modify portal content,N,N,Y,N,N,N,N,Y,Y,Y
 ,,,,,,,,,,
 [Transition],,,,,,,,,,
