@@ -337,7 +337,7 @@ class WorksheetAnalysesView(AnalysesView):
                 subitem = items[pos_subitem]
                 isanalysis = subitem['obj'].portal_type == 'Analysis'
                 hasremarks = True if subitem.get('Remarks', '') else False
-                remarksedit = remarksenabled and 'Remarks' in subitem.get('allowedit', [])
+                remarksedit = remarksenabled and 'Remarks' in subitem.get('allow_edit', [])
                 if isanalysis and (hasremarks or remarksedit):
                     rowspan += 1
             items[x]['rowspan'] = {'Pos': rowspan}
