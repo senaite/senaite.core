@@ -84,6 +84,10 @@ class WorksheetWorkflowAction(WorkflowAction):
                     Retested = 'retested' in form and uid in form['retested'],
                     Unit = unit and unit or '',
                     Remarks = form.get('Remarks', [{}])[0].get(uid, ''))
+                # Don't know why above call doesn't save result if logged in
+                # as analyst:
+                # https://github.com/bikalabs/Bika-LIMS/issues/956
+                analysis.setResult(result)
 
             # discover which items may be submitted
             submissable = []
