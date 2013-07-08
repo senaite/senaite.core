@@ -69,7 +69,7 @@ Select from dropdown
 
 Select First From Dropdown
     [Arguments]  ${Element}
-    
+
     Click Element  ${Element}
     sleep  0.5
     #select the first item in the dropdown and return status
@@ -93,6 +93,8 @@ Select from datepicker
     [Arguments]        ${locator}
     ...                ${number}
     Click Element      ${locator}
+    ${number} =        Convert To Integer    ${number}
+    ${number} =        Convert To String     ${number}
     Click link         ${number}
 
 SelectDate
@@ -100,6 +102,8 @@ SelectDate
     ...          ${Date}=
     Click Element  ${Element}
     Wait Until Page Contains Element  ui-datepicker-div
+    ${Date} =            Convert To Integer    ${Date}
+    ${Date} =            Convert To String     ${Date}
     Click Link  ${Date}
 
 
@@ -110,6 +114,8 @@ SelectPrevMonthDate
     Wait Until Page Contains Element  ui-datepicker-div
     Click Element        xpath=//div[@id='ui-datepicker-div']//a[@title='Prev']
     sleep                0.5
+    ${Date} =            Convert To Integer    ${Date}
+    ${Date} =            Convert To String     ${Date}
     Click Link           ${Date}
 
 SelectNextMonthDate
@@ -119,6 +125,8 @@ SelectNextMonthDate
     Wait Until Page Contains Element  ui-datepicker-div
     Click Element        xpath=//div[@id='ui-datepicker-div']//a[@title='Next']
     sleep                0.5
+    ${Date} =            Convert To Integer    ${Date}
+    ${Date} =            Convert To String     ${Date}
     Click Link           ${Date}
 
 Shleep
