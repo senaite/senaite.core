@@ -92,6 +92,8 @@ AnalysisRequest
 
     Log out
 
+    log   XXX missing test: AR should display icon and "Cannot verify: Results submitted by current user"     WARN
+
     Log in  test_labmanager1    test_labmanager1
 
     Verify AR

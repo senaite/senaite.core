@@ -2764,7 +2764,9 @@ class AnalysisRequestsView(BikaListingView):
                                 self_submitted = True
                             break
                     if self_submitted:
-                        items[x]['table_row_class'] = "state-submitted-by-current-user"
+                        items[i]['after']['state_title'] = \
+                             "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" % \
+                             (self.context.translate(_("Cannot verify: Submitted by current user")))
                 except WorkflowException:
                     pass
 

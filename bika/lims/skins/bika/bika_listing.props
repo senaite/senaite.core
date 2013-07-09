@@ -67,10 +67,6 @@ sample_received_BackgroundColor:string=#fff2dd
 sample_received_LinkColor:string=#303F81
 sample_received_TextColor:string=#000000
 
-submitted_by_current_user_BackgroundColor:string=#fffca7
-submitted_by_current_user_LinkColor:string=#303F81
-submitted_by_current_user_TextColor:string=#000
-
 to_be_verified_BackgroundColor:string=#d4e2fc
 to_be_verified_LinkColor:string=#303F81
 to_be_verified_TextColor:string=#000000
