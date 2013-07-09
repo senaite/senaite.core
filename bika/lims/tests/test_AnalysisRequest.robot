@@ -1,23 +1,16 @@
 *** Settings ***
 
-Documentation  AR with Workflow disabled, Lab sample AS and 2 users
-
-Library  Selenium2Library  timeout=10  implicit_wait=0.5
-Library  bika.lims.tests.base.Keywords
-
-Resource  keywords.txt
-
-
-Variables  plone/app/testing/interfaces.py
-
-#file location -> /Applications/Plone/buildout-cache/eggs/plone.app.testing-4.2.2-py2.7.egg/plone/app/testing/interfaces.py
+Library          Selenium2Library  timeout=10  implicit_wait=0.2
+Library          Remote  http://localhost:55001/plone/BikaKeywords
+Library          String
+Resource         keywords.txt
+Variables        plone/app/testing/interfaces.py
 
 Suite Setup      Start browser
-#Suite Teardown  Close All Browsers
+Suite Teardown   Close All Browsers
 
 *** Variables ***
 
-# higher speed variablr slows process down ie 0.1, 0.3 etc in seconds
 ${SELENIUM_SPEED}  0
 
 ${AnalysisServices_global_Title}  Analysis Services Title
@@ -36,18 +29,11 @@ ${YEAR}
 #empty string variable contained in AR name  <- just in case it returns
 #use 'Set Global Variable' when setting
 
-${user-labmanager}  labmanager
-${user-labmanager1}  labmanager1
-
-
 *** Test Cases ***
 
 AnalysisRequest
 
-    #test availability ofkeywords in resource keywords.txt
-    Test Keyword
-
-    Log in as  ${user-labmanager}
+    Log in  test_labmanager    test_labmanager
 
     #BIKA Setup
     RunBikaSetup
@@ -104,20 +90,17 @@ AnalysisRequest
     #signature upload not tested
     #end ClientContact
 
-    Log out as  ${user-labmanager}
+    Log out
 
-    Log in as  ${user-labmanager1}
+    Log in  test_labmanager1    test_labmanager1
 
     Verify AR
-
-    DiffTime  ${saveTime}
 
 
 *** Keywords ***
 
 Start browser
-    ShowAndSaveTime
-    Open browser  http://localhost:55001/plone/login_form
+    Open browser        http://localhost:55001/plone/login_form
     Set selenium speed  ${SELENIUM_SPEED}
 
 
@@ -252,13 +235,13 @@ Create AnalysisServices
     Select Radio Button  PointOfCapture  lab
     #Select Radio Button  PointOfCapture  field
 
-    Select First From Dropdown  Category
+    Select From Dropdown  Category  Metals
 
     Input Text  Price  50.23
     Input Text  BulkPrice  30.00
     Input Text  VAT  15.00
 
-    Select First From Dropdown  Department
+    Select From Dropdown  Department   Chemistry
 
     #sleep  2
     #Click Button  Save
@@ -285,10 +268,7 @@ Create AnalysisServices
     Select First From Dropdown  Method
     Select First From Dropdown  Instrument
 
-    Log  Specifically not selecting Dry Matter Calculation  WARN
-    SelectSpecificFromDropdown  Calculation  Residual
-
-    #Select First From Dropdown  Calculation
+    Select from Dropdown  Calculation  Residual
 
     Log  Selecting interim fields  WARN
     Input Text  InterimFields-keyword-0  IF-Keyword

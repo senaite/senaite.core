@@ -1,10 +1,16 @@
 *** Settings ***
 
-Library   Selenium2Library  timeout=20  implicit_wait=0
+Library   Selenium2Library  timeout=10  implicit_wait=0.2
+Library   Remote  http://localhost:55001/plone/BikaKeywords
+Library   String
 Resource  keywords.txt
 
-Suite Setup     Start browser
-#Suite Teardown  Close All Browsers
+Suite Setup      Start browser
+Suite Teardown   Close All Browsers
+
+*** Variables ***
+
+${SELENIUM_SPEED}       0
 
 *** Test Cases ***
 
@@ -46,7 +52,7 @@ Test Batch-AR workflow dependencies
 
 Start browser
     Open browser         http://localhost:55001/plone/login
-    Set selenium speed   0
+    Set selenium speed   ${SELENIUM_SPEED}
 
 Add Batch
     Go to                        http://localhost:55001/plone/batches

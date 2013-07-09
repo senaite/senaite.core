@@ -5,13 +5,17 @@ Documentation    Test views with and without ShowPartitions setting enabled.
 ...              in a hidden field - so, test to see that all the javascript
 ...              still functions.
 
-Library   Selenium2Library  timeout=10  implicit_wait=0.5
+Library   Selenium2Library  timeout=10  implicit_wait=0.2
+Library   Remote  http://localhost:55001/plone/BikaKeywords
 Library   String
-
 Resource  keywords.txt
 
 Suite Setup      Start browser
 Suite Teardown   Close All Browsers
+
+*** Variables ***
+
+${SELENIUM_SPEED}       0
 
 *** Test Cases ***
 
@@ -38,8 +42,8 @@ AnalysisRequest views
     Wait Until Page Contains        successfully created
 
     # Get new Analysis Request ID and URL
-    ${ar_id} =   Get text           //dl[contains(@class, 'portalMessage')][2]/dd
-    ${ar_id} =   Set Variable       ${ar_id.split()[2]}
+    ${ar_id} =            Get text      //dl[contains(@class, 'portalMessage')][2]/dd
+    ${ar_id} =            Set Variable  ${ar_id.split()[2]}
     ${ar_view_url} =      Set Variable  http://localhost:55001/plone/clients/client-1/${ar_id}/base_view
     ${ar_analyses_url} =  Set Variable  http://localhost:55001/plone/clients/client-1/${ar_id}/analyses
     ${ar_results_url} =   Set Variable  http://localhost:55001/plone/clients/client-1/${ar_id}/manage_results
@@ -83,8 +87,8 @@ AnalysisRequest views
 *** Keywords ***
 
 Start browser
-    Open browser  http://localhost:55001/plone/login_form
-    Set selenium speed  0
+    Open browser        http://localhost:55001/plone/login_form
+    Set selenium speed  ${SELENIUM_SPEED}
 
 Enable ShowPartitions
     Go to              http://localhost:55001/plone/bika_setup

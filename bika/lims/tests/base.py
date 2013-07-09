@@ -1,10 +1,9 @@
-from Products.MailHost.interfaces import IMailHost
-from zope.component import getSiteManager
-from Acquisition import aq_base
 from AccessControl.SecurityManagement import newSecurityManager
+from Acquisition import aq_base
 from bika.lims import logger
 from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
 from bika.lims.testing import BIKA_INTEGRATION_TESTING
+from plone.app.robotframework.remote import RemoteLibrary
 from plone.app.testing import setRoles
 from plone.app.testing import SITE_OWNER_NAME
 from plone.app.testing import TEST_USER_ID
@@ -13,13 +12,16 @@ from plone.app.testing import TEST_USER_PASSWORD
 from plone.protect.authenticator import AuthenticatorView
 from plone.testing.z2 import Browser
 from Products.CMFPlone.tests.utils import MockMailHost as _MMH
+from Products.MailHost.interfaces import IMailHost
 from re import match
 from Testing.ZopeTestCase.functional import Functional
+from zope.component import getSiteManager
 
 import unittest
 
 
 class MockMailHost(_MMH):
+
     def send(self, *kwargs):
         logger.log("***Message***")
         logger.log("From: {0}".format(kwargs['mfrom']))
@@ -52,7 +54,10 @@ class BikaTestCase(unittest.TestCase):
         self.portal.MailHost = self.portal._original_MailHost
         sm = getSiteManager(context=self.portal)
         sm.unregisterUtility(provided=IMailHost)
-        sm.registerUtility(aq_base(self.portal._original_MailHost), provided=IMailHost)
+        sm.registerUtility(
+            aq_base(
+                self.portal._original_MailHost),
+            provided=IMailHost)
 
     def setRequestMethod(self, method):
         self.app.REQUEST.set('REQUEST_METHOD', method)
@@ -109,7 +114,7 @@ class BikaFunctionalTestCase(Functional, BikaTestCase):
         return browser
 
 
-class Keywords(object):
+class BikaKeywords(RemoteLibrary):
 
     """Robot Framework keyword library
     """
@@ -120,3 +125,10 @@ class Keywords(object):
         for attr in ('stdin', 'stdout', 'stderr'):
             setattr(sys, attr, getattr(sys, '__%s__' % attr))
         pdb.set_trace()
+
+    def getObjectIds(self, path, portal_type):
+        """Returns a sorted list of object IDs in a folder.
+        We can use this to access objects without hard-coding prefixes.
+        """
+        self.set_trace()
+        folder = self.unrestrictedTraverse(path)

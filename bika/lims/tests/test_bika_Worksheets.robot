@@ -1,14 +1,13 @@
 *** Settings ***
 
-Documentation  Worksheets - creating ARs
-
 Library                 Selenium2Library  timeout=10  implicit_wait=0
-Library                 bika.lims.tests.base.Keywords
+Library                 Remote  http://localhost:55001/plone/BikaKeywords
 Library                 Collections
 Resource                keywords.txt
 Variables               plone/app/testing/interfaces.py
+
 Suite Setup             Start browser
-## Suite Teardown         Close All Browsers
+Suite Teardown          Close All Browsers
 
 *** Variables ***
 

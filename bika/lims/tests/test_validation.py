@@ -14,7 +14,7 @@ class Tests(BikaIntegrationTestCase):
         login(self.portal, TEST_USER_NAME)
 
         clients = self.portal.clients
-        client1 = clients['client-1']
+        client1 = clients['client-2']  # not Happy Hills
         self.assertEqual(
             client1.schema.get('Name').validate('Happy Hills', client1),
             u"Validation failed: 'Happy Hills' is not unique")
@@ -38,8 +38,8 @@ class Tests(BikaIntegrationTestCase):
             service1.schema.get('Keyword').validate('&', service1),
             u'Validation failed: keyword contains invalid characters')
         self.assertEqual(
-            service1.schema.get('Keyword').validate('Ash', service1),
-            u"Validation failed: 'Ash': This keyword is already in use by service 'Ash'")
+            service1.schema.get('Keyword').validate('Ca', service1),
+            u"Validation failed: 'Ca': This keyword is already in use by service 'Calcium'")
         self.assertEqual(
             service1.schema.get('Keyword').validate('TV', service1),
             u"Validation failed: 'TV': This keyword is already in use by calculation 'Titration'")
@@ -143,22 +143,6 @@ class Tests(BikaIntegrationTestCase):
                     calc1,
                     REQUEST=self.portal.REQUEST),
             u"Validation failed: 'Titration Volume': duplicate title")
-
-        interim_fields = [
-            {'keyword': 'Ash',
-             'title': 'Titration Volume',
-             'unit': '',
-             'default': ''},
-            {'keyword': 'TF', 'title': 'Titration Factor', 'unit': '', 'default': ''}]
-        self.portal.REQUEST.form['InterimFields'] = interim_fields
-        self.portal.REQUEST['validated'] = None
-        self.assertEqual(
-            calc1.schema.get(
-                'InterimFields').validate(
-                    interim_fields,
-                    calc1,
-                    REQUEST=self.portal.REQUEST),
-            u"Validation failed: 'Ash': This keyword is already in use by service 'Ash'")
 
         interim_fields = [
             {'keyword': 'TV',

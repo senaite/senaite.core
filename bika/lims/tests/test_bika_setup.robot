@@ -1,37 +1,33 @@
 *** Settings ***
 
+Library          Selenium2Library  timeout=10  implicit_wait=0.2
+Library          Remote  ${PLONEURL}/BikaKeywords
+Library          String
+Resource         keywords.txt
+Variables        plone/app/testing/interfaces.py
 
-Library  Selenium2Library  timeout=10  implicit_wait=0.5
-Library  bika.lims.tests.base.Keywords
-
-Resource  keywords.txt
-
-Variables  plone/app/testing/interfaces.py
-
-Suite Setup     Start browser
-#Suite Teardown  Close All Browsers
+Suite Setup      Start browser
+Suite Teardown   Close All Browsers
 
 *** Variables ***
 
-# higher speed variablr slows process down ie 0.1, 0.3 etc in seconds
-${SELENIUM_SPEED}  0
+${PLONEURL}           http://localhost:55001/plone
+${SELENIUM_SPEED}     0
 
 ${Manager Firstname}  Manager Firstname
-${Manager Surname}  Manager Surname
+${Manager Surname}    Manager Surname
 
 #following are used to locate Analysis Service when defining an Analysis Profile
-${AnalysisServices_global_Title}  Analysis Services Title
-${AnalysisServices_locator}  Select ${AnalysisServices_global_Title}
-${AnalysisCategory_global_Title}  Analysis Category Title
-${ClientName_global}  Client Name
-
+${AnalysisServices_global_Title}   Analysis Services Title
+${AnalysisServices_locator}        Select ${AnalysisServices_global_Title}
+${AnalysisCategory_global_Title}   Analysis Category Title
+${ClientName_global}               Client Name
 
 *** Test Cases ***
 
 Setup
 
-    #Log in as site owner
-    Log in as  labmanager
+    Log in  test_labmanager    test_labmanager
 
     #Start independent Bika Setup options
 
@@ -394,14 +390,14 @@ Setup
 Start browser
     ShowAndSaveTime
     Log  Start Bika Setup Testing: independent categories  WARN
-    Open browser  http://localhost:55001/plone/login_form
+    Open browser  ${PLONEURL}/login_form
     Set selenium speed  ${SELENIUM_SPEED}
 
 
 #BIKA Setup
 RunBikaSetup
     Log  BIKA Setup  WARN
-    Go to  http://localhost:55001/plone/bika_setup/edit
+    Go to  ${PLONEURL}/bika_setup/edit
     Click link  Analyses
     Select Checkbox  SamplingWorkflowEnabled
     Click Button  Save
@@ -413,7 +409,7 @@ Create Attachment Types
     [Arguments]  ${Title}=
     ...          ${Description}=
     Log  Attachment Types  WARN
-    Go to  http://localhost:55001/plone/bika_setup/bika_attachmenttypes
+    Go to  ${PLONEURL}/bika_setup/bika_attachmenttypes
     Click link  Add
     Wait Until Page Contains Element  title
     Input Text  title  ${Title}
@@ -425,7 +421,7 @@ Create Attachment Types
 # add test to check that correct page is displayed - not edit page ??
 
 Test Attachment Types Workflow
-    Go to  http://localhost:55001/plone/bika_setup/bika_attachmenttypes
+    Go to  ${PLONEURL}/bika_setup/bika_attachmenttypes
     Select Checkbox  list_select_all
     #sleep  2
     Click Button  deactivate_transition
@@ -439,7 +435,7 @@ Test Attachment Types Workflow
 Create Batch Labels
     [Arguments]  ${Title}=
     Log  Batch Labels  WARN
-    Go to  http://localhost:55001/plone/bika_setup/bika_batchlabels
+    Go to  ${PLONEURL}/bika_setup/bika_batchlabels
     Click link  Add
     Wait Until Page Contains Element  title
     Input Text  title  ${Title}
@@ -450,7 +446,7 @@ Create Batch Labels
 
 #specifically test the Deactivate and Activate options
 Test Batch Labels Workflow
-    Go to  http://localhost:55001/plone/bika_setup/bika_batchlabels
+    Go to  ${PLONEURL}/bika_setup/bika_batchlabels
     Select Checkbox  list_select_all
     #sleep  1
     Click Button  deactivate_transition
@@ -465,7 +461,7 @@ Test Batch Labels Workflow
 
 #specifically test the Cancel option
 Test Batch Labels Cancel
-    Go to  http://localhost:55001/plone/bika_setup/bika_batchlabels
+    Go to  ${PLONEURL}/bika_setup/bika_batchlabels
     Click link  Add
     Wait Until Page Contains Element  title
     Click Button  Cancel
@@ -478,7 +474,7 @@ Test Calculations Cancel
     ...          ${Description}=
     ...          ${Change note}=
     Log  Calculations  WARN
-    Go to  http://localhost:55001/plone/bika_setup/bika_calculations
+    Go to  ${PLONEURL}/bika_setup/bika_calculations
     Click link  Add
     Wait Until Page Contains Element  title
     Input Text  title  ${Title}
@@ -493,7 +489,7 @@ Create Calculations Description
     [Arguments]  ${Title}=
     ...          ${Description}=
     ...          ${Change note}=
-    Go to  http://localhost:55001/plone/bika_setup/bika_calculations
+    Go to  ${PLONEURL}/bika_setup/bika_calculations
     Click link  Add
     Wait Until Page Contains Element  title
     Input Text  title  ${Title}
@@ -529,7 +525,7 @@ Test Calculations Workflow
     Log  BUG: Calculations Workflow: - The added calculation also does not appear after deactivating  WARN
     Log  BUG: Calculations Workflow: not tested  WARN
 
-    #Go to  http://localhost:55001/plone/bika_setup/bika_calculations
+    #Go to  ${PLONEURL}/bika_setup/bika_calculations
     #Select Checkbox  list_select_all
     #Click Button  deactivate_transition
     #Wait Until Page Contains  Changes saved.
@@ -549,7 +545,7 @@ Test Container Types Cancel
     [Arguments]  ${Title}=
     ...          ${Description}=
     Log  Container Types  WARN
-    Go to  http://localhost:55001/plone/bika_setup/bika_containertypes
+    Go to  ${PLONEURL}/bika_setup/bika_containertypes
     Click link  Add
     Wait Until Page Contains Element  title
     Input Text  title  ${Title}
@@ -561,7 +557,7 @@ Test Container Types Cancel
 Create Container Types
     [Arguments]  ${Title}=
     ...          ${Description}=
-    Go to  http://localhost:55001/plone/bika_setup/bika_containertypes
+    Go to  ${PLONEURL}/bika_setup/bika_containertypes
     Click link  Add
     Wait Until Page Contains Element  title
     Input Text  title  ${Title}
@@ -571,7 +567,7 @@ Create Container Types
 
 
 Test Container Types Workflow
-    Go to  http://localhost:55001/plone/bika_setup/bika_containertypes
+    Go to  ${PLONEURL}/bika_setup/bika_containertypes
     Select Checkbox  list_select_all
     #sleep  2
     Click Button  deactivate_transition
@@ -588,7 +584,7 @@ Test Preservations Cancel
     [Arguments]  ${Title}=
     ...          ${Description}=
     Log  Preservations  WARN
-    Go to  http://localhost:55001/plone/bika_setup/bika_preservations
+    Go to  ${PLONEURL}/bika_setup/bika_preservations
     Click link  Add
     Wait Until Page Contains Element  title
     Input Text  title  ${Title}
@@ -606,7 +602,7 @@ Create Preservations
     ...          ${Hours}=
     ...          ${Minutes}=
 
-    Go to  http://localhost:55001/plone/bika_setup/bika_preservations
+    Go to  ${PLONEURL}/bika_setup/bika_preservations
     Click link  Add
     Wait Until Page Contains Element  title
     Input Text  title  ${Title}
@@ -622,7 +618,7 @@ Create Preservations
 
 
 Test Preservations Workflow
-    Go to  http://localhost:55001/plone/bika_setup/bika_preservations
+    Go to  ${PLONEURL}/bika_setup/bika_preservations
     Select Checkbox  list_select_all
     Click Button  deactivate_transition
     Wait Until Page Contains  Changes saved.
@@ -641,7 +637,7 @@ Test Lab Products Cancel
     ...          ${VAT}=
     ...          ${Price}=
     Log  Lab Products  WARN
-    Go to  http://localhost:55001/plone/bika_setup/bika_labproducts
+    Go to  ${PLONEURL}/bika_setup/bika_labproducts
     Click link  Add
     Wait Until Page Contains Element  title
     Input Text  title  ${Title}
@@ -661,7 +657,7 @@ Create Lab Products
     ...          ${Unit}=
     ...          ${VAT}=
     ...          ${Price}=
-    Go to  http://localhost:55001/plone/bika_setup/bika_labproducts
+    Go to  ${PLONEURL}/bika_setup/bika_labproducts
     Click link  Add
     Wait Until Page Contains Element  title
     Input Text  title  ${Title}
@@ -675,7 +671,7 @@ Create Lab Products
     Wait Until Page Contains  Changes saved.
 
 Test Lab Products Workflow
-    Go to  http://localhost:55001/plone/bika_setup/bika_labproducts
+    Go to  ${PLONEURL}/bika_setup/bika_labproducts
     Select Checkbox  list_select_all
     #sleep  2
     Click Button  deactivate_transition
@@ -693,7 +689,7 @@ Test Laboratory Information Cancel
     ...          ${Phone}=
     ...          ${Fax}=
     Log  Laboratory Information  WARN
-    Go to  http://localhost:55001/plone/bika_setup/laboratory/base_edit
+    Go to  ${PLONEURL}/bika_setup/laboratory/base_edit
     Input Text  Name  ${Name}
     Input Text  TaxNumber  ${VAT number}
     Input Text  Phone  ${Phone}
@@ -716,7 +712,7 @@ Create Laboratory Information
     ...          ${Physical Address}=
     ...          ${Postal Address}=
     ...          ${LabURL}=
-    Go to  http://localhost:55001/plone/bika_setup/laboratory/base_edit
+    Go to  ${PLONEURL}/bika_setup/laboratory/base_edit
     Input Text  Name  ${Name}
     Input Text  TaxNumber  ${VAT number}
     Input Text  Phone  ${Phone}
@@ -766,7 +762,7 @@ Test Methods Cancel
     ...          ${Instructions}=
     ...          ${Change note}=
     Log  Methods  WARN
-    Go to  http://localhost:55001/plone/bika_setup/methods
+    Go to  ${PLONEURL}/bika_setup/methods
     Click link  Add
     Wait Until Page Contains Element  title
     Input Text  title  ${Title}
@@ -781,7 +777,7 @@ Create Methods
     ...          ${Description}=
     ...          ${Instructions}=
     ...          ${Change note}=
-    Go to  http://localhost:55001/plone/bika_setup/methods
+    Go to  ${PLONEURL}/bika_setup/methods
     Click link  Add
     Wait Until Page Contains Element  title
     Input Text  title  ${Title}
@@ -794,7 +790,7 @@ Create Methods
     Wait Until Page Contains  Changes saved.
 
 Test Methods Workflow
-    Go to  http://localhost:55001/plone/bika_setup/methods
+    Go to  ${PLONEURL}/bika_setup/methods
     Select Checkbox  list_select_all
     #sleep  2
     Click Button  deactivate_transition
@@ -811,7 +807,7 @@ Test Sample Conditions Cancel
     [Arguments]  ${Title}=
     ...          ${Description}=
     Log  Sample Conditions  WARN
-    Go to  http://localhost:55001/plone/bika_setup/bika_sampleconditions
+    Go to  ${PLONEURL}/bika_setup/bika_sampleconditions
     Click link  Add
     Wait Until Page Contains Element  title
     Input Text  title  ${Title}
@@ -824,7 +820,7 @@ Create Sample Conditions
     [Arguments]  ${Title}=
     ...          ${Description}=
 
-    Go to  http://localhost:55001/plone/bika_setup/bika_sampleconditions
+    Go to  ${PLONEURL}/bika_setup/bika_sampleconditions
     Click link  Add
     Wait Until Page Contains Element  title
     Input Text  title  ${Title}
@@ -834,7 +830,7 @@ Create Sample Conditions
 
 
 Test Sample Conditions Workflow
-    Go to  http://localhost:55001/plone/bika_setup/bika_sampleconditions
+    Go to  ${PLONEURL}/bika_setup/bika_sampleconditions
     Select Checkbox  list_select_all
     Click Button  deactivate_transition
     Wait Until Page Contains  Changes saved.
@@ -849,7 +845,7 @@ Test Sample Matrices Cancel
     [Arguments]  ${Title}=
     ...          ${Description}=
     Log  Sample Matrices  WARN
-    Go to  http://localhost:55001/plone/bika_setup/bika_samplematrices
+    Go to  ${PLONEURL}/bika_setup/bika_samplematrices
     Click link  Add
     Wait Until Page Contains Element  title
     Input Text  title  ${Title}
@@ -862,7 +858,7 @@ Create Sample Matrices
     [Arguments]  ${Title}=
     ...          ${Description}=
 
-    Go to  http://localhost:55001/plone/bika_setup/bika_samplematrices
+    Go to  ${PLONEURL}/bika_setup/bika_samplematrices
     Click link  Add
     Wait Until Page Contains Element  title
     Input Text  title  ${Title}
@@ -874,7 +870,7 @@ Create Sample Matrices
 
 
 Test Sample Matrices Workflow
-    Go to  http://localhost:55001/plone/bika_setup/bika_samplematrices
+    Go to  ${PLONEURL}/bika_setup/bika_samplematrices
     Select Checkbox  list_select_all
     #sleep  2
     Click Button  deactivate_transition
@@ -893,7 +889,7 @@ Test Sample Points Cancel
     ...          ${Description}=
     ...          ${Change note}=
     Log  Sample Points  WARN
-    Go to  http://localhost:55001/plone/bika_setup/bika_samplepoints
+    Go to  ${PLONEURL}/bika_setup/bika_samplepoints
     Click link  Add
     Wait Until Page Contains Element  title
     Input Text  title  ${Title}
@@ -913,7 +909,7 @@ Create Sample Points
     ...          ${Minutes}=
     ...          ${Change note}=
 
-    Go to  http://localhost:55001/plone/bika_setup/bika_samplepoints
+    Go to  ${PLONEURL}/bika_setup/bika_samplepoints
     Click link  Add
     Wait Until Page Contains Element  title
     Input Text  title  ${Title}
@@ -959,7 +955,7 @@ Create Sample Points Location
 
 
 Test Sample Points Workflow
-    Go to  http://localhost:55001/plone/bika_setup/bika_samplepoints
+    Go to  ${PLONEURL}/bika_setup/bika_samplepoints
     Select Checkbox  list_select_all
     Click Button  deactivate_transition
     Wait Until Page Contains  Changes saved.
@@ -974,7 +970,7 @@ Test Sampling Deviations Cancel
     [Arguments]  ${Title}=
     ...          ${Description}=
     Log  Sampling Deviations  WARN
-    Go to  http://localhost:55001/plone/bika_setup/bika_samplingdeviations
+    Go to  ${PLONEURL}/bika_setup/bika_samplingdeviations
     Click link  Add
     Wait Until Page Contains Element  title
     Input Text  title  ${Title}
@@ -987,7 +983,7 @@ Create Sampling Deviations
     [Arguments]  ${Title}=
     ...          ${Description}=
 
-    Go to  http://localhost:55001/plone/bika_setup/bika_samplingdeviations
+    Go to  ${PLONEURL}/bika_setup/bika_samplingdeviations
     Click link  Add
     Wait Until Page Contains Element  title
     Input Text  title  ${Title}
@@ -996,7 +992,7 @@ Create Sampling Deviations
     Wait Until Page Contains  Changes saved.
 
 Test Sampling Deviations Workflow
-    Go to  http://localhost:55001/plone/bika_setup/bika_samplingdeviations
+    Go to  ${PLONEURL}/bika_setup/bika_samplingdeviations
     Select Checkbox  list_select_all
     Click Button  deactivate_transition
     Wait Until Page Contains  Changes saved.
@@ -1027,7 +1023,7 @@ Create LabManager
     ...          ${Email}=
     ...          ${Jobtitle}=
     Log  Lab Manager  WARN
-    Go to  http://localhost:55001/plone/bika_setup/bika_labcontacts
+    Go to  ${PLONEURL}/bika_setup/bika_labcontacts
     Click link  Add
     Wait Until Page Contains Element  Salutation
     Input Text  Salutation  ${Salutation}
@@ -1048,7 +1044,7 @@ Create LabDepartment
     ...          ${Description}=
     ...          ${Manager}=
     Log  Lab Department  WARN
-    Go to  http://localhost:55001/plone/bika_setup/bika_departments
+    Go to  ${PLONEURL}/bika_setup/bika_departments
     Click link  Add
     Wait Until Page Contains Element  title
     Input Text  title  ${Title}
@@ -1079,7 +1075,7 @@ Create LabContact
     ...          ${Postal Address}=
     ...          ${Preference}=
     Log  Lab Contact  WARN
-    Go to  http://localhost:55001/plone/bika_setup/bika_labcontacts
+    Go to  ${PLONEURL}/bika_setup/bika_labcontacts
     Click link  Add
     Wait Until Page Contains Element  Firstname
     Input Text  Salutation  ${Salutation}
@@ -1130,7 +1126,7 @@ Test Suppliers Cancel
     ...          ${Phone}=
     ...          ${Fax}=
     Log  Suppliers  WARN
-    Go to  http://localhost:55001/plone/bika_setup/bika_suppliers
+    Go to  ${PLONEURL}/bika_setup/bika_suppliers
     Click link  Add
     Input Text  Name  ${Name}
     Input Text  TaxNumber  ${VAT number}
@@ -1171,7 +1167,7 @@ Create Suppliers
     ...          ${Change note}=
 
 
-    Go to  http://localhost:55001/plone/bika_setup/bika_suppliers
+    Go to  ${PLONEURL}/bika_setup/bika_suppliers
     Page should contain  Suppliers
     Click link  Add
     #Wait Until Page Contains Element  Name
@@ -1236,7 +1232,7 @@ Create Suppliers
     Wait Until Page Contains  Changes saved.
 
     #now test Contacts
-    Go to  http://localhost:55001/plone/bika_setup/bika_suppliers
+    Go to  ${PLONEURL}/bika_setup/bika_suppliers
     Click link  ${Name}
 
     Wait Until Page Contains Element  Remarks
@@ -1289,7 +1285,7 @@ Create Suppliers
     #for that you need a supplier,manufacturer, instrument type and instrument - defined in that order
     #got supplier - so start with basic def of Manufacturer
 
-    Go to  http://localhost:55001/plone/bika_setup/bika_manufacturers
+    Go to  ${PLONEURL}/bika_setup/bika_manufacturers
     Page should contain  Manufacturers
     Click link  Add
     Wait Until Page Contains Element  title
@@ -1301,7 +1297,7 @@ Create Suppliers
     #now define an Instrument Type
     Log  Instrument Types  WARN
 
-    Go to  http://localhost:55001/plone/bika_setup/bika_instrumenttypes
+    Go to  ${PLONEURL}/bika_setup/bika_instrumenttypes
     Page should contain  Instrument Types
     Click link  Add
     Wait Until Page Contains Element  title
@@ -1316,7 +1312,7 @@ Create Suppliers
 #saving Instruments (from within) causes system to throw exception
 #Approach instrument from another angle - go direct to URL
 
-    Go to   http://localhost:55001/plone/bika_setup/bika_instruments
+    Go to   ${PLONEURL}/bika_setup/bika_instruments
     Page should contain  Instruments
     Click link  Add
     Wait Until Page Contains Element  title
@@ -1369,7 +1365,7 @@ Create Containers
     ...          ${Description}=
     ...          ${Change note}=
     Log  Containers  WARN
-    Go to  http://localhost:55001/plone/bika_setup/bika_containers
+    Go to  ${PLONEURL}/bika_setup/bika_containers
     Page should contain  Containers
     Click link  Add
     Wait Until Page Contains Element  title
@@ -1392,7 +1388,7 @@ Create SampleTypes
     ...          ${Hours}=
     ...          ${Minutes}=
     Log  Sample Types  WARN
-    Go to  http://localhost:55001/plone/bika_setup/bika_sampletypes
+    Go to  ${PLONEURL}/bika_setup/bika_sampletypes
     Click link  Add
     Wait Until Page Contains Element  title
     Input Text  title  ${Title}
@@ -1421,7 +1417,7 @@ Create SampleTypes
 Create AnalysisCategories
     [Arguments]  ${Description}=
     Log  Analysis Categories  WARN
-    Go to  http://localhost:55001/plone/bika_setup/bika_analysiscategories
+    Go to  ${PLONEURL}/bika_setup/bika_analysiscategories
     Wait Until Page Contains  Analysis Categories
     Click link  Add
     Wait Until Page Contains Element  title
@@ -1437,19 +1433,17 @@ Create AnalysisCategories
 #Analysis Services
 Create AnalysisServices
     [Arguments]  ${Description}=
-    Log  Analysis Services  WARN
-    Go to  http://localhost:55001/plone/bika_setup/bika_analysisservices
+    Go to                ${PLONEURL}/bika_setup/bika_analysisservices
     Wait Until Page Contains  Analysis Services
-    Click link  Add
+    Click link           Add
     Wait Until Page Contains Element  title
-    Input Text  title  ${AnalysisServices_global_Title}
-    Input Text  description  ${Description}
-    Input Text  Unit  measurement Unit
-    Input Text  Keyword  AnalysisKeyword
-    Select Radio Button  PointOfCapture  lab
-    Select Radio Button  PointOfCapture  field
+    Input Text           title         ${AnalysisServices_global_Title}
+    Input Text           description   ${Description}
+    Input Text           Unit          measurement Unit
+    Input Text           Keyword       AnalysisKeyword
+    Select Radio Button       PointOfCapture  lab
 
-    Select First From Dropdown  Category
+    Select From Dropdown      Category
 
     Input Text  Price  50.23
     Input Text  BulkPrice  30.00
@@ -1543,7 +1537,7 @@ Create AnalysisProfiles
     [Arguments]  ${Title}=
     ...          ${Description}=
     Log  Analysis Profiles  WARN
-    Go to    http://localhost:55001/plone/bika_setup/bika_analysisprofiles
+    Go to    ${PLONEURL}/bika_setup/bika_analysisprofiles
     Wait Until Page Contains  Analysis Profile
     Click link  Add Profile
     Wait Until Page Contains Element  title
@@ -1563,7 +1557,7 @@ Create AnalysisProfiles
 Create AnalysisSpecifications
     [Arguments]  ${Description}=
     Log  Analysis Specifications  WARN
-    Go to  http://localhost:55001/plone/bika_setup/bika_analysisspecs
+    Go to  ${PLONEURL}/bika_setup/bika_analysisspecs
     Wait Until Page Contains  Analysis Specifications
     Click link  Add
     Wait Until Page Contains Element  description
@@ -1588,7 +1582,7 @@ Create ReferenceDefinition
     [Arguments]  ${Title}=
     ...          ${Description}=
     Log  Reference Definition  WARN
-    Go to  http://localhost:55001/plone/bika_setup/bika_referencedefinitions
+    Go to  ${PLONEURL}/bika_setup/bika_referencedefinitions
     Wait Until Page Contains  Reference Definition
     Click link  Add
     Wait Until Page Contains Element  title
@@ -1616,7 +1610,7 @@ Create WorksheetTemplate
     [Arguments]  ${Title}=
     ...          ${Description}=
     Log  Worksheet Template  WARN
-    Go to  http://localhost:55001/plone/bika_setup/bika_worksheettemplates
+    Go to  ${PLONEURL}/bika_setup/bika_worksheettemplates
     Wait Until Page Contains  Worksheet Template
     Click link  Add
     Wait Until Page Contains Element  title
@@ -1654,7 +1648,7 @@ Create ARTemplates
     [Arguments]  ${Title}=
     ...          ${Description}=
     Log  AR Template  WARN
-    Go to  http://localhost:55001/plone/bika_setup/bika_artemplates
+    Go to  ${PLONEURL}/bika_setup/bika_artemplates
     Wait Until Page Contains  AR Templates
     Click link  Add Template
     Wait Until Page Contains Element  title
@@ -1668,7 +1662,7 @@ Create ARTemplates
     Wait Until Page Contains  Sample Partitions
 
     Select First From Dropdown  Partitions-Container-0
-    Select First From Dropdown  Partitions-Preservation-0 
+    Select First From Dropdown  Partitions-Preservation-0
     Click Button  More
     Select Specific From Dropdown  Partitions-Container-1  Glass
     Select Specific From Dropdown  Partitions-Preservation-1  HNO3
@@ -1696,7 +1690,7 @@ Create ARTemplates
 
     Click Link  Analyses
     Wait Until Page Contains Element  AnalysisProfile
-    Select First From Dropdown  AnalysisProfile 
+    Select First From Dropdown  AnalysisProfile
 
     Log  BUG: AR Template: Analysis Profile Dropdown fails to close?  WARN
 
@@ -1715,7 +1709,7 @@ Create AddClients
     ...          ${Physical Address}=
     ...          ${Postal Address}=
     Log  Clients  WARN
-    Go to  http://localhost:55001/plone/clients
+    Go to  ${PLONEURL}/clients
     Wait Until Page Contains  Clients
     Click link  Add
     Wait Until Page Contains Element  Name
@@ -1787,7 +1781,7 @@ Create ClientContact
     ...          ${Postal Address}=
     ...          ${Preference}=
     Log  Client Contacts  WARN
-    Go to  http://localhost:55001/plone/clients
+    Go to  ${PLONEURL}/clients
     Wait Until Page Contains  Clients
     Click link  ${ClientName_global}
     Click link  Contacts
@@ -1838,7 +1832,7 @@ Create ClientContact
     #now continue with AR
     Log  Analysis Request  WARN
 
-    Go to  http://localhost:55001/plone/clients
+    Go to  ${PLONEURL}/clients
     Wait Until Page Contains  Clients
     Click Link  ${ClientName_global}
     Wait Until Page Contains  Analysis Request
