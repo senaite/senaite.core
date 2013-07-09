@@ -59,7 +59,7 @@ retracted_BackgroundColor:string=#f2f3f4
 retracted_LinkColor:string=#303F81
 retracted_TextColor:string=#aeaeaf
 
-sample_due_BackgroundColor:string=#fff1ef
+sample_due_BackgroundColor:string=#FFFCA7
 sample_due_LinkColor:string=#303F81
 sample_due_TextColor:string=#000000
 
