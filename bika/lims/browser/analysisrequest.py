@@ -2752,15 +2752,18 @@ class AnalysisRequestsView(BikaListingView):
             if items[x]['review_state'] == 'to_be_verified' and \
                not checkPermission(VerifyOwnResults, obj):
                 self_submitted = False
-                review_history = list(workflow.getInfoFor(obj, 'review_history'))
-                review_history.reverse()
-                for event in review_history:
-                    if event.get('action') == 'submit':
-                        if event.get('actor') == member.getId():
-                            self_submitted = True
-                        break
-                if self_submitted:
-                    items[x]['table_row_class'] = "state-submitted-by-current-user"
+                try:
+                    review_history = list(workflow.getInfoFor(obj, 'review_history'))
+                    review_history.reverse()
+                    for event in review_history:
+                        if event.get('action') == 'submit':
+                            if event.get('actor') == member.getId():
+                                self_submitted = True
+                            break
+                    if self_submitted:
+                        items[x]['table_row_class'] = "state-submitted-by-current-user"
+                except WorkflowException:
+                    pass
 
         # Hide Preservation/Sampling workflow actions if the edit columns
         # are not displayed.

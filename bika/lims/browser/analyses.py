@@ -410,7 +410,6 @@ class AnalysesView(BikaListingView):
                     if self_submitted:
                         items[i]['table_row_class'] = "state-submitted-by-current-user"
                 except WorkflowException:
-                    # Some analyses may have no review_history
                     pass
 
             # add icon for assigned analyses in AR views
