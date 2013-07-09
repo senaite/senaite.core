@@ -2686,7 +2686,10 @@ class AnalysisRequestsView(BikaListingView):
 
             items[x]['Created'] = self.ulocalized_time(obj.created())
 
-            if not samplingdate > DateTime():
+            SamplingWorkflowEnabled =\
+                self.context.bika_setup.getSamplingWorkflowEnabled()
+
+            if not samplingdate > DateTime() and SamplingWorkflowEnabled:
                 datesampled = self.ulocalized_time(sample.getDateSampled())
 
                 if not datesampled:

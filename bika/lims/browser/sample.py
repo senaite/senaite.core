@@ -845,7 +845,10 @@ class SamplesView(BikaListingView):
 
             samplingdate = obj.getSamplingDate()
 
-            if not samplingdate > DateTime():
+            SamplingWorkflowEnabled =\
+                self.context.bika_setup.getSamplingWorkflowEnabled()
+
+            if not samplingdate > DateTime() and SamplingWorkflowEnabled:
                 datesampled = self.ulocalized_time(obj.getDateSampled())
                 if not datesampled:
                     datesampled = self.ulocalized_time(DateTime())
