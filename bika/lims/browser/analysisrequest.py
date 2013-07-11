@@ -2764,10 +2764,10 @@ class AnalysisRequestsView(BikaListingView):
                                 self_submitted = True
                             break
                     if self_submitted:
-                        items[i]['after']['state_title'] = \
+                        items[x]['after']['state_title'] = \
                              "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" % \
                              (self.context.translate(_("Cannot verify: Submitted by current user")))
-                except WorkflowException:
+                except Exception:
                     pass
 
         # Hide Preservation/Sampling workflow actions if the edit columns
