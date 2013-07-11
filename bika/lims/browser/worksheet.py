@@ -71,22 +71,20 @@ class WorksheetWorkflowAction(WorkflowAction):
                     # or it's cancelled
                     continue
                 results[uid] = result
-                service = analysis.getService()
                 interimFields = item_data[uid]
                 if len(interimFields) > 0:
                     hasInterims[uid] = True
                 else:
                     hasInterims[uid] = False
-                unit = service.getUnit()
-                analysis.edit(
-                    Result = result,
-                    InterimFields = interimFields,
-                    Retested = 'retested' in form and uid in form['retested'],
-                    Unit = unit and unit or '',
-                    Remarks = form.get('Remarks', [{}])[0].get(uid, ''))
-                # Don't know why above call doesn't save result if logged in
-                # as analyst:
+                # Don't know why analysis.edit() doesn't works if
+                # logged in as analyst
                 # https://github.com/bikalabs/Bika-LIMS/issues/956
+                # https://github.com/bikalabs/Bika-LIMS/issues/965
+                retested = 'retested' in form and uid in form['retested']
+                remarks = form.get('Remarks', [{}, ])[0].get(uid, '')
+                analysis.setInterimFields(interimFields)
+                analysis.setRetested(retested)
+                analysis.setRemarks(remarks)
                 analysis.setResult(result)
 
             # discover which items may be submitted
