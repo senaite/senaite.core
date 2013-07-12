@@ -1,11 +1,8 @@
 # Testing layer to provide some of the features of PloneTestCase
 
 from bika.lims.exportimport.load_setup_data import LoadSetupData
-from bika.lims.tests.base import BikaKeywords
-from plone.app.robotframework import RemoteLibraryLayer
 from plone.app.testing import applyProfile
 from plone.app.testing import FunctionalTesting
-from plone.app.testing import IntegrationTesting
 from plone.app.testing import login
 from plone.app.testing import logout
 from plone.app.testing import PLONE_FIXTURE
@@ -103,23 +100,12 @@ class BikaTestLayer(PloneSandboxLayer):
 
 BIKA_TEST_FIXTURE = BikaTestLayer()
 
-BIKA_INTEGRATION_TESTING = IntegrationTesting(
-    bases=(BIKA_TEST_FIXTURE,),
-    name="BikaTestingLayer:Integration"
-)
-
 BIKA_FUNCTIONAL_TESTING = FunctionalTesting(
     bases=(BIKA_TEST_FIXTURE,),
     name="BikaTestingLayer:Functional"
 )
 
-REMOTE_LIBRARY_FIXTURE = RemoteLibraryLayer(
-    bases=(PLONE_FIXTURE,),
-    libraries=(BikaKeywords,),
-    name="BikaTestingLayer:BikaKeywords"
-)
-
 BIKA_ROBOT_TESTING = FunctionalTesting(
-    bases=(BIKA_TEST_FIXTURE, REMOTE_LIBRARY_FIXTURE, z2.ZSERVER_FIXTURE),
+    bases=(BIKA_TEST_FIXTURE, z2.ZSERVER_FIXTURE),
     name="BikaTestingLayer:Robot"
 )

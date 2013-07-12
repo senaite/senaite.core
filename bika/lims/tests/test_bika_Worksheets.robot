@@ -1,7 +1,6 @@
 *** Settings ***
 
-Library                 Selenium2Library  timeout=10  implicit_wait=0
-Library                 Remote  http://localhost:55001/plone/BikaKeywords
+Library                 Selenium2Library  timeout=10  implicit_wait=0.2
 Library                 Collections
 Resource                keywords.txt
 Variables               plone/app/testing/interfaces.py
@@ -12,109 +11,69 @@ Suite Teardown          Close All Browsers
 *** Variables ***
 
 ${SELENIUM_SPEED}       0
+${PLONEURL}             http://localhost:55001/plone
 
 *** Test Cases ***
 
-Create Worksheets
+Test Worksheets
     Log in              test_labmanager  test_labmanager
 
-    Add ARs
-
-    Create Expired Reference Sample
-    Create Benign Metals Reference Sample
-    Create Hazardous Metals Reference Sample
-    Create Distilled Water Reference Sample
-
+    Create AnalysisRequests
+    Create Reference Samples
     Create Worksheet
 
-    Unassign Analysis   xpath=//input[@selector='H2O-0001-R01_Ca'][1]
-    Add Analysis        xpath=//input[@selector='H2O-0001-R01_Ca'][1]
+    Add Analyses                H2O-0001-R01_Ca    H2O-0001-R01_Mg
+    Add Reference Analyses
 
-    Add worksheet control
-    Add worksheet blank
-    Add worksheet duplicate
+    Unassign all
 
-    ## Value range testing: badValue followed by goodValue
+    Add Analyses                H2O-0001-R01_Ca    H2O-0001-R01_Mg
+    Add Reference Analyses
 
-    TestResultsRange    xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca'][1]               0   9      # analysis
-    TestResultsRange    xpath=//tr[@keyword='Ca']//input[@selector='Result_SA-001']              17  10.1   # control
-    TestResultsRange    xpath=//tr[@keyword='Ca']//input[contains(@selector, 'Result_D')]        8   8.1    # duplicate
-    TestResultsRange    xpath=//tr[@keyword='Ca']//input[contains(@selector, 'Result_D')]        10  9.9    # duplicate
-    TestResultsRange    xpath=//tr[@keyword='Ca']//input[@selector='Result_SA-003']              2   0      # blank
+    Submit and Verify and Test
+    Unassign all
 
-    TestSampleState     xpath=//tr[@keyword='Ca']//input[@selector='state_title_Ca']            Ca                       Received
-    TestSampleState     xpath=//tr[@keyword='Ca']//input[@selector='state_title_SA-001']        SA-001(Control Calcium)  Assigned
-    TestSampleState     xpath=//tr[@keyword='Ca']//input[contains(@selector, 'state_title_D')]  _D(Dup Calcium)          Assigned
-    TestSampleState     xpath=//tr[@keyword='Ca']//input[@selector='state_title_SA-003']        SA-003(Blank Calcium)    Assigned
+    Add Analyses                H2O-0002-R01_Ca    H2O-0002-R01_Mg
+    Add Reference Analyses
 
-    Click Element               xpath=//input[@value='Submit for verification'][1]
-    Wait Until Page Contains    Changes saved.
+    Submit and Verify Quickly
 
-    TestSampleState     xpath=//tr[@keyword='Ca']//input[@selector='state_title_Ca']            Ca(Normal Calcium)       To be verified
-    TestSampleState     xpath=//tr[@keyword='Ca']//input[@selector='state_title_SA-001']        SA-001(Control Calcium)  To be verified
-    TestSampleState     xpath=//tr[@keyword='Ca']//input[contains(@selector, 'state_title_D')]  _D(Dup Calcium)          To be verified
-    TestSampleState     xpath=//tr[@keyword='Ca']//input[@selector='state_title_SA-003']        SA-003(Blank Calcium)    To be verified
-
-    ## now fill in the remaining results
-
-    TestResultsRange    xpath=//tr[@keyword='Mg']//input[@selector='Result_Mg']                   13     9.5     # analysis
-    TestResultsRange    xpath=//tr[@keyword='Mg']//input[@selector='Result_SA-002']               2      9.2     # control
-    TestResultsRange    xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D')]         8.54   8.55    # duplicate
-    TestResultsRange    xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D')]         10.46  10.45   # duplicate
-    TestResultsRange    xpath=//tr[@keyword='Mg']//input[@selector='Result_SA-004']               20     0       # blank
-
-    TestSampleState     xpath=//tr[@keyword='Mg']//input[@selector='state_title_Mg']            Mg(Normal Magnesium)       Received
-    TestSampleState     xpath=//tr[@keyword='Mg']//input[@selector='state_title_SA-002']        SA-002(Control Magnesium)  Assigned
-    TestSampleState     xpath=//tr[@keyword='Mg']//input[contains(@selector, 'state_title_D')]  _D(Dup Magnesium)          Assigned
-    TestSampleState     xpath=//tr[@keyword='Mg']//input[@selector='state_title_SA-004']        SA-004(Blank Magnesium)    Assigned
-
-    Click Element               xpath=//input[@value='Submit for verification'][1]
-    Wait Until Page Contains    Changes saved.
-
-    TestSampleState     xpath=//tr[@keyword='Mg']//input[@selector='state_title_Mg']            Mg(Normal Magnesium)       To be verified
-    TestSampleState     xpath=//tr[@keyword='Mg']//input[@selector='state_title_SA-002']        SA-001(Control Magnesium)  To be verified
-    TestSampleState     xpath=//tr[@keyword='Mg']//input[contains(@selector, 'state_title_D')]  _D(Dup Magnesium)          To be verified
-    TestSampleState     xpath=//tr[@keyword='Mg']//input[@selector='state_title_SA-004']        SA-003(Blank Magnesium)    To be verified
-
-    # Retract
-    Check worksheet state       to_be_verified
-    Retract Analysis    xpath=//input[@selector='H2O-0001-R01_Ca'][1]
-    ...                 xpath=//input[@selector='H2O-0001-R01_Ca-1'][1]
+    Retract Analysis            xpath=//input[@selector='H2O-0002-R01_Ca'][1]
+    ...                         xpath=//input[@selector='H2O-0002-R01_Ca-1'][1]
     Check worksheet state       open
-    # Re-submit
-    TestResultsRange            xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca'][1]          0.5   9.5
+    Input Text                  xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca'][1]   9.5
+    Focus                       css=.analyst
     Click Element               xpath=//input[@value='Submit for verification'][1]
     Wait Until Page Contains    Changes saved.
     Check worksheet state       to_be_verified
-
-    # verify all results
     Log out
     Log in   test_labmanager1   test_labmanager1
-    Go to                       http://localhost:55001/plone/worksheets/WS-001
+    Go to                       ${PLONEURL}/worksheets/WS-001
     select checkbox             analyses_form_select_all
     Click Element               xpath=//input[@value='Verify'][1]
     Wait Until Page Contains    Changes saved.
     Check worksheet state       verified
 
-
 *** Keywords ***
 
 Start browser
-    Open browser  http://localhost:55001/plone/login_form
+    Open browser  ${PLONEURL}/login_form
     Set selenium speed  ${SELENIUM_SPEED}
 
-Add ARs
+Create AnalysisRequests
     [Documentation]     Add and receive some ARs.
     ...                 H2O-0001-R01  Bore
-
-    @{time} =           Get Time        year month day hour min sec
-    Go to               http://localhost:55001/plone/clients/client-1
+    ...                 H2O-0002-R01  Bruma
+    @{time} =                   Get Time        year month day hour min sec
+    Go to                       ${PLONEURL}/clients/client-1
     Wait until page contains element    css=body.portaltype-client
     Click Link                  Add
     Wait until page contains    Request new analyses
     Select from dropdown        ar_0_Template               Bore
-    Select from datepicker      ar_0_SamplingDate           @{time}[2]
-    Set Selenium Timeout        60
+    Select from dropdown        ar_1_Template               Bruma
+    Select Date                 ar_0_SamplingDate           @{time}[2]
+    Select Date                 ar_1_SamplingDate           @{time}[2]
+    Set Selenium Timeout        30
     Click Button                Save
     Wait until page contains    created
     Set Selenium Timeout        10
@@ -122,8 +81,11 @@ Add ARs
     Click element               receive_transition
     Wait until page contains    saved
 
-Create Expired Reference Sample
-    Go to  http://localhost:55001/plone/bika_setup/bika_suppliers/supplier-1
+Create Reference Samples
+
+    #Create Expired Reference Sample
+
+    Go to  ${PLONEURL}/bika_setup/bika_suppliers/supplier-1
     Wait Until Page Contains    Add
     Click Link                  Add
     Wait Until Page Contains    Add Reference Sample
@@ -139,8 +101,9 @@ Create Expired Reference Sample
     Click Button                Save
     Wait Until Page Contains    Changes saved.
 
-Create Benign Metals Reference Sample
-    Go to  http://localhost:55001/plone/bika_setup/bika_suppliers/supplier-1
+    #Create Benign Metals Reference Sample
+
+    Go to  ${PLONEURL}/bika_setup/bika_suppliers/supplier-1
     Wait Until Page Contains    Add
     Click Link                  Add
     Wait Until Page Contains    Add Reference Sample
@@ -155,8 +118,9 @@ Create Benign Metals Reference Sample
     Click Button                Save
     Wait Until Page Contains    Changes saved.
 
-Create Hazardous Metals Reference Sample
-    Go to  http://localhost:55001/plone/bika_setup/bika_suppliers/supplier-1
+    #Create Hazardous Metals Reference Sample
+
+    Go to  ${PLONEURL}/bika_setup/bika_suppliers/supplier-1
     Wait Until Page Contains    Add
     Click Link                  Add
     Wait Until Page Contains    Add Reference Sample
@@ -172,8 +136,9 @@ Create Hazardous Metals Reference Sample
     Click Button                Save
     Wait Until Page Contains    Changes saved.
 
-Create Distilled Water Reference Sample
-    Go to  http://localhost:55001/plone/bika_setup/bika_suppliers/supplier-2
+    #Create Distilled Water Reference Sample
+
+    Go to  ${PLONEURL}/bika_setup/bika_suppliers/supplier-2
     Wait Until Page Contains    Add
     Click Link                  Add
     Wait Until Page Contains    Add Reference Sample
@@ -189,51 +154,122 @@ Create Distilled Water Reference Sample
     Wait Until Page Contains    Changes saved.
 
 Create Worksheet
-    [Documentation]     Add one worksheet, with all
-    ...                 analyses from H2O-0001-R01 selected (Ca, Mg)
-    Go to  http://localhost:55001/plone/worksheets
+    Go to  ${PLONEURL}/worksheets
     Wait Until Page Contains    Mine
     Select From List            analyst          Lab Analyst 1
     Click Button                Add
     Wait Until Page Contains    Add Analyses
 
-    ## order AR's in list
+Add Analyses
+    [Arguments]         @{analyses}
+
+    Go to                               ${PLONEURL}/worksheets/WS-001/add_analyses
+    Wait Until Page Contains            Add Analyses
     Click Element                       css=th#foldercontents-getRequestID-column
     Wait Until Page Contains Element    css=th#foldercontents-getRequestID-column.sort_on
 
-    Select Checkbox             xpath=//input[@selector='H2O-0001-R01_Ca']
-    Select Checkbox             xpath=//input[@selector='H2O-0001-R01_Mg']
+    :FOR     ${analysis}   IN   @{analyses}
+    \     Select Checkbox         xpath=//input[@selector='${analysis}']
 
     Set Selenium Timeout        30
     Click Element               assign_transition
     Wait Until Page Contains    Manage Results
     Set Selenium Timeout        10
 
-Check worksheet state
-    [Arguments]  ${state_id}
-    Go to        http://localhost:55001/plone/worksheets/WS-001
-    Wait until page contains element    xpath=//span[@class='state-${state_id}']
+Add Reference Analyses
 
-Add worksheet control
-    Go to                       http://localhost:55001/plone/worksheets/WS-001
-    Click Link                  Add Control Reference
+    #Add worksheet control
+    Go to                       ${PLONEURL}/worksheets/WS-001/add_control
     Wait Until Page Contains    Trace Metals 10
     Click Element               xpath=//span[@id='worksheet_add_references']//tbody//tr[1]
     Wait Until Page Contains Element  submit_transition
 
-Add worksheet blank
-    Go to                       http://localhost:55001/plone/worksheets/WS-001
-    Click Link                  Add Blank Reference
+    #Add worksheet blank
+    Go to                       ${PLONEURL}/worksheets/WS-001/add_blank
     Wait Until Page Contains    Distilled
     Click Element               xpath=//span[@id='worksheet_add_references']//tbody//tr[1]
     Wait Until Page Contains Element  submit_transition
 
-Add worksheet duplicate
-    Go to                       http://localhost:55001/plone/worksheets/WS-001
-    Click Link                  Add Duplicate
+    #Add worksheet duplicate
+    Go to                       ${PLONEURL}/worksheets/WS-001/add_duplicate
     Wait Until Page Contains    Select a destinaton position
     Click Element               xpath=//span[@id='worksheet_add_duplicate_ars']//tbody//tr[1]
     Wait Until Page Contains Element  submit_transition
+
+Unassign all
+    Select Checkbox             analyses_form_select_all
+    Click Element               unassign_transition
+    Wait Until Page Contains    Changes saved
+
+Submit and Verify and Test
+    [Documentation]     Insert results in all available analyses,
+    ...                 checking ranges, workflow, etc during the process.
+
+    TestResultsRange    xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca']                     0   9      # analysis
+    TestResultsRange    xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'Result_SA')])[1]     17  10.1   # control
+    TestResultsRange    xpath=//tr[@keyword='Ca']//input[contains(@selector, 'Result_D')]           8   8.1    # duplicate
+    TestResultsRange    xpath=//tr[@keyword='Ca']//input[contains(@selector, 'Result_D')]           10  9.9    # duplicate
+    TestResultsRange    xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'Result_SA')])[2]     2   0      # blank
+
+    TestSampleState     xpath=//tr[@keyword='Ca']//input[@selector='state_title_Ca']                  Ca                       Received
+    TestSampleState     xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'state_title_SA')])[1]  SA-001(Control Calcium)  Assigned
+    TestSampleState     xpath=//tr[@keyword='Ca']//input[contains(@selector, 'state_title_D')]        _D(Dup Calcium)          Assigned
+    TestSampleState     xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'state_title_SA')])[2]  SA-003(Blank Calcium)    Assigned
+
+    Click Element               xpath=//input[@value='Submit for verification'][1]
+    Wait Until Page Contains    Changes saved.
+
+    TestSampleState     xpath=//tr[@keyword='Ca']//input[@selector='state_title_Ca']                   Ca(Normal Calcium)       To be verified
+    TestSampleState     xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'state_title_SA')])[1]   SA-001(Control Calcium)  To be verified
+    TestSampleState     xpath=//tr[@keyword='Ca']//input[contains(@selector, 'state_title_D')]         _D(Dup Calcium)          To be verified
+    TestSampleState     xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'state_title_SA')])[2]   SA-003(Blank Calcium)    To be verified
+
+    Check worksheet state       open
+
+    ## now fill in the remaining results
+
+    TestResultsRange    xpath=//tr[@keyword='Mg']//input[@selector='Result_Mg']                   13     9.5     # analysis
+    TestResultsRange    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[1]   2      9.2     # control
+    TestResultsRange    xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D')]         8.54   8.55    # duplicate
+    TestResultsRange    xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D')]         10.46  10.45   # duplicate
+    TestResultsRange    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[2]   20     0       # blank
+
+    TestSampleState     xpath=//tr[@keyword='Mg']//input[@selector='state_title_Mg']                   Mg(Normal Magnesium)       Received
+    TestSampleState     xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'state_title_SA')])[1]   SA-002(Control Magnesium)  Assigned
+    TestSampleState     xpath=//tr[@keyword='Mg']//input[contains(@selector, 'state_title_D')]         _D(Dup Magnesium)          Assigned
+    TestSampleState     xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'state_title_SA')])[2]   SA-004(Blank Magnesium)    Assigned
+
+    Click Element               xpath=//input[@value='Submit for verification'][1]
+    Wait Until Page Contains    Changes saved.
+
+    TestSampleState     xpath=//tr[@keyword='Mg']//input[@selector='state_title_Mg']                   Mg(Normal Magnesium)       To be verified
+    TestSampleState     xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'state_title_SA')])[1]   SA-001(Control Magnesium)  To be verified
+    TestSampleState     xpath=//tr[@keyword='Mg']//input[contains(@selector, 'state_title_D')]         _D(Dup Magnesium)          To be verified
+    TestSampleState     xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'state_title_SA')])[2]   SA-003(Blank Magnesium)    To be verified
+
+    Check worksheet state       to_be_verified
+
+Submit and Verify Quickly
+    [Documentation]     The results-entry process is repeated a few times
+    ...                 in order to test workflow, so we have a second
+    ...                 keyword that is not so slow and needlessly thorough.
+
+    Input Text    xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca']                        9       # analysis
+    Input Text    xpath=//tr[@keyword='Mg']//input[@selector='Result_Mg']                        9.5     # analysis
+    Input Text    xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'Result_SA')])[1]        10.1    # control
+    Input Text    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[1]        9.2     # control
+    Input Text    xpath=//tr[@keyword='Ca']//input[contains(@selector, 'Result_D')]              8.5     # duplicate
+    Input Text    xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D')]              10.45   # duplicate
+    Input Text    xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'Result_SA')])[2]        2       # blank
+    Input Text    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[2]        20      # blank
+    Focus               css=.analyst
+    Click Element               xpath=//input[@value='Submit for verification'][1]
+    Wait Until Page Contains    Changes saved.
+
+Check worksheet state
+    [Arguments]  ${state_id}
+    Go to        ${PLONEURL}/worksheets/WS-001
+    Wait until page contains element    xpath=//span[@class='state-${state_id}']
 
 TestResultsRange
     [Arguments]  ${locator}=
@@ -251,11 +287,11 @@ TestResultsRange
 
 Expect exclamation
     sleep  0.5
-    Page should contain Image   http://localhost:55001/plone/++resource++bika.lims.images/exclamation.png
+    Page should contain Image   ${PLONEURL}/++resource++bika.lims.images/exclamation.png
 
 Expect no exclamation
     sleep  0.5
-    Page should not contain Image  http://localhost:55001/plone/++resource++bika.lims.images/exclamation.png
+    Page should not contain Image  ${PLONEURL}/++resource++bika.lims.images/exclamation.png
 
 TestSampleState
     [Arguments]  ${locator}=
@@ -268,26 +304,17 @@ TestSampleState
 
 Unassign Analysis
     [Arguments]  ${locator}
-    Go to                               http://localhost:55001/plone/worksheets/WS-001
+    Go to                               ${PLONEURL}/worksheets/WS-001
     Wait until page contains element    css=body.template-manage_results
     Select checkbox                     ${locator}
     Click element                       unassign_transition
     Wait until page contains            Changes saved.
     Page should not contain element     ${locator}
 
-Add Analysis
-    [Arguments]         ${locator}
-    Go to                               http://localhost:55001/plone/worksheets/WS-001/add_analyses
-    Wait until page contains element    css=body.template-add_analyses
-    Select checkbox                     ${locator}
-    Click element                       assign_transition
-    Wait until page contains element    css=body.template-manage_results
-    page should contain element         ${locator}
-
 Retract Analysis
     [Arguments]  ${locator}
     ...          ${new_locator}
-    Go to                               http://localhost:55001/plone/worksheets/WS-001
+    Go to                               ${PLONEURL}/worksheets/WS-001
     Wait until page contains element    css=body.template-manage_results
     select checkbox                     ${locator}
     Click element                       retract_transition
@@ -296,3 +323,4 @@ Retract Analysis
     Page should contain element         ${locator}
     ## The old/retracted analysis selector ID
     Page should contain element         ${new_locator}
+

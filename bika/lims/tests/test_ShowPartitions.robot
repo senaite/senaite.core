@@ -6,7 +6,6 @@ Documentation    Test views with and without ShowPartitions setting enabled.
 ...              still functions.
 
 Library   Selenium2Library  timeout=10  implicit_wait=0.2
-Library   Remote  http://localhost:55001/plone/BikaKeywords
 Library   String
 Resource  keywords.txt
 

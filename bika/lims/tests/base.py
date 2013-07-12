@@ -2,7 +2,6 @@ from AccessControl.SecurityManagement import newSecurityManager
 from Acquisition import aq_base
 from bika.lims import logger
 from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
-from bika.lims.testing import BIKA_INTEGRATION_TESTING
 from plone.app.robotframework.remote import RemoteLibrary
 from plone.app.testing import setRoles
 from plone.app.testing import SITE_OWNER_NAME
@@ -91,9 +90,6 @@ class BikaTestCase(unittest.TestCase):
         context.manage_role(role, permissions)
 
 
-class BikaIntegrationTestCase(BikaTestCase):
-    layer = BIKA_INTEGRATION_TESTING
-
 
 class BikaFunctionalTestCase(Functional, BikaTestCase):
     layer = BIKA_FUNCTIONAL_TESTING
@@ -113,22 +109,3 @@ class BikaFunctionalTestCase(Functional, BikaTestCase):
             self.assertTrue('You are now logged in' in browser.contents)
         return browser
 
-
-class BikaKeywords(RemoteLibrary):
-
-    """Robot Framework keyword library
-    """
-
-    def set_trace(self):
-        import sys
-        import pdb
-        for attr in ('stdin', 'stdout', 'stderr'):
-            setattr(sys, attr, getattr(sys, '__%s__' % attr))
-        pdb.set_trace()
-
-    def getObjectIds(self, path, portal_type):
-        """Returns a sorted list of object IDs in a folder.
-        We can use this to access objects without hard-coding prefixes.
-        """
-        self.set_trace()
-        folder = self.unrestrictedTraverse(path)

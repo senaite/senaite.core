@@ -138,10 +138,18 @@ def AfterTransitionEventHandler(instance, event):
         can_submit = True
         can_attach = True
         can_verify = True
-        ws_empty = True
+        ws_empty = False
 
-        for a in ws.getAnalyses():
-            ws_empty = False
+        analyses = ws.getAnalyses()
+
+        # We flag this worksheet as empty if there is ONE UNASSIGNED
+        # analysis left: worksheet.removeAnalysis() hasn't removed it from
+        # the layout yet at this stage.
+        if len(analyses) == 1 \
+           and wf.getInfoFor(analyses[0], 'review_state') == 'unassigned':
+            ws_empty = True
+
+        for a in analyses:
             a_state = wf.getInfoFor(a, 'review_state')
             if a_state in \
                ('assigned', 'sample_due', 'sample_received',):
@@ -161,17 +169,17 @@ def AfterTransitionEventHandler(instance, event):
         #       to allow multiple promotions (maybe by more than one instance).
             if can_submit and wf.getInfoFor(ws, 'review_state') == 'open':
                 wf.doActionFor(ws, 'submit')
-                unskip(ws, 'submit', unskip=True)
+                skip(ws, 'submit', unskip=True)
             if can_attach and wf.getInfoFor(ws, 'review_state') == 'attachment_due':
                 wf.doActionFor(ws, 'attach')
-                unskip(ws, 'attach', unskip=True)
+                skip(ws, 'attach', unskip=True)
             if can_verify and wf.getInfoFor(ws, 'review_state') == 'to_be_verified':
                 instance.REQUEST["workflow_skiplist"].append('verify all analyses')
                 wf.doActionFor(ws, 'verify')
-                unskip(ws, 'verify', unskip=True)
+                skip(ws, 'verify', unskip=True)
         else:
             if wf.getInfoFor(ws, 'review_state') != 'open':
-                wf.doActionFor(ws, 'retract')
-                unskip(ws, 'retract', unskip=True)
+                wf.doActionFor(ws, 'revert')
+                skip(ws, 'revert', unskip=True)
 
     return
