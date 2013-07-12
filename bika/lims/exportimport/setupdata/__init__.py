@@ -303,7 +303,7 @@ class Client_Contacts(WorksheetImporter):
         pc = getToolByName(self.context, 'portal_catalog')
         for row in self.get_rows(3):
             client = pc(portal_type="Client",
-                        Title=row['Client_title'])
+                        title=row['Client_title'])
             if len(client) == 0:
                 raise IndexError("Client invalid: '%s'" % row['Client_title'])
             client = client[0].getObject()
