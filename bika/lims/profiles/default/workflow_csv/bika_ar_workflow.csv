@@ -156,7 +156,7 @@ Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifi
 BIKA: Add Analysis,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Cancel and reinstate,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR,N,Y,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Edit Results,N,Y,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit Results,N,Y,Y,N,Y,N,N,N,N,N,N,N,N,N
 BIKA: View Results,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,N,N,N
 BIKA: Manage Invoices,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N
