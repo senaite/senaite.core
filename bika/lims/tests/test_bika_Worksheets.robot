@@ -6,7 +6,7 @@ Resource                keywords.txt
 Variables               plone/app/testing/interfaces.py
 
 Suite Setup             Start browser
-Suite Teardown          Close All Browsers
+#Suite Teardown          Close All Browsers
 
 *** Variables ***
 
@@ -16,11 +16,26 @@ ${PLONEURL}             http://localhost:55001/plone
 *** Test Cases ***
 
 Test Worksheets
+    [Documentation]   Worksheets
+    ...  Groups analyses together for data entry, instrument interfacing,
+    ...  and workflow transition cascades.
+    ...  [workflow image]
+
     Log in              test_labmanager  test_labmanager
 
     Create AnalysisRequests
     Create Reference Samples
     Create Worksheet
+
+    Go to                       ${PLONEURL}/worksheets/WS-001
+    Select from list            css=select.analyst             Lab Analyst 2
+    Select from list            css=select.instrument          Protein Analyser
+    Page should contain         Changes saved.
+    Reload Page
+    ${analyst}=                 Get selected list label        css=select.analyst
+    ${instrument}=              Get selected list label        css=select.instrument
+    Should be equal             ${analyst}         Lab Analyst 2
+    Should be equal             ${Instrument}      Protein Analyser
 
     Add Analyses                H2O-0001-R01_Ca    H2O-0001-R01_Mg
     Add Reference Analyses
@@ -36,23 +51,19 @@ Test Worksheets
     Add Analyses                H2O-0002-R01_Ca    H2O-0002-R01_Mg
     Add Reference Analyses
 
-    Submit and Verify Quickly
+    Submit results quickly
 
-    Retract Analysis            xpath=//input[@selector='H2O-0002-R01_Ca'][1]
-    ...                         xpath=//input[@selector='H2O-0002-R01_Ca-1'][1]
-    Check worksheet state       open
-    Input Text                  xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca'][1]   9.5
-    Focus                       css=.analyst
-    Click Element               xpath=//input[@value='Submit for verification'][1]
-    Wait Until Page Contains    Changes saved.
-    Check worksheet state       to_be_verified
+    Add Duplicate: Submit, verify, and check that alerts persist
+
+    Test Retraction
+
     Log out
     Log in   test_labmanager1   test_labmanager1
-    Go to                       ${PLONEURL}/worksheets/WS-001
-    select checkbox             analyses_form_select_all
-    Click Element               xpath=//input[@value='Verify'][1]
-    Wait Until Page Contains    Changes saved.
-    Check worksheet state       verified
+    Verify all
+    Log out
+    Log in   test_labmanager   test_labmanager
+
+
 
 *** Keywords ***
 
@@ -98,23 +109,6 @@ Create Reference Samples
     Click Link                  Dates
     Wait Until Page Contains    Expiry Date
     SelectPrevMonthDate         ExpiryDate                  1
-    Click Button                Save
-    Wait Until Page Contains    Changes saved.
-
-    #Create Benign Metals Reference Sample
-
-    Go to  ${PLONEURL}/bika_setup/bika_suppliers/supplier-1
-    Wait Until Page Contains    Add
-    Click Link                  Add
-    Wait Until Page Contains    Add Reference Sample
-    Input Text                  title                       Benign Metals Reference Sample
-    Select From List            ReferenceDefinition:list    Trace Metals 10
-    Select From List            ReferenceManufacturer:list  Neiss
-    Input Text                  CatalogueNumber             Numba Waan
-    Input Text                  LotNumber                   AlotOfNumba
-    Click Link                  Dates
-    Wait Until Page Contains    Expiry Date
-    SelectNextMonthDate         ExpiryDate                  25
     Click Button                Save
     Wait Until Page Contains    Changes saved.
 
@@ -249,7 +243,7 @@ Submit and Verify and Test
 
     Check worksheet state       to_be_verified
 
-Submit and Verify Quickly
+Submit results quickly
     [Documentation]     The results-entry process is repeated a few times
     ...                 in order to test workflow, so we have a second
     ...                 keyword that is not so slow and needlessly thorough.
@@ -262,7 +256,7 @@ Submit and Verify Quickly
     Input Text    xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D')]              10.45   # duplicate
     Input Text    xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'Result_SA')])[2]        2       # blank
     Input Text    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[2]        20      # blank
-    Focus               css=.analyst
+    Focus                       css=.analyst
     Click Element               xpath=//input[@value='Submit for verification'][1]
     Wait Until Page Contains    Changes saved.
 
@@ -311,6 +305,16 @@ Unassign Analysis
     Wait until page contains            Changes saved.
     Page should not contain element     ${locator}
 
+Test Retraction
+    Retract Analysis            xpath=//input[@selector='H2O-0002-R01_Ca'][1]
+    ...                         xpath=//input[@selector='H2O-0002-R01_Ca-1'][1]
+    Check worksheet state       open
+    Input Text                  xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca'][1]   9.5
+    Focus                       css=.analyst
+    Click Element               xpath=//input[@value='Submit for verification'][1]
+    Wait Until Page Contains    Changes saved.
+    Check worksheet state       to_be_verified
+
 Retract Analysis
     [Arguments]  ${locator}
     ...          ${new_locator}
@@ -324,3 +328,22 @@ Retract Analysis
     ## The old/retracted analysis selector ID
     Page should contain element         ${new_locator}
 
+Add Duplicate: Submit, verify, and check that alerts persist
+    Go to                       ${PLONEURL}/worksheets/WS-001/add_duplicate
+    Wait Until Page Contains    Select a destinaton position
+    Click Element               xpath=//span[@id='worksheet_add_duplicate_ars']//tbody//tr[1]
+    Wait Until Page Contains Element  //tr[@keyword='Ca']//input[contains(@selector, 'Result_D-003')]
+    # Check if invalid results are flagged correctly through submit and verify
+    Input Text  xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D-003')]  55
+    Input Text  xpath=//tr[@keyword='Ca']//input[contains(@selector, 'Result_D-004')]  8.5
+    log   page should now contain exclamation for duplicate MG - verify.   warn
+    Focus                       css=.analyst
+    Click Element               xpath=//input[@value='Submit for verification'][1]
+    Wait Until Page Contains    Changes saved.
+
+Verify all
+    Go to                       ${PLONEURL}/worksheets/WS-001
+    select checkbox             analyses_form_select_all
+    Click Element               xpath=//input[@value='Verify'][1]
+    Wait Until Page Contains    Changes saved.
+    Check worksheet state       verified

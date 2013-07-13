@@ -126,7 +126,7 @@ def AfterTransitionEventHandler(instance, event):
                 instance.REQUEST['workflow_skiplist'] = ['retract all analyses', ]
             else:
                 instance.REQUEST["workflow_skiplist"].append('retract all analyses')
-            wf.doActionFor(ws, 'retract')
+            wf.doActionFor(ws, 'revert')
 
     elif action_id == "unassign":
         instance.reindexObject(idxs = ["review_state", ])
@@ -141,9 +141,18 @@ def AfterTransitionEventHandler(instance, event):
         can_submit = True
         can_attach = True
         can_verify = True
-        ws_empty = True
+        ws_empty = False
 
-        for a in ws.getAnalyses():
+        analyses = ws.getAnalyses()
+
+        # We flag this worksheet as empty if there is ONE UNASSIGNED
+        # analysis left: worksheet.removeAnalysis() hasn't removed it from
+        # the layout yet at this stage.
+        if len(analyses) == 1 \
+           and wf.getInfoFor(analyses[0], 'review_state') == 'unassigned':
+            ws_empty = True
+
+        for a in analyses:
             ws_empty = False
             a_state = wf.getInfoFor(a, 'review_state')
             if a_state in \
@@ -174,7 +183,7 @@ def AfterTransitionEventHandler(instance, event):
                 skip(ws, 'verify', unskip=True)
         else:
             if wf.getInfoFor(ws, 'review_state') != 'open':
-                wf.doActionFor(ws, 'retract')
-                skip(ws, 'retract', unskip=True)
+                wf.doActionFor(ws, 'revert')
+                skip(ws, 'revert', unskip=True)
 
     return
