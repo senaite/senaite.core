@@ -161,6 +161,16 @@ $(document).ready(function(){
 		return false;
 	});
 
+	function portalMessage(message) {
+		_ = jarn.i18n.MessageFactory('bika');
+		str = "<dl class='portalMessage info'>"+
+			"<dt>"+_('Info')+"</dt>"+
+			"<dd><ul>" + _(message) +
+			"</ul></dd></dl>";
+		$('.portalMessage').remove();
+		$(str).appendTo('#viewlet-above-content');
+	}
+
 	$(".manage_results_header .analyst").change(function(){
 		if ($(this).val() == '') {
 			return false;
@@ -169,7 +179,10 @@ $(document).ready(function(){
 		  type: 'POST',
 		  url: window.location.href.replace("/manage_results", "") + "/setAnalyst",
 		  data: {'value': $(this).val(),
-				  '_authenticator': $('input[name="_authenticator"]').val()}
+				 '_authenticator': $('input[name="_authenticator"]').val()},
+		  success: function(data, textStatus, jqXHR){
+               portalMessage("Changes saved.");
+		  }
 		});
 	});
 
@@ -181,7 +194,10 @@ $(document).ready(function(){
 		  type: 'POST',
 		  url: window.location.href.replace("/manage_results", "") + "/setInstrument",
 		  data: {'value': $(this).val(),
-				  '_authenticator': $('input[name="_authenticator"]').val()}
+				  '_authenticator': $('input[name="_authenticator"]').val()},
+		  success: function(data, textStatus, jqXHR){
+               portalMessage("Changes saved.");
+		  }
 		});
 	});
 
