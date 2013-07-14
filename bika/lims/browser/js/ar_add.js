@@ -262,6 +262,7 @@ function changePrimaryContact(){
 	$('#cc_titles').val($(elem).attr("cc_titles"));
 }
 
+
 function copyButton(){
 	var fieldName = $(this).attr("name");
 
@@ -319,29 +320,30 @@ function copyButton(){
 			}
 			var other_elem = $('#ar_' + column + '_' + fieldName);
 			if (!(other_elem.attr("disabled"))) {
+				$(other_elem).attr("skip_referencewidget_lookup", true);
 				other_elem.val(first_val);
 				other_elem.trigger('change');
 
-						// Selected a Profile
-						if(fieldName == 'Profile'){
-							unsetTemplate(column);
-							setAnalysisProfile(column, first_val);
-							calculate_parts(column);
-						}
+				// Selected a Profile
+				if(fieldName == 'Profile'){
+					unsetTemplate(column);
+					setAnalysisProfile(column, first_val);
+					calculate_parts(column);
+				}
 
-						// Selected a Template
-						if(fieldName == 'Template'){
-							setTemplate(column, first_val);
-						}
+				// Selected a Template
+				if(fieldName == 'Template'){
+					setTemplate(column, first_val);
+				}
 
-						// Selected a SampleType
-						if(fieldName == 'SampleType'){
-							unsetTemplate(column);
-							calculate_parts(column);
-						}
+				// Selected a SampleType
+				if(fieldName == 'SampleType'){
+					unsetTemplate(column);
+					calculate_parts(column);
+				}
 			}
 		}
-		$('[id*=_' + fieldName + "]").change();
+		//$('[id*=_' + fieldName + "]").change();
 	}
 }
 
@@ -706,23 +708,29 @@ function unsetAnalyses(column){
 function resolve_uid(catalog, query){
 	var UID = '';
 	query = $.toJSON(query);
-	jQuery.ajaxSetup({async:false});
-	$.get(window.location.href.split("/ar_add")[0] + '/referencewidget_search?',
-		{'_authenticator': $('input[name="_authenticator"]').val(),
-		 'base_query': query,
-		 'catalog_name': catalog,
-		 'searchTerm':'',
-		 'page':1,
-		 'rows':10,
-		 'sidx':'',
-		 'sord':''
-		},
-		function(data){
-			UID = data['rows'][0]['UID'];
-		},
-		dataType='json'
-	);
-	jQuery.ajaxSetup({async:true});
+	cache = window.bika_utils.resolve_uid_cache;
+	if(cache[query] == undefined || cache[query] == null){
+		jQuery.ajaxSetup({async:false});
+		$.get(window.location.href.split("/ar_add")[0] + '/referencewidget_search?',
+			{'_authenticator': $('input[name="_authenticator"]').val(),
+			 'base_query': query,
+			 'catalog_name': catalog,
+			 'searchTerm':'',
+			 'page':1,
+			 'rows':10,
+			 'sidx':'',
+			 'sord':''
+			},
+			function(data){
+				UID = data['rows'][0]['UID'];
+			},
+			dataType='json'
+		);
+		jQuery.ajaxSetup({async:true});
+		cache[query] = UID;
+	} else {
+		UID = cache[query];
+	}
 	return UID;
 }
 
@@ -797,7 +805,7 @@ function setTemplate(column,template_title){
 					$(e).attr('checked', true);
 					partnr = template_parts[uid].split("-")[1];
 					if (partnr != null) {
-						partnr = parseInt(partnr,10);						
+						partnr = parseInt(partnr,10);
 					} else {
 						partnr = 1;
 					}
@@ -814,7 +822,7 @@ function setTemplate(column,template_title){
 			$.each(selectedservices, function(i,uid){
 				partnr = template_parts[uid].split("-")[1];
 				if (partnr != null) {
-					partnr = parseInt(partnr,10);						
+					partnr = parseInt(partnr,10);
 				} else {
 					partnr = 1;
 				}
