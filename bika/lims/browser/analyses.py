@@ -344,8 +344,7 @@ class AnalysesView(BikaListingView):
                 else:
                     items[i]['result_in_range'] = (True, None)
 
-            if not can_view_result or \
-               (not items[i]['Result'] and not can_edit_analysis):
+            else:
                 if 'Result' in items[i]['allow_edit']:
                     items[i]['allow_edit'].remove('Result')
                 items[i]['before']['Result'] = \
