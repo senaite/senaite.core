@@ -70,7 +70,7 @@ schema = BikaSchema.copy() + Schema((
             visible={'edit': 'invisible', 'view': 'invisible', 'add': 'invisible'},
             catalog_name='bika_catalog',
             base_query={'inactive_state': 'active'},
-            showOn=False,
+            showOn=True,
         ),
     ),
     ReferenceField(
@@ -100,7 +100,7 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
             visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
             base_query={'inactive_state': 'active'},
-            showOn=False,
+            showOn=True,
         ),
     ),
     ReferenceField(
@@ -115,7 +115,7 @@ schema = BikaSchema.copy() + Schema((
             catalog_name='bika_catalog',
             base_query={'review_state': 'open',
                         'cancelled_state': 'active'},
-            showOn=False,
+            showOn=True,
         ),
     ),
     ComputedField(
@@ -138,7 +138,7 @@ schema = BikaSchema.copy() + Schema((
                      'secondary': 'invisible'},
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
-            showOn=False,
+            showOn=True,
         ),
     ),
     ReferenceField(
@@ -153,7 +153,7 @@ schema = BikaSchema.copy() + Schema((
             visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
-            showOn=False,
+            showOn=True,
         ),
     ),
     ReferenceField(
@@ -171,7 +171,7 @@ schema = BikaSchema.copy() + Schema((
             catalog_name='bika_catalog',
             base_query={'cancelled_state': 'active',
                         'review_state': ['sample_due', 'sample_received', ]},
-            showOn=False,
+            showOn=True,
         ),
     ),
     # SamplingDate is set by the sample
@@ -202,7 +202,7 @@ schema = BikaSchema.copy() + Schema((
                      'secondary': 'invisible'},
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
-            showOn=False,
+            showOn=True,
         ),
     ),
     # A sample field, listed here so that it can be accessed from ar add.
@@ -219,7 +219,7 @@ schema = BikaSchema.copy() + Schema((
                      'secondary': 'invisible'},
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
-            showOn=False,
+            showOn=True,
         ),
     ),
     StringField(
@@ -269,7 +269,7 @@ schema = BikaSchema.copy() + Schema((
                      'secondary': 'invisible'},
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
-            showOn=False,
+            showOn=True,
         ),
     ),
     # A sample field, listed here so that it can be accessed from ar add.
@@ -285,7 +285,7 @@ schema = BikaSchema.copy() + Schema((
                      'secondary': 'invisible'},
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
-            showOn=False,
+            showOn=True,
         ),
     ),
     ReferenceField('DefaultContainerType',
@@ -301,7 +301,7 @@ schema = BikaSchema.copy() + Schema((
                      'secondary': 'invisible'},
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
-            showOn=False,
+            showOn=True,
         ),
     ),
     # A sample field, listed here so that it can be accessed from ar add.
