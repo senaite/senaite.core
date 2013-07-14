@@ -70,6 +70,13 @@ class Batch(ATFolder):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
+    def Title(self):
+        """ Return the Batch ID if title is not defined """
+        title = self.Title()
+        if title is None:
+            title = self.getId()
+        return safe_unicode(title).encode('utf-8')
+
     def _getCatalogTool(self):
         from bika.lims.catalog import getCatalog
         return getCatalog(self)
