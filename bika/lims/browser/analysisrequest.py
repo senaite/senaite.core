@@ -518,7 +518,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         newar.setInvoice(ar.getInvoice())
         newar.setDateReceived(ar.getDateReceived())
         newar.setMemberDiscount(ar.getMemberDiscount())
-        import pdb; pdb.set_trace()
         # Set the results for each AR analysis
         ans = ar.getAnalyses(full_objects=True)
         for an in ans:

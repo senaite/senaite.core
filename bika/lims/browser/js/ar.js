@@ -86,11 +86,18 @@ function workflow_transition_retract_ar(event) {
 				addremarks = $.trim($("#arretractmsgbox_addremarks").val());
 				if (addremarks && addremarks!='') {
 					$("#archetypes-fieldname-Remarks #Remarks").val(addremarks);
-					$("#archetypes-fieldname-Remarks input[type=submit]").click();					
-					href += "&addremarks=1";
+					$("#archetypes-fieldname-Remarks input[type=submit]").click();	
+					// Add a delay in order to allow server saving the remarks
+					// Not sure if needed. Works without this snippet in dev
+					setTimeout(function (){
+						href += "&addremarks=1";
+						$(this).dialog("close");
+						window.location.href = href;
+			         }, 2000);
+				} else {
+					$(this).dialog("close");
+					window.location.href = href;
 				}
-				$(this).dialog("close");
-				window.location.href = href;
 			},
 			no:function(){
 				$(this).dialog("close");
