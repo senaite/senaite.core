@@ -37,12 +37,6 @@ import plone
 import xhtml2pdf.pisa as pisa
 
 
-@indexer(IBatch)
-def Title(instance):
-    value = instance.Schema()['BatchID'].get(instance)
-    return safe_unicode(value).encode('utf-8')
-
-
 class BatchAnalysisRequestsView(AnalysisRequestsView, AnalysisRequestAddView):
     template = ViewPageTemplateFile("templates/analysisrequests.pt")
     ar_add = ViewPageTemplateFile("templates/ar_add.pt")
