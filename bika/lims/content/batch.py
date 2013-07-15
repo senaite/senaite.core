@@ -1,12 +1,13 @@
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.public import *
-from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IBatch
 from bika.lims.workflow import skip
 from plone.app.folder.folder import ATFolder
+from Products.Archetypes.public import *
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
 
 schema = BikaFolderSchema.copy() + Schema((
@@ -72,10 +73,11 @@ class Batch(ATFolder):
 
     def Title(self):
         """ Return the Batch ID if title is not defined """
-        title = self.Title()
-        if title is None:
-            title = self.getId()
-        return safe_unicode(title).encode('utf-8')
+        titlefield = self.Schema().getField('title')
+        if titlefield.widget.visible:
+            return safe_unicode(self.title).encode('utf-8')
+        else:
+            return safe_unicode(self.id).encode('utf-8')
 
     def _getCatalogTool(self):
         from bika.lims.catalog import getCatalog
