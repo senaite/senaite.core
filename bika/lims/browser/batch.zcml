@@ -11,9 +11,6 @@
       name="getContacts"
     />
 
-    <adapter factory="bika.lims.browser.batch.Title" name="Title" />
-    <adapter factory="bika.lims.browser.batch.Title" name="title" />
-
     <browser:page
       for="bika.lims.interfaces.IBatch"
       name="base_view"

@@ -36,7 +36,11 @@ function referencewidget_lookups(elements){
             $(this).val(ui.item[$(this).attr('ui_item')]);
             $(this).attr('uid', ui.item['UID']);
             $('input[name='+fieldName+'_uid]').val(ui.item['UID']);
-            $(this).trigger("selected", ui.item['UID']);
+            skip = $(element).attr("skip_referencewidget_lookup");
+            if (skip != true){
+                $(this).trigger("selected", ui.item['UID']);
+            }
+            $(element).removeAttr("skip_referencewidget_lookup");
             $(this).next('input').focus();
         }
         if(window.location.href.search("portal_factory") > -1){

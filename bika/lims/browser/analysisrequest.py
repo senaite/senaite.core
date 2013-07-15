@@ -491,55 +491,51 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
     def cloneAR(self, ar):
         _id = ar.aq_parent.invokeFactory('AnalysisRequest', id=tmpID())
         newar = ar.aq_parent[_id]
-        newar.edit(
-            title=ar.title,
-            description=ar.description,
-            RequestID=newar.getId(),
-            Contact=ar.getContact(),
-            CCContact=ar.getCCContact(),
-            CCEmails=ar.getCCEmails(),
-            Batch=ar.getBatch(),
-            Template=ar.getTemplate(),
-            Profile=ar.getProfile(),
-            Sample=ar.getSample(),
-            SamplingDate=ar.getSamplingDate(),
-            SampleType=ar.getSampleType(),
-            SamplePoint=ar.getSamplePoint(),
-            ClientOrderNumber=ar.getClientOrderNumber(),
-            ClientReference=ar.getClientReference(),
-            ClientSampleID=ar.getClientSampleID(),
-            SamplingDeviation=ar.getSamplingDeviation(),
-            SampleCondition=ar.getSampleCondition(),
-            DefaultContainerType=ar.getDefaultContainerType(),
-            AdHoc=ar.getAdHoc(),
-            Composite=ar.getComposite(),
-            ReportDryMatter=ar.getReportDryMatter(),
-            InvoiceExclude=ar.getInvoiceExclude(),
-            Attachment=ar.getAttachment(),
-            Invoice=ar.getInvoice(),
-            DateReceived=ar.getDateReceived(),
-            MemberDiscount=ar.getMemberDiscount()
-        )
-
+        newar.title=ar.title
+        newar.description=ar.description
+        RequestID=newar.getId()
+        newar.setContact(ar.getContact())
+        newar.setCCContact(ar.getCCContact())
+        newar.setCCEmails(ar.getCCEmails())
+        newar.setBatch(ar.getBatch())
+        newar.setTemplate(ar.getTemplate())
+        newar.setProfile(ar.getProfile())
+        newar.setSample(ar.getSample())
+        newar.setSamplingDate(ar.getSamplingDate())
+        newar.setSampleType(ar.getSampleType())
+        newar.setSamplePoint(ar.getSamplePoint())
+        newar.setClientOrderNumber(ar.getClientOrderNumber())
+        newar.setClientReference(ar.getClientReference())
+        newar.setClientSampleID(ar.getClientSampleID())
+        newar.setSamplingDeviation(ar.getSamplingDeviation())
+        newar.setSampleCondition(ar.getSampleCondition())
+        newar.setDefaultContainerType(ar.getDefaultContainerType())
+        newar.setAdHoc(ar.getAdHoc())
+        newar.setComposite(ar.getComposite())
+        newar.setReportDryMatter(ar.getReportDryMatter())
+        newar.setInvoiceExclude(ar.getInvoiceExclude())
+        newar.setAttachment(ar.getAttachment())
+        newar.setInvoice(ar.getInvoice())
+        newar.setDateReceived(ar.getDateReceived())
+        newar.setMemberDiscount(ar.getMemberDiscount())
         # Set the results for each AR analysis
         ans = ar.getAnalyses(full_objects=True)
         for an in ans:
             newar.invokeFactory("Analysis", id=an.getKeyword())
             nan = newar[an.getKeyword()]
-            nan.edit(
-                Service=an.getService(),
-                Calculation=an.getCalculation(),
-                InterimFields=an.getInterimFields(),
-                Result=an.getResult(),
-                ResultDM=an.getResultDM(),
-                Retested=False,
-                MaxTimeAllowed=an.getMaxTimeAllowed(),
-                DueDate=an.getDueDate(),
-                Duration=an.getDuration(),
-                ReportDryMatter=an.getReportDryMatter(),
-                Analyst=an.getAnalyst(),
-                Instrument=an.getInstrument(),
-                SamplePartition=an.getSamplePartition())
+            nan.setService(an.getService())
+            nan.setCalculation(an.getCalculation())
+            nan.setInterimFields(an.getInterimFields())
+            nan.setResult(an.getResult())
+            nan.setResultDM(an.getResultDM())
+            nan.setRetested=False,
+            nan.setMaxTimeAllowed(an.getMaxTimeAllowed())
+            nan.setDueDate(an.getDueDate())
+            nan.setDuration(an.getDuration())
+            nan.setReportDryMatter(an.getReportDryMatter())
+            nan.setAnalyst(an.getAnalyst())
+            nan.setInstrument(an.getInstrument())
+            nan.setSamplePartition(an.getSamplePartition())
             nan.unmarkCreationFlag()
             zope.event.notify(ObjectInitializedEvent(nan))
             changeWorkflowState(nan, 'bika_analysis_workflow',
@@ -549,7 +545,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         newar.reindexObject()
         newar.aq_parent.reindexObject()
         renameAfterCreation(newar)
-        newar.edit(RequestID=newar.getId())
+        newar.setRequestID(newar.getId())
 
         if hasattr(ar, 'setChildAnalysisRequest'):
             ar.setChildAnalysisRequest(newar)

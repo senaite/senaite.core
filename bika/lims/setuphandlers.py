@@ -464,6 +464,7 @@ class BikaGenerator:
         addIndex(bac, 'getSampleTypeUID', 'FieldIndex')
         addIndex(bac, 'getSamplePointUID', 'FieldIndex')
         addIndex(bac, 'getRetested', 'FieldIndex')
+        addIndex(bac, 'getReferenceAnalysesGroupID', 'FieldIndex')
 
         addColumn(bac, 'path')
         addColumn(bac, 'UID')
@@ -479,6 +480,7 @@ class BikaGenerator:
         addColumn(bac, 'review_state')
         addColumn(bac, 'cancellation_state')
         addColumn(bac, 'getRequestID')
+        addColumn(bac, 'getReferenceAnalysesGroupID')
 
         ### bika_catalog
 
