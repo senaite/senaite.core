@@ -1,5 +1,12 @@
 #!/bin/bash
-I18NDUDE=~/Plone/zinstance/bin/i18ndude
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+cd $SCRIPT_DIR
+
+INSTANCE_HOME=../../../../..
+
+I18NDUDE=$INSTANCE_HOME/bin/i18ndude
 
 ### Grab new translated strings
 # tx pull -a
@@ -20,7 +27,7 @@ rm i18ndude.pot
 
 ### plone domain
 ### ============
-PLONE_POT=~/Plone/zinstance/parts/omelette/plone/app/locales/locales/plone.pot
+PLONE_POT=$INSTANCE_HOME/parts/omelette/plone/app/locales/locales/plone.pot
 $I18NDUDE rebuild-pot --pot i18ndude.pot --create plone ../profiles/
 $I18NDUDE filter i18ndude.pot $PLONE_POT > plone-tmp.pot
 msgcat --strict --use-first plone-manual.pot plone-tmp.pot > plone.pot
