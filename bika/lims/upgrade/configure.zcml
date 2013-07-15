@@ -256,4 +256,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Added index for QC Analyses"
+        description="Indexes for QC Analyses"
+        source="1134"
+        destination="1135"
+        handler="bika.lims.upgrade.to1135.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
