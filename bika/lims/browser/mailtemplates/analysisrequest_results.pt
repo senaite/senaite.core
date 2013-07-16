@@ -175,9 +175,9 @@
                 <td class="label" i18n:translate="">Date Published</td>
                 <td tal:content="python: view.ulocalized_time(ar.getDatePublished(), long_format=1)">2013-06-03 12:02 PM</td>
             </tr>
-            <tr tal:condition="python:ar.get_verifier()">
+            <tr tal:condition="python:ar.getVerifier()">
                 <td class="label" i18n:translate="">Verified by</td>
-                <td tal:content="python:ar.get_verifier()">John Verifier</td>
+                <td tal:content="python:ar.getVerifier()">John Verifier</td>
             </tr>
             <tr tal:condition="view/reporter">
                 <td class="label" i18n:translate="">Published by</td>
