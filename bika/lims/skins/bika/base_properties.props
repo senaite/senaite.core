@@ -86,3 +86,6 @@ contextmenuHighlightTextColor:string=#fff
 
 footerBackgroundColor:string=#fff
 footerTextColor:string=#000
+
+tableBorderStyle:string=1px solid #ddd
+tableDividerBorderStyle:string=2px solid #ddd

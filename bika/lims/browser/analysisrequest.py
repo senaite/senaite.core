@@ -11,6 +11,7 @@ from bika.lims.browser.sample import SamplePartitionsView
 from bika.lims.adapters.widgetvisibility import WidgetVisibility as _WV
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.config import POINTS_OF_CAPTURE
+from bika.lims.config import VERIFIED_STATES
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestAddView
@@ -2933,6 +2934,79 @@ class AnalysisRequestLog(LogView):
 
         template = LogView.__call__(self)
         return template
+
+
+class InvoiceView(BrowserView):
+
+    template = ViewPageTemplateFile("templates/analysisrequest_invoice.pt")
+    title = _('Invoice')
+    description = ''
+
+    def __call__(self):
+        context = self.context
+        workflow = getToolByName(context, 'portal_workflow')
+        # Collect related data and objects
+        invoice = context.getInvoice()
+        sample = context.getSample()
+        samplePoint = sample.getSamplePoint()
+        reviewState = workflow.getInfoFor(context, 'review_state')
+        # Collection invoice information
+        if invoice:
+            self.invoiceNumber = invoice.getInvoiceNumber()
+        else:
+            self.invoiceNumber = _('Proforma (Not yet invoiced)')
+        # Collect verified invoice information
+        verified = reviewState in VERIFIED_STATES
+        if verified:
+            self.verifiedBy = context.getVerifier()
+        self.verified = verified
+        # Collect published date
+        datePublished = context.getDatePublished()
+        if datePublished != None:
+            datePublished = self.ulocalized_time(
+                datePublished, long_format=1
+            )
+        self.datePublished = datePublished
+        # Collect received date
+        dateRecieved = context.getDateReceived()
+        if dateRecieved != None:
+            dateRecieved = self.ulocalized_time(dateRecieved, long_format=1)
+        self.dateRecieved = dateRecieved
+        # Collect general information
+        self.reviewState = reviewState
+        self.contact = context.getContact().Title()
+        self.clientOrderNumber = context.getClientOrderNumber()
+        self.clientReference = context.getClientReference()
+        self.clientSampleId = sample.getClientSampleID()
+        self.sampleType = sample.getSampleType().Title()
+        self.samplePoint = samplePoint and samplePoint.Title()
+        self.requestId = context.getRequestID()
+        # Retrieve required data from analyses collection
+        analyses = []
+        for analysis in context.getRequestedAnalyses():
+            service = analysis.getService()
+            categoryName = service.getCategory().Title()
+            # Find the category
+            try:
+                category = (
+                    o for o in analyses if o['name'] == categoryName
+                ).next()
+            except:
+                category = {'name':categoryName, 'analyses':[]}
+                analyses.append(category)
+            # Append the analysis to the category
+            category['analyses'].append({
+                'title': analysis.Title(),
+                'price': service.getPrice(),
+                'priceVat': "%.2f" % service.getVATAmount(),
+                'priceTotal': "%.2f" % service.getTotalPrice(),
+            })
+        self.analyses = analyses
+        # Get totals
+        self.subTotal = context.getSubTotal()
+        self.vatTotal = "%.2f" % context.getVATTotal()
+        self.totalPrice = "%.2f" % context.getTotalPrice()
+        return self.template()
 
 
 class ClientContactVocabularyFactory(CatalogVocabulary):

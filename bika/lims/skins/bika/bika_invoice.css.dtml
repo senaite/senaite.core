@@ -1,0 +1,45 @@
+<dtml-with base_properties>
+
+table.invoice-header {
+	width: 100%;
+}
+
+table.invoice-items {
+	width: 100%;
+	margin-top: 25px;
+}
+
+table.invoice-items thead tr {
+	border-top: &dtml-tableDividerBorderStyle;;
+	border-bottom: &dtml-tableDividerBorderStyle;;
+}
+
+table.invoice-items th {
+	text-align: center;
+}
+
+table.invoice-items tr {
+	border-bottom: &dtml-tableBorderStyle;;
+}
+
+table.invoice-items tr.category {
+	font-weight: bold;
+	border-bottom-width: 2px;
+}
+
+table.invoice-items tr.totals {
+	font-weight: bold;
+	border-bottom-width: 2px;
+	border-top: &dtml-tableDividerBorderStyle;;
+}
+
+table.invoice-items td:nth-child(1),
+table.invoice-items th:nth-child(1) {
+	text-align: left;
+}
+
+table.invoice-items td {
+	text-align: right;
+}
+
+</dtml-with>
