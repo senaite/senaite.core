@@ -6,7 +6,7 @@ Resource                keywords.txt
 Variables               plone/app/testing/interfaces.py
 
 Suite Setup             Start browser
-#Suite Teardown          Close All Browsers
+Suite Teardown          Close All Browsers
 
 *** Variables ***
 
@@ -56,6 +56,8 @@ Test Worksheets
     Add Duplicate: Submit, verify, and check that alerts persist
 
     Test Retraction
+
+    log   XXX missing test: AR should display icon and "Cannot verify: Results submitted by current user"     WARN
 
     Log out
     Log in   test_labmanager1   test_labmanager1
