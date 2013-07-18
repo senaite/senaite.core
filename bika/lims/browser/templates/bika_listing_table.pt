@@ -3,14 +3,14 @@ version. use "tal:omit-tag='table_only'" on the elements which should not be
 displayed when ajax requests the table. </tal:comment>
 
 <form name="bika_listing_form" method="post" action="workflow_action"
-    i18n:domain="bika"
+	i18n:domain="bika"
 	tal:attributes="id form_id"
 	tal:omit-tag="table_only"
 	tal:define="
 		form_id view/bika_listing/form_id;
 		table_only python:(hasattr(view, 'table_only') and view.table_only)
-		                  or (hasattr(view.bika_listing, 'table_only') and view.bika_listing.table_only)
-		                  or view.request.get('table_only','') == form_id;
+						or (hasattr(view.bika_listing, 'table_only') and view.bika_listing.table_only)
+						or view.request.get('table_only','') == form_id;
 		global rowspan python:{};
 		global rowspan_max python:{};
 		global colspan python:1;
@@ -19,12 +19,12 @@ displayed when ajax requests the table. </tal:comment>
 		portal context/@@plone_portal_state/portal;
 		review_state_id python:request.get(form_id+'_review_state', 'default');
 		review_state python:[t for t in view.bika_listing.review_states
-							 if t['id'] == review_state_id];
+							if t['id'] == review_state_id];
 		review_state python:review_state and review_state[0]
 							or view.bika_listing.review_states[0];
 		toggle_cols python:dict([(col, view.bika_listing.columns[col])
-		                         for col in view.bika_listing.columns.keys()
-		                         if col in review_state['columns']]);
+								for col in view.bika_listing.columns.keys()
+								if col in review_state['columns']]);
 		specification python:view.request.get('specification', 'lab');
 		sm python:modules['AccessControl'].getSecurityManager();
 		EditAnalyses python:sm.checkPermission('BIKA: Edit analyses', context);
@@ -69,7 +69,7 @@ displayed when ajax requests the table. </tal:comment>
 </tal:worksheet-cheat-2>
 
 <div class='bika-listing-table-container'
-     tal:omit-tag="python:table_only">
+	tal:omit-tag="python:table_only">
 
 <tal:comment replace="nothing"> These two hidden fields must be located
 directly above the table element Some of the javascript relies on this to
@@ -80,14 +80,14 @@ XXX This should use form_id </tal:comment>
 	name="specs"
 	tal:omit-tag="python:table_only"
 	tal:attributes="value python:hasattr(view.bika_listing, 'json_specs') and
-	                             view.bika_listing.json_specs or []"/>
+								view.bika_listing.json_specs or []"/>
 <input type="hidden"
 	id="item_data"
 	tal:omit-tag="python:table_only"
 	tal:condition="python:not table_only"
 	name="item_data"
 	tal:attributes="value python:hasattr(view.bika_listing, 'json_interim_fields') and
-	                             view.bika_listing.json_interim_fields or []"/>
+								view.bika_listing.json_interim_fields or []"/>
 <table
 	summary="Content listing"
 	tal:attributes="class python:'bika-listing-table'"
@@ -111,11 +111,11 @@ Workflow review state selector
 				<a
 					tal:define="state_id state/id"
 					tal:attributes="
-                        href python:view.bika_listing.GET_url(review_state=state['id']);
+						href python:view.bika_listing.GET_url(review_state=state['id']);
 						value state_id;
 						id state/id;
 						class python:request.get(form_id + '_review_state', 'default') == state_id
-									   and 'selected' or ''"
+									and 'selected' or ''"
 					tal:content="structure state/title"/>
 				</tal:review_states>
 			</td>
@@ -127,7 +127,7 @@ filter search
 					tal:define="term python:request.get(form_id+'_filter', '');"
 					tal:condition="python:hasattr(view.bika_listing, 'filter_indexes') and view.bika_listing.filter_indexes">
 					<span class="filter-search-button">&nbsp;</span>
-		            <input
+					<input
 						class="filter-search-input" autocomplete="off"
 						tal:attributes="
 							name python:form_id+'_filter';
@@ -149,7 +149,7 @@ Colum Headers
 		<th class="nosort column"
 			tal:condition="view/bika_listing/show_select_column">
 			<!-- All toggleable columns in this review_state,
-			     regardless of state. JS uses this for the popup menu -->
+				regardless of state. JS uses this for the popup menu -->
 			<input type="hidden"
 				tal:condition="view/bika_listing/show_column_toggles"
 				tal:attributes="
@@ -164,7 +164,7 @@ Colum Headers
 		<tal:col repeat="column column_list">
 			<th
 				tal:condition="python: 'toggle' not in view.bika_listing.columns[column]
-				                       or view.bika_listing.columns[column].get('toggle', True)"
+									or view.bika_listing.columns[column].get('toggle', True)"
 				tal:define="
 					klass python:view.bika_listing.columns[column].get('sortable', True) and 'sortable column' or 'column';
 					klass python:'%s%s'%(klass, request.get(form_id+'_sort_on', '') == column and ' sort_on' or '');
@@ -206,7 +206,7 @@ Table data rows start here
 						tmpstyle python:(not cat in selected_cats) and 'display:none;;' or '';
 						tmpstyle python:view.context.bika_setup.getEnableAnalysisRemarks() and tmpstyle + 'border-bottom:0 !important;;' or tmpstyle;"
 			tal:attributes="
-			     style tmpstyle;
+				style tmpstyle;
 				cat cat;
 				class item/table_row_class;
 				id string:folder-contents-item-${item/uid};
@@ -225,20 +225,20 @@ Table data rows start here
 Draggable column for manually ordering items
 ********************************</tal:comment>
 	<td tal:condition="view/bika_listing/show_sort_column" class="draggable">
-	 <tal:block tal:define="quoted_id item/uid;">
-	  <a href=""
-		 title="Move item up"
-		 i18n:attributes="title title_move_item_up;"
-		 tal:attributes="href string:${view/base_url}/folder_position?position=up&amp;id=${quoted_id}">
+	<tal:block tal:define="quoted_id item/uid;">
+	<a href=""
+		title="Move item up"
+		i18n:attributes="title title_move_item_up;"
+		tal:attributes="href string:${view/base_url}/folder_position?position=up&amp;id=${quoted_id}">
 		&#9650;
-	  </a>
-	  <a href=""
-		 title="Move item down"
-		 i18n:attributes="title title_move_item_down;"
-		 tal:attributes="href string:${view/base_url}/folder_position?position=down&amp;id=${quoted_id}">
+	</a>
+	<a href=""
+		title="Move item down"
+		i18n:attributes="title title_move_item_down;"
+		tal:attributes="href string:${view/base_url}/folder_position?position=down&amp;id=${quoted_id}">
 		&#9660;
-	  </a>
-	 </tal:block>
+	</a>
+	</tal:block>
 	</td>
 
 <tal:comment replace="nothing">***************
@@ -257,11 +257,11 @@ Item select checkboxes.
 		<input type="checkbox"
 			class="noborder"
 			tal:attributes="
-				name    string:${view/bika_listing/select_checkbox_name}:list;
+				name	string:${view/bika_listing/select_checkbox_name}:list;
 				value   item/uid;
-				id      string:${view/bika_listing/form_id}_cb_${item/uid};
+				id	string:${view/bika_listing/form_id}_cb_${item/uid};
 				item_title item/title;
-				alt     python:view.msg_select_item(item);
+				alt	python:view.msg_select_item(item);
 				tabindex string:1000;
 				selector python:str(item['obj'].aq_parent.getId() if hasattr(item.get('obj', ''), 'aq_parent') else '') + '_' + item['id'];
 				checked python:item.has_key('selected') and item['selected'] and 'yes' or '';"/>
@@ -286,21 +286,21 @@ Table cells for each column from in review_state's column list.
 		tal:repeat="column review_state/columns">
 	<tal:rowcolspan
 		tal:condition="python: 'toggle' not in view.bika_listing.columns[column]
-		                       or view.bika_listing.columns[column].get('toggle', True)"
+							or view.bika_listing.columns[column].get('toggle', True)"
 		tal:define="
 			dummy python: 'rowspan' in item and column in item['rowspan'] and rowspan_max.update({column: item['rowspan'][column]});
 			dummy python: column in rowspan_max or rowspan_max.update({column: 1});
 			dummy python: rowspan.update({column: 'rowspan' in item and column in item['rowspan'] and item['rowspan'][column] or rowspan.get('column', 2)-1});
 			global colspan_max python: 'colspan' in item and column in item['colspan'] and int(item['colspan'][column]) or colspan_max;
-			global colspan python:     'colspan' in item and column in item['colspan'] and int(item['colspan'][column]) or (colspan - 1);
+			global colspan python:	'colspan' in item and column in item['colspan'] and int(item['colspan'][column]) or (colspan - 1);
 			global colspan_max python: colspan < 1 and 1 or colspan_max;
-			global colspan python:     colspan < 1 and 1 or colspan;">
+			global colspan python:	colspan < 1 and 1 or colspan;">
 	<td
 		tal:condition="python:rowspan[column] == rowspan_max[column] and colspan == colspan_max"
 		tal:define="
 			allow_edit python:view.bika_listing.allow_edit
-			                  and column in item['allow_edit']
-							  and item.get('edit_condition', {}).get(column, True);
+							and column in item['allow_edit']
+							and item.get('edit_condition', {}).get(column, True);
 			required python:'required' in item and column in item['required'] or False;
 			before python:column in item['before'] and
 				item['before'][column] or '';
@@ -348,7 +348,7 @@ Table cells for each column from in review_state's column list.
 				autocomplete="off"
 				tal:condition="python:allow_edit"
 				tal:attributes="
-				    selector string:${column}_${item/id};
+					selector string:${column}_${item/id};
 					class python:'listing_string_entry %s' % input_class;
 					tabindex tabindex/next;
 					size input_width;
@@ -366,7 +366,7 @@ Table cells for each column from in review_state's column list.
 				type="hidden"
 				tal:condition="python:not allow_edit"
 				tal:attributes="
-				    selector string:${column}_${item/id};
+					selector string:${column}_${item/id};
 					size input_width;
 					uid string:${item/uid};
 					st_uid string:${item/st_uid|nothing};
@@ -388,7 +388,7 @@ Table cells for each column from in review_state's column list.
 				autocomplete="off"
 				tal:condition="python:allow_edit"
 				tal:attributes="
-				    selector string:${column}_${item/id};
+					selector string:${column}_${item/id};
 					class python:'listing_string_entry %s' % input_class;
 					tabindex tabindex/next;
 					size input_width;
@@ -412,7 +412,7 @@ Table cells for each column from in review_state's column list.
 				type="hidden"
 				tal:condition="python:not allow_edit"
 				tal:attributes="
-				    selector string:${column}_${item/id};
+					selector string:${column}_${item/id};
 					size input_width;
 					uid string:${item/uid};
 					st_uid string:${item/st_uid|nothing};
@@ -435,7 +435,7 @@ Table cells for each column from in review_state's column list.
 			<input
 				type="hidden"
 				tal:attributes="
-				    selector string:${column}_${item/id};
+					selector string:${column}_${item/id};
 					uid string:${item/uid};
 					st_uid string:${item/st_uid|nothing};
 					objectId string:${item/id};
@@ -453,7 +453,7 @@ Table cells for each column from in review_state's column list.
 			type="checkbox" style="font-size: 100%"
 			tal:condition="allow_edit"
 			tal:attributes="
-			    selector string:${column}_${item/id};
+				selector string:${column}_${item/id};
 				class item/state_class;
 				uid string:${item/uid};
 				id python:'%s-%s' % (item['uid'], column);
@@ -465,7 +465,7 @@ Table cells for each column from in review_state's column list.
 			tal:condition="python:not allow_edit and item.get(column)"
 			disabled="disabled"
 			tal:attributes="
-			    selector string:${column}_${item/id};
+				selector string:${column}_${item/id};
 				class item/state_class;
 				checked python:item.get(column) and 'yes' or '';"/>
 	</span>
@@ -477,7 +477,7 @@ Table cells for each column from in review_state's column list.
 			<select class="listing_select_entry" style="font-size: 100%"
 				tal:condition="python:column in item['choices']"
 				tal:attributes="
-				    selector string:${column}_${item/id};
+					selector string:${column}_${item/id};
 					tabindex tabindex/next;
 					field column;
 					name string:${column}.${item/uid}:records;
@@ -517,26 +517,21 @@ Table cells for each column from in review_state's column list.
 		style="white-space:nowrap;"
 		tal:content="python:item['Unit']"/>
 
-	<tal:comment replace="nothing"><!-- alert container --></tal:comment>
-	<tal:outofrange define="uid python:item['uid'];
-	                        alerts python:hasattr(view.bika_listing,'getOutOfRangeAlerts') and view.bika_listing.getOutOfRangeAlerts() or None">
-	   <span class="alert"
-	         tal:attributes="uid string:${uid};
-	                         field column;"
-	         tal:define="product python:(alerts and uid in alerts and 'product' in alerts[uid]) and alerts[uid]['product'] or 'bika.lims';">
-	         <img
-                tal:condition="python: (alerts and uid in alerts and column == 'Result' and item['Result']) or False"
-                tal:attributes="src python:(portal.absolute_url()+'/++resource++'+product+'.images/%s.png')%alerts[uid]['icon'];
-	                              title python:alerts[uid]['msg']"/>
-
-	   </span>
-	</tal:outofrange>
-
 	</span> <tal:comment replace="nothing"><!-- </span tal:condition="not:replace"> --></tal:comment>
 
 	<tal:comment replace="nothing"><!-- after structure --></tal:comment>
-	<span class="after"
-		tal:content="structure after"/>
+	<span class="after"tal:content="structure after"/>
+	<tal:field_icons define="uid python:item['uid'];
+		                    val python:view.bika_listing.field_icons.get(uid, []);
+							field_icons python: [i for i in val if i['field'] == column];">
+		<span class="alert"
+				tal:attributes="uid uid;
+								field column;">
+				<img tal:repeat="field_icon field_icons"
+					tal:attributes="src python:portal.absolute_url()+'/'+field_icon['icon'];
+									title python:field_icon['msg']"/>
+		</span>
+	</tal:field_icons>
 
 	</td>
 	</tal:rowcolspan>
@@ -544,14 +539,14 @@ Table cells for each column from in review_state's column list.
 
 	</tr>
 
-     <!-- Row Remarks field (for Analyses) -->
-     <tal:remarks_condition
-     	tal:define="remarksenabled python:view.context.bika_setup.getEnableAnalysisRemarks();
-     	            isanalysis python:item['obj'].portal_type == 'Analysis';
-     	            hasremarks python:True if item.get('Remarks','') else False;
-     	            remarksedit python: remarksenabled and 'Remarks' in item.get('allow_edit',[]);
-     	            showremarks python:isanalysis and (hasremarks or remarksedit)
-     	                               and (item.has_key('id') and item.get('category', 'None') == cat);">
+	<!-- Row Remarks field (for Analyses) -->
+	<tal:remarks_condition
+		tal:define="remarksenabled python:view.context.bika_setup.getEnableAnalysisRemarks();
+					isanalysis python:item['obj'].portal_type == 'Analysis';
+					hasremarks python:True if item.get('Remarks','') else False;
+					remarksedit python: remarksenabled and 'Remarks' in item.get('allow_edit',[]);
+					showremarks python:isanalysis and (hasremarks or remarksedit)
+									and (item.has_key('id') and item.get('category', 'None') == cat);">
 
 		<tr	tal:condition="showremarks"
 			tal:define="keyword python:item.has_key('Keyword') and item['Keyword'] or '';"
@@ -561,12 +556,12 @@ Table cells for each column from in review_state's column list.
 						uid item/uid;
 						keyword keyword;">
 
-            <td tal:attributes="class string:${item/state_class} result"></td>
+			<td tal:attributes="class string:${item/state_class} result"></td>
 
 			<td tal:attributes="colspan python:int(nr_cols)-1;
 								class string:${item/state_class} result"
-			     style="padding-right:10px;padding-bottom:5px;">
-			    <span i18n:translate="" style='color:#3f3f3f;font-size:0.95em;'>Remarks:</span>&nbsp;
+				style="padding-right:10px;padding-bottom:5px;">
+				<span i18n:translate="" style='color:#3f3f3f;font-size:0.95em;'>Remarks:</span>&nbsp;
 				<textarea
 					style="font-size: 0.9em;color:#3f3f3f;width:100%;display:block;"
 					autocomplete="off"
@@ -632,27 +627,27 @@ Batching
 				tal:define="batch view/batch"
 				condition="python:batch.multiple_pages and not view.show_all">
 				<span class="previous"
-				  tal:condition="batch/has_previous">
+				tal:condition="batch/has_previous">
 					<a href=""
-                       tal:attributes="href python:view.bika_listing.GET_url(pagenumber=batch.previouspage)">
-					   &laquo;
-					   <span i18n:domain="plone" i18n:translate="">
-						   Previous
-						   <span i18n:domain="plone" i18n:name="number" tal:omit-tag="" tal:content="batch/pagesize">n</span>
-						   items
-					   </span>
+					tal:attributes="href python:view.bika_listing.GET_url(pagenumber=batch.previouspage)">
+					&laquo;
+					<span i18n:domain="plone" i18n:translate="">
+						Previous
+						<span i18n:domain="plone" i18n:name="number" tal:omit-tag="" tal:content="batch/pagesize">n</span>
+						items
+					</span>
 					</a>
 				</span>
 				<!-- Link to first -->
 				<span tal:condition="batch/show_link_to_first">
-                    <a href="" tal:attributes="href python:view.bika_listing.GET_url(pagenumber=1)">1</a>
+					<a href="" tal:attributes="href python:view.bika_listing.GET_url(pagenumber=1)">1</a>
 					<span tal:condition="batch/second_page_not_in_navlist" tal:omit-tag="">
-					   ...
+					...
 					</span>
 				</span>
 				<!-- Pagelist with links to previous pages for quick navigation -->
 				<span tal:repeat="pagenumber batch/previous_pages" tal:omit-tag="" >
-                  <a href="" tal:content="pagenumber" tal:attributes="href python:view.bika_listing.GET_url(pagenumber=pagenumber)"/>
+				<a href="" tal:content="pagenumber" tal:attributes="href python:view.bika_listing.GET_url(pagenumber=pagenumber)"/>
 				</span>
 				<!-- Current page -->
 				<span tal:condition="batch/navlist" tal:omit-tag="">
@@ -660,27 +655,27 @@ Batching
 				</span>
 				<!-- Pagelist with links to next pages for quick navigation -->
 				<span tal:repeat="pagenumber batch/next_pages" tal:omit-tag="" >
-				  <a href="" tal:content="pagenumber" tal:attributes="href python:view.bika_listing.GET_url(pagenumber=pagenumber)"/>
+				<a href="" tal:content="pagenumber" tal:attributes="href python:view.bika_listing.GET_url(pagenumber=pagenumber)"/>
 				</span>
 				<!-- Link to last -->
 				<span tal:condition="batch/show_link_to_last">
 					<span tal:condition="batch/before_last_page_not_in_navlist" tal:omit-tag="">
-					   ...
+					...
 					</span>
 					<a href=""
-                       tal:attributes="href python:view.bika_listing.GET_url(pagenumber=batch.lastpage)"
-					   tal:content="string:${batch/lastpage}">3457</a>
+					tal:attributes="href python:view.bika_listing.GET_url(pagenumber=batch.lastpage)"
+					tal:content="string:${batch/lastpage}">3457</a>
 				</span>
 				<span class="next"
-					  tal:condition="batch/has_next">
+					tal:condition="batch/has_next">
 					<a href=""
-                       tal:attributes="href python:view.bika_listing.GET_url(pagenumber=batch.nextpage)">
-					   <span i18n:domain="plone" i18n:translate="">
-						   Next
-						   <span i18n:domain="plone" i18n:name="number" tal:omit-tag="" tal:content="string:${batch/next_item_count}">n</span>
-						   items
-					   </span>
-					   &raquo;
+					tal:attributes="href python:view.bika_listing.GET_url(pagenumber=batch.nextpage)">
+					<span i18n:domain="plone" i18n:translate="">
+						Next
+						<span i18n:domain="plone" i18n:name="number" tal:omit-tag="" tal:content="string:${batch/next_item_count}">n</span>
+						items
+					</span>
+					&raquo;
 					</a>
 				</span>
 			</tal:batching>

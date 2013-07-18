@@ -27,6 +27,7 @@ from zope.component._api import getMultiAdapter
 from zope.i18n import translate
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implements
+from zope.interface import Interface
 
 import App
 import json
@@ -41,6 +42,7 @@ try:
 except:
     # Plone < 4.3
     from plone.app.content.batching import Batch
+
 
 class WorkflowAction:
     """ Workflow actions taken in any Bika contextAnalysisRequest context
@@ -179,6 +181,7 @@ class BikaListingView(BrowserView):
     review_state = 'default'
     show_categories = False
     expand_all_categories = False
+    field_icons = {}
 
     """
      ### column definitions
@@ -244,6 +247,7 @@ class BikaListingView(BrowserView):
     ]
 
     def __init__(self, context, request, **kwargs):
+        self.field_icons = {}
         super(BikaListingView, self).__init__(context, request)
         path = hasattr(context, 'getPath') and context.getPath() \
             or "/".join(context.getPhysicalPath())
@@ -453,7 +457,9 @@ class BikaListingView(BrowserView):
 
     def __call__(self):
         """ Handle request parameters and render the form."""
+
         self._process_request()
+
         if self.request.get('table_only', '') == self.form_id:
             return self.contents_table(table_only=self.request.get('table_only'))
         else:

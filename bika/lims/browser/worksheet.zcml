@@ -13,6 +13,11 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <adapter
+      for="bika.lims.interfaces.IWorksheet"
+      factory="bika.lims.browser.worksheet.ResultOutOfRange"
+    />
+
     <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="manage_results"

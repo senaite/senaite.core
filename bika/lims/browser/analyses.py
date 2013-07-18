@@ -1,31 +1,32 @@
 # coding=utf-8
 from AccessControl import getSecurityManager
-from DateTime import DateTime
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import transaction_note
-from bika.lims.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import QCANALYSIS_TYPES
+from bika.lims.interfaces import IFieldIcons
 from bika.lims.permissions import *
 from bika.lims.utils import isActive
-from zope.component import getMultiAdapter
-from zope.interface import implements
-import json
-import plone
-from bika.lims.interfaces import IAnalysisRangeAlerts
+from DateTime import DateTime
 from operator import itemgetter
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from zope.interface import implements
+from zope.interface import Interface
+from zope.component import getAdapters
+
+import json
+
 
 
 class AnalysesView(BikaListingView):
-    implements(IAnalysisRangeAlerts)
     """ Displays a list of Analyses in a table.
         Visible InterimFields from all analyses are added to self.columns[].
         Keyword arguments are passed directly to bika_analysis_catalog.
     """
+
     def __init__(self, context, request, **kwargs):
         self.catalog = "bika_analysis_catalog"
         self.contentFilter = dict(kwargs)
@@ -102,6 +103,7 @@ class AnalysesView(BikaListingView):
                                            request,
                                            show_categories=context.bika_setup.getCategoriseAnalysisServices(),
                                            expand_all_categories=True)
+
 
     def folderitems(self):
         rc = getToolByName(self.context, REFERENCE_CATALOG)
@@ -339,11 +341,14 @@ class AnalysesView(BikaListingView):
                         attachments += "</br></span>"
                 items[i]['replace']['Attachments'] = attachments[:-12] + "</span>"
 
-                if hasattr(obj, 'result_in_range'):
-                    items[i]['result_in_range'] = obj.result_in_range(result, self.chosen_spec)
-                else:
-                    items[i]['result_in_range'] = (True, None)
-
+                for name, adapter in getAdapters((obj, ), IFieldIcons):
+                    auid = obj.UID()
+                    alerts = adapter()
+                    if alerts:
+                        if auid in self.field_icons:
+                            self.field_icons[auid].extend(alerts[auid])
+                        else:
+                            self.field_icons[auid] = alerts[auid]
             else:
                 if 'Result' in items[i]['allow_edit']:
                     items[i]['allow_edit'].remove('Result')
@@ -500,34 +505,6 @@ class AnalysesView(BikaListingView):
         self.items = items
 
         return items
-
-    def getOutOfRangeAlerts(self):
-        """ Declared by bika.lims.interfaces.IAnalysisRangeAlerts
-            Returns a dictionary: the keys are the Analysis UIDs and the
-            values are another dictionary with the keys 'result', 'icon', 'msg'
-        """
-        if not self.items:
-            self.items = self.folderitems()
-
-        alerts = {}
-        for item in self.items:
-            obj = item['obj']
-            if hasattr(obj, 'isOutOfRange') and obj.isOutOfRange():
-                outofrange, acceptable, spec = obj.isOutOfRange()
-                if outofrange:
-                    rngstr = _("min") + " " + str(spec['min']) + ", " + \
-                             _("max") + " " + str(spec['max'])
-
-                    if acceptable:
-                        message = _('Result in shoulder range') + " (%s)" % rngstr
-                    else:
-                        message = _('Result out of range') + ' (%s)' % rngstr
-
-                    alerts[obj.UID()] = {'result': obj.getResult(),
-                                         'icon': acceptable and 'warning' or \
-                                                'exclamation',
-                                         'msg': message}
-        return alerts
 
 
 class QCAnalysesView(AnalysesView):

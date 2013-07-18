@@ -13,8 +13,8 @@ from zope.interface import implements
 schema = schema.copy() + Schema((
     ReferenceField(
         'Analysis',
-    required=1,
-    allowed_types=('Analysis',),
+        required=1,
+        allowed_types=('Analysis',),
         referenceClass=HoldingReference,
         relationship='DuplicateAnalysisAnalysis',
     ),
@@ -135,37 +135,6 @@ class DuplicateAnalysis(Analysis):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
-
-    def result_in_range(self, result=None, specification="lab",
-                        orig=None):
-        """ Check if a result is "in range".
-            if result is None, self.getResult() is called for the result value.
-
-            if orig is specified, it is used as the original value,
-            rather than the value currently in the database.  This allows the
-            worksheet forms to validate against current form values.
-
-            Return False,spec if out of range
-            Return True,None if in range
-        """
-
-        orig = orig if orig else self.getAnalysis().getResult()
-        # if any of our requirements are not floatable, then: in_range
-        try:
-            orig = float(str(orig))
-            result = float(str(result))
-            variation = float(self.getService().getDuplicateVariation())
-        except ValueError:
-            return True, None
-
-        range_min = orig - (orig * variation / 100)
-        range_max = orig + (orig * variation / 100)
-        if range_min <= result <= range_max:
-            return True, None
-        else:
-            return False, {'min': range_min,
-                           'max': range_max,
-                           'error': variation}
 
     def getSample(self):
         return self.getAnalysis().aq_parent.getSample()
