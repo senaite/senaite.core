@@ -124,6 +124,50 @@ class WorksheetImporter:
         XXX Simple generic sheet importer
         """
 
+    def fill_addressfields(self, row, obj):
+        """ Fills the address fields for the specified object if allowed:
+            PhysicalAddress, PostalAddress, CountryState, BillingAddress
+        """
+        addresses = {}
+        for add_type in ['Physical', 'Postal', 'Billing', 'CountryState']:
+            addresses[add_type] = {}
+            for key in ['Address', 'City', 'State', 'Zip', 'Country']:
+                addresses[add_type][key.lower()] = row.get("%s_%s" % (add_type, key), '')
+
+        if addresses['CountryState']['country'] == '' \
+            and addresses['CountryState']['state'] == '':
+            addresses['CountryState']['country'] = addresses['Physical']['country']
+            addresses['CountryState']['state'] = addresses['Physical']['state']
+
+        if hasattr(obj, 'setPhysicalAddress'):
+            obj.setPhysicalAddress(addresses['Physical'])
+        if hasattr(obj, 'setPostalAddress'):
+            obj.setPostalAddress(addresses['Postal'])
+        if hasattr(obj, 'setCountryState'):
+            obj.setCountryState(addresses['CountryState'])
+        if hasattr(obj, 'setBillingAddress'):
+            obj.setBillingAddress(addresses['Billing'])
+
+    def fill_contactfields(self, row, obj):
+        """ Fills the contact fields for the specified object if allowed:
+            EmailAddress, Phone, Fax, BusinessPhone, BusinessFax, HomePhone,
+            MobilePhone
+        """
+        if hasattr(obj, 'setEmailAddress'):
+            obj.setEmailAddress(row.get('EmailAddress', ''))
+        if hasattr(obj, 'setPhone'):
+            obj.setPhone(row.get('Phone', ''))
+        if hasattr(obj, 'setFax'):
+            obj.setFax(row.get('Fax', ''))
+        if hasattr(obj, 'setBusinessPhone'):
+            obj.setBusinessPhone(row.get('BusinessPhone', ''))
+        if hasattr(obj, 'setBusinessFax'):
+            obj.setBusinessFax(row.get('BusinessFax', ''))
+        if hasattr(obj, 'setHomePhone'):
+            obj.setHomePhone(row.get('HomePhone', ''))
+        if hasattr(obj, 'setMobilePhone'):
+            obj.setMobilePhone(row.get('MobilePhone', ''))
+
 
 class Lab_Information(WorksheetImporter):
 
@@ -154,13 +198,9 @@ class Lab_Information(WorksheetImporter):
             AccreditationReference=values['AccreditationReference'],
             AccreditationBodyLogo=file_data,
             TaxNumber=values['TaxNumber'],
-            Phone=values['Phone'],
-            Fax=values['Fax'],
-            EmailAddress=values['EmailAddress'],
-            PhysicalAddress=row['Physical'],
-            PostalAddress=row['Postal'],
-            BillingAddress=row['Billing']
         )
+        self.fill_contactfields(values, laboratory)
+        self.fill_addressfields(values, laboratory)
 
 
 class Lab_Contacts(WorksheetImporter):
@@ -188,15 +228,12 @@ class Lab_Contacts(WorksheetImporter):
                 Salutation=row.get('Salutation', ''),
                 Firstname=row['Firstname'],
                 Surname=row.get('Surname', ''),
-                EmailAddress=row.get('EmailAddress', ''),
-                BusinessPhone=row.get('BusinessPhone', ''),
-                BusinessFax=row.get('BusinessFax', ''),
-                HomePhone=row.get('HomePhone', ''),
-                MobilePhone=row.get('MobilePhone', ''),
                 JobTitle=row.get('JobTitle', ''),
                 Username=row.get('Username', ''),
                 Signature=self.get_file_data(row.get('Signature', None))
             )
+            self.fill_contactfields(row, obj)
+            self.fill_addressfields(row, obj)
 
             if row['Department_title']:
                 self.defer(src_obj=obj,
@@ -284,14 +321,10 @@ class Clients(WorksheetImporter):
                          'MemberDiscountApplies'] and True or False,
                      BulkDiscount=row['BulkDiscount'] and True or False,
                      TaxNumber=row.get('TaxNumber', ''),
-                     Phone=row.get('Phone', ''),
-                     Fax=row.get('Fax', ''),
-                     EmailAddress=row.get('EmailAddress', ''),
-                     PhysicalAddress=row.get('Physical', {}),
-                     PostalAddress=row.get('Postal', {}),
-                     BillingAddress=row.get('Billing', {}),
                      AccountNumber=row.get('AccountNumber', '')
                      )
+            self.fill_contactfields(row, obj)
+            self.fill_addressfields(row, obj)
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
 
@@ -319,18 +352,12 @@ class Client_Contacts(WorksheetImporter):
                 Username=row.get('Username', ''),
                 JobTitle=row.get('JobTitle', ''),
                 Department=row.get('Department', ''),
-                BusinessPhone=row.get('BusinessPhone', ''),
-                BusinessFax=row.get('BusinessFax', ''),
-                HomePhone=row.get('HomePhone', ''),
-                MobilePhone=row.get('MobilePhone', ''),
-                EmailAddress=row.get('EmailAddress', ''),
                 PublicationPreference=pub_pref,
                 AttachmentsPermitted=row[
                     'AttachmentsPermitted'] and True or False,
-                PhysicalAddress=row['Physical'],
-                PostalAddress=row['Postal'],
             )
-
+            self.fill_contactfields(row, contact)
+            self.fill_addressfields(row, contact)
             contact.unmarkCreationFlag()
             renameAfterCreation(contact)
 
@@ -445,18 +472,14 @@ class Suppliers(WorksheetImporter):
                 obj.edit(
                     Name=row.get('Name', ''),
                     TaxNumber=row.get('TaxNumber', ''),
-                    EmailAddress=row.get('EmailAddress', ''),
-                    Phone=row.get('Phone', ''),
-                    Fax=row.get('Fax', ''),
-                    PhysicalAddress=row.get('Physical', {}),
-                    PostalAddress=row.get('Postal', {}),
-                    BillingAddress=row.get('Billing', {}),
                     AccountType=row.get('AccountType', {}),
                     AccountName=row.get('AccountName', {}),
                     AccountNumber=row.get('AccountNumber', ''),
                     BankName=row.get('BankName', ''),
                     BankBranch=row.get('BankBranch', ''),
                 )
+                self.fill_contactfields(row, obj)
+                self.fill_addressfields(row, obj)
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
 
@@ -480,9 +503,10 @@ class Supplier_Contacts(WorksheetImporter):
             obj.edit(
                 Firstname=row['Firstname'],
                 Surname=row.get('Surname', ''),
-                EmailAddress=row.get('EmailAddress', ''),
                 Username=row.get('Username')
             )
+            self.fill_contactfields(row, obj)
+            self.fill_addressfields(row, obj)
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
 
@@ -499,6 +523,7 @@ class Manufacturers(WorksheetImporter):
                     title=row['title'],
                     description=row.get('description', '')
                 )
+                self.fill_addressfields(row, obj)
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
 
@@ -1082,7 +1107,7 @@ class Analysis_Services(WorksheetImporter):
             obj = folder[_id]
             MTA = {
                 'days': int(row['MaxTimeAllowed_days'] and row['MaxTimeAllowed_days'] or 0),
-                'hours': int(row['MaxTimeAllowed_days'] and row['MaxTimeAllowed_days'] or 0),
+                'hours': int(row['MaxTimeAllowed_hours'] and row['MaxTimeAllowed_hours'] or 0),
                 'minutes': int(row['MaxTimeAllowed_minutes'] and row['MaxTimeAllowed_minutes'] or 0),
             }
             category = bsc(
@@ -1131,7 +1156,7 @@ class Analysis_Services(WorksheetImporter):
                 ReportDryMatter=self.to_bool(row['ReportDryMatter']),
                 AttachmentOption=row['Attachment'][0].lower(),
                 Unit=row['Unit'] and row['Unit'] or None,
-                Precision=row['Precision'] and str(row['Precision']) or '2',
+                Precision=row['Precision'] and str(row['Precision']) or '0',
                 MaxTimeAllowed=MTA,
                 Price=row['Price'] and "%02f" % (
                     float(row['Price'])) or "0,00",
