@@ -332,10 +332,10 @@ Add Duplicate: Submit, verify, and check that alerts persist
     Go to                       ${PLONEURL}/worksheets/WS-001/add_duplicate
     Wait Until Page Contains    Select a destinaton position
     Click Element               xpath=//span[@id='worksheet_add_duplicate_ars']//tbody//tr[1]
-    Wait Until Page Contains Element  //tr[@keyword='Ca']//input[contains(@selector, 'Result_D-003')]
+    Wait Until Page Contains Element  //tr[@keyword='Mg']//input[@type='text' and contains(@selector, 'Result_D')]
     # Check if invalid results are flagged correctly through submit and verify
-    Input Text  xpath=//tr[@keyword='Ca']//input[contains(@selector, 'Result_D-003')]  8.5
-    Input Text  xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D-004')]  55
+    Input Text  xpath=//tr[@keyword='Mg']//input[@type='text' and contains(@selector, 'Result_D')]  8.5
+    Input Text  xpath=//tr[@keyword='Ca']//input[@type='text' and contains(@selector, 'Result_D')]  55
     log   page should now contain exclamation for duplicate MG - verify.   warn
     Focus                       css=.analyst
     Click Element               xpath=//input[@value='Submit for verification'][1]
