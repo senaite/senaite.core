@@ -7,6 +7,11 @@ import unittest
 
 ROBOT_TESTS = [
     'test_bika_setup.robot',
+    'test_Client.robot'
+    'test_Batch.robot',
+    'test_AnalysisRequest.robot',
+    'test_bika_Worksheets.robot',
+    'test_ShowPartitions.robot',
 ]
 
 
