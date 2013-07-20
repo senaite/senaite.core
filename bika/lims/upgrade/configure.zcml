@@ -265,4 +265,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Added RegulatoryInspector permissions in analysis_workflow"
+        description="Added RegulatoryInspector permissions in bika_analysis_workflow_csv"
+        source="1135"
+        destination="1136"
+        handler="bika.lims.upgrade.to1136.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>

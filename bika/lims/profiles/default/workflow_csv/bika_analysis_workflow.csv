@@ -11,128 +11,128 @@ Id:,attachment_due,,,,,,,,,,,,
 Title:,Attachment Outstanding,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
 Transitions,"attach, retract",,,,,,,,,,,
-Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier
-BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,N,Y,N,N,N
-BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,N,N,N
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
+BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,N,Y,N,N,N,N
+BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,N,N,N,Y
 ,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,
 Id:,not_requested,,,,,,,,,,,,
 Title:,Not requested,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
 Transitions,verify,,,,,,,,,,,,
-Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier
-BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,N,Y,N,N,N
-BIKA: Edit Field Results,Y,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Edit Results,Y,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,N,N,N
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
+BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,N,Y,N,N,N,N
+BIKA: Edit Field Results,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit Results,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,N,N,N,Y
 ,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,
 Id:,published,,,,,,,,,,,,
 Title:,Published,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
 Transitions,publish,,,,,,,,,,,,
-Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier
-BIKA: Cancel and reinstate,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: View Results,N,N,Y,Y,N,N,N,Y,Y,Y,N,N,N
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
+BIKA: Cancel and reinstate,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: View Results,N,N,Y,Y,N,N,N,Y,Y,Y,N,N,N,Y
 ,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,
 Id:,retracted,,,,,,,,,,,,
 Title:,Retracted,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
 Transitions,,,,,,,,,,,,,
-Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier
-BIKA: Cancel and reinstate,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,N,Y,Y
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
+BIKA: Cancel and reinstate,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,N,Y,Y,Y
 ,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,
 Id:,sample_due,,,,,,,,,,,,
 Title:,Sample Due,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
 Transitions,"import, receive, submit",,,,,,,,,,
-Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier
-BIKA: Cancel and reinstate,N,N,Y,Y,N,N,N,N,N,Y,N,N,N
-BIKA: Edit Field Results,N,N,Y,N,N,N,N,N,Y,Y,N,Y,N
-BIKA: Edit Results,Y,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Receive Sample,Y,N,Y,N,N,N,N,N,Y,Y,N,N,N
-BIKA: View Results,Y,N,Y,N,N,N,N,N,Y,Y,N,Y,N
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
+BIKA: Cancel and reinstate,N,N,Y,Y,N,N,N,N,N,Y,N,N,N,N
+BIKA: Edit Field Results,N,N,Y,N,N,N,N,N,Y,Y,N,Y,N,N
+BIKA: Edit Results,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Receive Sample,Y,N,Y,N,N,N,N,N,Y,Y,N,N,N,N
+BIKA: View Results,Y,N,Y,N,N,N,N,N,Y,Y,N,Y,N,Y
 ,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,
 Id:,sample_received,,,,,,,,,,,,
 Title:,Received,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
 Transitions,submit,,,,,,,,,,,,
-Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier
-BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,N,Y,N,N,N
-BIKA: Edit Field Results,Y,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Edit Results,N,N,Y,N,N,N,N,Y,N,Y,N,N,N
-BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,N,N,N
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
+BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,N,Y,N,N,N,N
+BIKA: Edit Field Results,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit Results,N,N,Y,N,N,N,N,Y,N,Y,N,N,N,N
+BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,N,N,N,Y
 ,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,
 Id:,sample_registered,,,,,,,,,,,,
 Title:,Registered,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
 Transitions,"sampling_workflow, no_sampling_workflow",,,,,,,,,,,
-Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
 ,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,
 Id:,sampled,,,,,,,,,,,,
 Title:,Sampled,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
 Transitions,"auto_preservation_required, auto_no_preservation_required, to_be_preserved, sample_due",,,,,,,,,
-Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
 ,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,
 Id:,to_be_preserved,,,,,,,,,,,,
 Title:,To Be Preserved,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
 Transitions,preserve,,,,,,,,,,,,
-Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier
-BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,Y,Y,N,N,N
-BIKA: Edit Field Results,N,N,Y,N,N,N,N,N,Y,Y,N,Y,N
-BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Manage Invoices,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Preserve Sample,N,N,Y,N,N,N,N,N,N,Y,Y,N,N
-BIKA: Results not requested,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Sample Sample,N,N,N,N,N,N,N,N,N,N,N,N,N
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
+BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,Y,Y,N,N,N,N
+BIKA: Edit Field Results,N,N,Y,N,N,N,N,N,Y,Y,N,Y,N,N
+BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Manage Invoices,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Preserve Sample,N,N,Y,N,N,N,N,N,N,Y,Y,N,N,N
+BIKA: Results not requested,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Sample Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,
 Id:,to_be_sampled,,,,,,,,,,,,
 Title:,To Be Sampled,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
 Transitions,"sample",,,,,,,,,,,,
-Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier
-BIKA: Cancel and reinstate,N,N,Y,Y,N,N,N,N,Y,Y,N,N,N
-BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Sample Sample,N,N,Y,N,N,N,N,N,N,Y,N,Y,N
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
+BIKA: Cancel and reinstate,N,N,Y,Y,N,N,N,N,Y,Y,N,N,N,N
+BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Sample Sample,N,N,Y,N,N,N,N,N,N,Y,N,Y,N,N
 ,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,
 Id:,to_be_verified,,,,,,,,,,,,
 Title:,To be verified,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
 Transitions,"verify, retract, revert",,,,,,,,,,
-Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier
-BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,N,Y,N,N,N
-BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,N,Y,Y
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
+BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,N,Y,N,N,N,N
+BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,N,Y,Y,Y
 ,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,
 Id:,verified,,,,,,,,,,,,
 Title:,Verified,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
 Transitions,publish,,,,,,,,,,,,
-Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier
-BIKA: Cancel and reinstate,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: View Results,N,N,Y,Y,N,N,N,Y,Y,Y,N,N,N
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
+BIKA: Cancel and reinstate,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: View Results,N,N,Y,Y,N,N,N,Y,Y,Y,N,N,N,Y
 ,,,,,,,,,,,,,
 [Transition],,,,,,,,,,,,,
 Id:,attach,,,,,,,,,,,,
