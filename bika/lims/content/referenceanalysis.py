@@ -137,18 +137,6 @@ class ReferenceAnalysis(BaseContent):
         """
         return self.aq_parent
 
-    def result_in_range(self, result = None, specification = 'lab'):
-        """ Check if the result is in range for the Analysis' service.
-            if result is None, self.getResult() is called for the result value.
-            specification parameter is ignored.
-            Return False,spec if out of range
-            Return True,None if in range
-            return '1',spec if in shoulder
-        """
-        deprecated("Use isOutOfRange(result,specification) instead")
-        outofrange, acceptable, spec = self.isOutOfRange(result, specification)
-        return acceptable and '1' or not outofrange, spec
-
     security.declarePublic('setResult')
     def setResult(self, value, **kw):
         # Always update ResultCapture date when this field is modified

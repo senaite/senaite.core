@@ -6,7 +6,7 @@ Resource                keywords.txt
 Variables               plone/app/testing/interfaces.py
 
 Suite Setup             Start browser
-Suite Teardown          Close All Browsers
+# Suite Teardown          Close All Browsers
 
 *** Variables ***
 

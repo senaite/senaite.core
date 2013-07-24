@@ -1,6 +1,7 @@
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
+from bika.lims.interfaces import IFieldIcons
 from bika.lims.utils import encode_header, createPdf, attachPdf
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -13,6 +14,7 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from smtplib import SMTPRecipientsRefused
 from smtplib import SMTPServerDisconnected
+from zope.component import getAdapters
 
 import App
 import Globals
@@ -26,6 +28,7 @@ class doPublish(BrowserView):
     def __init__(self, context, request, action, analysis_requests):
         self.context = context
         self.request = request
+        self.field_icons = {}
 
         # the workflow transition that invoked us
         self.action = action
@@ -39,6 +42,17 @@ class doPublish(BrowserView):
             if workflow.getInfoFor(ar, 'review_state') in self.publish_states \
                     or ar.getAnalyses(review_state=self.publish_states):
                 self.analysis_requests.append(ar)
+
+    def ResultOutOfRange(self, analysis):
+        """ Template wants to know, is this analysis out of range?
+        We scan IFieldIcons adapters, and return True if any IAnalysis
+        adapters trigger a result.
+        """
+        adapters = getAdapters((analysis, ), IFieldIcons)
+        for name, adapter in adapters:
+            alerts = adapter()
+            if alerts and analysis.UID() in alerts:
+                return True
 
     def __call__(self):
 

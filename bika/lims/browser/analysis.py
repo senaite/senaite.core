@@ -8,6 +8,44 @@ from zope.component import adapts
 from zope.interface import implements
 
 
+def isOutOfRange(result, spec, keyword):
+    spec_min = None
+    spec_max = None
+    try:
+        spec_min = float(spec[keyword]['min'])
+    except:
+        spec_min = None
+        pass
+    try:
+        spec_max = float(spec[keyword]['max'])
+    except:
+        spec_max = None
+        pass
+    if (not spec_min and not spec_max):
+        return False, None, None  # No min and max values defined
+    elif spec_min and spec_max and spec_min <= result <= spec_max:
+        return False, None, None  # min and max values defined
+    elif spec_min and not spec_max and spec_min <= result:
+        return False, None, None  # max value not defined
+    elif not spec_min and spec_max and spec_max >= result:
+        return False, None, None  # min value not defined
+    # check if in 'shoulder' range - out of range, but in acceptable error
+    error = 0
+    try:
+        error = float(spec[keyword].get('error', '0'))
+    except:
+        error = 0
+        pass
+    error_amount = (result / 100) * error
+    error_min = result - error_amount
+    error_max = result + error_amount
+    if (spec_min and result < spec_min and error_max >= spec_min) \
+            or (spec_max and result > spec_max and error_min <= spec_max):
+        return True, True, spec[keyword]
+    # Default: in range
+    return False, None, None  # min value not defined
+
+
 class ResultOutOfRange(object):
 
     """An icon provider for Analyses: Result field out-of-range alerts
@@ -46,13 +84,14 @@ class ResultOutOfRange(object):
         # Other types of analysis depend on Analysis base class, and therefore
         # also provide IAnalysis.  We allow them to register their own adapters
         # for range checking, and manually ignore them here.
-        if self.context.portal_type in ('ReferenceAnalysis', 'DuplicateAnalysis'):
+        ignore = ('ReferenceAnalysis', 'DuplicateAnalysis')
+        if self.context.portal_type in ignore:
             return {}
+        # Retracted analyses don't qualify
         workflow = getToolByName(self.context, 'portal_workflow')
         astate = workflow.getInfoFor(self.context, 'review_state')
         if astate == 'retracted':
             return {}
-
         result = result is not None and str(result) or self.context.getResult()
         if result == '':
             return {}
@@ -61,6 +100,7 @@ class ResultOutOfRange(object):
             result = float(str(result))
         except ValueError:
             return {}
+
         # No specs available, assume in range:
         specs = self.context.getAnalysisSpecs(specification)
         if specs is None:
@@ -68,53 +108,7 @@ class ResultOutOfRange(object):
         keyword = self.context.getService().getKeyword()
         spec = specs.getResultsRangeDict()
         if keyword in spec:
-            spec_min = None
-            spec_max = None
-            try:
-                spec_min = float(spec[keyword]['min'])
-            except:
-                spec_min = None
-                pass
-            try:
-                spec_max = float(spec[keyword]['max'])
-            except:
-                spec_max = None
-                pass
-
-            if (not spec_min and not spec_max):
-                # No min and max values defined
-                outofrange, acceptable, o_spec = False, None, None
-
-            elif spec_min and spec_max and spec_min <= result <= spec_max:
-                # min and max values defined
-                outofrange, acceptable, o_spec = False, None, None
-
-            elif spec_min and not spec_max and spec_min <= result:
-                # max value not defined
-                outofrange, acceptable, o_spec = False, None, None
-
-            elif not spec_min and spec_max and spec_max >= result:
-                # min value not defined
-                outofrange, acceptable, o_spec = False, None, None
-
-            else:
-                outofrange, acceptable, o_spec = True, False, spec[keyword]
-
-            if not outofrange:
-                """ check if in 'shoulder' error range - out of range,
-                    but in acceptable error """
-                error = 0
-                try:
-                    error = float(spec[keyword].get('error', '0'))
-                except:
-                    error = 0
-                    pass
-                error_amount = (result / 100) * error
-                error_min = result - error_amount
-                error_max = result + error_amount
-                if (spec_min and result < spec_min and error_max >= spec_min) \
-                        or (spec_max and result > spec_max and error_min <= spec_max):
-                    outofrange, acceptable, o_spec = True, True, spec[keyword]
+            outofrange, acceptable, o_spec = isOutOfRange(result, spec, keyword)
             return self.get_alerts(outofrange, acceptable, o_spec)
         else:
             # Analysis without specification values. Assume in range

@@ -111,8 +111,8 @@ class Report(BrowserView):
 
         def lookup_spec(analysis):
             # If an analysis is OUT OF RANGE, the failed spec values are passed
-            # back from the result_in_range function. But if the analysis resuit
-            # is IN RANGE, we need to look it up.
+            # back from analysis.ResultOutOfRange. But if the analysis result
+            # is IN RANGE, we need to look up the spec ranges.
             service = analysis['service']
             keyword = service['Keyword']
             analysis = analysis['obj']
@@ -140,12 +140,13 @@ class Report(BrowserView):
         ## Compile a list of dictionaries, with all relevant analysis data
         for analysis in proxies:
             analysis = analysis.getObject()
+            result = analysis.getResult()
             client = analysis.aq_parent.aq_parent
             uid = analysis.UID()
             service = analysis.getService()
             keyword = service.getKeyword()
-            service_title = "%s (%s)" % (service.Title(), service.getKeyword())
-            result_in_range = analysis.result_in_range(specification=spec)
+            service_title = "%s (%s)" % (service.Title(), keyword)
+            result_in_range = isOutOfRange(result, spec, keyword)
             try:
                 precision = str(service.getPrecision())
             except:

@@ -151,10 +151,6 @@
                 <td class="label" i18n:translate="">Client Batch ID</td>
                 <td tal:content="python:ar.getBatch().getClientBatchID()"></td>
             </tr>
-            <tr tal:condition="python: ar.getBatch() and view.ulocalized_time(ar.getBatch().getOnsetDate())">
-                <td class="label" i18n:translate="">Onset Date</td>
-                <td tal:content="python: view.ulocalized_time(ar.getBatch().getOnsetDate())">2013-05-06 01:23 PM</td>
-            </tr>
             <tr>
                 <td class="label" i18n:translate="">Client</td>
                 <td tal:content="ar/aq_parent/Title"></td>
@@ -226,7 +222,7 @@
                                 analysis_result_dm python: analysis.getResultDM();
                                 analysis_uncertainty analysis/getUncertainty|nothing;
                                 analysis_accredited python:accredited and service.getAccredited();
-                                analysis_outofrange python:analysis.isOutOfRange()[0];
+                                analysis_outofrange python:view.ResultOutOfRange(analysis);
                                 analysis_retested python:analysis.getRetested();
                                 analysis_specs python:analysis.getAnalysisSpecs();
                                 analysis_range python: analysis_specs and analysis_specs.getAnalysisSpecsStr(analysis_keyword) or '';
@@ -302,8 +298,8 @@
                                             qc_service python: qc_analysis.getService();
                                             qc_refsample python: qc_analysis.aq_parent;
                                             qc_refsample_code python:'%s - %s'%(qc_refsample.id, qc_refsample.Title());
-                                            qc_outofrange python: qc_analysis.isOutOfRange()[0];
-                                            qc_uncertainity python: qc_analysis.getUncertainty();
+                                            qc_outofrange python: view.ResultOutOfRange(qc_analysis);
+                                            qc_uncertainty python: qc_analysis.getUncertainty();
                                             qc_range python: qc_refsample.getReferenceResultStr(qc_service.UID()) if (qc_refsample and hasattr(qc_refsample, 'getReferenceResultStr')) else '';
                                             qc_worksheet python:qc_analysis.getBackReferences('WorksheetAnalysis');
                                             qc_wsid python:qc_worksheet[0].id if (qc_worksheet and len(qc_worksheet) > 0) else '';
@@ -329,7 +325,7 @@
                                             dqc_service python: dqc_analysis.getService();
                                             dqc_refsample python: dqc_analysis.getSample();
                                             dqc_refsample_code python:dqc_refsample.id;
-                                            dqc_outofrange python: dqc_analysis.isOutOfRange()[0];
+                                            dqc_outofrange python: view.ResultOutOfRange(dqc_analysis);
                                             dqc_uncertainity python: dqc_analysis.getUncertainty();
                                             dqc_specs python: None;
                                             dqc_range python: dqc_specs and dqc_specs.getAnalysisSpecsStr(dqc_service.getKeyword()) or '';
