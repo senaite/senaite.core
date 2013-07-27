@@ -7,6 +7,24 @@ from bika.lims.permissions import *
 from zope.component import adapts
 from zope.interface import implements
 
+def isOutOfShoulderRange(result, spec, keyword):
+    # check if in 'shoulder' range - out of range, but in acceptable error
+    spec_min = float(spec[keyword]['min'])
+    spec_max = float(spec[keyword]['max'])
+    error = 0
+    try:
+        error = float(spec[keyword].get('error', '0'))
+    except:
+        pass
+    error_amount = (result / 100) * error
+    error_min = result - error_amount
+    error_max = result + error_amount
+    if (spec_min and result < spec_min and error_max >= spec_min) \
+            or (spec_max and result > spec_max and error_min <= spec_max):
+        return True
+    # Default: in range
+    return False
+
 
 def isOutOfRange(result, spec, keyword):
     spec_min = None
@@ -22,28 +40,28 @@ def isOutOfRange(result, spec, keyword):
         spec_max = None
         pass
     if (not spec_min and not spec_max):
-        return False, None, None  # No min and max values defined
+        if isOutOfShoulderRange(result, spec, keyword):
+            return True, True, spec[keyword]
+        else:
+            return False, None, None  # No min and max values defined
     elif spec_min and spec_max and spec_min <= result <= spec_max:
-        return False, None, None  # min and max values defined
+        if isOutOfShoulderRange(result, spec, keyword):
+            return True, True, spec[keyword]
+        else:
+            return False, None, None  # min and max values defined
     elif spec_min and not spec_max and spec_min <= result:
-        return False, None, None  # max value not defined
+        if isOutOfShoulderRange(result, spec, keyword):
+            return True, True, spec[keyword]
+        else:
+            return False, None, None  # max value not defined
     elif not spec_min and spec_max and spec_max >= result:
-        return False, None, None  # min value not defined
-    # check if in 'shoulder' range - out of range, but in acceptable error
-    error = 0
-    try:
-        error = float(spec[keyword].get('error', '0'))
-    except:
-        error = 0
-        pass
-    error_amount = (result / 100) * error
-    error_min = result - error_amount
-    error_max = result + error_amount
-    if (spec_min and result < spec_min and error_max >= spec_min) \
-            or (spec_max and result > spec_max and error_min <= spec_max):
+        if isOutOfShoulderRange(result, spec, keyword):
+            return True, True, spec[keyword]
+        else:
+            return False, None, None  # min value not defined
+    if isOutOfShoulderRange(result, spec, keyword):
         return True, True, spec[keyword]
-    # Default: in range
-    return False, None, None  # min value not defined
+    return True, None, spec[keyword]
 
 
 class ResultOutOfRange(object):
@@ -56,14 +74,14 @@ class ResultOutOfRange(object):
     def __init__(self, context):
         self.context = context
 
-    def get_alerts(self, outofrange, acceptable, spec, **kwargs):
+    def get_alerts(self, outofrange, acceptable, o_spec, **kwargs):
         alerts = {}
         translate = self.context.translate
         path = '++resource++bika.lims.images'
         if outofrange:
             rngstr = "{0} {1}, {2}, {3}".format(
-                translate(_("min")), str(spec['min']),
-                translate(_("max")), str(spec['max']))
+                translate(_("min")), str(o_spec['min']),
+                translate(_("max")), str(o_spec['max']))
 
             if acceptable:
                 message = "{0} ({1})".format(

@@ -26,7 +26,7 @@ AnalysisRequest views
     Click Link                      Add
     Wait Until Page Contains        Request new analyses
     Select from dropdown            ar_0_Template             Bruma
-    Select from datepicker          ar_0_SamplingDate         1
+    SelectDate                      ar_0_SamplingDate         1
     Element should be visible       xpath=//em[contains(@class, 'partnr_')]
 
     Disable ShowPartitions
@@ -34,7 +34,7 @@ AnalysisRequest views
     Click Link                      Add
     Wait Until Page Contains        Request new analyses
     Select from dropdown            ar_0_Template             Bruma
-    Select from datepicker          ar_0_SamplingDate         1
+    SelectDate                      ar_0_SamplingDate         1
     Element should not be visible   xpath=//em[contains(@class, 'partnr_')]
 
     Click Button  Save
