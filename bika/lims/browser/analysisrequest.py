@@ -1407,12 +1407,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
         self.table_only = True
         self.show_select_all_checkbox = False
         self.pagesize = 1000
-        analyses = self.context.getAnalyses(full_objects=True)
-        self.analyses = dict([(a.getServiceUID(), a) for a in analyses])
-        self.selected = [a.getServiceUID() for a in analyses]
-        self.show_categories = self.context.bika_setup.getCategoriseAnalysisServices()
-        self.expand_all_categories = False
-
 
         self.columns = {
             'Title': {'title': _('Service'),
@@ -1460,6 +1454,12 @@ class AnalysisRequestAnalysesView(BikaListingView):
     def folderitems(self):
         self.categories = []
 
+        analyses = self.context.getAnalyses(full_objects=True)
+        self.analyses = dict([(a.getServiceUID(), a) for a in analyses])
+        self.selected = self.analyses.keys()
+        self.show_categories = self.context.bika_setup.getCategoriseAnalysisServices()
+        self.expand_all_categories = False
+
         wf = getToolByName(self.context, 'portal_workflow')
         mtool = getToolByName(self.context, 'portal_membership')
         member = mtool.getAuthenticatedMember()
@@ -1491,14 +1491,14 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
             # js checks in row_data if an analysis may be removed.
             row_data = {}
-            keyword = obj.getKeyword()
-            if keyword in review_states.keys() \
-               and review_states[keyword] not in ['sample_due',
-                                                  'to_be_sampled',
-                                                  'to_be_preserved',
-                                                  'sample_received',
-                                                  ]:
-                row_data['disabled'] = True
+            # keyword = obj.getKeyword()
+            # if keyword in review_states.keys() \
+            #    and review_states[keyword] not in ['sample_due',
+            #                                       'to_be_sampled',
+            #                                       'to_be_preserved',
+            #                                       'sample_received',
+            #                                       ]:
+            #     row_data['disabled'] = True
             items[x]['row_data'] = json.dumps(row_data)
 
             calculation = obj.getCalculation()
