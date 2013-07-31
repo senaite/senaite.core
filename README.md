@@ -2,6 +2,7 @@ Bika Laboratory Information Management System
 
 Installation
 ------------
+Bika LIMS 3 requires Plone 4.2.
 
 1. Read https://plone.org/documentation/manual/installing-plone
 2. Read https://plone.org/documentation/kb/installing-add-ons-quick-how-to
