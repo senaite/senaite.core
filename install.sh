@@ -37,7 +37,7 @@ fi
 # ## Download and install Plone
 #
 # The latest Unified Installer can be found at http://plone.org/products/plone/releases
-# Plone 4 or newer is required. Bika has been tested with Plone 4.2.5.
+# Plone 4 or newer is required. Bika has been tested with Plone 4.3.1.
 #
 # All steps are required except where marked as optionally. If your installation fails, 
 # ensure that each step has completed successfully.
@@ -67,9 +67,9 @@ fi
 # to use the master branch instead.
 
 mkdir -p $BIKA_HOME
-wget -nc https://launchpad.net/plone/4.2/4.2.5/+download/Plone-4.2.5-UnifiedInstaller.tgz 
-tar xzf Plone-4.2.5-UnifiedInstaller.tgz 
-cd Plone-4.2.5-UnifiedInstaller/
+wget -nc https://launchpad.net/plone/4.2/4.3.1/+download/Plone-4.3.1-UnifiedInstaller.tgz 
+tar xzf Plone-4.3.1-UnifiedInstaller.tgz 
+cd Plone-4.3.1-UnifiedInstaller/
 ./install.sh --target=${BIKA_HOME} standalone 
 
 # Visit http://plone.org/documentation/topic/Installation for more
