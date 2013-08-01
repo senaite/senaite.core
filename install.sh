@@ -80,7 +80,7 @@ fi
 # to use the master branch instead.
 
 mkdir -p $BIKA_HOME
-wget -nc https://launchpad.net/plone/4.3/4.3.1/+download/Plone-4.2.5-UnifiedInstaller.tgz 
+wget -nc https://launchpad.net/plone/4.2/4.2.5/+download/Plone-4.2.5-UnifiedInstaller.tgz 
 tar xzf Plone-4.2.5-UnifiedInstaller.tgz 
 cd Plone-4.2.5-UnifiedInstaller/
 ./install.sh --target=${BIKA_HOME} standalone 
