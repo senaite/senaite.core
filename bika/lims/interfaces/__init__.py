@@ -34,9 +34,6 @@ class IAnalysisRequestAddView(Interface):
 class IAnalysisRequestsFolder(Interface):
     """AnalysisRequests Folder"""
 
-class IInvoiceView(Interface):
-    """Invoice View"""
-
 class IAnalysis(Interface):
     """Analysis"""
 

@@ -1,40 +1,36 @@
 from AccessControl import getSecurityManager
 from bika.lims import bikaMessageFactory as _
 from bika.lims import PMF
-from bika.lims.adapters.widgetvisibility import WidgetVisibility as _WV
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
-from bika.lims.browser.analyses import QCAnalysesView
+from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
-from bika.lims.browser.bika_listing import WorkflowAction
-from bika.lims.browser.log import LogView
 from bika.lims.browser.publish import doPublish
 from bika.lims.browser.sample import SamplePartitionsView
+from bika.lims.adapters.widgetvisibility import WidgetVisibility as _WV
+from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.config import VERIFIED_STATES
-from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestAddView
 from bika.lims.interfaces import IDisplayListVocabulary
-from bika.lims.interfaces import IInvoiceView
 from bika.lims.permissions import *
 from bika.lims.subscribers import doActionFor
 from bika.lims.utils import changeWorkflowState
-from bika.lims.utils import createPdf
-from bika.lims.utils import encode_header
 from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
-from bika.lims.utils import tmpID
 from bika.lims.utils import to_unicode as _u
+from bika.lims.utils import tmpID
+from bika.lims.utils import encode_header
 from bika.lims.vocabularies import CatalogVocabulary
+from bika.lims.browser.analyses import QCAnalysesView
 from DateTime import DateTime
+from email.Utils import formataddr
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.Utils import formataddr
 from magnitude import mg
-from pkg_resources import resource_filename
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -45,17 +41,14 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import adapts
 from zope.component import getAdapter
+import zope.event
 from zope.i18n.locales import locales
 from zope.interface import implements
 
-import App
 import json
 import plone
 import urllib
-import zope.event
-import os
-import Globals
-
+from bika.lims.browser.log import LogView
 
 class AnalysisRequestWorkflowAction(WorkflowAction):
     """Workflow actions taken in AnalysisRequest context.
@@ -2945,10 +2938,7 @@ class AnalysisRequestLog(LogView):
 
 class InvoiceView(BrowserView):
 
-    implements(IInvoiceView)
-
     template = ViewPageTemplateFile("templates/analysisrequest_invoice.pt")
-    content = ViewPageTemplateFile("templates/analysisrequest_invoice_content.pt")
     title = _('Invoice')
     description = ''
 
@@ -2970,7 +2960,6 @@ class InvoiceView(BrowserView):
         if verified:
             self.verifiedBy = context.getVerifier()
         self.verified = verified
-        self.request['verified'] = verified
         # Collect published date
         datePublished = context.getDatePublished()
         if datePublished != None:
@@ -3017,16 +3006,7 @@ class InvoiceView(BrowserView):
         self.subTotal = context.getSubTotal()
         self.vatTotal = "%.2f" % context.getVATTotal()
         self.totalPrice = "%.2f" % context.getTotalPrice()
-        # Render the template
         return self.template()
-
-
-class InvoicePrintView(InvoiceView):
-
-    template = ViewPageTemplateFile("templates/analysisrequest_invoice_print.pt")
-
-    def __call__(self):
-        return InvoiceView.__call__(self)
 
 
 class ClientContactVocabularyFactory(CatalogVocabulary):

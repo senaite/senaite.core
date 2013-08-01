@@ -72,7 +72,7 @@
          visible="True">
      <permission value="BIKA: Results not requested"/>
  </action>
-
+ 
  <action title="Published results"
          action_id="published_results"
          category="object"
@@ -103,18 +103,6 @@
          i18n:attributes="title"
          visible="True">
      <permission value="View"/>
- </action>
-
- <action title="Print"
-         action_id="invoice_print"
-         category="document_actions"
-         condition_expr="context/REQUEST/verified|nothing"
-         icon_expr="string:${object_url}/print_icon.png"
-         link_target=""
-         url_expr="string:${object_url}/invoice_print"
-         i18n:attributes="title"
-         visible="True">
-     <permission value="BIKA: Manage Invoices"/>
  </action>
 
  <action title="Large Sticker"
