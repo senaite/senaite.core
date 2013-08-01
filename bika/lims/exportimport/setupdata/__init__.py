@@ -1497,3 +1497,27 @@ class Attachment_Types(WorksheetImporter):
                 description=row.get('description', ''))
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+
+
+class Invoice_Batches(WorksheetImporter):
+
+    def Import(self):
+        folder = self.context.invoices
+        for row in self.get_rows(3):
+            _id = folder.invokeFactory('InvoiceBatch', id=tmpID())
+            obj = folder[_id]
+            if not row['title']:
+                message = "InvoiceBatch has no Title"
+                raise Exception(message)
+            if not row['start']:
+                message = "InvoiceBatch has no Start Date"
+                raise Exception(message)
+            if not row['end']:
+                message = "InvoiceBatch has no End Date"
+                raise Exception(message)
+            obj.edit(
+                title=row['title'],
+                BatchStartDate=row['start'],
+                BatchEndDate=row['end'],
+            )
+            renameAfterCreation(obj)
