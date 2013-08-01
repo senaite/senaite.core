@@ -54,6 +54,18 @@ if [ -f /etc/lsb-release ]; then # Ubuntu
   aptitude install libssl-dev
   aptitude install gnuplot
   aptitude install git-core
+  aptitude install python-dev
+  aptitude install make
+  aptitude install libxml2-dev
+  aptitude install libxslt1-dev
+  aptitude install python-distribute
+  aptitude install build-essential
+  aptitude install libbz2-dev
+  aptitude install libjpeg62-dev
+  aptitude install libreadline-gplv2-dev
+  aptitude install wv
+  aptitude install poppler-utils
+  aptitude install python-imaging
 else 
   if [ -f /etc/redhat-release ]; then # Fedora
     yum install gcc zlib-devel openssl-devel gnuplot git-core wget patch
