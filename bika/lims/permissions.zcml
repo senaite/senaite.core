@@ -22,7 +22,6 @@
 <permission id="bika.lims.permissions.AddBatch" title="BIKA: Add Batch"/>
 <permission id="bika.lims.permissions.AddClient" title="BIKA: Add Client"/>
 <permission id="bika.lims.permissions.AddClientFolder" title="BIKA: Add ClientFolder"/>
-<permission id="bika.lims.permissions.AddInvoice" title="BIKA: Add Invoice"/>
 <permission id="bika.lims.permissions.AddMethod" title="BIKA: Add Method"/>
 <permission id="bika.lims.permissions.AddSample" title="BIKA: Add Sample"/>
 <permission id="bika.lims.permissions.AddSamplePoint" title="BIKA: Add SamplePoint"/>
@@ -95,8 +94,8 @@
 #
 # Only takes effect if:
 #   - The AR's 'cancellation_state' is 'active'
-#   - The AR's 'review_state' is in:
-#       'sample_registered', 'to_be_sampled', 'sampled', 'to_be_preserved',
+#   - The AR's 'review_state' is in: 
+#       'sample_registered', 'to_be_sampled', 'sampled', 'to_be_preserved', 
 #       'sample_due', 'sample_received', 'to_be_verified', 'attachment_due'
 <permission id="bika.lims.EditAR" title="BIKA: Edit AR"/>
 
@@ -107,14 +106,14 @@
 #
 # Only takes effect if:
 #   - The Sample's 'cancellation_state' is 'active'
-#   - The Sample's 'review_state' is in:
-#       'sample_registered', 'to_be_sampled', 'sampled', 'to_be_preserved',
+#   - The Sample's 'review_state' is in: 
+#       'sample_registered', 'to_be_sampled', 'sampled', 'to_be_preserved', 
 #       'sample_due', 'sample_received', 'to_be_verified', 'attachment_due'
 <permission id="bika.lims.EditSamplePartition" title="BIKA: Edit Sample Partition"/>
 
 # Edit Client
 # ----------------------------------------------
-# Allows access to 'Edit' and 'Contacts' tabs from Client View
+# Allows access to 'Edit' and 'Contacts' tabs from Client View 
 <permission id="bika.lims.EditClient" title="BIKA: Edit Client"/>
 
 </configure>

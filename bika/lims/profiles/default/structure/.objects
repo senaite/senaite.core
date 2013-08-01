@@ -1,12 +1,12 @@
 front-page,Document
 setup-data-in-this-installation,Document
 clients,ClientFolder
-invoices,InvoiceFolder
 samples,SamplesFolder
 analysisrequests,AnalysisRequestsFolder
 batches,BatchFolder
 worksheets,WorksheetFolder
 referencesamples,ReferenceSamplesFolder
+invoices,InvoiceFolder
 methods,Methods
 pricelists,PricelistFolder
 bika_setup,BikaSetup
