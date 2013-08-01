@@ -34,10 +34,11 @@ if [ -n "${PROXY}" ]; then
   export https_proxy=${PROXY}
 fi
 
+
 # ## Download and install Plone
 #
 # The latest Unified Installer can be found at http://plone.org/products/plone/releases
-# Plone 4 or newer is required. Bika has been tested with Plone 4.3.1.
+# Plone 4 or newer is required. Bika has been tested with Plone 4.2.5.
 #
 # All steps are required except where marked as optionally. If your installation fails, 
 # ensure that each step has completed successfully.
@@ -79,9 +80,9 @@ fi
 # to use the master branch instead.
 
 mkdir -p $BIKA_HOME
-wget -nc https://launchpad.net/plone/4.3/4.3.1/+download/Plone-4.3.1-UnifiedInstaller.tgz 
-tar xzf Plone-4.3.1-UnifiedInstaller.tgz 
-cd Plone-4.3.1-UnifiedInstaller/
+wget -nc https://launchpad.net/plone/4.3/4.3.1/+download/Plone-4.2.5-UnifiedInstaller.tgz 
+tar xzf Plone-4.2.5-UnifiedInstaller.tgz 
+cd Plone-4.2.5-UnifiedInstaller/
 ./install.sh --target=${BIKA_HOME} standalone 
 
 # Visit http://plone.org/documentation/topic/Installation for more
@@ -104,7 +105,7 @@ fi
 
 # ## (Option) Retrieve the development branch Bika code 
 
-git clone -b dev https://github.com/bikalabs/Bika-LIMS.git src/bika.lims
+sudo -u plone_buildout git clone -b dev https://github.com/bikalabs/Bika-LIMS.git src/bika.lims
 
 #    Omit the command line switch '-b dev' to use the master branch instead.
 
@@ -117,7 +118,7 @@ git clone -b dev https://github.com/bikalabs/Bika-LIMS.git src/bika.lims
 #         bika.lims
 
 python -c 'open("buildout.1","w").write("".join([line.replace("    Pillow", "    Pillow\n    bika.lims") for line in open("buildout.cfg").readlines()]))'
-mv buildout.1 buildout.cfg
+sudo -u plone_buildout mv buildout.1 buildout.cfg
 
 ### (Option) - Use the latest source code instead of the PYPI egg
 # Find the "develop" section and add "src/bika.lims" to it
@@ -126,12 +127,12 @@ mv buildout.1 buildout.cfg
 #        src/bika.lims
 
 python -c 'open("buildout.2","w").write("".join([line.replace("develop =", "develop =\n     src/bika.lims") for line in open("buildout.cfg").readlines()]))'
-mv buildout.2 buildout.cfg
+sudo -u plone_buildout mv buildout.2 buildout.cfg
 
 
 ### Run buildout
 
-bin/buildout
+sudo -u plone_buildout bin/buildout
 
 # Some error messages may scroll past, especially on the first run of
 # buildout during the "reportlab" installation. They can be ignored.
