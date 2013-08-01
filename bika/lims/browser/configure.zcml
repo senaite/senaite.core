@@ -12,6 +12,7 @@
   <include file="calcs.zcml"/>
   <include file="client.zcml"/>
   <include file="clientfolder.zcml"/>
+  <include file="invoicefolder.zcml"/>
   <include file="contact.zcml"/>
   <include file="instrument.zcml"/>
   <include file="instrumenttype.zcml"/>
