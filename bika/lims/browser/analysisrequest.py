@@ -2944,7 +2944,6 @@ class ProFormaView(BrowserView):
     def __call__(self):
         context = self.context
         sample = context.getSample()
-        samplePoint = sample.getSamplePoint()
         # Collection general information
         self.contact = context.getContact().Title()
         self.invoiceNumber = ""
@@ -2952,7 +2951,7 @@ class ProFormaView(BrowserView):
         self.clientReference = context.getClientReference()
         self.clientSampleId = sample.getClientSampleID()
         self.sampleType = sample.getSampleType().Title()
-        self.samplePoint = samplePoint and samplePoint.Title()
+        self.samplePoint = sample.getSamplePoint().Title()
         self.requestId = context.getRequestID()
         dateRecieved = context.getDateReceived()
         if dateRecieved != None:
