@@ -105,7 +105,7 @@ fi
 
 # ## (Option) Retrieve the development branch Bika code 
 
-sudo -u plone_buildout git clone -b dev https://github.com/bikalabs/Bika-LIMS.git src/bika.lims
+git clone -b dev https://github.com/bikalabs/Bika-LIMS.git src/bika.lims
 
 #    Omit the command line switch '-b dev' to use the master branch instead.
 
@@ -118,7 +118,7 @@ sudo -u plone_buildout git clone -b dev https://github.com/bikalabs/Bika-LIMS.gi
 #         bika.lims
 
 python -c 'open("buildout.1","w").write("".join([line.replace("    Pillow", "    Pillow\n    bika.lims") for line in open("buildout.cfg").readlines()]))'
-sudo -u plone_buildout mv buildout.1 buildout.cfg
+mv buildout.1 buildout.cfg
 
 ### (Option) - Use the latest source code instead of the PYPI egg
 # Find the "develop" section and add "src/bika.lims" to it
@@ -127,12 +127,12 @@ sudo -u plone_buildout mv buildout.1 buildout.cfg
 #        src/bika.lims
 
 python -c 'open("buildout.2","w").write("".join([line.replace("develop =", "develop =\n     src/bika.lims") for line in open("buildout.cfg").readlines()]))'
-sudo -u plone_buildout mv buildout.2 buildout.cfg
+mv buildout.2 buildout.cfg
 
 
 ### Run buildout
 
-sudo -u plone_buildout bin/buildout
+bin/buildout
 
 # Some error messages may scroll past, especially on the first run of
 # buildout during the "reportlab" installation. They can be ignored.
