@@ -2935,56 +2935,6 @@ class AnalysisRequestLog(LogView):
         return template
 
 
-class ProFormaView(BrowserView):
-
-    template = ViewPageTemplateFile("templates/analysisrequest_proforma.pt")
-    title = _('Pro Forma Invoice')
-    description = ''
-
-    def __call__(self):
-        context = self.context
-        sample = context.getSample()
-        # Collection general information
-        self.contact = context.getContact().Title()
-        self.invoiceNumber = ""
-        self.clientOrderNumber = context.getClientOrderNumber()
-        self.clientReference = context.getClientReference()
-        self.clientSampleId = sample.getClientSampleID()
-        self.sampleType = sample.getSampleType().Title()
-        self.samplePoint = sample.getSamplePoint().Title()
-        self.requestId = context.getRequestID()
-        dateRecieved = context.getDateReceived()
-        if dateRecieved != None:
-            dateRecieved = self.ulocalized_time(dateRecieved, long_format=1)
-        self.dateRecieved = dateRecieved
-        # Retrieve required data from analyses collection
-        analyses = []
-        for analysis in context.getRequestedAnalyses():
-            service = analysis.getService()
-            categoryName = service.getCategory().Title()
-            # Find the category
-            try:
-                category = (
-                    o for o in analyses if o['name'] == categoryName
-                ).next()
-            except:
-                category = {'name':categoryName, 'analyses':[]}
-                analyses.append(category)
-            # Append the analysis to the category
-            category['analyses'].append({
-                'title': analysis.Title(),
-                'price': service.getPrice(),
-                'priceVat': "%.2f" % service.getVATAmount(),
-                'priceTotal': "%.2f" % service.getTotalPrice(),
-            })
-        self.analyses = analyses
-        # Get totals
-        self.subTotal = context.getSubTotal()
-        self.vatTotal = "%.2f" % context.getVATTotal()
-        self.totalPrice = "%.2f" % context.getTotalPrice()
-        return self.template()
-
-
 class ClientContactVocabularyFactory(CatalogVocabulary):
 
     def __call__(self):

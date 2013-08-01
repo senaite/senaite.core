@@ -682,32 +682,35 @@ class AnalysisRequest(BaseFolder):
                 items.append(analysis)
         return items
 
-    security.declareProtected(View, 'getSubTotal')
+    security.declareProtected(View, 'getSubtotal')
 
-    def getSubTotal(self):
+    def getSubtotal(self):
         """ Compute Subtotal
         """
         return sum(
             [Decimal(obj.getService() and obj.getService().getPrice() or 0)
             for obj in self.getBillableItems()])
 
-    security.declareProtected(View, 'getVATTotal')
+    security.declareProtected(View, 'getVAT')
 
-    def getVATTotal(self):
+    def getVAT(self):
         """ Compute VAT """
-        billable = self.getBillableItems()
-        services = [o.getService() for o in billable]
-        if None in services: return 0
-        else: return sum([o.getVATAmount() for o in services])
+        return Decimal(self.getTotalPrice()) - Decimal(self.getSubtotal())
 
     security.declareProtected(View, 'getTotalPrice')
 
     def getTotalPrice(self):
         """ Compute TotalPrice """
         billable = self.getBillableItems()
-        services = [o.getService() for o in billable]
-        if None in services: return 0
-        else: return sum([o.getTotalPrice() for o in services])
+        TotalPrice = Decimal(0, 2)
+        for item in billable:
+            service = item.getService()
+            if not service:
+                return Decimal(0, 2)
+            itemPrice = Decimal(service.getPrice() or 0)
+            VAT = Decimal(service.getVAT() or 0)
+            TotalPrice += Decimal(itemPrice) * (Decimal(1, 2) + VAT)
+        return TotalPrice
     getTotal = getTotalPrice
 
     security.declareProtected(ManageInvoices, 'issueInvoice')
@@ -922,32 +925,6 @@ class AnalysisRequest(BaseFolder):
         while (child and child.getChildAnalysisRequest()):
             child = child.getChildAnalysisRequest()
         return child
-
-    def getRequestedAnalyses(self):
-        ##
-        ##title=Get requested analyses
-        ##
-        result = []
-        cats = {}
-        workflow = getToolByName(self, 'portal_workflow')
-        for analysis in self.getAnalyses(full_objects = True):
-            review_state = workflow.getInfoFor(analysis, 'review_state')
-            if review_state == 'not_requested':
-                continue
-            service = analysis.getService()
-            category_name = service.getCategoryTitle()
-            if not category_name in cats:
-                cats[category_name] = {}
-            cats[category_name][analysis.Title()] = analysis
-        cat_keys = cats.keys()
-        cat_keys.sort(lambda x, y:cmp(x.lower(), y.lower()))
-        for cat_key in cat_keys:
-            analyses = cats[cat_key]
-            analysis_keys = analyses.keys()
-            analysis_keys.sort(lambda x, y:cmp(x.lower(), y.lower()))
-            for analysis_key in analysis_keys:
-                result.append(analyses[analysis_key])
-        return result
 
     def guard_unassign_transition(self):
         """Allow or disallow transition depending on our children's states

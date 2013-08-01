@@ -622,8 +622,10 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
     def getVATAmount(self):
         """ Compute VATAmount
         """
-        price, vat = self.getPrice(), self.getVAT()
-        return (float(price) * (float(vat) / 100))
+        try:
+            return "%.2f" % (self.getTotalPrice() - self.getPrice())
+        except:
+            return "0.00"
 
     def getAnalysisCategories(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
