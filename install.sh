@@ -62,8 +62,8 @@ if [ -f /etc/lsb-release ]; then # Ubuntu
   aptitude install python-distribute
   aptitude install build-essential
   aptitude install libbz2-dev
-  aptitude install libjpeg62-dev
-  aptitude install libreadline-gplv2-dev
+  aptitude install libjpeg-dev
+  aptitude install libreadline-dev
   aptitude install wv
   aptitude install poppler-utils
   aptitude install python-imaging
