@@ -6,12 +6,6 @@ table.invoice-header {
 
 table.invoice-items {
 	width: 100%;
-	margin-top: 25px;
-}
-
-table.invoice-items thead tr {
-	border-top: &dtml-tableDividerBorderStyle;;
-	border-bottom: &dtml-tableDividerBorderStyle;;
 }
 
 table.invoice-items th {
@@ -30,7 +24,8 @@ table.invoice-items tr.category {
 table.invoice-items tr.totals {
 	font-weight: bold;
 	border-bottom-width: 2px;
-	border-top: &dtml-tableDividerBorderStyle;;
+	border-top: &dtml-tableBorderStyle;;
+	border-top-width: 2px;
 }
 
 table.invoice-items td:nth-child(1),

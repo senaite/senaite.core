@@ -111,8 +111,8 @@
 
     <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"
-      name="invoice"
-      class="bika.lims.browser.analysisrequest.InvoiceView"
+      name="proforma"
+      class="bika.lims.browser.analysisrequest.ProFormaView"
       permission="bika.lims.ManageInvoices"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

@@ -85,11 +85,11 @@
      <permission value="View"/>
  </action>
 
- <action title="Invoice"
-         action_id="invoice"
+ <action title="Pro Forma"
+         action_id="proforma"
          category="object"
          condition_expr=""
-         url_expr="string:${object_url}/invoice"
+         url_expr="string:${object_url}/proforma"
          i18n:attributes="title"
          visible="True">
      <permission value="BIKA: Manage Invoices"/>

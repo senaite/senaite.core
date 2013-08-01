@@ -96,5 +96,3 @@ CURRENCIES = DisplayList(
     [(c.type, "%s (%s)" % (c.displayName, c.symbol))
      for c in currencies]
 )
-
-VERIFIED_STATES = ('verified', 'published')

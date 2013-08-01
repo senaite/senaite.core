@@ -11,7 +11,6 @@ from bika.lims.browser.sample import SamplePartitionsView
 from bika.lims.adapters.widgetvisibility import WidgetVisibility as _WV
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.config import POINTS_OF_CAPTURE
-from bika.lims.config import VERIFIED_STATES
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestAddView
@@ -2936,51 +2935,29 @@ class AnalysisRequestLog(LogView):
         return template
 
 
-class InvoiceView(BrowserView):
+class ProFormaView(BrowserView):
 
-    template = ViewPageTemplateFile("templates/analysisrequest_invoice.pt")
-    title = _('Invoice')
+    template = ViewPageTemplateFile("templates/analysisrequest_proforma.pt")
+    title = _('Pro Forma Invoice')
     description = ''
 
     def __call__(self):
         context = self.context
-        workflow = getToolByName(context, 'portal_workflow')
-        # Collect related data and objects
-        invoice = context.getInvoice()
         sample = context.getSample()
         samplePoint = sample.getSamplePoint()
-        reviewState = workflow.getInfoFor(context, 'review_state')
-        # Collection invoice information
-        if invoice:
-            self.invoiceNumber = invoice.getInvoiceNumber()
-        else:
-            self.invoiceNumber = _('Proforma (Not yet invoiced)')
-        # Collect verified invoice information
-        verified = reviewState in VERIFIED_STATES
-        if verified:
-            self.verifiedBy = context.getVerifier()
-        self.verified = verified
-        # Collect published date
-        datePublished = context.getDatePublished()
-        if datePublished != None:
-            datePublished = self.ulocalized_time(
-                datePublished, long_format=1
-            )
-        self.datePublished = datePublished
-        # Collect received date
-        dateRecieved = context.getDateReceived()
-        if dateRecieved != None:
-            dateRecieved = self.ulocalized_time(dateRecieved, long_format=1)
-        self.dateRecieved = dateRecieved
-        # Collect general information
-        self.reviewState = reviewState
+        # Collection general information
         self.contact = context.getContact().Title()
+        self.invoiceNumber = ""
         self.clientOrderNumber = context.getClientOrderNumber()
         self.clientReference = context.getClientReference()
         self.clientSampleId = sample.getClientSampleID()
         self.sampleType = sample.getSampleType().Title()
         self.samplePoint = samplePoint and samplePoint.Title()
         self.requestId = context.getRequestID()
+        dateRecieved = context.getDateReceived()
+        if dateRecieved != None:
+            dateRecieved = self.ulocalized_time(dateRecieved, long_format=1)
+        self.dateRecieved = dateRecieved
         # Retrieve required data from analyses collection
         analyses = []
         for analysis in context.getRequestedAnalyses():
