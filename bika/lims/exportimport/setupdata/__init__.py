@@ -1522,3 +1522,262 @@ class Attachment_Types(WorksheetImporter):
                 description=row.get('description', ''))
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+
+
+class Reference_Samples(WorksheetImporter):
+
+    def load_reference_sample_results(self, sample):
+        sheetname = 'Reference Sample Results'
+        if not hasattr(self, 'results_worksheet'):
+            worksheet = self.workbook.get_sheet_by_name(sheetname)
+            if not worksheet:
+                return
+            self.results_worksheet = worksheet
+        results = []
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        for row in self.get_rows(3, worksheet=self.results_worksheet):
+            if row['ReferenceSample_id'] != sample.getId():
+                continue
+            service = bsc(portal_type='AnalysisService',
+                          title=row['AnalysisService_title'])[0].getObject()
+            results.append({
+                    'uid': service.UID(),
+                    'result': row['result'],
+                    'min': row['min'],
+                    'max': row['max']})
+        sample.setReferenceResults(results)
+
+    def load_reference_analyses(self, sample):
+        sheetname = 'Reference Analyses'
+        if not hasattr(self, 'analyses_worksheet'):
+            worksheet = self.workbook.get_sheet_by_name(sheetname)
+            if not worksheet:
+                return
+            self.analyses_worksheet = worksheet
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        for row in self.get_rows(3, worksheet=self.analyses_worksheet):
+            if row['ReferenceSample_id'] != sample.getId():
+                continue
+            service = bsc(portal_type='AnalysisService',
+                          title=row['AnalysisService_title'])[0].getObject()
+            # Analyses are keyed/named by service keyword
+            sample.invokeFactory('ReferenceAnalysis', id=row['id'])
+            obj = sample[row['id']]
+            obj.edit(title=row['id'],
+                     ReferenceType=row['ReferenceType'],
+                     Result=row['Result'],
+                     ResultDM=row['ResultDM'],
+                     Analyst=row['Analyst'],
+                     Instrument=row['Instrument'],
+                     Retested=row['Retested']
+                     )
+            obj.setService(service)
+            # obj.setCreators(row['creator'])
+            # obj.setCreationDate(row['created'])
+            # self.set_wf_history(obj, row['workflow_history'])
+            obj.unmarkCreationFlag()
+
+            self.load_reference_analysis_interims(obj)
+
+    def load_reference_analysis_interims(self, analysis):
+        sheetname = 'Reference Analysis Interims'
+        if not hasattr(self, 'interim_worksheet'):
+            worksheet = self.workbook.get_sheet_by_name(sheetname)
+            if not worksheet:
+                return
+            self.interim_worksheet = worksheet
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        interims = []
+        for row in self.get_rows(3, worksheet=self.interim_worksheet):
+            if row['ReferenceAnalysis_id'] != analysis.getId():
+                continue
+            interims.append({
+                    'keyword': row['keyword'],
+                    'title': row['title'],
+                    'value': row['value'],
+                    'unit': row['unit'],
+                    'hidden': row['hidden']})
+        analysis.setInterimFields(interims)
+
+    def Import(self):
+        for row in self.get_rows(3):
+            if not row['id']:
+                continue
+            supplier = bsc(portal_type="Supplier",
+                           title=row['Supplier_title'])[0].getObject()
+            supplier.invokeFactory('ReferenceSample', id=row['id'])
+            obj = supplier[row['id']]
+            if row.get('ReferenceDefinition_title', ''):
+                ref_def = bsc(portal_type="ReferenceDefinition",
+                              title=row['ReferenceDefinition_title']).getObject()
+            if row.get('Manufacturer_title', ''):
+                ref_man = bsc(portal_type="Manufacturer",
+                              title=row['Manufacturer_title']).getObject()
+            obj.edit(title=row['id'],
+                     description=row.get('description', ''),
+                     Blank=self.to_bool(row['Blank']),
+                     Hazardous=to_bool(row['Hazardous']),
+                     CatalogueNumber=row['CatalogueNumber'],
+                     LotNumber=row['LotNumber'],
+                     Remarks=row['Remarks'],
+                     ExpiryDate=row['ExpiryDate'],
+                     DateSampled=row['DateSampled'],
+                     DateReceived=row['DateReceived'],
+                     DateOpened=row['DateOpened'],
+                     DateExpired=row['DateExpired'],
+                     DateDisposed=row['DateDisposed']
+                     )
+            obj.setReferenceDefinition(ref_def)
+            obj.setReferenceManufacturer(ref_man)
+            obj.unmarkCreationFlag()
+
+            self.load_reference_sample_results(obj)
+            self.load_reference_analyses(obj)
+
+class Samples(WorksheetImporter):
+
+    def Import(self):
+        folder = self.context.bika_setup.bika_attachmenttypes
+        pc = getToolByName(self.context, 'portal_catalog')
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        for row in self.get_rows(3):
+            if not row['id']:
+                continue
+            client = pc(portal_type="Client",
+                        title=row['Client_title'])[0].getObject()
+            client.invokeFactory('Sample', id=row['id'])
+            obj.setSampleID(row['id'])
+            obj.setClientSampleID(row['ClientSampleID'])
+            obj.setSamplingWorkflowEnabled(False)
+            obj.setDateSampled(row['DateSampled'])
+            obj.setDateReceived(row['DateReceived'])
+            obj.setRemarks(row['Remarks'])
+            obj.setComposite(self.to_bool(row['Composite']))
+            obj.setDateExpired(row['DateExpired'])
+            obj.setDateDisposed(row['DateDisposed'])
+            obj.setAdHoc(self.to_bool(row['AdHoc']))
+            if row.get('SampleType_title', ''):
+                st = bsc(portal_type="SampleType",
+                         title=row['SampleType_title'])[0].getObject()
+                obj.setSampleType(st)
+            if row.get('SamplePoint_title', ''):
+                sp = bsc(portal_type="SamplePoint",
+                         title=row['SamplePoint_title'])[0].getObject()
+                obj.setSamplePoint(sp)
+            obj.unmarkCreationFlag()
+            # XXX hard-wired, Creating a single partition without proper init, no decent review_state ideas
+            _id = obj.invokeFactory('SamplePartition', 'part-1')
+            part = obj[_id]
+            part.setContainer(self.containers['None Specified'])
+            part.unmarkCreationFlag()
+            part.reindexObject()
+
+class Analysis_Requests(WorksheetImporter):
+
+    def load_analyses(self, sample):
+        sheetname = 'Analyses'
+        if not hasattr(self, 'analyses_worksheet'):
+            worksheet = self.workbook.get_sheet_by_name(sheetname)
+            if not worksheet:
+                return
+            self.analyses_worksheet = worksheet
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        for row in self.get_rows(3, worksheet=self.analyses_worksheet):
+            service = self.services[row['AnalysisService_title']]
+            # analyses are keyed/named by keyword
+            keyword = service.getKeyword()
+            ar = self.ars[row['AnalysisRequest_id']]
+            ar.invokeFactory('Analysis', id=keyword)
+            obj = ar[keyword]
+            MTA = {
+                'days': int(row['MaxTimeAllowed_days'] and row['MaxTimeAllowed_days'] or 0),
+                'hours': int(row['MaxTimeAllowed_hours'] and row['MaxTimeAllowed_hours'] or 0),
+                'minutes': int(row['MaxTimeAllowed_minutes'] and row['MaxTimeAllowed_minutes'] or 0),
+            }
+            obj.edit(
+                Calculation=service.getCalculation(),
+                Result=row['Result'],
+                ResultCaptureDate=row['ResultCaptureDate'],
+                ResultDM=row['ResultDM'],
+                Analyst=row['Analyst'],
+                Instrument=row['Instrument'],
+                Retested=self.to_bool(row['Retested']),
+                MaxTimeAllowed=MTA,
+                DueDate=row['DueDate'],
+                ReportDryMatter=self.to_bool(row['ReportDryMatter']),
+                )
+
+            part = sample.objectValues('SamplePartition')[0].UID()
+            obj.setSamplePartition(part)
+            obj.setService(service.UID())
+            analyses = ar.objectValues('Analyses')
+            analyses = list(analyses)
+            analyses.append(obj)
+            ar.setAnalyses(analyses)
+            obj.unmarkCreationFlag()
+
+            self.load_analysis_interims(obj)
+
+    def load_analysis_interims(self, analysis):
+        sheetname = 'Reference Analysis Interims'
+        if not hasattr(self, 'interim_worksheet'):
+            worksheet = self.workbook.get_sheet_by_name(sheetname)
+            if not worksheet:
+                return
+            self.interim_worksheet = worksheet
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        interims = []
+        for row in self.get_rows(3, worksheet=self.interim_worksheet):
+            if row['ReferenceAnalysis_id'] != analysis.getId():
+                continue
+            interims.append({
+                    'keyword': row['keyword'],
+                    'title': row['title'],
+                    'value': row['value'],
+                    'unit': row['unit'],
+                    'hidden': row['hidden']})
+        analysis.setInterimFields(interims)
+
+    def Import(self):
+        bc = getToolByName(self.context, 'bika_catalog')
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        pc = getToolByName(self.context, 'portal_catalog')
+        for row in self.get_rows(3):
+            if not row['id']:
+                continue
+            client = pc(portal_type="Client",
+                        title=row['Client_title'])[0].getObject()
+            _id = folder.invokeFactory('AnalysisRequest', id=row['id'])
+            obj = folder[_id]
+            self.ars[row['id']] = obj
+            contact = pc(portal_type="Contact",
+                         getFullname=row['Contact'])[0].getObject()
+            sample = bc(portal_type="Sample",
+                         id=row['Sample_id'])[0].getObject()
+            obj.edit(
+                RequestID=row['id'],
+                Contact=contact,
+                CCEmails=row['CCEmails'],
+                ClientOrderNumber=row['ClientOrderNumber'],
+                InvoiceExclude=row['InvoiceExclude'],
+                ReportDryMatter=row['ReportDryMatter'],
+                DateReceived=row['DateReceived'],
+                DatePublished=row['DatePublished'],
+                Remarks=row['Remarks']
+            )
+            if row['CCContact']:
+                contact = pc(portal_type="Contact",
+                             getFullname=row['CCContact'])[0].getObject()
+                obj.setCCContact(contact)
+            if row['AnalysisProfile_title']:
+                profile = pc(portal_type="AnalysisProfile",
+                             title=row['AnalysisProfile_title'].getObject())
+                obj.setProfile(self.profiles[row['AnalysisProfile_title']])
+            if row['ARTemplate_title']:
+                profile = pc(portal_type="ARTemplate",
+                             title=row['ARTemplate_title'])[0].getObject()
+                obj.setProfile(self.profiles[row['ARTemplate_title']])
+
+            obj.unmarkCreationFlag()
+
+            self.load_analyses(obj)
