@@ -31,13 +31,19 @@ class InvoiceFolderContentsView(BikaListingView):
         self.review_states = [
             {
                 'id': 'default',
-                'contentFilter': {},
-                'title': _('Default'),
-                'transitions': [],
+                'contentFilter': {'cancellation_state':'active'},
+                'title': _('Active'),
+                'transitions': [{'id':'cancel'}],
+                'columns': ['title', 'start', 'end'],
+            },
+            {
+                'id': 'cancelled',
+                'contentFilter': {'cancellation_state':'cancelled'},
+                'title': _('Cancelled'),
+                'transitions': [{'id':'reinstate'}],
                 'columns': ['title', 'start', 'end'],
             },
         ]
-
 
     def __call__(self):
         mtool = getToolByName(self.context, 'portal_membership')
