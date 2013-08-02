@@ -57,7 +57,16 @@ class InvoiceFolderContentsView(BikaListingView):
         return super(InvoiceFolderContentsView, self).__call__()
 
     def getInvoiceBatches(self, contentFilter):
-        return self.context.objectValues('InvoiceBatch')
+        wf = getToolByName(self.context, 'portal_workflow')
+        # Define the state filter
+        cancellation_state = self.contentFilter['cancellation_state']
+        # Filter the items
+        items = []
+        for obj in self.context.objectValues('InvoiceBatch'):
+            state = wf.getInfoFor(obj, 'cancellation_state')
+            if state == cancellation_state: items.append(obj)
+        # Return the items
+        return items
 
     def folderitems(self):
         self.contentsMethod = self.getInvoiceBatches
