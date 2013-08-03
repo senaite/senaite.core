@@ -182,8 +182,13 @@
   <type type_id="InstrumentValidation"/>
 
   <type type_id="Invoice"/>
-  <type type_id="InvoiceBatch"/>
+
+  <type type_id="InvoiceBatch">
+    <bound-workflow workflow_id="bika_cancellation_workflow"/>
+  </type>
+
   <type type_id="InvoiceFolder"/>
+
   <type type_id="InvoiceLineItem"/>
 
   <type type_id="LabContacts"/>
