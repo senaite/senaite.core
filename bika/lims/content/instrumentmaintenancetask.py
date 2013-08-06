@@ -65,9 +65,9 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     TextField('Considerations',
-        default_content_type = 'text/x-web-intelligent',
-        allowable_content_types = ('text/x-web-intelligent',),
-        default_output_type="text/html",
+        default_content_type = 'text/plain',
+        allowed_content_types= ('text/plain', ),
+        default_output_type="text/plain",
         widget = TextAreaWidget(
             label = _("Considerations"),
             description = _("Remarks to take into account for maintenance process"),
@@ -75,9 +75,9 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     TextField('WorkPerformed',
-        default_content_type = 'text/x-web-intelligent',
-        allowable_content_types = ('text/x-web-intelligent',),
-        default_output_type="text/html",
+        default_content_type = 'text/plain',
+        allowed_content_types= ('text/plain', ),
+        default_output_type="text/plain",
         widget = TextAreaWidget(
             label = _("Work Performed"),
             description = _("Description of the actions made during the maintenance process"),
@@ -85,9 +85,9 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     TextField('Remarks',
-        default_content_type = 'text/x-web-intelligent',
-        allowable_content_types = ('text/x-web-intelligent',),
-        default_output_type="text/html",
+        default_content_type = 'text/plain',
+        allowed_content_types= ('text/plain', ),
+        default_output_type="text/plain",
         widget = TextAreaWidget(
             label = _("Remarks"),
         ),
