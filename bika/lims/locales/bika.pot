@@ -324,7 +324,7 @@ msgstr ""
 #
 # File: ../browser/analysisrequest.py, line: 579
 # File: ../browser/sample.py, line: 362
-# File: ../browser/templates/ar_add.pt, line: 594
+# File: ../browser/templates/ar_add.pt, line: 559
 msgid "Ad-Hoc"
 msgstr ""
 #
@@ -700,7 +700,7 @@ msgstr ""
 msgid "Assigned to worksheet"
 msgstr ""
 #
-# File: ../browser/analyses.py, line: 376
+# File: ../browser/analyses.py, line: 380
 msgid "Assigned to: ${worksheet_id}"
 msgstr ""
 #
@@ -777,8 +777,8 @@ msgstr ""
 msgid "Average late"
 msgstr ""
 #
-# File: ../browser/templates/sample_sticker_large.pt, line: 141
-# File: ../browser/templates/sample_sticker_small.pt, line: 87
+# File: ../browser/templates/sample_sticker_large.pt, line: 144
+# File: ../browser/templates/sample_sticker_small.pt, line: 90
 msgid "Back to list"
 msgstr ""
 #
@@ -916,7 +916,7 @@ msgstr ""
 #
 # File: ../browser/analysisrequest.py, line: 1186
 # File: ../browser/templates/analysisservice_popup.pt, line: 67
-# File: ../browser/templates/ar_add.pt, line: 819
+# File: ../browser/templates/ar_add.pt, line: 797
 msgid "Can be reported as dry matter"
 msgstr ""
 #
@@ -1131,7 +1131,7 @@ msgstr ""
 #
 # File: ../browser/analysisrequest.py, line: 573
 # File: ../browser/sample.py, line: 356
-# File: ../browser/templates/ar_add.pt, line: 617
+# File: ../browser/templates/ar_add.pt, line: 582
 msgid "Composite"
 msgstr ""
 #
@@ -1408,7 +1408,7 @@ msgstr ""
 msgid "Default Container"
 msgstr ""
 #
-# File: ../browser/templates/ar_add.pt, line: 558
+# File: ../browser/templates/ar_add.pt, line: 523
 # File: ../content/sampletype.py, line: 68
 msgid "Default Container Type"
 msgstr ""
@@ -1512,7 +1512,7 @@ msgstr ""
 msgid "Deviation"
 msgstr ""
 #
-# File: ../browser/templates/ar_add.pt, line: 736
+# File: ../browser/templates/ar_add.pt, line: 714
 msgid "Discount"
 msgstr ""
 #
@@ -1706,7 +1706,7 @@ msgid "Entity"
 msgstr ""
 #
 # File: ../browser/analysisrequest.py, line: 2340
-# File: ../browser/templates/ar_add.pt, line: 665
+# File: ../browser/templates/ar_add.pt, line: 630
 msgid "Exclude from invoice"
 msgstr ""
 #
@@ -2279,7 +2279,7 @@ msgid "Methods"
 msgstr ""
 #
 # File: ../browser/mailtemplates/analysisrequest_results.pt, line: 407
-# File: ../browser/templates/ar_add.pt, line: 828
+# File: ../browser/templates/ar_add.pt, line: 806
 msgid ""
 "Methods included in the ${accreditation_body} schedule of Accreditation for "
 "this Laboratory. Analysis remarks are not accredited"
@@ -2967,7 +2967,7 @@ msgid "Report Type"
 msgstr ""
 #
 # File: ../browser/analysisrequest.py, line: 591
-# File: ../browser/templates/ar_add.pt, line: 641
+# File: ../browser/templates/ar_add.pt, line: 606
 # File: ../content/analysisrequest.py, line: 172
 msgid "Report as Dry Matter"
 msgstr ""
@@ -3116,10 +3116,6 @@ msgstr ""
 msgid "Sample"
 msgstr ""
 #
-# File: ../browser/templates/ar_add.pt, line: 522
-msgid "Sample Condition"
-msgstr ""
-#
 # File: ../content/arimportitem.py, line: 41
 msgid "Sample Date"
 msgstr ""
@@ -3254,7 +3250,7 @@ msgstr ""
 #
 # File: ../browser/analysisrequest.py, line: 597
 # File: ../browser/sample.py, line: 88
-# File: ../browser/templates/ar_add.pt, line: 807
+# File: ../browser/templates/ar_add.pt, line: 657
 msgid "Save"
 msgstr ""
 #
@@ -3542,7 +3538,7 @@ msgstr ""
 #
 # File: ../browser/reports/templates/productivity_analysesperdepartment.pt, line: 121
 # File: ../browser/reports/templates/productivity_analysesperformedpertotal.pt, line: 121
-# File: ../browser/templates/ar_add.pt, line: 751
+# File: ../browser/templates/ar_add.pt, line: 729
 msgid "Subtotal"
 msgstr ""
 #
@@ -4003,7 +3999,7 @@ msgid ""
 "minimum number of results before QC statistics will be calculated and plotted"
 msgstr ""
 #
-# File: ../browser/templates/ar_add.pt, line: 769
+# File: ../browser/templates/ar_add.pt, line: 747
 # File: ../content/analysisservice.py, line: 368
 # File: ../content/invoicelineitem.py, line: 44
 msgid "VAT"
