@@ -207,6 +207,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             # the same Reference Sample and same Worksheet)
             # https://github.com/bikalabs/Bika-LIMS/issues/931
             ref_analysis.setReferenceAnalysesGroupID(refgid)
+            ref_analysis.reindexObject(idxs=["getReferenceAnalysesGroupID"])
 
             # copy the interimfields
             calculation = service.getCalculation()
@@ -282,6 +283,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 postfix = str(postfix).zfill(int(2))
                 refgid = '%s-D%s' % (part, postfix)
             duplicate.setReferenceAnalysesGroupID(refgid)
+            duplicate.reindexObject(idxs=["getReferenceAnalysesGroupID"])
 
             duplicate.processForm()
             if calc:

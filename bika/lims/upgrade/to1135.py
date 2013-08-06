@@ -14,8 +14,10 @@ def upgrade(tool):
 
     # then add indexes
     bac = getToolByName(portal, 'bika_analysis_catalog')
-    if 'getReferenceAnalysesGroupID' not in bac.indexes():
-        bac.addIndex('getReferenceAnalysesGroupID', 'FieldIndex')
-    bac.addColumn('getReferenceAnalysesGroupID')
-
+    bac.delIndex('getReferenceAnalysesGroupID')
+    bac.addIndex('getReferenceAnalysesGroupID', 'FieldIndex')
+    try:
+        bac.addColumn('getReferenceAnalysesGroupID')
+    except:
+        pass
     bac.clearFindAndRebuild()
