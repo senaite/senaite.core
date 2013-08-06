@@ -1,5 +1,5 @@
 #!/bin/bash
-I18NDUDE=~/Plone/zinstance/bin/i18ndude
+I18NDUDE=~/Plone/zeocluster/bin/i18ndude
 
 ### Grab new translated strings
 # tx pull -a

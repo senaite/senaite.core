@@ -1,15 +1,17 @@
 # 
 # Translators:
-# <campbell@bikalabs.com>, 2012.
-# <campbell@bikalabs.com>, 2012.
-# Jordi Puiggené <jordi.puiggene@gmail.com>, 2012.
+# Alfonso de la Guarda Reyes <alfonsodg@gmail.com>, 2013
+# campbell_bika <campbell@bikalabs.com>, 2012
+# campbell_bika <campbell@bikalabs.com>, 2012
+# cgarcia <garciaquintana_carlos@yahoo.com.mx>, 2013
+# Jordi Puiggené <jordi.puiggene@gmail.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2012-10-20 09:21+0000\n"
-"PO-Revision-Date: 2013-01-21 09:42+0000\n"
-"Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2013-08-02 15:43+0000\n"
+"Last-Translator: Alfonso de la Guarda Reyes <alfonsodg@gmail.com>\n"
+"Language-Team: Spanish (http://www.transifex.com/projects/p/bika-lims/language/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -168,15 +170,15 @@ msgstr "Lote"
 
 # File: ../profiles/default/types/BatchLabel.xml, line: -1
 msgid "Batch Label"
-msgstr ""
+msgstr "Etiqueta del Lote"
 
 # File: ../profiles/default/types/BatchLabels.xml, line: -1
 msgid "Batch Labels"
-msgstr ""
+msgstr "Etiquetas del Lote"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 msgid "Batch labels"
-msgstr ""
+msgstr "Etiquetas del lote"
 
 # File: ../profiles/default/types/BatchFolder.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
@@ -196,10 +198,9 @@ msgstr "Cálculo"
 msgid "Calculations"
 msgstr "Cálculos"
 
-# 
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Calibrations"
-msgstr ""
+msgstr "Calibraciones"
 
 # File:
 # ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
@@ -207,10 +208,9 @@ msgstr ""
 msgid "Cancelled"
 msgstr "Cancelado"
 
-# 
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Certifications"
-msgstr ""
+msgstr "Certificaciones"
 
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Client"
@@ -236,7 +236,7 @@ msgid "Comments about the last transition"
 msgstr "Comentarios respecto de la última transición"
 
 # File: ../profiles/default/types/Client.xml, line: -1
-# File: ../profiles/default/types/ReferenceSupplier.xml, line: -1
+# File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Contacts"
 msgstr "Contactos"
 
@@ -331,18 +331,17 @@ msgstr "Inactivo"
 msgid "Instrument"
 msgstr "Equipo"
 
-# 
 # File: ../profiles/default/types/InstrumentType.xml, line: -1
 msgid "Instrument Type"
-msgstr ""
+msgstr "Tipo de Instrumento"
 
-# 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/InstrumentTypes.xml, line: -1
 msgid "Instrument Types"
-msgstr ""
+msgstr "Tipos de Instrumento"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/InstrumentType.xml, line: -1
 # File: ../profiles/default/types/Instruments.xml, line: -1
 msgid "Instruments"
 msgstr "Equipos"
@@ -416,16 +415,14 @@ msgstr "Administrar análisis"
 msgid "Manage Results"
 msgstr "Administrar resultados"
 
-# 
 # File: ../profiles/default/types/Manufacturer.xml, line: -1
 msgid "Manufacturer"
-msgstr ""
+msgstr "Fabricante"
 
-# 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Manufacturers.xml, line: -1
 msgid "Manufacturers"
-msgstr ""
+msgstr "Fabricantes"
 
 # File: ../profiles/default/types/Method.xml, line: -1
 msgid "Method"
@@ -503,9 +500,10 @@ msgstr "Productividad"
 msgid "Quality Control"
 msgstr "Control de calidad"
 
-# File: ../profiles/default/actions.xml, line: -1
+# 
+# File: ../profiles/default/types/QueryFolder.xml, line: -1
 msgid "Queries"
-msgstr "Consultas"
+msgstr ""
 
 # File: ../profiles/default/actions.xml, line: -1
 msgid "Query"
@@ -542,13 +540,13 @@ msgstr "Muestra de referencia"
 
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/ReferenceSamplesFolder.xml, line: -1
-# File: ../profiles/default/types/ReferenceSupplier.xml, line: -1
+# File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Reference Samples"
 msgstr "Muestras de referencia"
 
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
 msgid "Reference Values"
-msgstr "Resultados de referencia"
+msgstr "Valores de referencia"
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
@@ -659,10 +657,9 @@ msgstr "Desviación en el muestreo"
 msgid "Sampling Deviations"
 msgstr "Desviaciones en el muestreo"
 
-# 
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Schedule"
-msgstr ""
+msgstr "Tarea programada"
 
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Sample.xml, line: -1
@@ -679,12 +676,13 @@ msgstr "Etiqueta"
 msgid "Submitted"
 msgstr "Enviados"
 
-# 
 # File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Supplier"
-msgstr ""
+msgstr "Proveedor"
 
 # File: ../profiles/default/actions.xml, line: -1
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/Suppliers.xml, line: -1
 msgid "Suppliers"
 msgstr "Proveedores"
 
@@ -754,12 +752,11 @@ msgstr "Sin asignar"
 # ../profiles/default/workflows/bika_publication_workflow/definition.xml,
 # line: -1
 msgid "Unpublished"
-msgstr ""
+msgstr "Por publicar"
 
-# 
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Validations"
-msgstr ""
+msgstr "Validaciones"
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
@@ -920,7 +917,7 @@ msgid "label_schema_Publication preference"
 msgstr "Publication preference"
 
 msgid "label_schema_Reference Values"
-msgstr "Reference Values"
+msgstr "Valores de referencia"
 
 msgid "label_schema_Result Options"
 msgstr "Result Options"

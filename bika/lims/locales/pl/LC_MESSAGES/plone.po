@@ -1,13 +1,13 @@
 # 
 # Translators:
-# Emil Cyraniak <cyrano30@epf.pl>, 2012.
+# Emil Cyraniak <cyrano30@epf.pl>, 2012-2013
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2012-10-20 09:21+0000\n"
-"PO-Revision-Date: 2013-01-21 09:42+0000\n"
-"Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2013-05-09 22:26+0000\n"
+"Last-Translator: Emil Cyraniak <cyrano30@epf.pl>\n"
+"Language-Team: Polish (http://www.transifex.com/projects/p/bika-lims/language/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -166,15 +166,15 @@ msgstr "Batch"
 
 # File: ../profiles/default/types/BatchLabel.xml, line: -1
 msgid "Batch Label"
-msgstr ""
+msgstr "Etykieta partii"
 
 # File: ../profiles/default/types/BatchLabels.xml, line: -1
 msgid "Batch Labels"
-msgstr ""
+msgstr "Etykiety partii"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 msgid "Batch labels"
-msgstr ""
+msgstr "Etykiety partii"
 
 # File: ../profiles/default/types/BatchFolder.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
@@ -194,7 +194,6 @@ msgstr "Obliczanie"
 msgid "Calculations"
 msgstr "Obliczenia"
 
-# 
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Calibrations"
 msgstr ""
@@ -205,7 +204,6 @@ msgstr ""
 msgid "Cancelled"
 msgstr "Anulowane"
 
-# 
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Certifications"
 msgstr ""
@@ -234,7 +232,7 @@ msgid "Comments about the last transition"
 msgstr "Komentarze dotyczące ostatniej zmiany"
 
 # File: ../profiles/default/types/Client.xml, line: -1
-# File: ../profiles/default/types/ReferenceSupplier.xml, line: -1
+# File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Contacts"
 msgstr "Kontakty"
 
@@ -329,18 +327,17 @@ msgstr "Nieaktywny"
 msgid "Instrument"
 msgstr "Przyrząd"
 
-# 
 # File: ../profiles/default/types/InstrumentType.xml, line: -1
 msgid "Instrument Type"
-msgstr ""
+msgstr "Typ przyrządu"
 
-# 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/InstrumentTypes.xml, line: -1
 msgid "Instrument Types"
-msgstr ""
+msgstr "Typy przyrządów"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/InstrumentType.xml, line: -1
 # File: ../profiles/default/types/Instruments.xml, line: -1
 msgid "Instruments"
 msgstr "Przyrządy"
@@ -407,23 +404,21 @@ msgstr "Szczegóły logowania"
 
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 msgid "Manage Analyses"
-msgstr "Zarządzaj analizami"
+msgstr "Zarządzanie analizami"
 
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Manage Results"
 msgstr "Zarządzanie wynikami"
 
-# 
 # File: ../profiles/default/types/Manufacturer.xml, line: -1
 msgid "Manufacturer"
-msgstr ""
+msgstr "Producent"
 
-# 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Manufacturers.xml, line: -1
 msgid "Manufacturers"
-msgstr ""
+msgstr "Producenci"
 
 # File: ../profiles/default/types/Method.xml, line: -1
 msgid "Method"
@@ -463,7 +458,7 @@ msgstr "Utrwalenie"
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Preservations.xml, line: -1
 msgid "Preservations"
-msgstr "Utrwalenia"
+msgstr "Utrwalanie"
 
 # File: ../profiles/default/types/Pricelist.xml, line: -1
 msgid "Pricelist"
@@ -501,9 +496,10 @@ msgstr "Wydajność"
 msgid "Quality Control"
 msgstr "Kontrola jakości"
 
-# File: ../profiles/default/actions.xml, line: -1
+# 
+# File: ../profiles/default/types/QueryFolder.xml, line: -1
 msgid "Queries"
-msgstr "Wyszukiwania"
+msgstr ""
 
 # File: ../profiles/default/actions.xml, line: -1
 msgid "Query"
@@ -540,13 +536,13 @@ msgstr "Materiał odniesienia"
 
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/ReferenceSamplesFolder.xml, line: -1
-# File: ../profiles/default/types/ReferenceSupplier.xml, line: -1
+# File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Reference Samples"
 msgstr "Materiały odniesienia"
 
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
 msgid "Reference Values"
-msgstr "Wyniki materiału odniesienia"
+msgstr ""
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
@@ -657,7 +653,6 @@ msgstr "Odstępstwo w pobieraniu próbki"
 msgid "Sampling Deviations"
 msgstr "Odstępstwa w pobieraniu próbek"
 
-# 
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Schedule"
 msgstr ""
@@ -677,12 +672,13 @@ msgstr "Naklejka"
 msgid "Submitted"
 msgstr "Wysłane"
 
-# 
 # File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Supplier"
-msgstr ""
+msgstr "Dostawca"
 
 # File: ../profiles/default/actions.xml, line: -1
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/Suppliers.xml, line: -1
 msgid "Suppliers"
 msgstr "Dostawcy"
 
@@ -752,9 +748,8 @@ msgstr "Nieprzydzielone"
 # ../profiles/default/workflows/bika_publication_workflow/definition.xml,
 # line: -1
 msgid "Unpublished"
-msgstr ""
+msgstr "Nieopublikowane"
 
-# 
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Validations"
 msgstr ""
@@ -891,7 +886,7 @@ msgid "label_schema_Dates"
 msgstr "Dates"
 
 msgid "label_schema_Description"
-msgstr "Description"
+msgstr "Opis"
 
 msgid "label_schema_Email Telephone Fax"
 msgstr "Email Telephone Fax"
@@ -915,10 +910,10 @@ msgid "label_schema_Preferences"
 msgstr "Preferences"
 
 msgid "label_schema_Publication preference"
-msgstr "Publication preference"
+msgstr "Preferencje publikowania"
 
 msgid "label_schema_Reference Values"
-msgstr "Reference Values"
+msgstr "Wartość odniesienia"
 
 msgid "label_schema_Result Options"
 msgstr "Result Options"

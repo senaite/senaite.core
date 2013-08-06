@@ -4,9 +4,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2012-10-20 09:21+0000\n"
-"PO-Revision-Date: 2013-01-21 09:42+0000\n"
+"PO-Revision-Date: 2013-03-19 20:20+0000\n"
 "Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language-Team: Italian (http://www.transifex.com/projects/p/bika-lims/language/it/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -193,7 +193,6 @@ msgstr "Calcoli"
 msgid "Calculations"
 msgstr "Calcoli"
 
-# 
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Calibrations"
 msgstr ""
@@ -204,7 +203,6 @@ msgstr ""
 msgid "Cancelled"
 msgstr "Cancellato"
 
-# 
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Certifications"
 msgstr ""
@@ -233,7 +231,7 @@ msgid "Comments about the last transition"
 msgstr ""
 
 # File: ../profiles/default/types/Client.xml, line: -1
-# File: ../profiles/default/types/ReferenceSupplier.xml, line: -1
+# File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Contacts"
 msgstr "Contatti"
 
@@ -328,18 +326,17 @@ msgstr ""
 msgid "Instrument"
 msgstr "Strumento"
 
-# 
 # File: ../profiles/default/types/InstrumentType.xml, line: -1
 msgid "Instrument Type"
 msgstr ""
 
-# 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/InstrumentTypes.xml, line: -1
 msgid "Instrument Types"
 msgstr ""
 
 # File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/InstrumentType.xml, line: -1
 # File: ../profiles/default/types/Instruments.xml, line: -1
 msgid "Instruments"
 msgstr "Strumenti"
@@ -413,12 +410,10 @@ msgstr ""
 msgid "Manage Results"
 msgstr ""
 
-# 
 # File: ../profiles/default/types/Manufacturer.xml, line: -1
 msgid "Manufacturer"
 msgstr ""
 
-# 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Manufacturers.xml, line: -1
 msgid "Manufacturers"
@@ -500,7 +495,8 @@ msgstr ""
 msgid "Quality Control"
 msgstr ""
 
-# File: ../profiles/default/actions.xml, line: -1
+# 
+# File: ../profiles/default/types/QueryFolder.xml, line: -1
 msgid "Queries"
 msgstr ""
 
@@ -539,13 +535,13 @@ msgstr ""
 
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/ReferenceSamplesFolder.xml, line: -1
-# File: ../profiles/default/types/ReferenceSupplier.xml, line: -1
+# File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Reference Samples"
 msgstr "Campioni di riferimento"
 
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
 msgid "Reference Values"
-msgstr "Risultati di riferimento"
+msgstr ""
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
@@ -656,7 +652,6 @@ msgstr ""
 msgid "Sampling Deviations"
 msgstr ""
 
-# 
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Schedule"
 msgstr ""
@@ -676,12 +671,13 @@ msgstr ""
 msgid "Submitted"
 msgstr "Inoltrato"
 
-# 
 # File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Supplier"
 msgstr ""
 
 # File: ../profiles/default/actions.xml, line: -1
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/Suppliers.xml, line: -1
 msgid "Suppliers"
 msgstr ""
 
@@ -753,7 +749,6 @@ msgstr "Non assegnati"
 msgid "Unpublished"
 msgstr ""
 
-# 
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Validations"
 msgstr ""
@@ -917,7 +912,7 @@ msgid "label_schema_Publication preference"
 msgstr "Publication preference"
 
 msgid "label_schema_Reference Values"
-msgstr "Reference Values"
+msgstr ""
 
 msgid "label_schema_Result Options"
 msgstr "Result Options"
