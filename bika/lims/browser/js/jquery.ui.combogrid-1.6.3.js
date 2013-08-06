@@ -1,11 +1,11 @@
 /*
- * jQuery UI Combogrid 1.6.2
+ * jQuery UI Combogrid 1.6.3
  *
  * Copyright 2011 D'Alia Sara
  * Dual licensed under the MIT or GPL Version 2 licenses.
  * http://jquery.org/license
  *
- *
+ * 
  * Depends:
  *	jquery.ui.core.js
  *	jquery.ui.widget.js
@@ -397,7 +397,7 @@ $.widget( "cg.combogrid", {
 			// workaround for jQuery bug #5781 http://dev.jquery.com/ticket/5781
 			.css({ top: 0, left: 0 })
 			.hide()
-			.data( "menucombo" );
+			.data( "cg-menucombo" );
 			if(this.options.draggable){
 				this.menucombo.element.draggable({
 					stop: function(event, ui) {

@@ -34,6 +34,17 @@
               inline="False"
               insert-after="*"/>
 
+  <javascript authenticated="False"
+              id="++resource++bika.lims.js/queries.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="False"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
   <javascript authenticated="True"
               id="++resource++bika.lims.js/client.js"
               cacheable="True"
@@ -69,6 +80,17 @@
 
 <javascript authenticated="True"
               id="++resource++bika.lims.js/ar.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+<javascript authenticated="True"
+              id="++resource++bika.lims.js/ar_add.js"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
@@ -189,7 +211,7 @@
               insert-after="*"/>
 
   <javascript authenticated="False"
-              id="++resource++bika.lims.js/jquery.ui.combogrid-1.6.2.js"
+              id="++resource++bika.lims.js/jquery-timepicker.js"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
@@ -200,12 +222,23 @@
               insert-after="*"/>
 
   <javascript authenticated="False"
-              id="++resource++bika.lims.js/jquery-timepicker.js"
+              id="++resource++bika.lims.js/jquery.ui.combogrid-1.6.3.js"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
               cookable="True"
               enabled="on"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="False"
+              id="++resource++bika.lims.js/jquery.ui.combogrid-1.6.2.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="False"
               expression=""
               inline="False"
               insert-after="*"/>
@@ -221,24 +254,10 @@
               inline="False"
               insert-after="*"/>
 
-  <javascript authenticated="False"
-              id="++resource++bika.lims.js/ar_add.js"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression="python:request['URL'].find('/ar_add')>0"
-              inline="False"
-              insert-after="*"/>
-
-  <javascript cacheable="True"
-              compression="none"
-              cookable="True"
-              enabled="True"
-              id="++resource++plone.app.jquerytools.dateinput.js"
-              inline="False"
+  <javascript cacheable="True" compression="none" cookable="True"
+              enabled="True" id="++resource++plone.app.jquerytools.dateinput.js" inline="False"
               expression=""
-              insert-after="++resource++plone.app.jquerytools.js"/>
+              insert-after="++resource++plone.app.jquerytools.js"
+              />
 
-</object>
+ </object>
