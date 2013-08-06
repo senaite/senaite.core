@@ -87,45 +87,8 @@
     </metal:define>
 
     <metal:define define-macro="area_format">
-      <tal:define
-          define="field_text_format string:${fieldName}_text_format;
-                  contentType python:request.get(field_text_format, context.getContentType(fieldName));
-                  get_act python:getattr(field, 'getAllowedContentTypes', False);
-                  allowable_ct python:get_act and get_act(here) or ('text/plain',);
-                  mimetypes python:[t for t in allowable_ct if t.startswith('text/')];
-                  contenttype python:hasattr(field, 'getContentType') and field.getContentType(here) or ''">
-
-        <tal:condition condition="python:len(mimetypes) > 1">
-        <div style="text-align: right; margin-right: 0.75em;">
-          <label i18n:translate="label_format">Format</label>
-          <select tal:define="textareaview context/@@at_textarea_widget;
-                              selection python:textareaview.getSelected(mimetypes, contenttype)"
-                  tal:attributes="id string:${fieldName}_text_format;
-                                  name string:${fieldName}_text_format;">
-            <option selected="selected"
-                    value=""
-                    tal:attributes="value contentType"
-                    tal:condition="python:contenttype not in mimetypes">
-              (no change)
-            </option>
-            <option tal:repeat="item mimetypes"
-                    tal:content="python:textareaview.lookupMime(item)"
-                    tal:attributes="value item;
-                                    selected python:item in selection and 'selected' or None;"
-                    />
-          </select>
-        </div>
-        </tal:condition>
-        <tal:condition condition="python:len(mimetypes) == 1">
-          <input type="hidden"
-                 name=""
-                 value=""
-                 tal:attributes="name field_text_format;
-                                 value python:mimetypes[0]"
-                 />
-        </tal:condition>
-      </tal:define>
     </metal:define>
+
     <metal:define define-macro="edit">
       <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
         <metal:fill fill-slot="widget_body">

@@ -15,18 +15,18 @@ from plone.app.folder.folder import ATFolder
 from zope.interface import implements
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
-                                     
+
     ReferenceField('InstrumentType',
         vocabulary='getInstrumentTypes',
         allowed_types=('InstrumentType',),
-        relationship='InstrumentInstrumentType',        
+        relationship='InstrumentInstrumentType',
         required=1,
         widget=SelectionWidget(
             format='select',
             label=_('Instrument type'),
         ),
     ),
-                                     
+
     ReferenceField('Manufacturer',
         vocabulary='getManufacturers',
         allowed_types=('Manufacturer',),
@@ -36,8 +36,8 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
             format='select',
             label=_('Manufacturer'),
         ),
-    ),        
-                                     
+    ),
+
     ReferenceField('Supplier',
         vocabulary='getSuppliers',
         allowed_types=('Supplier',),
@@ -55,20 +55,20 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
             description = _("The instrument's model number"),
         )
     ),
-                                                                      
+
     StringField('SerialNo',
         widget = StringWidget(
             label = _("Serial No"),
             description = _("The serial number that uniquely identifies the instrument"),
         )
-    ),  
+    ),
 
     # Procedures
     TextField('InlabCalibrationProcedure',
         schemata = 'Procedures',
-        default_content_type = 'text/x-web-intelligent',
-        allowable_content_types = ('text/x-web-intelligent',),
-        default_output_type="text/html",
+        default_content_type = 'text/plain',
+        allowed_content_types= ('text/plain', ),
+        default_output_type="text/plain",
         widget = TextAreaWidget(
             label = _("In-lab calibration procedure"),
             description = _("Instructions for in-lab regular calibration routines intended for analysts"),
@@ -76,15 +76,15 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
     ),
     TextField('PreventiveMaintenanceProcedure',
         schemata = 'Procedures',
-        default_content_type = 'text/x-web-intelligent',
-        allowable_content_types = ('text/x-web-intelligent',),
-        default_output_type="text/html",
+        default_content_type = 'text/plain',
+        allowed_content_types= ('text/plain', ),
+        default_output_type="text/plain",
         widget = TextAreaWidget(
             label = _("Preventive maintenance procedure"),
             description = _("Instructions for regular preventive and maintenance routines intended for analysts"),
         ),
-    ),   
-                                                               
+    ),
+
     StringField('DataInterface',
         vocabulary = "getDataInterfacesList",
         widget = ReferenceWidget(
@@ -104,7 +104,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
             description = _("Use this field to pass arbitrary parameters to the export/import "
                             "modules."),
         ),
-    ),               
+    ),
 ))
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
@@ -143,17 +143,17 @@ class Instrument(ATFolder):
 
     def getDataInterfacesList(self):
         return getDataInterfaces(self)
-    
+
     def getScheduleTaskTypesList(self):
         return getMaintenanceTypes(self)
-    
+
     def getMaintenanceTypesList(self):
         return getMaintenanceTypes(self)
-    
+
     def getCalibrationAgentsList(self):
         return getCalibrationAgents(self)
-    
-    def getManufacturers(self):        
+
+    def getManufacturers(self):
         manufacturers = []
         bsc = getToolByName(self, "bika_setup_catalog")
         for manufacturer in bsc(portal_type = 'Manufacturer',
@@ -162,16 +162,16 @@ class Instrument(ATFolder):
         manufacturers.sort(lambda x,y:cmp(x[1], y[1]))
         return DisplayList(manufacturers)
 
-    def getSuppliers(self):        
+    def getSuppliers(self):
         suppliers = []
         bsc = getToolByName(self, "bika_setup_catalog")
         for supplier in bsc(portal_type = 'Supplier',
                                 inactive_state = 'active'):
             suppliers.append([supplier.UID, supplier.getName])
-        suppliers.sort(lambda x,y:cmp(x[1], y[1]))        
+        suppliers.sort(lambda x,y:cmp(x[1], y[1]))
         return DisplayList(suppliers)
-    
-    def getInstrumentTypes(self):        
+
+    def getInstrumentTypes(self):
         its = []
         bsc = getToolByName(self, "bika_setup_catalog")
         for it in bsc(portal_type = 'InstrumentType',
@@ -179,21 +179,21 @@ class Instrument(ATFolder):
             its.append([it.UID, it.Title])
         its.sort(lambda x,y:cmp(x[1], y[1]))
         return DisplayList(its)
-    
+
     def getMaintenanceTasks(self):
         return self.objectValues('InstrumentMaintenanceTask')
-    
+
     def getCalibrations(self):
         return self.objectValues('InstrumentCalibration')
-    
+
     def getCertifications(self):
         return self.objectValues('InstrumentCertification')
-    
+
     def getValidations(self):
         return self.objectValues('InstrumentValidation')
-    
+
     def getSchedule(self):
-        return self.objectValues('InstrumentScheduledTask')                                     
+        return self.objectValues('InstrumentScheduledTask')
 #        pc = getToolByName(self, 'portal_catalog')
 #        uid = self.context.UID()
 #        return [p.getObject() for p in pc(portal_type='InstrumentScheduleTask',

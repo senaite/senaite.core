@@ -13,7 +13,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 
 schema = BikaSchema.copy() + Schema((
-    
+
     ReferenceField('Instrument',
         allowed_types=('Instrument',),
         relationship='InstrumentScheduledTaskInstrument',
@@ -21,13 +21,13 @@ schema = BikaSchema.copy() + Schema((
             visible=False,
         )
     ),
-                                     
+
     ComputedField('InstrumentUID',
         expression = 'context.getInstrument() and context.getInstrument().UID() or None',
         widget=ComputedWidget(
             visible=False,
         ),
-    ),                                
+    ),
 
     StringField('Type',
         vocabulary = "getTaskTypes",
@@ -37,7 +37,7 @@ schema = BikaSchema.copy() + Schema((
                       "Type"),
         ),
     ),
-                                     
+
     RecordsField('ScheduleCriteria',
         required=1,
         type='schedulecriteria',
@@ -45,11 +45,11 @@ schema = BikaSchema.copy() + Schema((
             label=_('Criteria'),
         ),
     ),
-                                         
+
     TextField('Considerations',
-        default_content_type = 'text/x-web-intelligent',
-        allowable_content_types = ('text/x-web-intelligent',),
-        default_output_type="text/html",
+        default_content_type = 'text/plain',
+        allowed_content_types= ('text/plain', ),
+        default_output_type="text/plain",
         widget = TextAreaWidget(
             label = _("Considerations"),
             description = _("Remarks to take into account before performing the task"),
@@ -70,13 +70,13 @@ schema['title']._validationLayer()
 class InstrumentScheduledTask(BaseFolder):
     security = ClassSecurityInfo()
     schema = schema
-    displayContentsTab = False       
-    
+    displayContentsTab = False
+
     _at_rename_after_creation = True
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
-        
+
     def getTaskTypes(self):
         """ Return the current list of task types
         """
@@ -85,9 +85,9 @@ class InstrumentScheduledTask(BaseFolder):
                  ('Preventive',safe_unicode(_('Preventive')).encode('utf-8')),
                  ('Repair', safe_unicode(_('Repair')).encode('utf-8')),
                  ('Validation', safe_unicode(_('Validation')).encode('utf-8'))]
-        
+
         return DisplayList(types)
-    
+
     def getCriteria(self):
         criteria = "";
         criterias = self.getScheduleCriteria()
@@ -100,5 +100,5 @@ class InstrumentScheduledTask(BaseFolder):
             if crit['repeatuntilenabled'] == True and crit['repeatuntil']:
                 criteria += _("until") + " " + crit['repeatuntil']
         return criteria;
-            
+
 atapi.registerType(InstrumentScheduledTask, PROJECTNAME)
