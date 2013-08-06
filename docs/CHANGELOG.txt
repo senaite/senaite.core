@@ -1,8 +1,8 @@
-3.0rc3.3 (unreleased)
+3.0rc3.3 (2013-08-06)
 ---------------------
 
-- Nothing changed yet.
-
+- Fix translation bug in accreditation
+- Update i18n message strings
 
 3.0rc3.2 (2013-06-28)
 ---------------------
