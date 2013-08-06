@@ -66,6 +66,14 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+  <browser:page
+      for="*"
+      name="at_validate_field"
+      class=".validation.InlineValidationView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
   <!-- Zope 3 browser resources -->
 
   <browser:resourceDirectory
