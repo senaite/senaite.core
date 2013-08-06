@@ -87,7 +87,7 @@ textarea#description,
   color: &dtml-footerTextColor;;
 }
 
-.bika-spinner {
+#ajax-spinner {
     display:    none;
     position:   fixed;
     z-index:    1000;
@@ -105,18 +105,9 @@ textarea#description,
     -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity = 90);
     filter: alpha(opacity = 90);
 }
-
-/* When the body has the loading class, we turn
-   the scrollbar off with overflow:hidden */
-body.loading {
-    overflow: hidden;
+#ajax-spinner img{
+  display:none;
 }
-/* Anytime the body has the loading class, our
-   bika-spinner element will be visible */
-body.loading .bika-spinner {
-    display: block;
-}
-
 /* edit-bar */
 
 #edit-bar {
