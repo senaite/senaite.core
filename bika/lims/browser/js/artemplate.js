@@ -78,8 +78,8 @@
 		$(".portaltype-artemplate #SampleType").autocomplete({ minLength: 0, source: autocomplete_sampletype});
 		$(".portaltype-artemplate #SamplePoint").autocomplete({ minLength: 0, source: autocomplete_samplepoint});
 
-		$(".portaltype-artemplate input[name$=save]").addClass('allowMultiSubmit');
-		$(".portaltype-artemplate input[name$=save]").click(clickSaveButton);
+		$(".portaltype-artemplate input[name$='save']").addClass('allowMultiSubmit');
+		$(".portaltype-artemplate input[name$='save']").click(clickSaveButton);
 
 	});
 }(jQuery));

@@ -2,7 +2,7 @@
 ////////////////////////////////////////
 function check_service(service_uid){
 	// Add partition dropdown
-	element = $("[name=Partition."+service_uid+":records]");
+	element = $("[name='Partition."+service_uid+":records']");
 	select = '<select class="listing_select_entry" '+
 		'name="Partition.'+service_uid+':records" '+
 		'field="Partition" uid="'+service_uid+'" '+
@@ -19,7 +19,7 @@ function check_service(service_uid){
 	$(element).remove();
 
 	// Add price field
-	element = $("[name=Price."+service_uid+":records]");
+	element = $("[name='Price."+service_uid+":records']");
 	price = '<input class="listing_string_entry numeric" '+
 		'name="Price.'+service_uid+':records" '+
 		'field="Price" type="text" uid="'+service_uid+'" '+
@@ -33,14 +33,14 @@ function check_service(service_uid){
 
 ////////////////////////////////////////
 function uncheck_service(service_uid){
-	element = $("[name=Partition."+service_uid+":records]");
+	element = $("[name='Partition."+service_uid+":records']");
 	$(element).after(
 		"<input type='hidden' name='Partition."+service_uid+":records'"+
 		"value=''/>"
 	);
 	$(element).remove();
 
-	element = $("[name=Price."+service_uid+":records]");
+	element = $("[name='Price."+service_uid+":records']");
 	$($(element).siblings()[0]).after(' <span class="state-active state-active ">'+$(element).val()+'</span>')
 	$(element).after(
 		"<input type='hidden' name='Price."+service_uid+":records'"+
@@ -65,7 +65,7 @@ function calcdependencies(elements, auto_yes) {
 	var deps = service_data['deps'];
 	var backrefs = service_data['backrefs'];
 
-	if ($(element).attr("checked") == true){
+	if ($(element).prop('checked') == true){
 		// selecting a service; discover services it depends on.
 		var affected_services = [];
 		var affected_titles = [];
@@ -85,7 +85,7 @@ function calcdependencies(elements, auto_yes) {
 				$.each(servicedata, function(i, serviceuid_servicetitle){
 					service = serviceuid_servicetitle.split("_");
 					// if the service is already checked, skip it.
-					if (! $('#list_cb_'+service[0]).attr("checked") ){
+					if (! $('#list_cb_'+service[0]).prop('checked') ){
 						// this one is for the current category
 						services.push(service[0]);
 						// and this one decides if the confirmation box gets shown at all.
@@ -110,9 +110,9 @@ function calcdependencies(elements, auto_yes) {
 				function add_Yes(){
 					$.each(dep_args, function(i,args){
 						$.each(args[2], function(x,serviceUID){
-							if(! $('#list_cb_'+serviceUID).attr("checked") ){
+							if(! $('#list_cb_'+serviceUID).prop('checked') ){
 								check_service(serviceUID);
-								$('#list_cb_'+serviceUID).attr("checked", true);
+								$('#list_cb_'+serviceUID).prop('checked', true);
 							}
 						});
 					});
@@ -120,9 +120,9 @@ function calcdependencies(elements, auto_yes) {
 					$('#messagebox').remove();
 				}
 				function add_No(){
-					if($(element).attr("checked") ){
+					if($(element).prop('checked') ){
 						uncheck_service($(element).attr('value'));
-						$(element).attr("checked", false);
+						$(element).prop('checked', false);
 					}
 					$(this).dialog("close");
 					$('#messagebox').remove();
@@ -154,7 +154,7 @@ function calcdependencies(elements, auto_yes) {
 		if (s_uids.length > 0){
 			$.each(s_uids, function(i, serviceUID){
 				cb = $('#list_cb_' + serviceUID);
-				if (cb.attr("checked")){
+				if (cb.prop('checked')){
 					affected_services.push(serviceUID);
 					affected_titles.push(cb.attr('item_title'));
 				}
@@ -176,7 +176,7 @@ function calcdependencies(elements, auto_yes) {
 						$.each(affected_services, function(i,serviceUID){
 							se = $('#list_cb_'+serviceUID);
 							uncheck_service(serviceUID);
-							$(se).attr('checked', false);
+							$(se).prop('checked', false);
 						});
 						$(this).dialog("close");
 						$('#messagebox').remove();
@@ -184,7 +184,7 @@ function calcdependencies(elements, auto_yes) {
 					no:function(){
 						service_uid = $(element).attr('value');
 						check_service(service_uid);
-						$(element).attr('checked', true);
+						$(element).prop('checked', true);
 						$(this).dialog("close");
 						$('#messagebox').remove();
 					}
@@ -205,27 +205,27 @@ $(document).ready(function(){
 	// disable checkboxes for eg verified analyses.
 	$.each($("[name='uids:list']"), function(i,cb){
 		uid = $(cb).val();
-		row_data = $.parseJSON($('#'+uid+'_row_data').val());
+		row_data = $.parseJSON($("#"+uid+"_row_data").val());
 		if (row_data['disabled'] == true){
 			// disabled fields must be shadowed by hidden fields,
 			// or they don't appear in the submitted form.
-			$(cb).attr('disabled', true);
-			cbname = $(cb).attr('name');
-			cbid = $(cb).attr('id');
-			$(cb).removeAttr('name').removeAttr('id');
+			$(cb).prop("disabled", true);
+			cbname = $(cb).attr("name");
+			cbid = $(cb).attr("id");
+			$(cb).removeAttr("name").removeAttr("id");
 			$(cb).after("<input type='hidden' name='"+cbname+"' value='"+uid+"' id='"+cbid+"'/>");
 
-			el = $('[name=Price.'+uid+':records]');
+			el = $("[name='Price."+uid+":records']");
 			elname = $(el).attr('name');
 			elval = $(el).val();
 			$(el).after("<input type='hidden' name='"+elname+"' value='"+elval+"'/>");
-			$(el).attr('disabled', true);
+			$(el).prop("disabled", true);
 
-			el = $('[name=Partition.'+uid+':records]');
-			elname = $(el).attr('name');
+			el = $("[name='Partition."+uid+":records']");
+			elname = $(el).attr("name");
 			elval = $(el).val();
 			$(el).after("<input type='hidden' name='"+elname+"' value='"+elval+"'/>");
-			$(el).attr('disabled', true);
+			$(el).prop("disabled", true);
 		}
 	})
 
@@ -235,7 +235,7 @@ $(document).ready(function(){
 		calcdependencies([this]);
 
 		service_uid = $(this).val();
-		if ($(this).attr("checked")){
+		if ($(this).prop('checked')){
 			check_service(service_uid);
 		}
 		else {

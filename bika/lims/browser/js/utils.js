@@ -246,12 +246,12 @@ function enableAddAttachment(this_field) {
 		document.getElementById('Analysis').value = '';
 	}
 
-	document.getElementById('addButton').disabled = false;
+	document.getElementById('addButton').prop('disabled', false);
 	if (attachfile == '') {
-		document.getElementById('addButton').disabled = true
+		document.getElementById('addButton').prop('disabled', true)
 	} else {
 		if ((service == '') && (analysis == '')) {
-			document.getElementById('addButton').disabled = true
+			document.getElementById('addButton').prop('disabled', true)
 		}
 	}
 

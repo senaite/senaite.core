@@ -5,7 +5,7 @@ $(document).ready(function(){
     PMF = jarn.i18n.MessageFactory('plone');
 
 	// Confirm before resetting client specs to default lab specs
-    $("a[href*=set_to_lab_defaults]").click(function(event){
+    $("a[href*='set_to_lab_defaults']").click(function(event){
 		// always prevent default/
 		// url is activated manually from 'Yes' below.
 		url = $(this).attr("href");
@@ -33,7 +33,7 @@ $(document).ready(function(){
 
      if($(".portaltype-client").length == 0 &&
        window.location.href.search('portal_factory/Client') == -1){
-        $("input[id=ClientID]").after('<a style="border-bottom:none !important;margin-left:.5;"' +
+        $("input[id='ClientID']").after('<a style="border-bottom:none !important;margin-left:.5;"' +
                     ' class="add_client"' +
                     ' href="'+window.portal_url+'/clients/portal_factory/Client/new/edit"' +
                     ' rel="#overlay">' +
@@ -61,7 +61,7 @@ $(document).ready(function(){
         }
     );
 
-    $("input[id*=ClientID]").combogrid({
+    $("input[id*='ClientID']").combogrid({
         colModel: [{'columnName':'ClientUID','hidden':true},
                    {'columnName':'ClientID','width':'20','label':_('Client ID')},
                    {'columnName':'Title','width':'80','label':_('Title')}],

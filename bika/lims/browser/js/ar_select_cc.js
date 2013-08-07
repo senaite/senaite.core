@@ -11,7 +11,7 @@ $(document).ready(function(){
 	});
 
 	// return selected references from the CC popup window back into the widget
-	$('[transition=save_selection_button]').click(function(){
+	$('[transition="save_selection_button"]').click(function(){
 		uids = [];
 		titles = [];
 		$.each($("[name='uids:list']").filter(":checked"), function(i, e){
@@ -19,7 +19,7 @@ $(document).ready(function(){
 			titles.push($(e).attr('item_title'));
 		});
 		window.opener.$("#cc_titles").attr('value', titles.join('; '));
-		window.opener.$("span[id=cc_titles]").empty().append(titles.join('; '));
+		window.opener.$("span[id='cc_titles']").empty().append(titles.join('; '));
 		window.opener.$("#cc_uids").attr('value', uids.join(','));
 
 		window.close();

@@ -9,14 +9,8 @@ function recalc_prices(column){
 		total = 0.00;
 		discount = parseFloat($("#member_discount").val());
 		$.each($('input[name="ar.'+column+'.Analyses:list:ignore_empty:record"]'), function(){
-			disabled = $(this).attr('disabled');
 			// For some browsers, `attr` is undefined; for others, its false.  Check for both.
-			if (typeof disabled !== 'undefined' && disabled !== false) {
-				disabled = true;
-			} else {
-				disabled = false;
-			}
-			if(!(disabled) && $(this).attr("checked")){
+			if(!($(this).prop('disabled')) && $(this).prop('checked')){
 				serviceUID = this.id;
 				form_price = parseFloat($("#"+serviceUID+"_price").val());
 				vat_amount = parseFloat($("#"+serviceUID+"_price").attr("vat_amount"));
@@ -52,14 +46,14 @@ function changeReportDryMatter(){
 	cat = $(dm).attr("cat");
 	poc = $(dm).attr("poc");
 	column = $(this).attr('column');
-	if ($(this).attr("checked")){
+	if ($(this).prop('checked')){
 		// only play with service checkboxes when enabling dry matter
 		unsetAnalysisProfile(column);
 		jQuery.ajaxSetup({async:false});
 		toggleCat(poc, cat, $(this).attr("column"), selectedservices=[uid], force_expand=true);
 		jQuery.ajaxSetup({async:true});
-		dryservice_cb = $("input[column="+$(this).attr("column")+"]:checkbox").filter("#"+uid);
-		$(dryservice_cb).attr("checked", true);
+		dryservice_cb = $("input[column='"+$(this).attr("column")+"']:checkbox").filter("#"+uid);
+		$(dryservice_cb).prop('checked') == true;
 		calcdependencies([$(dryservice_cb)], auto_yes = true);
 		calculate_parts(column);
 	}
@@ -79,7 +73,7 @@ function deleteSampleButton(){
 	column = $(this).attr('column');
 	$("#ar_"+column+"_SampleID_button").val($("#ar_"+column+"_SampleID_default").val());
 	$("#ar_"+column+"_SampleID").val('');
-	$("#ar_"+column+"_ClientReference").val('').removeAttr("readonly");
+	$("#ar_"+column+"_ClientReference").val('').prop('readonly', false);
 	$("#ar_"+column+"_SamplingDate")
 		.datepicker({
 			showOn:'focus',
@@ -91,16 +85,21 @@ function deleteSampleButton(){
 		})
 		.click(function(){$(this).attr('value', '');})
 		.attr('value', '');
-	$("#ar_"+column+"_ClientSampleID").val('').removeAttr("readonly");
-	$("#ar_"+column+"_SamplePoint").val('').removeAttr("readonly");
-	$("#ar_"+column+"_SampleType").val('').removeAttr("readonly");
-	$("#ar_"+column+"_SamplingDeviation").val('').removeAttr("disabled");
-	$("#ar_"+column+"_Composite").attr('checked', false).removeAttr("disabled");
-	$("#ar_"+column+"_AdHoc").attr('checked', false).removeAttr("disabled");
-	$("#ar_"+column+"_DefaultContainerType").removeAttr("disabled");
+	$("#ar_"+column+"_ClientSampleID").val('').prop('readonly', false);
+	$("#ar_"+column+"_SamplePoint").val('').prop('readonly', false);
+	$("#ar_"+column+"_SampleType").val('').prop('readonly', false);
+	$("#ar_"+column+"_SamplingDeviation").val('').prop('disabled', false);
+	$("#ar_"+column+"_Composite").prop('checked', false);
+	$("#ar_"+column+"_Composite").prop('disabled', false);
+	$("#ar_"+column+"_AdHoc").prop('checked', false);
+	$("#ar_"+column+"_AdHoc").prop('disabled', false);
+	$("#ar_"+column+"_DefaultContainerType").prop('disabled', false);
 	$("#deleteSampleButton_" + column).toggle(false);
 	// uncheck and enable all visible service checkboxes
-	$("input[id*='_"+column+"_']").filter(".cb").removeAttr('disabled').attr('checked', false);
+	$.each($("input[id*='_"+column+"_']").filter(".cb"), function(i,e){
+		$(v).prop('checked', false);
+		$(v).prop('disabled', false);
+	})
 	uncheck_partnrs(column);
 	recalc_prices();
 }
@@ -121,7 +120,7 @@ function showSelectCC(){
 
 function changePrimaryContact(){
 	contact_uid = $(this).val();
-	elem = $("[uid="+contact_uid+"]");
+	elem = $("[uid='"+contact_uid+"']");
 	cc_data = $.parseJSON($(elem).attr("ccs"));
 	$('#cc_uids').attr('value', $(elem).attr("cc_uids"));
 	$('#cc_titles').val($(elem).attr("cc_titles"));
@@ -134,14 +133,14 @@ function copyButton(){
 		for (col=1; col<parseInt($("#col_count").val()); col++) {
 			$("#ar_"+col+"_ARTemplate").val(first_val);
 		}
-		$("[id*=_ARTemplate]").change();
+		$("[id*='_ARTemplate']").change();
 	}
 	else if ($(this).hasClass('AnalysisProfileCopyButton')){ // Profile selector
 		first_val = $('#ar_0_AnalysisProfile').val();
 		for (col=1; col<parseInt($("#col_count").val()); col++) {
 			$("#ar_"+col+"_AnalysisProfile").val(first_val);
 		}
-		$("[id*=_AnalysisProfile]").change();
+		$("[id*='_AnalysisProfile']").change();
 	}
 	else if ($(this).hasClass('SampleTypeCopyButton')){ // SampleType - Must set partitions on copy
 		first_val = $('#ar_0_SampleType').val();
@@ -163,20 +162,20 @@ function copyButton(){
 		}
 	}
 	else if ($(this).parent().attr('class') == 'service'){ // Analysis Service checkbox
-		first_val = $('input[column="0"]').filter('#'+this.id).attr("checked");
+		first_val = $('input[column="0"]').filter('#'+this.id).prop('checked');
 		affected_elements = [];
 		// 0 is the first column; we only want to change cols 1 onward.
 		for (col=1; col<parseInt($("#col_count").val()); col++) {
 			other_elem = $('input[column="'+col+'"]').filter('#'+this.id);
-			disabled = other_elem.attr('disabled');
+			disabled = other_elem.prop('disabled');
 			// For some browsers, `attr` is undefined; for others, its false.  Check for both.
-			if (typeof disabled !== 'undefined' && disabled !== false) {
+			if (disabled) {
 				disabled = true;
 			} else {
 				disabled = false;
 			}
-			if (!disabled && !(other_elem.attr("checked")==first_val)) {
-				other_elem.attr("checked", first_val?true:false);
+			if (!disabled && !(other_elem.prop('checked')==first_val)) {
+				other_elem.prop('checked') = first_val?true:false;
 				affected_elements.push(other_elem);
 			}
 			calculate_parts(col);
@@ -186,27 +185,27 @@ function copyButton(){
 	}
 	else if ($('input[name^="ar\\.0\\.'+field_name+'"]').attr("type") == "checkbox") {
 		// other checkboxes
-		first_val = $('input[name^="ar\\.0\\.'+field_name+'"]').attr("checked");
+		first_val = $('input[name^="ar\\.0\\.'+field_name+'"]').prop('checked');
 		// col starts at 1 here; we don't copy into the the first row
 		for (col=1; col<parseInt($("#col_count").val()); col++) {
 			other_elem = $('#ar_' + col + '_' + field_name);
-			if (!(other_elem.attr("checked")==first_val)) {
-				other_elem.attr("checked", first_val?true:false);
+			if (!(other_elem.prop('checked')==first_val)) {
+				other_elem.prop('checked') = first_val?true:false;
 			}
 		}
-		$('[id*=_' + field_name + "]").change();
+		$("[id*='_" + field_name + "']").change();
 	}
 	else{
 		first_val = $('input[name^="ar\\.0\\.'+field_name+'"]').val();
 		// col starts at 1 here; we don't copy into the the first row
 		for (col=1; col<parseInt($("#col_count").val()); col++) {
 			other_elem = $('#ar_' + col + '_' + field_name);
-			if (!(other_elem.attr("disabled"))) {
+			if (!(other_elem.prop('disabled'))) {
 				if(field_name == 'SampleType'){ calculate_parts(col); }
 				other_elem.val(first_val);
 			}
 		}
-		$('[id*=_' + field_name + "]").change();
+		$("[id*=_'" + field_name + "']").change();
 	}
 }
 
@@ -227,7 +226,7 @@ function toggleCat(poc, category_uid, column, selectedservices,
 			for(service in tbody.children){
 				service_uid = service.id;
 				if(selectedservices.indexOf(service_uid) > -1){
-					$(this).attr("checked", "checked");
+					$(this).prop('checked', true);
 				}
 			}
 			recalc_prices(column);
@@ -250,8 +249,8 @@ function toggleCat(poc, category_uid, column, selectedservices,
 		$(tbody).load("analysisrequest_analysisservices", options,
 			function(){
 				// analysis service checkboxes
-				$('input[name*="Analyses"]').unbind();
-				$('input[name*="Analyses"]').bind('change', service_checkbox_change);
+				$("input[name*='Analyses']").unbind();
+				$("input[name*='Analyses']").bind('change', service_checkbox_change);
 				if(selectedservices!=[]){
 					recalc_prices(column);
 				}
@@ -284,7 +283,7 @@ function calcdependencies(elements, auto_yes) {
 	deps = service_data['deps'];
 	backrefs = service_data['backrefs'];
 
-	if ($(element).attr("checked") == true){
+	if ($(element).prop('checked') == true){
 		// selecting a service; discover services it depends on.
 		var affected_services = [];
 		var affected_titles = [];
@@ -303,7 +302,7 @@ function calcdependencies(elements, auto_yes) {
 				$.each(servicedata, function(i, serviceuid_servicetitle){
 					service = serviceuid_servicetitle.split("_");
 					// if the service is already checked, skip it.
-					if (! $('input[column="'+column+'"]').filter('#'+service[0]).attr("checked") ){
+					if (! $("input[column='"+column+"']").filter('#'+service[0]).prop('checked') ){
 						// this one is for the current category
 						services.push(service[0]);
 						// and this one decides if the confirmation box gets shown at all.
@@ -332,10 +331,10 @@ function calcdependencies(elements, auto_yes) {
 							// if cat is already expanded, we toggle(true) it and manually select service checkboxes
 							$(tbody).toggle(true);
 							$.each(args[3], function(x,serviceUID){
-								$('input[column="'+args[2]+'"]').filter('#'+serviceUID).attr("checked", true);
+								$('input[column="'+args[2]+'"]').filter('#'+serviceUID).prop('checked', true);
 								// if elements from more than one column were passed, set all columns to be the same.
 								for(col in remaining_columns){
-									$('input[column="'+remaining_columns[col]+'"]').filter('#'+serviceUID).attr("checked", true);
+									$('input[column="'+remaining_columns[col]+'"]').filter('#'+serviceUID).prop('checked', true);
 								}
 							});
 						} else {
@@ -354,12 +353,12 @@ function calcdependencies(elements, auto_yes) {
 					$('#messagebox').remove();
 				}
 				function add_No(){
-					$(element).attr("checked", false);
+					$(element).prop('checked', false);
 					recalc_prices();
 					for(col in remaining_columns){
 						e = $('input[column="'+remaining_columns[col]+'"]')
 								.filter('#'+serviceUID);
-						$(e).attr("checked", false);
+						$(e).prop('checked', false);
 					}
 					recalc_prices(column);
 					calculate_parts(column);
@@ -393,7 +392,7 @@ function calcdependencies(elements, auto_yes) {
 		if (s_uids.length > 0){
 			$.each(s_uids, function(i, serviceUID){
 				cb = $('input[column="'+column+'"]').filter('#'+serviceUID);
-				if (cb.attr("checked")){
+				if (cb.prop('checked')){
 					affected_services.push(serviceUID);
 					affected_titles.push(cb.attr('title'));
 				}
@@ -411,20 +410,20 @@ function calcdependencies(elements, auto_yes) {
 						for(as=0;as<affected_services.length;as++){
 							serviceUID = affected_services[as];
 							cb = $('input[column="'+column+'"]')
-								.filter('#'+serviceUID).attr('checked', false);
-							$(".partnr_"+serviceUID).filter('[column=]'+column)
+								.filter('#'+serviceUID).prop('checked', false);
+							$(".partnr_"+serviceUID).filter('[column="'+column + '"]')
 								.empty();
 							if ($(cb).val() == $("#getDryMatterService").val()) {
-								$("#ar_"+column+"_ReportDryMatter").attr("checked", false);
+								$("#ar_"+column+"_ReportDryMatter").prop('checked', false);
 							}
 							// if elements from more than one column were passed, set all columns to be the same.
 							for(col in remaining_columns){
 								cb = $('input[column="'+remaining_columns[col]+'"]')
-									.filter('#'+serviceUID).attr("checked", false);
-								$(".partnr_"+serviceUID).filter('[column=]'+col)
+									.filter('#'+serviceUID).prop('checked', false);
+								$(".partnr_"+serviceUID).filter('[column="'+col + '"]')
 									.empty();
 								if ($(cb).val() == $("#getDryMatterService").val()) {
-									$("#ar_"+col+"_ReportDryMatter").attr("checked", false);
+									$("#ar_"+col+"_ReportDryMatter").prop('checked', false);
 								}
 							}
 						};
@@ -437,9 +436,9 @@ function calcdependencies(elements, auto_yes) {
 						$('#messagebox').remove();
 					},
 					no:function(){
-						$(element).attr("checked", true);
+						$(element).prop('checked', true);
 						for(col in remaining_columns){
-							$('input[column="'+remaining_columns[col]+'"]').filter('#'+serviceUID).attr("checked", true);
+							$('input[column="'+remaining_columns[col]+'"]').filter('#'+serviceUID).prop('checked', true);
 						}
 						recalc_prices(column);
 						$(this).dialog("close");
@@ -479,12 +478,12 @@ function calculate_parts(column){
 		}
 	} else {
 		// all unchecked services have their part numbers removed
-		ep = $("[class^='partnr_']").filter("[column="+column+"]").not(":empty");
+		ep = $("[class^='partnr_']").filter("[column='"+column+"']").not(":empty");
 		for(i=0;i<ep.length;i++){
 			em = ep[i];
 			uid = $(ep[0]).attr('class').split("_")[1]
 			cb = $("#"+uid);
-			if ( ! $(cb).attr('checked') ){
+			if ( ! $(cb).prop('checked') ){
 				$(em).empty();
 			}
 		}
@@ -504,12 +503,12 @@ function calculate_parts(column){
 	// skip everything if no selected services in this column
 	if (service_uids.length == 0){
 		// all unchecked services have their part numbers removed
-		ep = $("[class^='partnr_']").filter("[column="+column+"]").not(":empty");
+		ep = $("[class^='partnr_']").filter("[column='"+column+"']").not(":empty");
 		for(i=0;i<ep.length;i++){
 			em = ep[i];
 			uid = $(ep[0]).attr('class').split("_")[1]
 			cb = $("#"+uid);
-			if ( ! $(cb).attr('checked') ){
+			if ( ! $(cb).prop('checked') ){
 				$(em).empty();
 			}
 		}
@@ -526,7 +525,7 @@ function calculate_parts(column){
 	// write new part numbers next to checkboxes
 	$.each(parts, function(p,part){
 		$.each(part['services'], function(s,service_uid){
-			$(".partnr_"+service_uid).filter("[column="+column+"]")
+			$(".partnr_"+service_uid).filter("[column='"+column+"']")
 				.empty().append(p+1);
 		});
 	});
@@ -535,12 +534,12 @@ function calculate_parts(column){
 
 function uncheck_partnrs(column){
 	// all unchecked services have their part numbers removed
-	ep = $("[class^='partnr_']").filter("[column="+column+"]").not(":empty");
+	ep = $("[class^='partnr_']").filter("[column='"+column+"']").not(":empty");
 	for(i=0;i<ep.length;i++){
 		em = ep[i];
 		uid = $(ep[0]).attr('class').split("_")[1]
 		cb = $("#"+uid);
-		if ( ! $(cb).attr('checked') ){
+		if ( ! $(cb).prop('checked') ){
 			$(em).empty();
 		}
 	}
@@ -560,8 +559,8 @@ function unsetAnalysisProfile(column){
 
 function unsetAnalyses(column){
 	$.each($('input[name^="ar.'+column+'.Analyses"]'), function(){
-		if($(this).attr("checked")) $(this).attr("checked", "");
-		$(".partnr_"+this.id).filter("[column="+column+"]")
+		$(this).prop('checked', false);
+		$(".partnr_"+this.id).filter("[column='"+column+"']")
 			.empty();
 	});
 }
@@ -576,7 +575,7 @@ function setARTemplate(){
 	analyses = template_data['Analyses'];
 
 	// always remove DryMatter - the Template can put it back.
-	$("#ar_"+column+"_ReportDryMatter").attr("checked", false);
+	$("#ar_"+column+"_ReportDryMatter").prop('checked', false);
 
 	// set our template fields
 	// SampleType and SamplePoint are strings - the item's Title.
@@ -586,7 +585,9 @@ function setARTemplate(){
 	sp = template_data['SamplePoint'];
 	$('#ar_'+column+'_SamplePoint').val(sp);
 	dm = template_data['ReportDryMatter'];
-	$('#ar_'+column+'_ReportDryMatter').attr('checked', dm);
+	if(dm) {
+		$('#ar_'+column+'_ReportDryMatter').prop('checked', true);
+	}
 	$('#ar_'+column+'_AnalysisProfile').val(template_data['AnalysisProfile']);
 
 	// Apply Template analyses/parts
@@ -626,9 +627,9 @@ function setARTemplate(){
 		if( $("tbody[class*='expanded']").filter("#"+poc_categoryUID).length > 0 ){
 			$.each(selectedservices, function(i,uid){
 				$.each($("input[column='"+column+"']").filter("#"+uid), function(x, e){
-					$(e).attr('checked', true);
+					$(e).prop('checked', true);
 					partnr = template_parts[uid].split("-")[1];
-					$(".partnr_"+uid).filter("[column="+column+"]")
+					$(".partnr_"+uid).filter("[column='"+column+"']")
 						.empty().append(partnr);
 					partnr = parseInt(partnr,10);
 					parts[partnr-1]['services'].push(uid);
@@ -641,7 +642,7 @@ function setARTemplate(){
 			jQuery.ajaxSetup({async:true});
 			$.each(selectedservices, function(i,uid){
 				partnr = template_parts[uid].split("-")[1];
-				$(".partnr_"+uid).filter("[column="+column+"]")
+				$(".partnr_"+uid).filter("[column='"+column+"']")
 					.empty().append(partnr);
 				partnr = parseInt(partnr,10);
 				parts[partnr-1]['services'].push(uid);
@@ -666,13 +667,13 @@ function setAnalysisProfile(column){
 	profile_services = profile_data['Services'];
 
 	// always remove DryMatter - the Template can put it back.
-	$("#ar_"+column+"_ReportDryMatter").attr("checked", false);
+	$("#ar_"+column+"_ReportDryMatter").prop('checked', false);
 
 	$.each(profile_services, function(poc_categoryUID, selectedservices){
 		if( $("tbody[class*='expanded']").filter("#"+poc_categoryUID).length > 0 ){
 			$.each(selectedservices, function(i,uid){
 				$.each($("input[column='"+column+"']").filter("#"+uid), function(x, e){
-					$(e).attr('checked', true);
+					$(e).prop('checked', true);
 				});
 				recalc_prices(column);
 			});
@@ -695,13 +696,13 @@ function service_checkbox_change(){
 
 	// Unselecting Dry Matter Service unsets 'Report Dry Matter'
 	if ($(this).val() == $("#getDryMatterService").val()
-	    && $(this).attr("checked") == false) {
-		$("#ar_"+column+"_ReportDryMatter").attr("checked", false);
+	    && $(this).prop('checked') == false) {
+		$("#ar_"+column+"_ReportDryMatter").prop('checked', false);
 	}
 
 	// unselecting service: remove part number.
-	if (!$(this).attr('checked')){
-		$(".partnr_"+this.id).filter("[column="+column+"]")
+	if (!$(this).prop('checked')){
+		$(".partnr_"+this.id).filter("[column='"+column+"']")
 			.empty();
 	}
 
@@ -764,7 +765,7 @@ function setupAutoCompleters(){
 					$("#ar_"+col+"_SamplePoint").val(st['samplepoints'][0]);
 				}
 				ct = st['containertype'];
-				disabled = $(e).attr('disabled');
+				disabled = $(e).prop('disabled');
 				if (ct != undefined && ct != null
 				    && (disabled == null || disabled == undefined)) {
 					$("#ar_"+col+"_DefaultContainerType").val(ct);
@@ -788,7 +789,9 @@ function setupAutoCompleters(){
 					$("#ar_"+col+"_SampleType").val(sp['sampletypes'][0]);
 					calculate_parts(col);
 				}
-				$("#ar_"+col+"_Composite").attr("checked", sp['composite']);
+				if(sp['composite']) {
+					$("#ar_"+col+"_Composite").prop('checked', true);
+				}
 				match = true;
 			}
 		});
@@ -867,7 +870,7 @@ $(document).ready(function(){
 	// clear date widget values if the page is reloaded.
 	e = $('input[id$="_SamplingDate"]');
 	if(e.length > 0){
-		if($($(e).parents('form').children('[name=came_from]')).val() == 'add'){
+		if($($(e).parents('form').children('[name="came_from"]')).val() == 'add'){
 			$(e)
 			.datepicker({
 				showOn:'focus',
@@ -929,7 +932,7 @@ $(document).ready(function(){
 			dataType: 'json',
 			data: {'_authenticator': $('input[name="_authenticator"]').val()},
 			beforeSubmit: function(formData, jqForm, options) {
-				$("input[class~='context']").attr('disabled',true);
+				$("input[class~='context']").prop('disabled', true);
 			},
 			success: function(responseText, statusText, xhr, $form) {
 				if(responseText['success'] != undefined){
@@ -965,13 +968,13 @@ $(document).ready(function(){
 					};
 					window.bika_utils.portalMessage(msg);
 					window.scroll(0,0);
-					$("input[class~='context']").removeAttr('disabled');
+					$("input[class~='context']").prop('disabled', false);
 				}
 			},
 			error: function(XMLHttpRequest, statusText, errorThrown) {
 				window.bika_utils.portalMessage(statusText);
 				window.scroll(0,0);
-				$("input[class~='context']").removeAttr('disabled');
+				$("input[class~='context']").prop('disabled', false);
 			},
 		};
 		$('#analysisrequest_edit_form').ajaxForm(options);
