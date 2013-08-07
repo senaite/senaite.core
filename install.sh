@@ -34,10 +34,11 @@ if [ -n "${PROXY}" ]; then
   export https_proxy=${PROXY}
 fi
 
+
 # ## Download and install Plone
 #
 # The latest Unified Installer can be found at http://plone.org/products/plone/releases
-# Plone 4 or newer is required. Bika has been tested with Plone 4.2.1.
+# Plone 4 or newer is required. Bika has been tested with Plone 4.2.5.
 #
 # All steps are required except where marked as optionally. If your installation fails, 
 # ensure that each step has completed successfully.
@@ -54,6 +55,18 @@ if [ -f /etc/lsb-release ]; then # Ubuntu
   aptitude install libssl-dev
   aptitude install gnuplot
   aptitude install git-core
+  aptitude install python-dev
+  aptitude install make
+  aptitude install libxml2-dev
+  aptitude install libxslt1-dev
+  aptitude install python-distribute
+  aptitude install build-essential
+  aptitude install libbz2-dev
+  aptitude install libjpeg-dev
+  aptitude install libreadline-dev
+  aptitude install wv
+  aptitude install poppler-utils
+  aptitude install python-imaging
 else 
   if [ -f /etc/redhat-release ]; then # Fedora
     yum install gcc zlib-devel openssl-devel gnuplot git-core wget patch
@@ -67,9 +80,9 @@ fi
 # to use the master branch instead.
 
 mkdir -p $BIKA_HOME
-wget -nc https://launchpad.net/plone/4.2/4.2.1/+download/Plone-4.2.1-UnifiedInstaller.tgz 
-tar xzf Plone-4.2.1-UnifiedInstaller.tgz 
-cd Plone-4.2.1-UnifiedInstaller/
+wget -nc https://launchpad.net/plone/4.2/4.2.5/+download/Plone-4.2.5-UnifiedInstaller.tgz 
+tar xzf Plone-4.2.5-UnifiedInstaller.tgz 
+cd Plone-4.2.5-UnifiedInstaller/
 ./install.sh --target=${BIKA_HOME} standalone 
 
 # Visit http://plone.org/documentation/topic/Installation for more
