@@ -13,7 +13,8 @@ class InvoiceFolderContentsView(BikaListingView):
 
     def __init__(self, context, request):
         super(InvoiceFolderContentsView, self).__init__(context, request)
-        self.contentFilter = {}
+        self.catalog = "portal_catalog"
+        self.contentFilter = {'portal_type': 'InvoiceBatch'}
         self.icon = self.portal_url + "/++resource++bika.lims.images/invoice_big.png"
         self.title = _("Invoices")
         self.description = ""
@@ -56,20 +57,7 @@ class InvoiceFolderContentsView(BikaListingView):
             self.show_select_column = True
         return super(InvoiceFolderContentsView, self).__call__()
 
-    def getInvoiceBatches(self, contentFilter):
-        wf = getToolByName(self.context, 'portal_workflow')
-        # Define the state filter
-        cancellation_state = self.contentFilter['cancellation_state']
-        # Filter the items
-        items = []
-        for obj in self.context.objectValues('InvoiceBatch'):
-            state = wf.getInfoFor(obj, 'cancellation_state')
-            if state == cancellation_state: items.append(obj)
-        # Return the items
-        return items
-
     def folderitems(self):
-        self.contentsMethod = self.getInvoiceBatches
         items = BikaListingView.folderitems(self)
         for item in items:
             obj = item['obj']
@@ -78,4 +66,3 @@ class InvoiceFolderContentsView(BikaListingView):
             item['start'] = self.ulocalized_time(obj.getBatchStartDate())
             item['end'] = self.ulocalized_time(obj.getBatchEndDate())
         return items
-
