@@ -18,7 +18,7 @@ from Products.CMFPlone import PloneMessageFactory as _p
 from Products.CMFPlone.utils import transaction_note
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims.browser.fields import ARAnalysesField
-from bika.lims.browser.widgets import DateTimeWidget
+from bika.lims.browser.widgets import DateTimeWidget, DecimalWidget
 from bika.lims.config import PROJECTNAME, \
     ManageInvoices
 from bika.lims.content.bikaschema import BikaSchema
@@ -682,9 +682,9 @@ class AnalysisRequest(BaseFolder):
                 items.append(analysis)
         return items
 
-    security.declareProtected(View, 'getSubTotal')
+    security.declareProtected(View, 'getSubtotal')
 
-    def getSubTotal(self):
+    def getSubtotal(self):
         """ Compute Subtotal
         """
         return sum(

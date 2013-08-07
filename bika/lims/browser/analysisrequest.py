@@ -3018,7 +3018,7 @@ class InvoiceView(BrowserView):
             })
         self.analyses = analyses
         # Get totals
-        self.subTotal = context.getSubTotal()
+        self.subtotal = context.getSubtotal()
         self.vatTotal = "%.2f" % context.getVATTotal()
         self.totalPrice = "%.2f" % context.getTotalPrice()
         # Render the template

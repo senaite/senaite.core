@@ -80,7 +80,7 @@
 		<td class="title" i18n:translate="">Total</td>
 		<td class="currency">
 			<span i18n:translate="label_currency_abbreviation">R</span>
-			<span tal:content="view/subTotal"></span>
+			<span tal:content="view/subtotal"></span>
 		</td>
 		<td class="currency">
 			<span i18n:translate="label_currency_abbreviation">R</span>

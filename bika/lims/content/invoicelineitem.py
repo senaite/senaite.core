@@ -2,7 +2,10 @@
 """
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
+from decimal import Decimal
 from Products.Archetypes.public import *
+from bika.lims.browser.widgets import DecimalWidget
+from Products.CMFCore.permissions import View
 from bika.lims.config import ManageInvoices
 from bika.lims.config import PROJECTNAME
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
@@ -29,7 +32,6 @@ schema = BaseSchema.copy() + Schema((
             label = _("Order Number"),
         ),
     ),
-
     FixedPointField('Subtotal',
         required = 1,
         default = '0.0',
@@ -37,11 +39,11 @@ schema = BaseSchema.copy() + Schema((
             label = _("Subtotal"),
         )
     ),
-    FixedPointField('VAT',
+    FixedPointField('VATTotal',
         required = 1,
         default = '0.0',
         widget = DecimalWidget(
-            label = _("VAT"),
+            label = _("VAT Total"),
         )
     ),
     FixedPointField('Total',
