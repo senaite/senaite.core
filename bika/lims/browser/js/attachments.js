@@ -23,7 +23,7 @@ $(document).ready(function(){
         if (attachfile != '' && ((service != '') || (analysis != ''))) {
             $("#addButton").removeAttr("disabled");
         } else {
-            $("#addButton").attr("disabled", true);
+            $("#addButton").prop("disabled", true);
         }
     });
 

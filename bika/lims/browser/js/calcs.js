@@ -90,7 +90,7 @@ $(document).ready(function(){
 
 					// check box
 					if (results != ''){
-						if ($('#'+form_id+'_cb_'+result.uid).attr('checked') == false) {
+						if ($('#'+form_id+'_cb_'+result.uid).prop('checked') == false) {
 							$('#'+form_id+'_cb_'+result.uid).click();
 						}
 					}

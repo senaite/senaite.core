@@ -7,7 +7,7 @@ function workflow_transition_sample(event){
 		requestdata.workflow_action = "sample";
 		$.each($("form[name='header_form']").find("input,select"), function(i,v){
 			name = $(v).attr('name');
-			value =  $(v).attr('type') == 'checkbox' ? $(v).attr('checked') : $(v).val();
+			value =  $(v).attr('type') == 'checkbox' ? $(v).prop('checked') : $(v).val();
 			requestdata[name] = value;
 		});
 		requeststring = $.param(requestdata);
@@ -31,7 +31,7 @@ function save_header(event){
 	requestdata = new Object();
 	$.each($("form[name='header_form']").find("input,select"), function(i,v){
 		name = $(v).attr('name');
-		value =  $(v).attr('type') == 'checkbox' ? $(v).attr('checked') : $(v).val();
+		value =  $(v).attr('type') == 'checkbox' ? $(v).prop('checked') : $(v).val();
 		requestdata[name] = value;
 	});
 	requeststring = $.param(requestdata);
