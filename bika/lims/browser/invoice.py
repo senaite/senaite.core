@@ -19,7 +19,7 @@ class InvoiceView(BrowserView):
         batch = context.aq_parent
         client = context.getClient()
         # Gather general data
-        self.invoiceNumber = context.getId()
+        self.invoiceId = context.getId()
         self.invoiceDate = self.ulocalized_time(context.getInvoiceDate())
         self.subtotal = context.getSubtotal()
         self.vatTotal = context.getVATTotal()
@@ -42,7 +42,7 @@ class InvoiceView(BrowserView):
             client.getPhysicalAddress(),
         )
         for address in addresses:
-            if address['address']:
+            if address.get('address'):
                 self.clientAddress = address
                 break
         # Gather the line items

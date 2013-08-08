@@ -13,14 +13,6 @@ from zope.interface import implements
 import sys
 
 schema = BikaSchema.copy() + Schema((
-    StringField('InvoiceNumber',
-        required = 1,
-        default_method = 'getId',
-        searchable = True,
-        widget = StringWidget(
-            label = _("Invoice number"),
-        ),
-    ),
     ReferenceField('Client',
         required = 1,
         vocabulary_display_path_bound = sys.maxint,
@@ -97,8 +89,8 @@ class Invoice(BaseFolder):
         renameAfterCreation(self)
 
     def Title(self):
-        """ Return the InvoiceNumber as title """
-        return safe_unicode(self.getInvoiceNumber()).encode('utf-8')
+        """ Return the Invoice Id as title """
+        return safe_unicode(self.getId()).encode('utf-8')
 
     security.declareProtected(View, 'getSubtotal')
     def getSubtotal(self):

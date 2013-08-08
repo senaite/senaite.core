@@ -2966,9 +2966,9 @@ class InvoiceView(BrowserView):
         reviewState = workflow.getInfoFor(context, 'review_state')
         # Collection invoice information
         if invoice:
-            self.invoiceNumber = invoice.getInvoiceNumber()
+            self.invoiceId = invoice.getId()
         else:
-            self.invoiceNumber = _('Proforma (Not yet invoiced)')
+            self.invoiceId = _('Proforma (Not yet invoiced)')
         # Collect verified invoice information
         verified = reviewState in VERIFIED_STATES
         if verified:

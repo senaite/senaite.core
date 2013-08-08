@@ -63,7 +63,7 @@ class InvoiceBatch(BaseFolder):
     #     _ordNum = 'starting at none'
     #     for invoice in invoices:
     #         new_invoice = True
-    #         _invNum = "%s" % invoice.getInvoiceNumber()[:8]
+    #         _invNum = "%s" % invoice.getId()[:8]
     #         _clientNum = "%s" % invoice.getClient().getAccountNumber()
     #         _invDate = "%s" % invoice.getInvoiceDate().strftime('%Y-%m-%d')
     #         _monthNum = invoice.getInvoiceDate().month()
@@ -196,11 +196,10 @@ class InvoiceBatch(BaseFolder):
         """ Creates and invoice for a client and a set of items
         """
         invoice_id = self.generateUniqueId('Invoice')
-        self.invokeFactory(id = invoice_id, type_name = 'Invoice')
+        self.invokeFactory(id=invoice_id, type_name='Invoice')
         invoice = self._getOb(invoice_id)
         invoice.edit(
             Client = client_uid,
-            InvoiceNumber = invoice_id,
             InvoiceDate = DateTime(),
         )
         invoice.processForm()

@@ -6,7 +6,7 @@
 		</tr>
 		<tr>
 			<th i18n:translate="">Invoice ID</th>
-			<td tal:content="view/invoiceNumber">123</td>
+			<td tal:content="view/invoiceId">123</td>
 			<th i18n:translate="">Client Order ID</th>
 			<td></td>
 		</tr>
