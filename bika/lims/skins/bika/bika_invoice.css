@@ -53,3 +53,11 @@ table.invoice-items td {
 	padding: .25em;
 	text-align: right;
 }
+
+table.invoice-items th.text, table.invoice-items td.text {
+	text-align: left;
+}
+
+table.invoice-items th.currency, table.invoice-items td.currency {
+	text-align: right;
+}

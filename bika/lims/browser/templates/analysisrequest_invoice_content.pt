@@ -48,8 +48,8 @@
 			<th i18n:translate="">Price incl VAT</th>
 		</tr>
 	</thead>
-	<tal:categories repeat="category view/analyses">
-		<tbody>
+	<tbody>
+		<tal:categories repeat="category view/analyses">
 			<tal:category>
 				<tr class="category">
 					<td colspan="4" tal:content="category/name"></td>
@@ -74,21 +74,21 @@
 					</tal:analysis>
 				</tal:analyses>
 			</tal:category>
-		</tbody>
-	</tal:categories>
-	<tr class="totals">
-		<td class="title" i18n:translate="">Total</td>
-		<td class="currency">
-			<span i18n:translate="label_currency_abbreviation">R</span>
-			<span tal:content="view/subtotal"></span>
-		</td>
-		<td class="currency">
-			<span i18n:translate="label_currency_abbreviation">R</span>
-			<span tal:content="view/vatTotal"></span>
-		</td>
-		<td class="currency">
-			<span i18n:translate="label_currency_abbreviation">R</span>
-			<span tal:content="view/totalPrice"></span>
-		</td>
-	</tr>
+		</tal:categories>
+		<tr class="totals">
+			<td class="title" i18n:translate="">Total</td>
+			<td class="currency">
+				<span i18n:translate="label_currency_abbreviation">R</span>
+				<span tal:content="view/subtotal"></span>
+			</td>
+			<td class="currency">
+				<span i18n:translate="label_currency_abbreviation">R</span>
+				<span tal:content="view/vatTotal"></span>
+			</td>
+			<td class="currency">
+				<span i18n:translate="label_currency_abbreviation">R</span>
+				<span tal:content="view/totalPrice"></span>
+			</td>
+		</tr>
+	</tbody>
 </table>
