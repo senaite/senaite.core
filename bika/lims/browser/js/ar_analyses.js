@@ -2,7 +2,7 @@
 ////////////////////////////////////////
 function check_service(service_uid){
 	// Add partition dropdown
-	element = $("[name=Partition."+service_uid+":records]");
+	element = $("[name='Partition."+service_uid+":records']");
 	select = '<select class="listing_select_entry" '+
 		'name="Partition.'+service_uid+':records" '+
 		'field="Partition" uid="'+service_uid+'" '+
@@ -19,7 +19,7 @@ function check_service(service_uid){
 	$(element).remove();
 
 	// Add price field
-	element = $("[name=Price."+service_uid+":records]");
+	element = $("[name='Price."+service_uid+":records']");
 	price = '<input class="listing_string_entry numeric" '+
 		'name="Price.'+service_uid+':records" '+
 		'field="Price" type="text" uid="'+service_uid+'" '+
@@ -33,14 +33,14 @@ function check_service(service_uid){
 
 ////////////////////////////////////////
 function uncheck_service(service_uid){
-	element = $("[name=Partition."+service_uid+":records]");
+	element = $("[name='Partition."+service_uid+":records']");
 	$(element).after(
 		"<input type='hidden' name='Partition."+service_uid+":records'"+
 		"value=''/>"
 	);
 	$(element).remove();
 
-	element = $("[name=Price."+service_uid+":records]");
+	element = $("[name='Price."+service_uid+":records']");
 	$($(element).siblings()[0]).after(' <span class="state-active state-active ">'+$(element).val()+'</span>')
 	$(element).after(
 		"<input type='hidden' name='Price."+service_uid+":records'"+
@@ -215,13 +215,13 @@ $(document).ready(function(){
 			$(cb).removeAttr('name').removeAttr('id');
 			$(cb).after("<input type='hidden' name='"+cbname+"' value='"+uid+"' id='"+cbid+"'/>");
 
-			el = $('[name=Price.'+uid+':records]');
+			el = $('[name="Price.'+uid+':records"]');
 			elname = $(el).attr('name');
 			elval = $(el).val();
 			$(el).after("<input type='hidden' name='"+elname+"' value='"+elval+"'/>");
 			$(el).attr('disabled', true);
 
-			el = $('[name=Partition.'+uid+':records]');
+			el = $('[name="Partition.'+uid+':records"]');
 			elname = $(el).attr('name');
 			elval = $(el).val();
 			$(el).after("<input type='hidden' name='"+elname+"' value='"+elval+"'/>");

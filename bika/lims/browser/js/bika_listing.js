@@ -40,7 +40,7 @@ $(document).ready(function(){
 			data: form.formToArray()
 		}
 		form.ajaxSubmit(options);
-		$("[name=table_only]").remove();
+		$("[name='table_only']").remove();
 		$(form).attr("action", stored_form_action);
 	});
 
@@ -145,7 +145,7 @@ $(document).ready(function(){
 			data: form.formToArray()
 		}
 		form.ajaxSubmit(options);
-		$('[name=table_only]').remove();
+		$('[name="table_only"]').remove();
 		$(form).attr('action', stored_form_action)
 		return false;
 	});

@@ -14,7 +14,7 @@ function workflow_transition_sample(event){
 	if ($("#DateSampled").val() != "" && $("#Sampler").val() != "") {
 		requestdata = new Object();
 		requestdata.workflow_action = "sample";
-		$.each($("form[name=header_form]").find("input,select"), function(i,v){
+		$.each($("form[name='header_form']").find("input,select"), function(i,v){
 			name = $(v).attr('name');
 			value =  $(v).attr('type') == 'checkbox' ? $(v).attr('checked') : $(v).val();
 			requestdata[name] = value;
@@ -39,7 +39,7 @@ function workflow_transition_sample(event){
 function save_header(event){
 	event.preventDefault();
 	requestdata = new Object();
-	$.each($("form[name=header_form]").find("input,select"), function(i,v){
+	$.each($("form[name='header_form']").find("input,select"), function(i,v){
 		name = $(v).attr('name');
 		value =  $(v).attr('type') == 'checkbox' ? $(v).attr('checked') : $(v).val();
 		requestdata[name] = value;
@@ -75,10 +75,10 @@ function workflow_transition_retract_ar(event) {
 				_("Are you sure?") +
 			"</p>" +
 		"</div>");
-		
+
 	yes = _("Yes");
 	no = _("No");
-	$("#arretractmsgbox").dialog({width:450, resizable:false, closeOnEscape: false, 
+	$("#arretractmsgbox").dialog({width:450, resizable:false, closeOnEscape: false,
 		buttons:{
 			yes: function(){
 				// Set the additional remarks to the AR
@@ -86,7 +86,7 @@ function workflow_transition_retract_ar(event) {
 				addremarks = $.trim($("#arretractmsgbox_addremarks").val());
 				if (addremarks && addremarks!='') {
 					$("#archetypes-fieldname-Remarks #Remarks").val(addremarks);
-					$("#archetypes-fieldname-Remarks input[type=submit]").click();	
+					$("#archetypes-fieldname-Remarks input[type='submit']").click();
 					// Add a delay in order to allow server saving the remarks
 					// Not sure if needed. Works without this snippet in dev
 					setTimeout(function (){
@@ -126,7 +126,7 @@ $(document).ready(function(){
 
 	// Disable Plone UI for preserve transition
 	$("#workflow-transition-preserve").click(workflow_transition_preserve);
-	
+
 	// Show email message box when AR gets retracted/invalidated
 	$("#workflow-transition-retract_ar").click(workflow_transition_retract_ar);
 

@@ -35,7 +35,7 @@ $(document).ready(function(){
 			type: 'POST',
 			success: function(responseText, statusText, xhr, $form) {
 				if(responseText == "success"){
-					$("span[attachment_uid="+attachment_uid+"]").remove();
+					$("span[attachment_uid='"+attachment_uid+"']").remove();
 				}
 			},
 			data: {

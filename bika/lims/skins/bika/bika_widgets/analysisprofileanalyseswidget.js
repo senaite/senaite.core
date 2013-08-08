@@ -8,7 +8,7 @@
 ////////////////////////////////////////
 function expand_cat(service_uid){
 	cat = $("#folder-contents-item-"+service_uid).attr('cat');
-	th = $('th[cat='+cat+']');
+	th = $('th[cat="'+cat+'"]');
 	if ($(th).hasClass('collapsed')){
 		table = $(th).parents('.bika-listing-table');
 		// show sub TR rows

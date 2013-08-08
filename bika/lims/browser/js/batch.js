@@ -6,13 +6,13 @@ $(document).ready(function(){
 
      if($(".portaltype-batch").length == 0 &&
        window.location.href.search('portal_factory/Batch') == -1){
-        $("input[id=BatchID]").after('<a style="border-bottom:none !important;margin-left:.5;"' +
+        $("input[id='BatchID']").after('<a style="border-bottom:none !important;margin-left:.5;"' +
                     ' class="add_batch"' +
                     ' href="'+window.portal_url+'/batches/portal_factory/Batch/new/edit"' +
                     ' rel="#overlay">' +
                     ' <img style="padding-bottom:1px;" src="'+window.portal_url+'/++resource++bika.lims.images/add.png"/>' +
                 ' </a>');
-        $("input[id*=BatchID]").combogrid({
+        $("input[id*='BatchID']").combogrid({
             colModel: [{'columnName':'BatchUID','hidden':true},
                        {'columnName':'BatchID','width':'35','label':_('Batch ID')},
                        {'columnName':'Description','width':'65','label':_('Description')}],

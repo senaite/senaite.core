@@ -11,8 +11,8 @@
 
 ////////////////////////////////////////
 function expand_cat(service_uid){
-	cat = $("[name=Partition."+service_uid+":records]").parents('tr').attr('cat');
-	th = $('th[cat='+cat+']');
+	cat = $("[name='Partition."+service_uid+":records']").parents('tr').attr('cat');
+	th = $('th[cat="'+cat+'"]');
 	if ($(th).hasClass('collapsed')){
 		table = $(th).parents('.bika-listing-table');
 		// show sub TR rows
@@ -27,7 +27,7 @@ function expand_cat(service_uid){
 ////////////////////////////////////////
 function check_service(service_uid){
 	// Add partition dropdown
-	element = $("[name=Partition."+service_uid+":records]");
+	element = $("[name='Partition."+service_uid+":records']");
 	select = '<select class="listing_select_entry" '+
 		'name="Partition.'+service_uid+':records" '+
 		'field="Partition" uid="'+service_uid+'" '+
@@ -46,7 +46,7 @@ function check_service(service_uid){
 
 ////////////////////////////////////////
 function uncheck_service(service_uid){
-	element = $("[name=Partition."+service_uid+":records]");
+	element = $("[name='Partition."+service_uid+":records']");
 	$(element).after(
 		"<input type='hidden' name='Partition."+service_uid+":records'"+
 		"value=''/>"
@@ -237,8 +237,8 @@ function setAnalysisProfile(){
 	// get profile services list
 	var analysisprofiles = $.parseJSON($("#AnalysisProfiles").attr('value'));
 	// clear existing selection
-	$('input[id^=analyses_cb_]').filter(":checked").attr("checked", false);
-	$.each($("select[name^=Partition]"), function(i,element){
+	$('input[id^="analyses_cb_"]').filter(":checked").attr("checked", false);
+	$.each($("select[name^='Partition']"), function(i,element){
 		$(element).after(
 			"<input type='hidden' name='"+$(element).attr('name')+"' value=''/>"
 		);
@@ -251,7 +251,7 @@ function setAnalysisProfile(){
 	if (service_uids != undefined && service_uids != null) {
 		$.each(service_uids, function(i,service_uid){
 			check_service(service_uid);
-			$('input[id^=analyses_cb_'+service_uid+']').attr("checked", true);
+			$('input[id^="analyses_cb_'+service_uid+'"]').attr("checked", true);
 		});
 	}
 	// calculate automatic partitions
