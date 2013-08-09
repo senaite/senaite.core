@@ -10,7 +10,11 @@ class InvoiceView(BrowserView):
     implements(IInvoiceView)
 
     template = ViewPageTemplateFile("templates/invoice.pt")
-    content = ViewPageTemplateFile("templates/invoice_print.pt")
+    content = ViewPageTemplateFile("templates/invoice_content.pt")
+
+    def __init__(self, context, request):
+        super(InvoiceView, self).__init__(context, request)
+        request.set('disable_border', 1)
 
     def __call__(self):
         context = self.context
@@ -57,3 +61,11 @@ class InvoiceView(BrowserView):
         } for item in items]
         # Render the template
         return self.template()
+
+
+class InvoicePrintView(InvoiceView):
+
+    template = ViewPageTemplateFile("templates/invoice_print.pt")
+
+    def __call__(self):
+        return InvoiceView.__call__(self)

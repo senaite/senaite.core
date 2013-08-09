@@ -4,13 +4,13 @@
 	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
 	metal:use-macro="here/main_template/macros/master"
 	i18n:domain="bika">
-<body>
 
-	<metal:content fill-slot="content">
-		<div id="content">
+	<body>
+
+		<metal:core fill-slot="content-core">
 			<span tal:replace="structure view/content"></span>
-		</div>
-	</metal:content>
+		</metal:core>
 
 	</body>
+
 </html>

@@ -22,4 +22,16 @@
  <alias from="(Default)" to="base_view"/>
  <alias from="view" to="base_view"/>
 
+ <action title="Print"
+         action_id="print"
+         category="document_actions"
+         condition_expr=""
+         icon_expr="string:${object_url}/print_icon.png"
+         link_target=""
+         url_expr="string:${object_url}/print"
+         i18n:attributes="title"
+         visible="True">
+     <permission value="BIKA: Manage Invoices"/>
+ </action>
+
 </object>

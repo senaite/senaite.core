@@ -12,4 +12,12 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="bika.lims.interfaces.IInvoice"
+      name="print"
+      class="bika.lims.browser.invoice.InvoicePrintView"
+      permission="bika.lims.ManageInvoices"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
 </configure>
