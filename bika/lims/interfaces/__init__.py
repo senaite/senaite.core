@@ -174,6 +174,8 @@ class ISupplier(Interface):
     ""
 class ISuppliers(Interface):
     ""
+class ISupplyOrder(Interface):
+    ""
 class IPreservations(Interface):
     ""
 class IReferenceDefinitions(Interface):

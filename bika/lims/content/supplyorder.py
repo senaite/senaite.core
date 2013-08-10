@@ -1,8 +1,10 @@
 import sys
+
+from DateTime import DateTime
+
+from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
-from DateTime import DateTime
-from AccessControl import ClassSecurityInfo
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.permissions import ListFolderContents, \
      ModifyPortalContent, View
@@ -11,9 +13,13 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
+from zope.interface import implements
+
+from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import ManageBika, PROJECTNAME
-from bika.lims import bikaMessageFactory as _
+from bika.lims.interfaces import ISupplyOrder
+
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('Contact',
@@ -79,7 +85,11 @@ schema = BikaSchema.copy() + Schema((
 
 schema['title'].required = False
 
+
 class SupplyOrder(BaseFolder):
+
+    implements(ISupplyOrder)
+
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

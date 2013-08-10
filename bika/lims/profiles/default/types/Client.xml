@@ -170,7 +170,7 @@
          link_target=""
          url_expr="string:${object_url}/orders"
          i18n:attributes="title"
-         visible="False">
+         visible="True">
   <permission value="BIKA: Manage Clients"/>
  </action>
 
