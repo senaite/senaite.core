@@ -245,7 +245,7 @@ msgid "Account Type"
 msgstr ""
 
 # 
-# File: ../browser/accreditation.py, line: 18
+# File: ../browser/accreditation.py, line: 17
 # File: ../content/laboratory.py, line: 69
 msgid "Accreditation"
 msgstr ""
@@ -378,14 +378,14 @@ msgid "Agency"
 msgstr ""
 
 # 
-# File: ../browser/accreditation.py, line: 64
+# File: ../browser/accreditation.py, line: 65
 # File: ../browser/analyses.py, line: 78
 # File: ../browser/analysisrequest.py, line: 1078
 msgid "All"
 msgstr ""
 
 # 
-# File: ../browser/accreditation.py, line: 42
+# File: ../browser/accreditation.py, line: 43
 msgid "All Accredited analysis services are listed here."
 msgstr ""
 
@@ -975,7 +975,7 @@ msgid "CSID"
 msgstr ""
 
 # 
-# File: ../browser/accreditation.py, line: 59
+# File: ../browser/accreditation.py, line: 60
 # File: ../browser/widgets/serviceswidget.py, line: 40
 # File: ../content/analysisservice.py, line: 267
 msgid "Calculation"
@@ -1068,7 +1068,7 @@ msgid "Categorise analysis services setup list"
 msgstr ""
 
 # 
-# File: ../browser/accreditation.py, line: 52
+# File: ../browser/accreditation.py, line: 53
 # File: ../browser/referencesample.py, line: 58
 # File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 104
 msgid "Category"
@@ -1656,7 +1656,7 @@ msgid "Delete attachment"
 msgstr ""
 
 # 
-# File: ../browser/accreditation.py, line: 53
+# File: ../browser/accreditation.py, line: 54
 # File: ../browser/reports/templates/productivity_analysesperdepartment.pt, line: 96
 # File: ../content/analysiscategory.py, line: 26
 msgid "Department"
@@ -1784,7 +1784,7 @@ msgid "Due Date"
 msgstr ""
 
 # 
-# File: ../browser/accreditation.py, line: 58
+# File: ../browser/accreditation.py, line: 59
 # File: ../controlpanel/bika_analysisservices.py, line: 137
 msgid "Dup Var"
 msgstr ""
@@ -2199,7 +2199,7 @@ msgid "Instructions for regular preventive and maintenance routines intended for
 msgstr ""
 
 # 
-# File: ../browser/accreditation.py, line: 54
+# File: ../browser/accreditation.py, line: 55
 # File: ../browser/reports/productivity_analysestats_overtime.py, line: 72
 # File: ../browser/reports/selection_macros/select_instrument.pt, line: 3
 msgid "Instrument"
@@ -2304,7 +2304,7 @@ msgid "Key"
 msgstr ""
 
 # 
-# File: ../browser/accreditation.py, line: 51
+# File: ../browser/accreditation.py, line: 52
 # File: ../browser/fields/interimfieldsfield.py, line: 14
 # File: ../browser/templates/analysisservice_popup.pt, line: 163
 msgid "Keyword"
@@ -2524,7 +2524,7 @@ msgid "Max"
 msgstr ""
 
 # 
-# File: ../browser/accreditation.py, line: 57
+# File: ../browser/accreditation.py, line: 58
 # File: ../controlpanel/bika_analysisservices.py, line: 135
 msgid "Max Time"
 msgstr ""
@@ -3121,7 +3121,7 @@ msgid "Preventive maintenance procedure"
 msgstr ""
 
 # 
-# File: ../browser/accreditation.py, line: 56
+# File: ../browser/accreditation.py, line: 57
 # File: ../browser/analysisrequest.py, line: 1070
 # File: ../browser/templates/analysisservice_popup.pt, line: 165
 msgid "Price"
@@ -3930,7 +3930,7 @@ msgid "Serial No"
 msgstr ""
 
 # 
-# File: ../browser/accreditation.py, line: 50
+# File: ../browser/accreditation.py, line: 51
 # File: ../browser/analysisrequest.py, line: 1067
 # File: ../browser/referencesample.py, line: 59
 msgid "Service"
@@ -4223,7 +4223,7 @@ msgid "The instrument's model number"
 msgstr ""
 
 # 
-# File: ../browser/accreditation.py, line: 39
+# File: ../browser/accreditation.py, line: 40
 msgid "The lab is not accredited, or accreditation has not been configured. "
 msgstr ""
 
@@ -4529,7 +4529,7 @@ msgid "Undefined"
 msgstr ""
 
 # 
-# File: ../browser/accreditation.py, line: 55
+# File: ../browser/accreditation.py, line: 56
 # File: ../browser/fields/interimfieldsfield.py, line: 17
 # File: ../browser/templates/analysisrequest_analyses_not_requested.pt, line: 101
 msgid "Unit"
