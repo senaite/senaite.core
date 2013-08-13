@@ -39,7 +39,7 @@
 	<tal:searchform condition="python:not table_only">
 
 		<table style="margin-bottom:0;"><tr><td>
-			<form metthod="POST">
+			<form id="applytemplate_form" method="POST">
 				<input type="hidden" name="submitted" value="1"/>
 				<input tal:replace="structure context/@@authenticator/authenticator"/>
 				<label for="getWorksheetTemplate" i18n:translate="">Select template</label>
@@ -54,7 +54,7 @@
 					</tal:profile>
 				</select>&nbsp;
 				<input type="submit"
-					   class="ws-analyses-search-button"
+					   class="applytemplate"
 				       value="Apply template"
 				       i18n:attributes="value"/>
 			</form>
