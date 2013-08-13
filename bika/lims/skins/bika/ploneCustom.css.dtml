@@ -91,28 +91,18 @@ textarea#description,
     display:    none;
     position:   fixed;
     z-index:    1000;
-    top:        1px;
+    top:        1em;
     left:       50%;
     height:     2em;
     width:      2em;
     border: 1px solid #777;
     border-radius: .2em;
-    background: rgba( 255, 255, 255, .90 )
-                url(&dtml-portal_url;/spinner.gif)
-                50% 50%
-                no-repeat;
-    opacity: 0.90;
-    -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity = 90);
-    filter: alpha(opacity = 90);
+    background: rgba( 255, 255, 255, .90 ) url(&dtml-portal_url;/spinner.gif) 50% 50% no-repeat;
 }
 
-/* When the body has the loading class, we turn
-   the scrollbar off with overflow:hidden */
 body.loading {
     overflow: hidden;
 }
-/* Anytime the body has the loading class, our
-   bika-spinner element will be visible */
 body.loading .bika-spinner {
     display: block;
 }
