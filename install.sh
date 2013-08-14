@@ -1,13 +1,14 @@
 #!/bin/bash
-# 
-# Original script by Inus Scheepers (inus@bikalabs.com), 
+#
+# Original script by Inus Scheepers (inus@bikalabs.com),
 # Proxy handling and Fedora suppot added
 # by Pieter vd Merwe pieter_vdm@debortoli.com.au
-# 
+# Minor updates by Inus Scheepers on 14 Aug 2013
+#
 # Bika LIMS Installation
 # ----------------------
 #
-# This document describes the installation of Bika LIMS 
+# This document describes the installation of Bika LIMS
 # on Ubuntu/Fedora Linux, using the Plone Unified Installer package.
 
 # ## Configure environment.
@@ -15,7 +16,14 @@
 # or a using an internet proxy
 
 # The target installation directory
-BIKA_HOME=/home/bika
+
+if [ "$1" == '' ]; then
+	BIKA_HOME="`pwd`/bika"
+else
+	BIKA_HOME=$1
+fi
+
+echo "Installing into directory $BIKA_HOME"
 
 # If a proxy is used, set this value.
 # PROXY=http://user:password@proxy1:80
@@ -40,7 +48,7 @@ fi
 # The latest Unified Installer can be found at http://plone.org/products/plone/releases
 # Plone 4 or newer is required. Bika has been tested with Plone 4.2.5.
 #
-# All steps are required except where marked as optionally. If your installation fails, 
+# All steps are required except where marked as optionally. If your installation fails,
 # ensure that each step has completed successfully.
 #
 # ## Install server (Linux) dependencies
@@ -67,23 +75,34 @@ if [ -f /etc/lsb-release ]; then # Ubuntu
   aptitude install wv
   aptitude install poppler-utils
   aptitude install python-imaging
-else 
+else
   if [ -f /etc/redhat-release ]; then # Fedora
     yum install gcc zlib-devel openssl-devel gnuplot git-core wget patch
   fi
 fi
 
-# ## Download and install the Plone UnifiedInstaller
+if ! [ -d $BIKA_HOME ] ; then
+	echo "Creating installation directory $BIKA_HOME"
+	mkdir -p $BIKA_HOME
+else
+	echo "Installation directory $BIKA_HOME already exists"
+fi
 
-# Retrieve the unified installer and run the install shell script. 
-# The "dev" branch is used in this case. Omit the "-b dev" argument
-# to use the master branch instead.
+# Download and install the Plone UnifiedInstaller
 
-mkdir -p $BIKA_HOME
-wget -nc https://launchpad.net/plone/4.2/4.2.5/+download/Plone-4.2.5-UnifiedInstaller.tgz 
-tar xzf Plone-4.2.5-UnifiedInstaller.tgz 
-cd Plone-4.2.5-UnifiedInstaller/
-./install.sh --target=${BIKA_HOME} standalone 
+if ! [ -f Plone-4.2.5-UnifiedInstaller.tgz ]; then
+    echo "Downloading Plone-4.2.5-UnifiedInstaller.tgz"
+    wget --no-check-certificate -nc https://launchpad.net/plone/4.2/4.2.5/+download/Plone-4.2.5-UnifiedInstaller.tgz
+fi
+
+if ! [ -d Plone-4.2.5-UnifiedInstaller ] ; then
+    echo "Extracting Plone-4.2.5-UnifiedInstaller.tgz"
+    tar xzf Plone-4.2.5-UnifiedInstaller.tgz
+fi
+
+echo "**** Starting Zope/Plone installation *******"
+cd Plone-4.2.5-UnifiedInstaller
+./install.sh --target=${BIKA_HOME} standalone
 
 # Visit http://plone.org/documentation/topic/Installation for more
 # information about setting up Plone if the above fails.
@@ -98,21 +117,21 @@ if [ -n "$PROXY" ] && [ -z "`git config --get http.proxy`" ]; then
   git config --global http.proxy ${PROXY}
 fi
 
-# At this point a plain Plone instance could be built and run. 
+# At this point a plain Plone instance could be built and run.
 # This is a good intermediary checkpoint in case of any system
-# issues or installation problems. Refer to http://Plone.org 
+# issues or installation problems. Refer to http://Plone.org
 # if this step fails.
 
-# ## (Option) Retrieve the development branch Bika code 
+# ## (Option) Retrieve the development branch Bika code
 
-git clone -b dev https://github.com/bikalabs/Bika-LIMS.git src/bika.lims
+git clone https://github.com/bikalabs/Bika-LIMS.git src/bika.lims
 
 #    Omit the command line switch '-b dev' to use the master branch instead.
 
 # ## Edit Plone/zinstance/buildout.conf and add Bika LIMS.
 
 # Find the "eggs" section and add "bika.lims"
-# 
+#
 #     eggs =
 #         ...
 #         bika.lims
@@ -122,8 +141,8 @@ mv buildout.1 buildout.cfg
 
 ### (Option) - Use the latest source code instead of the PYPI egg
 # Find the "develop" section and add "src/bika.lims" to it
-# 
-#   develop = 
+#
+#   develop =
 #        src/bika.lims
 
 python -c 'open("buildout.2","w").write("".join([line.replace("develop =", "develop =\n     src/bika.lims") for line in open("buildout.cfg").readlines()]))'
@@ -136,11 +155,18 @@ bin/buildout
 
 # Some error messages may scroll past, especially on the first run of
 # buildout during the "reportlab" installation. They can be ignored.
+# Eg. "Download error on http://stompstompstomp.com/pyPdf/ "
+
+### Workaround for MacOSX locale error
+if [ `uname` == "Darwin" ]; then
+  export LANG=
+  export LC_CTYPE=
+fi
 
 ### Start Plone
 
 # Start the Plone instance in foreground (debug) mode which will
-# display the instance log on the console. 
+# display the instance log on the console.
 
 bin/plonectl fg
 
@@ -151,17 +177,17 @@ bin/plonectl fg
 # The log should indicate that the Zope server is ready to serve
 # requests, and the port. If it does not start up, ensure that a
 # server is not already using the chosen port.
-# 
+#
 # You may track the instance log for a server process by running
-# 
+#
 # tail -f var/log/instance.log
 
 ### Add a new Plone instance with the Bika LIMS extension:
 
 # Assign an ID of your choice, and select the checkbox to activate the
 # Bika-LIMS extension profile. The 'title' field is optional.
-# 
-# To add Bika LIMS to an existing Plone site, visit the Addons page 
+#
+# To add Bika LIMS to an existing Plone site, visit the Addons page
 # of Site Setup or the quickinstaller.
 
 # IMPORTANT: Don't use "Bika" or "BIKA" as the instance name, this is a
@@ -176,7 +202,7 @@ bin/plonectl fg
 
 # rm -f var/filestorage/*
 
-# In this case, or if you have problems logging in, you might need to 
+# In this case, or if you have problems logging in, you might need to
 # initialize the Plone database with an admin user:
 
 # bin/plonectl adduser admin password
@@ -187,8 +213,8 @@ bin/plonectl fg
 # You should be able to test the site now by visiting
 
 # http://localhost:8080/Plone
-# or, for the really lazy: 
-# http://admin:password@localhost:8080/Plone 
+# or, for the really lazy:
+# http://admin:password@localhost:8080/Plone
 
 # If you need to visit the ZMI, use
 
@@ -197,13 +223,13 @@ bin/plonectl fg
 # If no Plone object exists, add one and tick the "Bika LIMS" extension.
 # (Note that "Bika" may not work as an instance name, see above.)
 
-# You can edit the code in src/bika.lims and restart the instance to 
+# You can edit the code in src/bika.lims and restart the instance to
 # make the changes take effect. It should not affect the installed databases.
 # Changing the CSS does not require the instance to be restarted.
-# 
+#
 # Once logged in, you will be given the option to load a test laboratory
 # setup via a link on the front page. To verify, select a client from the
-# left-hand portlet, add an Analysis Request, and fill in the fields. 
+# left-hand portlet, add an Analysis Request, and fill in the fields.
 # Progress the AR through reception, results entry, verification/retraction
 # and publication phases. Note that the mail server setup, in "Site Setup"
 # at the top righthand, needs to be completed before mail can be delivered.
@@ -214,12 +240,12 @@ bin/plonectl fg
 # If you encounter the message "AttributeError: type object 'IIdServer' has no attribute '__iro__'"
 # it may mean that the Bika lims code was not included, neither as egg
 # or as source code, while the Bika objects are in the Plone database.
-# 
+#
 
 #
 #### Adding Plone proxying to Apache setup for port 80  HTTP service
 
-# Find the apache virtual host entry, by default in Ubuntu in 
+# Find the apache virtual host entry, by default in Ubuntu in
 # /etc/apache2/sites-enabled/000-default and add the following:
 
 # <Virtualhost *:80>
@@ -228,10 +254,10 @@ bin/plonectl fg
 #     Order deny,allow
 #     Allow from all
 #   </Proxy>
- 
+
 #   Proxypass / http://localhost:8080/
 #   ProxypassReverse / http://localhost:8080/
- 
+
 # </VirtualHost>
 
 # You would also need to enable the module for the stock Ubuntu
