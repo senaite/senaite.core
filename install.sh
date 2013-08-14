@@ -15,12 +15,14 @@
 # Change the following values if you are installing to a different directory
 # or a using an internet proxy
 
-# The target installation directory
+# The target installation subdirectory name can be specified as an argument on the
+# command line, failing which a subdirectory "bika" will be created in the current
+# directory where the installation will be done.
 
 if [ "$1" == '' ]; then
 	BIKA_HOME="`pwd`/bika"
 else
-	BIKA_HOME=$1
+	BIKA_HOME="`pwd`/$1"
 fi
 
 echo "Installing into directory $BIKA_HOME"
