@@ -10,10 +10,10 @@ Long and correct way:
 2. Read https://plone.org/documentation/kb/installing-add-ons-quick-how-to
 3. Install Plone and the "bika.lims" package
 
-Quick and dirty way:
+Quick and dirty way (Linux or MacOSX):
 
-1. Download the install script from https://raw.github.com/bikalabs/Bika-LIMS/master/install.sh
-2. Run it as root: "sudo bash ./install.sh" - optionally giving a target directory name as command line argument.
+1. Download the "raw" install script from https://raw.github.com/bikalabs/Bika-LIMS/master/install.sh
+2. Run it (as root, using "sudo") to install in a subdirectory ./bika : "sudo bash ./install.sh" -- Optionally give another directory name as command line argument.
 
 
 If you have questions, please post to one of our mailing lists:
