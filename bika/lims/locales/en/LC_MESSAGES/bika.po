@@ -565,7 +565,7 @@ msgid "Analysis Request"
 msgstr ""
 
 # 
-# File: ../config.py, line: 68
+# File: ../config.py, line: 66
 msgid "Analysis Request ID"
 msgstr ""
 
@@ -588,7 +588,7 @@ msgid "Analysis Service"
 msgstr ""
 
 # 
-# File: ../config.py, line: 43
+# File: ../config.py, line: 41
 # File: ../controlpanel/bika_analysisservices.py, line: 108
 msgid "Analysis Services"
 msgstr ""
@@ -823,7 +823,7 @@ msgid "Attachments"
 msgstr ""
 
 # 
-# File: ../content/contact.py, line: 29
+# File: ../content/contact.py, line: 31
 msgid "Attachments Permitted"
 msgstr ""
 
@@ -917,7 +917,7 @@ msgid "Bika LIMS Configuration"
 msgstr ""
 
 # 
-# File: ../config.py, line: 82
+# File: ../config.py, line: 80
 # File: ../content/organisation.py, line: 61
 msgid "Billing address"
 msgstr ""
@@ -925,7 +925,7 @@ msgstr ""
 # 
 # File: ../browser/supplier.py, line: 175
 # File: ../browser/templates/referencesample_view.pt, line: 55
-# File: ../config.py, line: 49
+# File: ../config.py, line: 47
 msgid "Blank"
 msgstr ""
 
@@ -1120,7 +1120,7 @@ msgid "City"
 msgstr ""
 
 # 
-# File: ../config.py, line: 63
+# File: ../config.py, line: 61
 msgid "Classic"
 msgstr ""
 
@@ -1313,7 +1313,7 @@ msgstr ""
 
 # 
 # File: ../browser/analysisrequest.py, line: 1257
-# File: ../content/contact.py, line: 40
+# File: ../content/contact.py, line: 42
 msgid "Contacts to CC"
 msgstr ""
 
@@ -1353,7 +1353,7 @@ msgid "Content type"
 msgstr ""
 
 # 
-# File: ../config.py, line: 50
+# File: ../config.py, line: 48
 msgid "Control"
 msgstr ""
 
@@ -1621,7 +1621,7 @@ msgid "Default sample retention period"
 msgstr ""
 
 # 
-# File: ../browser/fields/interimfieldsfield.py, line: 16
+# File: ../browser/fields/interimfieldsfield.py, line: 21
 msgid "Default value"
 msgstr ""
 
@@ -1791,7 +1791,7 @@ msgstr ""
 
 # 
 # File: ../browser/worksheet.py, line: 362
-# File: ../config.py, line: 51
+# File: ../config.py, line: 49
 # File: ../controlpanel/bika_analysisservices.py, line: 159
 msgid "Duplicate"
 msgstr ""
@@ -1964,7 +1964,7 @@ msgstr ""
 # 
 # File: ../browser/clientfolder.py, line: 39
 # File: ../browser/supplier.py, line: 43
-# File: ../config.py, line: 20
+# File: ../content/organisation.py, line: 36
 msgid "Fax"
 msgstr ""
 
@@ -1974,35 +1974,34 @@ msgid "Fax (business)"
 msgstr ""
 
 # 
-# File: ../config.py, line: 76
+# File: ../config.py, line: 74
 msgid "Female"
 msgstr ""
 
 # 
-# File: ../config.py, line: 33
+# File: ../config.py, line: 31
 msgid "Field"
 msgstr ""
 
 # 
 # File: ../browser/templates/sample_sticker_large.pt, line: 113
-# File: ../config.py, line: 28
+# File: ../config.py, line: 26
 msgid "Field Analyses"
 msgstr ""
 
 # 
-# File: ../config.py, line: 38
+# File: ../config.py, line: 36
 msgid "Field Preservation"
 msgstr ""
 
 # 
-# File: ../browser/fields/interimfieldsfield.py, line: 15
+# File: ../browser/fields/interimfieldsfield.py, line: 20
 msgid "Field Title"
 msgstr ""
 
 # 
 # File: ../browser/client.py, line: 694
 # File: ../browser/reports/productivity_analysesattachments.py, line: 71
-# File: ../config.py, line: 21
 msgid "File"
 msgstr ""
 
@@ -2080,7 +2079,7 @@ msgid "Hazardous"
 msgstr ""
 
 # 
-# File: ../browser/fields/interimfieldsfield.py, line: 18
+# File: ../browser/fields/interimfieldsfield.py, line: 23
 msgid "Hidden Field"
 msgstr ""
 
@@ -2305,7 +2304,7 @@ msgstr ""
 
 # 
 # File: ../browser/accreditation.py, line: 52
-# File: ../browser/fields/interimfieldsfield.py, line: 14
+# File: ../browser/fields/interimfieldsfield.py, line: 19
 # File: ../browser/templates/analysisservice_popup.pt, line: 163
 msgid "Keyword"
 msgstr ""
@@ -2323,7 +2322,7 @@ msgid "Lab"
 msgstr ""
 
 # 
-# File: ../config.py, line: 29
+# File: ../config.py, line: 27
 msgid "Lab Analyses"
 msgstr ""
 
@@ -2338,12 +2337,12 @@ msgid "Lab Departments"
 msgstr ""
 
 # 
-# File: ../config.py, line: 39
+# File: ../config.py, line: 37
 msgid "Lab Preservation"
 msgstr ""
 
 # 
-# File: ../config.py, line: 44
+# File: ../config.py, line: 42
 # File: ../controlpanel/bika_labproducts.py, line: 29
 msgid "Lab Products"
 msgstr ""
@@ -2467,7 +2466,7 @@ msgid "Lot Number"
 msgstr ""
 
 # 
-# File: ../config.py, line: 81
+# File: ../config.py, line: 79
 msgid "Mailing address"
 msgstr ""
 
@@ -2484,7 +2483,7 @@ msgid "Maintenance type"
 msgstr ""
 
 # 
-# File: ../config.py, line: 75
+# File: ../config.py, line: 73
 msgid "Male"
 msgstr ""
 
@@ -2792,7 +2791,7 @@ msgid "Normal"
 msgstr ""
 
 # 
-# File: ../config.py, line: 60
+# File: ../config.py, line: 58
 msgid "Not Permitted"
 msgstr ""
 
@@ -2893,7 +2892,7 @@ msgid "Order Date"
 msgstr ""
 
 # 
-# File: ../config.py, line: 69
+# File: ../config.py, line: 67
 # File: ../content/arimport.py, line: 104
 msgid "Order ID"
 msgstr ""
@@ -2918,11 +2917,6 @@ msgstr ""
 # 
 # File: ../browser/reports/templates/productivity.pt, line: 385
 msgid "Other productivity reports"
-msgstr ""
-
-# 
-# File: ../config.py, line: 22
-msgid "PDF"
 msgstr ""
 
 # 
@@ -2982,7 +2976,7 @@ msgid "Period"
 msgstr ""
 
 # 
-# File: ../config.py, line: 59
+# File: ../config.py, line: 57
 msgid "Permitted"
 msgstr ""
 
@@ -3016,7 +3010,7 @@ msgid "Phone (mobile)"
 msgstr ""
 
 # 
-# File: ../config.py, line: 80
+# File: ../config.py, line: 78
 # File: ../content/organisation.py, line: 49
 # File: ../content/person.py, line: 91
 msgid "Physical address"
@@ -3143,11 +3137,6 @@ msgid "Pricelist for"
 msgstr ""
 
 # 
-# File: ../config.py, line: 23
-msgid "Print"
-msgstr ""
-
-# 
 # File: ../browser/reports/templates/report_frame.pt, line: 36
 # File: ../browser/templates/batch_publish.pt, line: 124
 msgid "Print date:"
@@ -3187,7 +3176,7 @@ msgid "Profile Keyword"
 msgstr ""
 
 # 
-# File: ../config.py, line: 64
+# File: ../config.py, line: 62
 msgid "Profiles"
 msgstr ""
 
@@ -3197,7 +3186,7 @@ msgid "Public. Lag"
 msgstr ""
 
 # 
-# File: ../content/contact.py, line: 22
+# File: ../content/contact.py, line: 24
 msgid "Publication preference"
 msgstr ""
 
@@ -3493,7 +3482,7 @@ msgstr ""
 
 # 
 # File: ../browser/templates/login_details.pt, line: 51
-# File: ../config.py, line: 58
+# File: ../config.py, line: 56
 msgid "Required"
 msgstr ""
 
@@ -3566,11 +3555,6 @@ msgstr ""
 # 
 # File: ../profiles/default/registry.xml, line: -1
 msgid "Review state"
-msgstr ""
-
-# 
-# File: ../config.py, line: 24
-msgid "SMS"
 msgstr ""
 
 # 
@@ -3984,7 +3968,7 @@ msgid "Set up the laboratory analysis service results specifications"
 msgstr ""
 
 # 
-# File: ../config.py, line: 83
+# File: ../config.py, line: 81
 msgid "Shipping address"
 msgstr ""
 
@@ -4026,7 +4010,7 @@ msgid "Sort the results in reversed order"
 msgstr ""
 
 # 
-# File: ../config.py, line: 65
+# File: ../config.py, line: 63
 msgid "Special"
 msgstr ""
 
@@ -4530,7 +4514,7 @@ msgstr ""
 
 # 
 # File: ../browser/accreditation.py, line: 56
-# File: ../browser/fields/interimfieldsfield.py, line: 17
+# File: ../browser/fields/interimfieldsfield.py, line: 22
 # File: ../browser/templates/analysisrequest_analyses_not_requested.pt, line: 101
 msgid "Unit"
 msgstr ""

@@ -2438,10 +2438,6 @@ msgstr "Organização responsável por garantir a certificação"
 msgid "Other productivity reports"
 msgstr "Outros relatórios de produtividade"
 
-# File: ../config.py, line: 22
-msgid "PDF"
-msgstr "PDF"
-
 msgid "Parent"
 msgstr "Pai"
 
@@ -2625,10 +2621,6 @@ msgstr "Preço excluindo impostos"
 # File: ../content/pricelist.py, line: 17
 msgid "Pricelist for"
 msgstr "Lista de preços"
-
-# File: ../config.py, line: 23
-msgid "Print"
-msgstr "Imprimir"
 
 # File: ../browser/reports/templates/report_frame.pt, line: 36
 # File: ../browser/templates/batch_publish.pt, line: 124
@@ -2981,10 +2973,6 @@ msgstr "Retestado"
 # File: ../profiles/default/registry.xml, line: -1
 msgid "Review state"
 msgstr ""
-
-# File: ../config.py, line: 24
-msgid "SMS"
-msgstr "SMS"
 
 # File: ../content/person.py, line: 17
 #. Default: "Title"

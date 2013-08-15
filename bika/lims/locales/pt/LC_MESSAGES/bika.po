@@ -2437,10 +2437,6 @@ msgstr ""
 msgid "Other productivity reports"
 msgstr ""
 
-# File: ../config.py, line: 22
-msgid "PDF"
-msgstr "PDF"
-
 msgid "Parent"
 msgstr ""
 
@@ -2624,10 +2620,6 @@ msgstr ""
 # File: ../content/pricelist.py, line: 17
 msgid "Pricelist for"
 msgstr ""
-
-# File: ../config.py, line: 23
-msgid "Print"
-msgstr "Imprimir"
 
 # File: ../browser/reports/templates/report_frame.pt, line: 36
 # File: ../browser/templates/batch_publish.pt, line: 124
@@ -2980,10 +2972,6 @@ msgstr ""
 # File: ../profiles/default/registry.xml, line: -1
 msgid "Review state"
 msgstr ""
-
-# File: ../config.py, line: 24
-msgid "SMS"
-msgstr "SMS"
 
 # File: ../content/person.py, line: 17
 #. Default: "Title"

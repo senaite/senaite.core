@@ -2436,10 +2436,6 @@ msgstr "Podmiot przeprowadzający wzorcowanie/legalizację"
 msgid "Other productivity reports"
 msgstr "Inne raporty wydajności"
 
-# File: ../config.py, line: 22
-msgid "PDF"
-msgstr "PDF"
-
 msgid "Parent"
 msgstr ""
 
@@ -2623,10 +2619,6 @@ msgstr "Cena bez VAT"
 # File: ../content/pricelist.py, line: 17
 msgid "Pricelist for"
 msgstr "Cennik dla"
-
-# File: ../config.py, line: 23
-msgid "Print"
-msgstr "Drukuj"
 
 # File: ../browser/reports/templates/report_frame.pt, line: 36
 # File: ../browser/templates/batch_publish.pt, line: 124
@@ -2979,10 +2971,6 @@ msgstr "Ponownie przebadać"
 # File: ../profiles/default/registry.xml, line: -1
 msgid "Review state"
 msgstr ""
-
-# File: ../config.py, line: 24
-msgid "SMS"
-msgstr "SMS"
 
 # File: ../content/person.py, line: 17
 #. Default: "Title"

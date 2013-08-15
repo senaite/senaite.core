@@ -2434,10 +2434,6 @@ msgstr ""
 msgid "Other productivity reports"
 msgstr ""
 
-# File: ../config.py, line: 22
-msgid "PDF"
-msgstr ""
-
 msgid "Parent"
 msgstr ""
 
@@ -2621,10 +2617,6 @@ msgstr "Ціна з ПДВ"
 # File: ../content/pricelist.py, line: 17
 msgid "Pricelist for"
 msgstr "Прайс-лист для"
-
-# File: ../config.py, line: 23
-msgid "Print"
-msgstr "Друкувати"
 
 # File: ../browser/reports/templates/report_frame.pt, line: 36
 # File: ../browser/templates/batch_publish.pt, line: 124
@@ -2976,10 +2968,6 @@ msgstr "Досліджено повторно"
 # 
 # File: ../profiles/default/registry.xml, line: -1
 msgid "Review state"
-msgstr ""
-
-# File: ../config.py, line: 24
-msgid "SMS"
 msgstr ""
 
 # File: ../content/person.py, line: 17
