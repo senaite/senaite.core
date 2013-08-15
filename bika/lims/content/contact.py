@@ -2,22 +2,24 @@
 """
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import manage_users
-from Products.ATContentTypes.content import schemata
+from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims.config import ManageClients, PUBLICATION_PREFS, PROJECTNAME
+from bika.lims.content.person import Person
+from bika.lims.interfaces import IContact
+from bika.lims.utils import isActive
 from Products.Archetypes import atapi
 from Products.Archetypes.public import *
+from Products.ATContentTypes.content import schemata
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims.config import ManageClients, PUBLICATION_PREFS, PROJECTNAME
-from bika.lims.content.person import Person
-from bika.lims import PMF, bikaMessageFactory as _
-from bika.lims.interfaces import IContact
 from zope.interface import implements
 
 schema = Person.schema.copy() + Schema((
     LinesField('PublicationPreference',
         vocabulary = PUBLICATION_PREFS,
         schemata = 'Publication preference',
+        default='email',
         widget = MultiSelectionWidget(
             label = _("Publication preference"),
         ),
@@ -68,5 +70,16 @@ class Contact(Person):
         """ check if contact has user """
         return self.portal_membership.getMemberById(
             self.getUsername()) is not None
+
+    def getContacts(self, dl=True):
+        pairs = []
+        objects = []
+        for contact in self.aq_parent.objectValues('Contact'):
+            if isActive(contact) and contact.UID() != self.UID():
+                pairs.append((contact.UID(), contact.Title()))
+                if not dl:
+                    objects.append(contact)
+        pairs.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
+        return dl and DisplayList(pairs) or objects
 
 atapi.registerType(Contact, PROJECTNAME)
