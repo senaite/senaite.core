@@ -1,3 +1,4 @@
+import warnings
 import pkg_resources
 __version__ = pkg_resources.get_distribution("bika.lims").version
 
@@ -150,3 +151,42 @@ def initialize(context):
                     extra_constructors = (constructor,),
                     fti                = ftis,
                     ).initialize(context)
+
+
+def deprecated(comment=None, replacement=None):
+    """ A decorator which can be used to mark functions as deprecated.
+        Emits a DeprecationWarning showing the module and method being flagged
+        as deprecated. If replacement is set, the warn will also show which is
+        the function or class to be used instead.
+    """
+    def old(oldcall):
+        def new(*args, **kwargs):
+            message = "Deprecated: '%s.%s'" % \
+                (oldcall.__module__,
+                 oldcall.__name__)
+            if replacement is not None:
+                message += ". Use '%s.%s' instead" % \
+                (replacement.__module__,
+                 replacement.__name__)
+            if comment is not None:
+                message += ". %s" % comment
+            warnings.warn(message, category=DeprecationWarning, stacklevel=2)
+            return oldcall(*args, **kwargs)
+        return new
+    return old
+
+
+class _DeprecatedClassDecorator(object):
+    """ A decorator which can be used to mark symbols as deprecated.
+        Emits a DeprecationWarning showing the symbol being flagged as
+        deprecated. For add comments, use deprecated() instead of it
+    """
+    def __call__(self, symbol):
+        message = "Deprecated: '%s.%s'" % \
+            (symbol.__module__,
+             symbol.__name__)
+        warnings.warn(message, category=DeprecationWarning, stacklevel=2)
+        return symbol
+
+deprecatedsymbol = _DeprecatedClassDecorator()
+del _DeprecatedClassDecorator
