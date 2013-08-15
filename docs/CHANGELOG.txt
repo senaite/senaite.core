@@ -1,3 +1,13 @@
+3.0rc3.4 (2013-08-06)
+---------------------
+
+- Fix CSS error while publishing results
+- Remove inoperative publication preferences
+- Fix disappearing "more" button for Calculation InterimFields
+- Fix Worksheet -> "apply template" function
+- install.sh updated
+- translations updated
+
 3.0rc3.3 (2013-08-06)
 ---------------------
 

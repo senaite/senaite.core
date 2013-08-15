@@ -1,7 +1,6 @@
 from setuptools import setup, find_packages
-import os
 
-version = '3.0rc3.3'
+version = '3.0rc3.4'
 
 setup(name='bika.lims',
       version=version,
@@ -38,7 +37,7 @@ setup(name='bika.lims',
           'gpw',
           'jarn.jsi18n==0.3',
       ],
-      extras_require = {
+      extras_require={
           'test': [
                   'plone.app.testing',
               ]
