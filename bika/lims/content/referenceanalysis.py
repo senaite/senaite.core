@@ -17,7 +17,6 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims import bikaMessageFactory as _
 from zope.interface import implements
-from bika.lims import deprecated
 
 #try:
 #    from BikaCalendar.config import TOOL_NAME as BIKA_CALENDAR_TOOL # XXX
@@ -209,8 +208,6 @@ class ReferenceAnalysis(BaseContent):
             # Analysis without specification values. Assume in range
             return False, None, None
 
-    @deprecated(comment="Note taht isOutOfRange method returns opposite values",
-                replacement=isOutOfRange)
     def result_in_range(self, result = None, specification = 'lab'):
         """ Check if the result is in range for the Analysis' service.
             if result is None, self.getResult() is called for the result value.
