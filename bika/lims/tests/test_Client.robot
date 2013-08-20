@@ -4,14 +4,11 @@ Library          Selenium2Library  timeout=10  implicit_wait=0.2
 Library          String
 Resource         keywords.txt
 Variables        plone/app/testing/interfaces.py
-
+Variables        bika/lims/tests/variables.py
 Suite Setup      Start browser
 Suite Teardown   Close All Browsers
 
 *** Variables ***
-
-${SELENIUM_SPEED}  0
-${PLONEURL}        http://localhost:55001/plone
 
 *** Test Cases ***
 

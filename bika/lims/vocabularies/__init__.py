@@ -125,25 +125,15 @@ class AnalysisCategoryVocabulary(BikaContentVocabulary):
     >>> name = 'bika.lims.vocabularies.AnalysisCategories'
     >>> util = queryUtility(IVocabularyFactory, name)
     >>> folder = portal.bika_setup.bika_analysiscategories
-
-    >>> folder.invokeFactory('AnalysisCategory', id='obj1', title='O One')
-    'obj1'
-    >>> folder.obj1.processForm()
-    >>> folder.invokeFactory('AnalysisCategory', id='obj2', title='O Two')
-    'obj2'
-    >>> folder.obj2.processForm()
-
     >>> objects = folder.objectValues()
     >>> len(objects)
-    2
+    3
 
     >>> source = util(portal)
     >>> source
     <zope.schema.vocabulary.SimpleVocabulary object at ...>
 
-    >>> 'O One' in source.by_token
-    True
-    >>> 'O Two' in source.by_token
+    >>> 'Water Chemistry' in source.by_token
     True
     """
 

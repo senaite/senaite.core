@@ -30,7 +30,7 @@ Select from dropdown
     ...                ${search_text}=
     ...                ${item_number}=1
     Input text         ${locator}  ${search_text}
-    sleep              1
+    Wait until page contains element       xpath=//div[contains(@class,'cg-colItem')]
     Click Element      xpath=//div[contains(@class,'cg-colItem')][${item_number}]
 
 

@@ -1,5 +1,4 @@
 from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
-from bika.lims.tests.base import BikaFunctionalTestCase
 from doctest import DocFileSuite
 from doctest import DocTestSuite
 from plone.testing import layered
@@ -8,7 +7,7 @@ import unittest
 
 OPTIONFLAGS = (doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
 
-DOCTESTS = [] # ['bika.lims.content.analysis']
+DOCTESTS = ['bika.lims.vocabularies']
 
 
 def test_suite():

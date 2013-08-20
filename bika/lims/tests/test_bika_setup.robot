@@ -1,18 +1,14 @@
 *** Settings ***
 
 Library          Selenium2Library  timeout=10  implicit_wait=0.2
-Library          Remote  ${PLONEURL}/BikaKeywords
 Library          String
 Resource         keywords.txt
 Variables        plone/app/testing/interfaces.py
-
+Variables        bika/lims/tests/variables.py
 Suite Setup      Start browser
 Suite Teardown   Close All Browsers
 
 *** Variables ***
-
-${PLONEURL}           http://localhost:55001/plone
-${SELENIUM_SPEED}     0
 
 ${Manager Firstname}  Manager Firstname
 ${Manager Surname}    Manager Surname
