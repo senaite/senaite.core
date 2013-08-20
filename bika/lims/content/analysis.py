@@ -24,7 +24,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysis
 from decimal import Decimal
 from zope.interface import implements
-from bika.lims.utils import deprecated
+from bika.lims import deprecated
 import datetime
 import math
 
@@ -360,6 +360,8 @@ class Analysis(BaseContent):
             # Analysis without specification values. Assume in range
             return False, None, None
 
+    @deprecated(comment="Note taht isOutOfRange method returns opposite values",
+                replacement=isOutOfRange)
     def result_in_range(self, result = None, specification = "lab"):
         """ Check if a result is "in range".
             if result is None, self.getResult() is called for the result value.
@@ -367,7 +369,6 @@ class Analysis(BaseContent):
             Return True,None if in range
             return '1',None if in shoulder
         """
-        deprecated("Use isOutOfRange(result,specification) instead")
         outofrange, acceptable, spec = self.isOutOfRange(result, specification)
         return acceptable and '1' or not outofrange, spec
 

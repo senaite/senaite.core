@@ -124,6 +124,9 @@ class MasshunterQuantCSVParser(InstrumentCSVResultsFileParser):
         self._quantitationresultsheader = []
         self._numline = 0
 
+    def getAttachmentFileType(self):
+        return "Agilent's Masshunter Quant CSV"
+
     def _parseline(self, line):
         if self._end_header == False:
             return self.parse_headerline(line)
