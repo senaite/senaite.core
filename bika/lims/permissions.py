@@ -68,6 +68,8 @@ RejectWorksheet = 'BIKA: Reject Worksheet'
 
 ImportInstrumentResults = "BIKA: Import Instrument Results"
 
+AccessJSONAPI = 'BIKA: Access JSON API'
+
 # New or changed permissions:
 # ---------------------------
 SampleSample = 'BIKA: Sample Sample'
