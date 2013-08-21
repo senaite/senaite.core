@@ -306,11 +306,10 @@ $.widget( "cg.combogrid", {
 		this.response = function() {
 			return self._response.apply( self, arguments );
 		};
-		this.menucombo = $( "<div></div>" )
-			.addClass( "cg-autocomplete" )
-			.appendTo( $( this.options.appendTo || "body", doc )[0] )
-			// prevent the close-on-blur in case of a "slow" click on the menu (long mousedown)
-			.mousedown(function( event ) {
+		this.menucombo = $( "<div></div>" );
+		this.menucombo.addClass( "cg-autocomplete" );
+		this.menucombo.appendTo( $( this.options.appendTo || "body", doc )[0] );
+		this.menucombo.mousedown(function( event ) {
 				// clicking on the scrollbar causes focus to shift to the body
 				// but we can't detect a mouseup or a click immediately afterward
 				// so we have to track the next mousedown and close the menu if
@@ -332,79 +331,83 @@ $.widget( "cg.combogrid", {
 				setTimeout(function() {
 					clearTimeout( self.closing );
 				}, 13);
-			})
-			.menucombo({
-				focus: function( event, ui ) {
-					var item = ui.item.data( "item.combogrid" );
-					if ( false !== self._trigger( "focus", event, { item: item } ) ) {
-						// use value to match what will end up in the input, if it was a key event
-						if ( /^key/.test(event.originalEvent.type) ) {
-							if(item.value!=undefined)
-							self.element.val( item.value );
-						}
-					}
-				},
-				selected: function( event, ui ) {
-					var item = ui.item.data( "item.combogrid" ),
-						previous = self.previous;
-
-					// only trigger when focus was lost (click on menu)
-					if ( self.element[0] !== doc.activeElement ) {
-						if(!self.options.showOn){
-							self.element.focus();
-						}
-						self.previous = previous;
-						// #6109 - IE triggers two focus events and the second
-						// is asynchronous, so we need to reset the previous
-						// term synchronously and asynchronously :-(
-						setTimeout(function() {
-							self.previous = previous;
-							self.selectedItem = item;
-						}, 1);
-					}
-
-					if ( false !== self._trigger( "select", event, { item: item } ) ) {
+			});
+		this.menucombo.menucombo({
+			focus: function( event, ui ) {
+				var item = ui.item.data( "item.combogrid" );
+				if ( false !== self._trigger( "focus", event, { item: item } ) ) {
+					// use value to match what will end up in the input, if it was a key event
+					if ( /^key/.test(event.originalEvent.type) ) {
+						if(item.value!=undefined)
 						self.element.val( item.value );
 					}
-					// reset the term after the select event
-					// this allows custom select handling to work properly
-					self.term = self.element.val();
+				}
+			},
+			selected: function( event, ui ) {
+				var item = ui.item.data( "item.combogrid" ),
+					previous = self.previous;
 
-					self.close( event );
-					self.selectedItem = item;
-					if(self.options.okIcon){
-						$('.' +self.element.attr('id') +'.ok-icon').remove();
-						$('.' +self.element.attr('id') +'.notok-icon').remove();
-						if(self.options.resetButton){
-							$('.' +self.element.attr('id') +'.cg-resetButton').after('<span class="'+ self.element.attr('id') +' ok-icon"></span>');
-						}else if(self.options.searchButton){
-							$('.' +self.element.attr('id') +'.cg-searchButton').after('<span class="'+self.element.attr('id') +' ok-icon"></span>');
-						}else{
-							self.element.after('<span class="'+self.element.attr('id') +' ok-icon"></span>');
-						}
+				// only trigger when focus was lost (click on menu)
+				if ( self.element[0] !== doc.activeElement ) {
+					if(!self.options.showOn){
+						self.element.focus();
 					}
-				},
-				blur: function( event, ui ) {
-					// don't set the value of the text field if it's already correct
-					// this prevents moving the cursor unnecessarily
-					if ( self.menucombo.element.is(":visible") &&
-						( self.element.val() !== self.term ) ) {
-					//	self.element.val( self.term );
+					self.previous = previous;
+					// #6109 - IE triggers two focus events and the second
+					// is asynchronous, so we need to reset the previous
+					// term synchronously and asynchronously :-(
+					setTimeout(function() {
+						self.previous = previous;
+						self.selectedItem = item;
+					}, 1);
+				}
+
+				if ( false !== self._trigger( "select", event, { item: item } ) ) {
+					self.element.val( item.value );
+				}
+				// reset the term after the select event
+				// this allows custom select handling to work properly
+				self.term = self.element.val();
+
+				self.close( event );
+				self.selectedItem = item;
+				if(self.options.okIcon){
+					$('.' +self.element.attr('id') +'.ok-icon').remove();
+					$('.' +self.element.attr('id') +'.notok-icon').remove();
+					if(self.options.resetButton){
+						$('.' +self.element.attr('id') +'.cg-resetButton').after('<span class="'+ self.element.attr('id') +' ok-icon"></span>');
+					}else if(self.options.searchButton){
+						$('.' +self.element.attr('id') +'.cg-searchButton').after('<span class="'+self.element.attr('id') +' ok-icon"></span>');
+					}else{
+						self.element.after('<span class="'+self.element.attr('id') +' ok-icon"></span>');
 					}
 				}
-			})
-			.zIndex( this.element.zIndex() + 1 )
-			// workaround for jQuery bug #5781 http://dev.jquery.com/ticket/5781
-			.css({ top: 0, left: 0 })
-			.hide()
-			.data( "cg-menucombo" );
-			if(this.options.draggable){
-				this.menucombo.element.draggable({
-					stop: function(event, ui) {
-						self.pos = ui.position;
-					}
-				});
+			},
+			blur: function( event, ui ) {
+				// don't set the value of the text field if it's already correct
+				// this prevents moving the cursor unnecessarily
+				if ( self.menucombo.element.is(":visible") &&
+					( self.element.val() !== self.term ) ) {
+				//	self.element.val( self.term );
+				}
 			}
+		});
+		this.menucombo.zIndex( this.element.zIndex() + 1 );
+		// workaround for jQuery bug #5781 http://dev.jquery.com/ticket/5781
+		this.menucombo.css({ top: 0, left: 0 })
+		this.menucombo.hide();
+		// Compensate for code that relies on old jquery behaviour
+		_v_data = this.menucombo.data( "cg-menucombo" );
+		if (_v_data == undefined){
+			_v_data = this.menucombo.data( "menucombo" );
+		}
+		if(this.options.draggable){
+			this.menucombo.element.draggable({
+				stop: function(event, ui) {
+					self.pos = ui.position;
+				}
+			});
+		}
 		if ( $.fn.bgiframe ) {
 			 this.menucombo.element.bgiframe();
 		}
