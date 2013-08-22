@@ -1,6 +1,7 @@
 from bika.lims.exportimport.dataimport import SetupDataSetList as SDL
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import ISetupDataSetList
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims.utils import tmpID
 from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
@@ -373,11 +374,13 @@ class Client_Contacts(WorksheetImporter):
                                )
 
             # Create Plone user
-            if(row['Username']):
+            username = safe_unicode(row['Username']).decode('utf-8')
+            password = safe_unicode(row['Password']).decode('utf-8')
+            if(username):
                 try:
                     self.portal_registration.addMember(
-                        row['Username'],
-                        row['Password'],
+                        username,
+                        password,
                         properties={
                             'username': row['Username'],
                             'email': row['EmailAddress'],
@@ -385,13 +388,13 @@ class Client_Contacts(WorksheetImporter):
                     )
                 except:
                     logger.info("Error adding user (already exists?): %s" %
-                                row['Username'])
-                contact.aq_parent.manage_setLocalRoles(row['Username'],
+                                username)
+                contact.aq_parent.manage_setLocalRoles(username,
                                                        ['Owner', ])
 
                 # add user to Clients group
                 group = portal_groups.getGroupById('Clients')
-                group.addMember(row['Username'])
+                group.addMember(username)
 
 
 class Container_Types(WorksheetImporter):

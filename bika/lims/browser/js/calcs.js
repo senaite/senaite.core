@@ -79,10 +79,10 @@ $(document).ready(function(){
 
 					$("input[uid='"+result.uid+"']").filter("input[field='Result']").val(result.result);
 
-					$('[type=hidden]').filter("[field=ResultDM]").filter("[uid="+result.uid+"]").val(result.dry_result);
-					$($('[type=hidden]').filter("[field=ResultDM]").filter("[uid="+result.uid+"]").siblings()[0]).empty().append(result.dry_result);
+					$('[type="hidden"]').filter("[field='ResultDM']").filter("[uid='"+result.uid+"']").val(result.dry_result);
+					$($('[type="hidden"]').filter("[field='ResultDM']").filter("[uid='"+result.uid+"']").siblings()[0]).empty().append(result.dry_result);
 					if(result.dry_result != ''){
-						$($('[type=hidden]').filter("[field=ResultDM]").filter("[uid="+result.uid+"]").siblings().filter(".after")).empty().append("<em class='discreet'>%</em>")
+						$($('[type="hidden"]').filter("[field='ResultDM']").filter("[uid='"+result.uid+"']").siblings().filter(".after")).empty().append("<em class='discreet'>%</em>")
 					}
 
 					$("input[uid='"+result.uid+"']").filter("input[field='formatted_result']").val(result.formatted_result);
@@ -90,7 +90,7 @@ $(document).ready(function(){
 
 					// check box
 					if (results != ''){
-						if ($('#'+form_id+'_cb_'+result.uid).attr('checked') == false) {
+						if ($('#'+form_id+'_cb_'+result.uid).prop('checked') == false) {
 							$('#'+form_id+'_cb_'+result.uid).click();
 						}
 					}

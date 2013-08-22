@@ -81,7 +81,7 @@ jQuery(function($){
             // clone last row
             var row = $(rows[rows.length-1]).clone();
             // after cloning, make sure the new element's IDs are unique
-            var found = $(row).find('input[id^='+fieldname+']');
+            var found = $(row).find("input[id^='"+fieldname+"']");
             for (var i = found.length - 1; i >= 0; i--) {
                 var ID = found[i].id;
                 var prefix = ID.split("-")[0] + "-" + ID.split("-")[1];

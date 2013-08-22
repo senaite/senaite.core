@@ -11,7 +11,7 @@ $(document).ready(function(){
 	});
 
 	// return selected references from the CC popup window back into the widget
-	$('[transition=save_selection_button]').click(function(){
+	$('[transition="save_selection_button"]').click(function(){
 		uids = [];
 		titles = [];
 		emails = [];
@@ -22,16 +22,16 @@ $(document).ready(function(){
 			emailfieldid = "[name='EmailAddress."+$(e).val()+":records']";
 			if ($(emailfieldid).length > 0){
 				emailaddress = $($(emailfieldid)[0]).val();
-				email = $(e).attr('item_title') 
+				email = $(e).attr('item_title')
 					+" &lt;<a href='mailto:"+emailaddress+"'>"
 					+emailaddress+"</a>&gt;"
 			} else {
 				email = $(e).attr('item_title');
 			}
-			emails.push(email);			
+			emails.push(email);
 		});
 		window.opener.$("#cc_titles").attr('value', titles.join('; '));
-		window.opener.$("span[id=cc_titles]").empty().append(emails.join('<br/>'));
+		window.opener.$("span[id='cc_titles']").empty().append(emails.join('<br/>'));
 		window.opener.$("#cc_uids").attr('value', uids.join(','));
 
 		window.close();

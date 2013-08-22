@@ -47,9 +47,9 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     TextField('Considerations',
-        default_content_type = 'text/x-web-intelligent',
-        allowable_content_types = ('text/x-web-intelligent',),
-        default_output_type="text/html",
+        default_content_type = 'text/plain',
+        allowed_content_types= ('text/plain', ),
+        default_output_type="text/plain",
         widget = TextAreaWidget(
             label = _("Considerations"),
             description = _("Remarks to take into account before performing the task"),

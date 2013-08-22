@@ -11,8 +11,8 @@
 
 ////////////////////////////////////////
 function expand_cat(service_uid){
-	cat = $("[name=Partition."+service_uid+":records]").parents('tr').attr('cat');
-	th = $('th[cat='+cat+']');
+	cat = $("[name='Partition."+service_uid+":records']").parents('tr').attr('cat');
+	th = $('th[cat="'+cat+'"]');
 	if ($(th).hasClass('collapsed')){
 		table = $(th).parents('.bika-listing-table');
 		// show sub TR rows
@@ -27,7 +27,7 @@ function expand_cat(service_uid){
 ////////////////////////////////////////
 function check_service(service_uid){
 	// Add partition dropdown
-	element = $("[name=Partition."+service_uid+":records]");
+	element = $("[name='Partition."+service_uid+":records']");
 	select = '<select class="listing_select_entry" '+
 		'name="Partition.'+service_uid+':records" '+
 		'field="Partition" uid="'+service_uid+'" '+
@@ -46,7 +46,7 @@ function check_service(service_uid){
 
 ////////////////////////////////////////
 function uncheck_service(service_uid){
-	element = $("[name=Partition."+service_uid+":records]");
+	element = $("[name='Partition."+service_uid+":records']");
 	$(element).after(
 		"<input type='hidden' name='Partition."+service_uid+":records'"+
 		"value=''/>"
@@ -70,7 +70,7 @@ function calcdependencies(elements, auto_yes) {
 	var deps = service_data['deps'];
 	var backrefs = service_data['backrefs'];
 
-	if ($(element).attr("checked") == true){
+	if ($(element).prop("checked") == true){
 		// selecting a service; discover services it depends on.
 		var affected_services = [];
 		var affected_titles = [];
@@ -90,7 +90,7 @@ function calcdependencies(elements, auto_yes) {
 				$.each(servicedata, function(i, serviceuid_servicetitle){
 					service = serviceuid_servicetitle.split("_");
 					// if the service is already checked, skip it.
-					if (! $('#analyses_cb_'+service[0]).attr("checked") ){
+					if (! $('#analyses_cb_'+service[0]).prop("checked") ){
 						// this one is for the current category
 						services.push(service[0]);
 						// and this one decides if the confirmation box gets shown at all.
@@ -115,9 +115,9 @@ function calcdependencies(elements, auto_yes) {
 				function add_Yes(){
 					$.each(dep_args, function(i,args){
 						$.each(args[2], function(x,serviceUID){
-							if(! $('#analyses_cb_'+serviceUID).attr("checked") ){
+							if(! $('#analyses_cb_'+serviceUID).prop("checked") ){
 								check_service(serviceUID);
-								$('#analyses_cb_'+serviceUID).attr("checked", true);
+								$('#analyses_cb_'+serviceUID).prop('checked',true);
 								expand_cat(serviceUID);
 							}
 						});
@@ -126,9 +126,9 @@ function calcdependencies(elements, auto_yes) {
 					$('#messagebox').remove();
 				}
 				function add_No(){
-					if($(element).attr("checked") ){
+					if($(element).prop("checked") ){
 						uncheck_service($(element).attr('value'));
-						$(element).attr("checked", false);
+						$(element).prop('checked',false);
 					}
 					$(this).dialog("close");
 					$('#messagebox').remove();
@@ -160,7 +160,7 @@ function calcdependencies(elements, auto_yes) {
 		if (s_uids.length > 0){
 			$.each(s_uids, function(i, serviceUID){
 				cb = $('#analyses_cb_' + serviceUID);
-				if (cb.attr("checked")){
+				if (cb.prop("checked")){
 					affected_services.push(serviceUID);
 					affected_titles.push(cb.attr('item_title'));
 				}
@@ -182,7 +182,7 @@ function calcdependencies(elements, auto_yes) {
 						$.each(affected_services, function(i,serviceUID){
 							se = $('#analyses_cb_'+serviceUID);
 							uncheck_service(serviceUID);
-							$(se).attr('checked', false);
+							$(se).prop('checked', false);
 						});
 						$(this).dialog("close");
 						$('#messagebox').remove();
@@ -190,7 +190,7 @@ function calcdependencies(elements, auto_yes) {
 					no:function(){
 						service_uid = $(element).attr('value');
 						check_service(service_uid);
-						$(element).attr('checked', true);
+						$(element).prop('checked', true);
 						$(this).dialog("close");
 						$('#messagebox').remove();
 					}
@@ -237,8 +237,8 @@ function setAnalysisProfile(){
 	// get profile services list
 	var analysisprofiles = $.parseJSON($("#AnalysisProfiles").attr('value'));
 	// clear existing selection
-	$('input[id^=analyses_cb_]').filter(":checked").attr("checked", false);
-	$.each($("select[name^=Partition]"), function(i,element){
+	$('input[id^="analyses_cb_"]').filter(":checked").prop('checked',false);
+	$.each($("select[name^='Partition']"), function(i,element){
 		$(element).after(
 			"<input type='hidden' name='"+$(element).attr('name')+"' value=''/>"
 		);
@@ -251,7 +251,7 @@ function setAnalysisProfile(){
 	if (service_uids != undefined && service_uids != null) {
 		$.each(service_uids, function(i,service_uid){
 			check_service(service_uid);
-			$('input[id^=analyses_cb_'+service_uid+']').attr("checked", true);
+			$('input[id^="analyses_cb_'+service_uid+'"]').prop('checked',true);
 		});
 	}
 	// calculate automatic partitions
@@ -316,7 +316,7 @@ function setAnalysisProfile(){
 function click_uid_checkbox(){
 	calcdependencies([this]);
 	service_uid = $(this).val();
-	if ($(this).attr("checked")){
+	if ($(this).prop("checked")){
 		check_service(service_uid);
 	} else {
 		uncheck_service(service_uid);

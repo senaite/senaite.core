@@ -17,14 +17,14 @@ function referencewidget_lookups(elements){
         // when receives the focus, so the underneath values must be
         // cleared too.
         var elName = $(element).attr('name');
-        $('input[name='+elName+']').live('focusin', function(){
+        $('input[name="'+elName+'"]').live('focusin', function(){
         	var fieldName = $(this).attr('name');
         	if($(this).val() || $(this).val().length==0){
         		var val = $(this).val();
         		var uid = $(this).attr('uid');
         		$(this).val('');
         		$(this).attr('uid', '');
-                $('input[name='+fieldName+'_uid]').val('');
+                $('input[name="'+fieldName+'_uid"]').val('');
                 $(this).trigger("unselected", [val,uid]);
         	}
     	});
@@ -35,7 +35,7 @@ function referencewidget_lookups(elements){
             var fieldName = $(this).attr('name');
             $(this).val(ui.item[$(this).attr('ui_item')]);
             $(this).attr('uid', ui.item['UID']);
-            $('input[name='+fieldName+'_uid]').val(ui.item['UID']);
+            $('input[name="'+fieldName+'_uid"]').val(ui.item['UID']);
             skip = $(element).attr("skip_referencewidget_lookup");
             if (skip != true){
                 $(this).trigger("selected", ui.item['UID']);
@@ -64,7 +64,7 @@ jQuery(function($){
     $(document).ready(function(){
         _p = jarn.i18n.MessageFactory('plone');
         _ = jarn.i18n.MessageFactory('bika');
-        
+
         referencewidget_lookups();
 
     });

@@ -66,9 +66,9 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
     # Procedures
     TextField('InlabCalibrationProcedure',
         schemata = 'Procedures',
-        default_content_type = 'text/x-web-intelligent',
-        allowable_content_types = ('text/x-web-intelligent',),
-        default_output_type="text/html",
+        default_content_type = 'text/plain',
+        allowed_content_types= ('text/plain', ),
+        default_output_type="text/plain",
         widget = TextAreaWidget(
             label = _("In-lab calibration procedure"),
             description = _("Instructions for in-lab regular calibration routines intended for analysts"),
@@ -76,9 +76,9 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
     ),
     TextField('PreventiveMaintenanceProcedure',
         schemata = 'Procedures',
-        default_content_type = 'text/x-web-intelligent',
-        allowable_content_types = ('text/x-web-intelligent',),
-        default_output_type="text/html",
+        default_content_type = 'text/plain',
+        allowed_content_types= ('text/plain', ),
+        default_output_type="text/plain",
         widget = TextAreaWidget(
             label = _("Preventive maintenance procedure"),
             description = _("Instructions for regular preventive and maintenance routines intended for analysts"),

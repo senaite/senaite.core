@@ -1,5 +1,6 @@
 from Acquisition import aq_parent, aq_inner, aq_base
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.Archetypes.utils import DisplayList
 from bika.lims import PMF, bikaMessageFactory as _
@@ -24,10 +25,10 @@ class ContactLoginDetailsView(BrowserView):
             form = self.request.form
             contact = self.context
 
-            password = form.get('password', '')
-            username = form.get('username', '')
+            password = safe_unicode(form.get('password', '')).encode('utf-8')
+            username = safe_unicode(form.get('username', '')).encode('utf-8')
             confirm = form.get('confirm', '')
-            email = form.get('email', '')
+            email = safe_unicode(form.get('email', '')).encode('utf-8')
 
             if not username:
                 return error('username', PMF("Input is required but not given."))

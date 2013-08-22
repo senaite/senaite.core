@@ -17,14 +17,14 @@ $(document).ready(function(){
 			.removeClass('hasDatepicker')
 			.removeData('datepicker')
 			.unbind();
-		window.opener.$("#ar_"+column+"_ClientReference").val(row_data['ClientReference']).attr('readonly', true);
-		window.opener.$("#ar_"+column+"_ClientSampleID").val(row_data['ClientSampleID']).attr('readonly', true);
-		window.opener.$("#ar_"+column+"_SampleType").val(row_data['SampleType']).attr('readonly', true);
-		window.opener.$("#ar_"+column+"_SamplePoint").val(row_data['SamplePoint']).attr('readonly', true);
-		window.opener.$("#ar_"+column+"_SamplingDeviation").val(row_data['SamplingDeviation']).attr('disabled', true);
-		window.opener.$("#ar_"+column+"_Composite").val(row_data['Composite']).attr('disabled', true);
-		window.opener.$("#ar_"+column+"_AdHoc").val(row_data['AdHoc']).attr('disabled', true);
-		window.opener.$("#ar_"+column+"_DefaultContainerType").val('').attr('disabled', true);
+		window.opener.$("#ar_"+column+"_ClientReference").val(row_data['ClientReference']).prop('readonly', true);
+		window.opener.$("#ar_"+column+"_ClientSampleID").val(row_data['ClientSampleID']).prop('readonly', true);
+		window.opener.$("#ar_"+column+"_SampleType").val(row_data['SampleType']).prop('readonly', true);
+		window.opener.$("#ar_"+column+"_SamplePoint").val(row_data['SamplePoint']).prop('readonly', true);
+		window.opener.$("#ar_"+column+"_SamplingDeviation").val(row_data['SamplingDeviation']).prop('disabled', true);
+		window.opener.$("#ar_"+column+"_Composite").val(row_data['Composite']).prop('disabled', true);
+		window.opener.$("#ar_"+column+"_AdHoc").val(row_data['AdHoc']).prop('disabled', true);
+		window.opener.$("#ar_"+column+"_DefaultContainerType").val('').prop('disabled', true);
 
 		// handle samples that do have field analyses
 		// field_analyses is a dict of lists: { catuid: [serviceuid,serviceuid], ... }
@@ -40,7 +40,7 @@ $(document).ready(function(){
 
 		$.each(window.opener.$('input[id*="_field_"]').filter(".cb"), function(i,e){
 			if ($(e).attr('id').indexOf('_'+column+'_') > -1){
-				$(e).attr('disabled', true);
+				$(e).prop('disabled', true);
 			}
 		});
 		window.opener.recalc_prices();
