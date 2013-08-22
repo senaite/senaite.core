@@ -221,9 +221,6 @@ class doPublish(BrowserView):
                     except SMTPRecipientsRefused as msg:
                         raise WorkflowException(str(msg))
 
-                else:
-                    raise Exception("XXX pub_pref %s" % self.pub_pref)
-
         return [ar.RequestID for ar in self.analysis_requests]
 
     def formattedResult(self, analysis):
