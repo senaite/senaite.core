@@ -455,7 +455,7 @@ class LoadSetupData(BrowserView):
         for add_type in ['Physical', 'Postal', 'Billing']:
             addresses[add_type] = {}
             for key in ['Address', 'City', 'State', 'Zip', 'Country']:
-                addresses[add_type][key] = values["%s_%s" % (add_type, key)]
+                addresses[add_type][key] = str(values["%s_%s" % (add_type, key)])
 
         if values['AccreditationBodyLogo']:
             path = resource_filename("bika.lims","setupdata/%s/%s" \
@@ -591,7 +591,7 @@ class LoadSetupData(BrowserView):
             for add_type in ['Physical', 'Postal', 'Billing']:
                 addresses[add_type] = {}
                 for key in ['Address', 'City', 'State', 'Zip', 'Country']:
-                    addresses[add_type][key] = row["%s_%s" % (add_type, key)]
+                    addresses[add_type][key] = str(row["%s_%s" % (add_type, key)])
 
             _id = folder.invokeFactory('Client', id = 'tmp')
             obj = folder[_id]
@@ -636,7 +636,7 @@ class LoadSetupData(BrowserView):
             for add_type in ['Physical', 'Postal']:
                 addresses[add_type] = {}
                 for key in ['Address', 'City', 'State', 'Zip', 'Country']:
-                    addresses[add_type][key] = row["%s_%s" % (add_type, key)]
+                    addresses[add_type][key] = str(row["%s_%s" % (add_type, key)])
             contact.edit(Salutation = row.get('Salutation',''),
                          Firstname = row.get('Firstname',''),
                          Surname = row.get('Surname',''),
