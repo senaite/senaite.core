@@ -80,7 +80,7 @@
 
     <br/>
 
-    <tal:tables tal:repeat="table python:view.tables.items()">
+    <tal:tables tal:repeat="table python:view.tables.items()" tal:condition="python:hasattr(view, 'tables')">
         <h3>
             <img
 				i18n:attributes="title"
