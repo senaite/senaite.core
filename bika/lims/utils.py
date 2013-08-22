@@ -316,20 +316,19 @@ def createPdf(htmlreport, outfile=None, css=None):
             _cssfile=css
         cssfile= open(_cssfile, 'r')
         css_def = cssfile.read()
-    pisa.showLogging()
-    ramdisk = StringIO()
+    from weasyprint import HTML, CSS
+    htmlfilepath = Globals.INSTANCE_HOME + "/var/" + tmpID() + ".html"
+    htmlfile = open(htmlfilepath, 'w')
+    htmlfile.write(htmlreport)
+    htmlfile.close()
+    if not outfile:
+        outfile = Globals.INSTANCE_HOME + "/var/" + tmpID() + ".pdf"
     if css:
-        pdf = pisa.CreatePDF(htmlreport, ramdisk, default_css=css_def)
+        HTML(htmlfilepath).write_pdf(outfile,
+            stylesheets=[CSS(string=css_def)])
     else:
-        pdf = pisa.CreatePDF(htmlreport, ramdisk)
-    pdf_data = ramdisk.getvalue()
-    ramdisk.close()
-
-    if not pdf.err:
-        if outfile:
-            open(outfile, "w").write(pdf_data)
-        return pdf_data
-    return None
+        HTML(htmlfilepath).write_pdf(outfile)
+    return open(outfile, 'r').read();
 
 
 def attachPdf(mimemultipart, pdfreport, filename=None):
