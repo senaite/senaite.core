@@ -37,8 +37,8 @@
     <table id="section-header">
         <tr>
             <td id="lab-logo">
-                <img tal:attributes="src string:${portal/absolute_url}/logo.png;
-                                     width string:213px"/>
+                <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/logo_print.png;
+                                     width string:213px "/>
             </td>
             <td id="accreditation-logo"
                 tal:define="logo python:context.bika_setup.laboratory.getAccreditationBodyLogo()">
@@ -85,22 +85,11 @@
                 <table>
                     <tr><td id="lab-title" tal:content='view/laboratory/Title'></td></tr>
                     <tr><td id="lab-address" tal:content='structure view/lab_address'></td></tr>
-                    <tr>
-                        <td id="lab-email">
-                            <a tal:content="view/laboratory/getEmailAddress"
-                               tal:attributes="url python:'mailto:%s' % view.laboratory.getEmailAddress();"></a>
-                        </td>
-                    </tr>
-                    <tr tal:condition="view/laboratory/getPhone">
-                        <td id="lab-phone">
-                            <span i18n:translate="">Phone</span>:
-                            <span tal:content="view/laboratory/getPhone"></span>
-                        </td>
-                    </tr>
-                    <tr tal:condition="view/laboratory/getFax">
-                        <td id="lab-fax">
-                            <span i18n:translate="">Fax</span>:
-                            <span tal:content="view/laboratory/getFax"></span>
+
+                    <tr tal:condition="view/laboratory/getLabURL">
+                        <td id="lab-URL">
+                            <a tal:attributes="href view/laboratory/getLabURL" 
+                               tal:content="view/laboratory/getLabURL"></a>
                         </td>
                     </tr>
                 </table>
@@ -463,9 +452,25 @@
             <li tal:condition="confidence_level" i18n:translate="">Test results are at a <tal:block replace="confidence_level" i18n:name="lab_confidence"/>% confidence level</li>
             <li tal:condition="python:'email' in pub_pref" i18n:translate="">Methods of analysis available by clicking on the 'Request' link</li>
         </ol>
+        <a tal:content="view/laboratory/getEmailAddress"
+           tal:attributes="url python:'mailto:%s' % view.laboratory.getEmailAddress();"></a>
+
+        <br>
+        <tal:con condition="view/laboratory/getPhone">
+            <span i18n:translate="">Phone</span>:
+            <span tal:content="view/laboratory/getPhone"></span>
+        </tal:con>
+
+        <br>
+        <tal:con condition="view/laboratory/getFax">
+            <span i18n:translate="">Fax</span>:
+            <span tal:content="view/laboratory/getFax"></span><br>
+        </tal:con>
+
     </div>
-    <!--div id="footer">
+
+<!--     <div id="footer">
         <pdf:pagenumber/>
-    </div-->
+    </div> -->
 </body>
 </html>
