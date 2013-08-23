@@ -135,8 +135,7 @@ mv buildout.2 buildout.cfg
 
 bin/buildout
 
-# Some error messages may scroll past, especially on the first run of
-# buildout during the "reportlab" installation. They can be ignored.
+# Some non-fatal error messages may scroll past
 
 ### Start Plone
 
