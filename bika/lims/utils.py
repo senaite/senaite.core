@@ -23,7 +23,6 @@ from email.MIMEBase import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email import Encoders
-import xhtml2pdf.pisa as pisa
 from cStringIO import StringIO
 import urllib2
 import Globals

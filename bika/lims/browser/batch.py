@@ -12,6 +12,7 @@ from bika.lims.interfaces import IDisplayListVocabulary
 from bika.lims.permissions import *
 from bika.lims.subscribers import doActionFor, skip
 from bika.lims.utils import isActive
+from bika.lims.utils import createPdf
 from bika.lims.vocabularies import CatalogVocabulary
 from cStringIO import StringIO
 from DateTime import DateTime
@@ -34,7 +35,6 @@ import Globals
 import json
 import os
 import plone
-import xhtml2pdf.pisa as pisa
 
 
 class BatchAnalysisRequestsView(AnalysisRequestsView, AnalysisRequestAddView):
@@ -208,9 +208,8 @@ class BatchPublishView(BrowserView):
             open(os.path.join(Globals.INSTANCE_HOME,'var', fn + ".html"),
                  "w").write(report_html)
 
-        pisa.showLogging()
         ramdisk = StringIO()
-        pdf = pisa.CreatePDF(report_html, ramdisk)
+        pdf = createPdf(report_html, ramdisk)
         pdf_data = ramdisk.getvalue()
         ramdisk.close()
 

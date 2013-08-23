@@ -10,6 +10,7 @@ from bika.lims.interfaces import IReportFolder
 from bika.lims.utils import getUsers, logged_in_client
 from bika.lims.utils import to_utf8 as _c
 from bika.lims.utils import to_unicode as _u
+from bika.lims.utils import createPdf
 from cStringIO import StringIO
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -18,7 +19,6 @@ import json
 import os
 import plone
 import sys
-import xhtml2pdf.pisa as pisa
 
 
 class ProductivityView(BrowserView):
@@ -242,9 +242,8 @@ class SubmitForm(BrowserView):
         framed_output = self.frame_template()
 
         # this is the good part
-        pisa.showLogging()
         ramdisk = StringIO()
-        pdf = pisa.CreatePDF(framed_output, ramdisk)
+        pdf = createPDF(framed_output, ramdisk)
         result = ramdisk.getvalue()
         ramdisk.close()
 
