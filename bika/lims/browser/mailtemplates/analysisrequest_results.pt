@@ -403,38 +403,41 @@
 
     <!-- Signatures section -->
     <div id="section-signatures">
-        <table tal:define="mngr_info python:view.get_managers_from_request(ar);
+        <table>
+            <tr>
+                <td tal:define="mngr_info python:view.get_managers_from_request(ar);
                            mngr_ids python:mngr_info['ids'];
                            managers python:mngr_info['dict'];"
-                tal:repeat="manager mngr_ids">
-            <tal:manager tal:define="rownum repeat/manager/number;
+                    tal:repeat="manager mngr_ids"
+                    class="manager-info">
+                    <tal:manager tal:define="rownum repeat/manager/number;
                                      email python:managers[manager]['email'];
                                      phone python:managers[manager]['phone'];
-                                     department python:managers[manager]['departments'];">
-            <span tal:condition="python: rownum % 3 == 0"
-                  tal:replace="structure python:'<tr>'"></span>
-                <td>
-                    <img tal:condition="signature"
-                         tal:define="signature python:managers[manager]['signature']"
-                         tal:attributes="src string:${signature}" style="height:75px">
-                    <div class="manager-info">
-                        <span class="manager-fullname" tal:content="python:managers[manager]['name']">Joe Blogs</span>
-                        <br tal:condition="email"/>
-                        <span class="manager-email" tal:condition="email">
-                            <a tal:attributes="href string:mailto:${email}"
-                               tal:content="email">a@b.com</a>
-                        </span>
-                        <br tal:condition="phone"/>
-                        <span class="manager-phone"
-                            tal:content="phone"
-                            tal:condition="phone">011 555 1112</span>
-                        <br/>
-                        <span class="manager-department" tal:content="department">Chemistry</span>
-                    </div>
+                                     department python:managers[manager]['departments'];
+                                     signature python:managers[manager]['signature'];">
+                        <span tal:condition="python: rownum % 3 == 0"
+                              tal:replace="structure python:'<tr>'"></span>
+
+                                <img tal:condition="signature"
+                                     tal:attributes="src string:${signature}" style="height:75px">
+                                    <span class="manager-fullname" tal:content="python:managers[manager]['name']">Joe Blogs</span>
+                                    <br tal:condition="email"/>
+                                    <span class="manager-email" tal:condition="email">
+                                        <a tal:attributes="href string:mailto:${email}"
+                                           tal:content="email">a@b.com</a>
+                                    </span>
+                                    <br tal:condition="phone"/>
+                                    <span class="manager-phone"
+                                        tal:content="phone"
+                                        tal:condition="phone">011 555 1112</span>
+                                    <br/>
+                                    <span class="manager-department" tal:content="department">Chemistry</span>
+
+                        <span tal:condition="python: rownum % 3 == 0"
+                              tal:replace="structure python:'</tr>'"></span>
+                    </tal:manager>
                 </td>
-            <span tal:condition="python: rownum % 3 == 0"
-                  tal:replace="structure python:'</tr>'"></span>
-            </tal:manager>
+            </tr>
         </table>
     </div>
 

@@ -50,7 +50,7 @@ table#section-header,
 table#section-info {
     width:100%;
     margin-bottom:20px;
-    border:none;
+    border:1px solid #000;
 }
 table#section-header tr td,
 table#section-info tr td {
@@ -60,7 +60,8 @@ table#section-header td#lab-logo {
 
 }
 table#section-header td#accreditation-logo {
-    text-align:right;
+    /*text-align:right;*/
+    width:80mm;
 }
 
 table#section-info {
@@ -90,7 +91,7 @@ table#section-info td#lab-info {
 }
 
 #section-summary tr td {
-    padding-right:20px;
+    padding-right:225px;
 }
 
 

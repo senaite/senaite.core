@@ -606,8 +606,10 @@ class AnalysisRequest(BaseFolder):
                 managers[manager_id]['name'] = manager.getFullname()
                 managers[manager_id]['email'] = manager.getEmailAddress()
                 managers[manager_id]['phone'] = manager.getBusinessPhone()
-                managers[manager_id][
-                    'signature'] = '%s/Signature' % manager.absolute_url()
+                if manager.getSignature():
+                    managers[manager_id]['signature'] = '%s/Signature' % manager.absolute_url()
+                else:
+                    managers[manager_id]['signature'] = False
                 managers[manager_id]['departments'] = ''
             mngr_dept = managers[manager_id]['departments']
             if mngr_dept:
