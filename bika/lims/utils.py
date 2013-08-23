@@ -11,7 +11,6 @@ from bika.lims import logger
 from bika.lims.config import POINTS_OF_CAPTURE
 from email.Utils import formataddr
 from plone.i18n.normalizer.interfaces import IIDNormalizer
-from reportlab.graphics.barcode import getCodes, getCodeNames, createBarcodeDrawing
 from zope.component import getUtility
 from zope.interface import providedBy
 from magnitude import mg, MagnitudeError
