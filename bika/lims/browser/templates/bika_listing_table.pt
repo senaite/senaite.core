@@ -517,27 +517,23 @@ Table cells for each column from in review_state's column list.
 		style="white-space:nowrap;"
 		tal:content="python:item['Unit']"/>
 
-	<tal:comment replace="nothing"><!-- alert container --></tal:comment>
-	<tal:outofrange define="uid python:item['uid'];
-	                        alerts python:hasattr(view.bika_listing,'getOutOfRangeAlerts') and view.bika_listing.getOutOfRangeAlerts() or None">
-	   <span class="alert"
-	         tal:attributes="uid string:${uid};
-	                         field column;"
-	         tal:define="product python:(alerts and uid in alerts and 'product' in alerts[uid]) and alerts[uid]['product'] or 'bika.lims';">
-	         <img
-                tal:condition="python: (alerts and uid in alerts and column == 'Result' and item['Result']) or False"
-                tal:attributes="src python:(portal.absolute_url()+'/++resource++'+product+'.images/%s.png')%alerts[uid]['icon'];
-	                              title python:alerts[uid]['msg']"/>
-
-	   </span>
-	</tal:outofrange>
-
 	</span> <tal:comment replace="nothing"><!-- </span tal:condition="not:replace"> --></tal:comment>
 
 	<tal:comment replace="nothing"><!-- after structure --></tal:comment>
-	<span class="after"
-		tal:content="structure after"/>
-
+	<span class="after"tal:content="structure after"/>
+	<tal:has_field_icons condition="python:hasattr(view.bika_listing, 'field_icons')">
+    	<tal:field_icons define="uid python:item['uid'];
+    		                    val python:view.bika_listing.field_icons.get(uid, []);
+    							field_icons python: [i for i in val if i['field'] == column];">
+    		<span class="alert"
+    				tal:attributes="uid uid;
+    								field column;">
+    				<img tal:repeat="field_icon field_icons"
+    					tal:attributes="src python:portal.absolute_url()+'/'+field_icon['icon'];
+    									title python:field_icon['msg']"/>
+    		</span>
+    	</tal:field_icons>
+    </tal:has_field_icons>
 	</td>
 	</tal:rowcolspan>
 	</tal:cell>
