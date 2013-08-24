@@ -37,8 +37,9 @@
     <table id="section-header">
         <tr>
             <td id="lab-logo">
-                <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/logo_print.png;
-                                     width string:213px "/>
+                <a tal:attributes="href string:${portal/bika_setup/laboratory/getLabURL}/">
+                    <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/logo_print.png;
+                                        width string:213px "/></a>
             </td>
             <td id="accreditation-logo"
                 tal:define="logo python:context.bika_setup.laboratory.getAccreditationBodyLogo()">
@@ -146,7 +147,10 @@
             </tr>
             <tr>
                 <td class="label" i18n:translate="">Client</td>
-                <td tal:content="ar/aq_parent/Title"></td>
+                <td>
+                <a tal:attributes="href ar/aq_parent/absolute_url"
+                   tal:content="ar/aq_parent/Title"></a>
+                </td>
             </tr>
             <tr>
                 <td class="label" i18n:translate="">Client SID</td>
@@ -199,8 +203,8 @@
                     <th class="analysis"><span tal:content="string:${cat}">Category: Vitamin D</span></th>
                     <th class="result"><span i18n:translate="">Result</span></th>
                     <th class="dryresult" tal:condition="dry"><span i18n:translate="">Result</span></th>
-                    <th class="units"><span i18n:translate="">Units</span></th>
-                    <th class="specs"><span i18n:translate="">Specifications</span></th>
+                    <!-- <th class="units"><span i18n:translate="">Unit</span></th> -->
+                    <th class="specs"><span i18n:translate="">Value Range</span></th>
                     <th class="outofrange"></th>
                 </tr>
             </thead>
@@ -226,11 +230,15 @@
                 <tr tal:attributes="class python:'%s %s %s' % (analysis_css_result, analysis_css_accredited, analysis_css_retested);">
 
                     <td class="analysis" tal:content="service/Title">Total 25-OHD</td>
-                    <td class="result" tal:content="analysis_result">23</td>
+                    <td><span class="result" tal:content="string:${analysis_result}">23</span> <span class="units" tal:content="service/Unit|nothing"/></td>
+
+
                     <td class="dryresult"
                         tal:condition="python: dry==True and analysis_result_dm"
-                        tal:content="analysis_result_dm">23</td>
-                    <td class="units" tal:content="service/Unit|nothing">ng/ml</td>
+                        tal:content="string:${analysis_result_dm}  ${service/Unit|nothing}">23</td>
+
+
+                    <!-- <td class="units" tal:content="service/Unit|nothing">ng/ml</td> -->
                     <td class="specs">
                         <span tal:condition="analysis_uncertainty"
                               tal:replace="string:[+/- $analysis_uncertainty] "></span>
@@ -277,8 +285,8 @@
                 <tr>
                     <th class="analysis"><span tal:content='python: qccat'>Category: Vitamin D</span></th>
                     <th class="result"><span i18n:translate="">Result</span></th>
-                    <th class="units"><span i18n:translate="">Units</span></th>
-                    <th class="specs"><span i18n:translate="">Specifications</span></th>
+                    <th class="units"><span i18n:translate="">Unit</span></th>
+                    <th class="specs"><span i18n:translate="">Value Range</span></th>
                     <th class="refsample" tal:condition='python: duplicate==False'><span i18n:translate="">Reference Sample</span></th>
                     <th class="worksheet"><span i18n:translate="">Worksheet</span></th>
                     <th class="outofrange"></th>
@@ -402,12 +410,12 @@
     </div>
 
     <!-- Signatures section -->
-    <div id="section-signatures">
-        <table>
+
+        <table id="section-signatures">
             <tr>
                 <td tal:define="mngr_info python:view.get_managers_from_request(ar);
-                           mngr_ids python:mngr_info['ids'];
-                           managers python:mngr_info['dict'];"
+                                mngr_ids python:mngr_info['ids'];
+                                managers python:mngr_info['dict'];"
                     tal:repeat="manager mngr_ids"
                     class="manager-info">
                     <tal:manager tal:define="rownum repeat/manager/number;
@@ -415,23 +423,21 @@
                                      phone python:managers[manager]['phone'];
                                      department python:managers[manager]['departments'];
                                      signature python:managers[manager]['signature'];">
-                        <span tal:condition="python: rownum % 3 == 0"
-                              tal:replace="structure python:'<tr>'"></span>
 
-                                <img tal:condition="signature"
-                                     tal:attributes="src string:${signature}" style="height:75px">
-                                    <span class="manager-fullname" tal:content="python:managers[manager]['name']">Joe Blogs</span>
-                                    <br tal:condition="email"/>
-                                    <span class="manager-email" tal:condition="email">
-                                        <a tal:attributes="href string:mailto:${email}"
-                                           tal:content="email">a@b.com</a>
-                                    </span>
-                                    <br tal:condition="phone"/>
-                                    <span class="manager-phone"
-                                        tal:content="phone"
-                                        tal:condition="phone">011 555 1112</span>
-                                    <br/>
-                                    <span class="manager-department" tal:content="department">Chemistry</span>
+                        <img tal:condition="signature"
+                             tal:attributes="src string:${signature}" style="height:75px">
+                            <span class="manager-fullname" tal:content="python:managers[manager]['name']">Joe Blogs</span>
+                            <br tal:condition="email"/>
+                            <span class="manager-email" tal:condition="email">
+                                <a tal:attributes="href string:mailto:${email}"
+                                   tal:content="email">a@b.com</a>
+                            </span>
+                            <br tal:condition="phone"/>
+                            <span class="manager-phone"
+                                tal:content="phone"
+                                tal:condition="phone">011 555 1112</span>
+                            <br/>
+                            <span class="manager-department" tal:content="department">Chemistry</span>
 
                         <span tal:condition="python: rownum % 3 == 0"
                               tal:replace="structure python:'</tr>'"></span>
@@ -439,7 +445,7 @@
                 </td>
             </tr>
         </table>
-    </div>
+
 
     <!-- Discreeter section -->
         <div id="section-discreeter">

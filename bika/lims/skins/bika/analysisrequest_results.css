@@ -35,6 +35,10 @@ h2 {
 
 }
 .units {
+    color:#777;
+    font-weight:none;
+    font-style:italic;
+    font-size:10px;
 }
 .outofrange {
     font-weight:bold;
@@ -46,11 +50,14 @@ table tr th {
     text-align:left;
 }
 
+table#section-header{
+    border-bottom:1px solid #000;
+}
+
 table#section-header,
 table#section-info {
     width:100%;
     margin-bottom:20px;
-    border:1px solid #000;
 }
 table#section-header tr td,
 table#section-info tr td {
@@ -92,6 +99,8 @@ table#section-info td#lab-info {
 
 #section-summary tr td {
     padding-right:225px;
+    border-left-width: 0px;
+    border-bottom:1px solid #ccc;
 }
 
 
@@ -177,6 +186,7 @@ table#section-info td#lab-info {
 
 #section-signatures {
     margin-top:100px;
+    width:100%
 }
 #section-signatures table {
     width:100%;
@@ -184,10 +194,7 @@ table#section-info td#lab-info {
 
 #section-signatures table tr td {
     text-align:center;
-}
-#section-signatures table tr td div.manager-info {
-    padding-top:20px;
-    /*text-align:left;*/
+    padding-right:50px;
 }
 
 #section-discreeter {
@@ -211,7 +218,6 @@ table#section-info td#lab-info {
 @media print {
     * {
         font: 12pt Georgia, "Times New Roman", Times, serif;
-        /*line-height: 1.3;*/
     }
     a {
         text-decoration:none;
@@ -220,9 +226,16 @@ table#section-info td#lab-info {
     .outofrange a {
         color:#d40000;
     }
+
     #section-attachments {
         visibility:hidden;
         display:none;
+    }
+    .units {
+        color:#777;
+        font-weight:none;
+        font-style:italic;
+        font-size:10px;
     }
 
 }
