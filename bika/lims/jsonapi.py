@@ -7,8 +7,12 @@ from plone.jsonapi import router
 from plone.jsonapi.interfaces import IRouteProvider
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
+from zExceptions import BadRequest
 from zope import event
 from zope import interface
+
+import App
+import logging
 
 
 class JSONAPI(object):
@@ -38,29 +42,47 @@ class JSONAPI(object):
 
         Then the corrosponding index will be used to look up the object
         from the uid_catalog.  This is for setting reference fields, and the
-        object found will be sent to the mutator.
+        UID of the object found will be sent to the mutator.
 
         """
-        ret = {}
+        debug_mode = App.config.getConfiguration().debug_mode
+        logger = logging.getLogger('bika.jsonapi')
         schema = obj.Schema()
-        fieldnames = [f for f in request.keys() if f in schema]
-        for fieldname in fieldnames:
-            brains = []
-            if fieldname.split("_", 1)[-1] in ("id", "Title", "UID"):
-                field, index = fieldname.split("_", 1)
-                uc = getToolByName(obj, "uid_catalog")
-                brains = uc({index: request[fieldname]})
+        # fields contains all schema-valid field values from the request.
+        fields = {}
+        for key, value in request.items():
+            if "_" in key:
+                fieldname, index = key.split("_", 1)
+                if fieldname not in schema:
+                    continue
+                pc = getToolByName(obj, "portal_catalog")
+                brains = pc({index: request[key]})
                 if not brains:
-                    raise ValueError("Object lookup failed: {0}.{1}".format(
-                            obj, fieldname))
-            value = brains[0].getObject() if brains else request[fieldname]
+                    # object lookup failure need not be fatal;
+                    # XXX for now we silently ignore lookup failure here,
+                    continue
+                value = brains[0].UID if brains else request[fieldname]
+            else:
+                fieldname = key
+                if fieldname not in schema:
+                    continue
+                value = request[fieldname]
+            fields[fieldname] = value
+        if debug_mode:
+            logger.info("Found schema fields for {0} in request: {1}".format(obj, fields))
+        # write and then read each field.
+        ret = {}
+        for fieldname, value in fields.items():
             field = schema[fieldname]
             mutator = field.getMutator(obj)
             if mutator and callable(mutator):
                 mutator(value)
             accessor = field.getAccessor(obj)
             if accessor and callable(accessor):
-                ret[fieldname] = accessor()
+                val = accessor()
+                if hasattr(val, 'Title') and callable(val.Title):
+                    val = val.Title()
+                ret[fieldname] = val
         return ret
 
     def _create_ar(self, context, request, client):
@@ -74,7 +96,7 @@ class JSONAPI(object):
               in the specified client.  The first Contact with the specified
               value in it's Fullname field will be used.
 
-            - SampleType_id - Must be an ID of an existing sample type.
+            - SampleType_Title - Must be an existing sample type.
 
         Optional request parameters:
 
@@ -87,58 +109,88 @@ class JSONAPI(object):
           unspecified, a new sample is created.
 
         """
+
         wftool = getToolByName(context, 'portal_workflow')
         bc = getToolByName(context, 'bika_catalog')
+        bsc = getToolByName(context, 'bika_setup_catalog')
+        pc = getToolByName(context, 'portal_catalog')
         ret = {
             "url": router.url_for("create", force_external=True),
             "success": True
         }
         SamplingWorkflowEnabled = \
             context.bika_setup.getSamplingWorkflowEnabled()
-        values = {}
-        values['Contact'] = request.get('Contact', '')
-        values['CCContacts'] = [x.strip() for x in
-                                request.get('cc_uids', '').split(",")]
-        values['CCEmails'] = [x.strip() for x in
-                              request.get('CCEmails', '').split(",")]
-        values['Sample_id'] = request.get('Sample_id', '')
+        required_fields = ['Contact', 'SampleType_Title', 'Services']
+        for field in required_fields:
+            if field not in request:
+                raise BadRequest("Missing field {0} in request".format(field))
+        # Fields which we munge/save manually.
+        try:
+            contact_uid = pc(portal_type='Contact', getFullname=request.get('Contact'))[0].UID
+            request['Contact'] = contact_uid
+        except:
+            raise BadRequest("Contact not found: getFullname="+request.get('Contact'))
+        try:
+            cc_contacts = [x.strip() for x in request.get('CCContacts', '').split(",")]
+            cc_contact_uids = []
+            for cc_contact in cc_contacts:
+                cc_contact_uid = pc(portal_type='Contact', getFullname=cc_contact)[0].UID
+                if cc_contact_uid not in cc_contact_uids:
+                    cc_contact_uids.append(cc_contact_uid)
+            request['CCContacts'] = cc_contact_uids
+        except:
+            raise BadRequest("CC Contact not found: getFullname="+cc_contact)
+        request['CCEmails'] = [x.strip() for x in request.get('CCEmails', '').split(",")]
 
-        if values['Sample_id']:
+        service_titles = [x.strip() for x in request.get('Services', '').split(",")]
+        services = []
+        try:
+            for service_title in service_titles:
+                service = bsc({'portal_type': 'AnalysisService',
+                              'title': service_title})[0].getObject()
+                if service not in services:
+                    services.append(service)
+        except IndexError:
+            raise IndexError("Service not found: {0}".format(service_title))
+        service_uids = [service.UID() for service in services]
+
+        request['Sample_id'] = request.get('Sample_id', '')
+        if request['Sample_id']:
             # Secondary AR on existing sample
-            sample = bc(id=values['Sample_id'])[0].getObject()
+            sample = bc(id=request['Sample_id'])[0].getObject()
         else:
             # Primary AR, create new sample.
             _id = client.invokeFactory('Sample', id=tmpID())
             sample = client[_id]
             sample.unmarkCreationFlag()
             ret.update(self.set_fields_from_request(sample, request))
-            sample.setSampleID(sample.getId())
             sample._renameAfterCreation()
-            event.notify(ObjectInitializedEvent(self))
-            self.at_post_create_script()
+            sample.setSampleID(sample.getId())
+            event.notify(ObjectInitializedEvent(sample))
+            sample.at_post_create_script()
 
             if SamplingWorkflowEnabled:
                 wftool.doActionFor(sample, 'sampling_workflow')
             else:
                 wftool.doActionFor(sample, 'no_sampling_workflow')
 
-        values['Sample'] = sample
-        values['Sample_uid'] = sample.UID()
         parts = [{'services': [],
                  'container':[],
                  'preservation':'',
                  'separate':False}]
 
-        # create the AR
-        Analyses = values['Analyses']
-
         _id = client.invokeFactory('AnalysisRequest', tmpID())
         ar = client[_id]
+        ar.unmarkCreationFlag()
         ret.update(self.set_fields_from_request(ar, request))
-        ar.processForm()
+        ar.setSample(sample)
+        ar._renameAfterCreation()
+        new_analyses = ar.setAnalyses(service_uids)
+        ar.setRequestID(ar.getId())
+        ar.reindexObject()
+        event.notify(ObjectInitializedEvent(ar))
+        ar.at_post_create_script()
 
-        # Object has been renamed
-        ar.edit(RequestID=ar.getId())
         # Create sample partitions
         parts_and_services = {}
         for _i in range(len(parts)):
@@ -170,8 +222,6 @@ class JSONAPI(object):
         else:
             wftool.doActionFor(ar, 'no_sampling_workflow')
 
-        new_analyses = ar.setAnalyses(Analyses)
-
         # Add analyses to sample partitions
         for part in sample.objectValues("SamplePartition"):
             part_services = parts_and_services[part.id]
@@ -184,8 +234,30 @@ class JSONAPI(object):
                 for analysis in analyses:
                     analysis.setSamplePartition(part)
 
+        # If Preservation is required for some partitions,
+        # and the SamplingWorkflow is disabled, we need
+        # to transition to to_be_preserved manually.
+        if not SamplingWorkflowEnabled:
+            to_be_preserved = []
+            sample_due = []
+            lowest_state = 'sample_due'
+            for p in sample.objectValues('SamplePartition'):
+                if p.getPreservation():
+                    lowest_state = 'to_be_preserved'
+                    to_be_preserved.append(p)
+                else:
+                    sample_due.append(p)
+            for p in to_be_preserved:
+                doActionFor(p, 'to_be_preserved')
+            for p in sample_due:
+                doActionFor(p, 'sample_due')
+            doActionFor(sample, lowest_state)
+            for analysis in ar.objectValues('Analysis'):
+                doActionFor(analysis, lowest_state)
+            doActionFor(ar, lowest_state)
+
         # receive secondary AR
-        if values.get('Sample_uid', ''):
+        if request.get('Sample_id', ''):
             doActionFor(ar, 'sampled')
             doActionFor(ar, 'sample_due')
             not_receive = ['to_be_sampled', 'sample_due', 'sampled',
@@ -198,6 +270,8 @@ class JSONAPI(object):
                 doActionFor(analysis, 'sample_due')
                 if sample_state not in not_receive:
                     doActionFor(analysis, 'receive')
+
+        return ret
 
     def create(self, context, request):
         """/@@API/create: Create new object.
