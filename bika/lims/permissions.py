@@ -15,6 +15,7 @@ AddAnalysis = 'BIKA: Add Analysis'
 AddAnalysisProfile = 'BIKA: Add AnalysisProfile'
 AddAnalysisRequest = 'BIKA: Add Analysis Request'
 AddAnalysisSpec = 'BIKA: Add AnalysisSpec'
+AddAttachment = 'BIKA: Add Attachment'
 AddARTemplate = 'BIKA: Add ARTemplate'
 AddBatch = 'BIKA: Add Batch'
 AddClient = 'BIKA: Add Client'
@@ -104,8 +105,8 @@ Unassign = 'BIKA: Unassign analyses'
 #
 # Only takes effect if:
 #   - The AR's 'cancellation_state' is 'active'
-#   - The AR's 'review_state' is in: 
-#       'sample_registered', 'to_be_sampled', 'sampled', 'to_be_preserved', 
+#   - The AR's 'review_state' is in:
+#       'sample_registered', 'to_be_sampled', 'sampled', 'to_be_preserved',
 #       'sample_due', 'sample_received', 'to_be_verified', 'attachment_due'
 EditAR = 'BIKA: Edit AR'
 
@@ -117,12 +118,12 @@ EditAR = 'BIKA: Edit AR'
 #
 # Only takes effect if:
 #   - The Sample's 'cancellation_state' is 'active'
-#   - The Sample's 'review_state' is in: 
-#       'sample_registered', 'to_be_sampled', 'sampled', 'to_be_preserved', 
+#   - The Sample's 'review_state' is in:
+#       'sample_registered', 'to_be_sampled', 'sampled', 'to_be_preserved',
 #       'sample_due', 'sample_received', 'to_be_verified', 'attachment_due'
 EditSamplePartition = 'BIKA: Edit Sample Partition'
 
 # Edit Client
 # ----------------------------------------------
-# Allows access to 'Edit' and 'Contacts' tabs from Client View 
+# Allows access to 'Edit' and 'Contacts' tabs from Client View
 EditClient = 'BIKA: Edit Client'
