@@ -171,6 +171,7 @@ class BikaGenerator:
         mp(AddAnalysisRequest, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
         mp(AddAnalysisSpec, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddARTemplate, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
+        mp(AddAttachment, ['Manager', 'LabManager', 'Owner' 'Analyst', 'LabClerk', 'Sampler'], 0)
         mp(AddBatch, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddClient, ['Manager', 'Owner', 'LabManager'], 1)
         mp(AddClientFolder, ['Manager'], 1)

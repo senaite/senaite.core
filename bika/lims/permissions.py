@@ -36,6 +36,7 @@ ADD_CONTENT_PERMISSIONS = {
     'AnalysisProfile': AddAnalysisProfile,
     'Analysis': AddAnalysis,
     'AnalysisRequest': AddAnalysisRequest,
+    'Attachment': AddAttachment,
     'Batch': AddBatch,
     'Client': AddClient,
     'Method': AddMethod,
