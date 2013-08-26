@@ -38,8 +38,7 @@
         <tr>
             <td id="lab-logo">
                 <a tal:attributes="href string:${portal/bika_setup/laboratory/getLabURL}/">
-                    <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/logo_print.png;
-                                        width string:213px "/></a>
+                    <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/logo_print.png;"/></a>
             </td>
             <td id="accreditation-logo"
                 tal:define="logo python:context.bika_setup.laboratory.getAccreditationBodyLogo()">
@@ -285,7 +284,7 @@
                 <tr>
                     <th class="analysis"><span tal:content='python: qccat'>Category: Vitamin D</span></th>
                     <th class="result"><span i18n:translate="">Result</span></th>
-                    <th class="units"><span i18n:translate="">Unit</span></th>
+                    <!-- <th class="units"><span i18n:translate="">Unit</span></th> -->
                     <th class="specs"><span i18n:translate="">Value Range</span></th>
                     <th class="refsample" tal:condition='python: duplicate==False'><span i18n:translate="">Reference Sample</span></th>
                     <th class="worksheet"><span i18n:translate="">Worksheet</span></th>
@@ -307,8 +306,10 @@
                                             qc_wshref python:qc_worksheet[0].absolute_url() if (qc_worksheet and len(qc_worksheet) > 0) else '';">
                 <tr tal:attributes="class python: 'outofrange' if qc_outofrange else '';">
                     <td class="analysis" tal:content="python:qc_service.Title()">Total 25-OHD</td>
-                    <td class="result" tal:content="python:qc_analysis.getResult()">0.8</td>
-                    <td class="units" tal:content="qc_service/Unit">ng/ml</td>
+
+                    <td><span class="result" tal:content="python:qc_analysis.getResult()">23</span> <span class="units" tal:content="qc_service/Unit|nothing"/></td>
+                    <!-- <td class="result" tal:content="python:qc_analysis.getResult()">0.8</td> -->
+                    <!-- <td class="units" tal:content="qc_service/Unit">ng/ml</td> -->
                     <td class="specs" tal:content="qc_range">0</td>
                     <td class="refsample" tal:content="qc_refsample_code">QC13-0001 - Vit D Blank</td>
                     <td class="worksheet">
@@ -335,8 +336,10 @@
                                             dqc_wshref python:dqc_worksheet[0].absolute_url() if (dqc_worksheet and len(dqc_worksheet) > 0) else '';">
                 <tr tal:attributes="class python: 'outofrange' if dqc_outofrange else '';">
                     <td class="analysis" tal:content="python:dqc_service.Title()">Total 25-OHD</td>
-                    <td class="result" tal:content="python:dqc_analysis.getResult()">0.8</td>
-                    <td class="units" tal:content="dqc_service/Unit">ng/ml</td>
+
+                    <td><span class="result" tal:content="python:dqc_analysis.getResult()">23</span> <span class="units" tal:content="dqc_service/Unit|nothing"/></td>
+                    <!-- <td class="result" tal:content="python:dqc_analysis.getResult()">0.8</td> -->
+                    <!-- <td class="units" tal:content="dqc_service/Unit">ng/ml</td> -->
                     <td class="specs" tal:content="dqc_range">0</td>
                     <td class="worksheet">
                         <a tal:attributes="href dqc_wshref"

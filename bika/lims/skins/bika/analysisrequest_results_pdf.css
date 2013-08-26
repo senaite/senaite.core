@@ -5,12 +5,6 @@ html, body {
     margin: 0;
     padding: 0;
 }
-body {
-/*    width: 210mm;
-    padding: 10px 10px 0px 20px;
-    margin: 10px auto;
-    background-color:#fff;*/
-}
 
 h1 {
     font-size:1.4em;
@@ -62,7 +56,7 @@ table#section-header td#lab-logo {
 }
 table#section-header td#accreditation-logo {
 
-    width:20mm;
+    width:25mm;
 }
 
 table#section-info {
@@ -97,11 +91,11 @@ table#section-info td#lab-info {
     border-bottom:1px solid #ccc;
 }
 
-
+/*------------------------------------------------------*/
 
 #section-results h2,
 #section-qcresults h2 {
-    padding-left:13px;
+    padding-left:12px;
     margin-bottom:0px;
     padding-bottom:0px;
     margin-top:20px;
@@ -122,39 +116,41 @@ table#section-info td#lab-info {
 }
 
 #section-results .analysis {
-    width:125px;
+    width:200px;
 }
 
 #section-results .result {
-    width:75px;
+    width:200px;
 }
 
 
 #section-results .specs {
-    width:50px;
+    width:200px;
     text-align:center;
-    padding-right:10px;
+
 }
 #section-results .outofrange {
-    width:10px;
+    width:200px;
 }
+
+
 #section-results .remarks {
-    font-size: 0.9em;
-    padding: 0 25px 5px 3px;
+    font-size: 0.8em;
+    padding: 0 650px 15px 3px;
+    color: #555;
+}
+
+#section-qcresults .analysis {
+    width:100px;
 }
 
 #section-qcresults .result {
-    width:60px;
+    width:100px;
 }
-#section-qcresults .units {
-    width:60px;
-    text-align:center;
-    padding-right:10px;
-}
+
 #section-qcresults .specs {
     width:100px;
     text-align:center;
-    padding-right:10px;
 }
 #section-qcresults .worksheet {
     width:80px;
@@ -165,6 +161,8 @@ table#section-info td#lab-info {
 #section-qcresults .outofrange {
     width:10px;
 }
+
+/*---------------------------------------------*/
 
 #section-attachments ul {
     list-style-type:none;
@@ -207,10 +205,9 @@ table#section-info td#lab-info {
     display:none;
 }
 
-
 @media print {
     * {
-        font: 12pt Georgia, "Times New Roman", Times, serif;
+        font: 9pt Arial, Verdana, serif;
     }
     a {
         text-decoration:none;
@@ -225,8 +222,7 @@ table#section-info td#lab-info {
         display:none;
     }
     .units {
-        color:#777;
-        font-weight:normal;
+        color:#555;
         font-style:italic;
         font-size:10px;
     }

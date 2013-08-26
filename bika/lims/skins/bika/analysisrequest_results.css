@@ -34,15 +34,17 @@ h2 {
 .result {
 
 }
-.units {
-    color:#777;
-    font-weight:none;
-    font-style:italic;
-    font-size:10px;
-}
+
 .outofrange {
     font-weight:bold;
     color:#d40000;
+}
+
+.units {
+    color:#777;
+    font-weight:normal;
+    font-style:italic;
+    font-size:10px;
 }
 
 table tr td,
@@ -131,11 +133,7 @@ table#section-info td#lab-info {
     width:100px;
 }
 
-#section-results .units {
-    width:100px;
-    text-align:center;
-    padding-right:10px;
-}
+
 
 #section-results .specs {
     width:200px;
@@ -147,17 +145,14 @@ table#section-info td#lab-info {
 }
 #section-results .remarks {
     font-size: 0.9em;
-    padding: 0 25px 5px 3px;
+    padding: 0 400px 15px 3px;
+    color: #555;
 }
 
 #section-qcresults .result {
     width:60px;
 }
-#section-qcresults .units {
-    width:60px;
-    text-align:center;
-    padding-right:10px;
-}
+
 #section-qcresults .specs {
     width:100px;
     text-align:center;
@@ -217,7 +212,7 @@ table#section-info td#lab-info {
 
 @media print {
     * {
-        font: 12pt Georgia, "Times New Roman", Times, serif;
+        font: 9pt Arial, Verdana, serif;
     }
     a {
         text-decoration:none;
@@ -230,12 +225,6 @@ table#section-info td#lab-info {
     #section-attachments {
         visibility:hidden;
         display:none;
-    }
-    .units {
-        color:#777;
-        font-weight:none;
-        font-style:italic;
-        font-size:10px;
     }
 
 }
