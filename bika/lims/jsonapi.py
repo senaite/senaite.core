@@ -1,5 +1,6 @@
 from AccessControl import getSecurityManager
 from AccessControl import Unauthorized
+from bika.lims.idserver import renameAfterCreation
 from bika.lims.permissions import AccessJSONAPI
 from bika.lims.utils import tmpID
 from bika.lims.workflow import doActionFor
@@ -11,6 +12,7 @@ from zExceptions import BadRequest
 from zope import event
 from zope import interface
 
+import json
 import App
 import logging
 
@@ -24,7 +26,8 @@ class JSONAPI(object):
     @property
     def routes(self):
         return (
-            ("/create", "create", self.create, dict(methods=['GET'])),
+            ("/create", "create", self.create, dict(methods=['GET', 'POST'])),
+            ("/read", "read", self.read, dict(methods=['GET', 'POST'])),
         )
 
     def set_fields_from_request(self, obj, request):
@@ -34,12 +37,7 @@ class JSONAPI(object):
         - Calls Accessor to retrieve value
         - Returns a dict of fields and current values
 
-        If the field name in the request ends in any of these:
-
-            _id
-            _Titles
-            _UID
-
+        If the field name in the request is <portal_type>_<index>
         Then the corrosponding index will be used to look up the object
         from the uid_catalog.  This is for setting reference fields, and the
         UID of the object found will be sent to the mutator.
@@ -56,7 +54,7 @@ class JSONAPI(object):
                 if fieldname not in schema:
                     continue
                 pc = getToolByName(obj, "portal_catalog")
-                brains = pc({index: request[key]})
+                brains = pc({'portal_type': fieldname, index: request[key]})
                 if not brains:
                     # object lookup failure need not be fatal;
                     # XXX for now we silently ignore lookup failure here,
@@ -82,10 +80,10 @@ class JSONAPI(object):
                 val = accessor()
                 if hasattr(val, 'Title') and callable(val.Title):
                     val = val.Title()
-                ret[fieldname] = val
+                ret[fieldname] = str(val)
         return ret
 
-    def _create_ar(self, context, request, client):
+    def _create_ar(self, context, request):
         """Creates AnalysisRequest object, with supporting Sample, Partition
         and Analysis objects.  The client is retrieved from the obj_path
         key in the request.
@@ -96,7 +94,7 @@ class JSONAPI(object):
               in the specified client.  The first Contact with the specified
               value in it's Fullname field will be used.
 
-            - SampleType_Title - Must be an existing sample type.
+            - SampleType_<index> - Must be an existing sample type.
 
         Optional request parameters:
 
@@ -116,20 +114,57 @@ class JSONAPI(object):
         pc = getToolByName(context, 'portal_catalog')
         ret = {
             "url": router.url_for("create", force_external=True),
-            "success": True
+            "success": True,
+            "error": False,
         }
         SamplingWorkflowEnabled = \
             context.bika_setup.getSamplingWorkflowEnabled()
-        required_fields = ['Contact', 'SampleType_Title', 'Services']
+        required_fields = ['Contact',
+                           'SamplingDate',
+                           'Services']
         for field in required_fields:
             if field not in request:
                 raise BadRequest("Missing field {0} in request".format(field))
-        # Fields which we munge/save manually.
+        # Client_X is also required in some form
+        try:
+            keys = [k for k in request.keys() if k.startswith("Client_")]
+            key = keys[0]
+            index = key.split("_")[-1]
+            client_proxy = pc({'portal_type': 'Client', index: request[key]})[0]
+            client = client_proxy.getObject()
+            request[key] = client_proxy.Title
+            ret['Client'] = client_proxy.Title
+        except:
+            raise BadRequest("Client not found, specify Client_title or Client_id...")
+        # SampleType_X is also required in some form
+        try:
+            keys = [k for k in request.keys() if k.startswith("SampleType_")]
+            key = keys[0]
+            index = key.split("_")[-1]
+            st_proxy = pc({'portal_type': 'SampleType', index: request[key]})[0]
+            sampletype = st_proxy.getObject()
+            request[key] = st_proxy.Title
+            ret['SampleType'] = st_proxy.Title
+        except:
+            raise BadRequest("SampleType not found, specify SampleType_title or SampleType_id...")
+        # Batch_X
+        try:
+            keys = [k for k in request.keys() if k.startswith("Batch_")]
+            key = keys[0]
+            index = key.split("_")[-1]
+            batch_proxy = pc({'portal_type': 'Batch', index: request[key]})[0]
+            batch = batch_proxy.getObject()
+            request[key] = batch_proxy.Title
+            ret['Batch'] = batch_proxy.Title
+        except IndexError:
+            pass
+        # Contact
         try:
             contact_uid = pc(portal_type='Contact', getFullname=request.get('Contact'))[0].UID
             request['Contact'] = contact_uid
         except:
-            raise BadRequest("Contact not found: getFullname="+request.get('Contact'))
+            raise BadRequest("Contact not found: getFullname=" + request.get('Contact'))
+        # CCContacts
         try:
             cc_contacts = [x.strip() for x in request.get('CCContacts', '').split(",")]
             cc_contact_uids = []
@@ -139,9 +174,10 @@ class JSONAPI(object):
                     cc_contact_uids.append(cc_contact_uid)
             request['CCContacts'] = cc_contact_uids
         except:
-            raise BadRequest("CC Contact not found: getFullname="+cc_contact)
+            raise BadRequest("CC Contact not found: getFullname=" + cc_contact)
+        # CCEmails
         request['CCEmails'] = [x.strip() for x in request.get('CCEmails', '').split(",")]
-
+        # Services
         service_titles = [x.strip() for x in request.get('Services', '').split(",")]
         services = []
         try:
@@ -153,17 +189,18 @@ class JSONAPI(object):
         except IndexError:
             raise IndexError("Service not found: {0}".format(service_title))
         service_uids = [service.UID() for service in services]
-
+        # Sample_id
         request['Sample_id'] = request.get('Sample_id', '')
         if request['Sample_id']:
-            # Secondary AR on existing sample
+            # Secondary AR
             sample = bc(id=request['Sample_id'])[0].getObject()
         else:
-            # Primary AR, create new sample.
+            # Primary AR
             _id = client.invokeFactory('Sample', id=tmpID())
             sample = client[_id]
             sample.unmarkCreationFlag()
             ret.update(self.set_fields_from_request(sample, request))
+            sample.setSampleType(sampletype.UID())
             sample._renameAfterCreation()
             sample.setSampleID(sample.getId())
             event.notify(ObjectInitializedEvent(sample))
@@ -174,6 +211,8 @@ class JSONAPI(object):
             else:
                 wftool.doActionFor(sample, 'no_sampling_workflow')
 
+        ret['sample_id'] = sample.getId()
+
         parts = [{'services': [],
                  'container':[],
                  'preservation':'',
@@ -183,8 +222,9 @@ class JSONAPI(object):
         ar = client[_id]
         ar.unmarkCreationFlag()
         ret.update(self.set_fields_from_request(ar, request))
-        ar.setSample(sample)
+        ar.setSample(sample.UID())
         ar._renameAfterCreation()
+        ret['ar_id'] = ar.getId()
         new_analyses = ar.setAnalyses(service_uids)
         ar.setRequestID(ar.getId())
         ar.reindexObject()
@@ -299,6 +339,14 @@ class JSONAPI(object):
         in the return value, for verification.
         """
 
+        # obj_type is required always.
+        obj_type = request.get("obj_type", "")
+        if not obj_type:
+            raise ValueError("bad or missing obj_type: " + obj_type)
+        # shortcut to create AnalysisRequest objects
+        if obj_type == "AnalysisRequest":
+            return self._create_ar(context, request)
+        # Other object types require explicit path as their parent
         obj_path = request.get("obj_path", "")
         if not obj_path:
             raise ValueError("bad or missing obj_path: " + obj_path)
@@ -306,30 +354,122 @@ class JSONAPI(object):
             obj_path = "/" + obj_path
         site_path = request['PATH_INFO'].replace("/@@API/create", "")
         parent = context.restrictedTraverse(site_path + obj_path)
-
+        # XXX normal permissions should still apply for this user
         if not getSecurityManager().checkPermission("AccessJSONAPI", parent):
             msg = "You don't have the '{0}' permission on {1}".format(
                 AccessJSONAPI, parent.absolute_url())
             raise Unauthorized(msg)
 
-        obj_type = request.get("obj_type", "")
-        if not obj_type:
-            raise ValueError("bad or missing obj_type: " + obj_type)
-
-        if obj_type == "AnalysisRequest":
-            return self._create_ar(context, request, parent)
-
         obj_id = request.get("obj_id", "")
+        _renameAfterCreation = False
         if not obj_id:
-            raise ValueError("bad or missing obj_id: " + obj_id)
+            _renameAfterCreation = True
+            obj_id = tmpID()
 
-        if obj_type == "AnalysisRequest":
-            return self._create_ar(context, request, parent, obj_id)
+        ret = {
+            "url": router.url_for("create", force_external=True),
+            "success": True,
+            "error": False,
+       }
 
         parent.invokeFactory(obj_type, obj_id)
-        obj = parent[obj_id].Schema()
+        obj = parent[obj_id]
         obj.unmarkCreationFlag()
-        ret = {"url": router.url_for("create", force_external=True),
-               "success": True}
+        if _renameAfterCreation:
+            renameAfterCreation(obj)
+        ret['obj_id'] = obj.getId()
         ret.update(self.set_fields_from_request(obj, request))
+        obj.reindexObject()
+        event.notify(ObjectInitializedEvent(obj))
+        obj.at_post_create_script()
+
+        return ret
+
+    def read(self, context, request):
+        """/@@API/read: Search the catalog and return data for all objects found
+
+        Optional parameters:
+
+            - catalog_name: uses portal_catalog if unspecified
+            - limit  default=1
+            - All catalog indexes are searched for in the request.
+
+        {
+            runtime: Function running time.
+            error: true or string(message) if error. false if no error.
+            success: true or string(message) if success. false if no success.
+            objects: list of dictionaries, containing catalog metadata
+        }
+        """
+
+        ret = {
+            "url": router.url_for("read", force_external=True),
+            "success": True,
+            "error": False,
+            "objects": [],
+        }
+        # get catalog_name
+        catalog_name = request.get("catalog_name", "portal_catalog")
+        if not catalog_name:
+            raise ValueError("bad or missing catalog_name: " + catalog_name)
+        catalog = getToolByName(context, catalog_name)
+        indexes = catalog.indexes()
+        # create contentFilter from request
+        contentFilter = {}
+        for index in indexes:
+            if index in request:
+                if index == 'review_state' and "{" in request[index]:
+                    continue
+                contentFilter[index] = request[index]
+        # get limit (or "1")
+        try:
+            limit = int(request.get("limit", 1))
+        except:
+            limit = None
+        finally:
+            if not limit:
+                raise ValueError("bad or missing limit: " + catalog_name)
+        contentFilter['limit'] = limit
+        # Get matching objects from catalog
+        proxies = catalog(**contentFilter)
+        for proxy in proxies:
+            obj = proxy.getObject()
+            schema = obj.Schema()
+            obj_data = {}
+            for field in schema.fields():
+                accessor = field.getAccessor(obj)
+                if accessor and callable(accessor):
+                    ### Special case for AR Analyses:
+                    if obj.portal_type == 'AnalysisRequest' and field.getName() == 'Analyses':
+                        val = self.ar_analysis_values(obj)
+                    else:
+                        val = accessor()
+                        if hasattr(val, 'Title') and callable(val.Title):
+                            val = val.Title()
+                        try:
+                            json.dumps(val)
+                        except:
+                            val = str(val)
+                    obj_data[field.getName()] = val
+            ret['objects'].append(obj_data)
+        return ret
+
+    def ar_analysis_values(self, obj):
+        ret = []
+        for analysis in obj.getAnalyses():
+            analysis = analysis.getObject()
+            schema = analysis.Schema()
+            analysis_data = {}
+            for field in schema.fields():
+                accessor = field.getAccessor(analysis)
+                if accessor and callable(accessor):
+                    val = accessor()
+                    if hasattr(val, 'Title') and callable(val.Title):
+                        val = val.Title()
+                    try:
+                        json.dumps(val)
+                    except:
+                        val = str(val)
+                    analysis_data[field.getName()] = val
+            ret.append(analysis_data)
         return ret

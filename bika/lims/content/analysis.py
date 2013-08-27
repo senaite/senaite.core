@@ -138,7 +138,7 @@ schema = BikaSchema.copy() + Schema((
         expression = 'context.aq_parent.getSample().getSampleType().UID()',
     ),
     ComputedField('SamplePointUID',
-        expression = 'context.aq_parent.getSample().getSamplePoint().UID()',
+        expression = 'context.aq_parent.getSample().getSamplePoint().UID() if context.aq_parent.getSample().getSamplePoint() else None',
     ),
     ComputedField('CategoryUID',
         expression = 'context.getService().getCategoryUID()',
