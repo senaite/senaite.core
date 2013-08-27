@@ -307,16 +307,14 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 if analysis.getInterimFields() != interimFields or \
                    analysis.getRetested() != retested or \
                    analysis.getRemarks() != remarks:
-                    analysis.edit(
-                        InterimFields = interimFields,
-                        Retested = retested,
-                        Remarks = remarks)
+                    analysis.setInterimFields(interimFields)
+                    analysis.setRetested(retested)
+                    analysis.setRemarks(remarks)
                 # save results separately, otherwise capture date is rewritten
                 if analysis.getResult() != result or \
                    analysis.getResultDM() != dry_result:
-                    analysis.edit(
-                        ResultDM = dry_result,
-                        Result = result)
+                    analysis.setResult(result)
+                    analysis.setResultDM(dry_result)
 
             # discover which items may be submitted
             # guard_submit does a lot of the same stuff, too.
