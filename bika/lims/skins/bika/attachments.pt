@@ -178,7 +178,7 @@
     <select name="AttachmentType">
     <tal:item
         tal:define="
-            vocab python:here.bika_setup_catalog(portal_type='AttachmentType');
+            vocab python:here.bika_setup_catalog(portal_type='AttachmentType',inactive_state='active');
             sort_on python:(('sortable_title', 'nocase', 'asc'),);
             vocab python:sequence.sort(vocab, sort_on);"
         tal:repeat="item vocab">
@@ -301,7 +301,7 @@
             <select name="AttachmentType">
                 <tal:item
                     tal:define="
-                        vocab python:here.bika_setup_catalog(portal_type='AttachmentType');
+                        vocab python:here.bika_setup_catalog(portal_type='AttachmentType',inactive_state='active');
                         sort_on python:(('Title', 'nocase', 'asc'),);
                         vocab python:sequence.sort(vocab, sort_on)"
                     tal:repeat="item vocab">
