@@ -118,15 +118,7 @@ function populate_sampletype(title) {
                'Title': title},
 	    dataType: "json",
 	    success: function(data, textStatus, $XHR){
-	    	if (data['UID']!='') {
-	    		$('#SampleMatrix').val(data['SampleMatrixTitle']);
-	    		$('#SampleMatrix').attr('uid', 'SampleMatrixUID');
-	    		$('#SampleMatrix_uid').val(data['SampleMatrixUID']);
-	    	} else {
-	    		$('#SampleMatrix').val('');
-	    		$('#SampleMatrix').attr('uid', '');
-	    		$('#SampleMatrix_uid').val('');
-	    	}
+	    	$('#SampleMatrix').val(data['SampleMatrixTitle']);
 	    }
 	});
 }

@@ -21,7 +21,6 @@ from Products.ZCTextIndex.ParseTree import ParseError
 import json
 import plone
 import urllib
-from string import count
 
 class SamplePartitionsView(BikaListingView):
     def __init__(self, context, request):
@@ -951,7 +950,6 @@ class SamplesView(BikaListingView):
 
 class ajaxGetSampleTypeInfo(BrowserView):
     def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
         plone.protect.CheckAuthenticator(self.request)
         uid = self.request.get('UID', '')
         title = self.request.get('Title', '')
