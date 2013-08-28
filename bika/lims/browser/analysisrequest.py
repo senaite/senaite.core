@@ -695,7 +695,7 @@ class AnalysisRequestViewView(BrowserView):
              'required': True},
             {'id': 'SampleMatrix',
              'title': _('Sample Matrix'),
-             'allow_edit': False,
+             'allow_edit': allow_sample_edit,
              'value': st.getSampleMatrix() and st.getSampleMatrix().Title() or '',
              'condition':True,
              'type': 'text'},

@@ -110,6 +110,27 @@ function workflow_transition_retract_ar(event) {
 	$('#portal-columns').fadeTo('slow', 0.3);
 }
 
+function populate_sampletype(title) {
+	$.ajax({
+		url: window.portal_url + "/getsampletypeinfo",
+		type: 'POST',
+		data: {'_authenticator': $('input[name="_authenticator"]').val(),
+               'Title': title},
+	    dataType: "json",
+	    success: function(data, textStatus, $XHR){
+	    	if (data['UID']!='') {
+	    		$('#SampleMatrix').val(data['SampleMatrixTitle']);
+	    		$('#SampleMatrix').attr('uid', 'SampleMatrixUID');
+	    		$('#SampleMatrix_uid').val(data['SampleMatrixUID']);
+	    	} else {
+	    		$('#SampleMatrix').val('');
+	    		$('#SampleMatrix').attr('uid', '');
+	    		$('#SampleMatrix_uid').val('');
+	    	}
+	    }
+	});
+}
+
 $(document).ready(function(){
 
 	_ = jarn.i18n.MessageFactory('bika');
@@ -129,6 +150,17 @@ $(document).ready(function(){
 	
 	// Show email message box when AR gets retracted/invalidated
 	$("#workflow-transition-retract_ar").click(workflow_transition_retract_ar);
+	
+	// Update sample matrix when sample type changed in AnalysisRequestViewView
+    $("#SampleType").autocomplete({
+        select: function (event, ui) {
+        	populate_sampletype(ui.item.value);
+        }
+    });
+	if ($("input[id='SampleMatrix']")) {
+		$("input[id='SampleMatrix']").attr('readonly', true);
+	} 
+	
 
 });
 }(jQuery));

@@ -17,9 +17,11 @@ from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
+from Products.ZCTextIndex.ParseTree import ParseError
 import json
 import plone
 import urllib
+from string import count
 
 class SamplePartitionsView(BikaListingView):
     def __init__(self, context, request):
@@ -945,3 +947,57 @@ class SamplesView(BikaListingView):
         self.review_states = new_states
 
         return items
+
+
+class ajaxGetSampleTypeInfo(BrowserView):
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        plone.protect.CheckAuthenticator(self.request)
+        uid = self.request.get('UID', '')
+        title = self.request.get('Title', '')
+        ret = {
+               'UID': '',
+               'Title': '',
+               'Prefix': '',
+               'Hazardous': '',
+               'SampleMatrixUID': '',
+               'SampleMatrixTitle': '',
+               'MinimumVolume':  '',
+               'ContainerTypeUID': '',
+               'ContainerTypeTitle': '',
+               'SamplePoints': ('',),
+               }
+        proxies = None
+        if uid:
+            try:
+                bsc = getToolByName(self.context, 'bika_setup_catalog')
+                proxies = bsc(UID=uid)
+            except ParseError:
+                pass
+        elif title:
+            try:
+                bsc = getToolByName(self.context, 'bika_setup_catalog')
+                proxies = bsc(portal_type='SampleType', title=title)
+            except ParseError:
+                pass
+
+        if proxies and len(proxies) == 1:
+            st = proxies[0].getObject();
+            ret = {
+               'UID': st.UID(),
+               'Title': st.Title(),
+               'Prefix': st.getPrefix(),
+               'Hazardous': st.getHazardous(),
+               'SampleMatrixUID': st.getSampleMatrix() and \
+                                  st.getSampleMatrix().UID() or '',
+               'SampleMatrixTitle': st.getSampleMatrix() and \
+                                  st.getSampleMatrix().Title() or '',
+               'MinimumVolume':  st.getMinimumVolume(),
+               'ContainerTypeUID': st.getContainerType() and \
+                                   st.getContainerType().UID() or '',
+               'ContainerTypeTitle': st.getContainerType() and \
+                                     st.getContainerType().Title() or '',
+               'SamplePoints': dict((sp.UID(),sp.Title()) for sp in st.getSamplePoints()),
+               }
+
+        return json.dumps(ret)

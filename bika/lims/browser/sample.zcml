@@ -71,5 +71,13 @@
       permission="bika.lims.permissions.AddSamplePartition"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
+    
+    <browser:page
+      for="*"
+      name="getsampletypeinfo"
+      class="bika.lims.browser.sample.ajaxGetSampleTypeInfo"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
 
 </configure>
