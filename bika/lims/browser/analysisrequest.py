@@ -26,6 +26,7 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from zExceptions import BadRequest
 from zope.component import adapts
 from zope.component import queryAdapter
 from zope.i18n.locales import locales
@@ -1652,8 +1653,14 @@ class ajaxAnalysisRequestSubmit():
                 values['ClientUID'] = client.UID()
             else:
                 ClientID = values['ClientID']
-                proxies = pc(portal_type = 'Client', getClientID = ClientID)
-                client = proxies[0].getObject()
+                clients = self.context.clients.objectValues()
+                client = None
+                for c in clients:
+                    if c.getClientID() == ClientID:
+                        client = c
+                        break
+                if not client:
+                    raise BadRequest("AR Add: Client not found or not specified")
                 values['ClientUID'] = client.UID()
             if values.has_key('SampleID'):
                 # Secondary AR
