@@ -89,7 +89,7 @@ class WorksheetWorkflowAction(WorkflowAction):
             # discover which items may be submitted
             submissable = []
             for uid, analysis in selected_analyses.items():
-                if uid not in results:
+                if uid not in results or not results[uid]:
                     continue
                 can_submit = True
                 if hasattr(analysis, 'getDependencies'):
@@ -258,7 +258,7 @@ class WorksheetAnalysesView(AnalysesView):
             items[x]['Service'] = service.Title()
             items[x]['Method'] = method and method.Title() or ''
             items[x]['class']['Service'] = 'service_title'
-            items[x]['Category'] = service.getCategory().Title()
+            items[x]['Category'] = service.getCategory() and service.getCategory().Title() or ''
             if obj.portal_type == "ReferenceAnalysis":
                 items[x]['DueDate'] = self.ulocalized_time(obj.aq_parent.getExpiryDate(), long_format=0)
             else:
@@ -323,11 +323,18 @@ class WorksheetAnalysesView(AnalysesView):
                 continue
 
             # set Pos column for this row, to have a rowspan
-            # It gets doubled if we have Remarks rows enabled
-            if self.context.bika_setup.getEnableAnalysisRemarks():
-                rowspan = len(pos_items) * 2
-            else:
-                rowspan = len(pos_items)
+            # Analysis Remarks only allowed for Analysis types
+            # Needs to look inside all slot analyses, cause some of them can
+            # have remarks entered and can have different analysis statuses
+            rowspan = len(pos_items)
+            remarksenabled = self.context.bika_setup.getEnableAnalysisRemarks()
+            for pos_subitem in pos_items:
+                subitem = items[pos_subitem]
+                isanalysis = subitem['obj'].portal_type == 'Analysis'
+                hasremarks = True if subitem.get('Remarks', '') else False
+                remarksedit = remarksenabled and 'Remarks' in subitem.get('allowedit', [])
+                if isanalysis and (hasremarks or remarksedit):
+                    rowspan += 1
             items[x]['rowspan'] = {'Pos': rowspan}
 
             # fill the rowspan with a little table
@@ -346,9 +353,11 @@ class WorksheetAnalysesView(AnalysesView):
             pos_text = "<table class='worksheet-position' width='100%%' cellpadding='0' cellspacing='0' style='padding-bottom:5px;'><tr>" + \
                        "<td class='pos' rowspan='3'>%s</td>" % pos
 
-            if obj.portal_type == 'ReferenceAnalysis' or \
-                (obj.portal_type == 'DuplicateAnalysis' and \
-                 obj.getAnalysis().portal_type == 'ReferenceAnalysis'):
+            if obj.portal_type == 'ReferenceAnalysis':
+                pos_text += "<td class='pos_top'><a href='%s'>%s</a></td>" % \
+                    (obj.aq_parent.absolute_url(), obj.aq_parent.id)
+            elif obj.portal_type == 'DuplicateAnalysis' and \
+                obj.getAnalysis().portal_type == 'ReferenceAnalysis':
                 pos_text += "<td class='pos_top'><a href='%s'>%s</a></td>" % \
                     (obj.aq_parent.absolute_url(), obj.aq_parent.id)
             elif client:
@@ -377,6 +386,8 @@ class WorksheetAnalysesView(AnalysesView):
                 pos_text += "<a href='%s'>%s</a>" % (parent.absolute_url(), parent.Title())
             elif parent.portal_type == 'ReferenceSample':
                 pos_text += "<a href='%s'>%s</a>" % (parent.absolute_url(), parent.Title())
+            elif obj.portal_type == 'DuplicateAnalysis':
+                pos_text += "<a style='white-space:nowrap' href='%s'>%s</a>" % (obj.getAnalysis().aq_parent.absolute_url(), obj.id)
             elif parent.portal_type == 'Worksheet':
                 parent = obj.getAnalysis().aq_parent
                 pos_text += "<a href='%s'>(%s)</a>" % (parent.absolute_url(), parent.Title())
@@ -631,7 +642,7 @@ class AddAnalysesView(BikaListingView):
                 items[x]['after']['DueDate'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                     (self.context.absolute_url(),
                      self.context.translate(_("Late Analysis")))
-            items[x]['CategoryTitle'] = service.getCategory().Title()
+            items[x]['CategoryTitle'] = service.getCategory() and service.getCategory().Title() or ''
 
             if getSecurityManager().checkPermission(EditResults, obj.aq_parent):
                 url = obj.aq_parent.absolute_url() + "/manage_results"
@@ -983,7 +994,7 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
         self.review_states = [
             {'id':'default',
              'title': _('All'),
-             'contentFilter':{},
+             'contentFilter':{'review_state':'current'},
              'columns': ['ID',
                          'Title',
                          'Definition',
@@ -994,7 +1005,7 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
 
     def folderitems(self):
         translate = self.context.translate
-
+        workflow = getToolByName(self.context, 'portal_workflow')
         items = super(ajaxGetWorksheetReferences, self).folderitems()
         new_items = []
         for x in range(len(items)):
@@ -1006,6 +1017,8 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
             ws_ref_services = [rs for rs in ref_services if
                                rs.UID() in self.service_uids]
             if ws_ref_services:
+                if workflow.getInfoFor(obj, 'review_state') != 'current':
+                    continue
                 services = [rs.Title() for rs in ws_ref_services]
                 items[x]['nr_services'] = len(services)
                 items[x]['Definition'] = (obj.getReferenceDefinition() and obj.getReferenceDefinition().Title()) or ''
@@ -1136,7 +1149,7 @@ class ajaxAttachAnalyses(BrowserView):
                 if matches:
                     rows.append(row)
 
-        rows = sorted(rows, cmp=lambda x,y: cmp(x, y), key = itemgetter(sidx and sidx or 'slot'))
+        rows = sorted(rows, cmp=lambda x,y: cmp(x, y, key = itemgetter(sidx and sidx or 'slot')))
         if sord == 'desc':
             rows.reverse()
         pages = len(rows) / int(nr_rows)
