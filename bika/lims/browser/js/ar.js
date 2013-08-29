@@ -75,10 +75,10 @@ function workflow_transition_retract_ar(event) {
 				_("Are you sure?") +
 			"</p>" +
 		"</div>");
-		
+
 	yes = _("Yes");
 	no = _("No");
-	$("#arretractmsgbox").dialog({width:450, resizable:false, closeOnEscape: false, 
+	$("#arretractmsgbox").dialog({width:450, resizable:false, closeOnEscape: false,
 		buttons:{
 			yes: function(){
 				// Set the additional remarks to the AR
@@ -86,7 +86,7 @@ function workflow_transition_retract_ar(event) {
 				addremarks = $.trim($("#arretractmsgbox_addremarks").val());
 				if (addremarks && addremarks!='') {
 					$("#archetypes-fieldname-Remarks #Remarks").val(addremarks);
-					$("#archetypes-fieldname-Remarks input[type=submit]").click();	
+					$("#archetypes-fieldname-Remarks input[type=submit]").click();
 					// Add a delay in order to allow server saving the remarks
 					// Not sure if needed. Works without this snippet in dev
 					setTimeout(function (){
@@ -139,20 +139,22 @@ $(document).ready(function(){
 
 	// Disable Plone UI for preserve transition
 	$("#workflow-transition-preserve").click(workflow_transition_preserve);
-	
+
 	// Show email message box when AR gets retracted/invalidated
 	$("#workflow-transition-retract_ar").click(workflow_transition_retract_ar);
-	
+
 	// Update sample matrix when sample type changed in AnalysisRequestViewView
-    $("#SampleType").autocomplete({
-        select: function (event, ui) {
-        	populate_sampletype(ui.item.value);
-        }
-    });
-	if ($("input[id='SampleMatrix']")) {
-		$("input[id='SampleMatrix']").attr('readonly', true);
-	} 
-	
+	if(window.location.href.search("ar_add") < 0) {
+	    $("#SampleType").autocomplete({
+	        select: function (event, ui) {
+	        	populate_sampletype(ui.item.value);
+	        }
+	    });
+		if ($("input[id='SampleMatrix']")) {
+			$("input[id='SampleMatrix']").attr('readonly', true);
+		}
+	}
+
 
 });
 }(jQuery));
