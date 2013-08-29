@@ -6,7 +6,7 @@
 
     <browser:page
       for="bika.lims.interfaces.ISupplyOrder"
-      name="edit"
+      name="custom_edit"
       class="bika.lims.browser.supplyorder.EditView"
       permission="bika.lims.ManageClients"
       layer="bika.lims.interfaces.IBikaLIMS"

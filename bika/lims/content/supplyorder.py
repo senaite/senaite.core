@@ -12,25 +12,29 @@ from Products.CMFCore import permissions
 from Products.CMFPlone.utils import safe_unicode
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from zope.interface import implements
+from zope.component import getAdapter
 
 from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import ManageBika, PROJECTNAME
 from bika.lims.interfaces import ISupplyOrder
-
+from bika.lims.browser.widgets import DateTimeWidget
 
 schema = BikaSchema.copy() + Schema((
-    ReferenceField('Contact',
-                   required = 1,
-                   vocabulary = 'getContacts',
-                   default_method = 'getContactUIDForUser',
-                   vocabulary_display_path_bound = sys.maxint,
-                   allowed_types = ('Contact',),
-                   referenceClass = HoldingReference,
-                   relationship = 'SupplyOrderContact',
-                   ),
+    ReferenceField(
+      'Contact',
+      required = 1,
+      vocabulary = 'getContacts',
+      default_method = 'getContactUIDForUser',
+      vocabulary_display_path_bound = sys.maxint,
+      allowed_types = ('Contact',),
+      referenceClass = HoldingReference,
+      relationship = 'SupplyOrderContact',
+      widget=ReferenceWidget(
+        render_own_label=True,
+      ),
+    ),
     StringField('OrderNumber',
                 required = 1,
                 default_method = 'getId',
@@ -45,13 +49,22 @@ schema = BikaSchema.copy() + Schema((
                    referenceClass = HoldingReference,
                    relationship = 'OrderInvoice',
                    ),
-    DateTimeField('OrderDate',
-                  required = 1,
-                  default_method = 'current_date',
-                  widget = DateTimeWidget(
-                      label = _("Date"),
-                      ),
-                  ),
+    DateTimeField(
+      'OrderDate',
+      required=1,
+      default_method='current_date',
+      widget=DateTimeWidget(
+        label=_("Order Date"),
+        size=12,
+        render_own_label=True,
+        visible={
+          'edit': 'visible',
+          'view': 'visible',
+          'add': 'visible',
+          'secondary': 'invisible'
+        },
+      ),
+    ),
     DateTimeField('DateDispatched',
                   widget = DateTimeWidget(
                       label = _("Date Dispatched"),
@@ -103,6 +116,10 @@ class SupplyOrder(BaseFolder):
     def Title(self):
         """ Return the OrderNumber as title """
         return safe_unicode(self.getOrderNumber()).encode('utf-8')
+
+    def getContacts(self):
+        adapter = getAdapter(self.aq_parent, name='getContacts')
+        return adapter()
 
     security.declarePublic('getContactUIDForUser')
     def getContactUIDForUser(self):
