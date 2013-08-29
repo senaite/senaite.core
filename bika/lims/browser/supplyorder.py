@@ -11,8 +11,13 @@ class EditView(BrowserView):
     field = ViewPageTemplateFile('templates/row_field.pt')
 
     def __call__(self):
+        portal = self.portal
         request = self.request
         context = self.context
+        setup = portal.bika_setup
+        # Collect the products
+        products = setup.bika_labproducts.objectValues('LabProduct')
+        # Handle for submission and regular request
     	if 'submit' in request:
             context.processForm()
             portal_factory = getToolByName(context, 'portal_factory')
@@ -21,6 +26,15 @@ class EditView(BrowserView):
             request.response.redirect(parent_url + '/orders')
             return
         else:
-        	self.orderDate = context.Schema()['OrderDate']
-        	self.contact = context.Schema()['Contact']
-        	return self.template()
+            self.orderDate = context.Schema()['OrderDate']
+            self.contact = context.Schema()['Contact']
+            # Prepare the products
+            self.products = ({
+                'title': o.Title(),
+                'description': o.Description(),
+                'volume': o.getVolume(),
+                'unit': o.getUnit(),
+                'price': o.getPrice(),
+            } for o in products)
+            # Render the template
+            return self.template()

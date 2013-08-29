@@ -61,3 +61,17 @@ table.invoice-items th.text, table.invoice-items td.text {
 table.invoice-items th.currency, table.invoice-items td.currency {
 	text-align: right;
 }
+
+table.invoice-items th.center, table.invoice-items td.center {
+	text-align: center
+}
+
+table.invoice-items td.number {
+	width: 100px;
+	text-align: center;
+}
+
+table.invoice-items td.number input {
+	width: 60%;
+	text-align: right;
+}

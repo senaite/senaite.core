@@ -22,6 +22,34 @@
 						<tal:field content="structure python:view.field(field=view.orderDate)" />
 						<tal:field content="structure python:view.field(field=view.contact)" />
 					</table>
+					<table class="invoice-items">
+						<thead>
+							<tr>
+								<th i18n:translate="">Product</th>
+								<th i18n:translate="">Description</th>
+								<th i18n:translate="">Volume</th>
+								<th i18n:translate="">Unit</th>
+								<th i18n:translate="">Price</th>
+								<th i18n:translate="">Quantity</th>
+								<th class="currency" i18n:translate="">Total</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tal:products repeat="product view/products">
+								<tal:product>
+									<tr>
+										<td tal:content="product/title"></td>
+										<td class="text" tal:content="product/description"></td>
+										<td class="number" tal:content="product/volume"></td>
+										<td class="center" tal:content="product/unit"></td>
+										<td class="currency" tal:content="product/price"></td>
+										<td class="number"><input type="text" tal:attributes="name string:product${repeat/product/index}" /></td>
+										<td class="currency">0</td>
+									</tr>
+								</tal:product>
+							</tal:products>
+						</tbody>
+					</table>
 				</div>
 				<div class="formControls">
 					<input class="context" type="submit" name="submit" value="Save" />
