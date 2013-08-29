@@ -309,6 +309,9 @@ class BikaListingView(BrowserView):
 
         # sort on
         sort_on = self.request.get(form_id + '_sort_on', '')
+        if type(sort_on) in (list, tuple):
+            sort_on = sort_on[0]
+
         # manual_sort_on: only sort the current batch of items
         # this is a compromise for sorting without column indexes
         self.manual_sort_on = None
