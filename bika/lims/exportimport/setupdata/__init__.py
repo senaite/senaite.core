@@ -1521,3 +1521,35 @@ class Invoice_Batches(WorksheetImporter):
                 BatchEndDate=row['end'],
             )
             renameAfterCreation(obj)
+
+
+class Lab_Products(WorksheetImporter):
+
+    def Import(self):
+        folder = self.context.bika_setup.bika_labproducts
+        for row in self.get_rows(3):
+            # Create a new object
+            _id = folder.invokeFactory('LabProduct', id=tmpID())
+            obj = folder[_id]
+            # Ensure that all fields are present
+            fields = [
+                'title', 'description', 'volume',
+                'unit', 'vat', 'price'
+            ]
+            for field in fields:
+                if field not in row:
+                    msg = "LabProduct requires a value for %s" % (field)
+                    raise Exception(msg)
+            # Set the values according to the row
+            obj.edit(
+                title=row['title'],
+                Description=row['description'],
+                Volume=row['volume'],
+                Unit=row['unit'],
+                VAT=str(row['vat']),
+                Price=str(row['price']),
+            )
+            # Rename the object
+            renameAfterCreation(obj)
+
+
