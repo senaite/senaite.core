@@ -1543,7 +1543,7 @@ class Lab_Products(WorksheetImporter):
             # Set the values according to the row
             obj.edit(
                 title=row['title'],
-                Description=row['description'],
+                description=row['description'],
                 Volume=row['volume'],
                 Unit=row['unit'],
                 VAT=str(row['vat']),
