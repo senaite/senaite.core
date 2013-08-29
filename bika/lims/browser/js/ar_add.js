@@ -462,7 +462,7 @@ function calcdependencies(elements, auto_yes) {
 			$("body").append(
 				"<div id='messagebox' style='display:none' title='" + _("Service dependencies") + "'>"+
 				_("<p>${service} requires the following services to be selected:</p><br/><p>${deps}</p><br/><p>Do you want to apply these selections now?</p>",
-					{service:$(element).aattrttr('title'),
+					{service:$(element).attr('title'),
 					 deps: affected_titles.join("<br/>")})+"</div>");
 				function add_Yes(){
 					$.each(dep_args, function(i,args){
