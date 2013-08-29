@@ -113,7 +113,7 @@
 		</li>
  	</ul>
  	
- 	<h2 i18n:translate="">Traceability</h2>    
+<!--  	<h2 i18n:translate="">Traceability</h2>    
     <ul id="toc-reports">      
 		<li>
     		<a href="#" id="usershistory_selector" 
@@ -139,7 +139,7 @@
             	</form>
 			</div>
 		</li>
- 	</ul>
+ 	</ul> -->
 </fieldset> 
 </div>
 </metal:content-core>
