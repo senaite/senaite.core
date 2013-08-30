@@ -1,6 +1,7 @@
 from AccessControl import getSecurityManager
 from AccessControl import Unauthorized
 from bika.lims.idserver import renameAfterCreation
+from bika.lims.jsonapi import set_fields_from_request
 from bika.lims.permissions import AccessJSONAPI
 from bika.lims.utils import tmpID
 from bika.lims.workflow import doActionFor
@@ -12,12 +13,8 @@ from zExceptions import BadRequest
 from zope import event
 from zope import interface
 
-import json
-import App
-import logging
 
-
-class JSONAPI(object):
+class Create(object):
     interface.implements(IRouteProvider)
 
     def initialize(self, context, request):
@@ -27,60 +24,78 @@ class JSONAPI(object):
     def routes(self):
         return (
             ("/create", "create", self.create, dict(methods=['GET', 'POST'])),
-            ("/read", "read", self.read, dict(methods=['GET', 'POST'])),
         )
 
-    def set_fields_from_request(self, obj, request):
-        """Search request for keys that match field names in obj.
+    def create(self, context, request):
+        """/@@API/create: Create new object.
 
-        - Calls field mutator with request value
-        - Calls Accessor to retrieve value
-        - Returns a dict of fields and current values
+        Required parameters:
 
-        If the field name in the request is <portal_type>_<index>
-        Then the corrosponding index will be used to look up the object
-        from the uid_catalog.  This is for setting reference fields, and the
-        UID of the object found will be sent to the mutator.
+            - obj_path = path of new object, from plone site root.
+            - obj_id = ID of new object.
+            - obj_type = portal_type of new object.
 
+        All other parameters in the request are matched against the object's
+        Schema.  If a matching field is found in the schema, then the value is
+        taken from the request and sent to the field's mutator.
+
+        The function returns a dictionary as a json string:
+
+        {
+            runtime: Function running time.
+            error: true or string(message) if error. false if no error.
+            success: true or string(message) if success. false if no success.
+        }
+
+        All fields which were automatically matched in the request, and which
+        were successfully completed with the request value, are also included
+        in the return value, for verification.
         """
-        debug_mode = App.config.getConfiguration().debug_mode
-        logger = logging.getLogger('bika.jsonapi')
-        schema = obj.Schema()
-        # fields contains all schema-valid field values from the request.
-        fields = {}
-        for key, value in request.items():
-            if "_" in key:
-                fieldname, index = key.split("_", 1)
-                if fieldname not in schema:
-                    continue
-                pc = getToolByName(obj, "portal_catalog")
-                brains = pc({'portal_type': fieldname, index: request[key]})
-                if not brains:
-                    # object lookup failure need not be fatal;
-                    # XXX for now we silently ignore lookup failure here,
-                    continue
-                value = brains[0].UID if brains else request[fieldname]
-            else:
-                fieldname = key
-                if fieldname not in schema:
-                    continue
-                value = request[fieldname]
-            fields[fieldname] = value
-        if debug_mode:
-            logger.info("Found schema fields for {0} in request: {1}".format(obj, fields))
-        # write and then read each field.
-        ret = {}
-        for fieldname, value in fields.items():
-            field = schema[fieldname]
-            mutator = field.getMutator(obj)
-            if mutator and callable(mutator):
-                mutator(value)
-            accessor = field.getAccessor(obj)
-            if accessor and callable(accessor):
-                val = accessor()
-                if hasattr(val, 'Title') and callable(val.Title):
-                    val = val.Title()
-                ret[fieldname] = str(val)
+
+        # obj_type is required always.
+        obj_type = request.get("obj_type", "")
+        if not obj_type:
+            raise ValueError("bad or missing obj_type: " + obj_type)
+        # shortcut to create AnalysisRequest objects
+        if obj_type == "AnalysisRequest":
+            return self._create_ar(context, request)
+        # Other object types require explicit path as their parent
+        obj_path = request.get("obj_path", "")
+        if not obj_path:
+            raise ValueError("bad or missing obj_path: " + obj_path)
+        if not obj_path.startswith("/"):
+            obj_path = "/" + obj_path
+        site_path = request['PATH_INFO'].replace("/@@API/create", "")
+        parent = context.restrictedTraverse(site_path + obj_path)
+        # XXX normal permissions should still apply for this user
+        if not getSecurityManager().checkPermission("AccessJSONAPI", parent):
+            msg = "You don't have the '{0}' permission on {1}".format(
+                AccessJSONAPI, parent.absolute_url())
+            raise Unauthorized(msg)
+
+        obj_id = request.get("obj_id", "")
+        _renameAfterCreation = False
+        if not obj_id:
+            _renameAfterCreation = True
+            obj_id = tmpID()
+
+        ret = {
+            "url": router.url_for("create", force_external=True),
+            "success": True,
+            "error": False,
+       }
+
+        parent.invokeFactory(obj_type, obj_id)
+        obj = parent[obj_id]
+        obj.unmarkCreationFlag()
+        if _renameAfterCreation:
+            renameAfterCreation(obj)
+        ret['obj_id'] = obj.getId()
+        ret.update(set_fields_from_request(obj, request))
+        obj.reindexObject()
+        event.notify(ObjectInitializedEvent(obj))
+        obj.at_post_create_script()
+
         return ret
 
     def _create_ar(self, context, request):
@@ -199,7 +214,7 @@ class JSONAPI(object):
             _id = client.invokeFactory('Sample', id=tmpID())
             sample = client[_id]
             sample.unmarkCreationFlag()
-            ret.update(self.set_fields_from_request(sample, request))
+            ret.update(set_fields_from_request(sample, request))
             sample.setSampleType(sampletype.UID())
             sample._renameAfterCreation()
             sample.setSampleID(sample.getId())
@@ -221,7 +236,7 @@ class JSONAPI(object):
         _id = client.invokeFactory('AnalysisRequest', tmpID())
         ar = client[_id]
         ar.unmarkCreationFlag()
-        ret.update(self.set_fields_from_request(ar, request))
+        ret.update(set_fields_from_request(ar, request))
         ar.setSample(sample.UID())
         ar._renameAfterCreation()
         ret['ar_id'] = ar.getId()
@@ -311,165 +326,4 @@ class JSONAPI(object):
                 if sample_state not in not_receive:
                     doActionFor(analysis, 'receive')
 
-        return ret
-
-    def create(self, context, request):
-        """/@@API/create: Create new object.
-
-        Required parameters:
-
-            - obj_path = path of new object, from plone site root.
-            - obj_id = ID of new object.
-            - obj_type = portal_type of new object.
-
-        All other parameters in the request are matched against the object's
-        Schema.  If a matching field is found in the schema, then the value is
-        taken from the request and sent to the field's mutator.
-
-        The function returns a dictionary as a json string:
-
-        {
-            runtime: Function running time.
-            error: true or string(message) if error. false if no error.
-            success: true or string(message) if success. false if no success.
-        }
-
-        All fields which were automatically matched in the request, and which
-        were successfully completed with the request value, are also included
-        in the return value, for verification.
-        """
-
-        # obj_type is required always.
-        obj_type = request.get("obj_type", "")
-        if not obj_type:
-            raise ValueError("bad or missing obj_type: " + obj_type)
-        # shortcut to create AnalysisRequest objects
-        if obj_type == "AnalysisRequest":
-            return self._create_ar(context, request)
-        # Other object types require explicit path as their parent
-        obj_path = request.get("obj_path", "")
-        if not obj_path:
-            raise ValueError("bad or missing obj_path: " + obj_path)
-        if not obj_path.startswith("/"):
-            obj_path = "/" + obj_path
-        site_path = request['PATH_INFO'].replace("/@@API/create", "")
-        parent = context.restrictedTraverse(site_path + obj_path)
-        # XXX normal permissions should still apply for this user
-        if not getSecurityManager().checkPermission("AccessJSONAPI", parent):
-            msg = "You don't have the '{0}' permission on {1}".format(
-                AccessJSONAPI, parent.absolute_url())
-            raise Unauthorized(msg)
-
-        obj_id = request.get("obj_id", "")
-        _renameAfterCreation = False
-        if not obj_id:
-            _renameAfterCreation = True
-            obj_id = tmpID()
-
-        ret = {
-            "url": router.url_for("create", force_external=True),
-            "success": True,
-            "error": False,
-       }
-
-        parent.invokeFactory(obj_type, obj_id)
-        obj = parent[obj_id]
-        obj.unmarkCreationFlag()
-        if _renameAfterCreation:
-            renameAfterCreation(obj)
-        ret['obj_id'] = obj.getId()
-        ret.update(self.set_fields_from_request(obj, request))
-        obj.reindexObject()
-        event.notify(ObjectInitializedEvent(obj))
-        obj.at_post_create_script()
-
-        return ret
-
-    def read(self, context, request):
-        """/@@API/read: Search the catalog and return data for all objects found
-
-        Optional parameters:
-
-            - catalog_name: uses portal_catalog if unspecified
-            - limit  default=1
-            - All catalog indexes are searched for in the request.
-
-        {
-            runtime: Function running time.
-            error: true or string(message) if error. false if no error.
-            success: true or string(message) if success. false if no success.
-            objects: list of dictionaries, containing catalog metadata
-        }
-        """
-
-        ret = {
-            "url": router.url_for("read", force_external=True),
-            "success": True,
-            "error": False,
-            "objects": [],
-        }
-        # get catalog_name
-        catalog_name = request.get("catalog_name", "portal_catalog")
-        if not catalog_name:
-            raise ValueError("bad or missing catalog_name: " + catalog_name)
-        catalog = getToolByName(context, catalog_name)
-        indexes = catalog.indexes()
-        # create contentFilter from request
-        contentFilter = {}
-        for index in indexes:
-            if index in request:
-                if index == 'review_state' and "{" in request[index]:
-                    continue
-                contentFilter[index] = request[index]
-        # get limit (or "1")
-        try:
-            limit = int(request.get("limit", 1))
-        except:
-            limit = None
-        finally:
-            if not limit:
-                raise ValueError("bad or missing limit: " + catalog_name)
-        contentFilter['limit'] = limit
-        # Get matching objects from catalog
-        proxies = catalog(**contentFilter)
-        for proxy in proxies:
-            obj = proxy.getObject()
-            schema = obj.Schema()
-            obj_data = {}
-            for field in schema.fields():
-                accessor = field.getAccessor(obj)
-                if accessor and callable(accessor):
-                    ### Special case for AR Analyses:
-                    if obj.portal_type == 'AnalysisRequest' and field.getName() == 'Analyses':
-                        val = self.ar_analysis_values(obj)
-                    else:
-                        val = accessor()
-                        if hasattr(val, 'Title') and callable(val.Title):
-                            val = val.Title()
-                        try:
-                            json.dumps(val)
-                        except:
-                            val = str(val)
-                    obj_data[field.getName()] = val
-            ret['objects'].append(obj_data)
-        return ret
-
-    def ar_analysis_values(self, obj):
-        ret = []
-        for analysis in obj.getAnalyses():
-            analysis = analysis.getObject()
-            schema = analysis.Schema()
-            analysis_data = {}
-            for field in schema.fields():
-                accessor = field.getAccessor(analysis)
-                if accessor and callable(accessor):
-                    val = accessor()
-                    if hasattr(val, 'Title') and callable(val.Title):
-                        val = val.Title()
-                    try:
-                        json.dumps(val)
-                    except:
-                        val = str(val)
-                    analysis_data[field.getName()] = val
-            ret.append(analysis_data)
         return ret

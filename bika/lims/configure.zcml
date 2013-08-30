@@ -26,6 +26,7 @@
   <include package=".content" />
   <include package=".controlpanel" />
   <include package=".exportimport" />
+  <include package=".jsonapi" />
   <include package=".locales" />
   <include package=".querystring" />
   <include package=".search" />
@@ -69,10 +70,5 @@
     permission="zope.Public"
     layer="bika.lims.interfaces.IBikaLIMS"
   />
-
-  <utility
-    name="bika.lims.jsonapi"
-    provides="plone.jsonapi.interfaces.IRouteProvider"
-    factory=".jsonapi.JSONAPI" />
 
 </configure>
