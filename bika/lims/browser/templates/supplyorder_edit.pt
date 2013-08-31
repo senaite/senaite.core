@@ -43,7 +43,7 @@
 										<td class="number" tal:content="product/volume"></td>
 										<td class="center" tal:content="product/unit"></td>
 										<td class="currency" tal:content="product/price"></td>
-										<td class="number"><input type="text" tal:attributes="name string:product${repeat/product/index}" /></td>
+										<td class="number"><input type="text" tal:attributes="name string:product${repeat/product/index}" value="0" /></td>
 										<td class="currency">0</td>
 									</tr>
 								</tal:product>

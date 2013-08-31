@@ -241,4 +241,15 @@
               expression=""
               insert-after="++resource++plone.app.jquerytools.js"/>
 
+  <javascript authenticated="False"
+              id="++resource++bika.lims.js/supplyorder_edit.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
 </object>
