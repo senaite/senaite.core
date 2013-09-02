@@ -35,6 +35,7 @@ class EditView(BrowserView):
                 'volume': o.getVolume(),
                 'unit': o.getUnit(),
                 'price': o.getPrice(),
+                'vat': "%s%%" % o.getVAT(),
             } for o in products)
             # Render the template
             return self.template()

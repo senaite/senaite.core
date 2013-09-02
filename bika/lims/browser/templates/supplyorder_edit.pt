@@ -16,7 +16,7 @@
 	<body>
 
 		<metal:content fill-slot="content">
-			<form id="edit" name="edit" method="post" action="">
+			<form id="supplyorder_edit" name="edit" method="post" action="">
 				<div id="content" tal:define="errors python:{}">
 					<table class="invoice-header">
 						<tal:field content="structure python:view.field(field=view.orderDate)" />
@@ -30,6 +30,7 @@
 								<th i18n:translate="">Volume</th>
 								<th i18n:translate="">Unit</th>
 								<th i18n:translate="">Price</th>
+								<th i18n:translate="">VAT</th>
 								<th i18n:translate="">Quantity</th>
 								<th class="currency" i18n:translate="">Total</th>
 							</tr>
@@ -43,11 +44,24 @@
 										<td class="number" tal:content="product/volume"></td>
 										<td class="center" tal:content="product/unit"></td>
 										<td class="currency" tal:content="product/price"></td>
+										<td class="center" tal:content="product/vat"></td>
 										<td class="number"><input type="text" tal:attributes="name string:product${repeat/product/index}" value="0" /></td>
-										<td class="currency">0</td>
+										<td class="currency">0.00</td>
 									</tr>
 								</tal:product>
 							</tal:products>
+							<tr class="totals">
+								<td colspan="7">Subtotal</td>
+								<td>0.00</td>
+							</tr>
+							<tr class="totals">
+								<td colspan="7">VAT</td>
+								<td>0.00</td>
+							</tr>
+							<tr class="totals">
+								<td colspan="7">Total</td>
+								<td>0.00</td>
+							</tr>
 						</tbody>
 					</table>
 				</div>
