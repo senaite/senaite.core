@@ -234,6 +234,16 @@ class doPublish(BrowserView):
                         if formatted not in to:
                             to.append(formatted)
 
+                    # Create the new mime_msg object, cause the previous one
+                    # has the pdf already attached
+                    mime_msg = MIMEMultipart('related')
+                    mime_msg['Subject'] = self.get_mail_subject(ar)[0]
+                    mime_msg['From'] = formataddr(
+                                (encode_header(laboratory.getName()),
+                                 laboratory.getEmailAddress()))
+                    mime_msg.preamble = 'This is a multi-part MIME message.'
+                    msg_txt = MIMEText(ar_results, _subtype='html')
+                    mime_msg.attach(msg_txt)
                     mime_msg['To'] = ','.join(to)
 
                     # Attach the pdf to the email if requested
