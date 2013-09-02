@@ -181,15 +181,49 @@ class doPublish(BrowserView):
                     except WorkflowException:
                         pass
 
-                # compose and send email
-                if 'email' in self.pub_pref:
-                    mime_msg = MIMEMultipart('related')
-                    mime_msg['Subject'] = self.get_mail_subject(ar)[0]
-                    mime_msg['From'] = formataddr(
-                        (encode_header(laboratory.getName()),
-                         laboratory.getEmailAddress()))
+                # compose and send email.
+                # The managers of the departments for which the current AR has
+                # at least one AS must receive always the pdf report by email.
+                # https://github.com/bikalabs/Bika-LIMS/issues/1028
+                mime_msg = MIMEMultipart('related')
+                mime_msg['Subject'] = self.get_mail_subject(ar)[0]
+                mime_msg['From'] = formataddr(
+                            (encode_header(laboratory.getName()),
+                             laboratory.getEmailAddress()))
+                mime_msg.preamble = 'This is a multi-part MIME message.'
+                msg_txt = MIMEText(ar_results, _subtype='html')
+                mime_msg.attach(msg_txt)
+
+                to = []
+                mngrs = ar.getResponsible()
+                for mngrid in mngrs['ids']:
+                    name = mngrs['dict'][mngrid].get('name', '')
+                    email = mngrs['dict'][mngrid].get('email', '')
+                    if (email != ''):
+                        to.append(formataddr((encode_header(name), email)))
+
+                if len(to) > 0:
+                    # Send the email to the managers
+                    mime_msg['To'] = ','.join(to)
+                    attachPdf(mime_msg, pdf_report, out_fn)
+                                        # For now, I will simply ignore mail send under test.
+                    if hasattr(self.portal, 'robotframework'):
+                        continue
+
+                    try:
+                        host = getToolByName(self.context, 'MailHost')
+                        host.send(mime_msg.as_string(), immediate=True)
+                    except SMTPServerDisconnected as msg:
+                        if not debug_mode:
+                            raise SMTPServerDisconnected(msg)
+                    except SMTPRecipientsRefused as msg:
+                        raise WorkflowException(str(msg))
 
                     to = []
+
+                # AR Contacts will only receive an email if the AR main contact
+                # has the option 'email' checked in publication preferences
+                if 'email' in self.pub_pref:
                     contact = ar.getContact()
                     if contact:
                         to.append(formataddr((encode_header(contact.Title()),
@@ -199,10 +233,8 @@ class doPublish(BrowserView):
                                                cc.getEmailAddress()))
                         if formatted not in to:
                             to.append(formatted)
+
                     mime_msg['To'] = ','.join(to)
-                    mime_msg.preamble = 'This is a multi-part MIME message.'
-                    msg_txt = MIMEText(ar_results, _subtype='html')
-                    mime_msg.attach(msg_txt)
 
                     # Attach the pdf to the email if requested
                     if pdf_report and 'pdf' in self.pub_pref:
