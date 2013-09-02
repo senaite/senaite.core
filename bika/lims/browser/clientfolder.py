@@ -82,27 +82,18 @@ class ClientFolderContentsView(BikaListingView):
         return super(ClientFolderContentsView, self).__call__()
 
     def getClientList(self, contentFilter):
-
         ## Only show clients to which we have Manage AR rights.
         ## (ritamo only sees Happy Hills).
         mtool = getToolByName(self.context, 'portal_membership')
         wf = getToolByName(self.context, 'portal_workflow')
-
-        clients = []
-        for client in self.context.objectValues("Client"):
-            perm = mtool.checkPermission(ManageAnalysisRequests, client)
-            if not perm:
-                continue
-            state = wf.getInfoFor(client, 'inactive_state')
-            accept_states = []
-            if self.review_state == 'default':
-                accept_states = ['active', ]
-            elif self.review_state == 'inactive':
-                accept_states = ['inactive', ]
-            elif self.review_state == 'all':
-                accept_states = ['active', 'inactive', ]
-            if state in accept_states:
-                clients.append(client)
+        state = self.request['review_state']
+        states = {'default': ['active', ],
+                  'active': ['active', ],
+                  'inactive': ['inactive', ],
+                  'all': ['active', 'inactive']}
+        clients = [cl for cl in self.context.objectValues("Client") \
+                   if (mtool.checkPermission(ManageAnalysisRequests, cl) and \
+                       wf.getInfoFor(cl, 'inactive_state') in states[state])]
         clients.sort(lambda x, y: cmp(x.Title().lower(), y.Title().lower()))
         return clients
 
