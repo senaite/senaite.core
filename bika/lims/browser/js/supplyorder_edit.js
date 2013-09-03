@@ -2,7 +2,7 @@
 
 	$(function () {
 
-		var parent, totalsTd, subtotalTd, vatTotalTd, totalTd;
+		var parent, totalsTd, subtotalTd, vatTotalTd, totalTd, calculateTotals;
 
 		parent = $('#supplyorder_edit');
 
@@ -11,18 +11,12 @@
 		vatTotalTd = totalTds.eq(1);
 		totalTd = totalTds.eq(2);
 
-		$('input[name*=product]', parent).change(function (e) {
-			var el, subtotal, vatTotal;
-			el = $(e.target);
+		// Add up the totals for all the items
+		calculateTotals = function () {
+			var table, subtotal, vatTotal;
 			subtotal = 0;
 			vatTotal = 0;
-			row = el.closest('tr');
-			price = parseFloat(row.children().eq(4).text());
-			quantity = parseFloat(el.val());
-			total = price * quantity;
-			row.children().eq(7).text(total.toFixed(2));
-			// Add up the totals for all the items
-			table = row.closest('table');
+			table = $('table.items', parent);
 			$('tr td:nth-child(8)', table).each(function () {
 				var el, price, vat;
 				el = $(this);
@@ -34,6 +28,18 @@
 			subtotalTd.text(subtotal.toFixed(2));
 			vatTotalTd.text(vatTotal.toFixed(2));
 			totalTd.text((subtotal + vatTotal).toFixed(2));
+		};
+
+		calculateTotals();
+
+		$('input[name*=product]', parent).change(function (e) {
+			var el = $(e.target);
+			row = el.closest('tr');
+			price = parseFloat(row.children().eq(4).text());
+			quantity = parseFloat(el.val());
+			total = price * quantity;
+			row.children().eq(7).text(total.toFixed(2));
+			calculateTotals();
 		});
 
 	});

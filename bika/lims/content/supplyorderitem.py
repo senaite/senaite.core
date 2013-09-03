@@ -1,8 +1,7 @@
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from AccessControl import ClassSecurityInfo
-from Products.CMFCore.permissions import View, \
-    ModifyPortalContent
+from Products.CMFCore.permissions import View
 from Products.CMFPlone.utils import safe_unicode
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
