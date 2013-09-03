@@ -2,9 +2,11 @@
 
 	$(function () {
 
-		var parent, totalsTd, subtotalTd, vatTotalTd, totalTd, calculateTotals;
+		var parent, table, totalsTd, subtotalTd,
+			vatTotalTd, totalTd, calculateTotals;
 
 		parent = $('#supplyorder_edit');
+		table = $('table.items', parent);
 
 		totalTds = $('tr.totals td:nth-child(2)', parent);
 		subtotalTd = totalTds.eq(0);
@@ -16,7 +18,6 @@
 			var table, subtotal, vatTotal;
 			subtotal = 0;
 			vatTotal = 0;
-			table = $('table.items', parent);
 			$('tr td:nth-child(8)', table).each(function () {
 				var el, price, vat;
 				el = $(this);
@@ -30,17 +31,24 @@
 			totalTd.text((subtotal + vatTotal).toFixed(2));
 		};
 
-		calculateTotals();
-
-		$('input[name*=product]', parent).change(function (e) {
-			var el = $(e.target);
+		// Calculate the total for a item
+		calculateItemTotal = function (el) {
 			row = el.closest('tr');
 			price = parseFloat(row.children().eq(4).text());
 			quantity = parseFloat(el.val());
 			total = price * quantity;
 			row.children().eq(7).text(total.toFixed(2));
+		}
+
+		// Attach change event and calcualte current totals
+		$('input[name*=product]', parent).change(function (e) {
+			calculateItemTotal($(e.target));
 			calculateTotals();
+		}).each(function () {
+			calculateItemTotal($(this));
 		});
+
+		calculateTotals();
 
 	});
 
