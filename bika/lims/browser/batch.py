@@ -34,7 +34,6 @@ import Globals
 import json
 import os
 import plone
-import xhtml2pdf.pisa as pisa
 
 
 class BatchAnalysisRequestsView(AnalysisRequestsView, AnalysisRequestAddView):

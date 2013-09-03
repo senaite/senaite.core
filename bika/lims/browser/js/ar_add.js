@@ -1,5 +1,20 @@
 (function( $ ) {
 
+// Sets the tab index to the elements. Tab flow top to bottom instead of left 
+// to right.
+// Keyboard tab flow top to bottom instead of left to right
+function ar_set_tabindexes() {
+	var index = 10;
+	var count = $('input[id=col_count]').val();
+	for (var i=0; i<count; i++) {
+		elements = $('td[column='+i+']').find('input[type!=hidden]').not('[disabled]');
+		for (var j=0; j<elements.length; j++) {
+			$(elements[j]).attr('tabindex',index);
+			index++;
+		}
+	}
+}
+
 // Configure the widgets that archetypes built:
 // set id and name to ar-col-fieldName fornats
 // un-set the readonly attribute on the fields (so that we can search).
@@ -921,6 +936,7 @@ $(document).ready(function(){
 
 	ar_rename_elements();
 	ar_referencewidget_lookups();
+	ar_set_tabindexes();
 
 	$("input[id*=_Template]").live('change', function(){
 		column = this.id.split('_')[1];
