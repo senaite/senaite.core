@@ -47,14 +47,20 @@ class EditView(BrowserView):
             self.orderDate = context.Schema()['OrderDate']
             self.contact = context.Schema()['Contact']
             # Prepare the products
-            self.products = ({
-                'id': o.getId(),
-                'title': o.Title(),
-                'description': o.Description(),
-                'volume': o.getVolume(),
-                'unit': o.getUnit(),
-                'price': o.getPrice(),
-                'vat': "%s%%" % o.getVAT(),
-            } for o in products)
+            items = context.objectValues('SupplyOrderItem')
+            self.products = []
+            for product in products:
+                item = [o for o in items if o.getProduct() == product]
+                quantity = item[0].getQuantity() if len(item) > 0 else 0
+                self.products.append({
+                    'id': product.getId(),
+                    'title': product.Title(),
+                    'description': product.Description(),
+                    'volume': product.getVolume(),
+                    'unit': product.getUnit(),
+                    'price': product.getPrice(),
+                    'vat': '%s%%' % product.getVAT(),
+                    'quantity': quantity,
+                })
             # Render the template
             return self.template()

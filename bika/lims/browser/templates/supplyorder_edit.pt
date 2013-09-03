@@ -45,7 +45,9 @@
 										<td class="center" tal:content="product/unit"></td>
 										<td class="currency" tal:content="product/price"></td>
 										<td class="center" tal:content="product/vat"></td>
-										<td class="number"><input type="text" tal:attributes="name string:product_${product/id}" value="0" /></td>
+										<td class="number">
+											<input type="text" tal:attributes="name string:product_${product/id}; value product/quantity" />
+										</td>
 										<td class="currency">0.00</td>
 									</tr>
 								</tal:product>
