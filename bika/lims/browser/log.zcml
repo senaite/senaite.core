@@ -8,7 +8,7 @@
       for="bika.lims.interfaces.IBikaLogging"
       name="log"
       class="bika.lims.browser.log.Log"
-      permission="zope.View"
+      permission="bika.lims.ViewLogTab"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

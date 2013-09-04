@@ -68,7 +68,7 @@
          url_expr="string:${object_url}/status_log"
          i18n:attributes="title"
          visible="True">
-  <permission value="BIKA: Manage Bika"/>
+     <permission value="BIKA: View Log Tab"/>
  </action>
 
 </object>
