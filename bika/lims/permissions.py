@@ -98,6 +98,7 @@ ManageLoginDetails = 'BIKA: Manage Login Details'
 Assign = 'BIKA: Assign analyses'
 Unassign = 'BIKA: Unassign analyses'
 
+ViewLogTab = 'BIKA: View Log Tab'
 
 # Edit AR
 # -----------------------------------------------------------------------------

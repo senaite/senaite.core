@@ -50,6 +50,6 @@
          url_expr="string:${object_url}/log"
          i18n:attributes="title"
          visible="True">
-     <permission value="View"/>
+     <permission value="BIKA: View Log Tab"/>
  </action>
 </object>
