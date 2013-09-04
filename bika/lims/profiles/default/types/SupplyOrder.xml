@@ -21,7 +21,7 @@
 
  <alias from="(Default)" to="base_view"/>
  <alias from="view" to="base_view"/>
- <alias from="edit" to="custom_edit"/>
+ <alias from="edit" to="@@base_edit"/>
 
  <action title="View"
          action_id="view"
@@ -42,7 +42,7 @@
          condition_expr=""
          icon_expr=""
          link_target=""
-         url_expr="string:${object_url}/custom_edit"
+         url_expr="string:${object_url}/edit"
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">
