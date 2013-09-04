@@ -60,5 +60,5 @@ def set_fields_from_request(obj, request):
             val = accessor()
             if hasattr(val, 'Title') and callable(val.Title):
                 val = val.Title()
-            ret[fieldname] = str(val)
+            ret[fieldname] = json.dumps(val)
     return ret
