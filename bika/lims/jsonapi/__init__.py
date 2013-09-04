@@ -1,4 +1,5 @@
 from Products.CMFCore.utils import getToolByName
+from zExceptions import BadRequest
 
 
 def set_fields_from_request(obj, request):
@@ -39,6 +40,18 @@ def set_fields_from_request(obj, request):
     ret = {}
     for fieldname, value in fields.items():
         field = schema[fieldname]
+        fieldtype = field.getType()
+        if fieldtype == 'Products.Archetypes.Field.BooleanField':
+            if value.lower() in ('0', 'false', 'no') or not value:
+                value = False
+            else:
+                value = True
+        elif fieldtype in ['Products.ATExtensions.field.records.RecordsField',
+                           'Products.ATExtensions.field.records.RecordField']:
+            try:
+                value = eval(value)
+            except:
+                raise BadRequest(fieldname + ": Invalid JSON/Python variable")
         mutator = field.getMutator(obj)
         if mutator and callable(mutator):
             mutator(value)
