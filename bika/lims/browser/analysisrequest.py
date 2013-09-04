@@ -142,12 +142,16 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             new = ar.setAnalyses(objects.keys(), prices = prices)
 
             # link analyses and partitions
-            for service_uid, service in objects.items():
-                part_id = form['Partition'][0][service_uid]
-                part = sample[part_id]
-                analysis = ar[service.getKeyword()]
-                analysis.setSamplePartition(part)
-                analysis.reindexObject()
+            # If Bika Setup > Analyses > 'Display individual sample
+            # partitions' is checked, no Partitions available.
+            # https://github.com/bikalabs/Bika-LIMS/issues/1030
+            if 'Partition' in form:
+                for service_uid, service in objects.items():
+                    part_id = form['Partition'][0][service_uid]
+                    part = sample[part_id]
+                    analysis = ar[service.getKeyword()]
+                    analysis.setSamplePartition(part)
+                    analysis.reindexObject()
 
             if new:
                 ar_state = workflow.getInfoFor(ar, 'review_state')
