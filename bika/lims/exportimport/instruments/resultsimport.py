@@ -506,7 +506,7 @@ class AnalysisResultsImporter(Logger):
                     and analysis.getInterimFields() or []
         for interim in interims:
             keyword = interims['keyword']
-            if values.get(keyword, ''):
+            if values.get(keyword, '') or values.get(keyword, '') == 0:
                 res = values.get(keyword)
                 self.log(_("% result for '%s:%s': '%s'") %
                          (objid, acode, keyword, str(res)))
@@ -521,6 +521,7 @@ class AnalysisResultsImporter(Logger):
             analysis.setInterimFields(interimsout)
 
         if resultsaved == False and (values.get(defresultkey, '') \
+                                     or values.get(defresultkey, '') == 0 \
                                      or self._override[1] == True):
             # set the result
             res = values.get(defresultkey, '')
