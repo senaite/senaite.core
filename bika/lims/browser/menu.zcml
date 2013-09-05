@@ -11,12 +11,4 @@
     factory="bika.lims.browser.menu.WorkflowSubMenuItem"
     provides="plone.app.contentmenu.interfaces.IContentMenuItem" />
 
-/*
-  <adapter
-    for="* bika.lims.interfaces.IBikaLIMS"
-    name="plone_contentmenu_workflow"
-    factory=".menu.WorkflowMenu"
-    provides="plone.app.contentmenu.interfaces.IWorkflowMenu" />
-    />
-*/
 </configure>
