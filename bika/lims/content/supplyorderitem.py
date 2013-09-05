@@ -67,9 +67,9 @@ class SupplyOrderItem( BaseContent):
     security.declareProtected(View, 'getTotalIncludingVAT')
     def getTotalIncludingVAT(self):
         """ Compute Total including VAT """
-        price = self.getPrice()
-        quantity = self.getQuantity()
-        vat = self.getVAT()
+        price = float(self.getPrice())
+        quantity = float(self.getQuantity())
+        vat = float(self.getVAT())
         if price and quantity and vat:
             subtotal = price * quantity
             return subtotal * (1 + vat / 100.0)

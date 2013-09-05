@@ -19,8 +19,10 @@
 			<form id="supplyorder_edit" name="edit" method="post" action="">
 				<div id="content" tal:define="errors python:{}">
 					<table class="invoice-header">
-						<tal:field content="structure python:view.field(field=view.orderDate)" />
-						<tal:field content="structure python:view.field(field=view.contact)" />
+						<tbody>
+							<tal:field content="structure python:view.field(field=view.orderDate)" />
+							<tal:field content="structure python:view.field(field=view.contact)" />
+						</tbody>
 					</table>
 					<table class="invoice-items items">
 						<thead>
@@ -48,21 +50,21 @@
 										<td class="number">
 											<input type="text" tal:attributes="name string:product_${product/id}; value product/quantity" />
 										</td>
-										<td class="currency">0.00</td>
+										<td class="currency" tal:content="product/total"></td>
 									</tr>
 								</tal:product>
 							</tal:products>
 							<tr class="totals">
 								<td colspan="7">Subtotal</td>
-								<td>0.00</td>
+								<td tal:content="view/subtotal"></td>
 							</tr>
 							<tr class="totals">
 								<td colspan="7">VAT</td>
-								<td>0.00</td>
+								<td tal:content="view/vat"></td>
 							</tr>
 							<tr class="totals">
 								<td colspan="7">Total</td>
-								<td>0.00</td>
+								<td tal:content="view/total"></td>
 							</tr>
 						</tbody>
 					</table>

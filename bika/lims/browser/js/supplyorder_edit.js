@@ -44,11 +44,7 @@
 		$('input[name*=product]', parent).change(function (e) {
 			calculateItemTotal($(e.target));
 			calculateTotals();
-		}).each(function () {
-			calculateItemTotal($(this));
 		});
-
-		calculateTotals();
 
 	});
 

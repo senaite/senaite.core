@@ -146,7 +146,7 @@ class SupplyOrder(BaseFolder):
     def getSubtotal(self):
         """ Compute Subtotal """
         return sum(
-            [obj.getTotal() \
+            [float(obj.getTotal()) \
              for obj in self.objectValues('SupplyOrderItem')])
 
     security.declareProtected(View, 'getVAT')
@@ -158,7 +158,7 @@ class SupplyOrder(BaseFolder):
     def getTotal(self):
         """ Compute TotalPrice """
         return sum(
-            [obj.getTotalIncludingVAT() \
+            [float(obj.getTotalIncludingVAT()) \
              for obj in self.objectValues('SupplyOrderItem')])
 
     def workflow_script_dispatch(self, state_info):
