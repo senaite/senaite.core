@@ -668,22 +668,24 @@ class LoadSetupData(BrowserView):
                                                          'getFullname':_fullname}})
 
             ## Create Plone user
+            username = safe_unicode(row['Username']).encode('utf-8')
+            password = safe_unicode(row['Password']).encode('utf-8')
             if(row['Username']):
                 try:
                     member = self.portal_registration.addMember(
-                        row['Username'],
+                        username,
                         row['Password'],
                         properties = {
-                            'username': row['Username'],
+                            'username': username,
                             'email': row['EmailAddress'],
                             'fullname': fullname}
                         )
                 except:
-                    logger.info("Error adding user (already exists?): %s" % row['Username'])
-                contact.aq_parent.manage_setLocalRoles(row['Username'], ['Owner',] )
+                    logger.info("Error adding user (already exists?): %s" % username)
+                contact.aq_parent.manage_setLocalRoles(username, ['Owner',] )
                 # add user to Clients group
                 group = self.portal_groups.getGroupById('Clients')
-                group.addMember(row['Username'])
+                group.addMember(username)
 
     def load_instruments(self, sheet):
         logger.info("Loading Instruments...")
