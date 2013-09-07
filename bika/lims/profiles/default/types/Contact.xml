@@ -42,7 +42,7 @@
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">
-    <permission value="BIKA: Manage Clients"/>
+   <permission value="Modify portal content"/>
  </action>
 
  <action title="Login details"

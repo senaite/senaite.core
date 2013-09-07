@@ -255,9 +255,9 @@ class ClientBatchesView(BatchFolderContentsView):
         self.view_url = self.context.absolute_url() + "/batches"
 
     def __call__(self):
-        self.context_actions[_('Add')] = \
-                {'url': '../../batches/createObject?type_name=Batch',
-                 'icon': self.portal.absolute_url() + '/++resource++bika.lims.images/add.png'}
+        # self.context_actions[_('Add')] = \
+        #         {'url': '../../batches/createObject?type_name=Batch',
+        #          'icon': self.portal.absolute_url() + '/++resource++bika.lims.images/add.png'}
         return BatchFolderContentsView.__call__(self)
 
     def contentsMethod(self, contentFilter):
@@ -635,7 +635,7 @@ class ClientAnalysisSpecsView(BikaListingView):
                 self.context_actions[_('Add')] = \
                     {'url': 'createObject?type_name=AnalysisSpec',
                      'icon': '++resource++bika.lims.images/add.png'}
-            if checkPermission(ManageClients, self.context):
+            if checkPermission("Modify portal content", self.context):
                 self.context_actions[_('Set to lab defaults')] = \
                     {'url': 'set_to_lab_defaults',
                      'icon': '++resource++bika.lims.images/analysisspec.png'}

@@ -264,7 +264,7 @@ class BikaGenerator:
         mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst', 'Sampler', 'Preserver'], 0)
         mp('Add portal content', ['Analyst'], 1)
         mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 0)
-        mp(ManageClients, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
+        mp(ManageClients, ['Manager', 'LabManager', 'LabClerk'], 0)
         mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
         mp(AddAnalysisSpec, ['Manager', 'LabManager', 'Owner'], 0)
         portal.clients.reindexObject()
