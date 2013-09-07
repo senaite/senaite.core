@@ -617,7 +617,7 @@ class ClientAnalysisSpecsView(BikaListingView):
                 self.context_actions[_('Add')] = \
                     {'url': 'createObject?type_name=AnalysisSpec',
                      'icon': '++resource++bika.lims.images/add.png'}
-            if checkPermission(ManageClients, self.context):
+            if checkPermission("Modify portal content", self.context):
                 self.context_actions[_('Set to lab defaults')] = \
                     {'url': 'set_to_lab_defaults',
                      'icon': '++resource++bika.lims.images/analysisspec.png'}
@@ -898,3 +898,4 @@ class ClientContactVocabularyFactory(CatalogVocabulary):
             path={'query': "/".join(self.context.getPhysicalPath()),
                   'level': 0}
         )
+

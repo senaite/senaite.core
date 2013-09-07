@@ -8,7 +8,7 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from bika.lims.content.person import Person
-from bika.lims.config import ManageClients, PUBLICATION_PREFS, PROJECTNAME
+from bika.lims.config import PUBLICATION_PREFS, PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from zope.interface import implements
 from bika.lims.interfaces import ILabContact
@@ -63,7 +63,6 @@ class LabContact(Person):
         """ Return the contact's Fullname as title """
         return safe_unicode(self.getFullname()).encode('utf-8')
 
-    security.declareProtected(ManageClients, 'hasUser')
     def hasUser(self):
         """ check if contact has user """
         return self.portal_membership.getMemberById(

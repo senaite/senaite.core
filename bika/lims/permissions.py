@@ -47,7 +47,6 @@ ADD_CONTENT_PERMISSIONS = {
 # Very Old permissions:
 # ---------------------
 ManageBika = 'BIKA: Manage Bika'
-ManageClients = 'BIKA: Manage Clients'
 ManageOrders = 'BIKA: Manage Orders'
 DispatchOrder = 'BIKA: Dispatch Order'
 ManageAnalysisRequests = 'BIKA: Manage Analysis Requests'
@@ -57,6 +56,9 @@ ManageSuppliers = 'BIKA: Manage Reference Suppliers'
 ManageReference = 'BIKA: Manage Reference'
 PostInvoiceBatch = 'BIKA: Post Invoice batch'
 ManagePricelists = 'BIKA: Manage Pricelists'
+
+# This allows to edit all client fields, and perform admin tasks on Clients.
+ManageClients = 'BIKA: Manage Clients'
 
 # this is for creating and transitioning worksheets
 ManageWorksheets = 'BIKA: Manage Worksheets'

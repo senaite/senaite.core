@@ -87,7 +87,7 @@
          url_expr="string:${object_url}/batches"
          i18n:attributes="title"
          visible="True">
-  <permission value="BIKA: Manage Clients"/>
+  <permission value="View"/>
  </action>
 
  <action title="Analysis Requests"
@@ -99,7 +99,7 @@
          url_expr="string:${object_url}/analysisrequests"
          i18n:attributes="title"
          visible="True">
-  <permission value="BIKA: Manage Analysis Requests"/>
+  <permission value="View"/>
  </action>
 
  <action title="Imports"
@@ -123,7 +123,7 @@
          url_expr="string:${object_url}/analysisprofiles"
          i18n:attributes="title"
          visible="True">
-  <permission value="BIKA: Manage Clients"/>
+  <permission value="View"/>
  </action>
 
  <action title="AR Templates"
@@ -135,7 +135,7 @@
          url_expr="string:${object_url}/artemplates"
          i18n:attributes="title"
          visible="True">
-  <permission value="BIKA: Manage Clients"/>
+  <permission value="View"/>
  </action>
 
  <action title="Analysis Specifications"
@@ -147,7 +147,7 @@
          url_expr="string:${object_url}/analysisspecs"
          i18n:attributes="title"
          visible="True">
-  <permission value="BIKA: Manage Clients"/>
+  <permission value="View"/>
  </action>
 
  <action title="Attachments"
@@ -159,7 +159,7 @@
          url_expr="string:${object_url}/attachments"
          i18n:attributes="title"
          visible="True">
-  <permission value="BIKA: Manage Analysis Requests"/>
+  <permission value="View"/>
  </action>
 
  <action title="Orders"
