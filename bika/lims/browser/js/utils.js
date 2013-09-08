@@ -328,7 +328,7 @@ $(document).ready(function(){
 				height:450,
 				closeText: _("Close"),
 				resizable:true,
-				title: "<img src='" + window.portal_url + "/++resource++bika.lims.images/analysisservice.png'/>&nbsp;" + $(this).text()
+				title: $(this).text()
 			});
 	});
 
