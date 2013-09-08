@@ -1,20 +1,23 @@
+from AccessControl.SecurityManagement import newSecurityManager
 from Acquisition import aq_inner, aq_parent
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.CMFPlone.utils import safe_unicode
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
+from DateTime import DateTime
 from operator import itemgetter
 from plone.app.layout.globals.interfaces import IViewView
 from plone.app.layout.viewlets.content import ContentHistoryView, ContentHistoryViewlet
-from AccessControl.SecurityManagement import newSecurityManager
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFPlone.utils import safe_unicode
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
 from zope.publisher.browser import TestRequest
-from DateTime import DateTime
 import json
 
+
 class LogView(BikaListingView):
+
     """ Show log entries, workflow history and revision history details
     for an object
     """
@@ -37,16 +40,16 @@ class LogView(BikaListingView):
         self.description = ""
 
         self.columns = {
-            'Version': {'title': _('Version'),'sortable':False},
-            'Date': {'title': _('Date'),'sortable':False},
-            'User': {'title': _('User'),'sortable':False},
-            'Action': {'title': _('Action'),'sortable':False},
-            'Description': {'title': _('Description'),'sortable':False},
+            'Version': {'title': _('Version'), 'sortable': False},
+            'Date': {'title': _('Date'), 'sortable': False},
+            'User': {'title': _('User'), 'sortable': False},
+            'Action': {'title': _('Action'), 'sortable': False},
+            'Description': {'title': _('Description'), 'sortable': False},
         }
         self.review_states = [
-            {'id':'default',
+            {'id': 'default',
              'title': 'All',
-             'contentFilter':{},
+             'contentFilter': {},
              'columns': ['Version',
                          'Date',
                          'User',
@@ -59,11 +62,13 @@ class LogView(BikaListingView):
         wf = getToolByName(self.context, 'portal_workflow')
         pr = getToolByName(self.context, 'portal_repository')
 
-
         isVersionable = pr.isVersionable(aq_inner(self.context))
-        review_history = wf.getInfoFor(self.context, 'review_history')
-        review_history = list(review_history)
-        review_history.reverse()
+        try:
+            review_history = wf.getInfoFor(self.context, 'review_history')
+            review_history = list(review_history)
+            review_history.reverse()
+        except WorkflowException:
+            review_history = []
         items = []
         for entry in review_history:
             # this folderitems doesn't subclass from the bika_listing.py
@@ -83,7 +88,7 @@ class LogView(BikaListingView):
                 'replace': {},
                 'before': {},
                 'after': {},
-                'choices':{},
+                'choices': {},
                 'class': {},
                 'state_class': '',
                 'allow_edit': [],
@@ -125,7 +130,7 @@ class LogView(BikaListingView):
                 'replace': {},
                 'before': {},
                 'after': {},
-                'choices':{},
+                'choices': {},
                 'class': {},
                 'state_class': '',
                 'allow_edit': [],
@@ -139,7 +144,7 @@ class LogView(BikaListingView):
             }
             items.append(item)
 
-        items = sorted(items, key = itemgetter('sortable_date'))
+        items = sorted(items, key=itemgetter('sortable_date'))
         items.reverse()
 
         return items
