@@ -39,4 +39,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+ <genericsetup:upgradeStep
+        title="Fix permissions"
+        description="Re-import default permissions (#948)"
+        source="1103"
+        destination="1104"
+        handler="bika.lims.upgrade.to1104.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
