@@ -349,7 +349,7 @@ class Client_Contacts(WorksheetImporter):
                 Salutation=row.get('Salutation', ''),
                 Firstname=row.get('Firstname', ''),
                 Surname=row.get('Surname', ''),
-                Username=row.get('Username', ''),
+                Username=row['Username'],
                 JobTitle=row.get('JobTitle', ''),
                 Department=row.get('Department', ''),
                 PublicationPreference=pub_pref,
@@ -360,7 +360,6 @@ class Client_Contacts(WorksheetImporter):
             self.fill_addressfields(row, contact)
             contact.unmarkCreationFlag()
             renameAfterCreation(contact)
-
             # CC Contacts
             if row['CCContacts']:
                 names = [x.strip() for x in row['CCContacts'].split(",")]
@@ -371,24 +370,21 @@ class Client_Contacts(WorksheetImporter):
                                dest_query={'portal_type': 'Contact',
                                            'getFullname': _fullname}
                                )
-
-            # Create Plone user
+            ## Create Plone user
+            username = safe_unicode(row['Username']).encode('utf-8')
             if(row['Username']):
                 try:
-                    self.portal_registration.addMember(
-                        row['Username'],
+                    member = self.context.portal_registration.addMember(
+                        username,
                         row['Password'],
                         properties={
-                            'username': row['Username'],
+                            'username': username,
                             'email': row['EmailAddress'],
                             'fullname': fullname}
-                    )
-                except:
-                    logger.info("Error adding user (already exists?): %s" %
-                                row['Username'])
-                contact.aq_parent.manage_setLocalRoles(row['Username'],
-                                                       ['Owner', ])
-
+                        )
+                except Exception as msg:
+                    logger.info("Error adding user (%s): %s" % (msg, username))
+                contact.aq_parent.manage_setLocalRoles(row['Username'], ['Owner', ])
                 # add user to Clients group
                 group = portal_groups.getGroupById('Clients')
                 group.addMember(row['Username'])
