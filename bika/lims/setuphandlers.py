@@ -244,7 +244,6 @@ class BikaGenerator:
         mp(ViewResults, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler'], 1)
         mp(EditResults, ['Manager', 'LabManager', 'Analyst'], 1)
         mp(EditFieldResults, ['Manager', 'LabManager', 'Sampler'], 1)
-        mp(CancelAndReinstate, ['Manager', 'LabManager', 'Owner'], 1)
 
         mp('Access contents information',  ['Authenticated'], 1)
         mp(permissions.View, ['Authenticated'], 1)
