@@ -69,6 +69,16 @@
 
 <form id="list" action="workflow_action" method="post" name="bika_listing_form">
 	<input tal:replace="structure context/@@authenticator/authenticator"/>
+    <input type="hidden"
+    	name="logged_in_client"
+        tal:define="groups_tool python:context.portal_groups;
+	                membership_tool python:context.portal_membership;
+                    member python:membership_tool.getAuthenticatedMember();
+                    member_groups python:[groups_tool.getGroupById(group.id).getGroupName() for group in groups_tool.getGroupsByUserId(member.id)];
+                    logged_in_client python:'Clients' in member_groups;"
+         tal:condition="logged_in_client"
+         value="1"
+    />
 	<input type="hidden" value="1" name="submitted">
 	<input type="hidden" value="list" name="form_id">
 	<input type="hidden" tal:attributes="value view/view_url" name="view_url">

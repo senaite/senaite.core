@@ -20,6 +20,7 @@ from bika.lims.subscribers import doActionFor
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
+from bika.lims.utils import logged_in_client
 from bika.lims.utils import to_unicode as _u
 from bika.lims.utils import tmpID
 from bika.lims.utils import encode_header
@@ -1448,6 +1449,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         p = SamplePartitionsView(sample, self.request)
         p.table_only = True
         p.allow_edit = False
+        p.form_id = "parts"
         p.show_select_column = False
         p.review_states[0]['transitions'] = [{'id': 'empty'}, ]  # none
         p.review_states[0]['custom_actions'] = []
@@ -1466,22 +1468,19 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
         wf = getToolByName(self.context, 'portal_workflow')
         mtool = getToolByName(self.context, 'portal_membership')
-        member = mtool.getAuthenticatedMember()
-        roles = member.getRoles()
-        self.allow_edit = 'LabManager' in roles or 'Manager' in roles
-        items = BikaListingView.folderitems(self)
-        sample = self.context.getSample()
-        analyses = self.context.getAnalyses(full_objects = True)
-        review_states = dict(
-            [(a.getService().getKeyword(), wf.getInfoFor(a, 'review_state'))
-             for a in analyses])
 
-        partitions = [{'ResultValue':o.Title(), 'ResultText':o.getId()}
-                      for o in
-                      self.context.getSample().objectValues('SamplePartition')
+        self.allow_edit = mtool.checkPermission('Modify portal content', self.context)
+
+        items = BikaListingView.folderitems(self)
+        analyses = self.context.getAnalyses(full_objects=True)
+
+        partitions = [{'ResultValue': o.Title(),
+                       'ResultText': o.getId()}
+                      for o in self.context.getSample().objectValues('SamplePartition')
                       if wf.getInfoFor(o, 'cancellation_state', 'active') == 'active']
         for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
+            if not 'obj' in items[x]:
+                continue
             obj = items[x]['obj']
 
             cat = obj.getCategoryTitle()
@@ -1514,10 +1513,11 @@ class AnalysisRequestAnalysesView(BikaListingView):
             items[x]['before']['Price'] = symbol
             items[x]['Price'] = obj.getPrice()
             items[x]['class']['Price'] = 'nowrap'
-            items[x]['allow_edit'] = ['Price', 'Partition']
+            items[x]['allow_edit'] = ['Partition', ]
+            if not logged_in_client(self.context):
+                items[x]['allow_edit'].append('Price')
             if not items[x]['selected']:
-                items[x]['edit_condition'] = {'Partition':False,
-                                              'Price':False}
+                items[x]['edit_condition'] = {'Partition': False, 'Price': False}
 
             items[x]['required'].append('Partition')
             items[x]['choices']['Partition'] = partitions
