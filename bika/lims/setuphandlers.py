@@ -231,7 +231,6 @@ class BikaGenerator:
         mp(ViewResults, ['Manager', 'LabManager', 'Analyst', 'Sampler','RegulatoryInspector'], 1)
         mp(EditResults, ['Manager', 'LabManager', 'Analyst'], 1)
         mp(EditFieldResults, ['Manager', 'LabManager', 'Sampler'], 1)
-        mp(CancelAndReinstate, ['Manager', 'LabManager', 'Owner'], 1)
         mp(EditSamplePartition, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 1)
         mp(EditClient, ['Manager', 'LabManager', 'LabClerk'], 1)
 
