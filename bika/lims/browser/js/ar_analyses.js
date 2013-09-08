@@ -19,16 +19,19 @@ function check_service(service_uid){
 	$(element).remove();
 
 	// Add price field
-	element = $("[name=Price."+service_uid+":records]");
-	price = '<input class="listing_string_entry numeric" '+
-		'name="Price.'+service_uid+':records" '+
-		'field="Price" type="text" uid="'+service_uid+'" '+
-		'autocomplete="off" style="font-size: 100%" size="5" '+
-		'value="'+$(element).val()+'">';
-	$(element).after(price);
-	// remove hidden field and price label
-	$($(element).siblings()[1]).remove();
-	$(element).remove();
+	var logged_in_client = $("input[name='logged_in_client']").val();
+	if (logged_in_client != "1") {
+		element = $("[name='Price."+service_uid+":records']");
+		price = '<input class="listing_string_entry numeric" '+
+			'name="Price.'+service_uid+':records" '+
+			'field="Price" type="text" uid="'+service_uid+'" '+
+			'autocomplete="off" style="font-size: 100%" size="5" '+
+			'value="'+$(element).val()+'">';
+		$(element).after(price);
+		// remove hidden field and price label
+		$($(element).siblings()[1]).remove();
+		$(element).remove();
+	}
 }
 
 ////////////////////////////////////////
@@ -40,13 +43,16 @@ function uncheck_service(service_uid){
 	);
 	$(element).remove();
 
-	element = $("[name=Price."+service_uid+":records]");
-	$($(element).siblings()[0]).after(' <span class="state-active state-active ">'+$(element).val()+'</span>')
-	$(element).after(
-		"<input type='hidden' name='Price."+service_uid+":records'"+
-		"value='"+$(element).val()+"'/>"
-	);
-	$(element).remove();
+	var logged_in_client = $("input[name='logged_in_client']").val();
+	if (logged_in_client != "1") {
+		element = $("[name='Price."+service_uid+":records']");
+		$($(element).siblings()[0]).after(' <span class="state-active state-active ">'+$(element).val()+'</span>')
+		$(element).after(
+			"<input type='hidden' name='Price."+service_uid+":records'"+
+			"value='"+$(element).val()+"'/>"
+		);
+		$(element).remove();
+	}
 }
 
 ////////////////////////////////////////
