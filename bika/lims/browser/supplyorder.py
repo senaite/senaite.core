@@ -3,10 +3,8 @@ from zope import event
 
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.Archetypes.event import ObjectInitializedEvent
 
 from bika.lims.browser import BrowserView
-from bika.lims.utils import tmpID
 
 
 class View(BrowserView):
@@ -14,10 +12,7 @@ class View(BrowserView):
     template = ViewPageTemplateFile('templates/supplyorder_view.pt')
 
     def __call__(self):
-        portal = self.portal
-        request = self.request
         context = self.context
-        setup = portal.bika_setup
         # Collect general data
         self.orderDate = context.getOrderDate()
         self.contact = context.getContact().getFullname()
