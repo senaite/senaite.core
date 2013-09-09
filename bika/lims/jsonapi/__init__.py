@@ -1,5 +1,8 @@
+from Products.Archetypes.config import TOOL_NAME
 from Products.CMFCore.utils import getToolByName
 from zExceptions import BadRequest
+
+import json
 
 
 def set_fields_from_request(obj, request):
@@ -9,32 +12,33 @@ def set_fields_from_request(obj, request):
     - Calls Accessor to retrieve value
     - Returns a dict of fields and current values
 
-    If the field name in the request is <portal_type>_<index>
-    Then the corrosponding index will be used to look up the object
-    from the uid_catalog.  This is for setting reference fields, and the
-    UID of the object found will be sent to the mutator.
+    To set Reference fields:
+
+    ...& <FieldName>=<obj type>:<obj title> &...
 
     """
+    at = getToolByName(obj, TOOL_NAME, None)
     schema = obj.Schema()
     # fields contains all schema-valid field values from the request.
     fields = {}
-    for key, value in request.items():
-        if "_" in key:
-            fieldname, index = key.split("_", 1)
-            if fieldname not in schema:
-                continue
-            pc = getToolByName(obj, "portal_catalog")
-            brains = pc({'portal_type': fieldname, index: request[key]})
+    for fieldname, value in request.items():
+        if fieldname not in schema:
+            continue
+        if ":" in value:
+            # Reference field lookup
+            field = schema[fieldname]
+            dst_type, title = value.split(":", 1)
+            result = None
+            brains = []
+            # search all possible catalogs
+            for catalog in at.getCatalogsByType(dst_type):
+                brains = catalog({'portal_type': dst_type, 'Title': title})
+                if not brains:
+                    continue
             if not brains:
-                # object lookup failure need not be fatal;
-                # XXX for now we silently ignore lookup failure here,
-                continue
-            value = brains[0].UID if brains else request[fieldname]
-        else:
-            fieldname = key
-            if fieldname not in schema:
-                continue
-            value = request[fieldname]
+                raise BadRequest("Object of type '%s' not found (title='%s')" %
+                                 (dst_type, title))
+            value = brains[0].UID
         fields[fieldname] = value
     # write and then read each field.
     ret = {}
