@@ -100,7 +100,7 @@ class Create(object):
             if _renameAfterCreation:
                 renameAfterCreation(obj)
             ret['obj_id'] = obj.getId()
-            ret.update(set_fields_from_request(obj, request))
+            set_fields_from_request(obj, request)
             obj.reindexObject()
             event.notify(ObjectInitializedEvent(obj))
             obj.at_post_create_script()
@@ -226,7 +226,7 @@ class Create(object):
             _id = client.invokeFactory('Sample', id=tmpID())
             sample = client[_id]
             sample.unmarkCreationFlag()
-            ret.update(set_fields_from_request(sample, request))
+            set_fields_from_request(sample, request)
             sample.setSampleType(sampletype.UID())
             sample._renameAfterCreation()
             sample.setSampleID(sample.getId())
@@ -248,7 +248,7 @@ class Create(object):
         _id = client.invokeFactory('AnalysisRequest', tmpID())
         ar = client[_id]
         ar.unmarkCreationFlag()
-        ret.update(set_fields_from_request(ar, request))
+        set_fields_from_request(ar, request)
         ar.setSample(sample.UID())
         ar._renameAfterCreation()
         ret['ar_id'] = ar.getId()

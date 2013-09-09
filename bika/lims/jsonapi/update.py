@@ -53,7 +53,7 @@ class Update(object):
 #            raise BadRequest("Object does not exist: " + obj_path)
 
         try:
-            ret.update(set_fields_from_request(obj, request))
+            set_fields_from_request(obj, request)
         except:
             savepoint.rollback()
             raise

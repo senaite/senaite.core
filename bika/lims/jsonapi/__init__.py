@@ -41,7 +41,6 @@ def set_fields_from_request(obj, request):
             value = brains[0].UID
         fields[fieldname] = value
     # write and then read each field.
-    ret = {}
     for fieldname, value in fields.items():
         field = schema[fieldname]
         fieldtype = field.getType()
@@ -59,10 +58,3 @@ def set_fields_from_request(obj, request):
         mutator = field.getMutator(obj)
         if mutator and callable(mutator):
             mutator(value)
-        accessor = field.getAccessor(obj)
-        if accessor and callable(accessor):
-            val = accessor()
-            if hasattr(val, 'Title') and callable(val.Title):
-                val = val.Title()
-            ret[fieldname] = json.dumps(val)
-    return ret
