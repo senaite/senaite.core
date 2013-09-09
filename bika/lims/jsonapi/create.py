@@ -13,6 +13,8 @@ from zExceptions import BadRequest
 from zope import event
 from zope import interface
 
+import transaction
+
 
 class Create(object):
     interface.implements(IRouteProvider)
@@ -52,13 +54,19 @@ class Create(object):
         in the return value, for verification.
         """
 
+        savepoint = transaction.savepoint()
+
         # obj_type is required always.
         obj_type = request.get("obj_type", "")
         if not obj_type:
             raise ValueError("bad or missing obj_type: " + obj_type)
         # shortcut to create AnalysisRequest objects
         if obj_type == "AnalysisRequest":
-            return self._create_ar(context, request)
+            try:
+                return self._create_ar(context, request)
+            except:
+                savepoint.rollback()
+                raise
         # Other object types require explicit path as their parent
         obj_path = request.get("obj_path", "")
         if not obj_path:
@@ -85,16 +93,20 @@ class Create(object):
             "error": False,
        }
 
-        parent.invokeFactory(obj_type, obj_id)
-        obj = parent[obj_id]
-        obj.unmarkCreationFlag()
-        if _renameAfterCreation:
-            renameAfterCreation(obj)
-        ret['obj_id'] = obj.getId()
-        ret.update(set_fields_from_request(obj, request))
-        obj.reindexObject()
-        event.notify(ObjectInitializedEvent(obj))
-        obj.at_post_create_script()
+        try:
+            parent.invokeFactory(obj_type, obj_id)
+            obj = parent[obj_id]
+            obj.unmarkCreationFlag()
+            if _renameAfterCreation:
+                renameAfterCreation(obj)
+            ret['obj_id'] = obj.getId()
+            ret.update(set_fields_from_request(obj, request))
+            obj.reindexObject()
+            event.notify(ObjectInitializedEvent(obj))
+            obj.at_post_create_script()
+        except:
+            savepoint.rollback()
+            raise
 
         return ret
 

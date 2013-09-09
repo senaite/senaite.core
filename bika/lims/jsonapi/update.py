@@ -3,7 +3,7 @@ from plone.jsonapi import router
 from plone.jsonapi.interfaces import IRouteProvider
 from zExceptions import BadRequest
 from zope import interface
-
+import transaction
 
 class Update(object):
     interface.implements(IRouteProvider)
@@ -33,6 +33,7 @@ class Update(object):
             ...
         }
         """
+        savepoint = transaction.savepoint()
 
         ret = {
             "url": router.url_for("update", force_external=True),
@@ -51,6 +52,10 @@ class Update(object):
 #        except:
 #            raise BadRequest("Object does not exist: " + obj_path)
 
-        ret.update(set_fields_from_request(obj, request))
+        try:
+            ret.update(set_fields_from_request(obj, request))
+        except:
+            savepoint.rollback()
+            raise
 
         return ret
