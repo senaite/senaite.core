@@ -1,0 +1,21 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="bika">
+
+  <utility
+    name="bika.lims.jsonapi.create"
+    provides="plone.jsonapi.interfaces.IRouteProvider"
+    factory=".create.Create" />
+
+  <utility
+    name="bika.lims.jsonapi.read"
+    provides="plone.jsonapi.interfaces.IRouteProvider"
+    factory=".read.Read" />
+
+  <utility
+    name="bika.lims.jsonapi.update"
+    provides="plone.jsonapi.interfaces.IRouteProvider"
+    factory=".update.Update" />
+
+</configure>
