@@ -130,9 +130,9 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     TextField('ResultFooter',
         schemata = "Results Reports",
-        default_content_type = 'text/x-web-intelligent',
-        allowable_content_types = ('text/x-web-intelligent',),
-        default_output_type="text/html",
+        default_content_type = 'text/plain',
+        allowed_content_types= ('text/plain', ),
+        default_output_type="text/plain",
         default="",
         widget = TextAreaWidget(
             label = _('Result Footer'),

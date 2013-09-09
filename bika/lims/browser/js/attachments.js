@@ -23,7 +23,7 @@ $(document).ready(function(){
         if (attachfile != '' && ((service != '') || (analysis != ''))) {
             $("#addButton").removeAttr("disabled");
         } else {
-            $("#addButton").attr("disabled", true);
+            $("#addButton").prop("disabled", true);
         }
     });
 
@@ -35,7 +35,7 @@ $(document).ready(function(){
 			type: 'POST',
 			success: function(responseText, statusText, xhr, $form) {
 				if(responseText == "success"){
-					$("span[attachment_uid="+attachment_uid+"]").remove();
+					$("span[attachment_uid='"+attachment_uid+"']").remove();
 				}
 			},
 			data: {

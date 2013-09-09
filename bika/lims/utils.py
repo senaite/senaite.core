@@ -48,8 +48,6 @@ def to_unicode(text):
     else:
         return text
 
-def deprecated(message):
-    warnings.warn(message, DeprecationWarning, stacklevel=2)
 
 # Wrapper for PortalTransport's sendmail - don't know why there sendmail
 # method is marked private

@@ -8,7 +8,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 
 schema = BikaSchema.copy() + Schema((
-                                     
+
     DateTimeField('DownFrom',
         with_time = 1,
         with_date = 1,
@@ -16,8 +16,8 @@ schema = BikaSchema.copy() + Schema((
             label = _("From"),
             description = _("Date from which the instrument is under validation"),
         ),
-    ), 
-                                     
+    ),
+
     DateTimeField('DownTo',
         with_time = 1,
         with_date = 1,
@@ -26,43 +26,43 @@ schema = BikaSchema.copy() + Schema((
             description = _("Date until the instrument will not be available"),
         ),
     ),
-                                     
+
     StringField('Validator',
         widget = StringWidget(
             label = _("Validator"),
             description = _("The analyst responsible of the validation"),
         )
     ),
-                                     
+
     TextField('Considerations',
-        default_content_type = 'text/x-web-intelligent',
-        allowable_content_types = ('text/x-web-intelligent',),
-        default_output_type="text/html",
+        default_content_type = 'text/plain',
+        allowed_content_types= ('text/plain', ),
+        default_output_type="text/plain",
         widget = TextAreaWidget(
             label = _("Considerations"),
             description = _("Remarks to take into account before validation"),
         ),
     ),
-                                     
+
     TextField('WorkPerformed',
-        default_content_type = 'text/x-web-intelligent',
-        allowable_content_types = ('text/x-web-intelligent',),
-        default_output_type="text/html",
+        default_content_type = 'text/plain',
+        allowed_content_types= ('text/plain', ),
+        default_output_type="text/plain",
         widget = TextAreaWidget(
             label = _("Work Performed"),
             description = _("Description of the actions made during the validation"),
         ),
     ),
-                                     
+
     TextField('Remarks',
-        default_content_type = 'text/x-web-intelligent',
-        allowable_content_types = ('text/x-web-intelligent',),
-        default_output_type="text/html",
+        default_content_type = 'text/plain',
+        allowed_content_types= ('text/plain', ),
+        default_output_type="text/plain",
         widget = TextAreaWidget(
             label = _("Remarks"),
         ),
     ),
-                                       
+
 ))
 
 class InstrumentValidation(BaseFolder):
@@ -74,5 +74,5 @@ class InstrumentValidation(BaseFolder):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
-    
+
 atapi.registerType(InstrumentValidation, PROJECTNAME)
