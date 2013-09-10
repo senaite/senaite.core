@@ -1358,7 +1358,7 @@ class LoadSetupData(BrowserView):
             self.wst_layouts[
                 row['WorksheetTemplate_title']].append({
                     'pos': row['pos'],
-                    'type': row['type'],
+                    'type': row['type'][0].lower(),
                     'blank_ref': row['blank_ref'],
                     'control_ref': row['control_ref'],
                     'dup': row['dup']})
