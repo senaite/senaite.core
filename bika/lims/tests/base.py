@@ -1,5 +1,6 @@
 from AccessControl.SecurityManagement import newSecurityManager
-from plone.app.testing import login
+from Acquisition import aq_base
+from bika.lims import logger
 from plone.app.testing import setRoles
 from plone.app.testing import SITE_OWNER_NAME
 from plone.app.testing import TEST_USER_ID
@@ -7,12 +8,27 @@ from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import TEST_USER_PASSWORD
 from plone.protect.authenticator import AuthenticatorView
 from plone.testing.z2 import Browser
+from Products.CMFPlone.tests.utils import MockMailHost as _MMH
+from Products.MailHost.interfaces import IMailHost
+
 from bika.lims.testing import BIKA_INTEGRATION_TESTING
 from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
 from re import match
 from Testing.ZopeTestCase.functional import Functional
+from zope.component import getSiteManager
 
 import unittest
+
+
+class MockMailHost(_MMH):
+
+    def send(self, *kwargs):
+        logger.log("***Message***")
+        logger.log("From: {0}".format(kwargs['mfrom']))
+        logger.log("To: {0}".format(kwargs['mto']))
+        logger.log("Subject: {0}".format(kwargs['subject']))
+        logger.log("Length: {0}".format(len(kwargs['messageText'])))
+        _MMH.send(self, *kwargs)
 
 
 class BikaTestCase(unittest.TestCase):
@@ -25,6 +41,24 @@ class BikaTestCase(unittest.TestCase):
         self.request['ACTUAL_URL'] = self.portal.absolute_url()
 
         setRoles(self.portal, TEST_USER_ID, ['LabManager', 'Member'])
+
+    def afterSetUp(self):
+        self.portal._original_MailHost = self.portal.MailHost
+        self.portal.MailHost = mailhost = MockMailHost('MailHost')
+        mailhost.smtp_host = 'localhost'
+        sm = getSiteManager(context=self.portal)
+        sm.unregisterUtility(provided=IMailHost)
+        sm.registerUtility(mailhost, provided=IMailHost)
+        self.portal.email_from_address = 'test@example.com'
+
+    def beforeTearDown(self):
+        self.portal.MailHost = self.portal._original_MailHost
+        sm = getSiteManager(context=self.portal)
+        sm.unregisterUtility(provided=IMailHost)
+        sm.registerUtility(
+            aq_base(
+                self.portal._original_MailHost),
+            provided=IMailHost)
 
     def setRequestMethod(self, method):
         self.app.REQUEST.set('REQUEST_METHOD', method)
