@@ -1,14 +1,16 @@
 *** Settings ***
 
-Library          Selenium2Library  timeout=10  implicit_wait=0.2
+Library          Selenium2Library  timeout=10  implicit_wait=0.1
 Library          String
 Resource         keywords.txt
 Variables        plone/app/testing/interfaces.py
-Variables        bika/lims/tests/variables.py
 Suite Setup      Start browser
-Suite Teardown   Close All Browsers
+#Suite Teardown   Close All Browsers
 
 *** Variables ***
+
+${SELENIUM_SPEED}  0
+${PLONEURL}        http://localhost:55001/plone
 
 ${Manager Firstname}  Manager Firstname
 ${Manager Surname}    Manager Surname
@@ -37,69 +39,56 @@ Setup
     Test Attachment Types Workflow
 
     #Batch Labels
-    Create Batch Labels  Title=Batch Labels Title
-
-    Test Batch Labels Workflow
-
-    Test Batch Labels Cancel
+    # Create Batch Labels  Title=Batch Labels Title
+    # Test Batch Labels Workflow
+    # Test Batch Labels Cancel
 
     #Calculations
     Test Calculations Cancel  Title=Calculations Title
     ...    Description=Calculations Description
     ...    Change note=Calculations Change note
-
     Create Calculations Description  Title=Calculations Title
     ...    Description=Calculations Description
     ...    Change note=Calculations Change note
-
     Create Calculations Calculation  Keyword=Keyword
     ...    Field Title=Field Title
     ...    Default Value=Default Value
     ...    Unit=Unit
     ...    Calculation Formula=Calculation Formula
     ...    Change note=Calculations Change note
-
     Test Calculations Workflow
 
     #Container Types
     Test Container Types Cancel  Title=Container Types Title
     ...    Description=Container Types Description
-
     Create Container Types  Title=Container Types Title
     ...    Description=Container Types Description
-
     Test Container Types Workflow
 
     #Preservations
     Test Preservations Cancel  Title=Preservations Title
     ...    Description=Preservations Description
-
-
     Create Preservations  Title=Preservations Title
     ...    Description=Preservations Description
     ...    Days=5
     ...    Hours=10
     ...    Minutes=15
-
     Test Preservations Workflow
 
-
-    #Lab Products
-    Test Lab Products Cancel  Title=Lab Products Title
-    ...    Description=Lab Products Description
-    ...    Volume=Lab Products Volume
-    ...    Unit=Lab Products Unit
-    ...    VAT=16.00
-    ...    Price=4321.39
-
-    Create Lab Products  Title=Lab Products Title
-    ...    Description=Lab Products Description
-    ...    Volume=Lab Products Volume
-    ...    Unit=Lab Products Unit
-    ...    VAT=16.00
-    ...    Price=4321.39
-
-    Test Lab Products Workflow
+    # #Lab Products
+    # Test Lab Products Cancel  Title=Lab Products Title
+    # ...    Description=Lab Products Description
+    # ...    Volume=Lab Products Volume
+    # ...    Unit=Lab Products Unit
+    # ...    VAT=16.00
+    # ...    Price=4321.39
+    # Create Lab Products  Title=Lab Products Title
+    # ...    Description=Lab Products Description
+    # ...    Volume=Lab Products Volume
+    # ...    Unit=Lab Products Unit
+    # ...    VAT=16.00
+    # ...    Price=4321.39
+    # Test Lab Products Workflow
 
     #Laboratory Information
     Test Laboratory Information Cancel  Name=Laboratory Name
@@ -127,50 +116,36 @@ Setup
     ...    Description=Methods Description
     ...    Instructions=Methods Instructions
     ...    Change note=Methods Change note
-
     Create Methods  Title=Methods Title
     ...    Description=Methods Description
     ...    Instructions=Methods Instructions
     ...    Change note=Methods Change note
-
     Test Methods Workflow
 
-
     #Sample Conditions
-    Test Sample Conditions Cancel  Title=Sample Conditions Title
-    ...    Description=Sample Conditions Description
-
-
-    Create Sample Conditions  Title=Sample Conditions Title
-    ...    Description=Sample Conditions Description
-
-
-    Test Sample Conditions Workflow
-
+    # Test Sample Conditions Cancel  Title=Sample Conditions Title
+    # ...    Description=Sample Conditions Description
+    # Create Sample Conditions  Title=Sample Conditions Title
+    # ...    Description=Sample Conditions Description
+    # Test Sample Conditions Workflow
 
     #Sample Matrices
     Test Sample Matrices Cancel  Title=Sample Matrices Title
     ...    Description=Sample Matrices Description
-
-
     Create Sample Matrices  Title=Sample Matrices Title
     ...    Description=Sample Matrices Description
-
-
     Test Sample Matrices Workflow
 
    #Sample Points
     Test Sample Points Cancel  Title=Sample Points Title
     ...    Description=Sample Points Description
     ...    Change note=Sample Points Change note
-
     Create Sample Points  Title=Sample Points Title
     ...    Description=Sample Points Description
     ...    Days=5
     ...    Hours=10
     ...    Minutes=15
     ...    Change note=Sample Points Change note
-
     Create Sample Points Location  Lat degrees=45
     ...    Lat minutes=30
     ...    Lat seconds=30
@@ -182,25 +157,18 @@ Setup
     ...    Elevation=10
     ...    Change note=Sample Points Location Change note
 
-
     Test Sample Points Workflow
-
 
     #Sampling Deviations
     Test Sampling Deviations Cancel  Title=Sampling Deviations Title
     ...    Description=Sampling Deviations Description
-
     Create Sampling Deviations  Title=Sampling Deviations Title
     ...    Description=Sampling Deviations Description
-
     Test Sampling Deviations Workflow
-
 
 #End independent Bika Setup options
 
-
 #Start dependent Bika Setup options
-
 
     #Lab Contact
     #requires 3 steps for testing the complete creation of a lab contact
@@ -217,19 +185,15 @@ Setup
     ...    Email=manager@lab.com
     ...    Jobtitle=Lab manager
 
-
     #create a Lab Department
     #a department is required for creating a lab contact
     Create LabDepartment  Title=Lab department
     ...    Description=Lab department description
     ...    Manager=${Manager Firstname} ${Manager Surname}
 
-
     #now create a Lab Contact using the manager and department info
     Create LabContact  Salutation=Mr
     ...    Firstname=Contact Firstname
-    ...    Middleinitial=Contact Middleinitial
-    ...    Middlename=Contact Middlename
     ...    Surname=Contact Surname
     ...    Jobtitle=Analyst
     #this is the previously created department
@@ -276,8 +240,6 @@ Setup
     ...    BankBranch=Bank Branch
     ...    Salutation=Mr
     ...    Firstname=Contact Firstname
-    ...    Middleinitial=Contact Middleinitial
-    ...    Middlename=Contact Middlename
     ...    Surname=Contact Surname
     ...    Jobtitle=Sales Representative
     ...    Department=Sales Department
@@ -293,7 +255,6 @@ Setup
     ...    Description=Containers Description
     ...    Change note=Containers Change note
     #end Containers
-
 
     #Sample Types
     Create SampleTypes  Title=Sample Types Title
@@ -317,11 +278,9 @@ Setup
     ...    Description=Analysis Profiles description
     #end Analysis Profile
 
-
     #Analysis Specifications <- note use of global variable ${AnalysisCategory_global_Title}
     Create AnalysisSpecifications  Description=Analysis Specifications description
     #end Analysis Specifications
-
 
     #Reference Definition
     Create ReferenceDefinition  Title= Reference DefinitionTitle
@@ -332,7 +291,6 @@ Setup
     Create WorksheetTemplate  Title= Reference DefinitionTitle
     ...    Description=ReferenceDefinition description
     #end Worksheet Template
-
 
     Create ARTemplates  Title=Reference DefinitionTitle
     ...    Description=ReferenceDefinition description
@@ -351,8 +309,6 @@ Setup
     #Client Contacts
     Create ClientContact  Salutation=Mrs
     ...    Firstname=Contact Firstname
-    ...    Middleinitial=Contact Middleinitial
-    ...    Middlename=Contact Middlename
     ...    Surname=Contact Surname
     ...    Jobtitle=Staff Geologist
     #this is the previously created department
@@ -377,14 +333,10 @@ Setup
 
 #End dependent Bika Setup options
 
-    DiffTime  ${saveTime}
-
-
 *** Keywords ***
 
 
 Start browser
-    ShowAndSaveTime
     Log  Start Bika Setup Testing: independent categories  WARN
     Open browser  ${PLONEURL}/login_form
     Set selenium speed  ${SELENIUM_SPEED}
@@ -427,41 +379,41 @@ Test Attachment Types Workflow
     Wait Until Page Contains  Changes saved.
 
 
-#Batch Labels
-Create Batch Labels
-    [Arguments]  ${Title}=
-    Log  Batch Labels  WARN
-    Go to  ${PLONEURL}/bika_setup/bika_batchlabels
-    Click link  Add
-    Wait Until Page Contains Element  title
-    Input Text  title  ${Title}
-    Click Button  Save
-    #portalMessage info
-    Wait Until Page Contains  Changes saved.
+# #Batch Labels
+# Create Batch Labels
+#     [Arguments]  ${Title}=
+#     Log  Batch Labels  WARN
+#     Go to  ${PLONEURL}/bika_setup/bika_batchlabels
+#     Click link  Add
+#     Wait Until Page Contains Element  title
+#     Input Text  title  ${Title}
+#     Click Button  Save
+#     #portalMessage info
+#     Wait Until Page Contains  Changes saved.
 
 
-#specifically test the Deactivate and Activate options
-Test Batch Labels Workflow
-    Go to  ${PLONEURL}/bika_setup/bika_batchlabels
-    Select Checkbox  list_select_all
-    #sleep  1
-    Click Button  deactivate_transition
-    Wait Until Page Contains  Changes saved.
-    #after deactivation no labels are shown
-    #first show all labels before continuing
-    Click link  all
-    #sleep  1
-    Select Checkbox  list_select_all
-    Click Button  activate_transition
-    Wait Until Page Contains  Changes saved.
+# #specifically test the Deactivate and Activate options
+# Test Batch Labels Workflow
+#     Go to  ${PLONEURL}/bika_setup/bika_batchlabels
+#     Select Checkbox  list_select_all
+#     #sleep  1
+#     Click Button  deactivate_transition
+#     Wait Until Page Contains  Changes saved.
+#     #after deactivation no labels are shown
+#     #first show all labels before continuing
+#     Click link  all
+#     #sleep  1
+#     Select Checkbox  list_select_all
+#     Click Button  activate_transition
+#     Wait Until Page Contains  Changes saved.
 
-#specifically test the Cancel option
-Test Batch Labels Cancel
-    Go to  ${PLONEURL}/bika_setup/bika_batchlabels
-    Click link  Add
-    Wait Until Page Contains Element  title
-    Click Button  Cancel
-    Wait Until Page Contains  Add New Item operation was cancelled.
+# #specifically test the Cancel option
+# Test Batch Labels Cancel
+#     Go to  ${PLONEURL}/bika_setup/bika_batchlabels
+#     Click link  Add
+#     Wait Until Page Contains Element  title
+#     Click Button  Cancel
+#     Wait Until Page Contains  Add New Item operation was cancelled.
 
 
 #Calculations
@@ -624,58 +576,58 @@ Test Preservations Workflow
     Wait Until Page Contains  Changes saved.
 
 
-#Lab Products
-Test Lab Products Cancel
-    [Arguments]  ${Title}=
-    ...          ${Description}=
-    ...          ${Volume}=
-    ...          ${Unit}=
-    ...          ${VAT}=
-    ...          ${Price}=
-    Log  Lab Products  WARN
-    Go to  ${PLONEURL}/bika_setup/bika_labproducts
-    Click link  Add
-    Wait Until Page Contains Element  title
-    Input Text  title  ${Title}
-    Input Text  description  ${Description}
-    Input Text  Volume  ${Volume}
-    Input Text  Unit  ${Unit}
-    Input Text  VAT  ${VAT}
-    Input Text  Price  ${Price}
-    #sleep  2
-    Click Button  Cancel
-    Page should contain  Add New Item operation was cancelled.
+# #Lab Products
+# Test Lab Products Cancel
+#     [Arguments]  ${Title}=
+#     ...          ${Description}=
+#     ...          ${Volume}=
+#     ...          ${Unit}=
+#     ...          ${VAT}=
+#     ...          ${Price}=
+#     Log  Lab Products  WARN
+#     Go to  ${PLONEURL}/bika_setup/bika_labproducts
+#     Click link  Add
+#     Wait Until Page Contains Element  title
+#     Input Text  title  ${Title}
+#     Input Text  description  ${Description}
+#     Input Text  Volume  ${Volume}
+#     Input Text  Unit  ${Unit}
+#     Input Text  VAT  ${VAT}
+#     Input Text  Price  ${Price}
+#     #sleep  2
+#     Click Button  Cancel
+#     Page should contain  Add New Item operation was cancelled.
 
-Create Lab Products
-    [Arguments]  ${Title}=
-    ...          ${Description}=
-    ...          ${Volume}=
-    ...          ${Unit}=
-    ...          ${VAT}=
-    ...          ${Price}=
-    Go to  ${PLONEURL}/bika_setup/bika_labproducts
-    Click link  Add
-    Wait Until Page Contains Element  title
-    Input Text  title  ${Title}
-    Input Text  description  ${Description}
-    Input Text  Volume  ${Volume}
-    Input Text  Unit  ${Unit}
-    Input Text  VAT  ${VAT}
-    Input Text  Price  ${Price}
-    #sleep  2
-    Click Button  Save
-    Wait Until Page Contains  Changes saved.
+# Create Lab Products
+#     [Arguments]  ${Title}=
+#     ...          ${Description}=
+#     ...          ${Volume}=
+#     ...          ${Unit}=
+#     ...          ${VAT}=
+#     ...          ${Price}=
+#     Go to  ${PLONEURL}/bika_setup/bika_labproducts
+#     Click link  Add
+#     Wait Until Page Contains Element  title
+#     Input Text  title  ${Title}
+#     Input Text  description  ${Description}
+#     Input Text  Volume  ${Volume}
+#     Input Text  Unit  ${Unit}
+#     Input Text  VAT  ${VAT}
+#     Input Text  Price  ${Price}
+#     #sleep  2
+#     Click Button  Save
+#     Wait Until Page Contains  Changes saved.
 
-Test Lab Products Workflow
-    Go to  ${PLONEURL}/bika_setup/bika_labproducts
-    Select Checkbox  list_select_all
-    #sleep  2
-    Click Button  deactivate_transition
-    Wait Until Page Contains  Changes saved.
-    Click Link  All
-    Select Checkbox  list_select_all
-    Click Button  activate_transition
-    Wait Until Page Contains  Changes saved.
+# Test Lab Products Workflow
+#     Go to  ${PLONEURL}/bika_setup/bika_labproducts
+#     Select Checkbox  list_select_all
+#     #sleep  2
+#     Click Button  deactivate_transition
+#     Wait Until Page Contains  Changes saved.
+#     Click Link  All
+#     Select Checkbox  list_select_all
+#     Click Button  activate_transition
+#     Wait Until Page Contains  Changes saved.
 
 
 #Laboratory Information
@@ -798,43 +750,43 @@ Test Methods Workflow
 
 
 
-#Sample Conditions
-Test Sample Conditions Cancel
-    [Arguments]  ${Title}=
-    ...          ${Description}=
-    Log  Sample Conditions  WARN
-    Go to  ${PLONEURL}/bika_setup/bika_sampleconditions
-    Click link  Add
-    Wait Until Page Contains Element  title
-    Input Text  title  ${Title}
-    Input Text  description  ${Description}
-    Click Button  Cancel
-    Page should contain  Add New Item operation was cancelled.
+# #Sample Conditions
+# Test Sample Conditions Cancel
+#     [Arguments]  ${Title}=
+#     ...          ${Description}=
+#     Log  Sample Conditions  WARN
+#     Go to  ${PLONEURL}/bika_setup/bika_sampleconditions
+#     Click link  Add
+#     Wait Until Page Contains Element  title
+#     Input Text  title  ${Title}
+#     Input Text  description  ${Description}
+#     Click Button  Cancel
+#     Page should contain  Add New Item operation was cancelled.
 
 
-Create Sample Conditions
-    [Arguments]  ${Title}=
-    ...          ${Description}=
+# Create Sample Conditions
+#     [Arguments]  ${Title}=
+#     ...          ${Description}=
 
-    Go to  ${PLONEURL}/bika_setup/bika_sampleconditions
-    Click link  Add
-    Wait Until Page Contains Element  title
-    Input Text  title  ${Title}
-    Input Text  description  ${Description}
-    Click Button  Save
-    Wait Until Page Contains  Changes saved.
+#     Go to  ${PLONEURL}/bika_setup/bika_sampleconditions
+#     Click link  Add
+#     Wait Until Page Contains Element  title
+#     Input Text  title  ${Title}
+#     Input Text  description  ${Description}
+#     Click Button  Save
+#     Wait Until Page Contains  Changes saved.
 
 
-Test Sample Conditions Workflow
-    Go to  ${PLONEURL}/bika_setup/bika_sampleconditions
-    Select Checkbox  list_select_all
-    Click Button  deactivate_transition
-    Wait Until Page Contains  Changes saved.
-#the link to "All" should also have an id called "all" like all others - not default
-    #Click Link  All
-    Click link  default
-    Select Checkbox  list_select_all
-    Click Button  activate_transition
+# Test Sample Conditions Workflow
+#     Go to  ${PLONEURL}/bika_setup/bika_sampleconditions
+#     Select Checkbox  list_select_all
+#     Click Button  deactivate_transition
+#     Wait Until Page Contains  Changes saved.
+# #the link to "All" should also have an id called "all" like all others - not default
+#     #Click Link  All
+#     Click link  default
+#     Select Checkbox  list_select_all
+#     Click Button  activate_transition
 
 #Sample Matrices
 Test Sample Matrices Cancel
@@ -1053,8 +1005,6 @@ Create LabDepartment
 Create LabContact
     [Arguments]  ${Salutation}=
     ...          ${Firstname}=
-    ...          ${Middleinitial}=
-    ...          ${Middlename}=
     ...          ${Surname}=
     ...          ${Jobtitle}=
     ...          ${Department}=
@@ -1076,8 +1026,6 @@ Create LabContact
     Wait Until Page Contains Element  Firstname
     Input Text  Salutation  ${Salutation}
     Input Text  Firstname  ${Firstname}
-    Input Text  Middleinitial  ${Middleinitial}
-    Input Text  Middlename  ${Middlename}
     Input Text  Surname  ${Surname}
     Input Text  JobTitle  ${Jobtitle}
     Select from list  Department:list  ${Department}
@@ -1103,11 +1051,6 @@ Create LabContact
     Input Text  PhysicalAddress.address  ${Physical Address}
     Select From List  PostalAddress.selection  PhysicalAddress
     Input Text  PostalAddress.address  ${Postal Address}
-    #sleep  2
-
-    Click Link  Publication preference
-    Wait Until Page Contains Element  PublicationPreference
-    Select from list  PublicationPreference:list  ${Preference}
     #sleep  2
 
     Click Button  Save
@@ -1151,8 +1094,6 @@ Create Suppliers
     ...          ${BankBranch}=
     ...          ${Salutation}=
     ...          ${Firstname}=
-    ...          ${Middleinitial}=
-    ...          ${Middlename}=
     ...          ${Surname}=
     ...          ${Jobtitle}=
     ...          ${Department}=
@@ -1241,8 +1182,6 @@ Create Suppliers
     Wait Until Page Contains Element  Salutation
     Input Text  Salutation  ${Salutation}
     Input Text  Firstname  ${Firstname}
-    Input Text  Middleinitial  ${Middleinitial}
-    Input Text  Middlename  ${Middlename}
     Input Text  Surname  ${Surname}
     Input Text  JobTitle  ${Jobtitle}
     Input Text  Department  ${Department}
@@ -1759,8 +1698,6 @@ Create AddClients
 Create ClientContact
     [Arguments]  ${Salutation}=
     ...          ${Firstname}=
-    ...          ${Middleinitial}=
-    ...          ${Middlename}=
     ...          ${Surname}=
     ...          ${Jobtitle}=
     ...          ${Department}=
@@ -1786,8 +1723,6 @@ Create ClientContact
     Wait Until Page Contains Element  Firstname
     Input Text  Salutation  ${Salutation}
     Input Text  Firstname  ${Firstname}
-    Input Text  Middleinitial  ${Middleinitial}
-    Input Text  Middlename  ${Middlename}
     Input Text  Surname  ${Surname}
     Input Text  JobTitle  ${Jobtitle}
     Input Text  Department  ${Department}

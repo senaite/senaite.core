@@ -35,8 +35,9 @@ SelectDate
     Wait Until Page Contains Element  ui-datepicker-div
     ${Date} =            Convert To Integer    ${Date}
     ${Date} =            Convert To String     ${Date}
+    sleep                1
     Click Link  ${Date}
-    sleep                0.5
+    sleep                .5
 
 
 SelectPrevMonthDate

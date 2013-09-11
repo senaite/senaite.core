@@ -12,14 +12,14 @@ Suite Teardown          Close All Browsers
 
 ${SELENIUM_SPEED}  0
 ${PLONEURL}        http://localhost:55001/plone
-${ar_factory_url}  portal_factory/AnalysisRequest/Request new analyses/ar_add
+${ar_factory_url}  ar_add
 
 *** Test Cases ***
 
 Analysis Request with no samping or preservation workflow
 
     Go to                     ${PLONEURL}/clients/client-1/${ar_factory_url}?col_count=1
-    ${ar_id}=                 Complete ar_add form with template Bore
+    ${ar_id}=                 Complete ar_add form with template    Lab: Borehole 12 Hardness
     Go to                     ${PLONEURL}/clients/client-1/analysisrequests
     Execute transition receive on items in form_id analysisrequests
     Go to                     ${PLONEURL}/clients/client-1/${ar_id}/manage_results
@@ -47,8 +47,6 @@ Analysis Request with no samping or preservation workflow
 # XXX copy across in all fields
 
 
-    shleep   300   aaaaaa
-
 *** Keywords ***
 
 Start browser
@@ -56,21 +54,24 @@ Start browser
     Log in              test_labmanager    test_labmanager
     Set selenium speed  ${SELENIUM_SPEED}
 
-Complete ar_add form with template ${template}
+Complete ar_add form with template
+    [Arguments]  ${template}=
+
     @{time} =               Get Time        year month day hour min sec
 
-    SelectDate              ar_0_SamplingDate   @{time}[2]
-    Select from dropdown    ar_0_Template       ${template}
+    SelectDate                  ar_0_SamplingDate     @{time}[2]
+    Select from list            ar_0_ARTemplate       ${template}
+    sleep    1
 
     #Click Element  Batch
     #Click Element  Sample
-    #Select From Dropdown  ar_0_SamplePoint              Thing
-    #Select From Dropdown  ar_0_ClientOrderNumber              Thing
-    #Select From Dropdown  ar_0_ClientReference              Thing
-    #Select From Dropdown  ar_0_ClientSampleID              Thing
-    #Select From Dropdown  ar_0_SamplingDeviation              Thing
-    #Select From Dropdown  ar_0_SampleCondition              Thing
-    #Select From Dropdown  ar_0_DefaultContainerType              Thing
+    #Select From List      ar_0_SamplePoint              Thing
+    #Select From List      ar_0_ClientOrderNumber              Thing
+    #Select From List      ar_0_ClientReference              Thing
+    #Select From List      ar_0_ClientSampleID              Thing
+    #Select From List      ar_0_SamplingDeviation              Thing
+    #Select From List      ar_0_SampleCondition              Thing
+    #Select From List      ar_0_DefaultContainerType              Thing
     #Select Checkbox  ar_0_AdHoc
     #Select Checkbox  ar_0_Composite
     #Select Checkbox  ar_0_ReportDryMatter
@@ -87,7 +88,7 @@ Complete ar_add form with template ${template}
 Complete ar_add form Without template
     @{time} =                  Get Time        year month day hour min sec
     SelectDate                 ar_0_SamplingDate   @{time}[2]
-    Select From Dropdown       ar_0_SampleType    Water
+    Select From List           ar_0_SampleType    Water
     Click Element              xpath=//th[@id='cat_lab_Water Chemistry']
     Select Checkbox            xpath=//input[@title='Moisture' and @name='ar.0.Analyses:list:ignore_empty:record']
     Click Element              xpath=//th[@id='cat_lab_Metals']
@@ -114,7 +115,8 @@ Submit results with out of range tests
     ${count} =          Convert to integer    ${count}
     :FOR    ${index}    IN RANGE    1   ${count+1}
     \    TestResultsRange    xpath=(//input[@type='text' and @field='Result'])[${index}]       5   10
-    Focus          Remarks
+    \    Press Key      xpath=(//input[@type='text' and @field='Result'])[${index}]   \\09
+    sleep  1
     Click Element               xpath=//input[@value='Submit for verification'][1]
     Wait Until Page Contains    Changes saved.
 
@@ -125,8 +127,9 @@ Submit results
     ${count} =          Convert to integer    ${count}
     :FOR    ${index}    IN RANGE    1   ${count+1}
     \    Input text     xpath=(//input[@type='text' and @field='Result'])[${index}]   10
-    Focus          Remarks
-    Click Element               xpath=//input[@value='Submit for verification'][1]
+    \    Press Key      xpath=(//input[@type='text' and @field='Result'])[${index}]   \\09
+    sleep  1
+    Click Element               xpath=//input[@value='Submit for verification']
     Wait Until Page Contains    Changes saved.
 
 TestResultsRange
@@ -137,10 +140,10 @@ TestResultsRange
     # Log  Testing Result Range for ${locator} -:- values: ${badResult} and ${goodResult}  WARN
 
     Input Text          ${locator}  ${badResult}
-    Focus               Remarks
+    Press Key           ${locator}  \\09
     Expect exclamation
     Input Text          ${locator}  ${goodResult}
-    Focus               Remarks
+    Press Key           ${locator}  \\09
     Expect no exclamation
 
 Expect exclamation
