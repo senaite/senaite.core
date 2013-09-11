@@ -245,12 +245,13 @@ class Lab_Contacts(WorksheetImporter):
 
             # Create Plone user
 
+            username = safe_unicode(row['Username']).encode('utf-8')
             if(row['Username']):
                 member = portal_registration.addMember(
-                    row['Username'],
+                    username,
                     row['Password'],
                     properties={
-                        'username': row['Username'],
+                        'username': username,
                         'email': row['EmailAddress'],
                         'fullname': Fullname}
                 )
@@ -261,7 +262,7 @@ class Lab_Contacts(WorksheetImporter):
                     for group_id in group_ids:
                         group = portal_groups.getGroupById(group_id)
                         if group:
-                            group.addMember(row['Username'])
+                            group.addMember(username)
                 roles = row.get('Roles', '')
                 if roles:
                     role_ids = [r.strip() for r in roles.split(',')]
@@ -272,7 +273,7 @@ class Lab_Contacts(WorksheetImporter):
                 # folder
                 if 'LabManager' in group_ids:
                     self.context.clients.manage_setLocalRoles(
-                        row['Username'], ['Owner', ])
+                        username, ['Owner', ])
 
 
 class Lab_Departments(WorksheetImporter):
