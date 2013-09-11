@@ -259,8 +259,8 @@ class BikaGenerator:
         portal.bika_setup.reindexObject()
 
         mp = portal.bika_setup.laboratory.manage_permission
-        mp('Access contents information',  ['Authenticated'], 1)
-        mp(permissions.View, ['Authenticated'], 1)
+        mp('Access contents information',  ['Anonymous', 'Authenticated'], 1)
+        mp(permissions.View, ['Anonymous', 'Authenticated'], 1)
         portal.bika_setup.laboratory.reindexObject()
 
         # /clients folder permissions
