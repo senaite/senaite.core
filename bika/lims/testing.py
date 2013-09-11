@@ -1,5 +1,6 @@
 # Testing layer to provide some of the features of PloneTestCase
 
+from plone.app.robotframework.testing import AUTOLOGIN_LIBRARY_FIXTURE
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import IntegrationTesting
 from plone.app.testing import login
@@ -59,3 +60,7 @@ BIKA_INTEGRATION_TESTING = IntegrationTesting(
 BIKA_FUNCTIONAL_TESTING = FunctionalTesting(
     bases=(BIKA_TEST_FIXTURE,),
     name="BikaTestingLayer:Functional")
+
+BIKA_ROBOT_TESTING = FunctionalTesting(
+    bases=(BIKA_TEST_FIXTURE, z2.ZSERVER_FIXTURE),
+    name="BikaTestingLayer:Robot")
