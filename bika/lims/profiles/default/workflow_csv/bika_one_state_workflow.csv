@@ -12,7 +12,3 @@ Title:,Active,,,,,,,,
 Description:,,,,,,,,,
 Transitions,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,LabManager,Site Administrator
-Access contents information,N,N,Y,Y,N,Y,N,Y,Y
-View,N,N,Y,Y,N,Y,N,Y,Y
-Modify portal content,N,N,Y,Y,N,Y,N,Y,Y
-Change portal events,N,N,Y,Y,N,Y,N,Y,Y
