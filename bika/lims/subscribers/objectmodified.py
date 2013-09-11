@@ -16,3 +16,9 @@ def ObjectModifiedEventHandler(obj, event):
             pr.save(obj=service, comment="Calculation updated to version %s"%
                 (obj.version_id+1,))
             service.reference_versions[obj.UID()] = obj.version_id + 1
+    elif obj.portal_type == 'Client':
+        # When modifying these values, keep in sync with setuphandlers.py
+        mp = obj.manage_permission
+        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver'], 0)
+        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver'], 0)
+        mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 0)

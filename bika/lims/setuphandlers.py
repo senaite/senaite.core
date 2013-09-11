@@ -255,6 +255,9 @@ class BikaGenerator:
         portal.bika_setup.laboratory.reindexObject()
 
         # /clients folder permissions
+
+        # When modifying these defaults, look to subscribers/objectmodified.py
+
         # Member role must have view permission on /clients, to see the list.
         # This means within a client, perms granted on Member role are available
         # in clients not our own, allowing sideways entry if we're not careful.
