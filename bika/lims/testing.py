@@ -9,6 +9,7 @@ from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import SITE_OWNER_NAME
 from plone.app.testing import applyProfile
+from plone.app.robotframework.testing import AUTOLOGIN_LIBRARY_FIXTURE
 from plone.testing import z2
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.setuphandlers import setupPortalContent
@@ -108,5 +109,5 @@ BIKA_FUNCTIONAL_TESTING = FunctionalTesting(
     name="BikaTestingLayer:Functional")
 
 BIKA_ROBOT_TESTING = FunctionalTesting(
-    bases=(BIKA_TEST_FIXTURE, z2.ZSERVER_FIXTURE),
+    bases=(BIKA_TEST_FIXTURE, AUTOLOGIN_LIBRARY_FIXTURE, z2.ZSERVER_FIXTURE),
     name="BikaTestingLayer:Robot")
