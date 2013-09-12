@@ -1,0 +1,77 @@
+*** Settings ***
+
+*** Keywords ***
+
+Log in
+    [Arguments]  ${userid}  ${password}
+
+    Go to                       http://localhost:55001/plone/login_form
+    Page should contain element  __ac_name
+    Page should contain element  __ac_password
+    Page should contain button   Log in
+    Input text                   __ac_name      ${userid}
+    Input text                   __ac_password  ${password}
+    Click Button  Log in
+
+
+Log out
+    Go to                          http://localhost:55001/plone/logout
+    Wait until page contains       You are now logged out
+
+
+Select from dropdown
+    [Arguments]        ${locator}
+    ...                ${search_text}=
+    ...                ${item_number}=1
+    Input text         ${locator}  ${search_text}
+    Wait until page contains element       xpath=//div[contains(@class,'cg-colItem')]
+    Click Element      xpath=//div[contains(@class,'cg-colItem')][${item_number}]
+
+
+SelectDate
+    [Arguments]  ${Element}=
+    ...          ${Date}=
+    Click Element  ${Element}
+    Wait Until Page Contains Element  ui-datepicker-div
+    ${Date} =            Convert To Integer    ${Date}
+    ${Date} =            Convert To String     ${Date}
+    sleep                1
+    Click Link  ${Date}
+    sleep                .5
+
+
+SelectPrevMonthDate
+    [Arguments]  ${Element}=
+    ...          ${Date}=
+    Click Element        ${Element}
+    Wait Until Page Contains Element  ui-datepicker-div
+    Click Element        xpath=//div[@id='ui-datepicker-div']//a[@title='Prev']
+    sleep                0.5
+    ${Date} =            Convert To Integer    ${Date}
+    ${Date} =            Convert To String     ${Date}
+    Click Link           ${Date}
+    sleep                0.5
+
+SelectNextMonthDate
+    [Arguments]  ${Element}=
+    ...          ${Date}=
+    Click Element        ${Element}
+    Wait Until Page Contains Element  ui-datepicker-div
+    Click Element        xpath=//div[@id='ui-datepicker-div']//a[@title='Next']
+    sleep                0.5
+    ${Date} =            Convert To Integer    ${Date}
+    ${Date} =            Convert To String     ${Date}
+    Click Link           ${Date}
+    sleep                0.5
+
+Execute transition ${transition} on items in form_id ${form_id}
+    Select checkbox     xpath=//input[@id='${form_id}_select_all']
+    Set Selenium Timeout        30
+    Click Element       ${transition}_transition
+    Set Selenium Timeout        10
+
+Shleep
+    [Arguments]  ${amount}=
+    ...          ${comment}=
+    Log  Sleeping ${amount}: ${comment}  WARN
+    sleep  ${amount}

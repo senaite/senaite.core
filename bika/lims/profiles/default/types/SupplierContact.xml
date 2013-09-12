@@ -20,7 +20,7 @@
  <property name="default_view_fallback">False</property>
 
  <alias from="(Default)" to="base_edit"/>
- <alias from="view" to="base_view"/>
+ <alias from="view" to="base_edit"/>
  <alias from="edit" to="base_edit"/>
 
  <action title="View"
@@ -29,7 +29,7 @@
          condition_expr=""
          icon_expr=""
          link_target=""
-         url_expr="string:${object_url}/base_view"
+         url_expr="string:${object_url}"
          i18n:attributes="title"
          i18n:domain="plone"
          visible="False">
@@ -42,7 +42,7 @@
          condition_expr=""
          icon_expr=""
          link_target=""
-         url_expr="string:${object_url}/base_edit"
+         url_expr="string:${object_url}/edit"
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">
