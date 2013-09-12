@@ -32,6 +32,21 @@ except:
     from zope.app.component.hooks import getSite
 
 
+def validate(instance, skip=[]):
+    errors = {}
+    instance.Schema().validate(instance, instance.REQUEST, errors, True, True)
+    for key in skip:
+        if key in errors:
+            del(errors[key])
+    if errors:
+        try:
+            title = instance.Title()
+        except:
+            title = ''
+        assert not errors, "Got errors validating {0} : {1}".format(
+            instance, str(errors))
+
+
 class LoadSetupData(BrowserView):
 
     def __init__(self, context, request):
@@ -353,6 +368,7 @@ class LoadSetupData(BrowserView):
                 obj.edit(title = row['title'],
                          description = row.get('description', ''))
                 obj.unmarkCreationFlag()
+                validate(obj)
                 renameAfterCreation(obj)
                 self.containertypes[row['title']] = obj
 
@@ -367,6 +383,7 @@ class LoadSetupData(BrowserView):
                 obj = folder[_id]
                 obj.edit(title = row['title'])
                 obj.unmarkCreationFlag()
+                validate(obj)
                 renameAfterCreation(obj)
                 self.batchlabels[row['title']] = obj
 
@@ -382,6 +399,7 @@ class LoadSetupData(BrowserView):
                 obj.edit(title = row['title'],
                          description = row.get('description', ''))
                 obj.unmarkCreationFlag()
+                validate(obj)
                 renameAfterCreation(obj)
                 self.casestatuses[row['title']] = obj
 
@@ -397,6 +415,7 @@ class LoadSetupData(BrowserView):
                 obj.edit(title = row['title'],
                          description = row.get('description', ''))
                 obj.unmarkCreationFlag()
+                validate(obj)
                 # renameAfterCreation(obj)
                 self.caseoutcomes[row['title']] = obj
 
@@ -418,6 +437,7 @@ class LoadSetupData(BrowserView):
                          description = row.get('description', ''),
                          RetentionPeriod = RP)
                 obj.unmarkCreationFlag()
+                validate(obj)
                 renameAfterCreation(obj)
                 self.preservations[row['title']] = obj
 
@@ -440,6 +460,7 @@ class LoadSetupData(BrowserView):
                 if P:
                     obj.setPreservation(self.preservations[P])
                 obj.unmarkCreationFlag()
+                validate(obj)
                 renameAfterCreation(obj)
                 self.containers[row['title']] = obj
 
@@ -522,6 +543,7 @@ class LoadSetupData(BrowserView):
                 Username = row.get('Username',''),
                 Signature = file_data
             )
+            validate(obj)
             self.lab_contacts[Fullname] = obj
 
             if row['Department_title']:
@@ -579,6 +601,7 @@ class LoadSetupData(BrowserView):
                     obj.setManager(manager.UID())
                 self.departments[row['title']] = obj
                 obj.unmarkCreationFlag()
+                validate(obj)
                 renameAfterCreation(obj)
 
     def load_clients(self, sheet):
@@ -615,6 +638,7 @@ class LoadSetupData(BrowserView):
                      AccountNumber = row.get('AccountNumber','')
             )
             obj.unmarkCreationFlag()
+            validate(obj)
             renameAfterCreation(obj)
             self.clients[row['Name']] = obj
 
@@ -655,6 +679,7 @@ class LoadSetupData(BrowserView):
             )
 
             contact.unmarkCreationFlag()
+            validate(contact)
             renameAfterCreation(contact)
             self.client_contacts[fullname] = contact
 
@@ -717,6 +742,7 @@ class LoadSetupData(BrowserView):
             obj.setSupplier(self.suppliers[row['Supplier']])
             self.instruments[row['title']] = obj.UID()
             obj.unmarkCreationFlag()
+            validate(obj)
             renameAfterCreation(obj)
 
     def load_sample_points(self, sheet):
@@ -751,6 +777,7 @@ class LoadSetupData(BrowserView):
                      )
             self.samplepoints[row['title']] = obj
             obj.unmarkCreationFlag()
+            validate(obj)
             renameAfterCreation(obj)
 
     def load_sample_types(self, sheet):
@@ -772,6 +799,7 @@ class LoadSetupData(BrowserView):
                          ContainerType = row['ContainerType_title'] and self.containertypes[row['ContainerType_title']] or None
                 )
                 obj.unmarkCreationFlag()
+                validate(obj)
                 renameAfterCreation(obj)
                 self.sampletypes[row['title']] = obj
 
@@ -806,6 +834,7 @@ class LoadSetupData(BrowserView):
                 obj.edit(title = row['title'],
                          description = row.get('description', ''))
                 obj.unmarkCreationFlag()
+                validate(obj)
                 renameAfterCreation(obj)
 
     def load_sample_matrices(self, sheet):
@@ -820,6 +849,7 @@ class LoadSetupData(BrowserView):
                 obj.edit(title = row['title'],
                          description = row.get('description', ''))
                 obj.unmarkCreationFlag()
+                validate(obj)
                 renameAfterCreation(obj)
                 self.samplematrices[row['title']] = obj
 
@@ -838,6 +868,7 @@ class LoadSetupData(BrowserView):
                     obj.setDepartment(self.departments[row['Department_title']].UID())
                 self.cats[row['title']] = obj
                 obj.unmarkCreationFlag()
+                validate(obj)
                 renameAfterCreation(obj)
 
     def load_methods(self, sheet):
@@ -864,6 +895,7 @@ class LoadSetupData(BrowserView):
                     obj.setMethodDocument(file_data)
 
                 obj.unmarkCreationFlag()
+                validate(obj)
                 renameAfterCreation(obj)
                 self.methods[row['title']] = obj
 
@@ -922,6 +954,7 @@ class LoadSetupData(BrowserView):
             )
             self.services[row['title']] = obj
             obj.unmarkCreationFlag()
+            validate(obj)
             renameAfterCreation(obj)
 
     def service_result_options(self, sheet):
@@ -994,6 +1027,7 @@ class LoadSetupData(BrowserView):
                                                      'getKeyword':kw}})
             self.calcs[row['title']] = obj
             obj.unmarkCreationFlag()
+            validate(obj)
             renameAfterCreation(obj)
 
     def load_analysis_profile_services(self, sheet):
@@ -1022,6 +1056,7 @@ class LoadSetupData(BrowserView):
                          ProfileKey = row['ProfileKey'])
                 obj.setService(self.profile_services[row['title']])
                 obj.unmarkCreationFlag()
+                validate(obj, skip=['Service',])
                 renameAfterCreation(obj)
                 self.profiles[row['title']] = obj
 
@@ -1093,6 +1128,7 @@ class LoadSetupData(BrowserView):
             obj.setPartitions(partitions)
             obj.setAnalyses(analyses)
             obj.unmarkCreationFlag()
+            validate(obj)
             renameAfterCreation(obj)
             self.artemplates[row['title']] = obj.UID()
 
@@ -1127,6 +1163,7 @@ class LoadSetupData(BrowserView):
                          ReferenceResults = self.ref_def_results.get(row['title'], []),
                          Hazardous = self.to_bool(row['Hazardous']))
                 obj.unmarkCreationFlag()
+                validate(obj)
                 renameAfterCreation(obj)
                 self.definitions[row['title']] = obj.UID()
 
@@ -1162,6 +1199,7 @@ class LoadSetupData(BrowserView):
                          ResultsRange = resultsrange)
                 obj.setSampleType(sampletype.UID())
                 obj.unmarkCreationFlag()
+                validate(obj)
                 renameAfterCreation(obj)
 
     def load_reference_manufacturers(self, sheet):
@@ -1176,6 +1214,7 @@ class LoadSetupData(BrowserView):
                 obj.edit(title = row['title'],
                          description = row.get('description', ''))
                 obj.unmarkCreationFlag()
+                validate(obj)
                 self.ref_manufacturers[row['title']] = obj.UID()
                 renameAfterCreation(obj)
 
@@ -1193,6 +1232,7 @@ class LoadSetupData(BrowserView):
                      Phone = row['Phone'],
                      Fax = row['Fax'])
             obj.unmarkCreationFlag()
+            validate(obj)
             self.ref_suppliers[obj.Title()] = obj
             renameAfterCreation(obj)
 
@@ -1213,6 +1253,7 @@ class LoadSetupData(BrowserView):
                     Surname = row['Surname'],
                     EmailAddress = row['EmailAddress'])
                 obj.unmarkCreationFlag()
+                validate(obj)
                 renameAfterCreation(obj)
 
                 if 'Username' in row:
@@ -1279,6 +1320,7 @@ class LoadSetupData(BrowserView):
             self.set_wf_history(obj, row['workflow_history'])
             self.ref_samples[row['id']] = obj
             obj.unmarkCreationFlag()
+            validate(obj)
 
     def load_reference_analyses_interims(self, sheet):
         logger.info("Loading Reference Analyses Interim fields...")
@@ -1316,6 +1358,7 @@ class LoadSetupData(BrowserView):
             obj.setCreationDate(row['created'])
             self.set_wf_history(obj, row['workflow_history'])
             obj.unmarkCreationFlag()
+            validate(obj)
 
     def load_attachment_types(self, sheet):
         logger.info("Loading Attachment Types...")
@@ -1328,6 +1371,7 @@ class LoadSetupData(BrowserView):
                 obj.edit(title = row['title'],
                          description = row.get('description', ''))
                 obj.unmarkCreationFlag()
+                validate(obj)
                 renameAfterCreation(obj)
 
     def load_lab_products(self, sheet):
@@ -1344,6 +1388,7 @@ class LoadSetupData(BrowserView):
                          Unit = row.get('Unit',''),
                          Price = "%02f" % float(row['Price']))
                 obj.unmarkCreationFlag()
+                validate(obj)
                 renameAfterCreation(obj)
 
     def load_wst_layouts(self, sheet):
@@ -1390,6 +1435,7 @@ class LoadSetupData(BrowserView):
                          Layout = self.wst_layouts[row['title']])
                 obj.setService(self.wst_services[row['title']])
                 obj.unmarkCreationFlag()
+                validate(obj)
                 renameAfterCreation(obj)
                 self.wstemplates[row['title']] = obj.UID()
 
@@ -1447,11 +1493,13 @@ class LoadSetupData(BrowserView):
             self.set_wf_history(obj, row['workflow_history'])
             review_state = self.wf.getInfoFor(obj, 'review_state')
             obj.unmarkCreationFlag()
+            validate(obj)
             # Create a single partition...
             _id = obj.invokeFactory('SamplePartition', 'part-1')
             part = obj[_id]
             part.setContainer(self.containers['None Specified'])
             part.unmarkCreationFlag()
+            validate(part)
             changeWorkflowState(part, 'bika_sample_workflow', review_state)
             part.reindexObject()
 
@@ -1501,6 +1549,7 @@ class LoadSetupData(BrowserView):
             obj.setCreationDate(row['created'])
             self.ar_workflows[row['id']] = row['workflow_history']
             obj.unmarkCreationFlag()
+            validate(obj)
 
     def load_analyses_interims(self, sheet):
         logger.info("Loading Analyses Interims...")
@@ -1556,6 +1605,7 @@ class LoadSetupData(BrowserView):
             analyses.append(obj)
             ar.setAnalyses(analyses)
             obj.unmarkCreationFlag()
+            validate(obj)
 
     def load_worksheet_layouts(self, sheet):
         logger.info("Loading Worksheet Layouts...")
@@ -1610,6 +1660,7 @@ class LoadSetupData(BrowserView):
             self.set_wf_history(obj, row['workflow_history'])
             self.worksheets[row['id']] = obj.UID()
             obj.unmarkCreationFlag()
+            validate(obj)
 
     def load_duplicate_interims(self, sheet):
         logger.info("Loading Duplicate Interims...")
@@ -1643,6 +1694,7 @@ class LoadSetupData(BrowserView):
             obj.setCreationDate(row['created'])
             self.set_wf_history(obj, row['workflow_history'])
             obj.unmarkCreationFlag()
+            validate(obj)
 
     def load_manufacturers(self, sheet):
         logger.info("Loading Manufacturers...")
@@ -1656,6 +1708,7 @@ class LoadSetupData(BrowserView):
                 obj.edit(title = row['title'],
                          description = row.get('description', ''))
                 obj.unmarkCreationFlag()
+                validate(obj)
                 self.manufacturers[row['title']] = obj.UID()
                 renameAfterCreation(obj)
 
@@ -1674,6 +1727,7 @@ class LoadSetupData(BrowserView):
                          Phone = row.get('Phone',''),
                          Fax = row.get('Fax',''))
                 obj.unmarkCreationFlag()
+                validate(obj)
                 self.suppliers[row['Name']] = obj.UID()
                 renameAfterCreation(obj)
 
@@ -1696,6 +1750,7 @@ class LoadSetupData(BrowserView):
                     Surname=row.get('Surname', ''),
                     EmailAddress=row.get('EmailAddress', ''))
                 obj.unmarkCreationFlag()
+                validate(obj)
                 renameAfterCreation(obj)
 
                 if 'Username' in row:
@@ -1713,6 +1768,7 @@ class LoadSetupData(BrowserView):
                 obj.edit(title=row['title'],
                          description=row.get('description', ''))
                 obj.unmarkCreationFlag()
+                validate(obj)
                 self.instrumenttypes[row['title']] = obj.UID()
                 renameAfterCreation(obj)
 
@@ -1738,6 +1794,7 @@ class LoadSetupData(BrowserView):
                          Remarks=row.get('remarks', '')
                          )
                 obj.unmarkCreationFlag()
+                validate(obj)
                 renameAfterCreation(obj)
 
     def load_instrumentcalibrations(self, sheet):
@@ -1762,6 +1819,7 @@ class LoadSetupData(BrowserView):
                          Remarks=row.get('remarks', '')
                          )
                 obj.unmarkCreationFlag()
+                validate(obj)
                 renameAfterCreation(obj)
 
     def load_instrumentcertifications(self, sheet):
@@ -1785,6 +1843,7 @@ class LoadSetupData(BrowserView):
                          Remarks=row.get('remarks', '')
                          )
                 obj.unmarkCreationFlag()
+                validate(obj)
                 renameAfterCreation(obj)
 
     def load_instrumentmaintenancetasks(self, sheet):
@@ -1814,6 +1873,7 @@ class LoadSetupData(BrowserView):
                          Closed=self.to_bool(row.get('closed'))
                          )
                 obj.unmarkCreationFlag()
+                validate(obj)
                 renameAfterCreation(obj)
 
     def load_instrumentschedule(self, sheet):
@@ -1847,6 +1907,7 @@ class LoadSetupData(BrowserView):
                          Considerations=row.get('considerations', ''),
                          )
                 obj.unmarkCreationFlag()
+                validate(obj)
                 renameAfterCreation(obj)
 
     def get_rows(self, sheet, startrow=3):
