@@ -1,12 +1,12 @@
 *** Settings ***
 
-Library          Selenium2Library  timeout=10  implicit_wait=0.1
+Library          Selenium2Library  timeout=10  implicit_wait=0.2
 Library          String
 Library  Remote  ${PLONE_URL}/RobotRemote
 Resource         keywords.txt
 Variables        plone/app/testing/interfaces.py
 Suite Setup      Start browser
-#Suite Teardown   Close All Browsers
+Suite Teardown   Close All Browsers
 
 *** Variables ***
 
@@ -14,6 +14,30 @@ ${SELENIUM_SPEED}  0
 ${PLONEURL}        http://localhost:55001/plone
 
 *** Test Cases ***
+
+
+ARTemplates
+    Go to  ${PLONEURL}/bika_setup/bika_artemplates
+    Wait Until Page Contains  AR Templates
+    Click link  Add Template
+    Wait Until Page Contains Element  title
+    Input Text  title          New Object
+    Input Text  description    Temporary test object
+    Input Text  SamplePoint   Borehole 12
+    Input Text  SampleType    Water
+    Select Checkbox  ReportDryMatter
+    Click link  Sample Partitions
+    Wait Until Page Contains  Sample Partitions
+    Select from list  container_uid.part-1:records        Glass Bottle 500ml
+    Select from list  preservation_uid.part-1:records     Any
+    Click Button  Add
+    Select from list  container_uid.part-2:records        Any
+    Select from list  preservation_uid.part-2:records     H2S04
+    Click Link  Analyses
+    Wait Until Page Contains Element  AnalysisProfile:list
+    Select from list   AnalysisProfile:list    Trace Metals
+    Click Button  Save
+    Wait Until Page Contains  Changes saved.
 
 Update Laboratory Information
     Go to  ${PLONEURL}/bika_setup/laboratory/base_edit
@@ -73,7 +97,7 @@ Calculation
     Go to  ${PLONEURL}/bika_setup/bika_calculations
     Click link  Add
     Wait Until Page Contains Element      title
-    Input Text  title          New Object
+    Input Text  title          Calculating Nothing
     Input Text  description    Temporary test object
     Click Link  Calculation
     Wait Until Page Contains Element      InterimFields-keyword-0
@@ -98,11 +122,11 @@ Calculation
     # test workflow
     # Can't disable Dry Matter here - use [2] which is our New Object.
     Go to  ${PLONEURL}/bika_setup/bika_calculations
-    Select Checkbox  xpath=(//input[contains(@id, '_cb_')])[2]
+    Select Checkbox  xpath=//input[@item_title='Calculating Nothing']
     Click Button  deactivate_transition
     Wait Until Page Contains  Changes saved.
     Click link   All
-    Select Checkbox  xpath=(//input[contains(@id, '_cb_')])[2]
+    Select Checkbox  xpath=//input[@item_title='Calculating Nothing']
     Click Button  activate_transition
     Wait Until Page Contains  Changes saved.
 
@@ -555,7 +579,7 @@ AnalysisServices
     Click Element       PartitionSetup-separate-0
     Select From List    PartitionSetup-preservation-0  Chill (4 degrees)
     Select From List    PartitionSetup-container-0     Glass Bottle 500ml
-    Input Text  PartitionSetup-vol-0                   250 ml
+    Input Text  PartitionSetup-vol-0                   250
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
@@ -569,7 +593,7 @@ AnalysisProfiles
     Input Text  ProfileKey  Profile Key
     Click link  Analyses
     Page should contain  Profile Analyses
-    Select Checkbox  xpath=//input[@alt='Manganese']
+    Select Checkbox  xpath=//input[@item_title='Manganese']
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
@@ -619,44 +643,23 @@ WorksheetTemplate
     Click link  Layout
     Wait Until Page Contains  Worksheet Layout
     Input Text  NoOfPositions  3
-    Click Button  Reset
+    Log  Can't select Reset using SESSION (breaks in zeo without sticky sessions)  WARN
+    #Click Button  Reset
     sleep  1
     Click link  Analyses
     Wait Until Page Contains  Analysis Service
     Click Element  xpath=//th[@cat='Metals']
-    Select Checkbox  xpath=//input[@alt='Calcium']
-    Select Checkbox  xpath=//input[@alt='Copper']
-    Select Checkbox  xpath=//input[@alt='Iron']
-    Select Checkbox  xpath=//input[@alt='Magnesium']
-    Select Checkbox  xpath=//input[@alt='Manganese']
-    Select Checkbox  xpath=//input[@alt='Phosphorus']
-    Select Checkbox  xpath=//input[@alt='Sodium']
-    Select Checkbox  xpath=//input[@alt='Zinc']
+    Select Checkbox  xpath=//input[@item_title='Calcium']
+    Select Checkbox  xpath=//input[@item_title='Copper']
+    Select Checkbox  xpath=//input[@item_title='Iron']
+    Select Checkbox  xpath=//input[@item_title='Magnesium']
+    Select Checkbox  xpath=//input[@item_title='Manganese']
+    Select Checkbox  xpath=//input[@item_title='Phosphorus']
+    Select Checkbox  xpath=//input[@item_title='Sodium']
+    Select Checkbox  xpath=//input[@item_title='Zinc']
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-ARTemplates
-    Go to  ${PLONEURL}/bika_setup/bika_artemplates
-    Wait Until Page Contains  AR Templates
-    Click link  Add Template
-    Wait Until Page Contains Element  title
-    Input Text  title          New Object
-    Input Text  description    Temporary test object
-    Input Text  SamplePoint   Borehole 12
-    Input Text  SampleType    Water
-    Select Checkbox  ReportDryMatter
-    Click link  Sample Partitions
-    Wait Until Page Contains  Sample Partitions
-    Select from list  Partitions-Container-0
-    Select from list  Partitions-Preservation-0
-    Click Button  More
-    Select from list  Partitions-Container-1:records:list  Any
-    Select from list  Partitions-Preservation-1:records:list  HNO3
-    Click Link  Analyses
-    Wait Until Page Contains Element  AnalysisProfile:list
-    Select from list   AnalysisProfile:list    Trace Metals
-    Click Button  Save
-    Wait Until Page Contains  Changes saved.
 
 Add a Client
     Go to  ${PLONEURL}/clients
@@ -722,7 +725,6 @@ Client Contact
     Input Text        PhysicalAddress.address           Foo House\nFoo Street 20\nFoo Town
     Select From List  PostalAddress.selection           PhysicalAddress
     Input Text        PostalAddress.address             Post Box 25\nFoo Town
-    Select From List  BillingAddress.selection          PostalAddress
     Click Link  Publication preference
     Wait Until Page Contains Element  PublicationPreference:list
     Select from list  PublicationPreference:list  email
