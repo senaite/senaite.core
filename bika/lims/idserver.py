@@ -1,5 +1,6 @@
 from AccessControl import ModuleSecurityInfo, allow_module
 from DateTime import DateTime
+from OFS.CopySupport import CopyError
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.TranslationServiceTool import TranslationServiceTool
@@ -124,9 +125,9 @@ def generateUniqueId(context):
 
             # get all IDS that start with prefix
             # this must specifically exclude AR IDs (two -'s)
-            r = re.compile("^"+prefix+"-[\d+]+$")
-            ids = [int(i.split(prefix+"-")[1]) \
-                   for i in catalog.Indexes['id'].uniqueValues() \
+            r = re.compile("^"+prefix+year+"-\d+$")
+            ids = [int(i.split(prefix+year+"-")[1])
+                   for i in catalog.Indexes['id'].uniqueValues()
                    if r.match(i)]
 
             #plone_tool = getToolByName(context, 'plone_utils')
@@ -155,13 +156,16 @@ def generateUniqueId(context):
 
         # no prefix; use portal_type
         # no year inserted here
-        prefix = norm(context.portal_type);
-        new_id = next_id(prefix)
-        return '%s-%s' % (prefix, new_id)
+        prefix = norm(context.portal_type)
+        new_id = next_id(prefix+year)
+        return '%s%s-%s' % (prefix, year, new_id)
+
 
 def renameAfterCreation(obj):
     # Can't rename without a subtransaction commit when using portal_factory
     transaction.savepoint(optimistic=True)
     new_id = generateUniqueId(obj)
+
     obj.aq_inner.aq_parent.manage_renameObject(obj.id, new_id)
+
     return new_id
