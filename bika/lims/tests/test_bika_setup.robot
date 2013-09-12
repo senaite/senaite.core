@@ -15,96 +15,6 @@ ${PLONEURL}        http://localhost:55001/plone
 
 *** Test Cases ***
 
-Create Attachment Types
-    Go to  ${PLONEURL}/bika_setup/bika_attachmenttypes
-    Click link  Add
-    Wait Until Page Contains Element  title
-    Input Text  title          New Object
-    Input Text  description    Temporary test object
-    Click Button  Save
-    Wait Until Page Contains Element  title
-    Wait Until Page Contains  Changes saved.
-
-Test Attachment Types Workflow
-    Go to  ${PLONEURL}/bika_setup/bika_attachmenttypes
-    Select Checkbox  xpath=//[contains(@id, '_cb_')][1]
-    Click Button  deactivate_transition
-    Wait Until Page Contains  Changes saved.
-    Select Checkbox  xpath=//[contains(@id, '_cb_')][1]
-    Click Button  activate_transition
-    Wait Until Page Contains  Changes saved.
-
-Create Calculation
-    Go to  ${PLONEURL}/bika_setup/bika_calculations
-    Click link  Add
-    Wait Until Page Contains Element      title
-    Input Text  title          New Object
-    Input Text  description    Temporary test object
-    Click Link  Calculation
-    Wait Until Page Contains Element      InterimFields-keyword-0
-    Input Text  InterimFields-keyword-0   This
-    Input Text  InterimFields-title-0     This Field
-    Input Text  InterimFields-value-0     1
-    Input Text  InterimFields-unit-0      mg/l
-    Input Text  InterimFields-keyword-1   That
-    Input Text  InterimFields-title-1     That Field
-    Input Text  InterimFields-value-1     1
-    Input Text  InterimFields-unit-1      mg/l
-    Input Text  Formula                   [This] + [That]
-    Click Button  Save
-    Wait Until Page Contains  Changes saved.
-
-Test Calculations Workflow
-    Go to  ${PLONEURL}/bika_setup/bika_calculations
-    Select Checkbox  xpath=//[contains(@id, '_cb_')][1]
-    Click Button  deactivate_transition
-    Wait Until Page Contains  Changes saved.
-    Select Checkbox  xpath=//[contains(@id, '_cb_')][1]
-    Click Button  activate_transition
-    Wait Until Page Contains  Changes saved.
-
-Create Container Type
-    Go to  ${PLONEURL}/bika_setup/bika_containertypes
-    Click link  Add
-    Wait Until Page Contains Element  title
-    Input Text  title          New Object
-    Input Text  description    Temporary test object
-    Click Button  Save
-    Wait Until Page Contains  Changes saved.
-
-Test Container Types Workflow
-    Go to  ${PLONEURL}/bika_setup/bika_containertypes
-    Select Checkbox  xpath=//[contains(@id, '_cb_')][1]
-    Click Button  deactivate_transition
-    Wait Until Page Contains  Changes saved.
-    Click Link  All
-    Select Checkbox  xpath=//[contains(@id, '_cb_')][1]
-    Click Button  activate_transition
-    Wait Until Page Contains  Changes saved.
-
-Create Preservations
-    Go to  ${PLONEURL}/bika_setup/bika_preservations
-    Click link  Add
-    Wait Until Page Contains Element     title
-    Input Text           title           Freeze Sample
-    Input Text           description     Stick sample in regular freezer to 0 degrees.
-    Select Radio Button  Category        lab
-    Input Text           RetentionPeriod.days:record:ignore_empty     180
-    Input Text           RetentionPeriod.hours:record:ignore_empty    0
-    Input Text           RetentionPeriod.minutes:record:ignore_empty  0
-    Click Button  Save
-    Wait Until Page Contains  Changes saved.
-
-Test Preservations Workflow
-    Go to  ${PLONEURL}/bika_setup/bika_preservations
-    Select Checkbox  xpath=//[contains(@id, '_cb_')][1]
-    Click Button  deactivate_transition
-    Wait Until Page Contains  Changes saved.
-    Click Link  All
-    Select Checkbox  xpath=//[contains(@id, '_cb_')][1]
-    Click Button  activate_transition
-    Wait Until Page Contains  Changes saved.
-
 Update Laboratory Information
     Go to  ${PLONEURL}/bika_setup/laboratory/base_edit
     Input Text        Name            Laboratory Name
@@ -123,7 +33,7 @@ Update Laboratory Information
     Select From List  PostalAddress.selection           PhysicalAddress
     Input Text        PostalAddress.address             Post Box 25\nFoo Town
     Select From List  BillingAddress.selection          PostalAddress
-    Input Text        LabURL                            ${LabURL}
+    Input Text        LabURL                            www.example.com
     Click link        Bank details
     Input Text        AccountType    Savings
     Input Text        AccountName    Test Laboratory Inc
@@ -141,27 +51,124 @@ Update Laboratory Information
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-Create Method
+Attachment Types
+    Go to  ${PLONEURL}/bika_setup/bika_attachmenttypes
+    Click link  Add
+    Wait Until Page Contains Element  title
+    Input Text  title          New Object
+    Input Text  description    Temporary test object
+    Click Button  Save
+    Wait Until Page Contains  Changes saved.
+
+    # test workflow
+    Go to  ${PLONEURL}/bika_setup/bika_attachmenttypes
+    Select Checkbox  xpath=(//input[contains(@id, '_cb_')])[1]
+    Click Button  deactivate_transition
+    Wait Until Page Contains  Changes saved.
+    Select Checkbox  xpath=(//input[contains(@id, '_cb_')])[1]
+    Click Button  activate_transition
+    Wait Until Page Contains  Changes saved.
+
+Calculation
+    Go to  ${PLONEURL}/bika_setup/bika_calculations
+    Click link  Add
+    Wait Until Page Contains Element      title
+    Input Text  title          New Object
+    Input Text  description    Temporary test object
+    Click Link  Calculation
+    Wait Until Page Contains Element      InterimFields-keyword-0
+    Input Text  InterimFields-keyword-0   This
+    Input Text  InterimFields-title-0     This Field
+    Input Text  InterimFields-value-0     1
+    Input Text  InterimFields-unit-0      mg
+    Click Button  More
+    Input Text  InterimFields-keyword-1   That
+    Input Text  InterimFields-title-1     That Field
+    Input Text  InterimFields-value-1     2
+    Input Text  InterimFields-unit-1      mg
+    Click Button  More
+    Input Text  InterimFields-keyword-2   Other
+    Input Text  InterimFields-title-2     Other Field
+    Input Text  InterimFields-value-2     0.5
+    Input Text  InterimFields-unit-2      mg
+    Input Text  Formula                   [This] + [That] - [Other]
+    Click Button  Save
+    Wait Until Page Contains  Changes saved.
+
+    # test workflow
+    # Can't disable Dry Matter here - use [2] which is our New Object.
+    Go to  ${PLONEURL}/bika_setup/bika_calculations
+    Select Checkbox  xpath=(//input[contains(@id, '_cb_')])[2]
+    Click Button  deactivate_transition
+    Wait Until Page Contains  Changes saved.
+    Click link   All
+    Select Checkbox  xpath=(//input[contains(@id, '_cb_')])[2]
+    Click Button  activate_transition
+    Wait Until Page Contains  Changes saved.
+
+Container Type
+    Go to  ${PLONEURL}/bika_setup/bika_containertypes
+    Click link  Add
+    Wait Until Page Contains Element  title
+    Input Text  title          New Object
+    Input Text  description    Temporary test object
+    Click Button  Save
+    Wait Until Page Contains  Changes saved.
+
+    # test workflow
+    Go to  ${PLONEURL}/bika_setup/bika_containertypes
+    Select Checkbox  xpath=(//input[contains(@id, '_cb_')])[1]
+    Click Button  deactivate_transition
+    Wait Until Page Contains  Changes saved.
+    Click Link  All
+    Select Checkbox  xpath=(//input[contains(@id, '_cb_')])[1]
+    Click Button  activate_transition
+    Wait Until Page Contains  Changes saved.
+
+Preservations
+    Go to  ${PLONEURL}/bika_setup/bika_preservations
+    Click link  Add
+    Wait Until Page Contains Element     title
+    Input Text           title           Freeze Sample
+    Input Text           description     Stick sample in regular freezer to 0 degrees.
+    Select Radio Button  Category        lab
+    Input Text           RetentionPeriod.days:record:ignore_empty     180
+    Input Text           RetentionPeriod.hours:record:ignore_empty    0
+    Input Text           RetentionPeriod.minutes:record:ignore_empty  0
+    Click Button  Save
+    Wait Until Page Contains  Changes saved.
+
+    # test workflow
+    Go to  ${PLONEURL}/bika_setup/bika_preservations
+    Select Checkbox  xpath=(//input[contains(@id, '_cb_')])[1]
+    Click Button  deactivate_transition
+    Wait Until Page Contains  Changes saved.
+    Click Link  All
+    Select Checkbox  xpath=(//input[contains(@id, '_cb_')])[1]
+    Click Button  activate_transition
+    Wait Until Page Contains  Changes saved.
+
+Method
     Go to  ${PLONEURL}/bika_setup/methods
     Click link    Add
     Wait Until Page Contains Element    title
     Input Text    title                 A New Method
     Input Text    description           Things you can do, some can't be done
-    Input Text    Instructions
+    Input Text    Instructions          It's very simple.
     Click Button  Save
     Wait Until Page Contains            Changes saved.
 
-Test Methods Workflow
+    # test workflow
     Go to  ${PLONEURL}/bika_setup/methods
-    Select Checkbox  xpath=//[contains(@id, '_cb_')][1]
+    Select Checkbox  xpath=(//input[contains(@id, '_cb_')])[1]
     Click Button  deactivate_transition
     Wait Until Page Contains  Changes saved.
     Click Link  All
-    Select Checkbox  xpath=//[contains(@id, '_cb_')][1]
+    Select Checkbox  xpath=(//input[contains(@id, '_cb_')])[1]
     Click Button  activate_transition
     Wait Until Page Contains  Changes saved.
 
-Create Sample Matrices
+Sample Matrices
     Go to  ${PLONEURL}/bika_setup/bika_samplematrices
     Click link  Add
     Wait Until Page Contains Element  title
@@ -171,17 +178,17 @@ Create Sample Matrices
     Wait Until Page Contains  Changes saved.
 
 
-Test Sample Matrices Workflow
+    # test workflow
     Go to  ${PLONEURL}/bika_setup/bika_samplematrices
-    Select Checkbox  xpath=//[contains(@id, '_cb_')][1]
+    Select Checkbox  xpath=(//input[contains(@id, '_cb_')])[1]
     Click Button  deactivate_transition
     Wait Until Page Contains  Changes saved.
     Click link  default
-    Select Checkbox  xpath=//[contains(@id, '_cb_')][1]
+    Select Checkbox  xpath=(//input[contains(@id, '_cb_')])[1]
     Click Button  activate_transition
     Wait Until Page Contains  Changes saved.
 
-Create Sample Points
+Sample Points
     Go to  ${PLONEURL}/bika_setup/bika_samplepoints
     Click link  Add
     Wait Until Page Contains Element  title
@@ -200,21 +207,21 @@ Create Sample Points
     Input Text  Longitude.minutes:record:ignore_empty    30
     Input Text  Longitude.seconds:record:ignore_empty    30
     Input Text  Longitude.bearing:record:ignore_empty    E
-    Input Text  Elevation  ${Elevation}                  10
+    Input Text  Elevation                                10
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-Test Sample Points Workflow
+    # test workflow
     Go to  ${PLONEURL}/bika_setup/bika_samplepoints
-    Select Checkbox  xpath=//[contains(@id, '_cb_')][1]
+    Select Checkbox  xpath=(//input[contains(@id, '_cb_')])[1]
     Click Button  deactivate_transition
     Wait Until Page Contains  Changes saved.
     Click link  all
-    Select Checkbox  xpath=//[contains(@id, '_cb_')][1]
+    Select Checkbox  xpath=(//input[contains(@id, '_cb_')])[1]
     Click Button  activate_transition
     Wait Until Page Contains  Changes saved.
 
-Create Sampling Deviations
+Sampling Deviations
     Go to  ${PLONEURL}/bika_setup/bika_samplingdeviations
     Click link  Add
     Wait Until Page Contains Element  title
@@ -223,17 +230,17 @@ Create Sampling Deviations
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-Test Sampling Deviations Workflow
+    # test workflow
     Go to  ${PLONEURL}/bika_setup/bika_samplingdeviations
-    Select Checkbox  xpath=//[contains(@id, '_cb_')][1]
+    Select Checkbox  xpath=(//input[contains(@id, '_cb_')])[1]
     Click Button  deactivate_transition
     Wait Until Page Contains  Changes saved.
     Click link  default
-    Select Checkbox  xpath=//[contains(@id, '_cb_')][1]
+    Select Checkbox  xpath=(//input[contains(@id, '_cb_')])[1]
     Click Button  activate_transition
     Wait Until Page Contains  Changes saved.
 
-Create LabManager
+LabManager
     Go to  ${PLONEURL}/bika_setup/bika_labcontacts
     Click link  Add
     Wait Until Page Contains Element  Salutation
@@ -247,7 +254,7 @@ Create LabManager
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-Create LabDepartment
+LabDepartment
     Go to  ${PLONEURL}/bika_setup/bika_departments
     Click link  Add
     Wait Until Page Contains Element  title
@@ -257,8 +264,7 @@ Create LabDepartment
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-Create LabContact
-    Log  Lab Contact  WARN
+LabContact
     Go to  ${PLONEURL}/bika_setup/bika_labcontacts
     Click link  Add
     Wait Until Page Contains Element  Firstname
@@ -266,7 +272,7 @@ Create LabContact
     Input Text  Firstname   Avon
     Input Text  Surname     Barksdale
     Input Text  JobTitle    Player
-    Select from list  Department:list  Administration
+    Select from list  Department:list  Admin
 
     Click Link  Email Telephone Fax
     Wait Until Page Contains Element  EmailAddress
@@ -285,17 +291,16 @@ Create LabContact
     Input Text        PhysicalAddress.address           Foo House\nFoo Street 20\nFoo Town
     Select From List  PostalAddress.selection           PhysicalAddress
     Input Text        PostalAddress.address             Post Box 25\nFoo Town
-    Select From List  BillingAddress.selection          PostalAddress
 
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-Create Suppliers
+Suppliers
     Go to  ${PLONEURL}/bika_setup/bika_suppliers
     Page should contain  Suppliers
     Click link  Add
-    Wait Until Page Contains Element  TaxNumber
-    Input Text        Name            Supplier Name
+    Wait Until Page Contains Element  Name
+    Input Text        Name            ACME Supplies
     Input Text        TaxNumber       0123456789
     Input Text        Phone           555-1234
     Input Text        Fax             555-1235
@@ -311,28 +316,29 @@ Create Suppliers
     Select From List  PostalAddress.selection           PhysicalAddress
     Input Text        PostalAddress.address             Post Box 25\nFoo Town
     Select From List  BillingAddress.selection          PostalAddress
-    Input Text        LabURL                            ${LabURL}
     Click link        Bank details
     Input Text        AccountType    Savings
     Input Text        AccountName    Supplier Inc
     Input Text        AccountNumber  0123456789
     Input Text        BankName       Standard Bank
     Input Text        BankBranch     555-0111
-
-    Click link  Reference Samples
-    Wait Until Page Contains Element  Remarks
-    Input Text  Remarks  Reference Sample Remarks
-    Click button  Save remarks
+    Click Button  Save
+    Wait Until Page Contains  Changes saved.
+    Go to  ${PLONEURL}/bika_setup/bika_suppliers
+    Click link        ACME Supplies
+    Wait Until Page Contains    Remarks
+    Input Text        Remarks          Reference Sample Remarks
+    Click button      Save remarks
+    Wait until page contains    ===
     Click link  Add
     Wait Until Page Contains Element  title
-    Input Text  title          New Object
+    Input Text        title           New Object
     Select From List  ReferenceDefinition:list
-    Select Checkbox  Blank
-    Select Checkbox  Hazardous
+    Select Checkbox   Blank
+    Select Checkbox   Hazardous
     Select From List  ReferenceManufacturer:list
-    Input Text  CatalogueNumber  Catalogue Number
-    Input Text  LotNumber  Lot Number
-
+    Input Text        CatalogueNumber  Catalogue Number
+    Input Text        LotNumber  Lot Number
     Click Link  Dates
     Wait Until Page Contains Element  DateSampled
     SelectPrevMonthDate  DateSampled  1
@@ -341,34 +347,26 @@ Create Suppliers
     SelectNextMonthDate  ExpiryDate  5
 
     Click Link  Reference Values
-
     Log  No new reference values are added  WARN
-
     Wait Until Page Contains  Expected Values
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-    #now test Contacts
-    Go to  ${PLONEURL}/bika_setup/bika_suppliers
-    Click link  ${Name}
 
+Supplier Contact
+    Go to  ${PLONEURL}/bika_setup/bika_suppliers/supplier-2/contacts
     Wait Until Page Contains Element  Remarks
-    Click link  Contacts
-    Wait Until Page Contains Element  Remarks
-
     Input Text  Remarks  Contacts Remarks
     Click button  Save remarks
     Click link  Add
     Wait Until Page Contains Element  Salutation
-    Input Text  Salutation  ${Salutation}
-    Input Text  Firstname  ${Firstname}
-    Input Text  Surname  ${Surname}
-    Input Text  JobTitle  ${Jobtitle}
-    Input Text  Department  ${Department}
-
+    Input Text  Salutation  Mr
+    Input Text  Firstname  Cameron
+    Input Text  Surname  Dennis
+    Input Text  JobTitle  Lawyer
+    Input Text  Department  Admin
     Click Button  Save
     Wait Until Page Contains  Changes saved.
-
     Click link  Edit
     Click link  Email Telephone Fax
     Input Text  EmailAddress  info@supplier.com
@@ -376,23 +374,18 @@ Create Suppliers
     Input Text  BusinessFax  021 234 568
     Input Text  HomePhone  021 123 456
     Input Text  MobilePhone  082 1234 567
-
     Click Button  Save
     Wait Until Page Contains  Changes saved.
-
     Click link  Edit
     Click link  Address
     Wait Until Page Contains Element  PhysicalAddress.country
-    Select From List  PhysicalAddress.country:record  ${Country}
-    Select From List  PhysicalAddress.state:record  ${State}
-    #district is on autoselect last entry
-    Select From List  PhysicalAddress.district:record
-    Input Text  PhysicalAddress.city  ${City}
-    Input Text  PhysicalAddress.zip  ${ZIP}
-    Input Text  PhysicalAddress.address  ${Physical Address}
-    Select From List  PostalAddress.selection  PhysicalAddress
-    Input Text  PostalAddress.address  ${Postal Address}
-
+    Select From List  PhysicalAddress.country:record   South Africa
+    Select From List  PhysicalAddress.state:record     Western Cape
+    Select From List  PhysicalAddress.district:record  City of Cape Town
+    Input Text        PhysicalAddress.city             Cape Town
+    Input Text        PhysicalAddress.zip              2000
+    Input Text        PhysicalAddress.address          Nr 1,\nloop street
+    Select From List  PostalAddress.selection          PhysicalAddress
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
@@ -400,8 +393,8 @@ Create Suppliers
     #for that you need a supplier,manufacturer, instrument type and instrument - defined in that order
     #got supplier - so start with basic def of Manufacturer
 
+Manufacturer
     Go to  ${PLONEURL}/bika_setup/bika_manufacturers
-    Page should contain  Manufacturers
     Click link  Add
     Wait Until Page Contains Element  title
     Input Text  title          New Object
@@ -409,9 +402,7 @@ Create Suppliers
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-    #now define an Instrument Type
-    Log  Instrument Types  WARN
-
+Instrument Type
     Go to  ${PLONEURL}/bika_setup/bika_instrumenttypes
     Page should contain  Instrument Types
     Click link  Add
@@ -421,30 +412,32 @@ Create Suppliers
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
+Instrument
 
-    #Click link  Instruments
-    Log  Instrument  WARN
-#saving Instruments (from within) causes system to throw exception
-#Approach instrument from another angle - go direct to URL
-
-    Go to   ${PLONEURL}/bika_setup/bika_instruments
-    Page should contain  Instruments
+    #XXX Hack this in here - actually should modify setup data sheets!
+    Go to  ${PLONEURL}/bika_setup/bika_instrumenttypes
+    Page should contain  Instrument Types
     Click link  Add
     Wait Until Page Contains Element  title
     Input Text  title          New Object
     Input Text  description    Temporary test object
-    Select From List  InstrumentType
-    Select From List  Manufacturer
-    Select From List  Supplier
+    Click Button  Save
+    Wait Until Page Contains  Changes saved.
+    #XXX
 
-    Input Text  Model  Instrument Model
-    Input Text  SerialNo  Instrument Serial Number 123
-
-    Select From List  DataInterface:list
-    Input Text  DataInterfaceOptions-Key-0  Data Interface Options Key
-    Input Text  DataInterfaceOptions-Value-0  Data Interface Options Value
-    # Input Text  cmfeditions_version_comment  ${Change note}
-
+    Go to   ${PLONEURL}/bika_setup/bika_instruments
+    Click link  Add
+    Wait Until Page Contains Element  title
+    Input Text  title                 New Object
+    Input Text  description           Temporary test object
+    Select From List  InstrumentType  Auto titrator
+    Select From List  Manufacturer    Boss
+    Select From List  Supplier        Instruments Inc
+    Input Text  Model                 Instrument Model 0123
+    Input Text  SerialNo              Instrument Serial Number 123
+    # Select From List  DataInterface:list
+    # Input Text  DataInterfaceOptions-Key-0  Data Interface Options Key
+    # Input Text  DataInterfaceOptions-Value-0  Data Interface Options Value
     Click Button  Save
     sleep  0.5
 
@@ -456,24 +449,14 @@ Create Suppliers
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-#At this stage numerous seletion options have appeared on a seperate bar Mainteneance etc
-#test at later stage
-
     Log  Maintenance, Validations, CAlibrations, Certifications and Schedules not tested  WARN
-
     #Click link  Maintenance
-
     #Click link  Validations
-
     #Click link  Calibrations
-
     #Click link  Certifications
-
     #Click link  Schedule
 
-    #end Suppliers
-
-Create Containers
+Containers
     Go to  ${PLONEURL}/bika_setup/bika_containers
     Page should contain  Containers
     Click link  Add
@@ -487,7 +470,7 @@ Create Containers
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-Create SampleTypes
+SampleTypes
     Go to  ${PLONEURL}/bika_setup/bika_sampletypes
     Click link  Add
     Wait Until Page Contains Element  title
@@ -504,8 +487,7 @@ Create SampleTypes
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-Create AnalysisCategories
-    Log  Analysis Categories  WARN
+AnalysisCategories
     Go to  ${PLONEURL}/bika_setup/bika_analysiscategories
     Wait Until Page Contains  Analysis Categories
     Click link  Add
@@ -516,39 +498,39 @@ Create AnalysisCategories
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-Create AnalysisServices
+AnalysisServices
     Go to                ${PLONEURL}/bika_setup/bika_analysisservices
     Wait Until Page Contains  Analysis Services
     Click link           Add
-    Wait Until Page Contains Element  title
-    Input Text           title         New Analysis Service
-    Input Text           description   New service for Testing
-    Input Text           Unit          measurement Unit
-    Input Text           Keyword       AnalysisKeyword
-    Select Radio Button       PointOfCapture  lab
-    Select From Dropdown      Category
-    Input Text  Price  50.23
+    Wait Until Page Contains Element     title
+    Input Text           title           New Analysis Service
+    Input Text           description     New service for Testing
+    Input Text           Unit            measurement Unit
+    Input Text           Keyword         AnalysisKeyword
+    Select Radio Button  PointOfCapture  lab
+    Select From list      Category:list  Metals
+    Input Text  Price      50.23
     Input Text  BulkPrice  30.00
-    Input Text  VAT  15.00
-    Select First From Dropdown  Department
+    Input Text  VAT        15.00
+    Select From list  Department:list   Admin
     Click link  Analysis
     Wait Until Page Contains Element  Precision
     Input Text  Precision  3
     Select Checkbox  ReportDryMatter
-    Select From List  AttachmentOption  n
+    Click element   AttachmentOption_2
     Input Text  MaxTimeAllowed.days:record:ignore_empty  3
     Input Text  MaxTimeAllowed.hours:record:ignore_empty  3
     Input Text  MaxTimeAllowed.minutes:record:ignore_empty  3
     Click link  Method
-    Wait Until Page Contains Element  Instrument
-    Select First From Dropdown  Method
-    Select First From Dropdown  Instrument
-    Select First From Dropdown  Calculation
-    Input Text  InterimFields-keyword-0  Keyword
-    Input Text  InterimFields-title-0  Field Title
-    Input Text  InterimFields-value-0  Default Value
-    Input Text  InterimFields-unit-0  Unit
-    Select Checkbox  InterimFields-hidden-0
+    Wait Until Page Contains Element     Instrument:list
+    Select From list  Method:list        Titration
+    Select From list  Instrument:list    Blott Titrator
+    Select From list  Calculation:list   Titration
+    Wait until page contains element     InterimFields-title-2  # 0=tv,1=tf,2=blank
+    Input Text  InterimFields-keyword-2  Other
+    Input Text  InterimFields-title-2    Other Field Title
+    Input Text  InterimFields-value-2    22
+    Input Text  InterimFields-unit-2     %
     Input Text  DuplicateVariation  5
     Select Checkbox  Accredited
     Click link  Uncertainties
@@ -567,17 +549,17 @@ Create AnalysisServices
     Input Text  ResultOptions-ResultText-1  Result Text 1
     Click link  Container and Preservation
     Select Checkbox  Separate
-    Select First From Dropdown  Preservation
-    Select First From Dropdown  Container
-    Select From List  PartitionSetup-sampletype-0
-    Click Element  PartitionSetup-separate-0
-    Select From List  PartitionSetup-preservation-0
-    Select From List  PartitionSetup-container-0
-    Input Text  PartitionSetup-vol-0  Volume 123
+    Select from list    Preservation:list    H2SO4
+    Select from list    Container:list        Any
+    Select From List    PartitionSetup-sampletype-0    Apple Pulp
+    Click Element       PartitionSetup-separate-0
+    Select From List    PartitionSetup-preservation-0  Chill (4 degrees)
+    Select From List    PartitionSetup-container-0     Glass Bottle 500ml
+    Input Text  PartitionSetup-vol-0                   250 ml
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-Create AnalysisProfiles
+AnalysisProfiles
     Go to    ${PLONEURL}/bika_setup/bika_analysisprofiles
     Wait Until Page Contains  Analysis Profile
     Click link  Add Profile
@@ -587,11 +569,11 @@ Create AnalysisProfiles
     Input Text  ProfileKey  Profile Key
     Click link  Analyses
     Page should contain  Profile Analyses
-    Select Checkbox  xpath=//input[@alt='${AnalysisServices_locator}']
+    Select Checkbox  xpath=//input[@alt='Manganese']
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-Create AnalysisSpecifications
+AnalysisSpecifications
     Go to  ${PLONEURL}/bika_setup/bika_analysisspecs
     Wait Until Page Contains  Analysis Specifications
     Click link  Add
@@ -607,7 +589,7 @@ Create AnalysisSpecifications
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-Create ReferenceDefinition
+ReferenceDefinition
     Go to  ${PLONEURL}/bika_setup/bika_referencedefinitions
     Wait Until Page Contains  Reference Definition
     Click link  Add
@@ -626,8 +608,7 @@ Create ReferenceDefinition
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-Create WorksheetTemplate
-    Log  Worksheet Template  WARN
+WorksheetTemplate
     Go to  ${PLONEURL}/bika_setup/bika_worksheettemplates
     Wait Until Page Contains  Worksheet Template
     Click link  Add
@@ -638,17 +619,23 @@ Create WorksheetTemplate
     Click link  Layout
     Wait Until Page Contains  Worksheet Layout
     Input Text  NoOfPositions  3
-    Log  BUG: Worksheet Template:   WARN
     Click Button  Reset
     sleep  1
     Click link  Analyses
     Wait Until Page Contains  Analysis Service
-    Click Element  xpath=//th[@cat='Water Chemistry']
-    Select Checkbox  xpath=//input[@alt='${AnalysisServices_locator}']
+    Click Element  xpath=//th[@cat='Metals']
+    Select Checkbox  xpath=//input[@alt='Calcium']
+    Select Checkbox  xpath=//input[@alt='Copper']
+    Select Checkbox  xpath=//input[@alt='Iron']
+    Select Checkbox  xpath=//input[@alt='Magnesium']
+    Select Checkbox  xpath=//input[@alt='Manganese']
+    Select Checkbox  xpath=//input[@alt='Phosphorus']
+    Select Checkbox  xpath=//input[@alt='Sodium']
+    Select Checkbox  xpath=//input[@alt='Zinc']
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-Create ARTemplates
+ARTemplates
     Go to  ${PLONEURL}/bika_setup/bika_artemplates
     Wait Until Page Contains  AR Templates
     Click link  Add Template
@@ -660,15 +647,14 @@ Create ARTemplates
     Select Checkbox  ReportDryMatter
     Click link  Sample Partitions
     Wait Until Page Contains  Sample Partitions
-    Select First From Dropdown  Partitions-Container-0
-    Select First From Dropdown  Partitions-Preservation-0
+    Select from list  Partitions-Container-0
+    Select from list  Partitions-Preservation-0
     Click Button  More
-    Select Specific From Dropdown  Partitions-Container-1  Glass
-    Select Specific From Dropdown  Partitions-Preservation-1  HNO3
+    Select from list  Partitions-Container-1:records:list  Any
+    Select from list  Partitions-Preservation-1:records:list  HNO3
     Click Link  Analyses
-    Wait Until Page Contains Element  AnalysisProfile
-    Select from list   AnalysisProfile
-    Log  BUG: AR Template: Analysis Profile Dropdown fails to close?  WARN
+    Wait Until Page Contains Element  AnalysisProfile:list
+    Select from list   AnalysisProfile:list    Trace Metals
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
@@ -677,7 +663,7 @@ Add a Client
     Wait Until Page Contains  Clients
     Click link  Add
     Wait Until Page Contains Element  Name
-    Input Text  Name          ACME Things
+    Input Text  Name          ACME Inc
     Input Text  ClientID      ACME
     Input Text  TaxNumber     98765A
     Input Text  Phone         011 3245679
@@ -697,7 +683,7 @@ Add a Client
     Select From List  BillingAddress.selection          PostalAddress
     Click link        Bank details
     Input Text        AccountType    Savings
-    Input Text        AccountName    Test Laboratory Inc
+    Input Text        AccountName    ACME INC
     Input Text        AccountNumber  0123456789
     Input Text        BankName       Standard Bank
     Input Text        BankBranch     555-0111
@@ -708,7 +694,7 @@ Add a Client
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-Create a Client Contact
+Client Contact
     Go to  ${PLONEURL}/clients
     Wait Until Page Contains  Clients
     Click link  Happy Hills
@@ -738,7 +724,7 @@ Create a Client Contact
     Input Text        PostalAddress.address             Post Box 25\nFoo Town
     Select From List  BillingAddress.selection          PostalAddress
     Click Link  Publication preference
-    Wait Until Page Contains Element  PublicationPreference
+    Wait Until Page Contains Element  PublicationPreference:list
     Select from list  PublicationPreference:list  email
     Select Checkbox  AttachmentsPermitted
     Click Button  Save
@@ -754,5 +740,3 @@ Start browser
     Select Checkbox  SamplingWorkflowEnabled
     Click Button  Save
     Wait Until Page Contains  Changes saved.
-
-
