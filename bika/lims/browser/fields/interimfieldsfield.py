@@ -10,9 +10,6 @@ class InterimFieldsField(RecordsField):
     """a list of InterimFields for calculations """
     _properties = RecordsField._properties.copy()
     _properties.update({
-        'fixedSize': 0,
-        'minimalSize': 0,
-        'maximalSize': 9999,
         'type': 'InterimFields',
         'subfields': ('keyword', 'title', 'value', 'unit', 'hidden'),
         'required_subfields': ('keyword', 'title'),

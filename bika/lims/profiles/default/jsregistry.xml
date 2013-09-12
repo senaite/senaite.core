@@ -133,14 +133,14 @@
               inline="False"
               insert-after="*"/>
 
-  <javascript authenticated="True"
+  <javascript authenticated="False"
               id="++resource++bika.lims.js/analysisservice.js"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
               cookable="True"
               enabled="on"
-              expression=""
+              expression="python:request['URL'].lower().find('analysisservice')>0"
               inline="False"
               insert-after="*"/>
 
