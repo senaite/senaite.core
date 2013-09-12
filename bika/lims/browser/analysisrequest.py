@@ -1134,14 +1134,20 @@ class AnalysisRequestAnalysesView(BikaListingView):
             items[x]['class']['Title'] = 'service_title'
 
             # js checks in row_data if an analysis may be removed.
+            # In the states listed below, the object may be removed
             row_data = {}
+            analyses = self.context.getAnalyses(full_objects=True)
+            review_states = dict(
+                [(a.getService().getKeyword(), wf.getInfoFor(a, 'review_state'))
+                 for a in analyses])
             keyword = obj.getKeyword()
             if keyword in review_states.keys() \
-               and review_states[keyword] not in ['sample_due',
-                                                  'to_be_sampled',
-                                                  'to_be_preserved',
-                                                  'sample_received',
-                                                  ]:
+            and review_states[keyword] not in [
+                'sample_due',
+                'to_be_sampled',
+                'to_be_preserved',
+                'sample_received'
+            ]:
                 row_data['disabled'] = True
             items[x]['row_data'] = json.dumps(row_data)
 
