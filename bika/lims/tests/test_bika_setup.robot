@@ -377,14 +377,12 @@ Setup
 
 #End dependent Bika Setup options
 
-    DiffTime  ${saveTime}
 
 
 *** Keywords ***
 
 
 Start browser
-    ShowAndSaveTime
     Log  Start Bika Setup Testing: independent categories  WARN
     Open browser  ${PLONEURL}/login_form
     Set selenium speed  ${SELENIUM_SPEED}

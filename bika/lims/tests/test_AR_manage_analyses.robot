@@ -71,6 +71,7 @@ Add new analysis ${ar_id} ${category} ${title}
     ${count} =      Get Matching XPath Count                      //th[@cat=${category} and contains(@class, 'collapsed')]
     Run Keyword If  '${count}' == '1'    Click element        xpath=//th[@cat=${category} and contains(@class, 'collapsed')]
     sleep                     1
+
     Select checkbox           xpath=//input[@item_title="${title}"]
     Click element             xpath=//input[@transition="save_analyses_button"]
     Wait until page contains  saved

@@ -7,7 +7,7 @@ function check_service(service_uid){
 		'name="Partition.'+service_uid+':records" '+
 		'field="Partition" uid="'+service_uid+'" '+
 		'style="font-size: 100%">';
-	$.each($('#partitions td.PartTitle'), function(i,v){
+	$.each($('td.Partition'), function(i,v){
 		partid = $($(v).children()[1]).text();
 		select = select + '<option value="'+partid+'">'+partid+
 			'</option>';
