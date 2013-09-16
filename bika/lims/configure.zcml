@@ -35,7 +35,6 @@
   <include package=".vocabularies" />
 
   <include file="profiles.zcml" />
-  <include file="monkey.zcml" />
 
   <i18n:registerTranslations directory="locales" />
 
