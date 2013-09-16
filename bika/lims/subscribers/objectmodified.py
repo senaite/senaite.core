@@ -1,4 +1,6 @@
 from Products.CMFCore.utils import getToolByName
+from Products.CMFCore import permissions
+
 
 def ObjectModifiedEventHandler(obj, event):
     """ Various types need automation on edit.
@@ -13,9 +15,10 @@ def ObjectModifiedEventHandler(obj, event):
         backrefs = obj.getBackReferences('AnalysisServiceCalculation')
         for i, service in enumerate(backrefs):
             service = uc(UID=service.UID())[0].getObject()
-            pr.save(obj=service, comment="Calculation updated to version %s"%
-                (obj.version_id+1,))
+            pr.save(obj=service, comment="Calculation updated to version %s" %
+                (obj.version_id + 1,))
             service.reference_versions[obj.UID()] = obj.version_id + 1
+
     elif obj.portal_type == 'Client':
         # When modifying these values, keep in sync with setuphandlers.py
         mp = obj.manage_permission
