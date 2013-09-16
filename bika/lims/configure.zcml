@@ -28,13 +28,13 @@
   <include package=".exportimport" />
   <include package=".jsonapi" />
   <include package=".locales" />
+  <include package=".monkey" />
   <include package=".querystring" />
   <include package=".search" />
   <include package=".subscribers" />
   <include package=".vocabularies" />
 
   <include file="profiles.zcml" />
-  <include file="monkey.zcml" />
 
   <i18n:registerTranslations directory="locales" />
 

@@ -12,21 +12,21 @@
       description="This adds the bika.lims category to controlpanel-overview."
       class="plone.app.controlpanel.overview.OverviewControlPanel"
       original="categories"
-      replacement="bika.lims.monkey.overview_controlpanel_categories"
+      replacement="bika.lims.monkey.controlpanel.overview_controlpanel_categories"
       />
 
   <monkey:patch
       description="This chops translated strings (from plone domain) into navtree titles."
       class="plone.app.portlets.portlets.navigation.Renderer"
       original="createNavTree"
-      replacement="bika.lims.monkey.createNavTree"
+      replacement="bika.lims.monkey.navtree.createNavTree"
       />
 
   <monkey:patch
       description="Forcibly remove some contentmenu items"
       class="plone.app.contentmenu.menu.FactoriesSubMenuItem"
       original="available"
-      replacement="bika.lims.monkey.contentmenu_factories_available"
+      replacement="bika.lims.monkey.contentmenu.contentmenu_factories_available"
       />
 
 
