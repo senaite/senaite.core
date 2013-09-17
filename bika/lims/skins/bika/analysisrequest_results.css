@@ -1,7 +1,3 @@
-/* <dtml-with analysisrequest_results>
-<dtml-call "REQUEST.set('portal_url', portal_url())">
-*/
-
 * {
     font-family: Arial;
     font-size:12px;
@@ -38,11 +34,17 @@ h2 {
 .result {
 
 }
-.units {
-}
+
 .outofrange {
     font-weight:bold;
     color:#d40000;
+}
+
+.units {
+    color:#777;
+    font-weight:normal;
+    font-style:italic;
+    font-size:10px;
 }
 
 table tr td,
@@ -50,11 +52,14 @@ table tr th {
     text-align:left;
 }
 
+table#section-header{
+    border-bottom:1px solid #000;
+}
+
 table#section-header,
 table#section-info {
     width:100%;
     margin-bottom:20px;
-    border:none;
 }
 table#section-header tr td,
 table#section-info tr td {
@@ -64,7 +69,8 @@ table#section-header td#lab-logo {
 
 }
 table#section-header td#accreditation-logo {
-    text-align:right;
+    /*text-align:right;*/
+    width:80mm;
 }
 
 table#section-info {
@@ -94,7 +100,9 @@ table#section-info td#lab-info {
 }
 
 #section-summary tr td {
-    padding-right:20px;
+    padding-right:225px;
+    border-left-width: 0px;
+    border-bottom:1px solid #ccc;
 }
 
 
@@ -125,11 +133,7 @@ table#section-info td#lab-info {
     width:100px;
 }
 
-#section-results .units {
-    width:100px;
-    text-align:center;
-    padding-right:10px;
-}
+
 
 #section-results .specs {
     width:200px;
@@ -141,17 +145,14 @@ table#section-info td#lab-info {
 }
 #section-results .remarks {
     font-size: 0.9em;
-    padding: 0 25px 5px 3px;
+    padding: 0 400px 15px 3px;
+    color: #555;
 }
 
 #section-qcresults .result {
     width:60px;
 }
-#section-qcresults .units {
-    width:60px;
-    text-align:center;
-    padding-right:10px;
-}
+
 #section-qcresults .specs {
     width:100px;
     text-align:center;
@@ -180,6 +181,7 @@ table#section-info td#lab-info {
 
 #section-signatures {
     margin-top:100px;
+    width:100%
 }
 #section-signatures table {
     width:100%;
@@ -187,10 +189,7 @@ table#section-info td#lab-info {
 
 #section-signatures table tr td {
     text-align:center;
-}
-#section-signatures table tr td div.manager-info {
-    padding-top:20px;
-    /*text-align:left;*/
+    padding-right:50px;
 }
 
 #section-discreeter {
@@ -213,8 +212,7 @@ table#section-info td#lab-info {
 
 @media print {
     * {
-        font: 12pt Georgia, "Times New Roman", Times, serif;
-        /*line-height: 1.3;*/
+        font: 9pt Arial, Verdana, serif;
     }
     a {
         text-decoration:none;
@@ -223,11 +221,10 @@ table#section-info td#lab-info {
     .outofrange a {
         color:#d40000;
     }
+
     #section-attachments {
         visibility:hidden;
         display:none;
     }
 
 }
-
-/* </dtml-with> */

@@ -37,8 +37,8 @@
     <table id="section-header">
         <tr>
             <td id="lab-logo">
-                <img tal:attributes="src string:${portal/absolute_url}/logo.png;
-                                     width string:213px"/>
+                <a tal:attributes="href string:${portal/bika_setup/laboratory/getLabURL}/">
+                    <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/logo_print.png;"/></a>
             </td>
             <td id="accreditation-logo"
                 tal:define="logo python:context.bika_setup.laboratory.getAccreditationBodyLogo()">
@@ -85,22 +85,11 @@
                 <table>
                     <tr><td id="lab-title" tal:content='view/laboratory/Title'></td></tr>
                     <tr><td id="lab-address" tal:content='structure view/lab_address'></td></tr>
-                    <tr>
-                        <td id="lab-email">
-                            <a tal:content="view/laboratory/getEmailAddress"
-                               tal:attributes="url python:'mailto:%s' % view.laboratory.getEmailAddress();"></a>
-                        </td>
-                    </tr>
-                    <tr tal:condition="view/laboratory/getPhone">
-                        <td id="lab-phone">
-                            <span i18n:translate="">Phone</span>:
-                            <span tal:content="view/laboratory/getPhone"></span>
-                        </td>
-                    </tr>
-                    <tr tal:condition="view/laboratory/getFax">
-                        <td id="lab-fax">
-                            <span i18n:translate="">Fax</span>:
-                            <span tal:content="view/laboratory/getFax"></span>
+
+                    <tr tal:condition="view/laboratory/getLabURL">
+                        <td id="lab-URL">
+                            <a tal:attributes="href view/laboratory/getLabURL" 
+                               tal:content="view/laboratory/getLabURL"></a>
                         </td>
                     </tr>
                 </table>
@@ -153,7 +142,10 @@
             </tr>
             <tr>
                 <td class="label" i18n:translate="">Client</td>
-                <td tal:content="ar/aq_parent/Title"></td>
+                <td>
+                <a tal:attributes="href ar/aq_parent/absolute_url"
+                   tal:content="ar/aq_parent/Title"></a>
+                </td>
             </tr>
             <tr>
                 <td class="label" i18n:translate="">Client SID</td>
@@ -206,8 +198,8 @@
                     <th class="analysis"><span tal:content="string:${cat}">Category: Vitamin D</span></th>
                     <th class="result"><span i18n:translate="">Result</span></th>
                     <th class="dryresult" tal:condition="dry"><span i18n:translate="">Result</span></th>
-                    <th class="units"><span i18n:translate="">Units</span></th>
-                    <th class="specs"><span i18n:translate="">Specifications</span></th>
+                    <!-- <th class="units"><span i18n:translate="">Unit</span></th> -->
+                    <th class="specs"><span i18n:translate="">Value Range</span></th>
                     <th class="outofrange"></th>
                 </tr>
             </thead>
@@ -233,11 +225,15 @@
                 <tr tal:attributes="class python:'%s %s %s' % (analysis_css_result, analysis_css_accredited, analysis_css_retested);">
 
                     <td class="analysis" tal:content="service/Title">Total 25-OHD</td>
-                    <td class="result" tal:content="analysis_result">23</td>
+                    <td><span class="result" tal:content="string:${analysis_result}">23</span> <span class="units" tal:content="service/Unit|nothing"/></td>
+
+
                     <td class="dryresult"
                         tal:condition="python: dry==True and analysis_result_dm"
-                        tal:content="analysis_result_dm">23</td>
-                    <td class="units" tal:content="service/Unit|nothing">ng/ml</td>
+                        tal:content="string:${analysis_result_dm}  ${service/Unit|nothing}">23</td>
+
+
+                    <!-- <td class="units" tal:content="service/Unit|nothing">ng/ml</td> -->
                     <td class="specs">
                         <span tal:condition="analysis_uncertainty"
                               tal:replace="string:[+/- $analysis_uncertainty] "></span>
@@ -284,8 +280,8 @@
                 <tr>
                     <th class="analysis"><span tal:content='python: qccat'>Category: Vitamin D</span></th>
                     <th class="result"><span i18n:translate="">Result</span></th>
-                    <th class="units"><span i18n:translate="">Units</span></th>
-                    <th class="specs"><span i18n:translate="">Specifications</span></th>
+                    <!-- <th class="units"><span i18n:translate="">Unit</span></th> -->
+                    <th class="specs"><span i18n:translate="">Value Range</span></th>
                     <th class="refsample" tal:condition='python: duplicate==False'><span i18n:translate="">Reference Sample</span></th>
                     <th class="worksheet"><span i18n:translate="">Worksheet</span></th>
                     <th class="outofrange"></th>
@@ -306,8 +302,10 @@
                                             qc_wshref python:qc_worksheet[0].absolute_url() if (qc_worksheet and len(qc_worksheet) > 0) else '';">
                 <tr tal:attributes="class python: 'outofrange' if qc_outofrange else '';">
                     <td class="analysis" tal:content="python:qc_service.Title()">Total 25-OHD</td>
-                    <td class="result" tal:content="python:qc_analysis.getResult()">0.8</td>
-                    <td class="units" tal:content="qc_service/Unit">ng/ml</td>
+
+                    <td><span class="result" tal:content="python:qc_analysis.getResult()">23</span> <span class="units" tal:content="qc_service/Unit|nothing"/></td>
+                    <!-- <td class="result" tal:content="python:qc_analysis.getResult()">0.8</td> -->
+                    <!-- <td class="units" tal:content="qc_service/Unit">ng/ml</td> -->
                     <td class="specs" tal:content="qc_range">0</td>
                     <td class="refsample" tal:content="qc_refsample_code">QC13-0001 - Vit D Blank</td>
                     <td class="worksheet">
@@ -334,8 +332,10 @@
                                             dqc_wshref python:dqc_worksheet[0].absolute_url() if (dqc_worksheet and len(dqc_worksheet) > 0) else '';">
                 <tr tal:attributes="class python: 'outofrange' if dqc_outofrange else '';">
                     <td class="analysis" tal:content="python:dqc_service.Title()">Total 25-OHD</td>
-                    <td class="result" tal:content="python:dqc_analysis.getResult()">0.8</td>
-                    <td class="units" tal:content="dqc_service/Unit">ng/ml</td>
+
+                    <td><span class="result" tal:content="python:dqc_analysis.getResult()">23</span> <span class="units" tal:content="dqc_service/Unit|nothing"/></td>
+                    <!-- <td class="result" tal:content="python:dqc_analysis.getResult()">0.8</td> -->
+                    <!-- <td class="units" tal:content="dqc_service/Unit">ng/ml</td> -->
                     <td class="specs" tal:content="dqc_range">0</td>
                     <td class="worksheet">
                         <a tal:attributes="href dqc_wshref"
@@ -409,41 +409,42 @@
     </div>
 
     <!-- Signatures section -->
-    <div id="section-signatures">
-        <table tal:define="mngr_info python:view.get_managers_from_request(ar);
-                           mngr_ids python:mngr_info['ids'];
-                           managers python:mngr_info['dict'];"
-                tal:repeat="manager mngr_ids">
-            <tal:manager tal:define="rownum repeat/manager/number;
+
+        <table id="section-signatures">
+            <tr>
+                <td tal:define="mngr_info python:view.get_managers_from_request(ar);
+                                mngr_ids python:mngr_info['ids'];
+                                managers python:mngr_info['dict'];"
+                    tal:repeat="manager mngr_ids"
+                    class="manager-info">
+                    <tal:manager tal:define="rownum repeat/manager/number;
                                      email python:managers[manager]['email'];
                                      phone python:managers[manager]['phone'];
-                                     department python:managers[manager]['departments'];">
-            <span tal:condition="python: rownum % 3 == 0"
-                  tal:replace="structure python:'<tr>'"></span>
-                <td>
-                    <img tal:condition="signature"
-                         tal:define="signature python:managers[manager]['signature']"
-                         tal:attributes="src string:${signature}" style="height:75px">
-                    <div class="manager-info">
-                        <span class="manager-fullname" tal:content="python:managers[manager]['name']">Joe Blogs</span>
-                        <br tal:condition="email"/>
-                        <span class="manager-email" tal:condition="email">
-                            <a tal:attributes="href string:mailto:${email}"
-                               tal:content="email">a@b.com</a>
-                        </span>
-                        <br tal:condition="phone"/>
-                        <span class="manager-phone"
-                            tal:content="phone"
-                            tal:condition="phone">011 555 1112</span>
-                        <br/>
-                        <span class="manager-department" tal:content="department">Chemistry</span>
-                    </div>
+                                     department python:managers[manager]['departments'];
+                                     signature python:managers[manager]['signature'];">
+
+                        <img tal:condition="signature"
+                             tal:attributes="src string:${signature}" style="height:75px">
+                            <span class="manager-fullname" tal:content="python:managers[manager]['name']">Joe Blogs</span>
+                            <br tal:condition="email"/>
+                            <span class="manager-email" tal:condition="email">
+                                <a tal:attributes="href string:mailto:${email}"
+                                   tal:content="email">a@b.com</a>
+                            </span>
+                            <br tal:condition="phone"/>
+                            <span class="manager-phone"
+                                tal:content="phone"
+                                tal:condition="phone">011 555 1112</span>
+                            <br/>
+                            <span class="manager-department" tal:content="department">Chemistry</span>
+
+                        <span tal:condition="python: rownum % 3 == 0"
+                              tal:replace="structure python:'</tr>'"></span>
+                    </tal:manager>
                 </td>
-            <span tal:condition="python: rownum % 3 == 0"
-                  tal:replace="structure python:'</tr>'"></span>
-            </tal:manager>
+            </tr>
         </table>
-    </div>
+
 
     <!-- Discreeter section -->
         <div id="section-discreeter">
@@ -459,9 +460,25 @@
             <li tal:condition="confidence_level" i18n:translate="">Test results are at a <tal:block replace="confidence_level" i18n:name="lab_confidence"/>% confidence level</li>
             <li tal:condition="python:'email' in pub_pref" i18n:translate="">Methods of analysis available by clicking on the 'Request' link</li>
         </ol>
+        <a tal:content="view/laboratory/getEmailAddress"
+           tal:attributes="url python:'mailto:%s' % view.laboratory.getEmailAddress();"></a>
+
+        <br>
+        <tal:con condition="view/laboratory/getPhone">
+            <span i18n:translate="">Phone</span>:
+            <span tal:content="view/laboratory/getPhone"></span>
+        </tal:con>
+
+        <br>
+        <tal:con condition="view/laboratory/getFax">
+            <span i18n:translate="">Fax</span>:
+            <span tal:content="view/laboratory/getFax"></span><br>
+        </tal:con>
+
     </div>
-    <!--div id="footer">
+
+<!--     <div id="footer">
         <pdf:pagenumber/>
-    </div-->
+    </div> -->
 </body>
 </html>

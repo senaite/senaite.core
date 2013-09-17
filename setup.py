@@ -34,11 +34,11 @@ setup(name='bika.lims',
           'plone.app.z3cform',
           'openpyxl==1.5.8',
           'plone.app.iterate',
-          'xhtml2pdf',
           'magnitude',
           'gpw',
           'jarn.jsi18n==0.3',
           'collective.wtf',
+          'WeasyPrint',
       ],
       extras_require={
           'test': [

@@ -3,6 +3,10 @@
 
 - Nothing here, yet.
 
+3.0rc3.5
+---------------------
+- xhtml2pdf replacement by WeasyPrint
+
 3.0rc3.2 (2013-06-28)
 ---------------------
 
