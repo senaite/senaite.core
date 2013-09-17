@@ -19,7 +19,7 @@ function ar_set_tabindexes() {
 // set id and name to ar-col-fieldName fornats
 // un-set the readonly attribute on the fields (so that we can search).
 function ar_rename_elements(){
-	elements = $('td[ar_add_column_widget]').find('input[type!=hidden]').not('[disabled]');
+	elements = $('td[ar_add_column_widget]').find('input[type!="hidden"]').not('[disabled]');
 	for (var i = elements.length - 1; i >= 0; i--) {
 		e = elements[i];
 		column = $($(e).parents('td')).attr('column');
@@ -28,7 +28,7 @@ function ar_rename_elements(){
 		e.id = 'ar_'+column+'_'+e.id;
 		$(e).removeAttr('required');
 	};
-	elements = $('td[ar_add_column_widget]').find('input[type=hidden]');
+	elements = $('td[ar_add_column_widget]').find('input[type="hidden"]');
 	for (var i = elements.length - 1; i >= 0; i--) {
 		e = elements[i];
 		column = $($(e).parents('td')).attr('column');
@@ -66,7 +66,7 @@ function ar_referencewidget_lookups(elements){
 
 			// split out the :ignore_empty:etc
 			var bits = fieldName.split(':');
-			$('input[name*=ar\\.'+column+'\\.'+bits[0]+'_uid]').val(ui.item['UID']);
+			$('input[name*="ar\\.'+column+'\\.'+bits[0]+'_uid"]').val(ui.item['UID']);
 
 			// samplepoint <> sampletype relations
 			if(fieldName == 'SampleType'){
@@ -135,11 +135,11 @@ function ar_referencewidget_lookups(elements){
 				$(this).blur(function(){
 					if($(this).val() == ''){
 						// clear and un-disable everything
-						elements = $("[ar_add_column_widget] [id*=ar_"+column+"]:disabled");
+						elements = $("[ar_add_column_widget] [id*='ar_"+column+"']:disabled");
 						$.each(elements, function(i,element){
-							$(element).removeAttr('disabled');
+							$(element).prop('disabled', false);
 							if($(element).attr('type') == 'checkbox'){
-								$(element).attr('checked', false);
+								$(element).prop('checked', false);
 							} else {
 								$(element).val('');
 							}
@@ -157,9 +157,9 @@ function ar_referencewidget_lookups(elements){
 							uid_element = $("#ar_"+column+"_"+fieldname+"_uid");
 							$(uid_element).val('');
 							element = $("#ar_"+column+"_"+fieldname);
-							$(element).val('').attr('disabled', '1');
+							$(element).val('').prop('disabled', true);
 							if($(element).attr('type') == 'checkbox' && fieldvalue){
-								$(element).attr('checked', true);
+								$(element).prop('checked', true);
 							} else {
 								$(element).val(fieldvalue);
 							}
@@ -203,14 +203,14 @@ function recalc_prices(column){
 		total = 0.00;
 		discount = parseFloat($("#member_discount").val());
 		$.each($('input[name="ar.'+column+'.Analyses:list:ignore_empty:record"]'), function(){
-			disabled = $(this).attr('disabled');
+			disabled = $(this).prop('disabled');
 			// For some browsers, `attr` is undefined; for others, its false.  Check for both.
 			if (typeof disabled !== 'undefined' && disabled !== false) {
 				disabled = true;
 			} else {
 				disabled = false;
 			}
-			if(!(disabled) && $(this).attr("checked")){
+			if(!(disabled) && $(this).prop("checked")){
 				serviceUID = this.id;
 				form_price = parseFloat($("#"+serviceUID+"_price").val());
 				vat_amount = parseFloat($("#"+serviceUID+"_price").attr("vat_amount"));
@@ -246,14 +246,14 @@ function changeReportDryMatter(){
 	cat = $(dm).attr("cat");
 	poc = $(dm).attr("poc");
 	column = $(this).attr('column');
-	if ($(this).attr("checked")){
+	if ($(this).prop("checked")){
 		// only play with service checkboxes when enabling dry matter
 		unsetAnalysisProfile(column);
 		jQuery.ajaxSetup({async:false});
 		toggleCat(poc, cat, $(this).attr("column"), selectedservices=[uid], force_expand=true);
 		jQuery.ajaxSetup({async:true});
-		dryservice_cb = $("input[column="+$(this).parents('td').attr("column")+"]:checkbox").filter("#"+uid);
-		$(dryservice_cb).attr("checked", true);
+		dryservice_cb = $("input[column='"+$(this).parents('td').attr("column")+"']:checkbox").filter("#"+uid);
+		$(dryservice_cb).prop('checked',true);
 		calcdependencies([$(dryservice_cb)], auto_yes = true);
 		calculate_parts(column);
 	}
@@ -271,7 +271,7 @@ function showSelectCC(){
 
 function changePrimaryContact(){
 	contact_uid = $(this).val();
-	elem = $("[uid="+contact_uid+"]");
+	elem = $("[uid='"+contact_uid+"']");
 	cc_data = $.parseJSON($(elem).attr("ccs"));
 	$('#cc_uids').attr('value', $(elem).attr("cc_uids"));
 	$('#cc_titles').val($(elem).attr("cc_titles"));
@@ -284,20 +284,20 @@ function copyButton(){
     // Analysis Service checkbox
 
 	if ($(this).parent().attr('class') == 'service'){
-		var first_val = $('input[column="0"]').filter('#'+this.id).attr("checked");
+		var first_val = $('input[column="0"]').filter('#'+this.id).prop("checked");
 		var affected_elements = [];
 		// 0 is the first column; we only want to change cols 1 onward.
 		for (var col=1; col<parseInt($("#col_count").val()); col++) {
 			var other_elem = $('input[column="'+col+'"]').filter('#'+this.id);
-			var disabled = other_elem.attr('disabled');
+			var disabled = other_elem.prop('disabled');
 			// For some browsers, `attr` is undefined; for others, its false.  Check for both.
 			if (typeof disabled !== 'undefined' && disabled !== false) {
 				disabled = true;
 			} else {
 				disabled = false;
 			}
-			if (!disabled && !(other_elem.attr("checked")==first_val)) {
-				other_elem.attr("checked", first_val?true:false);
+			if (!disabled && !(other_elem.prop("checked")==first_val)) {
+				other_elem.prop('checked',first_val?true:false);
 				affected_elements.push(other_elem);
 			}
 			calculate_parts(col);
@@ -309,16 +309,16 @@ function copyButton(){
 	// other checkboxes
 
 	else if ($('input[name^="ar\\.0\\.'+fieldName+'"]').attr("type") == "checkbox") {
-		var first_val = $('input[name^="ar\\.0\\.'+fieldName+'"]').attr("checked");
+		var first_val = $('input[name^="ar\\.0\\.'+fieldName+'"]').prop("checked");
 		// col starts at 1 here; we don't copy into the the first row
 		for (var col=1; col<parseInt($("#col_count").val()); col++) {
 			var other_elem = $('#ar_' + col + '_' + fieldName);
-			if (!(other_elem.attr("checked")==first_val)) {
-				other_elem.attr("checked", first_val?true:false);
+			if (!(other_elem.prop("checked")==first_val)) {
+				other_elem.prop('checked',first_val?true:false);
 				other_elem.trigger('change');
 			}
 		}
-		$('[id*=_' + fieldName + "]").change();
+		$('[id*="_' + fieldName + '"]').change();
 	}
 
 	// Anything else
@@ -334,7 +334,7 @@ function copyButton(){
 				other_uid_elem.val(first_uid);
 			}
 			var other_elem = $('#ar_' + column + '_' + fieldName);
-			if (!(other_elem.attr("disabled"))) {
+			if (!(other_elem.prop("disabled"))) {
 				$(other_elem).attr("skip_referencewidget_lookup", true);
 				other_elem.val(first_val);
 				other_elem.trigger('change');
@@ -379,7 +379,7 @@ function toggleCat(poc, category_uid, column, selectedservices,
 			for(service in tbody.children){
 				service_uid = service.id;
 				if(selectedservices.indexOf(service_uid) > -1){
-					$(this).attr("checked", "checked");
+					$(this).prop('checked',"checked");
 				}
 			}
 			recalc_prices(column);
@@ -438,7 +438,7 @@ function calcdependencies(elements, auto_yes) {
 	deps = service_data['deps'];
 	backrefs = service_data['backrefs'];
 
-	if ($(element).attr("checked") == true){
+	if ($(element).prop("checked") == true){
 		// selecting a service; discover services it depends on.
 		var affected_services = [];
 		var affected_titles = [];
@@ -457,7 +457,7 @@ function calcdependencies(elements, auto_yes) {
 				$.each(servicedata, function(i, serviceuid_servicetitle){
 					service = serviceuid_servicetitle.split("_");
 					// if the service is already checked, skip it.
-					if (! $('input[column="'+column+'"]').filter('#'+service[0]).attr("checked") ){
+					if (! $('input[column="'+column+'"]').filter('#'+service[0]).prop("checked") ){
 						// this one is for the current category
 						services.push(service[0]);
 						// and this one decides if the confirmation box gets shown at all.
@@ -486,10 +486,10 @@ function calcdependencies(elements, auto_yes) {
 							// if cat is already expanded, we toggle(true) it and manually select service checkboxes
 							$(tbody).toggle(true);
 							$.each(args[3], function(x,serviceUID){
-								$('input[column="'+args[2]+'"]').filter('#'+serviceUID).attr("checked", true);
+								$('input[column="'+args[2]+'"]').filter('#'+serviceUID).prop('checked',true);
 								// if elements from more than one column were passed, set all columns to be the same.
 								for(col in remaining_columns){
-									$('input[column="'+remaining_columns[col]+'"]').filter('#'+serviceUID).attr("checked", true);
+									$('input[column="'+remaining_columns[col]+'"]').filter('#'+serviceUID).prop('checked',true);
 								}
 							});
 						} else {
@@ -508,12 +508,12 @@ function calcdependencies(elements, auto_yes) {
 					$('#messagebox').remove();
 				}
 				function add_No(){
-					$(element).attr("checked", false);
+					$(element).prop('checked',false);
 					recalc_prices();
 					for(col in remaining_columns){
 						e = $('input[column="'+remaining_columns[col]+'"]')
 								.filter('#'+serviceUID);
-						$(e).attr("checked", false);
+						$(e).prop('checked',false);
 					}
 					recalc_prices(column);
 					calculate_parts(column);
@@ -547,7 +547,7 @@ function calcdependencies(elements, auto_yes) {
 		if (s_uids.length > 0){
 			$.each(s_uids, function(i, serviceUID){
 				cb = $('input[column="'+column+'"]').filter('#'+serviceUID);
-				if (cb.attr("checked")){
+				if (cb.prop("checked")){
 					affected_services.push(serviceUID);
 					affected_titles.push(cb.attr('title'));
 				}
@@ -565,20 +565,20 @@ function calcdependencies(elements, auto_yes) {
 						for(as=0;as<affected_services.length;as++){
 							serviceUID = affected_services[as];
 							cb = $('input[column="'+column+'"]')
-								.filter('#'+serviceUID).attr('checked', false);
-							$(".partnr_"+serviceUID).filter('[column=]'+column)
+								.filter('#'+serviceUID).prop('checked', false);
+							$(".partnr_"+serviceUID).filter('[column="'+column+'"]')
 								.empty();
 							if ($(cb).val() == $("#getDryMatterService").val()) {
-								$("#ar_"+column+"_ReportDryMatter").attr("checked", false);
+								$("#ar_"+column+"_ReportDryMatter").prop('checked',false);
 							}
 							// if elements from more than one column were passed, set all columns to be the same.
 							for(col in remaining_columns){
 								cb = $('input[column="'+remaining_columns[col]+'"]')
-									.filter('#'+serviceUID).attr("checked", false);
-								$(".partnr_"+serviceUID).filter('[column=]'+col)
+									.filter('#'+serviceUID).prop('checked',false);
+								$(".partnr_"+serviceUID).filter('[column="'+col+'"]')
 									.empty();
 								if ($(cb).val() == $("#getDryMatterService").val()) {
-									$("#ar_"+col+"_ReportDryMatter").attr("checked", false);
+									$("#ar_"+col+"_ReportDryMatter").prop('checked',false);
 								}
 							}
 						};
@@ -591,9 +591,9 @@ function calcdependencies(elements, auto_yes) {
 						$('#messagebox').remove();
 					},
 					no:function(){
-						$(element).attr("checked", true);
+						$(element).prop('checked',true);
 						for(col in remaining_columns){
-							$('input[column="'+remaining_columns[col]+'"]').filter('#'+serviceUID).attr("checked", true);
+							$('input[column="'+remaining_columns[col]+'"]').filter('#'+serviceUID).prop('checked',true);
 						}
 						recalc_prices(column);
 						$(this).dialog("close");
@@ -633,12 +633,12 @@ function calculate_parts(column){
 		}
 	} else {
 		// all unchecked services have their part numbers removed
-		ep = $("[class^='partnr_']").filter("[column="+column+"]").not(":empty");
+		ep = $("[class^='partnr_']").filter("[column='"+column+"']").not(":empty");
 		for(i=0;i<ep.length;i++){
 			em = ep[i];
 			uid = $(ep[0]).attr('class').split("_")[1]
 			cb = $("#"+uid);
-			if ( ! $(cb).attr('checked') ){
+			if ( ! $(cb).prop('checked') ){
 				$(em).empty();
 			}
 		}
@@ -658,12 +658,12 @@ function calculate_parts(column){
 	// skip everything if no selected services in this column
 	if (service_uids.length == 0){
 		// all unchecked services have their part numbers removed
-		ep = $("[class^='partnr_']").filter("[column="+column+"]").not(":empty");
+		ep = $("[class^='partnr_']").filter("[column='"+column+"']").not(":empty");
 		for(i=0;i<ep.length;i++){
 			em = ep[i];
 			uid = $(ep[0]).attr('class').split("_")[1]
 			cb = $("#"+uid);
-			if ( ! $(cb).attr('checked') ){
+			if ( ! $(cb).prop('checked') ){
 				$(em).empty();
 			}
 		}
@@ -680,7 +680,7 @@ function calculate_parts(column){
 	// write new part numbers next to checkboxes
 	$.each(parts, function(p,part){
 		$.each(part['services'], function(s,service_uid){
-			$(".partnr_"+service_uid).filter("[column="+column+"]")
+			$(".partnr_"+service_uid).filter("[column='"+column+"']")
 				.empty().append(p+1);
 		});
 	});
@@ -689,12 +689,12 @@ function calculate_parts(column){
 
 function uncheck_partnrs(column){
 	// all unchecked services have their part numbers removed
-	ep = $("[class^='partnr_']").filter("[column="+column+"]").not(":empty");
+	ep = $("[class^='partnr_']").filter("[column='"+column+"']").not(":empty");
 	for(i=0;i<ep.length;i++){
 		em = ep[i];
 		uid = $(ep[0]).attr('class').split("_")[1]
 		cb = $("#"+uid);
-		if ( ! $(cb).attr('checked') ){
+		if ( ! $(cb).prop('checked') ){
 			$(em).empty();
 		}
 	}
@@ -714,8 +714,8 @@ function unsetAnalysisProfile(column){
 
 function unsetAnalyses(column){
 	$.each($('input[name^="ar.'+column+'.Analyses"]'), function(){
-		if($(this).attr("checked")) $(this).attr("checked", "");
-		$(".partnr_"+this.id).filter("[column="+column+"]")
+		if($(this).prop("checked")) $(this).prop('checked',"");
+		$(".partnr_"+this.id).filter("[column='"+column+"']")
 			.empty();
 	});
 }
@@ -758,8 +758,8 @@ function setTemplate(column,template_title){
 	template_data = $.parseJSON($("#template_data").val())[templateUID];
 	analyses = template_data['Analyses'];
 
-	// always remove DryMatter - the Template can put it back.
-	$("#ar_"+column+"_ReportDryMatter").attr("checked", false);
+	// always remove DryMaattrtter - the Template can put it back.
+	$("#ar_"+column+"_ReportDryMatter").prop('checked',false);
 
 	// set our template fields
 	// SampleType and SamplePoint are strings - the item's Title.
@@ -775,7 +775,7 @@ function setTemplate(column,template_title){
 	$('#ar_'+column+'_SamplePoint_uid').val(sp_uid);
 
 	dm = template_data['ReportDryMatter'];
-	$('#ar_'+column+'_ReportDryMatter').attr('checked', dm);
+	$('#ar_'+column+'_ReportDryMatter').prop('checked', dm);
 
 	$('#ar_'+column+'_Profile').val(template_data['Profile']);
 	$('#ar_'+column+'_Profile_uid').val(template_data['Profile_uid']);
@@ -817,14 +817,14 @@ function setTemplate(column,template_title){
 		if( $("tbody[class*='expanded']").filter("#"+poc_categoryUID).length > 0 ){
 			$.each(selectedservices, function(i,uid){
 				$.each($("input[column='"+column+"']").filter("#"+uid), function(x, e){
-					$(e).attr('checked', true);
+					$(e).prop('checked', true);
 					partnr = template_parts[uid].split("-")[1];
 					if (partnr != null) {
 						partnr = parseInt(partnr,10);
 					} else {
 						partnr = 1;
 					}
-					$(".partnr_"+uid).filter("[column="+column+"]")
+					$(".partnr_"+uid).filter("[column='"+column+"']")
 					.empty().append(partnr);
 					parts[partnr-1]['services'].push(uid);
 				});
@@ -841,7 +841,7 @@ function setTemplate(column,template_title){
 				} else {
 					partnr = 1;
 				}
-				$(".partnr_"+uid).filter("[column="+column+"]")
+				$(".partnr_"+uid).filter("[column='"+column+"']")
 				.empty().append(partnr);
 				partnr = parseInt(partnr,10);
 				parts[partnr-1]['services'].push(uid);
@@ -868,13 +868,13 @@ function setAnalysisProfile(column, profile_title){
 	profile_services = profile_data['Services'];
 
 	// always remove DryMatter - the Template can put it back.
-	$("#ar_"+column+"_ReportDryMatter").attr("checked", false);
+	$("#ar_"+column+"_ReportDryMatter").prop('checked',false);
 
 	$.each(profile_services, function(poc_categoryUID, selectedservices){
 		if( $("tbody[class*='expanded']").filter("#"+poc_categoryUID).length > 0 ){
 			$.each(selectedservices, function(i,uid){
 				$.each($("input[column='"+column+"']").filter("#"+uid), function(x, e){
-					$(e).attr('checked', true);
+					$(e).prop('checked', true);
 				});
 				recalc_prices(column);
 			});
@@ -897,13 +897,13 @@ function service_checkbox_change(){
 
 	// Unselecting Dry Matter Service unsets 'Report Dry Matter'
 	if ($(this).val() == $("#getDryMatterService").val()
-		&& $(this).attr("checked") == false) {
-		$("#ar_"+column+"_ReportDryMatter").attr("checked", false);
+		&& $(this).prop("checked") == false) {
+		$("#ar_"+column+"_ReportDryMatter").prop('checked',false);
 	}
 
 	// unselecting service: remove part number.
-	if (!$(this).attr('checked')){
-		$(".partnr_"+this.id).filter("[column="+column+"]")
+	if (!$(this).prop('checked')){
+		$(".partnr_"+this.id).filter("[column='"+column+"']")
 			.empty();
 	}
 
@@ -938,13 +938,13 @@ $(document).ready(function(){
 	ar_referencewidget_lookups();
 	ar_set_tabindexes();
 
-	$("input[id*=_Template]").live('change', function(){
+	$("input[id*='_Template']").live('change', function(){
 		column = this.id.split('_')[1];
 		unsetAnalysisProfile(column);
 		setTemplate(column, $(this).val());
 	});
 
-	$("input[id*=_Profile").live('change', function(){
+	$("input[id*='_Profile']").live('change', function(){
 		column = $(this).attr("column");
 		unsetTemplate(column,$(this).val());
 		setAnalysisProfile(column);
@@ -961,7 +961,7 @@ $(document).ready(function(){
 
 	$('#open_cc_browser').click(showSelectCC);
 
-	$("input[id*=_ReportDryMatter]").change(changeReportDryMatter);
+	$("input[id*='_ReportDryMatter']").change(changeReportDryMatter);
 
 	// AR Add/Edit ajax form submits
 	ar_edit_form = $('#analysisrequest_edit_form');
@@ -971,7 +971,7 @@ $(document).ready(function(){
 			dataType: 'json',
 			data: {'_authenticator': $('input[name="_authenticator"]').val()},
 			beforeSubmit: function(formData, jqForm, options) {
-				$("input[class~='context']").attr('disabled',true);
+				$("input[class~='context']").prop('disabled',true);
 			},
 			success: function(responseText, statusText, xhr, $form) {
 				if(responseText['success'] != undefined){
@@ -1001,13 +1001,13 @@ $(document).ready(function(){
 					};
 					window.bika_utils.portalMessage(msg);
 					window.scroll(0,0);
-					$("input[class~='context']").removeAttr('disabled');
+					$("input[class~='context']").prop('disabled', false);
 				}
 			},
 			error: function(XMLHttpRequest, statusText, errorThrown) {
 				window.bika_utils.portalMessage(statusText);
 				window.scroll(0,0);
-				$("input[class~='context']").removeAttr('disabled');
+				$("input[class~='context']").prop('disabled', false);
 			},
 		};
 		$('#analysisrequest_edit_form').ajaxForm(options);

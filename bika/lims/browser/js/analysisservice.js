@@ -101,9 +101,9 @@
 		// service defaults
 		// update defalt Containers
 		$("#RequiredVolume, #Separate").change(function(){
-			separate = $("#Separate").attr('checked');
+			separate = $("#Separate").prop('checked');
 			if(!separate){
-				$("[name='Preservation\\:list']").removeAttr('disabled');
+				$("[name='Preservation\\:list']").prop('disabled', false);
 			}
 			requestdata = {
 				'allow_blank':true,
@@ -117,9 +117,9 @@
 		// partition table -> minvol field
 		// update row's containers
 		$("[name^='PartitionSetup.separate'],[name^='PartitionSetup.vol']").change(function(){
-			separate = $(this).parents("tr").find("[name^='PartitionSetup.separate']").attr("checked");
+			separate = $(this).parents("tr").find("[name^='PartitionSetup.separate']").prop("checked");
 			if (!separate){
-				$(this).parents("tr").find("[name^='PartitionSetup.preservation']").removeAttr('disabled');
+				$(this).parents("tr").find("[name^='PartitionSetup.preservation']").prop('disabled', false);
 			}
 			minvol = $(this).parents("tr").find("[name^='PartitionSetup.vol']").val();
 			target = $(this).parents("tr").find("[name^='PartitionSetup.container']");
@@ -156,16 +156,16 @@
 		$("[name^='Container'],[name^='PartitionSetup.container']").change(function(){
 			if ($(this).attr('name').search("Container") == 0){
 				target = "[name='Preservation\\:list']";
-				separate = $('#Separate').attr("checked");
+				separate = $('#Separate').prop("checked");
 				if (!separate){
-					$(target).removeAttr('disabled');
+					$(target).prop('disabled', false);
 					return;
 				}
 			} else {
-				separate = $(this).parents("tr").find("[name^='PartitionSetup.separate']").attr("checked");
+				separate = $(this).parents("tr").find("[name^='PartitionSetup.separate']").prop("checked");
 				target = $(this).parents("tr").find("[name^='PartitionSetup.preservation']");
 				if(!separate){
-					$(target).removeAttr('disabled');
+					$(target).prop('disabled', false);
 					return;
 				}
 			}
@@ -173,7 +173,7 @@
 			containers = window.bika_utils.data.containers;
 			selection = $(this).val();
 			if(selection == null || selection == undefined || selection.length == 0) {
-				$(target).removeAttr('disabled');
+				$(target).prop('disabled', false);
 				return;
 			}
 			// Only allow first container to be selected.
@@ -186,9 +186,9 @@
 			   && container.prepreserved
 			   && container.preservation){
 					$(target).val(container.preservation);
-					$(target).attr('disabled', true);
+					$(target).prop('disabled', true);
 			} else {
-				$(target).removeAttr('disabled');
+				$(target).prop('disabled', false);
 			}
 		});
 

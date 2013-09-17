@@ -14,23 +14,23 @@ $(document).ready(function(){
 		if (uid == '') {
 			// No reference definition selected;
 			// render empty widget.
-			$("#Blank").attr("checked", false);
-			$("#Hazardous").attr("checked", false);
+			$("#Blank").prop('checked',false);
+			$("#Hazardous").prop('checked',false);
 			$('.bika-listing-table')
 				.load('referenceresults', {'_authenticator': authenticator});
 			return;
 		}
 
 		if(option.search(_("(Blank)")) > -1){
-			$("#Blank").attr("checked", true);
+			$("#Blank").prop('checked',true);
 		} else {
-			$("#Blank").attr("checked", false);
+			$("#Blank").prop('checked',false);
 		}
 
 		if(option.search(_("(Hazardous)")) > -1){
-			$("#Hazardous").attr("checked", true);
+			$("#Hazardous").prop('checked',true);
 		} else {
-			$("#Hazardous").attr("checked", false);
+			$("#Hazardous").prop('checked',false);
 		}
 
 		$('.bika-listing-table')

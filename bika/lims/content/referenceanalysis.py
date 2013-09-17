@@ -17,7 +17,6 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims import bikaMessageFactory as _
 from zope.interface import implements
-from bika.lims.utils import deprecated
 
 #try:
 #    from BikaCalendar.config import TOOL_NAME as BIKA_CALENDAR_TOOL # XXX

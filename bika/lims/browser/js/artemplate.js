@@ -14,8 +14,8 @@
 			}
 		}
 
-		$(".portaltype-artemplate input[name$=save]").addClass('allowMultiSubmit');
-		$(".portaltype-artemplate input[name$=save]").click(clickSaveButton);
+		$(".portaltype-artemplate input[name$='save']").addClass('allowMultiSubmit');
+		$(".portaltype-artemplate input[name$='save']").click(clickSaveButton);
 
 	});
 }(jQuery));

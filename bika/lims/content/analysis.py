@@ -24,7 +24,6 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysis
 from decimal import Decimal
 from zope.interface import implements
-from bika.lims.utils import deprecated
 import datetime
 import math
 
