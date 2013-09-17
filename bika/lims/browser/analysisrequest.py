@@ -2,11 +2,11 @@ from AccessControl import getSecurityManager
 from bika.lims import bikaMessageFactory as _
 from bika.lims import PMF
 from bika.lims.adapters.widgetvisibility import WidgetVisibility as _WV
+from bika.lims.adapters.referencewidgetvocabulary import DefaultReferenceWidgetVocabulary
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.analyses import QCAnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.log import LogView
 from bika.lims.browser.publish import doPublish
@@ -1984,8 +1984,8 @@ class ajaxAnalysisRequestSubmit():
 
         # Now some basic validation
         required_fields = [field.getName() for field
-                           in AnalysisRequestSchema.fields()
-                           if field.required]
+                          in AnalysisRequestSchema.fields()
+                          if field.required]
 
         for column in columns:
             formkey = "ar.%s" % column
@@ -2001,6 +2001,12 @@ class ajaxAnalysisRequestSubmit():
             for field in required_fields:
                 # These two are still special.
                 if field in ['Contact', 'RequestID']:
+                    continue
+                # And these are not required if this is a secondary AR
+                if ar.get('Sample', '') != '' and field in [
+                    'SamplingDate',
+                    'SampleType'
+                ]:
                     continue
                 if (field in ar and not ar.get(field, '')):
                     error(field, column)
@@ -3006,3 +3012,19 @@ class WidgetVisibility(_WV):
             ret['add']['visible'].remove('Batch')
             ret['add']['hidden'].append('Batch')
         return ret
+
+
+class ReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
+    def __call__(self):
+
+        base_query = json.loads(self.request['base_query'])
+
+        # In client context, restrict samples to client samples only
+        if 'portal_type' in base_query and (
+            'Sample' in base_query['portal_type'] or
+            base_query['portal_type'] == 'Sample'
+        ):
+            base_query['getClientUID'] = self.context.aq_parent.UID()
+            self.request['base_query'] = json.dumps(base_query)
+
+        return DefaultReferenceWidgetVocabulary.__call__(self)

@@ -374,6 +374,14 @@ class IIdServer(Interface):
         """ Generate a new id for 'portal_type' """
 
 
+class IReferenceWidgetVocabulary(Interface):
+    """Return values for reference widgets in AR contexts
+    """
+    def __call__(**kwargs):
+        """
+        """
+
+
 class IDisplayListVocabulary(Interface):
 
     """Make vocabulary from catalog query.

@@ -1,6 +1,7 @@
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
+from bika.lims.interfaces import IReferenceWidgetVocabulary
 from bika.lims.permissions import *
 from bika.lims.utils import to_unicode as _u
 from bika.lims.utils import to_utf8 as _c
@@ -8,9 +9,9 @@ from operator import itemgetter
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import StringWidget
 from Products.CMFCore.utils import getToolByName
+from zope.component import getAdapters
 import json
 import plone
-
 
 class ReferenceWidget(StringWidget):
     _properties = StringWidget._properties.copy()
@@ -103,65 +104,24 @@ class ReferenceWidget(StringWidget):
 
 registerWidget(ReferenceWidget, title='Reference Widget')
 
-
 class ajaxReferenceWidgetSearch(BrowserView):
 
     """ Source for jquery combo dropdown box
     """
+
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
-        searchTerm = _c(self.request.get('searchTerm', '')).lower()
         page = self.request['page']
         nr_rows = self.request['rows']
         sord = self.request['sord']
         sidx = self.request['sidx']
-        force_all = self.request.get('force_all', 'true')
         colModel = json.loads(_u(self.request.get('colModel', '[]')))
-        searchFields = 'search_fields' in self.request \
-            and json.loads(_u(self.request.get('search_fields', '[]'))) \
-            or ('Title',)
+        discard_empty = json.loads(_c(self.request.get('discard_empty', "[]")))
         rows = []
 
-        # lookup objects from ZODB
-        catalog_name = _c(self.request.get('catalog_name', 'portal_catalog'))
-        catalog = getToolByName(self.context, catalog_name)
-        base_query = json.loads(_c(self.request['base_query']))
-        search_query = json.loads(_c(self.request.get('search_query', "{}")))
-        discard_empty = json.loads(_c(self.request.get('discard_empty', "[]")))
-
-        # first with all queries
-        contentFilter = dict((k, v) for k, v in base_query.items())
-        contentFilter.update(search_query)
-        brains = catalog(contentFilter)
-        if brains and searchTerm:
-            _brains = []
-            if len(searchFields) == 0 \
-                    or (len(searchFields) == 1 and searchFields[0] == 'Title'):
-                _brains = [p for p in brains
-                           if p.Title.lower().find(searchTerm) > -1]
-            else:
-                for p in brains:
-                    for fieldname in searchFields:
-                        value = getattr(p, fieldname, None)
-                        if not value:
-                            instance = p.getObject()
-                            schema = instance.Schema()
-                            if fieldname in schema:
-                                value = schema[fieldname].get(instance)
-                        if value and value.lower().find(searchTerm) > -1:
-                            _brains.append(p)
-                            break
-
-            brains = _brains
-        # Then just base_query alone ("show all if no match")
-        if not brains and force_all.lower() == 'true':
-            if search_query:
-                brains = catalog(base_query)
-                if brains and searchTerm:
-                    _brains = [p for p in brains
-                               if p.Title.lower().find(searchTerm) > -1]
-                    if _brains:
-                        brains = _brains
+        brains = []
+        for name, adapter in getAdapters((self.context, self.request), IReferenceWidgetVocabulary):
+            brains.extend(adapter())
 
         for p in brains:
             row = {'UID': getattr(p, 'UID'),

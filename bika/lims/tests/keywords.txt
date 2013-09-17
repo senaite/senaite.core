@@ -37,13 +37,13 @@ Select from dropdown
 SelectDate
     [Arguments]  ${Element}=
     ...          ${Date}=
-    Click Element  ${Element}
-    Wait Until Page Contains Element  ui-datepicker-div
     ${Date} =            Convert To Integer    ${Date}
     ${Date} =            Convert To String     ${Date}
     sleep                0.5
-    Click Link  ${Date}
+    Click Element  ${Element}
+    Wait Until Page Contains Element  ui-datepicker-div
     sleep                0.5
+    Click Link  ${Date}
 
 
 SelectPrevMonthDate

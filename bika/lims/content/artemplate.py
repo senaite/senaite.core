@@ -147,7 +147,6 @@ schema = BikaSchema.copy() + Schema((
         required = 0,
         multiValued = 0,
         allowed_types = ('AnalysisProfile',),
-        vocabulary = 'AnalysisProfiles',
         relationship = 'ARTemplateAnalysisProfile',
         widget=ReferenceWidget(
             label = _("Analysis Profile"),

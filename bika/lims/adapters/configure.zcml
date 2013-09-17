@@ -11,4 +11,12 @@
       name="getWidgetVisibility"
     />
 
+    <adapter
+      for="zope.interface.Interface
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory="bika.lims.adapters.referencewidgetvocabulary.DefaultReferenceWidgetVocabulary"
+      provides="bika.lims.interfaces.IReferenceWidgetVocabulary"
+    />
+
+
 </configure>
