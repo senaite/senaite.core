@@ -12,14 +12,12 @@ from bika.lims.browser.log import LogView
 from bika.lims.browser.publish import doPublish
 from bika.lims.browser.sample import SamplePartitionsView
 from bika.lims.config import POINTS_OF_CAPTURE
-from bika.lims.config import VERIFIED_STATES
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestAddView
 from bika.lims.interfaces import IDisplayListVocabulary
 from bika.lims.interfaces import IFieldIcons
-from bika.lims.interfaces import IInvoiceView
 from bika.lims.permissions import *
 from bika.lims.subscribers import doActionFor
 from bika.lims.utils import changeWorkflowState
