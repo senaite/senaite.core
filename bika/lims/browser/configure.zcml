@@ -3,9 +3,10 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     i18n_domain="bika">
 
-  <include file="attachment.zcml"/>
+  <include file="analysis.zcml"/>
   <include file="analysisservice.zcml"/>
   <include file="analysisrequest.zcml"/>
+  <include file="attachment.zcml"/>
   <include file="batch.zcml"/>
   <include file="batchfolder.zcml"/>
   <include file="bika_listing.zcml"/>
@@ -13,12 +14,14 @@
   <include file="client.zcml"/>
   <include file="clientfolder.zcml"/>
   <include file="contact.zcml"/>
+  <include file="duplicateanalysis.zcml"/>
   <include file="instrument.zcml"/>
   <include file="instrumenttype.zcml"/>
   <include file="late_analyses.zcml"/>
   <include file="manufacturer.zcml"/>
   <include file="menu.zcml"/>
   <include file="remarks.zcml"/>
+  <include file="referenceanalysis.zcml"/>
   <include file="referencesample.zcml"/>
   <include file="sample.zcml"/>
   <include file="stickers.zcml"/>

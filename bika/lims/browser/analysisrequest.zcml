@@ -10,11 +10,17 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="getContacts"
     />
+
     <adapter
       factory="bika.lims.browser.analysisrequest.WidgetVisibility"
       provides="bika.lims.interfaces.IWidgetVisibility"
       for="bika.lims.interfaces.IAnalysisRequest"
       name="getWidgetVisibility"
+    />
+
+    <adapter
+      for="bika.lims.interfaces.IAnalysisRequest"
+      factory="bika.lims.browser.analysisrequest.ResultOutOfRange"
     />
 
     <!-- main site/analysisrequests view -->

@@ -1,36 +1,42 @@
 from AccessControl import getSecurityManager
 from bika.lims import bikaMessageFactory as _
 from bika.lims import PMF
+from bika.lims.adapters.widgetvisibility import WidgetVisibility as _WV
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
-from bika.lims.browser.bika_listing import WorkflowAction
+from bika.lims.browser.analyses import QCAnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
+from bika.lims.browser.bika_listing import WorkflowAction
+from bika.lims.browser.log import LogView
 from bika.lims.browser.publish import doPublish
 from bika.lims.browser.sample import SamplePartitionsView
-from bika.lims.adapters.widgetvisibility import WidgetVisibility as _WV
-from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.config import POINTS_OF_CAPTURE
+from bika.lims.config import VERIFIED_STATES
+from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestAddView
 from bika.lims.interfaces import IDisplayListVocabulary
+from bika.lims.interfaces import IFieldIcons
+from bika.lims.interfaces import IInvoiceView
 from bika.lims.permissions import *
 from bika.lims.subscribers import doActionFor
 from bika.lims.utils import changeWorkflowState
+from bika.lims.utils import createPdf
+from bika.lims.utils import encode_header
 from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
 from bika.lims.utils import logged_in_client
-from bika.lims.utils import to_unicode as _u
 from bika.lims.utils import tmpID
-from bika.lims.utils import encode_header
+from bika.lims.utils import to_unicode as _u
 from bika.lims.vocabularies import CatalogVocabulary
-from bika.lims.browser.analyses import QCAnalysesView
 from DateTime import DateTime
-from email.Utils import formataddr
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.Utils import formataddr
 from magnitude import mg
+from pkg_resources import resource_filename
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -41,14 +47,18 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import adapts
 from zope.component import getAdapter
-import zope.event
+from zope.component import getAdapters
 from zope.i18n.locales import locales
 from zope.interface import implements
 
+import App
 import json
 import plone
 import urllib
-from bika.lims.browser.log import LogView
+import zope.event
+import os
+import Globals
+
 
 class AnalysisRequestWorkflowAction(WorkflowAction):
     """Workflow actions taken in AnalysisRequest context.
@@ -474,7 +484,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             try:
                 host = getToolByName(self.context, 'MailHost')
                 host.send(mime_msg.as_string(), immediate=True)
-            except Exception, msg:
+            except Exception as msg:
                 message = self.context.translate(
                         _('Unable to send an email to alert lab '
                           'client contacts that the Analysis Request has been '
@@ -556,6 +566,37 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             ar.setChildAnalysisRequest(newar)
         newar.setParentAnalysisRequest(ar)
         return newar
+
+
+class ResultOutOfRange(object):
+    """Return alerts for any analyses inside the context ar
+    """
+    implements(IFieldIcons)
+    adapts(IAnalysisRequest)
+
+    def __init__(self, context):
+        self.context = context
+
+    def __call__(self, result=None, specification="lab", **kwargs):
+        workflow = getToolByName(self.context, 'portal_workflow')
+        items = self.context.getAnalyses()
+        field_icons = {}
+        for obj in items:
+            obj = obj.getObject() if hasattr(obj, 'getObject') else obj
+            uid = obj.UID()
+            astate = workflow.getInfoFor(obj, 'review_state')
+            if astate == 'retracted':
+                continue
+            adapters = getAdapters((obj, ), IFieldIcons)
+            for name, adapter in adapters:
+                alerts = adapter(obj)
+                if alerts:
+                    if uid in field_icons:
+                        field_icons[uid].extend(alerts[uid])
+                    else:
+                        field_icons[uid] = alerts[uid]
+        return field_icons
+
 
 class AnalysisRequestViewView(BrowserView):
     """ AR View form

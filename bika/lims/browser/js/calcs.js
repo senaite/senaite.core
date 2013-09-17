@@ -10,8 +10,6 @@ $(document).ready(function(){
 		value = $(this).attr('value');
 		item_data = $(this).parents('table').prev('input[name="item_data"]').val();
 
-//		$(td).attr('class', classname);
-
 		// clear out the alerts for this field
 		$(".alert").filter("span[uid='"+$(this).attr("uid")+"']").empty();
 
@@ -55,19 +53,17 @@ $(document).ready(function(){
 					$(".alert").filter("span[uid='"+result.uid+"']").empty();
 				}
 				// put new alerts
-				for(i=0;i<$(data['alerts']).length;i++){
-					lert = $(data['alerts'])[i];
-					product = lert.product ? lert.product : 'bika.lims';
-					$("span[uid='"+lert.uid+"']")
-					  .filter("span[field='"+lert.field+"']")
-					  .empty()
-					  .append("<img src='"+
-					    window.portal_url+"/++resource++"+product+".images/" +
-						lert.icon +".png' title='"+
-						lert.msg+"' uid='"+
-						lert.uid+"' icon='"+
-						lert.icon+"'/>");
-				}
+				$.each( data['alerts'], function( auid, alerts ) {
+					for (var i = 0; i < alerts.length; i++) {
+						lert = alerts[i]
+ 						$("span[uid='"+auid+"']")
+					  		.filter("span[field='"+lert.field+"']")
+							.append("<img src='"+window.portal_url+"/"+lert.icon+
+						    	"' title='"+lert.msg+
+						    	"' uid='"+auid+
+					    		"'/>");
+					};
+				});
 				// Update uncertainty value
 				for(i=0;i<$(data['uncertainties']).length;i++){
 					u = $(data['uncertainties'])[i];
@@ -114,8 +110,7 @@ $(document).ready(function(){
 				uid = $(re).attr('uid');
 				st_uid = $(re).attr('st_uid');
 				// remove old alerts
-				$("img[uid='"+uid+"']").filter("img[icon='warning']").remove();
-				$("img[uid='"+uid+"']").filter("img[icon='exclamation']").remove();
+				$("img[uid='"+uid+"']").filter("img[icon]").remove();
 				if (result == ''){
 					continue
 				}
