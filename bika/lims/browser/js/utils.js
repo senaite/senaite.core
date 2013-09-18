@@ -332,28 +332,6 @@ $(document).ready(function(){
 			});
 	});
 
-    function clearTimer(){
-		if(window.bika_spinner != undefined && window.bika_spinner != null) {
-			clearTimeout(window.bika_spinner);
-		}
-	}
-	$('body')
-		.append("<div class='bika-spinner'/>")
-		.ajaxStart(function() {
-			// We don't want the spinner to stutter, so we wait a half second
-			clearTimer();
-			window.bika_spinner = setTimeout(function(){
-				$('body').addClass('loading'); },500);
-		})
-		.ajaxStop(function() {
-			clearTimer();
-			$('body').removeClass('loading');
-		})
-		.ajaxComplete(function() {
-			clearTimer();
-			$('body').removeClass('loading');
-		});
-
 	$(".numeric").live('keypress', function(event) {
 		// Backspace, tab, enter, end, home, left, right, ., <, >, and -
 		// We don't support the del key in Opera because del == . == 46.
