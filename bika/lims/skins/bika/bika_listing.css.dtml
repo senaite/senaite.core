@@ -64,7 +64,7 @@ div.bika-listing-table-container {
   border-radius: 5px 5px 5px 5px;
   box-shadow: 0pt 1px 2px rgba(0, 0, 0, 0.5);
   display: inline-block;
-  overflow: auto;
+  overflow: hidden;
   margin-bottom:10px;
 }
 
