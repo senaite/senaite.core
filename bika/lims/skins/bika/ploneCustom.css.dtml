@@ -53,6 +53,10 @@ dl.portlet dd {
   margin-top:.25em;
 }
 
+.section-front-page a#folder-folder_full_view {
+  display:none !important;
+}
+
 /* overwrite sunburst special display of description fields */
 #content .field textarea[name="description"],
 #archetypes-fieldname-description,
