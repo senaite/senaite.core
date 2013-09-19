@@ -10,6 +10,7 @@ from Products.CMFCore.permissions import ListFolderContents, \
      ModifyPortalContent, View
 from Products.CMFCore import permissions
 from Products.CMFPlone.utils import safe_unicode
+from Products.CMFPlone.interfaces import IConstrainTypes
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from zope.interface import implements
@@ -101,7 +102,7 @@ schema['title'].required = False
 
 class SupplyOrder(BaseFolder):
 
-    implements(ISupplyOrder)
+    implements(ISupplyOrder, IConstrainTypes)
 
     security = ClassSecurityInfo()
     displayContentsTab = False

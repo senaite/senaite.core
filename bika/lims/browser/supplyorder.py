@@ -13,6 +13,9 @@ class View(BrowserView):
 
     def __call__(self):
         context = self.context
+        # Disable the add new menu item
+        context.setConstrainTypesMode(1)
+        context.setLocallyAllowedTypes(())
         # Collect general data
         self.orderDate = context.getOrderDate()
         self.contact = context.getContact().getFullname()
@@ -48,6 +51,8 @@ class EditView(BrowserView):
         request = self.request
         context = self.context
         setup = portal.bika_setup
+        # Allow adding items to this context
+        context.setConstrainTypesMode(0)
         # Collect the products
         products = setup.bika_labproducts.objectValues('LabProduct')
         # Handle for submission and regular request
