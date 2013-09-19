@@ -47,26 +47,26 @@
 									<td class="text" tal:content="product/description"></td>
 									<td class="number" tal:content="product/volume"></td>
 									<td class="center" tal:content="product/unit"></td>
-									<td class="currency" tal:content="product/price"></td>
+									<tal:td tal:content="structure python:view.currency_td(value=product['price'])" />
 									<td class="center" tal:content="product/vat"></td>
 									<td class="number">
 										<input type="text" tal:attributes="name string:product_${product/id}; value product/quantity" />
 									</td>
-									<td class="currency" tal:content="product/total"></td>
+									<tal:td tal:content="structure python:view.currency_td(value=product['total'])" />
 								</tr>
 							</tal:product>
 						</tal:products>
 						<tr class="totals">
-							<td colspan="7">Subtotal</td>
-							<td tal:content="view/subtotal"></td>
+							<td colspan="7" i18n:translate="">Subtotal</td>
+							<tal:td tal:content="structure python:view.currency_td(value=view.subtotal)" />
 						</tr>
 						<tr class="totals">
-							<td colspan="7">VAT</td>
-							<td tal:content="view/vat"></td>
+							<td colspan="7" i18n:translate="">VAT</td>
+							<tal:td tal:content="structure python:view.currency_td(value=view.vat)" />
 						</tr>
 						<tr class="totals">
-							<td colspan="7">Total</td>
-							<td tal:content="view/total"></td>
+							<td colspan="7" i18n:translate="">Total</td>
+							<tal:td tal:content="structure python:view.currency_td(value=view.total)" />
 						</tr>
 					</tbody>
 				</table>

@@ -1,0 +1,4 @@
+<td class="currency">
+	<span i18n:translate="label_currency_abbreviation">R</span>
+	<span tal:content="options/value"></span>
+</td>

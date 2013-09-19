@@ -10,6 +10,7 @@ from bika.lims.browser import BrowserView
 class View(BrowserView):
 
     template = ViewPageTemplateFile('templates/supplyorder_view.pt')
+    currency_td = ViewPageTemplateFile('templates/currency_td.pt')
 
     def __call__(self):
         context = self.context
@@ -35,7 +36,7 @@ class View(BrowserView):
                 'price': product.getPrice(),
                 'vat': '%s%%' % product.getVAT(),
                 'quantity': item.getQuantity(),
-                'totalprice': item.getTotal(),
+                'totalprice': '%.2f' % item.getTotal(),
             })
         # Render the template
         return self.template()
@@ -45,6 +46,7 @@ class EditView(BrowserView):
 
     template = ViewPageTemplateFile('templates/supplyorder_edit.pt')
     field = ViewPageTemplateFile('templates/row_field.pt')
+    currency_td = ViewPageTemplateFile('templates/currency_td.pt')
 
     def __call__(self):
         portal = self.portal
