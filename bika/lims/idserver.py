@@ -125,8 +125,8 @@ def generateUniqueId(context):
 
             # get all IDS that start with prefix
             # this must specifically exclude AR IDs (two -'s)
-            r = re.compile("^"+prefix+year+"-\d+$")
-            ids = [int(i.split(prefix+year+"-")[1])
+            r = re.compile("^"+prefix+"-\d+$")
+            ids = [int(i.split(prefix+"-")[1])
                    for i in catalog.Indexes['id'].uniqueValues()
                    if r.match(i)]
 

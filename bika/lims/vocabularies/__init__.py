@@ -114,7 +114,7 @@ class AnalysisCategoryVocabulary(BikaContentVocabulary):
 
     >>> objects = folder.objectValues()
     >>> len(objects)
-    2
+    5
 
     >>> source = util(portal)
     >>> source

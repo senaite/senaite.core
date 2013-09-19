@@ -38,8 +38,9 @@ class Tests(BikaIntegrationTestCase):
         c1.processForm()
 
     def make_ar(self, services):
-        sampletypes = [p.getObject() for p in self.bsc(portal_type="SampleType")]
-        samplepoints = [p.getObject() for p in self.bsc(portal_type="SamplePoint")]
+        bsc = self.portal.bika_setup_catalog
+        sampletypes = [p.getObject() for p in bsc(portal_type="SampleType")]
+        samplepoints = [p.getObject() for p in bsc(portal_type="SamplePoint")]
         contacts = [c for c in self.client.objectValues() if c.portal_type == 'Contact']
         sample_id = self.client.invokeFactory(type_name='Sample', id='tmp')
         sample = self.client[sample_id]
@@ -109,7 +110,7 @@ class Tests(BikaIntegrationTestCase):
         # new AR should link to new calculation
         s1 = bsc(title='s1')[0].getObject()
         ar2 = self.make_ar([s1, ])
-        self.assertEqual(1, ar2['k1'].getService().version_id)
+        self.assertEqual(3, ar2['k1'].getService().version_id)
         self.assertEqual(3, ar2['k1'].getService().getCalculation().version_id)
 
         transaction.get().commit()
@@ -124,7 +125,7 @@ class Tests(BikaIntegrationTestCase):
         # new AR should link to new calculation
         s1 = bsc(title='s1')[0].getObject()
         ar3 = self.make_ar([s1, ])
-        self.assertEqual(1, ar3['k1'].getService().version_id)
+        self.assertEqual(4, ar3['k1'].getService().version_id)
         self.assertEqual(4, ar3['k1'].getService().getCalculation().version_id)
 
 
