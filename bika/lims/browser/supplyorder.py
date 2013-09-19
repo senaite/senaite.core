@@ -65,7 +65,10 @@ class EditView(BrowserView):
                 if k.startswith('product_') and int(v) > 0:
                     k = k.replace('product_', '')
                     product = setup.bika_labproducts[k]
-                    context.invokeFactory('SupplyOrderItem', k)
+                    # Create a item if it doesn't yet exist
+                    if k not in context:
+                        context.invokeFactory('SupplyOrderItem', k)
+                    # Fetch and edit the item
                     obj = context[k]
                     obj.edit(
                         Product=product,

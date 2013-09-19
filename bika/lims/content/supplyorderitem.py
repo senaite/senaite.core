@@ -60,7 +60,7 @@ class SupplyOrderItem( BaseContent):
         """ compute total excluding VAT """
         price = self.getPrice()
         if price:
-            return self.getPrice() * self.getQuantity()
+            return float(self.getPrice()) * self.getQuantity()
         else:
             return 0
 
