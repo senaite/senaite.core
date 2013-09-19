@@ -2292,6 +2292,7 @@ class AnalysisRequestsView(BikaListingView):
 
             # Sanitize the list: If the user does not have local Owner role on the object's
             # parent, then some fields are not displayed
+            # XXX field rw perms
             if member.id in obj.aq_parent.users_with_local_role('Owner'):
                 items[x]['Client'] = obj.aq_parent.Title()
                 items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
@@ -2357,34 +2358,29 @@ class AnalysisRequestsView(BikaListingView):
 
             items[x]['Created'] = self.ulocalized_time(obj.created())
 
-            if not samplingdate > DateTime():
-                datesampled = self.ulocalized_time(sample.getDateSampled())
+            items[x]['ClientContact'] = obj.getContact().Title()
+            items[x]['replace']['ClientContact'] = "<a href='%s'>%s</a>" % \
+                (obj.getContact().absolute_url(), obj.getContact().Title())
 
+            checkPermission = self.context.portal_membership.checkPermission
+            # sampling workflow - inline edits for Sampler and Date Sampled
+            if checkPermission(SampleSample, obj) \
+            and not samplingdate > DateTime() \
+            and SamplingWorkflowEnabled \
+            and workflow.getInfoFor(sample, 'review_state') == 'to_be_sampled':
+                datesampled = self.ulocalized_time(sample.getDateSampled())
+                sampler = sample.getSampler().strip()
+                if sampler:
+                    items[x]['replace']['getSampler'] = self.user_fullname(sampler)
+                # Provisional values (Sampler can submit these direcly in AR lists)
                 if not datesampled:
                     datesampled = self.ulocalized_time(
                         DateTime(),
                         long_format=1)
                     items[x]['class']['getDateSampled'] = 'provisional'
-                sampler = sample.getSampler().strip()
-                if sampler:
-                    items[x]['replace']['getSampler'] = self.user_fullname(sampler)
-                if 'Sampler' in member.getRoles() and not sampler:
+                if not sampler:
                     sampler = member.id
                     items[x]['class']['getSampler'] = 'provisional'
-            else:
-                datesampled = ''
-                sampler = ''
-            items[x]['getDateSampled'] = datesampled
-            items[x]['getSampler'] = sampler
-
-            items[x]['ClientContact'] = obj.getContact().Title()
-            items[x]['replace']['ClientContact'] = "<a href='%s'>%s</a>" % \
-                (obj.getContact().absolute_url(), obj.getContact().Title())
-
-            # sampling workflow - inline edits for Sampler and Date Sampled
-            checkPermission = self.context.portal_membership.checkPermission
-            if checkPermission(SampleSample, obj) \
-                and not samplingdate > DateTime():
                 items[x]['required'] = ['getSampler', 'getDateSampled']
                 items[x]['allow_edit'] = ['getSampler', 'getDateSampled']
                 samplers = getUsers(sample, ['Sampler', 'LabManager', 'Manager'])
@@ -2395,15 +2391,20 @@ class AnalysisRequestsView(BikaListingView):
                 Sampler = sampler and sampler or \
                     (username in samplers.keys() and username) or ''
                 items[x]['getSampler'] = Sampler
+            else:
+                datesampled = ''
+                sampler = ''
+            items[x]['getDateSampled'] = datesampled
+            items[x]['getSampler'] = sampler
 
             # These don't exist on ARs
-            # XXX This should be a list of preservers...
+            # the columns exist just to set transition from lists.
             items[x]['getPreserver'] = ''
             items[x]['getDatePreserved'] = ''
 
             # inline edits for Preserver and Date Preserved
-            checkPermission = self.context.portal_membership.checkPermission
-            if checkPermission(PreserveSample, obj):
+            if checkPermission(PreserveSample, obj) \
+            and workflow.getInfoFor(sample, 'review_state') == 'to_be_preserved':
                 items[x]['required'] = ['getPreserver', 'getDatePreserved']
                 items[x]['allow_edit'] = ['getPreserver', 'getDatePreserved']
                 preservers = getUsers(obj, ['Preserver', 'LabManager', 'Manager'])
@@ -2420,6 +2421,7 @@ class AnalysisRequestsView(BikaListingView):
                 items[x]['class']['getDatePreserved'] = 'provisional'
 
             # Submitting user may not verify results
+            # 'Review portal content' is required
             if items[x]['review_state'] == 'to_be_verified' and \
                not checkPermission(VerifyOwnResults, obj):
                 self_submitted = False
@@ -2437,20 +2439,20 @@ class AnalysisRequestsView(BikaListingView):
         # are not displayed.
         toggle_cols = self.get_toggle_cols()
         new_states = []
-        for i,state in enumerate(self.review_states):
+        for i, state in enumerate(self.review_states):
             if state['id'] == self.review_state:
                 if 'getSampler' not in toggle_cols \
                    or 'getDateSampled' not in toggle_cols:
                     if 'hide_transitions' in state:
                         state['hide_transitions'].append('sample')
                     else:
-                        state['hide_transitions'] = ['sample',]
+                        state['hide_transitions'] = ['sample', ]
                 if 'getPreserver' not in toggle_cols \
                    or 'getDatePreserved' not in toggle_cols:
                     if 'hide_transitions' in state:
                         state['hide_transitions'].append('preserve')
                     else:
-                        state['hide_transitions'] = ['preserve',]
+                        state['hide_transitions'] = ['preserve', ]
             new_states.append(state)
         self.review_states = new_states
 

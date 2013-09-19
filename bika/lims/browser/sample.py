@@ -780,11 +780,11 @@ class SamplesView(BikaListingView):
         mtool = getToolByName(self.context, 'portal_membership')
         member = mtool.getAuthenticatedMember()
         translate = self.context.translate
+        checkPermission = mtool.checkPermission
 
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
-
             # Sanitize the list: If the user does not have local Owner role on the object's
             # parent, then some fields are not displayed
             # if member.id in obj.aq_parent.users_with_local_role('Owner'):
@@ -806,27 +806,38 @@ class SamplesView(BikaListingView):
             #     sp = obj.getSamplePoint()
             #     if sp and sp.aq_parent != self.portal.bika_setup.bika_samplepoints:
             #         items[x]['replace']['getSamplePointTitle'] = ''
-
             items[x]['DateReceived'] = self.ulocalized_time(obj.getDateReceived())
-
             deviation = obj.getSamplingDeviation()
             items[x]['SamplingDeviation'] = deviation and deviation.Title() or ''
-
             items[x]['AdHoc'] = obj.getAdHoc() and True or ''
-
             samplingdate = obj.getSamplingDate()
-
-            if not samplingdate > DateTime():
-                datesampled = self.ulocalized_time(obj.getDateSampled())
-                if not datesampled:
-                    datesampled = self.ulocalized_time(DateTime())
-                    items[x]['class']['getDateSampled'] = 'provisional'
-                sampler = obj.getSampler().strip()
+            if checkPermission(SampleSample, obj) \
+            and not samplingdate > DateTime() \
+            and SamplingWorkflowEnabled \
+            and workflow.getInfoFor(sample, 'review_state') == 'to_be_sampled':
+                datesampled = self.ulocalized_time(sample.getDateSampled())
+                sampler = sample.getSampler().strip()
                 if sampler:
                     items[x]['replace']['getSampler'] = self.user_fullname(sampler)
-                if 'Sampler' in member.getRoles() and not sampler:
+                # Provisional values (Sampler can submit these direcly in AR lists)
+                if not datesampled:
+                    datesampled = self.ulocalized_time(
+                        DateTime(),
+                        long_format=1)
+                    items[x]['class']['getDateSampled'] = 'provisional'
+                if not sampler:
                     sampler = member.id
                     items[x]['class']['getSampler'] = 'provisional'
+                items[x]['required'] = ['getSampler', 'getDateSampled']
+                items[x]['allow_edit'] = ['getSampler', 'getDateSampled']
+                samplers = getUsers(sample, ['Sampler', 'LabManager', 'Manager'])
+                username = member.getUserName()
+                users = [({'ResultValue': u, 'ResultText': samplers.getValue(u)})
+                         for u in samplers]
+                items[x]['choices'] = {'getSampler': users}
+                Sampler = sampler and sampler or \
+                    (username in samplers.keys() and username) or ''
+                items[x]['getSampler'] = Sampler
             else:
                 datesampled = ''
                 sampler = ''
@@ -852,31 +863,15 @@ class SamplesView(BikaListingView):
             if after_icons:
                 items[x]['after']['getSampleID'] = after_icons
 
-            # sampling workflow - inline edits for Sampler and Date Sampled
-            checkPermission = self.context.portal_membership.checkPermission
-            if checkPermission(SampleSample, obj) \
-                and not samplingdate > DateTime():
-                items[x]['required'] = ['getSampler', 'getDateSampled']
-                items[x]['allow_edit'] = ['getSampler', 'getDateSampled']
-                samplers = getUsers(obj, ['Sampler', 'LabManager', 'Manager'])
-                getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
-                username = getAuthenticatedMember().getUserName()
-                users = [({'ResultValue': u, 'ResultText': samplers.getValue(u)})
-                         for u in samplers]
-                items[x]['choices'] = {'getSampler': users}
-                Sampler = sampler and sampler or \
-                    (username in samplers.keys() and username) or ''
-                items[x]['getSampler'] = Sampler
-
             # These don't exist on samples
             # the columns exist just to set "preserve" transition from lists.
-            # XXX This should be a list of preservers...
             items[x]['getPreserver'] = ''
             items[x]['getDatePreserved'] = ''
 
             # inline edits for Preserver and Date Preserved
             checkPermission = self.context.portal_membership.checkPermission
-            if checkPermission(PreserveSample, obj):
+            if checkPermission(PreserveSample, obj) \
+            and workflow.getInfoFor(obj, 'review_state') == 'to_be_preserved':
                 items[x]['required'] = ['getPreserver', 'getDatePreserved']
                 items[x]['allow_edit'] = ['getPreserver', 'getDatePreserved']
                 preservers = getUsers(obj, ['Preserver', 'LabManager', 'Manager'])
