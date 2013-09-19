@@ -79,8 +79,8 @@ class EditView(BrowserView):
                         VAT=product.getVAT(),
                     )
             # Redirect to the list of orders
-            parent_url = context.aq_parent.absolute_url_path()
-            request.response.redirect(parent_url + '/orders')
+            obj_url = context.absolute_url_path()
+            request.response.redirect(obj_url)
             return
         else:
             self.orderDate = context.Schema()['OrderDate']
