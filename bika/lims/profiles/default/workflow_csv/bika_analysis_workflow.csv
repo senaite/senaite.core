@@ -122,7 +122,7 @@ BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,N,Y,Y,Y
-Review portal content,N,N,Y,N,N,N,N,Y,Y,Y,N,N,N,N
+Review portal content,N,N,Y,N,N,N,N,Y,Y,Y,N,Y,Y,Y
 ,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,
 Id:,verified,,,,,,,,,,,,,
