@@ -3020,10 +3020,8 @@ class ReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
         base_query = json.loads(self.request['base_query'])
 
         # In client context, restrict samples to client samples only
-        if 'portal_type' in base_query and (
-            'Sample' in base_query['portal_type'] or
-            base_query['portal_type'] == 'Sample'
-        ):
+        if 'portal_type' in base_query \
+        and base_query['portal_type'] == 'Sample':
             base_query['getClientUID'] = self.context.aq_parent.UID()
             self.request['base_query'] = json.dumps(base_query)
 
