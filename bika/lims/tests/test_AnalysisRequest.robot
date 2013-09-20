@@ -6,7 +6,7 @@ Resource                keywords.txt
 Variables               plone/app/testing/interfaces.py
 
 Suite Setup             Start browser
-Suite Teardown          Close All Browsers
+# Suite Teardown          Close All Browsers
 
 *** Variables ***
 
@@ -22,6 +22,8 @@ Analysis Request with no samping or preservation workflow
     ${ar_id}=                 Complete ar_add form with template Bore
     Go to                     ${PLONEURL}/clients/client-1/analysisrequests
     Execute transition receive on items in form_id analysisrequests
+    Log out
+    Log in                    test_analyst    test_analyst
     Go to                     ${PLONEURL}/clients/client-1/${ar_id}/manage_results
     Submit results with out of range tests
     Log out
@@ -47,7 +49,6 @@ Analysis Request with no samping or preservation workflow
 # XXX copy across in all fields
 
 
-    shleep   300   aaaaaa
 
 *** Keywords ***
 
@@ -114,7 +115,6 @@ Submit results with out of range tests
     ${count} =          Convert to integer    ${count}
     :FOR    ${index}    IN RANGE    1   ${count+1}
     \    TestResultsRange    xpath=(//input[@type='text' and @field='Result'])[${index}]       5   10
-    Focus          Remarks
     Click Element               xpath=//input[@value='Submit for verification'][1]
     Wait Until Page Contains    Changes saved.
 
@@ -125,7 +125,6 @@ Submit results
     ${count} =          Convert to integer    ${count}
     :FOR    ${index}    IN RANGE    1   ${count+1}
     \    Input text     xpath=(//input[@type='text' and @field='Result'])[${index}]   10
-    Focus          Remarks
     Click Element               xpath=//input[@value='Submit for verification'][1]
     Wait Until Page Contains    Changes saved.
 
@@ -137,10 +136,10 @@ TestResultsRange
     # Log  Testing Result Range for ${locator} -:- values: ${badResult} and ${goodResult}  WARN
 
     Input Text          ${locator}  ${badResult}
-    Focus               Remarks
+    Press Key           ${locator}   \\9
     Expect exclamation
     Input Text          ${locator}  ${goodResult}
-    Focus               Remarks
+    Press Key           ${locator}   \\9
     Expect no exclamation
 
 Expect exclamation
