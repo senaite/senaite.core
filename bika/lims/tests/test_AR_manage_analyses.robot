@@ -1,11 +1,12 @@
 *** Settings ***
 
-Library   Selenium2Library  timeout=10  implicit_wait=0.2
-Library   String
-Resource  bika/lims/tests/keywords.txt
-
+Library          Selenium2Library  timeout=10  implicit_wait=0.2
+Library          String
+Library  Remote  ${PLONE_URL}/RobotRemote
+Resource         keywords.txt
+Variables        plone/app/testing/interfaces.py
 Suite Setup      Start browser
-# Suite Teardown   Close All Browsers
+Suite Teardown   Close All Browsers
 
 *** Variables ***
 
@@ -15,11 +16,11 @@ ${PLONEURL}             http://localhost:55001/plone
 *** Test Cases ***
 
 Test Manage Analyses
-    Log in  test_labmanager  test_labmanager
-
     Create AnalysisRequests
     H2O-0001-R01 state should be sample_due
+    Set Selenium Timeout        300
     Add new analysis H2O-0001-R01 Metals Copper
+    Set Selenium Timeout        10
     H2O-0001-R01 state should be sample_due
     Receive H2O-0001-R01
     H2O-0001-R01 state should be sample_received
@@ -29,22 +30,19 @@ Test Manage Analyses
     H2O-0001-R01 state should be to_be_verified
     Add new analysis H2O-0001-R01 Metals Zinc
     H2O-0001-R01 state should be sample_received
-    shleep  300  so think.
-
     Input text                   xpath=//tr[@keyword='Zn']//input[@type='text']   10
     Press Key                    xpath=//tr[@keyword='Zn']//input[@type='text']   \t
     Click button                 xpath=//input[@value="Submit for verification"]
     Wait until page contains     saved
     H2O-0001-R01 state should be to_be_verified
 
-    Add new analysis H2O-0001-R01 Metals Sodium
-
 
 *** Keywords ***
 
 Start browser
-    Open browser         http://localhost:55001/plone/login
+    Enable autologin as  test_labmanager
     Set selenium speed   ${SELENIUM_SPEED}
+    Open browser         http://localhost:55001/plone/login
 
 Create AnalysisRequests
     [Documentation]     Add and receive some ARs.
@@ -85,7 +83,7 @@ Receive ${ar_id}
 
 Submit ${ar_id}
     Go to                        http://localhost:55001/plone/clients/client-1/analysisrequests
-    Wait until page contains     Add new
+    Wait until page contains     ${ar_id}
     Click link                   ${ar_id}
     Wait until page contains     Results not requested
     Input text                   xpath=//tr[@keyword='Ca']//input[@type='text']   10

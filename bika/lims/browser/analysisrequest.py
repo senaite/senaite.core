@@ -163,8 +163,13 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     analysis.reindexObject()
 
             if new:
-                ar_state = workflow.getInfoFor(ar, 'review_state')
                 for analysis in new:
+                    # if the AR has progressed past sample_received, we need to bring it back.
+                    ar_state = workflow.getInfoFor(ar, 'review_state')
+                    if ar_state in ('attachment_due', 'to_be_verified'):
+                        workflow.doActionFor(ar, 'revert')
+                        ar_state = workflow.getInfoFor(ar, 'review_state')
+                    # Then we need to forward new analyses state
                     analysis.updateDueDate()
                     changeWorkflowState(analysis, 'bika_analysis_workflow', ar_state)
 

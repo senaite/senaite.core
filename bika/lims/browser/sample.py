@@ -15,6 +15,7 @@ from bika.lims.permissions import *
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
+from operator import itemgetter
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 from Products.ZCTextIndex.ParseTree import ParseError
@@ -25,11 +26,6 @@ import urllib
 class SamplePartitionsView(BikaListingView):
     def __init__(self, context, request):
         super(SamplePartitionsView, self).__init__(context, request)
-        self.catalog = 'bika_catalog'
-        self.contentFilter = {'portal_type': 'SamplePartition',
-                              'sort_on': 'sortable_title'}
-        self.contentFilter['path'] = {"query": "/".join(context.getPhysicalPath()),
-                                      "level" : 0 }
         self.context_actions = {}
         self.title = _("Sample Partitions")
         self.icon = self.portal_url + "/++resource++bika.lims.images/samplepartition_big.png"
@@ -97,13 +93,12 @@ class SamplePartitionsView(BikaListingView):
         mtool = getToolByName(self.context, 'portal_membership')
         checkPermission = mtool.checkPermission
         if self.context.portal_type == 'AnalysisRequest':
-            sample = self.context.getSample()
+            self.sample = self.context.getSample()
         else:
-            sample = self.context
-        if checkPermission(AddSamplePartition, sample):
+            self.sample = self.context
+        if checkPermission(AddSamplePartition, self.sample):
             self.context_actions[_('Add')] = \
-                {'url': sample.absolute_url() + \
-                        '/createSamplePartition',
+                {'url': self.sample.absolute_url() + '/createSamplePartition',
                  'icon': '++resource++bika.lims.images/add.png'}
 
         return super(SamplePartitionsView, self).__call__()
@@ -116,18 +111,15 @@ class SamplePartitionsView(BikaListingView):
                        'to_be_preserved', 'sample_due', 'attachment_due',
                        'sample_received', 'to_be_verified']
         if self.context.portal_type == 'AnalysisRequest':
-            sample = self.context.getSample()
+            self.sample = self.context.getSample()
         else:
-            sample = self.context
-
-        self.allow_edit = checkPermission(EditSamplePartition, sample) \
-                    and workflow.getInfoFor(sample, 'review_state') in edit_states \
-                    and workflow.getInfoFor(sample, 'cancellation_state') == 'active'
+            self.sample = self.context
+        self.allow_edit = checkPermission(EditSamplePartition, self.sample) \
+                    and workflow.getInfoFor(self.sample, 'review_state') in edit_states \
+                    and workflow.getInfoFor(self.sample, 'cancellation_state') == 'active'
         self.show_select_column = self.allow_edit
         if self.allow_edit == False:
             self.review_states[0]['custom_actions'] = []
-
-        items = BikaListingView.folderitems(self)
 
         bsc = getToolByName(self.context, 'bika_setup_catalog')
 
@@ -140,87 +132,113 @@ class SamplePartitionsView(BikaListingView):
                          for o in bsc(portal_type="Preservation",
                                       inactive_state="active")]
 
-        for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
-            obj = items[x]['obj']
+        parts = [p for p in self.sample.objectValues()
+                 if p.portal_type == 'SamplePartition']
+        items = []
+        for part in parts:
+            # this folderitems doesn't subclass from the bika_listing.py
+            # so we create items from scratch
+            item = {
+                'obj': part,
+                'id': part.id,
+                'uid': part.UID(),
+                'title': part.Title(),
+                'type_class': 'contenttype-SamplePartition',
+                'url': part.aq_parent.absolute_url(),
+                'relative_url': part.aq_parent.absolute_url(),
+                'view_url': part.aq_parent.absolute_url(),
+                'created': self.ulocalized_time(part.created()),
+                'replace': {},
+                'before': {},
+                'after': {},
+                'choices': {},
+                'class': {},
+                'allow_edit': [],
+            }
 
-            items[x]['PartTitle'] = obj.getId()
+            state = workflow.getInfoFor(part, 'review_state')
+            item['state_class'] = 'state-'+state
+            item['state_title'] = _(state)
 
-            container = obj.getContainer()
+            item['PartTitle'] = part.getId()
+
+            container = part.getContainer()
             if self.allow_edit:
-                items[x]['getContainer'] = container and container.UID() or ''
+                item['getContainer'] = container and container.UID() or ''
             else:
-                items[x]['getContainer'] = container and container.Title() or ''
+                item['getContainer'] = container and container.Title() or ''
 
-            preservation = obj.getPreservation()
+            preservation = part.getPreservation()
             if self.allow_edit:
-                items[x]['getPreservation'] = preservation and preservation.UID() or ''
+                item['getPreservation'] = preservation and preservation.UID() or ''
             else:
-                items[x]['getPreservation'] = preservation and preservation.Title() or ''
+                item['getPreservation'] = preservation and preservation.Title() or ''
 
-##            sampler = obj.getSampler().strip()
-##            items[x]['getSampler'] = \
+##            sampler = part.getSampler().strip()
+##            item['getSampler'] = \
 ##                sampler and self.user_fullname(sampler) or ''
-##            datesampled = obj.getDateSampled()
-##            items[x]['getDateSampled'] = \
+##            datesampled = part.getDateSampled()
+##            item['getDateSampled'] = \
 ##                datesampled and self.ulocalized_time(datesampled) or ''
 
-            preserver = obj.getPreserver().strip()
-            items[x]['getPreserver'] = \
+            preserver = part.getPreserver().strip()
+            item['getPreserver'] = \
                 preserver and self.user_fullname(preserver) or ''
-            datepreserved = obj.getDatePreserved()
-            items[x]['getDatePreserved'] = \
+            datepreserved = part.getDatePreserved()
+            item['getDatePreserved'] = \
                 datepreserved and self.ulocalized_time(datepreserved) or ''
 
-            disposaldate = obj.getDisposalDate()
-            items[x]['getDisposalDate'] = \
+            disposaldate = part.getDisposalDate()
+            item['getDisposalDate'] = \
                 disposaldate and self.ulocalized_time(disposaldate) or ''
-
-            samplingdate = obj.getSamplingDate()
 
             # inline edits for Container and Preservation
             if self.allow_edit:
-                items[x]['allow_edit'] = ['getContainer', 'getPreservation']
-            items[x]['choices']['getPreservation'] = preservations
-            items[x]['choices']['getContainer'] = containers
+                item['allow_edit'] = ['getContainer', 'getPreservation']
+            item['choices']['getPreservation'] = preservations
+            item['choices']['getContainer'] = containers
 
             # inline edits for Sampler and Date Sampled
 ##            checkPermission = self.context.portal_membership.checkPermission
-##            if checkPermission(SampleSample, obj) \
+##            if checkPermission(SampleSample, part) \
 ##                and not samplingdate > DateTime():
-##                items[x]['required'] += ['getSampler', 'getDateSampled']
-##                items[x]['allow_edit'] += ['getSampler', 'getDateSampled']
-##                samplers = getUsers(obj, ['Sampler', 'LabManager', 'Manager'])
-##                getAuthenticatedMember = obj.portal_membership.getAuthenticatedMember
+##                item['required'] += ['getSampler', 'getDateSampled']
+##                item['allow_edit'] += ['getSampler', 'getDateSampled']
+##                samplers = getUsers(part, ['Sampler', 'LabManager', 'Manager'])
+##                getAuthenticatedMember = part.portal_membership.getAuthenticatedMember
 ##                username = getAuthenticatedMember().getUserName()
 ##                users = [({'ResultValue': u, 'ResultText': samplers.getValue(u)})
 ##                         for u in samplers]
-##                items[x]['choices']['getSampler'] = users
-##                items[x]['getSampler'] = sampler and sampler or \
+##                item['choices']['getSampler'] = users
+##                item['getSampler'] = sampler and sampler or \
 ##                    (username in samplers.keys() and username) or ''
-##                items[x]['getDateSampled'] = items[x]['getDateSampled'] \
+##                item['getDateSampled'] = item['getDateSampled'] \
 ##                    or DateTime().strftime(self.date_format_short)
-##                items[x]['class']['getSampler'] = 'provisional'
-##                items[x]['class']['getDateSampled'] = 'provisional'
+##                item['class']['getSampler'] = 'provisional'
+##                item['class']['getDateSampled'] = 'provisional'
 
             # inline edits for Preserver and Date Preserved
             checkPermission = self.context.portal_membership.checkPermission
-            if checkPermission(PreserveSample, obj):
-                items[x]['required'] += ['getPreserver', 'getDatePreserved']
+            if checkPermission(PreserveSample, part):
+                item['required'] += ['getPreserver', 'getDatePreserved']
                 if self.allow_edit:
-                    items[x]['allow_edit'] += ['getPreserver', 'getDatePreserved']
-                preservers = getUsers(obj, ['Preserver', 'LabManager', 'Manager'])
-                getAuthenticatedMember = obj.portal_membership.getAuthenticatedMember
+                    item['allow_edit'] += ['getPreserver', 'getDatePreserved']
+                preservers = getUsers(part, ['Preserver', 'LabManager', 'Manager'])
+                getAuthenticatedMember = part.portal_membership.getAuthenticatedMember
                 username = getAuthenticatedMember().getUserName()
                 users = [({'ResultValue': u, 'ResultText': preservers.getValue(u)})
                          for u in preservers]
-                items[x]['choices']['getPreserver'] = users
-                items[x]['getPreserver'] = preserver and preserver or \
+                item['choices']['getPreserver'] = users
+                item['getPreserver'] = preserver and preserver or \
                     (username in preservers.keys() and username) or ''
-                items[x]['getDatePreserved'] = items[x]['getDatePreserved'] \
+                item['getDatePreserved'] = item['getDatePreserved'] \
                     or DateTime().strftime(self.date_format_short)
-                items[x]['class']['getPreserver'] = 'provisional'
-                items[x]['class']['getDatePreserved'] = 'provisional'
+                item['class']['getPreserver'] = 'provisional'
+                item['class']['getDatePreserved'] = 'provisional'
+
+            items.append(item)
+
+        items = sorted(items, key=itemgetter('id'))
 
         return items
 

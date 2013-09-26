@@ -113,7 +113,7 @@ def AfterTransitionEventHandler(instance, event):
             # (NB: don't revert if it's verified)
             analyses = instance.getAnalyses(review_state = ('attachment_due', 'to_be_verified',))
             for analysis in analyses:
-                doActionFor(analysis.getObject(), 'retract')
+                doActionFor(analysis.getObject(), 'revert')
 
     elif action_id == "verify":
         instance.reindexObject(idxs = ["review_state", ])
