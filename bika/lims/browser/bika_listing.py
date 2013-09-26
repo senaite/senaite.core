@@ -182,6 +182,8 @@ class BikaListingView(BrowserView):
     show_categories = False
     expand_all_categories = False
     field_icons = {}
+    show_table_footer = True
+
 
     """
      ### column definitions

@@ -1484,6 +1484,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         p.allow_edit = False
         p.form_id = "parts"
         p.show_select_column = False
+        p.show_table_footer = False
         p.review_states[0]['transitions'] = [{'id': 'empty'}, ]  # none
         p.review_states[0]['custom_actions'] = []
         p.review_states[0]['columns'] = ['PartTitle',
