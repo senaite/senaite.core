@@ -291,4 +291,13 @@
         handler="bika.lims.upgrade.to1135.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Plone 4.3 compatibility"
+        description="Upgrade combogrid query widget to 1.6.3: jsregistry.xml reimport"
+        source="1137"
+        destination="1138"
+        handler="bika.lims.upgrade.to1138.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
 </configure>

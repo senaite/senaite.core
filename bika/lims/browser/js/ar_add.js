@@ -925,98 +925,102 @@ function clickAnalysisCategory(){
 }
 
 $(document).ready(function(){
+    
+    // Only if the view is the Analysis Request Add View
+    if ($(".template-ar_add #analysisrequest_edit_form").length > 0) {
 
-	_ = jarn.i18n.MessageFactory('bika');
-	PMF = jarn.i18n.MessageFactory('plone');
+    	_ = jarn.i18n.MessageFactory('bika');
+    	PMF = jarn.i18n.MessageFactory('plone');
+    
+    	var curDate = new Date();
+    	var y = curDate.getFullYear();
+    	var limitString = '1900:' + y;
+    	var dateFormat = _("date_format_short_datepicker");
+    
+    	ar_rename_elements();
+    	ar_referencewidget_lookups();
+    	ar_set_tabindexes();
+    
+    	$("input[id*='_Template']").live('change', function(){
+    		column = this.id.split('_')[1];
+    		unsetAnalysisProfile(column);
+    		setTemplate(column, $(this).val());
+    	});
+    
+    	$("input[id*='_Profile']").live('change', function(){
+    		column = $(this).attr("column");
+    		unsetTemplate(column,$(this).val());
+    		setAnalysisProfile(column);
+    		calculate_parts(column);
+    	});
+    
+    	$(".copyButton").live('click',  copyButton );
+    
+    	$('th[class^="analysiscategory"]').click(clickAnalysisCategory);
+    
+    	$("#primary_contact").live('change', changePrimaryContact );
+    
+    	$("input[name^='Price']").live('change', recalc_prices );
+    
+    	$('#open_cc_browser').click(showSelectCC);
+    
+    	$("input[id*='_ReportDryMatter']").change(changeReportDryMatter);
+    
+    	// AR Add/Edit ajax form submits
+    	ar_edit_form = $('#analysisrequest_edit_form');
+    	if (ar_edit_form.ajaxForm != undefined){
+    		var options = {
+    			url: window.location.href.split("/portal_factory")[0] + "/analysisrequest_submit",
+    			dataType: 'json',
+    			data: {'_authenticator': $('input[name="_authenticator"]').val()},
+    			beforeSubmit: function(formData, jqForm, options) {
+    				$("input[class~='context']").prop('disabled',true);
+    			},
+    			success: function(responseText, statusText, xhr, $form) {
+    				if(responseText['success'] != undefined){
+    					if(responseText['labels'] != undefined){
+    						destination = window.location.href
+    							.split("/portal_factory")[0];
+    						ars = responseText['labels'];
+    						labelsize = responseText['labelsize'];
+    						q = "/sticker?size="+labelsize+"&items=";
+    						q = q + ars.join(",");
+    						window.location.replace(destination+q);
+    					} else {
+    						destination = window.location.href
+    							.split("/portal_factory")[0];
+    						window.location.replace(destination);
+    					}
+    				} else {
+    					msg = ""
+    					for(error in responseText['errors']){
+    						x = error.split(".");
+    						if (x.length == 2){
+    							e = x[1] + ", Column " + (+x[0]) + ": ";
+    						} else {
+    							e = "";
+    						}
+    						msg = msg + e + responseText['errors'][error] + "<br/>";
+    					};
+    					window.bika_utils.portalMessage(msg);
+    					window.scroll(0,0);
+    					$("input[class~='context']").prop('disabled', false);
+    				}
+    			},
+    			error: function(XMLHttpRequest, statusText, errorThrown) {
+    				window.bika_utils.portalMessage(statusText);
+    				window.scroll(0,0);
+    				$("input[class~='context']").prop('disabled', false);
+    			},
+    		};
+    		$('#analysisrequest_edit_form').ajaxForm(options);
+    	}
+    
+    	// these go here so that popup windows can access them in our context
+    	window.recalc_prices = recalc_prices;
+    	window.calculate_parts = calculate_parts;
+    	window.toggleCat = toggleCat;
 
-	var curDate = new Date();
-	var y = curDate.getFullYear();
-	var limitString = '1900:' + y;
-	var dateFormat = _("date_format_short_datepicker");
-
-	ar_rename_elements();
-	ar_referencewidget_lookups();
-	ar_set_tabindexes();
-
-	$("input[id*='_Template']").live('change', function(){
-		column = this.id.split('_')[1];
-		unsetAnalysisProfile(column);
-		setTemplate(column, $(this).val());
-	});
-
-	$("input[id*='_Profile']").live('change', function(){
-		column = $(this).attr("column");
-		unsetTemplate(column,$(this).val());
-		setAnalysisProfile(column);
-		calculate_parts(column);
-	});
-
-	$(".copyButton").live('click',  copyButton );
-
-	$('th[class^="analysiscategory"]').click(clickAnalysisCategory);
-
-	$("#primary_contact").live('change', changePrimaryContact );
-
-	$("input[name^='Price']").live('change', recalc_prices );
-
-	$('#open_cc_browser').click(showSelectCC);
-
-	$("input[id*='_ReportDryMatter']").change(changeReportDryMatter);
-
-	// AR Add/Edit ajax form submits
-	ar_edit_form = $('#analysisrequest_edit_form');
-	if (ar_edit_form.ajaxForm != undefined){
-		var options = {
-			url: window.location.href.split("/portal_factory")[0] + "/analysisrequest_submit",
-			dataType: 'json',
-			data: {'_authenticator': $('input[name="_authenticator"]').val()},
-			beforeSubmit: function(formData, jqForm, options) {
-				$("input[class~='context']").prop('disabled',true);
-			},
-			success: function(responseText, statusText, xhr, $form) {
-				if(responseText['success'] != undefined){
-					if(responseText['labels'] != undefined){
-						destination = window.location.href
-							.split("/portal_factory")[0];
-						ars = responseText['labels'];
-						labelsize = responseText['labelsize'];
-						q = "/sticker?size="+labelsize+"&items=";
-						q = q + ars.join(",");
-						window.location.replace(destination+q);
-					} else {
-						destination = window.location.href
-							.split("/portal_factory")[0];
-						window.location.replace(destination);
-					}
-				} else {
-					msg = ""
-					for(error in responseText['errors']){
-						x = error.split(".");
-						if (x.length == 2){
-							e = x[1] + ", Column " + (+x[0]) + ": ";
-						} else {
-							e = "";
-						}
-						msg = msg + e + responseText['errors'][error] + "<br/>";
-					};
-					window.bika_utils.portalMessage(msg);
-					window.scroll(0,0);
-					$("input[class~='context']").prop('disabled', false);
-				}
-			},
-			error: function(XMLHttpRequest, statusText, errorThrown) {
-				window.bika_utils.portalMessage(statusText);
-				window.scroll(0,0);
-				$("input[class~='context']").prop('disabled', false);
-			},
-		};
-		$('#analysisrequest_edit_form').ajaxForm(options);
-	}
-
-	// these go here so that popup windows can access them in our context
-	window.recalc_prices = recalc_prices;
-	window.calculate_parts = calculate_parts;
-	window.toggleCat = toggleCat;
-
+    }
 });
 }(jQuery));
