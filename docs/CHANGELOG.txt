@@ -1,3 +1,18 @@
+3.0rc3.5 (2013-09-29)
+---------------------
+
+- Add default robots.txt
+- Add robot tests
+- Fix display bugs
+- Fix setup data loader
+- Handle duplicate request values
+- ID server handles changes in ID schemes without error
+- Remove folder-full-view from front-page view
+- Remove user history report
+- Updated workflow and permissions
+- xhtml2pdf replacement by WeasyPrint
+
+
 3.0rc3.4 (2013-08-06)
 ---------------------
 
