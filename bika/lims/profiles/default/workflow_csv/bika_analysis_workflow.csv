@@ -45,7 +45,7 @@ Title:,Retracted,,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,,
 Transitions,,,,,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
-BIKA: Cancel and reinstate,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,N,Y,Y,Y
@@ -122,7 +122,7 @@ BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,N,Y,Y,Y
-Review portal content,N,N,Y,N,N,N,N,Y,Y,Y,N,N,N,N
+Review portal content,N,N,Y,N,N,N,N,Y,Y,Y,N,Y,Y,Y
 ,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,
 Id:,verified,,,,,,,,,,,,,

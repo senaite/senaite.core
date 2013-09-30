@@ -69,13 +69,17 @@ $(document).ready(function(){
 		}
 	});
 
-	// Prevent automatic submissions of manage_results
-	// forms when enter is pressed
 	$(".listing_string_entry,.listing_select_entry").live('keypress', function(event) {
-		var tab = 9;
+		// Prevent automatic submissions of manage_results forms when enter is pressed
 		var enter = 13;
 		if (event.which == enter) {
 			event.preventDefault();
+		}
+		// check the item's checkbox
+		form_id = $(this).parents("form").attr("id");
+		uid = $(this).attr('uid');
+		if ($('#'+form_id+'_cb_'+uid).prop('checked') == false) {
+			$('#'+form_id+'_cb_'+uid).prop('checked', true);
 		}
 	});
 
@@ -85,8 +89,8 @@ $(document).ready(function(){
 		form_id = $(form).attr('id');
 		pagesize = $(this).val();
 		new_query = $.query
-		    .set(form_id + "_pagesize", pagesize)
-            .set(form_id + "_pagenumber", 1).toString();
+			.set(form_id + "_pagesize", pagesize)
+			.set(form_id + "_pagenumber", 1).toString();
 		window.location = window.location.href.split("?")[0] + new_query;
 	});
 
@@ -112,13 +116,13 @@ $(document).ready(function(){
 		$(this).removeClass('expanded').addClass('collapsed');
 	});
 
-	// always select checkbox when editable listing item is changed
-	$(".listing_string_entry,.listing_select_entry").live('change', function(){
+	// always select checkbox when selectable listing item is changed
+	$(".listing_select_entry").live('change', function(){
 		form_id = $(this).parents("form").attr("id");
 		uid = $(this).attr('uid');
 		// check the item's checkbox
 		if ($('#'+form_id+'_cb_'+uid).prop('checked') == false) {
-			$('#'+form_id+'_cb_'+uid).click();
+			$('#'+form_id+'_cb_'+uid).prop('checked', true);
 		}
 	});
 
@@ -150,19 +154,6 @@ $(document).ready(function(){
 		return false;
 	});
 
-	$(".listing_string_entry").live('focus', function(){
-		$(this).parents("form").find(".workflow_action_button")
-			.addClass('disabled')
-			.prop("disabled", true);
-        $(".workflow_action_button")
-
-	});
-
-	$(".listing_string_entry").live('blur', function(){
-		$(this).parents("form").find(".workflow_action_button")
-			.removeClass('disabled')
-			.removeAttr("disabled");
-	});
 
 	// Workflow Action button was clicked.
 	$('.workflow_action_button').live('click', function(event){
@@ -170,13 +161,30 @@ $(document).ready(function(){
 		// The submit buttons would like to put the translated action title
 		// into the request.  Insert the real action name here to prevent the
 		// WorkflowAction handler from having to look it up (painful/slow).
-		form = $(this).parents('form');
-		form_id = $(form).attr('id');
+		var form = $(this).parents('form');
+		var form_id = $(form).attr('id');
 		$(form).append("<input type='hidden' name='workflow_action_id' value='"+$(this).attr('transition')+"'>");
 
-		$(form).submit();
+		if(this.id=='submit_transition'){
+			var focus = $(".ajax_calculate_focus");
+			if(focus.length > 0){
+				var e = $(focus[0]);
+				if ($(e).attr('focus_value') == $(e).val()){
+					// value did not change - transparent blur handler.
+					$(e).removeAttr("focus_value");
+					$(e).removeClass("ajax_calculate_focus");
+				} else {
+					// The calcs.js code is now responsible for submitting
+					// this form when the calculation ajax is complete
+					$(e).parents('form').attr('submit_after_calculation', 1);
+					event.preventDefault();
+				}
+			}
+		}
 
 	});
+
+
 
 	function positionTooltip(event){
 		var tPosX = event.pageX-5;
@@ -196,7 +204,7 @@ $(document).ready(function(){
 		portal_url = window.portal_url;
 		toggle_cols = $("#" + form_id + "_toggle_cols").val();
 		if (toggle_cols == ""
-		    || toggle_cols == undefined
+			|| toggle_cols == undefined
 			|| toggle_cols == null){
 			return false;
 		}
@@ -223,7 +231,7 @@ $(document).ready(function(){
 			if(enabled.length > 0){
 				txt = txt + "<tr class='enabled' col_id='"+col_id+"' form_id='"+form_id+"'>";
 				txt = txt + "<td>";
-	            txt = txt + "<img style='height:1em;' src='"+portal_url+"/++resource++bika.lims.images/ok.png'/>";
+				txt = txt + "<img style='height:1em;' src='"+portal_url+"/++resource++bika.lims.images/ok.png'/>";
 				txt = txt + "</td>";
 				txt = txt + "<td>"+col_title+"</td></tr>";
 			} else {

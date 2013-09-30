@@ -182,6 +182,8 @@ class BikaListingView(BrowserView):
     show_categories = False
     expand_all_categories = False
     field_icons = {}
+    show_table_footer = True
+
 
     """
      ### column definitions
@@ -280,6 +282,14 @@ class BikaListingView(BrowserView):
         form = self.request.form
         workflow = getToolByName(self.context, 'portal_workflow')
         catalog = getToolByName(self.context, self.catalog)
+
+        # Some ajax calls duplicate form values?  I have not figured out why!
+        if 'submitted' in self.request.form \
+        and self.request.form['submitted']\
+        and isinstance(self.request.form['submitted'], list):
+            for key, value in self.request.form.items():
+                if isinstance(value, list):
+                    self.request.form[key] = self.request.form[key][0]
 
         # If table_only specifies another form_id, then we abort.
         # this way, a single table among many can request a redraw,

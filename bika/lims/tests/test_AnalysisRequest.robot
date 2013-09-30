@@ -6,7 +6,7 @@ Resource                keywords.txt
 Variables               plone/app/testing/interfaces.py
 
 Suite Setup             Start browser
-Suite Teardown          Close All Browsers
+# Suite Teardown          Close All Browsers
 
 *** Variables ***
 
@@ -22,10 +22,14 @@ Analysis Request with no samping or preservation workflow
     ${ar_id}=                 Complete ar_add form with template Bore
     Go to                     ${PLONEURL}/clients/client-1/analysisrequests
     Execute transition receive on items in form_id analysisrequests
+    Log out
+    Log in                    test_analyst    test_analyst
     Go to                     ${PLONEURL}/clients/client-1/${ar_id}/manage_results
     Submit results with out of range tests
     Log out
     Log in                    test_labmanager1    test_labmanager1
+    Add new Copper analysis to ${ar_id}
+    ${ar_id} state should be received
     Go to                     ${PLONEURL}/clients/client-1/${ar_id}/base_view
     Execute transition verify on items in form_id lab_analyses
     Log out
@@ -47,7 +51,6 @@ Analysis Request with no samping or preservation workflow
 # XXX copy across in all fields
 
 
-    shleep   300   aaaaaa
 
 *** Keywords ***
 
@@ -57,25 +60,9 @@ Start browser
     Set selenium speed  ${SELENIUM_SPEED}
 
 Complete ar_add form with template ${template}
-    @{time} =               Get Time        year month day hour min sec
-
-    SelectDate              ar_0_SamplingDate   @{time}[2]
-    Select from dropdown    ar_0_Template       ${template}
-
-    #Click Element  Batch
-    #Click Element  Sample
-    #Select From Dropdown  ar_0_SamplePoint              Thing
-    #Select From Dropdown  ar_0_ClientOrderNumber              Thing
-    #Select From Dropdown  ar_0_ClientReference              Thing
-    #Select From Dropdown  ar_0_ClientSampleID              Thing
-    #Select From Dropdown  ar_0_SamplingDeviation              Thing
-    #Select From Dropdown  ar_0_SampleCondition              Thing
-    #Select From Dropdown  ar_0_DefaultContainerType              Thing
-    #Select Checkbox  ar_0_AdHoc
-    #Select Checkbox  ar_0_Composite
-    #Select Checkbox  ar_0_ReportDryMatter
-    #Select Checkbox  ar_0_InvoiceExclude
-
+    @{time} =                   Get Time        year month day hour min sec
+    SelectDate                  ar_0_SamplingDate   @{time}[2]
+    Select from dropdown        ar_0_Template       ${template}
     Set Selenium Timeout        30
     Click Button                Save
     Wait until page contains    created
@@ -110,24 +97,33 @@ Submit results with out of range tests
     [Documentation]   Complete all received analysis result entry fields
     ...               Do some out-of-range checking, too
 
-    ${count} =          Get Matching XPath Count    //input[@type='text' and @field='Result']
-    ${count} =          Convert to integer    ${count}
-    :FOR    ${index}    IN RANGE    1   ${count+1}
-    \    TestResultsRange    xpath=(//input[@type='text' and @field='Result'])[${index}]       5   10
-    Focus          Remarks
-    Click Element               xpath=//input[@value='Submit for verification'][1]
-    Wait Until Page Contains    Changes saved.
+    ${count} =                 Get Matching XPath Count    //input[@type='text' and @field='Result']
+    ${count} =                 Convert to integer    ${count}
+    :FOR    ${index}           IN RANGE    1   ${count+1}
+    \    TestResultsRange      xpath=(//input[@type='text' and @field='Result'])[${index}]       5   10
+    Click Element              xpath=//input[@value='Submit for verification'][1]
+    Wait Until Page Contains   Changes saved.
 
 Submit results
     [Documentation]   Complete all received analysis result entry fields
 
-    ${count} =          Get Matching XPath Count    //input[@type='text' and @field='Result']
-    ${count} =          Convert to integer    ${count}
-    :FOR    ${index}    IN RANGE    1   ${count+1}
-    \    Input text     xpath=(//input[@type='text' and @field='Result'])[${index}]   10
-    Focus          Remarks
-    Click Element               xpath=//input[@value='Submit for verification'][1]
-    Wait Until Page Contains    Changes saved.
+    ${count} =                 Get Matching XPath Count    //input[@type='text' and @field='Result']
+    ${count} =                 Convert to integer    ${count}
+    :FOR    ${index}           IN RANGE    1   ${count+1}
+    \    Input text            xpath=(//input[@type='text' and @field='Result'])[${index}]   10
+    Click Element              xpath=//input[@value='Submit for verification'][1]
+    Wait Until Page Contains   Changes saved.
+
+Add new ${service} analysis to ${ar_id}
+    Go to                      ${PLONEURL}/clients/client-1/${ar_id}/analyses
+    select checkbox            xpath=//input[@alt='Select ${service}']
+    click element              save_analyses_button_transition
+    wait until page contains   saved.
+
+${ar_id} state should be ${state_id}
+    Go to                        ${PLONEURL}/clients/client-1/${ar_id}
+    log     span.state-${state_id}   warn
+    Page should contain element  css=span.state-${state_id}
 
 TestResultsRange
     [Arguments]  ${locator}=
@@ -137,18 +133,18 @@ TestResultsRange
     # Log  Testing Result Range for ${locator} -:- values: ${badResult} and ${goodResult}  WARN
 
     Input Text          ${locator}  ${badResult}
-    Focus               Remarks
+    Press Key           ${locator}   \\9
     Expect exclamation
     Input Text          ${locator}  ${goodResult}
-    Focus               Remarks
+    Press Key           ${locator}   \\9
     Expect no exclamation
 
 Expect exclamation
-    sleep  0.5
+    sleep  .5
     Page should contain Image   ${PLONEURL}/++resource++bika.lims.images/exclamation.png
 
 Expect no exclamation
-    sleep  0.5
+    sleep  .5
     Page should not contain Image  ${PLONEURL}/++resource++bika.lims.images/exclamation.png
 
 TestSampleState
@@ -159,90 +155,3 @@ TestSampleState
     ${VALUE}  Get Value  ${locator}
     Should Be Equal  ${VALUE}  ${expectedState}  ${sample} Workflow States incorrect: Expected: ${expectedState} -
     # Log  Testing Sample State for ${sample}: ${expectedState} -:- ${VALUE}  WARN
-
-
-
-
-
-
-Temp
-    #check AS state - To be preserved
-    TestSampleState  xpath=//input[@selector='state_title_${AR_name_global}']  state_title_${AR_name_global}  To Be Preserved
-
-    #check page state - Active
-    TestPageState  xpath=//dl[@id='plone-contentmenu-workflow']//span[@class='state-active']  Active
-
-    Click Link  ${AR_name_global}
-    Wait Until Page Contains Element  xpath=//input[@selector='PREFIX-0001_PREFIX-0001-P1']
-
-    #There are 2 partitions since a seperate sample partition was requested
-    Select Checkbox  xpath=//input[@selector='PREFIX-0001_PREFIX-0001-P1']
-    #now select 2nd partition and enter values
-    Select Checkbox  xpath=//input[@selector='PREFIX-0001_PREFIX-0001-P2']
-    Select From List  xpath=//select[@selector='getContainer_PREFIX-0001-P2']
-    Select From List  xpath=//select[@selector='getPreservation_PREFIX-0001-P2']
-
-    Log  BUG: AR Preservation Converting unpreserved partition in sample due status and saving should move the partition status to to be preserved but leaves it incorrectly in sample due  WARN
-
-    Log  Saving partitions before preserving  WARN
-    Click Element  xpath=//input[@id='save_partitions_button_transition']
-    #Nothing to check on page that changes have occurred - sleep
-    sleep  1
-
-    Select Checkbox  xpath=//input[@selector='PREFIX-0001_PREFIX-0001-P1']
-    Select Checkbox  xpath=//input[@selector='PREFIX-0001_PREFIX-0001-P2']
-
-    Click Element  xpath=//input[@id='preserve_transition']
-    Wait Until Page Contains  PREFIX-0001-P1 is waiting to be received
-
-    #check page state - Sample due
-    TestPageState  xpath=//dl[@id='plone-contentmenu-workflow']//span[@class='state-sample_due']  Sample Due
-    TestSampleState  xpath=//input[@selector='state_title_PREFIX-0001-P1']  state_title_PREFIX-0001-P1  Sample Due
-    TestSampleState  xpath=//input[@selector='state_title_PREFIX-0001-P2']  state_title_PREFIX-0001-P2  Sample Due
-    TestSampleState  xpath=//input[@selector='state_title_${AS_Keyword}']  state_title_${AS_Keyword}  Sample Due
-
-
-
-
-    #page status remains Received
-    TestPageState  xpath=//dl[@id='plone-contentmenu-workflow']//span[@class='state-sample_received']  Received
-
-    #AR status must have changed to: To be verified
-    TestSampleState  xpath=//input[@selector='state_title_${AS_Keyword}']  ${AnalysisServices_global_Title}  To be verified
-
-
-Verify AR
-
-    Log  Verifying AR: ${AR_name_global} by different user  WARN
-
-    #Why does this not work??
-    #Click Link  ${AR_name_global}
-    Click Element  xpath=//a[@id='to_be_verified_${AR_name_global}']
-
-    Wait Until Page Contains Element  xpath=//a[@title='Change the state of this item']/span[@class='state-to_be_verified']
-    TestPageState  xpath=//dl[@id='plone-contentmenu-workflow']//span[@class='state-to_be_verified']  To be verified
-
-    Click Link  xpath=//a[@title='Change the state of this item']
-    Wait Until Page Contains Element  workflow-transition-verify
-    Click Link  workflow-transition-verify
-
-    Wait Until Page Contains Element  xpath=//a[@title='Change the state of this item']/span[@class='state-verified']
-    TestPageState  xpath=//dl[@id='plone-contentmenu-workflow']//span[@class='state-verified']  Verified
-
-    #Check content status
-    TestSampleState  xpath=//input[@selector='state_title_${AS_Keyword}']  ${AnalysisServices_global_Title}  Verified
-    TestSampleState  xpath=//input[@selector='state_title_Clos']  Clostridia  Verified
-    TestSampleState  xpath=//input[@selector='state_title_Ecoli']  Ecoli  Verified
-    TestSampleState  xpath=//input[@selector='state_title_Entero']  Enterococcus  Verified
-    TestSampleState  xpath=//input[@selector='state_title_Salmon']  Salmonella  Verified
-    TestSampleState  xpath=//input[@selector='state_title_Moist']  Moisture  Verified
-    TestSampleState  xpath=//input[@selector='state_title_Ca']  Calcium  Verified
-    TestSampleState  xpath=//input[@selector='state_title_Phos']  Phosphorus  Verified
-
-    Click Link  xpath=//a[@title='Change the state of this item']
-    Wait Until Page Contains Element  workflow-transition-publish
-    Click Link  workflow-transition-publish
-    Wait Until Page Contains Element  xpath=//a[@title='Change the state of this item']
-    TestPageState  xpath=//dl[@id='plone-contentmenu-workflow']//span[@class='state-verified']  Published
-
-    Log  Process Complete.  WARN

@@ -163,8 +163,13 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     analysis.reindexObject()
 
             if new:
-                ar_state = workflow.getInfoFor(ar, 'review_state')
                 for analysis in new:
+                    # if the AR has progressed past sample_received, we need to bring it back.
+                    ar_state = workflow.getInfoFor(ar, 'review_state')
+                    if ar_state in ('attachment_due', 'to_be_verified'):
+                        workflow.doActionFor(ar, 'revert')
+                        ar_state = workflow.getInfoFor(ar, 'review_state')
+                    # Then we need to forward new analyses state
                     analysis.updateDueDate()
                     changeWorkflowState(analysis, 'bika_analysis_workflow', ar_state)
 
@@ -1484,6 +1489,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         p.allow_edit = False
         p.form_id = "parts"
         p.show_select_column = False
+        p.show_table_footer = False
         p.review_states[0]['transitions'] = [{'id': 'empty'}, ]  # none
         p.review_states[0]['custom_actions'] = []
         p.review_states[0]['columns'] = ['PartTitle',
@@ -3020,10 +3026,8 @@ class ReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
         base_query = json.loads(self.request['base_query'])
 
         # In client context, restrict samples to client samples only
-        if 'portal_type' in base_query and (
-            'Sample' in base_query['portal_type'] or
-            base_query['portal_type'] == 'Sample'
-        ):
+        if 'portal_type' in base_query \
+        and base_query['portal_type'] == 'Sample':
             base_query['getClientUID'] = self.context.aq_parent.UID()
             self.request['base_query'] = json.dumps(base_query)
 

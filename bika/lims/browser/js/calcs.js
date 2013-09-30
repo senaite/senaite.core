@@ -2,8 +2,28 @@
 
 $(document).ready(function(){
 
+	$(".ajax_calculate").live('focus', function(){
+		$(this).attr('focus_value', $(this).val());
+		$(this).addClass("ajax_calculate_focus");
+
+	});
+
+	// 'blur' handler only if the value did NOT change
+	$(".ajax_calculate").live('blur', function(){
+		if ($(this).attr('focus_value') == $(this).val()){
+			$(this).removeAttr("focus_value");
+			$(this).removeClass("ajax_calculate_focus");
+		}
+	});
+
+	// otherwise 'change' handler is fired.
 	$(".ajax_calculate").live('change', function(){
-		form_id = $(this).parents("form").attr("id");
+
+		$(this).removeAttr("focus_value");
+		$(this).removeClass("ajax_calculate_focus");
+
+		form = $(this).parents("form");
+		form_id = $(form).attr("id");
 		td = $(this).parents('td');
 		uid = $(this).attr('uid');
 		field = $(this).attr('field');
@@ -87,8 +107,13 @@ $(document).ready(function(){
 					// check box
 					if (results != ''){
 						if ($('#'+form_id+'_cb_'+result.uid).prop('checked') == false) {
-							$('#'+form_id+'_cb_'+result.uid).click();
+							$('#'+form_id+'_cb_'+result.uid).prop('checked', true);
 						}
+					}
+				}
+				if($('.ajax_calculate_focus').length > 0){
+					if($(form).attr('submit_after_calculation')){
+						$('#submit_transition').click();
 					}
 				}
 			}
