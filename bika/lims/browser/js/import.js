@@ -42,8 +42,9 @@ $(document).ready(function(){
 		form = $(this).parents('form');
 		options = {
 			target: $('#intermediate'),
-			data: form.formToArray(),
+			data: JSON.stringify(form.formToArray()),
 			dataType: 'json',
+			processData: false,
 			success: function(responseText, statusText, xhr, $form){
 				$("#intermediate").empty()
 				if(responseText['errors'].length > 0){
@@ -62,7 +63,15 @@ $(document).ready(function(){
 					str = str + "</ul>";
 					$("#intermediate").append(str).toggle(true);
 				}
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+			    $("#intermediate").empty()
+			    str = "<h3>"+ _("Errors found") + "</h3><ul class='errors'>"
+			    str = str + "<li>" + textStatus;
+			    str = str + "<pre>" + errorThrown + "</pre></li>";
+			    $("#intermediate").append(str).toggle(true);
 			}
+		    
 		}
 		form.ajaxSubmit(options);
 		return false;
