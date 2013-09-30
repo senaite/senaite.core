@@ -231,16 +231,15 @@ class Create(object):
             wftool.doActionFor(ar, 'no_sampling_workflow')
 
         # Add analyses to sample partitions
-        for part in sample.objectValues("SamplePartition"):
-            part_services = parts_and_services[part.id]
-            analyses = [a for a in new_analyses
-                        if a.getServiceUID() in part_services]
-            if analyses:
-                part.edit(
-                    Analyses=analyses,
-                )
-                for analysis in analyses:
-                    analysis.setSamplePartition(part)
+        # XXX jsonapi create AR: right now, all new analyses are linked to the first samplepartition
+        if new_analyses:
+            analyses = list(part.getAnalyses())
+            analyses.extend(new_analyses)
+            part.edit(
+                Analyses=analyses,
+            )
+            for analysis in new_analyses:
+                analysis.setSamplePartition(part)
 
         # If Preservation is required for some partitions,
         # and the SamplingWorkflow is disabled, we need
