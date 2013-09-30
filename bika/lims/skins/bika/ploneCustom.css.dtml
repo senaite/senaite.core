@@ -813,4 +813,11 @@ div.managePortletsLink {
 ul.errors {
     color:#720000;
 }
+
+div.alert {
+	background-color: #FFDDCC;
+	border-left: 4px solid red;
+	margin: 10px 0;
+    padding: 10px;
+}
 </dtml-with>

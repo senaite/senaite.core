@@ -920,11 +920,13 @@ class ClientContactVocabularyFactory(CatalogVocabulary):
 class ajaxGetClientInfo(BrowserView):
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
-        client = self.context
+        wf = getToolByName(self.context, 'portal_workflow')
         ret = {'ClientTitle': self.context.Title(),
                'ClientID': self.context.getClientID(),
                'ClientSysID': self.context.id,
-               'ClientUID': self.context.UID()
+               'ClientUID': self.context.UID(),
+               'ContactUIDs' : [c.UID() for c in self.context.objectValues('Contact') if
+                                wf.getInfoFor(c, 'inactive_state', '') == 'active']
                }
 
         return json.dumps(ret)
