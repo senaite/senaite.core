@@ -46,7 +46,6 @@ def set_fields_from_request(obj, request):
     for fieldname, value in request.items():
         if fieldname not in schema:
             continue
-        print schema[fieldname].type
         if schema[fieldname].type in ('reference'):
             brains = resolve_request_lookup(obj, request, fieldname)
             if not brains:
