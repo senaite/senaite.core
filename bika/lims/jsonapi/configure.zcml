@@ -18,4 +18,9 @@
     provides="plone.jsonapi.interfaces.IRouteProvider"
     factory=".update.Update" />
 
+  <utility
+    name="bika.lims.jsonapi.doactionfor"
+    provides="plone.jsonapi.interfaces.IRouteProvider"
+    factory=".doactionfor.doActionFor" />
+
 </configure>
