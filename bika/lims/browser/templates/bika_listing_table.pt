@@ -397,16 +397,15 @@ Table cells for each column from in review_state's column list.
 					objectId string:${item/id};
 					field python:column;
 					name python:column == view.bika_listing.select_checkbox_name and '%s_column_value.%s:records'%(column, item['uid']) or '%s.%s:records'%(column, item['uid']);
-					value python:item[column] and
-									item[column] or '';"/>
+					value python:item[column] if item[column] is not None else '';"/>
 			<tal:comment replace="nothing"><!-- view --></tal:comment>
 			<span
 				tal:condition="python:not allow_edit and column == 'Result'"
-				tal:content="python:item['formatted_result'] and item['formatted_result'] or item[column]"
+				tal:content="python:item['formatted_result'] if item['formatted_result'] is not None else item[column]"
 				tal:attributes="class item/state_class"/>
 			<span
 				tal:condition="python:not allow_edit and column != 'Result'"
-				tal:content="python:item[column] and item[column] or ''"
+				tal:content="python:item[column] if item[column] is not None else ''"
 				tal:attributes="class item/state_class"/>
 			<input
 				type="hidden"
