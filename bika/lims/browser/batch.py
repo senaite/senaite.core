@@ -46,16 +46,25 @@ class BatchAnalysisRequestsView(AnalysisRequestsView, AnalysisRequestAddView):
 
     def __call__(self):
         self.context_actions = {}
-        bc = getToolByName(self.context, 'bika_catalog')
         wf = getToolByName(self.context, 'portal_workflow')
         mtool = getToolByName(self.context, 'portal_membership')
         addPortalMessage = self.context.plone_utils.addPortalMessage
         if isActive(self.context):
             if mtool.checkPermission(AddAnalysisRequest, self.portal):
-                self.context_actions[self.context.translate(_('Add new'))] = {
-                    'url': self.context.absolute_url() + "/portal_factory/"
-                    "AnalysisRequest/Request new analyses/ar_add?col_count=1",
-                    'icon': '++resource++bika.lims.images/add.png'}
+                # Client contact required (if client is associated)
+                cfield = self.context.Schema().getField('Client')
+                client = cfield.get(self.context) if cfield else None
+                if client:
+                    contacts = [c for c in client.objectValues('Contact') if
+                                wf.getInfoFor(c, 'inactive_state', '') == 'active']
+                    if contacts:
+                        self.context_actions[self.context.translate(_('Add new'))] = {
+                            'url': self.context.absolute_url() + "/portal_factory/"
+                            "AnalysisRequest/Request new analyses/ar_add?col_count=1",
+                            'icon': '++resource++bika.lims.images/add.png'}
+                    else:
+                        msg = _("Client contact required before request may be submitted")
+                        addPortalMessage(self.context.translate(msg))
         return super(BatchAnalysisRequestsView, self).__call__()
 
     @lazy_property

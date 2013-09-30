@@ -1988,6 +1988,11 @@ class ajaxAnalysisRequestSubmit():
             error(message = self.context.translate(_("No analyses have been selected")))
             return json.dumps({'errors':errors})
 
+        # The selected client must have, at least, one active contact
+        if (not form.get('Contact', '')):
+            error(message = self.context.translate(_("Client contact required before request may be submitted")))
+            return json.dumps({'errors':errors})
+
         # Now some basic validation
         required_fields = [field.getName() for field
                           in AnalysisRequestSchema.fields()

@@ -28,7 +28,8 @@
 			</a>
 		</tal:add_actions>
 		<select name="col_count"
-			class='col_count' style="vertical-align:top !important">
+			class='col_count' style="vertical-align:top !important"
+			tal:condition="python:len(view.context_actions) > 0">
 			<option value='1' i18n:translate="">1</option>
 			<option value='2' i18n:translate="">2</option>
 			<option value='3' i18n:translate="">3</option>
