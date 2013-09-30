@@ -2,7 +2,29 @@ from Products.Archetypes.config import TOOL_NAME
 from Products.CMFCore.utils import getToolByName
 from zExceptions import BadRequest
 
-import json
+
+def resolve_request_lookup(context, request, fieldname):
+    brains = []
+    at = getToolByName(context, TOOL_NAME, None)
+    for entry in request[fieldname].split("|"):
+        contentFilter = {}
+        for value in entry.split(","):
+            if ":" in value:
+                index, value = value.split(":", 1)
+            else:
+                index, value = 'id', value
+            contentFilter[index] = value
+        # search all possible catalogs
+        if 'portal_type' in contentFilter:
+            catalogs = at.getCatalogsByType(contentFilter['portal_type'])
+        else:
+            catalogs = [getToolByName(context, 'portal_catalog'), ]
+        for catalog in catalogs:
+            _brains = catalog(contentFilter)
+            if _brains:
+                brains.extend(_brains)
+                break
+    return brains
 
 
 def set_fields_from_request(obj, request):
@@ -12,35 +34,29 @@ def set_fields_from_request(obj, request):
     - Calls Accessor to retrieve value
     - Returns a dict of fields and current values
 
-    To set Reference fields:
+    To set Reference fields embed the portal_catalog search
 
-    ...& <FieldName>=<obj type>:<obj title> &...
+    ...& <FieldName>=index:value &...
+    ...& <FieldName>=index:value|index:value &...
 
     """
-    at = getToolByName(obj, TOOL_NAME, None)
     schema = obj.Schema()
     # fields contains all schema-valid field values from the request.
     fields = {}
     for fieldname, value in request.items():
         if fieldname not in schema:
             continue
-        if ":" in value:
-            # Reference field lookup
-            field = schema[fieldname]
-            dst_type, title = value.split(":", 1)
-            result = None
-            brains = []
-            # search all possible catalogs
-            for catalog in at.getCatalogsByType(dst_type):
-                brains = catalog({'portal_type': dst_type, 'Title': title})
-                if not brains:
-                    continue
+        print schema[fieldname].type
+        if schema[fieldname].type in ('reference'):
+            brains = resolve_request_lookup(obj, request, fieldname)
             if not brains:
-                raise BadRequest("Object of type '%s' not found (title='%s')" %
-                                 (dst_type, title))
-            value = brains[0].UID
+                raise BadRequest("Can't resolve reference: %s" % fieldname)
+            if schema[fieldname].multiValued:
+                value = [b.UID for b in brains]
+            else:
+                value = brains[0].UID
         fields[fieldname] = value
-    # write and then read each field.
+    # Write fields.
     for fieldname, value in fields.items():
         field = schema[fieldname]
         fieldtype = field.getType()
@@ -58,3 +74,4 @@ def set_fields_from_request(obj, request):
         mutator = field.getMutator(obj)
         if mutator and callable(mutator):
             mutator(value)
+        obj.reindexObject()

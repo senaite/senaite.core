@@ -2,6 +2,7 @@ from AccessControl import getSecurityManager
 from AccessControl import Unauthorized
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.jsonapi import set_fields_from_request
+from bika.lims.jsonapi import resolve_request_lookup
 from bika.lims.permissions import AccessJSONAPI
 from bika.lims.utils import tmpID
 from bika.lims.workflow import doActionFor
@@ -146,88 +147,26 @@ class Create(object):
         }
         SamplingWorkflowEnabled = \
             context.bika_setup.getSamplingWorkflowEnabled()
-        required_fields = ['Contact',
+        required_fields = ['Client',
+                           'SampleType',
+                           'Contact',
                            'SamplingDate',
                            'Services']
         for field in required_fields:
             if field not in request:
                 raise BadRequest("Missing field {0} in request".format(field))
-        # Client_X is also required in some form
-        try:
-            keys = [k for k in request.keys() if k.startswith("Client_")]
-            key = keys[0]
-            index = key.split("_")[-1]
-            client_proxy = pc({'portal_type': 'Client', index: request[key]})[0]
-            client = client_proxy.getObject()
-            request[key] = client_proxy.Title
-            ret['Client'] = client_proxy.Title
-        except:
-            raise BadRequest("Client not found, specify Client_title or Client_id...")
-        # SampleType_X is also required in some form
-        try:
-            keys = [k for k in request.keys() if k.startswith("SampleType_")]
-            key = keys[0]
-            index = key.split("_")[-1]
-            st_proxy = pc({'portal_type': 'SampleType', index: request[key]})[0]
-            sampletype = st_proxy.getObject()
-            request[key] = st_proxy.Title
-            ret['SampleType'] = st_proxy.Title
-        except:
-            raise BadRequest("SampleType not found, specify SampleType_title or SampleType_id...")
-        # Batch_X
-        try:
-            keys = [k for k in request.keys() if k.startswith("Batch_")]
-            key = keys[0]
-            index = key.split("_")[-1]
-            batch_proxy = pc({'portal_type': 'Batch', index: request[key]})[0]
-            batch = batch_proxy.getObject()
-            request[key] = batch_proxy.Title
-            ret['Batch'] = batch_proxy.Title
-        except IndexError:
-            pass
-        # Contact
-        try:
-            contact_uid = pc(portal_type='Contact', getFullname=request.get('Contact'))[0].UID
-            request['Contact'] = contact_uid
-        except:
-            raise BadRequest("Contact not found: getFullname=" + request.get('Contact'))
-        # CCContacts
-        try:
-            cc_contacts = [x.strip() for x in request.get('CCContacts', '').split(",")]
-            cc_contact_uids = []
-            for cc_contact in cc_contacts:
-                cc_contact_uid = pc(portal_type='Contact', getFullname=cc_contact)[0].UID
-                if cc_contact_uid not in cc_contact_uids:
-                    cc_contact_uids.append(cc_contact_uid)
-            request['CCContacts'] = cc_contact_uids
-        except:
-            raise BadRequest("CC Contact not found: getFullname=" + cc_contact)
-        # CCEmails
-        request['CCEmails'] = [x.strip() for x in request.get('CCEmails', '').split(",")]
-        # Services
-        service_titles = [x.strip() for x in request.get('Services', '').split(",")]
-        services = []
-        try:
-            for service_title in service_titles:
-                service = bsc({'portal_type': 'AnalysisService',
-                              'title': service_title})[0].getObject()
-                if service not in services:
-                    services.append(service)
-        except IndexError:
-            raise IndexError("Service not found: {0}".format(service_title))
-        service_uids = [service.UID() for service in services]
+
+        client = resolve_request_lookup(context, request, 'Client')[0].getObject()
+
         # Sample_id
-        request['Sample_id'] = request.get('Sample_id', '')
-        if request['Sample_id']:
-            # Secondary AR
-            sample = bc(id=request['Sample_id'])[0].getObject()
+        if 'Sample' in request:
+            sample = resolve_request_lookup(context, request, 'Sample')[0].getObject()
         else:
             # Primary AR
             _id = client.invokeFactory('Sample', id=tmpID())
             sample = client[_id]
             sample.unmarkCreationFlag()
             set_fields_from_request(sample, request)
-            sample.setSampleType(sampletype.UID())
             sample._renameAfterCreation()
             sample.setSampleID(sample.getId())
             event.notify(ObjectInitializedEvent(sample))
@@ -252,6 +191,8 @@ class Create(object):
         ar.setSample(sample.UID())
         ar._renameAfterCreation()
         ret['ar_id'] = ar.getId()
+        brains = resolve_request_lookup(context, request, 'Services')
+        service_uids = [p.UID for p in brains]
         new_analyses = ar.setAnalyses(service_uids)
         ar.setRequestID(ar.getId())
         ar.reindexObject()
@@ -290,16 +231,15 @@ class Create(object):
             wftool.doActionFor(ar, 'no_sampling_workflow')
 
         # Add analyses to sample partitions
-        for part in sample.objectValues("SamplePartition"):
-            part_services = parts_and_services[part.id]
-            analyses = [a for a in new_analyses
-                        if a.getServiceUID() in part_services]
-            if analyses:
-                part.edit(
-                    Analyses=analyses,
-                )
-                for analysis in analyses:
-                    analysis.setSamplePartition(part)
+        # XXX jsonapi create AR: right now, all new analyses are linked to the first samplepartition
+        if new_analyses:
+            analyses = list(part.getAnalyses())
+            analyses.extend(new_analyses)
+            part.edit(
+                Analyses=analyses,
+            )
+            for analysis in new_analyses:
+                analysis.setSamplePartition(part)
 
         # If Preservation is required for some partitions,
         # and the SamplingWorkflow is disabled, we need

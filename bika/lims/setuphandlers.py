@@ -166,6 +166,9 @@ class BikaGenerator:
 
         # Root permissions
         mp = portal.manage_permission
+
+        mp(AccessJSONAPI, ['Manager', 'LabManager'], 0)
+
         mp(AddAnalysis, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
         mp(AddAnalysisProfile, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddAnalysisRequest, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
