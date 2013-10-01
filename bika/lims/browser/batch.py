@@ -52,7 +52,7 @@ class BatchAnalysisRequestsView(AnalysisRequestsView, AnalysisRequestAddView):
         addPortalMessage = self.context.plone_utils.addPortalMessage
         if mtool.checkPermission(AddAnalysisRequest, self.portal):
             # Client contact required (if client is associated)
-            client = self.getClient()
+            client = self.fetchClient()
             if client and client.getContacts():
                 self.context_actions[self.context.translate(_('Add new'))] = {
                     'url': self.context.absolute_url() + "/portal_factory/"
@@ -63,9 +63,7 @@ class BatchAnalysisRequestsView(AnalysisRequestsView, AnalysisRequestAddView):
                 addPortalMessage(self.context.translate(msg))
         return super(BatchAnalysisRequestsView, self).__call__()
 
-
-    @lazy_property
-    def getClient(self):
+    def fetchClient(self):
         """ Retrieves the Client for which the current Batch is attached to
             Tries to retrieve the Client from the Schema property, but if not
             found, searches for linked ARs and retrieve the Client from the
@@ -83,15 +81,15 @@ class BatchAnalysisRequestsView(AnalysisRequestsView, AnalysisRequestAddView):
         return client
 
     def getMemberDiscountApplies(self):
-        client = self.getClient()
+        client = self.fetchClient()
         return client and client.getMemberDiscountApplies() or False
 
     def getRestrictedCategories(self):
-        client = self.getClient()
+        client = self.fetchClient()
         return client and client.getRestrictedCategories() or []
 
     def getDefaultCategories(self):
-        client = self.getClient()
+        client = self.fetchClient()
         return client and client.getDefaultCategories() or []
 
 
