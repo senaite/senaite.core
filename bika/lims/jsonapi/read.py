@@ -11,12 +11,24 @@ import json
 def ar_analysis_values(obj):
     ret = []
     workflow = getToolByName(obj, 'portal_workflow')
-    analyses = obj.getAnalyses(cancellation_state='active', full_objects=True)
-    for analysis in analyses:
-        if workflow.getInfoFor(analysis, 'review_state') == 'retracted':
+    analyses = obj.getAnalyses(cancellation_state='active')
+    for proxy in analyses:
+        if proxy.review_state == 'retracted':
             continue
+        ret.append({})
+        # Place all proxy attributes into the result.
+        for index in proxy.indexes():
+            if index in proxy:
+                val = getattr(proxy, index)
+                if val != Missing.Value:
+                    try:
+                        json.dumps(val)
+                    except:
+                        continue
+                    ret[-1][index] = val
+        # Then schema field values
+        analysis = proxy.getObject()
         schema = analysis.Schema()
-        analysis_data = {}
         for field in schema.fields():
             accessor = field.getAccessor(analysis)
             if accessor and callable(accessor):
@@ -27,19 +39,17 @@ def ar_analysis_values(obj):
                     json.dumps(val)
                 except:
                     val = str(val)
-                analysis_data[field.getName()] = val
-    for analysis in analyses:
+                ret[-1][field.getName()] = val
         if analysis.getRetested():
-            prevs = [a for a in analyses
-                     if workflow.getInfoFor(a, 'review_state') == 'retracted'
-                     and a.Title() == analysis.Title()]
-            prevs = sorted(prevs, key=lambda item: item.created())
-            prevs = [{'created': ulocalized_time(p.created(), long_format=True),
+            retracted = obj.getAnalyses(review_state='retracted',
+                                        title=analysis.Title(),
+                                        full_objects=True)
+            prevs = sorted(retracted, key=lambda item: item.created())
+            prevs = [{'created': str(p.created()),
                       'Result': p.getResult(),
                       'InterimFields': p.getInterimFields()}
                      for p in prevs]
-            analysis_data['Previous Results'] = prevs
-        ret.append(analysis_data)
+            ret[-1]['Previous Results'] = prevs
     return ret
 
 
@@ -50,28 +60,21 @@ def read(context, request):
         "error": False,
         "objects": [],
     }
-    # get catalog_name
     catalog_name = request.get("catalog_name", "portal_catalog")
     if not catalog_name:
         raise ValueError("bad or missing catalog_name: " + catalog_name)
     catalog = getToolByName(context, catalog_name)
     indexes = catalog.indexes()
-    # create contentFilter from request
     contentFilter = {}
     for index in indexes:
         if index in request:
             if index == 'review_state' and "{" in request[index]:
                 continue
             contentFilter[index] = request[index]
-    # get limit (or "1")
     try:
-        limit = int(request.get("limit", 1))
-    except:
-        limit = None
-    finally:
-        if not limit:
-            raise ValueError("bad or missing limit: " + catalog_name)
-    contentFilter['limit'] = limit
+        contentFilter['limit'] = int(request.get("limit", 1))
+    except ValueError:
+        contentFilter['limit'] = 1
     # Get matching objects from catalog
     proxies = catalog(**contentFilter)
     for proxy in proxies:
@@ -92,7 +95,7 @@ def read(context, request):
         for field in schema.fields():
             accessor = field.getAccessor(obj)
             if accessor and callable(accessor):
-                # Special case for AR Analyses:
+                # XXX Adapter
                 if obj.portal_type == 'AnalysisRequest' and field.getName() == 'Analyses':
                     val = ar_analysis_values(obj)
                 else:
