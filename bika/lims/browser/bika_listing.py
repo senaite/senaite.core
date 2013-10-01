@@ -96,60 +96,68 @@ class WorkflowAction:
     def __call__(self):
         form = self.request.form
         plone.protect.CheckAuthenticator(form)
-        workflow = getToolByName(self.context, 'portal_workflow')
-
         if self.destination_url == "":
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
-        action, came_from = self._get_form_workflow_action()
 
-        # transition the context object (plone edit bar dropdown)
-        if came_from == "workflow_action":
-            obj = self.context
-            # the only actions allowed on inactive/cancelled
-            # items are "reinstate" and "activate"
-            if not isActive(obj) and action not in ('reinstate', 'activate'):
-                message = self.context.translate(_('Item is inactive.'))
-                self.context.plone_utils.addPortalMessage(message, 'info')
-                self.request.response.redirect(self.destination_url)
-                return
-            if not skip(obj, action, peek=True):
-                allowed_transitions = []
-                for t in workflow.getTransitionsFor(obj):
-                    allowed_transitions.append(t['id'])
-                if action in allowed_transitions:
-                    workflow.doActionFor(obj, action)
-            self.request.response.redirect(self.destination_url)
-            return
+        action, came_from = self._get_form_workflow_action()
+        if action:
+            items = self._get_selected_items().values() \
+                if came_from != 'workflow_action' \
+                else [self.context, ]
+
+            if items:
+                trans, dest = self.submitTransition(action, came_from, items)
+                if trans:
+                    message = self.context.translate(PMF('Changes saved.'))
+                    self.context.plone_utils.addPortalMessage(message, 'info')
+                if dest:
+                    self.request.response.redirect(dest)
+            else:
+                message = self.context.translate(_('No items selected'))
+                self.context.plone_utils.addPortalMessage(message, 'warn')
+
+        # Do nothing
+        self.request.response.redirect(self.destination_url)
+
+    def submitTransition(self, action, came_from, items):
+        """ Performs the action's transition for the specified items
+            Returns (numtransitions, destination), where:
+            - numtransitions: the number of objects successfully transitioned.
+                If no objects have been successfully transitioned, gets 0 value
+            - destination: the destination url to be loaded immediately
+        """
+        dest = None
+        transitioned = []
+        workflow = getToolByName(self.context, 'portal_workflow')
 
         # transition selected items from the bika_listing/Table.
-        transitioned = []
-        selected_items = self._get_selected_items()
-        for uid, item in selected_items.items():
+        for item in items:
             # the only actions allowed on inactive/cancelled
             # items are "reinstate" and "activate"
             if not isActive(item) and action not in ('reinstate', 'activate'):
                 continue
             if not skip(item, action, peek=True):
-                allowed_transitions = []
-                for t in workflow.getTransitionsFor(item):
-                    allowed_transitions.append(t['id'])
+                allowed_transitions = [t['id'] for t in \
+                                       workflow.getTransitionsFor(item)]
                 if action in allowed_transitions:
-                    doActionFor(item, action)
-                    transitioned.append(item.Title())
-
-        if len(transitioned) > 0:
-            message = self.context.translate(PMF('Changes saved.'))
-            self.context.plone_utils.addPortalMessage(message, 'info')
+                    success, message = doActionFor(item, action)
+                    if success:
+                        transitioned.append(item.Title())
+                    else:
+                        message = self.context.translate(message)
+                        self.context.plone_utils.addPortalMessage(message, 'error')
 
         # automatic label printing
-        if action == 'receive' and 'receive' in self.portal.bika_setup.getAutoPrintLabels():
+        if transitioned and action == 'receive' \
+            and 'receive' in self.portal.bika_setup.getAutoPrintLabels():
             q = "/sticker?size=%s&items=" % (self.portal.bika_setup.getAutoLabelSize())
             # selected_items is a list of UIDs (stickers for AR_add use IDs)
-            q += ",".join([i.getId() for i in selected_items.values()])
-            self.request.response.redirect(self.context.absolute_url() + q)
-        else:
-            self.request.response.redirect(self.destination_url)
+            q += ",".join([i.getId() for i in items])
+            dest = self.context.absolute_url() + q
+
+        return len(transitioned), dest
+
 
 class BikaListingView(BrowserView):
     """

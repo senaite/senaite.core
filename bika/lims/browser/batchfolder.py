@@ -13,6 +13,7 @@ from zope.interface import implements
 from Products.CMFCore import permissions
 import plone
 import json
+from bika.lims.workflow import getCurrentState, StateFlow
 
 
 class BatchFolderContentsView(BikaListingView):
@@ -41,10 +42,9 @@ class BatchFolderContentsView(BikaListingView):
 
         self.review_states = [  # leave these titles and ids alone
             {'id':'default',
-             'contentFilter': {'cancellation_state':'active',
-                               'review_state': ['open', 'sample_received', 'to_be_verified', 'verified']},
+             'contentFilter': {'review_state': 'open'},
              'title': _('Open'),
-             'transitions': [{'id':'close'},{'id':'cancel'} ],
+             'transitions': [{'id':'close'},{'id':'cancel'}],
              'columns':['BatchID',
                         'Description',
                         'state_title', ]
@@ -52,15 +52,15 @@ class BatchFolderContentsView(BikaListingView):
             {'id':'closed',
              'contentFilter': {'review_state': 'closed'},
              'title': _('Closed'),
-             'transitions': [],
+             'transitions': [{'id':'open'}],
              'columns':['BatchID',
                         'Description',
                         'state_title', ]
              },
             {'id':'cancelled',
              'title': _('Cancelled'),
-             'transitions': [ ],
-             'contentFilter': {'cancellation_state': 'cancelled'},
+             'transitions': [{'id':'open'}],
+             'contentFilter': {'review_state': 'cancelled'},
              'columns':['BatchID',
                         'Description',
                         'state_title', ]
@@ -119,7 +119,7 @@ class ajaxGetBatches(BrowserView):
 
         for batch in batches:
             batch = batch.getObject()
-            if self.portal_workflow.getInfoFor(batch, 'review_state', 'open') == 'closed':
+            if self.portal_workflow.getInfoFor(batch, 'review_state', 'open') != 'open':
                 continue
             if batch.Title().lower().find(searchTerm) > -1 \
             or batch.Description().lower().find(searchTerm) > -1:

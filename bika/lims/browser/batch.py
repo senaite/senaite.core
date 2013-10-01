@@ -1,8 +1,8 @@
 from AccessControl import getSecurityManager
-from bika.lims import PMF, logger, bikaMessageFactory as _
+from bika.lims import PMF, logger, bikaMessageFactory as _, deprecated
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction, AnalysisRequestsView, AnalysisRequestAddView
-from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.bika_listing import BikaListingView, WorkflowAction
 from bika.lims.browser.client import ClientAnalysisRequestsView, ClientSamplesView
 from bika.lims.browser.sample import SamplesView
 from bika.lims.idserver import renameAfterCreation
@@ -35,59 +35,66 @@ import Globals
 import json
 import os
 import plone
+from bika.lims.workflow import getCurrentState, StateFlow, InactiveState
 
 
 class BatchAnalysisRequestsView(AnalysisRequestsView, AnalysisRequestAddView):
     template = ViewPageTemplateFile("templates/analysisrequests.pt")
     ar_add = ViewPageTemplateFile("templates/ar_add.pt")
+
     def __init__(self, context, request):
         super(BatchAnalysisRequestsView, self).__init__(context, request)
         self.contentFilter['getBatchUID'] = self.context.UID()
 
     def __call__(self):
         self.context_actions = {}
-        wf = getToolByName(self.context, 'portal_workflow')
         mtool = getToolByName(self.context, 'portal_membership')
         addPortalMessage = self.context.plone_utils.addPortalMessage
-        if isActive(self.context):
-            if mtool.checkPermission(AddAnalysisRequest, self.portal):
-                # Client contact required (if client is associated)
-                cfield = self.context.Schema().getField('Client')
-                client = cfield.get(self.context) if cfield else None
-                if client:
-                    contacts = [c for c in client.objectValues('Contact') if
-                                wf.getInfoFor(c, 'inactive_state', '') == 'active']
-                    if contacts:
-                        self.context_actions[self.context.translate(_('Add new'))] = {
-                            'url': self.context.absolute_url() + "/portal_factory/"
-                            "AnalysisRequest/Request new analyses/ar_add?col_count=1",
-                            'icon': '++resource++bika.lims.images/add.png'}
-                    else:
-                        msg = _("Client contact required before request may be submitted")
-                        addPortalMessage(self.context.translate(msg))
+        if mtool.checkPermission(AddAnalysisRequest, self.portal):
+            # Client contact required (if client is associated)
+            client = self.fetchClient()
+            if client and client.getContacts():
+                self.context_actions[self.context.translate(_('Add new'))] = {
+                    'url': self.context.absolute_url() + "/portal_factory/"
+                    "AnalysisRequest/Request new analyses/ar_add?col_count=1",
+                    'icon': '++resource++bika.lims.images/add.png'}
+            else:
+                msg = _("Client contact required before request may be submitted")
+                addPortalMessage(self.context.translate(msg))
         return super(BatchAnalysisRequestsView, self).__call__()
 
-    @lazy_property
-
-    def Client(self):
-        bc = getToolByName(self.context, 'bika_catalog')
-        proxies = bc(portal_type="AnalysisRequest", getBatchUID=self.context.UID())
-        if proxies:
-            return proxies[0].getObject()
+    def fetchClient(self):
+        """ Retrieves the Client for which the current Batch is attached to
+            Tries to retrieve the Client from the Schema property, but if not
+            found, searches for linked ARs and retrieve the Client from the
+            first one. If the Batch has no client, returns None.
+        """
+        cfield = self.context.Schema().getField('Client')
+        client = cfield.get(self.context) if cfield else None
+        if not client:
+            # Search for ARs and retrieve the client from the first found
+            bc = getToolByName(self.context, 'bika_catalog')
+            proxies = bc(portal_type="AnalysisRequest",
+                         getBatchUID=self.context.UID())
+            if proxies:
+                client = proxies[0].getObject()
+        return client
 
     def getMemberDiscountApplies(self):
-        client = self.Client
+        client = self.fetchClient()
         return client and client.getMemberDiscountApplies() or False
 
     def getRestrictedCategories(self):
-        client = self.Client
+        client = self.fetchClient()
         return client and client.getRestrictedCategories() or []
 
     def getDefaultCategories(self):
-        client = self.Client
+        client = self.fetchClient()
         return client and client.getDefaultCategories() or []
 
+
 class BatchSamplesView(SamplesView):
+
     def __init__(self, context, request):
         super(BatchSamplesView, self).__init__(context, request)
         self.view_url = self.context.absolute_url() + "/samples"

@@ -335,7 +335,6 @@ def attachPdf(mimemultipart, pdfreport, filename=None):
     Encoders.encode_base64(part)
     mimemultipart.attach(part)
 
-
 class bika_bsc_counter(BrowserView):
     def __call__(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')

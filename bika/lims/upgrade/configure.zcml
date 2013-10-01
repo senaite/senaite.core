@@ -300,4 +300,13 @@
         handler="bika.lims.upgrade.to1138.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Batch new workflow"
+        description="Registers the new Batch Workflow and updates the statuses of the ZopeDB batches"
+        source="1139"
+        destination="1139"
+        handler="bika.lims.upgrade.to1139.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
 </configure>

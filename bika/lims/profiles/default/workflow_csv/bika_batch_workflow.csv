@@ -1,111 +1,76 @@
-[Workflow],,,,,,,,,,,
-Id:,bika_batch_workflow,,,,,,,,,,
-Title:,Bika Batch Workflow,,,,,,,,,,
-Description:,,,,,,,,,,,
-Initial state:,open,,,,,,,,,,
-Type:,Workflow,,,,,,,,,,
-State variable:,review_state,,,,,,,,,,
-,,,,,,,,,,,
-[State],,,,,,,,,,,
-Id:,open,,,,,,,,,,
-Title:,Open,,,,,,,,,,
-Description:,Some of the samples have not been received,,,,,,,,,,
-Transitions,receive,,,,,,,,,,
-Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Publisher,Reader,Editor,Contributor,Anonymous,RegulatoryInspector
-View,N,N,Y,Y,Y,Y,N,N,N,N,N,Y
-Modify portal content,N,N,Y,Y,Y,N,N,N,N,N,N,N
-BIKA: Publish,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Add Analysis Request,N,N,Y,Y,Y,N,N,N,N,N,N,N
-,,,,,,,,,,,
-[State],,,,,,,,,,,
-Id:,sample_received,,,,,,,,,,
-Title:,Sample received,,,,,,,,,,
-Description:,All ARs have advanced at least to sample_received state,,,,,,,,,,
-Transitions,"open, submit",,,,,,,,,,
-Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Publisher,Reader,Editor,Contributor,Anonymous,RegulatoryInspector
-View,N,N,Y,Y,Y,Y,N,N,N,N,N,Y
-Modify portal content,N,N,Y,Y,Y,N,N,N,N,N,N,N
-BIKA: Publish,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Add Analysis Request,N,N,Y,Y,Y,N,N,N,N,N,N,N
-,,,,,,,,,,,
-[State],,,,,,,,,,,
-Id:,to_be_verified,,,,,,,,,,
-Title:,To be verified,,,,,,,,,,
-Description:,All ARs have advanced at least to to_be_verfied state,,,,,,,,,,
-Transitions,"open, receive, verify",,,,,,,,,,
-Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Publisher,Reader,Editor,Contributor,Anonymous,RegulatoryInspector
-View,N,N,Y,Y,Y,Y,N,N,N,N,N,Y
-Modify portal content,N,N,Y,Y,Y,N,N,N,N,N,N,N
-BIKA: Publish,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Add Analysis Request,N,N,N,N,N,N,N,N,N,N,N,N
-,,,,,,,,,,,
-[State],,,,,,,,,,,
-Id:,verified,,,,,,,,,,
-Title:,Verified,,,,,,,,,,
-Description:,All ARs have advanced at least to verified state,,,,,,,,,,
-Transitions,close,,,,,,,,,,
-Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Publisher,Reader,Editor,Contributor,Anonymous,RegulatoryInspector
-View,N,N,Y,Y,Y,Y,N,N,N,N,N,Y
-Modify portal content,N,N,Y,Y,N,N,N,N,N,N,N,N
-BIKA: Publish,N,N,Y,Y,N,N,Y,N,N,N,N,N
-BIKA: Add Analysis Request,N,N,N,N,N,N,N,N,N,N,N,N
-,,,,,,,,,,,
-[State],,,,,,,,,,,
-Id:,closed,,,,,,,,,,
-Title:,Closed,,,,,,,,,,
-Description:,,,,,,,,,,,
-Transitions,,,,,,,,,,,
-Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Publisher,Reader,Editor,Contributor,Anonymous,RegulatoryInspector
-View,N,N,Y,Y,Y,Y,N,N,N,N,N,Y
-Modify portal content,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Publish,N,N,Y,Y,N,N,Y,N,N,N,N,N
-,,,,,,,,,,,
-[Transition],,,,,,,,,,,
-Id:,open,,,,,,,,,,
-Title:,Open,,,,,,,,,,
-Description:,Used to retract a batch to 'open' state,,,,,,,,,,
-Target state:,open,,,,,,,,,,
-Trigger:,User,,,,,,,,,,
-Guard permission:,Modify portal content,,,,,,,,,,
-Guard expression:,"python:here.workflow_guard_open() if hasattr(here, 'workflow_guard_open') else True",,,,,,,,,,
-Script after:,bika.lims.workflow.default,,,,,,,,,,
-,,,,,,,,,,,
-[Transition],,,,,,,,,,,
-Id:,receive,,,,,,,,,,
-Title:,Receive sample,,,,,,,,,,
-Description:,Used to transition or retract a batch to 'sample_recieved',,,,,,,,,,
-Target state:,sample_received,,,,,,,,,,
-Trigger:,User,,,,,,,,,,
-Guard permission:,Modify portal content,,,,,,,,,,
-Guard expression:,"python:here.workflow_guard_receive() if hasattr(here, 'workflow_guard_receive') else True",,,,,,,,,,
-Script after:,bika.lims.workflow.default,,,,,,,,,,
-,,,,,,,,,,,
-[Transition],,,,,,,,,,,
-Id:,submit,,,,,,,,,,
-Title:,Submit for verification,,,,,,,,,,
-Description:,Transition to follow AR states to to_be_verified,,,,,,,,,,
-Target state:,to_be_verified,,,,,,,,,,
-Trigger:,User,,,,,,,,,,
-Guard permission:,Modify portal content,,,,,,,,,,
-Guard expression:,"python:here.workflow_guard_submit() if hasattr(here, 'workflow_guard_submit') else True",,,,,,,,,,
-Script after:,bika.lims.workflow.default,,,,,,,,,,
-,,,,,,,,,,,
-[Transition],,,,,,,,,,,
-Id:,verify,,,,,,,,,,
-Title:,Verify,,,,,,,,,,
-Description:,Transition to follow AR states to to_be_verified,,,,,,,,,,
-Target state:,verified,,,,,,,,,,
-Trigger:,User,,,,,,,,,,
-Guard permission:,Modify portal content,,,,,,,,,,
-Guard expression:,"python:here.workflow_guard_verify() if hasattr(here, 'workflow_guard_verify') else True",,,,,,,,,,
-Script after:,bika.lims.workflow.default,,,,,,,,,,
-,,,,,,,,,,,
-[Transition],,,,,,,,,,,
-Id:,close,,,,,,,,,,
-Title:,Close,,,,,,,,,,
-Description:,"Close the batch, removing it from default views",,,,,,,,,,
-Target state:,closed,,,,,,,,,,
-Trigger:,User,,,,,,,,,,
-Guard permission:,Modify portal content,,,,,,,,,,
-Guard expression:,"python:here.workflow_guard_close() if hasattr(here, 'workflow_guard_close') else True",,,,,,,,,,
-Script after:,bika.lims.workflow.default,,,,,,,,,,
+[Workflow],,,,,,,,,,,,,,,
+Id:,bika_batch_workflow,,,,,,,,,,,,,,
+Title:,Bika Batch Workflow,,,,,,,,,,,,,,
+Description:,,,,,,,,,,,,,,,
+Initial state:,open,,,,,,,,,,,,,,
+Type:,Workflow,,,,,,,,,,,,,,
+State variable:,review_state,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,
+[State],,,,,,,,,,,,,,,
+Id:,open,,,,,,,,,,,,,,
+Title:,Open,,,,,,,,,,,,,,
+Description:,The batch can be edited and Analysis Requests can be attached,,,,,,,,,,,,,,
+Transitions,"cancel,close",,,,,,,,,,,,,,
+Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,RegulatoryInspector,Publisher,Reader,Editor,Contributor,Anonymous
+View,N,N,Y,Y,Y,Y,N,N,Y,Y,N,N,N,N,N
+BIKA: Edit Batch,N,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N
+BIKA: Close Batch,N,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N
+BIKA: Cancel Batch,N,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N
+BIKA: Reopen Batch,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Add Analysis Request,N,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N
+Modify portal content,N,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N
+,,,,,,,,,,,,,,,
+[State],,,,,,,,,,,,,,,
+Id:,cancelled,,,,,,,,,,,,,,
+Title:,Cancelled,,,,,,,,,,,,,,
+Description:,Cancels the batch and all its linked Analysis Requests,,,,,,,,,,,,,,
+Transitions,open,,,,,,,,,,,,,,
+Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,RegulatoryInspector,Publisher,Reader,Editor,Contributor,Anonymous
+View,N,N,Y,Y,Y,N,N,N,N,Y,N,N,N,N,N
+BIKA: Edit Batch,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Close Batch,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Cancel Batch,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Reopen Batch,N,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N
+BIKA: Add Analysis Request,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+Modify portal content,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+,,,,,,,,,,,,,,,
+[State],,,,,,,,,,,,,,,
+Id:,closed,,,,,,,,,,,,,,
+Title:,Closed,,,,,,,,,,,,,,
+Description:,The batch can't be edited and Analysis Requests cannot be attached,,,,,,,,,,,,,,
+Transitions,open,,,,,,,,,,,,,,
+Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,RegulatoryInspector,Publisher,Reader,Editor,Contributor,Anonymous
+View,N,N,Y,Y,Y,N,N,N,N,Y,N,N,N,N,N
+BIKA: Edit Batch,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Close Batch,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Cancel Batch,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Reopen Batch,N,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N
+BIKA: Add Analysis Request,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+Modify portal content,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+,,,,,,,,,,,,,,,
+[Transition],,,,,,,,,,,,,,,
+Id:,open,,,,,,,,,,,,,,
+Title:,Open,,,,,,,,,,,,,,
+Description:,"Used to retract a batch to 'open' state",,,,,,,,,,,,,,
+Target state:,open,,,,,,,,,,,,,,
+Trigger:,User,,,,,,,,,,,,,,
+Guard permission:,BIKA: Reopen Batch,,,,,,,,,,,,,,
+Guard expression:,"python:here.workflow_guard_open() if hasattr(here, 'workflow_guard_open') else True",,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,
+[Transition],,,,,,,,,,,,,,,
+Id:,cancel,,,,,,,,,,,,,,
+Title:,Cancel,,,,,,,,,,,,,,
+Description:,Cancel the batch and all its linked Analysis Requests,,,,,,,,,,,,,,
+Target state:,cancelled,,,,,,,,,,,,,,
+Trigger:,User,,,,,,,,,,,,,,
+Guard permission:,BIKA: Cancel Batch,,,,,,,,,,,,,,
+Guard expression:,"python:here.workflow_guard_cancel() if hasattr(here, 'workflow_guard_cancel') else True",,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,
+[Transition],,,,,,,,,,,,,,,
+Id:,close,,,,,,,,,,,,,,
+Title:,Close,,,,,,,,,,,,,,
+Description:,Close the batch, removing it from default views,,,,,,,,,,,,,,
+Target state:,closed,,,,,,,,,,,,,,
+Trigger:,User,,,,,,,,,,,,,,
+Guard permission:,BIKA: Close Batch,,,,,,,,,,,,,,
+Guard expression:,"python:here.workflow_guard_close() if hasattr(here, 'workflow_guard_close') else True",,,,,,,,,,,,,,

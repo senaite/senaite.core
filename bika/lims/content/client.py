@@ -18,6 +18,7 @@ from zope.interface import implements
 from zope.interface.declarations import alsoProvides
 import json
 import sys
+from bika.lims.workflow import getCurrentState, StateFlow, InactiveState
 
 schema = Organisation.schema.copy() + atapi.Schema((
     atapi.StringField('ClientID',
@@ -139,6 +140,17 @@ class Client(Organisation):
                       sort_on = 'sortable_title'):
             cats.append((st.UID, st.Title))
         return DisplayList(cats)
+
+    def getContacts(self, only_active=True):
+        """ Return an array containing the contacts from this Client
+        """
+        contacts = []
+        if only_active:
+            contacts = [c for c in self.objectValues('Contact') if
+                        getCurrentState(c, StateFlow.inactive) == InactiveState.active]
+        else:
+            contacts = self.objectValues('Contact')
+        return contacts;
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 
