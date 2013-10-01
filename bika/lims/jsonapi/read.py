@@ -1,6 +1,7 @@
 from plone.jsonapi import router
 from plone.jsonapi.interfaces import IRouteProvider
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.i18nl10n import ulocalized_time
 from zope import interface
 import Missing
 
@@ -9,8 +10,11 @@ import json
 
 def ar_analysis_values(obj):
     ret = []
-    for analysis in obj.getAnalyses():
-        analysis = analysis.getObject()
+    workflow = getToolByName(obj, 'portal_workflow')
+    analyses = obj.getAnalyses(cancellation_state='active', full_objects=True)
+    for analysis in analyses:
+        if workflow.getInfoFor(analysis, 'review_state') == 'retracted':
+            continue
         schema = analysis.Schema()
         analysis_data = {}
         for field in schema.fields():
@@ -24,6 +28,17 @@ def ar_analysis_values(obj):
                 except:
                     val = str(val)
                 analysis_data[field.getName()] = val
+    for analysis in analyses:
+        if analysis.getRetested():
+            prevs = [a for a in analyses
+                     if workflow.getInfoFor(a, 'review_state') == 'retracted'
+                     and a.Title() == analysis.Title()]
+            prevs = sorted(prevs, key=lambda item: item.created())
+            prevs = [{'created': ulocalized_time(p.created(), long_format=True),
+                      'Result': p.getResult(),
+                      'InterimFields': p.getInterimFields()}
+                     for p in prevs]
+            analysis_data['Previous Results'] = prevs
         ret.append(analysis_data)
     return ret
 
@@ -63,7 +78,7 @@ def read(context, request):
         obj_data = {}
         # Place all proxy attributes into the result.
         for index in proxy.indexes():
-            if proxy.has_key(index):
+            if index in proxy:
                 val = getattr(proxy, index)
                 if val != Missing.Value:
                     try:
