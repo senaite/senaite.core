@@ -121,4 +121,11 @@
 # Allows access to 'Edit' and 'Contacts' tabs from Client View
 <permission id="bika.lims.EditClient" title="BIKA: Edit Client"/>
 
+# Batch specific permissions
+# ----------------------------------------------
+<permission id="bika.lims.EditBatch" title="BIKA: Edit Batch"/>
+<permission id="bika.lims.CloseBatch" title="BIKA: Close Batch"/>
+<permission id="bika.lims.CancelBatch" title="BIKA: Cancel Batch"/>
+<permission id="bika.lims.ReopenBatch" title="BIKA: Reopen Batch"/>
+
 </configure>

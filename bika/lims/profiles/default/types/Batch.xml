@@ -34,7 +34,7 @@
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">
-  <permission value="Modify portal content"/>
+  <permission value="BIKA: Edit Batch"/>
  </action>
 
  <action title="Analysis Requests"

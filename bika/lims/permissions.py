@@ -132,3 +132,11 @@ EditSamplePartition = 'BIKA: Edit Sample Partition'
 # ----------------------------------------------
 # Allows access to 'Edit' and 'Contacts' tabs from Client View
 EditClient = 'BIKA: Edit Client'
+
+
+# Batch-specific permissions
+# ----------------------------------------------
+EditBatch = 'BIKA: Edit Batch'
+CloseBatch = 'BIKA: Close Batch'
+CancelBatch = 'BIKA: Cancel Batch'
+ReopenBatch = 'BIKA: Reopen Batch'

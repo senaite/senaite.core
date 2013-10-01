@@ -190,3 +190,7 @@ class _DeprecatedClassDecorator(object):
 
 deprecatedsymbol = _DeprecatedClassDecorator()
 del _DeprecatedClassDecorator
+
+
+def enum(**enums):
+    return type('Enum', (), enums)
