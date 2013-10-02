@@ -811,13 +811,13 @@ class Sample_Points(WorksheetImporter):
     def Import(self):
         setup_folder = self.context.bika_setup.bika_samplepoints
         bsc = getToolByName(self.context, 'bika_setup_catalog')
+        pc = getToolByName(self.context, 'portal_catalog')
         for row in self.get_rows(3):
             if not row['title']:
                 continue
             if row['Client_title']:
                 client_title = row['Client_title']
-                client = self.portal_catalog(portal_type="Client",
-                                             Title=client_title)
+                client = pc(portal_type="Client", Title=client_title)
                 if len(client) == 0:
                     raise IndexError("Sample Point %s: Client invalid: '%s'" %
                                      (row['title'], client_title))
