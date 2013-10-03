@@ -1,14 +1,6 @@
 // ar.js and sample.js are nearly identical
 (function( $ ) {
 
-function openCCBrowser(event){
-	event.preventDefault();
-	contact_uid = $('#primary_contact').attr('value');
-	cc_uids = $('#cc_uids').attr('value');
-	window.open('ar_select_cc?hide_uids=' + contact_uid + '&selected_uids=' + cc_uids,
-		'ar_select_cc','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=550');
-}
-
 function workflow_transition_sample(event){
 	event.preventDefault()
 	if ($("#DateSampled").val() != "" && $("#Sampler").val() != "") {
@@ -128,8 +120,6 @@ $(document).ready(function(){
 	_ = jarn.i18n.MessageFactory('bika');
 	PMF = jarn.i18n.MessageFactory('plone');
 
-	$('#open_cc_browser').click(openCCBrowser);
-
 	// Plone "Sample" transition is only available when Sampler and DateSampled
 	// are completed
 	$("#workflow-transition-sample").click(workflow_transition_sample);
@@ -158,8 +148,8 @@ $(document).ready(function(){
 		    });
 			if ($("input[id='SampleMatrix']")) {
 				$("input[id='SampleMatrix']").attr('readonly', true);
-			}			
-		}		
+			}
+		}
 	}
 
 });

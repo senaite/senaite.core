@@ -1,6 +1,6 @@
 (function( $ ) {
 
-// Sets the tab index to the elements. Tab flow top to bottom instead of left 
+// Sets the tab index to the elements. Tab flow top to bottom instead of left
 // to right.
 // Keyboard tab flow top to bottom instead of left to right
 function ar_set_tabindexes() {
@@ -259,24 +259,6 @@ function changeReportDryMatter(){
 	}
 	recalc_prices();
 }
-
-
-function showSelectCC(){
-	contact_uid = $('#primary_contact').val();
-	cc_uids = $('#cc_uids').attr('value');
-	url = window.location.href.split("?")[0].split("/ar_add")[0].replace("/analysisrequests","")
-	window.open(url+'/ar_select_cc?hide_uids=' + contact_uid + '&selected_uids=' + cc_uids,
-		'ar_select_cc','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=600,height=550');
-}
-
-function changePrimaryContact(){
-	contact_uid = $(this).val();
-	elem = $("[uid='"+contact_uid+"']");
-	cc_data = $.parseJSON($(elem).attr("ccs"));
-	$('#cc_uids').attr('value', $(elem).attr("cc_uids"));
-	$('#cc_titles').val($(elem).attr("cc_titles"));
-}
-
 
 function copyButton(){
 	var fieldName = $(this).attr("name");
@@ -925,47 +907,43 @@ function clickAnalysisCategory(){
 }
 
 $(document).ready(function(){
-    
+
     // Only if the view is the Analysis Request Add View
     if ($(".template-ar_add #analysisrequest_edit_form").length > 0) {
 
     	_ = jarn.i18n.MessageFactory('bika');
     	PMF = jarn.i18n.MessageFactory('plone');
-    
+
     	var curDate = new Date();
     	var y = curDate.getFullYear();
     	var limitString = '1900:' + y;
     	var dateFormat = _("date_format_short_datepicker");
-    
+
     	ar_rename_elements();
     	ar_referencewidget_lookups();
     	ar_set_tabindexes();
-    
+
     	$("input[id*='_Template']").live('change', function(){
     		column = this.id.split('_')[1];
     		unsetAnalysisProfile(column);
     		setTemplate(column, $(this).val());
     	});
-    
+
     	$("input[id*='_Profile']").live('change', function(){
     		column = $(this).attr("column");
     		unsetTemplate(column,$(this).val());
     		setAnalysisProfile(column);
     		calculate_parts(column);
     	});
-    
+
     	$(".copyButton").live('click',  copyButton );
-    
+
     	$('th[class^="analysiscategory"]').click(clickAnalysisCategory);
-    
-    	$("#primary_contact").live('change', changePrimaryContact );
-    
+
     	$("input[name^='Price']").live('change', recalc_prices );
-    
-    	$('#open_cc_browser').click(showSelectCC);
-    
+
     	$("input[id*='_ReportDryMatter']").change(changeReportDryMatter);
-    
+
     	// AR Add/Edit ajax form submits
     	ar_edit_form = $('#analysisrequest_edit_form');
     	if (ar_edit_form.ajaxForm != undefined){
@@ -1015,7 +993,7 @@ $(document).ready(function(){
     		};
     		$('#analysisrequest_edit_form').ajaxForm(options);
     	}
-    
+
     	// these go here so that popup windows can access them in our context
     	window.recalc_prices = recalc_prices;
     	window.calculate_parts = calculate_parts;

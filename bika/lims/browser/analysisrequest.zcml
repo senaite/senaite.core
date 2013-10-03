@@ -135,10 +135,6 @@
     />
 
     <browser:page
-      for="*"
-      name="ar_select_cc"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestSelectCCView"
-      permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

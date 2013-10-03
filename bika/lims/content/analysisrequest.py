@@ -21,6 +21,7 @@ from bika.lims.browser.fields import ARAnalysesField
 from bika.lims.browser.widgets import DateTimeWidget, DecimalWidget
 from bika.lims.config import PROJECTNAME, \
     ManageInvoices
+from archetypes.referencebrowserwidget.widget import ReferenceBrowserWidget
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IBikaCatalog
@@ -66,11 +67,16 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestContact',
         widget=ReferenceWidget(
             label=_("Contact"),
-            # we let this one alone, template does it separately.
-            visible={'edit': 'invisible', 'view': 'invisible', 'add': 'invisible'},
-            catalog_name='bika_catalog',
+            render_own_label=True,
+            size=12,
+            helper_js=("bika_widgets/referencewidget.js", "++resource++bika.lims.js/contact.js"),
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
             base_query={'inactive_state': 'active'},
             showOn=True,
+            popup_width='300px',
+            colModel=[{'columnName': 'UID', 'hidden': True},
+                      {'columnName': 'Fullname', 'width': '25', 'label': _('Name')},
+                     ],
         ),
     ),
     ReferenceField(
@@ -81,6 +87,18 @@ schema = BikaSchema.copy() + Schema((
         allowed_types=('Contact',),
         referenceClass=HoldingReference,
         relationship='AnalysisRequestCCContact',
+        widget=ReferenceWidget(
+            label=_("CC Contacts"),
+            render_own_label=True,
+            size=12,
+            visible=False,  # {'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+            base_query={'inactive_state': 'active'},
+            showOn=True,
+            popup_width='300px',
+            colModel=[{'columnName': 'UID', 'hidden': True},
+                      {'columnName': 'Fullname', 'width': '25', 'label': _('Name')},
+                     ],
+        ),
     ),
     StringField(
         'CCEmails',

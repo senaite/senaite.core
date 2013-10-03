@@ -639,8 +639,7 @@ class AnalysisRequestViewView(BrowserView):
         for cc in contacts:
             ccemails.append("%s &lt;<a href='mailto:%s'>%s</a>&gt;" \
                 % (cc.Title(), cc.getEmailAddress(), cc.getEmailAddress()))
-        cc_uids = [c.UID() for c in contacts]
-        cc_titles = [c.Title() for c in contacts]
+
         emails = self.context.getCCEmails()
         if type(emails) == str:
             emails = emails and [emails,] or []
@@ -703,18 +702,13 @@ class AnalysisRequestViewView(BrowserView):
             {'id': 'Contact',
              'title': contactlabel,
              'allow_edit': False,
-             'value': "<input name='cc_uids' type='hidden' id='cc_uids' value='%s'/>\
-                       <a href='%s'><span name='primary_contact' id='primary_contact' value='%s'>%s</span></a>\
-                       &lt;<a href='mailto:%s'>%s</a>&gt;<br/>\
-                       <span name='cc_titles' id='cc_titles' value='%s'>%s</span>"\
-                       %(",".join(cc_uids),
-                         contact.absolute_url(),
-                         contact.UID(),
-                         contact.Title(),
-                         contact.getEmailAddress(),
-                         contact.getEmailAddress(),
-                         "; ".join(cc_titles),
-                         "<br/> ".join(ccemails)),
+             'value': "<a href='%s'><span name='primary_contact' id='primary_contact' value='%s'>%s</span></a>\
+                       &lt;<a href='mailto:%s'>%s</a>&gt;" % (
+                        contact.absolute_url(),
+                        contact.UID(),
+                        contact.Title(),
+                        contact.getEmailAddress(),
+                        contact.getEmailAddress()),
              'condition':True,
              'type': 'text'},
             {'id': 'ClientSampleID',
@@ -853,7 +847,6 @@ class AnalysisRequestViewView(BrowserView):
             plone.protect.CheckAuthenticator(form)
             message = None
             values = {
-                'CCContact':form.get('cc_uids','').split(",")
             }
             for row in [r for r in self.header_rows if r['allow_edit']]:
                 value = _u(urllib.unquote_plus(form.get(row['id'], '')))
@@ -1298,22 +1291,6 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         adapter = getAdapter(self.context.aq_parent, name='getContacts')
         return adapter()
 
-    def getCCsForContact(self, contact_uid, **kwargs):
-        """Get the default CCs for a particular client contact.  Used
-        once in form creation. #XXX search and destroy: cc_titles, cc_uids
-        """
-        uc = getToolByName(self.context, 'uid_catalog')
-        contact = uc(UID=contact_uid)
-        contacts = []
-        if contact:
-            contact = contact and contact[0].getObject() or None
-            contacts = [{'title': x.Title(), 'uid': x.UID()} for x in
-                        contact.getCCContact()]
-        if kwargs.get('json', ''):
-            return json.dumps(contacts)
-        else:
-            return contacts
-
     def getWidgetVisibility(self):
         adapter = getAdapter(self.context, name='getWidgetVisibility')
         return adapter()
@@ -1677,234 +1654,6 @@ class AnalysisRequestResultsNotRequestedView(AnalysisRequestManageResultsView):
         else:
             return self.template()
 
-class AnalysisRequestSelectCCView(BikaListingView):
-
-    template = ViewPageTemplateFile("templates/ar_select_cc.pt")
-
-    def __init__(self, context, request):
-        super(AnalysisRequestSelectCCView, self).__init__(context, request)
-        self.icon = self.portal_url + "/++resource++bika.lims.images/contact_big.png"
-        self.title = _("Contacts to CC")
-        self.description = _("Select the contacts that will receive analysis results for this request.")
-        self.catalog = "portal_catalog"
-
-        # c is the Context inside of which we will search for Contacts.
-        c = None
-        if context.portal_type == 'Batch':
-            if hasattr(context, 'getClientUID'):
-                client = self.portal_catalog(portal_type='Client', UID=context.getClientUID())
-                if client:
-                    c = client[0].getObject()
-                else:
-                    c = context
-            else:
-                c = context
-        elif context.portal_type == 'AnalysisRequest':
-            c = context.aq_parent
-        if not c:
-            c = context
-
-        self.contentFilter = {'portal_type': 'Contact',
-                              'sort_on':'sortable_title',
-                              'inactive_state': 'active',
-                              'path': {"query": "/".join(c.getPhysicalPath()),
-                                       "level" : 0 }
-                              }
-
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_workflow_action_buttons = True
-        self.show_select_column = True
-        self.pagesize = 25
-        self.form_id = "select_cc"
-
-        request.set('disable_border', 1)
-
-        self.columns = {
-            'Fullname': {'title': _('Full Name'),
-                         'index': 'getFullname'},
-            'EmailAddress': {'title': _('Email Address')},
-            'BusinessPhone': {'title': _('Business Phone')},
-            'MobilePhone': {'title': _('Mobile Phone')},
-        }
-        self.review_states = [
-            {'id':'default',
-             'title': _('All'),
-             'contentFilter':{},
-             'columns': ['Fullname',
-                         'EmailAddress',
-                         'BusinessPhone',
-                         'MobilePhone'],
-             'transitions': [{'id':'empty'}, ], # none
-             'custom_actions':[{'id': 'save_selection_button', 'title': 'Save selection'}, ] # do not translate this title.
-             }
-        ]
-
-    def folderitems(self, full_objects = False):
-        pc = getToolByName(self.context, 'portal_catalog')
-        self.contentsMethod = pc
-        old_items = BikaListingView.folderitems(self)
-        items = []
-        for item in old_items:
-            if not item.has_key('obj'):
-                items.append(item)
-                continue
-            obj = item['obj']
-            if obj.UID() in self.request.get('hide_uids', ()):
-                continue
-            item['Fullname'] = obj.getFullname()
-            item['EmailAddress'] = obj.getEmailAddress()
-            item['BusinessPhone'] = obj.getBusinessPhone()
-            item['MobilePhone'] = obj.getMobilePhone()
-            if self.request.get('selected_uids', '').find(item['uid']) > -1:
-                item['selected'] = True
-            items.append(item)
-        return items
-
-class AnalysisRequestSelectSampleView(BikaListingView):
-
-    template = ViewPageTemplateFile("templates/ar_select_sample.pt")
-
-    def __init__(self, context, request):
-        super(AnalysisRequestSelectSampleView, self).__init__(context, request)
-        self.icon = self.portal_url + "/++resource++bika.lims.images/sample_big.png"
-        self.title = _("Select Sample")
-        self.description = _("Select a sample to create a secondary AR")
-        c = context.portal_type == 'AnalysisRequest' and context.aq_parent or context
-        self.catalog = "bika_catalog"
-        self.contentFilter = {'portal_type': 'Sample',
-                              'sort_on':'id',
-                              'sort_order': 'reverse',
-                              'review_state': ['to_be_sampled', 'to_be_preserved',
-                                               'sample_due', 'sample_received'],
-                              'cancellation_state': 'active',
-                              'path': {"query": "/".join(c.getPhysicalPath()),
-                                       "level" : 0 }
-                              }
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_column = False
-        self.show_workflow_action_buttons = False
-        self.form_id = "select_sample"
-
-        self.pagesize = 25
-
-        request.set('disable_border', 1)
-
-        self.columns = {
-            'SampleID': {'title': _('Sample ID'),
-                         'index': 'getSampleID', },
-            'ClientSampleID': {'title': _('Client SID'),
-                               'index': 'getClientSampleID', },
-            'ClientReference': {'title': _('Client Reference'),
-                                'index': 'getClientReference', },
-            'SampleTypeTitle': {'title': _('Sample Type'),
-                                'index': 'getSampleTypeTitle', },
-            'SamplePointTitle': {'title': _('Sample Point'),
-                                 'index': 'getSamplePointTitle', },
-            'DateReceived': {'title': _('Date Received'),
-                             'index': 'getDateReceived', },
-            'SamplingDate': {'title': _('Sampling Date'),
-                             'index': 'getSamplingDate', },
-            'state_title': {'title': _('State'),
-                            'index': 'review_state', },
-        }
-
-        self.review_states = [
-            {'id':'default',
-             'contentFilter':{},
-             'title': _('All Samples'),
-             'columns': ['SampleID',
-                         'ClientReference',
-                         'ClientSampleID',
-                         'SampleTypeTitle',
-                         'SamplePointTitle',
-                         'SamplingDate',
-                         'state_title']},
-            {'id':'due',
-             'title': _('Sample Due'),
-             'contentFilter': {'review_state': 'sample_due'},
-             'columns': ['SampleID',
-                         'ClientReference',
-                         'ClientSampleID',
-                         'SampleTypeTitle',
-                         'SamplePointTitle',
-                         'SamplingDate']},
-            {'id':'sample_received',
-             'title': _('Sample received'),
-             'contentFilter': {'review_state': 'sample_received'},
-             'columns': ['SampleID',
-                         'ClientReference',
-                         'ClientSampleID',
-                         'SampleTypeTitle',
-                         'SamplePointTitle',
-                         'SamplingDate',
-                         'DateReceived']},
-        ]
-
-    def folderitems(self, full_objects = False):
-        items = BikaListingView.folderitems(self)
-        for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
-            obj = items[x]['obj']
-            items[x]['class']['SampleID'] = "select_sample"
-            if items[x]['uid'] in self.request.get('hide_uids', ''): continue
-            if items[x]['uid'] in self.request.get('selected_uids', ''):
-                items[x]['selected'] = True
-            items[x]['view_url'] = obj.absolute_url() + "/view"
-            items[x]['ClientReference'] = obj.getClientReference()
-            items[x]['ClientSampleID'] = obj.getClientSampleID()
-            items[x]['SampleID'] = obj.getSampleID()
-            if obj.getSampleType().getHazardous():
-                items[x]['after']['SampleID'] = \
-                     "<img src='%s/++resource++bika.lims.images/hazardous.png'\
-                     title='%s'>"%(self.portal_url,
-                                   self.context.translate(_("Hazardous")))
-            items[x]['SampleTypeTitle'] = obj.getSampleTypeTitle()
-            items[x]['SamplePointTitle'] = obj.getSamplePointTitle()
-            items[x]['row_data'] = json.dumps({
-                'SampleID': items[x]['title'],
-                'ClientReference': items[x]['ClientReference'],
-                'Requests': ", ".join([o.Title() for o in obj.getAnalysisRequests()]),
-                'ClientSampleID': items[x]['ClientSampleID'],
-                'DateReceived': obj.getDateReceived() and self.ulocalized_time(
-                    obj.getDateReceived()) or '',
-                'SamplingDate': obj.getSamplingDate() and self.ulocalized_time(
-                    obj.getSamplingDate()) or '',
-                'SampleType': items[x]['SampleTypeTitle'],
-                'SamplePoint': items[x]['SamplePointTitle'],
-                'Composite': obj.getComposite(),
-                'AdHoc': obj.getAdHoc(),
-                'SamplingDeviation': obj.getSamplingDeviation() and \
-                                     obj.getSamplingDeviation().UID() or '',
-                'field_analyses': self.FieldAnalyses(obj),
-                'column': self.request.get('column', None),
-            })
-            items[x]['DateReceived'] = obj.getDateReceived() and \
-                 self.ulocalized_time(obj.getDateReceived(), long_format=1) or ''
-            items[x]['SamplingDate'] = obj.getSamplingDate() and \
-                 self.ulocalized_time(obj.getSamplingDate(), long_format=1) or ''
-        return items
-
-    def FieldAnalyses(self, sample):
-        """ Returns a dictionary of lists reflecting Field Analyses
-            linked to this sample (meaning field analyses on this sample's
-            first AR. For secondary ARs field analyses and their values are
-            read/written from the first AR.)
-            {category_uid: [service_uid, service_uid], ... }
-        """
-        res = {}
-        ars = sample.getAnalysisRequests()
-        if len(ars) > 0:
-            for analysis in ars[0].getAnalyses(full_objects = True):
-                service = analysis.getService()
-                if service.getPointOfCapture() == 'field':
-                    catuid = service.getCategoryUID()
-                    if res.has_key(catuid):
-                        res[catuid].append(service.UID())
-                    else:
-                        res[catuid] = [service.UID()]
-        return res
 
 class ajaxExpandCategory(BikaListingView):
     """ ajax requests pull this view for insertion when category header
@@ -1988,11 +1737,6 @@ class ajaxAnalysisRequestSubmit():
             error(message = self.context.translate(_("No analyses have been selected")))
             return json.dumps({'errors':errors})
 
-        # The selected client must have, at least, one active contact
-        if (not form.get('Contact', '')):
-            error(message = self.context.translate(_("Client contact required before request may be submitted")))
-            return json.dumps({'errors':errors})
-
         # Now some basic validation
         required_fields = [field.getName() for field
                           in AnalysisRequestSchema.fields()
@@ -2010,8 +1754,8 @@ class ajaxAnalysisRequestSubmit():
 
             # check that required fields have values
             for field in required_fields:
-                # These two are still special.
-                if field in ['Contact', 'RequestID']:
+                # This one is still special.
+                if field in ['RequestID']:
                     continue
                 # And these are not required if this is a secondary AR
                 if ar.get('Sample', '') != '' and field in [
@@ -2048,11 +1792,6 @@ class ajaxAnalysisRequestSubmit():
                 # Analyses, we handle that specially.
                 if k == 'Analyses':
                     continue
-                # Contact things, there's only one on the form, so we
-                # insert those values here manually.
-                resolved_values['Contact'] = form['Contact']
-                resolved_values['CCContact'] = form['cc_uids'].split(",")
-                resolved_values['CCEmails'] = form['CCEmails']
 
                 if values.has_key("%s_uid" % k):
                     resolved_values[k] = values["%s_uid"%k]
