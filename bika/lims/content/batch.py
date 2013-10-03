@@ -9,6 +9,7 @@ from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
+from bika.lims.permissions import EditBatch
 
 from bika.lims.browser.widgets import ReferenceWidget
 
@@ -188,6 +189,11 @@ class Batch(ATFolder):
         uid = self.UID()
         return [b.getObject() for b in bc(portal_type='AnalysisRequest',
                                           getBatchUID=uid)]
+
+    def isOpen(self):
+        """ Returns true if the Batch is in 'open' state
+        """
+        return getCurrentState(self, StateFlow.review) == BatchState.open
 
     def workflow_guard_open(self):
         """ Permitted if current review_state is 'closed' or 'cancelled'

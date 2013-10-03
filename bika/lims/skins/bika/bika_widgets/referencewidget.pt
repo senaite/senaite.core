@@ -18,7 +18,7 @@
                             id string:parent-fieldname-$fieldName-$uid">
             <span metal:define-slot="inside"
                   tal:define="value accessor"
-                  tal:replace="python: value and value.Title() or ''">reference</span>
+                  tal:replace="python: (value and hasattr(value, 'Title')) and value.Title() or ''">reference</span>
         </span>
     </metal:view_macro>
 

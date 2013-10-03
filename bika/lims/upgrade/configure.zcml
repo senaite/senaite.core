@@ -304,9 +304,19 @@
 <genericsetup:upgradeStep
         title="Batch new workflow"
         description="Registers the new Batch Workflow and updates the statuses of the ZopeDB batches"
-        source="1139"
+        source="1138"
         destination="1139"
         handler="bika.lims.upgrade.to1139.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="New Batch readonly-view"
+        description="Register a new readonly-view for closed and cancelled batches"
+        source="1139"
+        destination="1140"
+        handler="bika.lims.upgrade.to1140.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
 </configure>
+

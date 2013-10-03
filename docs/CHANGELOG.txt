@@ -6,6 +6,7 @@
 3.0rc3.5
 ---------------------
 - xhtml2pdf replacement by WeasyPrint
+- New batch permissions and batch statuses refactoring
 
 3.0rc3.2 (2013-06-28)
 ---------------------
