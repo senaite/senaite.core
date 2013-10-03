@@ -10,8 +10,26 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
 
+from bika.lims.browser.widgets import ReferenceWidget
 
 schema = BikaFolderSchema.copy() + Schema((
+    ReferenceField(
+        'Client',
+        required=0,
+        allowed_types=('Client',),
+        relationship='BatchClient',
+        widget=ReferenceWidget(
+            label=_("Client"),
+            size=30,
+            visible=True,
+            base_query={'inactive_state': 'active'},
+            showOn=True,
+            colModel=[{'columnName': 'UID', 'hidden': True},
+                      {'columnName': 'ClientID', 'width': '20', 'label': _('Client ID')},
+                      {'columnName': 'Title', 'width': '80', 'label': _('Title')}
+                     ],
+      ),
+    ),
     StringField(
         'BatchID',
         searchable=True,
@@ -42,7 +60,7 @@ schema = BikaFolderSchema.copy() + Schema((
         'Remarks',
         searchable=True,
         default_content_type='text/x-web-intelligent',
-        allowable_content_types = ('text/plain', ),
+        allowable_content_types=('text/plain', ),
         default_output_type="text/plain",
         widget=TextAreaWidget(
             macro="bika_widgets/remarks",
@@ -58,6 +76,8 @@ schema['title'].required = False
 schema['title'].widget.visible = False
 schema['description'].required = False
 schema['description'].widget.visible = True
+schema.moveField('Client', before='description')
+
 
 class Batch(ATFolder):
     implements(IBatch)
@@ -83,14 +103,29 @@ class Batch(ATFolder):
         from bika.lims.catalog import getCatalog
         return getCatalog(self)
 
+    def getClient(self):
+        """ Retrieves the Client for which the current Batch is attached to
+            Tries to retrieve the Client from the Schema property, but if not
+            found, searches for linked ARs and retrieve the Client from the
+            first one. If the Batch has no client, returns None.
+        """
+        client = self.Schema().getField('Client').get(self)
+        if client:
+            return client
+        else:
+            # Search for ARs and retrieve the first client found
+            bc = getToolByName(self, 'bika_catalog')
+            proxies = bc(portal_type="AnalysisRequest",
+                         getBatchUID=self.UID())
+            if proxies:
+                client = proxies[0].aq_parent
+        return client
+
     def getClientTitle(self):
-        schema = self.Schema()
-        value = ""
-        if 'Client' in schema:
-            value = ['Client'].get(self)
-            if value:
-                return value.Title()
-        return value
+        client = self.getClient()
+        if client:
+            return client.Title()
+        return ""
 
     def getContactTitle(self):
         return ""
@@ -159,7 +194,7 @@ class Batch(ATFolder):
             The open transition is already controlled by 'Bika: Reopen Batch'
             permission, but left here for security reasons and also for the
             capability of being expanded/overrided by child products or
-            instance-specific-needs. 
+            instance-specific-needs.
         """
         states = [BatchState.cancelled,
                   BatchState.closed]
@@ -182,7 +217,7 @@ class Batch(ATFolder):
             instance-specific needs.
         """
         states = [BatchState.open]
-        return getCurrentState(self, StateFlow.review) in states 
+        return getCurrentState(self, StateFlow.review) in states
 
 
 registerType(Batch, PROJECTNAME)

@@ -52,7 +52,7 @@ class BatchAnalysisRequestsView(AnalysisRequestsView, AnalysisRequestAddView):
         addPortalMessage = self.context.plone_utils.addPortalMessage
         if mtool.checkPermission(AddAnalysisRequest, self.portal):
             # Client contact required (if client is associated)
-            client = self.fetchClient()
+            client = self.context.getClient()
             if client and client.getContacts():
                 self.context_actions[self.context.translate(_('Add new'))] = {
                     'url': self.context.absolute_url() + "/portal_factory/"
@@ -63,33 +63,16 @@ class BatchAnalysisRequestsView(AnalysisRequestsView, AnalysisRequestAddView):
                 addPortalMessage(self.context.translate(msg))
         return super(BatchAnalysisRequestsView, self).__call__()
 
-    def fetchClient(self):
-        """ Retrieves the Client for which the current Batch is attached to
-            Tries to retrieve the Client from the Schema property, but if not
-            found, searches for linked ARs and retrieve the Client from the
-            first one. If the Batch has no client, returns None.
-        """
-        cfield = self.context.Schema().getField('Client')
-        client = cfield.get(self.context) if cfield else None
-        if not client:
-            # Search for ARs and retrieve the client from the first found
-            bc = getToolByName(self.context, 'bika_catalog')
-            proxies = bc(portal_type="AnalysisRequest",
-                         getBatchUID=self.context.UID())
-            if proxies:
-                client = proxies[0].getObject()
-        return client
-
     def getMemberDiscountApplies(self):
-        client = self.fetchClient()
+        client = self.context.getClient()
         return client and client.getMemberDiscountApplies() or False
 
     def getRestrictedCategories(self):
-        client = self.fetchClient()
+        client = self.context.getClient()
         return client and client.getRestrictedCategories() or []
 
     def getDefaultCategories(self):
-        client = self.fetchClient()
+        client = self.context.getClient()
         return client and client.getDefaultCategories() or []
 
 
