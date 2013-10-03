@@ -134,8 +134,4 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <browser:page
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
 </configure>
