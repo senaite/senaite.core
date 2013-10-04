@@ -17,8 +17,6 @@ def AfterTransitionEventHandler(instance, event):
         return
 
     workflow = getToolByName(instance, 'portal_workflow')
-    membership_tool = getToolByName(instance, 'portal_membership')
-    member = membership_tool.getAuthenticatedMember()
     sample = instance.aq_parent
     sample_state = workflow.getInfoFor(sample, 'review_state')
 

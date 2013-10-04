@@ -29,5 +29,11 @@
       replacement="bika.lims.monkey.contentmenu.contentmenu_factories_available"
       />
 
+  <monkey:patch
+      description=""
+      class="Products.CMFCore.MembershipTool.MembershipTool"
+      original="getAuthenticatedMember"
+      replacement="bika.lims.monkey.member.getAuthenticatedMember"
+      />
 
 </configure>

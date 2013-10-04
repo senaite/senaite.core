@@ -51,9 +51,6 @@ class HistoryAwareReferenceField(ReferenceField):
             raise ValueError, \
                   "Multiple values given for single valued field %r" % self
 
-        pm = getToolByName(instance, "portal_membership")
-        member = pm.getAuthenticatedMember()
-
         ts = getToolByName(instance, "translation_service").translate
 
         #convert objects to uids
@@ -126,9 +123,6 @@ class HistoryAwareReferenceField(ReferenceField):
         try: res = instance.getRefs(relationship=self.relationship)
         except:
             pass
-
-        pm = getToolByName(instance, "portal_membership")
-        member = pm.getAuthenticatedMember()
 
         pr = getToolByName(instance, 'portal_repository')
 

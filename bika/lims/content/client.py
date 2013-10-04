@@ -117,7 +117,7 @@ class Client(Organisation):
         """
         membership_tool = getToolByName(instance, 'portal_membership')
         member = membership_tool.getAuthenticatedMember()
-        username = mtool.getAuthenticatedMember().getUserName()
+        username = member.getUserName()
         r = self.portal_catalog(
             portal_type = 'Contact',
             getUsername = username

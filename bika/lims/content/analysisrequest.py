@@ -59,7 +59,6 @@ schema = BikaSchema.copy() + Schema((
     ReferenceField(
         'Contact',
         required=1,
-        vocabulary='getContacts',
         default_method='getContactUIDForUser',
         vocabulary_display_path_bound=sys.maxint,
         allowed_types=('Contact',),
@@ -82,7 +81,6 @@ schema = BikaSchema.copy() + Schema((
     ReferenceField(
         'CCContact',
         multiValued=1,
-        vocabulary='getContacts',
         vocabulary_display_path_bound=sys.maxint,
         allowed_types=('Contact',),
         referenceClass=HoldingReference,
