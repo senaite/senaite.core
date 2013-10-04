@@ -458,7 +458,7 @@ class WorksheetAnalysesView(AnalysesView):
 ##            if obj.portal_type == 'DuplicateAnalysis':
 ##                barcode += "D"
 ##            pos_text += "<tr><td class='barcode' colspan='3'><div id='barcode_%s'></div>" % barcode + \
-##                "<script type='text/javascript'>$('#barcode_%s').barcode('%s', 'code39', {'barHeight':15, addQuietZone:false, showHRI: false })</script>" % (barcode, barcode) + \
+##                "<script type='text/javascript'>$('#barcode_%s').barcode('%s', 'code128', {'barHeight':15, addQuietZone:false, showHRI: false })</script>" % (barcode, barcode) + \
 ##                "</td></tr>"
 
             pos_text += "</table>"

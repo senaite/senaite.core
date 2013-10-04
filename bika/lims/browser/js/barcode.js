@@ -49,7 +49,7 @@ $(document).ready(function(){
 // XXX This doesn't work for me unless the javascript gets inserted directly into the outputted HTM.
 //    barcodes = $(".barcode");
 //	for (e = 0; e < barcodes.length; e++){
-//		$(barcodes[e]).barcode('*'+$(barcodes[e]).attr('value').split('_')[1]+'*', "code39",
+//		$(barcodes[e]).barcode('*'+$(barcodes[e]).attr('value').split('_')[1]+'*', "code128",
 //			{'barHeight':15, addQuietZone:false, showHRI: false });
 //
 //	}

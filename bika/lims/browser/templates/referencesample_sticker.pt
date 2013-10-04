@@ -96,7 +96,7 @@ td {
 
 <script
     type='text/javascript'
-    tal:content="python:'$(\'#barcode_%s\').barcode(\'%s\', \'code39\', {\'barHeight\':15, addQuietZone:true, showHRI: false })'%(context.id,context.id)">
+    tal:content="python:'$(\'#barcode_%s\').barcode(\'%s\', \'code128\', {\'barHeight\':15, addQuietZone:true, showHRI: false })'%(context.id,context.id)">
 </script>
 
 </thead>

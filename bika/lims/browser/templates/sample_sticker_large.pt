@@ -128,7 +128,7 @@
 
 <script
     type='text/javascript'
-    tal:content="python:'$(\'#barcode_%s\').barcode(\'%s\', \'code39\', {\'barHeight\':15, addQuietZone:true, showHRI: false })'%(barcode_str,barcode_str)">
+    tal:content="python:'$(\'#barcode_%s\').barcode(\'%s\', \'code128\', {\'barHeight\':15, addQuietZone:true, showHRI: false })'%(barcode_str,barcode_str)">
 </script>
 
 </thead>
