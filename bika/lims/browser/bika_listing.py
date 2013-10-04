@@ -113,12 +113,14 @@ class WorkflowAction:
                     self.context.plone_utils.addPortalMessage(message, 'info')
                 if dest:
                     self.request.response.redirect(dest)
+                    return
             else:
                 message = self.context.translate(_('No items selected'))
                 self.context.plone_utils.addPortalMessage(message, 'warn')
 
         # Do nothing
         self.request.response.redirect(self.destination_url)
+        return
 
     def submitTransition(self, action, came_from, items):
         """ Performs the action's transition for the specified items
@@ -143,17 +145,16 @@ class WorkflowAction:
                 if action in allowed_transitions:
                     success, message = doActionFor(item, action)
                     if success:
-                        transitioned.append(item.Title())
+                        transitioned.append(item.id)
                     else:
                         message = self.context.translate(message)
                         self.context.plone_utils.addPortalMessage(message, 'error')
-
         # automatic label printing
         if transitioned and action == 'receive' \
             and 'receive' in self.portal.bika_setup.getAutoPrintLabels():
             q = "/sticker?size=%s&items=" % (self.portal.bika_setup.getAutoLabelSize())
             # selected_items is a list of UIDs (stickers for AR_add use IDs)
-            q += ",".join([i.getId() for i in items])
+            q += ",".join(transitioned)
             dest = self.context.absolute_url() + q
 
         return len(transitioned), dest

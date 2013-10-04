@@ -1,4 +1,5 @@
 from Products.CMFCore.utils import getToolByName
+from bika.lims import logger
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
@@ -36,6 +37,11 @@ class Sticker(BrowserView):
             else:
                 new_items.append(i)
         self.items = new_items
+
+        if not self.items:
+            logger.warning("Cannot print labels: no items specified in request")
+            self.request.response.redirect(self.context.absolute_url())
+            return
 
         if self.items[0].portal_type == 'SamplePartition':
             if self.request.get('size', '') == 'small':
