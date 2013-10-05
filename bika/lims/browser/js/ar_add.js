@@ -842,7 +842,7 @@ function setTemplate(column,template_title){
 function setAnalysisProfile(column, profile_title){
 	var profileUID = resolve_uid('bika_setup_catalog',
 								  {'portal_type': 'AnalysisProfile',
-								   'title': profile_title});
+								   'Title': profile_title});
 	if(profileUID == "") return;
 	unsetAnalyses(column);
 
