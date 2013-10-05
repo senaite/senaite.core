@@ -22,7 +22,12 @@ def AfterTransitionEventHandler(instance, event):
 
     workflow = getToolByName(instance, 'portal_workflow')
 
-    if action_id == "attach":
+    if action_id in ("sampling_workflow", "no_sampling_workflow"):
+        sample = instance.getSample()
+        if sample.getSamplingDate() > DateTime():
+            sample.future_dated = True
+
+    elif action_id == "attach":
         instance.reindexObject(idxs = ["review_state", ])
         # Don't cascade. Shouldn't be attaching ARs for now (if ever).
         return
