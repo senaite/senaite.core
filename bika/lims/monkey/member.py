@@ -6,13 +6,14 @@ def getAuthenticatedMember(self):
     '''
     Returns the currently authenticated member object
     or the Anonymous User.  Never returns None.
-    This caches the value in the rqeust...
+    This caches the value in the reqeust...
     '''
     if not "_c_authenticatedUser" in self.REQUEST:
         u = _getAuthenticatedUser(self)
         if u is None:
             u = nobody
-        self.REQUEST['_c_authenticatedUser'] = self.wrapUser(u)
-        return self.wrapUser(u)
+        if str(u) not in ('Anonymous User',):
+            self.REQUEST['_c_authenticatedUser'] = u
     else:
-        return self.REQUEST['_c_authenticatedUser']
+        u = self.REQUEST['_c_authenticatedUser']
+    return self.wrapUser(u)
