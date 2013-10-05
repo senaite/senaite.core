@@ -36,6 +36,10 @@ def to_utf8(text):
     if type(text) == unicode:
         return text.encode('utf-8')
     else:
+        try:
+            text = text.decode('utf-8')
+        except:
+            pass
         return unicode(text).encode('utf-8')
 
 def to_unicode(text):
