@@ -20,4 +20,12 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="bika.lims.interfaces.ISupplyOrder"
+      name="print"
+      class="bika.lims.browser.supplyorder.PrintView"
+      permission="bika.lims.ManageOrders"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
 </configure>

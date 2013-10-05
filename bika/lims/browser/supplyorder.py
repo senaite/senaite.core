@@ -4,13 +4,16 @@ from zope import event
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 
 
 class View(BrowserView):
 
     template = ViewPageTemplateFile('templates/supplyorder_view.pt')
+    content = ViewPageTemplateFile('templates/supplyorder_content.pt')
     currency_td = ViewPageTemplateFile('templates/currency_td.pt')
+    title = _('Supply Order')
 
     def __call__(self):
         context = self.context
@@ -108,3 +111,11 @@ class EditView(BrowserView):
                 })
             # Render the template
             return self.template()
+
+
+class PrintView(View):
+
+    template = ViewPageTemplateFile('templates/supplyorder_print.pt')
+
+    def __call__(self):
+        return View.__call__(self)

@@ -2,24 +2,15 @@
 	xmlns:tal="http://xml.zope.org/namespaces/tal"
 	xmlns:metal="http://xml.zope.org/namespaces/metal"
 	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-	metal:use-macro="here/main_template/macros/master"
+	metal:use-macro="here/print_template/macros/master"
 	i18n:domain="bika">
-
-	<head></head>
 
 	<body>
 
-		<metal:title fill-slot="content-title">
-			<h1>
-				<span class="documentFirstHeading" tal:content="view/title"/>
-			</h1>
-		</metal:title>
-
-		<metal:core fill-slot="content-core">
+		<metal:content fill-slot="content">
 			<span tal:replace="structure view/content"></span>
-		</metal:core>
+		</metal:content>
 
 	</body>
 
 </html>
-

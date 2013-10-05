@@ -49,14 +49,16 @@
   <permission value="Modify portal content"/>
  </action>
 
- <action title="Print order"
+ <action title="Print"
          action_id="print"
-         category="object"
-         condition_expr="" icon_expr="" link_target=""
-         url_expr="string:${object_url}/order_print"
+         category="document_actions"
+         condition_expr=""
+         icon_expr="string:${object_url}/print_icon.png"
+         link_target=""
+         url_expr="string:${object_url}/print"
          i18n:attributes="title"
          visible="True">
-  <permission value="View"/>
+  <permission value="BIKA: Manage Orders"/>
  </action>
 
  <action title="Log"
