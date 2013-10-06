@@ -34,8 +34,8 @@ class CatalogVocabulary(object):
         catalog = getToolByName(site, self.catalog)
         if 'inactive_state' in catalog.indexes():
             self.contentFilter['inactive_state'] = 'active'
-        if 'cancelled_state' in catalog.indexes():
-            self.contentFilter['cancelled_state'] = 'active'
+        if 'cancellation_state' in catalog.indexes():
+            self.contentFilter['cancellation_state'] = 'active'
         self.contentFilter.update(**kwargs)
         objects = (b.getObject() for b in catalog(self.contentFilter))
 
