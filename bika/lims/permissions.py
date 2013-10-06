@@ -138,5 +138,4 @@ EditClient = 'BIKA: Edit Client'
 # ----------------------------------------------
 EditBatch = 'BIKA: Edit Batch'
 CloseBatch = 'BIKA: Close Batch'
-CancelBatch = 'BIKA: Cancel Batch'
 ReopenBatch = 'BIKA: Reopen Batch'

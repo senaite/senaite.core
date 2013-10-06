@@ -206,15 +206,6 @@ class Batch(ATFolder):
                   BatchState.closed]
         return getCurrentState(self, StateFlow.review) in states
 
-    def workflow_guard_cancel(self):
-        """ Always return true
-            The cancel transition is already controlled by 'Bika: Cancel Batch'
-            permission, but left here for security reasons and also for the
-            capability of being expanded/overrided by child products or
-            instance-specific-needs.
-        """
-        return True
-
     def workflow_guard_close(self):
         """ Permitted if current review_state is 'open'.
             The close transition is already controlled by 'Bika: Close Batch'
