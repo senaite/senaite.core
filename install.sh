@@ -1,15 +1,15 @@
 #!/bin/bash
+# Bika LIMS Installation
+# ----------------------
 #
 # Original script by Inus Scheepers (inus@bikalabs.com),
 # Proxy handling and Fedora suppot added
 # by Pieter vd Merwe pieter_vdm@debortoli.com.au
 # Minor updates by Inus Scheepers on 14 Aug 2013
-#
-# Bika LIMS Installation
-# ----------------------
+# Updated for Debian 7 and cffi on 8 Oct 2013
 #
 # This document describes the installation of Bika LIMS
-# on Ubuntu/Fedora Linux, using the Plone Unified Installer package.
+# on Ubuntu/Debian/Fedora Linux, using the Plone Unified Installer package.
 
 # ## Configure environment.
 # Change the following values if you are installing to a different directory
@@ -59,24 +59,25 @@ fi
 # Use a package manager to install the needed dependencies:
 # (apt-get is an alternative to yum)
 
-if [ -f /etc/lsb-release ]; then # Ubuntu
-  aptitude install gcc
-  aptitude install zlib1g-dev
-  aptitude install libssl-dev
-  aptitude install gnuplot
-  aptitude install git-core
-  aptitude install python-dev
-  aptitude install make
-  aptitude install libxml2-dev
-  aptitude install libxslt1-dev
-  aptitude install python-distribute
-  aptitude install build-essential
-  aptitude install libbz2-dev
-  aptitude install libjpeg-dev
-  aptitude install libreadline-dev
-  aptitude install wv
-  aptitude install poppler-utils
-  aptitude install python-imaging
+if [ -f /etc/lsb-release ] || [ -f /etc/issue ] ; then # Ubuntu or Debian 7
+  aptitude install -y gcc
+  aptitude install -y zlib1g-dev
+  aptitude install -y libssl-dev
+  aptitude install -y gnuplot
+  aptitude install -y git-core
+  aptitude install -y python-dev
+  aptitude install -y make
+  aptitude install -y libxml2-dev
+  aptitude install -y libxslt1-dev
+  aptitude install -y python-distribute
+  aptitude install -y build-essential
+  aptitude install -y libbz2-dev
+  aptitude install -y libjpeg-dev
+  aptitude install -y libreadline-dev
+  aptitude install -y wv
+  aptitude install -y poppler-utils
+  aptitude install -y python-imaging
+  aptitude install -y libffi-dev
 else
   if [ -f /etc/redhat-release ]; then # Fedora
     yum install gcc zlib-devel openssl-devel gnuplot git-core wget patch
@@ -281,13 +282,11 @@ bin/plonectl fg
 # /home/bika/zinstance/bin/plonectl start
 
 # Test by rebooting the server and verification by visiting the
-# URL by browser to check if the site is accessible.
+# URL by browser to check if everything starts up and the site is accessible.
 #
 # Thank for you reading the entire document, you may run this
 # installation on a new Ubuntu installation via bash as follows
 #
-# bash ./installation.txt
+# bash ./installation.sh
 #
 # The end.
-#
-# (Reuploaded on 26 Feb 2013 after it got clobbered)
