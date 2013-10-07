@@ -17,10 +17,6 @@ if workflow.getInfoFor(context, 'cancellation_state', "active") == "cancelled":
 
 if context.portal_type == 'AnalysisRequest':
 
-    # False if our Sample's SamplingDate is the future
-    if context.getSample().getSamplingDate() > DateTime():
-        return False
-
     # False if any Field Analyses in any of our sample's ARs have no result.
     for ar in context.getSample().getAnalysisRequests():
         if [a for a in ar.getAnalyses(getPointOfCapture='field')
@@ -28,10 +24,6 @@ if context.portal_type == 'AnalysisRequest':
             return False
 
 elif context.portal_type == 'Sample':
-
-    # False if our SamplingDate is the future
-    if context.getSamplingDate() > DateTime():
-        return False
 
     # False if any of this Sample's ARs have Field Analyses without results.
     for ar in context.getAnalysisRequests():
