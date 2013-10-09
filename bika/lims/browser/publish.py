@@ -235,18 +235,16 @@ class doPublish(BrowserView):
 
                     to = []
 
-                # AR Contacts will only receive an email if the AR main contact
-                # has the option 'email' checked in publication preferences
-                if 'email' in self.pub_pref:
-                    contact = ar.getContact()
-                    if contact:
-                        to.append(formataddr((encode_header(contact.Title()),
-                                              contact.getEmailAddress())))
-                    for cc in ar.getCCContact():
-                        formatted = formataddr((encode_header(cc.Title()),
-                                               cc.getEmailAddress()))
-                        if formatted not in to:
-                            to.append(formatted)
+                # Send report to recipients
+                recips = self.get_recipients(ar)
+                for recip in recips:
+                    if 'email' not in recip.get('pubpref', []) \
+                        or not recip.get('email', ''):
+                        continue
+
+                    title = encode_header(recip.get('title', ''))
+                    email = recip.get('email')
+                    formatted = formataddr((title, email))
 
                     # Create the new mime_msg object, cause the previous one
                     # has the pdf already attached
@@ -258,10 +256,10 @@ class doPublish(BrowserView):
                     mime_msg.preamble = 'This is a multi-part MIME message.'
                     msg_txt = MIMEText(ar_results, _subtype='html')
                     mime_msg.attach(msg_txt)
-                    mime_msg['To'] = ','.join(to)
+                    mime_msg['To'] = formatted
 
                     # Attach the pdf to the email if requested
-                    if pdf_report and 'pdf' in self.pub_pref:
+                    if pdf_report and 'pdf' in recip.get('pubpref'):
                         attachPdf(mime_msg, pdf_report, out_fn)
 
                     # For now, I will simply ignore mail send under test.
@@ -414,3 +412,20 @@ class doPublish(BrowserView):
     def get_titles_for_uids(self, *uids):
         uc = getToolByName(self.context, 'uid_catalog')
         return [p.getObject().Title() for p in uc(UID=uids)]
+
+    def get_recipients(self, ar):
+        """ Return an array with the recipients and all its publication prefs
+        """
+        recips = []
+
+        # Contact and CC's
+        contact = ar.getContact()
+        recips.append({'title': contact.Title(),
+                       'email': contact.getEmailAddress(),
+                       'pubpref': contact.getPublicationPreference()})
+        for cc in ar.getCCContact():
+            recips.append({'title': cc.Title(),
+                           'email': cc.getEmailAddress(),
+                           'pubpref': contact.getPublicationPreference()})
+
+        return recips
