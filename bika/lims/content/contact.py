@@ -27,7 +27,10 @@ schema = Person.schema.copy() + Schema((
         default = False,
         schemata = 'Publication preference',
         widget = BooleanWidget(
-            label = _("Attachments Permitted"),
+            label = _("Results attachments permitted"),
+            description = _("File attachments to results, e.g. microscope "
+                            "photos, will be included in emails to recipients "
+                            "if this option is enabled")
         ),
     ),
     ReferenceField('CCContact',
@@ -48,6 +51,7 @@ schema['Department'].schemata = 'default'
 # Don't make title required - it will be computed from the Person's Fullname
 schema['title'].required = 0
 schema['title'].widget.visible = False
+schema.moveField('CCContact', before='AttachmentsPermitted')
 
 class Contact(Person):
     implements(IContact)
