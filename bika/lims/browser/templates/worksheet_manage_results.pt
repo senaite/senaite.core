@@ -124,7 +124,7 @@
                 
                 <th i18n:translate="" style='padding-left:10px'>Value</th>
                 <td style='padding-left:5px;'>
-                    <input id='wideinterims_value' type='text'
+                    <input id='wideinterims_value' type='text' size="6"
                            tal:attributes="value python:wideinterims[wideanselected]['interims'][wideinterimselected]['value']" />
                     &nbsp;
                     <button id='wideinterims_apply' i18n:translate="">Apply</button>

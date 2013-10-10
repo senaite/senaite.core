@@ -505,15 +505,32 @@ class AnalysisResultsImporter(Logger):
         interims = hasattr(analysis, 'getInterimFields') \
                     and analysis.getInterimFields() or []
         for interim in interims:
-            keyword = interims['keyword']
+            keyword = interim['keyword']
+            title = interim['title']
             if values.get(keyword, '') or values.get(keyword, '') == 0:
                 res = values.get(keyword)
-                self.log(_("% result for '%s:%s': '%s'") %
+                self.log(_("%s result for '%s:%s': '%s'") %
                          (objid, acode, keyword, str(res)))
-                interimsout.append({'keyword': interims['keyword'],
-                                    'value': res})
-                if keyword == defresultkey:
-                    resultsaved = True
+                ninterim = interim
+                ninterim['value'] = res
+                interimsout.append(ninterim)
+                resultsaved = True
+#                interimsout.append({'keyword': interim['keyword'],
+#                                    'value': res})
+#                if keyword == defresultkey:
+#                    resultsaved = True
+            elif values.get(title, '') or values.get(title, '') == 0:
+                res = values.get(title)
+                self.log(_("%s result for '%s:%s': '%s'") %
+                         (objid, acode, title, str(res)))
+                ninterim = interim
+                ninterim['value'] = res
+                interimsout.append(ninterim)
+                resultsaved = True
+#                interimsout.append({'keyword': interim['keyword'],
+#                                    'value': res})
+#                if keyword == defresultkey:
+#                    resultsaved = True
             else:
                 interimsout.append(interim)
 
