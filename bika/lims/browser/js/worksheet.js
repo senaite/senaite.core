@@ -219,10 +219,17 @@ $(document).ready(function(){
 	        event.preventDefault();
 	        analysis=$("#wideinterims_analyses").val();
 	        interim=$("#wideinterims_interims").val();
-	        $('input[objectid='+analysis+'][field='+interim+']').each(function(i, obj) {
-	            $(this).val($('#wideinterims_value').val());
-	            $(this).change();
-	        });
+	        $('tr[keyword="'+analysis+'"] input[field="'+interim+'"]').each(function(i, obj) {
+	            if ($('#wideinterims_empty').is(':checked')) {
+	                if ($(this).val()=='' || $(this).val().match(/\d+/)=='0') {
+	                    $(this).val($('#wideinterims_value').val());
+	                    $(this).change();	                    
+	                }
+	            } else {
+                    $(this).val($('#wideinterims_value').val());
+                    $(this).change();	                
+	            }
+	        });	        
 	});
 
 });

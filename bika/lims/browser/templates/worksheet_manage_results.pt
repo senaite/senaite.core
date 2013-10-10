@@ -127,6 +127,8 @@
                     <input id='wideinterims_value' type='text' size="6"
                            tal:attributes="value python:wideinterims[wideanselected]['interims'][wideinterimselected]['value']" />
                     &nbsp;
+                    <input type='checkbox' id='wideinterims_empty' checked>&nbsp;<span i18n:translate="">Only to empty or zero fields</span>
+                    &nbsp;
                     <button id='wideinterims_apply' i18n:translate="">Apply</button>
                 </td>
              </tr>
