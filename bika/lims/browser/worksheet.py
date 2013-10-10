@@ -573,6 +573,58 @@ class ManageResultsView(BrowserView):
         edit_states = ['open', 'attachment_due', 'to_be_verified']
         return review_state in edit_states \
             and checkPermission(EditWorksheet, self.context)
+    
+    def getWideInterims(self):
+        """ Returns a dictionary with the analyses services from the current
+            worksheet which have at least one interim with 'Wide' attribute
+            set to true and state 'sample_received'
+            The structure of the returned dictionary is the following:
+            <Analysis_keyword>: {
+                'analysis': <Analysis_name>,
+                'keyword': <Analysis_keyword>,
+                'interims': {
+                    <Interim_keyword>: {
+                        'value': <Interim_default_value>,
+                        'keyword': <Interim_key>,
+                        'title': <Interim_title>
+                    }
+                }
+            }
+        """
+        outdict = {}
+        allowed_states = ['sample_received']
+        for analysis in self.context.getAnalyses():
+            wf = getToolByName(analysis, 'portal_workflow')
+            if wf.getInfoFor(analysis, 'review_state') not in allowed_states:
+                continue
+
+            service = analysis.getService()
+            if service.getKeyword() in outdict.keys():
+                continue
+
+            calculation = service.getCalculation()
+            if not calculation:
+                continue
+
+            andict = {'analysis': service.Title(),
+                      'keyword': service.getKeyword(),
+                      'interims': {}}
+
+            # Analysis Service interim defaults
+            for field in service.getInterimFields():
+                if field.get('wide', False):
+                    andict['interims'][field['keyword']] = field
+
+            # Interims from calculation
+            for field in calculation.getInterimFields():
+                if field['keyword'] not in andict['interims'].keys() \
+                    and field.get('wide', False):
+                    andict['interims'][field['keyword']] = field
+
+            if andict['interims']:
+                outdict[service.getKeyword()] = andict
+        return outdict
+
 
 class AddAnalysesView(BikaListingView):
     implements(IViewView)

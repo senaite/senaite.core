@@ -200,6 +200,30 @@ $(document).ready(function(){
 		  }
 		});
 	});
+	
+	// Manage the upper selection form for spread wide interim results values
+	$("#wideinterims_analyses").change(function(){
+	    $("#wideinterims_interims").html('');
+	    $('input[id^="wideinterim_'+$(this).val()+'"]').each(function(i, obj) {
+	        itemval = '<option value="'+ $(obj).attr('keyword') +'">'+$(obj).attr('name')+'</option>';
+	        $("#wideinterims_interims").append(itemval);
+	    });
+	});
+	$("#wideinterims_interims").change(function(){
+	    analysis = $("#wideinterims_analyses").val();
+	    interim = $(this).val();
+	    idinter = "#wideinterim_"+analysis+"_"+interim;
+	    $("#wideinterims_value").val($(idinter).val());
+	});
+	$("#wideinterims_apply").click(function(event) {
+	        event.preventDefault();
+	        analysis=$("#wideinterims_analyses").val();
+	        interim=$("#wideinterims_interims").val();
+	        $('input[objectid='+analysis+'][field='+interim+']').each(function(i, obj) {
+	            $(this).val($('#wideinterims_value').val());
+	            $(this).change();
+	        });
+	});
 
 });
 }(jQuery));

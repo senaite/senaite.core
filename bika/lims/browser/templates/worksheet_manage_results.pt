@@ -79,6 +79,59 @@
 			</td>
 		</tr>
 	</table>
+	
+	<tal:interimwide tal:define="wideinterims view/getWideInterims;"
+	                 tal:condition="python: wideinterims">
+        <table tal:define="wideanselected python:wideinterims.keys()[0];
+                           wideinterimselected python:wideinterims[wideanselected]['interims'].keys()[0]"
+               class='wideinterims_bar'>
+            <tr>
+	            <th i18n:translate="">Autofill</th>
+                <td>
+                    <select id='wideinterims_analyses'
+                            style='font-size: 100%;margin-left:1em;'>
+                            <tal:options repeat="option python:wideinterims.keys()">
+                                <option tal:attributes="
+                                            value python:option;
+                                            selected python:option==wideanselected;"
+                                        tal:content="python:wideinterims[option]['analysis']" />                                 
+                            </tal:options>
+                    </select>
+                    <tal:hiddeninterims repeat="an python:wideinterims.keys()">
+                        <tal:hiddeninterim repeat="inter python:wideinterims[an]['interims'].values()">
+	                        <input type='hidden'
+	                               tal:attributes="
+	                                    id python:'wideinterim_%s_%s' % (an, inter['keyword']);
+	                                    name python:inter['title'];
+	                                    value python:inter['value'];
+	                                    keyword python:inter['keyword'];"/>
+                        </tal:hiddeninterim>
+                    </tal:hiddeninterims>
+                </td>
+                
+                <th i18n:translate="" style='padding-left:10px;'>Field</th>
+                <td>
+                    <select id='wideinterims_interims'
+                            style='font-size: 100%;margin-left:1em;'>
+                            <tal:options repeat="interim python:wideinterims[wideanselected]['interims'].keys()">
+                                <option tal:attributes="
+                                            value python:interim;
+                                            selected python:interim==wideinterimselected;"
+                                        tal:content="python:wideinterims[wideanselected]['interims'][interim]['title']" />                                 
+                            </tal:options>
+                    </select>
+                </td>
+                
+                <th i18n:translate="" style='padding-left:10px'>Value</th>
+                <td style='padding-left:5px;'>
+                    <input id='wideinterims_value' type='text'
+                           tal:attributes="value python:wideinterims[wideanselected]['interims'][wideinterimselected]['value']" />
+                    &nbsp;
+                    <button id='wideinterims_apply' i18n:translate="">Apply</button>
+                </td>
+             </tr>
+        </table>
+	</tal:interimwide>
 
 	<span tal:replace="structure view/Analyses/contents_table"/>
 
