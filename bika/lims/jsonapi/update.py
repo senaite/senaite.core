@@ -37,8 +37,8 @@ class Update(object):
 
         ret = {
             "url": router.url_for("update", force_external=True),
-            "success": True,
-            "error": False,
+            "success": False,
+            "error": True,
             "objects": [],
         }
         obj_path = request.get("obj_path", "")
@@ -47,15 +47,15 @@ class Update(object):
         if not obj_path.startswith("/"):
             obj_path = "/" + obj_path
         site_path = request['PATH_INFO'].replace("/@@API/update", "")
-#        try:
         obj = context.restrictedTraverse(site_path + obj_path)
-#        except:
-#            raise BadRequest("Object does not exist: " + obj_path)
 
         try:
             set_fields_from_request(obj, request)
         except:
             savepoint.rollback()
             raise
+
+        ret['success'] = True
+        ret['error'] = False
 
         return ret
