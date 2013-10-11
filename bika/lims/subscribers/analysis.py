@@ -20,39 +20,30 @@ def ObjectInitializedEventHandler(instance, event):
     if instance.portal_type == "DuplicateAnalysis":
         return
 
-    # 'receive' instance if AR is received.
-    # Adding a new instance to an AR retracts the AR to 'sample_received'
-    # AR may have to be unassigned too
+    wf = getToolByName(instance, 'portal_workflow')
 
     ar = instance.aq_parent
-    ar_UID = ar.UID()
-    wf = getToolByName(instance, 'portal_workflow')
     ar_state = wf.getInfoFor(ar, 'review_state')
     ar_ws_state = wf.getInfoFor(ar, 'worksheetanalysis_review_state')
 
-    if ar_state not in ('sample_registered', 'sampled',
-                        'to_be_sampled', 'to_be_preserved',
-                        'sample_due'):
-        try:
-            wf.doActionFor(instance, 'receive')
-        except WorkflowException:
-            pass
-
-    # Note: AR adds itself to the skiplist so we have to take it off again
-    #       to allow possible promotions if other analyses are deleted.
-    if ar_state not in ('sample_registered', 'sampled',
-                        'to_be_sampled', 'to_be_preserved',
-                        'sample_due', 'sample_received'):
-        if not instance.REQUEST.has_key('workflow_skiplist'):
-            instance.REQUEST['workflow_skiplist'] = ['retract all analyses', ]
-        else:
-            instance.REQUEST["workflow_skiplist"].append('retract all analyses')
-        doActionFor(ar, 'retract')
-        skip(ar, 'retract', unskip=True)
+    # Set the state of the analysis depending on the state of the AR.
+    if ar_state in ('sample_registered',
+                    'to_be_sampled',
+                    'sampled',
+                    'to_be_preserved',
+                    'sample_due',
+                    'sample_received'):
+        changeWorkflowState(instance, "bika_analysis_workflow", ar_state)
+    elif ar_state in ('to_be_verified'):
+        changeWorkflowState(instance, "bika_analysis_workflow", received)
+        # bring AR back to 'received'.
+        wf.doActionFor(ar, 'revert')
 
     if ar_ws_state == 'assigned':
         wf.doActionFor(ar, 'unassign')
         skip(ar, 'unassign', unskip=True)
+
+    instance.updateDueDate()
 
     return
 
@@ -68,7 +59,6 @@ def ObjectRemovedEventHandler(instance, event):
     #  if all other analyses are at a higher state than this one was.
     wf = getToolByName(instance, 'portal_workflow')
     ar = instance.aq_parent
-    ar_UID = ar.UID()
     can_submit = True
     can_attach = True
     can_verify = True
