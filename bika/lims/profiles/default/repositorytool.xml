@@ -1,39 +1,7 @@
 <?xml version="1.0"?>
 <repositorytool>
     <policymap>
-        <type name="Analysis">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="AnalysisCategory">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="AnalysisProfile">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="AnalysisRequest">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
         <type name="AnalysisService">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="AnalysisSpec">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="ARTemplate">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="Attachment">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="Batch">
             <policy name="at_edit_autoversion"/>
             <policy name="version_on_revert"/>
         </type>
@@ -41,115 +9,7 @@
             <policy name="at_edit_autoversion"/>
             <policy name="version_on_revert"/>
         </type>
-        <type name="Client">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="Contact">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="Container">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="ContainerType">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="Department">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="DuplicateAnalysis">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="Instrument">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="InstrumentCalibration">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="InstrumentCertification">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="InstrumentMaintenanceTask">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="InstrumentScheduledTask">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="InstrumentType">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="InstrumentValidation">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="Manufacturer">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
         <type name="Method">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="Preservation">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="PriceList">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="ReferenceAnalysis">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="ReferenceDefinition">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="ReferenceSample">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="Sample">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="SampleMatrix">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="SamplePoint">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="SampleType">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="Supplier">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="SupplierContact">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="Worksheet">
-            <policy name="at_edit_autoversion"/>
-            <policy name="version_on_revert"/>
-        </type>
-        <type name="WorksheetTemplate">
             <policy name="at_edit_autoversion"/>
             <policy name="version_on_revert"/>
         </type>

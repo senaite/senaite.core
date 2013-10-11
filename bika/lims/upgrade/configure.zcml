@@ -318,5 +318,15 @@
         handler="bika.lims.upgrade.to1140.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Re-import updated profile"
+        description="Remove un-necessary versioning and reload workflow permissions"
+        source="1140"
+        destination="1141"
+        handler="bika.lims.upgrade.to1140.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
 
