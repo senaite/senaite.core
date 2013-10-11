@@ -93,20 +93,20 @@ def read(context, request):
         obj = proxy.getObject()
         schema = obj.Schema()
         for field in schema.fields():
-            accessor = field.getAccessor(obj)
-            if accessor and callable(accessor):
-                # XXX Adapter
-                if obj.portal_type == 'AnalysisRequest' and field.getName() == 'Analyses':
-                    val = ar_analysis_values(obj)
-                else:
-                    val = accessor()
-                    if hasattr(val, 'Title') and callable(val.Title):
+            if obj.portal_type == 'AnalysisRequest' and field.getName() == 'Analyses':
+                val = ar_analysis_values(obj)
+            else:
+                val = field.get(obj)
+                if field.type == 'reference':
+                    if type(val) in (list, tuple):
+                        val = [v.Title() for v in val]
+                    else:
                         val = val.Title()
-                    try:
-                        json.dumps(val)
-                    except:
-                        val = str(val)
-                obj_data[field.getName()] = val
+                try:
+                    json.dumps(val)
+                except:
+                    val = str(val)
+            obj_data[field.getName()] = val
         ret['objects'].append(obj_data)
     return ret
 

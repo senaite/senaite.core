@@ -6,14 +6,22 @@ from zExceptions import BadRequest
 def resolve_request_lookup(context, request, fieldname):
     brains = []
     at = getToolByName(context, TOOL_NAME, None)
-    for entry in request[fieldname].split("|"):
+    entries = request[fieldname] if type(request[fieldname]) in (list, tuple) \
+              else [request[fieldname], ]
+    for entry in entries:
         contentFilter = {}
         for value in entry.split(","):
             if ":" in value:
                 index, value = value.split(":", 1)
             else:
                 index, value = 'id', value
-            contentFilter[index] = value
+            if index in contentFilter:
+                v = contentFilter[index]
+                v = v if type(v) in (list, tuple) else [v, ]
+                v.append(value)
+                contentFilter[index] = v
+            else:
+                contentFilter[index] = value
         # search all possible catalogs
         if 'portal_type' in contentFilter:
             catalogs = at.getCatalogsByType(contentFilter['portal_type'])
@@ -37,7 +45,15 @@ def set_fields_from_request(obj, request):
     To set Reference fields embed the portal_catalog search
 
     ...& <FieldName>=index:value &...
-    ...& <FieldName>=index:value|index:value &...
+
+    eg to set the Client of a batch:
+
+    ...@@APIU/update?obj_path=batches/BATCH_ID&Client=title:Client Name&...
+
+    And, to set a multi-valued reference, use the Plone :list format to pass
+    each element of the list separately:
+
+    ...@@APIU/update?obj_path=batches/BATCH_ID&InheritedObjects:list=title:AR1&InheritedObjects:list=title:AR2&...
 
     """
     schema = obj.Schema()
