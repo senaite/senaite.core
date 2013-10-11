@@ -301,7 +301,7 @@ class Analysis(BaseContent):
         mapping = {}
 
         # Add interims to mapping
-        for interimuid, interimdata in self.getInterimFields():
+        for interimdata in self.getInterimFields():
             for i in interimdata:
                 try:
                     ivalue = float(i['value'])
