@@ -20,6 +20,9 @@ class InlineValidationView(_IVV):
             instance = self.context
 
         field = instance.getField(fname)
+        if not field:
+            return json.dumps(res)
+
         if field.type not in SKIP_VALIDATION_FIELDTYPES:
             return super(InlineValidationView, self).__call__(uid, fname, value)
 
