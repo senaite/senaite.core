@@ -75,12 +75,15 @@ def read(context, request):
         contentFilter['limit'] = int(request.get("limit", 1))
     except ValueError:
         contentFilter['limit'] = 1
+    include_fields = [x.strip() for x in request.get("include_fields", "").split(",")]
     # Get matching objects from catalog
     proxies = catalog(**contentFilter)
     for proxy in proxies:
         obj_data = {}
         # Place all proxy attributes into the result.
         for index in proxy.indexes():
+            if include_fields and index not in include_fields:
+                continue
             if index in proxy:
                 val = getattr(proxy, index)
                 if val != Missing.Value:
@@ -93,7 +96,10 @@ def read(context, request):
         obj = proxy.getObject()
         schema = obj.Schema()
         for field in schema.fields():
-            if obj.portal_type == 'AnalysisRequest' and field.getName() == 'Analyses':
+            fieldname = field.getName()
+            if include_fields and fieldname not in include_fields:
+                continue
+            if obj.portal_type == 'AnalysisRequest' and fieldname == 'Analyses':
                 val = ar_analysis_values(obj)
             else:
                 val = field.get(obj)
@@ -106,7 +112,7 @@ def read(context, request):
                     json.dumps(val)
                 except:
                     val = str(val)
-            obj_data[field.getName()] = val
+            obj_data[fieldname] = val
         ret['objects'].append(obj_data)
     return ret
 
