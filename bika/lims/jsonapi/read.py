@@ -75,7 +75,8 @@ def read(context, request):
         contentFilter['limit'] = int(request.get("limit", 1))
     except ValueError:
         contentFilter['limit'] = 1
-    include_fields = [x.strip() for x in request.get("include_fields", "").split(",")]
+    include_fields = [x.strip() for x in request.get("include_fields", "").split(",")
+                      if x.strip()]
     # Get matching objects from catalog
     proxies = catalog(**contentFilter)
     for proxy in proxies:
