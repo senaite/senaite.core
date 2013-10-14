@@ -200,12 +200,13 @@ class Analysis(BaseContent):
                      / 86400
                  )
         part = self.getSamplePartition()
-        starttime = part.getDateReceived()
-        if starttime:
-            duetime = starttime + max_days
-        else:
-            duetime = ''
-        self.setDueDate(duetime)
+        if part:
+            starttime = part.getDateReceived()
+            if starttime:
+                duetime = starttime + max_days
+            else:
+                duetime = ''
+            self.setDueDate(duetime)
 
     def getUncertainty(self, result=None):
         """ Calls self.Service.getUncertainty with either the provided
