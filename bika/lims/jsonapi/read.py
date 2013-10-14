@@ -104,11 +104,14 @@ def read(context, request):
                 val = ar_analysis_values(obj)
             else:
                 val = field.get(obj)
-                if field.type == 'reference':
-                    if type(val) in (list, tuple):
-                        val = [v.Title() for v in val]
-                    else:
-                        val = val.Title()
+                if val:
+                    if field.type == 'reference':
+                        if type(val) in (list, tuple):
+                            val = [v.Title() for v in val]
+                        else:
+                            val = val.Title()
+                else:
+                    val = ''
                 try:
                     json.dumps(val)
                 except:
