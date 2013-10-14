@@ -22,10 +22,10 @@ def resolve_request_lookup(context, request, fieldname):
     brains = []
     at = getToolByName(context, TOOL_NAME, None)
     entries = request[fieldname] if type(request[fieldname]) in (list, tuple) \
-              else request[fieldname].split("|")
+              else [request[fieldname], ]
     for entry in entries:
         contentFilter = {}
-        for value in entry.split(","):
+        for value in entry.split("|"):
             if ":" in value:
                 index, value = value.split(":", 1)
             else:
