@@ -7,7 +7,7 @@ def resolve_request_lookup(context, request, fieldname):
     brains = []
     at = getToolByName(context, TOOL_NAME, None)
     entries = request[fieldname] if type(request[fieldname]) in (list, tuple) \
-              else [request[fieldname], ]
+              else request[fieldname].split("|")
     for entry in entries:
         contentFilter = {}
         for value in entry.split(","):
