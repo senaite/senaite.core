@@ -1,7 +1,15 @@
 <configure
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:monkey="http://namespaces.plone.org/monkey"
     i18n_domain="bika">
+
+  <monkey:patch
+      description="Better jsonapi error handler."
+      module="plone.jsonapi.browser.decorators"
+      original="handle_errors"
+      replacement="bika.lims.jsonapi.handle_errors"
+      />
 
   <utility
     name="bika.lims.jsonapi.create"

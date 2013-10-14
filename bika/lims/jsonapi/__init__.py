@@ -3,6 +3,21 @@ from Products.CMFCore.utils import getToolByName
 from zExceptions import BadRequest
 
 
+def handle_errors(f):
+    """ simple JSON error handler
+    """
+    import traceback
+    from plone.jsonapi.helpers import error
+
+    def decorator(*args, **kwargs):
+        try:
+            return f(*args, **kwargs)
+        except Exception, e:
+            var = traceback.format_exc()
+            return error(var)
+    return decorator
+
+
 def resolve_request_lookup(context, request, fieldname):
     brains = []
     at = getToolByName(context, TOOL_NAME, None)
