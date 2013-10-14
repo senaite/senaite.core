@@ -114,12 +114,9 @@ class Batch(ATFolder):
         if client:
             return client
         else:
-            # Search for ARs and retrieve the first client found
-            bc = getToolByName(self, 'bika_catalog')
-            proxies = bc(portal_type="AnalysisRequest",
-                         getBatchUID=self.UID())
-            if proxies:
-                client = proxies[0].aq_parent
+            ars = self.getAnalysisRequests()
+            if ars:
+                client = ars[0].aq_parent
         return client
 
     def getClientTitle(self):
