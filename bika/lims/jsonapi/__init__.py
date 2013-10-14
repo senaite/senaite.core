@@ -101,7 +101,5 @@ def set_fields_from_request(obj, request):
                 value = eval(value)
             except:
                 raise BadRequest(fieldname + ": Invalid JSON/Python variable")
-        mutator = field.getMutator(obj)
-        if mutator and callable(mutator):
-            mutator(value)
-        obj.reindexObject()
+        mutator = field.set(obj, value)
+    obj.reindexObject()
