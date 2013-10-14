@@ -4,6 +4,7 @@ from Products.Archetypes.event import ObjectInitializedEvent
 from Products.Archetypes.public import *
 from Products.Archetypes.utils import shasattr
 from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.WorkflowCore import WorkflowException
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.permissions import ViewRetractedAnalyses
@@ -131,10 +132,15 @@ class ARAnalysesField(ObjectField):
                 analysis.unmarkCreationFlag()
                 zope.event.notify(ObjectInitializedEvent(analysis))
                 SamplingWorkflowEnabled = instance.bika_setup.getSamplingWorkflowEnabled()
-                if SamplingWorkflowEnabled:
-                    workflow.doActionFor(analysis, 'sampling_workflow')
-                else:
-                    workflow.doActionFor(analysis, 'no_sampling_workflow')
+                try:
+                    if SamplingWorkflowEnabled:
+                        workflow.doActionFor(analysis, 'sampling_workflow')
+                    else:
+                        workflow.doActionFor(analysis, 'no_sampling_workflow')
+                except WorkflowException:
+                    # The analysis may have been transitioned already!
+                    # I am leaving this code here though, to prevent regression.
+                    pass
                 new_analyses.append(analysis)
                 # Note: subscriber might retract and/or unassign the AR
 
