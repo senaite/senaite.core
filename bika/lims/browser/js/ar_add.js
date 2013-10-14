@@ -906,6 +906,25 @@ function clickAnalysisCategory(){
 	}
 }
 
+function applyComboFilter(element, filterkey, filtervalue) {
+    base_query=$.parseJSON($(element).attr("base_query"));
+    base_query[filterkey] = filtervalue;
+    $(element).attr("base_query", $.toJSON(base_query));
+    options = $.parseJSON($(element).attr("combogrid_options"));
+    options.url = window.location.href.split("/ar_add")[0] + "/" + options.url
+    options.url = options.url + '?_authenticator=' + $('input[name="_authenticator"]').val();
+    options.url = options.url + '&catalog_name=' + $(element).attr('catalog_name');
+    options.url = options.url + '&base_query=' + $.toJSON(base_query);
+    options.url = options.url + '&search_query=' + $(element).attr('search_query');
+    options.url = options.url + '&colModel=' + $.toJSON( $.parseJSON($(element).attr('combogrid_options'))["colModel"] );
+    options.url = options.url + '&search_fields=' + $.toJSON($.parseJSON($(element).attr('combogrid_options'))["search_fields"]);
+    options.url = options.url + '&discard_empty=' + $.toJSON($.parseJSON($(element).attr('combogrid_options'))["discard_empty"]);
+    options['force_all']='false';
+    $(element).combogrid(options);
+    $(element).addClass("has_combogrid_widget");
+    $(element).attr('search_query', '{}');
+}
+
 $(document).ready(function(){
 
     // Only if the view is the Analysis Request Add View
@@ -998,6 +1017,23 @@ $(document).ready(function(){
     	window.recalc_prices = recalc_prices;
     	window.calculate_parts = calculate_parts;
     	window.toggleCat = toggleCat;
+    	
+    	// Show only the contacts from the selected Client
+    	fromclient = window.location.href.search('/clients/') >= 0;
+    	if (fromclient) {
+    	    for (var col=0; col<parseInt($("#col_count").val()); col++) {
+    	        element = $("#ar_" + col + "_Contact");
+    	        clientuid = $("#ar_" + col + "_Client_uid").val(); 
+    	        applyComboFilter(element, "getParentUID", clientuid);
+    	    }
+    	} else {
+            $('[id$="_Client"]').bind("change", function() {
+                col = this.id.split("_")[1]
+                clientuid = $(this).attr('uid');
+                element = $("#ar_" + col + "_Contact");
+                applyComboFilter(element, "getParentUID", clientuid);
+            });
+    	}
 
     }
 });
