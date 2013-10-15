@@ -117,6 +117,7 @@ def read(context, request):
                 except:
                     val = str(val)
             obj_data[fieldname] = val
+        obj_data['path'] = "/".join(obj.getPhysicalPath())
         ret['objects'].append(obj_data)
     return ret
 
