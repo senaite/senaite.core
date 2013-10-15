@@ -64,6 +64,11 @@ def ObjectRemovedEventHandler(instance, event):
     can_verify = True
     can_publish = True
 
+    # We add this manually here, because during admin/ZMI removal,
+    # it may possibly not be added by the workflow code.
+    if not 'workflow_skiplist' in instance.REQUEST:
+        instance.REQUEST['workflow_skiplist'] = []
+
     for a in ar.getAnalyses():
         a_state = a.review_state
         if a_state in \
@@ -88,25 +93,40 @@ def ObjectRemovedEventHandler(instance, event):
     # Note: AR adds itself to the skiplist so we have to take it off again
     #       to allow multiple promotions (maybe by more than one deleted instance).
     if can_submit and wf.getInfoFor(ar, 'review_state') == 'sample_received':
-        wf.doActionFor(ar, 'submit')
+        try:
+            wf.doActionFor(ar, 'submit')
+        except WorkflowException:
+            pass
         skip(ar, 'submit', unskip=True)
     if can_attach and wf.getInfoFor(ar, 'review_state') == 'attachment_due':
-        wf.doActionFor(ar, 'attach')
+        try:
+            wf.doActionFor(ar, 'attach')
+        except WorkflowException:
+            pass
         skip(ar, 'attach', unskip=True)
     if can_verify and wf.getInfoFor(ar, 'review_state') == 'to_be_verified':
         instance.REQUEST["workflow_skiplist"].append('verify all analyses')
-        wf.doActionFor(ar, 'verify')
+        try:
+            wf.doActionFor(ar, 'verify')
+        except WorkflowException:
+            pass
         skip(ar, 'verify', unskip=True)
     if can_publish and wf.getInfoFor(ar, 'review_state') == 'verified':
         instance.REQUEST["workflow_skiplist"].append('publish all analyses')
-        wf.doActionFor(ar, 'publish')
+        try:
+            wf.doActionFor(ar, 'publish')
+        except WorkflowException:
+            pass
         skip(ar, 'publish', unskip=True)
 
     ar_ws_state = wf.getInfoFor(ar, 'worksheetanalysis_review_state')
     if ar_ws_state == 'unassigned':
         if not ar.getAnalyses(worksheetanalysis_review_state = 'unassigned'):
             if ar.getAnalyses(worksheetanalysis_review_state = 'assigned'):
-                wf.doActionFor(ar, 'assign')
+                try:
+                    wf.doActionFor(ar, 'assign')
+                except WorkflowException:
+                    pass
                 skip(ar, 'assign', unskip=True)
 
     return
