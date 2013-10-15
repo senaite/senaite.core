@@ -35,7 +35,7 @@ def ObjectInitializedEventHandler(instance, event):
                     'sample_received'):
         changeWorkflowState(instance, "bika_analysis_workflow", ar_state)
     elif ar_state in ('to_be_verified'):
-        changeWorkflowState(instance, "bika_analysis_workflow", received)
+        changeWorkflowState(instance, "bika_analysis_workflow", 'received')
         # bring AR back to 'received'.
         wf.doActionFor(ar, 'revert')
 
