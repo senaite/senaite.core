@@ -42,7 +42,8 @@ class BatchFolderContentsView(BikaListingView):
 
         self.review_states = [  # leave these titles and ids alone
             {'id':'default',
-             'contentFilter': {'review_state': 'open'},
+             'contentFilter': {'review_state': 'open',
+                               'cancellation_state': 'active'},
              'title': _('Open'),
              'transitions': [{'id':'close'},{'id':'cancel'}],
              'columns':['BatchID',
@@ -50,7 +51,8 @@ class BatchFolderContentsView(BikaListingView):
                         'state_title', ]
              },
             {'id':'closed',
-             'contentFilter': {'review_state': 'closed'},
+             'contentFilter': {'review_state': 'closed',
+                               'cancellation_state': 'active'},
              'title': _('Closed'),
              'transitions': [{'id':'open'}],
              'columns':['BatchID',
@@ -59,8 +61,8 @@ class BatchFolderContentsView(BikaListingView):
              },
             {'id':'cancelled',
              'title': _('Cancelled'),
-             'transitions': [{'id':'open'}],
-             'contentFilter': {'review_state': 'cancelled'},
+             'transitions': [{'id':'reinstate'}],
+             'contentFilter': {'cancellation_state': 'cancelled'},
              'columns':['BatchID',
                         'Description',
                         'state_title', ]
@@ -119,7 +121,8 @@ class ajaxGetBatches(BrowserView):
 
         for batch in batches:
             batch = batch.getObject()
-            if self.portal_workflow.getInfoFor(batch, 'review_state', 'open') != 'open':
+            if self.portal_workflow.getInfoFor(batch, 'review_state', 'open') != 'open' \
+               or self.portal_workflow.getInfoFor(batch, 'cancellation_state') == 'cancelled':
                 continue
             if batch.Title().lower().find(searchTerm) > -1 \
             or batch.Description().lower().find(searchTerm) > -1:

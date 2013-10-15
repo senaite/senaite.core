@@ -3,7 +3,8 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IBatch
-from bika.lims.workflow import skip, BatchState, StateFlow, getCurrentState
+from bika.lims.workflow import skip, BatchState, StateFlow, getCurrentState,\
+    CancellationState
 from plone.app.folder.folder import ATFolder
 from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
@@ -190,7 +191,10 @@ class Batch(ATFolder):
     def isOpen(self):
         """ Returns true if the Batch is in 'open' state
         """
-        return getCurrentState(self, StateFlow.review) == BatchState.open
+        revstatus = getCurrentState(self, StateFlow.review)
+        canstatus = getCurrentState(self, StateFlow.cancellation)
+        return revstatus == BatchState.open \
+            and canstatus == CancellationState.active
 
     def workflow_guard_open(self):
         """ Permitted if current review_state is 'closed' or 'cancelled'
@@ -199,9 +203,10 @@ class Batch(ATFolder):
             capability of being expanded/overrided by child products or
             instance-specific-needs.
         """
-        states = [BatchState.cancelled,
-                  BatchState.closed]
-        return getCurrentState(self, StateFlow.review) in states
+        revstatus = getCurrentState(self, StateFlow.review)
+        canstatus = getCurrentState(self, StateFlow.cancellation)
+        return revstatus == BatchState.closed \
+            and canstatus == CancellationState.active
 
     def workflow_guard_close(self):
         """ Permitted if current review_state is 'open'.
@@ -210,8 +215,10 @@ class Batch(ATFolder):
             capability of being expanded/overrided by child products or
             instance-specific needs.
         """
-        states = [BatchState.open]
-        return getCurrentState(self, StateFlow.review) in states
+        revstatus = getCurrentState(self, StateFlow.review)
+        canstatus = getCurrentState(self, StateFlow.cancellation)
+        return revstatus == BatchState.open \
+            and canstatus == CancellationState.active
 
 
 registerType(Batch, PROJECTNAME)
