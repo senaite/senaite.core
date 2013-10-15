@@ -85,4 +85,7 @@ class Contact(Person):
         pairs.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
         return dl and DisplayList(pairs) or objects
 
+    def getParentUID(self):
+        return self.aq_parent.UID();
+
 atapi.registerType(Contact, PROJECTNAME)
