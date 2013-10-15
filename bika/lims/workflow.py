@@ -72,3 +72,12 @@ InactiveState = enum(active='active')
 BatchState = enum(open='open',
                   closed='closed',
                   cancelled='cancelled')
+
+BatchTransitions = enum(open='open',
+                        close='close')
+
+CancellationState = enum(active='active',
+                         cancelled='cancelled')
+
+CancellationTransitions = enum(cancel='cancel',
+                               reinstate='reinstate')
