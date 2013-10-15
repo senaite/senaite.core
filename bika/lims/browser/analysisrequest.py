@@ -1808,6 +1808,7 @@ class ajaxAnalysisRequestSubmit():
                 sample = client[_id]
                 saved_form = self.request.form
                 self.request.form = resolved_values
+                sample.setSampleType(resolved_values['SampleType'])
                 sample.processForm()
                 self.request.form = saved_form
                 if SamplingWorkflowEnabled:
