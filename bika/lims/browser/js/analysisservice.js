@@ -5,8 +5,8 @@
 		_ = jarn.i18n.MessageFactory('bika');
 		PMF = jarn.i18n.MessageFactory('plone');
 
-		$("#InterimFields_more").hide();
-		$("#Calculation\\:list").change(function(){
+		$(".portaltype-analysisservice #InterimFields_more").hide();
+		$(".portaltype-analysisservice #Calculation\\:list").change(function(){
 			// no calculation selected
 			// clear and hide InterimFields widget completely
 			if($(this).val() == ''){
@@ -64,7 +64,7 @@
 				}
 			});
 		});
-		if($("#Calculation\\:list").val() == ''){
+		if($(".portaltype-analysisservice #Calculation\\:list").val() == ''){
 			$("#InterimFields_more").click(); // blank last row
 			var rows = $("tr.records_row_InterimFields") // Clear the rest
 			if($(rows).length > 1){
@@ -100,7 +100,7 @@
 
 		// service defaults
 		// update defalt Containers
-		$("#RequiredVolume, #Separate").change(function(){
+		$(".portaltype-analysisservice #RequiredVolume, .portaltype-analysisservice #Separate").change(function(){
 			separate = $("#Separate").prop('checked');
 			if(!separate){
 				$("[name='Preservation\\:list']").prop('disabled', false);
@@ -116,7 +116,7 @@
 		// partition table -> separate checkboxes
 		// partition table -> minvol field
 		// update row's containers
-		$("[name^='PartitionSetup.separate'],[name^='PartitionSetup.vol']").change(function(){
+		$(".portaltype-analysisservice [name^='PartitionSetup.separate'],.portaltype-analysisservice [name^='PartitionSetup.vol']").change(function(){
 			separate = $(this).parents("tr").find("[name^='PartitionSetup.separate']").prop("checked");
 			if (!separate){
 				$(this).parents("tr").find("[name^='PartitionSetup.preservation']").prop('disabled', false);
@@ -133,7 +133,7 @@
 		});
 
 		// copy sampletype MinimumVolume to minvol when selecting sampletype
-		$("[name^='PartitionSetup.sampletype']").change(function(){
+		$(".portaltype-analysisservice [name^='PartitionSetup.sampletype']").change(function(){
 			// get sampletype volume from bika_utils
 			option = $(this).children().filter(":selected");
 			if(!option || $(option).val() == '' || option.length == 0){
@@ -153,7 +153,7 @@
 
 		// Selecting a pre-preserved container will filter and disable the
 		// Preservations list.
-		$("[name^='Container'],[name^='PartitionSetup.container']").change(function(){
+		$(".portaltype-analysisservice [name^='Container'],.portaltype-analysisservice [name^='PartitionSetup.container']").change(function(){
 			if ($(this).attr('name').search("Container") == 0){
 				target = "[name='Preservation\\:list']";
 				separate = $('#Separate').prop("checked");
@@ -194,9 +194,9 @@
 
 
 		// update on first load
-		$("[name^='PartitionSetup.separate']").change();
-		$("[name^='Container']").change();
-		$("[name^='PartitionSetup.container']").change();
+		$(".portaltype-analysisservice [name^='PartitionSetup.separate']").change();
+		$(".portaltype-analysisservice [name^='Container']").change();
+		$(".portaltype-analysisservice [name^='PartitionSetup.container']").change();
 
 
 	});
