@@ -230,7 +230,8 @@ class Analysis(BaseContent):
             if not calculation:
                 continue
             depservices = calculation.getDependentServices()
-            if self.getService() in depservices:
+            dep_keywords = [x.getKeyword() for x in depservices]
+            if self.getService().getKeyword() in dep_keywords:
                 dependents.append(sibling)
         return dependents
 
