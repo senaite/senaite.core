@@ -51,7 +51,7 @@ $(document).ready(function(){
      * Used on batch folder views
      */
     $(".portaltype-batchfolder").append("" +
-            "<div id='batch-cancel-dialog' title='"+_("Cancel batch/es?")+">" +
+            "<div id='batch-cancel-dialog' title='"+_("Cancel batch/es?")+"'>" +
             "    <p style='padding:10px'>" +
             "        <span class='ui-icon ui-icon-alert' style=''float: left; margin: 0 7px 30px 0;'><br/></span>" +
             "        "+_("All linked Analysis Requests will be cancelled too.") +
@@ -87,7 +87,7 @@ $(document).ready(function(){
                event.preventDefault();
                $("#batch-cancel-dialog").dialog("open");
                return false;
-           }           
+           }
        } else {
            return false;
        }
