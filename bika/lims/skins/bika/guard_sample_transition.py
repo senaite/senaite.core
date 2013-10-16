@@ -17,15 +17,12 @@ if workflow.getInfoFor(context, 'cancellation_state', "active") == "cancelled":
 
 if context.portal_type == 'AnalysisRequest':
 
-    # False if our SamplingDate is the future
-    if context.getSample().getSamplingDate() > DateTime():
-        return False
+    pass
 
 elif context.portal_type == 'Sample':
 
-    # False if our SamplingDate is the future
-    if context.getSamplingDate() > DateTime():
-        return False
+    pass
+
 
 # Always available for Analysis
 

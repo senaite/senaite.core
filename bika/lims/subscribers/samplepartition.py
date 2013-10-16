@@ -96,8 +96,6 @@ def AfterTransitionEventHandler(instance, event):
                     doActionFor(ar, action_id)
 
     elif action_id == "receive":
-        if sample.getSamplingDate() > DateTime():
-            raise WorkflowException
         instance.setDateReceived(DateTime())
         instance.reindexObject(idxs = ["getDateReceived", ])
         # Transition our analyses
