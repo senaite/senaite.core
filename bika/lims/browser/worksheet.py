@@ -573,7 +573,7 @@ class ManageResultsView(BrowserView):
         edit_states = ['open', 'attachment_due', 'to_be_verified']
         return review_state in edit_states \
             and checkPermission(EditWorksheet, self.context)
-    
+
     def getWideInterims(self):
         """ Returns a dictionary with the analyses services from the current
             worksheet which have at least one interim with 'Wide' attribute
@@ -989,6 +989,7 @@ class WorksheetARsView(BikaListingView):
                 'class': {},
                 'state_class': 'state-active',
                 'allow_edit': [],
+                'required': [],
             }
             items.append(item)
         items = sorted(items, key = itemgetter('Position'))
@@ -1067,6 +1068,7 @@ class WorksheetServicesView(BikaListingView):
                 'class': {},
                 'state_class': 'state-active',
                 'allow_edit': [],
+                'required': [],
             }
             items.append(item)
 

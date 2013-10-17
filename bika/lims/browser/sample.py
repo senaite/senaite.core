@@ -154,6 +154,7 @@ class SamplePartitionsView(BikaListingView):
                 'choices': {},
                 'class': {},
                 'allow_edit': [],
+                'required': [],
             }
 
             state = workflow.getInfoFor(part, 'review_state')

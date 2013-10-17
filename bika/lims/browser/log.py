@@ -92,7 +92,7 @@ class LogView(BikaListingView):
                 'class': {},
                 'state_class': '',
                 'allow_edit': [],
-
+                'required': [],
                 'Version': isVersionable and self.context.get('version_id', '') or '0',
                 'Date': self.ulocalized_time(entry.get('time')),
                 'sortable_date': entry.get('time'),
@@ -134,7 +134,7 @@ class LogView(BikaListingView):
                 'class': {},
                 'state_class': '',
                 'allow_edit': [],
-
+                'required': [],
                 'Version': entry.get('version_id'),
                 'Date': self.ulocalized_time(DateTime(entry.get('time'))),
                 'sortable_date': entry.get('time'),

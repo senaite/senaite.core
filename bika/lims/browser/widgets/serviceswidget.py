@@ -92,6 +92,7 @@ class ServicesView(BikaListingView):
                 'class': {},
                 'state_class': 'state-active',
                 'allow_edit': [],
+                'required': [],
             }
             if checkPermission(ManageBika, service):
                 item['replace']['Service'] = "<a href='%s'>%s</a>" % \

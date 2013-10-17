@@ -131,6 +131,7 @@ class ReferenceResultsView(BikaListingView):
                 'class': "state-%s" % state,
                 'state_class': 'state-%s' % state,
                 'allow_edit': ['result', 'error', 'min', 'max'],
+                'required': [],
             }
             items.append(item)
 
