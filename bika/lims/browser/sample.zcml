@@ -13,6 +13,13 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <adapter
+      factory="bika.lims.browser.sample.WidgetVisibility"
+      provides="bika.lims.interfaces.IWidgetVisibility"
+      for="bika.lims.interfaces.ISample"
+      name="getWidgetVisibility"
+    />
+
     <browser:page
       for="bika.lims.interfaces.ISamplesFolder"
       name="base_view"
@@ -71,7 +78,7 @@
       permission="bika.lims.permissions.AddSamplePartition"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
-    
+
     <browser:page
       for="*"
       name="getsampletypeinfo"

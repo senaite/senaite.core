@@ -3,6 +3,7 @@ from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
+from bika.lims.adapters.widgetvisibility import WidgetVisibility as _WV
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import EditSample
@@ -10,6 +11,7 @@ from bika.lims import PMF
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.header_table import HeaderTableView
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.permissions import *
 from bika.lims.utils import changeWorkflowState
@@ -326,236 +328,8 @@ class SampleEdit(BrowserView):
         ars = self.context.getAnalysisRequests()
         sample = self.context
 
-        ## Create header_table data rows
-        ar_links = ", ".join(
-            ["<a href='%s'>%s</a>"%(ar.absolute_url(), ar.Title())
-             for ar in ars])
-        sp = self.context.getSamplePoint()
-        st = self.context.getSampleType()
-        sc = self.context.getSampleCondition()
-        if workflow.getInfoFor(self.context, 'cancellation_state') == "cancelled":
-            allow_sample_edit = False
-        else:
-            edit_states = ['to_be_sampled', 'to_be_preserved', 'sample_due']
-            allow_sample_edit = checkPermission(EditSample, self.context) \
-                and workflow.getInfoFor(self.context, 'review_state') in edit_states
-
-        SamplingWorkflowEnabled =\
-            self.context.bika_setup.getSamplingWorkflowEnabled()
-        samplers = getUsers(sample, ['Sampler', 'LabManager', 'Manager'])
-
-        samplingdeviations = DisplayList(
-            [(sd.UID, sd.title) for sd \
-             in bsc(portal_type = 'SamplingDeviation',
-                    inactive_state = 'active')])
-
-        sampleconditions = DisplayList(
-            [(sc.UID, sc.title) for sc \
-             in bsc(portal_type = 'SampleCondition',
-                    inactive_state = 'active')])
-
-        self.header_columns = 3
-        self.header_rows = [
-            {'id': 'ClientReference',
-             'title': _('Client Reference'),
-             'allow_edit': self.allow_edit,
-             'value': self.context.getClientReference(),
-             'condition':True,
-             'type': 'text'},
-            {'id': 'ClientSampleID',
-             'title': _('Client SID'),
-             'allow_edit': self.allow_edit,
-             'value': self.context.getClientSampleID(),
-             'condition':True,
-             'type': 'text'},
-            {'id': 'Requests',
-             'title': _('Requests'),
-             'allow_edit': False,
-             'value': ar_links,
-             'condition':True,
-             'type': 'text'},
-            {'id': 'SampleType',
-             'title': _('Sample Type'),
-             'allow_edit': self.allow_edit and allow_sample_edit,
-             'value': st and st.Title() or '',
-             'condition':True,
-             'type': 'text',
-             'required': True},
-            {'id': 'SampleMatrix',
-             'title': _('Sample Matrix'),
-             'allow_edit': False,
-             'value': st.getSampleMatrix() and st.getSampleMatrix().Title() or '',
-             'condition':True,
-             'type': 'text'},
-            {'id': 'SamplePoint',
-             'title': _('Sample Point'),
-             'allow_edit': self.allow_edit and allow_sample_edit,
-             'value': sp and sp.Title() or '',
-             'condition':True,
-             'type': 'text'},
-            {'id': 'Creator',
-             'title': PMF('Creator'),
-             'allow_edit': False,
-             'value': self.user_fullname(self.context.Creator()),
-             'condition':True,
-             'type': 'text'},
-            {'id': 'Composite',
-             'title': _('Composite'),
-             'allow_edit': self.allow_edit and allow_sample_edit,
-             'value': self.context.getComposite(),
-             'condition':True,
-             'type': 'boolean'},
-            {'id': 'AdHoc',
-             'title': _('Ad-Hoc'),
-             'allow_edit': self.allow_edit and allow_sample_edit,
-             'value': self.context.getAdHoc(),
-             'condition':True,
-             'type': 'boolean'},
-            {'id': 'DateCreated',
-             'title': PMF('Date Created'),
-             'allow_edit': False,
-             'value': self.context.created(),
-             'formatted_value': self.ulocalized_time(self.context.created()),
-             'condition':True,
-             'type': 'text'},
-            {'id': 'SamplingDate',
-             'title': _('Sampling Date'),
-             'allow_edit': self.allow_edit and allow_sample_edit,
-             'value': self.ulocalized_time(self.context.getSamplingDate(), long_format=1),
-             'formatted_value': self.ulocalized_time(self.context.getSamplingDate(), long_format=1),
-             'condition':True,
-             'class': 'datepicker',
-             'type': 'text'},
-            {'id': 'DateSampled',
-             'title': _('Date Sampled'),
-             'allow_edit': self.allow_edit and allow_sample_edit,
-             'value': sample.getDateSampled() and self.ulocalized_time(sample.getDateSampled()) or '',
-             'formatted_value': sample.getDateSampled() and self.ulocalized_time(sample.getDateSampled()) or '',
-             'condition':SamplingWorkflowEnabled,
-             'class': 'datepicker',
-             'type': 'text',
-             'required': True},
-            {'id': 'Sampler',
-             'title': _('Sampler'),
-             'allow_edit': self.allow_edit and allow_sample_edit,
-             'value': sample.getSampler(),
-             'formatted_value': sample.getSampler(),
-             'condition':SamplingWorkflowEnabled,
-             'vocabulary': samplers,
-             'type': 'choices',
-             'required': True},
-            {'id': 'SamplingDeviation',
-             'title': _('Sampling Deviation'),
-             'allow_edit': self.allow_edit and allow_sample_edit,
-             'value': sample.getSamplingDeviation() and sample.getSamplingDeviation().UID() or '',
-             'formatted_value': sample.getSamplingDeviation() and sample.getSamplingDeviation().Title() or '',
-             'condition':True,
-             'vocabulary': samplingdeviations,
-             'type': 'choices'},
-            {'id': 'SampleCondition',
-             'title': _('Sample Condition'),
-             'allow_edit': self.allow_edit and allow_sample_edit,
-             'value': sample.getSampleCondition() and sample.getSampleCondition().UID() or '',
-             'formatted_value': sample.getSampleCondition() and sample.getSampleCondition().Title() or '',
-             'condition':True,
-             'vocabulary': sampleconditions,
-             'type': 'choices'},
-            {'id': 'DateReceived',
-             'title': _('Date Received'),
-             'allow_edit': False,
-             'value': self.context.getDateReceived(),
-             'formatted_value': self.ulocalized_time(self.context.getDateReceived()),
-             'condition':True,
-             'type': 'text'},
-            {'id': 'DateExpired',
-             'title': _('Date Expired'),
-             'allow_edit': False,
-             'value': self.context.getDateExpired(),
-             'formatted_value': self.ulocalized_time(self.context.getDateExpired()),
-             'condition':True,
-             'type': 'text'},
-            {'id': 'DisposalDate',
-             'title': _('Disposal Date'),
-             'allow_edit': False,
-             'value': self.context.getDisposalDate(),
-             'formatted_value': self.ulocalized_time(self.context.getDisposalDate()),
-             'condition':True,
-             'type': 'text'},
-            {'id': 'DateDisposed',
-             'title': _('Date Disposed'),
-             'allow_edit': False,
-             'value': self.context.getDateDisposed(),
-             'formatted_value': self.ulocalized_time(self.context.getDateDisposed()),
-             'condition':True,
-             'type': 'text'},
-        ]
-        if self.allow_edit:
-            self.header_buttons = [{'name':'save_button', 'title':_('Save')}]
-        else:
-            self.header_buttons = []
-
-        ## handle_header table submit
-        if form.get('header_submitted', None):
-            plone.protect.CheckAuthenticator(form)
-            message = None
-            values = {}
-            for row in [r for r in self.header_rows if r['allow_edit']]:
-                value = urllib.unquote_plus(form.get(row['id'], ''))
-
-                if row['id'] == 'SampleType':
-                    if not value:
-                        message = PMF(
-                            u'error_required',
-                            default=u'${name} is required, please correct.',
-                            mapping={'name': _('Sample Type')})
-                        break
-                    if not bsc(portal_type = 'SampleType', title = value):
-                        message = _("${sampletype} is not a valid sample type",
-                                    mapping={'sampletype':value})
-                        break
-
-                if row['id'] == 'SamplePoint':
-                    if value and \
-                       not bsc(portal_type = 'SamplePoint', title = value):
-                        message = _("${samplepoint} is not a valid sample point",
-                                    mapping={'sampletype':value})
-                        break
-
-                values[row['id']] = value
-
-            # boolean - checkboxes are 'true'/'on' or 'false'/missing in form.
-            for row in [r for r in self.header_rows if r.get('type', '') == 'boolean']:
-                value = form.get(row['id'], 'false')
-                values[row['id']] = value == 'true' and True or value == 'on' and True or False
-
-            if not message:
-                self.context.edit(**values)
-                self.context.reindexObject()
-                ars = self.context.getAnalysisRequests()
-                # Analyses and AnalysisRequets have calculated fields
-                # that are indexed; re-index all these objects.
-                for ar in ars:
-                    ar.reindexObject()
-                    analyses = self.context.getAnalyses({'review_state':'to_be_sampled'})
-                    for a in analyses:
-                        a.getObject().reindexObject()
-                message = PMF("Changes saved.")
-
-            # If this sample was "To Be Sampled", and the
-            # Sampler and DateSampled fields were completed,
-            # do the Sampled transition.
-            if workflow.getInfoFor(sample, "review_state") == "to_be_sampled" \
-               and form.get("Sampler", None) \
-               and form.get("DateSampled", None):
-                # This transition does not invoke the regular WorkflowAction
-                # in analysisrequest.py
-                workflow.doActionFor(sample, "sample")
-                sample.reindexObject()
-
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            url = self.context.absolute_url().split("?")[0]
-            self.request.RESPONSE.redirect(url)
-            return
+        ## render header table
+        self.header_table = HeaderTableView(self.context, self.request)
 
         ## Create Sample Partitions table
         parts_table = None
@@ -1018,3 +792,93 @@ class ajaxGetSampleTypeInfo(BrowserView):
                }
 
         return json.dumps(ret)
+
+
+class WidgetVisibility(_WV):
+
+    def __call__(self):
+        ret = super(WidgetVisibility, self).__call__()
+
+        workflow = getToolByName(self.context, 'portal_workflow')
+        state = workflow.getInfoFor(self.context, 'review_state')
+
+        # header_table default visible fields
+        ret['header_table'] = {
+            'prominent': [],
+            'visible': [
+                'SamplingDate',
+                'SampleType',
+                'SamplePoint',
+                'ClientReference',
+                'ClientSampleID',
+                'SamplingDeviation',
+                'SampleCondition',
+                'DateSampled',
+                'DateReceived',
+                'AdHoc',
+                'Composite']}
+
+        # Edit and View widgets are displayed/hidden in different workflow
+        # states.  The widget.visible is used as a default.  This is placed
+        # here to manage the header_table display.
+        if state in ('to_be_sampled', 'to_be_preserved', 'sample_due', ):
+            ret['header_table']['visible'].remove('DateReceived')
+            ret['edit']['visible'] = [
+                'AdHoc',
+                'ClientReference',
+                'ClientSampleID',
+                'Composite',
+                'SampleCondition',
+                'SamplePoint',
+                'SampleType',
+                'SamplingDate',
+                'SamplingDeviation',
+            ]
+            ret['view']['visible'] = [
+                'DateSampled',
+            ]
+        elif state in ('sample_received', ):
+            ret['edit']['visible'] = [
+                'AdHoc',
+                'ClientReference',
+                'ClientSampleID',
+            ]
+            ret['view']['visible'] = [
+                'Composite',
+                'DateReceived',
+                'SampleCondition',
+                'SamplePoint',
+                'SampleType',
+                'SamplingDate',
+                'SamplingDeviation',
+            ]
+        elif state in ('to_be_verified', 'verified', ):
+            ret['edit']['visible'] = []
+            ret['view']['visible'] = [
+                'AdHoc',
+                'ClientReference',
+                'ClientSampleID',
+                'Composite',
+                'DateReceived',
+                'SampleCondition',
+                'SamplePoint',
+                'SampleType',
+                'SamplingDate',
+                'SamplingDeviation',
+            ]
+        elif state in ('published', ):
+            ret['edit']['visible'] = []
+            ret['view']['visible'] = [
+                'AdHoc',
+                'ClientReference',
+                'ClientSampleID',
+                'Composite',
+                'DateReceived',
+                'SampleCondition',
+                'SamplePoint',
+                'SampleType',
+                'SamplingDate',
+                'SamplingDeviation',
+            ]
+
+        return ret

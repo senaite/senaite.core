@@ -3,184 +3,278 @@
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.widgets.datetimewidget import DateTimeWidget
-from bika.lims.config import ManageBika, PROJECTNAME
+from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISample
-from bika.lims.interfaces import IBikaCatalog
-from bika.lims.utils import sortable_title
-from DateTime import DateTime
-from datetime import timedelta
-from plone.indexer.decorator import indexer
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.ATContentTypes.content import schemata
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.ATContentTypes.utils import DT2dt,dt2DT
+from Products.ATContentTypes.utils import DT2dt, dt2DT
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFDynamicViewFTI.browserdefault import BrowserDefaultMixin
 from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
 
+from bika.lims.browser.widgets import ReferenceWidget
+
 import sys
-import time
 
 schema = BikaSchema.copy() + Schema((
     StringField('SampleID',
-        required = 1,
-        searchable = True,
-        widget = StringWidget(
-            label = _("Sample ID"),
-            description = _("The ID assigned to the client's sample by the lab"),
-            visible = {'edit':'hidden'},
+        required=1,
+        searchable=True,
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        widget=StringWidget(
+            label=_("Sample ID"),
+            description=_("The ID assigned to the client's sample by the lab"),
+            visible={'edit': 'invisible',
+                     'view': 'invisible'},
+            render_own_label=True,
         ),
     ),
     StringField('ClientReference',
-        searchable = True,
-        widget = StringWidget(
-            label = _("Client Reference"),
+        searchable=True,
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        widget=StringWidget(
+            label=_("Client Reference"),
+            visible={'edit': 'visible',
+                     'view': 'visible'},
+            render_own_label=True,
         ),
     ),
     StringField('ClientSampleID',
-        searchable = True,
-        widget = StringWidget(
-            label = _("Client SID"),
+        searchable=True,
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        widget=StringWidget(
+            label=_("Client SID"),
+            visible={'edit': 'visible',
+                     'view': 'visible'},
+            render_own_label=True,
         ),
     ),
     ReferenceField('LinkedSample',
-        vocabulary_display_path_bound = sys.maxint,
-        multiValue = 1,
-        allowed_types = ('Sample',),
-        relationship = 'SampleSample',
-        referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            label = _("Linked Sample"),
+        vocabulary_display_path_bound=sys.maxsize,
+        multiValue=1,
+        allowed_types=('Sample',),
+        relationship='SampleSample',
+        referenceClass=HoldingReference,
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        widget=ReferenceWidget(
+            label=_("Linked Sample"),
         ),
     ),
     ReferenceField('SampleType',
-        required = 1,
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('SampleType',),
-        relationship = 'SampleSampleType',
-        referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
-            label = _("Sample Type"),
+        required=1,
+        vocabulary_display_path_bound=sys.maxsize,
+        allowed_types=('SampleType',),
+        relationship='SampleSampleType',
+        referenceClass=HoldingReference,
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        widget=ReferenceWidget(
+            label=_("Sample Type"),
+            render_own_label=True,
+            visible={'edit': 'invisible',
+                     'view': 'visible',
+                     'add': 'visible'},
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
+            showOn=True,
         ),
     ),
     ComputedField('SampleTypeTitle',
-        searchable = True,
-        expression = "here.getSampleType() and here.getSampleType().Title() or ''",
-        widget = ComputedWidget(
-            visible = False,
+        searchable=True,
+        expression="here.getSampleType() and here.getSampleType().Title() or ''",
+        widget=ComputedWidget(
+            visible=False,
         ),
     ),
     ReferenceField('SamplePoint',
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('SamplePoint',),
+        vocabulary_display_path_bound=sys.maxsize,
+        allowed_types=('SamplePoint',),
         relationship = 'SampleSamplePoint',
         referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
-            label = _("Sample Point"),
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        widget=ReferenceWidget(
+            label=_("Sample Point"),
+            render_own_label=True,
+            visible={'edit': 'invisible',
+                     'view': 'visible',
+                     'add': 'visible'},
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
+            showOn=True,
         ),
     ),
     ComputedField('SamplePointTitle',
         searchable = True,
         expression = "here.getSamplePoint() and here.getSamplePoint().Title() or ''",
         widget = ComputedWidget(
-            visible = False,
+            visible=False,
         ),
     ),
     BooleanField('SamplingWorkflowEnabled',
     ),
     DateTimeField('DateSampled',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        widget = DateTimeWidget(
+            label=_("Date Sampled"),
+            visible={'edit': 'invisible',
+                     'view': 'visible'},
+            render_own_label=True,
+        ),
     ),
     StringField('Sampler',
-        searchable=True
+        searchable=True,
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
     ),
     DateTimeField('SamplingDate',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
         widget = DateTimeWidget(
-            label = _("Sampling Date"),
-            visible = {'edit':'hidden'},
+            label=_("Sampling Date"),
+            visible={'edit': 'visible',
+                     'view': 'visible'},
+            render_own_label=True,
         ),
     ),
     ReferenceField('SamplingDeviation',
-        vocabulary_display_path_bound = sys.maxint,
+        vocabulary_display_path_bound = sys.maxsize,
         allowed_types = ('SamplingDeviation',),
         relationship = 'SampleSamplingDeviation',
         referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
-            label = _('Sampling Deviation'),
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        widget=ReferenceWidget(
+            label=_('Sampling Deviation'),
+            render_own_label=True,
+            visible={'edit': 'visible',
+                     'view': 'visible',
+                     'add': 'visible'},
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
+            showOn=True,
         ),
     ),
     ReferenceField('SampleCondition',
-        required = 1,
-        vocabulary_display_path_bound = sys.maxint,
+        vocabulary_display_path_bound = sys.maxsize,
         allowed_types = ('SampleCondition',),
         relationship = 'SampleSampleCondition',
         referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
-            label = _("Sample Condition"),
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        widget=ReferenceWidget(
+            label=_("Sample Condition"),
+            render_own_label=True,
+            visible={'edit': 'visible',
+                     'view': 'visible',
+                     'add': 'visible'},
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
+            showOn=True,
         ),
     ),
     DateTimeField('DateReceived',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
         widget = DateTimeWidget(
-            label = _("Date Received"),
-            visible = {'edit':'hidden'},
+            label=_("Date Received"),
+            visible={'edit': 'invisible',
+                     'view': 'visible'},
+            render_own_label=True,
         ),
     ),
     ComputedField('ClientUID',
         expression = 'context.aq_parent.UID()',
         widget = ComputedWidget(
-            visible = False,
+            visible=False,
         ),
     ),
     ComputedField('SampleTypeUID',
         expression = 'context.getSampleType().UID()',
         widget = ComputedWidget(
-            visible = False,
+            visible=False,
         ),
     ),
     ComputedField('SamplePointUID',
         expression = 'context.getSamplePoint() and context.getSamplePoint().UID() or None',
         widget = ComputedWidget(
-            visible = False,
+            visible=False,
         ),
     ),
     BooleanField('Composite',
         default = False,
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
         widget = BooleanWidget(
-            label = _("Composite"),
+            label=_("Composite"),
+            visible={'edit': 'visible',
+                     'view': 'visible'},
+            render_own_label=True,
         ),
     ),
     DateTimeField('DateExpired',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
         widget = DateTimeWidget(
-            label = _("Date Expired"),
-            visible = {'edit':'hidden'},
+            label=_("Date Expired"),
+            visible={'edit': 'invisible',
+                     'view': 'visible'},
+            render_own_label=True,
         ),
     ),
     ComputedField('DisposalDate',
         expression = 'context.disposal_date()',
         widget = ComputedWidget(
-            visible = False,
+            visible={'edit': 'invisible',
+                     'view': 'visible'},
+            render_own_label=True,
         ),
     ),
     DateTimeField('DateDisposed',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
         widget = DateTimeWidget(
-            label = _("Date Disposed"),
-            visible = {'edit':'hidden'},
+            label=_("Date Disposed"),
+            visible={'edit': 'invisible',
+                     'view': 'visible'},
+            render_own_label=True,
         ),
     ),
     BooleanField('AdHoc',
         default=False,
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
         widget=BooleanWidget(
             label=_("Ad-Hoc"),
+            visible={'edit': 'visible',
+                     'view': 'visible'},
+            render_own_label=True,
         ),
     ),
     TextField('Remarks',
@@ -188,6 +282,9 @@ schema = BikaSchema.copy() + Schema((
         default_content_type='text/x-web-intelligent',
         allowable_content_types = ('text/plain', ),
         default_output_type="text/plain",
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
         widget=TextAreaWidget(
             macro="bika_widgets/remarks",
             label=_('Remarks'),
@@ -207,6 +304,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
     schema = schema
 
     _at_rename_after_creation = True
+
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
@@ -272,11 +370,11 @@ class Sample(BaseFolder, HistoryAwareMixin):
         before saving.
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
-        sampletypes = bsc(portal_type = 'SampleType', title = value)
+        sampletypes = bsc(portal_type='SampleType', title=value)
         if sampletypes:
             value = sampletypes[0].UID
         else:
-            sampletypes = bsc(portal_type = 'SampleType', UID = value)
+            sampletypes = bsc(portal_type='SampleType', UID=value)
             if sampletypes:
                 value = sampletypes[0].UID
             else:
@@ -292,11 +390,11 @@ class Sample(BaseFolder, HistoryAwareMixin):
         before saving.
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
-        sampletypes = bsc(portal_type = 'SamplePoint', title = value)
+        sampletypes = bsc(portal_type='SamplePoint', title=value)
         if sampletypes:
             value = sampletypes[0].UID
         else:
-            sampletypes = bsc(portal_type = 'SamplePoint', UID = value)
+            sampletypes = bsc(portal_type='SamplePoint', UID=value)
             if sampletypes:
                 value = sampletypes[0].UID
             else:
@@ -334,6 +432,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
         self.Schema()['Composite'].set(self, value)
 
     security.declarePublic('getAnalysisRequests')
+
     def getAnalysisRequests(self):
         tool = getToolByName(self, REFERENCE_CATALOG)
         ar = ''
@@ -347,6 +446,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
         return ars
 
     security.declarePublic('getAnalyses')
+
     def getAnalyses(self, contentFilter):
         """ return list of all analyses against this sample
         """
@@ -374,8 +474,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
     def getLastARNumber(self):
         ARs = self.getBackReferences("AnalysisRequestSample")
         prefix = self.getSampleType().getPrefix()
-        ar_ids = [AR.id for AR in ARs if AR.id.startswith(prefix)]
-        ar_ids.sort()
+        ar_ids = sorted([AR.id for AR in ARs if AR.id.startswith(prefix)])
         try:
             last_ar_number = int(ar_ids[-1].split("-R")[-1])
         except:

@@ -44,6 +44,7 @@
 		attachments_allowed here/bika_setup/getAttachmentsPermitted;
 		attachments here/getAttachment | nothing;
 		delete_attachments python:True;
+        checkPermission python:context.portal_membership.checkPermission;
 		update_attachments python:context.portal_membership.checkPermission('EditResults', context) or
 		                          context.portal_membership.checkPermission('EditFieldResults', context)">
 
@@ -53,7 +54,7 @@
         <metal:block use-macro="here/attachments/macros/attachments"/>
     </div>
 
-	<span tal:replace="structure view/header_table"/>
+    <span tal:replace="structure view/header_table"/>
 
 	<h3 style="margin-top:2em;"
         tal:condition="python:context.bika_setup.getShowPartitions()">
