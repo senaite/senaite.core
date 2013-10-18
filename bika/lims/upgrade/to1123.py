@@ -3,7 +3,7 @@ from Acquisition import aq_parent
 from bika.lims.permissions import *
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
-
+from zExceptions import BadRequest
 
 class Empty:
     pass
@@ -25,13 +25,17 @@ def upgrade(tool):
                                    'plone.app.registry')
 
     # Add the QueryFolder at /queries
-    typestool.constructContent(type_name="QueryFolder",
+    try:
+        typestool.constructContent(type_name="QueryFolder",
                                container=portal,
                                id='queries',
                                title='Queries')
-    obj = portal['queries']
-    obj.unmarkCreationFlag()
-    obj.reindexObject()
+        obj = portal['queries']
+        obj.unmarkCreationFlag()
+        obj.reindexObject()
+    except BadRequest:
+        # folder already exists
+        pass
 
     # /queries folder permissions
     mp = portal.queries.manage_permission
