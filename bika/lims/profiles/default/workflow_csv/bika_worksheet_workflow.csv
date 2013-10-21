@@ -23,7 +23,7 @@ Modify portal content,N,N,Y,N,N,N,N,Y,Y,Y
 Id:,attachment_due,,,,,,,,,
 Title:,Attachment Outstanding,,,,,,,,,
 Description:,,,,,,,,,,
-Transitions,"attach, revert, reject",,,,,,,,,
+Transitions,"attach, retract, reject",,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager
 BIKA: Edit Worksheet,N,N,Y,N,N,N,N,Y,Y,Y
 BIKA: Assign analyses,N,N,Y,N,N,N,N,Y,Y,Y
@@ -36,7 +36,7 @@ Modify portal content,N,N,Y,N,N,N,N,Y,Y,Y
 Id:,to_be_verified,,,,,,,,,
 Title:,To be verified,,,,,,,,,
 Description:,,,,,,,,,,
-Transitions,"verify, revert, reject",,,,,,,,,
+Transitions,"verify, retract, reject",,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager
 BIKA: Edit Worksheet,N,N,Y,N,N,N,N,Y,Y,Y
 BIKA: Assign analyses,N,N,Y,N,N,N,N,Y,Y,Y
@@ -86,13 +86,13 @@ Trigger:,User,,,,,,,,,
 Guard permission:,BIKA: Reject Worksheet,,,,,,,,,
 ,,,,,,,,,,
 [Transition],,,,,,,,,,
-Id:,revert,,,,,,,,,
+Id:,retract,,,,,,,,,
 Title:,Retract worksheet,,,,,,,,,
 Description:,Retract worksheet,,,,,,,,,
 Target state:,open,,,,,,,,,
-URL:,workflow_action?workflow_action=revert,,,,,,,,,
+URL:,workflow_action?workflow_action=retract,,,,,,,,,
 Trigger:,User,,,,,,,,,
-Guard expression:,python:here.guard_revert_transition(),,,,,,,,,
+Guard expression:,python:here.guard_retract_transition(),,,,,,,,,
 ,,,,,,,,,,
 [Transition],,,,,,,,,,
 Id:,verify,,,,,,,,,

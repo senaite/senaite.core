@@ -35,9 +35,10 @@ def ObjectInitializedEventHandler(instance, event):
                     'sample_received'):
         changeWorkflowState(instance, "bika_analysis_workflow", ar_state)
     elif ar_state in ('to_be_verified'):
-        changeWorkflowState(instance, "bika_analysis_workflow", 'received')
-        # bring AR back to 'received'.
-        wf.doActionFor(ar, 'revert')
+        # Apply to AR only; we don't want this transition to cascade.
+        ar.REQUEST['workflow_skiplist'].append("retract all analyses")
+        workflow.doActionFor(ar, 'retract')
+        ar.REQUEST['workflow_skiplist'].remove("retract all analyses")
 
     if ar_ws_state == 'assigned':
         wf.doActionFor(ar, 'unassign')
@@ -302,16 +303,6 @@ def AfterTransitionEventHandler(instance, event):
         if can_attach:
             wf.doActionFor(instance, 'attach')
 
-    elif action_id == "revert":
-        # Escalate action to the parent AR
-        if not skip(ar, action_id, peek=True):
-            if wf.getInfoFor(ar, 'review_state') == 'sample_received':
-                skip(ar, action_id)
-            else:
-                if not "retract all analyses" in instance.REQUEST['workflow_skiplist']:
-                    instance.REQUEST["workflow_skiplist"].append("retract all analyses")
-                wf.doActionFor(ar, 'revert')
-
     elif action_id == "retract":
         # We'll assign the new analysis to this same worksheet, if any.
         ws = instance.getBackReferences("WorksheetAnalysis")
@@ -363,7 +354,7 @@ def AfterTransitionEventHandler(instance, event):
                 if wf.getInfoFor(dep, 'review_state') != 'sample_received':
                     instance.REQUEST["workflow_skiplist"].append("retract all dependencies")
                     # just return to "received" state, no cascade
-                    wf.doActionFor(dep, 'revert')
+                    wf.doActionFor(dep, 'retract')
                     instance.REQUEST["workflow_skiplist"].remove("retract all dependencies")
         # Escalate action to the parent AR
         if not skip(ar, action_id, peek=True):
@@ -372,7 +363,7 @@ def AfterTransitionEventHandler(instance, event):
             else:
                 if not "retract all analyses" in instance.REQUEST['workflow_skiplist']:
                     instance.REQUEST["workflow_skiplist"].append("retract all analyses")
-                wf.doActionFor(ar, 'revert')
+                wf.doActionFor(ar, 'retract')
         # Escalate action to the Worksheet (if it's on one).
         ws = instance.getBackReferences('WorksheetAnalysis')
         if ws:
@@ -525,7 +516,7 @@ def AfterTransitionEventHandler(instance, event):
                 instance.REQUEST['workflow_skiplist'] = ['retract all analyses', ]
             else:
                 instance.REQUEST["workflow_skiplist"].append('retract all analyses')
-            wf.doActionFor(ws, 'revert')
+            wf.doActionFor(ws, 'retract')
 
         # If all analyses in this AR have been assigned,
         # escalate the action to the parent AR
@@ -594,7 +585,7 @@ def AfterTransitionEventHandler(instance, event):
                 skip(ws, action_id, unskip=True)
         else:
             if wf.getInfoFor(ws, 'review_state') != 'open':
-                wf.doActionFor(ws, 'revert')
-                skip(ws, 'revert', unskip=True)
+                wf.doActionFor(ws, 'retract')
+                skip(ws, 'retract', unskip=True)
 
     return

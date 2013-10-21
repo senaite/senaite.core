@@ -169,7 +169,10 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     # if the AR has progressed past sample_received, we need to bring it back.
                     ar_state = workflow.getInfoFor(ar, 'review_state')
                     if ar_state in ('attachment_due', 'to_be_verified'):
-                        workflow.doActionFor(ar, 'revert')
+                        # Apply to AR only; we don't want this transition to cascade.
+                        ar.REQUEST['workflow_skiplist'].append("retract all analyses")
+                        workflow.doActionFor(ar, 'retract')
+                        ar.REQUEST['workflow_skiplist'].remove("retract all analyses")
                         ar_state = workflow.getInfoFor(ar, 'review_state')
                     # Then we need to forward new analyses state
                     analysis.updateDueDate()

@@ -126,7 +126,7 @@ def AfterTransitionEventHandler(instance, event):
                 instance.REQUEST['workflow_skiplist'] = ['retract all analyses', ]
             else:
                 instance.REQUEST["workflow_skiplist"].append('retract all analyses')
-            wf.doActionFor(ws, 'revert')
+            wf.doActionFor(ws, 'retract')
 
     elif action_id == "unassign":
         instance.reindexObject(idxs = ["review_state", ])
@@ -183,7 +183,7 @@ def AfterTransitionEventHandler(instance, event):
                 skip(ws, 'verify', unskip=True)
         else:
             if wf.getInfoFor(ws, 'review_state') != 'open':
-                wf.doActionFor(ws, 'revert')
-                skip(ws, 'revert', unskip=True)
+                wf.doActionFor(ws, 'retract')
+                skip(ws, 'retract', unskip=True)
 
     return

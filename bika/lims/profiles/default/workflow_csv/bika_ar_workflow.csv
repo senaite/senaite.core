@@ -131,7 +131,7 @@ Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N
 Id:,attachment_due,,,,,,,,,,,,,
 Title:,Attachment Outstanding,,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,,
-Transitions,"prepublish, attach, revert",,,,,,,,,,,,,
+Transitions,"prepublish, attach, retract",,,,,,,,,,,,,
 Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Anonymous,Authenticated
 BIKA: Add Analysis,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N
 BIKA: Cancel and reinstate,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N
@@ -151,7 +151,7 @@ Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N
 Id:,to_be_verified,,,,,,,,,,,,,
 Title:,To be verified,,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,,
-Transitions,"prepublish, verify, revert",,,,,,,,,,,,,
+Transitions,"prepublish, verify, retract",,,,,,,,,,,,,
 Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Anonymous,Authenticated
 BIKA: Add Analysis,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Cancel and reinstate,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N
@@ -319,13 +319,13 @@ Guard permission:,BIKA: Retract,,,,,,,,,,,,,
 Guard expression:,python:here.guard_cancelled_object(),,,,,,,,,,,,,
 ,,,,,,,,,,,,,,
 [Transition],,,,,,,,,,,,,,
-Id:,revert,,,,,,,,,,,,,
+Id:,retract,,,,,,,,,,,,,
 Title:,Retract,,,,,,,,,,,,,
 Description:,Retract,,,,,,,,,,,,,
 Target state:,sample_received,,,,,,,,,,,,,
-URL:,workflow_action?workflow_action=revert,,,,,,,,,,,,,
+URL:,workflow_action?workflow_action=retract,,,,,,,,,,,,,
 Trigger:,User,,,,,,,,,,,,,
-Guard expression:,python:here.guard_revert_transition(),,,,,,,,,,,,,
+Guard expression:,python:here.guard_retract_transition(),,,,,,,,,,,,,
 ,,,,,,,,,,,,,,
 [Transition],,,,,,,,,,,,,,
 Id:,sample,,,,,,,,,,,,,
