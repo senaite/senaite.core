@@ -2,7 +2,8 @@
 <object name="Instrument"
         meta_type="Factory-based Type Information with dynamic views"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-        i18n:domain="plone">
+        i18n:domain="plone"
+        purge="True">
  <property name="title" i18n:translate="">Instrument</property>
  <property name="description"></property>
  <property name="content_icon">++resource++bika.lims.images/instrument.png</property>
@@ -48,7 +49,7 @@
          visible="True">
   <permission value="Modify portal content"/>
  </action>
- 
+
  <action title="Maintenance"
 	 	action_id="maintenance"
 	 	category="object"
@@ -59,7 +60,7 @@
 	 	visible="True">
  	<permission value="Modify portal content"/>
  </action>
- 
+
  <action title="Validations"
 	 	action_id="validation"
 	 	category="object"
@@ -81,7 +82,7 @@
 	 	visible="True">
  	<permission value="Modify portal content"/>
  </action>
- 
+
   <action title="Certifications"
 	 	action_id="certification"
 	 	category="object"
@@ -103,7 +104,7 @@
 	 	visible="True">
  	<permission value="Modify portal content"/>
   </action>
-  
+
   <action title="Schedule"
 	 	action_id="schedule"
 	 	category="object"

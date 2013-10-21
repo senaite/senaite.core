@@ -16,7 +16,10 @@ from Products.CMFEditions.Permissions import ApplyVersionControl
 from Products.CMFEditions.Permissions import SaveNewVersion
 from Products.CMFEditions.Permissions import AccessPreviousVersions
 
-class Empty: pass
+
+class Empty:
+    pass
+
 
 class BikaGenerator:
 
@@ -36,7 +39,7 @@ class BikaGenerator:
             if obj_id in portal.objectIds():
                 del_ids.append(obj_id)
         if del_ids:
-            portal.manage_delObjects(ids = del_ids)
+            portal.manage_delObjects(ids=del_ids)
 
         # index objects - importing through GenericSetup doesn't
         for obj_id in ('clients',
@@ -87,14 +90,14 @@ class BikaGenerator:
             obj.reindexObject()
 
         lab = bika_setup.laboratory
-        lab.edit(title = _('Laboratory'))
+        lab.edit(title=_('Laboratory'))
         lab.unmarkCreationFlag()
         lab.reindexObject()
 
         # Move calendar and user action to bika
-##        for action in portal.portal_controlpanel.listActions():
-##            if action.id in ('UsersGroups', 'UsersGroups2', 'bika_calendar_tool'):
-##                action.permissions = (ManageBika,)
+# for action in portal.portal_controlpanel.listActions():
+# if action.id in ('UsersGroups', 'UsersGroups2', 'bika_calendar_tool'):
+# action.permissions = (ManageBika,)
 
     def setupGroupsAndRoles(self, portal):
         # add roles
@@ -118,47 +121,47 @@ class BikaGenerator:
 
         if 'LabManagers' not in portal_groups.listGroupIds():
             try:
-                portal_groups.addGroup('LabManagers', title = "Lab Managers",
-                       roles = ['Member', 'LabManager', 'Site Administrator', ])
+                portal_groups.addGroup('LabManagers', title="Lab Managers",
+                       roles=['Member', 'LabManager', 'Site Administrator', ])
             except KeyError:
-                portal_groups.addGroup('LabManagers', title = "Lab Managers",
-                       roles = ['Member', 'LabManager', 'Manager', ])# Plone < 4.1
+                portal_groups.addGroup('LabManagers', title="Lab Managers",
+                       roles=['Member', 'LabManager', 'Manager', ])  # Plone < 4.1
 
         if 'LabClerks' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('LabClerks', title = "Lab Clerks",
-                roles = ['Member', 'LabClerk'])
+            portal_groups.addGroup('LabClerks', title="Lab Clerks",
+                roles=['Member', 'LabClerk'])
 
         if 'Analysts' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('Analysts', title = "Lab Technicians",
-                roles = ['Member', 'Analyst'])
+            portal_groups.addGroup('Analysts', title="Lab Technicians",
+                roles=['Member', 'Analyst'])
 
         if 'Verifiers' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('Verifiers', title = "Verifiers",
-                roles = ['Verifier'])
+            portal_groups.addGroup('Verifiers', title="Verifiers",
+                roles=['Verifier'])
 
         if 'Samplers' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('Samplers', title = "Samplers",
-                roles = ['Sampler'])
+            portal_groups.addGroup('Samplers', title="Samplers",
+                roles=['Sampler'])
 
         if 'Preservers' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('Preservers', title = "Preservers",
-                roles = ['Preserver'])
+            portal_groups.addGroup('Preservers', title="Preservers",
+                roles=['Preserver'])
 
         if 'Publishers' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('Publishers', title = "Publishers",
-                roles = ['Publisher'])
+            portal_groups.addGroup('Publishers', title="Publishers",
+                roles=['Publisher'])
 
         if 'Clients' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('Clients', title = "Clients",
-                roles = ['Member', ])
+            portal_groups.addGroup('Clients', title="Clients",
+                roles=['Member', ])
 
         if 'Suppliers' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('Suppliers', title = "",
-                roles = ['Member', ])
+            portal_groups.addGroup('Suppliers', title="",
+                roles=['Member', ])
 
         if 'RegulatoryInspectors' not in portal_groups.listGroupIds():
-            portal_groups.addGroup('RegulatoryInspectors', title = "Regulatory Inspectors",
-                roles = ['Member', 'RegulatoryInspector'])
+            portal_groups.addGroup('RegulatoryInspectors', title="Regulatory Inspectors",
+                roles=['Member', 'RegulatoryInspector'])
 
     def setupPermissions(self, portal):
         """ Set up some suggested role to permission mappings.
@@ -231,13 +234,13 @@ class BikaGenerator:
         mp(EditWorksheet, ['Manager', 'LabManager', 'Analyst'], 1)
         mp(ResultsNotRequested, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(ManageInvoices, ['Manager', 'LabManager', 'Owner'], 1)
-        mp(ViewResults, ['Manager', 'LabManager', 'Analyst', 'Sampler','RegulatoryInspector'], 1)
+        mp(ViewResults, ['Manager', 'LabManager', 'Analyst', 'Sampler', 'RegulatoryInspector'], 1)
         mp(EditResults, ['Manager', 'LabManager', 'Analyst'], 1)
         mp(EditFieldResults, ['Manager', 'LabManager', 'Sampler'], 1)
         mp(EditSamplePartition, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 1)
         mp(EditClient, ['Manager', 'LabManager', 'LabClerk'], 1)
 
-        mp('Access contents information',  ['Authenticated'], 1)
+        mp('Access contents information', ['Authenticated'], 1)
         mp(permissions.View, ['Authenticated'], 1)
 
         mp(ImportInstrumentResults, ['Manager', 'LabManager', 'Analyst'], 1)
@@ -245,7 +248,7 @@ class BikaGenerator:
         mp(ViewLogTab, ['Manager', 'LabManager'], 1)
 
         mp = portal.bika_setup.manage_permission
-        mp('Access contents information',  ['Authenticated'], 1)
+        mp('Access contents information', ['Authenticated'], 1)
         mp(permissions.View, ['Authenticated'], 1)
         mp(ApplyVersionControl, ['Authenticated'], 1)
         mp(SaveNewVersion, ['Authenticated'], 1)
@@ -253,7 +256,7 @@ class BikaGenerator:
         portal.bika_setup.reindexObject()
 
         mp = portal.bika_setup.laboratory.manage_permission
-        mp('Access contents information',  ['Authenticated'], 1)
+        mp('Access contents information', ['Authenticated'], 1)
         mp(permissions.View, ['Authenticated'], 1)
         portal.bika_setup.laboratory.reindexObject()
 
@@ -267,7 +270,7 @@ class BikaGenerator:
         mp = portal.clients.manage_permission
         mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver'], 0)
         mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst', 'Sampler', 'Preserver'], 0)
-        mp('Add portal content', ['Analyst'], 1)
+        mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
         mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 0)
         mp(ManageClients, ['Manager', 'LabManager', 'LabClerk'], 0)
         mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
@@ -320,7 +323,7 @@ class BikaGenerator:
         mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector'], 0)
         mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler'], 0)
         mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector'], 0)
-        mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst','Sampler', 'Preserver', 'RegulatoryInspector'], 0)
+        mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector'], 0)
         mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
         portal.samples.reindexObject()
 
@@ -331,8 +334,8 @@ class BikaGenerator:
         mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Owner'], 0)
         mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Member'], 0)
 
-        mp('ATContentTypes: Add Image', ['Manager', 'Labmanager', 'LabClerk', 'Member',], 0)
-        mp('ATContentTypes: Add File', ['Manager', 'Labmanager', 'LabClerk', 'Member',], 0)
+        mp('ATContentTypes: Add Image', ['Manager', 'Labmanager', 'LabClerk', 'Member', ], 0)
+        mp('ATContentTypes: Add File', ['Manager', 'Labmanager', 'LabClerk', 'Member', ], 0)
         portal.reports.reindexObject()
 
         # /queries folder permissions
@@ -374,7 +377,6 @@ class BikaGenerator:
         mp('Access contents information', ['Manager', 'Member', 'Authenticated', 'Anonymous'], 1)
         portal.methods.reindexObject()
 
-
     def setupVersioning(self, portal):
         portal_repository = getToolByName(portal, 'portal_repository')
         versionable_types = list(portal_repository.getVersionableContentTypes())
@@ -392,13 +394,17 @@ class BikaGenerator:
         # that way looking it up means first looking up *the* catalog
         # in which it is indexed, as well as making it cheaper to index.
 
-        def addIndex(cat,*args):
-            try:cat.addIndex(*args)
-            except:pass
+        def addIndex(cat, *args):
+            try:
+                cat.addIndex(*args)
+            except:
+                pass
 
-        def addColumn(cat,col):
-            try:cat.addColumn(col)
-            except:pass
+        def addColumn(cat, col):
+            try:
+                cat.addColumn(col)
+            except:
+                pass
 
         # create lexicon
         wordSplitter = Empty()
@@ -415,7 +421,7 @@ class BikaGenerator:
         zc_extras.index_type = 'Okapi BM25 Rank'
         zc_extras.lexicon_id = 'Lexicon'
 
-        ### bika_analysis_catalog
+        # bika_analysis_catalog
 
         bac = getToolByName(portal, 'bika_analysis_catalog', None)
         if bac == None:
@@ -490,7 +496,7 @@ class BikaGenerator:
         addColumn(bac, 'getRequestID')
         addColumn(bac, 'getReferenceAnalysesGroupID')
 
-        ### bika_catalog
+        # bika_catalog
 
         bc = getToolByName(portal, 'bika_catalog', None)
         if bc == None:
@@ -600,7 +606,7 @@ class BikaGenerator:
         addColumn(bc, 'getDateSampled')
         addColumn(bc, 'review_state')
 
-        ### bika_setup_catalog
+        # bika_setup_catalog
 
         bsc = getToolByName(portal, 'bika_setup_catalog', None)
         if bsc == None:

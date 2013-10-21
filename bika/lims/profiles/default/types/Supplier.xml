@@ -2,7 +2,8 @@
 <object name="Supplier"
         meta_type="Factory-based Type Information with dynamic views"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-        i18n:domain="plone">
+        i18n:domain="plone"
+        purge="True">
  <property name="title" i18n:translate="">Supplier</property>
  <property name="description"></property>
  <property name="content_icon">++resource++bika.lims.images/supplier.png</property>
@@ -35,7 +36,7 @@
          visible="True">
   <permission value="Modify portal content"/>
  </action>
- 
+
  <action action_id="view"
          title="Reference Samples"
          category="object"
@@ -46,7 +47,7 @@
          visible="True">
   <permission value="View"/>
  </action>
- 
+
  <action action_id="contacts"
          title="Contacts"
          category="object"
@@ -55,7 +56,7 @@
          visible="True">
   <permission value="List folder contents"/>
  </action>
- 
+
  <action action_id="instruments"
          title="Instruments"
          category="object"
