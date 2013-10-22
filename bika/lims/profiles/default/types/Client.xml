@@ -52,7 +52,7 @@
          url_expr="string:${object_url}/contacts"
          i18n:attributes="title"
          visible="True">
-  <permission value="BIKA: Edit Client"/>
+    <permission value="Modify portal content"/>
  </action>
 
  <action title="Samples"
@@ -172,7 +172,7 @@
          url_expr="string:${object_url}/orders"
          i18n:attributes="title"
          visible="False">
-  <permission value="BIKA: Manage Clients"/>
+    <permission value="Modify portal content"/>
  </action>
 
 </object>

@@ -277,6 +277,14 @@ class BikaGenerator:
         mp(AddAnalysisSpec, ['Manager', 'LabManager', 'Owner'], 0)
         portal.clients.reindexObject()
 
+        for obj in portal.clients.objectValues():
+            mp = obj.manage_permission
+            mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver'], 0)
+            mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst', 'Sampler', 'Preserver'], 0)
+            mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
+            mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 0)
+            obj.reindexObject()
+
         # /worksheets folder permissions
         mp = portal.worksheets.manage_permission
         mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
