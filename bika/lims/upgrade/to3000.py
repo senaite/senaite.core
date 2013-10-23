@@ -36,18 +36,27 @@ def upgrade(tool):
 
     # Add RegulatoryInspectors group and RegulatoryInspector role.
     # Fix permissions: LabClerks don't see analysis results
-    portal.acl_users.portal_role_manager.addRole('RegulatoryInspector')
-    portal._addRole('RegulatoryInspector')
-    portal_groups.addGroup('RegulatoryInspectors',
+    role = 'RegulatoryInspector'
+    group = 'RegulatoryInspectors'
+    if role not in portal.acl_users.portal_role_manager.listRoleIds():
+        portal.acl_users.portal_role_manager.addRole(role)
+        portal._addRole(role)
+
+    if group not in portal_groups.listGroupIds():
+        portal_groups.addGroup('RegulatoryInspectors',
                            title="Regulatory Inspectors",
                            roles=['Member', 'RegulatoryInspector', ])
+    else:
+        portal_groups.setRolesForGroup('RegulatoryInspectors',
+                                       ['Member', 'RegulatoryInspector', ])
 
     # Add SampleConditions
     at.setCatalogsByType('SampleCondition', ['bika_setup_catalog'])
-    typestool.constructContent(type_name="SampleConditions",
-                               container=portal['bika_setup'],
-                               id='bika_sampleconditions',
-                               title='Sample Conditions')
+    if not portal['bika_setup'].get('bika_sampleconditions'):
+        typestool.constructContent(type_name="SampleConditions",
+                                   container=portal['bika_setup'],
+                                   id='bika_sampleconditions',
+                                   title='Sample Conditions')
     obj = portal['bika_setup']['bika_sampleconditions']
     obj.unmarkCreationFlag()
     obj.reindexObject()
@@ -58,19 +67,22 @@ def upgrade(tool):
         sample.setSampleCondition(None)
 
     # Some catalog indexes were added or modified
-    bc.delIndex('getSampleTypeTitle')
-    bc.delIndex('getSamplePointTitle')
+    if 'getSampleTypeTitle' in bc.indexes():
+        bc.delIndex('getSampleTypeTitle')
+    if 'getSamplePointTitle' in bc.indexes():
+        bc.delIndex('getSamplePointTitle')
     bc.addIndex('getSampleTypeTitle', 'KeywordIndex')
     bc.addIndex('getSamplePointTitle', 'KeywordIndex')
-    if 'getClientSampleID' not in pc.indexes():
+    
+    if 'getClientSampleID' in pc.indexes():
         pc.addIndex('getClientSampleID', 'FieldIndex')
-    pc.addColumn('getClientSampleID')
+        pc.addColumn('getClientSampleID')
     if 'getParentUID' not in pc.indexes():
         pc.addIndex('getParentUID', 'FieldIndex')
-    pc.addColumn('getParentUID')
+        pc.addColumn('getParentUID')
     if 'getReferenceAnalysesGroupID' not in bac.indexes():
         bac.addIndex('getReferenceAnalysesGroupID', 'FieldIndex')
-    bac.addColumn('getReferenceAnalysesGroupID')
+        bac.addColumn('getReferenceAnalysesGroupID')
 
     # Fix broken template partition containers
     for p in bsc(portal_type='ARTemplate'):
