@@ -76,7 +76,7 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             label=_("Contact"),
             render_own_label=True,
-            size=25,
+            size=20,
             helper_js=("bika_widgets/referencewidget.js", "++resource++bika.lims.js/contact.js"),
             visible={'edit': 'visible',
                      'view': 'visible',
@@ -103,7 +103,7 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             label=_("CC Contacts"),
             render_own_label=True,
-            size=25,
+            size=20,
             visible={'edit': 'visible',
                      'view': 'visible',
                      'add': 'visible'},
@@ -127,7 +127,7 @@ schema = BikaSchema.copy() + Schema((
                      'view': 'visible',
                      'add': 'visible'},
             render_own_label=True,
-            size=25,
+            size=20,
         ),
     ),
     ReferenceField(
@@ -141,7 +141,7 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             label=_("Client"),
             description=_("You must assign this request to a client"),
-            size=12,
+            size=20,
             render_own_label=True,
             visible={'edit': 'invisible',
                      'view': 'invisible',
@@ -162,7 +162,7 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             label=_("Sample"),
             description=_("Select a sample to create a secondary AR"),
-            size=12,
+            size=20,
             render_own_label=True,
             visible={'edit': 'visible',
                      'view': 'visible',
@@ -182,7 +182,7 @@ schema = BikaSchema.copy() + Schema((
         write_permission=permissions.ModifyPortalContent,
         widget=ReferenceWidget(
             label=_("Batch"),
-            size=12,
+            size=20,
             render_own_label=True,
             visible={'edit': 'visible',
                      'view': 'visible',
@@ -213,7 +213,7 @@ schema = BikaSchema.copy() + Schema((
         write_permission=permissions.ModifyPortalContent,
         widget=ReferenceWidget(
             label=_("Template"),
-            size=12,
+            size=20,
             render_own_label=True,
             visible={'edit': 'visible',
                      'view': 'visible',
@@ -234,7 +234,7 @@ schema = BikaSchema.copy() + Schema((
         write_permission=permissions.ModifyPortalContent,
         widget=ReferenceWidget(
             label=_("Analysis Profile"),
-            size=12,
+            size=20,
             render_own_label=True,
             visible={'edit': 'visible',
                      'view': 'visible',
@@ -253,7 +253,7 @@ schema = BikaSchema.copy() + Schema((
         write_permission=permissions.ModifyPortalContent,
         widget = DateTimeWidget(
             label=_("Sampling Date"),
-            size=12,
+            size=20,
             render_own_label=True,
             visible={'edit': 'visible',
                      'view': 'visible',
@@ -272,7 +272,7 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             label=_("Sample Type"),
             description=_("Create a new sample of this type"),
-            size=12,
+            size=20,
             render_own_label=True,
             visible={'edit': 'visible',
                      'view': 'visible',
@@ -293,7 +293,7 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             label=_("Sample Point"),
             description=_("Location where sample was taken"),
-            size=12,
+            size=20,
             render_own_label=True,
             visible={'edit': 'visible',
                      'view': 'visible',
@@ -312,7 +312,7 @@ schema = BikaSchema.copy() + Schema((
         write_permission=permissions.ModifyPortalContent,
         widget=StringWidget(
             label=_('Client Order Number'),
-            size=12,
+            size=20,
             render_own_label=True,
             visible={'edit': 'visible',
                      'view': 'visible',
@@ -328,7 +328,7 @@ schema = BikaSchema.copy() + Schema((
         write_permission=permissions.ModifyPortalContent,
         widget=StringWidget(
             label=_('Client Reference'),
-            size=12,
+            size=20,
             render_own_label=True,
             visible={'edit': 'visible',
                      'view': 'visible',
@@ -345,7 +345,7 @@ schema = BikaSchema.copy() + Schema((
         write_permission=permissions.ModifyPortalContent,
         widget=StringWidget(
             label=_('Client Sample ID'),
-            size=12,
+            size=20,
             render_own_label=True,
             visible={'edit': 'visible',
                      'view': 'visible',
@@ -363,7 +363,7 @@ schema = BikaSchema.copy() + Schema((
         write_permission=permissions.ModifyPortalContent,
         widget=ReferenceWidget(
             label=_('Sampling Deviation'),
-            size=12,
+            size=20,
             render_own_label=True,
             visible={'edit': 'visible',
                      'view': 'visible',
@@ -385,7 +385,7 @@ schema = BikaSchema.copy() + Schema((
         write_permission=permissions.ModifyPortalContent,
         widget=ReferenceWidget(
             label=_('Sample condition'),
-            size=12,
+            size=20,
             render_own_label=True,
             visible={'edit': 'visible',
                      'view': 'visible',
@@ -407,7 +407,7 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             label=_('Default Container'),
             description=_('Default container for new sample partitions'),
-            size=12,
+            size=20,
             render_own_label=True,
             visible={'edit': 'visible',
                      'view': 'visible',
