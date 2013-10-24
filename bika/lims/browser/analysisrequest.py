@@ -704,13 +704,13 @@ class AnalysisRequestViewView(BrowserView):
                         'listed here for trace-ability purposes. Please follow '
                         'the link to the retest')
             if anchor:
-                self.header_rows.append(
-                        {'id': 'ChildAR',
-                         'title': 'AR for retested results',
-                         'allow_edit': False,
-                         'value': anchor,
-                         'condition': True,
-                         'type': 'text'})
+#                self.header_rows.append(
+#                        {'id': 'ChildAR',
+#                         'title': 'AR for retested results',
+#                         'allow_edit': False,
+#                         'value': anchor,
+#                         'condition': True,
+#                         'type': 'text'})
                 message = (message + " %s.") % childar.getRequestID()
             else:
                 message = message + "."
@@ -723,13 +723,13 @@ class AnalysisRequestViewView(BrowserView):
             and ar.getParentAnalysisRequest():
             par = ar.getParentAnalysisRequest()
             anchor = "<a href='%s'>%s</a>" % (par.absolute_url(), par.getRequestID())
-            self.header_rows.append(
-                        {'id': 'ParentAR',
-                         'title': 'Invalid AR retested',
-                         'allow_edit': False,
-                         'value': anchor,
-                         'condition': True,
-                         'type': 'text'})
+#            self.header_rows.append(
+#                        {'id': 'ParentAR',
+#                         'title': 'Invalid AR retested',
+#                         'allow_edit': False,
+#                         'value': anchor,
+#                         'condition': True,
+#                         'type': 'text'})
             message = _('This Analysis Request has been '
                         'generated automatically due to '
                         'the retraction of the Analysis '
