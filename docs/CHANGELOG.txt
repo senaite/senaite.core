@@ -1,19 +1,19 @@
-3.0rc3.5 (2013-09-29)
+3.0rc3.5 (2013-10-24)
 ---------------------
 
-This release requires Plone 4.3.  For information on upgrading Plone, visit
+Requires Plone 4.3.  For information on upgrading Plone, visit
 http://plone.org/documentation/manual/upgrade-guide
 
-- Fix error saving/viewing Analysis results.
-- Add robot tests
-- Fix display bugs
-- Fix setup data loader
-- Handle duplicate request values
+- Fix a serious error saving Analysis results.
+- Improve upgrade handling in genericsetup profile
+- Fix errors in setupdata loader
+- Force UTF-8 encoding of usernames (imported client contacts can now login)
+- Removed outdated test setup data
+- Handle duplicate request values in bika_listing
 - ID server handles changes in ID schemes without error
 - Remove folder-full-view from front-page view
-- Remove user history report
-- Updated workflow and permissions
-- xhtml2pdf replacement by WeasyPrint
+- Updated workflow and permissions to prevent some silly errors
+- Add robot tests
 - Add default robots.txt
 
 3.0rc3.4 (2013-08-06)
