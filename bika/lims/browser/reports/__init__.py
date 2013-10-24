@@ -242,30 +242,27 @@ class SubmitForm(BrowserView):
         framed_output = self.frame_template()
 
         # this is the good part
-        ramdisk = StringIO()
-        pdf = createPDF(framed_output, ramdisk)
-        result = ramdisk.getvalue()
-        ramdisk.close()
-
-        ## Create new report object
-        reportid = self.aq_parent.generateUniqueId('Report')
-        self.aq_parent.invokeFactory(id = reportid, type_name = "Report")
-        report = self.aq_parent._getOb(reportid)
-        report.edit(Client = clientuid)
-        report.processForm()
-
-        ## write pdf to report object
-        report.edit(title = output['report_title'], ReportFile = result)
-        report.reindexObject()
-
-        fn = "%s - %s" % (self.date.strftime(self.date_format_short),
-                          _u(output['report_title']))
+        result = createPdf(framed_output)
 
         # remove temporary files
         for f in self.request['to_remove']:
             os.remove(f)
 
-        if not pdf.err:
+        if result:
+            ## Create new report object
+            reportid = self.aq_parent.generateUniqueId('Report')
+            self.aq_parent.invokeFactory(id = reportid, type_name = "Report")
+            report = self.aq_parent._getOb(reportid)
+            report.edit(Client = clientuid)
+            report.processForm()
+
+            ## write pdf to report object
+            report.edit(title = output['report_title'], ReportFile = result)
+            report.reindexObject()
+
+            fn = "%s - %s" % (self.date.strftime(self.date_format_short),
+                              _u(output['report_title']))
+
             setheader = self.request.RESPONSE.setHeader
             setheader('Content-Type', 'application/pdf')
             setheader("Content-Disposition", "attachment;filename=\"%s\""%_c(fn))
