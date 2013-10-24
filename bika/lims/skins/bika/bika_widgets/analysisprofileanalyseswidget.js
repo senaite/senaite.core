@@ -8,7 +8,7 @@
 ////////////////////////////////////////
 function expand_cat(service_uid){
 	cat = $("#folder-contents-item-"+service_uid).attr('cat');
-	th = $('th[cat='+cat+']');
+	th = $('th[cat="'+cat+'"]');
 	if ($(th).hasClass('collapsed')){
 		table = $(th).parents('.bika-listing-table');
 		// show sub TR rows
@@ -36,7 +36,7 @@ function calcdependencies(elements, auto_yes) {
 	var deps = service_data['deps'];
 	var backrefs = service_data['backrefs'];
 
-	if ($(element).attr("checked") == true){
+	if ($(element).prop('checked') == true){
 		// selecting a service; discover services it depends on.
 		var affected_services = [];
 		var affected_titles = [];
@@ -56,7 +56,7 @@ function calcdependencies(elements, auto_yes) {
 				$.each(servicedata, function(i, serviceuid_servicetitle){
 					service = serviceuid_servicetitle.split("_");
 					// if the service is already checked, skip it.
-					if (! $('#analyses_cb_'+service[0]).attr("checked") ){
+					if (! $('#analyses_cb_'+service[0]).prop('checked') ){
 						// this one is for the current category
 						services.push(service[0]);
 						// and this one decides if the confirmation box gets shown at all.
@@ -81,8 +81,8 @@ function calcdependencies(elements, auto_yes) {
 				function add_Yes(){
 					$.each(dep_args, function(i,args){
 						$.each(args[2], function(x,serviceUID){
-							if(! $('#analyses_cb_'+serviceUID).attr("checked") ){
-								$('#analyses_cb_'+serviceUID).attr("checked", true);
+							if(! $('#analyses_cb_'+serviceUID).prop('checked') ){
+								$('#analyses_cb_'+serviceUID).prop('checked', true);
 								expand_cat(serviceUID);
 							}
 						});
@@ -91,8 +91,8 @@ function calcdependencies(elements, auto_yes) {
 					$('#messagebox').remove();
 				}
 				function add_No(){
-					if($(element).attr("checked") ){
-						$(element).attr("checked", false);
+					if($(element).prop('checked') ){
+						$(element).prop('checked', false);
 					}
 					$(this).dialog("close");
 					$('#messagebox').remove();
@@ -124,7 +124,7 @@ function calcdependencies(elements, auto_yes) {
 		if (s_uids.length > 0){
 			$.each(s_uids, function(i, serviceUID){
 				cb = $('#analyses_cb_' + serviceUID);
-				if (cb.attr("checked")){
+				if (cb.prop('checked')){
 					affected_services.push(serviceUID);
 					affected_titles.push(cb.attr('item_title'));
 				}
@@ -145,13 +145,13 @@ function calcdependencies(elements, auto_yes) {
 					yes: function(){
 						$.each(affected_services, function(i,serviceUID){
 							se = $('#analyses_cb_'+serviceUID);
-							$(se).attr('checked', false);
+							$(se).prop('checked', false);
 						});
 						$(this).dialog("close");
 						$('#messagebox').remove();
 					},
 					no:function(){
-						$(element).attr('checked', true);
+						$(element).prop('checked', true);
 						$(this).dialog("close");
 						$('#messagebox').remove();
 					}

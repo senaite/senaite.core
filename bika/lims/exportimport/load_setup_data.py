@@ -1,20 +1,21 @@
-from DateTime import DateTime
-from Persistence import PersistentMapping
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.CMFCore.utils import getToolByName
-from bika.lims.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import PMF
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims import PMF
+from bika.lims.browser import BrowserView
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import sortable_title
 from bika.lims.utils import to_utf8 as _c
 from cStringIO import StringIO
+from DateTime import DateTime
 from openpyxl.reader.excel import load_workbook
 from os.path import join
+from Persistence import PersistentMapping
 from pkg_resources import resource_listdir, resource_filename, ResourceManager
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zipfile import ZipFile, ZIP_DEFLATED
 
 import Globals
@@ -236,7 +237,7 @@ class LoadSetupData(BrowserView):
             self.load_reference_suppliers(sheets['Reference Suppliers'])
         if 'Reference Supplier Contacts' in sheets:
             self.load_reference_supplier_contacts(sheets['Reference Supplier Contacts'])
-            
+
         if 'Worksheet Template Layouts' in sheets:
             self.load_wst_layouts(sheets['Worksheet Template Layouts'])
         if 'Worksheet Template Services' in sheets:
@@ -432,7 +433,7 @@ class LoadSetupData(BrowserView):
                       'hours': int(row['RetentionPeriod_hours'] and row['RetentionPeriod_hours'] or 0),
                       'minutes': int(row['RetentionPeriod_minutes'] and row['RetentionPeriod_minutes'] or 0),
                       }
-    
+
                 obj.edit(title = row['title'],
                          description = row.get('description', ''),
                          RetentionPeriod = RP)
@@ -554,12 +555,14 @@ class LoadSetupData(BrowserView):
                                                      'title':row['Department_title']}})
 
             ## Create Plone user
-            if(row['Username']):
+            username = safe_unicode(row['Username']).encode('utf-8')
+            password = safe_unicode(row['Password']).encode('utf-8')
+            if(username):
                 member = self.portal_registration.addMember(
-                    row['Username'],
-                    row['Password'],
+                    username,
+                    password,
                     properties = {
-                        'username': row['Username'],
+                        'username': username,
                         'email': row['EmailAddress'],
                         'fullname': Fullname}
                     )
@@ -569,13 +572,13 @@ class LoadSetupData(BrowserView):
                 for group_id in group_ids:
                     group = self.portal_groups.getGroupById(group_id)
                     if group:
-                        group.addMember(row['Username'])
+                        group.addMember(username)
                 # Add user to all specified roles
                 for role_id in role_ids:
                     member._addRole(role_id)
                 # If user is in LabManagers, add Owner local role on clients folder
                 if 'LabManager' in group_ids:
-                    self.context.clients.manage_setLocalRoles(row['Username'], ['Owner',] )
+                    self.context.clients.manage_setLocalRoles(username, ['Owner',] )
 
     def load_lab_departments(self, sheet):
         logger.info("Loading Lab departments...")
@@ -716,10 +719,10 @@ class LoadSetupData(BrowserView):
         logger.info("Loading Instruments...")
         folder = self.context.bika_setup.bika_instruments
         self.instruments = {}
-        rows = self.get_rows(sheet, 3) 
+        rows = self.get_rows(sheet, 3)
         for row in rows:
-            if (not row['Type'] 
-                or not row['title'] 
+            if (not row['Type']
+                or not row['title']
                 or not row['Supplier']
                 or not row['Brand']):
                 continue
@@ -788,7 +791,7 @@ class LoadSetupData(BrowserView):
         for row in rows:
             if row['title']:
                 _id = folder.invokeFactory('SampleType', id = 'tmp')
-                obj = folder[_id]            
+                obj = folder[_id]
                 obj.edit(title = row['title'],
                          description = row.get('description', ''),
                          RetentionPeriod = {'days':row['RetentionPeriod'] and row['RetentionPeriod'] or 0,'hours':0,'minutes':0},

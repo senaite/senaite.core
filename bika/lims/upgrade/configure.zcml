@@ -24,7 +24,7 @@
  <genericsetup:upgradeStep
         title="Fix permissions"
         description="Add some missing configuration (#615)"
-        source="*"
+        source="1100"
         destination="1101"
         handler="bika.lims.upgrade.to1101.upgrade"
         sortkey="1"
@@ -33,9 +33,18 @@
  <genericsetup:upgradeStep
         title="Add QueryWidget indexes to bika_catalog"
         description=""
-        source="*"
+        source="1101"
         destination="1102"
         handler="bika.lims.upgrade.to1102.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+        title="Plone 4.3 compatibility"
+        description=""
+        source="1102"
+        destination="1103"
+        handler="bika.lims.upgrade.to1103.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
 

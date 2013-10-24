@@ -34,6 +34,17 @@
               inline="False"
               insert-after="*"/>
 
+  <javascript authenticated="False"
+              id="++resource++bika.lims.js/queries.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="False"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
   <javascript authenticated="True"
               id="++resource++bika.lims.js/client.js"
               cacheable="True"
@@ -156,17 +167,6 @@
               insert-after="*"/>
 
   <javascript authenticated="True"
-              id="++resource++bika.lims.js/queries.js"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression=""
-              inline="False"
-              insert-after="*"/>
-
-  <javascript authenticated="True"
               id="++resource++bika.lims.js/barcode.js"
               cacheable="True"
               compression="safe"
@@ -200,12 +200,23 @@
               insert-after="*"/>
 
   <javascript authenticated="False"
-              id="++resource++bika.lims.js/jquery.ui.combogrid-1.6.2.js"
+              id="++resource++bika.lims.js/jquery.ui.combogrid-1.6.3.js"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
               cookable="True"
               enabled="on"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="False"
+              id="++resource++bika.lims.js/jquery.ui.combogrid-1.6.2.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="False"
               expression=""
               inline="False"
               insert-after="*"/>

@@ -11,31 +11,30 @@
 
 ////////////////////////////////////////
 function expand_cat(service_uid){
-	cat = $("[name=Partition."+service_uid+":records]").parents('tr').attr('cat');
-	th = $('th[cat='+cat+']');
-	if ($(th).hasClass('collapsed')){
-		table = $(th).parents('.bika-listing-table');
+	cat = $("[name='Partition."+service_uid+":records']").parents('tr').attr('cat');
+	th = $("th[cat='"+cat+"']");
+	if ($(th).hasClass("collapsed")){
+		table = $(th).parents(".bika-listing-table");
 		// show sub TR rows
 		$(table)
-			.children('tbody')
-			.children('tr[cat='+cat+']')
+			.children("tbody")
+			.children("tr[cat='"+cat+"']")
 			.toggle(true);
-		$(th).removeClass('collapsed').addClass('expanded');
+		$(th).removeClass("collapsed").addClass("expanded");
 	}
 }
 
 ////////////////////////////////////////
 function check_service(service_uid){
 	// Add partition dropdown
-	element = $("[name=Partition."+service_uid+":records]");
-	select = '<select class="listing_select_entry" '+
-		'name="Partition.'+service_uid+':records" '+
-		'field="Partition" uid="'+service_uid+'" '+
-		'style="font-size: 100%">';
-	$.each($('#partitions td.part_id'), function(i,v){
+	element = $("[name='Partition."+service_uid+":records']");
+	select = "<select class='listing_select_entry' "+
+		"name='Partition."+service_uid+":records' "+
+		"field='Partition' uid='"+service_uid+"' "+
+		"style='font-size: 100%'>";
+	$.each($("#partitions td.part_id"), function(i,v){
 		partid = $($(v).children()[1]).text();
-		select = select + '<option value="'+partid+'">'+partid+
-			'</option>';
+		select = select + "<option value='"+partid+"'>"+partid+"</option>";
 	});
 	select = select + "</select>";
 	$(element).after(select);
@@ -46,7 +45,7 @@ function check_service(service_uid){
 
 ////////////////////////////////////////
 function uncheck_service(service_uid){
-	element = $("[name=Partition."+service_uid+":records]");
+	element = $("[name='Partition."+service_uid+":records']");
 	$(element).after(
 		"<input type='hidden' name='Partition."+service_uid+":records'"+
 		"value=''/>"
@@ -67,10 +66,10 @@ function calcdependencies(elements, auto_yes) {
 		// if service_uid is not in bika_utils.data.services, there are no deps.
 		return;
 	}
-	var deps = service_data['deps'];
-	var backrefs = service_data['backrefs'];
+	var deps = service_data["deps"];
+	var backrefs = service_data["backrefs"];
 
-	if ($(element).attr("checked") == true){
+	if ($(element).prop("checked") == true){
 		// selecting a service; discover services it depends on.
 		var affected_services = [];
 		var affected_titles = [];
@@ -90,7 +89,7 @@ function calcdependencies(elements, auto_yes) {
 				$.each(servicedata, function(i, serviceuid_servicetitle){
 					service = serviceuid_servicetitle.split("_");
 					// if the service is already checked, skip it.
-					if (! $('#analyses_cb_'+service[0]).attr("checked") ){
+					if (! $("#analyses_cb_"+service[0]).prop("checked") ){
 						// this one is for the current category
 						services.push(service[0]);
 						// and this one decides if the confirmation box gets shown at all.
@@ -110,14 +109,14 @@ function calcdependencies(elements, auto_yes) {
 			$("body").append(
 				"<div id='messagebox' style='display:none' title='" + _("Service dependencies") + "'>"+
 				_("<p>${service} requires the following services to be selected:</p><br/><p>${deps}</p><br/><p>Do you want to apply these selections now?</p>",
-					{service:$(element).attr('item_title'),
+					{service:$(element).attr("item_title"),
 					 deps: affected_titles.join("<br/>")})+"</div>");
 				function add_Yes(){
 					$.each(dep_args, function(i,args){
 						$.each(args[2], function(x,serviceUID){
-							if(! $('#analyses_cb_'+serviceUID).attr("checked") ){
+							if(! $("#analyses_cb_"+serviceUID).prop("checked") ){
 								check_service(serviceUID);
-								$('#analyses_cb_'+serviceUID).attr("checked", true);
+								$("#analyses_cb_"+serviceUID).prop("checked", true);
 								expand_cat(serviceUID);
 							}
 						});
@@ -126,15 +125,15 @@ function calcdependencies(elements, auto_yes) {
 					$('#messagebox').remove();
 				}
 				function add_No(){
-					if($(element).attr("checked") ){
-						uncheck_service($(element).attr('value'));
-						$(element).attr("checked", false);
+					if($(element).prop("checked") ){
+						uncheck_service($(element).attr("value"));
+						$(element).prop("checked", false);
 					}
 					$(this).dialog("close");
-					$('#messagebox').remove();
+					$("#messagebox").remove();
 			}
 			if (auto_yes) {
-				$('#messagebox').remove();
+				$("#messagebox").remove();
 				add_Yes();
 			} else {
 				yes = _("Yes");
@@ -160,7 +159,7 @@ function calcdependencies(elements, auto_yes) {
 		if (s_uids.length > 0){
 			$.each(s_uids, function(i, serviceUID){
 				cb = $('#analyses_cb_' + serviceUID);
-				if (cb.attr("checked")){
+				if (cb.prop('checked')){
 					affected_services.push(serviceUID);
 					affected_titles.push(cb.attr('item_title'));
 				}
@@ -180,18 +179,18 @@ function calcdependencies(elements, auto_yes) {
 										 buttons:{
 					yes: function(){
 						$.each(affected_services, function(i,serviceUID){
-							se = $('#analyses_cb_'+serviceUID);
+							se = $("#analyses_cb_"+serviceUID);
 							uncheck_service(serviceUID);
-							$(se).attr('checked', false);
+							$(se).prop('checked', false);
 						});
 						$(this).dialog("close");
 						$('#messagebox').remove();
 					},
 					no:function(){
-						service_uid = $(element).attr('value');
+						service_uid = $(element).attr("value");
 						check_service(service_uid);
-						$(element).attr('checked', true);
-						$(this).dialog("close");
+						$(element).prop("checked", true);
+						$(this).dialog('close');
 						$('#messagebox').remove();
 					}
 				}});
@@ -216,7 +215,7 @@ function addPart(container,preservation){
 	}
 	highest_part = '';
 	from_tr = '';
-	$.each($('#partitions td.part_id'), function(i,v){
+	$.each($("#partitions td.part_id"), function(i,v){
 		partid = $($(v).children()[1]).text();
 		if (partid > highest_part){
 			from_tr = $(v).parent();
@@ -227,11 +226,11 @@ function addPart(container,preservation){
 	next_part = parseInt(highest_part,10) + 1;
 
 	// copy and re-format new partition table row
-	uid	= $(from_tr).attr('uid');
+	uid	= $(from_tr).attr("uid");
 	to_tr = $(from_tr).clone();
-	$(to_tr).attr('id', 'folder-contents-item-part-'+next_part);
-	$(to_tr).attr('uid', 'part-'+next_part);
-	$(to_tr).find("#"+uid+"_row_data").attr('id', "part-"+next_part+"_row_data").attr('name', "row_data."+next_part+":records");
+	$(to_tr).attr("id", "folder-contents-item-part-"+next_part);
+	$(to_tr).attr("uid", "part-"+next_part);
+	$(to_tr).find("#"+uid+"_row_data").attr('id', "part-"+next_part+"_row_data").attr("name", "row_data."+next_part+":records");
 	$(to_tr).find("#"+uid).attr('id', 'part-'+next_part);
 	$(to_tr).find("input[value='"+uid+"']").attr('value', 'part-'+next_part);
 	$(to_tr).find("[uid='"+uid+"']").attr('uid', 'part-'+next_part);
@@ -239,7 +238,7 @@ function addPart(container,preservation){
 	$(to_tr).find("input[name^='part_id']").attr('name', "part_id.part-"+next_part+":records").attr('value', 'part-'+next_part);
 	$(to_tr).find("select[field='container_uid']").attr('name', "container_uid.part-"+next_part+":records");
 	$(to_tr).find("select[field='preservation_uid']").attr('name', "preservation_uid.part-"+next_part+":records");
-	$($($(to_tr).children('td')[0]).children()[1]).empty().append('part-'+next_part);
+	$($($(to_tr).children("td")[0]).children()[1]).empty().append("part-"+next_part);
 
 	// set part and container values
 	$(to_tr).find("select[field='container_uid']").val(container);
@@ -247,7 +246,7 @@ function addPart(container,preservation){
 	$($("#partitions tbody")[0]).append($(to_tr));
 
 	// add this part to Partition selectors in Analyses tab
-	$.each($('select[name^="Partition\\."]'), function(i,v){
+	$.each($("select[name^='Partition\\.']"), function(i,v){
 		$(v).append($("<option value='part-"+next_part+"'>part-"+next_part+"</option>"));
 	});
 }
@@ -257,9 +256,10 @@ function calculate_parts(){
 
 	// get SampleType
 	st_title = $("#SampleType").val();
-	st_uid = window.bika_utils.data.st_uids[st_title];
-	if (st_uid != undefined && st_uid != null){
-		st_minvol = sampletype['minvol'].split(" ")[0];
+	sampletype = window.bika_utils.data.st_uids[st_title];
+	if (sampletype != undefined && sampletype != null){
+		st_uid = sampletype["uid"];
+		st_minvol = sampletype["minvol"].split(' ')[0];
 		if(st_minvol.length == 0){
 			st_minvol = 0;
 		} else {
@@ -271,10 +271,10 @@ function calculate_parts(){
 	}
 
 	// get selected services
-	selected = $('[name$="uids\\:list"]').filter(':checked');
+	selected = $("[name$='uids\\:list']").filter(":checked");
 	service_uids = []
 	for(i=0;i<selected.length;i++){
-		service_uids.push($(selected[i]).attr('value'));
+		service_uids.push($(selected[i]).attr("value"));
 	}
 
 	parts = window.bika_utils.calculate_partitions(service_uids, st_uid, st_minvol);
@@ -285,10 +285,10 @@ function calculate_parts(){
 ////////////////////////////////////////
 function setAnalysisProfile(){
 	// get profile services list
-	analysisprofiles = $.parseJSON($("#AnalysisProfiles").attr('value'));
+	analysisprofiles = $.parseJSON($("#AnalysisProfiles").attr("value"));
 	// clear existing selection
-	$('input[id^=analyses_cb_]').filter(":checked").attr("checked", false);
-	$.each($("select[name^=Partition]"), function(i,element){
+	$("input[id^='analyses_cb_']").filter(":checked").prop("checked", false);
+	$.each($("select[name^='Partition']"), function(i,element){
 		$(element).after(
 			"<input type='hidden' name='"+$(element).attr('name')+"' value=''/>"
 		);
@@ -301,17 +301,17 @@ function setAnalysisProfile(){
 	if (service_uids != undefined && service_uids != null) {
 		$.each(service_uids, function(i,service_uid){
 			check_service(service_uid);
-			$('input[id^=analyses_cb_'+service_uid+']').attr("checked", true);
+			$("input[id^='analyses_cb_"+service_uid+"']").prop("checked", true);
 		});
 	}
 	// calculate automatic partitions
 	parts = calculate_parts();
 	// reset partition table
-	$.each($('#partitions td.part_id'), function(i,v){
+	$.each($("#partitions td.part_id"), function(i,v){
 		partid = $($(v).children()[1]).text();
 		if (partid != 'part-1'){
 			// remove part TR from partition table
-			$("tr[uid="+partid+"]").remove();
+			$("tr[uid='"+partid+"']").remove();
 			// remove part from Partition selectors
 			$.each($('select[name^="Partition\\."]'), function(i,v){
 				$(v).find("option[value='"+partid+"']").remove();
@@ -321,23 +321,23 @@ function setAnalysisProfile(){
 
 	// set container and preservation of first part
 	if (parts.length > 0){
-		first_tr = $($('#partitions td.part_id')[0]).parent();
-		if(parts[0]['container'] != undefined
-		   && parts[0]['container'] != null){
-			container = parts[0]['container'][0];
+		first_tr = $($("#partitions td.part_id")[0]).parent();
+		if(parts[0]["container"] != undefined
+		   && parts[0]["container"] != null){
+			container = parts[0]["container"][0];
 
 			// if container is defined, but not in bika_utils.data, then it's
 			// a container type.
-			if (!(container in window.bika_utils.data['containers'])){
-				for(c in window.bika_utils.data['containers']){
-					c_obj = window.bika_utils.data['containers'][c];
-					if(c_obj['containertype'] == container){
-						container = c_obj['uid'];
+			if (!(container in window.bika_utils.data["containers"])){
+				for(c in window.bika_utils.data["containers"]){
+					c_obj = window.bika_utils.data["containers"][c];
+					if(c_obj["containertype"] == container){
+						container = c_obj["uid"];
 						break
 					}
 				}
 			}
-			if (!(container in window.bika_utils.data['containers'])){
+			if (!(container in window.bika_utils.data["containers"])){
 				// no match
 				container = '';
 			}
@@ -346,9 +346,9 @@ function setAnalysisProfile(){
 		}
 		$(first_tr).find("select[field='container_uid']").val(container);
 
-		if(parts[0]['preservation'] != undefined
-		    && parts[0]['preservation'] != null){
-			preservation = parts[0]['preservation'][0];
+		if(parts[0]["preservation"] != undefined
+		    && parts[0]["preservation"] != null){
+			preservation = parts[0]["preservation"][0];
 		} else {
 			preservation = '';
 		}
@@ -359,13 +359,13 @@ function setAnalysisProfile(){
 	nr_parts = parts.length;
 	for(i=1;i<parts.length;i++){
 		part = parts[i];
-		addPart(part['container'], part['preservation']);
+		addPart(part["container"], part["preservation"]);
 	}
 	// Set new part numbers
 	$.each(parts, function(p,part){
-		$.each(part['services'], function(s,service_uid){
+		$.each(part["services"], function(s,service_uid){
 			partnr = p+1;
-			$("[name=Partition."+service_uid+":records]").val('part-'+partnr);
+			$("[name='Partition."+service_uid+":records']").val('part-'+partnr);
 		});
 	});
 }
@@ -374,7 +374,7 @@ function setAnalysisProfile(){
 function click_uid_checkbox(){
 	calcdependencies([this]);
 	service_uid = $(this).val();
-	if ($(this).attr("checked")){
+	if ($(this).prop("checked")){
 		check_service(service_uid);
 	} else {
 		uncheck_service(service_uid);

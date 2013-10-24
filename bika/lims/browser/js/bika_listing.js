@@ -40,16 +40,16 @@ $(document).ready(function(){
 			data: form.formToArray()
 		}
 		form.ajaxSubmit(options);
-		$("[name=table_only]").remove();
+		$("[name='table_only']").remove();
 		$(form).attr("action", stored_form_action);
 	});
 
 	// select all (on this page at least)
 	$("input[id*='select_all']").live('click', function(){
 		form_id = $(this).parents("form").attr("id");
-		checked = $(this).attr("checked");
+		checked = $(this).prop('checked');
 		$.each($("input[id^='"+form_id+"_cb_']"), function(i,v){
-			$(v).attr("checked", checked);
+			$(v).prop('checked', checked);
 		});
 	});
 
@@ -58,14 +58,14 @@ $(document).ready(function(){
 		form_id = $(this).parents("form").attr("id");
 		all_selected = true;
 		$.each($("input[id^='"+form_id+"_cb_']"), function(i,v){
-			if($(v).attr("checked") == false){
+			if($(v).prop('checked') == undefined){
 				all_selected = false;
 			}
 		});
 		if(all_selected){
-			$("#"+form_id+"_select_all").attr("checked", true);
+			$("#"+form_id+"_select_all").prop('checked', true);
 		} else {
-			$("#"+form_id+"_select_all").attr("checked", false);
+			$("#"+form_id+"_select_all").prop('checked', false);
 		}
 	});
 
@@ -117,7 +117,7 @@ $(document).ready(function(){
 		form_id = $(this).parents("form").attr("id");
 		uid = $(this).attr('uid');
 		// check the item's checkbox
-		if ($('#'+form_id+'_cb_'+uid).attr('checked') == false) {
+		if ($('#'+form_id+'_cb_'+uid).prop('checked') == false) {
 			$('#'+form_id+'_cb_'+uid).click();
 		}
 	});
@@ -145,7 +145,7 @@ $(document).ready(function(){
 			data: form.formToArray()
 		}
 		form.ajaxSubmit(options);
-		$('[name=table_only]').remove();
+		$('[name="table_only"]').remove();
 		$(form).attr('action', stored_form_action)
 		return false;
 	});
@@ -153,7 +153,7 @@ $(document).ready(function(){
 	$(".listing_string_entry").live('focus', function(){
 		$(this).parents("form").find(".workflow_action_button")
 			.addClass('disabled')
-			.attr("disabled", true);
+			disabled = true;
         $(".workflow_action_button")
 
 	});
@@ -161,7 +161,7 @@ $(document).ready(function(){
 	$(".listing_string_entry").live('blur', function(){
 		$(this).parents("form").find(".workflow_action_button")
 			.removeClass('disabled')
-			.removeAttr("disabled");
+			disabled = false;
 	});
 
 	// Workflow Action button was clicked.

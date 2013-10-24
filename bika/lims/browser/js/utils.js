@@ -246,12 +246,12 @@ function enableAddAttachment(this_field) {
 		document.getElementById('Analysis').value = '';
 	}
 
-	document.getElementById('addButton').disabled = false;
+	document.getElementById('addButton').prop('disabled', false);
 	if (attachfile == '') {
-		document.getElementById('addButton').disabled = true
+		document.getElementById('addButton').prop('disabled', true)
 	} else {
 		if ((service == '') && (analysis == '')) {
-			document.getElementById('addButton').disabled = true
+			document.getElementById('addButton').prop('disabled', true)
 		}
 	}
 
@@ -331,28 +331,6 @@ $(document).ready(function(){
 				title: "<img src='" + window.portal_url + "/++resource++bika.lims.images/analysisservice.png'/>&nbsp;" + $(this).text()
 			});
 	});
-
-    function clearTimer(){
-		if(window.bika_spinner != undefined && window.bika_spinner != null) {
-			clearTimeout(window.bika_spinner);
-		}
-	}
-	$('body')
-		.append("<div class='bika-spinner'/>")
-		.ajaxStart(function() {
-			// We don't want the spinner to stutter, so we wait a half second
-			clearTimer();
-			window.bika_spinner = setTimeout(function(){
-				$('body').addClass('loading'); },500);
-		})
-		.ajaxStop(function() {
-			clearTimer();
-			$('body').removeClass('loading');
-		})
-		.ajaxComplete(function() {
-			clearTimer();
-			$('body').removeClass('loading');
-		});
 
 	$(".numeric").live('keypress', function(event) {
 		// Backspace, tab, enter, end, home, left, right, ., <, >, and -
