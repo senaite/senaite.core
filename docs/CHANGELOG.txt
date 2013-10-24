@@ -1,7 +1,10 @@
 3.0rc3.5 (2013-09-29)
 ---------------------
 
-- Add default robots.txt
+This release requires Plone 4.3.  For information on upgrading Plone, visit
+http://plone.org/documentation/manual/upgrade-guide
+
+- Fix error saving/viewing Analysis results.
 - Add robot tests
 - Fix display bugs
 - Fix setup data loader
@@ -11,7 +14,7 @@
 - Remove user history report
 - Updated workflow and permissions
 - xhtml2pdf replacement by WeasyPrint
-
+- Add default robots.txt
 
 3.0rc3.4 (2013-08-06)
 ---------------------

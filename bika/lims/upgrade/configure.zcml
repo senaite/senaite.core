@@ -57,4 +57,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+ <genericsetup:upgradeStep
+        title="Upgrade to rc3.5"
+        description="Re-import profile steps for rc3.5"
+        source="1104"
+        destination="1105"
+        handler="bika.lims.upgrade.to1105.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
