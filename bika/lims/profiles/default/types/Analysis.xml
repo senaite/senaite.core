@@ -2,7 +2,8 @@
 <object name="Analysis"
         meta_type="Factory-based Type Information with dynamic views"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-        i18n:domain="plone">
+        i18n:domain="plone"
+        purge="True">
  <property name="title" i18n:translate="">Analysis</property>
  <property name="description"></property>
  <property name="icon_expr">string:${portal_url}/document_icon.gif</property>
