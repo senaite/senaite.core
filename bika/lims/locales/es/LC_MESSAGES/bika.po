@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # Alfonso de la Guarda Reyes <alfonsodg@gmail.com>, 2012-2013
 # cgarcia <garciaquintana_carlos@yahoo.com.mx>, 2013
@@ -29,7 +29,7 @@ msgstr ""
 msgid "${contact_fullname} can log into the LIMS by using ${contact_username} as username. Contacts must change their own passwords. If a password is forgotten a contact can request a new password from the login form."
 msgstr "${contact_fullname} puede acceder al LIMS utilizando el nombre de usuario ${contact_username}. Se recomienda que los contactos modifiquen su contraseña. Si el usuario pierde su contraseña, siempre podrá solicitar una nueva en el formulario de acceso."
 
-# 
+#
 # File: ../browser/analysisrequest.py, line: 1601
 msgid "${id} is not a valid sample ID"
 msgstr ""
@@ -362,7 +362,7 @@ msgstr "Expandir siempre las categorías seleccionadas a las vistas de cliente"
 msgid "Amount"
 msgstr "Cantidad"
 
-# 
+#
 # File: ../profiles/default/registry.xml, line: -1
 msgid "An item's workflow state (e.g.published)"
 msgstr ""
@@ -484,7 +484,7 @@ msgstr "Perfil de análisis"
 msgid "Analysis Profiles"
 msgstr "Perfiles de solicitud de análisis"
 
-# 
+#
 # File: ../profiles/default/registry.xml, line: -1
 msgid "Analysis Request"
 msgstr ""
@@ -567,12 +567,12 @@ msgstr "Solicitudes de análisis y análisis por cliente"
 msgid "Analysis requests not invoiced"
 msgstr "Solicitudes de análisis no facturadas"
 
-# 
+#
 # File: ../profiles/default/registry.xml, line: -1
 msgid "Analysis requests will be selected if any of their analyses have this analysis service selected."
 msgstr ""
 
-# 
+#
 # File: ../profiles/default/registry.xml, line: -1
 msgid "Analysis requests will be selected if any of their analyses' services are in this category."
 msgstr ""
@@ -903,7 +903,7 @@ msgstr "Capturado"
 msgid "Catalogue Number"
 msgstr "Número de catálogo"
 
-# 
+#
 # File: ../content/bikasetup.py, line: 166
 msgid "Categorise analysis services setup list"
 msgstr ""
@@ -960,7 +960,7 @@ msgstr "Clásico"
 msgid "Click on Analysis Categories (against shaded background) to see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert."
 msgstr "Haga clic sobre las cabeceras de categorías de análisis (con fondo gris) para ver los servicios de análisis que contienen cada una de ellas. Introducid los valores mínimo y máximo para indicar el rango válido de los resultados. Si el resultado se encuentra fuera de este rango, el sistema lanzará una alerta. El campo % Error le permite indicar el porcentaje de incertidumbre que tiene que tener en cuenta el sistema en la evaluación de los resultados con el rango indicado. Si un resultado fuera de rango pasa a ser válido cuando el sistema tiene en cuenta el porcentaje de incertidumbre, el sistema lo notificará con una alerta menos severa."
 
-# 
+#
 # File: ../browser/analysisrequest.py, line: 1342
 msgid "Click on a sample to create a secondary AR"
 msgstr ""
@@ -1378,7 +1378,7 @@ msgstr "Definir el número de decimales del resultado"
 msgid "Define the prefixes for the unique sequential IDs the system issues for objects. In the 'Padding' field, indicate with how many leading zeros the numbers must be padded. E.g. a prefix of WS for worksheets with padding of 4, will see them numbered from WS-0001 to WS-9999. NB: Note that samples and analysis requests are prefixed with sample type abbreviations and are not configured in this table - their padding can be set in the specified fields below"
 msgstr "Definición de los prefijos para los identificadores únicos y secuenciales que utiliza el sistema para gestionar los elementos. El campo 'Tamaño del identificador' indica el número de ceros que deben añadirse al principio. Por ejemplo, para un prefijo de una hoja de trabajo con un valor de 4 para el campo 'Tamaño del identificador', el sistema generará el rango de códigos entre WS-0001 y WS-9999. El prefijo de las muestras y de las sol·licitudes de análisis corresponde con sus abreviaciones y no se pueden configurar desde esta tabla - podéis establecer su tamaño mediante los campos de debajo."
 
-# 
+#
 # File: ../content/analysisrequestquery.py, line: 33
 msgid "Define the search terms for the items you want to list by choosing what to match on. The list of results will be dynamically updated."
 msgstr ""
@@ -1683,7 +1683,7 @@ msgstr "Fichero"
 msgid "Filename"
 msgstr "Nombre del fichero"
 
-# 
+#
 # File: ../profiles/default/registry.xml, line: -1
 msgid "Find items which have been invoiced."
 msgstr ""
@@ -1721,7 +1721,7 @@ msgstr "Generar reporte"
 msgid "Greeting title eg. Mr, Mrs, Dr"
 msgstr "Título de cortesía, como p.ej. Sr., Sra. o Dr."
 
-# 
+#
 # File: ../content/bikasetup.py, line: 167
 msgid "Group analysis services by category in the LIMS set-up, helpful when the list is long"
 msgstr ""
@@ -1898,7 +1898,7 @@ msgstr "Excluido de facturación"
 msgid "Invoice number"
 msgstr "Número de factura"
 
-# 
+#
 # File: ../content/analysisrequestquery.py, line: 122
 # File: ../profiles/default/registry.xml, line: -1
 msgid "Invoiced"
@@ -2007,7 +2007,7 @@ msgstr "Análisis con retraso"
 msgid "Latitude"
 msgstr "Latitud"
 
-# 
+#
 # File: ../content/analysisrequestquery.py, line: 72
 msgid "Limit Search Results"
 msgstr ""
@@ -2138,7 +2138,7 @@ msgstr "% de descuento para clientes habituales"
 msgid "Member discount applies"
 msgstr "Aplicar descuento de cliente habitual"
 
-# 
+#
 # File: ../profiles/default/registry.xml, line: -1
 msgid "Metadata"
 msgstr ""
@@ -2276,7 +2276,7 @@ msgstr "Sin cambios."
 msgid "No control type specified"
 msgstr "No se ha indicado el tipo de control"
 
-# 
+#
 # File: ../browser/analysisrequest.py, line: 1562
 msgid "No data was entered"
 msgstr ""
@@ -2832,6 +2832,11 @@ msgstr "Observaciones a tener en cuenta antes de la validación"
 msgid "Remarks to take into account for maintenance process"
 msgstr "Observaciones a tener en cuenta para proceso de mantenimiento"
 
+#
+# File: ../browser/templates/bika_listing_table.pt, line: 576
+msgid "Remarks:"
+msgstr ""
+
 # File: ../content/instrumentmaintenancetask.py, line: 142
 # File: ../content/instrumentscheduledtask.py, line: 86
 msgid "Repair"
@@ -2971,7 +2976,7 @@ msgstr "Período de retención"
 msgid "Retested"
 msgstr "Prueba repetida"
 
-# 
+#
 # File: ../profiles/default/registry.xml, line: -1
 msgid "Review state"
 msgstr ""
@@ -3145,12 +3150,12 @@ msgstr "Tarea programada"
 msgid "Search"
 msgstr "Buscar"
 
-# 
+#
 # File: ../content/analysisrequestquery.py, line: 32
 msgid "Search terms"
 msgstr ""
 
-# 
+#
 # File: ../browser/templates/ar_add.pt, line: 332
 msgid "Secondary AR"
 msgstr ""
@@ -3216,7 +3221,7 @@ msgstr "Indique si es necesario incluir las descripciones"
 msgid "Select instrument"
 msgstr "Seleccionar el equipo"
 
-# 
+#
 # File: ../profiles/default/registry.xml, line: -1
 msgid "Select only analysis requests where one or more analyses were analyzed by this user."
 msgstr ""
@@ -3259,7 +3264,7 @@ msgstr "Seleccione esta casilla para activar el flujo de trabajo de los pasos pa
 msgid "Select which Analyses should be included on the Worksheet"
 msgstr "Seleccione qué análisis desea incluir a la hoja de trabajo"
 
-# 
+#
 # File: ../content/analysisrequestquery.py, line: 86
 msgid "Select which fields to display when 'Tabular view' is selected in the display menu."
 msgstr ""
@@ -3346,12 +3351,12 @@ msgstr "Posición"
 msgid "Small"
 msgstr "Pequeño"
 
-# 
+#
 # File: ../content/analysisrequestquery.py, line: 48
 msgid "Sort the collection on this index"
 msgstr ""
 
-# 
+#
 # File: ../content/analysisrequestquery.py, line: 60
 msgid "Sort the results in reversed order"
 msgstr ""
@@ -3368,7 +3373,7 @@ msgstr "Especificación"
 msgid "Specifications"
 msgstr "Especificaciones"
 
-# 
+#
 # File: ../content/analysisrequestquery.py, line: 73
 msgid "Specify the maximum number of items to show."
 msgstr ""
@@ -3419,7 +3424,7 @@ msgstr "Proveedores"
 msgid "Surname"
 msgstr "Apellidos"
 
-# 
+#
 # File: ../content/analysisrequestquery.py, line: 85
 msgid "Table Columns"
 msgstr ""
@@ -3591,7 +3596,7 @@ msgstr "El número de solicitudes y análisis por cliente"
 msgid "The period for which un-preserved samples of this type can be kept before they expire and cannot be analysed any further"
 msgstr "Periodo de tiempo durante el que se pueden mantener las muestras en un estado de no conservación antes que caduquen y no puedan ser analizadas."
 
-# 
+#
 # File: ../profiles/default/registry.xml, line: -1
 msgid "The person that created an item"
 msgstr ""
@@ -3657,7 +3662,7 @@ msgstr "No ha sido posible desactivar el Servicio de Análisis porque hay cálcu
 msgid "This document shall not be reproduced except in full, without the written approval of ${name_lab}"
 msgstr "Este documento no puede reproducirse sin el consentimiento de ${name_lab}, con excepción de la reproducción de su totalidad."
 
-# 
+#
 # File: ../content/analysisrequest.py, line: 173
 # File: ../content/analysisservice.py, line: 194
 # File: ../content/artemplate.py, line: 54
@@ -3744,10 +3749,6 @@ msgstr "Importe total"
 msgid "Total:"
 msgstr "Total:"
 
-# File: ../browser/reports/templates/administration.pt, line: 116
-msgid "Traceability"
-msgstr "Trazabilidad"
-
 # File: ../browser/reports/productivity_analysestats_overtime.py, line: 141
 msgid "Turnaround time (h)"
 msgstr "Tiempo de respuesta (h)"
@@ -3812,10 +3813,6 @@ msgstr "Usuario"
 # File: ../browser/templates/login_details.pt, line: 50
 msgid "User Name"
 msgstr "Nombre de usuario"
-
-# File: ../browser/reports/templates/administration.pt, line: 119
-msgid "User history"
-msgstr "Historial de Usuario"
 
 # File: ../browser/reports/templates/administration_usershistory.pt, line: 74
 msgid "UserID"

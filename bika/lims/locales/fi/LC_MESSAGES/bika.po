@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # masinotek, 2013
 msgid ""
@@ -2812,6 +2812,11 @@ msgstr ""
 msgid "Remarks to take into account for maintenance process"
 msgstr ""
 
+#
+# File: ../browser/templates/bika_listing_table.pt, line: 576
+msgid "Remarks:"
+msgstr ""
+
 # File: ../content/instrumentmaintenancetask.py, line: 142
 # File: ../content/instrumentscheduledtask.py, line: 86
 msgid "Repair"
@@ -3714,10 +3719,6 @@ msgstr ""
 msgid "Total:"
 msgstr ""
 
-# File: ../browser/reports/templates/administration.pt, line: 116
-msgid "Traceability"
-msgstr ""
-
 # File: ../browser/reports/productivity_analysestats_overtime.py, line: 141
 msgid "Turnaround time (h)"
 msgstr ""
@@ -3781,10 +3782,6 @@ msgstr ""
 # File: ../browser/client.py, line: 836
 # File: ../browser/templates/login_details.pt, line: 50
 msgid "User Name"
-msgstr ""
-
-# File: ../browser/reports/templates/administration.pt, line: 119
-msgid "User history"
 msgstr ""
 
 # File: ../browser/reports/templates/administration_usershistory.pt, line: 74

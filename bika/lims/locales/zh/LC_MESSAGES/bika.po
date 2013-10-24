@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # b6122 <bio.nanoparticle@gmail.com>, 2012
 # b6122 <bio.nanoparticle@gmail.com>, 2012
@@ -24,7 +24,7 @@ msgstr ""
 msgid "${contact_fullname} can log into the LIMS by using ${contact_username} as username. Contacts must change their own passwords. If a password is forgotten a contact can request a new password from the login form."
 msgstr ""
 
-# 
+#
 # File: ../browser/analysisrequest.py, line: 1601
 msgid "${id} is not a valid sample ID"
 msgstr ""
@@ -357,7 +357,7 @@ msgstr "始终扩展客户端视图中选定的类别"
 msgid "Amount"
 msgstr "数量"
 
-# 
+#
 # File: ../profiles/default/registry.xml, line: -1
 msgid "An item's workflow state (e.g.published)"
 msgstr ""
@@ -479,7 +479,7 @@ msgstr "分析属性"
 msgid "Analysis Profiles"
 msgstr ""
 
-# 
+#
 # File: ../profiles/default/registry.xml, line: -1
 msgid "Analysis Request"
 msgstr ""
@@ -562,12 +562,12 @@ msgstr "分析请求与分析 - 按客户"
 msgid "Analysis requests not invoiced"
 msgstr "未结算的分析请求"
 
-# 
+#
 # File: ../profiles/default/registry.xml, line: -1
 msgid "Analysis requests will be selected if any of their analyses have this analysis service selected."
 msgstr ""
 
-# 
+#
 # File: ../profiles/default/registry.xml, line: -1
 msgid "Analysis requests will be selected if any of their analyses' services are in this category."
 msgstr ""
@@ -898,7 +898,7 @@ msgstr "已捕获"
 msgid "Catalogue Number"
 msgstr "类别号码"
 
-# 
+#
 # File: ../content/bikasetup.py, line: 166
 msgid "Categorise analysis services setup list"
 msgstr ""
@@ -955,7 +955,7 @@ msgstr "典型的"
 msgid "Click on Analysis Categories (against shaded background) to see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert."
 msgstr ""
 
-# 
+#
 # File: ../browser/analysisrequest.py, line: 1342
 msgid "Click on a sample to create a secondary AR"
 msgstr ""
@@ -1373,7 +1373,7 @@ msgstr "定义本结果需要使用的十进制数"
 msgid "Define the prefixes for the unique sequential IDs the system issues for objects. In the 'Padding' field, indicate with how many leading zeros the numbers must be padded. E.g. a prefix of WS for worksheets with padding of 4, will see them numbered from WS-0001 to WS-9999. NB: Note that samples and analysis requests are prefixed with sample type abbreviations and are not configured in this table - their padding can be set in the specified fields below"
 msgstr ""
 
-# 
+#
 # File: ../content/analysisrequestquery.py, line: 33
 msgid "Define the search terms for the items you want to list by choosing what to match on. The list of results will be dynamically updated."
 msgstr ""
@@ -1678,7 +1678,7 @@ msgstr "文件"
 msgid "Filename"
 msgstr "文件名"
 
-# 
+#
 # File: ../profiles/default/registry.xml, line: -1
 msgid "Find items which have been invoiced."
 msgstr ""
@@ -1716,7 +1716,7 @@ msgstr ""
 msgid "Greeting title eg. Mr, Mrs, Dr"
 msgstr "称谓, 如先生,女士, 博士"
 
-# 
+#
 # File: ../content/bikasetup.py, line: 167
 msgid "Group analysis services by category in the LIMS set-up, helpful when the list is long"
 msgstr ""
@@ -1893,7 +1893,7 @@ msgstr "发票不包括"
 msgid "Invoice number"
 msgstr "发票号"
 
-# 
+#
 # File: ../content/analysisrequestquery.py, line: 122
 # File: ../profiles/default/registry.xml, line: -1
 msgid "Invoiced"
@@ -2002,7 +2002,7 @@ msgstr "分析延迟"
 msgid "Latitude"
 msgstr "纬度"
 
-# 
+#
 # File: ../content/analysisrequestquery.py, line: 72
 msgid "Limit Search Results"
 msgstr ""
@@ -2133,7 +2133,7 @@ msgstr "会员折扣%"
 msgid "Member discount applies"
 msgstr "会员折扣可用"
 
-# 
+#
 # File: ../profiles/default/registry.xml, line: -1
 msgid "Metadata"
 msgstr ""
@@ -2271,7 +2271,7 @@ msgstr "没有改变"
 msgid "No control type specified"
 msgstr "没有指定对照类型"
 
-# 
+#
 # File: ../browser/analysisrequest.py, line: 1562
 msgid "No data was entered"
 msgstr ""
@@ -2827,6 +2827,11 @@ msgstr ""
 msgid "Remarks to take into account for maintenance process"
 msgstr ""
 
+#
+# File: ../browser/templates/bika_listing_table.pt, line: 576
+msgid "Remarks:"
+msgstr ""
+
 # File: ../content/instrumentmaintenancetask.py, line: 142
 # File: ../content/instrumentscheduledtask.py, line: 86
 msgid "Repair"
@@ -2966,7 +2971,7 @@ msgstr "保留周期"
 msgid "Retested"
 msgstr "已重新测试"
 
-# 
+#
 # File: ../profiles/default/registry.xml, line: -1
 msgid "Review state"
 msgstr ""
@@ -3140,12 +3145,12 @@ msgstr ""
 msgid "Search"
 msgstr "搜索"
 
-# 
+#
 # File: ../content/analysisrequestquery.py, line: 32
 msgid "Search terms"
 msgstr ""
 
-# 
+#
 # File: ../browser/templates/ar_add.pt, line: 332
 msgid "Secondary AR"
 msgstr ""
@@ -3211,7 +3216,7 @@ msgstr "选择是否添加描述"
 msgid "Select instrument"
 msgstr "选择仪器"
 
-# 
+#
 # File: ../profiles/default/registry.xml, line: -1
 msgid "Select only analysis requests where one or more analyses were analyzed by this user."
 msgstr ""
@@ -3254,7 +3259,7 @@ msgstr "选此激活样品采集工作流程."
 msgid "Select which Analyses should be included on the Worksheet"
 msgstr "选择工作表中需要包含的分析"
 
-# 
+#
 # File: ../content/analysisrequestquery.py, line: 86
 msgid "Select which fields to display when 'Tabular view' is selected in the display menu."
 msgstr ""
@@ -3341,12 +3346,12 @@ msgstr "槽"
 msgid "Small"
 msgstr "小"
 
-# 
+#
 # File: ../content/analysisrequestquery.py, line: 48
 msgid "Sort the collection on this index"
 msgstr ""
 
-# 
+#
 # File: ../content/analysisrequestquery.py, line: 60
 msgid "Sort the results in reversed order"
 msgstr ""
@@ -3363,7 +3368,7 @@ msgstr "规格"
 msgid "Specifications"
 msgstr ""
 
-# 
+#
 # File: ../content/analysisrequestquery.py, line: 73
 msgid "Specify the maximum number of items to show."
 msgstr ""
@@ -3414,7 +3419,7 @@ msgstr ""
 msgid "Surname"
 msgstr "姓"
 
-# 
+#
 # File: ../content/analysisrequestquery.py, line: 85
 msgid "Table Columns"
 msgstr ""
@@ -3586,7 +3591,7 @@ msgstr "The number of requests and analyses per client"
 msgid "The period for which un-preserved samples of this type can be kept before they expire and cannot be analysed any further"
 msgstr "该类型非保留样品的可用于测试的有效期周期"
 
-# 
+#
 # File: ../profiles/default/registry.xml, line: -1
 msgid "The person that created an item"
 msgstr ""
@@ -3652,7 +3657,7 @@ msgstr "由于从属于一个或多个计算, 该分析服务现在不能停止.
 msgid "This document shall not be reproduced except in full, without the written approval of ${name_lab}"
 msgstr "除非另有说明, 未经 ${name_lab} 书面批准, 本报告不得复制."
 
-# 
+#
 # File: ../content/analysisrequest.py, line: 173
 # File: ../content/analysisservice.py, line: 194
 # File: ../content/artemplate.py, line: 54
@@ -3739,10 +3744,6 @@ msgstr "总价"
 msgid "Total:"
 msgstr ""
 
-# File: ../browser/reports/templates/administration.pt, line: 116
-msgid "Traceability"
-msgstr ""
-
 # File: ../browser/reports/productivity_analysestats_overtime.py, line: 141
 msgid "Turnaround time (h)"
 msgstr ""
@@ -3807,10 +3808,6 @@ msgstr "用户"
 # File: ../browser/templates/login_details.pt, line: 50
 msgid "User Name"
 msgstr "用户名"
-
-# File: ../browser/reports/templates/administration.pt, line: 119
-msgid "User history"
-msgstr ""
 
 # File: ../browser/reports/templates/administration_usershistory.pt, line: 74
 msgid "UserID"

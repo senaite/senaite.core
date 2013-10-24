@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 msgid ""
 msgstr ""
@@ -2811,6 +2811,11 @@ msgstr "Observaciones a tener en cuenta antes de la validación"
 msgid "Remarks to take into account for maintenance process"
 msgstr "Observaciones a tener en cuenta para proceso de mantenimiento"
 
+#
+# File: ../browser/templates/bika_listing_table.pt, line: 576
+msgid "Remarks:"
+msgstr ""
+
 # File: ../content/instrumentmaintenancetask.py, line: 142
 # File: ../content/instrumentscheduledtask.py, line: 86
 msgid "Repair"
@@ -3713,10 +3718,6 @@ msgstr "Importe total"
 msgid "Total:"
 msgstr "Total:"
 
-# File: ../browser/reports/templates/administration.pt, line: 116
-msgid "Traceability"
-msgstr "Trazabilidad"
-
 # File: ../browser/reports/productivity_analysestats_overtime.py, line: 141
 msgid "Turnaround time (h)"
 msgstr "Tiempo de respuesta (h)"
@@ -3781,10 +3782,6 @@ msgstr "Usuario"
 # File: ../browser/templates/login_details.pt, line: 50
 msgid "User Name"
 msgstr "Nombre de usuario"
-
-# File: ../browser/reports/templates/administration.pt, line: 119
-msgid "User history"
-msgstr "Historial de Usuario"
 
 # File: ../browser/reports/templates/administration_usershistory.pt, line: 74
 msgid "UserID"

@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # Alfonso de la Guarda Reyes <alfonsodg@gmail.com>, 2013
 # campbell_bika <campbell@bikalabs.com>, 2012
