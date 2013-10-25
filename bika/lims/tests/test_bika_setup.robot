@@ -1,12 +1,12 @@
 *** Settings ***
 
-Library          Selenium2Library  timeout=10  implicit_wait=0.2
+Library          Selenium2Library  timeout=10  implicit_wait=0.1
 Library          String
 Library  Remote  ${PLONE_URL}/RobotRemote
 Resource         keywords.txt
 Variables        plone/app/testing/interfaces.py
 Suite Setup      Start browser
-Suite Teardown   Close All Browsers
+# Suite Teardown   Close All Browsers
 
 *** Variables ***
 
@@ -16,31 +16,17 @@ ${PLONEURL}        http://localhost:55001/plone
 *** Test Cases ***
 
 
-ARTemplates
-    Go to  ${PLONEURL}/bika_setup/bika_artemplates
-    Wait Until Page Contains  AR Templates
-    Click link  Add Template
-    Wait Until Page Contains Element  title
-    Input Text  title          New Object
-    Input Text  description    Temporary test object
-    Input Text  SamplePoint   Borehole 12
-    Input Text  SampleType    Water
-    Select Checkbox  ReportDryMatter
-    Click link  Sample Partitions
-    Wait Until Page Contains  Sample Partitions
-    Select from list  container_uid.part-1:records        Glass Bottle 500ml
-    Select from list  preservation_uid.part-1:records     Any
-    Click Button  Add
-    Select from list  container_uid.part-2:records        Any
-    Select from list  preservation_uid.part-2:records     H2S04
-    Click Link  Analyses
-    Wait Until Page Contains Element  AnalysisProfile:list
-    Select from list   AnalysisProfile:list    Trace Metals
-    Click Button  Save
-    Wait Until Page Contains  Changes saved.
-
-Update Laboratory Information
-    Go to  ${PLONEURL}/bika_setup/laboratory/base_edit
+Add new items in all bika_setup categories
+#Update Laboratory Information
+    Go to  ${PLONEURL}/bika_setup/laboratory/#fieldsetlegend-accreditation
+    Input Text        Confidence                 95
+    Select Checkbox   LaboratoryAccredited
+    Input Text        AccreditationBodyLong      Accreditation Body Name
+    Input Text        AccreditationBody          ABBREVIATION
+    Input Text        AccreditationBodyURL       http://www.body.com
+    Input Text        Accreditation              Accreditation Type
+    Input Text        AccreditationReference     Reference
+    Click link        Default
     Input Text        Name            Laboratory Name
     Input Text        TaxNumber       0123456789
     Input Text        Phone           555-1234
@@ -64,18 +50,32 @@ Update Laboratory Information
     Input Text        AccountNumber  0123456789
     Input Text        BankName       Standard Bank
     Input Text        BankBranch     555-0111
-    Click link       Accreditation
-    Input Text       Confidence                 95
-    Select Checkbox  LaboratoryAccredited
-    Input Text       AccreditationBodyLong      Accreditation Body Name
-    Input Text       AccreditationBody          ABBREVIATION
-    Input Text       AccreditationBodyURL       http://www.body.com
-    Input Text       Accreditation              Accreditation Type
-    Input Text       AccreditationReference     Reference
+    Click Button      Save
+    Wait Until Page Contains  Changes saved.
+#ARTemplates
+    Go to  ${PLONEURL}/bika_setup/bika_artemplates
+    Wait Until Page Contains  AR Templates
+    Click link  Add Template
+    Wait Until Page Contains Element  title
+    Input Text  title          New Object
+    Input Text  description    Temporary test object
+    Input Text  SamplePoint   Borehole 12
+    Input Text  SampleType    Water
+    Select Checkbox  ReportDryMatter
+    Click link  Sample Partitions
+    Wait Until Page Contains  Sample Partitions
+    Select from list  container_uid.part-1:records        Glass Bottle 500ml
+    Select from list  preservation_uid.part-1:records     Any
+    Click Button  Add
+    Select from list  container_uid.part-2:records        Any
+    Select from list  preservation_uid.part-2:records     H2S04
+    Click Link  Analyses
+    Wait Until Page Contains Element  AnalysisProfile:list
+    Select from list   AnalysisProfile:list    Trace Metals
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-Attachment Types
+#Attachment Types
     Go to  ${PLONEURL}/bika_setup/bika_attachmenttypes
     Click link  Add
     Wait Until Page Contains Element  title
@@ -93,7 +93,7 @@ Attachment Types
     Click Button  activate_transition
     Wait Until Page Contains  Changes saved.
 
-Calculation
+#Calculation
     Go to  ${PLONEURL}/bika_setup/bika_calculations
     Click link  Add
     Wait Until Page Contains Element      title
@@ -130,7 +130,7 @@ Calculation
     Click Button  activate_transition
     Wait Until Page Contains  Changes saved.
 
-Container Type
+#Container Type
     Go to  ${PLONEURL}/bika_setup/bika_containertypes
     Click link  Add
     Wait Until Page Contains Element  title
@@ -149,7 +149,7 @@ Container Type
     Click Button  activate_transition
     Wait Until Page Contains  Changes saved.
 
-Preservations
+#Preservations
     Go to  ${PLONEURL}/bika_setup/bika_preservations
     Click link  Add
     Wait Until Page Contains Element     title
@@ -172,7 +172,7 @@ Preservations
     Click Button  activate_transition
     Wait Until Page Contains  Changes saved.
 
-Method
+#Method
     Go to  ${PLONEURL}/bika_setup/methods
     Click link    Add
     Wait Until Page Contains Element    title
@@ -192,7 +192,7 @@ Method
     Click Button  activate_transition
     Wait Until Page Contains  Changes saved.
 
-Sample Matrices
+#Sample Matrices
     Go to  ${PLONEURL}/bika_setup/bika_samplematrices
     Click link  Add
     Wait Until Page Contains Element  title
@@ -212,7 +212,7 @@ Sample Matrices
     Click Button  activate_transition
     Wait Until Page Contains  Changes saved.
 
-Sample Points
+#Sample Points
     Go to  ${PLONEURL}/bika_setup/bika_samplepoints
     Click link  Add
     Wait Until Page Contains Element  title
@@ -245,7 +245,7 @@ Sample Points
     Click Button  activate_transition
     Wait Until Page Contains  Changes saved.
 
-Sampling Deviations
+#Sampling Deviations
     Go to  ${PLONEURL}/bika_setup/bika_samplingdeviations
     Click link  Add
     Wait Until Page Contains Element  title
@@ -264,7 +264,7 @@ Sampling Deviations
     Click Button  activate_transition
     Wait Until Page Contains  Changes saved.
 
-LabManager
+#LabManager
     Go to  ${PLONEURL}/bika_setup/bika_labcontacts
     Click link  Add
     Wait Until Page Contains Element  Salutation
@@ -278,7 +278,7 @@ LabManager
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-LabDepartment
+#LabDepartment
     Go to  ${PLONEURL}/bika_setup/bika_departments
     Click link  Add
     Wait Until Page Contains Element  title
@@ -288,7 +288,7 @@ LabDepartment
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-LabContact
+#LabContact
     Go to  ${PLONEURL}/bika_setup/bika_labcontacts
     Click link  Add
     Wait Until Page Contains Element  Firstname
@@ -319,7 +319,7 @@ LabContact
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-Suppliers
+#Suppliers
     Go to  ${PLONEURL}/bika_setup/bika_suppliers
     Page should contain  Suppliers
     Click link  Add
@@ -377,7 +377,7 @@ Suppliers
     Wait Until Page Contains  Changes saved.
 
 
-Supplier Contact
+#Supplier Contact
     Go to  ${PLONEURL}/bika_setup/bika_suppliers/supplier-2/contacts
     Wait Until Page Contains Element  Remarks
     Input Text  Remarks  Contacts Remarks
@@ -417,7 +417,7 @@ Supplier Contact
     #for that you need a supplier,manufacturer, instrument type and instrument - defined in that order
     #got supplier - so start with basic def of Manufacturer
 
-Manufacturer
+#Manufacturer
     Go to  ${PLONEURL}/bika_setup/bika_manufacturers
     Click link  Add
     Wait Until Page Contains Element  title
@@ -426,7 +426,7 @@ Manufacturer
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-Instrument Type
+#Instrument Type
     Go to  ${PLONEURL}/bika_setup/bika_instrumenttypes
     Page should contain  Instrument Types
     Click link  Add
@@ -436,7 +436,7 @@ Instrument Type
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-Instrument
+#Instrument
 
     #XXX Hack this in here - actually should modify setup data sheets!
     Go to  ${PLONEURL}/bika_setup/bika_instrumenttypes
@@ -480,7 +480,7 @@ Instrument
     #Click link  Certifications
     #Click link  Schedule
 
-Containers
+#Containers
     Go to  ${PLONEURL}/bika_setup/bika_containers
     Page should contain  Containers
     Click link  Add
@@ -494,7 +494,7 @@ Containers
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-SampleTypes
+#SampleTypes
     Go to  ${PLONEURL}/bika_setup/bika_sampletypes
     Click link  Add
     Wait Until Page Contains Element  title
@@ -511,7 +511,7 @@ SampleTypes
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-AnalysisCategories
+#AnalysisCategories
     Go to  ${PLONEURL}/bika_setup/bika_analysiscategories
     Wait Until Page Contains  Analysis Categories
     Click link  Add
@@ -522,7 +522,7 @@ AnalysisCategories
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-AnalysisServices
+#AnalysisServices
     Go to                ${PLONEURL}/bika_setup/bika_analysisservices
     Wait Until Page Contains  Analysis Services
     Click link           Add
@@ -583,7 +583,7 @@ AnalysisServices
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-AnalysisProfiles
+#AnalysisProfiles
     Go to    ${PLONEURL}/bika_setup/bika_analysisprofiles
     Wait Until Page Contains  Analysis Profile
     Click link  Add Profile
@@ -597,7 +597,7 @@ AnalysisProfiles
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-AnalysisSpecifications
+#AnalysisSpecifications
     Go to  ${PLONEURL}/bika_setup/bika_analysisspecs
     Wait Until Page Contains  Analysis Specifications
     Click link  Add
@@ -613,7 +613,7 @@ AnalysisSpecifications
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-ReferenceDefinition
+#ReferenceDefinition
     Go to  ${PLONEURL}/bika_setup/bika_referencedefinitions
     Wait Until Page Contains  Reference Definition
     Click link  Add
@@ -632,7 +632,7 @@ ReferenceDefinition
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-WorksheetTemplate
+#WorksheetTemplate
     Go to  ${PLONEURL}/bika_setup/bika_worksheettemplates
     Wait Until Page Contains  Worksheet Template
     Click link  Add
@@ -661,7 +661,7 @@ WorksheetTemplate
     Wait Until Page Contains  Changes saved.
 
 
-Add a Client
+#Add a Client
     Go to  ${PLONEURL}/clients
     Wait Until Page Contains  Clients
     Click link  Add
@@ -697,7 +697,7 @@ Add a Client
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
-Client Contact
+#Client Contact
     Go to  ${PLONEURL}/clients
     Wait Until Page Contains  Clients
     Click link  Happy Hills

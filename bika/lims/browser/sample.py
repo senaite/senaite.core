@@ -817,9 +817,9 @@ class SamplesView(BikaListingView):
             if checkPermission(SampleSample, obj) \
             and not samplingdate > DateTime() \
             and SamplingWorkflowEnabled \
-            and workflow.getInfoFor(sample, 'review_state') == 'to_be_sampled':
-                datesampled = self.ulocalized_time(sample.getDateSampled())
-                sampler = sample.getSampler().strip()
+            and workflow.getInfoFor(obj, 'review_state') == 'to_be_sampled':
+                datesampled = self.ulocalized_time(obj.getDateSampled())
+                sampler = obj.getSampler().strip()
                 if sampler:
                     items[x]['replace']['getSampler'] = self.user_fullname(sampler)
                 # Provisional values (Sampler can submit these direcly in AR lists)
@@ -833,7 +833,7 @@ class SamplesView(BikaListingView):
                     items[x]['class']['getSampler'] = 'provisional'
                 items[x]['required'] = ['getSampler', 'getDateSampled']
                 items[x]['allow_edit'] = ['getSampler', 'getDateSampled']
-                samplers = getUsers(sample, ['Sampler', 'LabManager', 'Manager'])
+                samplers = getUsers(obj, ['Sampler', 'LabManager', 'Manager'])
                 username = member.getUserName()
                 users = [({'ResultValue': u, 'ResultText': samplers.getValue(u)})
                          for u in samplers]
