@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '3.0rc3.5'
+version = '3.0rc3.5.1'
 
 setup(name='bika.lims',
       version=version,
