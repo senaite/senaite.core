@@ -83,7 +83,6 @@ function workflow_transition_retract_ar(event) {
 					// Not sure if needed. Works without this snippet in dev
 					setTimeout(function (){
 						href += "&addremarks=1";
-						$(this).dialog("close");
 						window.location.href = href;
 			         }, 2000);
 				} else {

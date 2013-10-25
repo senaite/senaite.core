@@ -523,15 +523,15 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         newar.setBatch(ar.getBatch())
         newar.setTemplate(ar.getTemplate())
         newar.setProfile(ar.getProfile())
-        newar.setSample(ar.getSample())
         newar.setSamplingDate(ar.getSamplingDate())
         newar.setSampleType(ar.getSampleType())
         newar.setSamplePoint(ar.getSamplePoint())
+        newar.setSamplingDeviation(ar.getSamplingDeviation())
+        newar.setSampleCondition(ar.getSampleCondition())
+        newar.setSample(ar.getSample())
         newar.setClientOrderNumber(ar.getClientOrderNumber())
         newar.setClientReference(ar.getClientReference())
         newar.setClientSampleID(ar.getClientSampleID())
-        newar.setSamplingDeviation(ar.getSamplingDeviation())
-        newar.setSampleCondition(ar.getSampleCondition())
         newar.setDefaultContainerType(ar.getDefaultContainerType())
         newar.setAdHoc(ar.getAdHoc())
         newar.setComposite(ar.getComposite())
@@ -699,18 +699,10 @@ class AnalysisRequestViewView(BrowserView):
         if workflow.getInfoFor(ar, 'review_state') == 'invalid':
             childar = hasattr(ar, 'getChildAnalysisRequest') \
                         and ar.getChildAnalysisRequest() or None
-            anchor = childar and ("<a href='%s'>%s</a>"%(childar.absolute_url(),childar.getRequestID())) or None
             message = _('These results have been withdrawn and are '
                         'listed here for trace-ability purposes. Please follow '
                         'the link to the retest')
-            if anchor:
-#                self.header_rows.append(
-#                        {'id': 'ChildAR',
-#                         'title': 'AR for retested results',
-#                         'allow_edit': False,
-#                         'value': anchor,
-#                         'condition': True,
-#                         'type': 'text'})
+            if childar:
                 message = (message + " %s.") % childar.getRequestID()
             else:
                 message = message + "."
@@ -722,14 +714,6 @@ class AnalysisRequestViewView(BrowserView):
         if hasattr(ar, 'getParentAnalysisRequest') \
             and ar.getParentAnalysisRequest():
             par = ar.getParentAnalysisRequest()
-            anchor = "<a href='%s'>%s</a>" % (par.absolute_url(), par.getRequestID())
-#            self.header_rows.append(
-#                        {'id': 'ParentAR',
-#                         'title': 'Invalid AR retested',
-#                         'allow_edit': False,
-#                         'value': anchor,
-#                         'condition': True,
-#                         'type': 'text'})
             message = _('This Analysis Request has been '
                         'generated automatically due to '
                         'the retraction of the Analysis '
@@ -995,7 +979,31 @@ class AnalysisRequestViewView(BrowserView):
             header_table with this structure:
             {<fieldid>:{title:<title>, value:<html>}
         """
-        return {}
+        custom = {}
+        ar = self.context
+        workflow = getToolByName(self.context, 'portal_workflow')
+
+        # If is a retracted AR, show the link to child AR and show a warn msg
+        if workflow.getInfoFor(ar, 'review_state') == 'invalid':
+            childar = hasattr(ar, 'getChildAnalysisRequest') \
+                        and ar.getChildAnalysisRequest() or None
+            anchor = childar and ("<a href='%s'>%s</a>"%(childar.absolute_url(),childar.getRequestID())) or None
+            if anchor:
+                custom['ChildAR'] = {'title': self.context.translate(
+                                            _("AR for retested results")),
+                                     'value': anchor}
+
+        # If is an AR automatically generated due to a Retraction, show it's
+        # parent AR information
+        if hasattr(ar, 'getParentAnalysisRequest') \
+            and ar.getParentAnalysisRequest():
+            par = ar.getParentAnalysisRequest()
+            anchor = "<a href='%s'>%s</a>" % (par.absolute_url(), par.getRequestID())
+            custom['ParentAR'] = {'title': self.context.translate(
+                                        _("Invalid AR retested")),
+                                  'value': anchor}
+
+        return custom
 
 
 class AnalysisRequestAddView(AnalysisRequestViewView):
