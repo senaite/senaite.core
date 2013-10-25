@@ -3,10 +3,23 @@
 
 - Nothing here, yet.
 
-3.0rc3.5
+3.0rc3.5 (2013-10-24)
 ---------------------
-- xhtml2pdf replacement by WeasyPrint
-- New batch permissions and batch statuses refactoring
+
+Requires Plone 4.3.  For information on upgrading Plone, visit
+http://plone.org/documentation/manual/upgrade-guide
+
+- Fix a serious error saving Analysis results.
+- Improve upgrade handling in genericsetup profile
+- Fix errors in setupdata loader
+- Force UTF-8 encoding of usernames (imported client contacts can now login)
+- Removed outdated test setup data
+- Handle duplicate request values in bika_listing
+- ID server handles changes in ID schemes without error
+- Remove folder-full-view from front-page view
+- Updated workflow and permissions to prevent some silly errors
+- Add robot tests
+- Add default robots.txt
 
 3.0rc3.2 (2013-06-28)
 ---------------------
