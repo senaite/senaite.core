@@ -990,6 +990,13 @@ class AnalysisRequestViewView(BrowserView):
                 verifier = actor
         return verifier
 
+    def get_custom_fields(self):
+        """ Returns a dictionary with custom fields to be rendered after
+            header_table with this structure:
+            {<fieldid>:{title:<title>, value:<html>}
+        """
+        return {}
+
 
 class AnalysisRequestAddView(AnalysisRequestViewView):
     """ The main AR Add form

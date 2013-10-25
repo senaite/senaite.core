@@ -56,6 +56,14 @@
 
     <span tal:replace="structure view/header_table"/>
 
+    <div tal:define="cfields python:view.get_custom_fields()"
+         tal:condition="python: cfields">
+        <tal:customfields repeat="cfield python:cfields.keys()">
+            <span tal:replace="structure python:cfields[cfield]['title']"/>&nbsp;
+            <span tal:replace="structure python:cfields[cfield]['value']"/> 
+        </tal:customfields>
+    </div>
+
 	<h3 style="margin-top:2em;"
         tal:condition="python:context.bika_setup.getShowPartitions()">
 		<img
