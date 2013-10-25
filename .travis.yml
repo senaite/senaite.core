@@ -9,4 +9,5 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
 notifications:
   irc: "irc.freenode.net#bika"
+  skip_join: true
 script: bin/test -m bika.lims
