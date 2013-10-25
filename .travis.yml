@@ -1,0 +1,12 @@
+language: python
+python: "2.7"
+install:
+  - mkdir -p buildout-cache/downloads
+  - python bootstrap.py -c travis.cfg
+  - bin/buildout -N -t 3 -c travis.cfg
+before_script:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+notifications:
+  irc: "irc.freenode.net#bika"
+script: bin/test -m bika.lims
