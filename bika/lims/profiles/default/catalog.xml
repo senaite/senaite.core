@@ -3,6 +3,7 @@
  <index name="title" meta_type="FieldIndex"> <indexed_attr value="title"/> </index>
  <index name="getUsername" meta_type="FieldIndex"> <indexed_attr value="getUsername"/> </index>
  <index name="getFullname" meta_type="FieldIndex"> <indexed_attr value="getFullname"/> </index>
+ <index name="getParentUID" meta_type="FieldIndex"> <indexed_attr value="getParentUID"/> </index>
  <index name="getName" meta_type="FieldIndex"> <indexed_attr value="getName"/> </index>
  <index name="review_state" meta_type="FieldIndex"> <indexed_attr value="review_state"/> </index>
  <index name="inactive_state" meta_type="FieldIndex"> <indexed_attr value="inactive_state"/> </index>
