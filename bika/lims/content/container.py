@@ -27,7 +27,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('Capacity',
-        required = 0,
+        required = 1,
         default = "0 ml",
         widget = StringWidget(
             label = _("Capacity"),
