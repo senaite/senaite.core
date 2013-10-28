@@ -143,7 +143,7 @@ schema = BikaSchema.copy() + Schema((
             description=_("You must assign this request to a client"),
             size=20,
             render_own_label=True,
-            visible={'edit': 'invisible',
+            visible={'edit': 'visible',
                      'view': 'invisible',
                      'add': 'visible'},
             base_query={'inactive_state': 'active'},
