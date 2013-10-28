@@ -593,79 +593,57 @@ function calcdependencies(elements, auto_yes) {
 	}
 }
 
-function calculate_parts(column){
-
-//	console.log("===================================");
+function calculate_parts(column) {
 
 	// Template columns are not calculated
 	if ($("#ar_"+column+"_Template").val() != ''){
 		return;
 	}
 
-	// gather up SampleType UID
-	var st_title = $("#ar_"+column+"_SampleType").val();
-	sampletype = window.bika_utils.data.st_uids[st_title];
-	if (sampletype != undefined && sampletype != null){
-		st_uid = sampletype['uid'];
-		st_minvol = sampletype['minvol'].split(" ")[0];
-		if(st_minvol.length == 0){
-			st_minvol = 0;
-		} else {
-			st_minvol = parseFloat(st_minvol, 10);
-		}
-	} else {
-		// all unchecked services have their part numbers removed
-		ep = $("[class^='partnr_']").filter("[column='"+column+"']").not(":empty");
-		for(i=0;i<ep.length;i++){
-			em = ep[i];
-			uid = $(ep[0]).attr('class').split("_")[1]
-			cb = $("#"+uid);
-			if ( ! $(cb).prop('checked') ){
-				$(em).empty();
-			}
-		}
-		return;
-	}
-//	console.log("Sampletype: "+st_uid);
-
-	// gather up selected service uids
+	var st_uid = $("#ar_"+column+"_SampleType_uid").val();
 	var checked = $('[name^="ar\\.'+column+'\\.Analyses"]').filter(':checked');
-	service_uids = []
+
+	var service_uids = [];
 	for(i=0;i<checked.length;i++){
-		e = checked[i];
-		var uid = $(e).attr('value');
+		var uid = $(checked[i]).attr('value');
 		service_uids.push(uid);
 	}
 
-	// skip everything if no selected services in this column
-	if (service_uids.length == 0){
-		// all unchecked services have their part numbers removed
-		ep = $("[class^='partnr_']").filter("[column='"+column+"']").not(":empty");
-		for(i=0;i<ep.length;i++){
-			em = ep[i];
-			uid = $(ep[0]).attr('class').split("_")[1]
-			cb = $("#"+uid);
-			if ( ! $(cb).prop('checked') ){
-				$(em).empty();
-			}
-		}
+	// if no sampletype or no selected analyses:  remove partition markers
+	if (st_uid == '' || service_uids.length == 0) {
+		$("[class*='partnr_']")
+			.filter("[column='"+column+"']")
+			.empty();
 		return;
 	}
 
-	parts = window.bika_utils.calculate_partitions(service_uids, st_uid, st_minvol);
+	$.ajax({
+		type: 'POST',
+		dataType: 'json',
+		url: portal_url + "/@@API/calculate_partitions",
+		data: {
+			services: service_uids.join(","),
+			sampletype: st_uid,
+			_authenticator: $('input[name="_authenticator"]').val()
+		},
+		success: function(data, statusText, xhr, $form) {
+			// Set new part numbers in hidden form field
+			formparts = $.parseJSON($("#parts").val());
+			parts = data['parts'];
+			formparts[column] = parts;
+			$("#parts").val($.toJSON(formparts));
 
-	// Set new part numbers in hidden form field
-	formparts = $.parseJSON($("#parts").val());
-	formparts[column] = parts
-	$("#parts").val($.toJSON(formparts));
+			// write new part numbers next to checkboxes
+			$.each(parts, function(p,part){
+				$.each(part['services'], function(s,service_uid){
+					$(".partnr_"+service_uid).filter("[column='"+column+"']")
+						.empty().append(p+1);
+				});
+			});
+			window.location.href = responseText;
+		}
+	})
 
-	// write new part numbers next to checkboxes
-	$.each(parts, function(p,part){
-		$.each(part['services'], function(s,service_uid){
-			$(".partnr_"+service_uid).filter("[column='"+column+"']")
-				.empty().append(p+1);
-		});
-	});
 
 }
 
@@ -1017,13 +995,13 @@ $(document).ready(function(){
     	window.recalc_prices = recalc_prices;
     	window.calculate_parts = calculate_parts;
     	window.toggleCat = toggleCat;
-    	
+
     	// Show only the contacts from the selected Client
     	fromclient = window.location.href.search('/clients/') >= 0;
     	if (fromclient) {
     	    for (var col=0; col<parseInt($("#col_count").val()); col++) {
     	        element = $("#ar_" + col + "_Contact");
-    	        clientuid = $("#ar_" + col + "_Client_uid").val(); 
+    	        clientuid = $("#ar_" + col + "_Client_uid").val();
     	        applyComboFilter(element, "getParentUID", clientuid);
     	    }
     	} else {

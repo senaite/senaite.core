@@ -31,4 +31,9 @@
     provides="plone.jsonapi.interfaces.IRouteProvider"
     factory=".doactionfor.doActionFor" />
 
+  <utility
+    name="bika.lims.jsonapi.calculate_partitions"
+    provides="plone.jsonapi.interfaces.IRouteProvider"
+    factory=".calculate_partitions.calculate_partitions" />
+
 </configure>

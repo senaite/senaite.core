@@ -20,6 +20,16 @@ class ContainerType(BaseContent):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
+    def getContainers(self):
+        """Return a list of all containers of this type
+        """
+        _containers = []
+        for container in self.bika_setup.bika_containers.objectValues():
+            containertype = container.getContainerType()
+            if containertype and containertype.UID() == self.UID():
+                _containers.append(container)
+        return _containers
+
 registerType(ContainerType, PROJECTNAME)
 
 def ContainerTypes(self, instance=None, allow_blank=False):
