@@ -1462,8 +1462,7 @@ class Setup(WorksheetImporter):
             if values.get('DryMatterService', None) else None
         dry_uid = dry_service[0].UID if dry_service else None
         if not dry_uid:
-            print "DryMatter service does not exist {0}".format(
-                values['DryMatterService'])
+            print("DryMatter service does not exist {0}".format(values['DryMatterService']))
         self.context.bika_setup.edit(
             PasswordLifetime=int(values['PasswordLifetime']),
             AutoLogOff=int(values['AutoLogOff']),
@@ -1599,6 +1598,7 @@ class Reference_Samples(WorksheetImporter):
         analysis.setInterimFields(interims)
 
     def Import(self):
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
         for row in self.get_rows(3):
             if not row['id']:
                 continue
