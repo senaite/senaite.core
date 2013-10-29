@@ -22,7 +22,8 @@
 		tal:define="outerJoin field/outerJoin;
 					innerJoin field/innerJoin;">
 		<span
-			tal:define="subfieldValues python:[field.getViewFor(here,idx,key,innerJoin) for key in field.getSubfields()]"
+			tal:define="subfieldValues python:[field.getViewFor(here,idx,key,innerJoin) for key in field.getSubfields()];
+			            dummy python:subfieldValues.sort()"
 			tal:replace="structure python:innerJoin.join(subfieldValues)" /><span
 			tal:replace="structure outerJoin"
 			tal:condition="not: repeat/idx/end" />
@@ -42,6 +43,7 @@
 			session_values python:here.session_restore_value(fieldName, values);
 			cached_values python:request.get(fieldName,session_values);
 			values python:cached_values or values;
+			dummy python:values.sort();
 			i18n_domain field/widget/i18n_domain|context/i18n_domain|string:plone">
 
 	<table
