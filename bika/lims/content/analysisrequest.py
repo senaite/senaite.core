@@ -693,6 +693,8 @@ class AnalysisRequest(BaseFolder):
     def getClient(self):
         if self.aq_parent.portal_type == 'Client':
             return self.aq_parent
+        if self.aq_parent.portal_type == 'Batch':
+            return self.aq_parent.getClient()
 
     def getClientPath(self):
         return "/".join(self.aq_parent.getPhysicalPath())
