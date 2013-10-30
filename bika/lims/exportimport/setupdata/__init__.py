@@ -338,7 +338,7 @@ class Client_Contacts(WorksheetImporter):
         pc = getToolByName(self.context, 'portal_catalog')
         for row in self.get_rows(3):
             client = pc(portal_type="Client",
-                        Title=row['Client_title'])
+                        getName=row['Client_title'])
             if len(client) == 0:
                 raise IndexError("Client invalid: '%s'" % row['Client_title'])
             client = client[0].getObject()
@@ -816,7 +816,7 @@ class Sample_Points(WorksheetImporter):
                 continue
             if row['Client_title']:
                 client_title = row['Client_title']
-                client = pc(portal_type="Client", Title=client_title)
+                client = pc(portal_type="Client", getName=client_title)
                 if len(client) == 0:
                     raise IndexError("Sample Point %s: Client invalid: '%s'" %
                                      (row['title'], client_title))
@@ -1211,7 +1211,7 @@ class Analysis_Specifications(WorksheetImporter):
             if c_t == 'lab':
                 folder = self.context.bika_setup.bika_analysisspecs
             else:
-                folder = pc(portal_type='Client', title=c_t)[0].getObject()
+                folder = pc(portal_type='Client', getName=c_t)[0].getObject()
             for s_t in bucket[c_t]:
                 resultsrange = bucket[c_t][s_t]
                 sampletype = bsc(portal_type='SampleType', title=s_t)[0]
@@ -1328,7 +1328,7 @@ class AR_Templates(WorksheetImporter):
                 folder = self.context.bika_setup.bika_artemplates
             else:
                 folder = pc(portal_type='Client',
-                            title=client_title)[0].getObject()
+                            getName=client_title)[0].getObject()
 
             sampletype = bsc(portal_type='SampleType',
                              title=row['SampleType_title'])
@@ -1603,19 +1603,19 @@ class Reference_Samples(WorksheetImporter):
             if not row['id']:
                 continue
             supplier = bsc(portal_type="Supplier",
-                           title=row['Supplier_title'])[0].getObject()
+                           getName=row['Supplier_title'])[0].getObject()
             supplier.invokeFactory('ReferenceSample', id=row['id'])
             obj = supplier[row['id']]
             if row.get('ReferenceDefinition_title', ''):
                 ref_def = bsc(portal_type="ReferenceDefinition",
-                              title=row['ReferenceDefinition_title']).getObject()
+                              title=row['ReferenceDefinition_title'])[0].getObject()
             if row.get('Manufacturer_title', ''):
                 ref_man = bsc(portal_type="Manufacturer",
-                              title=row['Manufacturer_title']).getObject()
+                              title=row['Manufacturer_title'])[0].getObject()
             obj.edit(title=row['id'],
                      description=row.get('description', ''),
                      Blank=self.to_bool(row['Blank']),
-                     Hazardous=to_bool(row['Hazardous']),
+                     Hazardous=self.to_bool(row['Hazardous']),
                      CatalogueNumber=row['CatalogueNumber'],
                      LotNumber=row['LotNumber'],
                      Remarks=row['Remarks'],
@@ -1643,8 +1643,9 @@ class Samples(WorksheetImporter):
             if not row['id']:
                 continue
             client = pc(portal_type="Client",
-                        title=row['Client_title'])[0].getObject()
+                        getName=row['Client_title'])[0].getObject()
             client.invokeFactory('Sample', id=row['id'])
+            obj = client[row['id']]
             obj.setSampleID(row['id'])
             obj.setClientSampleID(row['ClientSampleID'])
             obj.setSamplingWorkflowEnabled(False)
@@ -1667,7 +1668,8 @@ class Samples(WorksheetImporter):
             # XXX hard-wired, Creating a single partition without proper init, no decent review_state ideas
             _id = obj.invokeFactory('SamplePartition', 'part-1')
             part = obj[_id]
-            part.setContainer(self.containers['None Specified'])
+            container = bsc(portal_type='Container', title='None Specified')[0].UID
+            part.setContainer(container)
             part.unmarkCreationFlag()
             part.reindexObject()
 
@@ -1681,11 +1683,13 @@ class Analysis_Requests(WorksheetImporter):
                 return
             self.analyses_worksheet = worksheet
         bsc = getToolByName(self.context, 'bika_setup_catalog')
+        bc = getToolByName(self.context, 'bika_catalog')
         for row in self.get_rows(3, worksheet=self.analyses_worksheet):
-            service = self.services[row['AnalysisService_title']]
+            service = bsc(portal_type='AnalysisService',
+                          title=row['AnalysisService_title'])[0].getObject()
             # analyses are keyed/named by keyword
             keyword = service.getKeyword()
-            ar = self.ars[row['AnalysisRequest_id']]
+            ar = bc(portal_type='AnalysisRequest', id=row['AnalysisRequest_id'])[0].getObject()
             ar.invokeFactory('Analysis', id=keyword)
             obj = ar[keyword]
             MTA = {
@@ -1702,11 +1706,11 @@ class Analysis_Requests(WorksheetImporter):
                 Instrument=row['Instrument'],
                 Retested=self.to_bool(row['Retested']),
                 MaxTimeAllowed=MTA,
-                DueDate=row['DueDate'],
                 ReportDryMatter=self.to_bool(row['ReportDryMatter']),
+                Service=service,
                 )
-
-            part = sample.objectValues('SamplePartition')[0].UID()
+            obj.updateDueDate()
+            part = sample.objectValues()[0].UID()
             obj.setSamplePartition(part)
             obj.setService(service.UID())
             analyses = ar.objectValues('Analyses')
@@ -1745,14 +1749,13 @@ class Analysis_Requests(WorksheetImporter):
             if not row['id']:
                 continue
             client = pc(portal_type="Client",
-                        title=row['Client_title'])[0].getObject()
-            _id = folder.invokeFactory('AnalysisRequest', id=row['id'])
-            obj = folder[_id]
-            self.ars[row['id']] = obj
+                        getName=row['Client_title'])[0].getObject()
+            _id = client.invokeFactory('AnalysisRequest', id=row['id'])
+            obj = client[_id]
             contact = pc(portal_type="Contact",
-                         getFullname=row['Contact'])[0].getObject()
+                         getFullname=row['Contact_Fullname'])[0].getObject()
             sample = bc(portal_type="Sample",
-                         id=row['Sample_id'])[0].getObject()
+                        id=row['Sample_id'])[0].getObject()
             obj.edit(
                 RequestID=row['id'],
                 Contact=contact,
@@ -1764,18 +1767,18 @@ class Analysis_Requests(WorksheetImporter):
                 DatePublished=row['DatePublished'],
                 Remarks=row['Remarks']
             )
-            if row['CCContact']:
+            if row['CCContact_Fullname']:
                 contact = pc(portal_type="Contact",
-                             getFullname=row['CCContact'])[0].getObject()
+                             getFullname=row['CCContact_Fullname'])[0].getObject()
                 obj.setCCContact(contact)
             if row['AnalysisProfile_title']:
                 profile = pc(portal_type="AnalysisProfile",
                              title=row['AnalysisProfile_title'].getObject())
-                obj.setProfile(self.profiles[row['AnalysisProfile_title']])
+                obj.setProfile(profile)
             if row['ARTemplate_title']:
-                profile = pc(portal_type="ARTemplate",
+                template = pc(portal_type="ARTemplate",
                              title=row['ARTemplate_title'])[0].getObject()
-                obj.setProfile(self.profiles[row['ARTemplate_title']])
+                obj.setProfile(template)
 
             obj.unmarkCreationFlag()
 
