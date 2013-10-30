@@ -640,7 +640,6 @@ function calculate_parts(column) {
 						.empty().append(p+1);
 				});
 			});
-			window.location.href = responseText;
 		}
 	})
 
