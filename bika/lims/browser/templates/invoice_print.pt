@@ -1,0 +1,16 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:tal="http://xml.zope.org/namespaces/tal"
+	xmlns:metal="http://xml.zope.org/namespaces/metal"
+	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+	metal:use-macro="here/print_template/macros/master"
+	i18n:domain="bika">
+
+	<body>
+
+		<metal:content fill-slot="content">
+			<span tal:replace="structure view/content"></span>
+		</metal:content>
+
+	</body>
+
+</html>

@@ -1,0 +1,81 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:tal="http://xml.zope.org/namespaces/tal"
+	xmlns:metal="http://xml.zope.org/namespaces/metal"
+	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+	metal:use-macro="here/main_template/macros/master"
+	i18n:domain="bika">
+
+	<head>
+	    <metal:block fill-slot="javascript_head_slot"
+	        tal:define="portal context/@@plone_portal_state/portal;">
+		    <script type="text/javascript"
+		        tal:attributes="src python:portal.absolute_url() + '/bika_widgets/datetimewidget.js'"></script>
+	    </metal:block>
+	</head>
+
+	<body>
+
+		<metal:title fill-slot="content-title">
+		</metal:title>
+		
+		<metal:core fill-slot="content-core">
+			<form id="supplyorder_edit" name="edit" method="post" action="" tal:define="errors python:{}">
+				<table class="invoice-header">
+					<tbody>
+						<tal:field content="structure python:view.field(field=view.orderDate)" />
+						<tal:field content="structure python:view.field(field=view.contact)" />
+					</tbody>
+				</table>
+				<table class="invoice-items items">
+					<thead>
+						<tr>
+							<th i18n:translate="">Product</th>
+							<th i18n:translate="">Description</th>
+							<th i18n:translate="">Volume</th>
+							<th i18n:translate="">Unit</th>
+							<th i18n:translate="">Price</th>
+							<th i18n:translate="">VAT</th>
+							<th i18n:translate="">Quantity</th>
+							<th class="currency" i18n:translate="">Total</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tal:products repeat="product view/products">
+							<tal:product>
+								<tr>
+									<td tal:content="product/title"></td>
+									<td class="text" tal:content="product/description"></td>
+									<td class="number" tal:content="product/volume"></td>
+									<td class="center" tal:content="product/unit"></td>
+									<tal:td tal:content="structure python:view.currency_td(value=product['price'])" />
+									<td class="center" tal:content="product/vat"></td>
+									<td class="number">
+										<input type="text" tal:attributes="name string:product_${product/id}; value product/quantity" />
+									</td>
+									<tal:td tal:content="structure python:view.currency_td(value=product['total'])" />
+								</tr>
+							</tal:product>
+						</tal:products>
+						<tr class="totals">
+							<td colspan="7" i18n:translate="">Subtotal</td>
+							<tal:td tal:content="structure python:view.currency_td(value=view.subtotal)" />
+						</tr>
+						<tr class="totals">
+							<td colspan="7" i18n:translate="">VAT</td>
+							<tal:td tal:content="structure python:view.currency_td(value=view.vat)" />
+						</tr>
+						<tr class="totals">
+							<td colspan="7" i18n:translate="">Total</td>
+							<tal:td tal:content="structure python:view.currency_td(value=view.total)" />
+						</tr>
+					</tbody>
+				</table>
+				<div class="formControls">
+					<input class="context" type="submit" name="submit" value="Save" />
+				</div>
+			</form>
+		</metal:core>
+
+	</body>
+
+</html>

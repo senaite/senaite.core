@@ -22,44 +22,17 @@
 
  <alias from="(Default)" to="base_view"/>
  <alias from="view" to="base_view"/>
- <alias from="edit" to="base_edit"/>
 
- <action title="View"
-         action_id="view"
-         category="object"
+ <action title="Print"
+         action_id="print"
+         category="document_actions"
          condition_expr=""
-         icon_expr=""
+         icon_expr="string:${object_url}/print_icon.png"
          link_target=""
-         url_expr="string:${object_url}/base_view"
-         i18n:attributes="title"
-         i18n:domain="plone"
-         visible="True">
-    <permission value="View"/>
- </action>
-
- <action title="Edit"
-         action_id="edit"
-         category="object"
-         condition_expr=""
-         icon_expr=""
-         link_target=""
-         url_expr="string:${object_url}/base_edit"
-         i18n:attributes="title"
-         i18n:domain="plone"
-         visible="False">
-    <permission value="Modify portal content"/>
- </action>
-
- <action title="Print invoice"
-         action_id="printinvoice"
-         category="object"
-         condition_expr=""
-         icon_expr=""
-         link_target=""
-         url_expr="string:${object_url}/invoice_print"
+         url_expr="string:${object_url}/print"
          i18n:attributes="title"
          visible="True">
-    <permission value="View"/>
+     <permission value="BIKA: Manage Invoices"/>
  </action>
 
 </object>

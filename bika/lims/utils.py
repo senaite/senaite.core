@@ -528,3 +528,18 @@ class bika_browserdata(BrowserView):
         data['prefixes'] = dict([(p['portal_type'], p['prefix']) for p in self.context.bika_setup.getPrefixes()])
 
         return json.dumps(data)
+
+
+def get_invoice_item_description(obj):
+    sample = obj.getSample()
+    sampleID = sample.Title()
+    clientref = sample.getClientReference()
+    clientsid = sample.getClientSampleID()
+    samplepoint = sample.getSamplePoint()
+    samplepoint = samplepoint and samplepoint.Title() or ''
+    sampletype = sample.getSampleType()
+    sampletype = sampletype and sampletype.Title() or ''
+    orderno = obj.getClientOrderNumber() or ''
+    item_description = orderno + ' ' + clientref + ' ' + clientsid + ' ' + sampleID + ' ' + sampletype + ' ' + samplepoint
+    return item_description
+

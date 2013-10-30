@@ -23,6 +23,7 @@
 <permission id="bika.lims.permissions.AddBatch" title="BIKA: Add Batch"/>
 <permission id="bika.lims.permissions.AddClient" title="BIKA: Add Client"/>
 <permission id="bika.lims.permissions.AddClientFolder" title="BIKA: Add ClientFolder"/>
+<permission id="bika.lims.permissions.AddInvoice" title="BIKA: Add Invoice"/>
 <permission id="bika.lims.permissions.AddMethod" title="BIKA: Add Method"/>
 <permission id="bika.lims.permissions.AddSample" title="BIKA: Add Sample"/>
 <permission id="bika.lims.permissions.AddSamplePoint" title="BIKA: Add SamplePoint"/>
@@ -31,19 +32,21 @@
 <permission id="bika.lims.permissions.AddSamplingDeviation" title="BIKA: Add SamplingDeviation"/>
 <permission id="bika.lims.permissions.AddQuery" title="BIKA: Add Query"/>
 
+<permission id="bika.lims.ManageOrders" title="BIKA: Manage Orders"/>
+<permission id="bika.lims.DispatchOrder" title="BIKA: Dispatch Order"/>
+
+
 # Old stuff I haven't looked at
 # =============================
 <permission id="bika.lims.ManageBika" title="BIKA: Manage Bika"/>
 <permission id="bika.lims.ManageClients" title="BIKA: Manage Clients"/>
 <permission id="bika.lims.ManageWorksheets" title="BIKA: Manage Worksheets"/>
-<permission id="bika.lims.ManageOrders" title="BIKA: Manage Orders"/>
 <permission id="bika.lims.ManageAnalysisRequests" title="BIKA: Manage Analysis Requests"/>
 <permission id="bika.lims.ManageSamples" title="BIKA: Manage Samples"/>
 <permission id="bika.lims.ManageSuppliers" title="BIKA: Manage Suppliers"/>
 <permission id="bika.lims.ManageReference" title="BIKA: Manage Reference"/>
 <permission id="bika.lims.ManagePricelists" title="BIKA: Manage Pricelists"/>
 <permission id="bika.lims.ManageARImport" title="BIKA: Manage ARImport"/>
-<permission id="bika.lims.DispatchOrder" title="BIKA: Dispatch Order"/>
 <permission id="bika.lims.PostInvoiceBatch" title="BIKA: Post Invoice batch"/>
 
 # Stuff I sorted out

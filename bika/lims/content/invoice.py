@@ -1,25 +1,18 @@
 from AccessControl import ClassSecurityInfo
-from DateTime import DateTime
-from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
-from Products.Archetypes.public import *
-from Products.CMFCore.permissions import View
-from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.config import ManageInvoices, ManageBika, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IInvoice
+from DateTime import DateTime
+from decimal import Decimal
+from Products.Archetypes.public import *
+from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
+from Products.CMFCore.permissions import View
+from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
 import sys
 
 schema = BikaSchema.copy() + Schema((
-    StringField('InvoiceNumber',
-        required = 1,
-        default_method = 'getId',
-        searchable = True,
-        widget = StringWidget(
-            label = _("Invoice number"),
-        ),
-    ),
     ReferenceField('Client',
         required = 1,
         vocabulary_display_path_bound = sys.maxint,
@@ -51,10 +44,10 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
-    ComputedField('VAT',
-        expression = 'context.getVAT()',
+    ComputedField('VATTotal',
+        expression = 'context.getVATTotal()',
         widget = ComputedWidget(
-            label = _("VAT %"),
+            label = _("VAT Total"),
             visible = False,
         ),
     ),
@@ -96,26 +89,26 @@ class Invoice(BaseFolder):
         renameAfterCreation(self)
 
     def Title(self):
-        """ Return the InvoiceNumber as title """
-        return safe_unicode(self.getInvoiceNumber()).encode('utf-8')
+        """ Return the Invoice Id as title """
+        return safe_unicode(self.getId()).encode('utf-8')
 
     security.declareProtected(View, 'getSubtotal')
     def getSubtotal(self):
         """ Compute Subtotal """
         return sum(
-            [obj.getSubtotal() \
+            [Decimal(obj.getSubtotal()) \
              for obj in self.objectValues('InvoiceLineItem')])
 
-    security.declareProtected(View, 'getVAT')
-    def getVAT(self):
+    security.declareProtected(View, 'getVATTotal')
+    def getVATTotal(self):
         """ Compute VAT """
-        return self.getTotal() - self.getSubtotal()
+        return Decimal(self.getTotal()) - Decimal(self.getSubtotal())
 
     security.declareProtected(View, 'getTotal')
     def getTotal(self):
         """ Compute Total """
         return sum(
-            [obj.getTotal() \
+            [Decimal(obj.getTotal()) \
              for obj in self.objectValues('InvoiceLineItem')])
 
     security.declareProtected(View, 'getInvoiceSearchableText')

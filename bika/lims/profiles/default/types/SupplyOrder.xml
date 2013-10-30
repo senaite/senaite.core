@@ -22,7 +22,7 @@
 
  <alias from="(Default)" to="base_view"/>
  <alias from="view" to="base_view"/>
- <alias from="edit" to="base_edit"/>
+ <alias from="edit" to="@@base_edit"/>
 
  <action title="View"
          action_id="view"
@@ -43,21 +43,23 @@
          condition_expr=""
          icon_expr=""
          link_target=""
-         url_expr="string:${object_url}/base_edit"
+         url_expr="string:${object_url}/edit"
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">
   <permission value="Modify portal content"/>
  </action>
 
- <action title="Print order"
+ <action title="Print"
          action_id="print"
-         category="object"
-         condition_expr="" icon_expr="" link_target=""
-         url_expr="string:${object_url}/order_print"
+         category="document_actions"
+         condition_expr=""
+         icon_expr="string:${object_url}/print_icon.png"
+         link_target=""
+         url_expr="string:${object_url}/print"
          i18n:attributes="title"
          visible="True">
-  <permission value="View"/>
+  <permission value="BIKA: Manage Orders"/>
  </action>
 
  <action title="Log"

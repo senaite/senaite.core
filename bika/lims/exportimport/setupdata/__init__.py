@@ -1783,3 +1783,58 @@ class Analysis_Requests(WorksheetImporter):
             obj.unmarkCreationFlag()
 
             self.load_analyses(obj)
+
+
+class Invoice_Batches(WorksheetImporter):
+
+    def Import(self):
+        folder = self.context.invoices
+        for row in self.get_rows(3):
+            _id = folder.invokeFactory('InvoiceBatch', id=tmpID())
+            obj = folder[_id]
+            if not row['title']:
+                message = "InvoiceBatch has no Title"
+                raise Exception(message)
+            if not row['start']:
+                message = "InvoiceBatch has no Start Date"
+                raise Exception(message)
+            if not row['end']:
+                message = "InvoiceBatch has no End Date"
+                raise Exception(message)
+            obj.edit(
+                title=row['title'],
+                BatchStartDate=row['start'],
+                BatchEndDate=row['end'],
+            )
+            renameAfterCreation(obj)
+
+
+class Lab_Products(WorksheetImporter):
+
+    def Import(self):
+        folder = self.context.bika_setup.bika_labproducts
+        for row in self.get_rows(3):
+            # Create a new object
+            _id = folder.invokeFactory('LabProduct', id=tmpID())
+            obj = folder[_id]
+            # Ensure that all fields are present
+            fields = [
+                'title', 'description', 'volume',
+                'unit', 'vat', 'price'
+            ]
+            for field in fields:
+                if field not in row:
+                    msg = "LabProduct requires a value for %s" % (field)
+                    raise Exception(msg)
+            # Set the values according to the row
+            obj.edit(
+                title=row['title'],
+                description=row['description'],
+                Volume=row['volume'],
+                Unit=row['unit'],
+                VAT=str(row['vat']),
+                Price=str(row['price']),
+            )
+            # Rename the object
+            renameAfterCreation(obj)
+

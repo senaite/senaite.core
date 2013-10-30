@@ -1,25 +1,26 @@
 from AccessControl import getSecurityManager
 from bika.lims import bikaMessageFactory as _
 from bika.lims import PMF
-from bika.lims.adapters.widgetvisibility import WidgetVisibility as _WV
 from bika.lims.adapters.referencewidgetvocabulary import DefaultReferenceWidgetVocabulary
+from bika.lims.adapters.widgetvisibility import WidgetVisibility as _WV
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.analyses import QCAnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
-from bika.lims.browser.log import LogView
 from bika.lims.browser.header_table import HeaderTableView
+from bika.lims.browser.log import LogView
 from bika.lims.browser.publish import doPublish
 from bika.lims.browser.sample import SamplePartitionsView
-from bika.lims.browser.header_table import HeaderTableView
 from bika.lims.config import POINTS_OF_CAPTURE
+from bika.lims.config import VERIFIED_STATES
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestAddView
 from bika.lims.interfaces import IDisplayListVocabulary
 from bika.lims.interfaces import IFieldIcons
+from bika.lims.interfaces import IInvoiceView
 from bika.lims.permissions import *
 from bika.lims.subscribers import doActionFor
 from bika.lims.utils import changeWorkflowState
@@ -52,12 +53,12 @@ from zope.i18n.locales import locales
 from zope.interface import implements
 
 import App
+import Globals
 import json
+import os
 import plone
 import urllib
 import zope.event
-import os
-import Globals
 
 
 class AnalysisRequestWorkflowAction(WorkflowAction):
@@ -2479,6 +2480,92 @@ class AnalysisRequestLog(LogView):
 
         template = LogView.__call__(self)
         return template
+
+
+class InvoiceView(BrowserView):
+
+    implements(IInvoiceView)
+
+    template = ViewPageTemplateFile("templates/analysisrequest_invoice.pt")
+    content = ViewPageTemplateFile("templates/analysisrequest_invoice_content.pt")
+    title = _('Invoice')
+    description = ''
+
+    def __call__(self):
+        context = self.context
+        workflow = getToolByName(context, 'portal_workflow')
+        # Collect related data and objects
+        invoice = context.getInvoice()
+        sample = context.getSample()
+        samplePoint = sample.getSamplePoint()
+        reviewState = workflow.getInfoFor(context, 'review_state')
+        # Collection invoice information
+        if invoice:
+            self.invoiceId = invoice.getId()
+        else:
+            self.invoiceId = _('Proforma (Not yet invoiced)')
+        # Collect verified invoice information
+        verified = reviewState in VERIFIED_STATES
+        if verified:
+            self.verifiedBy = context.getVerifier()
+        self.verified = verified
+        self.request['verified'] = verified
+        # Collect published date
+        datePublished = context.getDatePublished()
+        if datePublished != None:
+            datePublished = self.ulocalized_time(
+                datePublished, long_format=1
+            )
+        self.datePublished = datePublished
+        # Collect received date
+        dateRecieved = context.getDateReceived()
+        if dateRecieved != None:
+            dateRecieved = self.ulocalized_time(dateRecieved, long_format=1)
+        self.dateRecieved = dateRecieved
+        # Collect general information
+        self.reviewState = reviewState
+        self.contact = context.getContact().Title()
+        self.clientOrderNumber = context.getClientOrderNumber()
+        self.clientReference = context.getClientReference()
+        self.clientSampleId = sample.getClientSampleID()
+        self.sampleType = sample.getSampleType().Title()
+        self.samplePoint = samplePoint and samplePoint.Title()
+        self.requestId = context.getRequestID()
+        # Retrieve required data from analyses collection
+        analyses = []
+        for analysis in context.getRequestedAnalyses():
+            service = analysis.getService()
+            categoryName = service.getCategory().Title()
+            # Find the category
+            try:
+                category = (
+                    o for o in analyses if o['name'] == categoryName
+                ).next()
+            except:
+                category = {'name':categoryName, 'analyses':[]}
+                analyses.append(category)
+            # Append the analysis to the category
+            category['analyses'].append({
+                'title': analysis.Title(),
+                'price': service.getPrice(),
+                'priceVat': "%.2f" % service.getVATAmount(),
+                'priceTotal': "%.2f" % service.getTotalPrice(),
+            })
+        self.analyses = analyses
+        # Get totals
+        self.subtotal = context.getSubtotal()
+        self.vatTotal = "%.2f" % context.getVATTotal()
+        self.totalPrice = "%.2f" % context.getTotalPrice()
+        # Render the template
+        return self.template()
+
+
+class InvoicePrintView(InvoiceView):
+
+    template = ViewPageTemplateFile("templates/analysisrequest_invoice_print.pt")
+
+    def __call__(self):
+        return InvoiceView.__call__(self)
 
 
 class ClientContactVocabularyFactory(CatalogVocabulary):

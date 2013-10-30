@@ -1,8 +1,7 @@
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from AccessControl import ClassSecurityInfo
-from Products.CMFCore.permissions import View, \
-    ModifyPortalContent
+from Products.CMFCore.permissions import View
 from Products.CMFPlone.utils import safe_unicode
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
@@ -61,16 +60,16 @@ class SupplyOrderItem( BaseContent):
         """ compute total excluding VAT """
         price = self.getPrice()
         if price:
-            return self.getPrice() * self.getQuantity()
+            return float(self.getPrice()) * self.getQuantity()
         else:
             return 0
 
     security.declareProtected(View, 'getTotalIncludingVAT')
     def getTotalIncludingVAT(self):
         """ Compute Total including VAT """
-        price = self.getPrice()
-        quantity = self.getQuantity()
-        vat = self.getVAT()
+        price = float(self.getPrice())
+        quantity = float(self.getQuantity())
+        vat = float(self.getVAT())
         if price and quantity and vat:
             subtotal = price * quantity
             return subtotal * (1 + vat / 100.0)

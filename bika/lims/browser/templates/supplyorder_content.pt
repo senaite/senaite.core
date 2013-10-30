@@ -1,0 +1,54 @@
+<table class="invoice-header">
+	<tbody>
+		<tr>
+			<th i18n:translate="">Order Date</th>
+			<td tal:content="view/orderDate"></td>
+		</tr>
+		<tr>
+			<th i18n:translate="">Contact</th>
+			<td tal:content="view/contact"></td>
+		</tr>
+	</tbody>
+</table>
+<table class="invoice-items items">
+	<thead>
+		<tr>
+			<th i18n:translate="">Product</th>
+			<th i18n:translate="">Description</th>
+			<th i18n:translate="">Volume</th>
+			<th i18n:translate="">Unit</th>
+			<th i18n:translate="">Price</th>
+			<th i18n:translate="">VAT</th>
+			<th i18n:translate="">Quantity</th>
+			<th class="currency" i18n:translate="">Total</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tal:items repeat="item view/items">
+			<tal:item>
+				<tr>
+					<td tal:content="item/title"></td>
+					<td class="text" tal:content="item/description"></td>
+					<td class="number" tal:content="item/volume"></td>
+					<td class="center" tal:content="item/unit"></td>
+					<tal:td tal:content="structure python:view.currency_td(value=item['price'])" />
+					<td class="center" tal:content="item/vat"></td>
+					<td class="number" tal:content="item/quantity"></td>
+					<tal:td tal:content="structure python:view.currency_td(value=item['totalprice'])" />
+				</tr>
+			</tal:item>
+		</tal:items>
+		<tr class="totals">
+			<td colspan="7" i18n:translate="">Subtotal</td>
+			<tal:td tal:content="structure python:view.currency_td(value=view.subtotal)" />
+		</tr>
+		<tr class="totals">
+			<td colspan="7" i18n:translate="">VAT</td>
+			<tal:td tal:content="structure python:view.currency_td(value=view.vat)" />
+		</tr>
+		<tr class="totals">
+			<td colspan="7" i18n:translate="">Total</td>
+			<tal:td tal:content="structure python:view.currency_td(value=view.total)" />
+		</tr>
+	</tbody>
+</table>

@@ -4,7 +4,6 @@
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
         i18n:domain="plone"
         purge="True">
- <property name="title" i18n:translate="">Invoice batch</property>
  <property name="description"></property>
  <property name="content_icon">++resource++bika.lims.images/invoice.png</property>
  <property name="content_meta_type">InvoiceBatch</property>
@@ -19,22 +18,10 @@
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
+ <property name="default_view">base_view</property>
 
- <alias from="(Default)" to="invoicebatch_invoices"/>
- <alias from="view" to="invoicebatch_invoices"/>
+ <alias from="(Default)" to="base_view"/>
  <alias from="edit" to="base_edit"/>
-
- <action title="Invoices"
-         action_id="invoices"
-         category="object"
-         condition_expr=""
-         icon_expr=""
-         link_target=""
-         url_expr="string:${object_url}/invoicebatch_invoices"
-         i18n:attributes="title"
-         visible="True">
-    <permission value="List folder contents"/>
- </action>
 
  <action title="View"
          action_id="view"
@@ -62,6 +49,7 @@
     <permission value="Modify portal content"/>
  </action>
 
+ <!--
  <action title="Print batch"
          action_id="printbatch"
          category="object"
@@ -85,5 +73,6 @@
          visible="True">
     <permission value="BIKA: Manage Invoices"/>
  </action>
+ -->
 
 </object>

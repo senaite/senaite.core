@@ -1102,6 +1102,32 @@ class AnalysisRequest(BaseFolder):
             child = child.getChildAnalysisRequest()
         return child
 
+    def getRequestedAnalyses(self):
+        ##
+        ##title=Get requested analyses
+        ##
+        result = []
+        cats = {}
+        workflow = getToolByName(self, 'portal_workflow')
+        for analysis in self.getAnalyses(full_objects = True):
+            review_state = workflow.getInfoFor(analysis, 'review_state')
+            if review_state == 'not_requested':
+                continue
+            service = analysis.getService()
+            category_name = service.getCategoryTitle()
+            if not category_name in cats:
+                cats[category_name] = {}
+            cats[category_name][analysis.Title()] = analysis
+        cat_keys = cats.keys()
+        cat_keys.sort(lambda x, y:cmp(x.lower(), y.lower()))
+        for cat_key in cat_keys:
+            analyses = cats[cat_key]
+            analysis_keys = analyses.keys()
+            analysis_keys.sort(lambda x, y:cmp(x.lower(), y.lower()))
+            for analysis_key in analysis_keys:
+                result.append(analyses[analysis_key])
+        return result
+
     # Then a string of fields which are defined on the AR, but need to be set
     # and read from the sample
 

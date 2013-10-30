@@ -20,6 +20,7 @@ AddARTemplate = 'BIKA: Add ARTemplate'
 AddBatch = 'BIKA: Add Batch'
 AddClient = 'BIKA: Add Client'
 AddClientFolder = 'BIKA: Add ClientFolder'
+AddInvoice = 'BIKA: Add Invoice'
 AddMethod = 'BIKA: Add Method'
 AddSample = 'BIKA: Add Sample'
 AddSampleMatrix = 'BIKA: Add SampleMatrix'
@@ -40,6 +41,7 @@ ADD_CONTENT_PERMISSIONS = {
     'Attachment': AddAttachment,
     'Batch': AddBatch,
     'Client': AddClient,
+    'Invoice': AddInvoice,
     'Method': AddMethod,
     'Sample': AddSample,
     'SampleMatrix': AddSampleMatrix,

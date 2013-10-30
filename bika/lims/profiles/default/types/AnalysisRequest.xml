@@ -86,6 +86,16 @@
      <permission value="View"/>
  </action>
 
+ <action title="Invoice"
+         action_id="invoice"
+         category="object"
+         condition_expr=""
+         url_expr="string:${object_url}/invoice"
+         i18n:attributes="title"
+         visible="True">
+     <permission value="BIKA: Manage Invoices"/>
+ </action>
+
  <action title="Log"
          action_id="log"
          category="object"
@@ -94,6 +104,18 @@
          i18n:attributes="title"
          visible="True">
      <permission value="BIKA: View Log Tab"/>
+ </action>
+
+ <action title="Print"
+         action_id="invoice_print"
+         category="document_actions"
+         condition_expr="context/REQUEST/verified|nothing"
+         icon_expr="string:${object_url}/print_icon.png"
+         link_target=""
+         url_expr="string:${object_url}/invoice_print"
+         i18n:attributes="title"
+         visible="True">
+     <permission value="BIKA: Manage Invoices"/>
  </action>
 
  <action title="Large Sticker"

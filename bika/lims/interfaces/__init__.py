@@ -53,8 +53,8 @@ class IAnalysisRequestsFolder(Interface):
 
     """AnalysisRequests Folder"""
 
-
-
+class IInvoiceView(Interface):
+    """Invoice View"""
 
 class IAnalysis(Interface):
 
@@ -332,7 +332,8 @@ class ISupplier(Interface):
 
 
 class ISuppliers(Interface):
-
+    ""
+class ISupplyOrder(Interface):
     ""
 
 
