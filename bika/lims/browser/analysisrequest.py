@@ -350,25 +350,28 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     analysis.setResult(result)
 
             # discover which items may be submitted
-            # guard_submit does a lot of the same stuff, too.
             submissable = []
             for uid, analysis in selected_analyses.items():
                 if uid not in results or not results[uid]:
                     continue
                 can_submit = True
-                for dependency in analysis.getDependencies():
-                    dep_state = workflow.getInfoFor(dependency, 'review_state')
-                    if hasInterims[uid]:
-                        if dep_state in ('to_be_sampled', 'to_be_preserved',
-                                         'sample_due', 'sample_received',
-                                         'attachment_due', 'to_be_verified',):
-                            can_submit = False
-                            break
-                    else:
-                        if dep_state in ('to_be_sampled', 'to_be_preserved',
-                                         'sample_due', 'sample_received',):
-                            can_submit = False
-                            break
+                # guard_submit does a lot of the same stuff, too.
+                # the code there has also been commented.
+                # we must find a better way to allow dependencies to control
+                # this process.
+                # for dependency in analysis.getDependencies():
+                #     dep_state = workflow.getInfoFor(dependency, 'review_state')
+                #     if hasInterims[uid]:
+                #         if dep_state in ('to_be_sampled', 'to_be_preserved',
+                #                          'sample_due', 'sample_received',
+                #                          'attachment_due', 'to_be_verified',):
+                #             can_submit = False
+                #             break
+                #     else:
+                #         if dep_state in ('to_be_sampled', 'to_be_preserved',
+                #                          'sample_due', 'sample_received',):
+                #             can_submit = False
+                #             break
                 if can_submit and analysis not in submissable:
                     submissable.append(analysis)
 
