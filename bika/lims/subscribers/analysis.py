@@ -161,27 +161,27 @@ def AfterTransitionEventHandler(instance, event):
         # And   it's attachments are OK
         # And   all it's dependencies are at least 'to_be_verified'
         # Then: 'attach' it.:
-        dependents = instance.getDependents()
-        for dependent in dependents:
-            if not skip(dependent, 'attach', peek=True):
-                can_attach = True
-                if wf.getInfoFor(dependent, 'review_state') != 'attachment_due':
-                    can_attach = False
-                else:
-                    if not dependent.getAttachment():
-                        service = dependent.getService()
-                        if service.getAttachmentOption() == 'r':
-                            can_attach = False
-                if can_attach:
-                    dependencies = dependent.getDependencies()
-                    for dependency in dependencies:
-                        if wf.getInfoFor(dependency, 'review_state') in \
-                           ('to_be_sampled', 'to_be_preserved', 'sample_due',
-                            'sample_received', 'attachment_due',):
-                            can_attach = False
-                            break
-                if can_attach:
-                    doActionFor(dependent, 'attach')
+        # dependents = instance.getDependents()
+        # for dependent in dependents:
+        #     if not skip(dependent, 'attach', peek=True):
+        #         can_attach = True
+        #         if wf.getInfoFor(dependent, 'review_state') != 'attachment_due':
+        #             can_attach = False
+        #         else:
+        #             if not dependent.getAttachment():
+        #                 service = dependent.getService()
+        #                 if service.getAttachmentOption() == 'r':
+        #                     can_attach = False
+        #         if can_attach:
+        #             dependencies = dependent.getDependencies()
+        #             for dependency in dependencies:
+        #                 if wf.getInfoFor(dependency, 'review_state') in \
+        #                    ('to_be_sampled', 'to_be_preserved', 'sample_due',
+        #                     'sample_received', 'attachment_due',):
+        #                     can_attach = False
+        #                     break
+        #         if can_attach:
+        #             doActionFor(dependent, 'attach')
 
         # If all analyses in this AR have been attached
         # escalate the action to the parent AR
@@ -397,40 +397,40 @@ def AfterTransitionEventHandler(instance, event):
         #---------------------------------------------------------------------
         # Check for dependents, ensure all their dependencies
         # have been verified, and submit/verify them
-        for dependent in instance.getDependents():
-            if not skip(dependent, action_id, peek=True):
-                if dependent.getResult():
-                    review_state = wf.getInfoFor(dependent, 'review_state')
-                    interim_fields = False
-                    service = dependent.getService()
-                    calculation = service.getCalculation()
-                    if calculation:
-                        interim_fields = calculation.getInterimFields()
-                    dependencies = dependent.getDependencies()
-                    if interim_fields:
-                        if review_state == 'sample_received':
-                            can_submit = True
-                            for dependency in dependencies:
-                                if wf.getInfoFor(dependency, 'review_state') in \
-                                    ('to_be_sampled', 'to_be_preserved',
-                                     'sample_due', 'sample_received',
-                                     'attachment_due', 'to_be_verified'):
-                                    can_submit = False
-                                    break
-                            if can_submit:
-                                wf.doActionFor(dependent, 'submit')
-                    else:
-                        if review_state == 'to_be_verified':
-                            can_verify = True
-                            for dependency in dependencies:
-                                if wf.getInfoFor(dependency, 'review_state') in \
-                                    ('to_be_sampled', 'to_be_preserved',
-                                     'sample_due', 'sample_received',
-                                     'attachment_due', 'to_be_verified'):
-                                    can_verify = False
-                                    break
-                            if can_verify:
-                                wf.doActionFor(dependent, 'verify')
+        # for dependent in instance.getDependents():
+        #     if not skip(dependent, action_id, peek=True):
+        #         if dependent.getResult():
+        #             review_state = wf.getInfoFor(dependent, 'review_state')
+        #             interim_fields = False
+        #             service = dependent.getService()
+        #             calculation = service.getCalculation()
+        #             if calculation:
+        #                 interim_fields = calculation.getInterimFields()
+        #             dependencies = dependent.getDependencies()
+        #             if interim_fields:
+        #                 if review_state == 'sample_received':
+        #                     can_submit = True
+        #                     for dependency in dependencies:
+        #                         if wf.getInfoFor(dependency, 'review_state') in \
+        #                             ('to_be_sampled', 'to_be_preserved',
+        #                              'sample_due', 'sample_received',
+        #                              'attachment_due', 'to_be_verified'):
+        #                             can_submit = False
+        #                             break
+        #                     if can_submit:
+        #                         wf.doActionFor(dependent, 'submit')
+        #             else:
+        #                 if review_state == 'to_be_verified':
+        #                     can_verify = True
+        #                     for dependency in dependencies:
+        #                         if wf.getInfoFor(dependency, 'review_state') in \
+        #                             ('to_be_sampled', 'to_be_preserved',
+        #                              'sample_due', 'sample_received',
+        #                              'attachment_due', 'to_be_verified'):
+        #                             can_verify = False
+        #                             break
+        #                     if can_verify:
+        #                         wf.doActionFor(dependent, 'verify')
 
         # If all analyses in this AR are verified
         # escalate the action to the parent AR
