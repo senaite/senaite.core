@@ -39,6 +39,8 @@ class AnalysisSpecificationView(BikaListingView):
             'min': {'title': _('Min'), 'sortable': False,},
             'max': {'title': _('Max'), 'sortable': False,},
             'error': {'title': _('Permitted Error %'), 'sortable': False},
+            'hidemin': {'title': _('< Min'), 'sortable': False, 'type': 'boolean'},
+            'hidemax': {'title': _('> Max'), 'sortable': False, 'type': 'boolean'},
         }
 
         self.review_states = [
@@ -46,7 +48,8 @@ class AnalysisSpecificationView(BikaListingView):
              'title': _('All'),
              'contentFilter':{},
              'transitions': [],
-             'columns': ['service', 'min', 'max', 'error'],
+             'columns': ['service', 'min', 'max', 'error',
+                         'hidemin', 'hidemax'],
              },
         ]
 
@@ -77,7 +80,9 @@ class AnalysisSpecificationView(BikaListingView):
                 specresults = {'keyword': service.getKeyword(),
                         'min': '',
                         'max': '',
-                        'error': ''}
+                        'error': '',
+                        'hidemin': '',
+                        'hidemax': ''}
 
             after_icons = ' <span class="discreet">(%s)</span>&nbsp;&nbsp;' % service.getKeyword()
             if service.getAccredited():
@@ -127,6 +132,8 @@ class AnalysisSpecificationView(BikaListingView):
                 'error': specresults['error'],
                 'min': specresults['min'],
                 'max': specresults['max'],
+                'hidemin': specresults.get('hidemin',''),
+                'hidemax': specresults.get('hidemax',''),
                 'replace': {},
                 'before': {},
                 'after': {'service':after_icons,
@@ -136,7 +143,7 @@ class AnalysisSpecificationView(BikaListingView):
                 'choices':{},
                 'class': "state-%s" % (state),
                 'state_class': "state-%s" % (state),
-                'allow_edit': ['min', 'max', 'error'],
+                'allow_edit': ['min', 'max', 'error', 'hidemin', 'hidemax'],
             }
             items.append(item)
 
@@ -174,6 +181,8 @@ class AnalysisSpecificationWidget(TypesWidget):
                               'uid':uid,
                               'min':form['min'][0][uid],
                               'max':form['max'][0][uid],
+                              'hidemin':form['hidemin'].get(uid,'') if 'hidemin' in form else '',
+                              'hidemax':form['hidemax'].get(uid,'') if 'hidemax' in form else '',
                               'error':form['error'][0][uid]})
         return value, {}
 
