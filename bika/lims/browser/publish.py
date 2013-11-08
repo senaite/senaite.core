@@ -226,7 +226,7 @@ class doPublish(BrowserView):
 
                     try:
                         host = getToolByName(self.context, 'MailHost')
-                        host.send(mime_msg.as_string(), immediate=True)
+                #        host.send(mime_msg.as_string(), immediate=True)
                     except SMTPServerDisconnected as msg:
                         if not debug_mode:
                             raise SMTPServerDisconnected(msg)
@@ -268,7 +268,7 @@ class doPublish(BrowserView):
 
                     try:
                         host = getToolByName(self.context, 'MailHost')
-                        host.send(mime_msg.as_string(), immediate=True)
+                #        host.send(mime_msg.as_string(), immediate=True)
                     except SMTPServerDisconnected as msg:
                         if not debug_mode:
                             raise SMTPServerDisconnected(msg)
@@ -279,8 +279,11 @@ class doPublish(BrowserView):
 
     def formattedResult(self, analysis):
         """Formatted result:
-        1. Print ResultText of matching ResulOptions
-        2. If the result is floatable, render it to the correct precision
+        1. Print ResultText of matching ResultOptions
+        2. If the result is not floatable, return it without being formatted
+        3. If the analysis specs has hidemin or hidemax enabled and the
+           result is out of range, render result as '<min' or '>max'
+        4. If the result is floatable, render it to the correct precision
         If analysis is None, returns empty string
         """
         if analysis is None:
@@ -296,16 +299,39 @@ class doPublish(BrowserView):
         if match:
             return match[0]
 
-        # 2. If the result is floatable, render it to the correct precision
+        # 2. If the result is not floatable, return it without being formatted
+        try:
+            result = float(result)
+        except:
+            return result
+
+        # 3. If the analysis specs has enabled hidemin or hidemax and the
+        #    result is out of range, render result as '<min' or '>max'
+        specs = analysis.getAnalysisSpecs()
+        specs = specs.getResultsRangeDict() if specs is not None else {}
+        specs = specs.get(analysis.getKeyword(), {})
+        smin = float(specs['min']) if 'min' in specs else None
+        smax = float(specs['max']) if 'max' in specs else None
+        err = float(specs['error']) if 'error' in specs else 0
+        err_am = (result / 100) * err if result > 0 else 0
+
+        # 3.1. If result is below min and hidemin enabled, return '<min'
+        if specs.get('hidemin', '') == 'on' \
+            and smin is not None \
+            and ((result - err_am) < smin):
+            return '< %s' % smin
+
+        # 3.2. If result is above max and hidemax enabled, return '>max'
+        if specs.get('hidemax', '') == 'on' \
+            and smax is not None \
+            and ((result + err_am) > smax):
+            return '< %s' % smax
+
+        # 4. If the result is floatable, render it to the correct precision
         precision = service.getPrecision()
         if not precision:
             precision = ''
-        try:
-            result = str("%%.%sf" % precision) % float(result)
-        except:
-            pass
-
-        return result
+        return str("%%.%sf" % precision) % result
 
     def containsInvalidARs(self):
         for ar in self.batch:
