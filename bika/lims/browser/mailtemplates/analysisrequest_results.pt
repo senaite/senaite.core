@@ -454,7 +454,7 @@
         <div tal:condition="python:'email' in pub_pref" i18n:translate="">Methods of analysis available by clicking on the 'Request' link</div>
     </div>
 
-    <div class="footer" tal:content="structure view/Footer">
+    <div class="footer" tal:condition="view/Footer" tal:content="structure view/Footer">
     </div>
 </body>
 </html>
