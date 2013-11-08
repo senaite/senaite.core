@@ -34,5 +34,7 @@ def ObjectModifiedEventHandler(obj, event):
         mp = portal.manage_permission
         if allow:
             mp(AddClient, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
+            mp(EditClient, ['Manager', 'Owner', 'LabManger', 'LabClerk'], 1)
         else:
             mp(AddClient, ['Manager', 'Owner', 'LabManager'], 1)
+            mp(EditClient, ['Manager', 'Owner', 'LabManger'], 1)
