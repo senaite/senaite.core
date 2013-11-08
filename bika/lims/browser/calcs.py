@@ -169,7 +169,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
             # convert formula to a valid python string, ready for interpolation
             formula = calculation.getFormula()
             formula = formula.replace('[', '%(').replace(']', ')f')
-
+            calcsucceed = False
             try:
                 formula = eval("'%s'%%mapping" % formula,
                                {"__builtins__": None,
@@ -180,6 +180,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 result = eval(formula)
                 Result['result'] = result
                 self.current_results[uid] = result
+                calcsucceed = True
             except TypeError as e:
                 # non-numeric arguments in interim mapping?
                 alert = {'field': 'Result',
@@ -219,14 +220,38 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                     self.alerts[uid].append(alert)
                 else:
                     self.alerts[uid] = [alert, ]
-        try:
-            # format calculation result to service precision
-            Result['formatted_result'] = precision and Result['result'] and \
-                str("%%.%sf" % precision) % Result[
-                    'result'] or Result['result']
-        except:
-            # non-float
-            Result['formatted_result'] = Result['result']
+
+        # format result
+        belowmin = False
+        abovemax = False
+        specs = analysis.getAnalysisSpecs()
+        specs = specs.getResultsRangeDict() if specs is not None else {}
+        specs = specs.get(analysis.getKeyword(), {})
+        smin = float(specs['min']) if 'min' in specs else None
+        smax = float(specs['max']) if 'max' in specs else None
+        if calcsucceed:
+            fresult = Result['result']
+            err = float(specs['error']) if 'error' in specs else 0
+            err_am = (fresult / 100) * err if fresult > 0 else 0
+            belowmin = specs.get('hidemin', '') == 'on' \
+                        and smin is not None \
+                        and ((fresult - err_am) < smin)
+            abovemax = specs.get('hidemax', '') == 'on' \
+                        and smax is not None \
+                        and ((fresult + err_am) > smax)
+        if belowmin == True:
+            Result['formatted_result'] = '< %s' % smin
+        elif abovemax == True:
+            Result['formatted_result'] = '> %s' % smax
+        else:
+            try:
+                # format calculation result to service precision
+                Result['formatted_result'] = precision and Result['result'] and \
+                    str("%%.%sf" % precision) % Result[
+                        'result'] or Result['result']
+            except:
+                # non-float
+                Result['formatted_result'] = Result['result']
 
         # calculate Dry Matter result
         # if parent is not an AR, it's never going to be calculable
