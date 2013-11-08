@@ -226,7 +226,7 @@ class doPublish(BrowserView):
 
                     try:
                         host = getToolByName(self.context, 'MailHost')
-                #        host.send(mime_msg.as_string(), immediate=True)
+                        host.send(mime_msg.as_string(), immediate=True)
                     except SMTPServerDisconnected as msg:
                         if not debug_mode:
                             raise SMTPServerDisconnected(msg)
@@ -268,7 +268,7 @@ class doPublish(BrowserView):
 
                     try:
                         host = getToolByName(self.context, 'MailHost')
-                #        host.send(mime_msg.as_string(), immediate=True)
+                        host.send(mime_msg.as_string(), immediate=True)
                     except SMTPServerDisconnected as msg:
                         if not debug_mode:
                             raise SMTPServerDisconnected(msg)
