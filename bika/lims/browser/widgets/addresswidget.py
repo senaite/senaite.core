@@ -3,6 +3,7 @@ from Products.Archetypes.utils import DisplayList
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import TypesWidget
 from Products.CMFPlone.i18nl10n import ulocalized_time
+from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
 from bika.lims.locales import COUNTRIES,STATES,DISTRICTS
 import json
@@ -33,12 +34,17 @@ class AddressWidget(TypesWidget):
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return items
 
+    def getDefaultCountry(self):
+        portal = getToolByName(self, 'portal_url').getPortalObject()
+        bs = portal._getOb('bika_setup')
+        return bs.getDefaultCountry()
+
     def getStates(self, country):
         items = []
         if not country:
             return items
         # get ISO code for country
-        iso = [c for c in COUNTRIES if c['Country'] == country]
+        iso = [c for c in COUNTRIES if c['Country'] == country or c['ISO'] == country]
         if not iso:
             return items
         iso = iso[0]['ISO']
@@ -51,7 +57,7 @@ class AddressWidget(TypesWidget):
         if not country or not state:
             return items
         # get ISO code for country
-        iso = [c for c in COUNTRIES if c['Country'] == country]
+        iso = [c for c in COUNTRIES if c['Country'] == country or c['ISO'] == country]
         if not iso:
             return items
         iso = iso[0]['ISO']
