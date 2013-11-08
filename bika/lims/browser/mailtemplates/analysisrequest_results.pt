@@ -441,40 +441,20 @@
             </tr>
         </table>
 
-
     <!-- Discreeter section -->
-        <div id="section-discreeter">
-        <p id="discreeter-outofrange">
-            * Result out of client specified range.
-        </p>
-        <ol tal:define="confidence_level view/laboratory/Confidence | nothing;">
-            <li tal:condition="view/any_drymatter" i18n:translate="">Reported as dry matter</li>
-            <li tal:condition="invoice_exclude" i18n:translate="">Not invoiced</li>
-            <li tal:condition="lab_accredited" i18n:translate="">Methods included in the <tal:block replace="view/laboratory/AccreditationBody" i18n:name="accreditation_body"/> schedule of Accreditation for this Laboratory. Analysis remarks are not accredited</li>
-            <li i18n:translate="">Analysis results relate only to the samples tested.</li>
-            <li i18n:translate="">This document shall not be reproduced except in full, without the written approval of <tal:block replace="view/laboratory/Title" i18n:name="name_lab"/></li>
-            <li tal:condition="confidence_level" i18n:translate="">Test results are at a <tal:block replace="confidence_level" i18n:name="lab_confidence"/>% confidence level</li>
-            <li tal:condition="python:'email' in pub_pref" i18n:translate="">Methods of analysis available by clicking on the 'Request' link</li>
-        </ol>
-        <a tal:content="view/laboratory/getEmailAddress"
-           tal:attributes="url python:'mailto:%s' % view.laboratory.getEmailAddress();"></a>
-
-        <br>
-        <tal:con condition="view/laboratory/getPhone">
-            <span i18n:translate="">Phone</span>:
-            <span tal:content="view/laboratory/getPhone"></span>
-        </tal:con>
-
-        <br>
-        <tal:con condition="view/laboratory/getFax">
-            <span i18n:translate="">Fax</span>:
-            <span tal:content="view/laboratory/getFax"></span><br>
-        </tal:con>
-
+    <div id="section-discreeter">
+        <div id="discreeter-outofrange">* Result out of client specified range.</div>
+        <div tal:condition="view/any_drymatter" i18n:translate="">Reported as dry matter</div>
+        <div tal:condition="invoice_exclude" i18n:translate="">Not invoiced</div>
+        <div tal:condition="lab_accredited" i18n:translate="">Methods included in the <tal:block replace="view/laboratory/AccreditationBody" i18n:name="accreditation_body"/> schedule of Accreditation for this Laboratory. Analysis remarks are not accredited</div>
+        <div i18n:translate="">Analysis results relate only to the samples tested.</div>
+        <div i18n:translate="">This document shall not be reproduced except in full, without the written approval of <tal:block replace="view/laboratory/Title" i18n:name="name_lab"/></div>
+        <div tal:define="confidence_level view/laboratory/Confidence | nothing;"
+             tal:condition="confidence_level" i18n:translate="">Test results are at a <tal:block replace="confidence_level" i18n:name="lab_confidence"/>% confidence level</div>
+        <div tal:condition="python:'email' in pub_pref" i18n:translate="">Methods of analysis available by clicking on the 'Request' link</div>
     </div>
 
-<!--     <div id="footer">
-        <pdf:pagenumber/>
-    </div> -->
+    <div class="footer" tal:content="structure view/Footer">
+    </div>
 </body>
 </html>

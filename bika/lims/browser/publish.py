@@ -74,14 +74,16 @@ class doPublish(BrowserView):
                 self.reporter_signature = sf.absolute_url() + "/Signature"
 
         # lab address
+        # forced into a table for weasy-print.
         self.laboratory = laboratory = self.context.bika_setup.laboratory
         lab_address = laboratory.getPostalAddress() \
             or laboratory.getBillingAddress() \
             or laboratory.getPhysicalAddress()
         if lab_address:
             _keys = ['address', 'city', 'state', 'zip', 'country']
-            _list = [lab_address.get(v) for v in _keys if lab_address.get(v)]
-            self.lab_address = "<br/>".join(_list).replace("\n", "<br/>")
+            _list = ["<div>%s</div>"%lab_address.get(v) for v in _keys
+                     if lab_address.get(v)]
+            self.lab_address = "".join(_list)
         else:
             self.lab_address = None
 
@@ -97,10 +99,9 @@ class doPublish(BrowserView):
                 or self.contact.getPhysicalAddress()
             if client_address:
                 _keys = ['address', 'city', 'state', 'zip', 'country']
-                _list = [client_address.get(v) for v in _keys
+                _list = ["<div>%s</div>"%client_address.get(v) for v in _keys
                          if client_address.get(v)]
-                addr = "<br/>".join(_list).replace("\n", "<br/>")
-                self.client_address = addr
+                self.client_address = "".join(_list)
             else:
                 self.client_address = None
 
@@ -170,7 +171,7 @@ class doPublish(BrowserView):
             pdf_report = createPdf(ar_results, pdf_outfile, css=pdf_css)
 
             if pdf_report:
-                reportid = self.context.generateUniqueId('ARReport')
+                reportid =  self.context.generateUniqueId('ARReport')
                 ar.invokeFactory(id=reportid, type_name="ARReport")
                 report = ar._getOb(reportid)
                 report.edit(
@@ -220,9 +221,6 @@ class doPublish(BrowserView):
                     # Send the email to the managers
                     mime_msg['To'] = ','.join(to)
                     attachPdf(mime_msg, pdf_report, out_fn)
-                                        # For now, I will simply ignore mail send under test.
-                    if hasattr(self.portal, 'robotframework'):
-                        continue
 
                     try:
                         host = getToolByName(self.context, 'MailHost')
