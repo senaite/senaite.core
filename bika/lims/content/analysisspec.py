@@ -74,8 +74,6 @@ Schema((
                            'error': _('% Error'),
                            'hidemin': _('< Min'),
                            'hidemax': _('> Max')},
-        subfield_types = {'hidemin': 'boolean',
-                          'hidemax': 'boolean'},
         widget = AnalysisSpecificationWidget(
             checkbox_bound = 0,
             label = _("Specifications"),
@@ -87,9 +85,9 @@ Schema((
                             "considered when evaluating results against minimum and "
                             "maximum values. A result out of range but still in range "
                             "if the % error is taken into consideration, will raise a "
-                            "less severe alert. If '< Min' enabled, the results below "
-                            "the specified Min level will be shown as '< [min]'. The "
-                            "same applies for results above Max level if '> Max' enabled."),
+                            "less severe alert. If the result is below '< Min' "
+                            "the result will be shown as '< [min]'. The same "
+                            "applies for results above '> Max'"),
         ),
     ),
     ComputedField('ClientUID',

@@ -39,8 +39,8 @@ class AnalysisSpecificationView(BikaListingView):
             'min': {'title': _('Min'), 'sortable': False,},
             'max': {'title': _('Max'), 'sortable': False,},
             'error': {'title': _('Permitted Error %'), 'sortable': False},
-            'hidemin': {'title': _('< Min'), 'sortable': False, 'type': 'boolean'},
-            'hidemax': {'title': _('> Max'), 'sortable': False, 'type': 'boolean'},
+            'hidemin': {'title': _('< Min'), 'sortable': False},
+            'hidemax': {'title': _('> Max'), 'sortable': False},
         }
 
         self.review_states = [
@@ -181,8 +181,8 @@ class AnalysisSpecificationWidget(TypesWidget):
                               'uid':uid,
                               'min':form['min'][0][uid],
                               'max':form['max'][0][uid],
-                              'hidemin':form['hidemin'].get(uid,'') if 'hidemin' in form else '',
-                              'hidemax':form['hidemax'].get(uid,'') if 'hidemax' in form else '',
+                              'hidemin':form['hidemin'][0][uid] if 'hidemin' in form else '',
+                              'hidemax':form['hidemax'][0][uid] if 'hidemax' in form else '',
                               'error':form['error'][0][uid]})
         return value, {}
 

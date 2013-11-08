@@ -227,22 +227,24 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         specs = analysis.getAnalysisSpecs()
         specs = specs.getResultsRangeDict() if specs is not None else {}
         specs = specs.get(analysis.getKeyword(), {})
-        smin = float(specs['min']) if 'min' in specs else None
-        smax = float(specs['max']) if 'max' in specs else None
+        hidemin = specs.get('hidemin', '')
+        hidemax = specs.get('hidemax', '')
         if calcsucceed:
             fresult = Result['result']
-            err = float(specs['error']) if 'error' in specs else 0
-            err_am = (fresult / 100) * err if fresult > 0 else 0
-            belowmin = specs.get('hidemin', '') == 'on' \
-                        and smin is not None \
-                        and ((fresult - err_am) < smin)
-            abovemax = specs.get('hidemax', '') == 'on' \
-                        and smax is not None \
-                        and ((fresult + err_am) > smax)
+            try:
+                belowmin = hidemin and fresult < float(hidemin) or False
+            except:
+                belowmin = False
+                pass
+            try:
+                abovemax = hidemax and fresult > float(hidemax) or False
+            except:
+                abovemax = False
+                pass
         if belowmin == True:
-            Result['formatted_result'] = '< %s' % smin
+            Result['formatted_result'] = '< %s' % hidemin
         elif abovemax == True:
-            Result['formatted_result'] = '> %s' % smax
+            Result['formatted_result'] = '> %s' % hidemax
         else:
             try:
                 # format calculation result to service precision

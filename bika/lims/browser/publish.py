@@ -307,25 +307,31 @@ class doPublish(BrowserView):
 
         # 3. If the analysis specs has enabled hidemin or hidemax and the
         #    result is out of range, render result as '<min' or '>max'
+        belowmin = False
+        abovemax = False
         specs = analysis.getAnalysisSpecs()
         specs = specs.getResultsRangeDict() if specs is not None else {}
         specs = specs.get(analysis.getKeyword(), {})
-        smin = float(specs['min']) if 'min' in specs else None
-        smax = float(specs['max']) if 'max' in specs else None
-        err = float(specs['error']) if 'error' in specs else 0
-        err_am = (result / 100) * err if result > 0 else 0
+        hidemin = specs.get('hidemin', '')
+        hidemax = specs.get('hidemax', '')
+        try:
+            belowmin = hidemin and result < float(hidemin) or False
+        except:
+            belowmin = False
+            pass
+        try:
+            abovemax = hidemax and result > float(hidemax) or False
+        except:
+            abovemax = False
+            pass
 
         # 3.1. If result is below min and hidemin enabled, return '<min'
-        if specs.get('hidemin', '') == 'on' \
-            and smin is not None \
-            and ((result - err_am) < smin):
-            return '< %s' % smin
+        if belowmin:
+            return '< %s' % hidemin
 
         # 3.2. If result is above max and hidemax enabled, return '>max'
-        if specs.get('hidemax', '') == 'on' \
-            and smax is not None \
-            and ((result + err_am) > smax):
-            return '< %s' % smax
+        if abovemax:
+            return '> %s' % hidemax
 
         # 4. If the result is floatable, render it to the correct precision
         precision = service.getPrecision()

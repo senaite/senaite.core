@@ -306,32 +306,27 @@ class AnalysesView(BikaListingView):
                             [r['ResultText'] for r in items[i]['choices']['Result'] \
                                               if str(r['ResultValue']) == str(result)][0]
                     else:
-                        fresult = None
-                        try:
-                            fresult = float(result)
-                        except:
-                            pass
-
                         belowmin = False
                         abovemax = False
                         itspecs = self.specs.get(items[i].get('st_uid', {}), {})
                         itspecs = itspecs.get(client_or_lab,{}).get(items[i]['Keyword'],{})
-                        smin = float(itspecs['min']) if 'min' in itspecs else None
-                        smax = float(itspecs['max']) if 'max' in itspecs else None
-                        if fresult:
-                            err = float(itspecs['error']) if 'error' in itspecs else 0
-                            err_am = (fresult / 100) * err if fresult > 0 else 0
-                            belowmin = itspecs.get('hidemin', '') == 'on' \
-                                        and smin is not None \
-                                        and ((fresult - err_am) < smin)
-                            abovemax = itspecs.get('hidemax', '') == 'on' \
-                                        and smax is not None \
-                                        and ((fresult + err_am) > smax)
+                        hidemin = itspecs.get('hidemin', '')
+                        hidemax = itspecs.get('hidemax', '')
+                        try:
+                            belowmin = hidemin and float(result) < float(hidemin) or False
+                        except:
+                            belowmin = False
+                            pass
+                        try:
+                            abovemax = hidemax and float(result) > float(hidemax) or False
+                        except:
+                            abovemax = False
+                            pass
 
                         if belowmin == True:
-                            items[i]['formatted_result'] = '< %s' % smin
+                            items[i]['formatted_result'] = '< %s' % hidemin
                         elif abovemax == True:
-                            items[i]['formatted_result'] = '> %s' % smax
+                            items[i]['formatted_result'] = '> %s' % hidemax
                         else:
                             try:
                                 items[i]['formatted_result'] = precision and \
