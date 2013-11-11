@@ -193,6 +193,7 @@ class AnalysesView(BikaListingView):
             items[i]['Attachments'] = ''
 
             # calculate specs
+            client_or_lab = ""
             if obj.portal_type == 'ReferenceAnalysis':
                 items[i]['st_uid'] = obj.aq_parent.UID()
             elif obj.portal_type == 'DuplicateAnalysis' and \
@@ -226,7 +227,6 @@ class AnalysesView(BikaListingView):
                     proxies = []
                 if st_uid not in self.specs:
                     for spec in (p.getObject() for p in proxies):
-                        client_or_lab = ""
                         if spec.getClientUID() == obj.getClientUID():
                             client_or_lab = 'client'
                         elif spec.getClientUID() == self.context.bika_setup.bika_analysisspecs.UID():
@@ -309,7 +309,8 @@ class AnalysesView(BikaListingView):
                         belowmin = False
                         abovemax = False
                         itspecs = self.specs.get(items[i].get('st_uid', {}), {})
-                        itspecs = itspecs.get(client_or_lab,{}).get(items[i]['Keyword'],{})
+                        tgtspecs = client_or_lab or 'lab'
+                        itspecs = itspecs.get(tgtspecs,{}).get(items[i]['Keyword'],{})
                         hidemin = itspecs.get('hidemin', '')
                         hidemax = itspecs.get('hidemax', '')
                         try:
