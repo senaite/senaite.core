@@ -2,7 +2,7 @@ from bika.lims.exportimport.dataimport import SetupDataSetList as SDL
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import ISetupDataSetList
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims.utils import tmpID
+from bika.lims.utils import tmpID, to_unicode
 from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from zope.interface import implements
@@ -453,7 +453,7 @@ class Containers(WorksheetImporter):
                     obj.setContainerType(ct[0].getObject())
             if row['Preservation_title']:
                 pres = bsc(portal_type='Preservation',
-                           title=row['Preservation_title'])
+                           title=to_unicode(row['Preservation_title']))
                 if pres:
                     obj.setPreservation(pres[0].getObject())
             obj.unmarkCreationFlag()
