@@ -1196,8 +1196,7 @@ class Analysis_Profiles(WorksheetImporter):
             service = self.get_object(bsc, 'AnalysisService', row.get('Service',''))
             if not service:
                 service = bsc(portal_type='AnalysisService',
-                              getKeyword=row['Service'])
-            service = service[0].getObject()
+                              getKeyword=row['Service'])[0].getObject()
             self.profile_services[row['Profile']].append(service)
 
     def Import(self):
