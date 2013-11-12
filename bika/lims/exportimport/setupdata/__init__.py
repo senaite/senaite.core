@@ -171,13 +171,14 @@ class WorksheetImporter:
     def get_object(self, catalog, portal_type, title):
         if not title:
             return None
-        brains = catalog(portal_type=portal_type,
-                         title=title)
+        brains = catalog(portal_type=portal_type, title=to_unicode(title))
         if len(brains) > 1:
-            logger.info("More than one %s found for '%s'" % (portal_type, title))
+            logger.info("More than one %s found for '%s'" % \
+                        (portal_type, to_unicode(title)))
             return None
         elif len(brains) == 0:
-            logger.info("%s not found for %s" % (portal_type, title))
+            logger.info("%s not found for %s" % \
+                        (portal_type, to_unicode(title)))
             return None
         else:
             return brains[0].getObject()
@@ -460,15 +461,13 @@ class Containers(WorksheetImporter):
                 PrePreserved=self.to_bool(row['PrePreserved'])
             )
             if row['ContainerType_title']:
-                ct = bsc(portal_type='ContainerType',
-                         title=row['ContainerType_title'])
+                ct = self.get_object(bsc, 'ContainerType', row.get('ContainerType_title',''))
                 if ct:
-                    obj.setContainerType(ct[0].getObject())
+                    obj.setContainerType(ct)
             if row['Preservation_title']:
-                pres = bsc(portal_type='Preservation',
-                           title=to_unicode(row['Preservation_title']))
+                pres = self.get_object(bsc, 'Preservation',row.get('Preservation_title',''))
                 if pres:
-                    obj.setPreservation(pres[0].getObject())
+                    obj.setPreservation(pres)
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
 
@@ -482,7 +481,7 @@ class Suppliers(WorksheetImporter):
             obj = folder[_id]
             if row['Name']:
                 obj.edit(
-                    title=row.get('Name', ''),
+                    Name=row.get('Name', ''),
                     TaxNumber=row.get('TaxNumber', ''),
                     AccountType=row.get('AccountType', {}),
                     AccountName=row.get('AccountName', {}),
@@ -580,10 +579,14 @@ class Instruments(WorksheetImporter):
                 CalibrationExpiryDate=row.get('CalibrationExpiryDate', ''),
                 DataInterface=row.get('DataInterface', '')
             )
-            instrumenttype = self.get_object(bsc, 'InstrumentType', row.get('Type' ,''))
-            manufacturer = self.get_object(bsc, 'Manufacturer', row.get('Brand', ''))
-            supplier = self.get_object(bsc, 'Supplier', row.get('Supplier', ''))
+            instrumenttype = self.get_object(bsc, 'InstrumentType',
+                                             row.get('Type'))
+            manufacturer = self.get_object(bsc, 'Manufacturer',
+                                           row.get('Brand'))
+            supplier = bsc(portal_type='Supplier',
+                           getName=row.get('Supplier', ''))[0].getObject()
             obj.setInstrumentType(instrumenttype)
+            obj.setManufacturer(manufacturer)
             obj.setSupplier(supplier)
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
@@ -597,9 +600,8 @@ class Instrument_Validations(WorksheetImporter):
             if not row['instrument'] or not row['title']:
                 continue
 
-            folder = bsc(portal_type='Instrument', title=row['instrument'])
+            folder = self.get_object(bsc, 'Instrument', row.get('instrument'))
             if folder:
-                folder = folder[0].getObject()
                 _id = folder.invokeFactory('InstrumentValidation', id=tmpID())
                 obj = folder[_id]
                 obj.edit(
@@ -623,9 +625,8 @@ class Instrument_Calibrations(WorksheetImporter):
             if not row['instrument'] or not row['title']:
                 continue
 
-            folder = bsc(portal_type='Instrument', title=row['instrument'])
+            folder = self.get_object(bsc, 'Instrument', row.get('instrument'))
             if folder:
-                folder = folder[0].getObject()
                 _id = folder.invokeFactory('InstrumentCalibration', id=tmpID())
                 obj = folder[_id]
                 obj.edit(
@@ -649,9 +650,8 @@ class Instrument_Certifications(WorksheetImporter):
             if not row['instrument'] or not row['title']:
                 continue
 
-            folder = bsc(portal_type='Instrument', title=row['instrument'])
+            folder = self.get_object(bsc, 'Instrument', row.get('instrument',''))
             if folder:
-                folder = folder[0].getObject()
                 _id = folder.invokeFactory(
                     'InstrumentCertification', id=tmpID())
                 obj = folder[_id]
@@ -675,9 +675,8 @@ class Instrument_Maintenance_Tasks(WorksheetImporter):
             if not row['instrument'] or not row['title'] or not row['type']:
                 continue
 
-            folder = bsc(portal_type='Instrument', title=row['instrument'])
+            folder = self.get_object(bsc, 'Instrument',row.get('instrument'))
             if folder:
-                folder = folder[0].getObject()
                 _id = folder.invokeFactory('InstrumentMaintenanceTask',
                                            id=tmpID())
                 obj = folder[_id]
@@ -710,9 +709,8 @@ class Instrument_Schedule(WorksheetImporter):
         for row in self.get_rows(3):
             if not row['instrument'] or not row['title'] or not row['type']:
                 continue
-            folder = bsc(portal_type='Instrument', title=row['instrument'])
+            folder = self.get_object(bsc, 'Instrument', row.get('instrument'))
             if folder:
-                folder = folder[0].getObject()
                 _id = folder.invokeFactory('InstrumentScheduledTask',
                                            id=tmpID())
                 criteria = [
@@ -779,12 +777,10 @@ class Sample_Types(WorksheetImporter):
                 continue
             _id = folder.invokeFactory('SampleType', id=tmpID())
             obj = folder[_id]
-            samplematrix = bsc(portal_type='SampleMatrix',
-                               title=row['SampleMatrix_title'])[0].getObject() \
-                if row.get('SampleMatrix_title', '') else None
-            containertype = bsc(portal_type='ContainerType',
-                                title=row['ContainerType_title'])[0].getObject() \
-                if row.get('ContainerType_title', '') else None
+            samplematrix = self.get_object(bsc, 'SampleMatrix',
+                                           row.get('SampleMatrix_title'))
+            containertype = self.get_object(bsc, 'ContainerType',
+                                            row.get('ContainerType_title'))
             retentionperiod = {
                 'days': row['RetentionPeriod'] if row['RetentionPeriod'] else 0,
                 'hours': 0,
@@ -799,11 +795,8 @@ class Sample_Types(WorksheetImporter):
                 MinimumVolume=row['MinimumVolume'],
                 ContainerType=containertype
             )
-            samplepoint = bsc(portal_type='SamplePoint',
-                              title=row['SamplePoint_title']) \
-                if row.get('SamplePoint_title', '') else None
-            samplepoint = samplepoint[0].getObject() \
-                if samplepoint else None
+            samplepoint = self.get_object(bsc, 'SamplePoint',
+                                          row.get('SamplePoint_title'))
             if samplepoint:
                 obj.setSamplePoints([samplepoint, ])
             obj.unmarkCreationFlag()
@@ -842,11 +835,8 @@ class Sample_Points(WorksheetImporter):
                 Composite=self.to_bool(row['Composite']),
                 Elevation=row['Elevation'],
             )
-            sampletype = bsc(portal_type='SampleType',
-                             title=row['SampleType_title']) \
-                if row.get('SampleType_title', '') else None
-            sampletype = sampletype[0].getObject() \
-                if sampletype else None
+            sampletype = self.get_object(bsc, 'SampleType',
+                                         row.get('SampleType_title'))
             if sampletype:
                 obj.setSampleTypes([sampletype, ])
             obj.unmarkCreationFlag()
@@ -858,12 +848,10 @@ class Sample_Point_Sample_Types(WorksheetImporter):
     def Import(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for row in self.get_rows(3):
-            sampletype = bsc(portal_type='SampleType',
-                             title=row['SampleType_title'])
-            sampletype = sampletype[0].getObject() if sampletype else None
+            sampletype = self.get_object(bsc, 'SampleType',
+                                         row.get('SampleType_title'))
             samplepoint = bsc(portal_type='SamplePoint',
                               title=row['SamplePoint_title'])
-            samplepoint = samplepoint[0].getObject() if samplepoint else None
 
             sampletypes = samplepoint.getSampleTypes()
             if sampletype not in sampletypes:
@@ -905,8 +893,8 @@ class Analysis_Categories(WorksheetImporter):
                     title=row['title'],
                     description=row.get('description', ''))
                 if row['Department_title']:
-                    department = bsc(portal_type='Department',
-                                     title=row['Department_title'])[0].UID
+                    department = self.get_object(bsc, 'Department',
+                                                 row.get('Department_title'))
                     obj.setDepartment(department)
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
@@ -1039,8 +1027,8 @@ class Analysis_Services(WorksheetImporter):
         if not worksheet:
             return
         for row in self.get_rows(3, worksheet=worksheet):
-            service = bsc(portal_type='AnalysisService',
-                          title=row['Service_title'])[0].getObject()
+            service = self.get_object(bsc, 'AnalysisService',
+                                      row.get('Service_title'))
             sro = service.getResultOptions()
             sro.append({'ResultValue': row['ResultValue'],
                         'ResultText': row['ResultText']})
@@ -1057,8 +1045,8 @@ class Analysis_Services(WorksheetImporter):
         count = 0
         for row in self.get_rows(3, worksheet=worksheet):
             count += 1
-            service = bsc(portal_type='AnalysisService',
-                          title=row['Service_title'])[0].getObject()
+            service = self.get_object(bsc, 'AnalysisService',
+                                      row.get('Service_title'))
             service_uid = service.UID()
             if service_uid not in bucket:
                 bucket[service_uid] = []
@@ -1097,19 +1085,19 @@ class Analysis_Services(WorksheetImporter):
                 'minutes': int(row['MaxTimeAllowed_minutes'] and row['MaxTimeAllowed_minutes'] or 0),
             }
             category = self.get_object(bsc, 'AnalysisCategory',
-                                       row.get('AnalysisCategory_title', ''))
+                                       row.get('AnalysisCategory_title'))
             department = self.get_object(bsc, 'Department',
-                                         row.get('Department_title', ''))
+                                         row.get('Department_title'))
             method = self.get_object(bsc, 'Method',
-                                     row.get('Method', ''))
+                                     row.get('Method'))
             instrument = self.get_object(bsc, 'Instrument',
-                                         row.get('Instrument_title', ''))
+                                         row.get('Instrument_title'))
             calculation = self.get_object(bsc, 'Calculation',
-                                          row.get('Calculation_title', ''))
+                                          row.get('Calculation_title'))
             container = self.get_object(bsc, 'Container',
-                                        row.get('Container_title', ''))
+                                        row.get('Container_title'))
             preservation = self.get_object(bsc, 'Preservation',
-                                           row.get('Preservation_title', ''))
+                                           row.get('Preservation_title'))
 
             obj.edit(
                 title=row['title'],
@@ -1161,11 +1149,11 @@ class Analysis_Specifications(WorksheetImporter):
             s_t = row['SampleType_title'] if row['SampleType_title'] else s_t
             if s_t not in bucket[c_t]:
                 bucket[c_t][s_t] = []
-            service = bsc(portal_type='AnalysisService', title=row['service'])
+            service = self.get_object(bsc, 'AnalysisService',
+                                      row.get('service'))
             if not service:
                 service = bsc(portal_type='AnalysisService',
-                              getKeyword=row['service'])
-            service = service[0].getObject()
+                              getKeyword=row['service'])[0].getObject()
             bucket[c_t][s_t].append({
                 'keyword': service.getKeyword(),
                 'min': row['min'] if row['min'] else '0',
@@ -1205,8 +1193,7 @@ class Analysis_Profiles(WorksheetImporter):
                 self.profile_services[row['Profile']] = []
             # Here we match againts Keyword or Title.
             # XXX We need a utility for this kind of thing.
-            service = bsc(portal_type='AnalysisService',
-                          title=row['Service'])
+            service = self.get_object(bsc, 'AnalysisService', row.get('Service',''))
             if not service:
                 service = bsc(portal_type='AnalysisService',
                               getKeyword=row['Service'])
@@ -1239,8 +1226,8 @@ class AR_Templates(WorksheetImporter):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for row in self.get_rows(3, worksheet=worksheet):
             # XXX service_uid is not a uid
-            service = bsc(portal_type='AnalysisService',
-                          title=row.get('service_uid'))[0].getObject()
+            service = self.get_object(bsc, 'AnalysisService',
+                                      row.get('service_uid'))
             if row['ARTemplate'] not in self.artemplate_analyses.keys():
                 self.artemplate_analyses[row['ARTemplate']] = []
             self.artemplate_analyses[row['ARTemplate']].append(
@@ -1259,12 +1246,10 @@ class AR_Templates(WorksheetImporter):
         for row in self.get_rows(3, worksheet=worksheet):
             if row['ARTemplate'] not in self.artemplate_partitions.keys():
                 self.artemplate_partitions[row['ARTemplate']] = []
-            container = bsc(portal_type='Container',
-                            title=row['container']) \
-                if row['container'] else []
-            preservation = bsc(portal_type='Preservation',
-                               title=row['preservation']) \
-                if row['preservation'] else []
+            container = self.get_object(bsc, 'Container',
+                                        row.get('container'))
+            preservation = self.get_object(bsc, 'Preservation',
+                                           row.get('preservation'))
             self.artemplate_partitions[row['ARTemplate']].append({
                 'part_id': row['part_id'],
                 'Container': container.Title(),
@@ -1296,12 +1281,10 @@ class AR_Templates(WorksheetImporter):
                 folder = pc(portal_type='Client',
                             getName=client_title)[0].getObject()
 
-            sampletype = bsc(portal_type='SampleType',
-                             title=row['SampleType_title'])
-            sampletype = sampletype[0].getObject() if sampletype else None
-            samplepoint = bsc(portal_type='SamplePoint',
-                              title=row['SamplePoint_title'])
-            samplepoint = samplepoint[0].getObject() if samplepoint else None
+            sampletype = self.get_object(bsc, 'SampleType',
+                                         row.get('SampleType_title'))
+            samplepoint = self.get_object(bsc, 'SamplePoint',
+                                         row.get('SamplePoint_title'))
 
             _id = folder.invokeFactory('ARTemplate', id=tmpID())
             obj = folder[_id]
@@ -1330,8 +1313,8 @@ class Reference_Definitions(WorksheetImporter):
         for row in self.get_rows(3, worksheet=worksheet):
             if row['ReferenceDefinition_title'] not in self.results.keys():
                 self.results[row['ReferenceDefinition_title']] = []
-            service = bsc(portal_type='AnalysisService',
-                          title=row['service'])[0].getObject()
+            service = self.get_object(bsc, 'AnalysisService',
+                                      row.get('service'))
             self.results[
                 row['ReferenceDefinition_title']].append({
                     'uid': service.UID(),
@@ -1386,8 +1369,8 @@ class Worksheet_Templates(WorksheetImporter):
             return
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for row in self.get_rows(3, worksheet=worksheet):
-            service = bsc(portal_type='AnalysisService',
-                          title=row['service'])[0].getObject()
+            service = self.get_object(bsc, 'AnalysisService',
+                                      row.get('service'))
             if row['WorksheetTemplate_title'] not in self.wst_services.keys():
                 self.wst_services[row['WorksheetTemplate_title']] = []
             self.wst_services[
@@ -1423,10 +1406,9 @@ class Setup(WorksheetImporter):
             'hours': int(values['DefaultSampleLifetime_hours'] and values['DefaultSampleLifetime_hours'] or 0),
             'minutes': int(values['DefaultSampleLifetime_minutes'] and values['DefaultSampleLifetime_minutes'] or 0),
         }
-        dry_service = bsc(portal_type='AnalysisService',
-                          title=values['DryMatterService']) \
-            if values.get('DryMatterService', None) else None
-        dry_uid = dry_service[0].UID if dry_service else None
+        dry_service = self.get_object(bsc, 'AnalysisService',
+                                      values.get('DryMatterService'))
+        dry_uid = dry_service.UID() if dry_service else None
         if not dry_uid:
             print("DryMatter service does not exist {0}".format(values['DryMatterService']))
         self.context.bika_setup.edit(
@@ -1502,8 +1484,8 @@ class Reference_Samples(WorksheetImporter):
         for row in self.get_rows(3, worksheet=self.results_worksheet):
             if row['ReferenceSample_id'] != sample.getId():
                 continue
-            service = bsc(portal_type='AnalysisService',
-                          title=row['AnalysisService_title'])[0].getObject()
+            service = self.get_object(bsc, 'AnalysisService',
+                                      row.get('AnalysisService_title'))
             results.append({
                     'uid': service.UID(),
                     'result': row['result'],
@@ -1522,8 +1504,8 @@ class Reference_Samples(WorksheetImporter):
         for row in self.get_rows(3, worksheet=self.analyses_worksheet):
             if row['ReferenceSample_id'] != sample.getId():
                 continue
-            service = bsc(portal_type='AnalysisService',
-                          title=row['AnalysisService_title'])[0].getObject()
+            service = self.get_object(bsc, 'AnalysisService',
+                                      row.get('AnalysisService_title'))
             # Analyses are keyed/named by service keyword
             sample.invokeFactory('ReferenceAnalysis', id=row['id'])
             obj = sample[row['id']]
@@ -1568,16 +1550,14 @@ class Reference_Samples(WorksheetImporter):
         for row in self.get_rows(3):
             if not row['id']:
                 continue
-            supplier = bsc(portal_type="Supplier",
-                           getName=row['Supplier_title'])[0].getObject()
+            supplier = bsc(portal_type='Supplier',
+                           getName=row.get('Supplier_title', ''))[0].getObject()
             supplier.invokeFactory('ReferenceSample', id=row['id'])
             obj = supplier[row['id']]
-            if row.get('ReferenceDefinition_title', ''):
-                ref_def = bsc(portal_type="ReferenceDefinition",
-                              title=row['ReferenceDefinition_title'])[0].getObject()
-            if row.get('Manufacturer_title', ''):
-                ref_man = bsc(portal_type="Manufacturer",
-                              title=row['Manufacturer_title'])[0].getObject()
+            ref_def = self.get_object(bsc, 'ReferenceDefinition',
+                                      row.get('ReferenceDefinition_title'))
+            ref_man = self.get_object(bsc, 'Manufacturer',
+                                      row.get('Manufacturer_title'))
             obj.edit(title=row['id'],
                      description=row.get('description', ''),
                      Blank=self.to_bool(row['Blank']),
@@ -1623,12 +1603,12 @@ class Samples(WorksheetImporter):
             obj.setDateDisposed(row['DateDisposed'])
             obj.setAdHoc(self.to_bool(row['AdHoc']))
             if row.get('SampleType_title', ''):
-                st = bsc(portal_type="SampleType",
-                         title=row['SampleType_title'])[0].getObject()
+                st = self.get_object(bsc, 'SampleType',
+                                     row.get('SampleType_title'))
                 obj.setSampleType(st)
             if row.get('SamplePoint_title', ''):
-                sp = bsc(portal_type="SamplePoint",
-                         title=row['SamplePoint_title'])[0].getObject()
+                sp = self.get_object(bsc, 'SamplePoint',
+                                     row.get('SamplePoint_title'))
                 obj.setSamplePoint(sp)
             obj.unmarkCreationFlag()
             # XXX hard-wired, Creating a single partition without proper init, no decent review_state ideas
