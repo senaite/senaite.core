@@ -165,24 +165,6 @@
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
 
     <adapter
-      name="Reference_Manufacturers"
-      factory="bika.lims.exportimport.setupdata.Reference_Manufacturers"
-      provides="bika.lims.interfaces.ISetupDataImporter"
-      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
-
-    <adapter
-      name="Reference_Suppliers"
-      factory="bika.lims.exportimport.setupdata.Reference_Suppliers"
-      provides="bika.lims.interfaces.ISetupDataImporter"
-      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
-
-    <adapter
-      name="Reference_Supplier_Contacts"
-      factory="bika.lims.exportimport.setupdata.Reference_Supplier_Contacts"
-      provides="bika.lims.interfaces.ISetupDataImporter"
-      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
-
-    <adapter
       name="Calculations"
       factory="bika.lims.exportimport.setupdata.Calculations"
       provides="bika.lims.interfaces.ISetupDataImporter"

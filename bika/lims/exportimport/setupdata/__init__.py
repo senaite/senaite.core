@@ -17,7 +17,7 @@ class SetupDataSetList(SDL):
     implements(ISetupDataSetList)
 
     def __call__(self):
-        return SDL.__call__(self, projectname="bika.wine")
+        return SDL.__call__(self, projectname="bika.lims")
 
 
 class WorksheetImporter:
@@ -36,7 +36,6 @@ class WorksheetImporter:
         self.worksheet = workbook.get_sheet_by_name(self.sheetname)
         self.dataset_project = dataset_project
         self.dataset_name = dataset_name
-
         if self.worksheet:
             logger.info("Loading {0}.{1}: {2}".format(
                 self.dataset_project, self.dataset_name, self.sheetname))
@@ -168,6 +167,20 @@ class WorksheetImporter:
             obj.setHomePhone(row.get('HomePhone', ''))
         if hasattr(obj, 'setMobilePhone'):
             obj.setMobilePhone(row.get('MobilePhone', ''))
+
+    def get_object(self, catalog, portal_type, title):
+        if not title:
+            return None
+        brains = catalog(portal_type=portal_type,
+                         title=title)
+        if len(brains) > 1:
+            logger.info("More than one %s found for '%s'" % (portal_type, title))
+            return None
+        elif len(brains) == 0:
+            logger.info("%s not found for %s" % (portal_type, title))
+            return None
+        else:
+            return brains[0].getObject()
 
 
 class Lab_Information(WorksheetImporter):
@@ -469,7 +482,7 @@ class Suppliers(WorksheetImporter):
             obj = folder[_id]
             if row['Name']:
                 obj.edit(
-                    Name=row.get('Name', ''),
+                    title=row.get('Name', ''),
                     TaxNumber=row.get('TaxNumber', ''),
                     AccountType=row.get('AccountType', {}),
                     AccountName=row.get('AccountName', {}),
@@ -547,10 +560,10 @@ class Instruments(WorksheetImporter):
         folder = self.context.bika_setup.bika_instruments
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for row in self.get_rows(3):
-            if (not row['Type']
-               or not row['title']
-               or not row['Supplier']
-               or not row['Brand']):
+            if ('Type' not in row \
+                or 'Supplier' not in row \
+                or 'Brand' not in row):
+                logger.info("Unable to import '%s'. Missing supplier, manufacturer or type" % row.get('title',''))
                 continue
 
             _id = folder.invokeFactory('Instrument', id=tmpID())
@@ -567,18 +580,10 @@ class Instruments(WorksheetImporter):
                 CalibrationExpiryDate=row.get('CalibrationExpiryDate', ''),
                 DataInterface=row.get('DataInterface', '')
             )
-
-            instrumenttype = bsc(portal_type='InstrumentType',
-                                 title=row['Type'])[0].getObject() \
-                if row.get('Type', '') else None
+            instrumenttype = self.get_object(bsc, 'InstrumentType', row.get('Type' ,''))
+            manufacturer = self.get_object(bsc, 'Manufacturer', row.get('Brand', ''))
+            supplier = self.get_object(bsc, 'Supplier', row.get('Supplier', ''))
             obj.setInstrumentType(instrumenttype)
-            manufacturer = bsc(portal_type='Manufacturer',
-                               title=row['Brand'])[0].getObject() \
-                if row.get('Brand', '') else None
-            obj.setManufacturer(manufacturer)
-            supplier = bsc(portal_type='Supplier',
-                           getName=row['Supplier'])[0].getObject() \
-                if row.get('Supplier', '') else None
             obj.setSupplier(supplier)
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
@@ -950,24 +955,6 @@ class Sampling_Deviations(WorksheetImporter):
                 renameAfterCreation(obj)
 
 
-class Reference_Manufacturers(Manufacturers):
-
-    """BBB
-    """
-
-
-class Reference_Suppliers(Suppliers):
-
-    """BBB
-    """
-
-
-class Reference_Supplier_Contacts(Supplier_Contacts):
-
-    """BBB
-    """
-
-
 class Calculations(WorksheetImporter):
 
     def get_interim_fields(self):
@@ -1109,41 +1096,20 @@ class Analysis_Services(WorksheetImporter):
                 'hours': int(row['MaxTimeAllowed_hours'] and row['MaxTimeAllowed_hours'] or 0),
                 'minutes': int(row['MaxTimeAllowed_minutes'] and row['MaxTimeAllowed_minutes'] or 0),
             }
-            category = bsc(
-                portal_type='AnalysisCategory',
-                title=row.get('AnalysisCategory_title', ''))[0].getObject() \
-                if row.get('AnalysisCategory_title', '') \
-                else None
-            department = bsc(
-                portal_type='Department',
-                title=row.get('Department_title', ''))[0].getObject() \
-                if row.get('Department_title', '') \
-                else None
-            method = bsc(
-                portal_type='Method',
-                title=row.get('Method', ''))[0].getObject() \
-                if row.get('Method', '') \
-                else None
-            instrument = bsc(
-                portal_type='Instrument',
-                title=row.get('Instrument_title', ''))[0].getObject() \
-                if row.get('Instrument_title', '') \
-                else None
-            calculation = bsc(
-                portal_type='Calculation',
-                title=row.get('Calculation_title', ''))[0].getObject() \
-                if row.get('Calculation_title', '') \
-                else None
-            container = bsc(
-                portal_type='Container',
-                title=row.get('Container_title', ''))[0].getObject() \
-                if row.get('Container_title', '') \
-                else None
-            preservation = bsc(
-                portal_type='Preservation',
-                title=row.get('Preservation_title', ''))[0].getObject() \
-                if row.get('Preservation_title', '') \
-                else None
+            category = self.get_object(bsc, 'AnalysisCategory',
+                                       row.get('AnalysisCategory_title', ''))
+            department = self.get_object(bsc, 'Department',
+                                         row.get('Department_title', ''))
+            method = self.get_object(bsc, 'Method',
+                                     row.get('Method', ''))
+            instrument = self.get_object(bsc, 'Instrument',
+                                         row.get('Instrument_title', ''))
+            calculation = self.get_object(bsc, 'Calculation',
+                                          row.get('Calculation_title', ''))
+            container = self.get_object(bsc, 'Container',
+                                        row.get('Container_title', ''))
+            preservation = self.get_object(bsc, 'Preservation',
+                                           row.get('Preservation_title', ''))
 
             obj.edit(
                 title=row['title'],
