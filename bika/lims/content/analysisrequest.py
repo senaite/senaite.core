@@ -700,19 +700,16 @@ class AnalysisRequest(BaseFolder):
         return "/".join(self.aq_parent.getPhysicalPath())
 
     def getClientTitle(self):
-        client = self.getClient()
-        if client:
-            return client.Title()
-        else:
-            return ""
+        return self.getClient().Title() if self.getClient() else ''
 
     def getContactTitle(self):
-        value = self.getContact().Title() if self.getContact() else ''
-        return value
+        return self.getContact().Title() if self.getContact() else ''
 
     def getProfileTitle(self):
-        value = self.getProfile().Title() if self.getProfile() else ''
-        return value
+        return self.getProfile().Title() if self.getProfile() else ''
+
+    def getTemplateTitle(self):
+        return self.getTemplate().Title() if self.getTemplate() else ''
 
     def getAnalysisCategory(self):
         proxies = self.getAnalyses(full_objects=True)
