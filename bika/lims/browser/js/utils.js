@@ -319,7 +319,7 @@ $(document).ready(function(){
 		var dialog = $('<div></div>');
 		dialog
 			.load(window.portal_url + "/analysisservice_popup",
-				{'service_title':$(this).text(),
+				{'service_title':$(this).find("span[class^='state']").html(),
 				 'analysis_uid':$(this).parents('tr').attr('uid'),
 				 '_authenticator': $('input[name="_authenticator"]').val()}
 			)
