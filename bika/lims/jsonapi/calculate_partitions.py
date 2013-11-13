@@ -7,8 +7,10 @@ import magnitude
 
 
 def mg(value):
-    value, unit = value.split(" ", 1)
-    return magnitude.mg(float(value), unit)
+    tokens = value.split(" ") if value else [0, '']
+    val = float(tokens[0]) if isinstance(tokens[0], (int, long)) else 0
+    unit = tokens[1] if len(tokens) > 1 else ''
+    return magnitude.mg(val, unit)
 
 
 class calculate_partitions(object):
