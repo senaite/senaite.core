@@ -20,6 +20,7 @@ from zope.interface import implements
 from bika.lims.browser.widgets import ReferenceWidget
 
 import sys
+from bika.lims.utils import to_unicode
 
 schema = BikaSchema.copy() + Schema((
     StringField('SampleID',
@@ -370,7 +371,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
         before saving.
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
-        sampletypes = bsc(portal_type='SampleType', title=value)
+        sampletypes = bsc(portal_type='SampleType', title=to_unicode(value))
         if sampletypes:
             value = sampletypes[0].UID
         else:
@@ -390,7 +391,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
         before saving.
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
-        sampletypes = bsc(portal_type='SamplePoint', title=value)
+        sampletypes = bsc(portal_type='SamplePoint', title=to_unicode(value))
         if sampletypes:
             value = sampletypes[0].UID
         else:

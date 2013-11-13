@@ -9,6 +9,7 @@ import json, plone
 import plone.protect
 from magnitude import mg, MagnitudeError
 import re
+from bika.lims.utils import to_unicode
 
 ### AJAX methods for AnalysisService context
 
@@ -71,7 +72,8 @@ class ajaxServicePopup(BrowserView):
         else:
             self.log = []
 
-        brains = bsc(portal_type="AnalysisService", title=service_title)
+        brains = bsc(portal_type="AnalysisService",
+                     title=to_unicode(service_title))
         if not brains:
             return ''
 
