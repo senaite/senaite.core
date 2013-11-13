@@ -848,10 +848,12 @@ class Sample_Point_Sample_Types(WorksheetImporter):
     def Import(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for row in self.get_rows(3):
-            sampletype = self.get_object(bsc, 'SampleType',
+            sampletype = self.get_object(bsc,
+                                         'SampleType',
                                          row.get('SampleType_title'))
-            samplepoint = bsc(portal_type='SamplePoint',
-                              title=row['SamplePoint_title'])
+            samplepoint = self.get_object(bsc,
+                                          'SamplePoint',
+                                          row['SamplePoint_title'])
 
             sampletypes = samplepoint.getSampleTypes()
             if sampletype not in sampletypes:
@@ -1197,7 +1199,6 @@ class Analysis_Profiles(WorksheetImporter):
             if not service:
                 service = bsc(portal_type='AnalysisService',
                               getKeyword=row['Service'])
-            service = service[0].getObject()
             self.profile_services[row['Profile']].append(service)
 
     def Import(self):
