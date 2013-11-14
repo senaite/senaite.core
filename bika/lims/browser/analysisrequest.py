@@ -99,7 +99,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             # add missing parts
             if nr_parts > nr_existing:
                 for i in range(nr_parts - nr_existing):
-                    _id = sample.invokeFactory('SamplePartition', id = 'tmp')
+                    _id = sample.invokeFactory('SamplePartition', id=tmpID())
                     part = sample[_id]
                     part.setDateReceived = DateTime()
                     part.processForm()
@@ -1554,7 +1554,7 @@ class ajaxAnalysisRequestSubmit():
                 sample = uc(UID=values['Sample_uid'])[0].getObject()
             else:
                 # Primary AR
-                _id = client.invokeFactory('Sample', id = 'tmp')
+                _id = client.invokeFactory('Sample', id=tmpID())
                 sample = client[_id]
                 saved_form = self.request.form
                 self.request.form = resolved_values
@@ -1595,8 +1595,8 @@ class ajaxAnalysisRequestSubmit():
 
             saved_form = self.request.form
             self.request.form = resolved_values
-            client.invokeFactory('AnalysisRequest', id = 'tmp')
-            ar = client['tmp']
+            clientid = client.invokeFactory('AnalysisRequest', id=tmpID())
+            ar = client[clientid]
             ar.setSample(sample)
             ar.processForm()
             self.request.form = saved_form
@@ -1612,7 +1612,7 @@ class ajaxAnalysisRequestSubmit():
                     parts[_i]['object'] = sample['%s%s'%(part_prefix,_i+1)]
                     parts_and_services['%s%s'%(part_prefix, _i+1)] = p['services']
                 else:
-                    _id = sample.invokeFactory('SamplePartition', id = 'tmp')
+                    _id = sample.invokeFactory('SamplePartition', id = tmpID())
                     part = sample[_id]
                     parts[_i]['object'] = part
                     # Sort available containers by capacity and select the

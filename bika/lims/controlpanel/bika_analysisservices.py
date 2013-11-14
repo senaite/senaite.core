@@ -17,6 +17,7 @@ from bika.lims.idserver import renameAfterCreation
 from zope.interface.declarations import implements
 from operator import itemgetter
 import plone.protect
+from bika.lims.utils import tmpID
 
 class AnalysisServicesWorkflowAction(WorkflowAction):
     """ Workflow actions taken in Analysis Services page
@@ -36,7 +37,7 @@ class AnalysisServicesWorkflowAction(WorkflowAction):
             folder = self.context.bika_setup.bika_analysisservices
             created = []
             for service in selected_services.values():
-                _id = folder.invokeFactory('AnalysisService', id = 'tmp')
+                _id = folder.invokeFactory('AnalysisService', id=tmpID())
                 folder[_id].setTitle('%s (copy)' % service.Title())
                 _id = renameAfterCreation(folder[_id])
                 folder[_id].unmarkCreationFlag()

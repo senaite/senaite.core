@@ -208,7 +208,7 @@ class Create(object):
                 parts[_i]['object'] = sample['%s%s' % (part_prefix, _i + 1)]
                 parts_and_services['%s%s' % (part_prefix, _i + 1)] = p['services']
             else:
-                _id = sample.invokeFactory('SamplePartition', id='tmp')
+                _id = sample.invokeFactory('SamplePartition', id=tmpID())
                 part = sample[_id]
                 parts[_i]['object'] = part
                 container = None

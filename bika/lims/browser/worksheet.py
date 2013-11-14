@@ -12,7 +12,7 @@ from bika.lims.interfaces import IFieldIcons
 from bika.lims.interfaces import IWorksheet
 from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
-from bika.lims.utils import getUsers, isActive
+from bika.lims.utils import getUsers, isActive, tmpID
 from DateTime import DateTime
 from DocumentTemplate import sequence
 from operator import itemgetter
@@ -502,7 +502,7 @@ class ManageResultsView(BrowserView):
                     client = analysis.aq_parent.aq_parent
                 else:
                     client = analysis.aq_parent
-                attachmentid = client.invokeFactory("Attachment", id = 'tmp')
+                attachmentid = client.invokeFactory("Attachment", id = tmpID())
                 attachment = client._getOb(attachmentid)
                 attachment.edit(
                     AttachmentFile = this_file,
@@ -533,7 +533,8 @@ class ManageResultsView(BrowserView):
                         client = analysis.aq_parent.aq_parent
                     else:
                         client = analysis.aq_parent
-                    attachmentid = client.invokeFactory("Attachment", id = 'tmp')
+                    attachmentid = client.invokeFactory("Attachment",
+                                                        id=tmpID())
                     attachment = client._getOb(attachmentid)
                     attachment.edit(
                         AttachmentFile = this_file,
