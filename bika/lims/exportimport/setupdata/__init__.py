@@ -1195,10 +1195,10 @@ class Analysis_Profiles(WorksheetImporter):
                 self.profile_services[row['Profile']] = []
             # Here we match againts Keyword or Title.
             # XXX We need a utility for this kind of thing.
-            service = self.get_object(bsc, 'AnalysisService', row.get('Service',''))
+            service = self.get_object(bsc, 'AnalysisService', row.get('Service'))
             if not service:
                 service = bsc(portal_type='AnalysisService',
-                              getKeyword=row['Service'])
+                              getKeyword=row['Service'])[0].getObject()
             self.profile_services[row['Profile']].append(service)
 
     def Import(self):
