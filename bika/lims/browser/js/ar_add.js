@@ -1018,12 +1018,14 @@ $(document).ready(function(){
     	window.calculate_parts = calculate_parts;
     	window.toggleCat = toggleCat;
     	
-    	// Show only the contacts from the selected Client
+    	// Show only the contacts and CC from the selected Client
     	fromclient = window.location.href.search('/clients/') >= 0;
     	if (fromclient) {
     	    for (var col=0; col<parseInt($("#col_count").val()); col++) {
     	        element = $("#ar_" + col + "_Contact");
     	        clientuid = $("#ar_" + col + "_Client_uid").val(); 
+    	        applyComboFilter(element, "getParentUID", clientuid);
+    	        element = $("#ar_" + col + "_CCContact");
     	        applyComboFilter(element, "getParentUID", clientuid);
     	    }
     	} else {
@@ -1032,9 +1034,10 @@ $(document).ready(function(){
                 clientuid = $(this).attr('uid');
                 element = $("#ar_" + col + "_Contact");
                 applyComboFilter(element, "getParentUID", clientuid);
+                element = $("#ar_" + col + "_CCContact");
+                applyComboFilter(element, "getParentUID", clientuid);
             });
     	}
-
     }
 });
 }(jQuery));
