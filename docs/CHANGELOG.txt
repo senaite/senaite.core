@@ -1,6 +1,11 @@
 3.0rc3.5.1 (2013-10-25)
 -----------------------
 
+Fix CSS AR Publication error
+
+3.0rc3.5.1 (2013-10-25)
+-----------------------
+
 Fix error displaying client sample views
 
 3.0rc3.5 (2013-10-24)
