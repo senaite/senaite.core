@@ -12,7 +12,7 @@ from bika.lims.interfaces import IFieldIcons
 from bika.lims.interfaces import IWorksheet
 from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
-from bika.lims.utils import getUsers, isActive
+from bika.lims.utils import getUsers, isActive, tmpID
 from DateTime import DateTime
 from DocumentTemplate import sequence
 from operator import itemgetter
@@ -30,6 +30,7 @@ from zope.i18n import translate
 from zope.interface import implements
 
 import plone
+import plone.protect
 import json
 
 
@@ -493,17 +494,12 @@ class ManageResultsView(BrowserView):
             else:
                 service_uid = None
 
+            ws = self.context
             tool = getToolByName(self.context, REFERENCE_CATALOG)
             if analysis_uid:
                 analysis = tool.lookupObject(analysis_uid)
-                # client refers to Client in case of Analysis, and to
-                #     parent Worksheet in case of DuplicateAnalysis
-                if analysis.aq_parent.portal_type == 'AnalysisRequest':
-                    client = analysis.aq_parent.aq_parent
-                else:
-                    client = analysis.aq_parent
-                attachmentid = client.invokeFactory("Attachment", id = 'tmp')
-                attachment = client._getOb(attachmentid)
+                attachmentid = ws.invokeFactory("Attachment", id=tmpID())
+                attachment = ws._getOb(attachmentid)
                 attachment.edit(
                     AttachmentFile = this_file,
                     AttachmentType = self.request['AttachmentType'],
@@ -527,14 +523,9 @@ class ManageResultsView(BrowserView):
                     review_state = workflow.getInfoFor(analysis, 'review_state', '')
                     if not review_state in ['assigned', 'sample_received', 'to_be_verified']:
                         continue
-                    # client refers to Client in case of Analysis, and to
-                    #     parent Worksheet in case of DuplicateAnalysis
-                    if analysis.aq_parent.portal_type == 'AnalysisRequest':
-                        client = analysis.aq_parent.aq_parent
-                    else:
-                        client = analysis.aq_parent
-                    attachmentid = client.invokeFactory("Attachment", id = 'tmp')
-                    attachment = client._getOb(attachmentid)
+
+                    attachmentid = ws.invokeFactory("Attachment", id=tmpID())
+                    attachment = ws._getOb(attachmentid)
                     attachment.edit(
                         AttachmentFile = this_file,
                         AttachmentType = self.request['AttachmentType'],
@@ -548,6 +539,7 @@ class ManageResultsView(BrowserView):
                         attachments.append(other.UID())
                     attachments.append(attachment.UID())
                     analysis.setAttachment(attachments)
+
         # Here we create an instance of WorksheetAnalysesView
         self.Analyses = WorksheetAnalysesView(self.context, self.request)
         self.analystname = getAnalystName(self.context)
@@ -1287,7 +1279,7 @@ class ajaxSetAnalyst():
         mtool = getToolByName(self, 'portal_membership')
         plone.protect.CheckAuthenticator(self.request)
         plone.protect.PostOnly(self.request)
-        value = request.get('value', '')
+        value = self.request.get('value', '')
         if not value:
             return
         if not mtool.getMemberById(value):
@@ -1306,7 +1298,7 @@ class ajaxSetInstrument():
         uc = getToolByName(self.context, 'uid_catalog')
         plone.protect.CheckAuthenticator(self.request)
         plone.protect.PostOnly(self.request)
-        value = request.get('value', '')
+        value = self.request.get('value', '')
 ##        if not value:
 ##            return
         self.context.setInstrument(value)
