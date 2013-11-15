@@ -58,7 +58,7 @@ BIKA: Edit Worksheet,N,N,Y,N,N,N,N,N,N,N
 BIKA: Assign analyses,N,N,N,N,N,N,N,N,N,N
 BIKA: Unassign analyses,N,N,N,N,N,N,N,N,N,N
 BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y
-BIKA: Add Attachment,N,N,Y,N,N,N,N,Y,Y,Y
+BIKA: Add Attachment,N,N,Y,N,N,N,N,N,N,N
 BIKA: Retract,N,N,N,N,N,N,N,N,N,N
 Modify portal content,N,N,Y,N,N,N,N,Y,Y,Y
 ,,,,,,,,,,
