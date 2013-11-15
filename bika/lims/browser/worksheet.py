@@ -493,17 +493,12 @@ class ManageResultsView(BrowserView):
             else:
                 service_uid = None
 
+            ws = self.context
             tool = getToolByName(self.context, REFERENCE_CATALOG)
             if analysis_uid:
                 analysis = tool.lookupObject(analysis_uid)
-                # client refers to Client in case of Analysis, and to
-                #     parent Worksheet in case of DuplicateAnalysis
-                if analysis.aq_parent.portal_type == 'AnalysisRequest':
-                    client = analysis.aq_parent.aq_parent
-                else:
-                    client = analysis.aq_parent
-                attachmentid = client.invokeFactory("Attachment", id = tmpID())
-                attachment = client._getOb(attachmentid)
+                attachmentid = ws.invokeFactory("Attachment", id=tmpID())
+                attachment = ws._getOb(attachmentid)
                 attachment.edit(
                     AttachmentFile = this_file,
                     AttachmentType = self.request['AttachmentType'],
@@ -527,15 +522,9 @@ class ManageResultsView(BrowserView):
                     review_state = workflow.getInfoFor(analysis, 'review_state', '')
                     if not review_state in ['assigned', 'sample_received', 'to_be_verified']:
                         continue
-                    # client refers to Client in case of Analysis, and to
-                    #     parent Worksheet in case of DuplicateAnalysis
-                    if analysis.aq_parent.portal_type == 'AnalysisRequest':
-                        client = analysis.aq_parent.aq_parent
-                    else:
-                        client = analysis.aq_parent
-                    attachmentid = client.invokeFactory("Attachment",
-                                                        id=tmpID())
-                    attachment = client._getOb(attachmentid)
+
+                    attachmentid = ws.invokeFactory("Attachment", id=tmpID())
+                    attachment = ws._getOb(attachmentid)
                     attachment.edit(
                         AttachmentFile = this_file,
                         AttachmentType = self.request['AttachmentType'],
@@ -549,6 +538,7 @@ class ManageResultsView(BrowserView):
                         attachments.append(other.UID())
                     attachments.append(attachment.UID())
                     analysis.setAttachment(attachments)
+
         # Here we create an instance of WorksheetAnalysesView
         self.Analyses = WorksheetAnalysesView(self.context, self.request)
         self.analystname = getAnalystName(self.context)

@@ -37,7 +37,7 @@ def ObjectInitializedEventHandler(instance, event):
     elif ar_state in ('to_be_verified'):
         # Apply to AR only; we don't want this transition to cascade.
         ar.REQUEST['workflow_skiplist'].append("retract all analyses")
-        workflow.doActionFor(ar, 'retract')
+        wf.doActionFor(ar, 'retract')
         ar.REQUEST['workflow_skiplist'].remove("retract all analyses")
 
     if ar_ws_state == 'assigned':
