@@ -248,8 +248,8 @@ class BikaGenerator:
         mp(ViewLogTab, ['Manager', 'LabManager'], 1)
 
         mp = portal.bika_setup.manage_permission
-        mp('Access contents information', ['Authenticated'], 1)
-        mp(permissions.View, ['Authenticated'], 1)
+        mp('Access contents information', ['Authenticated', 'Analyst'], 1)
+        mp(permissions.View, ['Authenticated', 'Analyst'], 1)
         mp(ApplyVersionControl, ['Authenticated'], 1)
         mp(SaveNewVersion, ['Authenticated'], 1)
         mp(AccessPreviousVersions, ['Authenticated'], 1)
