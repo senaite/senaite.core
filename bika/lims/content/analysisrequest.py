@@ -974,8 +974,10 @@ class AnalysisRequest(BaseFolder):
 
             self.setAttachment(attachments)
 
-        RESPONSE.redirect(
-            '%s/manage_results' % self.absolute_url())
+        if REQUEST['HTTP_REFERER'].endswith('manage_results'):
+            RESPONSE.redirect('%s/manage_results' % self.absolute_url())
+        else:
+            RESPONSE.redirect(self.absolute_url())
 
     def delARAttachment(self, REQUEST=None, RESPONSE=None):
         """ delete the attachment """
