@@ -57,5 +57,14 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Add Client role and related permissions"
+        description="Add Client role and apply it to all client contacts"
+        source="3001"
+        destination="3002"
+        handler="bika.lims.upgrade.to3002.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
 

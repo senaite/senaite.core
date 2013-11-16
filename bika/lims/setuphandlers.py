@@ -110,7 +110,8 @@ class BikaGenerator:
                      'Publisher',
                      'Member',
                      'Reviewer',
-                     'RegulatoryInspector'):
+                     'RegulatoryInspector',
+                     'Client'):
             if role not in portal.acl_users.portal_role_manager.listRoleIds():
                 portal.acl_users.portal_role_manager.addRole(role)
             # add roles to the portal
@@ -153,7 +154,7 @@ class BikaGenerator:
 
         if 'Clients' not in portal_groups.listGroupIds():
             portal_groups.addGroup('Clients', title="Clients",
-                roles=['Member', ])
+                roles=['Member', 'Client'])
 
         if 'Suppliers' not in portal_groups.listGroupIds():
             portal_groups.addGroup('Suppliers', title="",
@@ -177,7 +178,7 @@ class BikaGenerator:
         mp(AddAnalysisRequest, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
         mp(AddAnalysisSpec, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddARTemplate, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
-        mp(AddAttachment, ['Manager', 'LabManager', 'Owner' 'Analyst', 'LabClerk', 'Sampler'], 0)
+        mp(AddAttachment, ['Manager', 'LabManager', 'Owner' 'Analyst', 'LabClerk', 'Sampler', 'Client'], 0)
         mp(AddBatch, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddClient, ['Manager', 'Owner', 'LabManager'], 1)
         mp(AddClientFolder, ['Manager'], 1)
@@ -384,6 +385,20 @@ class BikaGenerator:
         mp(permissions.View, ['Manager', 'Member', 'Authenticated', 'Anonymous'], 1)
         mp('Access contents information', ['Manager', 'Member', 'Authenticated', 'Anonymous'], 1)
         portal.methods.reindexObject()
+
+        # Add Analysis Services View permission to Clients
+        # (allow Clients to add attachments to Analysis Services from an AR)
+        mp = portal.bika_setup.bika_analysisservices.manage_permission
+        mp('Access contents information', ['Authenticated', 'Analyst', 'Client'], 1)
+        mp(permissions.View, ['Authenticated', 'Analyst', 'Client'], 1)
+        portal.bika_setup.bika_analysisservices.reindexObject()
+
+        # Add Attachment Types View permission to Clients
+        # (allow Clients to add attachments to Analysis Services from an AR)
+        mp = portal.bika_setup.bika_attachmenttypes.manage_permission
+        mp('Access contents information', ['Authenticated', 'Analyst', 'Client'], 1)
+        mp(permissions.View, ['Authenticated', 'Analyst', 'Client'], 1)
+        portal.bika_setup.bika_attachmenttypes.reindexObject()
 
     def setupVersioning(self, portal):
         portal_repository = getToolByName(portal, 'portal_repository')
