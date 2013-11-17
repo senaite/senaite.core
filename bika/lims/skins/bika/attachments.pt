@@ -18,7 +18,7 @@
       <table class="attachments" style="margin-bottom:0;">
         <tr>
           <td tal:define="updateable python:ar_review_state in ('to_be_sampled', 'to_be_preserved', 'sample_due', 'sample_received', 'to_be_verified')"
-              tal:condition="python:updateable and update_attachments">
+              tal:condition="python:updateable and (update_attachments or add_attachments)">
             <metal:block use-macro="here/attachments/macros/attachments_update"/>
           </td>
           <td style="padding-left:2em;">

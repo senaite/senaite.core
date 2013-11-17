@@ -14,7 +14,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.header_table import HeaderTableView
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.permissions import *
-from bika.lims.utils import changeWorkflowState
+from bika.lims.utils import changeWorkflowState, tmpID
 from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
 from operator import itemgetter
@@ -251,7 +251,7 @@ class createSamplePartition(BrowserView):
     def __call__(self):
         wf = getToolByName(self.context, 'portal_workflow')
         _id = self.context.invokeFactory(type_name = 'SamplePartition',
-                                         id = 'tmp')
+                                         id=tmpID())
         part = self.context[_id]
         part.processForm()
         SamplingWorkflowEnabled = part.bika_setup.getSamplingWorkflowEnabled()

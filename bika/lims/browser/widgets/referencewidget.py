@@ -133,7 +133,11 @@ class ajaxReferenceWidgetSearch(BrowserView):
             # This will be faster if the columnNames are catalog indexes
             for field in other_fields:
                 fieldname = field['columnName']
-                value = getattr(p, fieldname, None)
+                # Prioritize method retrieval over field retrieval from schema
+                obj = p.getObject()
+                value = getattr(obj, fieldname, None)
+                if not value or hasattr(value, 'im_self'):
+                    value = getattr(p, fieldname, None)
                 if not value:
                     if instance is None:
                         instance = p.getObject()

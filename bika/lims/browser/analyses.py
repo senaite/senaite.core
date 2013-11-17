@@ -295,6 +295,23 @@ class AnalysesView(BikaListingView):
                    (items[i]['calculation'] and self.interim_fields[obj.UID()]):
                     items[i]['allow_edit'].append('retested')
 
+            # If the user can attach files to analyses, show the attachment col
+            can_add_attachment = \
+                getSecurityManager().checkPermission(AddAttachment, obj)
+            if can_add_attachment or can_view_result:
+                attachments = ""
+                if hasattr(obj, 'getAttachment'):
+                    for attachment in obj.getAttachment():
+                        af = attachment.getAttachmentFile()
+                        icon = af.getBestIcon()
+                        attachments += "<span class='attachment' attachment_uid='%s'>" % (attachment.UID())
+                        if icon: attachments += "<img src='%s/%s'/>" % (self.portal_url, icon)
+                        attachments += '<a href="%s/at_download/AttachmentFile"/>%s</a>' % (attachment.absolute_url(), af.filename)
+                        if can_edit_analysis:
+                            attachments += "<img class='deleteAttachmentButton' attachment_uid='%s' src='%s'/>" % (attachment.UID(), "++resource++bika.lims.images/delete.png")
+                        attachments += "</br></span>"
+                items[i]['replace']['Attachments'] = attachments[:-12] + "</span>"
+
             # Only display data bearing fields if we have ViewResults
             # permission, otherwise just put an icon in Result column.
             if can_view_result:
@@ -328,18 +345,6 @@ class AnalysesView(BikaListingView):
                             #         'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
                             #         (self.portal_url)
                 items[i]['Uncertainty'] = obj.getUncertainty(result)
-
-                attachments = ""
-                if hasattr(obj, 'getAttachment'):
-                    for attachment in obj.getAttachment():
-                        af = attachment.getAttachmentFile()
-                        icon = af.getBestIcon()
-                        attachments += "<span class='attachment' attachment_uid='%s'>" % (attachment.UID())
-                        if icon: attachments += "<img src='%s/%s'/>" % (self.portal_url, icon)
-                        attachments += '<a href="%s/at_download/AttachmentFile"/>%s</a>' % (attachment.absolute_url(), af.filename)
-                        attachments += "<img class='deleteAttachmentButton' attachment_uid='%s' src='%s'/>" % (attachment.UID(), "++resource++bika.lims.images/delete.png")
-                        attachments += "</br></span>"
-                items[i]['replace']['Attachments'] = attachments[:-12] + "</span>"
 
                 for name, adapter in getAdapters((obj, ), IFieldIcons):
                     auid = obj.UID()

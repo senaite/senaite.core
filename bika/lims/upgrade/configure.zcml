@@ -48,5 +48,23 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Fix Worksheet view permissions"
+        description="Analysts had not privileges to manage worksheet results"
+        source="3000"
+        destination="3001"
+        handler="bika.lims.upgrade.to3001.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Add Client role and related permissions"
+        description="Add Client role and apply it to all client contacts"
+        source="3001"
+        destination="3002"
+        handler="bika.lims.upgrade.to3002.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
 

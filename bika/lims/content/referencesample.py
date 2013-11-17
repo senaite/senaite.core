@@ -17,7 +17,7 @@ from bika.lims.browser.widgets import ReferenceResultsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IReferenceSample
-from bika.lims.utils import sortable_title
+from bika.lims.utils import sortable_title, tmpID
 from bika.lims.utils import to_unicode as _u
 from zope.interface import implements
 import sys, time
@@ -311,7 +311,7 @@ class ReferenceSample(BaseFolder):
         rc = getToolByName(self, REFERENCE_CATALOG)
         service = rc.lookupObject(service_uid)
 
-        _id = self.invokeFactory(type_name = 'ReferenceAnalysis', id = 'tmp')
+        _id = self.invokeFactory(type_name='ReferenceAnalysis', id=tmpID())
         analysis = self._getOb(_id)
         calculation = service.getCalculation()
         interim_fields = calculation and calculation.getInterimFields() or []
