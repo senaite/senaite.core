@@ -57,5 +57,14 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Empty Analysis Service list on Add AR view as LabClerk"
+        description="LabClerk had not privileges to view Analysis Services"
+        source="3002"
+        destination="3003"
+        handler="bika.lims.upgrade.to3003.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
 
