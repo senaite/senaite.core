@@ -64,7 +64,7 @@ Schema((
         required = 1,
         type = 'analysisspec',
         subfields = ('keyword', 'min', 'max', 'error', 'hidemin', 'hidemax'),
-        required_subfields = ('keyword', 'min', 'max'),
+        required_subfields = ('keyword', 'error'),
         subfield_validators = {'min':'analysisspecs_validator',
                                'max':'analysisspecs_validator',
                                'error':'analysisspecs_validator',},
@@ -225,11 +225,13 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
         specs = self.getResultsRangeDict()
         if keyword in specs.keys():
             specs = specs[keyword]
-            if specs['min'] and specs['max']:
-                specstr = '%s - %s' % (specs['min'], specs['max'])
-            elif specs['min']:
+            smin = specs.get('min', '')
+            smax = specs.get('max', '')
+            if smin and smax:
+                specstr = '%s - %s' % (smin, smax)
+            elif smin:
                 specstr = '> %s' % specs['min']
-            elif specs['max']:
+            elif smax:
                 specstr = '< %s' % specs['max']
         return specstr
 

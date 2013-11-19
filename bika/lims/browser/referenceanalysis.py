@@ -24,8 +24,8 @@ class ResultOutOfRange(object):
         path = '++resource++bika.lims.images'
         if outofrange:
             rngstr = "{0} {1}, {2}, {3}".format(
-                translate(_("min")), str(spec['min']),
-                translate(_("max")), str(spec['max']))
+                translate(_("min")), str(spec.get('min', '')),
+                translate(_("max")), str(spec.get('max', '')))
 
             if acceptable:
                 message = "{0} ({1})".format(

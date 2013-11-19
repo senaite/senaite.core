@@ -301,6 +301,14 @@ def tmpID():
     return binascii.hexlify(os.urandom(16))
 
 
+def isnumber(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+
 def createPdf(htmlreport, outfile=None, css=None):
     # XXX css must be a local file - urllib fails under robotframework tests.
     css_def = '';

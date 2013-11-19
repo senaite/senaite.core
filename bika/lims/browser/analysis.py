@@ -3,14 +3,17 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IFieldIcons
-from bika.lims.permissions import *
 from zope.component import adapts
 from zope.interface import implements
+from bika.lims.utils import isnumber
+
 
 def isOutOfShoulderRange(result, spec, keyword):
     # check if in 'shoulder' range - out of range, but in acceptable error
-    spec_min = float(spec[keyword]['min'])
-    spec_max = float(spec[keyword]['max'])
+    spec_min = spec[keyword].get('min', '')
+    spec_min = float(spec_min) if isnumber(spec_min) else None
+    spec_max = spec[keyword].get('max', '')
+    spec_max = float(spec_max) if isnumber(spec_max) else None
     error = 0
     try:
         error = float(spec[keyword].get('error', '0'))
@@ -20,7 +23,7 @@ def isOutOfShoulderRange(result, spec, keyword):
     error_min = result - error_amount
     error_max = result + error_amount
     if (spec_min and result < spec_min and error_max >= spec_min) \
-            or (spec_max and result > spec_max and error_min <= spec_max):
+        or (spec_max and result > spec_max and error_min <= spec_max):
         return True
     # Default: in range
     return False
@@ -80,8 +83,8 @@ class ResultOutOfRange(object):
         path = '++resource++bika.lims.images'
         if outofrange:
             rngstr = "{0} {1}, {2}, {3}".format(
-                translate(_("min")), str(o_spec['min']),
-                translate(_("max")), str(o_spec['max']))
+                translate(_("min")), str(o_spec.get('min', '')),
+                translate(_("max")), str(o_spec.get('max', '')))
 
             if acceptable:
                 message = "{0} ({1})".format(
