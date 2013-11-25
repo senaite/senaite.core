@@ -35,6 +35,7 @@ $(document).ready(function(){
             width:'70%',
             noform:'close',
             config: {
+                closeOnEsc: false,
                 onLoad: function() {
                     // manually remove remarks
                     this.getOverlay().find("#archetypes-fieldname-Remarks").remove();
