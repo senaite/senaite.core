@@ -42,7 +42,7 @@ function recordswidget_lookups(elements){
                     }
                 }
             }
-        }
+        };
         if(window.location.href.search("portal_factory") > -1){
             options.url = window.location.href.split("/portal_factory")[0] + "/" + options.url;
         }
@@ -110,6 +110,7 @@ function recordswidget_loadEventHandlers(elements) {
             var td = $(row).children()[i];
             var input = $(td).children()[0];
             $(input).val('');
+            $(input).removeClass("hasDatepicker");
         }
         $(row).appendTo($(table));
         recordswidget_lookups($(row).find('[combogrid_options]'));
