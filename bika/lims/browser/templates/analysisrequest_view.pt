@@ -78,6 +78,7 @@
     <form
         id="analysisrequest_edit_form"
         name="analysisrequest_edit_form"
+        action="workflow_action"
         method="POST"
         enctype="multipart/form-data">
 
