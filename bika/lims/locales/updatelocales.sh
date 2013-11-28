@@ -1,11 +1,10 @@
 #!/bin/bash
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
 cd $SCRIPT_DIR
 
-INSTANCE_HOME=../../../../..
-
+# if INSTANCE_HOME is not defined try guessing
+INSTANCE_HOME=${INSTANCE_HOME:-../../../../..}
 I18NDUDE=$INSTANCE_HOME/bin/i18ndude
 
 ### Grab new translated strings

@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # Inus Scheepers <inus@animatica.co.za>, 2012.
 # Lemoene Smit <>, 2012.
@@ -222,10 +222,6 @@ msgstr "Epos pryslys"
 msgid "Export"
 msgstr "Uitvoer"
 
-# File: ../profiles/default/types/InvoiceBatch.xml, line: -1
-msgid "Export batch"
-msgstr "Uitvoerbundel"
-
 # File: ../profiles/default/actions.xml, line: -1
 msgid "Extracts"
 msgstr "Uittreksels"
@@ -256,14 +252,6 @@ msgstr "Instrumente"
 # File: ../profiles/default/types/Invoice.xml, line: -1
 msgid "Invoice"
 msgstr "Fakture"
-
-# File: ../profiles/default/types/InvoiceBatch.xml, line: -1
-msgid "Invoice batch"
-msgstr "Faktuurbundel"
-
-# File: ../profiles/default/types/InvoiceFolder.xml, line: -1
-msgid "Invoice batches"
-msgstr "Faktuurbundels"
 
 # File: ../profiles/default/types/InvoiceBatch.xml, line: -1
 # File: ../profiles/default/types/InvoiceFolder.xml, line: -1
@@ -366,17 +354,12 @@ msgstr "Pryslyste"
 msgid "Prices"
 msgstr "Pryse"
 
-# File: ../profiles/default/types/InvoiceBatch.xml, line: -1
-msgid "Print batch"
-msgstr "Druk bundel"
-
+#
+# File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Invoice.xml, line: -1
-msgid "Print invoice"
-msgstr "Druk faktuur"
-
 # File: ../profiles/default/types/SupplyOrder.xml, line: -1
-msgid "Print order"
-msgstr "Druk bestelling"
+msgid "Print"
+msgstr ""
 
 # File: ../profiles/default/types/Pricelist.xml, line: -1
 msgid "Print pricelist"
@@ -394,7 +377,7 @@ msgstr ""
 msgid "Quality Control"
 msgstr "Kwaliteitsbeheer"
 
-# 
+#
 # File: ../profiles/default/types/QueryFolder.xml, line: -1
 msgid "Queries"
 msgstr ""
@@ -647,7 +630,7 @@ msgstr "Expire"
 msgid "import_transition_title"
 msgstr "Import"
 
-# 
+#
 # This is for the "retract_ar" transition, to invalidate a published AR.
 #. Default: "Invalidate"
 msgid "invalidate_transition_title"
@@ -805,7 +788,7 @@ msgstr "Retract"
 msgid "retract_worksheet_transition_title"
 msgstr "Retract worksheet"
 
-# 
+#
 # This is for the "revert" transition, which is meant to look like a
 # "retract".
 #. Default: "Retract"

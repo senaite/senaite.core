@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 msgid ""
 msgstr ""
@@ -220,10 +220,6 @@ msgstr ""
 msgid "Export"
 msgstr ""
 
-# File: ../profiles/default/types/InvoiceBatch.xml, line: -1
-msgid "Export batch"
-msgstr ""
-
 # File: ../profiles/default/actions.xml, line: -1
 msgid "Extracts"
 msgstr ""
@@ -253,14 +249,6 @@ msgstr "Strumenti"
 
 # File: ../profiles/default/types/Invoice.xml, line: -1
 msgid "Invoice"
-msgstr ""
-
-# File: ../profiles/default/types/InvoiceBatch.xml, line: -1
-msgid "Invoice batch"
-msgstr ""
-
-# File: ../profiles/default/types/InvoiceFolder.xml, line: -1
-msgid "Invoice batches"
 msgstr ""
 
 # File: ../profiles/default/types/InvoiceBatch.xml, line: -1
@@ -364,16 +352,11 @@ msgstr ""
 msgid "Prices"
 msgstr ""
 
-# File: ../profiles/default/types/InvoiceBatch.xml, line: -1
-msgid "Print batch"
-msgstr ""
-
+#
+# File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Invoice.xml, line: -1
-msgid "Print invoice"
-msgstr ""
-
 # File: ../profiles/default/types/SupplyOrder.xml, line: -1
-msgid "Print order"
+msgid "Print"
 msgstr ""
 
 # File: ../profiles/default/types/Pricelist.xml, line: -1
@@ -392,7 +375,7 @@ msgstr ""
 msgid "Quality Control"
 msgstr ""
 
-# 
+#
 # File: ../profiles/default/types/QueryFolder.xml, line: -1
 msgid "Queries"
 msgstr ""
@@ -645,7 +628,7 @@ msgstr "Expire"
 msgid "import_transition_title"
 msgstr "Import"
 
-# 
+#
 # This is for the "retract_ar" transition, to invalidate a published AR.
 #. Default: "Invalidate"
 msgid "invalidate_transition_title"
@@ -803,7 +786,7 @@ msgstr "Retract"
 msgid "retract_worksheet_transition_title"
 msgstr "Retract worksheet"
 
-# 
+#
 # This is for the "revert" transition, which is meant to look like a
 # "retract".
 #. Default: "Retract"

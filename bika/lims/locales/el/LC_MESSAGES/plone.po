@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # <limstranslate@gmail.com>, 2013.
 msgid ""
@@ -221,10 +221,6 @@ msgstr ""
 msgid "Export"
 msgstr "Εξαγωγή"
 
-# File: ../profiles/default/types/InvoiceBatch.xml, line: -1
-msgid "Export batch"
-msgstr ""
-
 # File: ../profiles/default/actions.xml, line: -1
 msgid "Extracts"
 msgstr ""
@@ -254,14 +250,6 @@ msgstr ""
 
 # File: ../profiles/default/types/Invoice.xml, line: -1
 msgid "Invoice"
-msgstr ""
-
-# File: ../profiles/default/types/InvoiceBatch.xml, line: -1
-msgid "Invoice batch"
-msgstr ""
-
-# File: ../profiles/default/types/InvoiceFolder.xml, line: -1
-msgid "Invoice batches"
 msgstr ""
 
 # File: ../profiles/default/types/InvoiceBatch.xml, line: -1
@@ -365,17 +353,12 @@ msgstr "Τιμοκατάλογοι"
 msgid "Prices"
 msgstr "Τιμές"
 
-# File: ../profiles/default/types/InvoiceBatch.xml, line: -1
-msgid "Print batch"
-msgstr ""
-
+#
+# File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Invoice.xml, line: -1
-msgid "Print invoice"
-msgstr ""
-
 # File: ../profiles/default/types/SupplyOrder.xml, line: -1
-msgid "Print order"
-msgstr "Εκτύπωση παραγγελίας"
+msgid "Print"
+msgstr ""
 
 # File: ../profiles/default/types/Pricelist.xml, line: -1
 msgid "Print pricelist"
@@ -393,7 +376,7 @@ msgstr ""
 msgid "Quality Control"
 msgstr ""
 
-# 
+#
 # File: ../profiles/default/types/QueryFolder.xml, line: -1
 msgid "Queries"
 msgstr ""
@@ -646,7 +629,7 @@ msgstr ""
 msgid "import_transition_title"
 msgstr "Εισαγωγή"
 
-# 
+#
 # This is for the "retract_ar" transition, to invalidate a published AR.
 #. Default: "Invalidate"
 msgid "invalidate_transition_title"
@@ -804,7 +787,7 @@ msgstr "Ανάκληση"
 msgid "retract_worksheet_transition_title"
 msgstr "Ανάκληση φύλλου εργασίας"
 
-# 
+#
 # This is for the "revert" transition, which is meant to look like a
 # "retract".
 #. Default: "Retract"

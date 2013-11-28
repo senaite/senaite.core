@@ -1,4 +1,4 @@
-# 
+#
 # Translators:
 # <campbell@bikalabs.com>, 2012.
 # <campbell@bikalabs.com>, 2012.
@@ -224,10 +224,6 @@ msgstr "Lista de precios por correo electrónico"
 msgid "Export"
 msgstr "Exportar"
 
-# File: ../profiles/default/types/InvoiceBatch.xml, line: -1
-msgid "Export batch"
-msgstr "Exportar el lote"
-
 # File: ../profiles/default/actions.xml, line: -1
 msgid "Extracts"
 msgstr "Extractos"
@@ -258,14 +254,6 @@ msgstr "Equipos"
 # File: ../profiles/default/types/Invoice.xml, line: -1
 msgid "Invoice"
 msgstr "Factura"
-
-# File: ../profiles/default/types/InvoiceBatch.xml, line: -1
-msgid "Invoice batch"
-msgstr "Facturar el lote"
-
-# File: ../profiles/default/types/InvoiceFolder.xml, line: -1
-msgid "Invoice batches"
-msgstr "Facturar los lotes"
 
 # File: ../profiles/default/types/InvoiceBatch.xml, line: -1
 # File: ../profiles/default/types/InvoiceFolder.xml, line: -1
@@ -368,17 +356,12 @@ msgstr "Listas de precios"
 msgid "Prices"
 msgstr "Precios"
 
-# File: ../profiles/default/types/InvoiceBatch.xml, line: -1
-msgid "Print batch"
-msgstr "Imprimir el lote"
-
+#
+# File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Invoice.xml, line: -1
-msgid "Print invoice"
-msgstr "Imprimir la factura"
-
 # File: ../profiles/default/types/SupplyOrder.xml, line: -1
-msgid "Print order"
-msgstr "Imprimir el pedido"
+msgid "Print"
+msgstr ""
 
 # File: ../profiles/default/types/Pricelist.xml, line: -1
 msgid "Print pricelist"
@@ -396,7 +379,7 @@ msgstr ""
 msgid "Quality Control"
 msgstr "Control de calidad"
 
-# 
+#
 # File: ../profiles/default/types/QueryFolder.xml, line: -1
 msgid "Queries"
 msgstr ""
@@ -649,7 +632,7 @@ msgstr "Expire"
 msgid "import_transition_title"
 msgstr "Import"
 
-# 
+#
 # This is for the "retract_ar" transition, to invalidate a published AR.
 #. Default: "Invalidate"
 msgid "invalidate_transition_title"
@@ -807,7 +790,7 @@ msgstr "Retract"
 msgid "retract_worksheet_transition_title"
 msgstr "Retract worksheet"
 
-# 
+#
 # This is for the "revert" transition, which is meant to look like a
 # "retract".
 #. Default: "Retract"
