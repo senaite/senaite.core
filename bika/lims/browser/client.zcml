@@ -46,14 +46,6 @@
 
     <browser:page
       for="bika.lims.interfaces.IClient"
-      name="arimports"
-      class="bika.lims.browser.client.ClientARImportsView"
-      permission="bika.lims.ManageARImport"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IClient"
       name="analysisprofiles"
       class="bika.lims.browser.client.ClientAnalysisProfilesView"
       permission="zope2.View"
@@ -123,4 +115,5 @@
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
+
 </configure>

@@ -317,68 +317,6 @@ class ClientSamplesView(SamplesView):
             review_states.append(review_state)
         self.review_states = review_states
 
-class ClientARImportsView(BikaListingView):
-    implements(IViewView)
-
-    def __init__(self, context, request):
-        super(ClientARImportsView, self).__init__(context, request)
-        self.catalog = "portal_catalog"
-        self.contentFilter = {'portal_type': 'ARImport',
-                              'sort_on':'sortable_title'}
-        self.context_actions = {_('AR Import'):
-                                {'url': 'createObject?type_name=ARImport',
-                                 'icon': '++resource++bika.lims.images/add.png'}}
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_column = True
-        self.pagesize = 50
-        self.form_id = "arimports"
-
-        self.icon = self.portal_url + "/++resource++bika.lims.images/arimport_big.png"
-        self.title = _("Analysis Request Imports")
-        self.description = ""
-
-        self.columns = {
-            'title': {'title': _('Import')},
-            'getDateImported': {'title': _('Date Imported')},
-            'getStatus': {'title': _('Validity')},
-            'getDateApplied': {'title': _('Date Submitted')},
-            'state_title': {'title': _('State')},
-        }
-        self.review_states = [
-            {'id':'default',
-             'title': _('All'),
-             'contentFilter':{},
-             'columns': ['title',
-                         'getDateImported',
-                         'getStatus',
-                         'getDateApplied',
-                         'state_title']},
-            {'id':'imported',
-             'title': _('Imported'),
-             'contentFilter':{'review_state':'imported'},
-             'columns': ['title',
-                         'getDateImported',
-                         'getStatus']},
-            {'id':'submitted',
-             'title': _('Applied'),
-             'contentFilter':{'review_state':'submitted'},
-             'columns': ['title',
-                         'getDateImported',
-                         'getStatus',
-                         'getDateApplied']},
-        ]
-
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
-
-            items[x]['replace']['title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['title'])
-
-        return items
-
 class ClientAnalysisProfilesView(BikaListingView):
     """This is displayed in the Profiles client action,
        in the "Analysis Profiles" tab
@@ -932,3 +870,4 @@ class ajaxGetClientInfo(BrowserView):
                }
 
         return json.dumps(ret)
+

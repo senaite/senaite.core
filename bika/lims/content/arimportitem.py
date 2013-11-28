@@ -1,3 +1,7 @@
+from bika.lims import bikaMessageFactory as _
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.config import PROJECTNAME
+from bika.lims.interfaces import IARImportItem
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from AccessControl import ClassSecurityInfo
@@ -6,9 +10,7 @@ from Products.CMFCore.permissions import View, \
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.config import PROJECTNAME
-from bika.lims import bikaMessageFactory as _
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     StringField('SampleName',
@@ -51,9 +53,19 @@ schema = BikaSchema.copy() + Schema((
             label = _("Picking Slip"),
         )
     ),
+    StringField('ContainerType',
+        widget = StringWidget(
+            label = _("Container Type"),
+        )
+    ),
     StringField('ReportDryMatter',
         widget = StringWidget(
             label = _("Report as Dry Matter"),
+        )
+    ),
+    StringField('Priority',
+        widget = StringWidget(
+            label = _("Priority"),
         )
     ),
     LinesField('AnalysisProfile',
@@ -69,21 +81,31 @@ schema = BikaSchema.copy() + Schema((
     LinesField('Remarks',
         widget = LinesWidget(
             label = _("Remarks"),
+            visible = {'edit':'hidden'},
         )
     ),
     ReferenceField('AnalysisRequest',
         allowed_types = ('AnalysisRequest',),
         relationship = 'ARImportItemAnalysisRequest',
+        widget = ReferenceWidget(
+            label = _("AnalysisProfile Request"),
+            visible = {'edit':'hidden'},
+        ),
     ),
     ReferenceField('Sample',
         allowed_types = ('Sample',),
         relationship = 'ARImportItemSample',
+        widget = ReferenceWidget(
+            label = _("Sample"),
+            visible = {'edit':'hidden'},
+        ),
     ),
 ),
 )
 
 class ARImportItem(BaseContent):
     security = ClassSecurityInfo()
+    implements (IARImportItem)
     schema = schema
     displayContentsTab = False
 

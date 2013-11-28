@@ -6,7 +6,7 @@
         purge="True">
  <property name="title">ARImportItem</property>
  <property name="description"></property>
- <property name="content_icon">document_icon.gif</property>
+ <property name="content_icon">++resource++bika.lims.images/arimport.png</property>
  <property name="content_meta_type">ARImportItem</property>
  <property name="product">bika.lims</property>
  <property name="factory">addARImportItem</property>
@@ -21,18 +21,18 @@
  <action title="View"
          action_id="view"
          category="object"
-         condition_expr=""
+         condition_expr="object/isSubmitted"
          url_expr="string:${object_url}/base_view"
          i18n:attributes="title"
          i18n:domain="plone"
-         visible="False">
+         visible="True">
   <permission value="View"/>
  </action>
 
  <action title="Edit"
          action_id="edit"
          category="object"
-         condition_expr=""
+         condition_expr="not:object/isSubmitted"
          url_expr="string:${object_url}/base_edit"
          i18n:attributes="title"
          i18n:domain="plone"

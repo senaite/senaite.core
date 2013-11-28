@@ -836,4 +836,105 @@ div.alert {
 	margin: 10px 0;
     padding: 10px;
 }
+/* ARImport */
+table.arimport {
+  border-top: 1px solid #dddddd;
+}
+table.arimport {
+    width: 100%;
+    border-collapse: collapse;
+    border-left: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
+    border-bottom: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
+    margin: 1em 0em 1em 0em;
+}
+table.arimport th {
+    background: &dtml-globalBackgroundColor;;
+    border-top: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
+    border-right: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
+    font-weight: normal;
+    padding: 0.1em 0.5em;
+    text-align: left;
+}
+table.arimport th.center {
+    text-align: center;
+}
+table.arimport .top {
+    border-left: &dtml-borderWidth; &dtml-borderStyle; &dtml-backgroundColor;;
+    border-top: &dtml-borderWidth; &dtml-borderStyle; &dtml-backgroundColor; ! important;
+    border-right: &dtml-borderWidth; &dtml-borderStyle; &dtml-backgroundColor; ! important;
+    text-align: right ! important;
+    padding: 0em 0em 1em 0em;
+}
+table.arimport .listingCheckbox {
+    text-align: center;
+}
+table.arimport td.left {
+    text-align: left;
+    padding-left: 0.5em;
+}
+table.arimport td.contact {
+    text-align: left;
+}
+table.arimport td {
+    border-right: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
+    border-top: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
+    border-bottom: &dtml-borderWidth; &dtml-borderStyle; &dtml-globalBorderColor;;
+    padding: 0em 0em;
+    vertical-align: top;
+    text-align: center;
+}
+table.arimport .noborder {
+    background: transparent;;
+    border: none
+}
+table.arimport td.center {
+    vertical-align: middle;
+}
+table.arimport a:hover {
+    text-decoration: underline;
+}
+table.arimport img {
+    vertical-align: middle;
+}
+
+table.arimport input {
+    border: 1px solid &dtml-globalBackgroundColor;;  
+}
+
+table.arimport .amount {
+    text-align: right;
+    padding-right: 1em;
+}
+table.arimport .calculated {
+    text-align: right;
+    padding-right: 1em;
+    border: none ! important;
+    background: &dtml-backgroundColor;;
+}
+.cb,
+table.arimport * .cb {
+    border: none;
+    background-color: transparent;
+}
+table.arimport .dryhead {
+    background-color: #a6b5db;
+}
+table.arimport .drybody {
+    background-color: #dae0f0;
+}
+div.uncertaintydiv {
+    z-index: 100;
+    position: absolute;
+    margin-bottom: 0.1em;
+}
+table.uncertaintytable {
+    background: none repeat scroll 0 0 #D3D3AD;
+    border: 3px solid #636321;
+    margin: 0 0;
+    text-align: center !important;
+}
+.emphatic {
+    color: #FF0000;
+    font-weight: bold;
+}
 </dtml-with>

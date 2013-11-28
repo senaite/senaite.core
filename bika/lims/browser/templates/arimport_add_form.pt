@@ -1,0 +1,76 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+<head><title></title></head>
+             
+             
+<body>
+
+<div metal:fill-slot="main">
+
+    <h1>
+        <img src="" tal:attributes="src string:++resource++bika.lims.images/analysisprofile_big.png"/>
+        <span i18n:translate="heading_import_ar"
+            >Import Analysis Request Data</span>
+    </h1>
+
+    <form method="post" name="import_analysisrequest"
+        enctype="multipart/form-data">
+
+        <input type="hidden" name="submitted" value="1" />
+        <input type="hidden" name="ClientID" value=""
+            tal:attributes="value here/getId"/>
+        <tal:importoption
+            tal:define="
+                options here/getARImportOptions;
+                options python:options and options or ['c',]">
+            <tal:onlyone tal:condition="python:len(options) == 1">
+                <input type="hidden" name="ImportOption" value=""
+                    tal:attributes="value python:options[0]">
+            </tal:onlyone>
+            <tal:choice tal:condition="python:len(options) > 1">
+                <div class="field">
+                    <label i18n:translate="label_import_option">Import option</label>
+                    <br />
+                    <tal:options 
+                        tal:define="optionslist python:here.getARImportOptions()"
+                        tal:repeat="option options">
+                            <input class="noborder" type="radio"
+                                checked="" name="ImportOption" value=""
+                                tal:condition="python: option == 'c'"
+                                tal:attributes="value option"/>
+                            <input class="noborder" type="radio"
+                                name="ImportOption" value=""
+                                tal:condition="python: option != 'c'"
+                                tal:attributes="value option"/>
+                            <label tal:content="python:here.translate(optionslist.getValue(option), default=optionslist.getValue(option))"></label>
+                            <br />
+                    </tal:options>
+                </div>
+            </tal:choice>
+
+        </tal:importoption>
+
+
+        <div class="field">
+            <label i18n:translate="label_import_ar_file"
+                >Select Analysis request data file</label><br/>
+            <input id="arimport_file" type="file" name="csvfile" size="60"/>
+        </div>
+        <input tabindex=""
+            class="context"
+            type="submit"
+            name="submit"
+            value="Import"
+            i18n:attributes="value"
+            />                       
+
+    </form>
+
+</div>
+
+</body>
+</html>
+

@@ -56,7 +56,6 @@ ManageBika = 'BIKA: Manage Bika'
 ManageOrders = 'BIKA: Manage Orders'
 DispatchOrder = 'BIKA: Dispatch Order'
 ManageAnalysisRequests = 'BIKA: Manage Analysis Requests'
-ManageARImport = 'BIKA: Manage ARImport'
 ManageSamples = 'BIKA: Manage Samples'
 ManageSuppliers = 'BIKA: Manage Reference Suppliers'
 ManageReference = 'BIKA: Manage Reference'
@@ -144,3 +143,7 @@ EditClient = 'BIKA: Edit Client'
 EditBatch = 'BIKA: Edit Batch'
 CloseBatch = 'BIKA: Close Batch'
 ReopenBatch = 'BIKA: Reopen Batch'
+
+# Manage AR Imports
+# ----------------------------------------------
+ManageARImport = 'BIKA: Manage ARImport'

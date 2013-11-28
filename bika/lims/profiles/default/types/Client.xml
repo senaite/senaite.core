@@ -25,6 +25,7 @@
   <element value="Sample"/>
   <element value="SamplePoint"/>
   <element value="SupplyOrder"/>
+  <element value="Folder"/>
  </property>
  <property name="allow_discussion">False</property>
  <property name="immediate_view">base_edit</property>
@@ -111,7 +112,7 @@
          link_target=""
          url_expr="string:${object_url}/arimports"
          i18n:attributes="title"
-         visible="False">
+         visible="True">
   <permission value="BIKA: Manage ARImport"/>
  </action>
 

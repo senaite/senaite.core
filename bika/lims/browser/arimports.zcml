@@ -1,0 +1,59 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="bika">
+
+
+    <browser:page
+      for="bika.lims.interfaces.IARImport"
+      name="arimport_view"
+      class="bika.lims.browser.arimports.ARImportView"
+      template="templates/arimport_view.pt"
+      permission="bika.lims.ManageARImport"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IARImport"
+      name="arimport_views"
+      template="templates/arimport_views.pt"
+      permission="bika.lims.ManageARImport"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IClient"
+      name="arimport_add"
+      class="bika.lims.browser.arimports.ClientARImportAddView"
+      permission="bika.lims.ManageARImport"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IClient"
+      name="arimports"
+      class="bika.lims.browser.arimports.ClientARImportsView"
+      permission="bika.lims.ManageARImport"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IARImport"
+      name="validate_arimport"
+      class="bika.lims.browser.arimports.ARImportView"
+      attribute="validate_arimport"
+      permission="bika.lims.ManageARImport"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IARImportItem"
+      name="isSubmitted"
+      class="bika.lims.browser.arimports.ARImportView"
+      attribute="isSubmitted"
+      permission="bika.lims.ManageARImport"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+</configure>

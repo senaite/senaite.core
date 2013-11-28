@@ -33,6 +33,7 @@
   <include file="worksheet.zcml"/>
   <include file="worksheetfolder.zcml"/>
   <include file="viewlets.zcml"/>
+  <include file="arimports.zcml"/>
 
   <include package=".fields"/>
   <include package=".widgets"/>
@@ -99,5 +100,22 @@
       directory="js"
       layer="bika.lims.interfaces.IBikaLIMS"
       />
+
+<!-- #TODO Mike: duplicate of stanza on line 71 above -->
+  <browser:page
+      for="bika.lims.interfaces.IARImport"
+      name="at_validate_field"
+      class=".validation.InlineValidationView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+  <browser:page
+      for="bika.lims.interfaces.IARImportFolder"
+      name="arimports"
+      class="bika.lims.browser.arimports.GlobalARImportsView"
+      permission="bika.lims.ManageARImport"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
 
 </configure>

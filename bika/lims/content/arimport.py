@@ -1,30 +1,52 @@
 import sys
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
-from DateTime import DateTime
+import time
+import transaction
 from AccessControl import ClassSecurityInfo
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.permissions import ListFolderContents, \
-    ModifyPortalContent, View
-from Products.CMFCore import permissions
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.widgets import DateTimeWidget
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.config import ManageBika, PROJECTNAME, ARIMPORT_OPTIONS
+from bika.lims.idserver import renameAfterCreation
+from bika.lims.interfaces import IARImport
+from bika.lims.jsonapi import resolve_request_lookup
+from bika.lims.workflow import doActionFor
+from bika.lims.utils import tmpID
+from collective.progressbar.events import InitialiseProgressBar
+from collective.progressbar.events import ProgressBar
+from collective.progressbar.events import UpdateProgressEvent
+from collective.progressbar.events import ProgressState
+from DateTime import DateTime
+from Products.Archetypes import atapi
+from Products.Archetypes.event import ObjectInitializedEvent
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
+from Products.ATContentTypes.content import schemata
+from Products.CMFCore import permissions
+from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.config import ManageBika, PROJECTNAME
-from bika.lims import bikaMessageFactory as _
+from zope import event
+from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     StringField('ImportOption',
-        widget = StringWidget(
+        widget = SelectionWidget(
             label = _("Import Option"),
+            format='select',
         ),
+        vocabulary = ARIMPORT_OPTIONS,
     ),
     StringField('FileName',
         searchable = True,
         widget = StringWidget(
             label = _("Filename"),
+        ),
+    ),
+    FileField('OriginalFile',
+        searchable = True,
+        widget = FileWidget(
+            label = _("Original File"),
+            visible={'edit': 'invisible', 
+                     'view': 'visible', 'add': 'invisible'},
         ),
     ),
     StringField('ClientTitle',
@@ -69,33 +91,67 @@ schema = BikaSchema.copy() + Schema((
             label = _("Contact Name"),
         ),
     ),
-    StringField('CCContactID',
-        widget = StringWidget(
-            label = _("Contact ID"),
-        ),
-    ),
     ReferenceField('Contact',
-        vocabulary = 'getContacts',
-        vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('Contact',),
-        referenceClass = HoldingReference,
         relationship = 'ARImportContact',
+        default_method = 'getContactUIDForUser',
+        referenceClass = HoldingReference,
+        vocabulary_display_path_bound = sys.maxint,
+        widget=ReferenceWidget(
+            label=_("Contact"),
+            size=12,
+            helper_js=("bika_widgets/referencewidget.js", "++resource++bika.lims.js/contact.js"),
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+            base_query={'inactive_state': 'active'},
+            showOn=True,
+            popup_width='300px',
+            colModel=[{'columnName': 'UID', 'hidden': True},
+                      {'columnName': 'Fullname', 'width': '100', 'label': _('Name')},
+                     ],
+        ),
     ),
     StringField('ClientEmail',
         widget = StringWidget(
             label = _("Client Email"),
         ),
     ),
-    ReferenceField('CCContact',
-        vocabulary = 'getContacts',
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('Contact',),
-        referenceClass = HoldingReference,
-        relationship = 'ARImportCCContact',
-    ),
-    StringField('CCEmails',
+    StringField('CCContactID',
         widget = StringWidget(
-            label = _("CC Emails"),
+            label = _("CC Contact ID"),
+        ),
+    ),
+    ReferenceField('CCContact',
+        allowed_types = ('Contact',),
+        relationship = 'ARImportCCContact',
+        default_method = 'getCCContactUIDForUser',
+        referenceClass = HoldingReference,
+        vocabulary_display_path_bound = sys.maxint,
+        widget=ReferenceWidget(
+            label=_("CCContact"),
+            size=12,
+            helper_js=("bika_widgets/referencewidget.js", "++resource++bika.lims.js/contact.js"),
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible'},
+            base_query={'inactive_state': 'active'},
+            showOn=True,
+            popup_width='300px',
+            colModel=[{'columnName': 'UID', 'hidden': True},
+                      {'columnName': 'Fullname', 'width': '100', 'label': _('Name')},
+                     ],
+        ),
+    ),
+    StringField('CCNamesReport',
+        widget = StringWidget(
+            label = _("Report Contact Names"),
+        ),
+    ),
+    StringField('CCEmailsReport',
+        widget = StringWidget(
+            label = _("CC Email - Report"),
+        ),
+    ),
+    StringField('CCEmailsInvoice',
+        widget = StringWidget(
+            label = _("CC Email - Invoice"),
         ),
     ),
     StringField('OrderID',
@@ -123,14 +179,19 @@ schema = BikaSchema.copy() + Schema((
     ),
     DateTimeField('DateImported',
         required = 1,
-        default_method = 'current_date',
         widget = DateTimeWidget(
-            label = _("Date"),
+            label = _("Date Imported"),
+            size=12,
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible',
+                     'secondary': 'invisible'},
         ),
     ),
     DateTimeField('DateApplied',
         widget = DateTimeWidget(
-            label = _("Date"),
+            label = _("Date Applied"),
+            size=12,
+            visible={'edit': 'visible', 'view': 'visible', 'add': 'visible',
+                     'secondary': 'invisible'},
         ),
     ),
     IntegerField('NumberSamples',
@@ -169,27 +230,37 @@ class ARImport(BaseFolder):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
+    implements (IARImport)
+    _at_rename_after_creation = True
 
-    def Title(self):
-        """ Return the id as title """
-        return safe_unicode(self.getId()).encode('utf-8')
+    #def Title(self):
+    #    """ Return the id as title """
+    #    return safe_unicode(self.getId()).encode('utf-8')
 
     security.declarePublic('current_date')
     def current_date(self):
         """ return current date """
         return DateTime()
 
+    def _renameAfterCreation(self, check_auto_id=False):
+        renameAfterCreation(self)
+
 
     # workflow methods
     #
-    def workflow_script_submit(self, state_info):
+    def workflow_script_submit(self):
         """ submit arimport batch """
-        if self.getImportOption() == 's':
-            self.submit_arimport_s()
+        if self.getImportOption() == 'p':
+            self._submit_arimport_p()
         else:
-            self.submit_arimport_c()
+            self._submit_arimport_c()
+        transaction.commit()
+        #TODO time.sleep(2)
+        self.REQUEST.response.write(
+            '<script>document.location.href="%s"</script>' % (
+                self.absolute_url()))
 
-    def submit_arimport_c(self):
+    def _submit_arimport_c(self):
         """ load the classic import layout """
 
         ars = []
@@ -231,18 +302,17 @@ class ARImport(BaseFolder):
             valid_batch = False
 
         aritems = self.objectValues('ARImportItem')
-        pad = 8192 * ' '
-        REQUEST = self.REQUEST
-        REQUEST.RESPONSE.write(self.progress_bar(REQUEST = REQUEST))
-        REQUEST.RESPONSE.write('<input style="display: none;" id="progressType" value="Analysis request submission">')
-        REQUEST.RESPONSE.write('<input style="display: none;" id="progressDone" value="Completed">')
+        request = self.REQUEST
+        title = 'Submitting AR Import'
+        bar = ProgressBar(
+                self, request, title, description='')
+        event.notify(InitialiseProgressBar(bar))
 
-        REQUEST.RESPONSE.write(pad + '<input style="display: none;" id="inputTotal" value="%s">' % len(aritems))
-
+        SamplingWorkflowEnabled = \
+            self.bika_setup.getSamplingWorkflowEnabled()
         row_count = 0
-        next_id = self.generateUniqueId('Sample', batch_size = len(aritems))
-        (prefix, next_num) = next_id.split('-')
-        next_num = int(next_num)
+        item_count =len(aritems)
+        prefix = 'Sample'
         for aritem in aritems:
             row_count += 1
             # set up analyses
@@ -255,60 +325,81 @@ class ARImport(BaseFolder):
 
             sampletypes = self.portal_catalog(
                 portal_type = 'SampleType',
-                sortable_title = aritem.getSampleType())
+                sortable_title = aritem.getSampleType().lower(),
+                )
             if not sampletypes:
                 valid_batch = False
+                return
+            sampletypeuid = sampletypes[0].getObject().UID()
             if aritem.getSampleDate():
                 date_items = aritem.getSampleDate().split('/')
-                sample_date = DateTime(int(date_items[2]), int(date_items[1]), int(date_items[0]))
+                sample_date = DateTime(
+                    int(date_items[2]), int(date_items[1]), int(date_items[0]))
             else:
                 sample_date = None
-            sample_id = '%s-%s' % (prefix, (str(next_num)).zfill(5))
-            next_num += 1
+
+            sample_id = '%s-%s' % (prefix, tmpID())
             client.invokeFactory(id = sample_id, type_name = 'Sample')
             sample = client[sample_id]
+            sample.unmarkCreationFlag()
             sample.edit(
                 SampleID = sample_id,
                 ClientReference = aritem.getClientRef(),
                 ClientSampleID = aritem.getClientSid(),
                 SampleType = aritem.getSampleType(),
-                SamplePoint = aritem.getSamplePoint(),
                 DateSampled = sample_date,
                 DateReceived = DateTime(),
                 )
-            sample.processForm()
+            sample._renameAfterCreation()
+            #sp_id = client.invokeFactory('SamplePoint', id=tmpID())
+            #sp = client[sp_id]
+            #sp.edit(title=self.getSamplePoint())
+            sample.setSamplePoint(self.getSamplePoint())
+            sample.setSampleID(sample.getId())
+            event.notify(ObjectInitializedEvent(sample))
+            sample.at_post_create_script()
             sample_uid = sample.UID()
             samples.append(sample_id)
             aritem.setSample(sample_uid)
 
-            ar_id = self.generateARUniqueId('AnalysisRequest', sample_id, 1)
+            #Create AR
+            ar_id = tmpID()
             client.invokeFactory(id = ar_id, type_name = 'AnalysisRequest')
             ar = client[ar_id]
             if aritem.getReportDryMatter().lower() == 'y':
                 report_dry_matter = True
             else:
                 report_dry_matter = False
+            ar.unmarkCreationFlag()
             ar.edit(
                 RequestID = ar_id,
                 Contact = self.getContact(),
                 CCContact = self.getCCContact(),
-                CCEmails = self.getCCEmails(),
+                CCEmails = self.getCCEmailsInvoice(),
                 ClientOrderNumber = self.getOrderID(),
                 ReportDryMatter = report_dry_matter,
-                Sample = sample_uid,
                 Analyses = analyses
                 )
-            ar.processForm()
+            ar.setSample(sample_uid)
+            sample = ar.getSample()
+            ar.setSampleType(sampletypeuid)
             ar_uid = ar.UID()
             aritem.setAnalysisRequest(ar_uid)
             ars.append(ar_id)
-            REQUEST.RESPONSE.write(pad + '<input style="display: none;" name="inputProgress" value="%s">' % row_count)
+            ar._renameAfterCreation()
+
+            self._add_services_to_ar(ar, analyses)
+
+            progress_index = float(row_count)/float(item_count)*100.0
+            progress = ProgressState(request, progress_index)
+            event.notify(UpdateProgressEvent(progress))
+            #TODO REmove for production - just to look pretty
+            #time.sleep(1)
         self.setDateApplied(DateTime())
         self.reindexObject()
-        REQUEST.RESPONSE.write('<script>document.location.href="%s?portal_status_message=%s%%20submitted"</script>' % (self.absolute_url(), self.getId()))
 
-    def submit_arimport_s(self):
-        """ load the special (benchmark) import layout """
+    def _submit_arimport_p(self):
+        """ load the profiles import layout """
 
         ars = []
         samples = []
@@ -321,8 +412,17 @@ class ARImport(BaseFolder):
         for contact in client.objectValues('Contact'):
             if contact.getUsername() == self.getContactID():
                 contact_obj = contact
-                valid_batch = True
-                break
+            if self.getCCContactID() == None:
+                if contact_obj != None:
+                    break
+            else:
+                if contact.getUsername() == self.getCCContactID():
+                    cc_contact_obj = contact
+                    if contact_obj != None:
+                        break
+
+        if contact_obj == None:
+            valid_batch = False
 
         # get Keyword to ServiceId Map
         services = {}
@@ -335,23 +435,25 @@ class ARImport(BaseFolder):
             if keyword:
                 services[keyword] = '%s:%s' % (obj.UID(), obj.getPrice())
             service_uids[obj.UID()] = '%s:%s' % (obj.UID(), obj.getPrice())
-        sampletypes = []
+
+        samplepoints = self.bika_setup_catalog(
+            portal_type = 'SamplePoint',
+            Title = self.getSamplePoint())
+        if not samplepoints:
+            valid_batch = False
 
         profiles = {}
-
         aritems = self.objectValues('ARImportItem')
 
-        pad = 8192 * ' '
-        REQUEST = self.REQUEST
-        REQUEST.RESPONSE.write(self.progress_bar(REQUEST = REQUEST))
-        REQUEST.RESPONSE.write('<input style="display: none;" id="progressType" value="Analysis request submission">')
-        REQUEST.RESPONSE.write('<input style="display: none;" id="progressDone" value="Completed">')
-        REQUEST.RESPONSE.write(pad + '<input style="display: none;" id="inputTotal" value="%s">' % len(aritems))
+        request = self.REQUEST
+        title = 'Submitting AR Import'
+        bar = ProgressBar(
+                self, request, title, description='')
+        event.notify(InitialiseProgressBar(bar))
 
         row_count = 0
-        next_id = self.generateUniqueId('Sample', batch_size = len(aritems))
-        (prefix, next_num) = next_id.split('-')
-        next_num = int(next_num)
+        item_count = len(aritems)
+        prefix = 'Sample'
         for aritem in aritems:
             # set up analyses
             ar_profile = None
@@ -363,24 +465,26 @@ class ARImport(BaseFolder):
                 if not profiles.has_key(profilekey):
                     profiles[profilekey] = []
                     # there is no profilekey index
-                    l_prox = self.bika_setup_catalog(portal_type = 'AnalysisProfile',
-                                    getProfileKey = profilekey)
+                    l_prox = self._findProfileKey(profilekey)
                     if l_prox:
-                        p = l_prox[0].getObject()
-                        profiles[profilekey] = [s.UID() for s in p.getService()]
-                        this_profile = p
+                        profiles[profilekey] = \
+                                [s.UID() for s in l_prox.getService()]
+                        this_profile = l_prox
                     else:
+                        #TODO This will not find it!!
                         # there is no profilekey index
-                        c_prox = self.bika_setup_catalog(portal_type = 'AnalysisProfile',
+                        c_prox = self.bika_setup_catalog(
+                                    portal_type = 'AnalysisProfile',
                                     getClientUID = client.UID(),
                                     getProfileKey = profilekey)
                         if c_prox:
-                            p = c_prox[0].getObject()
-                            profiles[profilekey] = [s.UID() for s in p.getService()]
-                            this_profile = p
+                            obj = c_prox[0].getObject()
+                            profiles[profilekey] = \
+                                    [s.UID() for s in obj.getService()]
+                            this_profile = obj
 
                 if ar_profile is None:
-                    ar_profile = p
+                    ar_profile = obj
                 else:
                     ar_profile = None
                 profile = profiles[profilekey]
@@ -412,63 +516,405 @@ class ARImport(BaseFolder):
                 else:
                     valid_batch = False
 
-            sampletype = aritem.getSampleType()
-            if not sampletype in sampletypes:
-                for s in self.bika_setup_catalog(portal_type = 'SampleType',
-                                Title = sampletype):
-                    sampletypes.append(s.Title)
-
-
-            if not sampletype in sampletypes:
+            sampletypes = self.portal_catalog(
+                portal_type = 'SampleType',
+                sortable_title = aritem.getSampleType().lower(),
+                )
+            if not sampletypes:
                 valid_batch = False
+                return
+            sampletypeuid = sampletypes[0].getObject().UID()
 
             if aritem.getSampleDate():
                 date_items = aritem.getSampleDate().split('/')
-                sample_date = DateTime(int(date_items[2]), int(date_items[0]), int(date_items[1]))
+                sample_date = DateTime(
+                    int(date_items[2]), int(date_items[0]), int(date_items[1]))
             else:
                 sample_date = None
-            sample_id = '%s-%s' % (prefix, (str(next_num)).zfill(5))
+
+            sample_id = '%s-%s' % (prefix, tmpID())
             client.invokeFactory(id = sample_id, type_name = 'Sample')
-            next_num += 1
             sample = client[sample_id]
+            sample.unmarkCreationFlag()
             sample.edit(
                 SampleID = sample_id,
                 ClientReference = aritem.getClientRef(),
                 ClientSampleID = aritem.getClientSid(),
-                SampleType = sampletype,
+                SampleType = aritem.getSampleType(),
                 DateSampled = sample_date,
                 DateReceived = DateTime(),
                 Remarks = aritem.getClientRemarks(),
                 )
-            sample.processForm()
+            sample._renameAfterCreation()
+            sample.setSamplePoint(self.getSamplePoint())
+            sample.setSampleID(sample.getId())
+            event.notify(ObjectInitializedEvent(sample))
+            sample.at_post_create_script()
             sample_uid = sample.UID()
+            samples.append(sample_id)
             aritem.setSample(sample_uid)
 
-            ar_id = self.generateARUniqueId('AnalysisRequest', sample_id, 1)
+            ar_id = tmpID()
             client.invokeFactory(id = ar_id, type_name = 'AnalysisRequest')
             ar = client[ar_id]
             report_dry_matter = False
 
+            ar.unmarkCreationFlag()
             ar.edit(
                 RequestID = ar_id,
                 Contact = self.getContact(),
-                CCEmails = self.getCCEmails(),
-                ReportDryMatter = report_dry_matter,
-                Sample = sample_uid,
-                Profile = ar_profile,
+                CCContact = self.getCCContact(),
+                CCEmails = self.getCCEmailsInvoice(),
                 ClientOrderNumber = self.getOrderID(),
-                Remarks = aritem.getClientRemarks(),
+                ReportDryMatter = report_dry_matter,
+                Profile = ar_profile,
                 Analyses = analyses,
+                Remarks = aritem.getClientRemarks(),
                 )
-            ar.processForm()
+            ar.setSample(sample_uid)
+            sample = ar.getSample()
+            ar.setSampleType(sampletypeuid)
             ar_uid = ar.UID()
             aritem.setAnalysisRequest(ar_uid)
             ars.append(ar_id)
-            REQUEST.RESPONSE.write(pad + '<input style="display: none;" name="inputProgress" value="%s">' % row_count)
+            ar._renameAfterCreation()
+            progress_index = float(row_count)/float(item_count)*100.0
+            progress = ProgressState(request, progress_index)
+            event.notify(UpdateProgressEvent(progress))
+            self._add_services_to_ar(ar, analyses)
 
         self.setDateApplied(DateTime())
         self.reindexObject()
-        REQUEST.RESPONSE.write('<script>document.location.href="%s?portal_status_message=%s%%20submitted"</script>' % (self.absolute_url(), self.getId()))
 
+
+    def _add_services_to_ar(self, ar, analyses):
+        #Add Services
+        service_uids = [i.split(':')[0] for i in analyses]
+        new_analyses = ar.setAnalyses(service_uids)
+        ar.setRequestID(ar.getId())
+        ar.reindexObject()
+        event.notify(ObjectInitializedEvent(ar))
+        ar.at_post_create_script()
+
+        SamplingWorkflowEnabled = \
+            self.bika_setup.getSamplingWorkflowEnabled()
+        wftool = getToolByName(self, 'portal_workflow')
+
+        # Create sample partitions
+        parts = [{'services': [],
+                 'container':[],
+                 'preservation':'',
+                 'separate':False}]
+        sample = ar.getSample()
+        parts_and_services = {}
+        for _i in range(len(parts)):
+            p = parts[_i]
+            part_prefix = sample.getId() + "-P"
+            if '%s%s' % (part_prefix, _i + 1) in sample.objectIds():
+                parts[_i]['object'] = sample['%s%s' % (part_prefix, _i + 1)]
+                parts_and_services['%s%s' % (part_prefix, _i + 1)] = \
+                        p['services']
+            else:
+                _id = sample.invokeFactory('SamplePartition', id='tmp')
+                part = sample[_id]
+                parts[_i]['object'] = part
+                container = None
+                preservation = p['preservation']
+                parts[_i]['prepreserved'] = False
+                part.unmarkCreationFlag()
+                part.edit(
+                    Container=container,
+                    Preservation=preservation,
+                )
+                part._renameAfterCreation()
+                if SamplingWorkflowEnabled:
+                    wftool.doActionFor(part, 'sampling_workflow')
+                else:
+                    wftool.doActionFor(part, 'no_sampling_workflow')
+                parts_and_services[part.id] = p['services']
+
+        if SamplingWorkflowEnabled:
+            wftool.doActionFor(ar, 'sampling_workflow')
+        else:
+            wftool.doActionFor(ar, 'no_sampling_workflow')
+
+        # Add analyses to sample partitions
+        # XXX jsonapi create AR: right now, all new analyses are linked to the first samplepartition
+        if new_analyses:
+            analyses = list(part.getAnalyses())
+            analyses.extend(new_analyses)
+            part.edit(
+                Analyses=analyses,
+            )
+            for analysis in new_analyses:
+                analysis.setSamplePartition(part)
+
+        # If Preservation is required for some partitions,
+        # and the SamplingWorkflow is disabled, we need
+        # to transition to to_be_preserved manually.
+        if not SamplingWorkflowEnabled:
+            to_be_preserved = []
+            sample_due = []
+            lowest_state = 'sample_due'
+            for p in sample.objectValues('SamplePartition'):
+                if p.getPreservation():
+                    lowest_state = 'to_be_preserved'
+                    to_be_preserved.append(p)
+                else:
+                    sample_due.append(p)
+            for p in to_be_preserved:
+                doActionFor(p, 'to_be_preserved')
+            for p in sample_due:
+                doActionFor(p, 'sample_due')
+            doActionFor(sample, lowest_state)
+            for analysis in ar.objectValues('Analysis'):
+                doActionFor(analysis, lowest_state)
+            doActionFor(ar, lowest_state)
+
+        # receive secondary AR
+        #TODO if request.get('Sample_id', ''):
+        #    doActionFor(ar, 'sampled')
+        #    doActionFor(ar, 'sample_due')
+        #    not_receive = ['to_be_sampled', 'sample_due', 'sampled',
+        #                   'to_be_preserved']
+        #    sample_state = wftool.getInfoFor(sample, 'review_state')
+        #    if sample_state not in not_receive:
+        #        doActionFor(ar, 'receive')
+        #    for analysis in ar.getAnalyses(full_objects=1):
+        #        doActionFor(analysis, 'sampled')
+        #        doActionFor(analysis, 'sample_due')
+        #        if sample_state not in not_receive:
+        #            doActionFor(analysis, 'receive')
+
+    security.declarePublic('getContactUIDForUser')
+    def getContactUIDForUser(self):
+        """ get the UID of the contact associated with the authenticated
+            user
+        """
+        user = self.REQUEST.AUTHENTICATED_USER
+        user_id = user.getUserName()
+        r = self.portal_catalog(
+            portal_type = 'Contact',
+            getUsername = user_id
+        )
+        if len(r) == 1:
+            return r[0].UID
+
+    security.declarePublic('getCCContactUIDForUser')
+    def getCCContactUIDForUser(self):
+        """ get the UID of the cc contact associated with the authenticated
+            user
+        """
+        user = self.REQUEST.AUTHENTICATED_USER
+        user_id = user.getUserName()
+        r = self.portal_catalog(
+            portal_type = 'Contact',
+            getUsername = user_id
+        )
+        if len(r) == 1:
+            return r[0].UID
+
+
+    def validateIt(self):
+        rc = getToolByName(self, 'reference_catalog')
+        pc = getToolByName(self, 'portal_catalog')
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        client = self.aq_parent
+        batch_remarks = []
+        valid_batch = True
+        uid = self.UID()
+        batches = pc({
+                    'portal_type': 'ARImport', 
+                    'path': {'query': '/'.join(client.getPhysicalPath())},
+                    })
+        for brain in batches:
+            if brain.UID == uid:
+                continue
+            batch = brain.getObject()
+            if batch.getOrderID() != self.getOrderID():
+                continue
+            if batch.getStatus():
+                # then a previous valid batch exists
+                batch_remarks.append(
+                    '\n' + 'Duplicate order %s' % self.getOrderID())
+                valid_batch = False
+                break
+
+        # validate client
+        if self.getClientID() != client.getClientID():
+            batch_remarks.append(
+                '\n' + 'Client ID should be %s' %client.getClientID())
+            valid_batch = False
+
+        # validate contact
+        contact_found = False 
+        cc_contact_found = False 
+
+        if self.getContact():
+            contact_found = True
+        else:
+            contactid = self.getContactID()
+            for contact in client.objectValues('Contact'):
+                if contact.getUsername() == contactid:
+                    self.edit(Contact=contact)
+                    contact_found = True
+                    #break
+
+        if self.getCCContact():
+            cc_contact_found = True
+        else:
+            if self.getCCContactID():
+                cccontact_uname = self.getCCContactID()
+                for contact in client.objectValues('Contact'):
+                    if contact.getUsername() == cccontact_uname:
+                        self.edit(CCContact=contact)
+                        cc_contact_found = True
+                        break
+
+        cccontact_uname = self.getCCContactID()
+
+        if not contact_found:
+            batch_remarks.append('\n' + 'Contact invalid')
+            valid_batch = False
+        if cccontact_uname != None and \
+           cccontact_uname != '':
+            if not cc_contact_found:
+                batch_remarks.append('\n' + 'CC contact invalid')
+                valid_batch = False
+
+        # validate sample point
+        samplepoint = self.getSamplePoint()
+        if samplepoint != None:
+            points = pc(portal_type='SamplePoint', 
+                Title=samplepoint)
+
+        sampletypes = \
+            [p.Title for p in pc(portal_type="SampleType")]
+        containertypes = \
+            [p.Title for p in bsc(portal_type="ContainerType")]
+        service_keys = []
+        dependant_services = {}
+
+        services = bsc(portal_type = "AnalysisService",
+                       inactive_state = 'active')
+        for brain in services:
+            service = brain.getObject()
+            service_keys.append(service.getKeyword())
+            calc = service.getCalculation()
+            if calc:
+                dependencies = calc.getDependentServices()
+                if dependencies:
+                    dependant_services[service.getKeyword()] = dependencies
+        aritems = self.objectValues('ARImportItem')
+        for aritem in aritems:
+            item_remarks = []
+            valid_item = True
+            #validate sample type
+            if aritem.getSampleType() not in sampletypes:
+                batch_remarks.append('\n%s: Sample type %s invalid' %(
+                    aritem.getSampleName(), aritem.getSampleType()))
+                item_remarks.append(
+                    '\nSample type %s invalid' %(aritem.getSampleType()))
+                valid_item = False
+            #validate container type
+            if aritem.getContainerType() not in containertypes:
+                batch_remarks.append(
+                    '\n%s: Container type %s invalid' %(
+                        aritem.getSampleName(), aritem.getContainerType()))
+                item_remarks.append(
+                    '\nContainer type %s invalid' %(aritem.getContainerType()))
+                valid_item = False
+            #validate Sample Date
+            try:
+                date_items = aritem.getSampleDate().split('/')
+                test_date = DateTime(int(date_items[2]), int(date_items[1]), int(date_items[0]))
+            except:
+                valid_item = False
+                batch_remarks.append('\n' + '%s: Sample date %s invalid' %(aritem.getSampleName(), aritem.getSampleDate()))
+                item_remarks.append('\n' + 'Sample date %s invalid' %(aritem.getSampleDate()))
+
+            if self.getImportOption() == 'c':
+                analyses = aritem.getAnalyses()
+                for analysis in analyses:
+                    if analysis not in service_keys:
+                        batch_remarks.append('\n' + '%s: Analysis %s invalid' %(aritem.getSampleName(), analysis))
+                        item_remarks.append('\n' + 'Analysis %s invalid' %(analysis))
+                        valid_item = False
+                    # validate analysis dependancies
+                    reqd_analyses = []
+                    if dependant_services.has_key(analysis):
+                        reqd_analyses = \
+                            [s.getKeyword() for s in dependant_services[analysis]]
+                    reqd_titles = ''
+                    for reqd in reqd_analyses:
+                        if (reqd not in analyses):
+                            if reqd_titles != '':
+                                reqd_titles += ', '
+                            reqd_titles += reqd
+                    if reqd_titles != '':
+                        valid_item = False
+                        batch_remarks.append('\n' + '%s: %s needs %s' \
+                            %(aritem.getSampleName(), analysis, reqd_titles))
+                        item_remarks.append('\n' + '%s needs %s' \
+                            %(analysis, reqd_titles))
+
+                # validate analysisrequest dependancies
+                if aritem.getReportDryMatter().lower() == 'y':
+                    required = self.get_analysisrequest_dependancies('DryMatter')
+                    reqd_analyses = required['keys']
+                    reqd_titles = ''
+                    for reqd in reqd_analyses:
+                        if reqd not in analyses:
+                            if reqd_titles != '':
+                                reqd_titles += ', '
+                            reqd_titles += reqd
+
+                    if reqd_titles != '':
+                        valid_item = False
+                        batch_remarks.append('\n' + '%s: Report as Dry Matter needs %s' \
+                            %(aritem.getSampleName(), reqd_titles))
+                        item_remarks.append('\n' + 'Report as Dry Matter needs %s' \
+                            %(reqd_titles))
+            elif self.getImportOption() == 'p':
+                analyses = aritem.getAnalysisProfile()
+                if len(analyses) == 0:
+                    valid_item = False
+                    item_remarks.append('\n%s: No Profile provided' \
+                        % aritem.getSampleName())
+                    batch_remarks.append('\n%s: No Profile provided' \
+                        % aritem.getSampleName())
+                elif len(analyses) > 1:
+                    valid_item = False
+                    item_remarks.append('\n%s: Only one Profile allowed' \
+                        % aritem.getSampleName())
+                    batch_remarks.append('\n%s: Only one Profile allowed' \
+                        % aritem.getSampleName())
+                else:
+                    if not self._findProfileKey(analyses[0]):
+                        valid_item = False
+                        item_remarks.append('\n%s: unknown Profile %s' \
+                            % (aritem.getSampleName(), analyses[0]))
+                        batch_remarks.append('\n%s: unknown Profile %s' \
+                            % (aritem.getSampleName(), analyses[0]))
+
+            aritem.setRemarks(item_remarks)
+            if not valid_item:
+                valid_batch = False
+        if self.getNumberSamples() != len(aritems):
+            valid_batch = False
+            batch_remarks.append('\nNumber of samples specified (%s) does no match number listed (%s)' % (self.getNumberSamples(), len(aritems)))
+        self.edit(
+            Remarks=batch_remarks,
+            Status=valid_batch)
+
+        return valid_batch
+
+    def _findProfileKey(self, key):
+        profiles = self.bika_setup_catalog(
+                portal_type = 'AnalysisProfile')
+        found = False
+        for brain in profiles:
+            if brain.getObject().getProfileKey() == key:
+                return brain.getObject()
 
 atapi.registerType(ARImport, PROJECTNAME)

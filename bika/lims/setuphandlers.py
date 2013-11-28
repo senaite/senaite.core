@@ -9,7 +9,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.config import *
 from bika.lims.permissions import *
-from bika.lims.interfaces import IHaveNoBreadCrumbs
+from bika.lims.interfaces import IHaveNoBreadCrumbs, IARImportFolder
 from zope.event import notify
 from zope.interface import alsoProvides
 from Products.CMFEditions.Permissions import ApplyVersionControl
@@ -782,6 +782,18 @@ class BikaGenerator:
         addColumn(bsc, 'getVATAmount')
         addColumn(bsc, 'getVolume')
 
+    def setupTopLevelFolders(self, context):
+        obj_id = 'arimports'
+        if obj_id in context.objectIds():
+            return
+        context.invokeFactory('Folder', obj_id)
+        obj = context._getOb(obj_id)
+        obj.setTitle('AR Imports')
+        workflow = getToolByName(context, "portal_workflow")
+        workflow.doActionFor(obj, "publish")
+        obj.setLayout('@@arimports')
+        alsoProvides(obj, IARImportFolder)
+        alsoProvides(obj, IHaveNoBreadCrumbs)
 
 def setupVarious(context):
     """
@@ -795,6 +807,7 @@ def setupVarious(context):
     gen.setupGroupsAndRoles(site)
     gen.setupPortalContent(site)
     gen.setupPermissions(site)
+    gen.setupTopLevelFolders(site)
     try:
         from Products.CMFEditions.setuphandlers import DEFAULT_POLICIES
         # we're on plone < 4.1, configure versionable types manually
@@ -806,5 +819,7 @@ def setupVarious(context):
 
     # Plone's jQuery gets clobbered when jsregistry is loaded.
     setup = site.portal_setup
-    setup.runImportStepFromProfile('profile-plone.app.jquery:default', 'jsregistry')
+    setup.runImportStepFromProfile(
+            'profile-plone.app.jquery:default', 'jsregistry')
     # setup.runImportStepFromProfile('profile-plone.app.jquerytools:default', 'jsregistry')
+

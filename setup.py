@@ -39,6 +39,7 @@ setup(name='bika.lims',
           'jarn.jsi18n==0.3',
           'collective.wtf',
           'WeasyPrint',
+          'collective.progressbar',
       ],
       extras_require={
           'test': [

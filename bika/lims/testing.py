@@ -110,3 +110,13 @@ BIKA_ROBOT_TESTING = FunctionalTesting(
     bases=(BIKA_TEST_FIXTURE, AUTOLOGIN_LIBRARY_FIXTURE, z2.ZSERVER_FIXTURE),
     name="BikaTestingLayer:Robot"
 )
+
+
+class Keywords(object):
+    """Robot Framework keyword library
+    """
+
+    def resource_filename(self):
+        import pkg_resources
+        res = pkg_resources.resource_filename("bika.lims", "tests")
+        return res
