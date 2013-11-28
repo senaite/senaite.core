@@ -12,13 +12,15 @@
                         getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;">
         <span metal:define-macro="string-field-view"
             tal:define="kss_class python:getKssClasses(fieldName,
-                              templateId='widgets/string', macro='string-field-view');
-                              uid context/UID|nothing"
+                        templateId='widgets/string', macro='string-field-view');
+                        uid context/UID|nothing"
             tal:attributes="class kss_class;
                             id string:parent-fieldname-$fieldName-$uid">
             <span metal:define-slot="inside"
-                  tal:define="value accessor"
-                  tal:replace="python: (value and hasattr(value, 'Title')) and value.Title() or ''">reference</span>
+                  tal:define="value accessor;
+                              value python: (value and hasattr(value, 'Title')) and value.Title() or '';"
+                  tal:attributes="value python: value.strip();"
+                  tal:content="value">reference</span>
         </span>
     </metal:view_macro>
 

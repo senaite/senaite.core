@@ -5,6 +5,7 @@ from bika.lims.interfaces import IReferenceWidgetVocabulary
 from bika.lims.permissions import *
 from bika.lims.utils import to_unicode as _u
 from bika.lims.utils import to_utf8 as _c
+from bika.lims import logger
 from operator import itemgetter
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import StringWidget
@@ -26,7 +27,7 @@ class ReferenceWidget(StringWidget):
         # base_query can be a dict or a callable returning a dict
         'base_query': {},
 
-        # columnName must contain valid index names
+        # This will be faster if the columnNames are catalog indexes
         'colModel': [
             {'columnName': 'Title', 'width': '30', 'label': _(
                 'Title'), 'align': 'left'},
@@ -144,6 +145,11 @@ class ajaxReferenceWidgetSearch(BrowserView):
                         schema = instance.Schema()
                     if fieldname in schema:
                         value = schema[fieldname].get(instance)
+                    elif hasattr(instance, fieldname):
+                        value = getattr(instance, fieldname)
+                        if callable(value):
+                            value = value()
+
                 if fieldname in discard_empty and not value:
                     discard = True
                     break

@@ -7,15 +7,27 @@ from bika.lims.permissions import *
 from zope.component import adapts
 from zope.interface import implements
 
-def isOutOfShoulderRange(result, spec, keyword):
+
+def isOutOfShoulderRange(result, Min, Max, error):
     # check if in 'shoulder' range - out of range, but in acceptable error
-    spec_min = float(spec[keyword]['min'])
-    spec_max = float(spec[keyword]['max'])
-    error = 0
+    spec_min = None
+    spec_max = None
     try:
-        error = float(spec[keyword].get('error', '0'))
+        result = float(result)
     except:
-        pass
+        return False, None
+    try:
+        spec_min = float(Min)
+    except:
+        spec_min = None
+    try:
+        error = float(error)
+    except:
+        error = 0
+    try:
+        spec_max = float(Max)
+    except:
+        spec_max = None
     error_amount = (result / 100) * error
     error_min = result - error_amount
     error_max = result + error_amount
@@ -26,42 +38,48 @@ def isOutOfShoulderRange(result, spec, keyword):
     return False
 
 
-def isOutOfRange(result, spec, keyword):
+def isOutOfRange(result, Min, Max, error):
     spec_min = None
     spec_max = None
     try:
-        spec_min = float(spec[keyword]['min'])
+        result = float(result)
+    except:
+        return False, None
+    try:
+        spec_min = float(Min)
     except:
         spec_min = None
-        pass
     try:
-        spec_max = float(spec[keyword]['max'])
+        error = float(error)
+    except:
+        error = 0
+    try:
+        spec_max = float(Max)
     except:
         spec_max = None
-        pass
     if (not spec_min and not spec_max):
-        if isOutOfShoulderRange(result, spec, keyword):
-            return True, True, spec[keyword]
+        if isOutOfShoulderRange(result, Min, Max, error):
+            return True, True
         else:
-            return False, None, None  # No min and max values defined
+            return False, None  # No Min and Max values defined
     elif spec_min and spec_max and spec_min <= result <= spec_max:
-        if isOutOfShoulderRange(result, spec, keyword):
-            return True, True, spec[keyword]
+        if isOutOfShoulderRange(result, Min, Max, error):
+            return True, True
         else:
-            return False, None, None  # min and max values defined
+            return False, None  # Min and Max values defined
     elif spec_min and not spec_max and spec_min <= result:
-        if isOutOfShoulderRange(result, spec, keyword):
-            return True, True, spec[keyword]
+        if isOutOfShoulderRange(result, Min, Max, error):
+            return True, True
         else:
-            return False, None, None  # max value not defined
+            return False, None  # Max value not defined
     elif not spec_min and spec_max and spec_max >= result:
-        if isOutOfShoulderRange(result, spec, keyword):
-            return True, True, spec[keyword]
+        if isOutOfShoulderRange(result, Min, Max, error):
+            return True, True
         else:
-            return False, None, None  # min value not defined
-    if isOutOfShoulderRange(result, spec, keyword):
-        return True, True, spec[keyword]
-    return True, None, spec[keyword]
+            return False, None  # Min value not defined
+    if isOutOfShoulderRange(result, Min, Max, error):
+        return True, True
+    return True, None
 
 
 class ResultOutOfRange(object):
@@ -74,14 +92,14 @@ class ResultOutOfRange(object):
     def __init__(self, context):
         self.context = context
 
-    def get_alerts(self, outofrange, acceptable, o_spec, **kwargs):
+    def get_alerts(self, outofrange, acceptable, Min, Max):
         alerts = {}
         translate = self.context.translate
         path = '++resource++bika.lims.images'
         if outofrange:
-            rngstr = "{0} {1}, {2}, {3}".format(
-                translate(_("min")), str(o_spec['min']),
-                translate(_("max")), str(o_spec['max']))
+            rngstr = "{0} {1}, {2} {3}".format(
+                translate(_("min")), str(Min),
+                translate(_("max")), str(Max))
 
             if acceptable:
                 message = "{0} ({1})".format(
@@ -98,7 +116,7 @@ class ResultOutOfRange(object):
             }, ]
         return alerts
 
-    def __call__(self, result=None, specification="lab", **kwargs):
+    def __call__(self, result=None, **kwargs):
         # Other types of analysis depend on Analysis base class, and therefore
         # also provide IAnalysis.  We allow them to register their own adapters
         # for range checking, and manually ignore them here.
@@ -119,15 +137,20 @@ class ResultOutOfRange(object):
         except ValueError:
             return {}
 
-        # No specs available, assume in range:
-        specs = self.context.getAnalysisSpecs(specification)
-        if specs is None:
+        spec = {}
+        if hasattr(self.context, "specification") and self.context.specification:
+            spec = self.context.specification
+        if 'specification' in kwargs:
+            spec = kwargs['specification']
+        if not spec:
+            # No specs available, assume in range:
             return {}
-        keyword = self.context.getService().getKeyword()
-        spec = specs.getResultsRangeDict()
-        if keyword in spec:
-            outofrange, acceptable, o_spec = isOutOfRange(result, spec, keyword)
-            return self.get_alerts(outofrange, acceptable, o_spec)
-        else:
-            # Analysis without specification values. Assume in range
-            return {}
+
+        outofrange, acceptable = isOutOfRange(result,
+                                              spec.get('min', ''),
+                                              spec.get('max', ''),
+                                              spec.get('error', ''))
+        return self.get_alerts(outofrange,
+                               acceptable,
+                               spec.get('min', ''),
+                               spec.get('max', ''))

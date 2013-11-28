@@ -21,7 +21,8 @@ class Create(object):
     interface.implements(IRouteProvider)
 
     def initialize(self, context, request):
-        pass
+        self.context = context
+        self.request = request
 
     @property
     def routes(self):
@@ -50,9 +51,6 @@ class Create(object):
             success: true or string(message) if success. false if no success.
         }
 
-        All fields which were automatically matched in the request, and which
-        were successfully completed with the request value, are also included
-        in the return value, for verification.
         """
 
         savepoint = transaction.savepoint()
@@ -111,6 +109,38 @@ class Create(object):
 
         return ret
 
+    def get_specs_from_request(self):
+        context = self.context
+        request = self.request
+
+        brains = resolve_request_lookup(context, request, "AR_Specification")
+        kwspecs = brains[0].getObject().getResultsRangeDict() if brains else {}
+        Analysis_Specification = self.request.get("Analysis_Specification", "")
+        if not kwspecs and not Analysis_Specification:
+            return {}
+
+        specs = {}
+        bsc = getToolByName(context, "bika_setup_catalog")
+        for k, v in kwspecs.items():
+            uid = bsc(portal_type="AnalysisService", getKeyword=k)[0].UID
+            specs[uid] = v
+
+        if Analysis_Specification:
+            for string in Analysis_Specification:
+                keyword, Min, Max, error = string.split(":")
+                brains = bsc(
+                    portal_type="AnalysisService",
+                    getKeyword=keyword
+                )
+                if not brains:
+                    raise BadRequest("Service not found: %s" % keyword)
+                specs[brains[0].UID] = {
+                    "min": Min,
+                    "max": Max,
+                    "error": error,
+                }
+        return specs
+
     def _create_ar(self, context, request):
         """Creates AnalysisRequest object, with supporting Sample, Partition
         and Analysis objects.  The client is retrieved from the obj_path
@@ -133,6 +163,15 @@ class Create(object):
 
         - Sample_id: Create a secondary AR with an existing sample.  If
           unspecified, a new sample is created.
+
+        - AR_Specification: a lookup to set Analysis specs default values
+          for all analyses
+
+        - Analysis_Specification: specs (or overrides) per analysis, using
+          a special lookup format.
+
+            &Analysis_Specification:list=<Keyword>:min:max:error&...
+
 
         """
 
@@ -184,6 +223,8 @@ class Create(object):
                  'preservation':'',
                  'separate':False}]
 
+        specs = self.get_specs_from_request()
+
         _id = client.invokeFactory('AnalysisRequest', tmpID())
         ar = client[_id]
         ar.unmarkCreationFlag()
@@ -193,7 +234,7 @@ class Create(object):
         ret['ar_id'] = ar.getId()
         brains = resolve_request_lookup(context, request, 'Services')
         service_uids = [p.UID for p in brains]
-        new_analyses = ar.setAnalyses(service_uids)
+        new_analyses = ar.setAnalyses(service_uids,  specs=specs)
         ar.setRequestID(ar.getId())
         ar.reindexObject()
         event.notify(ObjectInitializedEvent(ar))

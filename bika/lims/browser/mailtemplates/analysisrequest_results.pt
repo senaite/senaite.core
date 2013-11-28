@@ -19,7 +19,6 @@
       pub_pref view/pub_pref;
       accredited python:lab_accredited and view.any_accredited;
       global invoice_exclude python:False;
-      global out_of_range python:0;
       ar nocall:view/ar;
       dry ar/getReportDryMatter;
       remarksenabled python:view.context.bika_setup.getEnableAnalysisRemarks();">
@@ -156,6 +155,10 @@
                 <td tal:content="python: ar.getSample().getSampleType().Title()"></td>
             </tr>
             <tr>
+                <td class="label" i18n:translate="">Specification</td>
+                <td tal:content="view/get_active_spec_title"></td>
+            </tr>
+            <tr>
                 <td class="label" i18n:translate="">Date Received</td>
                 <td tal:content="python: view.ulocalized_time(ar.getDateReceived(), long_format=1)">2013-05-31 02:02 PM</td>
             </tr>
@@ -210,10 +213,10 @@
                                 analysis_result_dm python: analysis.getResultDM();
                                 analysis_uncertainty analysis/getUncertainty|nothing;
                                 analysis_accredited python:accredited and service.getAccredited();
-                                analysis_outofrange python:view.ResultOutOfRange(analysis);
                                 analysis_retested python:analysis.getRetested();
-                                analysis_specs python:analysis.getAnalysisSpecs();
-                                analysis_range python: analysis_specs and analysis_specs.getAnalysisSpecsStr(analysis_keyword) or '';
+                                spec python:view.get_active_spec_dict(analysis);
+                                analysis_range python: view.getAnalysisSpecsStr(spec) or '';
+                                analysis_outofrange python:view.ResultOutOfRange(analysis);
                                 analysis_remarks python: analysis.getRemarks() or '';
                                 analysis_css_result python:'outofrange' if analysis_outofrange else '';
                                 analysis_css_accredited python:'accredited' if analysis_accredited else '';
@@ -321,8 +324,8 @@
                                             dqc_refsample_code python:dqc_refsample.id;
                                             dqc_outofrange python: view.ResultOutOfRange(dqc_analysis);
                                             dqc_uncertainity python: dqc_analysis.getUncertainty();
-                                            dqc_specs python: None;
-                                            dqc_range python: dqc_specs and dqc_specs.getAnalysisSpecsStr(dqc_service.getKeyword()) or '';
+                                            dqc_specs python: {'min':'', 'max':'', 'error':''};
+                                            dqc_range python: dqc_specs and view.getAnalysisSpecsStr(dqc_specs) or '';
                                             dqc_worksheet python:dqc_analysis.getBackReferences('WorksheetAnalysis');
                                             dqc_wsid python:dqc_worksheet[0].id if (dqc_worksheet and len(dqc_worksheet) > 0) else '';
                                             dqc_wshref python:dqc_worksheet[0].absolute_url() if (dqc_worksheet and len(dqc_worksheet) > 0) else '';">

@@ -109,6 +109,7 @@
 							name input_name;
 							value serviceUID;
 							title serviceTitle;
+                            keyword python:service_obj.getKeyword();
 							checked python:(selected.find(serviceUID)>-1 or request.get(input_name, [])) and 'checked' or None;"/>
 					<input
 						tal:condition="python: disable != column"
@@ -120,6 +121,7 @@
 							name input_name;
 							value serviceUID;
 							title serviceTitle;
+                            keyword python:service_obj.getKeyword();
 							checked python:(selected.find(serviceUID)>-1 or request.get(input_name, [])) and 'checked' or None;"/>
 					<em class="discreet"
                         tal:attributes="

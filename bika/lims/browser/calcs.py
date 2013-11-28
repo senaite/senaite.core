@@ -299,7 +299,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         plone.protect.CheckAuthenticator(self.request)
         plone.protect.PostOnly(self.request)
 
-        self.spec = self.request.get('specification', 'lab')
+        self.spec = self.request.get('specification', None)
 
         # information about the triggering element
         uid = self.request.get('uid')

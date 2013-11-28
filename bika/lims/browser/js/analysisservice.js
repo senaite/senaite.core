@@ -5,8 +5,7 @@
 		_ = jarn.i18n.MessageFactory('bika');
 		PMF = jarn.i18n.MessageFactory('plone');
 
-		$(".portaltype-analysisservice #InterimFields_more").hide();
-		$(".portaltype-analysisservice #Calculation\\:list").change(function(){
+		$(".portaltype-analysisservice #Calculation").bind("selected", function(){
 			// no calculation selected
 			// clear and hide InterimFields widget completely
 			if($(this).val() == ''){
@@ -64,7 +63,7 @@
 				}
 			});
 		});
-		if($(".portaltype-analysisservice #Calculation\\:list").val() == ''){
+		if($(".portaltype-analysisservice #Calculation").val() == ''){
 			$("#InterimFields_more").click(); // blank last row
 			var rows = $("tr.records_row_InterimFields") // Clear the rest
 			if($(rows).length > 1){

@@ -53,8 +53,10 @@ Create AnalysisRequests
     Wait until page contains element    css=body.portaltype-client
     Click Link                  Add
     Wait until page contains    Request new analyses
+    sleep    1
+    Select Date                 ar_0_SamplingDate           1
+    select from dropdown        ar_0_Contact                Rita
     Select from dropdown        ar_0_Template               Bore
-    Select Date                 ar_0_SamplingDate           @{time}[2]
     Set Selenium Timeout        30
     Click Button                Save
     Wait until page contains    created
@@ -71,6 +73,7 @@ Add new analysis ${ar_id} ${category} ${title}
     sleep                     1
 
     Select checkbox           xpath=//input[@item_title="${title}"]
+    Capture Page Screenshot
     Click element             xpath=//input[@transition="save_analyses_button"]
     Wait until page contains  saved
 

@@ -284,6 +284,61 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceField(
+        'Specification',
+        required=0,
+        allowed_types='AnalysisSpec',
+        relationship='AnalysisRequestAnalysisSpec',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        widget=ReferenceWidget(
+            label=_("Analysis Specification"),
+            description=_("Choose default AR specification values"),
+            size=20,
+            render_own_label=True,
+            visible={'edit': 'visible',
+                     'view': 'visible',
+                     'add': 'visible',
+                     'secondary': 'invisible'},
+            catalog_name='bika_setup_catalog',
+            colModel=[
+                {'columnName': 'contextual_title',
+                 'width': '30',
+                 'label': _('Title'),
+                 'align': 'left'},
+                {'columnName': 'SampleTypeTitle',
+                 'width': '70',
+                 'label': _('SampleType'),
+                 'align': 'left'},
+                # UID is required in colModel
+                {'columnName': 'UID', 'hidden': True},
+            ],
+            showOn=True,
+        ),
+    ),
+    ReferenceField(
+        'PublicationSpecification',
+        required=0,
+        allowed_types='AnalysisSpec',
+        relationship='AnalysisRequestPublicationSpec',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.View,
+        widget=ReferenceWidget(
+            label=_("Publication Specification"),
+            description=_("Set the specification to be used before publishing an AR."),
+            size=20,
+            render_own_label=True,
+            visible={'edit': 'visible',
+                     'view': 'visible',
+                     'add': 'invisible',
+                     'secondary': 'invisible'},
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
+            showOn=True,
+        ),
+    ),
+    ReferenceField(
         'SamplePoint',
         allowed_types='SamplePoint',
         relationship='AnalysisRequestSamplePoint',
@@ -710,6 +765,10 @@ class AnalysisRequest(BaseFolder):
 
     def getTemplateTitle(self):
         return self.getTemplate().Title() if self.getTemplate() else ''
+
+    def setPublicationSpecification(self, value):
+        "Never contains a value; this field is here for the UI."
+        return None
 
     def getAnalysisCategory(self):
         proxies = self.getAnalyses(full_objects=True)

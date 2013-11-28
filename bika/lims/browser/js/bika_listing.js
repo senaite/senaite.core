@@ -1,30 +1,30 @@
 (function( $ ) {
 $(document).ready(function(){
 
-	_ = jarn.i18n.MessageFactory('bika');
-	PMF = jarn.i18n.MessageFactory('plone');
+	_ = jarn.i18n.MessageFactory("bika");
+	PMF = jarn.i18n.MessageFactory("plone");
 
 	// Click column header - set or modify sort order.
-	$("th.sortable").live('click', function(){
+	$("th.sortable").live("click", function(){
 		form = $(this).parents("form");
 		form_id = $(form).attr("id");
 		column_id = this.id.split("-")[1];
-		var column_index = $(this).parent().children('th').index(this);
-		sort_on_selector = '[name=' + form_id + '_sort_on]';
+		var column_index = $(this).parent().children("th").index(this);
+		sort_on_selector = "[name=" + form_id + "_sort_on]";
 		sort_on = $(sort_on_selector).val();
-		sort_order_selector = '[name=' + form_id + '_sort_order]';
+		sort_order_selector = "[name=" + form_id + "_sort_order]";
 		sort_order = $(sort_order_selector).val();
 		// if this column_id is the current sort
 		if (sort_on == column_id) {
 			// then we reverse sort order
-			if (sort_order == 'descending') {
-				sort_order = 'ascending';
+			if (sort_order == "descending") {
+				sort_order = "ascending";
 			} else {
-				sort_order = 'descending';
+				sort_order = "descending";
 			}
 		} else {
 			sort_on = column_id;
-			sort_order = 'ascending';
+			sort_order = "ascending";
 		}
 		// reset these values in the form (ajax sort uses them)
 		$(sort_on_selector).val(sort_on);
@@ -38,38 +38,39 @@ $(document).ready(function(){
 			target: $(this).parents("table"),
 			replaceTarget: true,
 			data: form.formToArray()
-		}
+		};
 		form.ajaxSubmit(options);
 		$("[name='table_only']").remove();
 		$(form).attr("action", stored_form_action);
 	});
 
 	// select all (on this page at least)
-	$("input[id*='select_all']").live('click', function(){
-		form_id = $(this).parents("form").attr("id");
-		checked = $(this).prop("checked");
-		$.each($("input[id^='"+form_id+"_cb_']"), function(i,v){
-			$(v).prop('checked',checked);
-		});
+	$("input[id*='select_all']").live("click", function(){
+		var checkboxes = $(this).parents("form").find("[id*='_cb_']");
+		if($(this).prop("checked")) {
+			$(checkboxes).filter("input:checkbox:not(:checked)").prop("checked", true);
+		} else {
+			$(checkboxes).filter("input:checkbox:checked").prop("checked", false);
+		}
 	});
 
 	// modify select_all checkbox when regular checkboxes are modified
-	$("input[id*='_cb_']").live('change', function(){
+	$("input[id*='_cb_']").live("change", function(){
 		form_id = $(this).parents("form").attr("id");
 		all_selected = true;
 		$.each($("input[id^='"+form_id+"_cb_']"), function(i,v){
-			if($(v).prop("checked") == false){
+			if(!($(v).prop("checked"))){
 				all_selected = false;
 			}
 		});
 		if(all_selected){
-			$("#"+form_id+"_select_all").prop('checked',true);
+			$("#"+form_id+"_select_all").prop("checked",true);
 		} else {
-			$("#"+form_id+"_select_all").prop('checked',false);
+			$("#"+form_id+"_select_all").prop("checked",false);
 		}
 	});
 
-	$(".listing_string_entry,.listing_select_entry").live('keypress', function(event) {
+	$(".listing_string_entry,.listing_select_entry").live("keypress", function(event) {
 		// Prevent automatic submissions of manage_results forms when enter is pressed
 		var enter = 13;
 		if (event.which == enter) {
@@ -77,16 +78,16 @@ $(document).ready(function(){
 		}
 		// check the item's checkbox
 		form_id = $(this).parents("form").attr("id");
-		uid = $(this).attr('uid');
-		if ($('#'+form_id+'_cb_'+uid).prop('checked') == false) {
-			$('#'+form_id+'_cb_'+uid).prop('checked', true);
+		uid = $(this).attr("uid");
+		if (!($("#"+form_id+"_cb_"+uid).prop("checked"))) {
+			$("#"+form_id+"_cb_"+uid).prop("checked", true);
 		}
 	});
 
 	// pagesize
-	$("select.pagesize").live('change', function(){
-		form = $(this).parents('form');
-		form_id = $(form).attr('id');
+	$("select.pagesize").live("change", function(){
+		form = $(this).parents("form");
+		form_id = $(form).attr("id");
 		pagesize = $(this).val();
 		new_query = $.query
 			.set(form_id + "_pagesize", pagesize)
@@ -95,22 +96,22 @@ $(document).ready(function(){
 	});
 
 	// expand/collapse categorised rows
-	$(".bika-listing-table th.collapsed").live('click', function(){
-		$(this).parent().nextAll('tr[cat="'+$(this).attr("cat")+'"]') .toggle(true);
-		$(this) .removeClass('collapsed') .addClass('expanded');
+	$(".bika-listing-table th.collapsed").live("click", function(){
+		$(this).parent().nextAll("tr[cat='"+$(this).attr("cat")+"']") .toggle(true);
+		$(this) .removeClass("collapsed") .addClass("expanded");
 	});
-	$(".bika-listing-table th.expanded").live('click', function(){
-		$(this).parent().nextAll('tr[cat="'+$(this).attr("cat")+'"]') .toggle(false)
-		$(this).removeClass('expanded') .addClass('collapsed');
+	$(".bika-listing-table th.expanded").live("click", function(){
+		$(this).parent().nextAll("tr[cat='"+$(this).attr("cat")+"']") .toggle(false);
+		$(this).removeClass("expanded") .addClass("collapsed");
 	});
 
 	// always select checkbox when selectable listing item is changed
-	$(".listing_select_entry").live('change', function(){
+	$(".listing_select_entry").live("change", function(){
 		form_id = $(this).parents("form").attr("id");
-		uid = $(this).attr('uid');
+		uid = $(this).attr("uid");
 		// check the item's checkbox
-		if ($('#'+form_id+'_cb_'+uid).prop('checked') == false) {
-			$('#'+form_id+'_cb_'+uid).prop('checked', true);
+		if (!($("#"+form_id+"_cb_"+uid).prop("checked"))) {
+			$("#"+form_id+"_cb_"+uid).prop("checked", true);
 		}
 	});
 

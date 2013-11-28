@@ -72,9 +72,14 @@ class ARAnalysesField(ObjectField):
 
     security.declarePrivate('set')
 
-    def set(self, instance, service_uids, prices=None, **kwargs):
+    def set(self, instance, service_uids, prices=None, specs={}, **kwargs):
         """ service_uids are the services selected on the AR Add/Edit form.
-            prices is a service_uid keyed dictionary containing the prices entered on the form.
+
+        prices is a service_uid keyed dictionary containing the prices entered
+            on the form.
+
+        specs is a uid keyed dict with values of
+            {min:, max:, error:}
         """
         if not service_uids:
             return
@@ -101,6 +106,8 @@ class ARAnalysesField(ObjectField):
             keyword = service.getKeyword()
             price = prices[service_uid] if prices and service_uid in prices \
                 else service.getPrice()
+            spec = specs[service_uid] if specs and service_uid in specs \
+                else {"min": "", "max": "", "error": ""}
             vat = Decimal(service.getVAT())
 
             # analysis->InterimFields
@@ -126,9 +133,9 @@ class ARAnalysesField(ObjectField):
                 instance.invokeFactory(id=keyword,
                                        type_name='Analysis')
                 analysis = instance._getOb(keyword)
-                analysis.edit(Service=service,
-                              InterimFields=interim_fields,
-                              MaxTimeAllowed=service.getMaxTimeAllowed())
+                analysis.setService(service)
+                analysis.setInterimFields(interim_fields)
+                analysis.setMaxTimeAllowed(service.getMaxTimeAllowed())
                 analysis.unmarkCreationFlag()
                 zope.event.notify(ObjectInitializedEvent(analysis))
                 SamplingWorkflowEnabled = instance.bika_setup.getSamplingWorkflowEnabled()
@@ -143,6 +150,10 @@ class ARAnalysesField(ObjectField):
                     pass
                 new_analyses.append(analysis)
                 # Note: subscriber might retract and/or unassign the AR
+            analysis.specification = spec
+            # XXX Price?
+            # analysis.setPrice(price)
+
 
         # delete analyses
         delete_ids = []

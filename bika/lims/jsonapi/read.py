@@ -1,10 +1,11 @@
+from bika.lims import logger
 from plone.jsonapi import router
 from plone.jsonapi.interfaces import IRouteProvider
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.i18nl10n import ulocalized_time
 from zope import interface
+import App
 import Missing
-
 import json
 
 
@@ -60,6 +61,7 @@ def read(context, request):
         "error": False,
         "objects": [],
     }
+    debug_mode = App.config.getConfiguration().debug_mode
     catalog_name = request.get("catalog_name", "portal_catalog")
     if not catalog_name:
         raise ValueError("bad or missing catalog_name: " + catalog_name)
@@ -71,12 +73,23 @@ def read(context, request):
             if index == 'review_state' and "{" in request[index]:
                 continue
             contentFilter[index] = request[index]
-    try:
-        contentFilter['limit'] = int(request.get("limit", 1))
-    except ValueError:
-        contentFilter['limit'] = 1
-    include_fields = [x.strip() for x in request.get("include_fields", "").split(",")
-                      if x.strip()]
+        if "{0}[]".format(index) in request:
+            contentFilter[index] = request["{0}[]".format(index)]
+    if 'limit' in request:
+        try:
+            contentFilter['sort_limit'] = int(request["limit"])
+        except ValueError:
+            pass
+    include_fields = []
+    if "include_fields" in request:
+        include_fields = [x.strip() for x in request.get("include_fields", "").split(",")
+                          if x.strip()]
+    if "include_fields[]" in request:
+        include_fields = request['include_fields[]']
+    if debug_mode:
+        logger.info("contentFilter: " + str(contentFilter))
+        if include_fields:
+            logger.info("include_fields: " + str(include_fields))
     # Get matching objects from catalog
     proxies = catalog(**contentFilter)
     for proxy in proxies:
@@ -119,6 +132,8 @@ def read(context, request):
             obj_data[fieldname] = val
         obj_data['path'] = "/".join(obj.getPhysicalPath())
         ret['objects'].append(obj_data)
+    if debug_mode:
+        logger.info("{0} objects returned".format(len(ret['objects'])))
     return ret
 
 

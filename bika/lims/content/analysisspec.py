@@ -22,15 +22,16 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisSpec
 from types import ListType, TupleType
+from zope.i18n import translate
 from zope.interface import implements
 import sys
 import time
 
 schema = Schema((
     HistoryAwareReferenceField('SampleType',
-        schemata = 'Description',
-        required = 1,
-        vocabulary = "getRemainingSampleTypes",
+        # schemata = 'Description',
+        # required = 1,
+        vocabulary = "getSampleTypes",
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('SampleType',),
         relationship = 'AnalysisSpecSampleType',
@@ -38,20 +39,16 @@ schema = Schema((
         widget = ReferenceWidget(
             checkbox_bound = 0,
             label = _("Sample Type"),
-            description = _("If the sample type you are looking for is not listed here, "
-                            "a specification for it has been created already. To edit existing, "
-                            "specifications, navigate 1 level up and select the specification by "
-                            "clicking on the sample type in the list"),
         ),
     ),
     ComputedField('SampleTypeTitle',
-        expression = "context.getSampleType() and context.getSampleType().Title() or ''",
+        expression = "context.getSampleType().Title() if context.getSampleType() else ''",
         widget = ComputedWidget(
             visible = False,
         ),
     ),
     ComputedField('SampleTypeUID',
-        expression = "context.getSampleType() and context.getSampleType().UID() or ''",
+        expression = "context.getSampleType().UID() if context.getSampleType() else ''",
         widget = ComputedWidget(
             visible = False,
         ),
@@ -60,7 +57,7 @@ schema = Schema((
 BikaSchema.copy() + \
 Schema((
     RecordsField('ResultsRange',
-        schemata = 'Specifications',
+        # schemata = 'Specifications',
         required = 1,
         type = 'analysisspec',
         subfields = ('keyword', 'min', 'max', 'error'),
@@ -93,11 +90,11 @@ Schema((
         ),
     ),
 ))
-schema['description'].schemata = 'Description'
+# schema['description'].schemata = 'Description'
 schema['description'].widget.visible = True
-schema['title'].schemata = 'Description'
-schema['title'].required = False
-schema['title'].widget.visible = False
+# schema['title'].schemata = 'Description'
+schema['title'].required = True
+# schema['title'].widget.visible = False
 
 class AnalysisSpec(BaseFolder, HistoryAwareMixin):
     implements(IAnalysisSpec)
@@ -111,13 +108,22 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
         renameAfterCreation(self)
 
     def Title(self):
-        """ Return the SampleType as title """
-        try:
-            st = self.getSampleType()
-            st = st and st.Title() or ''
-        except:
-            st = self.getId()
-        return safe_unicode(st).encode('utf-8')
+        if not self.id:
+            # this won't work too early in the creation stage
+            return ''
+        if not self.title:
+            title = self.getSampleType().Title() \
+                if self.getSampleType() \
+                else self.id
+            return title
+        return self.title
+
+    def contextual_title(self):
+        parent = self.aq_parent
+        if parent == self.bika_setup.bika_analysisspecs:
+            return self.title + " ("+translate(_("Lab"))+")"
+        else:
+            return self.title + " ("+translate(_("Client"))+")"
 
     security.declarePublic('getSpecCategories')
     def getSpecCategories(self):
@@ -174,37 +180,15 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
         return sorted_specs
 
     security.declarePublic('getRemainingSampleTypes')
-    def getRemainingSampleTypes(self):
-        """ return all unused sample types """
-        """ plus the current object's sample type, if any """
-        unavailable_sampletypes = []
-        for spec in self.aq_parent.objectValues('AnalysisSpec'):
-            st = spec.getSampleType()
-            own_sampletype = self.getSampleType() and \
-                           self.getSampleType().UID()
-            if not st.UID() == own_sampletype:
-                unavailable_sampletypes.append(st.UID())
-
-        available_sampletypes = []
+    def getSampleTypes(self):
+        """ return all sampletypes """
+        sampletypes = []
         bsc = getToolByName(self, 'bika_setup_catalog')
         for st in bsc(portal_type = 'SampleType',
                       sort_on = 'sortable_title'):
-            if st.UID not in unavailable_sampletypes:
-                available_sampletypes.append((st.UID, st.Title))
+            sampletypes.append((st.UID, st.Title))
 
-        return DisplayList(available_sampletypes)
+        return DisplayList(sampletypes)
 
-    def getAnalysisSpecsStr(self, keyword):
-        specstr = ''
-        specs = self.getResultsRangeDict()
-        if keyword in specs.keys():
-            specs = specs[keyword]
-            if specs['min'] and specs['max']:
-                specstr = '%s - %s' % (specs['min'], specs['max'])
-            elif specs['min']:
-                specstr = '> %s' % specs['min']
-            elif specs['max']:
-                specstr = '< %s' % specs['max']
-        return specstr
 
 atapi.registerType(AnalysisSpec, PROJECTNAME)

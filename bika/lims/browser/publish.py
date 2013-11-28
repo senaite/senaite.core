@@ -29,10 +29,8 @@ class doPublish(BrowserView):
         self.context = context
         self.request = request
         self.field_icons = {}
-
         # the workflow transition that invoked us
         self.action = action
-
         # the list of ARs that we will process.
         # Filter them here so we only publish those with verified analyses.
         workflow = getToolByName(self.context, 'portal_workflow')
@@ -43,23 +41,74 @@ class doPublish(BrowserView):
                     or ar.getAnalyses(review_state=self.publish_states):
                 self.analysis_requests.append(ar)
 
+    def get_active_spec_object(self):
+        # 1) pub spec first
+        # 2) AR spec attribute
+        # 3) None
+        spec_uid = self.request.get('PublicationSpecification', '')
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        obj = None
+        if spec_uid:
+            brains = bsc(UID=spec_uid)
+            if brains:
+                obj = brains[0].getObject()
+        if not obj:
+            if self.context.getSpecification():
+                obj = self.context.getSpecification()
+        return obj
+
+    def get_active_spec_title(self):
+        obj = self.get_active_spec_object()
+        if obj:
+            return obj.Title()
+        return ""
+
+    def get_active_spec_dict(self, analysis):
+        # 1) pub/AR spec first
+        # 2) specs directly on the analysis
+        # 3) None
+
+        obj = self.get_active_spec_object()
+        if obj:
+            rr = obj.getResultsRangeDict()
+            keyword = analysis.getKeyword()
+            if keyword in rr:
+                return rr[keyword]
+        if hasattr(analysis, "specification") and analysis.specification:
+            return analysis.specification
+        return {"max": "", "min": "", "error": ""}
+
     def ResultOutOfRange(self, analysis):
         """ Template wants to know, is this analysis out of range?
         We scan IFieldIcons adapters, and return True if any IAnalysis
         adapters trigger a result.
         """
         adapters = getAdapters((analysis, ), IFieldIcons)
+        bsc = getToolByName(self.context, "bika_setup_catalog")
+        spec = self.get_active_spec_dict(analysis)
         for name, adapter in adapters:
-            alerts = adapter()
+            obj = self.get_active_spec_object()
+            if not spec:
+                return False
+            alerts = adapter(specification=spec)
             if alerts and analysis.UID() in alerts:
                 return True
+
+    def getAnalysisSpecsStr(self, spec):
+        specstr = ''
+        if spec['min'] and spec['max']:
+            specstr = '%s - %s' % (spec['min'], spec['max'])
+        elif spec['min']:
+            specstr = '> %s' % spec['min']
+        elif spec['max']:
+            specstr = '< %s' % spec['max']
+        return specstr
 
     def __call__(self):
 
         debug_mode = App.config.getConfiguration().debug_mode
         out_path = join(Globals.INSTANCE_HOME, 'var') if debug_mode else None
         workflow = getToolByName(self.context, 'portal_workflow')
-
         # reporting user
         member = self.context.portal_membership.getAuthenticatedMember()
         username = member.getUserName()

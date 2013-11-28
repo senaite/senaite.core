@@ -79,12 +79,15 @@ Create AnalysisRequests
     Wait until page contains element    css=body.portaltype-client
     Click Link                  Add
     Wait until page contains    Request new analyses
+    Select from dropdown        ar_0_Contact                Rita
+    Select from dropdown        ar_1_Contact                Rita
+    sleep  1
     Select from dropdown        ar_0_Template               Bore
-    sleep  2
     Select from dropdown        ar_1_Template               Bruma
-    sleep  2
+    sleep  1
     Select Date                 ar_0_SamplingDate           @{time}[2]
     Select Date                 ar_1_SamplingDate           @{time}[2]
+    sleep  1
     Set Selenium Timeout        30
     Click Button                Save
     Wait until page contains    created

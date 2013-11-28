@@ -25,7 +25,7 @@ ARTemplates
     Input Text  SamplePoint   Borehole 12
     Input Text  SampleType    Water
     Select Checkbox  ReportDryMatter
-    Click link  Sample Partitions
+    Click link  css=#fieldsetlegend-sample-partitions
     wait until page contains element    Partitions-Container-0
     Select from dropdown  Partitions-Container-0        Glass Bottle 500ml
     Select from dropdown  Partitions-Preservation-0     Any
@@ -537,17 +537,17 @@ AnalysisServices
     Input Text  Price      50.23
     Input Text  BulkPrice  30.00
     Input Text  VAT        15.00
-    Select From list  Department:list   Admin
+    Select From dropdown  Department   Admin
     Click link  Analysis
     Wait Until Page Contains Element  Precision
     Input Text  Precision  3
     Select Checkbox  ReportDryMatter
-    Click element   AttachmentOption_2
+    select from list   AttachmentOption      2
     Input Text  MaxTimeAllowed.days:record:ignore_empty  3
     Input Text  MaxTimeAllowed.hours:record:ignore_empty  3
     Input Text  MaxTimeAllowed.minutes:record:ignore_empty  3
     Click link  Method
-    Wait Until Page Contains Element     Instrument:list
+    Wait Until Page Contains Element     Instrument
     Select From dropdown  Method         Titration
     Select From dropdown  Instrument     Blott Titrator
     Select From dropdown  Calculation    Titration
@@ -574,8 +574,8 @@ AnalysisServices
     Input Text  ResultOptions-ResultText-1  Result Text 1
     Click link  Container and Preservation
     Select Checkbox  Separate
-    Select from dropdown    Preservation:list    H2SO4
-    Select from dropdown    Container:list        Any
+    Select from dropdown    Preservation    H2SO4
+    Select from dropdown    Container       Any
     Select From dropdown    PartitionSetup-sampletype-0    Apple Pulp
     Click Element           PartitionSetup-separate-0
     Select From dropdown    PartitionSetup-preservation-0  Chill (4 degrees)
@@ -605,12 +605,10 @@ AnalysisSpecifications
     Wait Until Page Contains Element  description
     Select From List  SampleType:list
     Input Text  description    Temporary test object
-    Click link  Specifications
-    Page should contain  Specifications
     Click Element  xpath=//th[@cat='Water Chemistry']
-    Input Text  xpath=//input[@field='min']  3
-    Input Text  xpath=//input[@field='max']  4
-    Input Text  xpath=//input[@field='error']  5
+    Input Text  xpath=(//th[@cat='Water Chemistry'])//input[@field='min']  3
+    Input Text  xpath=(//th[@cat='Water Chemistry'])//input[@field='max']  4
+    Input Text  xpath=(//th[@cat='Water Chemistry'])//input[@field='error']  5
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
@@ -627,9 +625,9 @@ ReferenceDefinition
     Page should contain  Specifications
     Wait Until Page Contains  Reference Values
     Click Element  xpath=//th[@cat='Water Chemistry']
-    Input Text  xpath=//input[@field='result']  3
-    Input Text  xpath=//input[@field='error']  5
-    Click Element  xpath=//input[@field='min']
+    Input Text  xpath=(//th[@cat='Water Chemistry'])//input[@field='result']   3
+    Input Text  xpath=(//th[@cat='Water Chemistry'])//input[@field='error']  5
+    Click Element  xpath=(//th[@cat='Water Chemistry'])//input[@field='min']
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 

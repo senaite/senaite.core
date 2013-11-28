@@ -186,6 +186,24 @@ schema = BikaFolderSchema.copy() + Schema((
                             "tables, helpful when the list is long")
         ),
     ),
+    BooleanField('EnableARSpecs',
+        schemata = "Analyses",
+        default = True,
+        widget = BooleanWidget(
+            label = _("Enable AR Specifications"),
+            description=_("EnableARSpecs_description"),
+        ),
+    ),
+    StringField('DefaultARSpecs',
+        schemata = "Analyses",
+        default = 'ar_specs',
+        vocabulary = DEFAULT_AR_SPECS,
+        widget = SelectionWidget(
+            label = _("Default AR Specifications"),
+            description = _("DefaultARSpecs_description"),
+            format='select',
+        )
+    ),
     BooleanField('EnableAnalysisRemarks',
         schemata = "Analyses",
         default = False,

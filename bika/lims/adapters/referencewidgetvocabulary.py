@@ -14,7 +14,7 @@ class DefaultReferenceWidgetVocabulary(object):
         self.context = context
         self.request = request
 
-    def __call__(self, result=None, specification="lab", **kwargs):
+    def __call__(self, result=None, specification=None, **kwargs):
         searchTerm = _c(self.request.get('searchTerm', '')).lower()
         force_all = self.request.get('force_all', 'true')
         searchFields = 'search_fields' in self.request \

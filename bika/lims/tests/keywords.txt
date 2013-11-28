@@ -30,7 +30,7 @@ Select from dropdown
     ...                ${search_text}=
     ...                ${item_number}=1
     Input text         ${locator}  ${search_text}
-    Wait until page contains element       xpath=//div[contains(@class,'cg-colItem')]
+    sleep    1
     Click Element      xpath=//div[contains(@class,'cg-colItem')][${item_number}]
 
 
@@ -81,3 +81,6 @@ Shleep
     ...          ${comment}=
     Log  Sleeping ${amount}: ${comment}  WARN
     sleep  ${amount}
+
+Wait For Ajax
+    Wait for Condition   return window.jQuery.active == 0;

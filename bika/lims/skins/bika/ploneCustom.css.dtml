@@ -364,6 +364,11 @@ table.analysisrequest.add td {
 table.analysisrequest.add td.contact {
   text-align: left;
 }
+table.analysisrequest.add td.service {
+  text-align: left;
+  /*padding-left: 8px;*/
+  /*padding-right: 8px;*/
+}
 
 table.analysisrequest.edit td {
   text-align: center;
@@ -372,16 +377,6 @@ table.analysisrequest.edit td {
 table.analysisrequest.add td.ar_column {
   width:8em;
   padding 0px 5px 0 5px;
-}
-#cc_titles {
-  width:60%;
-  background:transparent;
-  border:none;
-}
-#cc_emails {
-  width:100%;
-  background:transparent;
-  border:none;
 }
 
 table.analysisrequest .pointofcapture th {

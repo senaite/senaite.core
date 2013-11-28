@@ -58,18 +58,18 @@ Add Batch
     Click Link                   Add
     Wait until page contains     Add Batch
     Input text                   description  Just a regular batch
-    # Select from dropdown       ClientID   Happy    1
+    Select from dropdown         ClientID     Happy
     Click Button                 xpath=//input[@value="Save"]
     Wait until page contains     saved
 
 Batch state should be
     [Arguments]   ${state_id}
-    Go to                        http://localhost:55001/plone/batches/B-001
+    Go to                        http://localhost:55001/plone/batches/B-001/analysisrequests
     Wait until page contains     Analysis Requests
     Page should contain element  css=span.state-${state_id}
 
 Add AR
-    Go to                        http://localhost:55001/plone/batches/B-001
+    Go to                        http://localhost:55001/plone/batches/B-001/analysisrequests
     Wait until page contains     Add new
     Select from list             col_count  1
     click Link                   Add new
@@ -83,7 +83,7 @@ Add AR
 
 Receive AR
     [Arguments]   ${ar_id}
-    Go to                        http://localhost:55001/plone/batches/B-001
+    Go to                        http://localhost:55001/plone/batches/B-001/analysisrequests
     Wait until page contains     ${ar_id}
     Select checkbox              xpath=//input[@item_title="${ar_id}"]
     Click button                 xpath=//input[@value="Receive sample"]
@@ -91,7 +91,7 @@ Receive AR
 
 Submit AR
     [Arguments]   ${ar_id}
-    Go to                        http://localhost:55001/plone/batches/B-001
+    Go to                        http://localhost:55001/plone/batches/B-001/analysisrequests
     Wait until page contains     Add new
     Click link                   ${ar_id}
     Wait until page contains     Results not requested
@@ -105,7 +105,7 @@ Submit AR
 
 Retract AR
     [Arguments]   ${ar_id}
-    Go to                        http://localhost:55001/plone/batches/B-001
+    Go to                        http://localhost:55001/plone/batches/B-001/analysisrequests
     Wait until page contains     ${ar_id}
     Select checkbox              xpath=//input[@item_title="${ar_id}"]
     Click button                 xpath=//input[@value="Retract"]
@@ -113,7 +113,7 @@ Retract AR
 
 Verify AR
     [Arguments]   ${ar_id}
-    Go to                        http://localhost:55001/plone/batches/B-001
+    Go to                        http://localhost:55001/plone/batches/B-001/analysisrequests
     Wait until page contains     ${ar_id}
     Select checkbox              xpath=//input[@item_title="${ar_id}"]
     Click button                 xpath=//input[@value="Verify"]

@@ -24,33 +24,6 @@
 
     <span tal:replace="structure view/header_table"/>
 
-    <h3 tal:condition="view/tables"
-	    style="margin-top:2em;">
-        <tal:range>
-            <form name="specificationForm"
-                enctype="multipart/form-data"
-                method="post">
-            <img
-				title="range"
-				i18n:attributes="title"
-                tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/analysisspec.png"/>
-            <span i18n:translate="">Range Specification</span>
-            <a class="specification" id="lab" value="lab"
-                href=""
-				i18n:translate=""
-                tal:attributes="
-                    href python:context.absolute_url();
-                    class python:specification == 'lab' and 'specification selected' or 'specification'">Lab</a>
-            <a class="specification" id="client" value="client"
-                href=""
-				i18n:translate=""
-                tal:attributes="
-                    href python:context.absolute_url();
-                    class python:specification == 'client' and 'specification selected' or 'specification'">Client</a>
-            </form>
-        </tal:range>
-    </h3>
-
     <tal:tables tal:condition="view/tables"
 	            tal:repeat="table python:view.tables.items()">
 		<h3 style="margin-top:2em;">

@@ -25,7 +25,7 @@ displayed when ajax requests the table. </tal:comment>
 		toggle_cols python:dict([(col, view.bika_listing.columns[col])
 								for col in view.bika_listing.columns.keys()
 								if col in review_state['columns']]);
-		specification python:view.request.get('specification', 'lab');
+		specification python:view.request.get('specification', None);
 		sm python:modules['AccessControl'].getSecurityManager();
 		EditAnalyses python:sm.checkPermission('BIKA: Edit analyses', context);
 		ViewResults python:sm.checkPermission('BIKA: View Results', context);
@@ -76,11 +76,12 @@ directly above the table element Some of the javascript relies on this to
 distinguish between data for pages with multiple editable tables.
 XXX This should use form_id </tal:comment>
 
-<input type="hidden"
+<!-- <input type="hidden"
 	name="specs"
 	tal:omit-tag="python:table_only"
 	tal:attributes="value python:hasattr(view.bika_listing, 'json_specs') and
 								view.bika_listing.json_specs or []"/>
+-->
 <input type="hidden"
 	id="item_data"
 	tal:omit-tag="python:table_only"

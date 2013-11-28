@@ -59,7 +59,7 @@
          tal:condition="python: cfields">
         <tal:customfields repeat="cfield python:cfields.keys()">
             <span tal:replace="structure python:cfields[cfield]['title']"/>&nbsp;
-            <span tal:replace="structure python:cfields[cfield]['value']"/> 
+            <span tal:replace="structure python:cfields[cfield]['value']"/>
         </tal:customfields>
     </div>
 
@@ -88,32 +88,7 @@
 				tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/analysisprofile.png">
 			<span i18n:translate="">Profile</span>:
 			<span tal:content="view/getAnalysisProfileTitle"/>
-			&nbsp&nbsp&nbsp&nbsp
 		</tal:profile>
-
-        <form name="specificationForm"
-					enctype="multipart/form-data"
-					method="post">
-        <tal:range>
-            <img title="range"
-                tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/analysisspec.png">
-            <span i18n:translate="">Range Specification</span>
-            <a class="review_state_selector" id="lab" value="lab"
-                href=""
-				i18n:translate=""
-                tal:attributes="
-                    href python:context.absolute_url();
-                  class python:specification == 'lab' and 'specification selected' or 'specification'">Lab</a>
-            <a class="review_state_selector" id="client" value="client"
-                href=""
-				i18n:translate=""
-                tal:attributes="
-                    href python:context.absolute_url();
-                  class python:specification == 'client' and 'specification selected' or 'specification'">Client</a>
-
-
-        </tal:range>
-        </form>
         </h3>
         <br/>
 

@@ -7,7 +7,6 @@
 
 <body tal:define="
     portal context/@@plone_portal_state/portal;
-    specification python:request.get('specification', 'lab');
     global out_of_range python:0;
     global late python:0;
     tabindex view/tabindex;
@@ -35,7 +34,6 @@
 <metal:content-core fill-slot="content-core" tal:define="
 	tabindex view/tabindex;
 	portal context/@@plone_portal_state/portal;
-	specification python: request.get('specification', view.getDefaultSpec());
 	ar_attach_allowed here/bika_setup/getARAttachmentsPermitted;
 	ar_review_state python: context.portal_workflow.getInfoFor(context, 'review_state');
 	analysis_attach_allowed here/bika_setup/getAnalysisAttachmentsPermitted;
@@ -51,34 +49,6 @@
     </div>
 
 	<br/>
-
-    <h3>
-        <tal:range>
-            <form name="specificationForm"
-                enctype="multipart/form-data"
-                method="post">
-            <img
-				title="range"
-				i18n:attributes="title"
-                tal:attributes="src string:${view/portal_url}/++resource++bika.lims.images/analysisspec.png"/>
-            <span i18n:translate="">Range Specification</span>
-            <a class="specification" id="lab" value="lab"
-                href=""
-				i18n:translate=""
-                tal:attributes="
-                    href python:context.absolute_url();
-                    class python:specification == 'lab' and 'specification selected' or 'specification'">Lab</a>
-            <a class="specification" id="client" value="client"
-                href=""
-				i18n:translate=""
-                tal:attributes="
-                    href python:context.absolute_url();
-                    class python:specification == 'client' and 'specification selected' or 'specification'">Client</a>
-            </form>
-        </tal:range>
-    </h3>
-
-    <br/>
 
     <tal:tables tal:repeat="table python:view.tables.items()" tal:condition="python:hasattr(view, 'tables')">
         <h3>

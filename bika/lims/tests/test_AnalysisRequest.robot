@@ -62,6 +62,7 @@ Start browser
 Complete ar_add form with template ${template}
     @{time} =                   Get Time        year month day hour min sec
     SelectDate                  ar_0_SamplingDate   @{time}[2]
+    Select from dropdown        ar_0_Contact       Rita
     Select from dropdown        ar_0_Template       ${template}
     Set Selenium Timeout        30
     Click Button                Save
@@ -75,6 +76,7 @@ Complete ar_add form Without template
     @{time} =                  Get Time        year month day hour min sec
     SelectDate                 ar_0_SamplingDate   @{time}[2]
     Select From Dropdown       ar_0_SampleType    Water
+    Select from dropdown        ar_0_Contact       Rita
     Click Element              xpath=//th[@id='cat_lab_Water Chemistry']
     Select Checkbox            xpath=//input[@title='Moisture' and @name='ar.0.Analyses:list:ignore_empty:record']
     Click Element              xpath=//th[@id='cat_lab_Metals']

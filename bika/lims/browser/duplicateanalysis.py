@@ -18,7 +18,7 @@ class ResultOutOfRange(object):
     def __init__(self, context):
         self.context = context
 
-    def __call__(self, result=None, specification="lab", **kwargs):
+    def __call__(self, result=None, specification=None, **kwargs):
         # Other types of analysis depend on Analysis base class, and therefore
         # also provide IAnalysis.  We allow them to register their own adapters
         # for range checking, and manually ignore them here.

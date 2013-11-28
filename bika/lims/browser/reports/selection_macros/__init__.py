@@ -57,15 +57,26 @@ class SelectionMacrosView(BrowserView):
             return res
 
     select_analysisspecification_pt = ViewPageTemplateFile("select_analysisspecification.pt")
-    def select_analysisspecification(self, specs=['lab', 'client']):
-        self.specs = specs
+    def select_analysisspecification(self):
+        specfolder_uid = self.context.bika_setup.bika_analysisspecs.UID()
+        res = []
+        bsc = getToolByName(self.context, "bika_setup_catalog")
+        for s in bsc(portal_type='AnalysisSpec'):
+            if s.getClientUID == specfolder_uid:
+                res.append({'uid': s.UID, 'title': s.Title})
+        for c in self.context.clients.objectValues():
+            for s in c.objectValues():
+                if s.portal_type != 'AnalysisSpec':
+                    continue
+                res.append({'uid': s.UID(), 'title': s.Title() + " (" + c.Title() + ")"})
+        self.specs = res
         return self.select_analysisspecification_pt()
 
     select_analyst_pt = ViewPageTemplateFile("select_analyst.pt")
     def select_analyst(self):
         self.analysts = getUsers(self.context, ['Manager', 'LabManager', 'Analyst'])
         return self.select_analyst_pt()
-    
+
     select_user_pt = ViewPageTemplateFile("select_user.pt")
     def select_user(self, allow_blank=True):
         self.allow_blank = allow_blank
@@ -123,7 +134,7 @@ class SelectionMacrosView(BrowserView):
         res['parms'] = {'title': field_title, 'value': parms}
         res['titles'] = parms
         return res
-    
+
     select_instrument_pt = ViewPageTemplateFile("select_instrument.pt")
     def select_instrument(self):
         self.instruments = self.bsc(portal_type='Instrument', inactive_state='active', sort_on='sortable_title')
@@ -208,7 +219,7 @@ class SelectionMacrosView(BrowserView):
             res['parms'] = {'title': _("Sample Type"), 'value': title}
             res['titles'] = title
             return res
-        
+
     select_groupingperiod_pt = ViewPageTemplateFile("select_groupingperiod.pt")
     def select_groupingperiod(self, allow_blank=True, multiselect=False):
         self.allow_blank = allow_blank

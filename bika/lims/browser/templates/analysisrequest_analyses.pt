@@ -51,6 +51,13 @@
 
 <metal:content-core fill-slot="content-core">
 
+<span id="bika_setup" style="display:none;"
+    tal:define="bs python: context.bika_setup;"
+    tal:attributes="EnableARSpecs python: 'true' if bs.getEnableARSpecs() else '';
+                    ShowPartitions python: 'true' if bs.getShowPartitions() else '';
+                    SHowPrices python: 'true' if bs.getShowPartitions() else '';">
+</span>
+
 <h3 style="margin-top:1em;" tal:condition="python:context.bika_setup.getShowPartitions()">
 	<img
 		i18n:attributes="title"

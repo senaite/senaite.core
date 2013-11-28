@@ -195,7 +195,7 @@ class ResultOutOfRange(object):
     def __init__(self, context):
         self.context = context
 
-    def __call__(self, result=None, specification="lab", **kwargs):
+    def __call__(self, result=None, **kwargs):
         workflow = getToolByName(self.context, 'portal_workflow')
         items = self.context.getAnalyses()
         field_icons = {}

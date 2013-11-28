@@ -399,13 +399,15 @@ class IFieldIcons(Interface):
     """Used to signal an analysis result out of range alert
     """
 
-    def __call__(self, result=None, specification="lab", **kwargs):
+    def __call__(self, result=None, **kwargs):
         """Returns a dictionary: with the keys 'field', 'icon', 'message'.
 
         If result is specified, it's checked instead of the database.  This
         is for form validations.
 
-        By default, specification should be one of "lab" or "client"
+        Analysis range checkers can include a 'specification' in kwargs to
+        override the spec derived from the context. It should be a dict
+        w/ 'min', 'max', and 'error' keys.
         """
 
 

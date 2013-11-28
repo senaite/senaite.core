@@ -60,7 +60,6 @@ import plone
 import urllib
 import zope.event
 
-
 class AnalysisRequestWorkflowAction(WorkflowAction):
     """Workflow actions taken in AnalysisRequest context.
 
@@ -150,8 +149,20 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 self.request.response.redirect(self.destination_url)
                 return
 
-            prices = form.get('Price', [None])[0]
-            new = ar.setAnalyses(objects.keys(), prices = prices)
+            Analyses = objects.keys()
+            prices = form.get("Price", [None])[0]
+            specs = {}
+            if form.get("min", None):
+                for service_uid in Analyses:
+                    specs[service_uid] = {
+                        "min": form["min"][0][service_uid],
+                        "max": form["max"][0][service_uid],
+                        "error": form["error"][0][service_uid]
+                    }
+            else:
+                for service_uid in Analyses:
+                    specs[service_uid] = {"min": "", "max": "", "error": ""}
+            new = ar.setAnalyses(Analyses, prices=prices, specs=specs)
 
             # link analyses and partitions
             # If Bika Setup > Analyses > 'Display individual sample
@@ -589,7 +600,7 @@ class ResultOutOfRange(object):
     def __init__(self, context):
         self.context = context
 
-    def __call__(self, result=None, specification="lab", **kwargs):
+    def __call__(self, result=None, **kwargs):
         workflow = getToolByName(self.context, 'portal_workflow')
         items = self.context.getAnalyses()
         field_icons = {}
@@ -1051,85 +1062,6 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                 ps.append(service.UID())
         return json.dumps(ps)
 
-    def listProfiles(self):
-        ## List of selected services for each AnalysisProfile
-        profiles = {}
-        client = self.context.portal_type == 'AnalysisRequest' \
-            and self.context.aq_parent or self.context
-        for context in (client, self.context.bika_setup.bika_analysisprofiles):
-            for profile in [p for p in context.objectValues("AnalysisProfile")
-                            if isActive(p)]:
-                slist = {}
-                profile_services = profile.getService()
-                if type(profile_services) not in (list, tuple):
-                    profile_services = [profile_services, ]
-                for p_service in profile_services:
-                    key = "%s_%s" % (p_service.getPointOfCapture(),
-                                     p_service.getCategoryUID())
-                    if key in slist:
-                        slist[key].append(p_service.UID())
-                    else:
-                        slist[key] = [p_service.UID(), ]
-
-                title = context == self.context.bika_setup.bika_analysisprofiles \
-                    and "%s: %s" % (self.context.translate(_('Lab')), profile.Title().decode('utf-8')) \
-                    or profile.Title()
-
-                p_dict = {
-                    'UID':profile.UID(),
-                    'Title':title,
-                    'Services':slist,
-                }
-                profiles[profile.UID()] = p_dict
-        return json.dumps(profiles)
-
-    def listTemplates(self):
-        ## parameters for all ARTemplates
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        templates = {}
-        client = self.context.portal_type == 'AnalysisRequest' \
-            and self.context.aq_parent or self.context
-        for context in (client, self.context.bika_setup.bika_artemplates):
-            for template in [t for t in context.objectValues("ARTemplate")
-                             if isActive(t)]:
-                title = context == self.context.bika_setup.bika_artemplates \
-                    and "%s: %s" % (self.context.translate(_('Lab')), template.Title().decode('utf-8')) \
-                    or template.Title()
-                sp_title = template.getSamplePoint().Title() \
-                    if template.getSamplePoint() else ''
-                st_title = template.getSampleType().Title() \
-                    if template.getSampleType() else ''
-                sp_uid = template.getSamplePoint().UID() \
-                    if template.getSamplePoint() else ''
-                st_uid = template.getSampleType().UID() \
-                    if template.getSampleType() else ''
-                profile = template.getAnalysisProfile()
-                Analyses = [{}]
-                for x in template.getAnalyses():
-                    service = bsc(UID=x['service_uid'])
-                    service = service[0].getObject() if service else None
-                    if service:
-                        Analyses.append({
-                            'service_poc': service.getPointOfCapture(),
-                            'category_uid': service.getCategoryUID(),
-                            'partition': x['partition'],
-                            'service_uid': x['service_uid']})
-                t_dict = {
-                    'UID':template.UID(),
-                    'Title':template.Title(),
-                    'Profile':profile and profile.Title() or '',
-                    'Profile_uid':profile and profile.UID() or '',
-                    'SamplePoint':sp_title,
-                    'SamplePoint_uid':sp_uid,
-                    'SampleType':st_title,
-                    'SampleType_uid':st_uid,
-                    'Partitions':template.getPartitions(),
-                    'Analyses':Analyses,
-                    'ReportDryMatter':template.getReportDryMatter(),
-                }
-                templates[template.UID()] = t_dict
-        return json.dumps(templates)
-
 
 class SecondaryARSampleInfo(BrowserView):
     """Return fieldnames and pre-digested values for Sample fields which
@@ -1192,11 +1124,23 @@ class AnalysisRequestAnalysesView(BikaListingView):
                       'sortable': False,},
             'Partition': {'title': _('Partition'),
                           'sortable': False, },
+            'min': {'title': _('Min')},
+            'max': {'title': _('Max')},
+            'error': {'title': _('Permitted Error %')},
         }
 
+        columns = ['Title', ]
         ShowPrices = self.context.bika_setup.getShowPrices()
-        columns = ['Title', 'Price', 'Partition'] if ShowPrices \
-            else ['Title', 'Partition']
+        if ShowPrices:
+            columns.append('Price')
+        ShowPartitions = self.context.bika_setup.getShowPartitions()
+        if ShowPartitions:
+            columns.append('Partition')
+        EnableARSpecs = self.context.bika_setup.getEnableARSpecs()
+        if EnableARSpecs:
+            columns.append('min')
+            columns.append('max')
+            columns.append('error')
 
         self.review_states = [
             {'id': 'default',
@@ -1223,9 +1167,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
                                          'getContainer',
                                          'getPreservation',
                                          'state_title']
-
-        if not context.bika_setup.getShowPartitions():
-            self.review_states[0]['columns'].remove('Partition')
 
         self.parts = p.contents_table()
 
@@ -1285,21 +1226,31 @@ class AnalysisRequestAnalysesView(BikaListingView):
             items[x]['before']['Price'] = symbol
             items[x]['Price'] = obj.getPrice()
             items[x]['class']['Price'] = 'nowrap'
-            items[x]['allow_edit'] = ['Partition', ]
-            if not logged_in_client(self.context):
-                items[x]['allow_edit'].append('Price')
-            if not items[x]['selected']:
-                items[x]['edit_condition'] = {'Partition': False, 'Price': False}
+
+            if items[x]['selected']:
+                items[x]['allow_edit'] = ['Partition', 'min', 'max', 'error']
+                if not logged_in_client(self.context):
+                    items[x]['allow_edit'].append('Price')
 
             items[x]['required'].append('Partition')
             items[x]['choices']['Partition'] = partitions
 
             if obj.UID() in self.analyses:
-                part = self.analyses[obj.UID()].getSamplePartition()
+                analysis = self.analyses[obj.UID()]
+                part = analysis.getSamplePartition()
                 part = part and part or obj
                 items[x]['Partition'] = part.Title()
+                spec = analysis.specification \
+                    if hasattr(analysis, 'specification') \
+                    else {"min": "", "max": "", "error": ""}
+                items[x]["min"] = spec["min"]
+                items[x]["max"] = spec["max"]
+                items[x]["error"] = spec["error"]
             else:
                 items[x]['Partition'] = ''
+                items[x]["min"] = ''
+                items[x]["max"] = ''
+                items[x]["error"] = ''
 
             after_icons = ''
             if obj.getAccredited():
@@ -1591,7 +1542,16 @@ class ajaxAnalysisRequestSubmit():
                         parts[i]['container'] = d_clist
 
             # create the AR
-            Analyses = values['Analyses']
+            Analyses = values["Analyses"]
+
+            specs = {}
+            if len(values.get("min", [])):
+                for i, service_uid in enumerate(Analyses):
+                    specs[service_uid] = {
+                        "min": values["min"][i],
+                        "max": values["max"][i],
+                        "error": values["error"][i]
+                    }
 
             saved_form = self.request.form
             self.request.form = resolved_values
@@ -1663,7 +1623,7 @@ class ajaxAnalysisRequestSubmit():
 
             ARs.append(ar.getId())
 
-            new_analyses = ar.setAnalyses(Analyses, prices = prices)
+            new_analyses = ar.setAnalyses(Analyses, prices=prices, specs=specs)
             ar_analyses = ar.objectValues('Analysis')
 
             # Add analyses to sample partitions
@@ -2644,6 +2604,8 @@ class WidgetVisibility(_WV):
                 'Profile',
                 'SamplingDate',
                 'SampleType',
+                'Specification',
+                'PublicationSpecification',
                 'SamplePoint',
                 'ClientOrderNumber',
                 'ClientReference',
@@ -2685,8 +2647,10 @@ class WidgetVisibility(_WV):
                 'MemberDiscount',
                 'Profile',
                 'ReportDryMatter',
+                'Specification',
                 'Sample',
                 'SamplePoint',
+                'Specification',
                 'SampleType',
                 'Template',
             ]
@@ -2711,15 +2675,20 @@ class WidgetVisibility(_WV):
                 'ReportDryMatter',
                 'Sample',
                 'SampleCondition',
-                'SamplePoint',
                 'SampleType',
+                'Specification',
                 'SamplingDate',
+                'SamplePoint',
                 'SamplingDeviation',
                 'Template',
             ]
+        # include this in to_be_verified - there may be verified analyses to
+        # pre-publish
         elif state in ('to_be_verified', 'verified', ):
             ret['header_table']['visible'].remove('DatePublished')
-            ret['edit']['visible'] = []
+            ret['edit']['visible'] = [
+                'PublicationSpecification',
+            ]
             ret['view']['visible'] = [
                 'Contact',
                 'CCContact',
@@ -2738,13 +2707,16 @@ class WidgetVisibility(_WV):
                 'Sample',
                 'SampleCondition',
                 'SamplePoint',
+                'Specification',
                 'SampleType',
                 'SamplingDate',
                 'SamplingDeviation',
                 'Template',
             ]
         elif state in ('published', ):
-            ret['edit']['visible'] = []
+            ret['edit']['visible'] = [
+                'PublicationSpecification',
+            ]
             ret['view']['visible'] = [
                 'AdHoc',
                 'Batch',
@@ -2761,6 +2733,7 @@ class WidgetVisibility(_WV):
                 'Sample',
                 'SampleCondition',
                 'SamplePoint',
+                'Specification',
                 'SampleType',
                 'SamplingDate',
                 'SamplingDeviation',

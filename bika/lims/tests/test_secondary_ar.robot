@@ -33,6 +33,7 @@ Create AR
     Wait until page contains element    css=body.portaltype-client
     Click Link                  Add
     Wait until page contains    Request new analyses
+    Select from dropdown        ar_0_Contact                Rita
     Select from dropdown        ar_0_Template               Bore
     Select Date                 ar_0_SamplingDate           @{time}[2]
     Set Selenium Timeout        30
@@ -55,6 +56,7 @@ Create Secondary AR
     Wait until page contains element    css=body.portaltype-client
     Click Link                  Add
     Wait until page contains    Request new analyses
+    Select from dropdown        ar_0_Contact                Rita
     Select from dropdown        ar_0_Template              Bruma    1
     select from dropdown        ar_0_Sample
     Set Selenium Timeout        30
@@ -73,6 +75,7 @@ In a client context, only allow selecting samples from that client.
     Click Link                  Add
     Wait until page contains    Request new analyses
     Set Selenium Timeout        2
+    Select from dropdown        ar_0_Contact               Neil    1
     Select from dropdown        ar_0_Template              Bore    1
     Run keyword and expect error
     ...   Element 'xpath=//div[contains(@class,'cg-colItem')]' did not appear in 2 seconds

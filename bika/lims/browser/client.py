@@ -607,6 +607,8 @@ class ClientAnalysisSpecsView(BikaListingView):
         self.title = _("Analysis Specifications")
 
         self.columns = {
+            'Title': {'title': _('Title'),
+                           'index': 'title'},
             'SampleType': {'title': _('Sample Type'),
                            'index': 'getSampleTypeTitle'},
         }
@@ -615,16 +617,16 @@ class ClientAnalysisSpecsView(BikaListingView):
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
-             'columns': ['SampleType']},
+             'columns': ['Title', 'SampleType']},
             {'id':'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': [{'id':'activate'}, ],
-             'columns': ['SampleType']},
+             'columns': ['Title', 'SampleType']},
             {'id':'all',
              'title': _('All'),
              'contentFilter':{},
-             'columns': ['SampleType']},
+             'columns': ['Title', 'SampleType']},
         ]
 
     def __call__(self):
@@ -635,25 +637,25 @@ class ClientAnalysisSpecsView(BikaListingView):
                 self.context_actions[_('Add')] = \
                     {'url': 'createObject?type_name=AnalysisSpec',
                      'icon': '++resource++bika.lims.images/add.png'}
-            if checkPermission("Modify portal content", self.context):
-                self.context_actions[_('Set to lab defaults')] = \
-                    {'url': 'set_to_lab_defaults',
-                     'icon': '++resource++bika.lims.images/analysisspec.png'}
+            #
+            # @lemoene with the changes made in AR-specs, I dont know how much
+            # sense this makes anymore.
+            # if checkPermission("Modify portal content", self.context):
+            #     self.context_actions[_('Set to lab defaults')] = \
+            #         {'url': 'set_to_lab_defaults',
+            #          'icon': '++resource++bika.lims.images/analysisspec.png'}
         return super(ClientAnalysisSpecsView, self).__call__()
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
-
             obj = items[x]['obj']
-
-            items[x]['SampleType'] = obj.getSampleType() and \
-                 obj.getSampleType().Title()
-
-            items[x]['replace']['SampleType'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['SampleType'])
-
+            items[x]['Title'] = obj.Title()
+            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['Title'])
+            items[x]['SampleType'] = obj.getSampleType().Title() \
+                if obj.getSampleType() else ""
         return items
 
 class SetSpecsToLabDefaults(BrowserView):

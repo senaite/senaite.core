@@ -62,6 +62,8 @@ class AnalysesView(BikaListingView):
                        'input_width': '6',
                        'input_class': 'ajax_calculate numeric',
                        'sortable': False},
+            'Specification': {'title': _('Specification'),
+                       'sortable': False},
             'ResultDM': {'title': _('Dry'),
                          'sortable': False},
             'Uncertainty': {'title': _('+-'),
@@ -88,6 +90,7 @@ class AnalysesView(BikaListingView):
                          'Partition',
                          'Method',
                          'Result',
+                         'Specification',
                          'Uncertainty',
                          'CaptureDate',
                          'DueDate',
@@ -98,12 +101,62 @@ class AnalysesView(BikaListingView):
         if not context.bika_setup.getShowPartitions():
             self.review_states[0]['columns'].remove('Partition')
 
-        self.chosen_spec = request.get('specification', 'lab')
         super(AnalysesView, self).__init__(context,
                                            request,
                                            show_categories=context.bika_setup.getCategoriseAnalysisServices(),
                                            expand_all_categories=True)
 
+    def get_active_spec_object(self):
+        # AR spec attribute or none
+        ar = self.context
+        if hasattr(ar, 'getSpecification'):
+            return ar.getSpecification()
+        else:
+            return None
+
+    def get_active_spec_title(self):
+        obj = self.get_active_spec_object()
+        if obj:
+            return obj.Title()
+
+        return ""
+
+    def get_active_spec_dict(self, analysis):
+        obj = self.get_active_spec_object()
+        if hasattr(analysis, "specification") and analysis.specification:
+            return analysis.specification
+        if obj:
+            rr = obj.getResultsRangeDict()
+            keyword = analysis.getKeyword()
+            if keyword in rr:
+                return rr[keyword]
+        return None
+
+    def ResultOutOfRange(self, analysis):
+        """ Template wants to know, is this analysis out of range?
+        We scan IFieldIcons adapters, and return True if any IAnalysis
+        adapters trigger a result.
+        """
+        adapters = getAdapters((analysis, ), IFieldIcons)
+        bsc = getToolByName(self.context, "bika_setup_catalog")
+        spec = self.get_active_spec_dict(analysis)
+        for name, adapter in adapters:
+            obj = self.get_active_spec_object()
+            if not spec:
+                return False
+            alerts = adapter(specification=spec)
+            if alerts and analysis.UID() in alerts:
+                return True
+
+    def getAnalysisSpecsStr(self, spec):
+        specstr = ''
+        if spec['min'] and spec['max']:
+            specstr = '%s - %s' % (spec['min'], spec['max'])
+        elif spec['min']:
+            specstr = '> %s' % spec['min']
+        elif spec['max']:
+            specstr = '< %s' % spec['max']
+        return specstr
 
     def folderitems(self):
         rc = getToolByName(self.context, REFERENCE_CATALOG)
@@ -139,7 +192,7 @@ class AnalysesView(BikaListingView):
 
         self.interim_fields = {}
         self.interim_columns = {}
-        self.specs = {}
+        # self.specs = {}
         for i, item in enumerate(items):
             # self.contentsMethod may return brains or objects.
             obj = hasattr(items[i]['obj'], 'getObject') and \
@@ -191,59 +244,6 @@ class AnalysesView(BikaListingView):
             cd = obj.getResultCaptureDate()
             items[i]['CaptureDate'] = cd and self.ulocalized_time(cd, long_format=1) or ''
             items[i]['Attachments'] = ''
-
-            # calculate specs
-            if obj.portal_type == 'ReferenceAnalysis':
-                items[i]['st_uid'] = obj.aq_parent.UID()
-            elif obj.portal_type == 'DuplicateAnalysis' and \
-                obj.getAnalysis().portal_type == 'ReferenceAnalysis':
-                items[i]['st_uid'] = obj.aq_parent.UID()
-            else:
-                if self.context.portal_type == 'AnalysisRequest':
-                    sample = self.context.getSample()
-                    st_uid = sample.getSampleType().UID()
-                    items[i]['st_uid'] = st_uid
-                    if st_uid not in self.specs:
-                        proxies = bsc(portal_type = 'AnalysisSpec',
-                                      getSampleTypeUID = st_uid)
-                elif self.context.portal_type == "Worksheet":
-                    if obj.portal_type == "DuplicateAnalysis":
-                        sample = obj.getAnalysis().getSample()
-                    else:
-                        sample = obj.aq_parent.getSample()
-                    st_uid = sample.getSampleType().UID()
-                    items[i]['st_uid'] = st_uid
-                    if st_uid not in self.specs:
-                        proxies = bsc(portal_type = 'AnalysisSpec',
-                                      getSampleTypeUID = st_uid)
-                elif self.context.portal_type == 'Sample':
-                    st_uid = self.context.getSampleType().UID()
-                    items[i]['st_uid'] = st_uid
-                    if st_uid not in self.specs:
-                        proxies = bsc(portal_type = 'AnalysisSpec',
-                                      getSampleTypeUID = st_uid)
-                else:
-                    proxies = []
-                if st_uid not in self.specs:
-                    for spec in (p.getObject() for p in proxies):
-                        client_or_lab = ""
-                        if spec.getClientUID() == obj.getClientUID():
-                            client_or_lab = 'client'
-                        elif spec.getClientUID() == self.context.bika_setup.bika_analysisspecs.UID():
-                            client_or_lab = 'lab'
-                        else:
-                            continue
-                        for keyword, results_range in \
-                            spec.getResultsRangeDict().items():
-                            # hidden form field 'specs' keyed by sampletype uid:
-                            # {st_uid: {'lab/client':{keyword:{min,max,error}}}}
-                            if st_uid in self.specs:
-                                if client_or_lab in self.specs[st_uid]:
-                                    self.specs[st_uid][client_or_lab][keyword] = results_range
-                                else:
-                                    self.specs[st_uid][client_or_lab] = {keyword: results_range}
-                            else:
-                                self.specs[st_uid] = {client_or_lab: {keyword: results_range}}
 
             method = service.getMethod()
             items[i]['Method'] = method and method.Title() or ''
@@ -320,7 +320,7 @@ class AnalysesView(BikaListingView):
                 if result != '':
                     if 'Result' in items[i]['choices'] and items[i]['choices']['Result']:
                         items[i]['formatted_result'] = \
-                            [r['ResultText'] for r in items[i]['choices']['Result'] \
+                            [r['ResultText'] for r in items[i]['choices']['Result']
                                               if str(r['ResultValue']) == str(result)][0]
                     else:
                         try:
@@ -346,9 +346,23 @@ class AnalysesView(BikaListingView):
                             #         (self.portal_url)
                 items[i]['Uncertainty'] = obj.getUncertainty(result)
 
+                spec = self.get_active_spec_dict(obj)
+                if spec:
+                    min_val = spec.get('min', '')
+                    min_str = ">{0}".format(min_val) if min_val else ''
+                    max_val = spec.get('max', '')
+                    max_str = "<{0}".format(max_val) if max_val else ''
+                    error_val = spec.get('error', '')
+                    error_str = "{0}%".format(error_val) if error_val else ''
+                    rngstr = ",".join([x for x in [min_str, max_str, error_str] if x])
+                else:
+                    rngstr = ""
+
+                items[i]['Specification'] = rngstr
+
                 for name, adapter in getAdapters((obj, ), IFieldIcons):
                     auid = obj.UID()
-                    alerts = adapter()
+                    alerts = adapter(specification=spec)
                     if alerts:
                         if auid in self.field_icons:
                             self.field_icons[auid].extend(alerts[auid])
@@ -429,8 +443,7 @@ class AnalysesView(BikaListingView):
                              "<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='%s'/></a>" % \
                              (ws.absolute_url(), self.context.translate(
                                  _("Assigned to: ${worksheet_id}",
-                                   mapping={'worksheet_id':ws.id})))
-
+                                   mapping={'worksheet_id': ws.id})))
 
         # the TAL requires values for all interim fields on all
         # items, so we set blank values in unused cells
@@ -498,7 +511,7 @@ class AnalysesView(BikaListingView):
                 new_states.append(state)
             self.review_states = new_states
 
-        self.json_specs = json.dumps(self.specs)
+        # self.json_specs = json.dumps(self.specs)
         self.json_interim_fields = json.dumps(self.interim_fields)
         self.items = items
 

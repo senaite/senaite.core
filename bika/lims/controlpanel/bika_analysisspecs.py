@@ -34,6 +34,8 @@ class AnalysisSpecsView(BikaListingView):
         self.pagesize = 25
 
         self.columns = {
+            'Title': {'title': _('Title'),
+                           'index': 'title'},
             'SampleType': {'title': _('Sample Type'),
                            'index': 'sortable_title'},
         }
@@ -43,28 +45,29 @@ class AnalysisSpecsView(BikaListingView):
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
-             'columns': ['SampleType']},
+             'columns': ['Title', 'SampleType']},
             {'id':'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': [{'id':'activate'}, ],
-             'columns': ['SampleType']},
+             'columns': ['Title', 'SampleType']},
             {'id':'all',
              'title': _('All'),
              'contentFilter':{},
-             'columns': ['SampleType']},
+             'columns': ['Title', 'SampleType']},
         ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
-
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
-            items[x]['SampleType'] = items[x]['title']
-            items[x]['replace']['SampleType'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['title'])
-
+            items[x]['Title'] = obj.Title()
+            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['Title'])
+            st = obj.getSampleType()
+            items[x]['SampleType'] = obj.getSampleType().Title() \
+                if obj.getSampleType() else ""
         return items
 
 schema = ATFolderSchema.copy()

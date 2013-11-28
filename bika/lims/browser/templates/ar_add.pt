@@ -43,8 +43,12 @@
 <input type="hidden" name="submitted" value="1" />
 <span tal:replace="structure context/@@authenticator/authenticator"/>
 <input type="hidden" name="came_from" tal:attributes="value view/came_from" />
-<input type="hidden" id="template_data" tal:attributes="value view/listTemplates"/>
-<input type="hidden" id="profile_data" tal:attributes="value view/listProfiles"/>
+
+<span id="bika_setup" style="display:none;"
+    tal:define="bs python: context.bika_setup;"
+    tal:attributes="EnableARSpecs python: 'true' if bs.getEnableARSpecs() else '';
+                    bika_analysisspecs_uid python: bs.bika_analysisspecs.UID();">
+</span>
 
 <!-- member discount percentage if applicable -->
 <input type="hidden" id="member_discount" name="member_discount"
@@ -71,6 +75,11 @@
             cat python: dms.getCategoryUID();
             value python: dms.UID();"/>
 </tal:i>
+
+<input type="hidden"
+    id="PhysicalPath"
+    tal:attributes="here python:'/'.join(context.getPhysicalPath()[:-3]);
+                    lab_specs python:'/'.join(context.bika_setup.bika_analysisspecs.getPhysicalPath())"/>
 
 <table summary="Add analysis requests"
     class="listing analysisrequest add nosort"
