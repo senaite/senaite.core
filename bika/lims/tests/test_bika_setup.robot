@@ -524,65 +524,72 @@ AnalysisCategories
     Wait Until Page Contains  Changes saved.
 
 AnalysisServices
-    Go to                ${PLONEURL}/bika_setup/bika_analysisservices
-    Wait Until Page Contains  Analysis Services
-    Click link           Add
-    Wait Until Page Contains Element     title
-    Input Text           title           New Analysis Service
-    Input Text           description     New service for Testing
-    Input Text           Unit            measurement Unit
-    Input Text           Keyword         AnalysisKeyword
-    Select Radio Button  PointOfCapture  lab
-    Select From dropdown      Category  Metals
-    Input Text  Price      50.23
-    Input Text  BulkPrice  30.00
-    Input Text  VAT        15.00
-    Select From dropdown  Department   Admin
-    Click link  Analysis
-    Wait Until Page Contains Element  Precision
-    Input Text  Precision  3
-    Select Checkbox  ReportDryMatter
-    select from list   AttachmentOption      2
-    Input Text  MaxTimeAllowed.days:record:ignore_empty  3
-    Input Text  MaxTimeAllowed.hours:record:ignore_empty  3
-    Input Text  MaxTimeAllowed.minutes:record:ignore_empty  3
-    Click link  Method
-    Wait Until Page Contains Element     Instrument
-    Select From dropdown  Method         Titration
-    Select From dropdown  Instrument     Blott Titrator
-    Select From dropdown  Calculation    Titration
-    Wait until page contains element     InterimFields-title-2  # 0=tv,1=tf,2=blank
-    Input Text  InterimFields-keyword-2  Other
-    Input Text  InterimFields-title-2    Other Field Title
-    Input Text  InterimFields-value-2    22
-    Input Text  InterimFields-unit-2     %
-    Input Text  DuplicateVariation  5
-    Select Checkbox  Accredited
-    Click link  Uncertainties
-    Input Text  Uncertainties-intercept_min-0  2
-    Input Text  Uncertainties-intercept_max-0  9
-    Input Text  Uncertainties-errorvalue-0  3.8
-    Click Button  Uncertainties_more
-    Input Text  Uncertainties-intercept_min-1  0
-    Input Text  Uncertainties-intercept_max-1  10
-    Input Text  Uncertainties-errorvalue-1  5.5
-    Click link  Result Options
-    Input Text  ResultOptions-ResultValue-0  10
-    Input Text  ResultOptions-ResultText-0  Result Text 0
-    Click Button  ResultOptions_more
-    Input Text  ResultOptions-ResultValue-1  2
-    Input Text  ResultOptions-ResultText-1  Result Text 1
-    Click link  Container and Preservation
-    Select Checkbox  Separate
-    Select from dropdown    Preservation    H2SO4
-    Select from dropdown    Container       Any
-    Select From dropdown    PartitionSetup-sampletype-0    Apple Pulp
-    Click Element           PartitionSetup-separate-0
-    Select From dropdown    PartitionSetup-preservation-0  Chill (4 degrees)
-    Select From dropdown    PartitionSetup-container-0     Glass Bottle 500ml
-    Input Text  PartitionSetup-vol-0                   250
-    Click Button  Save
-    Wait Until Page Contains  Changes saved.
+    Go to                               ${PLONEURL}/bika_setup/bika_analysisservices
+    Wait Until Page Contains            Analysis Services
+    Click link                          Add
+    Wait Until Page Contains Element    title
+    Input Text                          title                   New Analysis Service
+    Input Text                          description             New service for Testing
+    Input Text                          Unit                    measurement Unit
+    Input Text                          Keyword                 AnalysisKeyword
+    Select Radio Button                 PointOfCapture          lab
+    Select From dropdown                Category                Metals
+    Input Text                          Price                   50.23
+    Input Text                          BulkPrice               30.00
+    Input Text                          VAT                     15.00
+    Select From dropdown                Department              Admin
+
+    Click link                          Analysis
+    Wait Until Page Contains Element    Precision
+    Input Text                          Precision               3
+    Select Checkbox                     ReportDryMatter
+    select from list                    AttachmentOption        2
+    Input Text                          MaxTimeAllowed.days:record:ignore_empty      3
+    Input Text                          MaxTimeAllowed.hours:record:ignore_empty     3
+    Input Text                          MaxTimeAllowed.minutes:record:ignore_empty   3
+
+    Click link                          Method
+    Wait Until Page Contains Element    Instrument
+    Select From dropdown                Method                           Titration
+    Select From dropdown                Instrument                       Blott Titrator
+    Select From dropdown                Calculation                      Titration
+    Wait until page contains element    InterimFields-title-2            # 0=tv,1=tf,2=blank
+    Input Text                          InterimFields-keyword-2          Other
+    Input Text                          InterimFields-title-2            Other Field Title
+    Input Text                          InterimFields-value-2            22
+    Input Text                          InterimFields-unit-2             %
+    Input Text                          DuplicateVariation               5
+    Select Checkbox                     Accredited
+
+    Click link                          Uncertainties
+    Input Text                          Uncertainties-intercept_min-0    2
+    Input Text                          Uncertainties-intercept_max-0    9
+    Input Text                          Uncertainties-errorvalue-0       3.8
+    Click Button                        Uncertainties_more
+    Input Text                          Uncertainties-intercept_min-1    0
+    Input Text                          Uncertainties-intercept_max-1    10
+    Input Text                          Uncertainties-errorvalue-1       5.5
+
+    Click link                          Result Options
+    Input Text                          ResultOptions-ResultValue-0      10
+    Input Text                          ResultOptions-ResultText-0       Result Text 0
+    Click Button                        ResultOptions_more
+    Input Text                          ResultOptions-ResultValue-1      2
+    Input Text                          ResultOptions-ResultText-1       Result Text 1
+
+    Click link                          Container and Preservation
+    Select from dropdown                Container                        Pre Preserved
+    Element Should Be Disabled          Preservation
+
+    # this works but selemium doesn't manage it!
+    # Select From list by label           PartitionSetup-sampletype-0      Pre Preserved
+    # Element Should Be Disabled          PartitionSetup-preservation-0
+
+    Select from list                    PartitionSetup-sampletype-0      Apple Pulp
+    Textfield should contain            PartitionSetup-vol-0             100 g
+
+    Click Button                        Save
+    Wait Until Page Contains            Changes saved.
 
 AnalysisProfiles
     Go to    ${PLONEURL}/bika_setup/bika_analysisprofiles
@@ -606,9 +613,9 @@ AnalysisSpecifications
     Select From List  SampleType:list
     Input Text  description    Temporary test object
     Click Element  xpath=//th[@cat='Water Chemistry']
-    Input Text  xpath=(//th[@cat='Water Chemistry'])//input[@field='min']  3
-    Input Text  xpath=(//th[@cat='Water Chemistry'])//input[@field='max']  4
-    Input Text  xpath=(//th[@cat='Water Chemistry'])//input[@field='error']  5
+    Input Text  xpath=//input[@selector='min_analysisservice-4']  3
+    Input Text  xpath=//input[@selector='max_analysisservice-4']  4
+    Input Text  xpath=//input[@selector='error_analysisservice-4']  5
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
@@ -625,9 +632,10 @@ ReferenceDefinition
     Page should contain  Specifications
     Wait Until Page Contains  Reference Values
     Click Element  xpath=//th[@cat='Water Chemistry']
-    Input Text  xpath=(//th[@cat='Water Chemistry'])//input[@field='result']   3
-    Input Text  xpath=(//th[@cat='Water Chemistry'])//input[@field='error']  5
-    Click Element  xpath=(//th[@cat='Water Chemistry'])//input[@field='min']
+    Input Text  xpath=//input[@selector='result_analysisservice-4']  1
+    Input Text  xpath=//input[@selector='error_analysisservice-4']   3
+    Tectfield value should be       xpath=//input[@selector='min_analysisservice-4']     0.97
+    Tectfield value should be       xpath=//input[@selector='max_analysisservice-4']     1.03
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 

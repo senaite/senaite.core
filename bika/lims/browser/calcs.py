@@ -339,23 +339,3 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         return json.dumps({'alerts': self.alerts,
                            'uncertainties': self.uncertainties,
                            'results': results})
-
-
-class ajaxGetInterimFields:
-
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
-
-    def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
-        plone.protect.PostOnly(self.request)
-        uc = getToolByName(self.context, 'uid_catalog')
-        calc = self.request['calc']
-        calcs = uc(UID=calc)
-        if calcs:
-            calc = calcs[0].getObject()
-        else:
-            return json.dumps([])
-
-        return json.dumps(calc.getInterimFields())
