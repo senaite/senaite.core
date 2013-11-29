@@ -12,38 +12,38 @@ Suite Teardown   Close All Browsers
 
 *** Test Cases ***
 
-Test Batch-AR workflow dependencies
+Test Batch-AR
     Log in  test_labmanager  test_labmanager
 
     Add Batch
     Batch state should be  open
     Add AR
-    Batch state should be  open
+    # Batch state should be  open                               Batch state by default does not depend on AR state
     Receive AR  AP-0001-R01
-    Batch state should be  sample_received
+    # Batch state should be  sample_received                    Batch state by default does not depend on AR state
     Add AR
-    Batch state should be  open
+    # Batch state should be  open                               Batch state by default does not depend on AR state
     Receive AR  AP-0002-R01
-    Batch state should be  sample_received
+    # Batch state should be  sample_received                    Batch state by default does not depend on AR state
     Submit AR  AP-0001-R01
     Submit AR  AP-0002-R01
-    Batch state should be  to_be_verified
+    # Batch state should be  to_be_verified                     Batch state by default does not depend on AR state
     Add AR
-    Batch state should be  open
+    # Batch state should be  open                               Batch state by default does not depend on AR state
     Receive AR  AP-0003-R01
-    Batch state should be  sample_received
+    # Batch state should be  sample_received                    Batch state by default does not depend on AR state
     Submit AR  AP-0003-R01
-    Batch state should be  to_be_verified
+    # Batch state should be  to_be_verified                     Batch state by default does not depend on AR state
     Retract AR  AP-0001-R01
-    Batch state should be  sample_received
+    # Batch state should be  sample_received                    Batch state by default does not depend on AR state
     Submit AR  AP-0001-R01
-    Batch state should be  to_be_verified
+    # Batch state should be  to_be_verified                     Batch state by default does not depend on AR state
     Log out
     Log in  test_labmanager1  test_labmanager1
     Verify AR  AP-0001-R01
     Verify AR  AP-0002-R01
     Verify AR  AP-0003-R01
-    Batch state should be  verified
+    # Batch state should be  verified                           Batch state by default does not depend on AR state
 
 
 *** Keywords ***
@@ -58,7 +58,7 @@ Add Batch
     Click Link                   Add
     Wait until page contains     Add Batch
     Input text                   description  Just a regular batch
-    Select from dropdown         ClientID     Happy
+    Select from dropdown         Client     Happy
     Click Button                 xpath=//input[@value="Save"]
     Wait until page contains     saved
 
@@ -74,8 +74,8 @@ Add AR
     Select from list             col_count  1
     click Link                   Add new
     Wait until page contains     Request new analyses
+    Select from dropdown         ar_0_Contact            Rita
     Select from dropdown         ar_0_SampleType         Apple
-    Select from dropdown         ar_0_Client             Happy
     Select from dropdown         ar_0_Profile            Counts
     SelectDate                   ar_0_SamplingDate       1
     Click Button                 Save
@@ -109,7 +109,7 @@ Retract AR
     Wait until page contains     ${ar_id}
     Select checkbox              xpath=//input[@item_title="${ar_id}"]
     Click button                 xpath=//input[@value="Retract"]
-    Wait until page contains     saved
+    Wait until page contains     xpath=//input[@selector="state_title_AP-0001-R01" and @value="Received"]
 
 Verify AR
     [Arguments]   ${ar_id}
