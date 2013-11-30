@@ -2745,12 +2745,12 @@ class WidgetVisibility(_WV):
 
 class ReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
     def __call__(self):
-
         base_query = json.loads(self.request['base_query'])
 
         # In client context, restrict samples to client samples only
         if 'portal_type' in base_query \
-        and base_query['portal_type'] == 'Sample':
+        and (base_query['portal_type'] == 'Sample'
+             or base_query['portal_type'][0] == 'Sample'):
             base_query['getClientUID'] = self.context.aq_parent.UID()
             self.request['base_query'] = json.dumps(base_query)
 

@@ -366,19 +366,22 @@ class Sample(BaseFolder, HistoryAwareMixin):
     # Forms submit Title Strings which need
     # to be converted to objects somewhere along the way...
     def setSampleType(self, value, **kw):
-        """ Accept Title or UID, and convert SampleType title to UID
+        """ Accept Object, Title or UID, and convert SampleType title to UID
         before saving.
         """
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        sampletypes = bsc(portal_type='SampleType', title=value)
-        if sampletypes:
-            value = sampletypes[0].UID
+        if hasattr(value, "portal_type") and value.portal_type == "SampleType":
+            pass
         else:
-            sampletypes = bsc(portal_type='SampleType', UID=value)
+            bsc = getToolByName(self, 'bika_setup_catalog')
+            sampletypes = bsc(portal_type='SampleType', title=value)
             if sampletypes:
                 value = sampletypes[0].UID
             else:
-                value = None
+                sampletypes = bsc(portal_type='SampleType', UID=value)
+                if sampletypes:
+                    value = sampletypes[0].UID
+                else:
+                    value = None
         for ar in self.getAnalysisRequests():
             ar.Schema()['SampleType'].set(ar, value)
         return self.Schema()['SampleType'].set(self, value)
@@ -386,19 +389,22 @@ class Sample(BaseFolder, HistoryAwareMixin):
     # Forms submit Title Strings which need
     # to be converted to objects somewhere along the way...
     def setSamplePoint(self, value, **kw):
-        """ Accept Title or UID, and convert SampleType title to UID
+        """ Accept Object, Title or UID, and convert SampleType title to UID
         before saving.
         """
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        sampletypes = bsc(portal_type='SamplePoint', title=value)
-        if sampletypes:
-            value = sampletypes[0].UID
+        if hasattr(value, "portal_type") and value.portal_type == "SamplePoint":
+            pass
         else:
-            sampletypes = bsc(portal_type='SamplePoint', UID=value)
+            bsc = getToolByName(self, 'bika_setup_catalog')
+            sampletypes = bsc(portal_type='SamplePoint', title=value)
             if sampletypes:
                 value = sampletypes[0].UID
             else:
-                value = None
+                sampletypes = bsc(portal_type='SamplePoint', UID=value)
+                if sampletypes:
+                    value = sampletypes[0].UID
+                else:
+                    value = None
         for ar in self.getAnalysisRequests():
             ar.Schema()['SamplePoint'].set(ar, value)
         return self.Schema()['SamplePoint'].set(self, value)

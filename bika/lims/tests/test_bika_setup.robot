@@ -541,9 +541,9 @@ AnalysisServices
 
     Click link                          Analysis
     Wait Until Page Contains Element    Precision
-    Input Text                          Precision               3
+    Input Text                          Precision                                    3
     Select Checkbox                     ReportDryMatter
-    select from list                    AttachmentOption        2
+    select from list                    AttachmentOption                             2
     Input Text                          MaxTimeAllowed.days:record:ignore_empty      3
     Input Text                          MaxTimeAllowed.hours:record:ignore_empty     3
     Input Text                          MaxTimeAllowed.minutes:record:ignore_empty   3
@@ -620,24 +620,25 @@ AnalysisSpecifications
     Wait Until Page Contains  Changes saved.
 
 ReferenceDefinition
-    Go to  ${PLONEURL}/bika_setup/bika_referencedefinitions
-    Wait Until Page Contains  Reference Definition
-    Click link  Add
-    Wait Until Page Contains Element  title
-    Input Text  title          New Object
-    Input Text  description    Temporary test object
-    Select Checkbox  Blank
-    Select Checkbox  Hazardous
-    Click link  Reference Values
-    Page should contain  Specifications
-    Wait Until Page Contains  Reference Values
-    Click Element  xpath=//th[@cat='Water Chemistry']
-    Input Text  xpath=//input[@selector='result_analysisservice-4']  1
-    Input Text  xpath=//input[@selector='error_analysisservice-4']   3
-    Tectfield value should be       xpath=//input[@selector='min_analysisservice-4']     0.97
-    Tectfield value should be       xpath=//input[@selector='max_analysisservice-4']     1.03
-    Click Button  Save
-    Wait Until Page Contains  Changes saved.
+    Go to                               ${PLONEURL}/bika_setup/bika_referencedefinitions
+    Wait Until Page Contains            Reference Definition
+    Click link                          Add
+    Wait Until Page Contains Element    title
+    Input Text                          title          New Object
+    Input Text                          description    Temporary test object
+    Select Checkbox                     Blank
+    Select Checkbox                     Hazardous
+    Click link                          Reference Values
+    Page should contain                 Specifications
+    Wait Until Page Contains            Reference Values
+    Click Element                       xpath=//th[@cat='Water Chemistry']
+    Input Text                          xpath=//input[@selector='result_analysisservice-4']  1
+    Input Text                          xpath=//input[@selector='error_analysisservice-4']   3
+    Press Key                           xpath=//input[@selector='error_analysisservice-4']   \t
+    Textfield value should be           xpath=//input[@selector='min_analysisservice-4']     0.97
+    Textfield value should be           xpath=//input[@selector='max_analysisservice-4']     1.03
+    Click Button                        Save
+    Wait Until Page Contains            Changes saved.
 
 WorksheetTemplate
     Go to  ${PLONEURL}/bika_setup/bika_worksheettemplates

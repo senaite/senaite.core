@@ -1192,7 +1192,7 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('setSamplingDate')
     def setSamplingDate(self, value):
         sample = self.getSample()
-        if sample:
+        if sample and value:
             return sample.setSamplingDate(value)
 
     security.declarePublic('getSamplingDate')
@@ -1204,7 +1204,7 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('setSamplePoint')
     def setSamplePoint(self, value):
         sample = self.getSample()
-        if sample:
+        if sample and value:
             return sample.setSamplePoint(value)
 
     security.declarePublic('getSamplepoint')
@@ -1216,7 +1216,7 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('setSampleType')
     def setSampleType(self, value):
         sample = self.getSample()
-        if sample:
+        if sample and value:
             return sample.setSampleType(value)
 
     security.declarePublic('getSampleType')
@@ -1228,7 +1228,7 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('setClientReference')
     def setClientReference(self, value):
         sample = self.getSample()
-        if sample:
+        if sample and value:
             return sample.setClientReference(value)
 
     security.declarePublic('getClientReference')
@@ -1240,7 +1240,7 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('setClientSampleID')
     def setClientSampleID(self, value):
         sample = self.getSample()
-        if sample:
+        if sample and value:
             return sample.setClientSampleID(value)
 
     security.declarePublic('getClientSampleID')
@@ -1252,7 +1252,7 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('setSamplingDeviation')
     def setSamplingDeviation(self, value):
         sample = self.getSample()
-        if sample:
+        if sample and value:
             return sample.setSamplingDeviation(value)
 
     security.declarePublic('getSamplingDeviation')
@@ -1264,7 +1264,7 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('setSampleCondition')
     def setSampleCondition(self, value):
         sample = self.getSample()
-        if sample:
+        if sample and value:
             return sample.setSampleCondition(value)
 
     security.declarePublic('getSampleCondition')
@@ -1276,7 +1276,7 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('setComposite')
     def setComposite(self, value):
         sample = self.getSample()
-        if sample:
+        if sample and value:
             return sample.setComposite(value)
 
     security.declarePublic('getComposite')
@@ -1288,7 +1288,7 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('setAdHoc')
     def setAdHoc(self, value):
         sample = self.getSample()
-        if sample:
+        if sample and value:
             return sample.setAdHoc(value)
 
     security.declarePublic('getAdHoc')

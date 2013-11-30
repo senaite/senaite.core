@@ -18,38 +18,22 @@ Test Batch-AR
     Add Batch
     Batch state should be  open
     Add AR
-    # Batch state should be  open                               Batch state by default does not depend on AR state
     Receive AR  AP-0001-R01
-    # Batch state should be  sample_received                    Batch state by default does not depend on AR state
-    Add AR
-    # Batch state should be  open                               Batch state by default does not depend on AR state
-    Receive AR  AP-0002-R01
-    # Batch state should be  sample_received                    Batch state by default does not depend on AR state
+    Batch state should be  open
     Submit AR  AP-0001-R01
-    Submit AR  AP-0002-R01
-    # Batch state should be  to_be_verified                     Batch state by default does not depend on AR state
-    Add AR
-    # Batch state should be  open                               Batch state by default does not depend on AR state
-    Receive AR  AP-0003-R01
-    # Batch state should be  sample_received                    Batch state by default does not depend on AR state
-    Submit AR  AP-0003-R01
-    # Batch state should be  to_be_verified                     Batch state by default does not depend on AR state
+    Batch state should be  open
     Retract AR  AP-0001-R01
-    # Batch state should be  sample_received                    Batch state by default does not depend on AR state
     Submit AR  AP-0001-R01
-    # Batch state should be  to_be_verified                     Batch state by default does not depend on AR state
-    Log out
-    Log in  test_labmanager1  test_labmanager1
-    Verify AR  AP-0001-R01
-    Verify AR  AP-0002-R01
-    Verify AR  AP-0003-R01
-    # Batch state should be  verified                           Batch state by default does not depend on AR state
+    # Log out
+    # Log in  test_labmanager1  test_labmanager1
+    # Verify AR  AP-0001-R01
 
 
 *** Keywords ***
 
 Start browser
     Open browser         http://localhost:55001/plone/login
+    Maximize browser window
     Set selenium speed   ${SELENIUM_SPEED}
 
 Add Batch
@@ -105,11 +89,18 @@ Submit AR
 
 Retract AR
     [Arguments]   ${ar_id}
-    Go to                        http://localhost:55001/plone/batches/B-001/analysisrequests
-    Wait until page contains     ${ar_id}
-    Select checkbox              xpath=//input[@item_title="${ar_id}"]
-    Click button                 xpath=//input[@value="Retract"]
-    Wait until page contains     xpath=//input[@selector="state_title_AP-0001-R01" and @value="Received"]
+    Go to                               http://localhost:55001/plone/batches/B-001/analysisrequests
+    Wait until page contains            ${ar_id}
+    Select checkbox                     xpath=//input[@item_title="${ar_id}"]
+    Click button                        xpath=//input[@value="Retract"]
+    Wait until page contains element    xpath=//input[@selector="state_title_AP-0001-R01" and @value="Received"]
+    Go to                               http://localhost:55001/plone/batches/B-001/analysisrequests
+    Wait until page contains            Add new
+    Click link                          ${ar_id}
+    Wait until page contains            Results not requested
+    Select Checkbox                     ar_manage_results_lab_select_all
+    Click button                        xpath=//input[@value="Retract"]
+    Wait Until Page Contains            Changes saved
 
 Verify AR
     [Arguments]   ${ar_id}

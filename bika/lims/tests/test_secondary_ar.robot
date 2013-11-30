@@ -57,7 +57,7 @@ Create Secondary AR
     Click Link                  Add
     Wait until page contains    Request new analyses
     Select from dropdown        ar_0_Contact                Rita
-    Select from dropdown        ar_0_Template              Bruma    1
+    Select from dropdown        ar_0_Template               Bruma
     select from dropdown        ar_0_Sample
     Set Selenium Timeout        30
     Click Button                Save
@@ -78,5 +78,5 @@ In a client context, only allow selecting samples from that client.
     Select from dropdown        ar_0_Contact               Neil    1
     Select from dropdown        ar_0_Template              Bore    1
     Run keyword and expect error
-    ...   Element 'xpath=//div[contains(@class,'cg-colItem')]' did not appear in 2 seconds
+    ...   ValueError: Element locator 'xpath=//div[contains(@class,'cg-colItem')][1]' did not match any elements.
     ...   Select from dropdown        ar_0_Sample
