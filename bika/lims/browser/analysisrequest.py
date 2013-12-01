@@ -1495,6 +1495,9 @@ class ajaxAnalysisRequestSubmit():
                     continue
 
                 if values.has_key("%s_uid" % k):
+                    v = values["%s_uid"%k]
+                    if v and "," in v:
+                        v = v.split(",")
                     resolved_values[k] = values["%s_uid"%k]
                 else:
                     resolved_values[k] = values[k]

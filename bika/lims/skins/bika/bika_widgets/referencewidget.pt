@@ -27,64 +27,89 @@
     <metal:define define-macro="edit">
       <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
         <metal:fill metal:fill-slot="widget_body">
-        <input
-               type="text"
-               name=""
-               id=""
-               uid=""
-               class="blurrable firstToFocus referencewidget"
-               value=""
-               size="30"
-               tal:define="val python:context.Schema()[fieldName].getAccessor(context)();"
-               tal:condition="python:context.Schema()[fieldName].required"
-               tal:attributes="name fieldName;
-                               required python:True;
-                               id fieldName;
-                               value val/Title|nothing;
-                               uid val/UID|nothing;
-                               size widget/size;
-                               placeholder widget/placeholder|nothing;
-                               maxlength widget/maxlength;
-                               catalog_name widget/catalog_name;
-                               base_query python:widget.get_base_query(context, fieldName);
-                               search_query string:{};
-                               showOn widget/showOn;
-                               ui_item widget/ui_item;
-                               combogrid_options python:widget.get_combogrid_options(context, fieldName)"
-               />
-        <input
-               type="text"
-               name=""
-               id=""
-               uid=""
-               class="blurrable firstToFocus referencewidget"
-               value=""
-               size="30"
-               tal:define="val python:context.Schema()[fieldName].getAccessor(context)();"
-               tal:condition="python:not context.Schema()[fieldName].required"
-               tal:attributes="name fieldName;
-                               id fieldName;
-                               value val/Title|nothing;
-                               uid val/UID|nothing;
-                               size widget/size;
-                               placeholder widget/placeholder|nothing;
-                               maxlength widget/maxlength;
-                               catalog_name widget/catalog_name;
-                               base_query python:widget.get_base_query(context, fieldName);
-                               search_query string:{};
-                               showOn widget/showOn;
-                               ui_item widget/ui_item;
-                               combogrid_options python:widget.get_combogrid_options(context, fieldName)"
-               />
-        <input
-               type="hidden"
-               name=""
-               value=""
-               tal:define="val python:context.Schema()[fieldName].getAccessor(context)();"
-               tal:attributes="name string:${fieldName}_uid;
-                               id string:${fieldName}_uid;
-                               value val/UID|nothing;"/>
-        </metal:fill>
+
+          <div class="multiValued-listing"
+                tal:condition="python:context.Schema()[fieldName].multiValued"
+                tal:attributes="id string:${fieldName}-listing;fieldName fieldName;"
+                tal:define="values python:context.Schema()[fieldName].getAccessor(context)();">
+                <tal:repeat repeat="value values">
+                  <div class="reference_multi_item"
+                       tal:attributes="uid value/UID">
+                    <img
+                      class="deletebtn"
+                      tal:attributes="
+                        src string:${portal/absolute_url}/++resource++bika.lims.images/delete.png;
+                      	fieldName fieldName;
+                        uid value/UID"/>
+                    <span tal:replace="python:str(value.Title())"/>
+                  </div>
+                </tal:repeat>
+          </div>
+
+          <input
+                 type="text"
+                 name=""
+                 id=""
+                 uid=""
+                 class="blurrable firstToFocus referencewidget"
+                 value=""
+                 size="30"
+                 tal:define="val python:context.Schema()[fieldName].getAccessor(context)();"
+                 tal:condition="python:context.Schema()[fieldName].required"
+                 tal:attributes="name fieldName;
+                                 required python:True;
+                                 id fieldName;
+                                 value val/Title|nothing;
+                                 uid val/UID|nothing;
+                                 size widget/size;
+                                 placeholder widget/placeholder|nothing;
+                                 maxlength widget/maxlength;
+                                 catalog_name widget/catalog_name;
+                                 base_query python:widget.get_base_query(context, fieldName);
+                                 search_query string:{};
+                                 showOn widget/showOn;
+                                 searchIcon widget/searchIcon;
+                                 resetButton widget/resetButton;
+                                 minLength python:widget.minLength;
+                                 ui_item widget/ui_item;
+                                 combogrid_options python:widget.get_combogrid_options(context, fieldName)"
+                 />
+          <input
+                 type="text"
+                 name=""
+                 id=""
+                 uid=""
+                 class="blurrable firstToFocus referencewidget"
+                 value=""
+                 size="30"
+                 tal:define="val python:context.Schema()[fieldName].getAccessor(context)();"
+                 tal:condition="python:not context.Schema()[fieldName].required"
+                 tal:attributes="name fieldName;
+                                 id fieldName;
+                                 value val/Title|nothing;
+                                 uid val/UID|nothing;
+                                 size widget/size;
+                                 placeholder widget/placeholder|nothing;
+                                 maxlength widget/maxlength;
+                                 catalog_name widget/catalog_name;
+                                 base_query python:widget.get_base_query(context, fieldName);
+                                 search_query string:{};
+                                 showOn widget/showOn;
+                                 searchIcon widget/searchIcon;
+                                 resetButton widget/resetButton;
+                                 minLength widget/minLength;
+                                 ui_item widget/ui_item;
+                                 combogrid_options python:widget.get_combogrid_options(context, fieldName)"
+                 />
+          <input
+                 type="hidden"
+                 name=""
+                 value=""
+                 tal:define="val python:context.Schema()[fieldName].getAccessor(context)();"
+                 tal:attributes="name string:${fieldName}_uid;
+                                 id string:${fieldName}_uid;
+                                 value python:widget.initial_uid_field_value(val);"/>
+        </metal:fill>sss
       </metal:use>
     </metal:define>
 

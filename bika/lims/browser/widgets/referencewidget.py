@@ -42,10 +42,13 @@ class ReferenceWidget(StringWidget):
         'search_fields': ('Title',),
         'discard_empty': [],
         'popup_width': '550px',
-        'showOn': 'false',
+        'showOn': False,
+        'searchIcon': True,
+        'minLength': '0',
+        'resetButton': False,
         'sord': 'asc',
         'sidx': 'Title',
-        'force_all': 'true',
+        'force_all': True,
         'portal_types': {}
     })
     security = ClassSecurityInfo()
@@ -59,8 +62,12 @@ class ReferenceWidget(StringWidget):
         fieldName = field.getName()
         if fieldName + "_uid" in form:
             uid = form.get(fieldName + "_uid", '')
+            if field.multiValued:
+                uid = uid.split(",")
         elif fieldName in form:
             uid = form.get(fieldName, '')
+            if field.multiValued:
+                uid = uid.split(",")
         else:
             uid = None
         return uid, {}
@@ -79,6 +86,9 @@ class ReferenceWidget(StringWidget):
             'force_all': self.force_all,
             'search_fields': self.search_fields,
             'discard_empty': self.discard_empty,
+            'minLength': self.minLength,
+            'resetButton': self.resetButton,
+            'searchIcon': self.searchIcon,
         }
         return json.dumps(options)
 
@@ -102,6 +112,13 @@ class ReferenceWidget(StringWidget):
             else self.portal_types
 
         return json.dumps(self.base_query)
+
+    def initial_uid_field_value(self, value):
+        if type(value) in (list, tuple):
+            ret = ",".join([v.UID() for v in value])
+        else:
+            ret = value.UID() if value else value
+        return ret
 
 registerWidget(ReferenceWidget, title='Reference Widget')
 

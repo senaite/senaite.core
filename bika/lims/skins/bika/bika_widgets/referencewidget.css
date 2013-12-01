@@ -1,4 +1,19 @@
-
-.referencewidget{
+/*.referencewidget{
 
 }
+*/
+.reference_multi_item {
+    text-align: left;
+}
+
+.reference_multi_item .deletebtn {
+    border: 0;
+    cursor: pointer;
+    height: 1em;
+    margin-right: 5px;
+}
+
+.reference_multi_item .deletebtn img {
+    height: 13px;
+}
+

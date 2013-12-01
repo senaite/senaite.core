@@ -74,8 +74,7 @@ In a client context, only allow selecting samples from that client.
     Wait until page contains element    css=body.portaltype-client
     Click Link                  Add
     Wait until page contains    Request new analyses
-    Set Selenium Timeout        2
-    Select from dropdown        ar_0_Contact               Neil    1
+    Select from dropdown        ar_0_Contact               Johanna
     Select from dropdown        ar_0_Template              Bore    1
     Run keyword and expect error
     ...   ValueError: Element locator 'xpath=//div[contains(@class,'cg-colItem')][1]' did not match any elements.

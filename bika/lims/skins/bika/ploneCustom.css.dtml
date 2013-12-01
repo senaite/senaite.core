@@ -898,7 +898,7 @@ table.arimport img {
 }
 
 table.arimport input {
-    border: 1px solid &dtml-globalBackgroundColor;;  
+    border: 1px solid &dtml-globalBackgroundColor;;
 }
 
 table.arimport .amount {
@@ -937,4 +937,11 @@ table.uncertaintytable {
     color: #FF0000;
     font-weight: bold;
 }
+
+
+.input-bg {
+    background-position: 100% 1px !important;
+    padding-right: 0px !important;
+}
+
 </dtml-with>

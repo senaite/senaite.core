@@ -1,6 +1,11 @@
 (function( $ ) {
 "use strict";
 
+function destroy(arr, val) {
+	for (var i = 0; i < arr.length; i++) if (arr[i] === val) arr.splice(i, 1);
+	return arr;
+}
+
 function toggle_spec_fields(element) {
 	// when a service checkbox is clicked, this is used to display
 	// or remove the specification inputs.
@@ -218,6 +223,16 @@ function ar_rename_elements(){
 		// not :ignore_empty, widgets each get submitted to their own form handlers
 		$(e).attr("name", "ar."+column+"."+$(e).attr("name")+":record");
 	}
+	elements = $(".multiValued-listing");
+	for (i = elements.length - 1; i >= 0; i--) {
+		e = elements[i];
+		var eid = e.id.split("-listing")[0];
+		column = $($(e).parents("td")).attr("column");
+		$(e).attr("id", "ar_"+column+"_"+eid+"-listing");
+		// not :ignore_empty, widgets each get submitted to their own form handlers
+		$(e).attr("name", "ar."+column+"."+eid+"-listing");
+		$(e).attr("fieldName", "ar."+column+"."+eid);
+	}
 }
 
 // The columnar referencewidgets that we reconfigure use this as their
@@ -229,12 +244,46 @@ function ar_referencewidget_select_handler(event, ui){
 	// Set form values in activated element (must exist in colModel!)
 	var column = $(this).attr("id").split("_")[1];
 	var fieldName = $(this).attr("name").split(".")[2].split(":")[0];
-	$(this).val(ui.item[$(this).attr("ui_item")]);
-	$(this).attr("uid", ui.item.UID);
+	var skip;
 
-	// split out the :ignore_empty:etc
-	var bits = fieldName.split(":");
-	$("input[name*='ar\\."+column+"\\."+bits[0]+"_uid']").val(ui.item.UID);
+	var uid_element = $("#ar_"+column+"_"+fieldName+"_uid");
+  var listing_div = $("#ar_"+column+"_"+fieldName+"-listing");
+  if(listing_div.length > 0) {
+      // Add selection to textfield value
+      var existing_uids = $(uid_element).val().split(",");
+			destroy(existing_uids,"");
+			destroy(existing_uids,"[]");
+      var selected_value = ui.item[$(this).attr("ui_item")];
+      var selected_uid = ui.item.UID;
+      if (existing_uids.indexOf(selected_uid) == -1) {
+          existing_uids.push(selected_uid);
+          $(this).val("");
+          $(this).attr("uid", existing_uids.join(","));
+          $(uid_element).val(existing_uids.join(","));
+					// insert item to listing
+					var del_btn_src = portal_url+"/++resource++bika.lims.images/delete.png";
+					var del_btn = "<img class='deletebtn' src='"+del_btn_src+"' fieldName='ar."+column+"."+fieldName+"' uid='"+selected_uid+"'/>";
+					var new_item = "<div class='reference_multi_item' uid='"+selected_uid+"'>"+del_btn+selected_value+"</div>";
+					$(listing_div).append($(new_item));
+      }
+      skip = $(element).attr("skip_referencewidget_lookup");
+      if (skip !== true){
+          $(this).trigger("selected", ui.item.UID);
+      }
+      $(element).removeAttr("skip_referencewidget_lookup");
+      $(this).next("input").focus();
+  } else {
+      // Set value in activated element (must exist in colModel!)
+      $(this).val(ui.item[$(this).attr("ui_item")]);
+      $(this).attr("uid", ui.item.UID);
+      $(uid_element).val(ui.item.UID);
+      skip = $(element).attr("skip_referencewidget_lookup");
+      if (skip !== true){
+          $(this).trigger("selected", ui.item.UID);
+      }
+      $(element).removeAttr("skip_referencewidget_lookup");
+      $(this).next("input").focus();
+  }
 
 	if(fieldName == "SampleType"){
 		// selecting a Sampletype - jiggle the SamplePoint element.
@@ -1278,15 +1327,15 @@ $(document).ready(function() {
 	window.calculate_parts = calculate_parts;
 	window.toggleCat = toggleCat;
 
-    	// Show only the contacts and CC from the selected Client
+  // Show only the contacts and CC from the selected Client
 	var fromclient = window.location.href.search("/clients/") >= 0;
 	if (fromclient) {
 		for (var col=0; col<parseInt($("#col_count").val(), 10); col++) {
 			var element = $("#ar_" + col + "_Contact");
 			var clientuid = $("#ar_" + col + "_Client_uid").val();
 			applyComboFilter(element, "getParentUID", clientuid);
-    	        element = $("#ar_" + col + "_CCContact");
-    	        applyComboFilter(element, "getParentUID", clientuid);
+				element = $("#ar_" + col + "_CCContact");
+				applyComboFilter(element, "getParentUID", clientuid);
 		}
 	} else {
 		$("[id$='_Client']").bind("change", function() {
@@ -1294,8 +1343,8 @@ $(document).ready(function() {
 			var element = $("#ar_" + col + "_Contact");
 			var clientuid = $(this).attr("uid");
 			applyComboFilter(element, "getParentUID", clientuid);
-                element = $("#ar_" + col + "_CCContact");
-                applyComboFilter(element, "getParentUID", clientuid);
+				element = $("#ar_" + col + "_CCContact");
+				applyComboFilter(element, "getParentUID", clientuid);
 		});
 	}
 }
