@@ -38,7 +38,14 @@ Analysis Request with no samping or preservation workflow
     # Go to                     ${PLONEURL}/clients/client-1/${ar_id}/base_view
     # Execute transition retract on items in form_id lab_analyses
 
-
+Check that the Contact CC auto-fills correctly when a contact is selected
+    Go to                               ${PLONEURL}/clients/client-1/${ar_factory_url}?col_count=2
+    SelectDate                          ar_0_SamplingDate       1
+    Select From Dropdown                ar_0_SampleType         Water
+    Select from dropdown                ar_0_Contact            Rita
+    Xpath Should Match X Times          //div[@class='reference_multi_item']    1
+    Select from dropdown                ar_0_Contact            Neil
+    Xpath Should Match X Times          //div[@class='reference_multi_item']    2
 
 
 # XXX Automatic expanded categories
@@ -55,9 +62,9 @@ Analysis Request with no samping or preservation workflow
 *** Keywords ***
 
 Start browser
-    Open browser        ${PLONEURL}/login_form
-    Log in              test_labmanager    test_labmanager
-    Set selenium speed  ${SELENIUM_SPEED}
+    Open browser                        ${PLONEURL}/login_form
+    Log in                              test_labmanager         test_labmanager
+    Set selenium speed                  ${SELENIUM_SPEED}
 
 Complete ar_add form with template ${template}
     @{time} =                   Get Time        year month day hour min sec
@@ -76,7 +83,7 @@ Complete ar_add form Without template
     @{time} =                  Get Time        year month day hour min sec
     SelectDate                 ar_0_SamplingDate   @{time}[2]
     Select From Dropdown       ar_0_SampleType    Water
-    Select from dropdown        ar_0_Contact       Rita
+    Select from dropdown       ar_0_Contact       Rita
     Click Element              xpath=//th[@id='cat_lab_Water Chemistry']
     Select Checkbox            xpath=//input[@title='Moisture' and @name='ar.0.Analyses:list:ignore_empty:record']
     Click Element              xpath=//th[@id='cat_lab_Metals']

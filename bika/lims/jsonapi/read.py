@@ -118,10 +118,13 @@ def read(context, request):
             else:
                 val = field.get(obj)
                 if val:
+                    # I put the UID of all references here in *_uid.
                     if field.type == 'reference':
                         if type(val) in (list, tuple):
+                            obj_data[fieldname+"_uid"] = [v.UID() for v in val]
                             val = [v.Title() for v in val]
                         else:
+                            obj_data[fieldname+"_uid"] = val.UID()
                             val = val.Title()
                 else:
                     val = ''

@@ -169,6 +169,41 @@ function set_default_spec(column) {
 	}
 }
 
+function set_cc_contacts(column) {
+	var contact_uid = $("#ar_"+column+"_Contact_uid").val();
+	var fieldName = "ar."+column+".CCContact";
+	// clear the CC widget
+	$("input[name='"+fieldName+":record']").val("");
+	$("input[name='"+fieldName+":record']").attr("uid", "");
+	$("input[name='"+fieldName+"_uid']").val("");
+	$("#ar_"+column+"_CCContact-listing").empty();
+	if(contact_uid !== ""){
+		var request_data = {
+			portal_type: "Contact",
+			UID: contact_uid
+		};
+		window.jsonapi_read(request_data, function(data) {
+			if(data.objects.length < 1) {
+				return;
+			}
+			var ob = data.objects[0];
+			var cc_titles = ob.CCContact;
+			var cc_uids = ob.CCContact_uid;
+			if(!cc_uids) {
+				return;
+			}
+			$("input[name='"+fieldName+"_uid']").val(cc_uids.join(","));
+			for (var i = 0; i < cc_uids.length; i++) {
+				var title = cc_titles[i];
+				var uid = cc_uids[i];
+				var del_btn_src = window.portal_url+"/++resource++bika.lims.images/delete.png";
+				var del_btn = "<img class='ar_deletebtn' src='"+del_btn_src+"' fieldName='"+fieldName+"' uid='"+uid+"'/>";
+				var new_item = "<div class='reference_multi_item' uid='"+uid+"'>"+del_btn+title+"</div>";
+				$("#ar_"+column+"_CCContact-listing").append($(new_item));
+			}
+		});
+	}
+}
 function modify_Specification_field_filter(column) {
 	// when a SampleType is selected I will allow only specs to be selected
 	// which 1- (have the same Sample Types)
@@ -285,6 +320,9 @@ function ar_referencewidget_select_handler(event, ui){
       $(this).next("input").focus();
   }
 
+  if(fieldName == "Contact"){
+  	set_cc_contacts(column);
+  }
 	if(fieldName == "SampleType"){
 		// selecting a Sampletype - jiggle the SamplePoint element.
 		var sp_element = $("#ar_"+column+"_SamplePoint");

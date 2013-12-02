@@ -5,7 +5,7 @@
  * Dual licensed under the MIT or GPL Version 2 licenses.
  * http://jquery.org/license
  *
- * 
+ *
  * Depends:
  *	jquery.ui.core.js
  *	jquery.ui.widget.js
@@ -84,7 +84,7 @@ $.widget( "cg.combogrid", {
 						$.each(self.options.resetFields, function() {
 						$( ''+this ).val('');
 				 		});
-					} 
+					}
 				});
 			}
 			if (self.options.searchButton){
@@ -172,11 +172,16 @@ $.widget( "cg.combogrid", {
 						$( ''+this ).val('');
 				 		});
 					}
+
 						self.element.val('');
+
+						// XXX bika.lims jqeury combogrid modified to fire this event
+						self.element.trigger("unselected");
+
 		//Introduced in 1.5.1 to trigger search on DELETE input field
 		/*	// keypress is triggered before the input value is changed
 					clearTimeout( self.searching );
-					
+
 						self.searching = setTimeout(function() {
 						// only search if the value has changed
 							if ( self.term != self.element.val()) {
@@ -215,7 +220,7 @@ $.widget( "cg.combogrid", {
 					}
 					// keypress is triggered before the input value is changed
 					clearTimeout( self.searching );
-					
+
 						self.searching = setTimeout(function() {
 							// only search if the value has changed
 						//	if ( self.term != self.element.val()) {
@@ -223,7 +228,7 @@ $.widget( "cg.combogrid", {
 								self.search( null, event );
 						//	}
 						}, self.options.delay );
-					
+
 					break;
 				}
 			})
@@ -245,7 +250,7 @@ $.widget( "cg.combogrid", {
 				if ( self.options.disabled ) {
 					return;
 				}
-				//preventing from closing when a button trigger a search 
+				//preventing from closing when a button trigger a search
 				if(self.options.searchButton){
 					if(self.menucombo.element.is(":visible")){
 						clearTimeout( self.searching );
@@ -444,7 +449,7 @@ $.widget( "cg.combogrid", {
 		var self = this,
 			array,
 			url;
-		
+
 		if ( $.isArray(this.options.source) ) {
 			array = this.options.source;
 			this.source = function( request, response ) {
@@ -508,7 +513,7 @@ $.widget( "cg.combogrid", {
 	},
 
 	_response: function(records, total, content ) {
-		
+
 		if ( !this.options.disabled && content && content.length ) {
 			//content = this._normalize( content );
 			this._suggest(records, total, content );
@@ -543,7 +548,7 @@ $.widget( "cg.combogrid", {
 			this._trigger( "close", event );
 		}
 	},
-	
+
 	_change: function( event ) {
 		if ( this.previous !== this.element.val() ) {
 			this._trigger( "change", event, { item: this.selectedItem } );
@@ -777,7 +782,7 @@ $.widget( "cg.combogrid", {
 			$('.' +self.element.attr('id') +'.cg-keynav-next').addClass("cg-state-disabled");
 			$('.' +self.element.attr('id') +'.cg-keynav-last').addClass("cg-state-disabled");
 		};
-		
+
 		$('.' +self.element.attr('id') +'.cg-keynav-next').bind('click.combogrid',function(){
 			if(self.page<total){
 				self.page++;
@@ -872,7 +877,7 @@ $.extend( $.cg.combogrid, {
 
 /*
  * jQuery UI Menu (not officially released)
- * 
+ *
  * This widget isn't yet finished and the API is subject to change. We plan to finish
  * it for the next release. You're welcome to give it a try anyway and give us feedback,
  * as long as you're okay with migrating your code later on. We can help with that, too.
@@ -908,7 +913,7 @@ $.widget("cg.menucombo", {
 			});
 		this.refresh();
 	},
-	
+
 	refresh: function() {
 		var self = this;
 
@@ -916,7 +921,7 @@ $.widget("cg.menucombo", {
 		var items = this.element.children("div:not(.cg-menu-item):not(#cg-divHeader):not(.cg-comboButton):has(div)")
 			.addClass("cg-menu-item")
 			.attr("role", "menuitem");
-		
+
 		items.children("div")
 			.addClass("ui-corner-all")
 			.attr("tabindex", -1)
