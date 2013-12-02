@@ -109,7 +109,7 @@
                  tal:attributes="name string:${fieldName}_uid;
                                  id string:${fieldName}_uid;
                                  value python:widget.initial_uid_field_value(val);"/>
-        </metal:fill>sss
+        </metal:fill>
       </metal:use>
     </metal:define>
 
