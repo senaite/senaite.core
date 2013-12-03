@@ -21,7 +21,7 @@ def ar_analysis_values(obj):
         # these may become regular fields, handled by the normal read() code.
         method = analysis.getService().getMethod()
         ret.append({
-            "Uncertainty": analysis.getService().getUncertainty(),
+            "Uncertainty": analysis.getService().getUncertainty(analysis.getResult()),
             "Method": method.Title() if method else '',
             "specification": analysis.specification if hasattr(analysis, "specification") else {},
         })
