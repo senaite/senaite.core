@@ -131,9 +131,7 @@
                     <tal:hidden_def
                         tal:repeat="hiddenfieldName python:widget_visibility.get('add', {}).get('hidden', [])"
                         tal:define="index repeat/fieldName/index">
-                            <!-- All hidden fields -->
                             <input
-                                tal:condition="python:index==1"
                                 type="hidden"
                                 tal:define="val python:context.Schema()[hiddenfieldName].getAccessor(context)();"
                                 tal:attributes="
@@ -141,7 +139,6 @@
                                     id string:${hiddenfieldName};
                                     value val/Title|nothing;"/>
                              <input
-                                tal:condition="python:index==1"
                                 type="hidden"
                                 tal:define="val python:context.Schema()[hiddenfieldName].getAccessor(context)();"
                                 tal:attributes="
@@ -154,6 +151,30 @@
             </tal:columns>
         </tal:def>
     </tr>
+
+    <tal:hidden repeat="hiddenfieldName python:widget_visibility.get('add', {}).get('hidden', [])">
+        <tal:columns tal:repeat="column python:range(view.col_count)">
+            <input
+                type="hidden"
+                tal:define="
+                    field python:context.Schema()[hiddenfieldName];
+                    val python:field.getAccessor(context)();"
+                tal:attributes="
+                    name string:ar.${column}.${hiddenfieldName};
+                    id string:ar_${column}_${hiddenfieldName};
+                    value val/Title|nothing;"/>
+             <input
+                type="hidden"
+                tal:define="
+                    field python:context.Schema()[hiddenfieldName];
+                    val python:field.getAccessor(context)();"
+                tal:attributes="
+                    name string:ar.${column}.${hiddenfieldName}_uid;
+                    id string:ar_${column}_${hiddenfieldName}_uid;
+                    value val/UID|nothing;"/>
+        </tal:columns>
+    </tal:hidden>
+
 </thead>
 
 <thead class="pointofcapture">
