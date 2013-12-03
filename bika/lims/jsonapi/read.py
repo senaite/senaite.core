@@ -16,7 +16,14 @@ def ar_analysis_values(obj):
     for proxy in analyses:
         if proxy.review_state == 'retracted':
             continue
-        ret.append({})
+        # things that are manually inserted into the analysis.
+        # these may become regular fields, handled by the normal read() code.
+        method = analysis.getService().getMethod()
+        ret.append({
+            "Uncertainty": analysis.getService().getUncertainty(),
+            "Method": method.Title() if method else '',
+            "specification": analysis.specification,
+        })
         # Place all proxy attributes into the result.
         for index in proxy.indexes():
             if index in proxy:
