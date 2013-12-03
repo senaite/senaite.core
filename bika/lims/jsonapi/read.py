@@ -14,6 +14,7 @@ def ar_analysis_values(obj):
     workflow = getToolByName(obj, 'portal_workflow')
     analyses = obj.getAnalyses(cancellation_state='active')
     for proxy in analyses:
+        analysis = proxy.getObject()
         if proxy.review_state == 'retracted':
             continue
         # things that are manually inserted into the analysis.
@@ -22,7 +23,7 @@ def ar_analysis_values(obj):
         ret.append({
             "Uncertainty": analysis.getService().getUncertainty(),
             "Method": method.Title() if method else '',
-            "specification": analysis.specification,
+            "specification": analysis.specification if hasattr(analysis, "specification") else {},
         })
         # Place all proxy attributes into the result.
         for index in proxy.indexes():
@@ -35,7 +36,6 @@ def ar_analysis_values(obj):
                         continue
                     ret[-1][index] = val
         # Then schema field values
-        analysis = proxy.getObject()
         schema = analysis.Schema()
         for field in schema.fields():
             accessor = field.getAccessor(analysis)
