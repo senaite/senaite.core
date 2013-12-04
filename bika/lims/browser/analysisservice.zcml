@@ -28,4 +28,9 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <adapter
+      factory="bika.lims.browser.analysisservice.JSONReadExtender"
+      provides="bika.lims.interfaces.IJSONReadExtender"
+    />
+
 </configure>

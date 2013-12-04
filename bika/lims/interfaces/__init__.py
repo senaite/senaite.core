@@ -430,6 +430,15 @@ class ISetupDataSetList(Interface):
     the load_setup_data view
     """
 
+class IJSONReadExtender(Interface):
+
+    """This interface allows an adapter to modify an object's data before
+    it is sent to the HTTP response.
+    """
+
+    def __call__(obj_data):
+        """obj_data is the current python dictionary that will go to json.
+        it should be returned complete with modifications."""
 
 class ISetupDataImporter(Interface):
 

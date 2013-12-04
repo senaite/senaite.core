@@ -1,13 +1,18 @@
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
+from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.browser.log import LogView
 from bika.lims.content.analysisservice import getContainers
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.interfaces import IAnalysisService
+from bika.lims.interfaces import IJSONReadExtender
 from Products.CMFCore.utils import getToolByName
+from magnitude import mg, MagnitudeError
+from zope.component import adapts
+from zope.interface import implements
 import json, plone
 import plone.protect
-from magnitude import mg, MagnitudeError
 import re
 
 ### AJAX methods for AnalysisService context
@@ -161,3 +166,44 @@ class ajaxGetServiceInterimFields:
             calc_interims.append(s_i)
 
         return json.dumps(calc_interims)
+
+
+class JSONReadExtender(object):
+    """- Adds the 'ServiceDependencies' key, this is a list of dictionaries,
+    one per service
+    """
+
+    implements(IJSONReadExtender)
+    adapts(IAnalysisService)
+
+    def __init__(self, context):
+        self.context = context
+
+    def service_info(self, service):
+        ret = {
+            "Category": service.getCategory().Title(),
+            "Category_uid": service.getCategory().UID(),
+            "Service": service.Title(),
+            "Service_uid": service.UID(),
+            "PointOfCapture": POINTS_OF_CAPTURE.getValue(service.getPointOfCapture()),
+        }
+        return ret
+
+    def __call__(self, obj_data):
+        ret = obj_data.copy()
+
+        calc = self.context.getCalculation()
+        if calc:
+            services = [self.service_info(service) for service
+                in calc.getCalculationDependencies(flat=True)
+                if service.UID() != self.context.UID()]
+            ret["ServiceDependencies"] = services
+            services = [self.service_info(service) for service
+                in calc.getCalculationDependants()
+                if service.UID() != self.context.UID()]
+            ret["ServiceDependants"] = services
+        else:
+            ret["ServiceDependencies"] = []
+            ret["ServiceDependants"] = []
+
+        return ret

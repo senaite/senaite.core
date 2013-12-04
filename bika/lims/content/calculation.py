@@ -116,7 +116,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
             self.getField('DependentServices').set(self, DependentServices)
             self.getField('Formula').set(self, Formula)
 
-    def getCalculationDependencies(self):
+    def getCalculationDependencies(self, flat=False):
         """ Recursively calculates all dependencies of this calculation.
             The return value is dictionary of dictionaries (of dictionaries....)
 
@@ -127,12 +127,38 @@ class Calculation(BaseFolder, HistoryAwareMixin):
                     },
                 },
             }
+
+            set flat=True to get a simple list of AnalysisService objects
         """
-        deps = {}
+        if flat:
+            deps = []
+        else:
+            deps = {}
         for service in self.getDependentServices():
-            try: deps[service.UID()] = service.getCalculation().getCalculationDependencies()
-            except AttributeError: deps[service.UID()] = {}
+            calc = service.getCalculation()
+            if not calc:
+                continue
+            if flat:
+                deps.append(service)
+                deps.extend(calc.getCalculationDependencies(flat=True))
+            else:
+                deps[service.UID()] = calc.getCalculationDependencies()
         return deps
 
+    def getCalculationDependants(self):
+        """Return a flat list of services who's calculations depend on this."""
+        backrefs = []
+        skip = []
+
+        def walk(services):
+            for service in services:
+                if service not in skip:
+                    skip.append(service)
+                    backrefs.append(service)
+                    for calc in service.getBackReferences('CalculationAnalysisService'):
+                        walk(calc.getBackReferences('AnalysisServiceCalculation'))
+        walk(self.getBackReferences('AnalysisServiceCalculation'))
+
+        return backrefs
 
 registerType(Calculation, PROJECTNAME)
