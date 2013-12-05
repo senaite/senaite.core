@@ -39,7 +39,7 @@ def Import(context, request):
 
     # Load the most suitable parser according to file extension/options/etc...
     parser = None
-    if not hasattr(infile, 'name'):
+    if not hasattr(infile, 'filename'):
         errors.append(_("No file selected"))
     elif fileformat == 'csv':
         parser = MasshunterQuantCSVParser(infile)
