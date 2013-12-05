@@ -18,7 +18,7 @@ import plone
 import zope
 import zope.event
 
-title = 'FIAStar'
+title = "FOSS - FIAStar"
 
 class Export(BrowserView):
     """ Writes workseet analyses to a CSV file that FIAStar can read.

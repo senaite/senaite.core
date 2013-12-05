@@ -6,12 +6,14 @@ from agilent.masshunter import quantitative
 from foss.fiastar import fiastar
 from foss.winescan import auto
 from foss.winescan import ft120
+from thermoscientific.gallery import Ts9861x
 
 __all__ = ['generic.xml',
            'agilent.masshunter.quantitative',
            'foss.fiastar.fiastar',
            'foss.winescan.auto',
-           'foss.winescan.ft120']
+           'foss.winescan.ft120',
+           'thermoscientific.gallery.Ts9861x']
 
 
 def getExim(exim_id):

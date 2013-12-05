@@ -1,0 +1,106 @@
+""" Thermo Scientific 'Gallery'
+"""
+from bika.lims import bikaMessageFactory as _
+from bika.lims.exportimport.instruments.resultsimport import \
+    AnalysisResultsImporter, InstrumentCSVResultsFileParser
+
+
+class ThermoGalleryTSVParser(InstrumentCSVResultsFileParser):
+
+    def __init__(self, tsv):
+        InstrumentCSVResultsFileParser.__init__(self, tsv)
+        self._end_header = False
+        self._columns = []
+
+    def _parseline(self, line):
+
+        if self._end_header == False:
+            return self.parse_headerline(line)
+        else:
+            return self.parse_resultline(line)
+
+    def splitLine(self, line):
+        return [token.strip() for token in line.split('\t')]
+
+    def parse_headerline(self, line):
+        """ Parses header lines
+
+            Header example:
+            Date    2012/11/15    User    anonymous
+            Time    06:07:08PM    Software version: 4.0
+
+            Example laboratory
+            Arizona
+        """
+        if line.startswith('Date'):
+            splitted = self.splitLine(line)
+            if len(splitted) > 1:
+                self._header['Date'] = splitted[1]
+                if len(splitted) > 2 and splitted[2] == 'User':
+                    self._header['Date'] = splitted[1]
+                    self._header['User'] = splitted[3] \
+                        if len(splitted) > 3 else ''
+                else:
+                    self.warn(_('Unexpected header format'))
+            else:
+                self.warn(_('Unexpected header format'))
+
+            return 0
+
+        if line.startswith('Time'):
+            splitted = self.splitLine(line)
+            if len(splitted) > 1:
+                self._header['Time'] = splitted[1]
+            else:
+                self.warn(_('Unexpected header format'), self._numline)
+
+            return 0
+
+        if line.startswith('Sample/ctrl'):
+            # Sample/ctrl ID    Pat/Ctr/cAl    Test name    Test type
+            if len(self._header) == 0:
+                self.err(_("No header found"), self._numline)
+                return -1
+
+            #Grab column names
+            self._end_header = True
+            self._columns = self.splitLine(line)
+            return 1
+
+    def parse_resultline(self, line):
+        # Sample/ctrl ID    Pat/Ctr/cAl    Test name    Test type
+        if not line.strip():
+            return 0
+
+        rawdict = {}
+        splitted = self.splitLine(line)
+        for idx, result in enumerate(splitted):
+            if len(self._columns) <= idx:
+                self.err(_("Orphan value in column %s, line %s") \
+                         % (str(idx + 1), self._numline))
+                break
+            rawdict[self._columns[idx]] = result
+
+        acode = rawdict.get('Test name', '')
+        if not acode:
+            self.err(_("No Analysis Code defined, line %s") % (self.num_line))
+            return 0
+
+        errors = rawdict.get('Errors', '')
+        errors = "Errors: %s" % errors if errors else ''
+        notes = rawdict.get('Notes', '')
+        notes = "Notes: %s" % notes if notes else ''
+        rawdict['DefaultResult'] = 'Result'
+        rawdict['Remarks'] = ' '.join([errors, notes])
+        self._addRawResult(acode, rawdict, True)
+        return 0
+
+
+class ThermoGalleryImporter(AnalysisResultsImporter):
+
+    def __init__(self, parser, context, idsearchcriteria, override,
+                 allowed_ar_states=None, allowed_analysis_states=None):
+        AnalysisResultsImporter.__init__(self, parser, context,
+                                         idsearchcriteria, override,
+                                         allowed_ar_states,
+                                         allowed_analysis_states)
