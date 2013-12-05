@@ -2,14 +2,14 @@ import sys
 import inspect
 
 from generic import xml
-from agilent import masshunter_quant
-from fiastar import fiastar
+from agilent.masshunter import quantitative
+from foss.fiastar import fiastar
 from foss.winescan import auto
 from foss.winescan import ft120
 
 __all__ = ['generic.xml',
-           'fiastar.fiastar',
-           'agilent.masshunter_quant',
+           'agilent.masshunter.quantitative',
+           'foss.fiastar.fiastar',
            'foss.winescan.auto',
            'foss.winescan.ft120']
 

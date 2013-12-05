@@ -23,7 +23,7 @@ import zope.event
 from bika.lims.exportimport.instruments.resultsimport import InstrumentCSVResultsFileParser,\
     AnalysisResultsImporter
 
-title = "Agilent - Masshunter Quant"
+title = "Agilent - Masshunter Quantitative"
 
 
 def Import(context, request):
