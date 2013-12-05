@@ -1,21 +1,20 @@
-""" FOSS 'Winescan FT120'
+""" FOSS 'Winescan Auto'
 """
 from bika.lims import bikaMessageFactory as _
-from bika.lims.exportimport.instruments.foss.winescan import WinescanImporter,\
-    WinescanCSVParser
+from . import WinescanImporter, WinescanCSVParser
 import json
 
-title = "FOSS - Winescan FT120"
+title = "FOSS - Winescan Auto"
 
 
 def Import(context, request):
-    """ Read FOSS's Winescan FT120 analysis results
+    """ Read FOSS's Winescan Auto analysis results
     """
-    infile = request.form['wsf_file']
-    fileformat = request.form['wsf_format']
-    artoapply = request.form['wsf_artoapply']
-    override = request.form['wsf_override']
-    sample = request.form.get('wsf_sample', 'requestid')
+    infile = request.form['wsa_file']
+    fileformat = request.form['wsa_format']
+    artoapply = request.form['wsa_artoapply']
+    override = request.form['wsa_override']
+    sample = request.form.get('wsa_sample', 'requestid')
     errors = []
     logs = []
 
@@ -23,8 +22,8 @@ def Import(context, request):
     parser = None
     if not hasattr(infile, 'filename'):
         errors.append(_("No file selected"))
-    if fileformat == 'csv':
-        parser = WinescanFT120CSVParser(infile)
+    elif fileformat == 'csv':
+        parser = WinescanAutoCSVParser(infile)
     else:
         errors.append(_("Unrecognized file format '%s'") % fileformat)
 
@@ -54,12 +53,12 @@ def Import(context, request):
         elif sample == 'sample_clientsid':
             sam = ['getSampleID', 'getClientSampleID']
 
-        importer = WinescanFT120Importer(parser=parser,
-                                         context=context,
-                                         idsearchcriteria=sam,
-                                         allowed_ar_states=status,
-                                         allowed_analysis_states=None,
-                                         override=over)
+        importer = WinescanAutoImporter(parser=parser,
+                                        context=context,
+                                        idsearchcriteria=sam,
+                                        allowed_ar_states=status,
+                                        allowed_analysis_states=None,
+                                        override=over)
         importer.process()
         errors = importer.errors
         logs = importer.logs
@@ -69,13 +68,13 @@ def Import(context, request):
     return json.dumps(results)
 
 
-class WinescanFT120CSVParser(WinescanCSVParser):
+class WinescanAutoCSVParser(WinescanCSVParser):
 
     def getAttachmentFileType(self):
-        return "FOSS Winescan FT120 CSV"
+        return "FOSS Winescan Auto CSV"
 
 
-class WinescanFT120Importer(WinescanImporter):
+class WinescanAutoImporter(WinescanImporter):
 
     def getKeywordsToBeExcluded(self):
-        return ['Rep #', 'Date', 'Time', 'Product']
+        return ['Info', 'ResultType', 'BottleType', 'Remark']

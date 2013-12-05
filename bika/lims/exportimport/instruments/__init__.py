@@ -4,14 +4,14 @@ import inspect
 from generic import xml
 from agilent import masshunter_quant
 from fiastar import fiastar
-from foss import winescan_auto
-from foss import winescan_ft120
+from foss.winescan import auto
+from foss.winescan import ft120
 
 __all__ = ['generic.xml',
            'fiastar.fiastar',
            'agilent.masshunter_quant',
-           'foss.winescan_auto',
-           'foss.winescan_ft120']
+           'foss.winescan.auto',
+           'foss.winescan.ft120']
 
 
 def getExim(exim_id):
