@@ -169,8 +169,7 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
 
     def parse(self):
         infile = self.getInputFile()
-        self.log(_("Parsing file ") + " %s (%s)" % (infile.filename,
-                                                    infile.name))
+        self.log(_("Parsing file ") + " %s" % infile.filename)
         jump = 0
         for line in infile.readlines():
             self._numline += 1
@@ -550,9 +549,10 @@ class AnalysisResultsImporter(Logger):
         elif resultsaved == False:
             self.warn(_("%s result for '%s': Empty") % (objid, acode))
 
-#        if (resultsaved or len(interimsout) > 0) \
-#            and values.get('Remarks', '') \
-#            and analysis.portal_type == 'Analysis':
-#            analysis.setRemarks(values['Remarks'])
+        if (resultsaved or len(interimsout) > 0) \
+            and values.get('Remarks', '') \
+            and analysis.portal_type == 'Analysis' \
+            and (analysis.getRemarks() != '' or self._override[1] == True):
+            analysis.setRemarks(values['Remarks'])
 
         return resultsaved or len(interimsout) > 0
