@@ -54,12 +54,12 @@ def Import(context, request):
         elif sample == 'sample_clientsid':
             sam = ['getSampleID', 'getClientSampleID']
 
-        importer = WinescanImporter(parser=parser,
-                                    context=context,
-                                    idsearchcriteria=sam,
-                                    allowed_ar_states=status,
-                                    allowed_analysis_states=None,
-                                    override=over)
+        importer = WinescanAutoImporter(parser=parser,
+                                        context=context,
+                                        idsearchcriteria=sam,
+                                        allowed_ar_states=status,
+                                        allowed_analysis_states=None,
+                                        override=over)
         importer.process()
         errors = importer.errors
         logs = importer.logs
@@ -73,3 +73,9 @@ class WinescanAutoCSVParser(WinescanCSVParser):
 
     def getAttachmentFileType(self):
         return "FOSS Winescan Auto CSV"
+
+
+class WinescanAutoImporter(WinescanImporter):
+
+    def getKeywordsToBeExcluded(self):
+        return ['Info', 'ResultType', 'BottleType', 'Remark']

@@ -277,6 +277,12 @@ class AnalysisResultsImporter(Logger):
         """
         return self._idsearch
 
+    def getKeywordsToBeExcluded(self):
+        """ Returns an array with the analysis codes/keywords to be excluded
+            by the importer. By default, an empty array
+        """
+        return []
+
     def process(self):
         parsed = self._parser.parse()
         if parsed == False:
@@ -297,7 +303,10 @@ class AnalysisResultsImporter(Logger):
         arprocessed = []
         importedars = {}
         rawacodes = self._parser.getAnalysisKeywords()
+        exclude = self.getKeywordsToBeExcluded()
         for acode in rawacodes:
+            if acode in exclude:
+                continue
             service = self.bsc(getKeyword=acode)
             if not service:
                 self.err(_('Service keyword %s not found') % acode)

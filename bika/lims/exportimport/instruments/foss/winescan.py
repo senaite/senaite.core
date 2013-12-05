@@ -90,4 +90,3 @@ class WinescanImporter(AnalysisResultsImporter):
                                          idsearchcriteria, override,
                                          allowed_ar_states,
                                          allowed_analysis_states)
-
