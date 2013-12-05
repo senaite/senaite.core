@@ -13,6 +13,7 @@ class InstrumentResultsFileParser(Logger):
         self._header = {}
         self._rawresults = {}
         self._mimetype = mimetype
+        self._numline = 0
 
     def getInputFile(self):
         """ Returns the results input file

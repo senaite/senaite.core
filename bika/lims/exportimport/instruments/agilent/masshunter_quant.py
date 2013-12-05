@@ -73,7 +73,7 @@ def Import(context, request):
             sam = ['getSampleID', 'getClientSampleID']
 
         importer = MasshunterQuantImporter(parser=parser,
-                                           context=context, 
+                                           context=context,
                                            idsearchcriteria=sam,
                                            allowed_ar_states=status,
                                            allowed_analysis_states=None,
