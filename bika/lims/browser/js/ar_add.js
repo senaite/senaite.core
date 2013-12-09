@@ -786,6 +786,12 @@ function setTemplate(column,template_title){
 	template_parts = {};
 	analyses = template_data['Analyses'];
 	for(i=0;i<analyses.length;i++){
+	    if (analyses[i]['service_uid'] == null) {
+	        // Exclude empty objects from being processed.
+	        // Sometimes, template_data['Analyses'] returns an array with an
+	        // undefined array value.
+	        continue;
+	    }
 		key = analyses[i]['service_poc'] + "_" + analyses[i]['category_uid'];
 		if (template_services[key] == undefined){
 			template_services[key] = [];
