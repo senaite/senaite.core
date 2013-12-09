@@ -91,6 +91,7 @@ class WorksheetFolderListingView(BikaListingView):
         pm = getToolByName(context, "portal_membership")
         # this is a property of self, because self.getAnalysts returns it
         self.analysts = getUsers(self, ['Manager', 'LabManager', 'Analyst'])
+        self.analysts = self.analysts.sortedByKey()
 
         bsc = getToolByName(context, 'bika_setup_catalog')
         templates = [t for t in bsc(portal_type = 'WorksheetTemplate',
