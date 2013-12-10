@@ -1,64 +1,14 @@
 from bika.lims import logger
+from bika.lims.interfaces import IJSONReadExtender
 from plone.jsonapi import router
 from plone.jsonapi.interfaces import IRouteProvider
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.i18nl10n import ulocalized_time
 from zope import interface
+from zope.component import getAdapters
 import App
 import Missing
 import json
-
-
-def ar_analysis_values(obj):
-    ret = []
-    workflow = getToolByName(obj, 'portal_workflow')
-    analyses = obj.getAnalyses(cancellation_state='active')
-    for proxy in analyses:
-        analysis = proxy.getObject()
-        if proxy.review_state == 'retracted':
-            continue
-        # things that are manually inserted into the analysis.
-        # these may become regular fields, handled by the normal read() code.
-        method = analysis.getService().getMethod()
-        ret.append({
-            "Uncertainty": analysis.getService().getUncertainty(),
-            "Method": method.Title() if method else '',
-            "specification": analysis.specification if hasattr(analysis, "specification") else {},
-        })
-        # Place all proxy attributes into the result.
-        for index in proxy.indexes():
-            if index in proxy:
-                val = getattr(proxy, index)
-                if val != Missing.Value:
-                    try:
-                        json.dumps(val)
-                    except:
-                        continue
-                    ret[-1][index] = val
-        # Then schema field values
-        schema = analysis.Schema()
-        for field in schema.fields():
-            accessor = field.getAccessor(analysis)
-            if accessor and callable(accessor):
-                val = accessor()
-                if hasattr(val, 'Title') and callable(val.Title):
-                    val = val.Title()
-                try:
-                    json.dumps(val)
-                except:
-                    val = str(val)
-                ret[-1][field.getName()] = val
-        if analysis.getRetested():
-            retracted = obj.getAnalyses(review_state='retracted',
-                                        title=analysis.Title(),
-                                        full_objects=True)
-            prevs = sorted(retracted, key=lambda item: item.created())
-            prevs = [{'created': str(p.created()),
-                      'Result': p.getResult(),
-                      'InterimFields': p.getInterimFields()}
-                     for p in prevs]
-            ret[-1]['Previous Results'] = prevs
-    return ret
 
 
 def read(context, request):
@@ -120,8 +70,6 @@ def read(context, request):
             fieldname = field.getName()
             if include_fields and fieldname not in include_fields:
                 continue
-            if obj.portal_type == 'AnalysisRequest' and fieldname == 'Analyses':
-                val = ar_analysis_values(obj)
             else:
                 val = field.get(obj)
                 if val:
@@ -141,6 +89,12 @@ def read(context, request):
                     val = str(val)
             obj_data[fieldname] = val
         obj_data['path'] = "/".join(obj.getPhysicalPath())
+
+        # call any adapters that care to modify this data.
+        adapters = getAdapters((obj, ), IJSONReadExtender)
+        for name, adapter in adapters:
+            obj_data = adapter(obj_data)
+
         ret['objects'].append(obj_data)
     if debug_mode:
         logger.info("{0} objects returned".format(len(ret['objects'])))

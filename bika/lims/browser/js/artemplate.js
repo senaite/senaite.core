@@ -8,7 +8,7 @@
 		function clickSaveButton(event){
 			selected_analyses = $('[name^="uids\\:list"]').filter(':checked');
 			if(selected_analyses.length < 1){
-				window.bika_utils.portalMessage("No analyses have been selected");
+				window.bika.lims.portalMessage("No analyses have been selected");
 				window.scroll(0, 0);
 				return false;
 			}

@@ -1,6 +1,37 @@
 (function( $ ) {
 "use strict";
 
+window.bika.lims.AnalysisService = window.bika.lims.AnalysisService || {
+	Dependants: function(service_uid){
+		var request_data = {
+			catalog_name: "bika_setup_catalog",
+			UID: service_uid
+		};
+		var deps = {};
+		$.ajaxSetup({async:false});
+		window.bika.lims.jsonapi_read(request_data, function(data){
+			deps = data.objects[0].ServiceDependants;
+		});
+		$.ajaxSetup({async:true});
+		return deps;
+	},
+	Dependencies: function(service_uid){
+		var request_data = {
+			catalog_name: "bika_setup_catalog",
+			UID: service_uid
+		};
+		var deps = {};
+		$.ajaxSetup({async:false});
+		window.bika.lims.jsonapi_read(request_data, function(data){
+			deps = data.objects[0].ServiceDependencies;
+		});
+		$.ajaxSetup({async:true});
+		return deps;
+	}
+};
+
+
+
 $(document).ready(function(){
 
 	// Calculation.
@@ -24,7 +55,7 @@ $(document).ready(function(){
 			catalog_name: "bika_setup_catalog",
 			UID: $("#Calculation_uid").val()
 		};
-		window.jsonapi_read(request_data, function(data) {
+		window.bika.lims.jsonapi_read(request_data, function(data) {
 			// Clear rows
 			var rows, i;
 			$("#InterimFields_more").click(); // blank last row
@@ -116,7 +147,7 @@ $(document).ready(function(){
 			catalog_name: "uid_catalog",
 			UID: $(this).val()
 		};
-		window.jsonapi_read(request_data, function(data) {
+		window.bika.lims.jsonapi_read(request_data, function(data) {
 			var minvol = data.objects[0].MinimumVolume;
 			var target = $(st_element).parents("tr").find("[name^='PartitionSetup.vol']");
 			$(target).val(minvol);
@@ -135,7 +166,7 @@ $(document).ready(function(){
 			catalog_name: "uid_catalog",
 			UID: container_uid
 		};
-		window.jsonapi_read(request_data, function(data) {
+		window.bika.lims.jsonapi_read(request_data, function(data) {
 			if (data.objects.length < 1 ||
 				(!data.objects[0].PrePreserved) || (!data.objects[0].Preservation)) {
 				$("#Preservation").val("");
@@ -161,7 +192,7 @@ $(document).ready(function(){
 			catalog_name: "uid_catalog",
 			UID: container_uid
 		};
-		window.jsonapi_read(request_data, function(data) {
+		window.bika.lims.jsonapi_read(request_data, function(data) {
 			if (data.objects.length < 1 ||
 				(!data.objects[0].PrePreserved) || (!data.objects[0].Preservation)) {
 				$(target).prop("disabled", false);

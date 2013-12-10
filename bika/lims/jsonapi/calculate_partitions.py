@@ -78,10 +78,10 @@ class calculate_partitions(object):
                          if ps['sampletype'] == sampletype.UID()]
             if partsetup:
                 # User values set for each SampleType on each service
-                separate = bool(partsetup['separate'])
-                containers = [uc(UID=uid)[0].getObject() for uid in partsetup['container']]
-                preservations = [uc(UID=uid)[0].getObject() for uid in partsetup['preservation']]
-                minvol = mg(partsetup['vol'])
+                separate = bool(partsetup[0]['separate'])
+                containers = [uc(UID=uid)[0].getObject() for uid in partsetup[0]['container']]
+                preservations = [uc(UID=uid)[0].getObject() for uid in partsetup[0]['preservation']]
+                minvol = mg(partsetup[0]['vol'])
             else:
                 # read default values from service
                 separate = service.getSeparate()
@@ -168,8 +168,11 @@ class calculate_partitions(object):
 
         # Convert objects to UIDs
         for x, part in enumerate(parts):
+            parts[x]['service_titles'] = [s.Title() for s in part['services']]
             parts[x]['services'] = [s.UID() for s in part['services']]
+            parts[x]['container_titles'] = [c.Title() for c in part['container']]
             parts[x]['container'] = [c.UID() for c in part['container']]
+            parts[x]['preservation_titles'] = [p.Title() for p in part['preservation']]
             parts[x]['preservation'] = [p.UID() for p in part['preservation']]
             parts[x]['minvol'] = str(part['minvol'])
 

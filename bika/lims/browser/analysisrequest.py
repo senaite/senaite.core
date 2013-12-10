@@ -20,6 +20,7 @@ from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestAddView
 from bika.lims.interfaces import IDisplayListVocabulary
 from bika.lims.interfaces import IFieldIcons
+from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.interfaces import IInvoiceView
 from bika.lims.permissions import *
 from bika.lims.subscribers import doActionFor
@@ -54,6 +55,7 @@ from zope.interface import implements
 
 import App
 import Globals
+import Missing
 import json
 import os
 import plone
@@ -2758,3 +2760,69 @@ class ReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
             self.request['base_query'] = json.dumps(base_query)
 
         return DefaultReferenceWidgetVocabulary.__call__(self)
+
+
+class JSONReadExtender(object):
+    """- Adds the full details of all analyses to the AR.Analyses field
+    """
+
+    implements(IJSONReadExtender)
+    adapts(IAnalysisRequest)
+
+    def __init__(self, context):
+        self.context = context
+
+    def ar_analysis_values(self):
+        ret = []
+        workflow = getToolByName(self.context, 'portal_workflow')
+        analyses = self.context.getAnalyses(cancellation_state='active')
+        for proxy in analyses:
+            analysis = proxy.getObject()
+            if proxy.review_state == 'retracted':
+                continue
+            # things that are manually inserted into the analysis.
+            method = analysis.getService().getMethod()
+            ret.append({
+                "Uncertainty": analysis.getService().getUncertainty(analysis.getResult()),
+                "Method": method.Title() if method else '',
+                "specification": analysis.specification if hasattr(analysis, "specification") else {},
+            })
+            # Place all proxy attributes into the result.
+            for index in proxy.indexes():
+                if index in proxy:
+                    val = getattr(proxy, index)
+                    if val != Missing.Value:
+                        try:
+                            json.dumps(val)
+                        except:
+                            continue
+                        ret[-1][index] = val
+            # Then schema field values
+            schema = analysis.Schema()
+            for field in schema.fields():
+                accessor = field.getAccessor(analysis)
+                if accessor and callable(accessor):
+                    val = accessor()
+                    if hasattr(val, 'Title') and callable(val.Title):
+                        val = val.Title()
+                    try:
+                        json.dumps(val)
+                    except:
+                        val = str(val)
+                    ret[-1][field.getName()] = val
+            if analysis.getRetested():
+                retracted = self.context.getAnalyses(review_state='retracted',
+                                            title=analysis.Title(),
+                                            full_objects=True)
+                prevs = sorted(retracted, key=lambda item: item.created())
+                prevs = [{'created': str(p.created()),
+                          'Result': p.getResult(),
+                          'InterimFields': p.getInterimFields()}
+                         for p in prevs]
+                ret[-1]['Previous Results'] = prevs
+        return ret
+
+    def __call__(self, obj_data):
+        ret = obj_data.copy()
+        ret['Analyses'] = self.ar_analysis_values()
+        return ret

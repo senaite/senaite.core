@@ -4,7 +4,11 @@ window.jarn.i18n.loadCatalog("plone");
 (function( $ ) {
 "use strict";
 
-function portalMessage(message) {
+window.bika = window.bika || {
+	lims: {}
+};
+
+window.bika.lims.portalMessage = function (message) {
 	var _ = window.jarn.i18n.MessageFactory("bika");
 	var str = "<dl class='portalMessage error'>"+
 		"<dt>"+_("Error")+"</dt>"+
@@ -12,9 +16,9 @@ function portalMessage(message) {
 		"</ul></dd></dl>";
 	$(".portalMessage").remove();
 	$(str).appendTo("#viewlet-above-content");
-}
+};
 
-function log(e) {
+window.bika.lims.log = function(e) {
 	var message = "JS: " + e.message + " url: " + window.location.url;
 	$.ajax({
 		type: "POST",
@@ -22,87 +26,28 @@ function log(e) {
 		data: {"message":message,
 				"_authenticator": $("input[name='_authenticator']").val()}
 	});
-}
-
-var bika_utils = bika_utils || {
-
-	init: function () {
-        bika_utils.resolve_uid_cache = {};
-		if ("localStorage" in window && window.localStorage !== null) {
-			bika_utils.storage = window.localStorage;
-		} else {
-			bika_utils.storage = {};
-		}
-		var t = new Date().getTime();
-		var stored_counter = bika_utils.storage.bika_bsc_counter;
-		$.getJSON(window.portal_url+"/bika_bsc_counter?"+t, function(counter) {
-			if (counter != stored_counter){
-				$.getJSON(window.portal_url+"/bika_browserdata?"+t, function(data){
-					bika_utils.storage.bika_bsc_counter = counter;
-					bika_utils.storage.bika_browserdata = $.toJSON(data);
-					bika_utils.data = data;
-				});
-			} else {
-				var data = $.parseJSON(bika_utils.storage.bika_browserdata);
-				bika_utils.data = data;
-			}
-		});
-	},
-
-	portalMessage: portalMessage
-
 };
 
-bika_utils.init();
-window.bika_utils = bika_utils;
-
-function jsonapi_read(request_data, handler) {
-	window.jsonapi_cache = window.jsonapi_cache || {};
+window.bika.lims.jsonapi_cache = {};
+window.bika.lims.jsonapi_read = function(request_data, handler) {
+	window.bika.lims.jsonapi_cache = window.bika.lims.jsonapi_cache || {};
 	var jsonapi_cacheKey = $.param(request_data);
 	var jsonapi_read_handler = handler;
-	if (window.jsonapi_cache[jsonapi_cacheKey] === undefined){
+	if (window.bika.lims.jsonapi_cache[jsonapi_cacheKey] === undefined){
 		$.ajax({
 			type: "POST",
 			dataType: "json",
 			url: window.portal_url + "/@@API/read",
 			data: request_data,
 			success: function(data) {
-				window.jsonapi_cache[jsonapi_cacheKey] = data;
+				window.bika.lims.jsonapi_cache[jsonapi_cacheKey] = data;
 				jsonapi_read_handler(data);
 			}
 		});
 	} else {
-		jsonapi_read_handler(window.jsonapi_cache[jsonapi_cacheKey]);
+		jsonapi_read_handler(window.bika.lims.jsonapi_cache[jsonapi_cacheKey]);
 	}
-}
-window.jsonapi_read = jsonapi_read;
-window.jsonapi_cache = {};
-
-/*
-function enableAddAttachment(this_field) {
-	// XX move this to worksheet or AR or wherever it actually belongs
-	var attachfile = document.getElementById("AttachFile").value;
-	var service = document.getElementById("Service").value;
-	var analysis = document.getElementById("Analysis").value;
-	if (this_field == "Analysis") {
-		document.getElementById("Service").value = "";
-	}
-	if (this_field == "Service") {
-		document.getElementById("Analysis").value = "";
-	}
-	document.getElementById("addButton").disabled = false;
-	if (attachfile === "") {
-		document.getElementById("addButton").disabled = true;
-	} else {
-		if ((service === "") && (analysis === "")) {
-			document.getElementById("addButton").disabled = true;
-		}
-	}
-	return;
-}
-
-*/
-
+};
 
 $(document).ready(function(){
 
