@@ -97,7 +97,7 @@ class Report(BrowserView):
             dataitem = {'value': filename,
                         'img_before': icon}
             dataline.append(dataitem)
-            dataitem = {'value': attachment.getAttachmentType().Title()}
+            dataitem = {'value': attachment.getAttachmentType().Title() if attachment.getAttachmentType() else ''}
             dataline.append(dataitem)
             dataitem = {'value': self.context.lookupMime(attachment_file.getContentType())}
             dataline.append(dataitem)

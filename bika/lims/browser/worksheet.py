@@ -500,9 +500,9 @@ class ManageResultsView(BrowserView):
                 attachmentid = ws.invokeFactory("Attachment", id=tmpID())
                 attachment = ws._getOb(attachmentid)
                 attachment.edit(
-                    AttachmentFile = this_file,
-                    AttachmentType = self.request['AttachmentType'],
-                    AttachmentKeys = self.request['AttachmentKeys'])
+                    AttachmentFile=this_file,
+                    AttachmentType=self.request.get('AttachmentType', ''),
+                    AttachmentKeys=self.request['AttachmentKeys'])
                 attachment.reindexObject()
 
                 others = analysis.getAttachment()
@@ -527,7 +527,7 @@ class ManageResultsView(BrowserView):
                     attachment = ws._getOb(attachmentid)
                     attachment.edit(
                         AttachmentFile = this_file,
-                        AttachmentType = self.request['AttachmentType'],
+                        AttachmentType = self.request.get('AttachmentType', ''),
                         AttachmentKeys = self.request['AttachmentKeys'])
                     attachment.processForm()
                     attachment.reindexObject()

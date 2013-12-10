@@ -26,7 +26,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceField('AttachmentType',
-        required = 1,
+        required = 0,
         allowed_types = ('AttachmentType',),
         relationship = 'AttachmentAttachmentType',
         widget = ReferenceWidget(
@@ -47,7 +47,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('AttachmentTypeUID',
-        expression = 'context.getAttachmentType().UID()',
+        expression="context.getAttachmentType().UID() if context.getAttachmentType() else ''",
         widget = ComputedWidget(
             visible = False,
         ),

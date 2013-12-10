@@ -378,7 +378,7 @@
                 <a title="Click to download"
                    tal:attributes="href string:${attachment/absolute_url}/at_download/AttachmentFile"
                    tal:content="attachment/Title">Filename</a>
-                <span class="file-type" tal:content="python:attachment.getAttachmentType().Title()">Title</span>&nbsp;&nbsp;
+                <span class="file-type" tal:content="python:attachment.getAttachmentType().Title() if attachment.getAttachmentType() else ''">Title</span>&nbsp;&nbsp;
                 (<span class="file-mime" tal:content="python:here.lookupMime(file.getContentType())">CSV</span>)&nbsp;&mdash;&nbsp;
                 <span class="file-size" tal:content="python:'%sKb' % (filesize / 1024)">145Kb</span>
             </li>
@@ -397,7 +397,7 @@
                     <a title="Click to download"
                    tal:attributes="href string:${attachment/absolute_url}/at_download/AttachmentFile"
                    tal:content="attachment/Title">Filename</a>
-                <span class="file-type" tal:content="python:attachment.getAttachmentType().Title()">Title</span>&nbsp;&nbsp;
+                <span class="file-type" tal:content="python:attachment.getAttachmentType().Title() if attachment.getAttachmentType() else ''">Title</span>&nbsp;&nbsp;
                 (<span class="file-mime" tal:content="python:here.lookupMime(file.getContentType())">CSV</span>)&nbsp;&mdash;&nbsp;
                 <span class="file-size" tal:content="python:'%sKb' % (filesize / 1024)">145Kb</span>
                 </td>

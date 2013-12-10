@@ -1008,7 +1008,7 @@ class AnalysisRequest(BaseFolder):
         attachment = self.aq_parent._getOb(attachmentid)
         attachment.edit(
             AttachmentFile=this_file,
-            AttachmentType=self.REQUEST.form['AttachmentType'],
+            AttachmentType=self.REQUEST.form.get('AttachmentType', ''),
             AttachmentKeys=self.REQUEST.form['AttachmentKeys'])
         attachment.processForm()
         attachment.reindexObject()
