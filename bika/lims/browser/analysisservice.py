@@ -185,7 +185,8 @@ class JSONReadExtender(object):
             "Category_uid": service.getCategory().UID(),
             "Service": service.Title(),
             "Service_uid": service.UID(),
-            "PointOfCapture": POINTS_OF_CAPTURE.getValue(service.getPointOfCapture()),
+            "PointOfCapture": service.getPointOfCapture(),
+            "PointOfCapture_title": POINTS_OF_CAPTURE.getValue(service.getPointOfCapture()),
         }
         return ret
 

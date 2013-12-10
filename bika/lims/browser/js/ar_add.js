@@ -23,7 +23,7 @@ function toggle_spec_fields(element) {
 				catalog_name: "uid_catalog",
 				UID: spec_uid
 			};
-			window.jsonapi_read(request_data, function(data) {
+			window.bika.lims.jsonapi_read(request_data, function(data) {
 				var min_val = "";
 				var max_val = "";
 				var error_val = "";
@@ -66,7 +66,7 @@ function reset_spec_field_values(column) {
 			catalog_name: "uid_catalog",
 			UID: spec_uid
 		};
-		window.jsonapi_read(request_data, function(data) {
+		window.bika.lims.jsonapi_read(request_data, function(data) {
 			// 1 empty all specification inputs.
 			// 2 set specification values in all supported services.
 			var min_name = "[name^='ar."+column+".min']";
@@ -138,7 +138,7 @@ function set_default_spec(column) {
 			getClientUID: [client_uid, bika_analysisspecs_uid]
 		};
 
-		window.jsonapi_read(request_data, function(data) {
+		window.bika.lims.jsonapi_read(request_data, function(data) {
 			var ob, obj;
 			if (data.objects.length > 0) {
 				for(ob in data.objects){
@@ -182,7 +182,7 @@ function set_cc_contacts(column) {
 			portal_type: "Contact",
 			UID: contact_uid
 		};
-		window.jsonapi_read(request_data, function(data) {
+		window.bika.lims.jsonapi_read(request_data, function(data) {
 			if(data.objects.length < 1) {
 				return;
 			}
@@ -446,7 +446,7 @@ function add_path_filter_to_spec_lookups(){
 	for (var col=0; col<parseInt($("#col_count").val(), 10); col++) {
 		var element = $("#ar_"+col+"_Specification");
 		var bq = $.parseJSON($(element).attr("base_query"));
-		bq["path"] = [$("#PhysicalPath").attr("lab_specs"), $("#PhysicalPath").attr("here")];
+		bq.path = [$("#PhysicalPath").attr("lab_specs"), $("#PhysicalPath").attr("here")];
 		$(element).attr("base_query", $.toJSON(bq));
 	}
 }
@@ -771,57 +771,63 @@ function calculate_parts(column) {
 	}
 }
 
-function add_Yes(dlg, dep_args, element, remaining_columns){
+function add_Yes(dlg, element, dep_services){
 	/*jshint validthis:true */
 	var column = $(element).attr("column");
-	$.each(dep_args, function(i,args){
-		var tbody = $("#"+args[0]+"_"+args[1]);
-		if ($(tbody).hasClass("expanded")) {
-			// if cat is already expanded, we toggle(true) it and manually select service checkboxes
+	var key, json_key, dep, i;
+	var keyed_deps = {};
+	for(i = 0; i<dep_services.length; i++){
+		dep = dep_services[i];
+		key = {
+			col: column,
+			poc: dep.PointOfCapture,
+			cat_uid: dep.Category_uid
+		};
+		json_key = $.toJSON(key);
+		if(!keyed_deps[json_key]){
+			keyed_deps[json_key] = [];
+		}
+		keyed_deps[json_key].push(dep.Service_uid);
+	}
+
+	var modified_cols = [];
+	for(json_key in keyed_deps){
+		if (!keyed_deps.hasOwnProperty(json_key)){ continue; }
+		key = $.parseJSON(json_key);
+		if(!modified_cols[key.col]){
+			modified_cols.push(key.col);
+		}
+		var service_uids = keyed_deps[json_key];
+		var tbody = $("#"+key.poc+"_"+key.cat_uid);
+		if($(tbody).hasClass("expanded")) {
+			// if cat is already expanded, manually select service checkboxes
 			$(tbody).toggle(true);
-			$.each(args[3], function(x,serviceUID){
-				var e = $("input[column='"+args[2]+"']").filter("#"+serviceUID);
+			for(i=0; i<service_uids.length; i++){
+				var service_uid = service_uids[i];
+				var e = $("input[column='"+key.col+"']").filter("#"+service_uid);
 				$(e).prop("checked",true);
 				toggle_spec_fields(e);
-				// if elements from more than one column were passed, set all columns to be the same.
-				for(var col in remaining_columns){
-					var cb_el = $("input[column='"+remaining_columns[col]+"']").filter("#"+serviceUID);
-					$(cb_el).prop("checked",true);
-					toggle_spec_fields(cb_el);
-				}
-			});
+			}
 		} else {
 			// otherwise, toggleCat will take care of everything for us
 			$.ajaxSetup({async:false});
-			toggleCat(args[0], args[1], args[2], args[3]);
+			toggleCat(key.poc, key.cat, dep.col, service_uids);
 			$.ajaxSetup({async:true});
 		}
-	});
+	}
 	recalc_prices();
-	calculate_parts(column);
-	for(var col in remaining_columns){
-		calculate_parts(col);
+	for(i=0; i<modified_cols.length; i+=1){
+		calculate_parts(modified_cols[i]);
 	}
 	$(dlg).dialog("close");
 	$("#messagebox").remove();
+
+
 }
 
-function add_No(dlg, element, remaining_columns){
+function add_No(dlg, element){
 	/*jshint validthis:true */
-	var column = $(element).attr("column");
-	var serviceUID = $(element).attr("id");
 	$(element).prop("checked",false);
-	recalc_prices();
-	for(var col in remaining_columns){
-		var e = $("input[column='"+remaining_columns[col]+"']").filter("#"+serviceUID);
-		$(e).prop("checked",false);
-		toggle_spec_fields(e);
-	}
-	recalc_prices(column);
-	calculate_parts(column);
-	for(col in remaining_columns){
-		calculate_parts(column);
-	}
 	$(dlg).dialog("close");
 	$("#messagebox").remove();
 }
@@ -830,174 +836,129 @@ function calcdependencies(elements, auto_yes) {
 	/*jshint validthis:true */
 	auto_yes = auto_yes || false;
 	var _ = window.jarn.i18n.MessageFactory("bika");
-	// elements is a list of jquery checkbox objects
-	// it's got one element in it when a single checkbox was changed,
-	// and one from each column when a copy button was clicked.
-	var element = elements.shift();
-	var column = $(element).attr("column");
-	column = column || 0;
-	var remaining_columns = [];
-	var x, _col;
-	for(x = 0; x<elements.length; x++){
-		_col = $(elements[x]).attr("column");
-		if(!(_col in remaining_columns)){
-			remaining_columns.push($(elements[x]).attr("column"));
-		}
-	}
 
-	var service_uid = $(element).attr("id");
-	var service_data = window.bika_utils.data.services[service_uid];
-	if (!service_data){
-		// if service_uid is not in bika_utils.data.services, there are no deps.
-		return;
-	}
-	var deps = service_data.deps;
-	// actions are discovered and stored in dep_args, until confirmation dialog->Yes.
-	var dep_args = [];
-	var backrefs = service_data.backrefs;
+	var dep;
+	var dep_i, cb;
 
-	var affected_services = [];
-	var affected_titles = [];
-	if ($(element).prop("checked")){
-		// selecting a service; discover services it depends on.
-		var pocdata = [];
-		if (deps) {
-			pocdata = deps;
-		} else {
-			pocdata = [];
-		}
-		var cat;
-		for(var pocid_poctitle in pocdata) {
-			if (!pocdata.hasOwnProperty(pocid_poctitle)) { continue; }
-			var catdata = pocdata[pocid_poctitle];
-			var poc = pocid_poctitle.split("_");
-			var services = [];
-			for (var catid_cattitle in catdata){
-				if (!catdata.hasOwnProperty(catid_cattitle)) { continue; }
-				var servicedata = catdata[catid_cattitle];
-				cat = catid_cattitle.split("_");
-				for (x = 0; x < servicedata.length; x++) {
-					if (!servicedata.hasOwnProperty(x)) { continue; }
-					var serviceuid_servicetitle = servicedata[x];
-					var service = serviceuid_servicetitle.split("_");
-					// if the service is already checked, skip it.
-					if (! $("input[column='"+column+"']").filter("#"+service[0]).prop("checked") ){
-						// this one is for the current category
-						services.push(service[0]);
-						// and this one decides if the confirmation box gets shown at all.
-						affected_services.push(service[0]);
-						// this one is for the pretty message box.
-						affected_titles.push(service[1] + " ("+cat[1]+")");
-					}
+	var lims = window.bika.lims;
+
+	for(var elements_i = 0; elements_i < elements.length; elements_i++){
+		var dep_services = [];  // actionable services
+		var dep_titles = [];
+		var element = elements[elements_i];
+		var column = $(element).attr("column");
+		var service_uid = $(element).attr("id");
+		var modified_cols = [];
+		// selecting a service; discover dependencies
+		if ($(element).prop("checked")){
+			var Dependencies = lims.AnalysisService.Dependencies(service_uid);
+			for(dep_i = 0; dep_i<Dependencies.length; dep_i++) {
+				dep = Dependencies[dep_i];
+				if ($("input[column='"+column+"']").filter("#"+dep.Service_uid).prop("checked")){
+					continue; // skip if checked already
 				}
-				// we want to confirm, then process these all at once
-				if(services.length > 0){
-					dep_args.push([poc[0], cat[0], column, services]);
-				}
+				dep_services.push(dep);
+				dep_titles.push(dep.Service);
 			}
-		}
-		if (affected_services.length > 0) {
-			$("body").append(
-				"<div id='messagebox' style='display:none' title='" + _("Service dependencies") + "'>"+
-				_("<p>${service} requires the following services to be selected:</p><br/><p>${deps}</p><br/><p>Do you want to apply these selections now?</p>",
-					{service:$(element).attr("title"),
-					deps: affected_titles.join("<br/>")})+"</div>");
-			if (auto_yes) {
-				$("#messagebox").remove();
-				add_Yes(this, dep_args, element, remaining_columns);
-			} else {
-				$("#messagebox").dialog({width:450, resizable:false, closeOnEscape: false, buttons:{
+
+			if (dep_services.length > 0) {
+				if(!modified_cols[column]){
+					modified_cols.push(column);
+				}
+				if (auto_yes) {
+					add_Yes(this, element, dep_services);
+				} else {
+					var html = "<div id='messagebox' style='display:none' title='" + _("Service dependencies") + "'>";
+					html = html + _("<p>${service} requires the following services to be selected:</p>"+
+													"<br/><p>${deps}</p><br/><p>Do you want to apply these selections now?</p>",
+													{
+														service: $(element).attr("title"),
+														deps: dep_titles.join("<br/>")
+													});
+					html = html + "</div>";
+					$("body").append(html);
+					$("#messagebox").dialog({
+						width:450,
+						resizable:false,
+						closeOnEscape: false,
+						buttons:{
 							yes: function(){
-								add_Yes(this, dep_args, element, remaining_columns);
+								add_Yes(this, element, dep_services);
 							},
 							no: function(){
-								add_No(this, element, remaining_columns);
+								add_No(this, element);
 							}
-							}});
-			}
-		}
-	} else {
-		// unselecting a service; discover back dependencies
-		var s_uids = backrefs ? backrefs : [];
-		var serviceUID;
-		var cb;
-		if (s_uids.length > 0){
-			for (x in s_uids){
-				if (!s_uids.hasOwnProperty(x)) { continue; }
-				serviceUID = s_uids[x];
-				cb = $("input[column='"+column+"']").filter("#"+serviceUID);
-				if (cb.prop("checked")){
-					affected_services.push(serviceUID);
-					affected_titles.push(cb.attr("title"));
+						}
+					});
 				}
 			}
-			$("body").append(
-				"<div id='messagebox' style='display:none' title='" + _("Service dependencies") + "'>"+
-				_("<p>The following services depend on ${service}, and will be unselected if you continue:</p><br/><p>${deps}</p><br/><p>Do you want to remove these selections now?</p>",
-					{service:$(element).attr("title"),
-					deps: affected_titles.join("<br/>")})+"</div>");
-			if (affected_services.length > 0) {
-				// var yes = _("Yes");
-				// var no = _("No");
-				$("#messagebox").dialog({
-					width:450,
-					resizable:false,
-					closeOnEscape: false,
-					buttons:{
-					Yes: function(){
-						for(var x in affected_services) {
-							if (!affected_services.hasOwnProperty(x)){ continue; }
-							serviceUID = affected_services[x];
-							cb = $("input[column='"+column+"']").filter("#"+serviceUID);
+		}
+		// unselecting a service; discover back dependencies
+		else {
+			var Dependants = lims.AnalysisService.Dependants(service_uid);
+			if (Dependants.length > 0){
+				for (i=0; i<Dependants.length; i++){
+					dep = Dependants[i];
+					cb = $("input[column='"+column+"']").filter("#"+dep.Service_uid);
+					if (cb.prop("checked")){
+						dep_titles.push(dep.Service);
+						dep_services.push(dep);
+					}
+				}
+				if(dep_services.length > 0){
+					if (auto_yes) {
+						for(dep_i=0; dep_i<dep_services.length; dep_i+=1) {
+							dep = dep_services[dep_i];
+							service_uid = dep.Service_uid;
+							cb = $("input[column='"+column+"']").filter("#"+service_uid);
 							$(cb).prop("checked", false);
 							toggle_spec_fields($(cb));
-							$(".partnr_"+serviceUID).filter("[column='"+column+"']")
-								.empty();
+							$(".partnr_"+service_uid).filter("[column='"+column+"']").empty();
 							if ($(cb).val() == $("#getDryMatterService").val()) {
 								$("#ar_"+column+"_ReportDryMatter").prop("checked",false);
 							}
-							// if elements from more than one column were passed, set all columns to be the same.
-							for(var col in remaining_columns){
-								if (!remaining_columns.hasOwnProperty(col)){ continue ;}
-								cb = $("input[column='"+remaining_columns[col]+"']")
-									.filter("#"+serviceUID);
-								$(cb).prop("checked",false);
-								toggle_spec_fields($(cb));
-								$(".partnr_"+serviceUID).filter("[column='"+col+"']")
-									.empty();
-								if ($(cb).val() == $("#getDryMatterService").val()) {
-									$("#ar_"+col+"_ReportDryMatter").prop("checked",false);
+						}
+					} else {
+						$("body").append(
+							"<div id='messagebox' style='display:none' title='" + _("Service dependencies") + "'>"+
+							_("<p>The following services depend on ${service}, and will be unselected if you continue:</p><br/><p>${deps}</p><br/><p>Do you want to remove these selections now?</p>",
+								{service:$(element).attr("title"),
+								deps: dep_titles.join("<br/>")})+"</div>");
+						$("#messagebox").dialog({
+							width:450,
+							resizable:false,
+							closeOnEscape: false,
+							buttons:{
+								Yes: function(){
+									for(dep_i=0; dep_i<dep_services.length; dep_i+=1) {
+										dep = dep_services[dep_i];
+										service_uid = dep.Service_uid;
+										cb = $("input[column='"+column+"']").filter("#"+service_uid);
+										$(cb).prop("checked", false);
+										toggle_spec_fields($(cb));
+										$(".partnr_"+service_uid).filter("[column='"+column+"']").empty();
+										if ($(cb).val() == $("#getDryMatterService").val()) {
+											$("#ar_"+column+"_ReportDryMatter").prop("checked",false);
+										}
+									}
+									$(this).dialog("close");
+									$("#messagebox").remove();
+								},
+								No:function(){
+									$(element).prop("checked",true);
+									toggle_spec_fields($(element));
+									$(this).dialog("close");
+									$("#messagebox").remove();
 								}
 							}
-						}
-						recalc_prices();
-						calculate_parts(column);
-						for(col in remaining_columns){
-							calculate_parts(column);
-						}
-						$(this).dialog("close");
-						$("#messagebox").remove();
-					},
-					No:function(){
-						$(element).prop("checked",true);
-						toggle_spec_fields($(element));
-						for(var col in remaining_columns){
-							var cb = $("input[column='"+remaining_columns[col]+"']").filter("#"+serviceUID);
-							$(cb).prop("checked",true);
-							toggle_spec_fields($(cb));
-						}
-						recalc_prices(column);
-						$(this).dialog("close");
-						calculate_parts(column);
-						for(col in remaining_columns){
-							calculate_parts(column);
-						}
-						$("#messagebox").remove();
+						});
 					}
-				}});
-			} else {
-				$("#messagebox").remove();
+				}
 			}
+		}
+		recalc_prices();
+		for(var i=0; i<modified_cols.length; i+=1){
+			calculate_parts(modified_cols[i]);
 		}
 	}
 }
@@ -1053,7 +1014,7 @@ function setTemplate(column, template_title){
 			"Partitions",
 			"Analyses"]
 	};
-	window.jsonapi_read(request_data, function(data){
+	window.bika.lims.jsonapi_read(request_data, function(data){
 		var template = data.objects[0];
 		var request_data, x, i;
 		// set our template fields
@@ -1070,7 +1031,7 @@ function setTemplate(column, template_title){
 				title: template.AnalysisProfile,
 				include_fields: ["UID"]
 			};
-			window.jsonapi_read(request_data, function(data){
+			window.bika.lims.jsonapi_read(request_data, function(data){
 				$("#ar_"+column+"_Profile").val(template.AnalysisProfile);
 				$("#ar_"+column+"_Profile_uid").val(data.objects[0].UID);
 			});
@@ -1116,7 +1077,7 @@ function setTemplate(column, template_title){
 			request_data.UID.push(template.Analyses[x].service_uid);
 		}
 		// save services in hash for easier lookup this
-		window.jsonapi_read(request_data, function(data) {
+		window.bika.lims.jsonapi_read(request_data, function(data) {
 			var e;
 			var poc_cat_services = {};
 			for(var x in data.objects) {
@@ -1175,14 +1136,14 @@ function setAnalysisProfile(column, profile_title){
 		portal_type: "AnalysisProfile",
 		title: profile_title
 	};
-	window.jsonapi_read(request_data, function(data){
+	window.bika.lims.jsonapi_read(request_data, function(data){
 		var profile_objects = data.objects;
 		var request_data = {
 			portal_type: "AnalysisService",
 			title: profile_objects[0].Service,
 			include_fields: ["PointOfCapture", "Category", "UID", "title"]
 		};
-		window.jsonapi_read(request_data, function(data){
+		window.bika.lims.jsonapi_read(request_data, function(data){
 			var i;
 			unsetAnalyses(column);
 			$("#ar_"+column+"_ReportDryMatter").prop("checked",false);
@@ -1346,13 +1307,13 @@ $(document).ready(function() {
 						}
 						msg = msg + e + responseText.errors[error] + "<br/>";
 					}
-					window.bika_utils.portalMessage(msg);
+					window.bika.lims.portalMessage(msg);
 					window.scroll(0,0);
 					$("input[class~='context']").prop("disabled", false);
 				}
 			},
 			error: function(XMLHttpRequest, statusText) {
-				window.bika_utils.portalMessage(statusText);
+				window.bika.lims.portalMessage(statusText);
 				window.scroll(0,0);
 				$("input[class~='context']").prop("disabled", false);
 			}

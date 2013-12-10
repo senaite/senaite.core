@@ -16,11 +16,6 @@
 <metal:use use-macro="field_macro | context/widgets/field/macros/edit">
 
     <metal:body_macro fill-slot="widget_body">
-		<span
-			style="display:none;"
-			id='AnalysisProfiles'
-			tal:attributes="value python:widget.AnalysisProfiles()">
-		</span>
 		<div id="folderlisting-main-table">
 			<span
 				id="analyses"

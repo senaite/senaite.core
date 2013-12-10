@@ -26,7 +26,7 @@ function workflow_transition_sample(event){
 			if(message !== "") { message = message + "<br/>"; }
 			message = message + PMF("${name} is required, please correct.", {"name":"Sampler"});
 		}
-		window.bika_utils.portalMessage(message);
+		window.bika.lims.portalMessage(message);
 	}
 }
 
@@ -34,7 +34,7 @@ function workflow_transition_preserve(event){
 	event.preventDefault();
 	var _ = window.jarn.i18n.MessageFactory("bika");
 	var message = _("You must preserve individual Sample Partitions");
-	window.bika_utils.portalMessage(message);
+	window.bika.lims.portalMessage(message);
 }
 
 function workflow_transition_publish(event){

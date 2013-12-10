@@ -180,21 +180,6 @@ class ARTemplateAnalysesWidget(TypesWidget):
                                       allow_edit = allow_edit)
         return view.contents_table(table_only = True)
 
-    security.declarePublic('AnalysisProfiles')
-    def AnalysisProfiles(self):
-        """generate the AnalysisProfiles hidden field value
-        contains service details for each AnalysisProfile
-        """
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = {}
-        for p in bsc(portal_type='AnalysisProfile',
-                      inactive_state='active',
-                      sort_on = 'sortable_title'):
-            p = p.getObject()
-            service_uids = [x.UID() for x in p.getService()]
-            items[p.UID()] = service_uids
-        return json.dumps(items)
-
 registerWidget(ARTemplateAnalysesWidget,
                title = 'AR Template Analyses Layout',
                description = ('AR Template Analyses Layout'),

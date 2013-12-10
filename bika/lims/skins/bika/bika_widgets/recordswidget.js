@@ -101,7 +101,7 @@ function recordswidget_loadEventHandlers(elements) {
             var required = $(e).hasClass('required');
             var val = $(e).val();
             if (required && val == ""){
-                window.bika_utils.portalMessage(e.id.split("-")[1] + ": " + _p("Input is required but not given."));
+                window.bika.lims.portalMessage(e.id.split("-")[1] + ": " + _p("Input is required but not given."));
                 return false;
             }
         };
