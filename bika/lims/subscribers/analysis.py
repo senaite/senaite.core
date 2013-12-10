@@ -334,7 +334,7 @@ def AfterTransitionEventHandler(instance, event):
             Instrument=instance.getInstrument(),
             SamplePartition=instance.getSamplePartition())
         analysis.unmarkCreationFlag()
-        zope.event.notify(ObjectInitializedEvent(analysis))
+        # zope.event.notify(ObjectInitializedEvent(analysis))
         changeWorkflowState(analysis,
                             'bika_analysis_workflow', 'sample_received')
         if ws:
