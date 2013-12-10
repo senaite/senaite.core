@@ -101,7 +101,6 @@
   <type type_id="BatchFolder"/>
   <type type_id="Batch">
    <bound-workflow workflow_id="bika_batch_workflow"/>
-   <bound-workflow workflow_id="bika_publication_workflow"/>
    <bound-workflow workflow_id="bika_cancellation_workflow"/>
   </type>
 
