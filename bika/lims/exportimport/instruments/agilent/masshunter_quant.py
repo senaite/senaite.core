@@ -409,12 +409,12 @@ class MasshunterQuantCSVParser(InstrumentCSVResultsFileParser):
             # Look for sequence matches and populate rawdata
             datafile = quantitation.get(self.QUANTITATIONRESULTS_HEADER_DATAFILE, '')
             if not datafile:
-                self.err(_("No Data File found for quantitation result"), self.num_line, line)
+                self.err(_("No Data File found for quantitation result"), self._numline, line)
             else:
                 seqs = [sequence for sequence in self._sequences \
                         if sequence.get('Data File', '') == datafile]
                 if len(seqs) == 0:
-                    self.err(_("No sample found for quntitative result %s") % datafile, self.num_line, line)
+                    self.err(_("No sample found for quntitative result %s") % datafile, self._numline, line)
                 elif len(seqs) > 1:
                     self.err(_("More than one sequence found for quantitative result %s") % datafile, self._numline, line)
                 else:
