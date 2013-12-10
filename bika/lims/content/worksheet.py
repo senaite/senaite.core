@@ -123,7 +123,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                   'type': 'a',
                                   'container_uid': parent_uid,
                                   'analysis_uid': analysis.UID()}, ])
-        wf.doActionFor(analysis, 'assign')
+
+        allowed_transitions = [t['id'] for t in wf.getTransitionsFor(analysis)]
+        if 'assign' in allowed_transitions:
+            wf.doActionFor(analysis, 'assign')
 
         # If a dependency of DryMatter service is added here, we need to
         # make sure that the dry matter analysis itself is also
