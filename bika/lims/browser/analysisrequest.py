@@ -1582,20 +1582,23 @@ class ajaxAnalysisRequestSubmit():
                     parts[_i]['object'] = part
                     # Sort available containers by capacity and select the
                     # smallest one possible.
-                    containers = [_p.getObject() for _p in bsc(UID=p['container'])]
-                    if containers:
-                        try:
-                            containers.sort(lambda a,b:cmp(
-                                a.getCapacity() \
-                                and mg(float(a.getCapacity().lower().split(" ", 1)[0]), a.getCapacity().lower().split(" ", 1)[1]) \
-                                or mg(0, 'ml'),
-                                b.getCapacity() \
-                                and mg(float(b.getCapacity().lower().split(" ", 1)[0]), b.getCapacity().lower().split(" ", 1)[1]) \
-                                or mg(0, 'ml')
-                            ))
-                        except:
-                            pass
-                        container = containers[0]
+                    if p.get('container', ''):
+                        containers = [_p.getObject() for _p in bsc(UID=p['container'])]
+                        if containers:
+                            try:
+                                containers.sort(lambda a,b:cmp(
+                                    a.getCapacity() \
+                                    and mg(float(a.getCapacity().lower().split(" ", 1)[0]), a.getCapacity().lower().split(" ", 1)[1]) \
+                                    or mg(0, 'ml'),
+                                    b.getCapacity() \
+                                    and mg(float(b.getCapacity().lower().split(" ", 1)[0]), b.getCapacity().lower().split(" ", 1)[1]) \
+                                    or mg(0, 'ml')
+                                ))
+                            except:
+                                pass
+                            container = containers[0]
+                        else:
+                            container = None
                     else:
                         container = None
 
@@ -1607,12 +1610,12 @@ class ajaxAnalysisRequestSubmit():
                         preservation = container.getPreservation().UID()
                         parts[_i]['prepreserved'] = True
                     else:
-                        preservation = p['preservation']
+                        preservation = p.get('preservation', '')
                         parts[_i]['prepreserved'] = False
 
                     part.edit(
-                        Container = container,
-                        Preservation = preservation,
+                        Container=container,
+                        Preservation=preservation,
                     )
                     part.processForm()
                     if SamplingWorkflowEnabled:
