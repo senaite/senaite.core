@@ -32,9 +32,15 @@ def ObjectModifiedEventHandler(obj, event):
         allow = obj.Schema().getField('AllowClerksToEditClients').get(obj)
         portal = getToolByName(obj, 'portal_url').getPortalObject()
         mp = portal.manage_permission
+        roles = ['Manager', 'Owner', 'LabManager']
         if allow:
-            mp(AddClient, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
-            mp(EditClient, ['Manager', 'Owner', 'LabManger', 'LabClerk'], 1)
-        else:
-            mp(AddClient, ['Manager', 'Owner', 'LabManager'], 1)
-            mp(EditClient, ['Manager', 'Owner', 'LabManger'], 1)
+            roles.append('LabClerk')
+        mp(AddClient, roles, 1)
+        mp(EditClient, roles, 1)
+
+        # Set permissions at object level
+        for obj in portal.clients.objectValues():
+            mp = obj.manage_permission
+            mp(AddClient, roles, 0)
+            mp(EditClient, roles, 0)
+            obj.reindexObject()
