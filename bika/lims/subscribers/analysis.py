@@ -522,11 +522,11 @@ def AfterTransitionEventHandler(instance, event):
 
         # If all analyses in this AR have been assigned,
         # escalate the action to the parent AR
-        if not skip(ar, action_id, peek=True):
-            if not ar.getAnalyses(worksheetanalysis_review_state = 'unassigned'):
-                allowed_transitions = [t['id'] for t in wf.getTransitionsFor(ar)]
-                if 'assign' in allowed_transitions:
-                    wf.doActionFor(ar, 'assign')
+#         if not skip(ar, action_id, peek=True):
+#             if not ar.getAnalyses(worksheetanalysis_review_state = 'unassigned'):
+#                 allowed_transitions = [t['id'] for t in wf.getTransitionsFor(ar)]
+#                 if 'assign' in allowed_transitions:
+#                     wf.doActionFor(ar, 'assign')
 
     elif action_id == "unassign":
         instance.reindexObject(idxs = ["worksheetanalysis_review_state", ])
