@@ -43,6 +43,33 @@ class Create(object):
         Schema.  If a matching field is found in the schema, then the value is
         taken from the request and sent to the field's mutator.
 
+        Reference fields may have their target value(s) specified with a
+        delimited string query syntax, containing the portal_catalog search:
+
+            <FieldName>=index1:value1|index2:value2
+
+        eg to set the Client of a batch:
+
+            ...@@API/update?obj_path=<path>...
+            ...&Client=title:<client_title>&...
+
+        And, to set a multi-valued reference, these both work:
+
+            ...@@API/update?obj_path=<path>...
+            ...&InheritedObjects:list=title:AR1...
+            ...&InheritedObjects:list=title:AR2...
+
+            ...@@API/update?obj_path=<path>...
+            ...&InheritedObjects[]=title:AR1...
+            ...&InheritedObjects[]=title:AR2...
+
+        The Analysis_Specification parameter is special, it mimics
+        the format of the python dictionaries, and only service Keyword
+        can be used to reference services.  Even if the keyword is not
+        actively required, it must be supplied:
+
+            <service_keyword>:min:max:error tolerance
+
         The function returns a dictionary as a json string:
 
         {
@@ -51,7 +78,40 @@ class Create(object):
             success: true or string(message) if success. false if no success.
         }
 
+        >>> portal = layer['portal']
+        >>> portal_url = portal.absolute_url()
+        >>> from plone.app.testing import SITE_OWNER_NAME
+        >>> from plone.app.testing import SITE_OWNER_PASSWORD
+        >>> browser = layer['getBrowser'](portal, loggedIn=False)
+        >>> browser.open(portal_url)
+        >>> browser.getControl('Login Name').value = SITE_OWNER_NAME
+        >>> browser.getControl('Password').value = SITE_OWNER_PASSWORD
+        >>> browser.getControl('Log in').click()
+        >>> 'You are now logged in' in browser.contents
+        True
+
+        >>> query_str = "".join([
+        ... "obj_type=AnalysisRequest",
+        ... "&Client=portal_type:Client|id:client-1",
+        ... "&SampleType=portal_type:SampleType|title:Apple Pulp",
+        ... "&Contact=portal_type:Contact|getFullname:Rita Mohale",
+        ... "&Services:list=portal_type:AnalysisService|title:Calcium",
+        ... "&Services:list=portal_type:AnalysisService|title:Copper",
+        ... "&Services:list=portal_type:AnalysisService|title:Magnesium",
+        ... "&SamplingDate=2013-09-29",
+        ... "&AR_Specification=portal_type:AnalysisSpec|title:Apple Pulp",
+        ... "&Analysis_Specification:list=Cu:5:10:10",
+        ... "&Analysis_Specification:list=Mg:6:11:11"
+        ... ])
+        >>> url = portal_url+"/@@API/create"
+        >>> browser.open(url, query_str)
+        >>> browser.contents
+        '{..."success": true...}'
+
         """
+
+        self.context = context
+        self.request = request
 
         savepoint = transaction.savepoint()
 
@@ -112,7 +172,6 @@ class Create(object):
     def get_specs_from_request(self):
         context = self.context
         request = self.request
-
         brains = resolve_request_lookup(context, request, "AR_Specification")
         kwspecs = brains[0].getObject().getResultsRangeDict() if brains else {}
         Analysis_Specification = self.request.get("Analysis_Specification", "")

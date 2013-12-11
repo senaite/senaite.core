@@ -51,25 +51,8 @@ def resolve_request_lookup(context, request, fieldname):
 
 
 def set_fields_from_request(obj, request):
-    """Search request for keys that match field names in obj.
-
-    - Calls field mutator with request value
-    - Calls Accessor to retrieve value
-    - Returns a dict of fields and current values
-
-    To set Reference fields embed the portal_catalog search
-
-    ...& <FieldName>=index:value &...
-
-    eg to set the Client of a batch:
-
-    ...@@APIU/update?obj_path=batches/BATCH_ID&Client=title:Client Name&...
-
-    And, to set a multi-valued reference, use the Plone :list format to pass
-    each element of the list separately:
-
-    ...@@APIU/update?obj_path=batches/BATCH_ID&InheritedObjects:list=title:AR1&InheritedObjects:list=title:AR2&...
-
+    """Search request for keys that match field names in obj,
+    and call field mutator with request value.
     """
     schema = obj.Schema()
     # fields contains all schema-valid field values from the request.

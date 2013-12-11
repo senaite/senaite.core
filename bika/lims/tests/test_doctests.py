@@ -7,7 +7,8 @@ import unittest
 
 OPTIONFLAGS = (doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
 
-DOCTESTS = ['bika.lims.vocabularies']
+DOCTESTS = ['bika.lims.vocabularies',
+            'bika.lims.jsonapi.create']
 
 
 def test_suite():
