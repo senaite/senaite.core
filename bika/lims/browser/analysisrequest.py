@@ -2429,12 +2429,24 @@ class AnalysisRequestPublishedResults(BikaListingView):
                 obj = items[x]['obj']
                 obj_url = obj.absolute_url()
                 pdf = obj.getPdf()
+                filesize = 0
+                title = _('Download')
+                anchor = "<a href='%s/at_download/Pdf'>%s</a>" % \
+                         (obj_url, _("Download"))
+                try:
+                    filesize = pdf.get_size()
+                    filesize = filesize / 1024 if filesize > 0 else 0
+                except:
+                    # POSKeyError: 'No blob file'
+                    # Show the record, but not the link
+                    title = _('Not available')
+                    anchor = title
 
-                items[x]['Title'] = "Download"
-                items[x]['FileSize'] = '%sKb' % (pdf.get_size() / 1024)
+                items[x]['Title'] = title
+                items[x]['FileSize'] = '%sKb' % filesize
                 items[x]['Date'] = self.ulocalized_time(obj.created(), long_format=1)
-                items[x]['PublishedBy'] = obj.Creator()
-                recip=''
+                items[x]['PublishedBy'] = self.user_fullname(obj.Creator())
+                recip = ''
                 for recipient in obj.getRecipients():
                     email = recipient['EmailAddress']
                     val = recipient['Fullname']
@@ -2446,9 +2458,7 @@ class AnalysisRequestPublishedResults(BikaListingView):
                         recip += (", " +val)
 
                 items[x]['replace']['Recipients'] = recip
-                items[x]['replace']['Title'] = \
-                     "<a href='%s/at_download/Pdf'>%s</a>" % \
-                     (obj_url, _("Download"))
+                items[x]['replace']['Title'] = anchor
         return items
 
 
