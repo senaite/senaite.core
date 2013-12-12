@@ -73,6 +73,8 @@ def read(context, request):
             else:
                 val = field.get(obj)
                 if val:
+                    if field.type == "blob":
+                        continue
                     # I put the UID of all references here in *_uid.
                     if field.type == 'reference':
                         if type(val) in (list, tuple):
@@ -89,7 +91,6 @@ def read(context, request):
                     val = str(val)
             obj_data[fieldname] = val
         obj_data['path'] = "/".join(obj.getPhysicalPath())
-
         # call any adapters that care to modify this data.
         adapters = getAdapters((obj, ), IJSONReadExtender)
         for name, adapter in adapters:
