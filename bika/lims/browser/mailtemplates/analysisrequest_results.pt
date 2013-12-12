@@ -37,7 +37,7 @@
         <tr>
             <td id="lab-logo">
                 <a tal:attributes="href string:${portal/bika_setup/laboratory/getLabURL}/">
-                    <img tal:attributes="src string:${portal/absolute_url}/logo_print.png;"/></a>
+                    <img tal:attributes="src string:${portal/absolute_url}/logo_print.jpg;"/></a>
             </td>
             <td id="accreditation-logo"
                 tal:define="logo python:context.bika_setup.laboratory.getAccreditationBodyLogo()">
