@@ -197,11 +197,11 @@ class Person(BaseFolder):
         """ Set email in member data if the person is a Plone user, else
             store it on the Person instance.
         """
-        member = self.portal_membership.getMemberById(self.getUsername())
-        if member:
-            member.setMemberProperties({'email': value})
-        else:
-            return self.Schema()['EmailAddress'].set(self, value, **kw)
-
+        self.Schema()['EmailAddress'].set(self, value, **kw)
+        username = self.getUsername()
+        if username:
+            member = self.portal_membership.getMemberById(username)
+            if member:
+                member.setMemberProperties({'email': value})
 
 registerType(Person, PROJECTNAME)
