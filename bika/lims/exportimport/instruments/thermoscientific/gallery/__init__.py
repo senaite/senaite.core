@@ -13,11 +13,11 @@ class ThermoGalleryTSVParser(InstrumentCSVResultsFileParser):
         self._columns = []
 
     def _parseline(self, line):
-
+        sline = line.replace('"', '').strip()
         if self._end_header == False:
-            return self.parse_headerline(line)
+            return self.parse_headerline(sline)
         else:
-            return self.parse_resultline(line)
+            return self.parse_resultline(sline)
 
     def splitLine(self, line):
         return [token.strip() for token in line.split('\t')]
