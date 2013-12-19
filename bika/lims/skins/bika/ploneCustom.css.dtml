@@ -944,4 +944,44 @@ table.uncertaintytable {
     padding-right: 0px !important;
 }
 
+div.errorbox, div.logbox {
+    border: 1px solid rgb(204, 204, 204);
+    border-radius: 5px 5px 5px 5px;
+    margin: 20px 0px;
+    padding: 0px 0px 15px 0px;
+}
+div.errorbox {
+    background-color: #f5f5cb;
+}
+div.errorbox h3,
+div.logbox h3 {
+    margin: 0 0 10px 0;
+    padding-left: 28px;
+    font-size: 1em;
+    color: #fff;
+    line-height: 24px;
+}
+div.errorbox h3 {
+    background: rgb(204,204,204) url(&dtml-portal_url;/++resource++bika.lims.images/exclamation.png) no-repeat scroll 5px 4px;
+    color: rgb(114,0,0);
+}
+#content div.errorbox ul,
+#content div.logbox ul {
+    list-style-type: none;
+    padding-left:0;
+    margin:10px 0 0 10px;
+}
+div.logbox ul li,
+div.errorbox ul li {
+    unicode-bidi: embed;
+    font-family: monospace;
+    white-space: pre;
+    font-size:1.1em;
+}
+div.logbox h3 {
+    background: rgb(204,204,204) url(&dtml-portal_url;/++resource++bika.lims.images/info.png) no-repeat scroll 5px 4px;
+    color: #000;
+}
+
+
 </dtml-with>

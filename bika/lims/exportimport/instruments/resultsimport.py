@@ -285,11 +285,11 @@ class AnalysisResultsImporter(Logger):
 
     def process(self):
         parsed = self._parser.parse()
-        if parsed == False:
-            return False
-
         self._errors = self._parser.errors
         self._logs = self._parser.logs
+
+        if parsed == False:
+            return False
 
         # Allowed analysis states
         allowed_ar_states_msg = [_(s) for s in self.getAllowedARStates()]

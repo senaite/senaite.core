@@ -78,7 +78,7 @@ class WinescanCSVParser(InstrumentCSVResultsFileParser):
             self.currentHeader = None
             return 0
 
-        self.err(_("No header found for line %s"), self._numline)
+        self.err(_("No header found"))
         return 0
 
 

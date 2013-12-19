@@ -27,7 +27,7 @@ $(document).ready(function(){
 				window.location.href.replace("/import", "/getImportTemplate"),
 				{'_authenticator': $('input[name="_authenticator"]').val(),
 				 'exim': $(this).val()
-				})
+				});
 		}
     });
 
@@ -46,33 +46,36 @@ $(document).ready(function(){
 			dataType: 'json',
 			processData: false,
 			success: function(responseText, statusText, xhr, $form){
-				$("#intermediate").empty()
+				$("#intermediate").empty();
 				if(responseText['errors'].length > 0){
-					str = "<h3>"+ _("Errors found") + "</h3><ul class='errors'>"					
+				    str = "<div class='errorbox'>";
+					str += "<h3>"+ _("Errors found") + "</h3><ul>";
 					$.each(responseText['errors'], function(i,v){
-						str = str + "<li>" + v + "</li>";
+						str += "<li>" + v + "</li>";
 					});
-					str = str + "</ul>";
+					str += "</ul></div>";
 					$("#intermediate").append(str).toggle(true);
 				}
 				if(responseText['log'].length > 0){
-					str = "<h3>"+ _("Log trace") + "</h3><ul>"
+				    str = "<div class='logbox'>";
+					str += "<h3>"+ _("Log trace") + "</h3><ul>";
 					$.each(responseText['log'], function(i,v){
-						str = str + "<li>" + v + "</li>";
+						str += "<li>" + v + "</li>";
 					});
-					str = str + "</ul>";
+					str += "</ul></div>";
 					$("#intermediate").append(str).toggle(true);
 				}
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
-			    $("#intermediate").empty()
-			    str = "<h3>"+ _("Errors found") + "</h3><ul class='errors'>"
-			    str = str + "<li>" + textStatus;
-			    str = str + "<pre>" + errorThrown + "</pre></li>";
+			    $("#intermediate").empty();
+			    str = "<div class='errorbox'>";
+			    str += "<h3>"+ _("Errors found") + "</h3><ul>";
+			    str += "<li>" + textStatus;
+			    str += "<pre>" + errorThrown + "</pre></li></ul></div>";
 			    $("#intermediate").append(str).toggle(true);
 			}
 		    
-		}
+		};
 		form.ajaxSubmit(options);
 		return false;
 	});
