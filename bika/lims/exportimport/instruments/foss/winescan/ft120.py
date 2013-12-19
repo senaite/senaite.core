@@ -16,6 +16,7 @@ def Import(context, request):
     override = request.form['wsf_override']
     sample = request.form.get('wsf_sample', 'requestid')
     errors = []
+    warns = []
     logs = []
 
     # Load the most suitable parser according to file extension/options/etc...
@@ -62,8 +63,9 @@ def Import(context, request):
         importer.process()
         errors = importer.errors
         logs = importer.logs
+        warns = importer.warns
 
-    results = {'errors': errors, 'log': logs}
+    results = {'errors': errors, 'log': logs, 'warns': warns}
 
     return json.dumps(results)
 

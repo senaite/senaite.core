@@ -47,24 +47,33 @@ $(document).ready(function(){
 			processData: false,
 			success: function(responseText, statusText, xhr, $form){
 				$("#intermediate").empty();
+                if(responseText['log'].length > 0){
+                    str = "<div class='logbox'>";
+                    str += "<h3>"+ _("Log trace") + "</h3><ul>";
+                    $.each(responseText['log'], function(i,v){
+                        str += "<li>" + v + "</li>";
+                    });
+                    str += "</ul></div>";
+                    $("#intermediate").append(str).toggle(true);
+                }
 				if(responseText['errors'].length > 0){
 				    str = "<div class='errorbox'>";
-					str += "<h3>"+ _("Errors found") + "</h3><ul>";
+					str += "<h3>"+ _("Errors") + "</h3><ul>";
 					$.each(responseText['errors'], function(i,v){
 						str += "<li>" + v + "</li>";
 					});
 					str += "</ul></div>";
 					$("#intermediate").append(str).toggle(true);
 				}
-				if(responseText['log'].length > 0){
-				    str = "<div class='logbox'>";
-					str += "<h3>"+ _("Log trace") + "</h3><ul>";
-					$.each(responseText['log'], function(i,v){
-						str += "<li>" + v + "</li>";
-					});
-					str += "</ul></div>";
-					$("#intermediate").append(str).toggle(true);
-				}
+				if(responseText['warns'].length > 0){
+                    str = "<div class='warnbox'>";
+                    str += "<h3>"+ _("Warnings") + "</h3><ul>";
+                    $.each(responseText['warns'], function(i,v){
+                        str += "<li>" + v + "</li>";
+                    });
+                    str += "</ul></div>";
+                    $("#intermediate").append(str).toggle(true);
+                }
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
 			    $("#intermediate").empty();

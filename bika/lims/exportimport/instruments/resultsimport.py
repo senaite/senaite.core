@@ -286,6 +286,7 @@ class AnalysisResultsImporter(Logger):
     def process(self):
         parsed = self._parser.parse()
         self._errors = self._parser.errors
+        self._warns = self._parser.warns
         self._logs = self._parser.logs
 
         if parsed == False:
@@ -309,9 +310,11 @@ class AnalysisResultsImporter(Logger):
                 continue
             service = self.bsc(getKeyword=acode)
             if not service:
-                self.err(_('Service keyword %s not found') % acode)
+                self.warn(_('Service keyword %s not found') % acode)
             else:
                 acodes.append(acode)
+        if len(acodes) == 0:
+            self.err(_("Service keywords: no matches found"))
 
         for objid, results in self._parser.getRawResults().iteritems():
             analyses = self._getZODBAnalyses(objid)

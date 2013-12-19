@@ -63,8 +63,9 @@ def Import(context, request):
         importer.process()
         errors = importer.errors
         logs = importer.logs
+        warns = importer.warns
 
-    results = {'errors': errors, 'log': logs}
+    results = {'errors': errors, 'log': logs, 'warns': warns}
 
     return json.dumps(results)
 
