@@ -70,8 +70,26 @@ def Import(context, request):
 
 class WinescanFT120CSVParser(WinescanCSVParser):
 
+    def __init__(self, csv):
+        WinescanCSVParser.__init__(self, csv)
+        self._omitrows = ['Calibration',
+                         'Pilot definition',
+                         'Pilot test',
+                         'Zero setting',
+                         'Zero correction']
+        self._omit = False
+
     def getAttachmentFileType(self):
         return "FOSS Winescan FT120 CSV"
+
+    def _parseline(self, line):
+        if self.currentheader and line in self._omitrows:
+            self.currentheader = None
+            self._omit = True
+        elif line.startswith('Sample Id') or not self._omit:
+            self._omit = False
+            return WinescanCSVParser._parseline(self, line)
+        return 0
 
 
 class WinescanFT120Importer(WinescanImporter):
