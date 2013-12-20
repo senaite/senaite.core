@@ -82,6 +82,11 @@ class InstrumentResultsFileParser(Logger):
         if override == True or resid not in self._rawresults.keys():
             self._rawresults[resid] = values
 
+    def _emptyRawResults(self):
+        """ Remove all grabbed raw results
+        """
+        self._rawresults = {}
+
     def getObjectsTotalCount(self):
         """ The total number of objects (ARs, ReferenceSamples, etc.) parsed
         """
@@ -161,6 +166,15 @@ class InstrumentResultsFileParser(Logger):
         """
         return self._rawresults
 
+    def resume(self):
+        """ Resumes the parse process
+            Called by the Results Importer after parse() call
+        """
+        if len(self.getRawResults()) == 0:
+            self.err(_("No results found"))
+            return False
+        return True
+
 
 class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
 
@@ -187,10 +201,6 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
 
             line = line.strip()
             jump = self._parseline(line)
-
-        if len(self.getRawResults()) == 0:
-            self.err(_("No results found"))
-            return False
 
         self.log(_("End of file reached successfully: %s objects, "
                    "%s analyses, %s results") %
@@ -284,7 +294,8 @@ class AnalysisResultsImporter(Logger):
         return []
 
     def process(self):
-        parsed = self._parser.parse()
+        self._parser.parse()
+        parsed = self._parser.resume()
         self._errors = self._parser.errors
         self._warns = self._parser.warns
         self._logs = self._parser.logs

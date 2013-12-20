@@ -80,6 +80,7 @@ class WinescanFT120CSVParser(WinescanCSVParser):
                          'Zero setting',
                          'Zero correction']
         self._omit = False
+        self._parsedresults = {}
 
     def getAttachmentFileType(self):
         return "FOSS Winescan FT120 CSV"
@@ -93,8 +94,79 @@ class WinescanFT120CSVParser(WinescanCSVParser):
             return WinescanCSVParser._parseline(self, line)
         return 0
 
+    def _addRawResult(self, resid, values={}, override=False):
+        replicate = '1'
+
+        ''' Structure of values dict (dict entry for each analysis/field):
+
+            {'ALC': {'ALC': '13.55',
+                     'DefaultResult': 'ALC',
+                     'Remarks': ''},
+             'CO2': {'CO2': '0.66',
+                     'DefaultResult': 'CO2',
+                     'Remarks': ''},
+             'Date': {'Date': '21/11/2013',
+                      'DefaultResult': 'Date',
+                      'Remarks': ''},
+             'Malo': {'DefaultResult': 'Malo',
+                      'Malo': '0.26',
+                      'Remarks': ''},
+             'Meth': {'DefaultResult': 'Meth',
+                      'Meth': '0.58',
+             'Rep #': {'DefaultResult': 'Rep #',
+                      'Remarks': '',
+                      'Rep #': '1'}
+            }
+        '''
+
+        if 'Rep #' in values.keys():
+            replicate = values['Rep #']['Rep #']
+
+        replicates = {}
+        if resid in self._parsedresults.keys():
+            replicates = self._parsedresults[resid]
+
+        if replicate in replicates.keys():
+            self.err(_("Replicate '%s' already exists for '%s', line %s") % \
+                      (replicate, resid, self._numline))
+            return
+        else:
+            del values['Rep #']
+            replicates[replicate] = values
+        self._parsedresults[resid] = replicates
+
+    def resume(self):
+        """ Looks for, Replicates, Mean and Sd values foreach Sample.
+            If Mean and Sd values found for a sample, removes the replicates
+            and creates a unique rawresult for that sample with Mean and Sd.
+            If there's a sample with replicates but without Mean, logs an error
+            and removes the sample from rawresults
+        """
+        self._emptyRawResults()
+        for objid, replicates in self._parsedresults.iteritems():
+            results = {}
+            if 'Mean' in replicates.keys():
+                results = replicates['Mean']
+                for key, value in replicates.get('Sd', {}).iteritems():
+                    results['Sd-%s' % key] = value
+
+            elif len(replicates) > 1:
+                self.err(_("More than one replica with no Mean for '%s'") % \
+                           objid)
+                continue
+
+            elif len(replicates) < 1:
+                self.err(_("No replicas found for '%s'") % objid)
+                continue
+
+            else:
+                results = replicates.itervalues().next()
+
+            WinescanCSVParser._addRawResult(self, objid, results, True)
+        return WinescanCSVParser.resume(self)
+
 
 class WinescanFT120Importer(WinescanImporter):
 
     def getKeywordsToBeExcluded(self):
-        return ['Rep #', 'Date', 'Time', 'Product']
+        return ['Date', 'Time', 'Product']
