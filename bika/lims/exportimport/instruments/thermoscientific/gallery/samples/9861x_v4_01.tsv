@@ -1,0 +1,55 @@
+																																												
+Date	2012/11/15	User	anonymous																																									
+Time	06:07:08PM	Software version: 4.0																																										
+																																												
+Example laboratory																																												
+Arizona																																												
+																																												
+																																												
+																																												
+Sample/ctrl ID	Pat/Ctr/cAl	Test name	Test type	Result	Result unit	Result time	STAT	Status	Errors	Notes	Dilution 1 +	Manual dilution 1 +	Response	Blank response / Cal. voltage	Side abs. (A)	AE check value ()	Nbr. of points used	Main abs. 1	Main abs. 2 / Factor	Main abs. 3 / Bias	Main abs. 4	Main abs. 5	Main abs. 6	Main abs. 7	Main abs. 8	Main abs. 9	Main abs. 10	Main abs. 11	Main abs. 12	Blank side abs.	Blank abs. 1	Blank abs. 2	Blank abs. 3	Blank abs. 4	Blank abs. 5	Blank abs. 6	Blank abs. 7	Blank abs. 8	Blank abs. 9	Blank abs. 10	Blank abs. 11	Blank abs. 12	Rate (A/min)	Calibrator conc.
+																																												
+pienk QC	P	D Lac BBK	P	141,4722	mg/l	2012/11/15 12:41:08 PM		MA			0	0	0,41497	0,20853				0,6235													0,20853													
+rooi QC	P	D Lac BBK	P	327,847	mg/l	2012/11/15 12:42:01 PM		AR	19,30,	R	0	0	0,83108	1,13068				1,96177													1,13068													
+pienk QC	P	L-Malic	P	2,2527	g/l	2012/11/15 12:42:19 PM		MA			9	0	0,34073	0,14816				0,4889													0,14816													
+wit QC	P	D Lac BBK	P	94,72762	mg/l	2012/11/15 12:42:56 PM		MA			0	0	0,32024	0,15352				0,47376													0,15352													
+rooi QC	P	L-Malic	P	0,20189	g/l	2012/11/15 12:43:13 PM		AR	18,	R	9	0	0,02066	0,24339				0,26405													0,24339													
+jerepigo QC	P	D Lac BBK	P	15,27747	mg/l	2012/11/15 12:43:59 PM		MA	20,		0	0	0,17177	0,46605				0,63782													0,46605													
+wit QC	P	L-Malic	P	2,29048	g/l	2012/11/15 12:44:07 PM		MA			9	0	0,34663	0,14491				0,49154													0,14491													
+jerepigo QC	P	L-Malic	P	2,37515	g/l	2012/11/15 12:45:10 PM		MA			9	0	0,35984	0,17548				0,53532													0,17548													
+watertoets	P	D Lac BBK	P	-1,86901	mg/l	2012/11/15 12:45:38 PM		MA	20,30,		0	0	0,14179	0,01972				0,16152													0,01972													
+watertoets	P	L-Malic	P	0,09245	g/l	2012/11/15 12:46:23 PM		AR	18,	R	9	0	0,00358	0,12228				0,12586													0,12228													
+rooi QC	P	L-Malic	P	0,08538	g/l	2012/11/15 12:54:28 PM		MA		R	0	0	0,1224	1,42027				1,54268													1,42027													
+watertoets	P	L-Malic	P	0,00591	g/l	2012/11/15 12:57:29 PM		MA	20,	R	0	0	-0,00162	0,12235				0,12073													0,12235													
+rooi QC	P	D Lac BBK	P	400,4033	mg/l	2012/11/15 01:01:05 PM		MA		R	7	0	0,23481	0,13875				0,37356													0,13875													
+pienk QC	P	D Lac BBK	P	134,9599	mg/l	2012/11/15 04:18:11 PM		MA			0	0	0,40819	0,21185				0,62004													0,21185													
+rooi QC	P	D Lac BBK	P	325,4791	mg/l	2012/11/15 04:18:28 PM		AR	19,30,	R	0	0	0,81098	1,17404				1,98502													1,17404													
+wit QC	P	D Lac BBK	P	94,21033	mg/l	2012/11/15 04:18:47 PM		MA			0	0	0,32722	0,15694				0,48416													0,15694													
+jerepigo QC	P	D Lac BBK	P	16,1926	mg/l	2012/11/15 04:19:05 PM		MA	20,		0	0	0,17925	0,48772				0,66697													0,48772													
+watertoets	P	D Lac BBK	P	-5,95131	mg/l	2012/11/15 04:19:23 PM		MA	20,30,		0	0	0,13891	0,02043				0,15934													0,02043													
+rooi QC	P	D Lac BBK	P	364,4101	mg/l	2012/11/15 04:37:32 PM		MA		R	7	0	0,23385	0,14174				0,37558													0,14174													
+28839	P	D Lac BBK	P	271,257	mg/l	2012/11/15 05:22:59 PM		AR	19,30,	R	0	0	0,69496	1,07577				1,77073													1,07577													
+28798	P	D Lac BBK	P	129,7704	mg/l	2012/11/15 05:23:53 PM		MA			0	0	0,39774	0,13904				0,53678													0,13904													
+28839	P	L-Malic	P	0,17298	g/l	2012/11/15 05:24:11 PM		AR	18,	R	9	0	0,01615	0,2381				0,25426													0,2381													
+28825	P	D Lac BBK	P	112,3195	mg/l	2012/11/15 05:24:47 PM		MA			0	0	0,36289	0,22689				0,58979													0,22689													
+28798	P	L-Malic	P	2,68751	g/l	2012/11/15 05:25:05 PM		MA			9	0	0,40859	0,14477				0,55336													0,14477													
+28817	P	D Lac BBK	P	283,6147	mg/l	2012/11/15 05:25:50 PM		AR	19,30,	R	0	0	0,7214	0,88318				1,60459													0,88318													
+28825	P	L-Malic	P	2,09182	g/l	2012/11/15 05:25:59 PM		MA			9	0	0,31563	0,14817				0,4638													0,14817													
+28817	P	L-Malic	P	0,23721	g/l	2012/11/15 05:27:02 PM		AR	18,	R	9	0	0,02618	0,2126				0,23878													0,2126													
+28883	P	D Lac BBK	P	474,6074	mg/l	2012/11/15 05:27:29 PM		AR	19,30,	R	0	0	1,13007	1,19117				2,32124													1,19117													
+28883	P	L-Malic	P	0,17526	g/l	2012/11/15 05:28:14 PM		AR	18,	R	9	0	0,01651	0,2337				0,25021													0,2337													
+E.L.O.	P	D Lac BBK	P	107,9711	mg/l	2012/11/15 05:28:41 PM		MA			0	0	0,35428	0,31769				0,67197													0,31769													
+E.L.O.	P	L-Malic	P	1,18784	g/l	2012/11/15 05:29:53 PM		MA			9	0	0,17454	0,16531				0,33985													0,16531													
+28826	P	D Lac BBK	P	235,4531	mg/l	2012/11/15 05:30:02 PM		AR	19,30,	R	0	0	0,61835	0,58471				1,20306													0,58471													
+28826	P	L-Malic	P	1,18626	g/l	2012/11/15 05:30:56 PM		MA			9	0	0,17429	0,18925				0,36354													0,18925													
+28871	P	D Lac BBK	P	102,0114	mg/l	2012/11/15 05:31:23 PM		MA			0	0	0,34253	0,12669				0,46922													0,12669													
+28871	P	L-Malic	P	2,3822	g/l	2012/11/15 05:32:17 PM		MA			9	0	0,36094	0,13844				0,49938													0,13844													
+28801	P	D Lac BBK	P	107,1796	mg/l	2012/11/15 05:32:43 PM		MA			0	0	0,35272	0,09249				0,4452													0,09249													
+28801	P	L-Malic	P	2,82521	g/l	2012/11/15 05:33:28 PM		MA			9	0	0,43008	0,12966				0,55975													0,12966													
+28839	P	L-Malic	P	0,07621	g/l	2012/11/15 05:35:26 PM		MA		R	0	0	0,1081	1,30824				1,41634													1,30824													
+28817	P	L-Malic	P	0,16708	g/l	2012/11/15 05:38:53 PM		MA		R	0	0	0,24992	1,10496				1,35488													1,10496													
+28883	P	L-Malic	P	0,12784	g/l	2012/11/15 05:40:14 PM		MA		R	0	0	0,18867	1,43417				1,62284													1,43417													
+28839	P	D Lac BBK	P	325,6494	mg/l	2012/11/15 05:42:38 PM		MA		R	7	0	0,22475	0,12802				0,35277													0,12802													
+28817	P	D Lac BBK	P	281,5811	mg/l	2012/11/15 05:45:02 PM		MA		R	7	0	0,21444	0,10527				0,31972													0,10527													
+28883	P	D Lac BBK	P	588,4108	mg/l	2012/11/15 05:46:32 PM		MA		R	7	0	0,28714	0,1346				0,42173													0,1346													
+28826	P	D Lac BBK	P	218,0846	mg/l	2012/11/15 05:49:05 PM		MA		R	7	0	0,19968	0,07556				0,27524													0,07556													

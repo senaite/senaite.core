@@ -2,10 +2,18 @@ import sys
 import inspect
 
 from generic import xml
-from agilent import masshunter_quant
-from fiastar import fiastar
+from agilent.masshunter import quantitative
+from foss.fiastar import fiastar
+from foss.winescan import auto
+from foss.winescan import ft120
+from thermoscientific.gallery import Ts9861x
 
-__all__ = ['generic.xml', 'fiastar.fiastar', "agilent.masshunter_quant"]
+__all__ = ['generic.xml',
+           'agilent.masshunter.quantitative',
+           'foss.fiastar.fiastar',
+           'foss.winescan.auto',
+           'foss.winescan.ft120',
+           'thermoscientific.gallery.Ts9861x']
 
 
 def getExim(exim_id):

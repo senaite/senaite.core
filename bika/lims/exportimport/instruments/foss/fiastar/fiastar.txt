@@ -1,0 +1,76 @@
+Instrument data interface options
+=================================
+
+- 'parameter'
+    default = 'F SO2 & T SO2'
+- 'dilute_factor'
+    default = 1
+- 'F SO2'
+    The keyword of the service linked to F SO2 analyses
+    default = 'FSO2'
+- 'T SO2'
+    The keyword of the service linked to T SO2 analyses
+    default = 'TSO2'
+
+TSO2 and FSO2 services / calculations
+=====================================
+
+The services that are configured to receive instrument imports must calculate
+their own results - no value will be inserted into the Result field.
+
+The linked Calculation may include any of the following interim fields:
+
+- dilution_factor
+- injection
+- peak
+- peak_mean
+- peak_st_dev
+- concentration
+- concentration_mean
+- concentration_st_dev
+- deviation
+
+Only fields that are included in the calculation's InterimFields will be
+displayed, but all these fields will be written to the Analysis' InterimFields.
+
+For Fiastar v1 imports, the _mean and _st_dev fields will be set to 0.
+
+fia star v1 - csv from instrument
+=================================
+List name;Date;Time;Tray;Cup;Sample name;Sample type;
+7 Dilution;Remark;
+9 Parameter;Sample;
+11 Injection;
+12 Peak Height/Area;
+13 Concentration;
+14 Deviation;
+15 Error/Warning,,,,
+BB;2010/09/03;02:18:41 PM;2;31;V10-005121;Sample;1.000;;F SO2;1;1;360.769; 48.260;;,,,,
+BB;2010/09/03;02:18:41 PM;2;32;V10-005122;Sample;1.000;;F SO2;2;1;322.064; 43.048;;,,,,
+BB;2010/09/03;02:18:41 PM;2;33;V11-011182;Sample;1.000;;F SO2;3;1;281.386; 37.570;;,,,,
+BB;2010/09/03;02:18:41 PM;2;31;V10-005121;Sample;1.000;;T SO2;1;1; 47.513;144.146;;,,,,
+BB;2010/09/03;02:18:41 PM;2;32;V10-005122;Sample;1.000;;T SO2;2;1; 43.961;133.336;;,,,,
+BB;2010/09/03;02:18:41 PM;2;33;V11-005122;Sample;1.000;;T SO2;3;1; 41.558;126.021;;,,,,
+,,,,
+
+fia star v2 - csv from instrument:
+==================================
+List name;Date;Time;Tray;Cup;Sample name;Sample type;
+7 Dilution;Remark;
+9 Parameter;Sample;
+11 Injection;
+12 Peak Height/Area;
+13 Mean;
+14 St dev;
+15 Concentration;
+16 Mean;
+17 St dev;
+18 Deviation;
+19 Error/Warning
+Inname;2010/09/07;05:00:55 PM;1;1;V10-011180;Sample;1.000;;F SO2;1;1;191.453;191.453;  0.000; 33.455; 33.455;  0.000;;
+Inname;2010/09/07;05:00:55 PM;1;2;V10-011181;Sample;1.000;;F SO2;2;1;121.728;121.728;  0.000; 21.245; 21.245;  0.000;;
+Inname;2010/09/07;05:00:55 PM;1;3;V10-011182;Sample;1.000;;F SO2;3;1; 92.952; 92.952;  0.000; 16.206; 16.206;  0.000;;
+Inname;2010/09/07;05:00:55 PM;1;1;V10-011180;Sample;1.000;;T SO2;1;1; 33.569; 33.569;  0.000;123.307;123.307;  0.000;;
+Inname;2010/09/07;05:00:55 PM;1;2;V10-011181;Sample;1.000;;T SO2;2;1; 29.846; 29.846;  0.000;109.708;109.708;  0.000;;
+Inname;2010/09/07;05:00:55 PM;1;3;V10-011182;Sample;1.000;;T SO2;3;1; 29.457; 29.457;  0.000;108.286;108.286;  0.000;;
+,,,,

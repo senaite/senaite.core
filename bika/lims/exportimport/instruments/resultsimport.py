@@ -13,6 +13,7 @@ class InstrumentResultsFileParser(Logger):
         self._header = {}
         self._rawresults = {}
         self._mimetype = mimetype
+        self._numline = 0
 
     def getInputFile(self):
         """ Returns the results input file
@@ -80,6 +81,11 @@ class InstrumentResultsFileParser(Logger):
         """
         if override == True or resid not in self._rawresults.keys():
             self._rawresults[resid] = values
+
+    def _emptyRawResults(self):
+        """ Remove all grabbed raw results
+        """
+        self._rawresults = {}
 
     def getObjectsTotalCount(self):
         """ The total number of objects (ARs, ReferenceSamples, etc.) parsed
@@ -160,6 +166,15 @@ class InstrumentResultsFileParser(Logger):
         """
         return self._rawresults
 
+    def resume(self):
+        """ Resumes the parse process
+            Called by the Results Importer after parse() call
+        """
+        if len(self.getRawResults()) == 0:
+            self.err(_("No results found"))
+            return False
+        return True
+
 
 class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
 
@@ -168,8 +183,7 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
 
     def parse(self):
         infile = self.getInputFile()
-        self.log(_("Parsing file ") + " %s (%s)" % (infile.filename,
-                                                    infile.name))
+        self.log(_("Parsing file ") + " %s" % infile.filename)
         jump = 0
         for line in infile.readlines():
             self._numline += 1
@@ -187,10 +201,6 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
 
             line = line.strip()
             jump = self._parseline(line)
-
-        if len(self.getRawResults()) == 0:
-            self.err(_("No results found"))
-            return False
 
         self.log(_("End of file reached successfully: %s objects, "
                    "%s analyses, %s results") %
@@ -277,13 +287,21 @@ class AnalysisResultsImporter(Logger):
         """
         return self._idsearch
 
+    def getKeywordsToBeExcluded(self):
+        """ Returns an array with the analysis codes/keywords to be excluded
+            by the importer. By default, an empty array
+        """
+        return []
+
     def process(self):
-        parsed = self._parser.parse()
+        self._parser.parse()
+        parsed = self._parser.resume()
+        self._errors = self._parser.errors
+        self._warns = self._parser.warns
+        self._logs = self._parser.logs
+
         if parsed == False:
             return False
-
-        self._errors = self._parser.errors
-        self._logs = self._parser.logs
 
         # Allowed analysis states
         allowed_ar_states_msg = [_(s) for s in self.getAllowedARStates()]
@@ -297,12 +315,17 @@ class AnalysisResultsImporter(Logger):
         arprocessed = []
         importedars = {}
         rawacodes = self._parser.getAnalysisKeywords()
+        exclude = self.getKeywordsToBeExcluded()
         for acode in rawacodes:
+            if acode in exclude:
+                continue
             service = self.bsc(getKeyword=acode)
             if not service:
-                self.err(_('Service keyword %s not found') % acode)
+                self.warn(_('Service keyword %s not found') % acode)
             else:
                 acodes.append(acode)
+        if len(acodes) == 0:
+            self.err(_("Service keywords: no matches found"))
 
         for objid, results in self._parser.getRawResults().iteritems():
             analyses = self._getZODBAnalyses(objid)
@@ -549,9 +572,10 @@ class AnalysisResultsImporter(Logger):
         elif resultsaved == False:
             self.warn(_("%s result for '%s': Empty") % (objid, acode))
 
-#        if (resultsaved or len(interimsout) > 0) \
-#            and values.get('Remarks', '') \
-#            and analysis.portal_type == 'Analysis':
-#            analysis.setRemarks(values['Remarks'])
+        if (resultsaved or len(interimsout) > 0) \
+            and values.get('Remarks', '') \
+            and analysis.portal_type == 'Analysis' \
+            and (analysis.getRemarks() != '' or self._override[1] == True):
+            analysis.setRemarks(values['Remarks'])
 
         return resultsaved or len(interimsout) > 0
