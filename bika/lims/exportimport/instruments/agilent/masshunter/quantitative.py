@@ -22,6 +22,7 @@ import zope
 import zope.event
 from bika.lims.exportimport.instruments.resultsimport import InstrumentCSVResultsFileParser,\
     AnalysisResultsImporter
+import traceback
 
 title = "Agilent - Masshunter Quantitative"
 
@@ -78,10 +79,16 @@ def Import(context, request):
                                            allowed_ar_states=status,
                                            allowed_analysis_states=None,
                                            override=over)
-        importer.process()
+        tbex = ''
+        try:
+            importer.process()
+        except:
+            tbex = traceback.format_exc()
         errors = importer.errors
         logs = importer.logs
         warns = importer.warns
+        if tbex:
+            errors.append(tbex)
 
     results = {'errors': errors, 'log': logs, 'warns': warns}
 

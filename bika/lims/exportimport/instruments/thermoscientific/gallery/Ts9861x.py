@@ -3,6 +3,7 @@
 from bika.lims import bikaMessageFactory as _
 from . import ThermoGalleryImporter, ThermoGalleryTSVParser
 import json
+import traceback
 
 title = "Thermo Scientific - Gallery 9861x"
 
@@ -60,10 +61,16 @@ def Import(context, request):
                                               allowed_ar_states=status,
                                               allowed_analysis_states=None,
                                               override=over)
-        importer.process()
+        tbex = ''
+        try:
+            importer.process()
+        except:
+            tbex = traceback.format_exc()
         errors = importer.errors
         logs = importer.logs
         warns = importer.warns
+        if tbex:
+            errors.append(tbex)
 
     results = {'errors': errors, 'log': logs, 'warns': warns}
 
