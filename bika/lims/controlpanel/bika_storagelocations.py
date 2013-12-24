@@ -24,7 +24,7 @@ class StorageLocationsView(BikaListingView):
     implements(IFolderContentsView, IViewView)
 
     def __init__(self, context, request):
-        super(StorageLocationView, self).__init__(context, request)
+        super(StorageLocationsView, self).__init__(context, request)
         self.catalog = 'bika_setup_catalog'
         self.contentFilter = {'portal_type': 'StorageLocation',
                               'sort_on': 'sortable_title'}
