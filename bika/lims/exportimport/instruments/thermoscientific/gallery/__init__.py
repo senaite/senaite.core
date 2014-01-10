@@ -86,14 +86,20 @@ class ThermoGalleryTSVParser(InstrumentCSVResultsFileParser):
             self.err(_("No Analysis Code defined, line %s") % (self.num_line))
             return 0
 
+        rid = rawdict.get('Sample/ctrl ID')
+        if not rid:
+            self.err(_("No Sample ID defined, line %s") % (self.num_line))
+            return 0
+    
         errors = rawdict.get('Errors', '')
         errors = "Errors: %s" % errors if errors else ''
         notes = rawdict.get('Notes', '')
         notes = "Notes: %s" % notes if notes else ''
-        rawdict['DefaultResult'] = 'Result'
+        rawdict[acode]=rawdict['Result']
+        rawdict['DefaultResult'] = acode
         rawdict['Remarks'] = ' '.join([errors, notes])
-        self._addRawResult(acode, rawdict, True)
-        return 0
+        self._addRawResult(rid, rawdict, True)
+        return 00
 
 
 class ThermoGalleryImporter(AnalysisResultsImporter):
