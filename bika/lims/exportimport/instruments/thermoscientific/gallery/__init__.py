@@ -98,8 +98,10 @@ class ThermoGalleryTSVParser(InstrumentCSVResultsFileParser):
         rawdict[acode]=rawdict['Result']
         rawdict['DefaultResult'] = acode
         rawdict['Remarks'] = ' '.join([errors, notes])
-        self._addRawResult(rid, rawdict, True)
-        return 00
+        rawres = self.getRawResults().get(rid, {})
+        rawres[acode] = rawdict
+        self._addRawResult(rid, rawres, True)
+        return 0
 
 
 class ThermoGalleryImporter(AnalysisResultsImporter):
