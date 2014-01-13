@@ -2,6 +2,8 @@
 
 $(document).ready(function(){
 
+    $(".state-retracted .ajax_calculate").removeClass('ajax_calculate');
+
 	$(".ajax_calculate").live('focus', function(){
 		$(this).attr('focus_value', $(this).val());
 		$(this).addClass("ajax_calculate_focus");
@@ -18,7 +20,6 @@ $(document).ready(function(){
 
 	// otherwise 'change' handler is fired.
 	$(".ajax_calculate").live('change', function(){
-
 		$(this).removeAttr("focus_value");
 		$(this).removeClass("ajax_calculate_focus");
 
@@ -48,7 +49,7 @@ $(document).ready(function(){
 
 		// collect all form results into a hash (by analysis UID)
 		var results = {};
-		$.each($("input[field='Result'], select[field='Result']"), function(i, e){
+		$.each($("td:not(.state-retracted) input[field='Result'], td:not(.state-retracted) select[field='Result']"), function(i, e){
 			results[$(e).attr("uid")] = $(e).val();
 		});
 
@@ -117,7 +118,7 @@ $(document).ready(function(){
 					}
 				}
 			}
-		}
+		};
 		$.ajax(options);
 	});
 

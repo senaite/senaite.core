@@ -45,7 +45,7 @@ BIKA: Assign analyses,N,N,Y,N,N,N,N,Y,Y,Y
 BIKA: Unassign analyses,N,N,Y,N,N,N,N,Y,Y,Y
 BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y
 BIKA: Add Attachment,N,N,Y,N,N,N,N,Y,Y,Y
-BIKA: Retract,N,N,N,N,N,N,N,Y,Y,Y
+BIKA: Retract,N,N,Y,N,N,N,N,Y,Y,Y
 Modify portal content,N,N,Y,N,N,N,N,Y,Y,Y
 ,,,,,,,,,,
 [State],,,,,,,,,,

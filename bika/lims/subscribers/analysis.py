@@ -353,7 +353,7 @@ def AfterTransitionEventHandler(instance, event):
         # Retract our dependents
         for dep in instance.getDependents():
             if not skip(dep, action_id, peek=True):
-                if wf.getInfoFor(dep, 'review_state') != 'sample_received':
+                if wf.getInfoFor(dep, 'review_state') not in ('sample_received', 'retracted'):
                     instance.REQUEST["workflow_skiplist"].append("retract all dependencies")
                     # just return to "received" state, no cascade
                     wf.doActionFor(dep, 'retract')
@@ -518,13 +518,17 @@ def AfterTransitionEventHandler(instance, event):
                 instance.REQUEST['workflow_skiplist'] = ['retract all analyses', ]
             else:
                 instance.REQUEST["workflow_skiplist"].append('retract all analyses')
-            wf.doActionFor(ws, 'retract')
+            allowed_transitions = [t['id'] for t in wf.getTransitionsFor(ws)]
+            if 'retract' in allowed_transitions:
+                wf.doActionFor(ws, 'retract')
 
         # If all analyses in this AR have been assigned,
         # escalate the action to the parent AR
         if not skip(ar, action_id, peek=True):
             if not ar.getAnalyses(worksheetanalysis_review_state = 'unassigned'):
-                wf.doActionFor(ar, 'assign')
+                allowed_transitions = [t['id'] for t in wf.getTransitionsFor(ar)]
+                if 'assign' in allowed_transitions:
+                    wf.doActionFor(ar, 'assign')
 
     elif action_id == "unassign":
         instance.reindexObject(idxs = ["worksheetanalysis_review_state", ])
