@@ -64,7 +64,6 @@ div.bika-listing-table-container {
   border-radius: 5px 5px 5px 5px;
   box-shadow: 0pt 1px 2px rgba(0, 0, 0, 0.5);
   display: inline-block;
-  overflow: hidden;
   margin-bottom:10px;
 }
 
@@ -72,9 +71,9 @@ table.bika-listing-table {
   font-size: &dtml-fontSmallSize;;
   border-bottom: medium none;
   width: 100%;
-  border: 1px solid rgb(220, 220, 220);
-  border: medium none;
+  border: none;
   border-collapse: collapse;
+  background-color:#fff;
 }
 
 .bika-listing-table .listing_remarks {
@@ -507,6 +506,11 @@ tfoot td.batching a {
 .bika-listing-table .state-empty a:visited {
     color: &dtml-empty_LinkColor; !important;
 }
+
+.template-batchbook .item-listing-tbody td {
+  border-right: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
+}
+
 
 /* </dtml-with> */
 
