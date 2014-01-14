@@ -346,7 +346,7 @@ class doPublish(BrowserView):
         # 2. If the result is floatable, render it to the correct precision
         precision = service.getPrecision()
         if not precision:
-            precision = ''
+            precision = '2'
         try:
             result = str("%%.%sf" % precision) % float(result)
         except:
