@@ -267,7 +267,7 @@ class Lab_Contacts(WorksheetImporter):
                     row['Password'],
                     properties={
                         'username': username,
-                        # 'email': row['EmailAddress'],
+                        'email': row['EmailAddress'],
                         'fullname': Fullname}
                 )
                 groups = row.get('Groups', '')
