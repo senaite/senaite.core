@@ -59,7 +59,7 @@ class ContactLoginDetailsView(BrowserView):
                                    password,
                                    properties = {
                                        'username': username,
-                                       'email': email,
+                                       # 'email': email,
                                        'fullname': username})
             except ValueError, msg:
                 return error(None, msg)

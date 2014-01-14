@@ -182,26 +182,26 @@ class Person(BaseFolder):
         return self.portal_membership.getMemberById(
             self.getUsername()) is not None
 
-    def getEmailAddress(self, **kw):
-        """ Return the email address stored in member data if the
-            person is a Plone user, else return the one stored on the
-            person.
-        """
-        member = self.portal_membership.getMemberById(self.getUsername())
-        if member:
-            return member.getProperty('email')
-        else:
-            return self.Schema()['EmailAddress'].get(self)
-
-    def setEmailAddress(self, value, **kw):
-        """ Set email in member data if the person is a Plone user, else
-            store it on the Person instance.
-        """
-        self.Schema()['EmailAddress'].set(self, value, **kw)
-        username = self.getUsername()
-        if username:
-            member = self.portal_membership.getMemberById(username)
-            if member:
-                member.setMemberProperties({'email': value})
+    ### Removed these accessors to prevent confusion when LDAP is used
+    # def getEmailAddress(self, **kw):
+    #     """ Return the email address stored in member data if the
+    #         person is a Plone user, else return the one stored on the
+    #         person.
+    #     """
+    #     member = self.portal_membership.getMemberById(self.getUsername())
+    #     if member:
+    #         return member.getProperty('email')
+    #     else:
+    #         return self.Schema()['EmailAddress'].get(self)
+    # def setEmailAddress(self, value, **kw):
+    #     """ Set email in member data if the person is a Plone user, else
+    #         store it on the Person instance.
+    #     """
+    #     self.Schema()['EmailAddress'].set(self, value, **kw)
+    #     username = self.getUsername()
+    #     if username:
+    #         member = self.portal_membership.getMemberById(username)
+    #         if member:
+    #             member.setMemberProperties({'email': value})
 
 registerType(Person, PROJECTNAME)
