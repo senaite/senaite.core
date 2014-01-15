@@ -137,6 +137,7 @@ class ARAnalysesField(ObjectField):
                 analysis.setInterimFields(interim_fields)
                 analysis.setMaxTimeAllowed(service.getMaxTimeAllowed())
                 analysis.unmarkCreationFlag()
+                analysis.reindexObject()
                 zope.event.notify(ObjectInitializedEvent(analysis))
                 SamplingWorkflowEnabled = instance.bika_setup.getSamplingWorkflowEnabled()
                 try:
