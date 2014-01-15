@@ -116,11 +116,14 @@ def generateUniqueId(context):
 
         def next_id(prefix):
 
-            # grab the first catalog we are indexed in.
-            at = getToolByName(context, 'archetype_tool')
             plone = context.portal_url.getPortalObject()
-            catalog_name = context.portal_type in at.catalog_map \
-                and at.catalog_map[context.portal_type][0] or 'portal_catalog'
+
+            # grab the first catalog we are indexed in.
+            at = getToolByName(plone, 'archetype_tool')
+            if context.portal_type in at.catalog_map:
+                catalog_name = at.catalog_map[context.portal_type][0]
+            else:
+                catalog_name = 'portal_catalog'
             catalog = getToolByName(plone, catalog_name)
 
             # get all IDS that start with prefix
