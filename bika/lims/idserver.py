@@ -120,7 +120,7 @@ def generateUniqueId(context):
             if context.portal_type in at.catalog_map:
                 catalog_name = at.catalog_map[context.portal_type][0]
             else:
-                'portal_catalog'
+                catalog_name = 'portal_catalog'
             catalog = getToolByName(plone, catalog_name)
 
             # get all IDS that start with prefix
