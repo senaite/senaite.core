@@ -42,6 +42,7 @@ class AnalysisSpecificationView(BikaListingView):
             'error': {'title': _('Permitted Error %'), 'sortable': False},
             'hidemin': {'title': _('< Min'), 'sortable': False},
             'hidemax': {'title': _('> Max'), 'sortable': False},
+            'rangecomment': {'title': _('Range comment'), 'sortable': False, 'toggle': False}
         }
 
         self.review_states = [
@@ -50,7 +51,7 @@ class AnalysisSpecificationView(BikaListingView):
              'contentFilter':{},
              'transitions': [],
              'columns': ['service', 'min', 'max', 'error',
-                         'hidemin', 'hidemax'],
+                         'hidemin', 'hidemax', 'rangecomment'],
              },
         ]
 
@@ -83,7 +84,8 @@ class AnalysisSpecificationView(BikaListingView):
                         'max': '',
                         'error': '',
                         'hidemin': '',
-                        'hidemax': ''}
+                        'hidemax': '',
+                        'rangecomment': ''}
 
             after_icons = ' <span class="discreet">(%s)</span>&nbsp;&nbsp;' % service.getKeyword()
             if service.getAccredited():
@@ -135,6 +137,7 @@ class AnalysisSpecificationView(BikaListingView):
                 'max': specresults.get('max', ''),
                 'hidemin': specresults.get('hidemin',''),
                 'hidemax': specresults.get('hidemax',''),
+                'rangecomment': specresults.get('rangecomment', ''),
                 'replace': {},
                 'before': {},
                 'after': {'service':after_icons,
@@ -144,7 +147,8 @@ class AnalysisSpecificationView(BikaListingView):
                 'choices':{},
                 'class': "state-%s" % (state),
                 'state_class': "state-%s" % (state),
-                'allow_edit': ['min', 'max', 'error', 'hidemin', 'hidemax'],
+                'allow_edit': ['min', 'max', 'error', 'hidemin', 'hidemax',
+                               'rangecomment'],
             }
             items.append(item)
 
@@ -181,6 +185,7 @@ class AnalysisSpecificationWidget(TypesWidget):
                 mins = form['min'][0].get(uid, '') if 'min' in form else ''
                 maxs = form['max'][0].get(uid, '') if 'max' in form else ''
                 err = form['error'][0].get(uid, '') if 'error' in form else ''
+                rangecomment = form['rangecomment'][0].get(uid, '') if 'rangecomment' in form else ''
 
                 if not isnumber(hidemin) and not isnumber(hidemax) and \
                    (not isnumber(mins) or not isnumber(maxs)):
@@ -194,7 +199,8 @@ class AnalysisSpecificationWidget(TypesWidget):
                               'max': maxs if isnumber(maxs) else '',
                               'hidemin': hidemin if isnumber(hidemin) else '',
                               'hidemax': hidemax if isnumber(hidemax) else '',
-                              'error': err if isnumber(err) else '0'})
+                              'error': err if isnumber(err) else '0',
+                              'rangecomment': rangecomment})
         return value, {}
 
     security.declarePublic('AnalysisSpecificationResults')
