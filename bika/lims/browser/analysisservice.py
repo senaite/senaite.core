@@ -190,7 +190,7 @@ class JSONReadExtender(object):
         }
         return ret
 
-    def __call__(self, obj_data):
+    def __call__(self, request, obj_data):
         ret = obj_data.copy()
 
         calc = self.context.getCalculation()

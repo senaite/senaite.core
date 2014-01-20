@@ -94,7 +94,7 @@ def read(context, request):
         # call any adapters that care to modify this data.
         adapters = getAdapters((obj, ), IJSONReadExtender)
         for name, adapter in adapters:
-            obj_data = adapter(obj_data)
+            obj_data = adapter(request, obj_data)
 
         ret['objects'].append(obj_data)
     if debug_mode:

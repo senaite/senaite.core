@@ -2835,7 +2835,14 @@ class JSONReadExtender(object):
                 ret[-1]['Previous Results'] = prevs
         return ret
 
-    def __call__(self, obj_data):
+    def __call__(self, request, obj_data):
         ret = obj_data.copy()
-        ret['Analyses'] = self.ar_analysis_values()
+        include_fields = []
+        if "include_fields" in request:
+            include_fields = [x.strip() for x in request.get("include_fields", "").split(",")
+                              if x.strip()]
+        if "include_fields[]" in request:
+            include_fields = request['include_fields[]']
+        if not include_fields or "Analyses" in include_fields:
+            ret['Analyses'] = self.ar_analysis_values()
         return ret
