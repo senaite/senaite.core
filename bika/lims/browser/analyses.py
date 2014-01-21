@@ -7,6 +7,7 @@ from bika.lims.config import QCANALYSIS_TYPES
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.permissions import *
 from bika.lims.utils import isActive
+from bika.lims.utils import getUsers
 from DateTime import DateTime
 from operator import itemgetter
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -50,36 +51,60 @@ class AnalysesView(BikaListingView):
         self.allow_edit = False
 
         self.columns = {
-            'Service': {'title': _('Analysis'),
-                        'sortable': False},
-            'Partition': {'title': _("Partition"),
-                          'sortable':False},
-            'Method': {'title': _('Method'),
-                       'sortable': False},
-            'state_title': {'title': _('Status'),
-                            'sortable': False},
-            'Result': {'title': _('Result'),
-                       'input_width': '6',
-                       'input_class': 'ajax_calculate numeric',
-                       'sortable': False},
-            'Specification': {'title': _('Specification'),
-                       'sortable': False},
-            'ResultDM': {'title': _('Dry'),
-                         'sortable': False},
-            'Uncertainty': {'title': _('+-'),
-                            'sortable': False},
-            'retested': {'title': "<img title='%s' src='%s/++resource++bika.lims.images/retested.png'/>"%\
-                         (context.translate(_('Retested')), self.portal_url),
-                         'type':'boolean',
-                         'sortable': False},
-            'Attachments': {'title': _('Attachments'),
-                            'sortable': False},
-            'CaptureDate': {'title': _('Captured'),
-                            'index': 'getResultCaptureDate',
-                            'sortable':False},
-            'DueDate': {'title': _('Due Date'),
-                        'index': 'getDueDate',
-                        'sortable':False},
+            'Service': {
+                'title': _('Analysis'),
+                'sortable': False},
+            'Partition': {
+                'title': _("Partition"),
+                'sortable':False},
+            'Method': {
+                'title': _('Method'),
+                'sortable': False,
+                'toggle': True,
+                'type':'choices'},
+            'Instrument': {
+                'title': _('Instrument'),
+                'sortable': False,
+                'toggle': True,
+                'type':'choices'},
+            'Analyst': {
+                'title': _('Analyst'),
+                'sortable': False,
+                'toggle': True,
+                'type':'choices'},
+            'state_title': {
+                'title': _('Status'),
+                'sortable': False},
+            'Result': {
+                'title': _('Result'),
+                'input_width': '6',
+                'input_class': 'ajax_calculate numeric',
+                'sortable': False},
+            'Specification': {
+                'title': _('Specification'),
+                'sortable': False},
+            'ResultDM': {
+                'title': _('Dry'),
+                'sortable': False},
+            'Uncertainty': {
+                'title': _('+-'),
+                'sortable': False},
+            'retested': {
+                'title': "<img title='%s' src='%s/++resource++bika.lims.images/retested.png'/>"%\
+                    (context.translate(_('Retested')), self.portal_url),
+                'type':'boolean',
+                'sortable': False},
+            'Attachments': {
+                'title': _('Attachments'),
+                'sortable': False},
+            'CaptureDate': {
+                'title': _('Captured'),
+                'index': 'getResultCaptureDate',
+                'sortable':False},
+            'DueDate': {
+                'title': _('Due Date'),
+                'index': 'getDueDate',
+                'sortable':False},
         }
 
         self.review_states = [
@@ -88,14 +113,15 @@ class AnalysesView(BikaListingView):
              'contentFilter': {},
              'columns': ['Service',
                          'Partition',
-                         'Method',
                          'Result',
                          'Specification',
+                         'Method',
+                         'Instrument',
+                         'Analyst',
                          'Uncertainty',
                          'CaptureDate',
                          'DueDate',
-                         'state_title',
-                         'Attachments'],
+                         'state_title']
              },
         ]
         if not context.bika_setup.getShowPartitions():
@@ -158,6 +184,33 @@ class AnalysesView(BikaListingView):
             specstr = '< %s' % spec['max']
         return specstr
 
+    def get_methods_vocabulary(self):
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        brains = bsc(portal_type='Method', inactive_state='active')
+        ret = []
+        for brain in brains:
+            ret.append({'ResultValue': brain.UID,
+                        'ResultText': brain.title})
+        return ret
+
+    def get_instruments_vocabulary(self):
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        brains = bsc(portal_type='Instrument', inactive_state='active')
+        ret = []
+        for brain in brains:
+            ret.append({'ResultValue': brain.UID,
+                        'ResultText': brain.title})
+        return ret
+
+    def getAnalysts(self):
+        analysts = getUsers(self.context, ['Manager', 'LabManager', 'Analyst'])
+        analysts = analysts.sortedByKey()
+        ret = []
+        for a in analysts:
+            ret.append({'ResultValue': a,
+                        'ResultText': analysts.getValue(a)})
+        return ret
+
     def folderitems(self):
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
@@ -189,6 +242,8 @@ class AnalysesView(BikaListingView):
                 continue
             new_items.append(item)
         items = new_items
+
+        methods = self.get_methods_vocabulary()
 
         self.interim_fields = {}
         self.interim_columns = {}
@@ -250,6 +305,15 @@ class AnalysesView(BikaListingView):
             if method:
                 items[i]['replace']['Method'] = "<a href='%s'>%s</a>" % \
                     (method.absolute_url(), method.Title())
+            item['choices']['Method'] = self.get_methods_vocabulary()
+
+            instrument = obj.getInstrument()
+            items[i]['Instrument'] = instrument and instrument.Title() or ''
+            item['choices']['Instrument'] = self.get_instruments_vocabulary()
+
+            Analyst = obj.getAnalyst()
+            items[i]['Analyst'] = Analyst
+            item['choices']['Analyst'] = self.getAnalysts()
 
             if checkPermission(ManageBika, self.context):
                 service_uid = service.UID()
@@ -284,7 +348,11 @@ class AnalysesView(BikaListingView):
                   (poc != 'field' and getSecurityManager().checkPermission(EditResults, obj)) )
 
             if can_edit_analysis:
-                items[i]['allow_edit'] = ['Result', 'Remarks', ]
+                items[i]['allow_edit'] = ['Method',
+                                          'Instrument',
+                                          'Analyst',
+                                          'Result',
+                                          'Remarks', ]
                 # if the Result field is editable, our interim fields are too
                 for f in self.interim_fields[obj.UID()]:
                     items[i]['allow_edit'].append(f['keyword'])
