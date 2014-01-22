@@ -277,68 +277,6 @@ class doPublish(BrowserView):
 
         return [ar.RequestID for ar in self.analysis_requests]
 
-    def formattedResult(self, analysis):
-        """Formatted result:
-        1. Print ResultText of matching ResultOptions
-        2. If the result is not floatable, return it without being formatted
-        3. If the analysis specs has hidemin or hidemax enabled and the
-           result is out of range, render result as '<min' or '>max'
-        4. If the result is floatable, render it to the correct precision
-        If analysis is None, returns empty string
-        """
-        if analysis is None:
-            return ''
-
-        result = analysis.getResult()
-        service = analysis.getService()
-        choices = service.getResultOptions()
-
-        # 1. Print ResultText of mathching ResulOptions
-        match = [x['ResultText'] for x in choices
-                 if str(x['ResultValue']) == str(result)]
-        if match:
-            return match[0]
-
-        # 2. If the result is not floatable, return it without being formatted
-        try:
-            result = float(result)
-        except:
-            return result
-
-        # 3. If the analysis specs has enabled hidemin or hidemax and the
-        #    result is out of range, render result as '<min' or '>max'
-        belowmin = False
-        abovemax = False
-        specs = analysis.getAnalysisSpecs()
-        specs = specs.getResultsRangeDict() if specs is not None else {}
-        specs = specs.get(analysis.getKeyword(), {})
-        hidemin = specs.get('hidemin', '')
-        hidemax = specs.get('hidemax', '')
-        try:
-            belowmin = hidemin and result < float(hidemin) or False
-        except:
-            belowmin = False
-            pass
-        try:
-            abovemax = hidemax and result > float(hidemax) or False
-        except:
-            abovemax = False
-            pass
-
-        # 3.1. If result is below min and hidemin enabled, return '<min'
-        if belowmin:
-            return '< %s' % hidemin
-
-        # 3.2. If result is above max and hidemax enabled, return '>max'
-        if abovemax:
-            return '> %s' % hidemax
-
-        # 4. If the result is floatable, render it to the correct precision
-        precision = service.getPrecision()
-        if not precision:
-            precision = ''
-        return str("%%.%sf" % precision) % result
-
     def containsInvalidARs(self):
         for ar in self.batch:
             if ar.isInvalid():
