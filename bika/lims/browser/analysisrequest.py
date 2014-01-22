@@ -2794,7 +2794,9 @@ class JSONReadExtender(object):
             if proxy.review_state == 'retracted':
                 continue
             # things that are manually inserted into the analysis.
-            method = analysis.getService().getMethod()
+            method = obj.getMethod()
+            if not method:
+                method = service.getMethod()
             ret.append({
                 "Uncertainty": analysis.getService().getUncertainty(analysis.getResult()),
                 "Method": method.Title() if method else '',

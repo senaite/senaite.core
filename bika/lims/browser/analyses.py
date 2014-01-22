@@ -300,15 +300,17 @@ class AnalysesView(BikaListingView):
             items[i]['CaptureDate'] = cd and self.ulocalized_time(cd, long_format=1) or ''
             items[i]['Attachments'] = ''
 
-            method = service.getMethod()
-            items[i]['Method'] = method and method.Title() or ''
+            method = obj.getMethod()
+            if not method:
+                method = service.getMethod()
+            items[i]['Method'] = method.Title() if method else ''
             if method:
                 items[i]['replace']['Method'] = "<a href='%s'>%s</a>" % \
                     (method.absolute_url(), method.Title())
             item['choices']['Method'] = self.get_methods_vocabulary()
 
             instrument = obj.getInstrument()
-            items[i]['Instrument'] = instrument and instrument.Title() or ''
+            items[i]['Instrument'] = instrument.Title() if instrument else ''
             item['choices']['Instrument'] = self.get_instruments_vocabulary()
 
             Analyst = obj.getAnalyst()

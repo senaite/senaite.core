@@ -95,7 +95,6 @@ schema = BikaSchema.copy() + Schema((
     BooleanField('ReportDryMatter',
         default = False,
     ),
-
     StringField('Analyst',
     ),
     TextField('Remarks',
@@ -103,7 +102,13 @@ schema = BikaSchema.copy() + Schema((
     ReferenceField('Instrument',
         required = 0,
         allowed_types = ('Instrument',),
-        relationship = 'WorksheetInstrument',
+        relationship = 'AnalysisInstrument',
+        referenceClass = HoldingReference,
+    ),
+    ReferenceField('Method',
+        required = 0,
+        allowed_types = ('Method',),
+        relationship = 'AnalysisMethod',
         referenceClass = HoldingReference,
     ),
     ReferenceField('SamplePartition',
@@ -372,6 +377,5 @@ class Analysis(BaseContent):
         """
         """
         return True
-
 
 atapi.registerType(Analysis, PROJECTNAME)
