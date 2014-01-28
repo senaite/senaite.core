@@ -4,14 +4,14 @@
     xmlns:i18n="http://xml.zope.org/namespaces/i18n"
     metal:use-macro="here/main_template/macros/master"
     i18n:domain="bika">
-    
+
 <head>
     <metal:block fill-slot="head_slot">
 	    <style media="screen" type="text/css">
 	    	h2 {
 	    		font-size:1.1em;
 	    		margin:15px 0px;
-	    	}  
+	    	}
 	    	#content-core div fieldset {
 	    		border-style:none;
 	    	}
@@ -26,12 +26,12 @@
 	    	#toc-reports li span {
 	    		font-size:0.9em;
 	    		color:#666;
-	    	}  	
+	    	}
 	    	#toc-reports li div {
 	    		margin-top:5px;
 	    		border-radius: 5px 5px 5px 5px;
 	    		margin-bottom: 5px;
-	    		overflow:hidden;    		
+	    		overflow:hidden;
 	    		padding:10px 10px 15px 15px;
 	    		background-color:#efefef;
 	    	}
@@ -75,11 +75,11 @@
 
 <div>
 <fieldset>
-    <h2 i18n:translate="">Sample related reports</h2>    
-    <ul id="toc-reports">  
-    	
+    <h2 i18n:translate="">Sample related reports</h2>
+    <ul id="toc-reports">
+
 		<li>
-    		<a href="#" id="dailysamplesreceived_selector" 
+    		<a href="#" id="dailysamplesreceived_selector"
     		i18n:translate="">Daily samples received</a><br/>
     		<span i18n:translate="">
     			Lists all samples received for a date range
@@ -91,6 +91,7 @@
 				        <tal:x content="structure python:view.selection_macros.select_daterange(
 					                                          field_id='getDateReceived',
 					                                          field_title='Date Received')"/>
+                        <tal:x content="structure context/@@selection_macros/select_output_format"/>
 				    </fieldset>
 				    <input tabindex=""
 				        class="searchButton allowMultiSubmit"
@@ -100,11 +101,11 @@
 				        i18n:attributes="value"/>
 				</form>
 			</div>
-		</li> 
-		
-		
+		</li>
+
+
 		<li>
-    		<a href="#" id="samplereceivedvsreported_selector" 
+    		<a href="#" id="samplereceivedvsreported_selector"
     		i18n:translate="">Samples received vs. samples reported</a><br/>
     		<span i18n:translate="">
     			Report tables between a period of time the number of
@@ -118,6 +119,7 @@
 				        <tal:x content="structure python:view.selection_macros.select_daterange(
 					                                          field_id='getDateReceived',
 					                                          field_title='Date Received')"/>
+                        <tal:x content="structure context/@@selection_macros/select_output_format"/>
 				    </fieldset>
 				    <input tabindex=""
 				        class="searchButton allowMultiSubmit"
@@ -127,15 +129,15 @@
 				        i18n:attributes="value"/>
 				</form>
 			</div>
-		</li>   
+		</li>
     </ul>
-    
-    <h2 i18n:translate="">Analyses related reports</h2> 
-    <ul id="toc-reports">        	
-    	
+
+    <h2 i18n:translate="">Analyses related reports</h2>
+    <ul id="toc-reports">
+
     	<!--  Analyses per service -->
-    	<li>    	
-    		<a href="#" id="analysestotals_selector" 
+    	<li>
+    		<a href="#" id="analysestotals_selector"
     			i18n:translate="">Analyses per service</a><br/>
     		<span i18n:translate="">
     			The number of analyses requested per analysis service
@@ -163,6 +165,7 @@
 				                                               workflow_id='bika_worksheetanalysis_workflow',
 				                                               field_id='bika_worksheetanalysis_workflow',
 				                                               field_title='Worksheet state')"/>
+                        <tal:x content="structure context/@@selection_macros/select_output_format"/>
 				    </fieldset>
 				    <input tabindex=""
 				        class="searchButton allowMultiSubmit"
@@ -172,8 +175,8 @@
 				        i18n:attributes="value"/>
 				</form>
 			</div>
-		</li> 
-		
+		</li>
+
 		<!-- Analyses per sample type -->
     	<li>
     		<a href="#" id="analysespersampletype_selector"
@@ -201,6 +204,7 @@
 				                                               workflow_id='bika_worksheetanalysis_workflow',
 				                                               field_id='bika_worksheetanalysis_workflow',
 				                                               field_title='Worksheet state')"/>
+                        <tal:x content="structure context/@@selection_macros/select_output_format"/>
 				    </fieldset>
 				    <input tabindex=""
 				        class="searchButton allowMultiSubmit"
@@ -210,8 +214,8 @@
 				        i18n:attributes="value"/>
 				</form>
 			</div>
-		</li> 
-		
+		</li>
+
 		<!-- Analyses requests and analyses -->
     	<li tal:condition="here/member_is_client">
     		<a href="#" id="memberanalysesperclient_selector"
@@ -219,8 +223,8 @@
     		<span i18n:translate="">
     			The number of requests and analyses
     		</span>
-		</li> 		
-		
+		</li>
+
 		<!-- Analyses requests and analyses per client -->
     	<li tal:condition="not:here/member_is_client">
     		<a href="#" id="analysesperclient_selector"
@@ -248,6 +252,7 @@
 				                                               workflow_id='bika_worksheetanalysis_workflow',
 				                                               field_id='bika_worksheetanalysis_workflow',
 				                                               field_title='Worksheet state')"/>
+                        <tal:x content="structure context/@@selection_macros/select_output_format"/>
 				    </fieldset>
 				    <input tabindex=""
 				           class="searchButton allowMultiSubmit"
@@ -257,8 +262,8 @@
 				           i18n:attributes="value"/>
 			    </form>
 			</div>
-		</li> 	
-		
+		</li>
+
 		<!-- Analyses turnaround time -->
     	<li>
     		<a href="#" id="tats_selector"
@@ -278,6 +283,7 @@
 				                                               workflow_id='bika_worksheetanalysis_workflow',
 				                                               field_id='bika_worksheetanalysis_workflow',
 				                                               field_title='Worksheet state')"/>
+                        <tal:x content="structure context/@@selection_macros/select_output_format"/>
 				    </fieldset>
 				    <input tabindex=""
 				           class="searchButton allowMultiSubmit"
@@ -288,7 +294,7 @@
 				</form>
 			</div>
 		</li>
-		
+
 		<!-- Analyses turnaround time over time -->
     	<li tal:condition="not:here/member_is_client">
     		<a href="#" id="tats_overtime_selector"
@@ -309,6 +315,7 @@
 			            <tal:x content="structure python:view.selection_macros.select_daterange(
 			                                                   field_id='Received',
 			                                                   field_title='Date Received')"/>
+                        <tal:x content="structure context/@@selection_macros/select_output_format"/>
 			        </fieldset>
 			        <input tabindex=""
 			            class="searchButton allowMultiSubmit"
@@ -319,10 +326,10 @@
 			    </form>
 			</div>
 		</li>
-		
+
 		<!-- Analyses by lab department -->
 		<li>
-    		<a href="#" id="analysesperdepartment_selector" 
+    		<a href="#" id="analysesperdepartment_selector"
     		i18n:translate="">Analyses summary per department</a><br/>
     		<span i18n:translate="">
     			Number of analysis requested and published per department
@@ -341,6 +348,7 @@
 				                                               field_title='Analysis state')"/>
 				    	<tal:x content="structure python:view.selection_macros.select_groupingperiod(
 				    												allow_blank=True)"/>
+                        <tal:x content="structure context/@@selection_macros/select_output_format"/>
 				    </fieldset>
 				    <input tabindex=""
 				        class="searchButton allowMultiSubmit"
@@ -351,8 +359,8 @@
 				</form>
 			</div>
 		</li>
-		
-		<!-- Analyses perfomed as % of total --> 
+
+		<!-- Analyses perfomed as % of total -->
 		<li>
     		<a href="#" id="analysesperformedpertotal_selector"
     		i18n:translate="">Analyses performed and published as % of total</a><br/>
@@ -370,6 +378,7 @@
 				                                               field_title='Date Requested')"/>
 					    <tal:x content="structure python:view.selection_macros.select_groupingperiod(
 					    											allow_blank=True)"/>
+                        <tal:x content="structure context/@@selection_macros/select_output_format"/>
 				    </fieldset>
 				    <input tabindex=""
 				        class="searchButton allowMultiSubmit"
@@ -379,11 +388,11 @@
 				        i18n:attributes="value"/>
 				</form>
 			</div>
-		</li>   
+		</li>
     </ul>
-    
-    <h2 style="font-size:1.1em;margin:15px 0px;" i18n:translate="">Other productivity reports</h2> 	
-	<ul id="toc-reports">    
+
+    <h2 style="font-size:1.1em;margin:15px 0px;" i18n:translate="">Other productivity reports</h2>
+	<ul id="toc-reports">
 		<li>
     		<a href="#" id="attachments_selector"
     		i18n:translate="">Attachments</a><br/>
@@ -398,13 +407,14 @@
 			            <tal:x content="structure python:view.selection_macros.select_daterange(
 			                                                  field_id='Loaded',
 			                                                  field_title='Date Loaded')"/>
+                        <tal:x content="structure context/@@selection_macros/select_output_format"/>
 			        </fieldset>
-			            <input tabindex=""
-			                class="searchButton allowMultiSubmit"
-			                type="submit"
-			                name="submit"
-			                value="Generate report"
-			                i18n:attributes="value"/>
+		            <input tabindex=""
+		                class="searchButton allowMultiSubmit"
+		                type="submit"
+		                name="submit"
+		                value="Generate report"
+		                i18n:attributes="value"/>
 			    </form>
 			</div>
 		</li>
@@ -412,7 +422,7 @@
     		<a href="#" id="dataentrydaybook_selector"
     		i18n:translate="">Data entry day book</a><br/>
     		<span i18n:translate="">
-    			Report tables of Analysis Requests and totals submitted 
+    			Report tables of Analysis Requests and totals submitted
     			between	a period of time
     		</span>
     		<div id="dataentrydaybook" style="display:none" class="criteria">
@@ -422,6 +432,7 @@
 				        <tal:x content="structure python:view.selection_macros.select_daterange(
 					                                          field_id='getDateCreated',
 					                                          field_title='Date Created')"/>
+                        <tal:x content="structure context/@@selection_macros/select_output_format"/>
 				    </fieldset>
 				    <input tabindex=""
 				        class="searchButton allowMultiSubmit"
@@ -431,7 +442,7 @@
 				        i18n:attributes="value"/>
 				</form>
 			</div>
-		</li> 
+		</li>
 	</ul>
 </fieldset>
 </div>

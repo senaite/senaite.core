@@ -224,3 +224,7 @@ class SelectionMacrosView(BrowserView):
     def select_groupingperiod(self, allow_blank=True, multiselect=False):
         self.allow_blank = allow_blank
         return self.select_groupingperiod_pt()
+
+    select_output_format_pt = ViewPageTemplateFile("select_output_format.pt")
+    def select_output_format(self):
+        return self.select_output_format_pt()

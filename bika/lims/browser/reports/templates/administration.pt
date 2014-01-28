@@ -11,7 +11,7 @@
 	    	h2 {
 	    		font-size:1.1em;
 	    		margin:15px 0px;
-	    	}  
+	    	}
 	    	#content-core div fieldset {
 	    		border-style:none;
 	    	}
@@ -26,12 +26,12 @@
 	    	#toc-reports li span {
 	    		font-size:0.9em;
 	    		color:#666;
-	    	}  	
+	    	}
 	    	#toc-reports li div {
 	    		margin-top:5px;
 	    		border-radius: 5px 5px 5px 5px;
 	    		margin-bottom: 5px;
-	    		overflow:hidden;    		
+	    		overflow:hidden;
 	    		padding:10px 10px 15px 15px;
 	    		background-color:#efefef;
 	    	}
@@ -61,7 +61,7 @@
 	    		padding-right:10px;
 	    	}
 	    </style>
-    </metal:block>  
+    </metal:block>
 </head>
 
 <body>
@@ -75,13 +75,13 @@
 
 <metal:content-core fill-slot="content-core">
   <input tal:replace="structure context/@@authenticator/authenticator"/>
-  
-<div>  
+
+<div>
 <fieldset>
-	<h2 i18n:translate="">Analyses related reports</h2>    
-    <ul id="toc-reports">      
+	<h2 i18n:translate="">Analyses related reports</h2>
+    <ul id="toc-reports">
 		<li>
-    		<a href="#" id="arsnotinvoiced_selector" 
+    		<a href="#" id="arsnotinvoiced_selector"
     		i18n:translate="">Analysis requests not invoiced</a><br/>
     		<span i18n:translate="">
     			Report of published analysis requests which have not been invoiced
@@ -101,22 +101,23 @@
 	                                                 workflow_id='bika_cancellation_workflow',
 	                                                 field_id='bika_cancellation_workflow',
 	                                                 field_title='Cancellation state')"/>
+                    <tal:x content="structure context/@@selection_macros/select_output_format"/>
 	              </fieldset>
 	              <input tabindex=""
 	                     class="searchButton allowMultiSubmit"
 	                     type="submit"
 	                     name="submit"
-	                     value="Report"
+	                     value="Generate report"
 	                     i18n:attributes="value"/>
             	</form>
 			</div>
 		</li>
  	</ul>
- 	
- 	<h2 i18n:translate="">Traceability</h2>    
-    <ul id="toc-reports">      
+
+ 	<h2 i18n:translate="">Traceability</h2>
+    <ul id="toc-reports">
 		<li>
-    		<a href="#" id="usershistory_selector" 
+    		<a href="#" id="usershistory_selector"
     		i18n:translate="">User history</a><br/>
     		<span i18n:translate="">
     			Actions performed by users (or specific user) between a period of time
@@ -129,18 +130,19 @@
 	                                                 field_id='getModificationDate',
 	                                                 field_title='Modification date')"/>
 	                <tal:x content="structure python:view.selection_macros.select_user(allow_blank=True)"/>
+                    <tal:x content="structure context/@@selection_macros/select_output_format"/>
 	              </fieldset>
 	              <input tabindex=""
 	                     class="searchButton allowMultiSubmit"
 	                     type="submit"
 	                     name="submit"
-	                     value="Report"
+	                     value="Generate report"
 	                     i18n:attributes="value"/>
             	</form>
 			</div>
 		</li>
  	</ul>
-</fieldset> 
+</fieldset>
 </div>
 </metal:content-core>
 </body>
