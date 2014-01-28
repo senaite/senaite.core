@@ -52,7 +52,7 @@ class doPublish(BrowserView):
             brains = bsc(UID=spec_uid)
             if brains:
                 obj = brains[0].getObject()
-        if not obj:
+        if hasattr(self.context, 'getSpecification') and not obj:
             if self.context.getSpecification():
                 obj = self.context.getSpecification()
         return obj
