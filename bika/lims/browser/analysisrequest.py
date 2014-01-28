@@ -2791,10 +2791,11 @@ class JSONReadExtender(object):
         analyses = self.context.getAnalyses(cancellation_state='active')
         for proxy in analyses:
             analysis = proxy.getObject()
+            service = analysis.getService()
             if proxy.review_state == 'retracted':
                 continue
             # things that are manually inserted into the analysis.
-            method = obj.getMethod()
+            method = analysis.getMethod()
             if not method:
                 method = service.getMethod()
             ret.append({

@@ -19,6 +19,8 @@ def handle_errors(f):
 
 
 def resolve_request_lookup(context, request, fieldname):
+    if fieldname not in request:
+        return []
     brains = []
     at = getToolByName(context, TOOL_NAME, None)
     entries = request[fieldname] if type(request[fieldname]) in (list, tuple) \

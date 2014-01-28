@@ -254,11 +254,18 @@ class Create(object):
             if field not in request:
                 raise BadRequest("Missing field {0} in request".format(field))
 
-        client = resolve_request_lookup(context, request, 'Client')[0].getObject()
+        try:
+            client = resolve_request_lookup(context, request, 'Client')[0].getObject()
+        except IndexError:
+            import pdb; pdb.set_trace()
+            raise Exception("Client not found")
 
         # Sample_id
         if 'Sample' in request:
-            sample = resolve_request_lookup(context, request, 'Sample')[0].getObject()
+            try:
+                sample = resolve_request_lookup(context, request, 'Sample')[0].getObject()
+            except IndexError:
+                raise Exception("Sample not found")
         else:
             # Primary AR
             _id = client.invokeFactory('Sample', id=tmpID())
