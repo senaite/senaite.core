@@ -24,7 +24,7 @@ setup(name='bika.lims',
       install_requires=[
           'setuptools',
           'plone.api',
-          'plone.jsonapi',
+          'plone.jsonapi.core',
           'Products.ATExtensions>=1.1a3',
           'Products.CMFEditions',
           'Products.AdvancedQuery',

@@ -1,5 +1,5 @@
-from plone.jsonapi import router
-from plone.jsonapi.interfaces import IRouteProvider
+from plone.jsonapi.core import router
+from plone.jsonapi.core.interfaces import IRouteProvider
 from Products.CMFCore.utils import getToolByName
 from zExceptions import BadRequest
 from zope import interface

@@ -7,7 +7,7 @@ def handle_errors(f):
     """ simple JSON error handler
     """
     import traceback
-    from plone.jsonapi.helpers import error
+    from plone.jsonapi.core.helpers import error
 
     def decorator(*args, **kwargs):
         try:

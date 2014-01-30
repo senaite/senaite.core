@@ -1,6 +1,6 @@
 from bika.lims.jsonapi import set_fields_from_request
-from plone.jsonapi import router
-from plone.jsonapi.interfaces import IRouteProvider
+from plone.jsonapi.core import router
+from plone.jsonapi.core.interfaces import IRouteProvider
 from zExceptions import BadRequest
 from zope import interface
 import transaction
