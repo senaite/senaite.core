@@ -5,6 +5,7 @@ from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 
+
 class Report(BrowserView):
     implements(IViewView)
     default_template = ViewPageTemplateFile("templates/productivity.pt")
@@ -66,8 +67,33 @@ class Report(BrowserView):
         self.report_data = {
             'parameters': parms,
             'datalines': datalines,
-            'footlines': footlines }
+            'footlines': footlines}
 
-        return {'report_title': _('Daily samples received'),
-                'report_data': self.template()}
-
+        if self.request.get('output_format', '') == 'CSV':
+            import csv
+            import StringIO
+            import datetime
+            fieldnames = [
+                'SampleID',
+                'SampleType',
+                'SampleSamplingDate',
+                'SampleDateReceived',
+                'AnalysisTitle',
+                'AnalysisKeyword',
+            ]
+            output = StringIO.StringIO()
+            dw = csv.DictWriter(output, fieldnames=fieldnames)
+            dw.writerow(dict((fn, fn) for fn in fieldnames))
+            for row in datalines:
+                dw.writerow(row)
+            report_data = output.getvalue()
+            output.close()
+            date = datetime.datetime.now().strftime("%Y%m%d%H%M")
+            setheader = self.request.RESPONSE.setHeader
+            setheader('Content-Type', 'text/csv')
+            setheader("Content-Disposition",
+                "attachment;filename=\"dailysamplesreceived_%s.csv\"" % date)
+            self.request.RESPONSE.write(report_data)
+        else:
+            return {'report_title': _('Daily samples received'),
+                    'report_data': self.template()}

@@ -1,16 +1,11 @@
-from AccessControl import getSecurityManager
-from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.client import ClientSamplesView
 from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client
-from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
-import json
-import plone
+
 
 class Report(BrowserView):
     implements(IViewView)
@@ -24,11 +19,8 @@ class Report(BrowserView):
         # get all the data into datalines
 
         pc = getToolByName(self.context, 'portal_catalog')
-        sc = getToolByName(self.context, 'bika_setup_catalog')
-        bc = getToolByName(self.context, 'bika_analysis_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
         self.report_content = {}
-        parm_lines = {}
         parms = []
         headings = {}
         headings['header'] = _("Attachments")
@@ -36,7 +28,7 @@ class Report(BrowserView):
 
         count_all = 0
         query = {'portal_type': 'Attachment'}
-        if self.request.form.has_key('ClientUID'):
+        if 'ClientUID' in self.request.form:
             client_uid = self.request.form['ClientUID']
             query['getClientUID'] = client_uid
             client = rc.lookupObject(client_uid)
@@ -47,9 +39,9 @@ class Report(BrowserView):
                 client_title = client.Title()
                 query['getClientUID'] = client.UID()
             else:
-                client_title = 'Undefined'
+                client_title = 'All'
         parms.append(
-            { 'title': _('Client'),
+            {'title': _('Client'),
              'value': client_title,
              'type': 'text'})
 
@@ -57,22 +49,19 @@ class Report(BrowserView):
         if date_query:
             query['getDateLoaded'] = date_query
             loaded = formatDateParms(self.context, 'Loaded')
-        else:
-            loaded = 'Undefined'
-        parms.append(
-            { 'title': _('Loaded'),
-             'value': loaded,
-             'type': 'text'})
-
+            parms.append(
+                {'title': _('Loaded'),
+                 'value': loaded,
+                 'type': 'text'})
 
         # and now lets do the actual report lines
         formats = {'columns': 6,
-                   'col_heads': [ _('Request'), \
-                                  _('File'), \
-                                  _('Attachment type'), \
-                                  _('Content type'), \
-                                  _('Size'), \
-                                  _('Loaded'), \
+                   'col_heads': [_('Request'),
+                                  _('File'),
+                                  _('Attachment type'),
+                                  _('Content type'),
+                                  _('Size'),
+                                  _('Loaded'),
                                   ],
                    'class': '',
                   }
@@ -101,11 +90,10 @@ class Report(BrowserView):
             dataline.append(dataitem)
             dataitem = {'value': self.context.lookupMime(attachment_file.getContentType())}
             dataline.append(dataitem)
-            dataitem = {'value': '%s%s' %(filesize, sizeunit)}
+            dataitem = {'value': '%s%s' % (filesize, sizeunit)}
             dataline.append(dataitem)
             dataitem = {'value': self.ulocalized_time(dateloaded)}
             dataline.append(dataitem)
-
 
             datalines.append(dataline)
 
@@ -122,7 +110,6 @@ class Report(BrowserView):
         footline.append(footitem)
         footlines.append(footline)
 
-
         self.report_content = {
                 'headings': headings,
                 'parms': parms,
@@ -130,9 +117,31 @@ class Report(BrowserView):
                 'datalines': datalines,
                 'footings': footlines}
 
-
-        return {'report_title': self.context.translate(headings['header']),
-                'report_data': self.template()}
-
-
-
+        if self.request.get('output_format', '') == 'CSV':
+            import csv
+            import StringIO
+            import datetime
+            fieldnames = [
+                _('Request'),
+                _('File'),
+                _('Attachment type'),
+                _('Content type'),
+                _('Size'),
+                _('Loaded'),
+            ]
+            output = StringIO.StringIO()
+            dw = csv.DictWriter(output, fieldnames=fieldnames)
+            dw.writerow(dict((fn, fn) for fn in fieldnames))
+            for row in datalines:
+                dw.writerow(row)
+            report_data = output.getvalue()
+            output.close()
+            date = datetime.datetime.now().strftime("%Y%m%d%H%M")
+            setheader = self.request.RESPONSE.setHeader
+            setheader('Content-Type', 'text/csv')
+            setheader("Content-Disposition",
+                "attachment;filename=\"analysesattachments_%s.csv\"" % date)
+            self.request.RESPONSE.write(report_data)
+        else:
+            return {'report_title': self.context.translate(headings['header']),
+                    'report_data': self.template()}

@@ -13,6 +13,7 @@ from zope.interface import implements
 import json
 import plone
 
+
 class Report(BrowserView):
     implements(IViewView)
     template = ViewPageTemplateFile("templates/report_out.pt")
@@ -22,8 +23,8 @@ class Report(BrowserView):
         BrowserView.__init__(self, context, request)
 
     def __call__(self):
-        # get all the data into datalines
 
+        # get all the data into datalines
         sc = getToolByName(self.context, 'bika_setup_catalog')
         bac = getToolByName(self.context, 'bika_analysis_catalog')
         rc = getToolByName(self.context, 'reference_catalog')
@@ -36,7 +37,8 @@ class Report(BrowserView):
 
         count_all = 0
         query = {'portal_type': 'Analysis'}
-        if self.request.form.has_key('ClientUID'):
+        client_title = None
+        if 'ClientUID' in self.request.form:
             client_uid = self.request.form['ClientUID']
             query['getClientUID'] = client_uid
             client = rc.lookupObject(client_uid)
@@ -46,62 +48,52 @@ class Report(BrowserView):
             if client:
                 client_title = client.Title()
                 query['getClientUID'] = client.UID()
-            else:
-                client_title = 'Undefined'
-        parms.append(
-            { 'title': _('Client'),
-             'value': client_title,
-             'type': 'text'})
+        if client_title:
+            parms.append(
+                {'title': _('Client'),
+                 'value': client_title,
+                 'type': 'text'})
 
         date_query = formatDateQuery(self.context, 'Requested')
         if date_query:
             query['created'] = date_query
             requested = formatDateParms(self.context, 'Requested')
-        else:
-            requested = 'Undefined'
-        parms.append(
-            { 'title': _('Requested'),
-             'value': requested,
-             'type': 'text'})
+            parms.append(
+                {'title': _('Requested'),
+                 'value': requested,
+                 'type': 'text'})
 
         workflow = getToolByName(self.context, 'portal_workflow')
-        if self.request.form.has_key('bika_analysis_workflow'):
+        if 'bika_analysis_workflow' in self.request.form:
             query['review_state'] = self.request.form['bika_analysis_workflow']
             review_state = workflow.getTitleForStateOnType(
                         self.request.form['bika_analysis_workflow'], 'Analysis')
-        else:
-            review_state = 'Undefined'
-        parms.append(
-            { 'title': _('Status'),
-             'value': review_state,
-             'type': 'text'})
+            parms.append(
+                {'title': _('Status'),
+                 'value': review_state,
+                 'type': 'text'})
 
-        if self.request.form.has_key('bika_cancellation_workflow'):
+        if 'bika_cancellation_workflow' in self.request.form:
             query['cancellation_state'] = self.request.form['bika_cancellation_workflow']
             cancellation_state = workflow.getTitleForStateOnType(
                         self.request.form['bika_cancellation_workflow'], 'Analysis')
-        else:
-            cancellation_state = 'Undefined'
-        parms.append(
-            { 'title': _('Active'),
-             'value': cancellation_state,
-             'type': 'text'})
+            parms.append(
+                {'title': _('Active'),
+                 'value': cancellation_state,
+                 'type': 'text'})
 
-        if self.request.form.has_key('bika_worksheetanalysis_workflow'):
+        if 'bika_worksheetanalysis_workflow' in self.request.form:
             query['worksheetanalysis_review_state'] = self.request.form['bika_worksheetanalysis_workflow']
             ws_review_state = workflow.getTitleForStateOnType(
                         self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
-        else:
-            ws_review_state = 'Undefined'
-        parms.append(
-            { 'title': _('Assigned to worksheet'),
-             'value': ws_review_state,
-             'type': 'text'})
-
+            parms.append(
+                {'title': _('Assigned to worksheet'),
+                 'value': ws_review_state,
+                 'type': 'text'})
 
         # and now lets do the actual report lines
         formats = {'columns': 2,
-                   'col_heads': [ _('Sample type'), _('Number of analyses')],
+                   'col_heads': [_('Sample type'), _('Number of analyses')],
                    'class': '',
                   }
 
@@ -115,10 +107,9 @@ class Report(BrowserView):
             dataline = []
             dataitem = {'value': sampletype.Title}
             dataline.append(dataitem)
-            dataitem = {'value': count_analyses }
+            dataitem = {'value': count_analyses}
 
             dataline.append(dataitem)
-
 
             datalines.append(dataline)
 
@@ -134,7 +125,6 @@ class Report(BrowserView):
         footline.append(footitem)
         footlines.append(footline)
 
-
         self.report_content = {
                 'headings': headings,
                 'parms': parms,
@@ -142,9 +132,31 @@ class Report(BrowserView):
                 'datalines': datalines,
                 'footings': footlines}
 
-        title = self.context.translate(headings['header'])
 
-        return {'report_title': title,
-                'report_data': self.template()}
-
-
+        if self.request.get('output_format', '') == 'CSV':
+            import csv
+            import StringIO
+            import datetime
+            fieldnames = [
+                'Sample Type',
+                'Analyses',
+            ]
+            output = StringIO.StringIO()
+            dw = csv.DictWriter(output, extrasaction='ignore', fieldnames=fieldnames)
+            dw.writerow(dict((fn, fn) for fn in fieldnames))
+            for row in datalines:
+                dw.writerow({
+                    'Sample Type': row[0]['value'],
+                    'Analyses': row[1]['value'],
+                })
+            report_data = output.getvalue()
+            output.close()
+            date = datetime.datetime.now().strftime("%Y%m%d%H%M")
+            setheader = self.request.RESPONSE.setHeader
+            setheader('Content-Type', 'text/csv')
+            setheader("Content-Disposition",
+                "attachment;filename=\"analysespersampletype_%s.csv\"" % date)
+            self.request.RESPONSE.write(report_data)
+        else:
+            return {'report_title': self.context.translate(headings['header']),
+                    'report_data': self.template()}

@@ -231,6 +231,10 @@ class SubmitForm(BrowserView):
         # - report_data - rendered report
         output = Report(self.context, self.request)()
 
+        # if CSV output is chosen, report returns None
+        if not output:
+            return
+
         if type(output) in (str, unicode, bytes):
             # remove temporary files
             for f in self.request['to_remove']:

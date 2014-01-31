@@ -12,13 +12,11 @@
 
 <body>
 
-  <h2
-    style="-pdf-outline:false"
+  <h1
     tal:content="python:view.report_data['header']"/>
-  <h3
-    style="-pdf-outline:false"
+<!--   <h2
     tal:content="python:view.report_data['subheader']"/>
-
+ -->
   <!-- Summary -->
 
   <table
