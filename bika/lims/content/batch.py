@@ -11,6 +11,8 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
 from bika.lims.permissions import EditBatch
+from bika.lims.subscribers import doActionFor
+from plone.indexer import indexer
 
 from bika.lims.browser.widgets import ReferenceWidget
 
@@ -70,8 +72,7 @@ schema = BikaFolderSchema.copy() + Schema((
             append_only=True,
         )
     )
-)
-)
+))
 
 
 schema['title'].required = False
@@ -219,6 +220,25 @@ class Batch(ATFolder):
         canstatus = getCurrentState(self, StateFlow.cancellation)
         return revstatus == BatchState.open \
             and canstatus == CancellationState.active
+
+    def workflow_script_close(self, state_change):
+        import pdb
+        pdb.set_trace()
+
+    def workflow_script_cancel(self, state_change):
+        import pdb
+        pdb.set_trace()
+        # Before cancelling the AR we transition to 'cancelled' state all
+        # contained ARs
+        for ar in self.getAnalysisRequests():
+            if wf.getInfoFor(ar, 'cancellation_state') != 'active':
+                doActionFor(ar, 'cancel')
+                ar.reindexObject()
+
+
+@indexer(IBatch)
+def BatchDate(instance):
+    return instance.Schema().getField('BatchDate').get(instance)
 
 
 registerType(Batch, PROJECTNAME)
