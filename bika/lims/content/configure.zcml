@@ -30,6 +30,4 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <include file="indexers.zcml"/>
-
 </configure>
