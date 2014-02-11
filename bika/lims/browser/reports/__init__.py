@@ -1,61 +1,91 @@
-from AccessControl import getSecurityManager
-from DateTime import DateTime
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
-from bika.lims.interfaces import IReportFolder
-from bika.lims.utils import getUsers, logged_in_client
-from bika.lims.utils import to_utf8 as _c
-from bika.lims.utils import to_unicode as _u
 from bika.lims.utils import createPdf
-from cStringIO import StringIO
-from plone.app.content.browser.interfaces import IFolderContentsView
+from bika.lims.utils import getUsers, logged_in_client
+from bika.lims.utils import to_unicode as _u
+from bika.lims.utils import to_utf8 as _c
+from bika.lims.interfaces import IProductivityReport
+from bika.lims.interfaces import IQualityControlReport
+from bika.lims.interfaces import IAdministrationReport
+from DateTime import DateTime
 from plone.app.layout.globals.interfaces import IViewView
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from zope.component import getAdapters
 from zope.interface import implements
 import json
 import os
 import plone
-import sys
 
 
 class ProductivityView(BrowserView):
+
     """ Productivity View form
     """
     implements(IViewView)
     template = ViewPageTemplateFile("templates/productivity.pt")
+
     def __call__(self):
         self.selection_macros = SelectionMacrosView(self.context, self.request)
         self.icon = self.portal_url + "/++resource++bika.lims.images/report_big.png"
         self.getAnalysts = getUsers(self.context, ['Manager', 'LabManager', 'Analyst'])
+
+        self.additional_reports = []
+        adapters = getAdapters((self.context, ), IProductivityReport)
+        for name, adapter in adapters:
+            report_dict = adapter(self.context, self.request)
+            report_dict['id'] = name
+            self.additional_reports.append(report_dict)
+
         return self.template()
 
 
 class QualityControlView(BrowserView):
+
     """ QC View form
     """
     implements(IViewView)
     template = ViewPageTemplateFile("templates/qualitycontrol.pt")
+
     def __call__(self):
         self.selection_macros = SelectionMacrosView(self.context, self.request)
         self.icon = self.portal_url + "/++resource++bika.lims.images/report_big.png"
+
+        self.additional_reports = []
+        adapters = getAdapters((self.context, ), IQualityControlReport)
+        for name, adapter in adapters:
+            report_dict = adapter(self.context, self.request)
+            report_dict['id'] = name
+            self.additional_reports.append()
+
         return self.template()
 
 
 class AdministrationView(BrowserView):
+
     """ Administration View form
     """
     implements(IViewView)
     template = ViewPageTemplateFile("templates/administration.pt")
+
     def __call__(self):
         self.selection_macros = SelectionMacrosView(self.context, self.request)
         self.icon = self.portal_url + "/++resource++bika.lims.images/report_big.png"
+
+        self.additional_reports = []
+        adapters = getAdapters((self.context, ), IAdministrationReport)
+        for name, adapter in adapters:
+            report_dict = adapter(self.context, self.request)
+            report_dict['id'] = name
+            self.additional_reports.append()
+
         return self.template()
 
 
 class ReportHistoryView(BikaListingView):
+
     """ Report history form
     """
     implements(IViewView)
@@ -94,9 +124,9 @@ class ReportHistoryView(BikaListingView):
                 'Created': {'title': _('Created')},
                 'By': {'title': _('By')}, }
             self.review_states = [
-                {'id':'default',
+                {'id': 'default',
                  'title': 'All',
-                 'contentFilter':{},
+                 'contentFilter': {},
                  'columns': ['Title',
                              'FileSize',
                              'Created',
@@ -115,9 +145,9 @@ class ReportHistoryView(BikaListingView):
                 'By': {'title': _('By')},
             }
             self.review_states = [
-                {'id':'default',
+                {'id': 'default',
                  'title': 'All',
-                 'contentFilter':{},
+                 'contentFilter': {},
                  'columns': ['Client',
                              'Title',
                              'FileSize',
@@ -139,7 +169,8 @@ class ReportHistoryView(BikaListingView):
         items = BikaListingView.folderitems(self)
         props = self.context.portal_properties.site_properties
         for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
+            if 'obj' not in items[x]:
+                continue
             obj = items[x]['obj']
             obj_url = obj.absolute_url()
             file = obj.getReportFile()
@@ -159,7 +190,9 @@ class ReportHistoryView(BikaListingView):
                  (obj_url, items[x]['Title'])
         return items
 
+
 class SubmitForm(BrowserView):
+
     """ Redirect to specific report
     """
     implements(IViewView)
@@ -176,7 +209,7 @@ class SubmitForm(BrowserView):
 
         report_id = self.request.get('report_id', '')
         if not report_id:
-            message =  "No report specified in request"
+            message = "No report specified in request"
             self.logger.error(message)
             self.context.plone_utils.addPortalMessage(message, 'error')
             return self.template()
@@ -212,16 +245,20 @@ class SubmitForm(BrowserView):
             self.client_title = None
             self.client_address = None
 
-        ## Render form output
+        # Render form output
 
         # the report can add file names to this list; they will be deleted
         # once the PDF has been generated.  temporary plot image files, etc.
         self.request['to_remove'] = []
 
+        if "module" in self.request:
+            module = self.request["module"]
+        else:
+            module = "bika.lims.browser.reports.%s" % report_id
         try:
-            exec("from bika.lims.browser.reports.%s import Report" % report_id)
+            exec("from %s import Report")
         except ImportError:
-            message = "Report %s not found (shouldn't happen)" % report_id
+            message = "Report %s.Report not found (shouldn't happen)" % module
             self.logger.error(message)
             self.context.plone_utils.addPortalMessage(message, 'error')
             return self.template()
@@ -241,7 +278,7 @@ class SubmitForm(BrowserView):
                 os.remove(f)
             return output
 
-        ## The report output gets pulled through report_frame.pt
+        # The report output gets pulled through report_frame.pt
         self.reportout = output['report_data']
         framed_output = self.frame_template()
 
@@ -253,15 +290,15 @@ class SubmitForm(BrowserView):
             os.remove(f)
 
         if result:
-            ## Create new report object
+            # Create new report object
             reportid = self.aq_parent.generateUniqueId('Report')
-            self.aq_parent.invokeFactory(id = reportid, type_name = "Report")
+            self.aq_parent.invokeFactory(id=reportid, type_name="Report")
             report = self.aq_parent._getOb(reportid)
-            report.edit(Client = clientuid)
+            report.edit(Client=clientuid)
             report.processForm()
 
-            ## write pdf to report object
-            report.edit(title = output['report_title'], ReportFile = result)
+            # write pdf to report object
+            report.edit(title=output['report_title'], ReportFile=result)
             report.reindexObject()
 
             fn = "%s - %s" % (self.date.strftime(self.date_format_short),
@@ -269,12 +306,14 @@ class SubmitForm(BrowserView):
 
             setheader = self.request.RESPONSE.setHeader
             setheader('Content-Type', 'application/pdf')
-            setheader("Content-Disposition", "attachment;filename=\"%s\""%_c(fn))
+            setheader("Content-Disposition", "attachment;filename=\"%s\"" % _c(fn))
             self.request.RESPONSE.write(result)
 
         return
 
+
 class ReferenceAnalysisQC_Samples(BrowserView):
+
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         # get Supplier from request
@@ -282,9 +321,9 @@ class ReferenceAnalysisQC_Samples(BrowserView):
         supplier = self.reference_catalog.lookupObject(supplier)
         if supplier:
             # get ReferenceSamples for this supplier
-            samples = self.bika_catalog(portal_type = 'ReferenceSample',
+            samples = self.bika_catalog(portal_type='ReferenceSample',
                                         path={"query": "/".join(supplier.getPhysicalPath()),
-                                              "level" : 0 })
+                                              "level": 0})
             ret = []
             for sample in samples:
                 sample = sample.getObject()
@@ -293,10 +332,12 @@ class ReferenceAnalysisQC_Samples(BrowserView):
                 definition = sample.getReferenceDefinition()
                 if definition:
                     title = "%s (%s)" % (title, definition.Title())
-                ret.append((UID,title))
+                ret.append((UID, title))
             return json.dumps(ret)
 
+
 class ReferenceAnalysisQC_Services(BrowserView):
+
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         # get Sample from request
@@ -304,16 +345,16 @@ class ReferenceAnalysisQC_Services(BrowserView):
         sample = self.reference_catalog.lookupObject(sample)
         if sample:
             # get ReferenceSamples for this supplier
-            analyses = self.bika_analysis_catalog(portal_type = 'ReferenceAnalysis',
+            analyses = self.bika_analysis_catalog(portal_type='ReferenceAnalysis',
                                                   path={"query": "/".join(sample.getPhysicalPath()),
-                                                        "level" : 0 })
+                                                        "level": 0})
             ret = {}
             for analysis in analyses:
                 service = analysis.getObject().getService()
-                if ret.has_key(service.UID()):
+                if service.UID() in ret:
                     ret[service.UID()]['analyses'].append(analysis.UID)
                 else:
                     ret[service.UID()] = {'title': service.Title(),
-                                          'analyses': [analysis.UID,]}
-            ret = [[k, v['title'], v['analyses']] for k,v in ret.items()]
+                                          'analyses': [analysis.UID, ]}
+            ret = [[k, v['title'], v['analyses']] for k, v in ret.items()]
             return json.dumps(ret)
