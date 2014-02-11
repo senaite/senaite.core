@@ -37,6 +37,16 @@ def read(context, request):
             contentFilter['sort_limit'] = int(request["limit"])
         except ValueError:
             pass
+    sort_on = request.get('sort_on', 'title')
+    contentFilter['sort_on'] = sort_on
+    # sort order
+    sort_order = request.get('sort_order', '')
+    if sort_order:
+        contentFilter['sort_order'] = sort_order
+    else:
+        sort_order = 'ascending'
+        contentFilter['sort_order'] = 'ascending'
+
     include_fields = []
     if "include_fields" in request:
         include_fields = [x.strip() for x in request.get("include_fields", "").split(",")
@@ -47,8 +57,16 @@ def read(context, request):
         logger.info("contentFilter: " + str(contentFilter))
         if include_fields:
             logger.info("include_fields: " + str(include_fields))
+
     # Get matching objects from catalog
     proxies = catalog(**contentFilter)
+
+    # batching items
+    page_nr = int(request.get("page_nr", 0))
+    page_size = int(request.get("page_size", 10))
+    first_item_nr = page_size*page_nr
+    proxies = proxies[first_item_nr:first_item_nr+page_size]
+
     for proxy in proxies:
         obj_data = {}
         # Place all proxy attributes into the result.
@@ -97,6 +115,10 @@ def read(context, request):
             obj_data = adapter(request, obj_data)
 
         ret['objects'].append(obj_data)
+    ret['total_objects'] = len(proxies)
+    ret['first_object_nr'] = first_item_nr
+    ret['last_object_nr'] = first_item_nr + len(proxies)
+
     if debug_mode:
         logger.info("{0} objects returned".format(len(ret['objects'])))
     return ret
