@@ -182,6 +182,7 @@ class BikaGenerator:
         mp(AddBatch, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddClient, ['Manager', 'Owner', 'LabManager'], 1)
         mp(AddClientFolder, ['Manager'], 1)
+        mp(AddInvoice, ['Manager', 'LabManager'], 1)
         mp(AddMethod, ['Manager', 'LabManager'], 1)
         mp(AddSample, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
         mp(AddSampleMatrix, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
