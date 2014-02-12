@@ -65,9 +65,10 @@ def read(context, request):
     page_nr = int(request.get("page_nr", 0))
     page_size = int(request.get("page_size", 10))
     first_item_nr = page_size*page_nr
-    proxies = proxies[first_item_nr:first_item_nr+page_size]
-
-    for proxy in proxies:
+    if first_item_nr > len(proxies):
+        first_item_nr = 0
+    page_proxies = proxies[first_item_nr:first_item_nr+page_size]
+    for proxy in page_proxies:
         obj_data = {}
         # Place all proxy attributes into the result.
         for index in proxy.indexes():
@@ -117,7 +118,10 @@ def read(context, request):
         ret['objects'].append(obj_data)
     ret['total_objects'] = len(proxies)
     ret['first_object_nr'] = first_item_nr
-    ret['last_object_nr'] = first_item_nr + len(proxies)
+    last_object_nr = first_item_nr + len(page_proxies)
+    if last_object_nr > ret['total_objects']:
+        last_object_nr = ret['total_objects']
+    ret['last_object_nr'] = last_object_nr
 
     if debug_mode:
         logger.info("{0} objects returned".format(len(ret['objects'])))
