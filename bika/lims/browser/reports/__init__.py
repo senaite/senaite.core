@@ -58,7 +58,7 @@ class QualityControlView(BrowserView):
         for name, adapter in adapters:
             report_dict = adapter(self.context, self.request)
             report_dict['id'] = name
-            self.additional_reports.append()
+            self.additional_reports.append(report_dict)
 
         return self.template()
 
@@ -79,7 +79,7 @@ class AdministrationView(BrowserView):
         for name, adapter in adapters:
             report_dict = adapter(self.context, self.request)
             report_dict['id'] = name
-            self.additional_reports.append()
+            self.additional_reports.append(report_dict)
 
         return self.template()
 
@@ -206,6 +206,12 @@ class SubmitForm(BrowserView):
 
         # if there's an error, we return productivity.pt which requires these.
         self.selection_macros = SelectionMacrosView(self.context, self.request)
+        self.additional_reports = []
+        adapters = getAdapters((self.context, ), IProductivityReport)
+        for name, adapter in adapters:
+            report_dict = adapter(self.context, self.request)
+            report_dict['id'] = name
+            self.additional_reports.append(report_dict)
 
         report_id = self.request.get('report_id', '')
         if not report_id:
@@ -251,12 +257,15 @@ class SubmitForm(BrowserView):
         # once the PDF has been generated.  temporary plot image files, etc.
         self.request['to_remove'] = []
 
-        if "module" in self.request:
-            module = self.request["module"]
+        if "report_module" in self.request:
+            module = self.request["report_module"]
         else:
             module = "bika.lims.browser.reports.%s" % report_id
         try:
-            exec("from %s import Report")
+            exec("from %s import Report" % module)
+            # required during error redirect: the report must have a copy of
+            # additional_reports, because it is used as a surrogate view.
+            Report.additional_reports = self.additional_reports
         except ImportError:
             message = "Report %s.Report not found (shouldn't happen)" % module
             self.logger.error(message)
