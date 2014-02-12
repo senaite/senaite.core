@@ -57,12 +57,17 @@ class InvoiceFolderContentsView(BikaListingView):
             self.show_select_column = True
         return super(InvoiceFolderContentsView, self).__call__()
 
+    def getInvoiceBatches(self, contentFilter={}):
+        return self.context.objectValues()
+
     def folderitems(self):
+        self.contentsMethod = self.getInvoiceBatches
         items = BikaListingView.folderitems(self)
-        for item in items:
+        for x, item in enumerate(items):
             obj = item['obj']
             title_link = "<a href='%s'>%s</a>" % (item['url'], item['title'])
-            item['replace']['title'] = title_link
-            item['start'] = self.ulocalized_time(obj.getBatchStartDate())
-            item['end'] = self.ulocalized_time(obj.getBatchEndDate())
+            items[x]['replace']['title'] = title_link
+            items[x]['start'] = self.ulocalized_time(obj.getBatchStartDate())
+            items[x]['end'] = self.ulocalized_time(obj.getBatchEndDate())
+
         return items
