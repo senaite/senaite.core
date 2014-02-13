@@ -116,4 +116,12 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="bika.lims.interfaces.IClient"
+      name="storagelocations"
+      class="bika.lims.browser.client.ClientStorageLocationsView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
 </configure>

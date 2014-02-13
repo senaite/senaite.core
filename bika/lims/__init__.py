@@ -96,6 +96,7 @@ def initialize(context):
     from content.samplematrix import SampleMatrix
     from content.samplepartition import SamplePartition
     from content.samplepoint import SamplePoint
+    from content.storagelocation import StorageLocation
     from content.samplesfolder import SamplesFolder
     from content.sampletype import SampleType
     from content.samplingdeviation import SamplingDeviation
@@ -131,6 +132,7 @@ def initialize(context):
     from controlpanel.bika_sampleconditions import SampleConditions
     from controlpanel.bika_samplematrices import SampleMatrices
     from controlpanel.bika_samplepoints import SamplePoints
+    from controlpanel.bika_storagelocations import StorageLocations
     from controlpanel.bika_sampletypes import SampleTypes
     from controlpanel.bika_samplingdeviations import SamplingDeviations
     from controlpanel.bika_srtemplates import SRTemplates

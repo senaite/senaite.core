@@ -1433,6 +1433,21 @@ msgid "Closed"
 msgstr ""
 
 #
+# File: ../content/storagelocation.py, line: 49
+msgid "Code for the location"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 31
+msgid "Code for the site"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 73
+msgid "Code the the shelf"
+msgstr ""
+
+#
 # File: ../browser/reports/templates/administration_usershistory.pt, line: 79
 msgid "Comments"
 msgstr ""
@@ -1934,6 +1949,21 @@ msgstr ""
 #
 # File: ../content/instrumentvalidation.py, line: 53
 msgid "Description of the actions made during the validation"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 55
+msgid "Description of the location"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 79
+msgid "Description of the shelf"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 37
+msgid "Description of the site"
 msgstr ""
 
 #
@@ -2853,7 +2883,31 @@ msgid "Loaded"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../content/analysisrequest.py, line: 352
+=======
+# File: ../content/storagelocation.py, line: 48
+msgid "Location Code"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 54
+msgid "Location Description"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 42
+msgid "Location Title"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 60
+msgid "Location Type"
+msgstr ""
+
+#
+# File: ../content/analysisrequest.py, line: 215
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../content/artemplate.py, line: 38
 msgid "Location where sample was taken"
 msgstr ""
@@ -3123,6 +3177,7 @@ msgid "More than one analysis found for %s and %s"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../content/analysisservice.py, line: 273
 msgid "More than one instrument can do an Analysis Service. The instruments selected here are displayed in the Analysis Request creation view for its selection when this Analysis Service is selected."
 msgstr ""
@@ -3134,6 +3189,14 @@ msgstr ""
 
 #
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 429
+=======
+# File: ../exportimport/instruments/foss/winescan/ft120.py, line: 162
+msgid "More than one replica with no Mean for '%s'"
+msgstr ""
+
+#
+# File: ../exportimport/instruments/agilent/masshunter_quant.py, line: 416
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "More than one sequence found for quantitative result %s"
 msgstr ""
 
@@ -3161,7 +3224,11 @@ msgid "No Analysis Code defined, line %s"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/resultsimport.py, line: 356
+=======
+# File: ../exportimport/instruments/resultsimport.py, line: 440
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "No Analysis Request with '%s' states neither QC analyses found for %s"
 msgstr ""
 
@@ -3176,6 +3243,7 @@ msgid "No Data File found for quantitation result"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/resultsimport.py, line: 381
 msgid "No Reference Sample found for '%s'"
 msgstr ""
@@ -3186,12 +3254,18 @@ msgid "No Sample ID defined, line %s"
 msgstr ""
 
 #
+=======
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../exportimport/instruments/foss/winescan/__init__.py, line: 25
 msgid "No Sample ID found, line %s"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 303
+=======
+# File: ../exportimport/instruments/agilent/masshunter_quant.py, line: 290
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "No Sequence Table found"
 msgstr ""
 
@@ -3310,7 +3384,16 @@ msgid "No reference sample was selected."
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/resultsimport.py, line: 180
+=======
+# File: ../exportimport/instruments/foss/winescan/ft120.py, line: 167
+msgid "No replicas found for '%s'"
+msgstr ""
+
+#
+# File: ../exportimport/instruments/resultsimport.py, line: 184
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "No results found"
 msgstr ""
 
@@ -3363,8 +3446,18 @@ msgid "Not Permitted"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 2466
 msgid "Not available"
+=======
+# File: ../browser/analysisrequest.py, line: 2440
+msgid "Not available"
+msgstr ""
+
+#
+# File: ../browser/templates/worksheet_manage_results.pt, line: 75
+msgid "Not defined"
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgstr ""
 
 #
@@ -3511,7 +3604,11 @@ msgid "Orphan value in column %s, line %s"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/reports/templates/productivity.pt, line: 406
+=======
+# File: ../browser/reports/templates/productivity.pt, line: 385
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Other productivity reports"
 msgstr ""
 
@@ -4090,6 +4187,15 @@ msgid "Repeated analyses"
 msgstr ""
 
 #
+<<<<<<< HEAD
+=======
+# File: ../exportimport/instruments/foss/winescan/ft120.py, line: 138
+msgid "Replicate '%s' already exists for '%s', line %s"
+msgstr ""
+
+#
+# File: ../browser/reports/templates/administration.pt, line: 105
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/reports/templates/qualitycontrol.pt, line: 24
 # File: ../content/report.py, line: 18
 msgid "Report"
@@ -4715,14 +4821,24 @@ msgid "Service keyword %s not found"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/resultsimport.py, line: 340
+=======
+# File: ../exportimport/instruments/resultsimport.py, line: 328
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Service keywords: no matches found"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/reports/selection_macros/__init__.py, line: 57
 # File: ../browser/worksheet.py, line: 1093
 # File: ../browser/worksheetfolder.py, line: 124
+=======
+# File: ../browser/reports/selection_macros/__init__.py, line: 55
+# File: ../browser/worksheet.py, line: 990
+# File: ../browser/worksheetfolder.py, line: 121
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Services"
 msgstr ""
 
@@ -4752,7 +4868,26 @@ msgid "Set up the laboratory analysis service results specifications"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../config.py, line: 89
+=======
+# File: ../content/storagelocation.py, line: 72
+msgid "Shelf Code"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 78
+msgid "Shelf Description"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 66
+msgid "Shelf Title"
+msgstr ""
+
+#
+# File: ../config.py, line: 83
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Shipping address"
 msgstr ""
 
@@ -4767,9 +4902,30 @@ msgid "Signature"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 2393
 # File: ../browser/client.py, line: 655
 # File: ../browser/reports/__init__.py, line: 123
+=======
+# File: ../content/storagelocation.py, line: 30
+msgid "Site Code"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 36
+msgid "Site Description"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 24
+msgid "Site Title"
+msgstr ""
+
+#
+# File: ../browser/analysisrequest.py, line: 2797
+# File: ../browser/client.py, line: 715
+# File: ../browser/reports/__init__.py, line: 93
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Size"
 msgstr ""
 
@@ -4854,6 +5010,18 @@ msgstr ""
 # File: ../browser/reports/productivity_analysesperclient.py, line: 71
 # File: ../browser/reports/productivity_analysespersampletype.py, line: 72
 msgid "Status"
+msgstr ""
+
+#
+# File: ../controlpanel/bika_storagelocations.py, line: 43
+# File: ../profiles/default/registry.xml, line: -1
+msgid "Storage Location"
+msgstr ""
+
+#
+# File: ../browser/client.py, line: 541
+# File: ../controlpanel/bika_storagelocations.py, line: 34
+msgid "Storage Locations"
 msgstr ""
 
 #
@@ -5271,6 +5439,21 @@ msgid "Title"
 msgstr ""
 
 #
+# File: ../content/storagelocation.py, line: 43
+msgid "Title of location"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 67
+msgid "Title of the shelf"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 25
+msgid "Title of the site"
+msgstr ""
+
+#
 # File: ../content/instrumentcalibration.py, line: 40
 # File: ../content/instrumentcertification.py, line: 65
 # File: ../content/instrumentmaintenancetask.py, line: 54
@@ -5361,7 +5544,16 @@ msgid "Type Error"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/resultsimport.py, line: 463
+=======
+# File: ../content/storagelocation.py, line: 61
+msgid "Type of location"
+msgstr ""
+
+#
+# File: ../exportimport/instruments/resultsimport.py, line: 360
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Unable to create the Attachment Type %s "
 msgstr ""
 

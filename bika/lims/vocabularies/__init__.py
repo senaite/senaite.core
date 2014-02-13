@@ -155,6 +155,15 @@ class AnalysisProfileVocabulary(BikaContentVocabulary):
 AnalysisProfileVocabularyFactory = AnalysisProfileVocabulary()
 
 
+class StorageLocationVocabulary(BikaContentVocabulary):
+
+    def __init__(self):
+        BikaContentVocabulary.__init__(self,
+                                       ['bika_setup/bika_storagelocations', ],
+                                       ['StorageLocation', ])
+
+StorageLocationVocabularyFactory = StorageLocationVocabulary()
+
 class SamplePointVocabulary(BikaContentVocabulary):
 
     def __init__(self):

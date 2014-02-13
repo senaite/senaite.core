@@ -643,6 +643,24 @@ msgid "Sticker"
 msgstr ""
 
 #
+<<<<<<< HEAD
+=======
+# File: ../profiles/default/types/StorageLocation.xml, line: -1
+msgid "Storage Location"
+msgstr ""
+
+#
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/StorageLocations.xml, line: -1
+msgid "Storage Locations"
+msgstr ""
+
+#
+# File: ../profiles/default/types/Client.xml, line: -1
+msgid "StorageLocations"
+msgstr ""
+
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Supplier"
 msgstr ""

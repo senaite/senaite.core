@@ -207,6 +207,19 @@
     <value key="group" i18n:translate="" i18ndomain="plone">Sample</value>
   </records>
 
+  <records interface="plone.app.querystring.interfaces.IQueryField"
+           prefix="bika.lims.bika_catalog_query.field.getStorageLocationTitle">
+    <value key="title" i18n:translate="">Storage Location</value>
+    <value key="description" i18n:translate=""/>
+    <value key="enabled">True</value>
+    <value key="sortable">True</value>
+    <value key="operations">
+      <element>plone.app.querystring.operation.string.is</element>
+    </value>
+    <vocabulary>bika.lims.vocabularies.StorageLocations</vocabulary>
+    <value key="group" i18n:translate="" i18ndomain="plone">Sample</value>
+  </records>
+
   <!-- Dates group -->
   <records interface="plone.app.querystring.interfaces.IQueryField"
            prefix="bika.lims.bika_catalog_query.field.getDateSampled">

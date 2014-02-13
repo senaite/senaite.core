@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<object name="StorageLocation"
+        meta_type="Factory-based Type Information with dynamic views"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        i18n:domain="plone"
+        purge="True">
+ <property name="title" i18n:translate="">Storage Location</property>
+ <property name="description"></property>
+ <property name="content_icon">++resource++bika.lims.images/storagelocation.png</property>
+ <property name="content_meta_type">StorageLocation</property>
+ <property name="product">bika.lims</property>
+ <property name="factory">addStorageLocation</property>
+ <property name="add_view_expr"></property>
+ <property name="link_target"></property>
+ <property name="global_allow">False</property>
+ <property name="filter_content_types">False</property>
+ <property name="allowed_content_types"/>
+ <property name="allow_discussion">False</property>
+ <property name="default_view_fallback">False</property>
+
+ <alias from="(Default)" to="base_edit"/>
+ <alias from="view" to="base_edit"/>
+ <alias from="edit" to="base_edit"/>
+
+ <action title="View"
+         action_id="view"
+         category="object"
+         condition_expr=""
+         icon_expr=""
+         link_target=""
+         url_expr="string:${object_url}"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="False">
+  <permission value="View"/>
+ </action>
+
+ <action title="Edit"
+         action_id="edit"
+         category="object"
+         condition_expr=""
+         icon_expr=""
+         link_target=""
+         url_expr="string:${object_url}/base_edit"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="True">
+  <permission value="Modify portal content"/>
+ </action>
+
+  <action title="Log"
+         action_id="log"
+         category="object"
+         condition_expr=""
+         url_expr="string:${object_url}/log"
+         i18n:attributes="title"
+         visible="True">
+     <permission value="BIKA: View Log Tab"/>
+ </action>
+</object>

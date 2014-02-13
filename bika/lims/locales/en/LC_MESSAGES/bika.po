@@ -25,7 +25,11 @@ msgid "${items} are waiting for preservation."
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 236
+=======
+# File: ../browser/analysisrequest.py, line: 235
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/client.py, line: 130
 msgid "${items} are waiting to be received."
 msgstr ""
@@ -46,7 +50,11 @@ msgid "${item} is waiting for preservation."
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 241
+=======
+# File: ../browser/analysisrequest.py, line: 240
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/client.py, line: 139
 msgid "${item} is waiting to be received."
 msgstr ""
@@ -89,17 +97,34 @@ msgid "% Published"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/resultsimport.py, line: 504
+=======
+# File: ../exportimport/instruments/resultsimport.py, line: 422
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "%s calculated result for '%s': '%s'"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/resultsimport.py, line: 747
+=======
+# File: ../exportimport/instruments/resultsimport.py, line: 568
+msgid "%s result for '%s': '%s'"
+msgstr ""
+
+#
+# File: ../exportimport/instruments/resultsimport.py, line: 573
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "%s result for '%s': Empty"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/resultsimport.py, line: 707
+=======
+# File: ../exportimport/instruments/resultsimport.py, line: 535
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "%s result for '%s:%s': '%s'"
 msgstr ""
 
@@ -237,7 +262,11 @@ msgid "AR Templates"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1012
+=======
+# File: ../browser/analysisrequest.py, line: 1010
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "AR for retested results"
 msgstr ""
 
@@ -293,7 +322,11 @@ msgid "Accreditation Reference"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1274
+=======
+# File: ../browser/analysisrequest.py, line: 1263
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/widgets/analysisprofileanalyseswidget.py, line: 100
 # File: ../browser/widgets/analysisspecificationwidget.py, line: 87
 msgid "Accredited"
@@ -312,14 +345,22 @@ msgid "Actions performed by users (or specific user) between a period of time"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1843
+=======
+# File: ../browser/analysisrequest.py, line: 1829
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/client.py, line: 355
 # File: ../browser/clientfolder.py, line: 46
 msgid "Active"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1807
+=======
+# File: ../browser/analysisrequest.py, line: 1793
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/sample.py, line: 443
 # File: ../content/analysisrequest.py, line: 486
 msgid "Ad-Hoc"
@@ -374,7 +415,11 @@ msgid "Add new"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 493
+=======
+# File: ../browser/analysisrequest.py, line: 492
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Additional remarks:"
 msgstr ""
 
@@ -401,8 +446,13 @@ msgstr ""
 
 #
 # File: ../browser/accreditation.py, line: 64
+<<<<<<< HEAD
 # File: ../browser/analyses.py, line: 112
 # File: ../browser/analysisrequest.py, line: 1155
+=======
+# File: ../browser/analyses.py, line: 87
+# File: ../browser/analysisrequest.py, line: 1149
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "All"
 msgstr ""
 
@@ -412,7 +462,11 @@ msgid "All Accredited analysis services are listed here."
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 2238
+=======
+# File: ../browser/analysisrequest.py, line: 2212
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "All analyses assigned"
 msgstr ""
 
@@ -427,6 +481,7 @@ msgid "All reference samples in the system are displayed here."
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../content/analysisservice.py, line: 251
 msgid "Allow instrument entry of results"
 msgstr ""
@@ -438,11 +493,18 @@ msgstr ""
 
 #
 # File: ../exportimport/instruments/resultsimport.py, line: 319
+=======
+# File: ../exportimport/instruments/resultsimport.py, line: 309
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Allowed Analysis Request states: %s"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/resultsimport.py, line: 320
+=======
+# File: ../exportimport/instruments/resultsimport.py, line: 310
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Allowed analysis states: %s"
 msgstr ""
 
@@ -608,7 +670,7 @@ msgid "Analysis Request"
 msgstr ""
 
 #
-# File: ../config.py, line: 74
+# File: ../config.py, line: 75
 msgid "Analysis Request ID"
 msgstr ""
 
@@ -618,6 +680,7 @@ msgid "Analysis Request Imports"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/arpriorities.py, line: 52
 # File: ../controlpanel/bika_arpriorities.py, line: 44
 msgid "Analysis Request Priorities"
@@ -625,11 +688,18 @@ msgstr ""
 
 #
 # File: ../config.py, line: 64
+=======
+# File: ../config.py, line: 65
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Analysis Request Specifications"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1762
+=======
+# File: ../browser/analysisrequest.py, line: 1751
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../skins/bika/portlet_to_be_verified.pt, line: 69
 msgid "Analysis Requests"
 msgstr ""
@@ -642,7 +712,7 @@ msgid "Analysis Service"
 msgstr ""
 
 #
-# File: ../config.py, line: 44
+# File: ../config.py, line: 45
 # File: ../controlpanel/bika_analysisservices.py, line: 109
 msgid "Analysis Services"
 msgstr ""
@@ -653,7 +723,7 @@ msgid "Analysis Specification"
 msgstr ""
 
 #
-# File: ../browser/client.py, line: 545
+# File: ../browser/client.py, line: 611
 # File: ../controlpanel/bika_analysisspecs.py, line: 29
 msgid "Analysis Specifications"
 msgstr ""
@@ -664,7 +734,11 @@ msgid "Analysis State"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 205
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 203
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Analysis Time not found or empty"
 msgstr ""
 
@@ -689,7 +763,11 @@ msgid "Analysis parent UID ${parent_uid} not found"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1711
+=======
+# File: ../browser/analysisrequest.py, line: 1700
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Analysis request ${AR} was successfully created."
 msgstr ""
 
@@ -704,7 +782,11 @@ msgid "Analysis request attachments"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1706
+=======
+# File: ../browser/analysisrequest.py, line: 1695
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Analysis requests ${ARs} were successfully created."
 msgstr ""
 
@@ -778,7 +860,7 @@ msgid "Analysis services attachments"
 msgstr ""
 
 #
-# File: ../browser/client.py, line: 626
+# File: ../browser/client.py, line: 692
 msgid "Analysis specifications reset to lab defaults."
 msgstr ""
 
@@ -815,12 +897,20 @@ msgid "Analyst"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 213
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 211
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Analyst Name not found"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 211
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 209
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Analyst Name not found or empty"
 msgstr ""
 
@@ -851,7 +941,11 @@ msgid "Apply wide"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 2100
+=======
+# File: ../browser/analysisrequest.py, line: 2078
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Assigned"
 msgstr ""
 
@@ -889,7 +983,7 @@ msgid "Attachment Option"
 msgstr ""
 
 #
-# File: ../browser/client.py, line: 653
+# File: ../browser/client.py, line: 719
 # File: ../content/attachment.py, line: 33
 # File: ../controlpanel/bika_attachmenttypes.py, line: 35
 msgid "Attachment Type"
@@ -901,14 +995,22 @@ msgid "Attachment Types"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1292
+=======
+# File: ../browser/analysisrequest.py, line: 1281
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/widgets/analysisprofileanalyseswidget.py, line: 115
 # File: ../browser/widgets/analysisspecificationwidget.py, line: 102
 msgid "Attachment not permitted"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1286
+=======
+# File: ../browser/analysisrequest.py, line: 1275
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/widgets/analysisprofileanalyseswidget.py, line: 110
 # File: ../browser/widgets/analysisspecificationwidget.py, line: 97
 msgid "Attachment required"
@@ -920,8 +1022,13 @@ msgid "Attachment type"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analyses.py, line: 98
 # File: ../browser/client.py, line: 647
+=======
+# File: ../browser/analyses.py, line: 75
+# File: ../browser/client.py, line: 713
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/mailtemplates/analysisrequest_results.pt, line: 370
 msgid "Attachments"
 msgstr ""
@@ -932,7 +1039,11 @@ msgid "Autofill"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 434
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 432
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Autoimport"
 msgstr ""
 
@@ -985,12 +1096,25 @@ msgid "Batch"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 194
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 192
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Batch Data Path not found or empty"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1785
+=======
+# File: ../browser/invoicefolder.py, line: 30
+msgid "Batch End Date"
+msgstr ""
+
+#
+# File: ../browser/analysisrequest.py, line: 1774
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/batchfolder.py, line: 38
 # File: ../browser/mailtemplates/analysisrequest_results.pt, line: 132
 msgid "Batch ID"
@@ -1008,12 +1132,25 @@ msgid "Batch labels"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 251
-msgid "Batch state not found"
+=======
+# File: ../content/invoicebatch.py, line: 19
+msgid "Batch start date"
 msgstr ""
 
 #
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 249
+>>>>>>> 9b5f9a0... Added StorageLocation type
+msgid "Batch state not found"
+msgstr ""
+
+#
+<<<<<<< HEAD
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 249
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 247
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Batch state not found or empty"
 msgstr ""
 
@@ -1038,7 +1175,7 @@ msgid "Bika LIMS Configuration"
 msgstr ""
 
 #
-# File: ../config.py, line: 88
+# File: ../config.py, line: 89
 # File: ../content/organisation.py, line: 61
 msgid "Billing address"
 msgstr ""
@@ -1046,12 +1183,12 @@ msgstr ""
 #
 # File: ../browser/supplier.py, line: 145
 # File: ../browser/templates/referencesample_view.pt, line: 55
-# File: ../config.py, line: 50
+# File: ../config.py, line: 51
 msgid "Blank"
 msgstr ""
 
 #
-# File: ../config.py, line: 93
+# File: ../config.py, line: 94
 msgid "Blank QC analyses"
 msgstr ""
 
@@ -1077,8 +1214,13 @@ msgid "Bulk price (excluding VAT)"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/client.py, line: 801
 # File: ../browser/supplier.py, line: 183
+=======
+# File: ../browser/client.py, line: 862
+# File: ../browser/supplier.py, line: 42
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Business Phone"
 msgstr ""
 
@@ -1173,14 +1315,22 @@ msgid "Calibrator"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1280
+=======
+# File: ../browser/analysisrequest.py, line: 1269
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/templates/analysisservice_popup.pt, line: 68
 # File: ../browser/templates/ar_add.pt, line: 326
 msgid "Can be reported as dry matter"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 2035
+=======
+# File: ../browser/analysisrequest.py, line: 2015
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/batchfolder.py, line: 63
 # File: ../browser/instrument.py, line: 68
 msgid "Cancelled"
@@ -1197,8 +1347,13 @@ msgid "Cannot deactivate calculation, because it is in use by the following serv
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analyses.py, line: 518
 # File: ../browser/analysisrequest.py, line: 2339
+=======
+# File: ../browser/analyses.py, line: 429
+# File: ../browser/analysisrequest.py, line: 2313
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Cannot verify: Submitted by current user"
 msgstr ""
 
@@ -1299,7 +1454,7 @@ msgid "City"
 msgstr ""
 
 #
-# File: ../config.py, line: 69
+# File: ../config.py, line: 70
 msgid "Classic"
 msgstr ""
 
@@ -1316,7 +1471,11 @@ msgid "Click to download"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1786
+=======
+# File: ../browser/analysisrequest.py, line: 1775
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/arimports.py, line: 91
 # File: ../browser/invoicebatch.py, line: 24
 msgid "Client"
@@ -1362,7 +1521,11 @@ msgid "Client Name"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1774
+=======
+# File: ../browser/analysisrequest.py, line: 1763
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../content/query.py, line: 120
 # File: ../profiles/default/registry.xml, line: -1
 msgid "Client Order"
@@ -1379,15 +1542,24 @@ msgid "Client Phone"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1788
+=======
+# File: ../browser/analysisrequest.py, line: 1777
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/sample.py, line: 430
 # File: ../content/arimportitem.py, line: 23
 msgid "Client Ref"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../config.py, line: 76
 # File: ../content/analysisrequest.py, line: 387
+=======
+# File: ../config.py, line: 77
+# File: ../content/analysisrequest.py, line: 385
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../content/query.py, line: 121
 msgid "Client Reference"
 msgstr ""
@@ -1398,7 +1570,11 @@ msgid "Client Remarks"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1791
+=======
+# File: ../browser/analysisrequest.py, line: 1780
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/mailtemplates/analysisrequest_results.pt, line: 150
 # File: ../browser/sample.py, line: 433
 msgid "Client SID"
@@ -1425,6 +1601,21 @@ msgstr ""
 # File: ../browser/batchfolder.py, line: 56
 # File: ../content/instrumentmaintenancetask.py, line: 106
 msgid "Closed"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 49
+msgid "Code for the location"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 31
+msgid "Code for the site"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 73
+msgid "Code the the shelf"
 msgstr ""
 
 #
@@ -1462,7 +1653,11 @@ msgid "Considerations"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1794
+=======
+# File: ../browser/analysisrequest.py, line: 1783
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/late_analyses.py, line: 43
 # File: ../browser/reports/selection_macros/select_contact.pt, line: 4
 msgid "Contact"
@@ -1480,9 +1675,14 @@ msgid "Contact Name"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/client.py, line: 793
 # File: ../browser/supplier.py, line: 178
 # File: ../browser/templates/pricelist_email_form.pt, line: 27
+=======
+# File: ../browser/client.py, line: 854
+# File: ../browser/supplier.py, line: 37
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Contacts"
 msgstr ""
 
@@ -1517,7 +1717,7 @@ msgid "Containers"
 msgstr ""
 
 #
-# File: ../browser/client.py, line: 654
+# File: ../browser/client.py, line: 720
 msgid "Content Type"
 msgstr ""
 
@@ -1527,12 +1727,12 @@ msgid "Content type"
 msgstr ""
 
 #
-# File: ../config.py, line: 51
+# File: ../config.py, line: 52
 msgid "Control"
 msgstr ""
 
 #
-# File: ../config.py, line: 94
+# File: ../config.py, line: 95
 msgid "Control QC analyses"
 msgstr ""
 
@@ -1627,8 +1827,13 @@ msgid "Data entry day book"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 2394
 # File: ../browser/instrument.py, line: 507
+=======
+# File: ../browser/analysisrequest.py, line: 2368
+# File: ../browser/instrument.py, line: 194
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/log.py, line: 44
 msgid "Date"
 msgstr ""
@@ -1646,9 +1851,14 @@ msgid "Date Created"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/client.py, line: 731
 # File: ../browser/supplyorderfolder.py, line: 32
 # File: ../content/supplyorder.py, line: 64
+=======
+# File: ../browser/client.py, line: 792
+# File: ../content/supplyorder.py, line: 71
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Date Dispatched"
 msgstr ""
 
@@ -1671,7 +1881,7 @@ msgid "Date Imported"
 msgstr ""
 
 #
-# File: ../browser/client.py, line: 656
+# File: ../browser/client.py, line: 722
 # File: ../content/attachment.py, line: 46
 msgid "Date Loaded"
 msgstr ""
@@ -1684,20 +1894,32 @@ msgid "Date Opened"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1819
+=======
+# File: ../browser/analysisrequest.py, line: 1805
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/sample.py, line: 59
 msgid "Date Preserved"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1829
+=======
+# File: ../browser/analysisrequest.py, line: 1815
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/mailtemplates/analysisrequest_results.pt, line: 166
 # File: ../content/analysis.py, line: 77
 msgid "Date Published"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1826
+=======
+# File: ../browser/analysisrequest.py, line: 1812
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/late_analyses.py, line: 44
 # File: ../browser/mailtemplates/analysisrequest_results.pt, line: 162
 msgid "Date Received"
@@ -1711,7 +1933,11 @@ msgid "Date Requested"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1812
+=======
+# File: ../browser/analysisrequest.py, line: 1798
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/referencesample.py, line: 213
 # File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 250
 msgid "Date Sampled"
@@ -1932,6 +2158,21 @@ msgid "Description of the actions made during the validation"
 msgstr ""
 
 #
+# File: ../content/storagelocation.py, line: 55
+msgid "Description of the location"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 79
+msgid "Description of the shelf"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 37
+msgid "Description of the site"
+msgstr ""
+
+#
 # File: ../browser/templates/sample_sticker_large.pt, line: 89
 msgid "Deviation"
 msgstr ""
@@ -1947,8 +2188,12 @@ msgid "Discount %"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/client.py, line: 749
 # File: ../browser/supplyorderfolder.py, line: 50
+=======
+# File: ../browser/client.py, line: 810
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Dispatched"
 msgstr ""
 
@@ -2002,7 +2247,11 @@ msgid "Down to"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 2457
+=======
+# File: ../browser/analysisrequest.py, line: 2431
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Download"
 msgstr ""
 
@@ -2024,7 +2273,11 @@ msgid "Dry matter analysis"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1882
+=======
+# File: ../browser/analysisrequest.py, line: 1867
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/sample.py, line: 491
 msgid "Due"
 msgstr ""
@@ -2044,7 +2297,7 @@ msgstr ""
 
 #
 # File: ../browser/worksheet.py, line: 410
-# File: ../config.py, line: 52
+# File: ../config.py, line: 53
 # File: ../controlpanel/bika_analysisservices.py, line: 160
 msgid "Duplicate"
 msgstr ""
@@ -2055,7 +2308,7 @@ msgid "Duplicate Of"
 msgstr ""
 
 #
-# File: ../config.py, line: 95
+# File: ../config.py, line: 96
 msgid "Duplicate QC analyses"
 msgstr ""
 
@@ -2116,13 +2369,17 @@ msgstr ""
 
 #
 # File: ../browser/templates/login_details.pt, line: 93
-# File: ../config.py, line: 19
+# File: ../config.py, line: 20
 # File: ../controlpanel/bika_suppliers.py, line: 39
 msgid "Email"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/client.py, line: 800
+=======
+# File: ../browser/client.py, line: 861
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/clientfolder.py, line: 37
 # File: ../browser/supplier.py, line: 182
 msgid "Email Address"
@@ -2154,6 +2411,7 @@ msgid "EnableARSpecs_description"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/invoicefolder.py, line: 30
 # File: ../browser/pricelist.py, line: 40
 # File: ../content/invoicebatch.py, line: 26
@@ -2162,6 +2420,9 @@ msgstr ""
 
 #
 # File: ../exportimport/instruments/resultsimport.py, line: 211
+=======
+# File: ../exportimport/instruments/resultsimport.py, line: 205
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "End of file reached successfully: %s objects, %s analyses, %s results"
 msgstr ""
 
@@ -2218,12 +2479,20 @@ msgid "Entity"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 461
+=======
+# File: ../browser/analysisrequest.py, line: 460
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Erroneus result publication from %s"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 2250
+=======
+# File: ../browser/analysisrequest.py, line: 2224
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Exclude from invoice"
 msgstr ""
 
@@ -2273,24 +2542,24 @@ msgid "Fax (business)"
 msgstr ""
 
 #
-# File: ../config.py, line: 82
+# File: ../config.py, line: 83
 msgid "Female"
 msgstr ""
 
 #
 # File: ../browser/templates/worksheet_manage_results.pt, line: 112
-# File: ../config.py, line: 34
+# File: ../config.py, line: 35
 msgid "Field"
 msgstr ""
 
 #
 # File: ../browser/templates/sample_sticker_large.pt, line: 113
-# File: ../config.py, line: 29
+# File: ../config.py, line: 30
 msgid "Field Analyses"
 msgstr ""
 
 #
-# File: ../config.py, line: 39
+# File: ../config.py, line: 40
 msgid "Field Preservation"
 msgstr ""
 
@@ -2300,9 +2569,15 @@ msgid "Field Title"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 2392
 # File: ../browser/client.py, line: 652
 # File: ../browser/reports/productivity_analysesattachments.py, line: 60
+=======
+# File: ../browser/analysisrequest.py, line: 2366
+# File: ../browser/client.py, line: 718
+# File: ../browser/reports/productivity_analysesattachments.py, line: 71
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "File"
 msgstr ""
 
@@ -2312,7 +2587,11 @@ msgid "File attachments to results, e.g. microscope photos, will be included in 
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/resultsimport.py, line: 198
+=======
+# File: ../exportimport/instruments/resultsimport.py, line: 192
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "File processing finished due to critical errors"
 msgstr ""
 
@@ -2344,14 +2623,23 @@ msgid "From"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/client.py, line: 797
 # File: ../browser/supplier.py, line: 181
+=======
+# File: ../browser/client.py, line: 858
+# File: ../browser/supplier.py, line: 40
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../content/person.py, line: 50
 msgid "Full Name"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 2247
+=======
+# File: ../browser/analysisrequest.py, line: 2221
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/sample.py, line: 676
 msgid "Future dated sample"
 msgstr ""
@@ -2385,19 +2673,31 @@ msgid "Grouping period"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 2253
+=======
+# File: ../browser/analysisrequest.py, line: 2227
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/sample.py, line: 671
 # File: ../browser/supplier.py, line: 151
 msgid "Hazardous"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 187
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 185
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Header Batch Data Path already found. Discarding"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 175
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 173
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Header Batch Info already found. Discarding"
 msgstr ""
 
@@ -2462,7 +2762,11 @@ msgid "Import Option"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/resultsimport.py, line: 532
+=======
+# File: ../exportimport/instruments/resultsimport.py, line: 430
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Import finished successfully: %s ARs and %s results updated"
 msgstr ""
 
@@ -2598,6 +2902,7 @@ msgid "Instruments"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/instrument.py, line: 340
 msgid "Internal Calibration Tests"
 msgstr ""
@@ -2609,31 +2914,54 @@ msgstr ""
 
 #
 # File: ../browser/analysisrequest.py, line: 2069
+=======
+# File: ../browser/analysisrequest.py, line: 2048
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Invalid"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1022
+=======
+# File: ../browser/analysisrequest.py, line: 1020
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Invalid AR retested"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 203
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 201
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Invalid Analysis Time format"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 241
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 239
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Invalid Last Calibration time format"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 222
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 220
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Invalid Report Time format"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 2528
+=======
+# File: ../browser/analysisrequest.py, line: 2502
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Invoice"
 msgstr ""
 
@@ -2678,7 +3006,11 @@ msgid "Invoices"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 313
+=======
+# File: ../browser/analysisrequest.py, line: 312
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Item is inactive."
 msgstr ""
 
@@ -2720,14 +3052,19 @@ msgid "Keywords"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 787
 # File: ../config.py, line: 35
+=======
+# File: ../browser/analysisrequest.py, line: 785
+# File: ../config.py, line: 36
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../content/analysisspec.py, line: 124
 msgid "Lab"
 msgstr ""
 
 #
-# File: ../config.py, line: 30
+# File: ../config.py, line: 31
 msgid "Lab Analyses"
 msgstr ""
 
@@ -2742,12 +3079,12 @@ msgid "Lab Departments"
 msgstr ""
 
 #
-# File: ../config.py, line: 40
+# File: ../config.py, line: 41
 msgid "Lab Preservation"
 msgstr ""
 
 #
-# File: ../config.py, line: 45
+# File: ../config.py, line: 46
 # File: ../controlpanel/bika_labproducts.py, line: 29
 msgid "Lab Products"
 msgstr ""
@@ -2779,7 +3116,11 @@ msgid "Laboratory Accredited"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 243
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 241
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Last Calibration time not found or empty"
 msgstr ""
 
@@ -2795,7 +3136,11 @@ msgid "Late"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 2244
+=======
+# File: ../browser/analysisrequest.py, line: 2218
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/late_analyses.py, line: 26
 # File: ../skins/bika/portlet_late_analyses.pt, line: 31
 msgid "Late Analyses"
@@ -2848,7 +3193,31 @@ msgid "Loaded"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../content/analysisrequest.py, line: 352
+=======
+# File: ../content/storagelocation.py, line: 48
+msgid "Location Code"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 54
+msgid "Location Description"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 42
+msgid "Location Title"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 60
+msgid "Location Type"
+msgstr ""
+
+#
+# File: ../content/analysisrequest.py, line: 350
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../content/artemplate.py, line: 38
 msgid "Location where sample was taken"
 msgstr ""
@@ -2887,7 +3256,7 @@ msgid "Lot Number"
 msgstr ""
 
 #
-# File: ../config.py, line: 87
+# File: ../config.py, line: 88
 msgid "Mailing address"
 msgstr ""
 
@@ -2904,7 +3273,7 @@ msgid "Maintenance type"
 msgstr ""
 
 #
-# File: ../config.py, line: 81
+# File: ../config.py, line: 82
 msgid "Male"
 msgstr ""
 
@@ -2942,8 +3311,13 @@ msgid "Manufacturers"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1135
 # File: ../browser/fields/referenceresultsfield.py, line: 24
+=======
+# File: ../browser/analysisrequest.py, line: 1130
+# File: ../browser/fields/referenceresultsfield.py, line: 23
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/referencesample.py, line: 130
 msgid "Max"
 msgstr ""
@@ -3049,8 +3423,13 @@ msgid "Middle name"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1134
 # File: ../browser/fields/referenceresultsfield.py, line: 23
+=======
+# File: ../browser/analysisrequest.py, line: 1129
+# File: ../browser/fields/referenceresultsfield.py, line: 22
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/referencesample.py, line: 129
 msgid "Min"
 msgstr ""
@@ -3083,8 +3462,13 @@ msgid "Minutes"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/client.py, line: 802
 # File: ../browser/supplier.py, line: 184
+=======
+# File: ../browser/client.py, line: 863
+# File: ../browser/supplier.py, line: 43
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../controlpanel/bika_labcontacts.py, line: 46
 msgid "Mobile Phone"
 msgstr ""
@@ -3108,16 +3492,25 @@ msgid "More"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/resultsimport.py, line: 634
+=======
+# File: ../exportimport/instruments/resultsimport.py, line: 504
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "More than one Analysis Request found for %s"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/resultsimport.py, line: 413
+=======
+# File: ../exportimport/instruments/resultsimport.py, line: 343
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "More than one analysis found for %s and %s"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../content/analysisservice.py, line: 273
 msgid "More than one instrument can do an Analysis Service. The instruments selected here are displayed in the Analysis Request creation view for its selection when this Analysis Service is selected."
 msgstr ""
@@ -3129,6 +3522,14 @@ msgstr ""
 
 #
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 429
+=======
+# File: ../exportimport/instruments/foss/winescan/ft120.py, line: 162
+msgid "More than one replica with no Mean for '%s'"
+msgstr ""
+
+#
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 427
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "More than one sequence found for quantitative result %s"
 msgstr ""
 
@@ -3156,7 +3557,11 @@ msgid "No Analysis Code defined, line %s"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/resultsimport.py, line: 356
+=======
+# File: ../exportimport/instruments/resultsimport.py, line: 483
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "No Analysis Request with '%s' states neither QC analyses found for %s"
 msgstr ""
 
@@ -3166,11 +3571,16 @@ msgid "No Analysis Requests matched your query"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 422
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 420
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "No Data File found for quantitation result"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/resultsimport.py, line: 381
 msgid "No Reference Sample found for '%s'"
 msgstr ""
@@ -3181,17 +3591,27 @@ msgid "No Sample ID defined, line %s"
 msgstr ""
 
 #
+=======
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../exportimport/instruments/foss/winescan/__init__.py, line: 25
 msgid "No Sample ID found, line %s"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 303
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 301
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "No Sequence Table found"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 390
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 388
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "No Target Compound found"
 msgstr ""
 
@@ -3201,17 +3621,29 @@ msgid "No actions found for user %s"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/resultsimport.py, line: 607
+=======
+# File: ../exportimport/instruments/resultsimport.py, line: 518
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "No analyses '%s' states found for %s"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/resultsimport.py, line: 418
+=======
+# File: ../exportimport/instruments/resultsimport.py, line: 348
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "No analyses found for %s and %s"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 149
+=======
+# File: ../browser/analysisrequest.py, line: 148
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "No analyses have been selected"
 msgstr ""
 
@@ -3239,7 +3671,11 @@ msgid "No analysis services were selected."
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 246
+=======
+# File: ../browser/analysisrequest.py, line: 245
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/client.py, line: 144
 msgid "No changes made."
 msgstr ""
@@ -3260,14 +3696,24 @@ msgid "No default preservations specified for this service"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 45
 # File: ../exportimport/instruments/foss/winescan/auto.py, line: 26
 # File: ../exportimport/instruments/foss/winescan/ft120.py, line: 27
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 44
+# File: ../exportimport/instruments/foss/winescan/auto.py, line: 25
+# File: ../exportimport/instruments/foss/winescan/ft120.py, line: 26
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "No file selected"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 166
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 164
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../exportimport/instruments/foss/winescan/__init__.py, line: 81
 # File: ../exportimport/instruments/thermoscientific/gallery/__init__.py, line: 62
 msgid "No header found"
@@ -3279,7 +3725,11 @@ msgid "No historical actions matched your query"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 128
+=======
+# File: ../browser/analysisrequest.py, line: 127
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "No items have been selected"
 msgstr ""
 
@@ -3289,7 +3739,11 @@ msgid "No items selected"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 422
+=======
+# File: ../browser/analysisrequest.py, line: 421
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/client.py, line: 238
 msgid "No items were published"
 msgstr ""
@@ -3305,12 +3759,25 @@ msgid "No reference sample was selected."
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/resultsimport.py, line: 180
+=======
+# File: ../exportimport/instruments/foss/winescan/ft120.py, line: 167
+msgid "No replicas found for '%s'"
+msgstr ""
+
+#
+# File: ../exportimport/instruments/resultsimport.py, line: 174
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "No results found"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 427
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 425
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "No sample found for quntitative result %s"
 msgstr ""
 
@@ -3331,12 +3798,20 @@ msgid "No valid file or format"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 325
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 323
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "No valid number %s in column %s (%s)"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 440
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 437
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "No valid sequence for %s "
 msgstr ""
 
@@ -3353,12 +3828,16 @@ msgid "Normal"
 msgstr ""
 
 #
-# File: ../config.py, line: 61
+# File: ../config.py, line: 62
 msgid "Not Permitted"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 2466
+=======
+# File: ../browser/analysisrequest.py, line: 2440
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Not available"
 msgstr ""
 
@@ -3442,7 +3921,11 @@ msgstr ""
 
 #
 # File: ../browser/batchfolder.py, line: 47
+<<<<<<< HEAD
 # File: ../browser/instrument.py, line: 59
+=======
+# File: ../browser/instrument.py, line: 45
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/worksheetfolder.py, line: 182
 msgid "Open"
 msgstr ""
@@ -3454,28 +3937,48 @@ msgid "Order"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/client.py, line: 730
 # File: ../browser/supplyorderfolder.py, line: 31
 # File: ../content/supplyorder.py, line: 51
+=======
+# File: ../browser/client.py, line: 791
+# File: ../content/supplyorder.py, line: 58
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Order Date"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../config.py, line: 75
 # File: ../content/arimport.py, line: 161
+=======
+# File: ../config.py, line: 76
+# File: ../content/arimport.py, line: 160
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Order ID"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/client.py, line: 729
 # File: ../browser/supplyorderfolder.py, line: 30
 # File: ../content/supplyorder.py, line: 37
+=======
+# File: ../browser/client.py, line: 790
+# File: ../content/invoicelineitem.py, line: 32
+# File: ../content/supplyorder.py, line: 44
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Order Number"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/client.py, line: 726
 # File: ../browser/supplyorderfolder.py, line: 27
+=======
+# File: ../browser/client.py, line: 787
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Orders"
 msgstr ""
 
@@ -3495,7 +3998,11 @@ msgid "Original File"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 331
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 329
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Orphan value in column %s (%s)"
 msgstr ""
 
@@ -3506,11 +4013,16 @@ msgid "Orphan value in column %s, line %s"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/reports/templates/productivity.pt, line: 406
+=======
+# File: ../browser/reports/templates/productivity.pt, line: 385
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Other productivity reports"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/instrument.py, line: 554
 msgid "Out of date"
 msgstr ""
@@ -3522,6 +4034,9 @@ msgstr ""
 
 #
 # File: ../config.py, line: 20
+=======
+# File: ../config.py, line: 21
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "PDF"
 msgstr ""
 
@@ -3530,13 +4045,22 @@ msgid "Parent"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/resultsimport.py, line: 192
+=======
+# File: ../exportimport/instruments/resultsimport.py, line: 186
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Parsing file "
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analyses.py, line: 58
 # File: ../browser/analysisrequest.py, line: 1132
+=======
+# File: ../browser/analyses.py, line: 55
+# File: ../browser/analysisrequest.py, line: 1127
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/sample.py, line: 45
 msgid "Partition"
 msgstr ""
@@ -3563,8 +4087,12 @@ msgid "Password lifetime"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/client.py, line: 744
 # File: ../browser/supplyorderfolder.py, line: 45
+=======
+# File: ../browser/client.py, line: 805
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Pending"
 msgstr ""
 
@@ -3587,13 +4115,18 @@ msgid "Period"
 msgstr ""
 
 #
-# File: ../config.py, line: 60
+# File: ../config.py, line: 61
 msgid "Permitted"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1136
 # File: ../browser/fields/referenceresultsfield.py, line: 22
+=======
+# File: ../browser/analysisrequest.py, line: 1131
+# File: ../browser/fields/referenceresultsfield.py, line: 21
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/widgets/analysisspecificationwidget.py, line: 41
 msgid "Permitted Error %"
 msgstr ""
@@ -3621,7 +4154,7 @@ msgid "Phone (mobile)"
 msgstr ""
 
 #
-# File: ../config.py, line: 86
+# File: ../config.py, line: 87
 # File: ../content/organisation.py, line: 49
 # File: ../content/person.py, line: 103
 msgid "Physical address"
@@ -3714,7 +4247,11 @@ msgid "Preservations"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1824
+=======
+# File: ../browser/analysisrequest.py, line: 1810
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/sample.py, line: 57
 msgid "Preserver"
 msgstr ""
@@ -3732,7 +4269,11 @@ msgstr ""
 
 #
 # File: ../browser/accreditation.py, line: 56
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1127
+=======
+# File: ../browser/analysisrequest.py, line: 1125
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/templates/analysisservice_popup.pt, line: 166
 msgid "Price"
 msgstr ""
@@ -3787,8 +4328,13 @@ msgid "Productivity Reports"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1834
 # File: ../browser/reports/selection_macros/select_profile.pt, line: 4
+=======
+# File: ../browser/analysisrequest.py, line: 1820
+# File: ../browser/reports/selection_macros/select_profile.pt, line: 3
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/templates/analysisrequest_view.pt, line: 89
 msgid "Profile"
 msgstr ""
@@ -3810,12 +4356,16 @@ msgid "Profile Keyword"
 msgstr ""
 
 #
-# File: ../config.py, line: 70
+# File: ../config.py, line: 71
 msgid "Profiles"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 2543
+=======
+# File: ../browser/analysisrequest.py, line: 2517
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Proforma (Not yet invoiced)"
 msgstr ""
 
@@ -3836,8 +4386,12 @@ msgid "Publication preference"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 2006
 # File: ../browser/arpriorities.py, line: 72
+=======
+# File: ../browser/analysisrequest.py, line: 1987
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/reports/administration_arsnotinvoiced.py, line: 47
 msgid "Published"
 msgstr ""
@@ -3848,7 +4402,11 @@ msgid "Published Analysis Requests which have not been invoiced"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 2395
+=======
+# File: ../browser/analysisrequest.py, line: 2369
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Published By"
 msgstr ""
 
@@ -3858,7 +4416,11 @@ msgid "Published by"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 2388
+=======
+# File: ../browser/analysisrequest.py, line: 2362
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Published results"
 msgstr ""
 
@@ -3930,9 +4492,15 @@ msgid "Receive"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1916
 # File: ../browser/reports/productivity_analysestats.py, line: 53
 # File: ../browser/reports/productivity_analysestats_overtime.py, line: 71
+=======
+# File: ../browser/analysisrequest.py, line: 1900
+# File: ../browser/reports/productivity_analysestats.py, line: 63
+# File: ../browser/reports/productivity_analysestats_overtime.py, line: 88
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Received"
 msgstr ""
 
@@ -3942,7 +4510,11 @@ msgid "Recept. Lag"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 2396
+=======
+# File: ../browser/analysisrequest.py, line: 2370
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Recipients"
 msgstr ""
 
@@ -4085,6 +4657,15 @@ msgid "Repeated analyses"
 msgstr ""
 
 #
+<<<<<<< HEAD
+=======
+# File: ../exportimport/instruments/foss/winescan/ft120.py, line: 138
+msgid "Replicate '%s' already exists for '%s', line %s"
+msgstr ""
+
+#
+# File: ../browser/reports/templates/administration.pt, line: 105
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/reports/templates/qualitycontrol.pt, line: 24
 # File: ../content/report.py, line: 18
 msgid "Report"
@@ -4129,7 +4710,11 @@ msgid "Report tables of Analysis Requests and totals submitted between a period 
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 224
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 222
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Report time not found or empty"
 msgstr ""
 
@@ -4144,12 +4729,20 @@ msgid "Reported as dry matter"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 232
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 230
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Reporter Name not found"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 230
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 228
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Reporter Name not found or empty"
 msgstr ""
 
@@ -4166,9 +4759,13 @@ msgid "Request"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1772
+=======
+# File: ../browser/analysisrequest.py, line: 1761
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/batch.py, line: 163
-# File: ../browser/client.py, line: 651
+# File: ../browser/client.py, line: 717
 msgid "Request ID"
 msgstr ""
 
@@ -4191,7 +4788,7 @@ msgstr ""
 
 #
 # File: ../browser/templates/login_details.pt, line: 51
-# File: ../config.py, line: 59
+# File: ../config.py, line: 60
 msgid "Required"
 msgstr ""
 
@@ -4251,7 +4848,11 @@ msgid "Results attachments permitted"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 2241
+=======
+# File: ../browser/analysisrequest.py, line: 2215
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Results have been withdrawn"
 msgstr ""
 
@@ -4301,7 +4902,11 @@ msgid "Same as the above, but sets the default on analysis services. This settin
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1783
+=======
+# File: ../browser/analysisrequest.py, line: 1772
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/reports/templates/productivity_dataentrydaybook.pt, line: 95
 # File: ../content/analysisrequest.py, line: 165
 msgid "Sample"
@@ -4359,7 +4964,11 @@ msgid "Sample Partitions"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1799
+=======
+# File: ../browser/analysisrequest.py, line: 1788
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/batch.py, line: 166
 # File: ../browser/reports/selection_macros/__init__.py, line: 217
 msgid "Sample Point"
@@ -4373,9 +4982,13 @@ msgid "Sample Points"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1796
+=======
+# File: ../browser/analysisrequest.py, line: 1785
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/batch.py, line: 165
-# File: ../browser/client.py, line: 550
+# File: ../browser/client.py, line: 616
 msgid "Sample Type"
 msgstr ""
 
@@ -4385,12 +4998,12 @@ msgid "Sample Type Prefix"
 msgstr ""
 
 #
-# File: ../config.py, line: 66
+# File: ../config.py, line: 67
 msgid "Sample Type Specifications (Client)"
 msgstr ""
 
 #
-# File: ../config.py, line: 65
+# File: ../config.py, line: 66
 msgid "Sample Type Specifications (Lab)"
 msgstr ""
 
@@ -4431,7 +5044,11 @@ msgid "SampleType"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1817
+=======
+# File: ../browser/analysisrequest.py, line: 1803
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/sample.py, line: 453
 # File: ../browser/templates/sample_sticker_large.pt, line: 77
 msgid "Sampler"
@@ -4466,14 +5083,22 @@ msgid "Samples: %s"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1809
+=======
+# File: ../browser/analysisrequest.py, line: 1795
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/sample.py, line: 445
 # File: ../browser/templates/sample_sticker_large.pt, line: 75
 msgid "Sampling Date"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1802
+=======
+# File: ../browser/analysisrequest.py, line: 1791
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/sample.py, line: 441
 # File: ../content/analysisrequest.py, line: 422
 msgid "Sampling Deviation"
@@ -4490,7 +5115,11 @@ msgid "Sampling Frequency"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1160
+=======
+# File: ../browser/analysisrequest.py, line: 1154
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/sample.py, line: 87
 # File: ../browser/templates/ar_add.pt, line: 184
 msgid "Save"
@@ -4684,7 +5313,11 @@ msgstr ""
 
 #
 # File: ../browser/accreditation.py, line: 50
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1124
+=======
+# File: ../browser/analysisrequest.py, line: 1122
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/referencesample.py, line: 59
 msgid "Service"
 msgstr ""
@@ -4705,17 +5338,29 @@ msgid "Service keyword ${keyword} not found"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/resultsimport.py, line: 336
+=======
+# File: ../exportimport/instruments/resultsimport.py, line: 324
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Service keyword %s not found"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/resultsimport.py, line: 340
+=======
+# File: ../exportimport/instruments/resultsimport.py, line: 328
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Service keywords: no matches found"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/reports/selection_macros/__init__.py, line: 57
+=======
+# File: ../browser/reports/selection_macros/__init__.py, line: 55
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/worksheet.py, line: 1093
 # File: ../browser/worksheetfolder.py, line: 124
 msgid "Services"
@@ -4747,7 +5392,22 @@ msgid "Set up the laboratory analysis service results specifications"
 msgstr ""
 
 #
-# File: ../config.py, line: 89
+# File: ../content/storagelocation.py, line: 72
+msgid "Shelf Code"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 78
+msgid "Shelf Description"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 66
+msgid "Shelf Title"
+msgstr ""
+
+#
+# File: ../config.py, line: 90
 msgid "Shipping address"
 msgstr ""
 
@@ -4762,9 +5422,30 @@ msgid "Signature"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 2393
 # File: ../browser/client.py, line: 655
 # File: ../browser/reports/__init__.py, line: 123
+=======
+# File: ../content/storagelocation.py, line: 30
+msgid "Site Code"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 36
+msgid "Site Description"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 24
+msgid "Site Title"
+msgstr ""
+
+#
+# File: ../browser/analysisrequest.py, line: 2367
+# File: ../browser/client.py, line: 721
+# File: ../browser/reports/__init__.py, line: 93
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Size"
 msgstr ""
 
@@ -4779,12 +5460,16 @@ msgid "Small"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../content/arpriority.py, line: 41
 msgid "Small Icon"
 msgstr ""
 
 #
 # File: ../browser/analysisrequest.py, line: 499
+=======
+# File: ../browser/analysisrequest.py, line: 498
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Some errors have been detected in the results report published from the Analysis Request %s. The Analysis Request %s has been created automatically and the previous has been invalidated.<br/>The possible mistake has been picked up and is under investigation.<br/><br/>%s%s"
 msgstr ""
 
@@ -4831,6 +5516,7 @@ msgid "Specify the uncertainty value for a given range, e.g. for results in a ra
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/invoicefolder.py, line: 29
 # File: ../browser/pricelist.py, line: 37
 # File: ../content/invoicebatch.py, line: 19
@@ -4839,6 +5525,9 @@ msgstr ""
 
 #
 # File: ../browser/analysisrequest.py, line: 1832
+=======
+# File: ../browser/analysisrequest.py, line: 1818
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/arimports.py, line: 95
 # File: ../browser/arpriorities.py, line: 58
 msgid "State"
@@ -4849,6 +5538,18 @@ msgstr ""
 # File: ../browser/reports/productivity_analysesperclient.py, line: 71
 # File: ../browser/reports/productivity_analysespersampletype.py, line: 72
 msgid "Status"
+msgstr ""
+
+#
+# File: ../controlpanel/bika_storagelocations.py, line: 43
+# File: ../profiles/default/registry.xml, line: -1
+msgid "Storage Location"
+msgstr ""
+
+#
+# File: ../browser/client.py, line: 541
+# File: ../controlpanel/bika_storagelocations.py, line: 34
+msgid "Storage Locations"
 msgstr ""
 
 #
@@ -4917,9 +5618,15 @@ msgid "Temperature"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1837
 # File: ../browser/worksheetfolder.py, line: 122
 # File: ../content/analysisrequest.py, line: 217
+=======
+# File: ../browser/analysisrequest.py, line: 1823
+# File: ../browser/worksheetfolder.py, line: 122
+# File: ../content/analysisrequest.py, line: 215
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Template"
 msgstr ""
 
@@ -5182,7 +5889,11 @@ msgid "The unique keyword used to identify the analysis service in import files 
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 701
+=======
+# File: ../browser/analysisrequest.py, line: 699
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "There are field analyses without submitted results."
 msgstr ""
 
@@ -5199,12 +5910,20 @@ msgid "These results can be reported as dry matter"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 721
+=======
+# File: ../browser/analysisrequest.py, line: 719
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "These results have been withdrawn and are listed here for trace-ability purposes. Please follow the link to the retest"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 736
+=======
+# File: ../browser/analysisrequest.py, line: 734
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "This Analysis Request has been generated automatically due to the retraction of the Analysis Request %s."
 msgstr ""
 
@@ -5214,7 +5933,11 @@ msgid "This Analysis Request has been invalidated due to erroneously published r
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1346
+=======
+# File: ../browser/analysisrequest.py, line: 1335
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "This Analysis Request has been withdrawn and is shown for trace-ability purposes only. Retest: %s."
 msgstr ""
 
@@ -5266,6 +5989,21 @@ msgid "Title"
 msgstr ""
 
 #
+# File: ../content/storagelocation.py, line: 43
+msgid "Title of location"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 67
+msgid "Title of the shelf"
+msgstr ""
+
+#
+# File: ../content/storagelocation.py, line: 25
+msgid "Title of the site"
+msgstr ""
+
+#
 # File: ../content/instrumentcalibration.py, line: 40
 # File: ../content/instrumentcertification.py, line: 65
 # File: ../content/instrumentmaintenancetask.py, line: 54
@@ -5283,7 +6021,11 @@ msgid "To Be Sampled"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1946
+=======
+# File: ../browser/analysisrequest.py, line: 1929
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/worksheetfolder.py, line: 198
 # File: ../skins/bika/portlet_to_be_verified.pt, line: 31
 msgid "To be verified"
@@ -5356,17 +6098,34 @@ msgid "Type Error"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/resultsimport.py, line: 463
+=======
+# File: ../content/storagelocation.py, line: 61
+msgid "Type of location"
+msgstr ""
+
+#
+# File: ../exportimport/instruments/resultsimport.py, line: 383
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Unable to create the Attachment Type %s "
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 515
+=======
+# File: ../browser/analysisrequest.py, line: 514
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Unable to send an email to alert lab client contacts that the Analysis Request has been retracted: %s"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 2140
+=======
+# File: ../browser/analysisrequest.py, line: 2117
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Unassigned"
 msgstr ""
 
@@ -5408,9 +6167,15 @@ msgid "Unpublished"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 49
 # File: ../exportimport/instruments/foss/winescan/auto.py, line: 30
 # File: ../exportimport/instruments/foss/winescan/ft120.py, line: 31
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 48
+# File: ../exportimport/instruments/foss/winescan/auto.py, line: 29
+# File: ../exportimport/instruments/foss/winescan/ft120.py, line: 30
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Unrecognized file format '%s'"
 msgstr ""
 
@@ -5442,7 +6207,11 @@ msgid "User"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/client.py, line: 799
+=======
+# File: ../browser/client.py, line: 860
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/templates/login_details.pt, line: 50
 msgid "User Name"
 msgstr ""
@@ -5464,7 +6233,11 @@ msgid "Using too few data points does not make statistical sense. Set an accepta
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/invoicebatch.py, line: 27
+=======
+# File: ../browser/invoicebatch.py, line: 23
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/templates/ar_add.pt, line: 276
 # File: ../browser/templates/supplyorder_edit.pt, line: 37
 msgid "VAT"
@@ -5735,7 +6508,11 @@ msgid "Value Range"
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 442
+=======
+# File: ../exportimport/instruments/agilent/masshunter/quantitative.py, line: 439
+>>>>>>> 9b5f9a0... Added StorageLocation type
 msgid "Value for column '%s' not found"
 msgstr ""
 
@@ -5745,7 +6522,11 @@ msgid "Values can be entered here which will override the defaults specified in 
 msgstr ""
 
 #
+<<<<<<< HEAD
 # File: ../browser/analysisrequest.py, line: 1978
+=======
+# File: ../browser/analysisrequest.py, line: 1960
+>>>>>>> 9b5f9a0... Added StorageLocation type
 # File: ../browser/worksheetfolder.py, line: 216
 # File: ../skins/bika/portlet_verified.pt, line: 22
 msgid "Verified"

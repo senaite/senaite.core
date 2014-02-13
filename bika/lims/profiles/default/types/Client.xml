@@ -24,6 +24,7 @@
   <element value="Contact"/>
   <element value="Sample"/>
   <element value="SamplePoint"/>
+  <element value="StorageLocation"/>
   <element value="SupplyOrder"/>
   <element value="Folder"/>
  </property>
@@ -75,6 +76,18 @@
          icon_expr="string:${portal_url}/images/samplepoint.png"
          link_target=""
          url_expr="string:${object_url}/samplepoints"
+         i18n:attributes="title"
+         visible="True">
+  <permission value="BIKA: Manage Samples"/>
+ </action>
+
+ <action title="StorageLocations"
+         action_id="storagelocations"
+         category="object"
+         condition_expr=""
+         icon_expr="string:${portal_url}/images/storagelocation.png"
+         link_target=""
+         url_expr="string:${object_url}/storagelocations"
          i18n:attributes="title"
          visible="True">
   <permission value="BIKA: Manage Samples"/>
