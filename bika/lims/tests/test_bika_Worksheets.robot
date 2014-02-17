@@ -141,7 +141,7 @@ Create Reference Samples
     Click Link                  Add
     Wait Until Page Contains    Add Reference Sample
     Input Text                  title                       D Water Reference Sample
-    Select From List            ReferenceDefinition:list    Distilled Water
+    Select From List            ReferenceDefinition:list    Distilled Water (Blank)
     Select From List            ReferenceManufacturer:list  Blott
     Input Text                  CatalogueNumber             Numba Too
     Input Text                  LotNumber                   MoreLotOfNumba
@@ -203,7 +203,8 @@ Submit and Verify and Test
     [Documentation]     Insert results in all available analyses,
     ...                 checking ranges, workflow, etc during the process.
 
-    TestResultsRange    xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca']                     0   9      # analysis
+    # All values are valid for Calcium, this sampletype has no specification linked to it.
+    Input Text    xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca']                        9       # analysis                     0   9      # analysis
     TestResultsRange    xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'Result_SA')])[1]     17  10.1   # control
     TestResultsRange    xpath=//tr[@keyword='Ca']//input[contains(@selector, 'Result_D')]           8   8.1    # duplicate
     TestResultsRange    xpath=//tr[@keyword='Ca']//input[contains(@selector, 'Result_D')]           10  9.9    # duplicate
@@ -225,8 +226,7 @@ Submit and Verify and Test
     Check worksheet state       open
 
     ## now fill in the remaining results
-
-    TestResultsRange    xpath=//tr[@keyword='Mg']//input[@selector='Result_Mg']                   13     9.5     # analysis
+    input text    xpath=//tr[@keyword='Mg']//input[@selector='Result_Mg']                       9.5     # analysis
     TestResultsRange    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[1]   2      9.2     # control
     TestResultsRange    xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D')]         8.54   8.55    # duplicate
     TestResultsRange    xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D')]         10.46  10.45   # duplicate

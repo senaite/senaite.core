@@ -257,7 +257,6 @@ class Create(object):
         try:
             client = resolve_request_lookup(context, request, 'Client')[0].getObject()
         except IndexError:
-            import pdb; pdb.set_trace()
             raise Exception("Client not found")
 
         # Sample_id
@@ -290,7 +289,6 @@ class Create(object):
                  'separate':False}]
 
         specs = self.get_specs_from_request()
-
         _id = client.invokeFactory('AnalysisRequest', tmpID())
         ar = client[_id]
         ar.unmarkCreationFlag()

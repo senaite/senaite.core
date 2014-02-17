@@ -27,7 +27,7 @@ function toggle_spec_fields(element) {
 				var min_val = "";
 				var max_val = "";
 				var error_val = "";
-				if (data.objects.length > 0) {
+				if (data.objects && data.objects.length > 0) {
 					var rr = data.objects[0].ResultsRange;
 					for (var i in rr) {
 						if (!(rr.hasOwnProperty(i))){ continue; }
@@ -75,7 +75,7 @@ function reset_spec_field_values(column) {
 			$(min_name).val("");
 			$(max_name).val("");
 			$(error_name).val("");
-			if (data.objects.length > 0) {
+			if (data.objects && data.objects.length > 0) {
 				var rr = data.objects[0].ResultsRange;
 				for (var i in rr) {
 					var kw = "[keyword='"+rr[i].keyword+"']";
@@ -140,7 +140,7 @@ function set_default_spec(column) {
 
 		window.bika.lims.jsonapi_read(request_data, function(data) {
 			var ob, obj;
-			if (data.objects.length > 0) {
+			if (data.objects && data.objects.length > 0) {
 				for(ob in data.objects){
 					if ((!data.objects.hasOwnProperty(ob))) { continue; }
 					obj = data.objects[ob];
@@ -183,7 +183,7 @@ function set_cc_contacts(column) {
 			UID: contact_uid
 		};
 		window.bika.lims.jsonapi_read(request_data, function(data) {
-			if(data.objects.length < 1) {
+			if(data.objects && data.objects.length < 1) {
 				return;
 			}
 			var ob = data.objects[0];

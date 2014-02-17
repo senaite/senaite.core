@@ -106,13 +106,12 @@ class ARAnalysesField(ObjectField):
             keyword = service.getKeyword()
             price = prices[service_uid] if prices and service_uid in prices \
                 else service.getPrice()
-            spec = specs[service_uid] if specs and service_uid in specs \
-                else {"min": "", "max": "", "error": ""}
             vat = Decimal(service.getVAT())
 
             # analysis->InterimFields
             calc = service.getCalculation()
             interim_fields = calc and list(calc.getInterimFields()) or []
+
             # override defaults from service->InterimFields
             service_interims = service.getInterimFields()
             sif = dict([[x['keyword'], x['value']]
@@ -130,12 +129,12 @@ class ARAnalysesField(ObjectField):
             if hasattr(instance, keyword):
                 analysis = instance._getOb(keyword)
             else:
-                instance.invokeFactory(id=keyword,
-                                       type_name='Analysis')
+                instance.invokeFactory(id=keyword, type_name='Analysis')
                 analysis = instance._getOb(keyword)
                 analysis.setService(service)
                 analysis.setInterimFields(interim_fields)
                 analysis.setMaxTimeAllowed(service.getMaxTimeAllowed())
+
                 analysis.unmarkCreationFlag()
                 analysis.reindexObject()
                 zope.event.notify(ObjectInitializedEvent(analysis))
@@ -150,8 +149,16 @@ class ARAnalysesField(ObjectField):
                     # I am leaving this code here though, to prevent regression.
                     pass
                 new_analyses.append(analysis)
-                # Note: subscriber might retract and/or unassign the AR
+            # Note: subscriber might retract and/or unassign the AR
+
+            spec = specs[service_uid] if specs and service_uid in specs \
+                else None
+            # If no specification came to us from the form, then we will
+            # see if there is a spec for this SampleType & AnalysisService
+            if not spec:
+                spec = analysis.get_default_specification()
             analysis.specification = spec
+
             # XXX Price?
             # analysis.setPrice(price)
 

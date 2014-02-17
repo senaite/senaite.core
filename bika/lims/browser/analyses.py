@@ -300,7 +300,7 @@ class AnalysesView(BikaListingView):
             items[i]['CaptureDate'] = cd and self.ulocalized_time(cd, long_format=1) or ''
             items[i]['Attachments'] = ''
 
-            method = obj.getMethod()
+            method = obj.getMethod() if hasattr(obj, 'getMethod') else None
             if not method:
                 method = service.getMethod()
             items[i]['Method'] = method.Title() if method else ''
@@ -389,9 +389,13 @@ class AnalysesView(BikaListingView):
                 items[i]['formatted_result'] = result
                 if result != '':
                     if 'Result' in items[i]['choices'] and items[i]['choices']['Result']:
-                        items[i]['formatted_result'] = \
-                            [r['ResultText'] for r in items[i]['choices']['Result']
-                                              if str(r['ResultValue']) == str(result)][0]
+                        texts = [r['ResultText'] for r
+                                 in items[i]['choices']['Result']
+                                 if str(r['ResultValue']) == str(result)]
+                        if texts:
+                            items[i]['formatted_result'] = texts[0]
+                        else:
+                            items[i]['formatted_result'] = result
                     else:
                         try:
                             items[i]['formatted_result'] = precision and \

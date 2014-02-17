@@ -358,6 +358,40 @@ class Analysis(BaseContent):
         self.setResult(result)
         return True
 
+    def get_default_specification(self):
+        bsc = getToolByName(self, "bika_setup_catalog")
+        spec = None
+        sampletype = self.getSample().getSampleType()
+        keyword = self.getKeyword()
+        client_folder_uid = self.aq_parent.aq_parent.UID()
+        client_specs = bsc(
+            portal_type="AnalysisSpec",
+            getSampleTypeUID=sampletype.UID(),
+            getClientUID=client_folder_uid
+        )
+        for client_spec in client_specs:
+            rr = client_spec.getObject().getResultsRange()
+            kw_list = [r for r in rr if r['keyword'] == keyword]
+            if kw_list:
+                    spec = kw_list[0]
+            break
+        if not spec:
+            lab_folder_uid = self.bika_setup.bika_analysisspecs.UID()
+            lab_specs = bsc(
+                portal_type="AnalysisSpec",
+                getSampleTypeUID=sampletype.UID(),
+                getClientUID=lab_folder_uid
+            )
+            for lab_spec in lab_specs:
+                rr = lab_spec.getObject().getResultsRange()
+                kw_list = [r for r in rr if r['keyword'] == keyword]
+                if kw_list:
+                    spec = kw_list[0]
+                    break
+        if not spec:
+            return {"min": 0, "max": 0, "error": 0}
+        return spec
+
     def guard_unassign_transition(self):
         """ Check permission against parent worksheet
         """
@@ -377,5 +411,6 @@ class Analysis(BaseContent):
         """
         """
         return True
+
 
 atapi.registerType(Analysis, PROJECTNAME)
