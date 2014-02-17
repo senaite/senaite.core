@@ -240,7 +240,8 @@ function calculate_parts() {
 		$.ajaxSetup({async:false});
 		window.bika.lims.jsonapi_read(request_data = {
 			catalog_name: "uid_catalog",
-			UID: st_uid
+			UID: st_uid,
+			sort_on: 'Title'
 		}, function(data){
 			sampletype = data.objects[0];
 		});
@@ -298,7 +299,8 @@ function setAnalysisProfile(){
 	//
 	window.bika.lims.jsonapi_read({
 		catalog_name: "uid_catalog",
-		UID: $("#AnalysisProfile_uid").val()
+		UID: $("#AnalysisProfile_uid").val(),
+		sort_on: 'Title'
 	}, function(profile_data){
 		var service_uids = profile_data.objects[0].Service_uid;
 			for (var i = 0; i < service_uids.length; i++){
