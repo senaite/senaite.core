@@ -96,34 +96,39 @@ def AfterTransitionEventHandler(instance, event):
         # If all other analyses on the worksheet are verified,
         # then verify the worksheet.
         ws = instance.getBackReferences('WorksheetAnalysis')
-        ws = ws[0]
-        ws_state = wf.getInfoFor(ws, 'review_state')
-        if ws_state == 'to_be_verified' and not skip(ws, action_id, peek=True):
-            all_verified = True
-            for a in ws.getAnalyses():
-                if wf.getInfoFor(a, 'review_state') in \
-                   ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified', 'assigned'):
-                    all_verified = False
-                    break
-            if all_verified:
-                if not "verify all analyses" in instance.REQUEST['workflow_skiplist']:
-                    instance.REQUEST["workflow_skiplist"].append("verify all analyses")
-                wf.doActionFor(ws, "verify")
+        if ws and len(ws) > 0:
+            ws = ws[0]
+            ws_state = wf.getInfoFor(ws, 'review_state')
+            if ws_state == 'to_be_verified' and not skip(ws, action_id, peek=True):
+                all_verified = True
+                for a in ws.getAnalyses():
+                    if wf.getInfoFor(a, 'review_state') in \
+                       ('sample_due', 'sample_received', 'attachment_due', 'to_be_verified', 'assigned'):
+                        all_verified = False
+                        break
+                if all_verified:
+                    if not "verify all analyses" in instance.REQUEST['workflow_skiplist']:
+                        instance.REQUEST["workflow_skiplist"].append("verify all analyses")
+                    wf.doActionFor(ws, "verify")
+        else:
+            # A new ReferenceAnalysis attached directly to an Instrument
+            return
 
     elif action_id == "assign":
         instance.reindexObject(idxs = ["review_state", ])
         rc = getToolByName(instance, REFERENCE_CATALOG)
-        wsUID = instance.REQUEST['context_uid']
-        ws = rc.lookupObject(wsUID)
+        if 'context_uid' in instance.REQUEST:
+            wsUID = instance.REQUEST['context_uid']
+            ws = rc.lookupObject(wsUID)
 
-        # retract the worksheet to 'open'
-        ws_state = wf.getInfoFor(ws, 'review_state')
-        if ws_state != 'open':
-            if not instance.REQUEST.has_key('workflow_skiplist'):
-                instance.REQUEST['workflow_skiplist'] = ['retract all analyses', ]
-            else:
-                instance.REQUEST["workflow_skiplist"].append('retract all analyses')
-            wf.doActionFor(ws, 'retract')
+            # retract the worksheet to 'open'
+            ws_state = wf.getInfoFor(ws, 'review_state')
+            if ws_state != 'open':
+                if not instance.REQUEST.has_key('workflow_skiplist'):
+                    instance.REQUEST['workflow_skiplist'] = ['retract all analyses', ]
+                else:
+                    instance.REQUEST["workflow_skiplist"].append('retract all analyses')
+                wf.doActionFor(ws, 'retract')
 
     elif action_id == "unassign":
         instance.reindexObject(idxs = ["review_state", ])

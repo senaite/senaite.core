@@ -220,12 +220,12 @@ class Instrument(ATFolder):
     def addReferences(self, reference, service_uids):
         """ Add reference analyses to reference
         """
+        addedanalyses = []
         wf = getToolByName(self, 'portal_workflow')
         bsc = getToolByName(self, 'bika_setup_catalog')
         bac = getToolByName(self, 'bika_analysis_catalog')
         ref_type = reference.getBlank() and 'b' or 'c'
         ref_uid = reference.UID()
-
         postfix = 1
         for refa in reference.getReferenceAnalyses():
             grid = refa.getReferenceAnalysesGroupID()
@@ -236,15 +236,15 @@ class Instrument(ATFolder):
             except:
                 pass
         postfix = str(postfix).zfill(int(3))
-        refgid = '%s-%s' % (reference.id, postfix)
+        refgid = 'I%s-%s' % (reference.id, postfix)
         for service_uid in service_uids:
             # services with dependents don't belong in references
-            service = bsc(portal_type='AnalysisService', uid=service_uid)[0].getObject()
+            service = bsc(portal_type='AnalysisService', UID=service_uid)[0].getObject()
             calc = service.getCalculation()
             if calc and calc.getDependentServices():
                 continue
             ref_uid = reference.addReferenceAnalysis(service_uid, ref_type)
-            ref_analysis = bac(portal_type='ReferenceAnalysis', uid=ref_uid)[0].getObject()
+            ref_analysis = bac(portal_type='ReferenceAnalysis', UID=ref_uid)[0].getObject()
 
             # Set ReferenceAnalysesGroupID (same id for the analyses from
             # the same Reference Sample and same Worksheet)
@@ -257,9 +257,17 @@ class Instrument(ATFolder):
             if calc:
                 ref_analysis.setInterimFields(calc.getInterimFields())
 
-            self.setAnalyses(self.getAnalyses() + [ref_analysis, ])
-            #TODO: Repassar doActionFor
-            #wf.doActionFor(ref_analysis, 'assign')
+            # Comes from a worksheet or has been attached directly?
+            ws = ref_analysis.getBackReferences('WorksheetAnalysis')
+            if not ws or len(ws) == 0:
+                # This is a reference analysis attached directly to the
+                # Instrument, we apply the assign state
+                wf.doActionFor(ref_analysis, 'assign')
+            addedanalyses.append(ref_analysis)
+
+        self.setAnalyses(self.getAnalyses() + addedanalyses)
+
+        return addedanalyses
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 

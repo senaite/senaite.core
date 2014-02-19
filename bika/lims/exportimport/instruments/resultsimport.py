@@ -378,8 +378,7 @@ class AnalysisResultsImporter(Logger):
                 services = self.bsc(portal_type='AnalysisService')
                 service_uids = [service.UID for service in services \
                                 if service.getObject().getKeyword() in results.keys()]
-                inst.addReferences(refsample, service_uids)
-                analyses = inst.getAnalyses()
+                analyses = inst.addReferences(refsample, service_uids)
 
             elif len(analyses) == 0:
                 # No analyses found
@@ -653,7 +652,6 @@ class AnalysisResultsImporter(Logger):
 
         if len(interimsout) > 0:
             analysis.setInterimFields(interimsout)
-
         if resultsaved == False and (values.get(defresultkey, '') \
                                      or values.get(defresultkey, '') == 0 \
                                      or self._override[1] == True):
