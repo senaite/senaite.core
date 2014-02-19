@@ -1,0 +1,32 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    metal:use-macro="here/main_template/macros/master"
+    i18n:domain="bika">
+<head><title></title></head>
+
+<body>
+    <metal:content-title fill-slot="content-title">
+    <h1>
+        <img tal:condition="view/icon | nothing"
+             src="" tal:attributes="src view/icon"/>
+        <span class="documentFirstHeading"
+              tal:content="context/title"></span>
+    </h1>
+    <h2 tal:content="view/title"></h2>
+    </metal:content-title>
+
+    <metal:content-description fill-slot="content-description">
+    </metal:content-description>
+
+    <metal:content-core fill-slot="content-core">
+
+    <!-- Reference Analyses table -->
+    <tal:analysestable>
+    <tal:parts replace="structure view/get_analyses_table"/>
+    </tal:analysestable>
+
+    </metal:content-core>
+</body>
+</html>

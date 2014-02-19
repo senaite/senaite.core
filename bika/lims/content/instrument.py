@@ -205,6 +205,18 @@ class Instrument(ATFolder):
 #        return [p.getObject() for p in pc(portal_type='InstrumentScheduleTask',
 #                                          getInstrumentUID=uid)]
 
+    def getReferenceAnalyses(self):
+        """ Returns an array with the subset of Controls and Blanks
+            analysis objects, performed using this instrument.
+            Reference Analyses can be from a Worksheet or directly
+            generated using Instrument import tools, without need to
+            create a new Worksheet.
+            The rest of the analyses (regular and duplicates) will not
+            be returned.
+        """
+        return [analysis for analysis in self.getAnalyses() \
+                if analysis.portal_type=='ReferenceAnalysis']
+
     def addReferences(self, reference, service_uids):
         """ Add reference analyses to reference
         """

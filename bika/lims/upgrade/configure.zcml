@@ -75,5 +75,14 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="New Instrument's Calibration Tests view"
+        description="Added a Calibration Tests tab in Instruments view"
+        source="3003"
+        destination="3004"
+        handler="bika.lims.upgrade.to3004.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
 
