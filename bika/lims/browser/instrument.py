@@ -375,6 +375,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 import plone
+import json
 
 class InstrumentReferenceAnalysesViewView(BrowserView):
     """ View of Reference Analyses linked to the Instrument.
@@ -404,6 +405,9 @@ class InstrumentReferenceAnalysesViewView(BrowserView):
     def get_analyses_table(self):
         """ Returns the table of Reference Analyses
         """
+        return self.get_analyses_view().contents_table()
+
+    def get_analyses_view(self):
         if not self._analysesview:
             # Creates the Analyses View if not exists yet
             self._analysesview = InstrumentReferenceAnalysesView(self.context,
@@ -415,7 +419,10 @@ class InstrumentReferenceAnalysesViewView(BrowserView):
             self._analysesview.form_id = "%s_qcanalyses"
             self._analysesview.review_states[0]['transitions'] = [{}]
 
-        return self._analysesview.contents_table()
+        return self._analysesview
+
+    def get_analyses_json(self):
+        return self.get_analyses_view().get_analyses_json()
 
 
 class InstrumentReferenceAnalysesView(AnalysesView):
@@ -443,6 +450,7 @@ class InstrumentReferenceAnalysesView(AnalysesView):
         self.catalog = 'bika_analysis_catalog'
         self.contentFilter = {'UID': asuids,
                               'sort_on': 'sortable_title'}
+        self.anjson = {}
 
     def folderitems(self):
         items = AnalysesView.folderitems(self)
@@ -467,6 +475,45 @@ class InstrumentReferenceAnalysesView(AnalysesView):
             items[i]['sortcode'] = '%s_%s' % (obj.getReferenceAnalysesGroupID(),
                                               obj.getService().getKeyword())
 
+            # Create json
+            reftype = obj.getReferenceType();
+            trows = self.anjson.get(items[i]['Keyword'], {});
+            anrows = trows.get(reftype, []);
+            anid = '%s.%s' % (items[i]['getReferenceAnalysesGroupID'],
+                              items[i]['id'])
+
+            rr = obj.aq_parent.getResultsRangeDict()
+            uid = obj.getServiceUID()
+            if uid in rr:
+                specs = rr[uid];
+                try:
+                    smin  = float(specs.get('min', 0))
+                    smax = float(specs.get('max', 0))
+                    error  = float(specs.get('error', 0))
+                    target = float(specs.get('result', 0))
+                    result = float(items[i]['Result'])
+                    error_amount = ((target / 100) * error) if target > 0 else 0
+                    upper  = smax + error_amount
+                    lower   = smin - error_amount
+
+                    anrow = { 'date': items[i]['CaptureDate'],
+                              'min': smin,
+                              'max': smax,
+                              'target': target,
+                              'error': error,
+                              'erroramount': error_amount,
+                              'upper': upper,
+                              'lower': lower,
+                              'result': result }
+                    anrows.append(anrow);
+                    trows[reftype] = anrows;
+                    self.anjson[items[i]['Keyword']] = trows
+                except:
+                    pass
+
         # Sort items
         items = sorted(items, key = itemgetter('sortcode'))
         return items
+
+    def get_analyses_json(self):
+        return json.dumps(self.anjson)
