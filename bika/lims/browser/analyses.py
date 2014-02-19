@@ -148,14 +148,26 @@ class AnalysesView(BikaListingView):
         return ""
 
     def get_active_spec_dict(self, analysis):
-        obj = self.get_active_spec_object()
+        if analysis.portal_type == 'ReferenceAnalysis':
+            # The analysis is a Control or Blank. We might use the
+            # reference results instead other specs
+            rr = analysis.aq_parent.getResultsRangeDict()
+            uid = analysis.getServiceUID()
+            if uid in rr:
+                return rr[uid]
+
         if hasattr(analysis, "specification") and analysis.specification:
             return analysis.specification
+
+        obj = self.get_active_spec_object()
         if obj:
             rr = obj.getResultsRangeDict()
             keyword = analysis.getKeyword()
+            uid = analysis.getServiceUID()
             if keyword in rr:
                 return rr[keyword]
+            elif uid in rr:
+                return rr[uid]
         return None
 
     def ResultOutOfRange(self, analysis):
@@ -167,7 +179,6 @@ class AnalysesView(BikaListingView):
         bsc = getToolByName(self.context, "bika_setup_catalog")
         spec = self.get_active_spec_dict(analysis)
         for name, adapter in adapters:
-            obj = self.get_active_spec_object()
             if not spec:
                 return False
             alerts = adapter(specification=spec)
@@ -421,6 +432,7 @@ class AnalysesView(BikaListingView):
                 items[i]['Uncertainty'] = obj.getUncertainty(result)
 
                 spec = self.get_active_spec_dict(obj)
+
                 if spec:
                     min_val = spec.get('min', '')
                     min_str = ">{0}".format(min_val) if min_val else ''
