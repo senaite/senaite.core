@@ -35,6 +35,7 @@ def Import(context, request):
     artoapply = request.form['amhq_artoapply']
     override = request.form['amhq_override']
     sample = request.form.get('amhq_sample', 'requestid')
+    instrument = request.form.get('amhq_instrument', None)
     errors = []
     logs = []
 
@@ -78,7 +79,8 @@ def Import(context, request):
                                            idsearchcriteria=sam,
                                            allowed_ar_states=status,
                                            allowed_analysis_states=None,
-                                           override=over)
+                                           override=over,
+                                           instrument_uid=instrument)
         tbex = ''
         try:
             importer.process()
@@ -444,7 +446,9 @@ class MasshunterQuantCSVParser(InstrumentCSVResultsFileParser):
 class MasshunterQuantImporter(AnalysisResultsImporter):
 
     def __init__(self, parser, context, idsearchcriteria, override,
-                 allowed_ar_states=None, allowed_analysis_states=None):
+                 allowed_ar_states=None, allowed_analysis_states=None,
+                 instrument_uid=''):
         AnalysisResultsImporter.__init__(self, parser, context, idsearchcriteria,
                                          override, allowed_ar_states,
-                                         allowed_analysis_states)
+                                         allowed_analysis_states,
+                                         instrument_uid)

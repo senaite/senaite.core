@@ -105,6 +105,12 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
                             "modules."),
         ),
     ),
+    ReferenceField('Analyses',
+        required = 0,
+        multiValued = 1,
+        allowed_types = ('ReferenceAnalysis','Analysis', 'DuplicateAnalysis'),
+        relationship = 'InstrumentAnalyses',
+    ),
 ))
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
@@ -198,6 +204,50 @@ class Instrument(ATFolder):
 #        uid = self.context.UID()
 #        return [p.getObject() for p in pc(portal_type='InstrumentScheduleTask',
 #                                          getInstrumentUID=uid)]
+
+    def addReferences(self, reference, service_uids):
+        """ Add reference analyses to reference
+        """
+        wf = getToolByName(self, 'portal_workflow')
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        bac = getToolByName(self, 'bika_analysis_catalog')
+        ref_type = reference.getBlank() and 'b' or 'c'
+        ref_uid = reference.UID()
+
+        postfix = 1
+        for refa in reference.getReferenceAnalyses():
+            grid = refa.getReferenceAnalysesGroupID()
+            try:
+                cand = int(grid.split('-')[2])
+                if cand >= postfix:
+                    postfix = cand + 1
+            except:
+                pass
+        postfix = str(postfix).zfill(int(3))
+        refgid = '%s-%s' % (reference.id, postfix)
+        for service_uid in service_uids:
+            # services with dependents don't belong in references
+            service = bsc(portal_type='AnalysisService', uid=service_uid)[0].getObject()
+            calc = service.getCalculation()
+            if calc and calc.getDependentServices():
+                continue
+            ref_uid = reference.addReferenceAnalysis(service_uid, ref_type)
+            ref_analysis = bac(portal_type='ReferenceAnalysis', uid=ref_uid)[0].getObject()
+
+            # Set ReferenceAnalysesGroupID (same id for the analyses from
+            # the same Reference Sample and same Worksheet)
+            # https://github.com/bikalabs/Bika-LIMS/issues/931
+            ref_analysis.setReferenceAnalysesGroupID(refgid)
+            ref_analysis.reindexObject(idxs=["getReferenceAnalysesGroupID"])
+
+            # copy the interimfields
+            calculation = service.getCalculation()
+            if calc:
+                ref_analysis.setInterimFields(calc.getInterimFields())
+
+            self.setAnalyses(self.getAnalyses() + [ref_analysis, ])
+            #TODO: Repassar doActionFor
+            #wf.doActionFor(ref_analysis, 'assign')
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 

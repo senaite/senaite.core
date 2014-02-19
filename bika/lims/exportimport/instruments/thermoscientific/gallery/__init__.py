@@ -90,7 +90,7 @@ class ThermoGalleryTSVParser(InstrumentCSVResultsFileParser):
         if not rid:
             self.err(_("No Sample ID defined, line %s") % (self.num_line))
             return 0
-    
+
         errors = rawdict.get('Errors', '')
         errors = "Errors: %s" % errors if errors else ''
         notes = rawdict.get('Notes', '')
@@ -107,8 +107,10 @@ class ThermoGalleryTSVParser(InstrumentCSVResultsFileParser):
 class ThermoGalleryImporter(AnalysisResultsImporter):
 
     def __init__(self, parser, context, idsearchcriteria, override,
-                 allowed_ar_states=None, allowed_analysis_states=None):
+                 allowed_ar_states=None, allowed_analysis_states=None,
+                 instrument_uid=None):
         AnalysisResultsImporter.__init__(self, parser, context,
                                          idsearchcriteria, override,
                                          allowed_ar_states,
-                                         allowed_analysis_states)
+                                         allowed_analysis_states,
+                                         instrument_uid)

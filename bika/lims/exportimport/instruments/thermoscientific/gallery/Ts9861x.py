@@ -17,6 +17,7 @@ def Import(context, request):
     override = request.form['thermoscientific_gallery_9861x_override']
     sample = request.form.get('thermoscientific_gallery_9861x_sample',
                               'requestid')
+    instrument = request.form.get('thermoscientific_gallery_9861x_instrument', None)
     errors = []
     logs = []
 
@@ -60,7 +61,8 @@ def Import(context, request):
                                               idsearchcriteria=sam,
                                               allowed_ar_states=status,
                                               allowed_analysis_states=None,
-                                              override=over)
+                                              override=over,
+                                              instrument_uid=instrument)
         tbex = ''
         try:
             importer.process()

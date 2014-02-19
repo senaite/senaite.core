@@ -16,6 +16,7 @@ def Import(context, request):
     artoapply = request.form['wsa_artoapply']
     override = request.form['wsa_override']
     sample = request.form.get('wsa_sample', 'requestid')
+    instrument = request.form.get('wsa_instrument', None)
     errors = []
     logs = []
 
@@ -59,7 +60,8 @@ def Import(context, request):
                                         idsearchcriteria=sam,
                                         allowed_ar_states=status,
                                         allowed_analysis_states=None,
-                                        override=over)
+                                        override=over,
+                                        instrument_uid=instrument)
         tbex = ''
         try:
             importer.process()
