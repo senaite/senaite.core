@@ -21,25 +21,36 @@
 
                 // Populate analyses selector
                 var data = $.parseJSON($('#graphdata').val());
+                var qcrec = false;
                 $.map(data, function(value,key){
                     $('#selanalyses').append('<option value="'+key+'">'+key+'</option>');
+                    if (qcrec == false) {
+                        $.map(value, function(v, k) {
+                            $('#selqcsample').append('<option value="'+k+'">'+k+'</option>');
+                        });
+                        qcrec = true;
+                    }
                 });
 
                 $('#selanalyses').change(function(e) {
-                    drawControlChart($(this).val(), $('#selreftype').val());
+                    drawControlChart($(this).val(), $('#selqcsample').val(), $('#interpolation').val());
                 });
 
-                $('#selreftype').change(function(e) {
-                    drawControlChart($('#selanalyses').val(), $(this).val());
+                $('#selqcsample').change(function(e) {
+                    drawControlChart($('#selanalyses').val(), $(this).val(), $('#interpolation').val());
+                });
+
+                $('#interpolation').change(function(e) {
+                    drawControlChart($('#selanalyses').val(), $('#selqcsample').val(), $('#interpolation').val());
                 });
 
                 // Draw the chart
-                drawControlChart($('#selanalyses option:first-child').val(), 'c');
+                drawControlChart($('#selanalyses option:first-child').val(), $('#selqcsample option:first-child').val(), $('#interpolation').val());
 
             });
         });
 
-        function drawControlChart(analysiskey, reftype) {
+        function drawControlChart(analysiskey, reftype, interpolation) {
             if ($("#chart svg").length > 0) {
                 $("#chart").css('height', $("#chart").innerHeight());
                 $("#chart").css('width', $("#chart").innerWidth());
@@ -54,17 +65,10 @@
                 return;
             }
             data = data[reftype];
-            var unit = data['unit'];
-            var upper = data[0]['upper'];
-            var lower = data[0]['lower'];
-            var target = data[0]['target'];
-
-            // HARDCODED
-            unit = "mg/ml";
-            upper = 0.3;
-            lower = -0.3;
-            target = 0.0;
-
+            var unit = data[data.length-1]['unit'];
+            var upper = data[data.length-1]['upper'];
+            var lower = data[data.length-1]['lower'];
+            var target = data[data.length-1]['target'];
             var ylabel = "Result";
             if (unit == '' || typeof unit == 'undefined') {
                 unit = "";
@@ -77,6 +81,7 @@
             var centrtxt = $.trim("CL ("+target+""+unit+")");
             chart = new ControlChart();
             chart.setData(data);
+            chart.setInterpolation(interpolation);
             chart.setXColumn('date');
             chart.setYColumn('result');
             chart.setYLabel(ylabel);
@@ -114,10 +119,14 @@
             <label for='selanalyses'>Analysis</label>
             <select id='selanalyses' name='selanalyses'>
             </select>&nbsp;&nbsp;
-            <label for='selreftype'>Reference Type</label>
-            <select id='selreftype' name='selreftype'>
-                <option value='c' selected>Control</option>
-                <option value='b'>Blank</option>
+            <label for='selqcsample'>Reference Sample</label>
+            <select id='selqcsample' name='selqcsample'>
+            </select>&nbsp;&nbsp;
+            <label for='interpolation'>Interpolation</label>
+            <select id='interpolation' name='interpolation'>
+                <option value='basis' selected>Basis</option>
+                <option value='cardinal'>Cardinal</option>
+                <option value='linear'>Linear</option>
             </select>
         </div>
         <div id='chart'></div>
