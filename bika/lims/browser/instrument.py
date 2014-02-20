@@ -477,7 +477,8 @@ class InstrumentReferenceAnalysesView(AnalysesView):
 
             # Create json
             reftype = obj.getReferenceType();
-            trows = self.anjson.get(items[i]['Keyword'], {});
+            serviceref = "%s (%s)" % (items[i]['Service'], items[i]['Keyword'])
+            trows = self.anjson.get(serviceref, {});
             anrows = trows.get(reftype, []);
             anid = '%s.%s' % (items[i]['getReferenceAnalysesGroupID'],
                               items[i]['id'])
@@ -504,10 +505,11 @@ class InstrumentReferenceAnalysesView(AnalysesView):
                               'erroramount': error_amount,
                               'upper': upper,
                               'lower': lower,
-                              'result': result }
+                              'result': result,
+                              'unit': items[i]['Unit'] }
                     anrows.append(anrow);
                     trows[reftype] = anrows;
-                    self.anjson[items[i]['Keyword']] = trows
+                    self.anjson[serviceref] = trows
                 except:
                     pass
 

@@ -11,8 +11,10 @@ function ControlChart() {
     var ylabel = "Value";
     var lowerlimit = 0;
     var upperlimit = 1;
+    var centerlimit = 0.5;
     var lowerlimit_text = "Lower Limit";
     var upperlimit_text = "Upper Limit";
+    var lowerlimit_text = "Center Limit";
 
     /**
      * Sets the data to the chart
@@ -80,6 +82,14 @@ function ControlChart() {
     }
 
     /**
+     * Sets the center limit line value
+     * Default: 0.5
+     */
+    this.setCenterLimit = function(centerLimit) {
+        that.centerlimit = centerLimit;
+    }
+
+    /**
      * Sets the text to be displayed above upper limit line
      * By default: 'Upper Limit'
      */
@@ -96,6 +106,14 @@ function ControlChart() {
     }
 
     /**
+     * Sets the text to be displayed above center limit line
+     * By default: 'Center Limit'
+     */
+    this.setCenterLimitText = function(centerLimitText) {
+        that.centerlimit_text = centerLimitText;
+    }
+
+    /**
      * Draws the chart inside the container specified as 'canvas'
      * Accepts a jquery element identifier (i.e. '#chart')
      */
@@ -105,21 +123,22 @@ function ControlChart() {
         var margin = {top: 20, right: 20, bottom: 30, left: 30},
         width = width - margin.left - margin.right,
         height = height - margin.top - margin.bottom;
-        console.warn(height);
 
         var x = d3.time.scale()
-        .range([0, width]);
+            .range([0, width]);
 
         var y = d3.scale.linear()
             .range([height, 0]);
 
         var xAxis = d3.svg.axis()
             .scale(x)
-            .orient("bottom");
+            .orient("bottom")
+            .tickSize(0);
 
         var yAxis = d3.svg.axis()
             .scale(y)
-            .orient("left");
+            .orient("left")
+            .tickSize(0);
 
         var line = d3.svg.line()
             .interpolate("basis")
@@ -144,23 +163,27 @@ function ControlChart() {
         // "2014-02-19 03:11 PM"
         x_data_parse = d3.time.format("%Y-%m-%d %I:%M %p").parse;
         that.datasource.forEach(function(d) {
-            console.warn("X ("+that.xcolumnkey+"): "+x_data_parse(d[that.xcolumnkey]));
-            console.warn("Y ("+that.ycolumnkey+"): "+tonumber(d[that.ycolumnkey]));
             d.x_axis = x_data_parse(d[that.xcolumnkey]);
             d.y_axis = tonumber(d[that.ycolumnkey]);
         });
 
         x.domain(d3.extent(that.datasource, function(d) { return d.x_axis; }));
         y.domain(d3.extent(that.datasource, function(d) { return d.y_axis; }));
-
         svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
-            .call(xAxis);
+            .call(xAxis)
+                .style("font-size", "11px")
+                .append("text")
+                    .attr("x", width)
+                    .attr("dy", "-0.71em")
+                    .attr("text-anchor", "end")
+                    .text(that.xlabel);
 
         svg.append("g")
             .attr("class", "y axis")
             .call(yAxis)
+            .style("font-size", "11px")
             .append("text")
                 .attr("transform", "rotate(-90)")
                 .attr("y", 6)
@@ -170,24 +193,42 @@ function ControlChart() {
 
         svg.append("path")
             .datum(that.datasource)
+            .attr("stroke", "#4682b4")
+            .attr("stroke-width", "1.5px")
+            .attr("fill", "none")
             .attr("class", "line")
             .attr("d", line);
 
         // upper limit line
         svg.append("line")
-            .attr("class", "limit-line")
+            .attr("stroke", "#8e0000")
+            .attr("stroke-width", "1px")
+            .attr("stroke-dasharray", "5, 5")
             .attr({ x1: 0, y1: y(that.upperlimit), x2: width, y2: y(that.upperlimit) });
         svg.append("text")
-            .attr({ x: width + 5, y: y(that.upperlimit) + 4})
+            .attr({ x: 30, y: y(that.upperlimit) - 5})
+            .style("font-size","11px")
             .text(that.upperlimit_text);
-        console.warn(that.upperlimit_text);
 
         // lower limit line
         svg.append("line")
-            .attr("class", "limit-line")
+            .attr("stroke", "#8e0000")
+            .attr("stroke-width", "1px")
+            .attr("stroke-dasharray", "5, 5")
             .attr({ x1: 0, y1: y(that.lowerlimit), x2: width, y2: y(that.lowerlimit) });
         svg.append("text")
-            .attr({ x: width + 5, y: y(that.lowerlimit) + 4})
+            .attr({ x: 30, y: y(that.lowerlimit) - 5})
+            .style("font-size","11px")
             .text(that.lowerlimit_text);
+
+        // center limit line
+        svg.append("line")
+            .attr("stroke", "#598859")
+            .attr("stroke-width", "1px")
+            .attr({ x1: 0, y1: y(that.centerlimit), x2: width, y2: y(that.centerlimit) });
+        svg.append("text")
+            .attr({ x: 30, y: y(that.centerlimit) - 5})
+            .style("font-size","11px")
+            .text(that.centerlimit_text);
     }
 }

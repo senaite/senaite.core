@@ -8,18 +8,12 @@
 <metal:slot fill-slot="head_slot">
     <style>
         #chart { text-align:center; white-space:nowrap; overflow:auto;height:300px;}
-
-        .line {
+        .domain {
           fill: none;
-          stroke: #4682b4;
-          stroke-width: 1.5px;
+          stroke: #3d3d3d;
+          stroke-width: 1.5;
         }
 
-        .limit-line {
-          stroke: #000;
-          stroke-width: 1px;
-          stroke-dasharray: 5, 5;
-        }
     </style>
     <script>
         jQuery(function($){
@@ -51,19 +45,46 @@
                 $("#chart").css('width', $("#chart").innerWidth());
             }
             $("#chart").html("");
-
+            $("#chart").show();
             var data = $.parseJSON($('#graphdata').val());
-            data = data[analysiskey][reftype];
+            data = data[analysiskey]
+            if (!(reftype in data) || data[reftype].length == 0) {
+                // There is no results for this type of refsample
+                $("#chart").hide();
+                return;
+            }
+            data = data[reftype];
+            var unit = data['unit'];
             var upper = data[0]['upper'];
             var lower = data[0]['lower'];
+            var target = data[0]['target'];
+
+            // HARDCODED
+            unit = "mg/ml";
+            upper = 0.3;
+            lower = -0.3;
+            target = 0.0;
+
+            var ylabel = "Result";
+            if (unit == '' || typeof unit == 'undefined') {
+                unit = "";
+            } else {
+                ylabel = unit;
+            }
+
+            var uppertxt = $.trim("UCL (" + upper+""+unit+")");
+            var lowertxt = $.trim("LCL (" + lower+""+unit+")");
+            var centrtxt = $.trim("CL ("+target+""+unit+")");
             chart = new ControlChart();
             chart.setData(data);
             chart.setXColumn('date');
             chart.setYColumn('result');
-            chart.setYLabel('Result');
+            chart.setYLabel(ylabel);
             chart.setXLabel('Date');
-            chart.setUpperLimitText('Upper limit');
-            chart.setLowerLimitText('Lower limit');
+            chart.setUpperLimitText(uppertxt);
+            chart.setLowerLimitText(lowertxt);
+            chart.setCenterLimitText(centrtxt);
+            chart.setCenterLimit(target);
             chart.setUpperLimit(upper);
             chart.setLowerLimit(lower);
             chart.draw('#chart');
