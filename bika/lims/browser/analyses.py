@@ -245,6 +245,8 @@ class AnalysesView(BikaListingView):
         new_items = []
         for i,item in enumerate(items):
             # self.contentsMethod may return brains or objects.
+            if not ('obj' in items[i]):
+                continue
             obj = hasattr(items[i]['obj'], 'getObject') and \
                 items[i]['obj'].getObject() or \
                 items[i]['obj']
