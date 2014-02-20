@@ -432,7 +432,8 @@ class MasshunterQuantCSVParser(InstrumentCSVResultsFileParser):
                     if objid:
                         quantitation['DefaultResult'] = 'Final Conc'
                         quantitation['Remarks'] = _("Autoimport")
-                        raw = self.getRawResults().get(objid, {})
+                        rows = self.getRawResults().get(objid, [])
+                        raw = rows[0] if len(rows) > 0 else {}
                         raw[compound] = quantitation
                         self._addRawResult(objid, raw, True)
                     else:

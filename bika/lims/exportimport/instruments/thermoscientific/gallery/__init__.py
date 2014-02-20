@@ -98,9 +98,10 @@ class ThermoGalleryTSVParser(InstrumentCSVResultsFileParser):
         rawdict[acode]=rawdict['Result']
         rawdict['DefaultResult'] = acode
         rawdict['Remarks'] = ' '.join([errors, notes])
-        rawres = self.getRawResults().get(rid, {})
-        rawres[acode] = rawdict
-        self._addRawResult(rid, rawres, True)
+        rawres = self.getRawResults().get(rid, [])
+        raw = rawres[0] if len(rawres) > 0 else {}
+        raw[acode] = rawdict
+        self._addRawResult(rid, raw, True)
         return 0
 
 
