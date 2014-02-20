@@ -4,7 +4,15 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
 
-	<browser:page
+    <browser:page
+      for="bika.lims.interfaces.IInstrument"
+      name="referenceanalyses"
+      class="bika.lims.browser.instrument.InstrumentReferenceAnalysesViewView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
       for="bika.lims.interfaces.IInstrument"
       name="schedule"
       class="bika.lims.browser.instrument.InstrumentScheduleView"
@@ -19,7 +27,7 @@
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
-    
+
     <browser:page
       for="bika.lims.interfaces.IInstrument"
       name="validations"
@@ -27,7 +35,7 @@
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
-    
+
     <browser:page
       for="bika.lims.interfaces.IInstrument"
       name="calibrations"
@@ -35,7 +43,7 @@
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
-    
+
     <browser:page
       for="bika.lims.interfaces.IInstrument"
       name="certifications"

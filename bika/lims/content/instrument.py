@@ -105,6 +105,12 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
                             "modules."),
         ),
     ),
+    ReferenceField('Analyses',
+        required = 0,
+        multiValued = 1,
+        allowed_types = ('ReferenceAnalysis','Analysis', 'DuplicateAnalysis'),
+        relationship = 'InstrumentAnalyses',
+    ),
 ))
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
@@ -198,6 +204,70 @@ class Instrument(ATFolder):
 #        uid = self.context.UID()
 #        return [p.getObject() for p in pc(portal_type='InstrumentScheduleTask',
 #                                          getInstrumentUID=uid)]
+
+    def getReferenceAnalyses(self):
+        """ Returns an array with the subset of Controls and Blanks
+            analysis objects, performed using this instrument.
+            Reference Analyses can be from a Worksheet or directly
+            generated using Instrument import tools, without need to
+            create a new Worksheet.
+            The rest of the analyses (regular and duplicates) will not
+            be returned.
+        """
+        return [analysis for analysis in self.getAnalyses() \
+                if analysis.portal_type=='ReferenceAnalysis']
+
+    def addReferences(self, reference, service_uids):
+        """ Add reference analyses to reference
+        """
+        addedanalyses = []
+        wf = getToolByName(self, 'portal_workflow')
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        bac = getToolByName(self, 'bika_analysis_catalog')
+        ref_type = reference.getBlank() and 'b' or 'c'
+        ref_uid = reference.UID()
+        postfix = 1
+        for refa in reference.getReferenceAnalyses():
+            grid = refa.getReferenceAnalysesGroupID()
+            try:
+                cand = int(grid.split('-')[2])
+                if cand >= postfix:
+                    postfix = cand + 1
+            except:
+                pass
+        postfix = str(postfix).zfill(int(3))
+        refgid = 'I%s-%s' % (reference.id, postfix)
+        for service_uid in service_uids:
+            # services with dependents don't belong in references
+            service = bsc(portal_type='AnalysisService', UID=service_uid)[0].getObject()
+            calc = service.getCalculation()
+            if calc and calc.getDependentServices():
+                continue
+            ref_uid = reference.addReferenceAnalysis(service_uid, ref_type)
+            ref_analysis = bac(portal_type='ReferenceAnalysis', UID=ref_uid)[0].getObject()
+
+            # Set ReferenceAnalysesGroupID (same id for the analyses from
+            # the same Reference Sample and same Worksheet)
+            # https://github.com/bikalabs/Bika-LIMS/issues/931
+            ref_analysis.setReferenceAnalysesGroupID(refgid)
+            ref_analysis.reindexObject(idxs=["getReferenceAnalysesGroupID"])
+
+            # copy the interimfields
+            calculation = service.getCalculation()
+            if calc:
+                ref_analysis.setInterimFields(calc.getInterimFields())
+
+            # Comes from a worksheet or has been attached directly?
+            ws = ref_analysis.getBackReferences('WorksheetAnalysis')
+            if not ws or len(ws) == 0:
+                # This is a reference analysis attached directly to the
+                # Instrument, we apply the assign state
+                wf.doActionFor(ref_analysis, 'assign')
+            addedanalyses.append(ref_analysis)
+
+        self.setAnalyses(self.getAnalyses() + addedanalyses)
+
+        return addedanalyses
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 

@@ -1,0 +1,134 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    metal:use-macro="here/main_template/macros/master"
+    i18n:domain="bika">
+
+<metal:slot fill-slot="head_slot">
+    <style>
+        #chart { text-align:center; white-space:nowrap; overflow:auto;height:300px;}
+        .domain {
+          fill: none;
+          stroke: #3d3d3d;
+          stroke-width: 1.5;
+        }
+
+    </style>
+    <script>
+        jQuery(function($){
+            $(document).ready(function(){
+
+                // Populate analyses selector
+                var data = $.parseJSON($('#graphdata').val());
+                $.map(data, function(value,key){
+                    $('#selanalyses').append('<option value="'+key+'">'+key+'</option>');
+                });
+
+                $('#selanalyses').change(function(e) {
+                    drawControlChart($(this).val(), $('#selreftype').val());
+                });
+
+                $('#selreftype').change(function(e) {
+                    drawControlChart($('#selanalyses').val(), $(this).val());
+                });
+
+                // Draw the chart
+                drawControlChart($('#selanalyses option:first-child').val(), 'c');
+
+            });
+        });
+
+        function drawControlChart(analysiskey, reftype) {
+            if ($("#chart svg").length > 0) {
+                $("#chart").css('height', $("#chart").innerHeight());
+                $("#chart").css('width', $("#chart").innerWidth());
+            }
+            $("#chart").html("");
+            $("#chart").show();
+            var data = $.parseJSON($('#graphdata').val());
+            data = data[analysiskey]
+            if (!(reftype in data) || data[reftype].length == 0) {
+                // There is no results for this type of refsample
+                $("#chart").hide();
+                return;
+            }
+            data = data[reftype];
+            var unit = data['unit'];
+            var upper = data[0]['upper'];
+            var lower = data[0]['lower'];
+            var target = data[0]['target'];
+
+            // HARDCODED
+            unit = "mg/ml";
+            upper = 0.3;
+            lower = -0.3;
+            target = 0.0;
+
+            var ylabel = "Result";
+            if (unit == '' || typeof unit == 'undefined') {
+                unit = "";
+            } else {
+                ylabel = unit;
+            }
+
+            var uppertxt = $.trim("UCL (" + upper+""+unit+")");
+            var lowertxt = $.trim("LCL (" + lower+""+unit+")");
+            var centrtxt = $.trim("CL ("+target+""+unit+")");
+            chart = new ControlChart();
+            chart.setData(data);
+            chart.setXColumn('date');
+            chart.setYColumn('result');
+            chart.setYLabel(ylabel);
+            chart.setXLabel('Date');
+            chart.setUpperLimitText(uppertxt);
+            chart.setLowerLimitText(lowertxt);
+            chart.setCenterLimitText(centrtxt);
+            chart.setCenterLimit(target);
+            chart.setUpperLimit(upper);
+            chart.setLowerLimit(lower);
+            chart.draw('#chart');
+        }
+    </script>
+</metal:slot>
+
+<body>
+    <metal:content-title fill-slot="content-title">
+    <h1>
+        <img tal:condition="view/icon | nothing"
+             src="" tal:attributes="src view/icon"/>
+        <span class="documentFirstHeading"
+              tal:content="context/title"></span>
+    </h1>
+    <h2 tal:content="view/title"></h2>
+    </metal:content-title>
+
+    <metal:content-description fill-slot="content-description">
+    </metal:content-description>
+
+    <metal:content-core fill-slot="content-core">
+
+    <!-- Chart container -->
+    <div class='chart-container'>
+        <div class='chart-options'>
+            <label for='selanalyses'>Analysis</label>
+            <select id='selanalyses' name='selanalyses'>
+            </select>&nbsp;&nbsp;
+            <label for='selreftype'>Reference Type</label>
+            <select id='selreftype' name='selreftype'>
+                <option value='c' selected>Control</option>
+                <option value='b'>Blank</option>
+            </select>
+        </div>
+        <div id='chart'></div>
+    </div>
+
+    <!-- Reference Analyses table -->
+    <tal:analysestable>
+    <tal:parts replace="structure view/get_analyses_table"/>
+    <input type="hidden" id='graphdata' tal:attributes="value view/get_analyses_json"/>
+    </tal:analysestable>
+
+    </metal:content-core>
+</body>
+</html>

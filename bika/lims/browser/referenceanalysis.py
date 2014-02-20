@@ -72,7 +72,10 @@ class ResultOutOfRange(object):
             except:
                 spec_max = None
                 pass
-            if (not spec_min and not spec_max):
+            if (spec_min==0 and spec_max==0 and result !=0):
+                # Value has to be zero
+                outofrange, acceptable, o_spec = True, False, spec[service_uid]
+            elif (not spec_min and not spec_max):
                 # No min and max values defined
                 outofrange, acceptable, o_spec = False, None, None
             elif spec_min and spec_max and spec_min <= result <= spec_max:

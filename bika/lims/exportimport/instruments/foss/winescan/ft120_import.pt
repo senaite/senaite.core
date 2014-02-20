@@ -1,14 +1,14 @@
     <p></p>
-    
+
     <label for='wsf_file'>File</label>&nbsp;
     <input type="file" name="wsf_file" id="wsf_file"/>
     &nbsp;&nbsp;
-    <label for='wsf_format'>Format</label>&nbsp;    
+    <label for='wsf_format'>Format</label>&nbsp;
     <select name="wsf_format" id="wsf_format">
         <option value='csv'>CSV</option>
     </select>
     <p></p>
-    <h3>Advanced options</h3>
+    <h3 style='margin-bottom:10px;margin-top:10px;'>Advanced options</h3>
     <table cellpadding="0" cellspacing="0">
  <!--
         <tr>
@@ -24,7 +24,7 @@
         </tr>
   -->
         <tr>
-            <td><label for="wsf_artoapply">Analysis Requests state</label>&nbsp;</td>
+            <td style='vertical-align:top;padding-right:30px;'><label for="wsf_artoapply">Analysis Requests state</label>&nbsp;</td>
             <td>
                 <select name="wsf_artoapply" id="wsf_artoapply">
                     <option value="received">Received</option>
@@ -42,7 +42,23 @@
                 </select>
             </td>
         </tr>
-    </table>    
+        <tr>
+            <td style='vertical-align:top;padding-right:30px;'><label for="wsf_instrument">Instrument</label></td>
+            <td>
+                <select name="wsf_instrument" id="wsf_instrument"
+                        tal:define="instrlist view/getInstruments">
+                    <tal:options repeat="option instrlist">
+                    <option tal:attributes="value python:option;"
+                            tal:content="python:instrlist.getValue(option)"/>
+                    </tal:options>
+                </select>
+                <p i18n:translate="" style='color: #3F3F3F;font-size: 0.87em;'>
+                    If the system doesn't find any match (AnalysisRequest, Sample, Reference Analysis or Duplicate), it will use the record's identifier to find matches with Reference Sample IDs. If a Reference Sample ID is found, the system will automatically create a Calibration Test (Reference Analysis) and will link it to the seleced Instrument above.<br/>
+                    If no instrument selected, any Calibration Test will be created for orphan IDs.
+                </p>
+            </td>
+        </tr>
+    </table>
     <p></p>
     <input name="firstsubmit" type="submit" value="Submit" i18n:attributes="value"/>
     <p></p>

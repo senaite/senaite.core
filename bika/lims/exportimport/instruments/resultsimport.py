@@ -1,8 +1,10 @@
+# coding=utf-8
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.exportimport.instruments.logger import Logger
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.utils import tmpID
+from Products.Archetypes.config import REFERENCE_CATALOG
 
 
 class InstrumentResultsFileParser(Logger):
@@ -153,7 +155,7 @@ class InstrumentResultsFileParser(Logger):
             - 'DefaultResult' column maps to the column with default result
             - 'Remarks' column with Remarks results for that Analysis
             - The rest of the dict columns are results (or additional info)
-              that can be set to the analysis if needed (the default importer 
+              that can be set to the analysis if needed (the default importer
               will look for them if the analysis has Interim fields).
 
             In the case of reference samples:
@@ -221,11 +223,12 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
 
 class AnalysisResultsImporter(Logger):
 
-    def __init__(self, parser, context, 
+    def __init__(self, parser, context,
                  idsearchcriteria=None,
                  override=[False, False],
                  allowed_ar_states=None,
-                 allowed_analysis_states=None):
+                 allowed_analysis_states=None,
+                 instrument_uid=None):
         Logger.__init__(self)
         self._parser = parser
         self.context = context
@@ -249,6 +252,7 @@ class AnalysisResultsImporter(Logger):
                                            'to_be_verified']
         if not self._idsearch:
             self._idsearch=['getRequestID']
+        self.instrument_uid=instrument_uid
 
     def getParser(self):
         """ Returns the parser that will be used for the importer
@@ -282,7 +286,7 @@ class AnalysisResultsImporter(Logger):
 
     def getIdSearchCriteria(self):
         """ Returns the search criteria for retrieving analyses.
-            Example: 
+            Example:
             serachcriteria=['getRequestID', 'getSampleID', 'getClientSampleID']
         """
         return self._idsearch
@@ -313,7 +317,9 @@ class AnalysisResultsImporter(Logger):
         acodes = []
         ancount = 0
         arprocessed = []
+        instprocessed = []
         importedars = {}
+        importedinsts = {}
         rawacodes = self._parser.getAnalysisKeywords()
         exclude = self.getKeywordsToBeExcluded()
         for acode in rawacodes:
@@ -327,10 +333,60 @@ class AnalysisResultsImporter(Logger):
         if len(acodes) == 0:
             self.err(_("Service keywords: no matches found"))
 
+        searchcriteria = self.getIdSearchCriteria();
         for objid, results in self._parser.getRawResults().iteritems():
             analyses = self._getZODBAnalyses(objid)
-            if len(analyses) == 0:
+            inst = None
+            if len(analyses) == 0 and self.instrument_uid:
+                # No registered analyses found, but maybe we need to
+                # create them first if an instruemnt id has been set in
+                insts = self.bsc(portal_type='Instrument', UID=self.instrument_uid)
+                if len(insts) == 0:
+                    # No instrument found
+                    self.err(_("No Analysis Request with '%s' states neither QC"
+                                   " analyses found for %s") %
+                                 (', '.join(allowed_ar_states_msg), objid))
+                    self.err(_("Instrument not found"))
+                    continue
+
+                inst = insts[0].getObject()
+
+                # Create a new ReferenceAnalysis and link it to the Instrument
+                # Here we have an objid (i.e. R01200012) and
+                # a dict with results (the key is the AS keyword).
+                # How can we create a ReferenceAnalysis if we don't know
+                # which ReferenceSample we might use?
+                # Ok. The objid HAS to be the ReferenceSample code.
+                refsample = self.bc(portal_type='ReferenceSample', id=objid)
+                if refsample and len(refsample) == 1:
+                    refsample = refsample[0].getObject()
+
+                elif refsample and len(refsample) > 1:
+                    # More than one reference sample found!
+                    self.err(_("More than one reference sample found for '%s'") % objid)
+                    continue
+
+                else:
+                    # More than one reference sample found!
+                    self.err(_("No Reference Sample found for '%s'") % objid)
+                    continue
+
+                # For each acode, create a ReferenceAnalysis and attach it
+                # to the Reference Sample
+                service_uids = []
+                reference_type = 'b' if refsample.getBlank() == True else 'c'
+                services = self.bsc(portal_type='AnalysisService')
+                service_uids = [service.UID for service in services \
+                                if service.getObject().getKeyword() in results.keys()]
+                analyses = inst.addReferences(refsample, service_uids)
+
+            elif len(analyses) == 0:
+                # No analyses found
+                self.err(_("No Analysis Request with '%s' states neither QC"
+                                   " analyses found for %s") %
+                                 (', '.join(allowed_ar_states_msg), objid))
                 continue
+
             for acode, values in results.iteritems():
                 if acode not in acodes:
                     # Analysis keyword doesn't exist
@@ -353,16 +409,24 @@ class AnalysisResultsImporter(Logger):
                 processed = self._process_analysis(objid, analysis, values)
                 if processed:
                     ancount += 1
-
-                    ar = analysis.portal_type == 'Analysis' and analysis.aq_parent or None
-                    if ar and ar.UID:
-                        # Set AR imported info
-                        arprocessed.append(ar.UID())
-                        importedar = ar.getRequestID() in importedars.keys() \
-                                    and importedars[ar.getRequestID()] or []
-                        if acode not in importedar:
-                            importedar.append(acode)
-                        importedars[ar.getRequestID()] = importedar
+                    if inst:
+                        # Calibration Test (import to Instrument)
+                        instprocessed.append(inst.UID())
+                        importedinst = inst.title in importedinsts.keys() \
+                                    and importedinsts[inst.title] or []
+                        if acode not in importedinst:
+                            importedinst.append(acode)
+                        importedinsts[inst.title] = importedinst
+                    else:
+                        ar = analysis.portal_type == 'Analysis' and analysis.aq_parent or None
+                        if ar and ar.UID:
+                            # Set AR imported info
+                            arprocessed.append(ar.UID())
+                            importedar = ar.getRequestID() in importedars.keys() \
+                                        and importedars[ar.getRequestID()] or []
+                            if acode not in importedar:
+                                importedar.append(acode)
+                            importedars[ar.getRequestID()] = importedar
 
                     # Create the AttachmentType for mime type if not exists
                     attuid = None
@@ -389,6 +453,7 @@ class AnalysisResultsImporter(Logger):
                             # Attach the file to the Analysis
                             wss = analysis.getBackReferences('WorksheetAnalysis')
                             if wss and len(wss) > 0:
+                                #TODO: Mirar si es pot evitar utilitzar el WS i utilitzar directament l'Anàlisi (útil en cas de CalibrationTest)
                                 ws = wss[0]
                                 attachmentid = ws.invokeFactory("Attachment", id=tmpID())
                                 attachment = ws._getOb(attachmentid)
@@ -404,6 +469,7 @@ class AnalysisResultsImporter(Logger):
                                         attachments.append(other.UID())
                                 attachments.append(attachment.UID())
                                 analysis.setAttachment(attachments)
+
                         except:
 #                            self.err(_("Unable to attach results file '%s' to AR %s") %
 #                                     (self._parser.getInputFile().filename,
@@ -422,13 +488,33 @@ class AnalysisResultsImporter(Logger):
                     self.log(_("%s calculated result for '%s': '%s'") %
                          (ar.getRequestID(), analysis.getKeyword(), str(analysis.getResult())))
 
+        # Not sure if there's any reason why ReferenceAnalyses have not
+        # defined the method calculateResult...
+        # Needs investigation.
+        #for instuid in instprocessed:
+        #    inst = self.bsc(portal_type='Instrument',UID=instuid)[0].getObject()
+        #    analyses = inst.getAnalyses()
+        #    for analysis in analyses:
+        #        if (analysis.calculateResult(True, True)):
+        #            self.log(_("%s calculated result for '%s': '%s'") %
+        #                 (inst.title, analysis.getKeyword(), str(analysis.getResult())))
+
         for arid, acodes in importedars.iteritems():
             acodesmsg = ["Analysis %s" % acod for acod in acodes]
             msg = "%s: %s %s" % (arid, ", ".join(acodesmsg), "imported sucessfully")
             self.log(msg)
 
-        self.log(_("Import finished successfully: %s ARs and %s results updated") %
-                 (str(len(importedars)), str(ancount)))
+        for instid, acodes in importedinsts.iteritems():
+            acodesmsg = ["Analysis %s" % acod for acod in acodes]
+            msg = "%s: %s %s" % (instid, ", ".join(acodesmsg), "imported sucessfully")
+            self.log(msg)
+
+        if self.instrument_uid:
+            self.log(_("Import finished successfully: %s ARs, %s Instruments and %s results updated") %
+                    (str(len(importedars)), str(len(importedinsts)), str(ancount)))
+        else:
+            self.log(_("Import finished successfully: %s ARs and %s results updated") %
+                    (str(len(importedars)), str(ancount)))
 
     def _getZODBAnalyses(self, objid):
         """ Searches for analyses from ZODB to be filled with results.
@@ -480,22 +566,29 @@ class AnalysisResultsImporter(Logger):
                                                    'DuplicateAnalysis'], UID=objid)
 
                 if len(refans) == 0:
-                    self.err(_("No Analysis Request with '%s' states neither QC"
-                               " analyses found for %s") %
-                             (', '.join(allowed_ar_states_msg), objid))
                     return []
 
+                an = refans[0].getObject()
+                wss = an.getBackReferences('WorksheetAnalysis')
+                if wss and len(wss) > 0:
+                    analyses = [an for an in wss.getAnalyses() \
+                                if (an.portal_type == 'ReferenceAnalysis' \
+                                    or an.portal_type == 'DuplicateAnalysis')
+                                and an.getReferenceAnalysesGroupID() \
+                                    == refans.getReferenceAnalysesGroupID()]
                 else:
-                    an = refans[0].getObject()
-                    wss = an.getBackReferences('WorksheetAnalysis')
-                    if wss and len(wss) > 0:
-                        analyses = [an for an in wss.getAnalyses() \
-                                    if (an.portal_type == 'ReferenceAnalysis' \
-                                        or an.portal_type == 'DuplicateAnalysis')
-                                    and an.getReferenceAnalysesGroupID() \
-                                        == refans.getReferenceAnalysesGroupID()]
+                    # Look if the reference analysis have an instrument
+                    # linked but not a WS, so its a Calibration Test
+                    inst = an.getBackReferences('WorksheetInstrument');
+                    if inst and len(inst) > 0:
+                        # At least one Instrument found for this
+                        # ReferenceAnalysis.
+                        # TODO: Repasar el tema de ReferenceAnalysesGroupID()
+                        analyses = [an for an in instrument.getAnalyses() \
+                                    if an.getReferenceAnalysesGroupID() \
+                                    == refans.getReferenceAnalysesGroupID()]
                     else:
-                        analyses = [an.getObject() for an in refans]
+                        return []
             else:
                 analyses = [an.getObject() for an in refans]
 
@@ -559,13 +652,13 @@ class AnalysisResultsImporter(Logger):
 
         if len(interimsout) > 0:
             analysis.setInterimFields(interimsout)
-
         if resultsaved == False and (values.get(defresultkey, '') \
                                      or values.get(defresultkey, '') == 0 \
                                      or self._override[1] == True):
             # set the result
             res = values.get(defresultkey, '')
             self.log(_("%s result for '%s': '%s'") % (objid, acode, str(res)))
+            #TODO incorporar per veure detall d'importacio
             analysis.setResult(res)
             resultsaved = True
 

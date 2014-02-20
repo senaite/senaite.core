@@ -1,9 +1,9 @@
     <p></p>
-    
+
     <label for='thermoscientific_gallery_9861x_file'>File</label>&nbsp;
     <input type="file" name="thermoscientific_gallery_9861x_file" id="thermoscientific_gallery_9861x_file"/>
     &nbsp;&nbsp;
-    <label for='thermoscientific_gallery_9861x_format'>Format</label>&nbsp;    
+    <label for='thermoscientific_gallery_9861x_format'>Format</label>&nbsp;
     <select name="thermoscientific_gallery_9861x_format" id="thermoscientific_gallery_9861x_format">
         <option value='tsv_40'>TSV/XLS v4.0</option>
     </select>
@@ -42,7 +42,23 @@
                 </select>
             </td>
         </tr>
-    </table>    
+        <tr>
+            <td style='vertical-align:top;padding-right:30px;'><label for="thermoscientific_gallery_9861x_instrument">Instrument</label></td>
+            <td>
+                <select name="thermoscientific_gallery_9861x_instrument" id="thermoscientific_gallery_9861x_instrument"
+                        tal:define="instrlist view/getInstruments">
+                    <tal:options repeat="option instrlist">
+                    <option tal:attributes="value python:option;"
+                            tal:content="python:instrlist.getValue(option)"/>
+                    </tal:options>
+                </select>
+                <p i18n:translate="" style='color: #3F3F3F;font-size: 0.87em;'>
+                    If the system doesn't find any match (AnalysisRequest, Sample, Reference Analysis or Duplicate), it will use the record's identifier to find matches with Reference Sample IDs. If a Reference Sample ID is found, the system will automatically create a Calibration Test (Reference Analysis) and will link it to the seleced Instrument above.<br/>
+                    If no instrument selected, any Calibration Test will be created for orphan IDs.
+                </p>
+            </td>
+        </tr>
+    </table>
     <p></p>
     <input name="firstsubmit" type="submit" value="Submit" i18n:attributes="value"/>
     <p></p>

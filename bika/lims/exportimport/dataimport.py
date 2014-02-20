@@ -6,6 +6,8 @@ from bika.lims.exportimport import instruments
 from bika.lims.exportimport.load_setup_data import LoadSetupData
 from bika.lims.interfaces import ISetupDataSetList
 from plone.app.layout.globals.interfaces import IViewView
+from Products.Archetypes.public import DisplayList
+from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
 from pkg_resources import *
 from zope.component import getAdapters
@@ -84,3 +86,11 @@ class ajaxGetImportTemplate(BrowserView):
         plone.protect.CheckAuthenticator(self.request)
         exim = self.request.get('exim').replace(".", "/")
         return ViewPageTemplateFile("instruments/%s_import.pt" % exim)(self)
+
+    def getInstruments(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [('', '')] + [(o.UID, o.Title) for o in
+                               bsc(portal_type = 'Instrument',
+                                   inactive_state = 'active')]
+        items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
+        return DisplayList(list(items))

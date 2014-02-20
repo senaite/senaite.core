@@ -281,5 +281,24 @@
               expression=""
               inline="False"
               />
-
+  <javascript authenticated="False"
+              id="++resource++bika.lims.js/d3.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              />
+  <javascript authenticated="False"
+              id="++resource++bika.lims.js/bika.d3.controlchart.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              />
  </object>

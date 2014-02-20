@@ -10,14 +10,14 @@ from zope.interface import implements
 
 class InstrumentMaintenanceView(BikaListingView):
     implements(IFolderContentsView, IViewView)
-    
+
     def __init__(self, context, request):
         super(InstrumentMaintenanceView, self).__init__(context, request)
         self.catalog = "portal_catalog"
         self.contentFilter = {
             'portal_type': 'InstrumentMaintenanceTask',
         }
-        self.context_actions = {_('Add'): 
+        self.context_actions = {_('Add'):
                                 {'url': 'createObject?type_name=InstrumentMaintenanceTask',
                                  'icon': '++resource++bika.lims.images/add.png'}}
         self.show_sort_column = False
@@ -29,17 +29,17 @@ class InstrumentMaintenanceView(BikaListingView):
         self.icon = "++resources++bika.lims.images/instrumentmaintenance_big.png"
         self.title = _("Instrument Maintenance")
         self.description = ""
-        
+
         self.columns = {
             'getCurrentState' : {'title': ''},
             'Title': {'title': _('Task'),
-                      'index': 'sortable_title'},            
+                      'index': 'sortable_title'},
             'getType' : {'title': _('Task type', 'Type'), 'sortable': True},
             'getDownFrom': {'title': _('Down from'), 'sortable': True},
             'getDownTo': {'title': _('Down to'), 'sortable': True},
             'getMaintainer': {'title': _('Maintainer'), 'sortable': True},
         }
-        
+
         self.review_states = [
             {'id':'default',
              'title': _('Open'),
@@ -59,7 +59,7 @@ class InstrumentMaintenanceView(BikaListingView):
                          'getDownFrom',
                          'getDownTo',
                          'getMaintainer']},
-            
+
             {'id':'all',
              'title': _('All'),
              'contentFilter':{},
@@ -70,7 +70,7 @@ class InstrumentMaintenanceView(BikaListingView):
                          'getDownTo',
                          'getMaintainer']},
         ]
-    
+
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         outitems = []
@@ -78,7 +78,7 @@ class InstrumentMaintenanceView(BikaListingView):
         for man in self.context.getMaintenanceTasks():
             toshow.append(man.UID())
         for x in range (len(items)):
-            if not items[x].has_key('obj'): continue            
+            if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
             if obj.UID() in toshow:
                 items[x]['getType'] = safe_unicode(_(obj.getType()[0])).encode('utf-8')
@@ -87,7 +87,7 @@ class InstrumentMaintenanceView(BikaListingView):
                 items[x]['getMaintainer'] = safe_unicode(_(obj.getMaintainer())).encode('utf-8')
                 items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                      (items[x]['url'], safe_unicode(items[x]['Title']).encode('utf-8'))
-                        
+
                 status = obj.getCurrentState();
                 statustext = obj.getCurrentStateI18n();
                 statusimg = "";
@@ -101,35 +101,35 @@ class InstrumentMaintenanceView(BikaListingView):
                     statusimg = "instrumentmaintenance_overdue.png"
                 elif status == mstatus.PENDING:
                     statusimg = "instrumentmaintenance_pending.png"
-                    
+
                 items[x]['replace']['getCurrentState'] = \
                     "<img title='%s' src='%s/++resource++bika.lims.images/%s'/>" % \
                     (statustext, self.portal_url, statusimg)
-                outitems.append(items[x]) 
-        return outitems   
+                outitems.append(items[x])
+        return outitems
 
 class InstrumentCalibrationsView(BikaListingView):
     implements(IFolderContentsView, IViewView)
-    
+
     def __init__(self, context, request):
         super(InstrumentCalibrationsView, self).__init__(context, request)
         self.catalog = "portal_catalog"
         self.contentFilter = {
             'portal_type': 'InstrumentCalibration',
         }
-        self.context_actions = {_('Add'): 
+        self.context_actions = {_('Add'):
                                 {'url': 'createObject?type_name=InstrumentCalibration',
                                  'icon': '++resource++bika.lims.images/add.png'}}
         self.show_table_only = False
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
-        self.pagesize = 25 
+        self.pagesize = 25
         self.form_id = "instrumentcalibrations"
         self.icon = "++resources++bika.lims.images/instrumentcalibration_big.png"
         self.title = _("Instrument Calibrations")
         self.description = ""
-        
+
         self.columns = {
             'Title': {'title': _('Task'),
                       'index': 'sortable_title'},
@@ -146,7 +146,7 @@ class InstrumentCalibrationsView(BikaListingView):
                          'getDownTo',
                          'getCalibrator']},
         ]
-    
+
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         outitems = []
@@ -154,7 +154,7 @@ class InstrumentCalibrationsView(BikaListingView):
         for cal in self.context.getCalibrations():
             toshow.append(cal.UID())
         for x in range (len(items)):
-            if not items[x].has_key('obj'): continue            
+            if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
             if obj.UID() in toshow:
                 items[x]['getDownFrom'] = obj.getDownFrom()
@@ -162,31 +162,31 @@ class InstrumentCalibrationsView(BikaListingView):
                 items[x]['getCalibrator'] = obj.getCalibrator()
                 items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                      (items[x]['url'], items[x]['Title'])
-                outitems.append(items[x]) 
+                outitems.append(items[x])
         return outitems
-    
+
 class InstrumentCertificationsView(BikaListingView):
     implements(IFolderContentsView, IViewView)
-    
+
     def __init__(self, context, request):
         super(InstrumentCertificationsView, self).__init__(context, request)
         self.catalog = "portal_catalog"
         self.contentFilter = {
             'portal_type': 'InstrumentCertification',
         }
-        self.context_actions = {_('Add'): 
+        self.context_actions = {_('Add'):
                                 {'url': 'createObject?type_name=InstrumentCertification',
                                  'icon': '++resource++bika.lims.images/add.png'}}
         self.show_table_only = False
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
-        self.pagesize = 25 
+        self.pagesize = 25
         self.form_id = "instrumentcertifications"
         self.icon = "++resources++bika.lims.images/instrumentcertification_big.png"
         self.title = _("Instrument Certifications")
         self.description = ""
-        
+
         self.columns = {
             'Title': {'title': _('Certification Num'),
                       'index': 'sortable_title'},
@@ -205,7 +205,7 @@ class InstrumentCertificationsView(BikaListingView):
                          'getValidFrom',
                          'getValidTo']},
         ]
-    
+
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         outitems = []
@@ -213,7 +213,7 @@ class InstrumentCertificationsView(BikaListingView):
         for cer in self.context.getCertifications():
             toshow.append(cer.UID())
         for x in range (len(items)):
-            if not items[x].has_key('obj'): continue            
+            if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
             if obj.UID() in toshow:
                 items[x]['getAgency'] = obj.getAgency()
@@ -222,31 +222,31 @@ class InstrumentCertificationsView(BikaListingView):
                 items[x]['getValidTo'] = obj.getValidTo()
                 items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                      (items[x]['url'], items[x]['Title'])
-                outitems.append(items[x]) 
+                outitems.append(items[x])
         return outitems
 
 class InstrumentValidationsView(BikaListingView):
     implements(IFolderContentsView, IViewView)
-    
+
     def __init__(self, context, request):
         super(InstrumentValidationsView, self).__init__(context, request)
         self.catalog = "portal_catalog"
         self.contentFilter = {
             'portal_type': 'InstrumentValidation',
         }
-        self.context_actions = {_('Add'): 
+        self.context_actions = {_('Add'):
                                 {'url': 'createObject?type_name=InstrumentValidation',
                                  'icon': '++resource++bika.lims.images/add.png'}}
         self.show_table_only = False
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
-        self.pagesize = 25 
+        self.pagesize = 25
         self.form_id = "instrumentvalidations"
         self.icon = "++resources++bika.lims.images/instrumentvalidation_big.png"
         self.title = _("Instrument Validations")
         self.description = ""
-        
+
         self.columns = {
             'Title': {'title': _('Task'),
                       'index': 'sortable_title'},
@@ -263,7 +263,7 @@ class InstrumentValidationsView(BikaListingView):
                          'getDownTo',
                          'getValidator']},
         ]
-    
+
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         outitems = []
@@ -271,7 +271,7 @@ class InstrumentValidationsView(BikaListingView):
         for val in self.context.getValidations():
             toshow.append(val.UID())
         for x in range (len(items)):
-            if not items[x].has_key('obj'): continue        
+            if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
             if obj.UID() in toshow:
                 items[x]['getDownFrom'] = obj.getDownFrom()
@@ -279,12 +279,12 @@ class InstrumentValidationsView(BikaListingView):
                 items[x]['getValidator'] = obj.getValidator()
                 items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                      (items[x]['url'], items[x]['Title'])
-                outitems.append(items[x]) 
+                outitems.append(items[x])
         return outitems
 
 class InstrumentScheduleView(BikaListingView):
     implements(IFolderContentsView, IViewView)
-    
+
     def __init__(self, context, request):
         super(InstrumentScheduleView, self).__init__(context, request)
         self.catalog = "portal_catalog"
@@ -292,7 +292,7 @@ class InstrumentScheduleView(BikaListingView):
             'portal_type': 'InstrumentScheduledTask',
             'getInstrumentUID()':context.UID(),
         }
-        self.context_actions = {_('Add'): 
+        self.context_actions = {_('Add'):
                                 {'url': 'createObject?type_name=InstrumentScheduledTask',
                                  'icon': '++resource++bika.lims.images/add.png'}}
         self.show_table_only = False
@@ -300,13 +300,13 @@ class InstrumentScheduleView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = True
         self.show_select_all_checkbox = False
-        self.pagesize = 25 
-        
+        self.pagesize = 25
+
         self.form_id = "instrumentschedule"
         self.icon = "++resources++bika.lims.images/instrumentschedule_big.png"
         self.title = _("Instrument Scheduled Tasks")
         self.description = ""
-        
+
         self.columns = {
             'Title': {'title': _('Scheduled task'),
                       'index': 'sortable_title'},
@@ -315,7 +315,7 @@ class InstrumentScheduleView(BikaListingView):
             'creator': {'title': _('Created by')},
             'created' : {'title': _('Created')},
         }
-        
+
         self.review_states = [
             {'id':'default',
              'title': _('Active'),
@@ -344,16 +344,16 @@ class InstrumentScheduleView(BikaListingView):
                          'creator',
                          'created']},
         ]
-    
+
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         outitems = []
         toshow = []
         for sch in self.context.getSchedule():
             toshow.append(sch.UID())
-            
+
         for x in range (len(items)):
-            if not items[x].has_key('obj'): continue            
+            if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
             if obj.UID() in toshow:
                 items[x]['created'] = self.ulocalized_time(obj.created())
@@ -361,5 +361,161 @@ class InstrumentScheduleView(BikaListingView):
                 items[x]['getType'] = safe_unicode(_(obj.getType()[0])).encode('utf-8')
                 items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                      (items[x]['url'], items[x]['Title'])
-                outitems.append(items[x]) 
+                outitems.append(items[x])
         return outitems
+
+from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.config import QCANALYSIS_TYPES
+from bika.lims.permissions import *
+from operator import itemgetter
+from bika.lims.browser import BrowserView
+from bika.lims.browser.analyses import AnalysesView
+from bika.lims.browser.analyses import QCAnalysesView
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+import plone
+import json
+
+class InstrumentReferenceAnalysesViewView(BrowserView):
+    """ View of Reference Analyses linked to the Instrument.
+        Only shows the Reference Analyses (Control and Blanks), the rest
+        of regular and duplicate analyses linked to this instrument are
+        not displayed.
+        The Reference Analyses from an Instrument can be from Worksheets
+        (QC analysis performed regularly for any Analysis Request) or
+        attached directly to the instrument, without being linked to
+        any Worksheet). In this case, the Reference Analyses are created
+        automatically by the instrument import tool.
+    """
+
+    implements(IViewView)
+    template = ViewPageTemplateFile("templates/instrument_referenceanalyses.pt")
+
+    def __init__(self, context, request):
+        super(InstrumentReferenceAnalysesViewView, self).__init__(context, request)
+        self.icon = self.portal_url + "/++resource++bika.lims.images/referencesample_big.png"
+        self.title = _("Internal Calibration Tests")
+        self.description = ""
+        self._analysesview = None
+
+    def __call__(self):
+        return self.template()
+
+    def get_analyses_table(self):
+        """ Returns the table of Reference Analyses
+        """
+        return self.get_analyses_view().contents_table()
+
+    def get_analyses_view(self):
+        if not self._analysesview:
+            # Creates the Analyses View if not exists yet
+            self._analysesview = InstrumentReferenceAnalysesView(self.context,
+                                    self.request,
+                                    show_categories=False)
+            self._analysesview.allow_edit = False
+            self._analysesview.show_select_column = False
+            self._analysesview.show_workflow_action_buttons = False
+            self._analysesview.form_id = "%s_qcanalyses"
+            self._analysesview.review_states[0]['transitions'] = [{}]
+
+        return self._analysesview
+
+    def get_analyses_json(self):
+        return self.get_analyses_view().get_analyses_json()
+
+
+class InstrumentReferenceAnalysesView(AnalysesView):
+    """ View for the table of Reference Analyses linked to the Instrument.
+        Only shows the Reference Analyses (Control and Blanks), the rest
+        of regular and duplicate analyses linked to this instrument are
+        not displayed.
+    """
+
+    def __init__(self, context, request, **kwargs):
+        AnalysesView.__init__(self, context, request, **kwargs)
+        self.columns['getReferenceAnalysesGroupID'] = {'title': _('QC Sample ID'),
+                                                       'sortable': False}
+        self.columns['Partition'] = {'title': _('Reference Sample'),
+                                     'sortable': False}
+        self.review_states[0]['columns'] = ['Service',
+                                            'getReferenceAnalysesGroupID',
+                                            'Partition',
+                                            'Result',
+                                            'Uncertainty',
+                                            'CaptureDate']
+
+        analyses = self.context.getReferenceAnalyses()
+        asuids = [an.UID() for an in analyses]
+        self.catalog = 'bika_analysis_catalog'
+        self.contentFilter = {'UID': asuids,
+                              'sort_on': 'sortable_title'}
+        self.anjson = {}
+
+    def folderitems(self):
+        items = AnalysesView.folderitems(self)
+        for i in range(len(items)):
+            obj = items[i]['obj']
+            imgtype = ""
+            if obj.portal_type == 'ReferenceAnalysis':
+                antype = QCANALYSIS_TYPES.getValue(obj.getReferenceType())
+                if obj.getReferenceType() == 'c':
+                    imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/control.png'/>&nbsp;" % (antype, self.context.absolute_url())
+                if obj.getReferenceType() == 'b':
+                    imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/blank.png'/>&nbsp;" % (antype, self.context.absolute_url())
+                items[i]['replace']['Partition'] = "<a href='%s'>%s</a>" % (obj.aq_parent.absolute_url(), obj.aq_parent.id)
+            elif obj.portal_type == 'DuplicateAnalysis':
+                antype = QCANALYSIS_TYPES.getValue('d')
+                imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/duplicate.png'/>&nbsp;" % (antype, self.context.absolute_url())
+                items[i]['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getService().getKeyword())
+            else:
+                items[i]['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getService().getKeyword())
+
+            items[i]['before']['Service'] = imgtype
+            items[i]['sortcode'] = '%s_%s' % (obj.getReferenceAnalysesGroupID(),
+                                              obj.getService().getKeyword())
+
+            # Create json
+            reftype = obj.getReferenceType();
+            serviceref = "%s (%s)" % (items[i]['Service'], items[i]['Keyword'])
+            trows = self.anjson.get(serviceref, {});
+            anrows = trows.get(reftype, []);
+            anid = '%s.%s' % (items[i]['getReferenceAnalysesGroupID'],
+                              items[i]['id'])
+
+            rr = obj.aq_parent.getResultsRangeDict()
+            uid = obj.getServiceUID()
+            if uid in rr:
+                specs = rr[uid];
+                try:
+                    smin  = float(specs.get('min', 0))
+                    smax = float(specs.get('max', 0))
+                    error  = float(specs.get('error', 0))
+                    target = float(specs.get('result', 0))
+                    result = float(items[i]['Result'])
+                    error_amount = ((target / 100) * error) if target > 0 else 0
+                    upper  = smax + error_amount
+                    lower   = smin - error_amount
+
+                    anrow = { 'date': items[i]['CaptureDate'],
+                              'min': smin,
+                              'max': smax,
+                              'target': target,
+                              'error': error,
+                              'erroramount': error_amount,
+                              'upper': upper,
+                              'lower': lower,
+                              'result': result,
+                              'unit': items[i]['Unit'] }
+                    anrows.append(anrow);
+                    trows[reftype] = anrows;
+                    self.anjson[serviceref] = trows
+                except:
+                    pass
+
+        # Sort items
+        items = sorted(items, key = itemgetter('sortcode'))
+        return items
+
+    def get_analyses_json(self):
+        return json.dumps(self.anjson)
