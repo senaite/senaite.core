@@ -60,7 +60,8 @@ class Report(BrowserView):
         for analysis in analyses:
             analysis = analysis.getObject()
             analysisservice = analysis.getService()
-            department = analysisservice.getDepartment().Title()
+            department = analysisservice.getDepartment()
+            department = department.Title() if department else ''
             daterequested = analysis.created()
 
             group = ''

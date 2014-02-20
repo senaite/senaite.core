@@ -37,7 +37,7 @@ def read(context, request):
             contentFilter['sort_limit'] = int(request["limit"])
         except ValueError:
             pass
-    sort_on = request.get('sort_on', 'title')
+    sort_on = request.get('sort_on', 'id')
     contentFilter['sort_on'] = sort_on
     # sort order
     sort_order = request.get('sort_order', '')
