@@ -13,6 +13,9 @@
           stroke: #3d3d3d;
           stroke-width: 1.5;
         }
+        div.bika-listing-table-container {
+            display:none;
+        }
 
     </style>
     <script>
@@ -32,25 +35,50 @@
                     }
                 });
 
+                // Draw the chart and filter rows
+                filterRows();
+                drawControlChart();
+
                 $('#selanalyses').change(function(e) {
-                    drawControlChart($(this).val(), $('#selqcsample').val(), $('#interpolation').val());
+                    drawControlChart();
+                    filterRows();
                 });
 
                 $('#selqcsample').change(function(e) {
-                    drawControlChart($('#selanalyses').val(), $(this).val(), $('#interpolation').val());
+                    drawControlChart();
+                    filterRows();
                 });
 
                 $('#interpolation').change(function(e) {
-                    drawControlChart($('#selanalyses').val(), $('#selqcsample').val(), $('#interpolation').val());
+                    drawControlChart();
                 });
 
-                // Draw the chart
-                drawControlChart($('#selanalyses option:first-child').val(), $('#selqcsample option:first-child').val(), $('#interpolation').val());
-
+                $('div.bika-listing-table-container').fadeIn();
             });
         });
 
-        function drawControlChart(analysiskey, reftype, interpolation) {
+        function filterRows() {
+            var ankeyword = $('#selanalyses').val().split("(");
+            ankeyword = ankeyword[ankeyword.length-1].slice(0,-1).trim();
+            var idqc = $('#selqcsample').val();
+            var count = 0;
+            $('div.results-info').remove();
+            $('.item-listing-tbody tr').each(function( index ) {
+                if ($(this).attr('keyword') != ankeyword
+                    || $(this).find('td.Partition a').html() != idqc) {
+                    $(this).hide();
+                } else {
+                    $(this).fadeIn();
+                    count+=1;
+                }
+            });
+            $('.bika-listing-table').closest('div').before('<div class="results-info">'+count+' results found</div>');
+        }
+
+        function drawControlChart() {
+            var analysiskey = $('#selanalyses').val();
+            var reftype = $('#selqcsample').val();
+            var interpolation = $('#interpolation').val()
             if ($("#chart svg").length > 0) {
                 $("#chart").css('height', $("#chart").innerHeight());
                 $("#chart").css('width', $("#chart").innerWidth());
