@@ -8,15 +8,24 @@
 <metal:slot fill-slot="head_slot">
     <style>
         #chart { text-align:center; white-space:nowrap; overflow:auto;height:300px;}
+        .chart-options {
+            background: none repeat scroll 0 0 #EFEFEF;
+            border: 1px solid #DEDEDE;
+            border-radius: 5px 5px 5px 5px;
+            margin: 10px 0;
+            padding: 10px 15px;
+        }
         .domain {
           fill: none;
           stroke: #3d3d3d;
           stroke-width: 1.5;
         }
+        tr.selected td {
+            font-weight:bold;
+        }
         div.bika-listing-table-container {
             display:none;
         }
-
     </style>
     <script>
         jQuery(function($){
@@ -51,6 +60,21 @@
 
                 $('#interpolation').change(function(e) {
                     drawControlChart();
+                });
+
+                $('.item-listing-tbody tr').mouseover(function(e) {
+                    if ($(this).attr('uid') != '') {
+                        $(this).addClass('selected');
+                        var uid = $(this).attr('uid');
+                        $('#chart svg g circle#'+uid).trigger('__onmouseover');
+                    }
+                });
+                $('.item-listing-tbody tr').mouseout(function(e) {
+                    $(this).removeClass('selected');
+                    if ($(this).attr('uid') != '') {
+                        var uid = $(this).attr('uid');
+                        $('#chart svg g circle#'+uid).trigger('__onmouseout');
+                    }
                 });
 
                 $('div.bika-listing-table-container').fadeIn();
@@ -112,6 +136,7 @@
             chart.setInterpolation(interpolation);
             chart.setXColumn('date');
             chart.setYColumn('result');
+            chart.setPointId('id');
             chart.setYLabel(ylabel);
             chart.setXLabel('Date');
             chart.setUpperLimitText(uppertxt);

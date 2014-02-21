@@ -506,7 +506,8 @@ class InstrumentReferenceAnalysesView(AnalysesView):
                               'upper': upper,
                               'lower': lower,
                               'result': result,
-                              'unit': items[i]['Unit'] }
+                              'unit': items[i]['Unit'],
+                              'id': items[i]['uid'] }
                     anrows.append(anrow);
                     trows[qcid] = anrows;
                     self.anjson[serviceref] = trows

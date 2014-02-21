@@ -16,6 +16,8 @@ function ControlChart() {
     var upperlimit_text = "Upper Limit";
     var lowerlimit_text = "Center Limit";
     var interpolation = "basis";
+    var pointid = "";
+
     /**
      * Sets the data to the chart
      *
@@ -121,6 +123,13 @@ function ControlChart() {
     }
 
     /**
+     * Sets the key to be used to set the identifier to each point
+     */
+    this.setPointId = function(pointId) {
+        that.pointid = pointId;
+    }
+
+    /**
      * Draws the chart inside the container specified as 'canvas'
      * Accepts a jquery element identifier (i.e. '#chart')
      */
@@ -172,6 +181,7 @@ function ControlChart() {
         that.datasource.forEach(function(d) {
             d.x_axis = x_data_parse(d[that.xcolumnkey]);
             d.y_axis = tonumber(d[that.ycolumnkey]);
+            d.point_id = d[that.pointid];
         });
 
         x.domain(d3.extent(that.datasource, function(d) { return d.x_axis; }));
@@ -220,6 +230,7 @@ function ControlChart() {
             svg.append("g")
                 .attr("fill", "#2f2f2f")
                 .append("circle")
+                .attr("id", d.point_id)
                 .attr("r", 3)
                 .attr("cx", x(d.x_axis))
                 .attr("cy", y(d.y_axis))
@@ -231,6 +242,17 @@ function ControlChart() {
                         .remove();
                 })
                 .on("mouseover",  function() {
+                    d3.select(this)
+                        .attr("fill", "#4682b4")
+                        .attr("r", 6);
+                    d3.select(this.parentNode)
+                        .append("text")
+                            .attr("fill", "#000000")
+                            .style("font-size", "10px")
+                            .attr("x", x(d.x_axis) - 10)
+                            .attr("y", y(d.y_axis) - 10)
+                            .text(d.y_axis+that.ylabel);
+                }).on("click",  function() {
                     d3.select(this)
                         .attr("fill", "#4682b4")
                         .attr("r", 6);
