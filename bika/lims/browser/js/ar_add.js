@@ -811,7 +811,7 @@ function add_Yes(dlg, element, dep_services){
 		} else {
 			// otherwise, toggleCat will take care of everything for us
 			$.ajaxSetup({async:false});
-			toggleCat(key.poc, key.cat, dep.col, service_uids);
+			toggleCat(key.poc, key.cat_uid, key.col, service_uids);
 			$.ajaxSetup({async:true});
 		}
 	}
