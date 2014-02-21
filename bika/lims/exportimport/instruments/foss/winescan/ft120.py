@@ -84,30 +84,26 @@ class WinescanFT120CSVParser(WinescanCSVParser):
 
     def __init__(self, csv):
         WinescanCSVParser.__init__(self, csv)
-        self._omitrows = ['Calibration',
-                         'Pilot definition',
+        self._omitrows = ['Pilot definition',
                          'Pilot test',
                          'Zero setting',
                          'Zero correction']
         self._omit = False
         self._parsedresults = {}
+        self._calibration = 0
 
     def getAttachmentFileType(self):
         return "FOSS Winescan FT120 CSV"
 
     def _parseline(self, line):
-        if self.currentheader and line in self._omitrows:
-            self.currentheader = None
-            self._omit = True
-        elif line.startswith('Sample Id') or not self._omit:
-            self._omit = False
-            return WinescanCSVParser._parseline(self, line)
-        return 0
+        if line.startswith('Calibration'):
+            self._calibration += 1
+            return 0
+
+        return WinescanCSVParser._parseline(self, line)
 
     def _addRawResult(self, resid, values={}, override=False):
-        replicate = '1'
-
-        ''' Structure of values dict (dict entry for each analysis/field):
+        """ Structure of values dict (dict entry for each analysis/field):
 
             {'ALC': {'ALC': '13.55',
                      'DefaultResult': 'ALC',
@@ -127,56 +123,64 @@ class WinescanFT120CSVParser(WinescanCSVParser):
                       'Remarks': '',
                       'Rep #': '1'}
             }
-        '''
-
-        if 'Rep #' in values.keys():
-            replicate = values['Rep #']['Rep #']
-
-        replicates = {}
-        if resid in self._parsedresults.keys():
-            replicates = self._parsedresults[resid]
-
-        if replicate in replicates.keys():
-            self.err(_("Replicate '%s' already exists for '%s', line %s") % \
-                      (replicate, resid, self._numline))
-            return
-        else:
-            del values['Rep #']
-            replicates[replicate] = values
-        self._parsedresults[resid] = replicates
-
-    def resume(self):
-        """ Looks for, Replicates, Mean and Sd values foreach Sample.
-            If Mean and Sd values found for a sample, removes the replicates
-            and creates a unique rawresult for that sample with Mean and Sd.
-            If there's a sample with replicates but without Mean, logs an error
-            and removes the sample from rawresults
         """
-        self._emptyRawResults()
-        for objid, replicates in self._parsedresults.iteritems():
-            results = {}
-            if 'Mean' in replicates.keys():
-                results = replicates['Mean']
-                for key, value in replicates.get('Sd', {}).iteritems():
-                    results['Sd-%s' % key] = value
 
-            elif len(replicates) > 1:
-                self.err(_("More than one replica with no Mean for '%s'") % \
-                           objid)
-                continue
+        if 'Date' in values and 'Time' in values:
+            try:
+                dtstr = '%s %s' % (values.get('Date')['Date'], values.get('Time')['Time'])
+                # 2/11/2005 13:33 PM
+                from datetime import datetime
+                dtobj = datetime.strptime(dtstr, '%d/%m/%Y %H:%M %p')
+                values['DateTime'] = {'DateTime': dtobj.strftime("%Y%m%d %H:%M:%S"),
+                                      'DefaultValue': 'DateTime'};
+            except:
+                pass
+            del values['Date']
+            del values['Time']
 
-            elif len(replicates) < 1:
-                self.err(_("No replicas found for '%s'") % objid)
-                continue
+        values['Calibration'] = {'Calibration': self._calibration,
+                                 'DefaultValue': 'Calibration'}
 
+        # First, we must find if already exists a row with results for
+        # the same date, in order to take into account replicas, Mean
+        # and Standard Deviation
+        dtidx = values.get('Calibration',{}).get('Calibration',0)
+        rows = self.getRawResults().get(resid, [])
+        row, rows = self._extractrowbycalibration(rows, self._calibration)
+        is_std = values.get('Rep #',{}).get('Rep #','') == 'Sd'
+        is_mean = values.get('Rep #',{}).get('Rep #','') == 'Mean'
+        if is_std:
+            # Add the results of Standard Deviation. For each acode, add
+            # the Standard Result
+            del values['Rep #']
+            for key, value in values.iteritems():
+                row['Sd-%s' % key] = value
+        elif is_mean:
+            # Remove the # item and override with new values
+            row = values
+            del row['Rep #']
+        else:
+            # Override with new values
+            row = values
+        rows.append(row)
+        isfirst = True
+        for row in rows:
+            WinescanCSVParser._addRawResult(self, resid, row, isfirst)
+            isfirst = False
+
+    def _extractrowbycalibration(self, rows=[], calidx=0):
+        outrows = []
+        target = {}
+        for row in rows:
+            dtrow = row.get('Calibration', {}).get('Calibration',0)
+            if dtrow == calidx:
+                target = row
             else:
-                results = replicates.itervalues().next()
-
-            WinescanCSVParser._addRawResult(self, objid, results, True)
-        return WinescanCSVParser.resume(self)
+                outrows.append(row)
+        return target, outrows
 
 
 class WinescanFT120Importer(WinescanImporter):
 
     def getKeywordsToBeExcluded(self):
-        return ['Date', 'Time', 'Product']
+        return ['Product']

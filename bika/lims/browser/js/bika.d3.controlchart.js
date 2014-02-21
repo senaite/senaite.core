@@ -15,7 +15,7 @@ function ControlChart() {
     var lowerlimit_text = "Lower Limit";
     var upperlimit_text = "Upper Limit";
     var lowerlimit_text = "Center Limit";
-
+    var interpolation = "basis";
     /**
      * Sets the data to the chart
      *
@@ -114,6 +114,13 @@ function ControlChart() {
     }
 
     /**
+     * Sets the interpolation to be used for drawing the line
+     */
+    this.setInterpolation = function(interpolation) {
+        that.interpolation = interpolation;
+    }
+
+    /**
      * Draws the chart inside the container specified as 'canvas'
      * Accepts a jquery element identifier (i.e. '#chart')
      */
@@ -128,7 +135,7 @@ function ControlChart() {
             .range([0, width]);
 
         var y = d3.scale.linear()
-            .range([height, 0]);
+            .range([height,0]);
 
         var xAxis = d3.svg.axis()
             .scale(x)
@@ -141,7 +148,7 @@ function ControlChart() {
             .tickSize(0);
 
         var line = d3.svg.line()
-            .interpolate("basis")
+            .interpolate(that.interpolation)
             .x(function(d) { return x(d.x_axis); })
             .y(function(d) { return y(d.y_axis); });
 
@@ -168,7 +175,16 @@ function ControlChart() {
         });
 
         x.domain(d3.extent(that.datasource, function(d) { return d.x_axis; }));
-        y.domain(d3.extent(that.datasource, function(d) { return d.y_axis; }));
+        var min = d3.min(that.datasource, function(d) { return d.y_axis; });
+        if (min > that.lowerlimit) {
+            min = that.lowerlimit;
+        }
+        var max = d3.max(that.datasource, function(d) { return d.y_axis; });
+        if (max < that.upperlimit) {
+            max = that.upperlimit;
+        }
+        y.domain([min, max]);
+
         svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
