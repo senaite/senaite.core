@@ -14,6 +14,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.interfaces import IFieldIcons
 from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
 from bika.lims.utils import isActive
@@ -22,6 +23,7 @@ from plone.app.content.browser import tableview
 from plone.app.content.browser.foldercontents import FolderContentsView, FolderContentsTable
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.i18n.normalizer.interfaces import IIDNormalizer
+from zope.component import getAdapters
 from zope.component import getUtility
 from zope.component._api import getMultiAdapter
 from zope.i18n import translate
@@ -673,6 +675,16 @@ class BikaListingView(BrowserView):
 
             # extra classes for individual fields on this item { field_id : "css classes" }
             results_dict['class'] = {}
+            for name, adapter in getAdapters((obj, ), IFieldIcons):
+                auid = obj.UID() if hasattr(obj, 'UID') and callable(obj.UID) else None
+                if not auid:
+                    continue
+                alerts = adapter()
+                if alerts:
+                    if auid in self.field_icons:
+                        self.field_icons[auid].extend(alerts[auid])
+                    else:
+                        self.field_icons[auid] = alerts[auid]
 
             # Search for values for all columns in obj
             for key in self.columns.keys():

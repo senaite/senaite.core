@@ -1,0 +1,37 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+<head><title></title></head>
+             
+             
+<body>
+
+<div metal:fill-slot="main">
+
+    <h1>
+        <img src="" tal:attributes="src string:++resource++bika.lims.images/analysisprofile_big.png"/>
+        <span i18n:translate="heading_arpriority">Analysis Request Priority</span>
+    </h1>
+
+    <form method="post" name="analysisrequest_priority"
+        enctype="multipart/form-data">
+
+        <input type="hidden" name="submitted" value="1" />
+
+        <input tabindex=""
+            class="context"
+            type="submit"
+            name="submit"
+            value="Add"
+            i18n:attributes="value"
+            />                       
+
+    </form>
+
+</div>
+
+</body>
+</html>
+

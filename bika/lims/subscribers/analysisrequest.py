@@ -110,3 +110,17 @@ def AfterTransitionEventHandler(instance, event):
             doActionFor(analysis.getObject(), 'cancel')
 
     return
+
+def ObjectInitializedEventHandler(instance, event):
+
+    if instance.portal_type != "AnalysisRequest":
+        #import pdb; pdb.set_trace()
+        return
+
+    priority = instance.getPriority()
+    if priority:
+        #print 'Got priority'
+        return
+    
+    instance.setPriority(instance.getDefaultPriority())
+    return

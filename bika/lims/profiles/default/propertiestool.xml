@@ -39,6 +39,7 @@
     <element value="AnalysisSpec"/>
     <element value="ARImport"/>
     <element value="ARImportItem"/>
+    <element value="ARPriority"/>
     <element value="AnalysisProfile"/>
     <element value="ARReport"/>
     <element value="ARTemplate"/>

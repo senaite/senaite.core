@@ -1,5 +1,6 @@
 """The request for analysis by a client. It contains analysis instances.
 """
+import logging
 from AccessControl import ClassSecurityInfo
 from AccessControl.Permissions import delete_objects
 from archetypes.referencebrowserwidget import ReferenceBrowserWidget
@@ -27,6 +28,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IBikaCatalog
 from bika.lims.utils import sortable_title, to_unicode
+from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.widgets import ReferenceWidget
 from decimal import Decimal
 from email.Utils import formataddr
@@ -713,7 +715,28 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             visible=False,
         ),
-    )
+    ),
+    HistoryAwareReferenceField(
+        'Priority',
+        allowed_types=('ARPriority',),
+        referenceClass=HoldingReference,
+        relationship='AnalysisRequestPriority',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=ManageARPriority,
+        widget=ReferenceWidget(
+            label=_("Priority"),
+            size=10,
+            render_own_label=True,
+            visible={'edit': 'visible',
+                     'view': 'visible',
+                     'add': 'visible',
+                     'secondary': 'invisible'},
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active', 'sort_on': 'sortKey'},
+            showOn=True,
+        ),
+    ),
 )
 )
 
@@ -816,8 +839,21 @@ class AnalysisRequest(BaseFolder):
             else:
                 return "0.00"
 
-    security.declareProtected(View, 'getResponsible')
+    def getDefaultPriority(self):
+        """ compute default priority """
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        priorities = bsc(
+            portal_type = 'ARPriority',
+            )
+        for brain in priorities:
+            obj = brain.getObject()
+            if obj.getIsDefault():
+                return obj
 
+        logging.error('Priority: no priority specified')
+        return None
+
+    security.declareProtected(View, 'getResponsible')
     def getResponsible(self):
         """ Return all manager info of responsible departments """
         managers = {}
@@ -923,26 +959,25 @@ class AnalysisRequest(BaseFolder):
         """ Compute Subtotal
         """
         return sum(
-            [Decimal(obj.getService() and obj.getService().getPrice() or 0)
-            for obj in self.getBillableItems()])
+            [Decimal(obj.getPrice()) for obj in self.getBillableItems()])
 
     security.declareProtected(View, 'getVATTotal')
 
     def getVATTotal(self):
         """ Compute VAT """
         billable = self.getBillableItems()
-        services = [o.getService() for o in billable]
-        if None in services: return 0
-        else: return sum([o.getVATAmount() for o in services])
+        if len(billable) > 0:
+            return sum([o.getVATAmount() for o in billable])
+        return 0
 
     security.declareProtected(View, 'getTotalPrice')
 
     def getTotalPrice(self):
         """ Compute TotalPrice """
         billable = self.getBillableItems()
-        services = [o.getService() for o in billable]
-        if None in services: return 0
-        else: return sum([o.getTotalPrice() for o in services])
+        if len(billable) > 0:
+            return sum([o.getTotalPrice() for o in billable])
+        return 0
     getTotal = getTotalPrice
 
     security.declareProtected(ManageInvoices, 'issueInvoice')

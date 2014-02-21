@@ -412,5 +412,29 @@ class Analysis(BaseContent):
         """
         return True
 
+    def getPriority(self):
+        """ get priority from AR
+        """
+        ar = self.aq_parent
+        priority = ar.getPriority()
+        if priority:
+            return priority
+
+    def getPrice(self):
+        price = self.getService().getPrice()
+        priority = self.getPriority()
+        if priority and priority.getPricePremium() > 0:
+            price = Decimal(price) + (
+                      Decimal(price) * Decimal(priority.getPricePremium()) \
+                      / 100)
+        return price
+         
+    def getVATAmount(self):
+        vat = self.getService().getVAT()
+        price = self.getPrice()
+        return price * Decimal(vat) / 100
+         
+    def getTotalPrice(self):
+        return self.getPrice() + self.getVATAmount()
 
 atapi.registerType(Analysis, PROJECTNAME)

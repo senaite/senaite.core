@@ -43,6 +43,7 @@ def initialize(context):
     from content.analysisspec import AnalysisSpec
     from content.arimport import ARImport
     from content.arimportitem import ARImportItem
+    from content.arpriority import ARPriority
     from content.analysisprofile import AnalysisProfile
     from content.arreport import ARReport
     from content.artemplate import ARTemplate

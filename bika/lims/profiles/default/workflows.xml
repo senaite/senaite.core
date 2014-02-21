@@ -31,6 +31,10 @@
   <type type_id="ARImport">
    <bound-workflow workflow_id="bika_arimport_workflow"/>
   </type>
+  <type type_id="ARPriority">
+   <bound-workflow workflow_id="bika_one_state_workflow"/>
+   <bound-workflow workflow_id="bika_inactive_workflow"/>
+  </type>
  <type type_id="AnalysisProfiles"/>
  <type type_id="AnalysisProfile">
    <bound-workflow workflow_id="bika_one_state_workflow"/>

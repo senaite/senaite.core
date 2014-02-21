@@ -1100,6 +1100,8 @@ class Analysis_Services(WorksheetImporter):
                                         row.get('Container_title'))
             preservation = self.get_object(bsc, 'Preservation',
                                            row.get('Preservation_title'))
+            priority = self.get_object(bsc, 'ARPriority',
+                                           row.get('Priority_title'))
 
             obj.edit(
                 title=row['title'],
@@ -1127,7 +1129,8 @@ class Analysis_Services(WorksheetImporter):
                     row['title'], []) or [],
                 Separate=self.to_bool(row.get('Separate', False)),
                 Container=container,
-                Preservation=preservation
+                Preservation=preservation,
+                Priority=priority,
             )
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
@@ -1799,3 +1802,29 @@ class Lab_Products(WorksheetImporter):
             # Rename the object
             renameAfterCreation(obj)
 
+class AR_Priorities(WorksheetImporter):
+
+    def Import(self):
+        folder = self.context.bika_setup.bika_arpriorities
+        for row in self.get_rows(3):
+            if row['title']:
+                _id = folder.invokeFactory('ARPriority', id=tmpID())
+                obj = folder[_id]
+                obj.edit(title=row['title'],
+                         description=row.get('description', ''),
+                         pricePremium=row.get('pricePremium', 0),
+                         sortKey=row.get('sortKey', 0),
+                         isDefault=row.get('isDefault', 0) == 1,
+                         )
+                small_icon_name = row.get('smallIcon', None)
+                if small_icon_name:
+                    small_icon = self.get_file_data(small_icon_name)
+                    if small_icon:
+                        obj.setSmallIcon(small_icon)
+                big_icon_name = row.get('bigIcon', None)
+                if big_icon_name:
+                    big_icon = self.get_file_data(big_icon_name)
+                    if big_icon:
+                        obj.setBigIcon(big_icon)
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)

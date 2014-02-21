@@ -30,6 +30,10 @@
       provides="bika.lims.interfaces.IJSONReadExtender"
     />
 
+    <adapter
+      for="bika.lims.interfaces.IAnalysisRequest"
+      factory="bika.lims.browser.analysisrequest.PriorityIcons"
+    />
     <!-- main site/analysisrequests view -->
     <browser:page
       for="bika.lims.interfaces.IAnalysisRequestsFolder"
