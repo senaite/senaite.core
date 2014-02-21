@@ -1156,15 +1156,15 @@ function setAnalysisProfile(column, profile_title){
 					service_objects[i].Category;
 				if(categorised_services[key] === undefined)
 					categorised_services[key] = [];
-				categorised_services[key].push(service_objects[i].UID);
+				categorised_services[key].push(service_objects[i]);
 			}
 
 			for (var poc_cat in categorised_services) {
-				var service_uids = categorised_services[poc_cat];
+				var services = categorised_services[poc_cat];
 				var th = $("th#cat_"+poc_cat);
 				if($(th).hasClass("expanded")){
-					for (i in service_uids){
-						var service_uid = service_uids[i];
+					for (i in services){
+						var service_uid = services[i].UID;
 						var e = $("input[column='"+column+"']").filter("#"+service_uid);
 						$(e).prop("checked", true);
 						toggle_spec_fields($(e));
@@ -1172,7 +1172,11 @@ function setAnalysisProfile(column, profile_title){
 					recalc_prices(column);
 				} else {
 					var poc = poc_cat.split("_")[0];
-					var cat_uid = $(th).attr("cat");
+					var cat_uid = services[0].Category_uid;
+					var service_uids = [];
+					for(var x = 0; x<services.length;x++){
+						service_uids.push(services[x].UID);
+					}
 					$.ajaxSetup({async:false});
 					toggleCat(poc, cat_uid, column, service_uids);
 					$.ajaxSetup({async:true});
