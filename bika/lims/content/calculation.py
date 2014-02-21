@@ -136,13 +136,15 @@ class Calculation(BaseFolder, HistoryAwareMixin):
             deps = {}
         for service in self.getDependentServices():
             calc = service.getCalculation()
-            if not calc:
+            if calc == self:
                 continue
             if flat:
                 deps.append(service)
-                deps.extend(calc.getCalculationDependencies(flat=True))
+                if calc:
+                    deps.extend(calc.getCalculationDependencies(flat=True))
             else:
-                deps[service.UID()] = calc.getCalculationDependencies()
+                if calc:
+                    deps[service.UID()] = calc.getCalculationDependencies()
         return deps
 
     def getCalculationDependants(self):
