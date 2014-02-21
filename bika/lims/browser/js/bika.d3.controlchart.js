@@ -215,6 +215,35 @@ function ControlChart() {
             .attr("class", "line")
             .attr("d", line);
 
+        // set points
+        that.datasource.forEach(function(d) {
+            svg.append("g")
+                .attr("fill", "#2f2f2f")
+                .append("circle")
+                .attr("r", 3)
+                .attr("cx", x(d.x_axis))
+                .attr("cy", y(d.y_axis))
+                .on("mouseout", function() {
+                    d3.select(this)
+                        .attr("fill", "#2f2f2f")
+                        .attr("r", 3);
+                    d3.select(this.parentNode.children[1])
+                        .remove();
+                })
+                .on("mouseover",  function() {
+                    d3.select(this)
+                        .attr("fill", "#4682b4")
+                        .attr("r", 6);
+                    d3.select(this.parentNode)
+                        .append("text")
+                            .attr("fill", "#000000")
+                            .style("font-size", "10px")
+                            .attr("x", x(d.x_axis) - 10)
+                            .attr("y", y(d.y_axis) - 10)
+                            .text(d.y_axis+that.ylabel);
+                });
+        });
+
         // upper limit line
         svg.append("line")
             .attr("stroke", "#8e0000")
