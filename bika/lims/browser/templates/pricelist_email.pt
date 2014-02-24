@@ -1,0 +1,31 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  i18n:domain="bika">
+  <body>
+
+    <h1>
+    <img tal:condition="view/icon | nothing"
+       src="" tal:attributes="src view/icon"/>
+    <span style="position:relative;top:-0.2em;"
+      class="documentFirstHeading"
+      tal:content="context/title"/>
+    <span class="documentDescription;"
+      tal:content="context/description"
+      tal:condition="context/description|nothing"/>
+    </h1>
+
+    <div id="pricelist_content"
+      tal:content="structure view/pricelist_content"/>
+
+    <tal:hasremarks tal:condition="python:hasattr(context.aq_inner, 'Remarks')">
+      <tal:remarks define="
+        field python:context.Schema()['Remarks'];">
+        <p style="margin-top:2em;" tal:content="structure python:field.get(context)"/>
+      </tal:remarks>
+    </tal:hasremarks>
+
+  </body>
+</html>
+

@@ -969,7 +969,7 @@ msgstr ""
 
 #
 # File: ../browser/invoicefolder.py, line: 30
-msgid "Batch End Date"
+msgid "End Date"
 msgstr ""
 
 #
@@ -987,12 +987,12 @@ msgstr ""
 
 #
 # File: ../browser/invoicefolder.py, line: 29
-msgid "Batch Start Date"
+msgid "Start Date"
 msgstr ""
 
 #
 # File: ../content/invoicebatch.py, line: 26
-msgid "Batch end date"
+msgid "End Date"
 msgstr ""
 
 #
@@ -1002,7 +1002,7 @@ msgstr ""
 
 #
 # File: ../content/invoicebatch.py, line: 19
-msgid "Batch start date"
+msgid "Start Date"
 msgstr ""
 
 #

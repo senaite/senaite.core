@@ -1,0 +1,17 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  i18n:domain="bika">
+
+  <head>
+      <link rel="stylesheet" type="text/css" media="all" href=""
+            tal:attributes="href string:${view/portal_url}/++resource++bika.lims.css/print.css" />
+      <title tal:content="python:context.title"/>
+  </head>
+
+  <body onload="javascript:this.print();">
+    <div id="pricelist_content" tal:content="structure view/pricelist_content"/>
+  </body>
+
+</html>

@@ -26,8 +26,8 @@ class InvoiceFolderContentsView(BikaListingView):
         request.set('disable_border', 1)
         self.columns = {
             'title': {'title': _('Title')},
-            'start': {'title': _('Batch Start Date')},
-            'end': {'title': _('Batch End Date')},
+            'start': {'title': _('Start Date')},
+            'end': {'title': _('End Date')},
         }
         self.review_states = [
             {

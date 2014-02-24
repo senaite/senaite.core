@@ -93,5 +93,14 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Add missing pricelists folder"
+        description=""
+        source="3005"
+        destination="3006"
+        handler="bika.lims.upgrade.to3006.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
 

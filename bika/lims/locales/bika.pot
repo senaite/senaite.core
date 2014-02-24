@@ -870,7 +870,7 @@ msgid "Batch Data Path not found or empty"
 msgstr ""
 #
 # File: ../browser/invoicefolder.py, line: 30
-msgid "Batch End Date"
+msgid "End Date"
 msgstr ""
 #
 # File: ../browser/analysisrequest.py, line: 1766
@@ -885,11 +885,11 @@ msgid "Batch Labels"
 msgstr ""
 #
 # File: ../browser/invoicefolder.py, line: 29
-msgid "Batch Start Date"
+msgid "Start Date"
 msgstr ""
 #
 # File: ../content/invoicebatch.py, line: 26
-msgid "Batch end date"
+msgid "End Date"
 msgstr ""
 #
 # File: ../content/batch.py, line: 57
@@ -897,7 +897,7 @@ msgid "Batch labels"
 msgstr ""
 #
 # File: ../content/invoicebatch.py, line: 19
-msgid "Batch start date"
+msgid "Start Date"
 msgstr ""
 #
 # File: ../exportimport/instruments/agilent/masshunter_quant.py, line: 241

@@ -41,6 +41,7 @@
   <type portal_type="Query"/>
   <type portal_type="ReferenceDefinition"/>
   <type portal_type="ReferenceSample"/>
+  <type portal_type="Pricelist"/>
   <type portal_type="Sample"/>
   <type portal_type="SampleMatrix"/>
   <type portal_type="SampleCondition"/>

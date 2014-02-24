@@ -20,46 +20,34 @@
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
 
- <alias from="(Default)" to="pricelistfolder_pricelists"/>
- <alias from="view" to="pricelistfolder_pricelists"/>
+ <alias from="(Default)" to="base_view"/>
+ <alias from="view" to="base_view"/>
  <alias from="edit" to="base_edit"/>
 
- <action title="View"
-         action_id="view"
-         category="object"
-         condition_expr=""
-         icon_expr=""
-         link_target=""
-         url_expr="string:${object_url}/base_view"
-         i18n:attributes="title"
-         i18n:domain="plone"
-         visible="False">
+  <action title="View"
+        action_id="view"
+        category="object"
+        condition_expr=""
+        icon_expr=""
+        link_target=""
+        url_expr="string:${object_url}/base_view"
+        i18n:attributes="title"
+        i18n:domain="plone"
+        visible="True">
     <permission value="View"/>
- </action>
+</action>
 
- <action title="Edit"
-         action_id="edit"
-         category="object"
-         condition_expr=""
-         icon_expr=""
-         link_target=""
-         url_expr="string:${object_url}/base_edit"
-         i18n:attributes="title"
-         i18n:domain="plone"
-         visible="False">
+<action title="Edit"
+        action_id="edit"
+        category="object"
+        condition_expr=""
+        icon_expr=""
+        link_target=""
+        url_expr="string:${object_url}/base_edit"
+        i18n:attributes="title"
+        i18n:domain="plone"
+        visible="True">
     <permission value="Modify portal content"/>
- </action>
-
- <action title="Pricelists"
-         action_id="pricelists"
-         category="object"
-         condition_expr=""
-         icon_expr=""
-         link_target=""
-         url_expr="string:${object_url}/pricelistfolder_pricelists"
-         i18n:attributes="title"
-         visible="True">
-    <permission value="BIKA: Manage Pricelists"/>
- </action>
+</action>
 
 </object>

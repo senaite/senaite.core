@@ -22,7 +22,7 @@
 
  <alias from="(Default)" to="base_view"/>
  <alias from="view" to="base_view"/>
- <alias from="edit" to="base_edit"/>
+  <alias from="edit" to="base_edit"/>
 
  <action title="View"
          action_id="view"
@@ -46,7 +46,7 @@
          url_expr="string:${object_url}/base_edit"
          i18n:attributes="title"
          i18n:domain="plone"
-         visible="False">
+         visible="True">
     <permission value="Modify portal content"/>
  </action>
 
@@ -56,7 +56,7 @@
          condition_expr=""
          icon_expr=""
          link_target=""
-         url_expr="string:${object_url}/pricelist_print"
+         url_expr="string:${object_url}/print"
          i18n:attributes="title"
          visible="True">
     <permission value="View"/>
@@ -68,9 +68,9 @@
          condition_expr=""
          icon_expr=""
          link_target=""
-         url_expr="string:${object_url}/pricelist_email"
+         url_expr="string:${object_url}/email"
          i18n:attributes="title"
-         visible="True">
+         visible="False">
     <permission value="View"/>
  </action>
 

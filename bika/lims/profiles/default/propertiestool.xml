@@ -30,7 +30,6 @@
   <property name="metaTypesNotToList" type="lines">
     <element value="Contact"/>
     <element value="SupplierContact"/>
-    <element value="PricelistFolder"/>
     <element value="ATFile"/>
     <element value="Address"/>
     <element value="Analysis"/>
@@ -55,7 +54,7 @@
     <element value="DuplicateAnalysis"/>
     <element value="Instrument"/>
     <element value="InstrumentCalibration"/>
-	  <element value="InstrumentCertification"/>
+    <element value="InstrumentCertification"/>
     <element value="InstrumentMaintenanceTask"/>
     <element value="InstrumentScheduledTask"/>
     <element value="InstrumentType"/>
