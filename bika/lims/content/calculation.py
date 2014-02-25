@@ -130,20 +130,25 @@ class Calculation(BaseFolder, HistoryAwareMixin):
 
             set flat=True to get a simple list of AnalysisService objects
         """
+        if 'recursion_check' not in self.REQUEST:
+            self.REQUEST['recursion_check'] = []
         if flat:
             deps = []
         else:
             deps = {}
         for service in self.getDependentServices():
-            calc = service.getCalculation()
-            if calc == self:
+            if service in self.REQUEST['recursion_check']:
                 continue
-            if flat:
-                deps.append(service)
-                if calc:
+            self.REQUEST['recursion_check'].append(service)
+            calc = service.getCalculation()
+            if calc in self.REQUEST['recursion_check']:
+                continue
+            self.REQUEST['recursion_check'].append(calc)
+            if calc:
+                if flat:
+                    deps.append(service)
                     deps.extend(calc.getCalculationDependencies(flat=True))
-            else:
-                if calc:
+                else:
                     deps[service.UID()] = calc.getCalculationDependencies()
         return deps
 
