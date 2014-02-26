@@ -6,6 +6,7 @@ from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.config import PROJECTNAME
@@ -63,6 +64,17 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         )
     ),
 
+    HistoryAwareReferenceField('Method',
+        vocabulary='_getAvailableMethods',
+        allowed_types=('Method',),
+        relationship='InstrumentMethod',
+        required=0,
+        widget=SelectionWidget(
+            format='select',
+            label=_('Method'),
+        ),
+    ),
+
     # Procedures
     TextField('InlabCalibrationProcedure',
         schemata = 'Procedures',
@@ -85,14 +97,18 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         ),
     ),
 
+    #TODO: To be removed?
     StringField('DataInterface',
         vocabulary = "getDataInterfacesList",
         widget = ReferenceWidget(
             checkbox_bound = 0,
             label = _("Data Interface"),
             description = _("Select an Import/Export interface for this instrument."),
+            visible = False,
         ),
     ),
+
+    #TODO: To be removed?
     RecordsField('DataInterfaceOptions',
         type = 'interfaceoptions',
         subfields = ('Key','Value'),
@@ -103,13 +119,21 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
             label = _("Data Interface Options"),
             description = _("Use this field to pass arbitrary parameters to the export/import "
                             "modules."),
+            visible = False,
         ),
     ),
+
+    # References to all analyses performed with this instrument.
+    # Includes regular analyses, QC analyes and Calibration tests.
     ReferenceField('Analyses',
         required = 0,
         multiValued = 1,
-        allowed_types = ('ReferenceAnalysis','Analysis', 'DuplicateAnalysis'),
+        allowed_types = ('ReferenceAnalysis', 'DuplicateAnalysis',
+                         'Analysis'),
         relationship = 'InstrumentAnalyses',
+        widget = ReferenceWidget(
+            visible = False,
+        ),
     ),
 ))
 schema['description'].widget.visible = True
@@ -160,31 +184,41 @@ class Instrument(ATFolder):
         return getCalibrationAgents(self)
 
     def getManufacturers(self):
-        manufacturers = []
-        bsc = getToolByName(self, "bika_setup_catalog")
-        for manufacturer in bsc(portal_type = 'Manufacturer',
-                                inactive_state = 'active'):
-            manufacturers.append([manufacturer.UID, manufacturer.Title])
-        manufacturers.sort(lambda x,y:cmp(x[1], y[1]))
-        return DisplayList(manufacturers)
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(c.UID, c.Title) \
+                for c in bsc(portal_type='Manufacturer',
+                             inactive_state = 'active')]
+        items.sort(lambda x,y:cmp(x[1], y[1]))
+        return DisplayList(items)
 
     def getSuppliers(self):
-        suppliers = []
-        bsc = getToolByName(self, "bika_setup_catalog")
-        for supplier in bsc(portal_type = 'Supplier',
-                                inactive_state = 'active'):
-            suppliers.append([supplier.UID, supplier.getName])
-        suppliers.sort(lambda x,y:cmp(x[1], y[1]))
-        return DisplayList(suppliers)
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(c.UID, c.getName) \
+                for c in bsc(portal_type='Supplier',
+                             inactive_state = 'active')]
+        items.sort(lambda x,y:cmp(x[1], y[1]))
+        return DisplayList(items)
+
+    def _getAvailableMethods(self):
+        """ Returns the available (active) methods.
+            One method can be done by multiple instruments, but one
+            instrument can only be used in one method.
+        """
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(c.UID, c.Title) \
+                for c in bsc(portal_type='Method',
+                             inactive_state = 'active')]
+        items.sort(lambda x,y:cmp(x[1], y[1]))
+        items.insert(0, ('', self.translate(_('None'))))
+        return DisplayList(items)
 
     def getInstrumentTypes(self):
-        its = []
-        bsc = getToolByName(self, "bika_setup_catalog")
-        for it in bsc(portal_type = 'InstrumentType',
-                                inactive_state = 'active'):
-            its.append([it.UID, it.Title])
-        its.sort(lambda x,y:cmp(x[1], y[1]))
-        return DisplayList(its)
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(c.UID, c.Title) \
+                for c in bsc(portal_type='InstrumentType',
+                             inactive_state = 'active')]
+        items.sort(lambda x,y:cmp(x[1], y[1]))
+        return DisplayList(items)
 
     def getMaintenanceTasks(self):
         return self.objectValues('InstrumentMaintenanceTask')
