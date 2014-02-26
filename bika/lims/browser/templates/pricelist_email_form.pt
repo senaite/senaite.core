@@ -1,0 +1,70 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:tal="http://xml.zope.org/namespaces/tal"
+  xmlns:metal="http://xml.zope.org/namespaces/metal"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+  metal:use-macro="here/main_template/macros/master"
+  i18n:domain="bika">
+<body>
+
+  <metal:content-title fill-slot="content-title">
+      <h1>
+      <img tal:condition="view/icon | nothing"
+         src="" tal:attributes="src view/icon"/>
+      <span style="position:relative;top:-0.2em;"
+        class="documentFirstHeading"
+        tal:content="context/title"/>
+      <span class="documentDescription;"
+        tal:content="context/description"
+        tal:condition="context/description|nothing"/>
+      </h1>
+  </metal:content-title>
+
+  <metal:content-core fill-slot="content-core">
+    <form>
+      <input type="hidden" name="submitted" value="1"/>
+      <fieldset>
+        <div style="width:100%" class="field ArchetypesReferenceWidget">
+          <label i18n:translate="">Contacts</label>
+          <br/>
+          <input
+            type="text"
+            name="Batch"
+            id="Batch"
+            class="blurrable firstToFocus referencewidget"
+            value=""
+            base_query='{"portal_type": "Contact", "cancellation_state": "active"}'
+            search_query='{}'
+            catalog_name="portal_catalog"
+            ui_item="id"
+            autocomplete="false"
+            combogrid_options='{"colModel": [{"columnName": "Fullname", "align": "left", "label": "ID", "width": "100"},
+                                            {"columnName": "UID", "hidden": true}],
+                                "search_fields": ["Fullname"],
+                                "catalog_name": "portal_catalog",
+                                "url": "referencewidget_search",
+                                "discard_empty": [],
+                                "popup_width": "550px",
+                                "showOn": false,
+                                "searchIcon": true,
+                                "minLength": "0",
+                                "resetButton": false,
+                                "sord": "asc",
+                                "sidx": "id",
+                                "force_all": true,
+                                "portal_types": {}}'
+          />
+          <input
+                 type="hidden"
+                 name="Contact_uid"
+                 id="Contact_uid"
+                 value=""
+          />
+        </div>
+        <input type="submit" value="Send email" i18n:attributes="value"/>
+      </fieldset>
+    </form>
+  </metal:content-core>
+
+</body>
+</html>
+

@@ -4,13 +4,15 @@ from bika.lims.permissions import *
 
 
 def upgrade(tool):
-    """Added bika.lims.loader.js and bika.lims.method.edit.js
+    """Simple imports for missing PricelistFolder view
+    mimics bika2 behaviour faithfully
     """
 
     portal = aq_parent(aq_inner(tool))
     setup = portal.portal_setup
 
     # update affected tools
-    setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'propertiestool')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
 
     return True

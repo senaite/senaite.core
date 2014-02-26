@@ -184,6 +184,7 @@ class BikaGenerator:
         mp(AddClientFolder, ['Manager'], 1)
         mp(AddInvoice, ['Manager', 'LabManager'], 1)
         mp(AddMethod, ['Manager', 'LabManager'], 1)
+        mp(AddPricelist, ['Manager', 'Owner', 'LabManager'], 1)
         mp(AddSample, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
         mp(AddSampleMatrix, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddSamplePartition, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
@@ -209,7 +210,6 @@ class BikaGenerator:
         mp(ManageClients, ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(ManageLoginDetails, ['Manager', 'LabManager'], 1)
         mp(ManageOrders, ['Manager', 'LabManager', 'LabClerk'], 1)
-        mp(ManagePricelists, ['Manager', 'LabManager', 'Owner'], 1)
         mp(ManageReference, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(ManageSuppliers, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(ManageSamples, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'RegulatoryInspector'], 1)
@@ -371,6 +371,7 @@ class BikaGenerator:
         # /pricelists folder permissions
         mp = portal.pricelists.manage_permission
         mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
+        mp(ManagePricelists, ['Manager', 'LabManager', 'Owner'], 1)
         mp(permissions.ListFolderContents, ['Member'], 1)
         mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
         mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)

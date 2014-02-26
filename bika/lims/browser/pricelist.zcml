@@ -1,0 +1,41 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:five="http://namespaces.zope.org/five"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    i18n_domain="bika">
+
+    <browser:page
+      for="bika.lims.interfaces.IPricelistFolder"
+      name="base_view"
+      class="bika.lims.browser.pricelist.PricelistsView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IPricelist"
+      name="base_view"
+      class="bika.lims.browser.pricelist.PricelistView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IPricelist"
+      name="print"
+      class="bika.lims.browser.pricelist.PricelistPrintView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IPricelist"
+      name="email"
+      class="bika.lims.browser.pricelist.PricelistEmailView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+</configure>

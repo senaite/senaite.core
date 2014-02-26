@@ -1,26 +1,25 @@
 """PricelistFolder is a container for Pricelist instances.
 """
 from AccessControl import ClassSecurityInfo
-from ZODB.POSException import ConflictError
+from bika.lims.interfaces import IPricelistFolder
+from plone.app.folder import folder
+from bika.lims.content.bikaschema import BikaFolderSchema
+from bika.lims import PROJECTNAME
 from Products.Archetypes.public import *
-from Products.ATContentTypes.content.folder import ATBTreeFolder, \
-    ATBTreeFolderSchema
-from Products.CMFCore.utils import UniqueObject
-from Products.CMFCore import permissions
-from bika.lims import bikaMessageFactory as _
-from bika.lims.config import ManagePricelists, PROJECTNAME
+from zope.interface import implements
+from bika.lims.interfaces import IHaveNoBreadCrumbs
 
-schema = ATBTreeFolderSchema.copy()
+schema = BikaFolderSchema.copy()
 IdField = schema['id']
-IdField.widget.visible = {'edit':'hidden', 'view': 'invisible'}
+IdField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 TitleField = schema['title']
-TitleField.widget.visible = {'edit':'hidden', 'view': 'invisible'}
+TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 
-class PricelistFolder(UniqueObject, ATBTreeFolder):
+
+class PricelistFolder(folder.ATFolder):
+    implements(IPricelistFolder, IHaveNoBreadCrumbs)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
-
-    security.declareObjectProtected(ManagePricelists)
 
 registerType(PricelistFolder, PROJECTNAME)

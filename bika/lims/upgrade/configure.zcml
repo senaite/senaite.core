@@ -94,11 +94,20 @@
         profile="bika.lims:default"/>
 
 <genericsetup:upgradeStep
-        title="bika.lims.loader.js and bika.lims.method.edit.js"
-        description="Javascripts for managing method's edit view"
+        title="Add missing pricelists folder"
+        description=""
         source="3005"
         destination="3006"
         handler="bika.lims.upgrade.to3006.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="bika.lims.loader.js and bika.lims.method.edit.js"
+        description="Javascripts for managing method's edit view"
+        source="3006"
+        destination="3007"
+        handler="bika.lims.upgrade.to3007.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
 

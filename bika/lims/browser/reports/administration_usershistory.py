@@ -53,7 +53,7 @@ class Report(BrowserView):
                                               'Manufacturer'
                                               'Method',
                                               'Preservation',
-                                              'PriceList',
+                                              'Pricelist',
                                               'ReferenceAnalysis',
                                               'ReferenceDefinition',
                                               'ReferenceSample',
@@ -161,11 +161,11 @@ class Report(BrowserView):
             tmpkeys.sort(reverse=True)
             for index in range(len(tmpkeys)):
                 datalines.append(tmpdatalines[tmpkeys[index]])
-    
+
             self.report_data = {'parameters': parms,
                                 'datalines': datalines,
                                 'footlines': footlines }
-    
+
             return {'report_title': _('Users history'),
                     'report_data': self.template()}
-        
+

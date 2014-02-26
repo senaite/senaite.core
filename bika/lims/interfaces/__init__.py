@@ -458,6 +458,11 @@ class IARImportItem(Interface):
 
     "Marker interface for an ARImport"
 
+class IPricelist(Interface):
+    "Folder view marker for Pricelist"
+
+class IPricelistFolder(Interface):
+    "Folder view marker for PricelistFolder instance"
 
 class IProductivityReport(Interface):
 
