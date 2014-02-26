@@ -31,7 +31,13 @@
     />
 
     <adapter
+      name="ar-pi"
       for="bika.lims.interfaces.IAnalysisRequest"
+      factory="bika.lims.browser.analysisrequest.PriorityIcons"
+    />
+    <adapter
+      name="a-pi"
+      for="bika.lims.interfaces.IAnalysis"
       factory="bika.lims.browser.analysisrequest.PriorityIcons"
     />
     <!-- main site/analysisrequests view -->

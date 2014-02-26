@@ -801,16 +801,6 @@ class BikaGenerator:
             alsoProvides(obj, IARImportFolder)
             alsoProvides(obj, IHaveNoBreadCrumbs)
 
-        obj_id = 'arpriorities'
-        if obj_id not in context.objectIds():
-            context.invokeFactory('Folder', obj_id)
-            obj = context._getOb(obj_id)
-            obj.setTitle('AR Priorities')
-            workflow = getToolByName(context, "portal_workflow")
-            workflow.doActionFor(obj, "publish")
-            obj.setLayout('@@arpriorities')
-            alsoProvides(obj, IARPriorities)
-            alsoProvides(obj, IHaveNoBreadCrumbs)
 
 def setupVarious(context):
     """
