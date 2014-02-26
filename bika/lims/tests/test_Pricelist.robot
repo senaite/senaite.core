@@ -20,6 +20,7 @@ Test Pricelist-AR
 
     #Add Pricelist
     Go to                        http://localhost:55001/plone/pricelists
+    Sleep   300
     Wait until page contains     Add
     Click Link                   Add
     Wait until page contains     Add Pricelist

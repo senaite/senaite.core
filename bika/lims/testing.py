@@ -120,7 +120,7 @@ BIKA_FUNCTIONAL_TESTING = FunctionalTesting(
 )
 
 BIKA_ROBOT_TESTING = FunctionalTesting(
-    bases=(BIKA_TEST_FIXTURE, AUTOLOGIN_LIBRARY_FIXTURE, z2.ZSERVER_FIXTURE),
+    bases=(BIKA_TEST_FIXTURE, z2.ZSERVER_FIXTURE),
     name="BikaTestingLayer:Robot"
 )
 

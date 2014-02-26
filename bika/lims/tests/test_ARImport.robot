@@ -97,6 +97,7 @@ Import Profile AR File with errors
 
 
 Submit Valid AR Import
+    HangOn
     Open Workflow Menu
     Click Link                  link=Submit ARImport
     Wait until page contains    View
