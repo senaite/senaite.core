@@ -1,8 +1,10 @@
 from AccessControl import ClassSecurityInfo
 from Products.CMFCore.permissions import ModifyPortalContent, View
+from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.ateapi import RecordsField as RecordsField
+from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
@@ -27,6 +29,64 @@ schema = BikaSchema.copy() + Schema((
             description = _("Load documents describing the method here"),
         )
     ),
+
+    # The instruments linked to this method. Don't use this
+    # method, use getInstrumentUIDs() or getInstruments() instead
+    LinesField('_Instruments',
+        vocabulary='getInstrumentsDisplayList',
+        widget=MultiSelectionWidget(
+            modes = ('edit'),
+            label = _("Instruments"),
+            description = _("The selected instruments have support for "
+                            "this method. "
+                            "Use the Instrument edit view to assign "
+                            "the method to an especific instrument"),
+        ),
+    ),
+
+    # All the instruments available in the system. Don't use this
+    # method to retrieve the instruments linked to this method, use
+    # getInstruments() or getInstrumentUIDs() instead.
+    LinesField('_AvailableInstruments',
+        vocabulary='_getAvailableInstrumentsDisplayList',
+        widget=MultiSelectionWidget(
+            modes = ('edit'),
+        )
+    ),
+
+    # If no instrument selected, always True. Otherwise, the user will
+    # be able to set or unset the value. The behavior for this field
+    # is controlled with javascript.
+    BooleanField('ManualEntryOfResults',
+        default=False,
+        widget=BooleanWidget(
+            label=_("Manual entry of results"),
+            description=_("The results for the Analysis Services that "
+                          "use this method can be set manually"),
+        )
+    ),
+
+    # Calculations associated to this method. The analyses services
+    # with this method assigned will use the calculation selected here.
+    HistoryAwareReferenceField('Calculation',
+        required = 0,
+        vocabulary_display_path_bound = sys.maxint,
+        vocabulary = '_getCalculations',
+        allowed_types = ('Calculation',),
+        relationship = 'MethodCalculation',
+        referenceClass = HoldingReference,
+        widget = ReferenceWidget(
+            checkbox_bound = 0,
+            label = _("Calculation"),
+            description = _("If required, select a calculation for the "
+                            "The analysis services linked to this "
+                            "method. Calculations can be configured "
+                            "under the calculations item in the LIMS "
+                            "set-up"),
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
+        )
+    ),
 ))
 
 schema['description'].schemata = 'default'
@@ -38,10 +98,69 @@ class Method(BaseFolder):
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
+    instruments = None
+    instrumentsdl = None
+    calculationsdl = None
 
     _at_rename_after_creation = True
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
+
+    def isManualEntryOfResults(self):
+        """ Indicates if manual entry of results is allowed.
+            If no instrument is selected for this method, returns True.
+            Otherwise, returns False by default, but its value can be
+            modified using the ManualEntryOfResults Boolean Field
+        """
+        return len(getInstruments()) == 0 or getManualEntryOfResults()
+
+    def _getCalculations(self):
+        """ Returns a DisplayList with the available Calculations
+            registered in Bika-Setup. Used to fill the Calculation
+            ReferenceWidget.
+        """
+        if not self.calculationsdl:
+            bsc = getToolByName(self, 'bika_setup_catalog')
+            items = [(c.UID, c.Title) \
+                    for c in bsc(portal_type='Calculation',
+                                 inactive_state = 'active')]
+            items.sort(lambda x,y: cmp(x[1], y[1]))
+            items.insert(0, ('', self.translate(_('None'))))
+            self.calculationsdl = DisplayList(list(items))
+        return self.calculationsdl
+
+    def getInstruments(self):
+        """ Instruments capable to perform this method
+        """
+        if not self.instruments:
+            self.instruments = self.getBackReferences('InstrumentMethod')
+        return self.instruments
+
+    def getInstrumentUIDs(self):
+        """ UIDs of the instruments capable to perform this method
+        """
+        return [i.UID for i in self.getInstruments()]
+
+    def getInstrumentsDisplayList(self):
+        """ DisplayList containing the Instruments capable to perform
+            this method.
+        """
+        items = [(i.UID(), i.Title()) for i in self.getInstruments()]
+        return DisplayList(list(items))
+
+    def _getAvailableInstrumentsDisplayList(self):
+        """ Available instruments registered in the system
+            Only instruments with state=active will be fetched
+        """
+        if not self.instrumentsdl:
+            bsc = getToolByName(self, 'bika_setup_catalog')
+            items = [(i.UID, i.Title) \
+                    for i in bsc(portal_type='Instrument',
+                                 inactive_state = 'active')]
+            items.sort(lambda x,y: cmp(x[1], y[1]))
+            self.instrumentsdl = DisplayList(list(items))
+        return self.instrumentsdl
+
 
 registerType(Method, PROJECTNAME)
