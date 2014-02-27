@@ -19,4 +19,11 @@
     name="bika.lims.calculation_result_icons"
   />
 
+  <browser:page
+      for="*"
+      name="get_method_calculation"
+      class="bika.lims.browser.calcs.ajaxGetMethodCalculation"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+  />
 </configure>

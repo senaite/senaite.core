@@ -111,5 +111,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Migration of old AnalysisServices to the new approach"
+        description="Javascripts for managing analysisservice's edit view and migration of AnalysisService old method, instrument and calculation"
+        source="3007"
+        destination="3008"
+        handler="bika.lims.upgrade.to3008.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
 </configure>
 

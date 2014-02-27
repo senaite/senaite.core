@@ -520,3 +520,19 @@ class InstrumentReferenceAnalysesView(AnalysesView):
 
     def get_analyses_json(self):
         return json.dumps(self.anjson)
+
+class ajaxGetInstrumentMethod(BrowserView):
+    """ Returns the method assigned to the defined instrument.
+        uid: unique identifier of the instrument
+    """
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        methoddict = {}
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        instrument = bsc(portal_type='Instrument', UID=self.request.get("uid", '0'))
+        if instrument and len(instrument) == 1:
+            method = instrument[0].getObject().getMethod()
+            if method:
+                methoddict = {'uid': method.UID(),
+                              'title': method.Title()}
+        return json.dumps(methoddict)

@@ -8,7 +8,7 @@ from Products.Archetypes.public import DisplayList, ReferenceField, \
                         BooleanWidget, StringField, SelectionWidget, \
                         FixedPointField, DecimalWidget, IntegerField, \
                         IntegerWidget, StringWidget, BaseContent, \
-                        Schema, registerType
+                        Schema, registerType, MultiSelectionWidget
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
@@ -225,57 +225,212 @@ schema = BikaSchema.copy() + Schema((
                             "defined results calculations"),
         ),
     ),
-    HistoryAwareReferenceField('Method',
+    # Allow/Disallow manual entry of results
+    # Behavior controlled by javascript depending on Instruments field:
+    # - If InstrumentEntry not checked, set checked and readonly
+    # - If InstrumentEntry checked, set as not readonly
+    # See browser/js/bika.lims.analysisservice.edit.js
+    BooleanField('ManualEntryOfResults',
         schemata = "Method",
-        required = 0,
-        searchable = True,
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('Method',),
-        vocabulary = 'getMethods',
-        relationship = 'AnalysisServiceMethod',
-        referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
-            label = _("Method"),
-            description = _("Select analysis method"),
-            catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
-        ),
+        default=True,
+        widget=BooleanWidget(
+            label=_("Allow manual entry of results"),
+            description=_("Select if the results for this Analysis "
+                          "Service can be set manually."),
+        )
     ),
-    ReferenceField('Instrument',
+    # Allow/Disallow instrument entry of results
+    # Behavior controlled by javascript depending on Instruments field:
+    # - If no instruments available, hide and uncheck
+    # - If at least one instrument selected, checked, but not readonly
+    # See browser/js/bika.lims.analysisservice.edit.js
+    BooleanField('InstrumentEntryOfResults',
+        schemata = "Method",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Allow instrument entry of results"),
+            description=_("Select if the results for this Analysis "
+                          "Service can be set using an Instrument."),
+        )
+    ),
+    # Instruments associated to the AS
+    # List of instruments capable to perform the Analysis Service. The
+    # Instruments selected here are displayed in the Analysis Request
+    # Add view, closer to this Analysis Service if selected.
+    # - If InstrumentEntry not checked, hide and unset
+    # - If InstrumentEntry checked, set the first selected and show
+    ReferenceField('Instruments',
+        schemata = "Method",
+        required = 0,
+        multiValued = 1,
+        vocabulary_display_path_bound = sys.maxint,
+        vocabulary = '_getAvailableInstrumentsDisplayList',
+        allowed_types = ('Instrument',),
+        relationship = 'AnalysisServiceInstruments',
+        referenceClass = HoldingReference,
+        widget = MultiSelectionWidget(
+            label = _("Instruments"),
+            description = _("More than one instrument can do an "
+                            "Analysis Service. The instruments "
+                            "selected here are displayed in the "
+                            "Analysis Request creation view for its "
+                            "selection when this Analysis Service is "
+                            "selected."),
+        )
+    ),
+    # Default instrument to be used.
+    # Gets populated with the instruments selected in the multiselection
+    # box above.
+    # Behavior controlled by js depending on ManualEntry/Instruments:
+    # - Populate dynamically with selected Instruments
+    # - If InstrumentEntry checked, set first selected instrument
+    # - If InstrumentEntry not checked, hide and set None
+    # See browser/js/bika.lims.analysisservice.edit.js
+    HistoryAwareReferenceField('Instrument',
         schemata = "Method",
         searchable = True,
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
-        vocabulary = 'getInstruments',
+        vocabulary = '_getAvailableInstrumentsDisplayList',
         allowed_types = ('Instrument',),
         relationship = 'AnalysisServiceInstrument',
         referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
-            label = _("Instrument"),
-            description = _("Select the preferred instrument"),
-            catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
+        widget = SelectionWidget(
+            format='select',
+            label=_('Instrument'),
+            description=_("Default instrument")
         ),
     ),
+    # Returns the Default's instrument title. If no default instrument
+    # set, returns string.empty
     ComputedField('InstrumentTitle',
         expression = "context.getInstrument() and context.getInstrument().Title() or ''",
         widget = ComputedWidget(
             visible = False,
         ),
     ),
-    HistoryAwareReferenceField('Calculation',
+    # Methods associated to the AS
+    # List of methods capable to perform the Analysis Service. The
+    # Methods selected here are displayed in the Analysis Request
+    # Add view, closer to this Analysis Service if selected.
+    # Behavior controlled by js depending on ManualEntry/Instrument:
+    # - If InstrumentEntry checked, hide and unselect
+    # - If InsrtumentEntry not checked, show
+    # See browser/js/bika.lims.analysisservice.edit.js
+    ReferenceField('Methods',
+        schemata = "Method",
+        required = 0,
+        multiValued = 1,
+        vocabulary_display_path_bound = sys.maxint,
+        vocabulary = '_getAvailableMethodsDisplayList',
+        allowed_types = ('Method',),
+        relationship = 'AnalysisServiceMethods',
+        referenceClass = HoldingReference,
+        widget = MultiSelectionWidget(
+            label = _("Methods"),
+            description = _("The Analysis Service can be performed by "
+                            "using more than one Method. The methods "
+                            "selected here are displayed in the "
+                            "Analysis Request creation view for its "
+                            "selection when this Analaysis Service "
+                            "is selected"),
+        )
+    ),
+    # Default method to be used. This field is used in Analysis Service
+    # Edit view, use getMethod() to retrieve the Method to be used in
+    # this Analysis Service.
+    # Gets populated with the methods selected in the multiselection
+    # box above or with the default instrument's method.
+    # Behavior controlled by js depending on ManualEntry/Instrument/Methods:
+    # - If InstrumentEntry checked, set instrument's default method, and readonly
+    # - If InstrumentEntry not checked, populate dynamically with
+    #   selected Methods, set the first method selected and non-readonly
+    # See browser/js/bika.lims.analysisservice.edit.js
+    ReferenceField('_Method',
+        schemata = "Method",
+        required = 0,
+        searchable = True,
+        vocabulary_display_path_bound = sys.maxint,
+        allowed_types = ('Method',),
+        vocabulary = '_getAvailableMethodsDisplayList',
+        relationship = 'AnalysisServiceMethod',
+        referenceClass = HoldingReference,
+        widget = SelectionWidget(
+            format='select',
+            label=_('Method'),
+            description=_("Default method. If 'Allow instrument entry "
+                          "of results' is selected, the Default method to "
+                          "be used will be the method set in the "
+                          "Default Instrument. Otherwise, the Method "
+                          "to be used can be set manually.")
+        ),
+    ),
+    # Allow/Disallow to set the calculation manually
+    # Behavior controlled by javascript depending on Instruments field:
+    # - If no instruments available, hide and uncheck
+    # - If at least one instrument selected, checked, but not readonly
+    # See browser/js/bika.lims.analysisservice.edit.js
+    BooleanField('UseDefaultCalculation',
+        schemata = "Method",
+        default=True,
+        widget=BooleanWidget(
+            label=_("Use default calculation"),
+            description=_("Select if the calculation to be used is the "
+                          "calculation set by default in the default "
+                          "method. If unselected, the calculation can "
+                          "be selected manually"),
+        )
+    ),
+    # Default calculation to be used. This field is used in Analysis Service
+    # Edit view, use getCalculation() to retrieve the Calculation to be used in
+    # this Analysis Service.
+    # The default calculation is the one linked to the default method
+    # Behavior controlled by js depending on UseDefaultCalculation:
+    # - If UseDefaultCalculation is set to False, show this field
+    # - If UseDefaultCalculation is set to True, show this field
+    # See browser/js/bika.lims.analysisservice.edit.js
+    ReferenceField('_Calculation',
         schemata = "Method",
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
-        vocabulary = 'getCalculations',
+        vocabulary = '_getAvailableCalculationsDisplayList',
         allowed_types = ('Calculation',),
         relationship = 'AnalysisServiceCalculation',
         referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
-            label = _("Calculation"),
+        widget = SelectionWidget(
+            format='select',
+            label= _('Default Calculation'),
+            description = _("Default calculation to be used from the "
+                            "default Method selected. The Calculation "
+                            "for a method can be assigned in the Method "
+                            "edit view."),
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
+        ),
+    ),
+    # Default calculation is not longer linked directly to the AS: it
+    # currently uses the calculation linked to the default Method.
+    # Use getCalculation() to retrieve the Calculation to be used.
+    # Old ASes (before 3008 upgrade) can be linked to the same Method,
+    # but to different Calculation objects. In that case, the Calculation
+    # is saved as DeferredCalculation and UseDefaultCalculation is set to
+    # False in the upgrade.
+    # Behavior controlled by js depending on UseDefaultCalculation:
+    # - If UseDefaultCalculation is set to False, show this field
+    # - If UseDefaultCalculation is set to True, show this field
+    # See browser/js/bika.lims.analysisservice.edit.js
+    #     bika/lims/upgrade/to3008.py
+    ReferenceField('DeferredCalculation',
+        schemata = "Method",
+        required = 0,
+        vocabulary_display_path_bound = sys.maxint,
+        vocabulary = '_getAvailableCalculationsDisplayList',
+        allowed_types = ('Calculation',),
+        relationship = 'AnalysisServiceDeferredCalculation',
+        referenceClass = HoldingReference,
+        widget = SelectionWidget(
+            format='select',
+            label= _('Deferred Calculation'),
             description = _("If required, select a calculation for the analysis here. "
                             "Calculations can be configured under the calculations item "
                             "in the LIMS set-up"),
@@ -283,6 +438,7 @@ schema = BikaSchema.copy() + Schema((
             base_query={'inactive_state': 'active'},
         ),
     ),
+
     ComputedField('CalculationTitle',
         expression = "context.getCalculation() and context.getCalculation().Title() or ''",
         searchable = True,
@@ -553,6 +709,10 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
     displayContentsTab = False
     implements(IAnalysisService)
 
+    instrumentsdl = None
+    methodsdl = None
+    calculationsdl = None
+
     _at_rename_after_creation = True
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
@@ -636,38 +796,80 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
-    def getMethods(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('','')] + [(o.UID, o.Title) for o in
-                               bsc(portal_type='Method',
-                                   inactive_state = 'active')]
-        o = self.getMethod()
-        if o and o.UID() not in [i[0] for i in items]:
-            items.append((o.UID(), o.Title()))
-        items.sort(lambda x,y: cmp(x[1], y[1]))
-        return DisplayList(list(items))
+    def _getAvailableInstrumentsDisplayList(self):
+        """ Returns a DisplayList with the available Instruments
+            registered in Bika-Setup. Only active Instruments are
+            fetched. Used to fill the Instruments MultiSelectionWidget
+        """
+        if not self.instrumentsdl:
+            bsc = getToolByName(self, 'bika_setup_catalog')
+            items = [(i.UID, i.Title) \
+                    for i in bsc(portal_type='Instrument',
+                                 inactive_state = 'active')]
+            items.sort(lambda x,y: cmp(x[1], y[1]))
+            self.instrumentsdl = DisplayList(list(items))
+        return self.instrumentsdl
 
-    def getInstruments(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('','')] + [(o.UID, o.Title) for o in
-                               bsc(portal_type='Instrument',
-                                   inactive_state = 'active')]
-        o = self.getInstrument()
-        if o and o.UID() not in [i[0] for i in items]:
-            items.append((o.UID(), o.Title()))
-        items.sort(lambda x,y: cmp(x[1], y[1]))
-        return DisplayList(list(items))
+    def _getAvailableMethodsDisplayList(self):
+        """ Returns a DisplayList with the available Methods
+            registered in Bika-Setup. Only active Methods are
+            fetched. Used to fill the Methods MultiSelectionWidget
+        """
+        if not self.methodsdl:
+            bsc = getToolByName(self, 'bika_setup_catalog')
+            items = [(i.UID, i.Title) \
+                    for i in bsc(portal_type='Method',
+                                 inactive_state = 'active')]
+            items.sort(lambda x,y: cmp(x[1], y[1]))
+            self.methodsdl = DisplayList(list(items))
+        return self.methodsdl
 
-    def getCalculations(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('','')] + [(o.UID, o.Title) for o in
-                               bsc(portal_type='Calculation',
-                                   inactive_state = 'active')]
-        o = self.getCalculation()
-        if o and o.UID() not in [i[0] for i in items]:
-            items.append((o.UID(), o.Title()))
-        items.sort(lambda x,y: cmp(x[1], y[1]))
-        return DisplayList(list(items))
+    def _getAvailableCalculationsDisplayList(self):
+        """ Returns a DisplayList with the available Calculations
+            registered in Bika-Setup. Only active Calculations are
+            fetched. Used to fill the _Calculation and DeferredCalculation
+            List fields
+        """
+        if not self.calculationsdl:
+            bsc = getToolByName(self, 'bika_setup_catalog')
+            items = [(i.UID, i.Title) \
+                    for i in bsc(portal_type='Calculation',
+                                 inactive_state = 'active')]
+            items.sort(lambda x,y: cmp(x[1], y[1]))
+            self.calculationsdl = DisplayList(list(items))
+        return self.calculationsdl
+
+    def getCalculation(self):
+        """ Returns the calculation to be used in this AS.
+            If UseDefaultCalculation() is set, returns the calculation
+            from the default method selected or none (if method hasn't
+            defined any calculation). If UseDefaultCalculation is set
+            to false, returns the Deferred Calculation (manually set)
+        """
+        if self.getUseDefaultCalculation():
+            return self.getMethod().getCalculation() \
+                    if (self.getMethod() \
+                       and self.getMethod().getCalculation()) \
+                    else None
+        else:
+            return self.getDeferredCalculation()
+
+    def getMethod(self):
+        """ Returns the method assigned by default to the AS.
+            If Instrument Entry Of Results selected, returns the method
+            from the Default Instrument or None.
+            If Instrument Entry of Results is not selected, returns the
+            method assigned directly by the user using the _Method Field
+        """
+        method = None
+        if (self.getInstrumentEntryOfResults() == True):
+            method = self.getInstrument().getMethod() \
+                     if (self.getInstrument() \
+                        and self.getInstrument().getMethod()) \
+                     else None
+        else:
+            method = self.get_Method();
+        return method
 
     def getDepartments(self):
         bsc = getToolByName(self, 'bika_setup_catalog')

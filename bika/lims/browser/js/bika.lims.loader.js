@@ -9,6 +9,8 @@ $(document).ready(function(){
     var views = {
         ".template-base_edit.portaltype-method":
             ['MethodEditView'],
+        ".template-base_edit.portaltype-analysisservice":
+            ['AnalysisServiceEditView'],
     };
 
     // Instantiate the js objects needed for the current view

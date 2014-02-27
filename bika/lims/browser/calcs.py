@@ -339,3 +339,19 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         return json.dumps({'alerts': self.alerts,
                            'uncertainties': self.uncertainties,
                            'results': results})
+
+class ajaxGetMethodCalculation(BrowserView):
+    """ Returns the calculation assigned to the defined method.
+        uid: unique identifier of the method
+    """
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        calcdict = {}
+        bc = getToolByName(self, 'bika_catalog')
+        method = bc(portal_type='Method', UID=self.request.get("uid", '0'))
+        if method and len(method) == 1:
+            calc = method[0].getObject().getCalculation()
+            if calc:
+                calcdict = {'uid': calc.UID(),
+                            'title': calc.Title()}
+        return json.dumps(calcdict)
