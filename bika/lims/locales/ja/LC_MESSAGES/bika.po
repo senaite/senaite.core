@@ -100,11 +100,6 @@ msgid "%s calculated result for '%s': '%s'"
 msgstr ""
 
 #
-# File: ../exportimport/instruments/resultsimport.py, line: 507
-msgid "%s result for '%s': '%s'"
-msgstr ""
-
-#
 # File: ../exportimport/instruments/resultsimport.py, line: 512
 msgid "%s result for '%s': Empty"
 msgstr ""
@@ -163,6 +158,11 @@ msgid "10"
 msgstr ""
 
 #
+# File: ../content/arpriority.py, line: 42
+msgid "16x16 pixel icon used for the this priority in listings."
+msgstr ""
+
+#
 # File: ../browser/templates/analysisrequests.pt, line: 33
 msgid "2"
 msgstr ""
@@ -170,6 +170,11 @@ msgstr ""
 #
 # File: ../browser/templates/analysisrequests.pt, line: 34
 msgid "3"
+msgstr ""
+
+#
+# File: ../content/arpriority.py, line: 48
+msgid "32x32 pixel icon used for the this priority in object views."
 msgstr ""
 
 #
@@ -608,6 +613,12 @@ msgid "Analysis Request Imports"
 msgstr ""
 
 #
+# File: ../browser/arpriorities.py, line: 52
+# File: ../controlpanel/bika_arpriorities.py, line: 44
+msgid "Analysis Request Priorities"
+msgstr ""
+
+#
 # File: ../config.py, line: 64
 msgid "Analysis Request Specifications"
 msgstr ""
@@ -974,11 +985,6 @@ msgid "Batch Data Path not found or empty"
 msgstr ""
 
 #
-# File: ../browser/invoicefolder.py, line: 30
-msgid "End Date"
-msgstr ""
-
-#
 # File: ../browser/analysisrequest.py, line: 641
 # File: ../browser/batchfolder.py, line: 37
 # File: ../browser/mailtemplates/analysisrequest_results.pt, line: 144
@@ -992,23 +998,8 @@ msgid "Batch Labels"
 msgstr ""
 
 #
-# File: ../browser/invoicefolder.py, line: 29
-msgid "Start Date"
-msgstr ""
-
-#
-# File: ../content/invoicebatch.py, line: 25
-msgid "End Date"
-msgstr ""
-
-#
 # File: ../content/batch.py, line: 35
 msgid "Batch labels"
-msgstr ""
-
-#
-# File: ../content/invoicebatch.py, line: 18
-msgid "Start Date"
 msgstr ""
 
 #
@@ -1029,6 +1020,11 @@ msgstr ""
 #
 # File: ../browser/fields/coordinatefield.py, line: 23
 msgid "Bearing"
+msgstr ""
+
+#
+# File: ../content/arpriority.py, line: 47
+msgid "Big Icon"
 msgstr ""
 
 #
@@ -1253,6 +1249,11 @@ msgstr ""
 #
 # File: ../content/container.py, line: 42
 msgid "Check this box if this container is already preserved.Setting this will short-circuit the preservation workflow for sample partitions stored in this container."
+msgstr ""
+
+#
+# File: ../content/arpriority.py, line: 54
+msgid "Check this box if this is the default priority"
 msgstr ""
 
 #
@@ -1777,6 +1778,11 @@ msgid "Default Preservation"
 msgstr ""
 
 #
+# File: ../content/arpriority.py, line: 53
+msgid "Default Priority?"
+msgstr ""
+
+#
 # File: ../content/client.py, line: 64
 msgid "Default categories"
 msgstr ""
@@ -1957,6 +1963,12 @@ msgid "Download"
 msgstr ""
 
 #
+# File: ../browser/arpriorities.py, line: 67
+# File: ../controlpanel/bika_arpriorities.py, line: 65
+msgid "Draft"
+msgstr ""
+
+#
 # File: ../browser/analyses.py, line: 64
 # File: ../browser/worksheet.py, line: 216
 msgid "Dry"
@@ -2029,6 +2041,11 @@ msgid "Duplicate analysis quality control graphs"
 msgstr ""
 
 #
+# File: ../exportimport/instruments/foss/winescan/__init__.py, line: 63
+msgid "Duplicated result for '%s', line %s"
+msgstr ""
+
+#
 # File: ../content/analysis.py, line: 87
 msgid "Duration"
 msgstr ""
@@ -2073,6 +2090,11 @@ msgid "Email subject line"
 msgstr ""
 
 #
+# File: ../exportimport/instruments/foss/winescan/__init__.py, line: 59
+msgid "Empty result for %s, column %s, line %s"
+msgstr ""
+
+#
 # File: ../content/bikasetup.py, line: 193
 msgid "Enable AR Specifications"
 msgstr ""
@@ -2085,6 +2107,11 @@ msgstr ""
 #
 # File: ../content/bikasetup.py, line: 194
 msgid "EnableARSpecs_description"
+msgstr ""
+
+#
+# File: ../content/invoicebatch.py, line: 25
+msgid "End Date"
 msgstr ""
 
 #
@@ -2359,6 +2386,11 @@ msgid "If a sample is taken periodically at this sample point,  enter frequency 
 msgstr ""
 
 #
+# File: ../content/method.py, line: 81
+msgid "If required, select a calculation for the The analysis services linked to this method. Calculations can be configured under the calculations item in the LIMS set-up"
+msgstr ""
+
+#
 # File: ../content/analysisservice.py, line: 279
 msgid "If required, select a calculation for the analysis here. Calculations can be configured under the calculations item in the LIMS set-up"
 msgstr ""
@@ -2382,6 +2414,11 @@ msgstr ""
 #
 # File: ../exportimport/instruments/resultsimport.py, line: 387
 msgid "Import finished successfully: %s ARs and %s results updated"
+msgstr ""
+
+#
+# File: ../exportimport/instruments/resultsimport.py, line: 529
+msgid "Import finished successfully: %s ARs, %s Instruments and %s results updated"
 msgstr ""
 
 #
@@ -2495,6 +2532,11 @@ msgid "Instrument has no data interface selected"
 msgstr ""
 
 #
+# File: ../exportimport/instruments/resultsimport.py, line: 359
+msgid "Instrument not found"
+msgstr ""
+
+#
 # File: ../content/instrument.py, line: 26
 msgid "Instrument type"
 msgstr ""
@@ -2502,6 +2544,11 @@ msgstr ""
 #
 # File: ../controlpanel/bika_instruments.py, line: 29
 msgid "Instruments"
+msgstr ""
+
+#
+# File: ../browser/instrument.py, line: 398
+msgid "Internal Calibration Tests"
 msgstr ""
 
 #
@@ -2804,6 +2851,11 @@ msgid "Manager Phone"
 msgstr ""
 
 #
+# File: ../content/method.py, line: 63
+msgid "Manual entry of results"
+msgstr ""
+
+#
 # File: ../browser/supplier.py, line: 91
 # File: ../browser/templates/referencesample_sticker.pt, line: 51
 # File: ../browser/templates/referencesample_view.pt, line: 60
@@ -2991,6 +3043,11 @@ msgid "More than one analysis found for %s and %s"
 msgstr ""
 
 #
+# File: ../exportimport/instruments/resultsimport.py, line: 376
+msgid "More than one reference sample found for '%s'"
+msgstr ""
+
+#
 # File: ../exportimport/instruments/agilent/masshunter_quant.py, line: 416
 msgid "More than one sequence found for quantitative result %s"
 msgstr ""
@@ -3014,6 +3071,11 @@ msgid "No"
 msgstr ""
 
 #
+# File: ../exportimport/instruments/thermoscientific/gallery/__init__.py, line: 86
+msgid "No Analysis Code defined, line %s"
+msgstr ""
+
+#
 # File: ../exportimport/instruments/resultsimport.py, line: 440
 msgid "No Analysis Request with '%s' states neither QC analyses found for %s"
 msgstr ""
@@ -3026,6 +3088,21 @@ msgstr ""
 #
 # File: ../exportimport/instruments/agilent/masshunter_quant.py, line: 409
 msgid "No Data File found for quantitation result"
+msgstr ""
+
+#
+# File: ../exportimport/instruments/resultsimport.py, line: 381
+msgid "No Reference Sample found for '%s'"
+msgstr ""
+
+#
+# File: ../exportimport/instruments/thermoscientific/gallery/__init__.py, line: 91
+msgid "No Sample ID defined, line %s"
+msgstr ""
+
+#
+# File: ../exportimport/instruments/foss/winescan/__init__.py, line: 25
+msgid "No Sample ID found, line %s"
 msgstr ""
 
 #
@@ -3196,6 +3273,11 @@ msgid "Not Permitted"
 msgstr ""
 
 #
+# File: ../browser/analysisrequest.py, line: 2466
+msgid "Not available"
+msgstr ""
+
+#
 # File: ../browser/templates/worksheet_manage_results.pt, line: 75
 msgid "Not defined"
 msgstr ""
@@ -3203,11 +3285,6 @@ msgstr ""
 #
 # File: ../browser/mailtemplates/analysisrequest_results.pt, line: 459
 msgid "Not invoiced"
-msgstr ""
-
-#
-# File: ../browser/reports/templates/productivity_dataentrydaybook.pt, line: 72
-msgid "Number of Analysis Requests and totals submitted between a period of time"
 msgstr ""
 
 #
@@ -3233,11 +3310,6 @@ msgid "Number of analyses out of range for period"
 msgstr ""
 
 #
-# File: ../browser/reports/templates/productivity_analysesperformedpertotal.pt, line: 80
-msgid "Number of analyses published and expressed as a percentage of all analyses performed"
-msgstr ""
-
-#
 # File: ../browser/reports/productivity_analysesperservice.py, line: 35
 msgid "Number of analyses requested per analysis service"
 msgstr ""
@@ -3259,11 +3331,6 @@ msgid "Number of analysis requested and published per department and expresed as
 msgstr ""
 
 #
-# File: ../browser/reports/templates/productivity_analysesperdepartment.pt, line: 80
-msgid "Number of analysis requested and published per department and expressed as a percentage of all analyses performed"
-msgstr ""
-
-#
 # File: ../browser/reports/productivity_analysesperclient.py, line: 95
 msgid "Number of requests"
 msgstr ""
@@ -3271,6 +3338,11 @@ msgstr ""
 #
 # File: ../content/arimport.py, line: 138
 msgid "Number of samples"
+msgstr ""
+
+#
+# File: ../content/arpriority.py, line: 30
+msgid "Numeric value indicating the sort order of objects that are prioritised"
 msgstr ""
 
 #
@@ -3340,8 +3412,19 @@ msgid "Orphan value in column %s (%s)"
 msgstr ""
 
 #
+# File: ../exportimport/instruments/foss/winescan/__init__.py, line: 37
+# File: ../exportimport/instruments/thermoscientific/gallery/__init__.py, line: 79
+msgid "Orphan value in column %s, line %s"
+msgstr ""
+
+#
 # File: ../browser/reports/templates/productivity.pt, line: 385
 msgid "Other productivity reports"
+msgstr ""
+
+#
+# File: ../browser/reports/selection_macros/select_output_format.pt, line: 3
+msgid "Output format"
 msgstr ""
 
 #
@@ -3514,6 +3597,11 @@ msgid "Prefixes"
 msgstr ""
 
 #
+# File: ../controlpanel/bika_arpriorities.py, line: 51
+msgid "Premium"
+msgstr ""
+
+#
 # File: ../browser/sample.py, line: 50
 # File: ../browser/templates/sample_sticker_large.pt, line: 98
 # File: ../content/analysisservice.py, line: 116
@@ -3561,6 +3649,11 @@ msgid "Price (excluding VAT)"
 msgstr ""
 
 #
+# File: ../content/arpriority.py, line: 35
+msgid "Price Premium Percentage"
+msgstr ""
+
+#
 # File: ../content/labproduct.py, line: 30
 msgid "Price excluding VAT"
 msgstr ""
@@ -3568,6 +3661,11 @@ msgstr ""
 #
 # File: ../content/pricelist.py, line: 18
 msgid "Pricelist for"
+msgstr ""
+
+#
+# File: ../browser/pricelist.py, line: 26
+msgid "Pricelists"
 msgstr ""
 
 #
@@ -4252,11 +4350,6 @@ msgid "Samples of this type should be treated as hazardous"
 msgstr ""
 
 #
-# File: ../browser/reports/templates/productivity_dailysamplesreceived.pt, line: 41
-msgid "Samples received for a date range"
-msgstr ""
-
-#
 # File: ../browser/reports/productivity_samplereceivedvsreported.py, line: 92
 # File: ../browser/reports/templates/productivity_samplereceivedvsreported.pt, line: 20
 msgid "Samples received vs. reported"
@@ -4452,6 +4545,11 @@ msgid "Select which fields to display when 'Tabular view' is selected in the dis
 msgstr ""
 
 #
+# File: ../browser/templates/pricelist_email_form.pt, line: 63
+msgid "Send email"
+msgstr ""
+
+#
 # File: ../browser/templates/analysisservice_popup.pt, line: 263
 msgid "Separate"
 msgstr ""
@@ -4491,6 +4589,11 @@ msgstr ""
 #
 # File: ../exportimport/instruments/resultsimport.py, line: 295
 msgid "Service keyword %s not found"
+msgstr ""
+
+#
+# File: ../exportimport/instruments/resultsimport.py, line: 340
+msgid "Service keywords: no matches found"
 msgstr ""
 
 #
@@ -4558,8 +4661,19 @@ msgid "Small"
 msgstr ""
 
 #
+# File: ../content/arpriority.py, line: 41
+msgid "Small Icon"
+msgstr ""
+
+#
 # File: ../browser/analysisrequest.py, line: 458
 msgid "Some errors have been detected in the results report published from the Analysis Request %s. The Analysis Request %s has been created automatically and the previous has been invalidated.<br/>The possible mistake has been picked up and is under investigation.<br/><br/>%s%s"
+msgstr ""
+
+#
+# File: ../content/arpriority.py, line: 29
+# File: ../controlpanel/bika_arpriorities.py, line: 50
+msgid "Sort Key"
 msgstr ""
 
 #
@@ -4596,6 +4710,11 @@ msgstr ""
 #
 # File: ../content/analysisservice.py, line: 457
 msgid "Specify the uncertainty value for a given range, e.g. for results in a range with minimum of 0 and maximum of 10, the uncertainty value is 0.5 - a result of 6.67 will be reported as 6.67 +- 0.5. Please ensure successive ranges are continuous, e.g. 0.00 - 10.00 is followed by 10.01 - 20.00, 20.01 - 30 .00 etc."
+msgstr ""
+
+#
+# File: ../content/invoicebatch.py, line: 18
+msgid "Start Date"
 msgstr ""
 
 #
@@ -4858,6 +4977,11 @@ msgid "The number of requests and analyses per client"
 msgstr ""
 
 #
+# File: ../content/arpriority.py, line: 36
+msgid "The percentage used to calculate the price for analyses done at this priority"
+msgstr ""
+
+#
 # File: ../content/sampletype.py, line: 27
 msgid "The period for which un-preserved samples of this type can be kept before they expire and cannot be analysed any further"
 msgstr ""
@@ -4883,8 +5007,18 @@ msgid "The reference code issued to the lab by the accreditation body"
 msgstr ""
 
 #
+# File: ../content/method.py, line: 64
+msgid "The results for the Analysis Services that use this method can be set manually"
+msgstr ""
+
+#
 # File: ../content/analysisservice.py, line: 341
 msgid "The results of field analyses are captured during sampling at the sample point, e.g. the temperature of a water sample in the river where it is sampled. Lab analyses are done in the laboratory"
+msgstr ""
+
+#
+# File: ../content/method.py, line: 40
+msgid "The selected instruments have support for this method. Use the Instrument edit view to assign the method to an especific instrument"
 msgstr ""
 
 #
@@ -5127,6 +5261,11 @@ msgid "Undefined"
 msgstr ""
 
 #
+# File: ../exportimport/instruments/thermoscientific/gallery/__init__.py, line: 44
+msgid "Unexpected header format"
+msgstr ""
+
+#
 # File: ../browser/accreditation.py, line: 55
 # File: ../browser/fields/interimfieldsfield.py, line: 17
 # File: ../browser/templates/analysisrequest_analyses_not_requested.pt, line: 101
@@ -5231,11 +5370,6 @@ msgstr ""
 #
 # File: ../browser/instrument.py, line: 196
 msgid "Valid to"
-msgstr ""
-
-#
-# File: ../content/pricelist.py, line: 54
-msgid "Valid until"
 msgstr ""
 
 #
@@ -5564,16 +5698,6 @@ msgid "You must select an instrument"
 msgstr ""
 
 #
-# File: ../exportimport/instruments/logger.py, line: 11
-msgid "[ERROR] "
-msgstr ""
-
-#
-# File: ../exportimport/instruments/logger.py, line: 14
-msgid "[WARN] "
-msgstr ""
-
-#
 # File: ../browser/reports/administration_usershistory.py, line: 112
 msgid "action"
 msgstr ""
@@ -5641,6 +5765,12 @@ msgstr ""
 #
 # File: ../browser/mailtemplates/analysisrequest_results.pt, line: 118
 msgid "has been replaced by"
+msgstr ""
+
+#
+# File: ../browser/templates/arpriority_add_form.pt, line: 15
+#. Default: "Analysis Request Priority"
+msgid "heading_arpriority"
 msgstr ""
 
 #

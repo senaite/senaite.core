@@ -259,6 +259,11 @@ msgstr "Remove"
 msgid "verify_transition_title"
 msgstr "Verify"
 #
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/ARPriorities.xml, line: -1
+msgid "AR Priorities"
+msgstr ""
+#
 # File: ../profiles/default/types/ARTemplate.xml, line: -1
 msgid "AR Template"
 msgstr ""
@@ -401,14 +406,6 @@ msgstr ""
 msgid "Calculations"
 msgstr ""
 #
-# File: ../profiles/default/types/Instrument.xml, line: -1
-msgid "Calibrations"
-msgstr ""
-#
-# File: ../profiles/default/types/Instrument.xml, line: -1
-msgid "Certifications"
-msgstr ""
-#
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Client"
 msgstr ""
@@ -486,6 +483,10 @@ msgstr ""
 # File: ../profiles/default/types/InstrumentType.xml, line: -1
 # File: ../profiles/default/types/Instruments.xml, line: -1
 msgid "Instruments"
+msgstr ""
+#
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Internal Calibration Tests"
 msgstr ""
 #
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
@@ -735,10 +736,6 @@ msgstr ""
 msgid "Sampling Deviations"
 msgstr ""
 #
-# File: ../profiles/default/types/Instrument.xml, line: -1
-msgid "Schedule"
-msgstr ""
-#
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Sample.xml, line: -1
 # File: ../profiles/default/types/SamplePartition.xml, line: -1
@@ -761,10 +758,6 @@ msgstr ""
 #
 # File: ../profiles/default/types/SupplyOrder.xml, line: -1
 msgid "Supply Order"
-msgstr ""
-#
-# File: ../profiles/default/types/Instrument.xml, line: -1
-msgid "Validations"
 msgstr ""
 #
 # File: ../profiles/default/types/Worksheet.xml, line: -1
