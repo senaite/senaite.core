@@ -592,6 +592,10 @@ class ARImport(BaseFolder):
             if len(priorities) < 1:
                 logging.error(
                     'Invalid Priority: validation should have prevented this')
+                priority = ''
+                import pdb; pdb.set_trace()
+            else:
+                priority = priorities[0].getObject()
 
             ar_id = tmpID()
             client.invokeFactory(id = ar_id, type_name = 'AnalysisRequest')
@@ -609,7 +613,7 @@ class ARImport(BaseFolder):
                 Profile = ar_profile,
                 Analyses = analyses,
                 Remarks = aritem.getClientRemarks(),
-                Priority = priorities[0]
+                Priority = priority,
                 )
             ar.setSample(sample_uid)
             sample = ar.getSample()

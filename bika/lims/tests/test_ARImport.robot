@@ -20,6 +20,7 @@ ${PATH_TO_TEST} =
 
 Test AR Importing dependencies
     Log in                      test_labmanager  test_labmanager
+    Wait until page contains    You are now logged in
 
     Import Classic Valid AR
     Submit Valid AR Import
@@ -97,9 +98,9 @@ Import Profile AR File with errors
 
 
 Submit Valid AR Import
-    HangOn
     Open Workflow Menu
     Click Link                  link=Submit ARImport
+    Sleep                       10s
     Wait until page contains    View
     Page Should Contain         Submitted
 
