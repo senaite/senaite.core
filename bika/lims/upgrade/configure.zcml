@@ -119,5 +119,14 @@
         handler="bika.lims.upgrade.to3008.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Instrument certificates"
+        description=""
+        source="3008"
+        destination="3009"
+        handler="bika.lims.upgrade.to3009.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
 </configure>
 

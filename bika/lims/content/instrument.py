@@ -227,7 +227,59 @@ class Instrument(ATFolder):
         return self.objectValues('InstrumentCalibration')
 
     def getCertifications(self):
+        """ Returns the certifications of the instrument. Both internal
+            and external certifitions
+        """
         return self.objectValues('InstrumentCertification')
+
+    def getValidCertifications(self, includeinternals=True):
+        """ Returns the certifications fully valid
+        """
+        from datetime import date
+        from DateTime import DateTime
+        certs = []
+        today = date.today()
+        for c in self.getCertifications():
+            validfrom = c.getValidFrom().asdatetime().date()
+            validto = c.getValidTo().asdatetime().date()
+            if (today >= validfrom and today <= validto):
+                certs.append(c)
+        return certs
+
+    def getFurtherCertifications(self, includeinternals=True):
+        from datetime import date
+        from DateTime import DateTime
+        certs = []
+        today = date.today()
+        for c in self.getCertifications():
+            validfrom = c.getValidFrom().asdatetime().date()
+            validto = c.getValidTo().asdatetime().date()
+            if (validfrom > today and today <= validto):
+                certs.append(c)
+        return certs
+
+    def isOutOfDate(self, includeinternals=True):
+        """ Returns if the current instrument is out-of-date regards to
+            its certifications
+        """
+        return self.getValidCertifications() == 0
+
+    def getLatestCertifications(self, includeinternals=True):
+        """ Returns the latest valid certifications
+        """
+        from datetime import date
+        from DateTime import DateTime
+        latest = None
+        latestcert = None
+        today = date.today()
+        for c in self.getCertifications():
+            validfrom = c.getValidFrom().asdatetime().date()
+            validto = c.getValidTo().asdatetime().date()
+            if today >= validfrom and today <= validto \
+               and (not latest or validto > latest):
+                latest = validto
+                latestcert = c
+        return [latestcert,] if latestcert else []
 
     def getValidations(self):
         return self.objectValues('InstrumentValidation')

@@ -4,7 +4,7 @@
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
         i18n:domain="plone"
         purge="True">
- <property name="title">InstrumentCertification</property>
+ <property name="title">Calibration Certificate</property>
  <property name="description"></property>
  <property name="content_icon">++resource++bika.lims.images/instrumentcertification.png</property>
  <property name="content_meta_type">InstrumentCertification</property>

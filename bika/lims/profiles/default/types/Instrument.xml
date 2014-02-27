@@ -61,6 +61,15 @@
   <permission value="List folder contents"/>
  </action>
 
+ <action title="Certificates"
+         action_id="certifications"
+         category="object"
+         url_expr="string:${object_url}/certifications"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="True">
+ </action>
+
 <!--
  <action title="Maintenance"
         action_id="maintenance"
@@ -94,17 +103,6 @@
         visible="True">
     <permission value="Modify portal content"/>
  </action>
-
-  <action title="Certifications"
-        action_id="certification"
-        category="object"
-        condition_expr=""
-        icon_expr="string:${portal_url}/images/instrumentcertification.png"
-        url_expr="string:${object_url}/certifications"
-        i18n:attributes="title"
-        visible="True">
-    <permission value="Modify portal content"/>
-  </action>
 
   <action title="Validations"
         action_id="validation"

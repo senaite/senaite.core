@@ -575,8 +575,6 @@ class Instruments(WorksheetImporter):
                 Brand=row['Brand'],
                 Model=row['Model'],
                 SerialNo=row.get('SerialNo', ''),
-                CalibrationCertificate=row.get('CalibrationCertificate', ''),
-                CalibrationExpiryDate=row.get('CalibrationExpiryDate', ''),
                 DataInterface=row.get('DataInterface', '')
             )
             instrumenttype = self.get_object(bsc, 'InstrumentType',

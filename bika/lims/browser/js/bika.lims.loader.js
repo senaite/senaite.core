@@ -11,6 +11,8 @@ $(document).ready(function(){
             ['MethodEditView'],
         ".template-base_edit.portaltype-analysisservice":
             ['AnalysisServiceEditView'],
+        ".template-base_edit.portaltype-instrumentcertification":
+            ['InstrumentCertificationEditView']
     };
 
     // Instantiate the js objects needed for the current view

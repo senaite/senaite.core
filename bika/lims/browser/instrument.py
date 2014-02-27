@@ -7,6 +7,18 @@ from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
+from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.config import QCANALYSIS_TYPES
+from bika.lims.permissions import *
+from operator import itemgetter
+from bika.lims.browser import BrowserView
+from bika.lims.browser.analyses import AnalysesView
+from bika.lims.browser.analyses import QCAnalysesView
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+import plone
+import json
 
 class InstrumentMaintenanceView(BikaListingView):
     implements(IFolderContentsView, IViewView)
@@ -165,66 +177,6 @@ class InstrumentCalibrationsView(BikaListingView):
                 outitems.append(items[x])
         return outitems
 
-class InstrumentCertificationsView(BikaListingView):
-    implements(IFolderContentsView, IViewView)
-
-    def __init__(self, context, request):
-        super(InstrumentCertificationsView, self).__init__(context, request)
-        self.catalog = "portal_catalog"
-        self.contentFilter = {
-            'portal_type': 'InstrumentCertification',
-        }
-        self.context_actions = {_('Add'):
-                                {'url': 'createObject?type_name=InstrumentCertification',
-                                 'icon': '++resource++bika.lims.images/add.png'}}
-        self.show_table_only = False
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_column = True
-        self.pagesize = 25
-        self.form_id = "instrumentcertifications"
-        self.icon = "++resources++bika.lims.images/instrumentcertification_big.png"
-        self.title = _("Instrument Certifications")
-        self.description = ""
-
-        self.columns = {
-            'Title': {'title': _('Certification Num'),
-                      'index': 'sortable_title'},
-            'getAgency': {'title': _('Agency')},
-            'getDate': {'title': _('Date')},
-            'getValidFrom': {'title': _('Valid from')},
-            'getValidTo': {'title': _('Valid to')},
-        }
-        self.review_states = [
-            {'id':'default',
-             'title':_('All'),
-             'contentFilter':{},
-             'columns': [ 'Title',
-                         'getAgency',
-                         'getDate',
-                         'getValidFrom',
-                         'getValidTo']},
-        ]
-
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        outitems = []
-        toshow = []
-        for cer in self.context.getCertifications():
-            toshow.append(cer.UID())
-        for x in range (len(items)):
-            if not items[x].has_key('obj'): continue
-            obj = items[x]['obj']
-            if obj.UID() in toshow:
-                items[x]['getAgency'] = obj.getAgency()
-                items[x]['getDate'] = obj.getDate()
-                items[x]['getValidFrom'] = obj.getValidFrom()
-                items[x]['getValidTo'] = obj.getValidTo()
-                items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                     (items[x]['url'], items[x]['Title'])
-                outitems.append(items[x])
-        return outitems
-
 class InstrumentValidationsView(BikaListingView):
     implements(IFolderContentsView, IViewView)
 
@@ -364,18 +316,6 @@ class InstrumentScheduleView(BikaListingView):
                 outitems.append(items[x])
         return outitems
 
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.config import QCANALYSIS_TYPES
-from bika.lims.permissions import *
-from operator import itemgetter
-from bika.lims.browser import BrowserView
-from bika.lims.browser.analyses import AnalysesView
-from bika.lims.browser.analyses import QCAnalysesView
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-import plone
-import json
 
 class InstrumentReferenceAnalysesViewView(BrowserView):
     """ View of Reference Analyses linked to the Instrument.
@@ -520,6 +460,103 @@ class InstrumentReferenceAnalysesView(AnalysesView):
 
     def get_analyses_json(self):
         return json.dumps(self.anjson)
+
+
+class InstrumentCertificationsViewView(BrowserView):
+    """ View of Instrument Certifications
+        Shows the list of Instrument Certifications, either Internal and
+        External Calibrations.
+    """
+
+    implements(IViewView)
+    template = ViewPageTemplateFile("templates/instrument_certifications.pt")
+    _certificationsview = None
+
+    def __call__(self):
+        return self.template()
+
+    def get_certifications_table(self):
+        """ Returns the table of Certifications
+        """
+        return self.get_certifications_view().contents_table()
+
+    def get_certifications_view(self):
+        """ Returns the Certifications Table view
+        """
+        if not self._certificationsview:
+            self._certificationsview = InstrumentCertificationsView(
+                                        self.context,
+                                        self.request)
+        return self._certificationsview
+
+
+class InstrumentCertificationsView(BikaListingView):
+    """ View for the table of Certifications. Includes Internal and
+        External Calibrations. Also a bar to filter the results
+    """
+
+    def __init__(self, context, request, **kwargs):
+        BikaListingView.__init__(self, context, request, **kwargs)
+        self.form_id = "instrumentcertifications"
+        self.columns = {
+            'Title': {'title': _('Cert. Num'),
+                      'index': 'sortable_title'},
+            'getAgency': {'title': _('Agency')},
+            'getDate': {'title': _('Date')},
+            'getValidFrom': {'title': _('Valid from')},
+            'getValidTo': {'title': _('Valid to')},
+        }
+        self.review_states = [
+            {'id':'default',
+             'title':_('All'),
+             'contentFilter':{},
+             'columns': [ 'Title',
+                         'getAgency',
+                         'getDate',
+                         'getValidFrom',
+                         'getValidTo'],
+             'transitions': [{}]},
+        ]
+        self.allow_edit = False
+        self.show_select_column = False
+        self.show_workflow_action_buttons = False
+        uids = [c.UID() for c in self.context.getCertifications()]
+        self.catalog = 'portal_catalog'
+        self.contentFilter = {'UID': uids, 'sort_on': 'sortable_title'}
+
+    def folderitems(self):
+        items = BikaListingView.folderitems(self)
+        latest = [c.UID() for c in self.context.getLatestCertifications()]
+        valid  = [c.UID() for c in self.context.getValidCertifications()]
+        further = [c.UID() for c in self.context.getFurtherCertifications()]
+        for x in range (len(items)):
+            if not items[x].has_key('obj'): continue
+            obj = items[x]['obj']
+           # items[x]['getAgency'] = obj.getAgency()
+            items[x]['getDate'] = self.ulocalized_time(obj.getDate(), long_format=0)
+            items[x]['getValidFrom'] = self.ulocalized_time(obj.getValidFrom(), long_format=0)
+            items[x]['getValidTo'] = self.ulocalized_time(obj.getValidTo(), long_format=0)
+            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['Title'])
+            if obj.getInternal() == True:
+                items[x]['replace']['getAgency'] = "(%s)" % _("In-house")
+                items[x]['state_class'] = '%s %s' % (items[x]['state_class'], 'internalcertificate')
+
+            uid = obj.UID()
+            if uid in latest and uid in valid and uid not in further:
+                # The active calibration
+                items[x]['state_class'] = '%s %s' % (items[x]['state_class'], 'active')
+            elif uid in latest and uid not in valid and uid not in further:
+                # Out of date
+                img = "<img title='%s' src='%s/++resource++bika.lims.images/exclamation.png'/>&nbsp;" \
+                    % (self.context.translate(_('Out of date')), self.portal_url)
+                items[x]['replace']['getValidTo'] = '%s %s' % (items[x]['getValidTo'], img)
+                items[x]['state_class'] = '%s %s' % (items[x]['state_class'], 'inactive outofdate')
+            else:
+                # Old and further calibrations
+                items[x]['state_class'] = '%s %s' % (items[x]['state_class'], 'inactive')
+        return items
+
 
 class ajaxGetInstrumentMethod(BrowserView):
     """ Returns the method assigned to the defined instrument.

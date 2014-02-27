@@ -831,9 +831,9 @@ ul.errors {
 }
 
 div.alert {
-	background-color: #FFDDCC;
-	border-left: 4px solid red;
-	margin: 10px 0;
+    background-color: #FFDDCC;
+    border-left: 4px solid red;
+    margin: 10px 0;
     padding: 10px;
 }
 /* ARImport */
@@ -989,6 +989,12 @@ div.warnbox h3 {
     background: rgb(204,204,204) url(&dtml-portal_url;/++resource++bika.lims.images/warning.png) no-repeat scroll 5px 4px;
     color: #000;
 }
-
-
+a.add-button {
+    font-weight: bold;
+    background: transparent url(&dtml-portal_url;/++resource++bika.lims.images/add.png) left center no-repeat;
+}
+h2 a.add-button {
+    padding: 12px 0 0 38px;
+    background-position: 15px 10px;
+}
 </dtml-with>

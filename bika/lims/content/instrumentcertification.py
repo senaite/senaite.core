@@ -6,6 +6,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from Products.CMFCore import permissions
 
 schema = BikaSchema.copy() + Schema((
 
@@ -24,17 +25,27 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
+    # Set the Certificate as Internal
+    # When selected, the 'Agency' field is hidden
+    BooleanField('Internal',
+        default=False,
+        widget=BooleanWidget(
+            label=_("Internal Certificate"),
+            description=_("Select if is an in-house calibration certificate")
+        )
+    ),
+
     StringField('Agency',
         widget = StringWidget(
             label = _("Agency"),
-            description = _("Organization responsible of granting the certification")
+            description = _("Organization responsible of granting the calibration certificate")
         ),
     ),
 
     DateTimeField('Date',
         widget = DateTimeWidget(
             label = _("Date"),
-            description = _("Date when the certification was granted"),
+            description = _("Date when the calibration certificate was granted"),
         ),
     ),
 
@@ -43,7 +54,7 @@ schema = BikaSchema.copy() + Schema((
         with_date = 1,
         widget = DateTimeWidget(
             label = _("From"),
-            description = _("Date from which the certification is valid"),
+            description = _("Date from which the calibration certificate is valid"),
         ),
     ),
 
@@ -52,20 +63,33 @@ schema = BikaSchema.copy() + Schema((
         with_date = 1,
         widget = DateTimeWidget(
             label = _("To"),
-            description = _("Date until the certification is valid"),
+            description = _("Date until the certificate is valid"),
         ),
     ),
 
+    FileField('Document',
+        widget = FileWidget(
+            label = _("Certificate Document"),
+            description = _("Load the certificate document here"),
+        )
+    ),
+
     TextField('Remarks',
-        default_content_type = 'text/plain',
-        allowed_content_types= ('text/plain', ),
+        searchable=True,
+        default_content_type='text/x-web-intelligent',
+        allowable_content_types = ('text/plain', ),
         default_output_type="text/plain",
-        widget = TextAreaWidget(
-            label = _("Remarks"),
+        mode="rw",
+        widget=TextAreaWidget(
+            macro="bika_widgets/remarks",
+            label=_('Remarks'),
+            append_only=True,
         ),
     ),
 
 ))
+
+schema['title'].widget.label=_("Certificate Code")
 
 class InstrumentCertification(BaseFolder):
     security = ClassSecurityInfo()

@@ -1,0 +1,58 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    metal:use-macro="here/main_template/macros/master"
+    i18n:domain="bika">
+
+<metal:slot fill-slot="head_slot">
+    <style>
+        tr td.internalcertificate {
+            background-color:#dfdfdf;
+        }
+        tr td.inactive {
+            color:#6f6f6f;
+        }
+        tr td.active {
+            background-color:#d0ff8d;
+        }
+        tr td.outofdate {
+            background-color: #ff9d8d;
+            font-weight:bold;
+            color:#1f1f1f;
+        }
+        #content tr td.outofdate a {
+            color:#1f1f1f;
+        }
+        #content tr td.outofdate a:hover {
+            color:#3f3f3f !important;
+        }
+    </style>
+</metal:slot>
+
+<body>
+    <metal:content-title fill-slot="content-title">
+    <h1>
+        <img tal:attributes="src string:$portal_url/++resource++bika.lims.images/instrumentcertification_big.png"/>
+        <span class="documentFirstHeading" tal:content="context/title"></span>
+    </h1>
+    <h2>
+        <span i18n:translate="">Calibration Certificates</span>
+        <a class="context_action_link add-button"
+           href="createObject?type_name=InstrumentCertification"
+           i18n:translate="">Add</a>
+    </h2>
+    </metal:content-title>
+
+    <metal:content-description fill-slot="content-description">
+    </metal:content-description>
+
+    <metal:content-core fill-slot="content-core">
+    <!-- Certifications table -->
+    <tal:certificatestable>
+    <tal:parts replace="structure view/get_certifications_table"/>
+    </tal:certificatestable>
+
+    </metal:content-core>
+</body>
+</html>
