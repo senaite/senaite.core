@@ -59,4 +59,12 @@
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
+
+    <browser:page
+      for="*"
+      name="get_instruments_outofdate"
+      class="bika.lims.browser.instrument.ajaxGetOutOfDateInstruments"
+      permission="cmf.ModifyPortalContent"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
 </configure>

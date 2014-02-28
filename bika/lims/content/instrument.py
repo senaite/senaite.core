@@ -14,6 +14,8 @@ from bika.lims.content.bikaschema import BikaSchema, BikaFolderSchema
 from bika.lims.interfaces import IInstrument
 from plone.app.folder.folder import ATFolder
 from zope.interface import implements
+from datetime import date
+from DateTime import DateTime
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 
@@ -232,11 +234,9 @@ class Instrument(ATFolder):
         """
         return self.objectValues('InstrumentCertification')
 
-    def getValidCertifications(self, includeinternals=True):
+    def getValidCertifications(self):
         """ Returns the certifications fully valid
         """
-        from datetime import date
-        from DateTime import DateTime
         certs = []
         today = date.today()
         for c in self.getCertifications():
@@ -246,40 +246,35 @@ class Instrument(ATFolder):
                 certs.append(c)
         return certs
 
-    def getFurtherCertifications(self, includeinternals=True):
-        from datetime import date
-        from DateTime import DateTime
-        certs = []
-        today = date.today()
-        for c in self.getCertifications():
-            validfrom = c.getValidFrom().asdatetime().date()
-            validto = c.getValidTo().asdatetime().date()
-            if (validfrom > today and today <= validto):
-                certs.append(c)
-        return certs
-
-    def isOutOfDate(self, includeinternals=True):
+    def isOutOfDate(self):
         """ Returns if the current instrument is out-of-date regards to
             its certifications
         """
-        return self.getValidCertifications() == 0
-
-    def getLatestCertifications(self, includeinternals=True):
-        """ Returns the latest valid certifications
-        """
-        from datetime import date
-        from DateTime import DateTime
-        latest = None
-        latestcert = None
+        cert = self.getLatestValidCertification()
         today = date.today()
+        if cert:
+            validto = cert.getValidTo().asdatetime().date();
+            if validto > today:
+                return False
+        return True
+
+    def getLatestValidCertification(self):
+        """ Returns the latest valid certification. If no latest valid
+            certification found, returns None
+        """
+        cert = None
+        lastfrom = None
+        lastto = None
         for c in self.getCertifications():
             validfrom = c.getValidFrom().asdatetime().date()
             validto = c.getValidTo().asdatetime().date()
-            if today >= validfrom and today <= validto \
-               and (not latest or validto > latest):
-                latest = validto
-                latestcert = c
-        return [latestcert,] if latestcert else []
+            if not cert \
+                or validto > lastto \
+                or (validto == lastto and validfrom > lastfrom):
+                cert = c
+                lastfrom = validfrom
+                lastto = validto
+        return cert
 
     def getValidations(self):
         return self.objectValues('InstrumentValidation')

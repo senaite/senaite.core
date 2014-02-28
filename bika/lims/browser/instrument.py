@@ -526,9 +526,9 @@ class InstrumentCertificationsView(BikaListingView):
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
-        latest = [c.UID() for c in self.context.getLatestCertifications()]
         valid  = [c.UID() for c in self.context.getValidCertifications()]
-        further = [c.UID() for c in self.context.getFurtherCertifications()]
+        latest = self.context.getLatestValidCertification()
+        latest = latest.UID() if latest else ''
         for x in range (len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
@@ -539,22 +539,23 @@ class InstrumentCertificationsView(BikaListingView):
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
             if obj.getInternal() == True:
-                items[x]['replace']['getAgency'] = "(%s)" % _("In-house")
+                items[x]['replace']['getAgency'] = ""
                 items[x]['state_class'] = '%s %s' % (items[x]['state_class'], 'internalcertificate')
 
             uid = obj.UID()
-            if uid in latest and uid in valid and uid not in further:
-                # The active calibration
+            if uid in valid:
+                # Valid calibration.
                 items[x]['state_class'] = '%s %s' % (items[x]['state_class'], 'active')
-            elif uid in latest and uid not in valid and uid not in further:
-                # Out of date
+            elif uid == latest:
+                # Latest valid certificate
                 img = "<img title='%s' src='%s/++resource++bika.lims.images/exclamation.png'/>&nbsp;" \
-                    % (self.context.translate(_('Out of date')), self.portal_url)
+                % (self.context.translate(_('Out of date')), self.portal_url)
                 items[x]['replace']['getValidTo'] = '%s %s' % (items[x]['getValidTo'], img)
                 items[x]['state_class'] = '%s %s' % (items[x]['state_class'], 'inactive outofdate')
             else:
                 # Old and further calibrations
                 items[x]['state_class'] = '%s %s' % (items[x]['state_class'], 'inactive')
+
         return items
 
 
@@ -573,3 +574,22 @@ class ajaxGetInstrumentMethod(BrowserView):
                 methoddict = {'uid': method.UID(),
                               'title': method.Title()}
         return json.dumps(methoddict)
+
+class ajaxGetOutOfDateInstruments(BrowserView):
+    """ Returns an array of json dict with the instruments currently
+        out of date regards to their calibration certificates
+    """
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        out = []
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        insts = bsc(portal_type='Instrument')
+        for i in insts:
+            i = i.getObject();
+            if i.isOutOfDate():
+                instr = {'uid': i.UID(),
+                         'title': i.Title(),
+                         'url': i.absolute_url_path()}
+                out.append(instr)
+        return json.dumps(out)
+
