@@ -1,4 +1,5 @@
-<div class="field" tal:condition="not:here/member_is_client" i18n:domain="bika">
+<div class="field" tal:attributes="style view/style|nothing"
+    tal:condition="not:here/member_is_client" i18n:domain="bika">
 
     <label i18n:translate="">Contact</label>
     <br/>

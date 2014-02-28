@@ -1,4 +1,4 @@
-<div class="field" tal:define="
+<div class="field" tal:attributes="style view/style|nothing" tal:define="
     periods python:['Day', 'Week', 'Month' ]"
     i18n:domain="bika">
 

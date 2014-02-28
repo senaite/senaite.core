@@ -6,7 +6,7 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
-from bika.lims.utils import sendmail, encode_header
+from bika.lims.utils import sendmail, encode_header, createPdf
 from cStringIO import StringIO
 from email.Utils import formataddr
 from email.mime.image import MIMEImage
@@ -20,7 +20,6 @@ from smtplib import SMTPServerDisconnected
 import App
 import Globals
 import re
-import xhtml2pdf.pisa as pisa
 
 class doPublish(BrowserView):
     """Pre/Re/Publish analysis requests"""
@@ -141,9 +140,8 @@ class doPublish(BrowserView):
                         open(join(Globals.INSTANCE_HOME,'var', out_fn + ".html"),
                              "w").write(ar_results)
 
-                    pisa.showLogging()
                     ramdisk = StringIO()
-                    pdf = pisa.CreatePDF(ar_results, ramdisk)
+                    pdf = createPdf(ar_results, ramdisk)
                     pdf_data = ramdisk.getvalue()
                     ramdisk.close()
 

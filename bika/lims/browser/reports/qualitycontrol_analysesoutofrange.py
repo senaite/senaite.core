@@ -1,15 +1,11 @@
-from AccessControl import getSecurityManager
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.client import ClientSamplesView
-from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client
-from plone.app.content.browser.interfaces import IFolderContentsView
+from bika.lims.utils import formatDateQuery, formatDateParms
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
-import json
-import plone
+
 
 class Report(BrowserView):
     implements(IViewView)
@@ -23,30 +19,29 @@ class Report(BrowserView):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         bac = getToolByName(self.context, 'bika_analysis_catalog')
         self.report_content = {}
-        parm_lines = {}
         parms = []
         headings = {}
         headings['header'] = _("Analyses out of range")
-        headings['subheader'] = _("Analyses results out of client or lab specified range")
+        headings['subheader'] = _("Analyses results out of specified range")
 
         count_all = 0
 
-        query = {'portal_type': 'Analysis',
-                 'sort_order': 'reverse'}
+        query = {"portal_type": "Analysis",
+                 "sort_order": "reverse"}
 
-        if self.request.form.has_key('spec'):
-            spec = self.request.form['spec']
+        if self.request.form.get("spec", ""):
+            spec_uid = self.request.form["spec"]
+            spec_obj = bsc(UID=spec_uid).getObject()
+            spec_title = spec_obj.Title()
         else:
-            spec = 'lab'
-        if spec == 'lab':
-            lab_spec = True
-        else:
-            lab_spec = False
+            spec_uid = ""
+            spec_obj = None
+            spec_title = ""
 
         parms.append(
-            { 'title': _('Range spec'),
-             'value': spec,
-             'type': 'text'})
+            {"title": _("Range spec"),
+             "value": spec_title,
+             "type": "text"})
 
         date_query = formatDateQuery(self.context, 'Received')
         if date_query:
@@ -55,7 +50,7 @@ class Report(BrowserView):
         else:
             received = 'Undefined'
         parms.append(
-            { 'title': _('Received'),
+            {'title': _('Received'),
              'value': received,
              'type': 'text'})
 
@@ -67,7 +62,7 @@ class Report(BrowserView):
         else:
             review_state = 'Undefined'
         parms.append(
-            { 'title': _('Status'),
+            {'title': _('Status'),
              'value': review_state,
              'type': 'text'})
 
@@ -78,10 +73,9 @@ class Report(BrowserView):
         else:
             cancellation_state = 'Undefined'
         parms.append(
-            { 'title': _('Active'),
+            {'title': _('Active'),
              'value': cancellation_state,
              'type': 'text'})
-
 
         if self.request.form.has_key('bika_worksheetanalysis_workflow'):
             query['worksheetanalysis_review_state'] = self.request.form['bika_worksheetanalysis_workflow']
@@ -90,37 +84,27 @@ class Report(BrowserView):
         else:
             ws_review_state = 'Undefined'
         parms.append(
-            { 'title': _('Assigned to worksheet'),
+            {'title': _('Assigned to worksheet'),
              'value': ws_review_state,
              'type': 'text'})
 
-
         # and now lets do the actual report lines
         formats = {'columns': 10,
-                   'col_heads': [ _('Client'), \
-                                  _('Request'), \
-                                  _('Sample type'), \
-                                  _('Sample point'), \
-                                  _('Category'), \
-                                  _('Analysis'), \
-                                  _('Result'), \
-                                  _('Min'), \
-                                  _('Max'), \
-                                  _('Status'), \
-                                  ],
+                   'col_heads': [_('Client'),
+                                 _('Request'),
+                                 _('Sample type'),
+                                 _('Sample point'),
+                                 _('Category'),
+                                 _('Analysis'),
+                                 _('Result'),
+                                 _('Min'),
+                                 _('Max'),
+                                 _('Status'),
+                                 ],
                    'class': '',
                   }
 
         datalines = []
-        clients = {}
-        sampletypes = {}
-        samplepoints = {}
-        categories = {}
-        services = {}
-        specs = {}
-
-        if lab_spec:
-            owner_uid = self.context.bika_setup.bika_analysisspecs.UID()
 
         for a_proxy in bac(query):
             analysis = a_proxy.getObject()
@@ -132,43 +116,50 @@ class Report(BrowserView):
             else:
                 continue
 
-            sampletypeuid = analysis.getSampleTypeUID()
-
-            # determine which specs to use, and load if not yet found
-            if not lab_spec:
-                owner_uid = analysis.getClientUID()
-            if not specs.has_key(owner_uid):
-                specs[owner_uid] = {}
-            if not specs[owner_uid].has_key(sampletypeuid):
-                proxies = bsc(portal_type = 'AnalysisSpec',
-                              getSampleTypeUID = sampletypeuid,
-                              getClientUID = owner_uid)
-                if len(proxies) == 0:
-                    continue
-                spec_object = proxies[0].getObject()
-                specs[owner_uid][sampletypeuid] = spec_object.getResultsRangeDict()
-            spec = specs[owner_uid][sampletypeuid]
-
             keyword = analysis.getKeyword()
-            if spec.has_key(keyword):
-                spec_min = float(spec[keyword]['min'])
-                spec_max = float(spec[keyword]['max'])
-                if spec_min <= result <= spec_max:
-                    continue
+
+            # determine which specs to use for this particular analysis
+            # 1) if a spec is given in the query form, use it.
+            # 2) if a spec is entered directly on the analysis, use it.
+            # otherwise just continue to the next object.
+            if spec_obj:
+                rr = spec_obj.getResultsRangeDict()
+                if keyword in rr:
+                    spec_dict = rr[keyword]
             else:
+                ar = analysis.aq_parent
+                ar_spec_obj = ar.getSpecification()
+                if ar_spec_obj:
+                    rr = ar_spec_obj.getResultsRangeDict()
+                    if keyword in rr:
+                        spec_dict = rr[keyword]
+                else:
+                    if hasattr(analysis, "specification") \
+                    and analysis.specification:
+                        spec_dict = analysis.specification
+                    else:
+                        continue
+
+            spec_min = float(spec_dict['min'])
+            spec_max = float(spec_dict['max'])
+            if spec_min <= result <= spec_max:
                 continue
 
             # check if in shoulder: out of range, but in acceptable
             #     error percentage
             shoulder = False
-            error_amount = (result / 100) * float(spec[keyword]['error'])
+            error = 0
+            try:
+                error = float(spec_dict.get('error', '0'))
+            except:
+                error = 0
+                pass
+            error_amount = (result / 100) * error
             error_min = result - error_amount
             error_max = result + error_amount
             if ((result < spec_min) and (error_max >= spec_min)) or \
                ((result > spec_max) and (error_min <= spec_max)):
                 shoulder = True
-
-
 
             dataline = []
 
@@ -198,10 +189,10 @@ class Report(BrowserView):
 
             dataline.append(dataitem)
 
-            dataitem = {'value': spec[keyword]['min']}
+            dataitem = {'value': spec_dict['min']}
             dataline.append(dataitem)
 
-            dataitem = {'value': spec[keyword]['max']}
+            dataitem = {'value': spec_dict['max']}
             dataline.append(dataitem)
 
             state = wf_tool.getInfoFor(analysis, 'review_state', '')

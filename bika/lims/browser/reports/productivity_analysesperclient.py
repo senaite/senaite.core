@@ -13,6 +13,7 @@ from zope.interface import implements
 import json
 import plone
 
+
 class Report(BrowserView):
     implements(IViewView)
     template = ViewPageTemplateFile("templates/report_out.pt")
@@ -32,18 +33,18 @@ class Report(BrowserView):
         self.report_content = {}
         parm_lines = {}
         parms = []
-        headings = {}        
+        headings = {}
         count_all_ars = 0
         count_all_analyses = 0
         query = {}
 
         this_client = logged_in_client(self.context)
 
-        if not this_client and self.request.form.has_key('ClientUID'):
+        if not this_client and 'ClientUID' in self.request.form:
             client_uid = self.request.form['ClientUID']
             this_client = rc.lookupObject(client_uid)
             parms.append(
-                { 'title': _('Client'),
+                {'title': _('Client'),
                  'value': this_client.Title(),
                  'type': 'text'})
 
@@ -58,40 +59,38 @@ class Report(BrowserView):
         if date_query:
             query['created'] = date_query
             requested = formatDateParms(self.context, 'Requested')
-        else:
-            requested = 'Undefined'
-        parms.append(
-            { 'title': _('Requested'),
-             'value': requested,
-             'type': 'text'})
+            parms.append(
+                {'title': _('Requested'),
+                 'value': requested,
+                 'type': 'text'})
 
         workflow = getToolByName(self.context, 'portal_workflow')
-        if self.request.form.has_key('bika_analysis_workflow'):
+        if 'bika_analysis_workflow' in self.request.form:
             query['review_state'] = self.request.form['bika_analysis_workflow']
             review_state = workflow.getTitleForStateOnType(self.request.form['bika_analysis_workflow'], 'Analysis')
             parms.append({'title': _('Status'), 'value': review_state, 'type': 'text'})
 
-        if self.request.form.has_key('bika_cancellation_workflow'):
+        if 'bika_cancellation_workflow' in self.request.form:
             query['cancellation_state'] = self.request.form['bika_cancellation_workflow']
             cancellation_state = workflow.getTitleForStateOnType(
                         self.request.form['bika_cancellation_workflow'], 'Analysis')
             parms.append({'title': _('Active'), 'value': cancellation_state, 'type': 'text'})
 
-        if self.request.form.has_key('bika_worksheetanalysis_workflow'):
+        if 'bika_worksheetanalysis_workflow' in self.request.form:
             query['worksheetanalysis_review_state'] = self.request.form['bika_worksheetanalysis_workflow']
             ws_review_state = workflow.getTitleForStateOnType(
                         self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
             parms.append({'title': _('Assigned to worksheet'), 'value': ws_review_state, 'type': 'text'})
-        
-        if self.request.form.has_key('bika_worksheetanalysis_workflow'):
+
+        if 'bika_worksheetanalysis_workflow' in self.request.form:
             query['worksheetanalysis_review_state'] = self.request.form['bika_worksheetanalysis_workflow']
             ws_review_state = workflow.getTitleForStateOnType(
                         self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
             parms.append({'title': _('Assigned to worksheet'), 'value': ws_review_state, 'type': 'text'})
-        
+
         # and now lets do the actual report lines
         formats = {'columns': 3,
-                   'col_heads': [ _('Client'),
+                   'col_heads': [_('Client'),
                                   _('Number of requests'),
                                   _('Number of analyses')],
                    'class': ''}
@@ -105,7 +104,7 @@ class Report(BrowserView):
 
         for client in c_proxies:
             query['getClientUID'] = client.UID
-            dataline = [{'value': client.Title },]
+            dataline = [{'value': client.Title}, ]
             query['portal_type'] = 'AnalysisRequest'
             ars = bc(query)
             count_ars = len(ars)
@@ -115,9 +114,8 @@ class Report(BrowserView):
             query['portal_type'] = 'Analysis'
             analyses = bac(query)
             count_analyses = len(analyses)
-            dataitem = {'value': count_analyses }
+            dataitem = {'value': count_analyses}
             dataline.append(dataitem)
-
 
             datalines.append(dataline)
 
@@ -139,7 +137,6 @@ class Report(BrowserView):
 
             footlines.append(footline)
 
-
         self.report_content = {
                 'headings': headings,
                 'parms': parms,
@@ -147,7 +144,32 @@ class Report(BrowserView):
                 'datalines': datalines,
                 'footings': footlines}
 
-
-        return {'report_title': self.context.translate(headings['header']),
+        if self.request.get('output_format', '') == 'CSV':
+            import csv
+            import StringIO
+            import datetime
+            fieldnames = [
+                'Client',
+                'Analysis Requests',
+                'Analyses',
+            ]
+            output = StringIO.StringIO()
+            dw = csv.DictWriter(output, extrasaction='ignore', fieldnames=fieldnames)
+            dw.writerow(dict((fn, fn) for fn in fieldnames))
+            for row in datalines:
+                dw.writerow({
+                    'Client': row[0]['value'],
+                    'Analysis Requests': row[1]['value'],
+                    'Analyses': row[2]['value'],
+                })
+            report_data = output.getvalue()
+            output.close()
+            date = datetime.datetime.now().strftime("%Y%m%d%H%M")
+            setheader = self.request.RESPONSE.setHeader
+            setheader('Content-Type', 'text/csv')
+            setheader("Content-Disposition",
+                "attachment;filename=\"analysesperclient_%s.csv\"" % date)
+            self.request.RESPONSE.write(report_data)
+        else:
+            return {'report_title': self.context.translate(headings['header']),
                 'report_data': self.template()}
-

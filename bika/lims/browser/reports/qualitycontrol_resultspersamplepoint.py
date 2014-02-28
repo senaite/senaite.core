@@ -5,6 +5,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
+from bika.lims.browser.analysis import isOutOfRange
 from bika.lims.utils import formatDateQuery, formatDateParms
 from gpw import plot
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -14,6 +15,16 @@ import json
 import os
 import plone
 import tempfile
+
+
+def ResultOutOfRange(analysis):
+    spec = {}
+    if hasattr(self.context, "specification") and self.context.specification:
+        spec = self.context.specification
+    return isOutOfRange(analysis.getResult(),
+                        spec.get("min", ""),
+                        spec.get("max", ""),
+                        spec.get("error", ""))
 
 class Report(BrowserView):
     implements(IViewView)
@@ -42,9 +53,6 @@ class Report(BrowserView):
         self.contentFilter = {'portal_type': 'Analysis',
                               'review_state': ['verified', 'published'],
                               'sort_on': "getDateSampled"}
-
-        spec = self.request.form.get('spec', 'lab')
-        spec_title = (spec == 'lab') and _("Lab") or _("Client")
 
         parms = []
         titles = []
@@ -107,45 +115,16 @@ class Report(BrowserView):
             self.context.plone_utils.addPortalMessage(message, 'error')
             return self.default_template()
 
-        cached_specs = {} # keyed by parent_folder
-
-        def lookup_spec(analysis):
-            # If an analysis is OUT OF RANGE, the failed spec values are passed
-            # back from the result_in_range function. But if the analysis resuit
-            # is IN RANGE, we need to look it up.
-            service = analysis['service']
-            keyword = service['Keyword']
-            analysis = analysis['obj']
-            if spec == "client":
-                parent = analysis.aq_parent.aq_parent
-            else:
-                parent = self.context.bika_setup.bika_analysisspecs
-            if not parent.UID() in cached_specs:
-                proxies = self.bika_setup_catalog(
-                    portal_type = 'AnalysisSpec',
-                    getSampleTypeUID = st_uid,
-                    path = {"query": "/".join(parent.getPhysicalPath()),
-                            "level" : 0 }
-                )
-                if proxies:
-                    spec_obj = proxies[0].getObject()
-                    this_spec = spec_obj.getResultsRangeDict()
-                else:
-                    this_spec = {'min':None,'max':None}
-                cached_specs[parent.UID()] = this_spec
-            else:
-                this_spec = cached_specs[parent.UID()]
-            return this_spec
-
         ## Compile a list of dictionaries, with all relevant analysis data
         for analysis in proxies:
             analysis = analysis.getObject()
+            result = analysis.getResult()
             client = analysis.aq_parent.aq_parent
             uid = analysis.UID()
             service = analysis.getService()
             keyword = service.getKeyword()
-            service_title = "%s (%s)" % (service.Title(), service.getKeyword())
-            result_in_range = analysis.result_in_range(specification=spec)
+            service_title = "%s (%s)" % (service.Title(), keyword)
+            result_in_range = ResultOutOfRange(analysis)
             try:
                 precision = str(service.getPrecision())
             except:
@@ -180,7 +159,6 @@ class Report(BrowserView):
 
         parms += [
             {"title": _("Total analyses"), "value": analysis_count},
-            {"title": _("Analysis specification"), "value": spec_title},
         ]
 
         ## This variable is output to the TAL
@@ -240,49 +218,30 @@ class Report(BrowserView):
                 R = a['Result']
                 U = a['Uncertainty']
 
-                a['Result'] = str("%." + precision + "f")% a['Result']
+                a['Result'] = str("%." + precision + "f") % a['Result']
 
                 in_range = a['result_in_range']
-                # in-range: lookup spec, if possible
-                if in_range[1] == None:
-                    this_spec_results = lookup_spec(a)
-                    if this_spec_results and a['Keyword'] in this_spec_results:
-                        this_spec = this_spec_results[a['Keyword']]
-                        in_range[1] == this_spec
-                # If no specs are supplied, fake them
-                # and do not print specification values or errors
-                a['range_min'] = in_range[1] and in_range[1]['min'] or ''
-                a['range_max'] = in_range[1] and in_range[1]['max'] or ''
-                if a['range_min'] and a['range_max']:
-                    range_min = a['range_min']
-                    range_max = a['range_max']
-                    # result out of range
-                    if str(in_range[0]) == 'False':
-                        out_of_range_count += 1
-                        a['Result'] = "%s %s" % (a['Result'], error_icon)
-                    # result almost out of range
-                    if str(in_range[0]) == '1':
-                        in_shoulder_range_count += 1
-                        a['Result'] = "%s %s" % (a['Result'], warning_icon)
-                else:
-                    a['range_min'] = min(result_values)
-                    a['range_max'] = max(result_values)
+                # result out of range
+                if str(in_range[0]) == 'False':
+                    out_of_range_count += 1
+                    a['Result'] = "%s %s" % (a['Result'], error_icon)
+                # result almost out of range
+                if str(in_range[0]) == '1':
+                    in_shoulder_range_count += 1
+                    a['Result'] = "%s %s" % (a['Result'], warning_icon)
+
+                spec = {}
+                if hasattr(a["obj"], 'specification') and a["obj"].specification:
+                    spec = a["obj"].specification
 
                 plotdata += "%s\t%s\t%s\t%s\t%s\n"%(
                     a['Sampled'],
                     R,
-                    range_min,
-                    range_max,
+                    spec.get("min", ""),
+                    spec.get("max", ""),
                     U and U or 0,
                 )
                 plotdata.encode('utf-8')
-
-            if range_min and range_max:
-                spec_str = "%s: %s, %s: %s" % (
-                    self.context.translate(_("Range min")), range_min,
-                    self.context.translate(_("Range max")), range_max,
-                )
-                parms.append({'title': _('Specification'), 'value': spec_str,})
 
             unit = analyses[service_title][0]['Unit']
             if MinimumResults <= len(dict([(d, d) for d in result_dates])):
