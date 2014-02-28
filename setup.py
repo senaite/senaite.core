@@ -41,6 +41,7 @@ setup(name='bika.lims',
           'test': [
                   'plone.app.testing',
                   'plone.app.robotframework',
+                  'robotframework-debuglibrary',
               ]
       },
       entry_points="""
@@ -48,3 +49,4 @@ setup(name='bika.lims',
       target = plone
       """,
       )
+/home/campbell/Plone/zinstance/parts/test/test_client_views/View_client_screens_as_Client_Contact/log.html

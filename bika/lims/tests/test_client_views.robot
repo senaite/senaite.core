@@ -2,8 +2,10 @@
 
 Library                 Selenium2Library  timeout=10  implicit_wait=0.1
 Library                 Collections
+Library                 DebugLibrary
 Resource                keywords.txt
 Variables               plone/app/testing/interfaces.py
+
 
 Suite Setup             Start browser
 Suite Teardown          Close All Browsers
@@ -29,9 +31,11 @@ View client screens as Client Contact.
     Click button               Save
     Wait until page contains   Changes saved.
 
+    # Debug
+
     Go to                      ${PLONEURL}/clients/client-1/samples
-    Wait until page contains   H2O13-0001
-    Click link                 H2O13-0001
+    Wait until page contains   H2O14-0001
+    Click link                 H2O14-0001
     Wait until page contains   Magnesium
 
     Go to                      ${PLONEURL}/clients/client-1/samplepoints
@@ -46,9 +50,9 @@ View client screens as Client Contact.
     Wait until page contains   Cancelled
 
     Go to                      ${PLONEURL}/clients/client-1/analysisrequests
-    Wait until page contains   H2O13-0001-R01
-    Click link                 H2O13-0001-R01
-    Wait until page contains   H2O13-0001-P1
+    Wait until page contains   H2O14-0001-R01
+    Click link                 H2O14-0001-R01
+    Wait until page contains   H2O14-0001-P1
 
     Go to                      ${PLONEURL}/clients/client-1/analysisprofiles
     Click link                 Add

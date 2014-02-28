@@ -418,9 +418,10 @@ msgstr "Relatório de análises repetidas"
 msgid "Analyses repeated"
 msgstr "Análises repetidas"
 
-# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 30
-msgid "Analyses results out of client or lab specified range"
-msgstr "Resultados de análise fora da variação especificada pelo cliente ou pelo laboratório"
+#
+# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 25
+msgid "Analyses results out of specified range"
+msgstr ""
 
 # File: ../browser/reports/qualitycontrol_analysesrepeated.py, line: 29
 msgid "Analyses retested"
@@ -596,10 +597,6 @@ msgstr "Resultados de análises relativos apenas às amostras testadas"
 # File: ../browser/queries/orders.py, line: 117
 msgid "Analysis service"
 msgstr "Serviço de análise"
-
-# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 183
-msgid "Analysis specification"
-msgstr "Especificação de análise"
 
 # File: ../browser/client.py, line: 670
 msgid "Analysis specifications reset to lab defaults."
@@ -1323,10 +1320,6 @@ msgstr "Data em que a certificação foi concedida"
 # File: ../browser/fields/durationfield.py, line: 19
 msgid "Days"
 msgstr "Dias"
-
-# File: ../browser/reports/administration_usershistory.py, line: 104
-msgid "Deactivated"
-msgstr "Desativar"
 
 msgid "Default"
 msgstr "Padrão"
@@ -2217,6 +2210,11 @@ msgstr "Celular"
 msgid "Model"
 msgstr "Modelo"
 
+#
+# File: ../browser/reports/administration_usershistory.py, line: 72
+msgid "Modification date"
+msgstr ""
+
 # File: ../skins/bika/portlet_late_analyses.pt, line: 58
 # File: ../skins/bika/portlet_pending_orders.pt, line: 53
 # File: ../skins/bika/portlet_sample_due.pt, line: 54
@@ -2241,6 +2239,11 @@ msgstr "Não"
 # File: ../browser/reports/productivity_dataentrydaybook.py, line: 38
 msgid "No Analysis Requests matched your query"
 msgstr "Nenhuma pedido de análise acompanhado sua consulta"
+
+#
+# File: ../browser/reports/administration_usershistory.py, line: 155
+msgid "No actions found for user %s"
+msgstr ""
 
 # File: ../browser/analysisrequest.py, line: 126
 msgid "No analyses have been selected"
@@ -2334,11 +2337,6 @@ msgstr "Não Permitido"
 msgid "Not invoiced"
 msgstr "Não faturado"
 
-# File: ../browser/reports/templates/productivity_dataentrydaybook.pt, line:
-# 72
-msgid "Number of Analysis Requests and totals submitted between a period of time"
-msgstr "Número de Solicitações de Análises e totais submetidas entre um período de tempo"
-
 # File: ../browser/reports/productivity_analysesperclient.py, line: 52
 msgid "Number of Analysis requests and analyses"
 msgstr "Número de requisições de análises e análises"
@@ -2357,12 +2355,6 @@ msgstr "Número de análises"
 msgid "Number of analyses out of range for period"
 msgstr "Número de análises fora da variação para o período"
 
-# File:
-# ../browser/reports/templates/productivity_analysesperformedpertotal.pt,
-# line: 80
-msgid "Number of analyses published and expressed as a percentage of all analyses performed"
-msgstr "Número de análises publicadas e expressas como a porcentagem do total de análises realizadas"
-
 # File: ../browser/queries/invoices.py, line: 34
 # File: ../browser/queries/orders.py, line: 34
 # File: ../browser/reports/productivity_analysesperservice.py, line: 35
@@ -2380,11 +2372,6 @@ msgstr "Número de análises retestadas para o período"
 
 # File: ../browser/reports/templates/productivity.pt, line: 327
 msgid "Number of analysis requested and published per department and expresed as a percentage of all analyses performed"
-msgstr "Número de análises publicadas e expressas como a porcentagem do total de análises realizadas"
-
-# File: ../browser/reports/templates/productivity_analysesperdepartment.pt,
-# line: 80
-msgid "Number of analysis requested and published per department and expressed as a percentage of all analyses performed"
 msgstr "Número de análises publicadas e expressas como a porcentagem do total de análises realizadas"
 
 # File: ../browser/reports/productivity_analysesperclient.py, line: 95
@@ -2437,6 +2424,11 @@ msgstr "Organização responsável por garantir a certificação"
 # File: ../browser/reports/templates/productivity.pt, line: 385
 msgid "Other productivity reports"
 msgstr "Outros relatórios de produtividade"
+
+#
+# File: ../browser/reports/selection_macros/select_output_format.pt, line: 3
+msgid "Output format"
+msgstr ""
 
 msgid "Parent"
 msgstr "Pai"
@@ -3095,11 +3087,6 @@ msgstr "Amostras"
 msgid "Samples of this type should be treated as hazardous"
 msgstr "Amostras deste tipo devem ser tratadas como perigosas"
 
-# File: ../browser/reports/templates/productivity_dailysamplesreceived.pt,
-# line: 41
-msgid "Samples received for a date range"
-msgstr "Amostras recebidas por período"
-
 # File: ../browser/reports/productivity_samplereceivedvsreported.py, line: 92
 # File: ../browser/reports/templates/productivity_samplereceivedvsreported.pt,
 # line: 20
@@ -3362,10 +3349,6 @@ msgstr ""
 # File: ../config.py, line: 65
 msgid "Special"
 msgstr "Especial"
-
-# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 285
-msgid "Specification"
-msgstr "Especificação"
 
 # File: ../content/analysisspec.py, line: 77
 msgid "Specifications"
@@ -3747,6 +3730,11 @@ msgstr "Preço total"
 msgid "Total:"
 msgstr "Total;"
 
+#
+# File: ../browser/reports/templates/administration.pt, line: 117
+msgid "Traceability"
+msgstr ""
+
 # File: ../browser/reports/productivity_analysestats_overtime.py, line: 141
 msgid "Turnaround time (h)"
 msgstr "Tempo de processamento (h)"
@@ -3812,9 +3800,10 @@ msgstr "Usuário"
 msgid "User Name"
 msgstr "Nome do usuário"
 
-# File: ../browser/reports/templates/administration_usershistory.pt, line: 74
-msgid "UserID"
-msgstr "ID Usuário"
+#
+# File: ../browser/reports/templates/administration.pt, line: 120
+msgid "User history"
+msgstr ""
 
 # File: ../browser/reports/administration_usershistory.py, line: 157
 # File: ../browser/reports/templates/administration_usershistory.pt, line: 58
@@ -4056,6 +4045,11 @@ msgstr "Quando os resultados de uma análise duplicada em planilhas, feitas a pa
 # File: ../content/instrumentvalidation.py, line: 52
 msgid "Work Performed"
 msgstr "Performance de trabalho"
+
+#
+# File: ../browser/reports/templates/administration_usershistory.pt, line: 75
+msgid "Workflow"
+msgstr ""
 
 # File: ../browser/mailtemplates/analysisrequest_results.pt, line: 304
 # File: ../browser/referencesample.py, line: 60

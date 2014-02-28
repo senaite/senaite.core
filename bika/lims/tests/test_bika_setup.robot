@@ -19,6 +19,7 @@ ${PLONEURL}        http://localhost:55001/plone
 Add new items in all bika_setup categories
 #Update Laboratory Information
     Go to  ${PLONEURL}/bika_setup/laboratory/#fieldsetlegend-accreditation
+    wait until page contains   Confidence
     Input Text        Confidence                 95
     Select Checkbox   LaboratoryAccredited
     Input Text        AccreditationBodyLong      Accreditation Body Name
@@ -65,9 +66,9 @@ Add new items in all bika_setup categories
     Click link  Sample Partitions
     Wait Until Page Contains  Sample Partitions
     Select from list  container_uid.part-1:records        Glass Bottle 500ml
-    Select from list  preservation_uid.part-1:records     Any
+    Select from list  preservation_uid.part-1:records     \
     Click Button  Add
-    Select from list  container_uid.part-2:records        Any
+    Select from list  container_uid.part-2:records        \
     Select from list  preservation_uid.part-2:records     H2S04
     Click Link  Analyses
     Wait Until Page Contains Element  AnalysisProfile:list

@@ -416,8 +416,9 @@ msgstr ""
 msgid "Analyses repeated"
 msgstr "Analizy powtarzane"
 
-# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 30
-msgid "Analyses results out of client or lab specified range"
+#
+# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 25
+msgid "Analyses results out of specified range"
 msgstr ""
 
 # File: ../browser/reports/qualitycontrol_analysesrepeated.py, line: 29
@@ -594,10 +595,6 @@ msgstr "Wyniki analiz odnoszą się wyłącznie do badanych próbek"
 # File: ../browser/queries/orders.py, line: 117
 msgid "Analysis service"
 msgstr "Usługa badawcza"
-
-# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 183
-msgid "Analysis specification"
-msgstr "Specyfikacja analizy"
 
 # File: ../browser/client.py, line: 670
 msgid "Analysis specifications reset to lab defaults."
@@ -1321,10 +1318,6 @@ msgstr "Data wzorcowania/legalizacji"
 # File: ../browser/fields/durationfield.py, line: 19
 msgid "Days"
 msgstr "Dni"
-
-# File: ../browser/reports/administration_usershistory.py, line: 104
-msgid "Deactivated"
-msgstr "Nieaktywny"
 
 msgid "Default"
 msgstr "Domyślne"
@@ -2215,6 +2208,11 @@ msgstr "Telefon komórkowy"
 msgid "Model"
 msgstr "Model"
 
+#
+# File: ../browser/reports/administration_usershistory.py, line: 72
+msgid "Modification date"
+msgstr ""
+
 # File: ../skins/bika/portlet_late_analyses.pt, line: 58
 # File: ../skins/bika/portlet_pending_orders.pt, line: 53
 # File: ../skins/bika/portlet_sample_due.pt, line: 54
@@ -2239,6 +2237,11 @@ msgstr "Nie"
 # File: ../browser/reports/productivity_dataentrydaybook.py, line: 38
 msgid "No Analysis Requests matched your query"
 msgstr "Nie znaleziono żadnych zestawów analiz dla zadanych warunków"
+
+#
+# File: ../browser/reports/administration_usershistory.py, line: 155
+msgid "No actions found for user %s"
+msgstr ""
 
 # File: ../browser/analysisrequest.py, line: 126
 msgid "No analyses have been selected"
@@ -2332,11 +2335,6 @@ msgstr "Niedozwolone"
 msgid "Not invoiced"
 msgstr "Niezafakturowane"
 
-# File: ../browser/reports/templates/productivity_dataentrydaybook.pt, line:
-# 72
-msgid "Number of Analysis Requests and totals submitted between a period of time"
-msgstr ""
-
 # File: ../browser/reports/productivity_analysesperclient.py, line: 52
 msgid "Number of Analysis requests and analyses"
 msgstr "Liczba analiz i zestawów analiz"
@@ -2355,12 +2353,6 @@ msgstr "Liczba analiz"
 msgid "Number of analyses out of range for period"
 msgstr "Liczba analiz poza zakresem dla zadanego okresu"
 
-# File:
-# ../browser/reports/templates/productivity_analysesperformedpertotal.pt,
-# line: 80
-msgid "Number of analyses published and expressed as a percentage of all analyses performed"
-msgstr ""
-
 # File: ../browser/queries/invoices.py, line: 34
 # File: ../browser/queries/orders.py, line: 34
 # File: ../browser/reports/productivity_analysesperservice.py, line: 35
@@ -2378,11 +2370,6 @@ msgstr "Liczba analiz ponownie badanych dla zadanego okresu"
 
 # File: ../browser/reports/templates/productivity.pt, line: 327
 msgid "Number of analysis requested and published per department and expresed as a percentage of all analyses performed"
-msgstr ""
-
-# File: ../browser/reports/templates/productivity_analysesperdepartment.pt,
-# line: 80
-msgid "Number of analysis requested and published per department and expressed as a percentage of all analyses performed"
 msgstr ""
 
 # File: ../browser/reports/productivity_analysesperclient.py, line: 95
@@ -2435,6 +2422,11 @@ msgstr "Podmiot przeprowadzający wzorcowanie/legalizację"
 # File: ../browser/reports/templates/productivity.pt, line: 385
 msgid "Other productivity reports"
 msgstr "Inne raporty wydajności"
+
+#
+# File: ../browser/reports/selection_macros/select_output_format.pt, line: 3
+msgid "Output format"
+msgstr ""
 
 msgid "Parent"
 msgstr ""
@@ -3093,11 +3085,6 @@ msgstr "Próbki"
 msgid "Samples of this type should be treated as hazardous"
 msgstr "Próbki tego typu powinny być traktowane jako niebezpieczne"
 
-# File: ../browser/reports/templates/productivity_dailysamplesreceived.pt,
-# line: 41
-msgid "Samples received for a date range"
-msgstr "Próbki dostarczone w zadanym okresie"
-
 # File: ../browser/reports/productivity_samplereceivedvsreported.py, line: 92
 # File: ../browser/reports/templates/productivity_samplereceivedvsreported.pt,
 # line: 20
@@ -3360,10 +3347,6 @@ msgstr ""
 # File: ../config.py, line: 65
 msgid "Special"
 msgstr "Specjalny"
-
-# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 285
-msgid "Specification"
-msgstr "Specyfikacja"
 
 # File: ../content/analysisspec.py, line: 77
 msgid "Specifications"
@@ -3745,6 +3728,11 @@ msgstr "Cena całkowita"
 msgid "Total:"
 msgstr "Ogółem:"
 
+#
+# File: ../browser/reports/templates/administration.pt, line: 117
+msgid "Traceability"
+msgstr ""
+
 # File: ../browser/reports/productivity_analysestats_overtime.py, line: 141
 msgid "Turnaround time (h)"
 msgstr "Czas realizacji (h)"
@@ -3810,8 +3798,9 @@ msgstr "Użytkownik"
 msgid "User Name"
 msgstr "Nazwa użytkownika"
 
-# File: ../browser/reports/templates/administration_usershistory.pt, line: 74
-msgid "UserID"
+#
+# File: ../browser/reports/templates/administration.pt, line: 120
+msgid "User history"
 msgstr ""
 
 # File: ../browser/reports/administration_usershistory.py, line: 157
@@ -4053,6 +4042,11 @@ msgstr "Gdy wyniki analizy zduplikowanej próbki w karcie pracy, przeprowadzonej
 # File: ../content/instrumentmaintenancetask.py, line: 82
 # File: ../content/instrumentvalidation.py, line: 52
 msgid "Work Performed"
+msgstr ""
+
+#
+# File: ../browser/reports/templates/administration_usershistory.pt, line: 75
+msgid "Workflow"
 msgstr ""
 
 # File: ../browser/mailtemplates/analysisrequest_results.pt, line: 304

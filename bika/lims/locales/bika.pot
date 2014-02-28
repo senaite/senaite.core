@@ -149,7 +149,7 @@ msgstr ""
 msgid "${sampletype} is not a valid sample type"
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity_samplereceivedvsreported.pt, line: 39
+# File: ../browser/reports/templates/productivity_samplereceivedvsreported.pt, line: 38
 msgid "%"
 msgstr ""
 #
@@ -311,7 +311,7 @@ msgstr ""
 msgid "Action"
 msgstr ""
 #
-# File: ../browser/reports/templates/administration_usershistory.pt, line: 59
+# File: ../browser/reports/templates/administration.pt, line: 122
 msgid "Actions performed by users (or specific user) between a period of time"
 msgstr ""
 #
@@ -361,7 +361,7 @@ msgstr ""
 msgid "Add a remarks field to all analyses"
 msgstr ""
 #
-# File: ../browser/batch.py, line: 52
+# File: ../browser/batch.py, line: 53
 msgid "Add new"
 msgstr ""
 #
@@ -426,40 +426,40 @@ msgstr ""
 msgid "Analyses"
 msgstr ""
 #
-# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 337
+# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 296
 msgid "Analyses in error shoulder range"
 msgstr ""
 #
-# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 29
+# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 24
 # File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 206
-# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 332
+# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 291
 msgid "Analyses out of range"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysesperservice.py, line: 34
+# File: ../browser/reports/productivity_analysesperservice.py, line: 27
 msgid "Analyses per analysis service"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysespersampletype.py, line: 34
-# File: ../browser/reports/templates/productivity.pt, line: 179
+# File: ../browser/reports/productivity_analysespersampletype.py, line: 35
+# File: ../browser/reports/templates/productivity.pt, line: 187
 msgid "Analyses per sample type"
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity.pt, line: 138
+# File: ../browser/reports/templates/productivity.pt, line: 144
 msgid "Analyses per service"
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity.pt, line: 357
+# File: ../browser/reports/templates/productivity.pt, line: 376
 # File: ../browser/reports/templates/productivity_analysesperformedpertotal.pt, line: 79
 msgid "Analyses performed and published as % of total"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysesperformedpertotal.py, line: 138
+# File: ../browser/reports/productivity_analysesperformedpertotal.py, line: 172
 msgid "Analyses performed as % of total"
 msgstr ""
 #
 # File: ../browser/reports/templates/administration.pt, line: 81
-# File: ../browser/reports/templates/productivity.pt, line: 133
+# File: ../browser/reports/templates/productivity.pt, line: 139
 msgid "Analyses related reports"
 msgstr ""
 #
@@ -467,16 +467,16 @@ msgstr ""
 msgid "Analyses repeated"
 msgstr ""
 #
-# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 30
-msgid "Analyses results out of client or lab specified range"
+# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 25
+msgid "Analyses results out of specified range"
 msgstr ""
 #
 # File: ../browser/reports/qualitycontrol_analysesrepeated.py, line: 29
 msgid "Analyses retested"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysesperdepartment.py, line: 147
-# File: ../browser/reports/templates/productivity.pt, line: 325
+# File: ../browser/reports/productivity_analysesperdepartment.py, line: 181
+# File: ../browser/reports/templates/productivity.pt, line: 342
 # File: ../browser/reports/templates/productivity_analysesperdepartment.pt, line: 79
 msgid "Analyses summary per department"
 msgstr ""
@@ -487,7 +487,7 @@ msgstr ""
 #
 # File: ../browser/analyses.py, line: 46
 # File: ../browser/late_analyses.py, line: 38
-# File: ../browser/reports/productivity_analysestats.py, line: 136
+# File: ../browser/reports/productivity_analysestats.py, line: 124
 msgid "Analysis"
 msgstr ""
 #
@@ -548,9 +548,9 @@ msgstr ""
 msgid "Analysis Requests"
 msgstr ""
 #
-# File: ../browser/batch.py, line: 164
+# File: ../browser/batch.py, line: 165
 # File: ../browser/fields/referenceresultsfield.py, line: 19
-# File: ../browser/reports/productivity_analysestats_overtime.py, line: 49
+# File: ../browser/reports/productivity_analysestats_overtime.py, line: 38
 msgid "Analysis Service"
 msgstr ""
 #
@@ -564,7 +564,7 @@ msgstr ""
 msgid "Analysis Specifications"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysesperdepartment.py, line: 37
+# File: ../browser/reports/productivity_analysesperdepartment.py, line: 38
 msgid "Analysis State"
 msgstr ""
 #
@@ -596,13 +596,13 @@ msgstr ""
 msgid "Analysis requests ${ARs} were successfully created."
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysesperclient.py, line: 51
-# File: ../browser/reports/templates/productivity.pt, line: 217
+# File: ../browser/reports/productivity_analysesperclient.py, line: 52
+# File: ../browser/reports/templates/productivity.pt, line: 227
 msgid "Analysis requests and analyses"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysesperclient.py, line: 54
-# File: ../browser/reports/templates/productivity.pt, line: 226
+# File: ../browser/reports/productivity_analysesperclient.py, line: 55
+# File: ../browser/reports/templates/productivity.pt, line: 237
 msgid "Analysis requests and analyses per client"
 msgstr ""
 #
@@ -623,11 +623,11 @@ msgid ""
 "this category."
 msgstr ""
 #
-# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 232
+# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 223
 msgid "Analysis result within error range"
 msgstr ""
 #
-# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 40
+# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 51
 msgid "Analysis results for per sample point and analysis service"
 msgstr ""
 #
@@ -641,37 +641,33 @@ msgstr ""
 msgid "Analysis results relate only to the samples tested"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysesperservice.py, line: 84
+# File: ../browser/reports/productivity_analysesperservice.py, line: 77
 # File: ../browser/reports/selection_macros/select_analysisservice.pt, line: 3
 msgid "Analysis service"
-msgstr ""
-#
-# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 183
-msgid "Analysis specification"
 msgstr ""
 #
 # File: ../browser/client.py, line: 668
 msgid "Analysis specifications reset to lab defaults."
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity.pt, line: 264
+# File: ../browser/reports/templates/productivity.pt, line: 277
 msgid "Analysis turnaround time"
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity.pt, line: 294
+# File: ../browser/reports/templates/productivity.pt, line: 309
 msgid "Analysis turnaround time over time"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysestats.py, line: 34
+# File: ../browser/reports/productivity_analysestats.py, line: 27
 msgid "Analysis turnaround times"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysestats_overtime.py, line: 34
+# File: ../browser/reports/productivity_analysestats_overtime.py, line: 26
 msgid "Analysis turnaround times over time"
 msgstr ""
 #
-# File: ../browser/batch.py, line: 167
-# File: ../browser/reports/productivity_analysestats_overtime.py, line: 60
+# File: ../browser/batch.py, line: 168
+# File: ../browser/reports/productivity_analysestats_overtime.py, line: 47
 # File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 111
 msgid "Analyst"
 msgstr ""
@@ -693,9 +689,9 @@ msgstr ""
 msgid "Assigned"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysesperclient.py, line: 84
-# File: ../browser/reports/productivity_analysespersampletype.py, line: 97
-# File: ../browser/reports/productivity_analysesperservice.py, line: 80
+# File: ../browser/reports/productivity_analysesperclient.py, line: 83
+# File: ../browser/reports/productivity_analysespersampletype.py, line: 90
+# File: ../browser/reports/productivity_analysesperservice.py, line: 73
 msgid "Assigned to worksheet"
 msgstr ""
 #
@@ -742,7 +738,7 @@ msgstr ""
 msgid "Attachment required"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysesattachments.py, line: 72
+# File: ../browser/reports/productivity_analysesattachments.py, line: 61
 msgid "Attachment type"
 msgstr ""
 #
@@ -764,15 +760,15 @@ msgstr ""
 msgid "Automatic log-off"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysestats_overtime.py, line: 173
+# File: ../browser/reports/productivity_analysestats_overtime.py, line: 154
 msgid "Average TAT"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysestats.py, line: 142
+# File: ../browser/reports/productivity_analysestats.py, line: 130
 msgid "Average early"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysestats.py, line: 140
+# File: ../browser/reports/productivity_analysestats.py, line: 128
 msgid "Average late"
 msgstr ""
 #
@@ -858,7 +854,7 @@ msgstr ""
 msgid "Business Phone"
 msgstr ""
 #
-# File: ../browser/reports/__init__.py, line: 95
+# File: ../browser/reports/__init__.py, line: 125
 msgid "By"
 msgstr ""
 #
@@ -959,7 +955,7 @@ msgstr ""
 #
 # File: ../browser/accreditation.py, line: 53
 # File: ../browser/referencesample.py, line: 58
-# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 104
+# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 97
 msgid "Category"
 msgstr ""
 #
@@ -1156,7 +1152,7 @@ msgstr ""
 #
 # File: ../browser/analysisrequest.py, line: 1956
 # File: ../browser/late_analyses.py, line: 43
-# File: ../browser/reports/selection_macros/select_contact.pt, line: 3
+# File: ../browser/reports/selection_macros/select_contact.pt, line: 4
 msgid "Contact"
 msgstr ""
 #
@@ -1210,7 +1206,7 @@ msgstr ""
 msgid "Content Type"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysesattachments.py, line: 73
+# File: ../browser/reports/productivity_analysesattachments.py, line: 62
 msgid "Content type"
 msgstr ""
 #
@@ -1222,7 +1218,7 @@ msgstr ""
 msgid "Copy from"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysestats.py, line: 137
+# File: ../browser/reports/productivity_analysestats.py, line: 125
 msgid "Count"
 msgstr ""
 #
@@ -1231,8 +1227,8 @@ msgid "Country"
 msgstr ""
 #
 # File: ../browser/instrument.py, line: 316
-# File: ../browser/reports/__init__.py, line: 94
-# File: ../browser/reports/administration_usershistory.py, line: 100
+# File: ../browser/reports/__init__.py, line: 124
+# File: ../browser/reports/administration_usershistory.py, line: 106
 msgid "Created"
 msgstr ""
 #
@@ -1241,7 +1237,7 @@ msgid "Created by"
 msgstr ""
 #
 # File: ../browser/mailtemplates/analysisrequest_results.pt, line: 64
-# File: ../browser/reports/templates/report_frame.pt, line: 40
+# File: ../browser/reports/templates/report_frame.pt, line: 46
 msgid "Created by:"
 msgstr ""
 #
@@ -1264,8 +1260,8 @@ msgstr ""
 msgid "Current"
 msgstr ""
 #
-# File: ../browser/reports/productivity_dailysamplesreceived.py, line: 71
-# File: ../browser/reports/templates/productivity.pt, line: 82
+# File: ../browser/reports/productivity_dailysamplesreceived.py, line: 98
+# File: ../browser/reports/templates/productivity.pt, line: 84
 # File: ../browser/reports/templates/productivity_dailysamplesreceived.pt, line: 40
 msgid "Daily samples received"
 msgstr ""
@@ -1278,21 +1274,21 @@ msgstr ""
 msgid "Data Interface Options"
 msgstr ""
 #
-# File: ../browser/reports/productivity_dataentrydaybook.py, line: 111
-# File: ../browser/reports/templates/productivity.pt, line: 412
+# File: ../browser/reports/productivity_dataentrydaybook.py, line: 160
+# File: ../browser/reports/templates/productivity.pt, line: 436
 # File: ../browser/reports/templates/productivity_dataentrydaybook.pt, line: 71
 msgid "Data entry day book"
 msgstr ""
 #
 # File: ../browser/instrument.py, line: 194
 # File: ../browser/log.py, line: 41
-# File: ../browser/reports/productivity_analysestats_overtime.py, line: 140
+# File: ../browser/reports/productivity_analysestats_overtime.py, line: 122
 msgid "Date"
 msgstr ""
 #
-# File: ../browser/reports/administration_usershistory.py, line: 65
-# File: ../browser/reports/productivity_dataentrydaybook.py, line: 28
+# File: ../browser/reports/productivity_dataentrydaybook.py, line: 29
 # File: ../content/analysisrequestquery.py, line: 132
+# File: ../profiles/default/registry.xml, line: -1
 msgid "Date Created"
 msgstr ""
 #
@@ -1345,15 +1341,15 @@ msgstr ""
 msgid "Date Received"
 msgstr ""
 #
-# File: ../browser/batch.py, line: 161
-# File: ../browser/reports/productivity_analysesperdepartment.py, line: 28
-# File: ../browser/reports/productivity_analysesperformedpertotal.py, line: 28
+# File: ../browser/batch.py, line: 162
+# File: ../browser/reports/productivity_analysesperdepartment.py, line: 29
+# File: ../browser/reports/productivity_analysesperformedpertotal.py, line: 29
 msgid "Date Requested"
 msgstr ""
 #
 # File: ../browser/analysisrequest.py, line: 538
 # File: ../browser/referencesample.py, line: 213
-# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 291
+# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 250
 msgid "Date Sampled"
 msgstr ""
 #
@@ -1397,10 +1393,6 @@ msgstr ""
 #
 # File: ../browser/fields/durationfield.py, line: 19
 msgid "Days"
-msgstr ""
-#
-# File: ../browser/reports/administration_usershistory.py, line: 104
-msgid "Deactivated"
 msgstr ""
 #
 # File: ../content/analysisservice.py, line: 498
@@ -1622,7 +1614,7 @@ msgstr ""
 msgid "Earliness"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysestats.py, line: 141
+# File: ../browser/reports/productivity_analysestats.py, line: 129
 msgid "Early"
 msgstr ""
 #
@@ -1762,7 +1754,7 @@ msgid "Field Title"
 msgstr ""
 #
 # File: ../browser/client.py, line: 694
-# File: ../browser/reports/productivity_analysesattachments.py, line: 71
+# File: ../browser/reports/productivity_analysesattachments.py, line: 60
 msgid "File"
 msgstr ""
 #
@@ -1782,7 +1774,7 @@ msgstr ""
 msgid "Formula"
 msgstr ""
 #
-# File: ../browser/reports/selection_macros/__init__.py, line: 116
+# File: ../browser/reports/selection_macros/__init__.py, line: 136
 # File: ../browser/reports/selection_macros/select_daterange.pt, line: 9
 # File: ../content/instrumentcalibration.py, line: 31
 msgid "From"
@@ -1799,7 +1791,9 @@ msgstr ""
 msgid "Future dated sample"
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity.pt, line: 95
+# File: ../browser/reports/templates/administration.pt, line: 106
+# File: ../browser/reports/templates/productivity.pt, line: 99
+# File: ../browser/reports/templates/qualitycontrol.pt, line: 103
 msgid "Generate report"
 msgstr ""
 #
@@ -1817,8 +1811,8 @@ msgstr ""
 msgid "Group by"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysesperdepartment.py, line: 52
-# File: ../browser/reports/productivity_analysesperformedpertotal.py, line: 43
+# File: ../browser/reports/productivity_analysesperdepartment.py, line: 53
+# File: ../browser/reports/productivity_analysesperformedpertotal.py, line: 44
 msgid "Grouping period"
 msgstr ""
 #
@@ -1847,7 +1841,7 @@ msgid "ID Server URL"
 msgstr ""
 #
 # File: ../controlpanel/bika_idserver.py, line: 57
-# File: ../idserver.py, line: 46
+# File: ../idserver.py, line: 45
 msgid "ID Server unavailable"
 msgstr ""
 #
@@ -1942,7 +1936,7 @@ msgid ""
 msgstr ""
 #
 # File: ../browser/accreditation.py, line: 55
-# File: ../browser/reports/productivity_analysestats_overtime.py, line: 72
+# File: ../browser/reports/productivity_analysestats_overtime.py, line: 57
 # File: ../browser/reports/selection_macros/select_instrument.pt, line: 3
 msgid "Instrument"
 msgstr ""
@@ -2037,8 +2031,8 @@ msgid "Keywords"
 msgstr ""
 #
 # File: ../browser/analysisrequest.py, line: 621
-# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 47
 # File: ../browser/templates/analysisrequest_manage_results.pt, line: 65
+# File: ../browser/templates/analysisrequest_view.pt, line: 85
 msgid "Lab"
 msgstr ""
 #
@@ -2089,7 +2083,7 @@ msgid "Last modified"
 msgstr ""
 #
 # File: ../browser/late_analyses.py, line: 48
-# File: ../browser/reports/productivity_analysestats.py, line: 139
+# File: ../browser/reports/productivity_analysestats.py, line: 127
 msgid "Late"
 msgstr ""
 #
@@ -2116,7 +2110,7 @@ msgstr ""
 msgid "Linked Sample"
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity.pt, line: 84
+# File: ../browser/reports/templates/productivity.pt, line: 87
 msgid "Lists all samples received for a date range"
 msgstr ""
 #
@@ -2128,7 +2122,7 @@ msgstr ""
 msgid "Load documents describing the method here"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysesattachments.py, line: 63
+# File: ../browser/reports/productivity_analysesattachments.py, line: 53
 msgid "Loaded"
 msgstr ""
 #
@@ -2206,7 +2200,7 @@ msgstr ""
 #
 # File: ../browser/fields/referenceresultsfield.py, line: 23
 # File: ../browser/referencesample.py, line: 130
-# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 108
+# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 101
 msgid "Max"
 msgstr ""
 #
@@ -2249,7 +2243,7 @@ msgid "Metadata"
 msgstr ""
 #
 # File: ../browser/analyses.py, line: 50
-# File: ../browser/batch.py, line: 165
+# File: ../browser/batch.py, line: 166
 # File: ../browser/templates/analysisservice_popup.pt, line: 164
 msgid "Method"
 msgstr ""
@@ -2289,7 +2283,7 @@ msgstr ""
 #
 # File: ../browser/fields/referenceresultsfield.py, line: 22
 # File: ../browser/referencesample.py, line: 129
-# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 107
+# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 100
 msgid "Min"
 msgstr ""
 #
@@ -2326,6 +2320,10 @@ msgstr ""
 msgid "Model"
 msgstr ""
 #
+# File: ../browser/reports/administration_usershistory.py, line: 72
+msgid "Modification date"
+msgstr ""
+#
 # File: ../skins/bika/portlet_late_analyses.pt, line: 58
 # File: ../skins/bika/portlet_pending_orders.pt, line: 53
 # File: ../skins/bika/portlet_sample_due.pt, line: 54
@@ -2351,12 +2349,16 @@ msgstr ""
 msgid "No Analysis Requests matched your query"
 msgstr ""
 #
+# File: ../browser/reports/administration_usershistory.py, line: 155
+msgid "No actions found for user %s"
+msgstr ""
+#
 # File: ../browser/analysisrequest.py, line: 123
 msgid "No analyses have been selected"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysesperdepartment.py, line: 46
-# File: ../browser/reports/productivity_analysesperformedpertotal.py, line: 37
+# File: ../browser/reports/productivity_analysesperdepartment.py, line: 47
+# File: ../browser/reports/productivity_analysesperformedpertotal.py, line: 38
 # File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 75
 msgid "No analyses matched your query"
 msgstr ""
@@ -2370,7 +2372,7 @@ msgid "No analyses were added to this worksheet."
 msgstr ""
 #
 # File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 55
-# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 77
+# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 85
 msgid "No analysis services were selected."
 msgstr ""
 #
@@ -2395,7 +2397,7 @@ msgstr ""
 msgid "No default preservations specified for this service"
 msgstr ""
 #
-# File: ../browser/reports/administration_usershistory.py, line: 85
+# File: ../browser/reports/administration_usershistory.py, line: 91
 msgid "No historical actions matched your query"
 msgstr ""
 #
@@ -2416,8 +2418,8 @@ msgstr ""
 msgid "No reference sample was selected."
 msgstr ""
 #
-# File: ../browser/reports/productivity_dailysamplesreceived.py, line: 38
-# File: ../browser/reports/productivity_samplereceivedvsreported.py, line: 38
+# File: ../browser/reports/productivity_dailysamplesreceived.py, line: 39
+# File: ../browser/reports/productivity_samplereceivedvsreported.py, line: 43
 msgid "No samples matched your query"
 msgstr ""
 #
@@ -2444,40 +2446,29 @@ msgstr ""
 msgid "Not invoiced"
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity_dataentrydaybook.pt, line: 72
-msgid ""
-"Number of Analysis Requests and totals submitted between a period of time"
-msgstr ""
-#
-# File: ../browser/reports/productivity_analysesperclient.py, line: 52
+# File: ../browser/reports/productivity_analysesperclient.py, line: 53
 msgid "Number of Analysis requests and analyses"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysesperclient.py, line: 55
+# File: ../browser/reports/productivity_analysesperclient.py, line: 56
 msgid "Number of Analysis requests and analyses per client"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysesperclient.py, line: 96
-# File: ../browser/reports/productivity_analysespersampletype.py, line: 104
-# File: ../browser/reports/productivity_analysesperservice.py, line: 84
+# File: ../browser/reports/productivity_analysesperclient.py, line: 95
+# File: ../browser/reports/productivity_analysespersampletype.py, line: 96
+# File: ../browser/reports/productivity_analysesperservice.py, line: 77
 msgid "Number of analyses"
 msgstr ""
 #
-# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 221
+# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 212
 msgid "Number of analyses out of range for period"
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity_analysesperformedpertotal.pt, line: 80
-msgid ""
-"Number of analyses published and expressed as a percentage of all analyses "
-"performed"
-msgstr ""
-#
-# File: ../browser/reports/productivity_analysesperservice.py, line: 35
+# File: ../browser/reports/productivity_analysesperservice.py, line: 28
 msgid "Number of analyses requested per analysis service"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysespersampletype.py, line: 35
+# File: ../browser/reports/productivity_analysespersampletype.py, line: 36
 msgid "Number of analyses requested per sample type"
 msgstr ""
 #
@@ -2486,19 +2477,13 @@ msgstr ""
 msgid "Number of analyses retested for period"
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity.pt, line: 327
+# File: ../browser/reports/templates/productivity.pt, line: 345
 msgid ""
 "Number of analysis requested and published per department and expresed as a "
 "percentage of all analyses performed"
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity_analysesperdepartment.pt, line: 80
-msgid ""
-"Number of analysis requested and published per department and expressed as a "
-"percentage of all analyses performed"
-msgstr ""
-#
-# File: ../browser/reports/productivity_analysesperclient.py, line: 95
+# File: ../browser/reports/productivity_analysesperclient.py, line: 94
 msgid "Number of requests"
 msgstr ""
 #
@@ -2546,8 +2531,12 @@ msgstr ""
 msgid "Organization responsible of granting the certification"
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity.pt, line: 385
+# File: ../browser/reports/templates/productivity.pt, line: 406
 msgid "Other productivity reports"
+msgstr ""
+#
+# File: ../browser/reports/selection_macros/select_output_format.pt, line: 3
+msgid "Output format"
 msgstr ""
 #
 # File: ../browser/analyses.py, line: 48
@@ -2732,7 +2721,7 @@ msgstr ""
 msgid "Pricelist for"
 msgstr ""
 #
-# File: ../browser/reports/templates/report_frame.pt, line: 36
+# File: ../browser/reports/templates/report_frame.pt, line: 42
 # File: ../browser/templates/batch_publish.pt, line: 124
 msgid "Print date:"
 msgstr ""
@@ -2741,11 +2730,11 @@ msgstr ""
 msgid "Product"
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity.pt, line: 69
+# File: ../browser/reports/templates/productivity.pt, line: 71
 msgid "Productivity Reports"
 msgstr ""
 #
-# File: ../browser/reports/selection_macros/select_profile.pt, line: 3
+# File: ../browser/reports/selection_macros/select_profile.pt, line: 4
 # File: ../browser/templates/analysisrequest_view.pt, line: 73
 # File: ../browser/templates/ar_add.pt, line: 297
 msgid "Profile"
@@ -2778,7 +2767,7 @@ msgstr ""
 #
 # File: ../browser/analysisrequest.py, line: 2144
 # File: ../browser/reports/administration_arsnotinvoiced.py, line: 47
-# File: ../browser/reports/productivity_analysesperservice.py, line: 62
+# File: ../browser/reports/productivity_analysesperservice.py, line: 55
 msgid "Published"
 msgstr ""
 #
@@ -2808,17 +2797,15 @@ msgstr ""
 msgid "Range Specification"
 msgstr ""
 #
-# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 283
 # File: ../content/analysisservice.py, line: 431
 msgid "Range max"
 msgstr ""
 #
-# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 282
 # File: ../content/analysisservice.py, line: 430
 msgid "Range min"
 msgstr ""
 #
-# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 47
+# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 42
 msgid "Range spec"
 msgstr ""
 #
@@ -2835,8 +2822,8 @@ msgid "Receive"
 msgstr ""
 #
 # File: ../browser/analysisrequest.py, line: 2063
-# File: ../browser/reports/productivity_analysestats.py, line: 63
-# File: ../browser/reports/productivity_analysestats_overtime.py, line: 88
+# File: ../browser/reports/productivity_analysestats.py, line: 53
+# File: ../browser/reports/productivity_analysestats_overtime.py, line: 71
 msgid "Received"
 msgstr ""
 #
@@ -2914,7 +2901,7 @@ msgstr ""
 msgid "Register"
 msgstr ""
 #
-# File: ../browser/batch.py, line: 189
+# File: ../browser/batch.py, line: 190
 # File: ../browser/mailtemplates/analysisrequest_results.pt, line: 286
 # File: ../content/analysisprofile.py, line: 46
 msgid "Remarks"
@@ -2949,13 +2936,12 @@ msgstr ""
 msgid "Repeated analyses"
 msgstr ""
 #
-# File: ../browser/reports/templates/administration.pt, line: 105
 # File: ../browser/reports/templates/qualitycontrol.pt, line: 24
 # File: ../content/report.py, line: 18
 msgid "Report"
 msgstr ""
 #
-# File: ../browser/reports/__init__.py, line: 112
+# File: ../browser/reports/__init__.py, line: 142
 # File: ../content/report.py, line: 23
 msgid "Report Type"
 msgstr ""
@@ -2970,19 +2956,19 @@ msgstr ""
 msgid "Report of published analysis requests which have not been invoiced"
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity.pt, line: 359
+# File: ../browser/reports/templates/productivity.pt, line: 379
 msgid ""
 "Report tables between a period of time the number of analyses published and "
 "expressed as a percentage of all analyses performed."
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity.pt, line: 109
+# File: ../browser/reports/templates/productivity.pt, line: 114
 msgid ""
 "Report tables between a period of time the number of samples received and "
 "results reported for them with differences between the two"
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity.pt, line: 414
+# File: ../browser/reports/templates/productivity.pt, line: 439
 msgid ""
 "Report tables of Analysis Requests and totals submitted between a period of "
 "time"
@@ -2996,18 +2982,18 @@ msgstr ""
 msgid "Reported as dry matter"
 msgstr ""
 #
-# File: ../browser/reports/__init__.py, line: 77
+# File: ../browser/reports/__init__.py, line: 107
 msgid "Reports"
 msgstr ""
 #
 # File: ../browser/reports/administration_arsnotinvoiced.py, line: 67
-# File: ../browser/reports/productivity_analysesattachments.py, line: 70
-# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 101
+# File: ../browser/reports/productivity_analysesattachments.py, line: 59
+# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 94
 msgid "Request"
 msgstr ""
 #
 # File: ../browser/analysisrequest.py, line: 1934
-# File: ../browser/batch.py, line: 160
+# File: ../browser/batch.py, line: 161
 # File: ../browser/client.py, line: 693
 msgid "Request ID"
 msgstr ""
@@ -3016,9 +3002,9 @@ msgstr ""
 msgid "Request new analyses"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysesperclient.py, line: 64
-# File: ../browser/reports/productivity_analysespersampletype.py, line: 63
-# File: ../browser/reports/productivity_analysesperservice.py, line: 56
+# File: ../browser/reports/productivity_analysesperclient.py, line: 63
+# File: ../browser/reports/productivity_analysespersampletype.py, line: 62
+# File: ../browser/reports/productivity_analysesperservice.py, line: 49
 msgid "Requested"
 msgstr ""
 #
@@ -3040,7 +3026,7 @@ msgid "Restrict categories"
 msgstr ""
 #
 # File: ../browser/analyses.py, line: 54
-# File: ../browser/batch.py, line: 166
+# File: ../browser/batch.py, line: 167
 # File: ../browser/mailtemplates/analysisrequest_results.pt, line: 208
 msgid "Result"
 msgstr ""
@@ -3065,7 +3051,7 @@ msgstr ""
 msgid "Result out of range"
 msgstr ""
 #
-# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 39
+# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 50
 # File: ../browser/reports/templates/qualitycontrol.pt, line: 48
 msgid "Results per sample point"
 msgstr ""
@@ -3142,7 +3128,7 @@ msgid "Sample Partitions"
 msgstr ""
 #
 # File: ../browser/analysisrequest.py, line: 509
-# File: ../browser/batch.py, line: 163
+# File: ../browser/batch.py, line: 164
 # File: ../browser/mailtemplates/analysisrequest_results.pt, line: 155
 msgid "Sample Point"
 msgstr ""
@@ -3154,7 +3140,7 @@ msgid "Sample Points"
 msgstr ""
 #
 # File: ../browser/analysisrequest.py, line: 496
-# File: ../browser/batch.py, line: 162
+# File: ../browser/batch.py, line: 163
 # File: ../browser/client.py, line: 592
 msgid "Sample Type"
 msgstr ""
@@ -3170,7 +3156,7 @@ msgid "Sample Types"
 msgstr ""
 #
 # File: ../browser/reports/administration_arsnotinvoiced.py, line: 69
-# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 103
+# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 96
 # File: ../browser/reports/qualitycontrol_analysesrepeated.py, line: 90
 msgid "Sample point"
 msgstr ""
@@ -3179,13 +3165,13 @@ msgstr ""
 msgid "Sample received"
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity.pt, line: 78
+# File: ../browser/reports/templates/productivity.pt, line: 80
 msgid "Sample related reports"
 msgstr ""
 #
 # File: ../browser/reports/administration_arsnotinvoiced.py, line: 68
-# File: ../browser/reports/productivity_analysespersampletype.py, line: 104
-# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 102
+# File: ../browser/reports/productivity_analysespersampletype.py, line: 96
+# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 95
 msgid "Sample type"
 msgstr ""
 #
@@ -3205,16 +3191,12 @@ msgstr ""
 msgid "Samples of this type should be treated as hazardous"
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity_dailysamplesreceived.pt, line: 41
-msgid "Samples received for a date range"
-msgstr ""
-#
-# File: ../browser/reports/productivity_samplereceivedvsreported.py, line: 92
+# File: ../browser/reports/productivity_samplereceivedvsreported.py, line: 122
 # File: ../browser/reports/templates/productivity_samplereceivedvsreported.pt, line: 20
 msgid "Samples received vs. reported"
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity.pt, line: 107
+# File: ../browser/reports/templates/productivity.pt, line: 111
 msgid "Samples received vs. samples reported"
 msgstr ""
 #
@@ -3417,7 +3399,7 @@ msgstr ""
 msgid "Service keyword ${keyword} not found"
 msgstr ""
 #
-# File: ../browser/reports/selection_macros/__init__.py, line: 55
+# File: ../browser/reports/selection_macros/__init__.py, line: 57
 # File: ../browser/worksheet.py, line: 992
 # File: ../browser/worksheetfolder.py, line: 119
 msgid "Services"
@@ -3459,8 +3441,8 @@ msgid "Signature"
 msgstr ""
 #
 # File: ../browser/client.py, line: 697
-# File: ../browser/reports/__init__.py, line: 93
-# File: ../browser/reports/productivity_analysesattachments.py, line: 74
+# File: ../browser/reports/__init__.py, line: 123
+# File: ../browser/reports/productivity_analysesattachments.py, line: 63
 msgid "Size"
 msgstr ""
 #
@@ -3478,10 +3460,6 @@ msgstr ""
 #
 # File: ../config.py, line: 63
 msgid "Special"
-msgstr ""
-#
-# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 285
-msgid "Specification"
 msgstr ""
 #
 # File: ../content/analysisspec.py, line: 76
@@ -3517,8 +3495,8 @@ msgid "State"
 msgstr ""
 #
 # File: ../browser/analyses.py, line: 52
-# File: ../browser/reports/productivity_analysesperclient.py, line: 72
-# File: ../browser/reports/productivity_analysespersampletype.py, line: 75
+# File: ../browser/reports/productivity_analysesperclient.py, line: 71
+# File: ../browser/reports/productivity_analysespersampletype.py, line: 72
 msgid "Status"
 msgstr ""
 #
@@ -3617,8 +3595,8 @@ msgstr ""
 msgid "The analyst responsible of the validation"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysesattachments.py, line: 35
-# File: ../browser/reports/templates/productivity.pt, line: 390
+# File: ../browser/reports/productivity_analysesattachments.py, line: 27
+# File: ../browser/reports/templates/productivity.pt, line: 412
 msgid "The attachments linked to analysis requests and analyses"
 msgstr ""
 #
@@ -3698,11 +3676,11 @@ msgid ""
 "e.g. South African National Accreditation Service for SANAS"
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity.pt, line: 140
+# File: ../browser/reports/templates/productivity.pt, line: 147
 msgid "The number of analyses requested per analysis service"
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity.pt, line: 181
+# File: ../browser/reports/templates/productivity.pt, line: 190
 msgid "The number of analyses requested per sample type"
 msgstr ""
 #
@@ -3724,11 +3702,11 @@ msgid ""
 "automatic log-off"
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity.pt, line: 219
+# File: ../browser/reports/templates/productivity.pt, line: 230
 msgid "The number of requests and analyses"
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity.pt, line: 228
+# File: ../browser/reports/templates/productivity.pt, line: 240
 msgid "The number of requests and analyses per client"
 msgstr ""
 #
@@ -3775,19 +3753,19 @@ msgid ""
 "are required, permitted or not per analysis request"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysestats.py, line: 35
+# File: ../browser/reports/productivity_analysestats.py, line: 28
 msgid "The turnaround time of analyses"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysestats_overtime.py, line: 36
+# File: ../browser/reports/productivity_analysestats_overtime.py, line: 28
 msgid "The turnaround time of analyses plotted over time"
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity.pt, line: 266
+# File: ../browser/reports/templates/productivity.pt, line: 280
 msgid "The turnaround times of analyses"
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity.pt, line: 296
+# File: ../browser/reports/templates/productivity.pt, line: 312
 msgid "The turnaround times of analyses plotted over time"
 msgstr ""
 #
@@ -3868,9 +3846,9 @@ msgstr ""
 msgid "To be verified"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysesattachments.py, line: 117
-# File: ../browser/reports/productivity_analysesperclient.py, line: 131
-# File: ../browser/reports/productivity_analysespersampletype.py, line: 130
+# File: ../browser/reports/productivity_analysesattachments.py, line: 105
+# File: ../browser/reports/productivity_analysesperclient.py, line: 129
+# File: ../browser/reports/productivity_analysespersampletype.py, line: 121
 msgid "Total"
 msgstr ""
 #
@@ -3883,11 +3861,11 @@ msgid "Total Price"
 msgstr ""
 #
 # File: ../browser/reports/qualitycontrol_referenceanalysisqc.py, line: 126
-# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 182
+# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 161
 msgid "Total analyses"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysestats_overtime.py, line: 166
+# File: ../browser/reports/productivity_analysestats_overtime.py, line: 147
 msgid "Total data points"
 msgstr ""
 #
@@ -3900,7 +3878,11 @@ msgstr ""
 msgid "Total:"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysestats_overtime.py, line: 141
+# File: ../browser/reports/templates/administration.pt, line: 117
+msgid "Traceability"
+msgstr ""
+#
+# File: ../browser/reports/productivity_analysestats_overtime.py, line: 123
 msgid "Turnaround time (h)"
 msgstr ""
 #
@@ -3922,7 +3904,7 @@ msgstr ""
 msgid "Uncertainty value"
 msgstr ""
 #
-# File: ../browser/reports/productivity_analysestats.py, line: 138
+# File: ../browser/reports/productivity_analysestats.py, line: 126
 msgid "Undefined"
 msgstr ""
 #
@@ -3936,7 +3918,7 @@ msgstr ""
 msgid "Unit price"
 msgstr ""
 #
-# File: ../browser/reports/templates/productivity_samplereceivedvsreported.pt, line: 38
+# File: ../browser/reports/templates/productivity_samplereceivedvsreported.pt, line: 37
 msgid "Unpublished"
 msgstr ""
 #
@@ -3956,7 +3938,7 @@ msgid ""
 msgstr ""
 #
 # File: ../browser/log.py, line: 42
-# File: ../browser/reports/administration_usershistory.py, line: 78
+# File: ../browser/reports/administration_usershistory.py, line: 84
 # File: ../browser/reports/selection_macros/select_user.pt, line: 4
 msgid "User"
 msgstr ""
@@ -3966,11 +3948,11 @@ msgstr ""
 msgid "User Name"
 msgstr ""
 #
-# File: ../browser/reports/templates/administration_usershistory.pt, line: 74
-msgid "UserID"
+# File: ../browser/reports/templates/administration.pt, line: 120
+msgid "User history"
 msgstr ""
 #
-# File: ../browser/reports/administration_usershistory.py, line: 157
+# File: ../browser/reports/administration_usershistory.py, line: 169
 # File: ../browser/reports/templates/administration_usershistory.pt, line: 58
 msgid "Users history"
 msgstr ""
@@ -4226,6 +4208,10 @@ msgstr ""
 msgid "Work Performed"
 msgstr ""
 #
+# File: ../browser/reports/templates/administration_usershistory.pt, line: 75
+msgid "Workflow"
+msgstr ""
+#
 # File: ../browser/referencesample.py, line: 60
 # File: ../browser/worksheetfolder.py, line: 112
 msgid "Worksheet"
@@ -4252,7 +4238,7 @@ msgstr ""
 msgid "You must select an instrument"
 msgstr ""
 #
-# File: ../browser/reports/administration_usershistory.py, line: 106
+# File: ../browser/reports/administration_usershistory.py, line: 112
 msgid "action"
 msgstr ""
 #
@@ -4269,11 +4255,11 @@ msgstr ""
 msgid "client"
 msgstr ""
 #
-# File: ../browser/reports/administration_usershistory.py, line: 130
+# File: ../browser/reports/administration_usershistory.py, line: 137
 msgid "comment"
 msgstr ""
 #
-# File: ../browser/batch.py, line: 195
+# File: ../browser/batch.py, line: 196
 msgid "datalines"
 msgstr ""
 #
@@ -4336,7 +4322,7 @@ msgstr ""
 msgid "title_move_item_up"
 msgstr ""
 #
-# File: ../browser/reports/selection_macros/__init__.py, line: 118
+# File: ../browser/reports/selection_macros/__init__.py, line: 138
 # File: ../browser/reports/selection_macros/select_daterange.pt, line: 28
 msgid "to"
 msgstr ""

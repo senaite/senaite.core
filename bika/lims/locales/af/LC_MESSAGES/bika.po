@@ -417,9 +417,10 @@ msgstr "Ontledings verslae"
 msgid "Analyses repeated"
 msgstr "Ontledings herhaal"
 
-# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 30
-msgid "Analyses results out of client or lab specified range"
-msgstr "Ontledings buite kliënt- of laboratorium-gespesifiseerde bereik"
+#
+# File: ../browser/reports/qualitycontrol_analysesoutofrange.py, line: 25
+msgid "Analyses results out of specified range"
+msgstr ""
 
 # File: ../browser/reports/qualitycontrol_analysesrepeated.py, line: 29
 msgid "Analyses retested"
@@ -595,10 +596,6 @@ msgstr "Ontledingsresultate verwys slegs na die monsters getoets"
 # File: ../browser/queries/orders.py, line: 117
 msgid "Analysis service"
 msgstr "Ontledingsdiens"
-
-# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 183
-msgid "Analysis specification"
-msgstr "Ontleding spesifikasie"
 
 # File: ../browser/client.py, line: 670
 msgid "Analysis specifications reset to lab defaults."
@@ -1322,10 +1319,6 @@ msgstr "Datum waarop die sertifisering toegeken was"
 # File: ../browser/fields/durationfield.py, line: 19
 msgid "Days"
 msgstr "Dae"
-
-# File: ../browser/reports/administration_usershistory.py, line: 104
-msgid "Deactivated"
-msgstr "Gedeaktiveer"
 
 msgid "Default"
 msgstr "Verstek"
@@ -2216,6 +2209,11 @@ msgstr "Mobiele Foon"
 msgid "Model"
 msgstr "Model"
 
+#
+# File: ../browser/reports/administration_usershistory.py, line: 72
+msgid "Modification date"
+msgstr ""
+
 # File: ../skins/bika/portlet_late_analyses.pt, line: 58
 # File: ../skins/bika/portlet_pending_orders.pt, line: 53
 # File: ../skins/bika/portlet_sample_due.pt, line: 54
@@ -2240,6 +2238,11 @@ msgstr "Nee"
 # File: ../browser/reports/productivity_dataentrydaybook.py, line: 38
 msgid "No Analysis Requests matched your query"
 msgstr "Geen ontledings versoekes voldoen aan navraag"
+
+#
+# File: ../browser/reports/administration_usershistory.py, line: 155
+msgid "No actions found for user %s"
+msgstr ""
 
 # File: ../browser/analysisrequest.py, line: 126
 msgid "No analyses have been selected"
@@ -2333,11 +2336,6 @@ msgstr "Nie Toegelaat"
 msgid "Not invoiced"
 msgstr "Nie gefaktureer"
 
-# File: ../browser/reports/templates/productivity_dataentrydaybook.pt, line:
-# 72
-msgid "Number of Analysis Requests and totals submitted between a period of time"
-msgstr ""
-
 # File: ../browser/reports/productivity_analysesperclient.py, line: 52
 msgid "Number of Analysis requests and analyses"
 msgstr "Aantal ontledingsversoeke en ontledings "
@@ -2356,12 +2354,6 @@ msgstr "Aantal ontledings "
 msgid "Number of analyses out of range for period"
 msgstr "Aantal ontledings buite reikwydte vir tydsinterval"
 
-# File:
-# ../browser/reports/templates/productivity_analysesperformedpertotal.pt,
-# line: 80
-msgid "Number of analyses published and expressed as a percentage of all analyses performed"
-msgstr ""
-
 # File: ../browser/queries/invoices.py, line: 34
 # File: ../browser/queries/orders.py, line: 34
 # File: ../browser/reports/productivity_analysesperservice.py, line: 35
@@ -2379,11 +2371,6 @@ msgstr "Aantal ontledings hertoeds vir tydsinterval"
 
 # File: ../browser/reports/templates/productivity.pt, line: 327
 msgid "Number of analysis requested and published per department and expresed as a percentage of all analyses performed"
-msgstr ""
-
-# File: ../browser/reports/templates/productivity_analysesperdepartment.pt,
-# line: 80
-msgid "Number of analysis requested and published per department and expressed as a percentage of all analyses performed"
 msgstr ""
 
 # File: ../browser/reports/productivity_analysesperclient.py, line: 95
@@ -2435,6 +2422,11 @@ msgstr ""
 
 # File: ../browser/reports/templates/productivity.pt, line: 385
 msgid "Other productivity reports"
+msgstr ""
+
+#
+# File: ../browser/reports/selection_macros/select_output_format.pt, line: 3
+msgid "Output format"
 msgstr ""
 
 msgid "Parent"
@@ -3094,11 +3086,6 @@ msgstr "Monsters"
 msgid "Samples of this type should be treated as hazardous"
 msgstr "Monsters van hierdie tipe moet as gevaarlik beskou word"
 
-# File: ../browser/reports/templates/productivity_dailysamplesreceived.pt,
-# line: 41
-msgid "Samples received for a date range"
-msgstr ""
-
 # File: ../browser/reports/productivity_samplereceivedvsreported.py, line: 92
 # File: ../browser/reports/templates/productivity_samplereceivedvsreported.pt,
 # line: 20
@@ -3361,10 +3348,6 @@ msgstr ""
 # File: ../config.py, line: 65
 msgid "Special"
 msgstr "Spesiaal"
-
-# File: ../browser/reports/qualitycontrol_resultspersamplepoint.py, line: 285
-msgid "Specification"
-msgstr "Spesifikasie"
 
 # File: ../content/analysisspec.py, line: 77
 msgid "Specifications"
@@ -3746,6 +3729,11 @@ msgstr "Totale Prys"
 msgid "Total:"
 msgstr ""
 
+#
+# File: ../browser/reports/templates/administration.pt, line: 117
+msgid "Traceability"
+msgstr ""
+
 # File: ../browser/reports/productivity_analysestats_overtime.py, line: 141
 msgid "Turnaround time (h)"
 msgstr "Omkeertyd (h)"
@@ -3811,8 +3799,9 @@ msgstr "Gebruiker"
 msgid "User Name"
 msgstr "Gebruikersnaam"
 
-# File: ../browser/reports/templates/administration_usershistory.pt, line: 74
-msgid "UserID"
+#
+# File: ../browser/reports/templates/administration.pt, line: 120
+msgid "User history"
 msgstr ""
 
 # File: ../browser/reports/administration_usershistory.py, line: 157
@@ -4054,6 +4043,11 @@ msgstr "Wanneer die resultate op 'n werkskaart van duplikaat ontledings op diese
 # File: ../content/instrumentmaintenancetask.py, line: 82
 # File: ../content/instrumentvalidation.py, line: 52
 msgid "Work Performed"
+msgstr ""
+
+#
+# File: ../browser/reports/templates/administration_usershistory.pt, line: 75
+msgid "Workflow"
 msgstr ""
 
 # File: ../browser/mailtemplates/analysisrequest_results.pt, line: 304
