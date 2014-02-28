@@ -1,0 +1,22 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="bika">
+
+    <browser:page
+      for="bika.lims.interfaces.IARPriority"
+      name="arpriority_views"
+      template="templates/arpriority_views.pt"
+      permission="bika.lims.permissions.ManageARPriority"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+    <browser:page
+      for="bika.lims.interfaces.IARPriorities"
+      name="arpriorities"
+      class="bika.lims.browser.arpriorities.GlobalARPrioritiesView"
+      permission="bika.lims.permissions.ManageARPriority"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+</configure>

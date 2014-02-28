@@ -9,7 +9,8 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.config import *
 from bika.lims.permissions import *
-from bika.lims.interfaces import IHaveNoBreadCrumbs, IARImportFolder
+from bika.lims.interfaces \
+        import IHaveNoBreadCrumbs, IARImportFolder, IARPriorities
 from zope.event import notify
 from zope.interface import alsoProvides
 from Products.CMFEditions.Permissions import ApplyVersionControl
@@ -63,6 +64,7 @@ class BikaGenerator:
         bika_setup = portal._getOb('bika_setup')
         for obj_id in ('bika_analysiscategories',
                        'bika_analysisservices',
+                       'bika_arpriorities',
                        'bika_attachmenttypes',
                        'bika_batchlabels',
                        'bika_calculations',
@@ -206,6 +208,7 @@ class BikaGenerator:
 
         mp(DispatchOrder, ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(ManageARImport, ['Manager', 'LabManager', 'LabClerk'], 1)
+        mp(ManageARPriority, ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(ManageAnalysisRequests, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'RegulatoryInspector'], 1)
         mp(ManageBika, ['Manager', 'LabManager'], 1)
         mp(ManageClients, ['Manager', 'LabManager', 'LabClerk'], 1)
@@ -673,6 +676,7 @@ class BikaGenerator:
         at.setCatalogsByType('Unit', ['bika_setup_catalog', ])
         at.setCatalogsByType('WorksheetTemplate', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('BatchLabel', ['bika_setup_catalog', ])
+        at.setCatalogsByType('ARPriority', ['bika_setup_catalog', ])
 
         addIndex(bsc, 'path', 'ExtendedPathIndex', ('getPhysicalPath'))
         addIndex(bsc, 'allowedRolesAndUsers', 'KeywordIndex')
@@ -731,6 +735,7 @@ class BikaGenerator:
         addIndex(bsc, 'getUnit', 'FieldIndex')
         addIndex(bsc, 'getVATAmount', 'FieldIndex')
         addIndex(bsc, 'getVolume', 'FieldIndex')
+        addIndex(bsc, 'sortKey', 'FieldIndex')
 
         addColumn(bsc, 'path')
         addColumn(bsc, 'UID')
@@ -787,16 +792,16 @@ class BikaGenerator:
 
     def setupTopLevelFolders(self, context):
         obj_id = 'arimports'
-        if obj_id in context.objectIds():
-            return
-        context.invokeFactory('Folder', obj_id)
-        obj = context._getOb(obj_id)
-        obj.setTitle('AR Imports')
-        workflow = getToolByName(context, "portal_workflow")
-        workflow.doActionFor(obj, "publish")
-        obj.setLayout('@@arimports')
-        alsoProvides(obj, IARImportFolder)
-        alsoProvides(obj, IHaveNoBreadCrumbs)
+        if obj_id not in context.objectIds():
+            context.invokeFactory('Folder', obj_id)
+            obj = context._getOb(obj_id)
+            obj.setTitle('AR Imports')
+            workflow = getToolByName(context, "portal_workflow")
+            workflow.doActionFor(obj, "publish")
+            obj.setLayout('@@arimports')
+            alsoProvides(obj, IARImportFolder)
+            alsoProvides(obj, IHaveNoBreadCrumbs)
+
 
 def setupVarious(context):
     """

@@ -355,3 +355,10 @@ class AnalysisRequestWorkflowStateVocabulary(object):
 
 AnalysisRequestWorkflowStateVocabularyFactory = \
     AnalysisRequestWorkflowStateVocabulary()
+
+class ARPrioritiesVocabulary(BikaContentVocabulary):
+
+    def __init__(self):
+        BikaContentVocabulary.__init__(self,
+                                       ['bika_setup/bika_arpriorities', ],
+                                       ['ARPriority', ])

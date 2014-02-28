@@ -23,7 +23,7 @@ Create two different ARs from the same sample.
 *** Keywords ***
 
 Start browser
-    Enable autologin as  test_labmanager
+    Log in                      test_labmanager  test_labmanager
     Set selenium speed   ${SELENIUM_SPEED}
     Open browser         ${PLONEURL}/clients
 

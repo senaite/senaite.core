@@ -3,6 +3,7 @@
  <factorytypes>
   <type portal_type="ARImport"/>
   <type portal_type="ARImportItem"/>
+  <type portal_type="ARPriority"/>
   <type portal_type="ARReport"/>
   <type portal_type="AnalysisProfile"/>
   <type portal_type="ARTemplate"/>

@@ -521,3 +521,11 @@ class IAdministrationReport(Interface):
     }
     """
 
+class IARPriorities(Interface):
+
+    "Marker interface for a folder that lists ARPriority's"
+
+class IARPriority(Interface):
+
+    "Marker interface for an ARPriority"
+

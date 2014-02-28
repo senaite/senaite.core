@@ -45,6 +45,14 @@
     />
 
     <browser:page
+      for="bika.lims.interfaces.IARPriorities"
+      name="folder_view"
+      class=".bika_arpriorities.ARPrioritiesView"
+      permission="bika.lims.permissions.ManageARPriority"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
       for="bika.lims.interfaces.IAnalysisCategories"
       name="folder_view"
       class=".bika_analysiscategories.AnalysisCategoriesView"

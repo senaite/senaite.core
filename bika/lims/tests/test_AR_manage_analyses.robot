@@ -40,7 +40,7 @@ Test Manage Analyses
 *** Keywords ***
 
 Start browser
-    Enable autologin as  test_labmanager
+    Log in                      test_labmanager  test_labmanager
     Set selenium speed   ${SELENIUM_SPEED}
     Open browser         http://localhost:55001/plone/login
 

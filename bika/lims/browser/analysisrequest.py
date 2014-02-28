@@ -16,6 +16,7 @@ from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.config import VERIFIED_STATES
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.idserver import renameAfterCreation
+from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IAnalysisRequestAddView
 from bika.lims.interfaces import IDisplayListVocabulary
@@ -544,6 +545,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         newar.setSampleType(ar.getSampleType())
         newar.setSamplePoint(ar.getSamplePoint())
         newar.setSamplingDeviation(ar.getSamplingDeviation())
+        newar.setPriority(ar.getPriority())
         newar.setSampleCondition(ar.getSampleCondition())
         newar.setSample(ar.getSample())
         newar.setClientOrderNumber(ar.getClientOrderNumber())
@@ -1124,6 +1126,9 @@ class AnalysisRequestAnalysesView(BikaListingView):
                       'sortable': False,},
             'Price': {'title': _('Price'),
                       'sortable': False,},
+            #'Priority': {'title': _('Priority'),
+            #             'sortable': False,
+            #             'toggle': True },
             'Partition': {'title': _('Partition'),
                           'sortable': False, },
             'min': {'title': _('Min')},
@@ -1135,6 +1140,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         ShowPrices = self.context.bika_setup.getShowPrices()
         if ShowPrices:
             columns.append('Price')
+            #columns.append('Priority')
         ShowPartitions = self.context.bika_setup.getShowPartitions()
         if ShowPartitions:
             columns.append('Partition')
@@ -1228,6 +1234,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
             items[x]['before']['Price'] = symbol
             items[x]['Price'] = obj.getPrice()
             items[x]['class']['Price'] = 'nowrap'
+            #items[x]['Priority'] = None
 
             if items[x]['selected']:
                 items[x]['allow_edit'] = ['Partition', 'min', 'max', 'error']
@@ -1248,6 +1255,10 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 items[x]["min"] = spec["min"]
                 items[x]["max"] = spec["max"]
                 items[x]["error"] = spec["error"]
+                #Add priority premium
+                items[x]['Price'] = analysis.getPrice()
+                #priority = analysis.getPriority()
+                #items[x]['Priority'] = priority and priority.Title() or ''
             else:
                 items[x]['Partition'] = ''
                 items[x]["min"] = ''
@@ -1790,6 +1801,9 @@ class AnalysisRequestsView(BikaListingView):
                                     'toggle': False},
             'SamplingDeviation': {'title': _('Sampling Deviation'),
                                   'toggle': False},
+            'Priority': {'title': _('Priority'),
+                            'index': 'Priority',
+                            'toggle': True},
             'AdHoc': {'title': _('Ad-Hoc'),
                       'toggle': False},
             'SamplingDate': {'title': _('Sampling Date'),
@@ -1855,6 +1869,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
                         'SamplingDeviation',
+                        'Priority',
                         'AdHoc',
                         'SamplingDate',
                         'getDateSampled',
@@ -1894,6 +1909,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
                         'SamplingDeviation',
+                        'Priority',
                         'AdHoc',
                         'state_title']},
            {'id':'sample_received',
@@ -1919,6 +1935,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
                         'SamplingDeviation',
+                        'Priority',
                         'AdHoc',
                         'getDateSampled',
                         'getSampler',
@@ -1950,6 +1967,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
                         'SamplingDeviation',
+                        'Priority',
                         'AdHoc',
                         'getDateSampled',
                         'getSampler',
@@ -1977,6 +1995,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
                         'SamplingDeviation',
+                        'Priority',
                         'AdHoc',
                         'getDateSampled',
                         'getSampler',
@@ -2004,6 +2023,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
                         'SamplingDeviation',
+                        'Priority',
                         'AdHoc',
                         'getDateSampled',
                         'getSampler',
@@ -2036,6 +2056,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
                         'SamplingDeviation',
+                        'Priority',
                         'AdHoc',
                         'getDateSampled',
                         'getSampler',
@@ -2065,6 +2086,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
                         'SamplingDeviation',
+                        'Priority',
                         'AdHoc',
                         'getDateSampled',
                         'getSampler',
@@ -2104,6 +2126,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
                         'SamplingDeviation',
+                        'Priority',
                         'AdHoc',
                         'getDateSampled',
                         'getSampler',
@@ -2144,6 +2167,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
                         'SamplingDeviation',
+                        'Priority',
                         'AdHoc',
                         'SamplingDate',
                         'getDateSampled',
@@ -2202,6 +2226,8 @@ class AnalysisRequestsView(BikaListingView):
 
             deviation = sample.getSamplingDeviation()
             items[x]['SamplingDeviation'] = deviation and deviation.Title() or ''
+            priority = obj.getPriority()
+            items[x]['Priority'] = priority and priority.Title() or ''
 
             items[x]['AdHoc'] = sample.getAdHoc() and True or ''
 
@@ -2558,9 +2584,9 @@ class InvoiceView(BrowserView):
             # Append the analysis to the category
             category['analyses'].append({
                 'title': analysis.Title(),
-                'price': service.getPrice(),
-                'priceVat': "%.2f" % service.getVATAmount(),
-                'priceTotal': "%.2f" % service.getTotalPrice(),
+                'price': analysis.getPrice(),
+                'priceVat': "%.2f" % analysis.getVATAmount(),
+                'priceTotal': "%.2f" % analysis.getTotalPrice(),
             })
         self.analyses = analyses
         # Get totals
@@ -2629,6 +2655,7 @@ class WidgetVisibility(_WV):
                 'ClientReference',
                 'ClientSampleID',
                 'SamplingDeviation',
+                'Priority',
                 'SampleCondition',
                 'DateSampled',
                 'DateReceived',
@@ -2637,7 +2664,8 @@ class WidgetVisibility(_WV):
                 'AdHoc',
                 'Composite',
                 'MemberDiscount',
-                'InvoiceExclude']}
+                'InvoiceExclude',
+                ]}
 
         # Edit and View widgets are displayed/hidden in different workflow
         # states.  The widget.visible is used as a default.  This is placed
@@ -2659,6 +2687,7 @@ class WidgetVisibility(_WV):
                 'SampleCondition',
                 'SamplingDate',
                 'SamplingDeviation',
+                'Priority',
             ]
             ret['view']['visible'] = [
                 'DateSampled',
@@ -2698,6 +2727,7 @@ class WidgetVisibility(_WV):
                 'SamplingDate',
                 'SamplePoint',
                 'SamplingDeviation',
+                'Priority',
                 'Template',
             ]
         # include this in to_be_verified - there may be verified analyses to
@@ -2729,6 +2759,7 @@ class WidgetVisibility(_WV):
                 'SampleType',
                 'SamplingDate',
                 'SamplingDeviation',
+                'Priority',
                 'Template',
             ]
         elif state in ('published', ):
@@ -2755,6 +2786,7 @@ class WidgetVisibility(_WV):
                 'SampleType',
                 'SamplingDate',
                 'SamplingDeviation',
+                'Priority',
                 'Template',
             ]
 
@@ -2849,3 +2881,29 @@ class JSONReadExtender(object):
         if not include_fields or "Analyses" in include_fields:
             ret['Analyses'] = self.ar_analysis_values()
         return ret
+
+class PriorityIcons(object):
+
+    """An icon provider for indicating AR priorities
+    """
+
+    implements(IFieldIcons)
+    #adapts(IAnalysisRequest)
+
+    def __init__(self, context):
+        self.context = context
+
+    def __call__(self, **kwargs):
+        result = {
+            'msg': '',
+            'field': 'Priority',
+            'icon': '',
+        }
+        priority = self.context.getPriority()
+        if priority:
+            result['msg'] = priority.Title()
+            icon = priority.getSmallIcon()
+            if icon:
+                result['icon'] = icon.absolute_url()
+
+        return {self.context.UID(): [result]}

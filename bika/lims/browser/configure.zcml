@@ -36,6 +36,7 @@
   <include file="worksheetfolder.zcml"/>
   <include file="viewlets.zcml"/>
   <include file="arimports.zcml"/>
+  <include file="arpriorities.zcml"/>
 
   <include package=".fields"/>
   <include package=".widgets"/>
@@ -99,6 +100,13 @@
       name="arimports"
       class="bika.lims.browser.arimports.GlobalARImportsView"
       permission="bika.lims.ManageARImport"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+  <browser:page
+      for="bika.lims.interfaces.IARPriorities"
+      name="arpriorities"
+      class="bika.lims.browser.arpriorities.GlobalARPrioritiesView"
+      permission="bika.lims.permissions.ManageARPriority"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

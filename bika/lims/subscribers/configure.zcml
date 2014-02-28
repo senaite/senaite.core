@@ -59,6 +59,12 @@
            Products.DCWorkflow.interfaces.IAfterTransitionEvent"
       handler="bika.lims.subscribers.analysisrequest.AfterTransitionEventHandler"
     />
+    <!-- Newly created AnalysisRequest -->
+    <subscriber
+      for="bika.lims.interfaces.IAnalysisRequest
+           Products.Archetypes.interfaces.IObjectInitializedEvent"
+      handler="bika.lims.subscribers.analysisrequest.ObjectInitializedEventHandler"
+    />
 
     <!-- Workflow action event for Worksheet objects -->
     <subscriber
