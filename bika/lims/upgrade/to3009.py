@@ -13,5 +13,5 @@ def upgrade(tool):
     # update affected tools
     setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
-
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'cssregistry')
     return True
