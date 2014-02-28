@@ -163,7 +163,7 @@ $(document).ready(function(){
             html += "<p class='title'>"+data.length+_(" instruments are out-of-date")+":</p>";
             html += "<p>";
             $.each(data, function(index, value){
-                var hrefinstr = value['url'];
+                var hrefinstr = value['url']+"/certifications";
                 var titleinstr = value['title'];
                 var anchor = "<a href='"+hrefinstr+"'>"+titleinstr+"</a>";
                 if (index == 0) {
