@@ -699,14 +699,19 @@ class ClientAttachmentsView(BikaListingView):
                  (obj_url, items[x]['AttachmentFile'])
         return items
 
+
 class ClientOrdersView(BikaListingView):
     implements(IViewView)
 
     def __init__(self, context, request):
         super(ClientOrdersView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'SupplyOrder',
-                              'sort_on':'sortable_title',
-                              'sort_order': 'reverse'}
+                              'sort_on': 'sortable_title',
+                              'sort_order': 'reverse',
+                              'path': {
+                                "query": "/".join(context.getPhysicalPath()),
+                                "level": 0}
+                             }
         self.context_actions = {_('Add'):
                                 {'url': 'createObject?type_name=SupplyOrder',
                                  'icon': '++resource++bika.lims.images/add.png'}}
@@ -727,20 +732,20 @@ class ClientOrdersView(BikaListingView):
             'state_title': {'title': _('State')},
         }
         self.review_states = [
-            {'id':'default',
+            {'id': 'default',
              'title': _('All'),
-             'contentFilter':{},
+             'contentFilter': {},
              'columns': ['OrderNumber',
                          'OrderDate',
                          'DateDispatched',
                          'state_title']},
-            {'id':'pending',
-             'contentFilter':{'review_state':'pending'},
+            {'id': 'pending',
+             'contentFilter': {'review_state': 'pending'},
              'title': _('Pending'),
              'columns': ['OrderNumber',
                          'OrderDate']},
-            {'id':'dispatched',
-             'contentFilter':{'review_state':'dispatched'},
+            {'id': 'dispatched',
+             'contentFilter': {'review_state': 'dispatched'},
              'title': _('Dispatched'),
              'columns': ['OrderNumber',
                          'OrderDate',
