@@ -22,7 +22,8 @@ class View(BrowserView):
         context.setLocallyAllowedTypes(())
         # Collect general data
         self.orderDate = context.getOrderDate()
-        self.contact = context.getContact().getFullname()
+        self.contact = context.getContact()
+        self.contact = self.contact.getFullname() if self.contact else ''
         self.subtotal = '%.2f' % context.getSubtotal()
         self.vat = '%.2f' % context.getVAT()
         self.total = '%.2f' % context.getTotal()

@@ -23,6 +23,7 @@ AddClientFolder = 'BIKA: Add ClientFolder'
 AddInvoice = 'BIKA: Add Invoice'
 AddMethod = 'BIKA: Add Method'
 AddPricelist = 'BIKA: Add Pricelist'
+AddSupplyOrder = 'BIKA: Add SupplyOrder'
 AddSample = 'BIKA: Add Sample'
 AddSampleMatrix = 'BIKA: Add SampleMatrix'
 AddSamplePartition = 'BIKA: Add SamplePartition'
@@ -44,6 +45,7 @@ ADD_CONTENT_PERMISSIONS = {
     'Client': AddClient,
     'Invoice': AddInvoice,
     'Method': AddMethod,
+    'SupplyOrder': AddSupplyOrder,
     'Sample': AddSample,
     'SampleMatrix': AddSampleMatrix,
     'SamplePartition': AddSamplePartition,

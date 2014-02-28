@@ -128,5 +128,15 @@
         handler="bika.lims.upgrade.to3009.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Add SupplyOrdersFolder at /supplyorders"
+        description=""
+        source="3009"
+        destination="3010"
+        handler="bika.lims.upgrade.to3010.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
 

@@ -38,7 +38,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     StringField('OrderNumber',
                 required = 1,
-                default_method = 'getId',
                 searchable = True,
                 widget = StringWidget(
                     label = _("Order Number"),
@@ -108,6 +107,12 @@ class SupplyOrder(BaseFolder):
     displayContentsTab = False
     schema = schema
 
+    _at_rename_after_creation = True
+
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.idserver import renameAfterCreation
+        renameAfterCreation(self)
+
     def hasBeenInvoiced(self):
         if self.getInvoice():
             return True
@@ -117,6 +122,9 @@ class SupplyOrder(BaseFolder):
     def Title(self):
         """ Return the OrderNumber as title """
         return safe_unicode(self.getOrderNumber()).encode('utf-8')
+
+    def getOrderNumber(self):
+        return safe_unicode(self.getId()).encode('utf-8')
 
     def getContacts(self):
         adapter = getAdapter(self.aq_parent, name='getContacts')

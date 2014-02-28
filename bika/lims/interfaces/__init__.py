@@ -333,7 +333,11 @@ class ISupplier(Interface):
 
 class ISuppliers(Interface):
     ""
+
 class ISupplyOrder(Interface):
+    ""
+
+class ISupplyOrderFolder(Interface):
     ""
 
 

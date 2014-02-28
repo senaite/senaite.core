@@ -1,0 +1,15 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="bika">
+
+    <browser:page
+      for="bika.lims.interfaces.ISupplyOrderFolder"
+      name="base_view"
+      class="bika.lims.browser.supplyorderfolder.SupplyOrderFolderView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+</configure>

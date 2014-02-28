@@ -102,6 +102,7 @@ def initialize(context):
     from content.samplingdeviation import SamplingDeviation
     from content.supplier import Supplier
     from content.suppliercontact import SupplierContact
+    from content.supplyorderfolder import SupplyOrderFolder
     from content.supplyorder import SupplyOrder
     from content.supplyorderitem import SupplyOrderItem
     from content.worksheet import Worksheet

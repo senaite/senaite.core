@@ -51,6 +51,7 @@ class BikaGenerator:
                        'analysisrequests',
                        'referencesamples',
                        'samples',
+                       'supplyorders',
                        'worksheets',
                        'reports',
                        'queries',

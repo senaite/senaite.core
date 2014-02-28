@@ -234,6 +234,8 @@
    <bound-workflow workflow_id="bika_order_workflow"/>
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
+  <type type_id="SupplyOrderFolder">
+  </type>
 
   <type type_id="SupplyOrderItem"/>
   <type type_id="Plone Site"/>
