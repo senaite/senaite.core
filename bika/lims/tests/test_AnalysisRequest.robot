@@ -52,9 +52,10 @@ Check that the Contact CC auto-fills correctly when a contact is selected
     SelectDate                          ar_0_SamplingDate       1
     Select From Dropdown                ar_0_SampleType         Water
     Select from dropdown                ar_0_Contact            Rita
-    Xpath Should Match X Times          //div[@class='reference_multi_item']    1
+    Xpath Should Match X Times          //div[@class='reference_multi_item']   1
     Select from dropdown                ar_0_Contact            Neil
-    Xpath Should Match X Times          //div[@class='reference_multi_item']    2
+    Select from dropdown                ar_0_Priority           High
+    Xpath Should Match X Times          //div[@class='reference_multi_item']   2
 
 
 # XXX Automatic expanded categories
@@ -81,6 +82,7 @@ Complete ar_add form with template ${template}
     @{time} =                   Get Time        year month day hour min sec
     SelectDate                  ar_0_SamplingDate   @{time}[2]
     Select from dropdown        ar_0_Contact       Rita
+    Select from dropdown        ar_0_Priority           High
     Select from dropdown        ar_0_Template       ${template}
     Sleep                       10s
     Click Button                Save
@@ -94,6 +96,7 @@ Complete ar_add form Without template
     SelectDate                 ar_0_SamplingDate   @{time}[2]
     Select From Dropdown       ar_0_SampleType    Water
     Select from dropdown       ar_0_Contact       Rita
+    Select from dropdown       ar_0_Priority           High
     Click Element              xpath=//th[@id='cat_lab_Water Chemistry']
     Select Checkbox            xpath=//input[@title='Moisture' and @name='ar.0.Analyses:list:ignore_empty:record']
     Click Element              xpath=//th[@id='cat_lab_Metals']

@@ -21,6 +21,7 @@ AnalysisRequest views
     Wait Until Page Contains         Request new analyses
     SelectDate                       ar_0_SamplingDate         1
     Select from dropdown             ar_0_Contact              Rita
+    Select from dropdown             ar_0_Priority             High
     Select from dropdown             ar_0_Template             Bruma
     Element should be visible        xpath=//em[contains(@class, 'partnr_')]
 
@@ -30,6 +31,7 @@ AnalysisRequest views
     Wait Until Page Contains         Request new analyses
     SelectDate                       ar_0_SamplingDate         1
     Select from dropdown             ar_0_Contact              Rita
+    Select from dropdown             ar_0_Priority             High
     Select from dropdown             ar_0_Template             Bruma
     Element should not be visible    xpath=//em[contains(@class, 'partnr_')]
 
