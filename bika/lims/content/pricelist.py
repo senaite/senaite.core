@@ -108,7 +108,7 @@ def create_price_list(instance):
             cat = None
             if obj.getPrice():
                 price = float(obj.getPrice())
-                totalprice = obj.getTotalPrice()
+                totalprice = float(obj.getTotalPrice())
                 vat = totalprice - price
             else:
                 price = 0
