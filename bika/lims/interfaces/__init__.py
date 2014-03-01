@@ -529,3 +529,20 @@ class IARPriority(Interface):
 
     "Marker interface for an ARPriority"
 
+class IHeaderTableFieldRenderer(Interface):
+    """
+    Allows an adapter to return the HTML content of the rendered field view,
+    in header_table listings. The adapter must be registered with
+    name=FieldName.
+
+    If the field is a Reference, and the user has View permission on the
+    target object, the field is rendered as <a href="absolute_url">Title</a>.
+
+    If no adapter is found, and the field is not a reference, it is rendered
+    with the normal AT field view machine.
+    """
+
+    def __call__(field):
+        """
+        Accepts an Archetypes Field, returns HTML.
+        """

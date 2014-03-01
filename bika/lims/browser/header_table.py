@@ -3,10 +3,13 @@ view and edit screens.
 """
 
 from bika.lims.browser import BrowserView
+from bika.lims.interfaces import IHeaderTableFieldRenderer
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.CMFPlone import PloneMessageFactory as _p
 from zope.component import getAdapter
-
+from AccessControl import getSecurityManager
+from AccessControl.Permissions import view
+from zope.component.interfaces import ComponentLookupError
 
 class HeaderTableView(BrowserView):
 
@@ -49,6 +52,40 @@ class HeaderTableView(BrowserView):
                 final.append(column)
         return final
 
+    def render_field_view(self, fieldname):
+        field = self.context.Schema()[fieldname]
+        ret = {'fieldName': fieldname, 'mode': 'view'}
+        try:
+            adapter = getAdapter(self.context,
+                                 interface=IHeaderTableFieldRenderer,
+                                 name=fieldname)
+        except ComponentLookupError:
+            adapter = None
+        if adapter:
+            ret = {'fieldName': fieldname,
+                   'mode': 'structure',
+                   'html': adapter(field)}
+        else:
+            if field.getType().find("Reference") > -1:
+                target = field.get(self.context)
+                if target:
+                    sm = getSecurityManager()
+                    if sm.checkPermission(view, target):
+                        a = "<a href='%s'>%s</a>" % (target.absolute_url(),
+                                                     target.Title())
+                        ret = {'fieldName': fieldname,
+                               'mode': 'structure',
+                               'html': a}
+                    else:
+                        ret = {'fieldName': fieldname,
+                               'mode': 'structure',
+                               'html': target.Title()}
+                else:
+                    ret = {'fieldName': fieldname,
+                           'mode': 'structure',
+                           'html': ''}
+        return ret
+
     def sublists(self, mode):
         ret = []
         prominent = []
@@ -57,18 +94,20 @@ class HeaderTableView(BrowserView):
         edit = wv.get('edit', {}).get('visible', [])
         view = wv.get('view', {}).get('visible', [])
 
-        fieldnames = wv.get('header_table', {}).get('prominent', [])
-        for fieldname in fieldnames:
+        prominent_fieldnames = wv.get('header_table', {}).get('prominent', [])
+        for fieldname in prominent_fieldnames:
             if fieldname in view:
-                prominent.append({'fieldName': fieldname, 'mode': 'view'})
+                prominent.append(self.render_field_view(fieldname))
             elif fieldname in edit:
                 prominent.append({'fieldName': fieldname, 'mode': 'edit'})
 
-        fieldnames = wv.get('header_table', {}).get('visible', [])
-        for fieldname in fieldnames:
+        visible_fieldnames = wv.get('header_table', {}).get('visible', [])
+        for fieldname in visible_fieldnames:
+            if fieldname in prominent_fieldnames:
+                continue
             if fieldname in edit:
                 ret.append({'fieldName': fieldname, 'mode': 'edit'})
             elif fieldname in view:
-                ret.append({'fieldName': fieldname, 'mode': 'view'})
+                ret.append(self.render_field_view(fieldname))
 
         return prominent, self.three_column_list(ret)

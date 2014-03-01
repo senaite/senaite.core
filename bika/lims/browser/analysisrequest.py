@@ -2642,6 +2642,9 @@ class WidgetVisibility(_WV):
         ret['header_table'] = {
             'prominent': ['Contact', 'CCContact', 'CCEmails'],
             'visible': [
+                'Contact',
+                'CCContact',
+                'CCEmails',
                 'Sample',
                 'Batch',
                 'Template',
@@ -2690,6 +2693,9 @@ class WidgetVisibility(_WV):
                 'Priority',
             ]
             ret['view']['visible'] = [
+                'Contact',
+                'CCContact',
+                'CCEmails',
                 'DateSampled',
                 'MemberDiscount',
                 'Profile',
@@ -2714,6 +2720,9 @@ class WidgetVisibility(_WV):
                 'InvoiceExclude',
             ]
             ret['view']['visible'] = [
+                'Contact',
+                'CCContact',
+                'CCEmails',
                 'AdHoc',
                 'Composite',
                 'DateReceived',
@@ -2767,6 +2776,9 @@ class WidgetVisibility(_WV):
                 'PublicationSpecification',
             ]
             ret['view']['visible'] = [
+                'Contact',
+                'CCContact',
+                'CCEmails',
                 'AdHoc',
                 'Batch',
                 'ClientOrderNumber',
@@ -2907,3 +2919,34 @@ class PriorityIcons(object):
                 result['icon'] = icon.absolute_url()
 
         return {self.context.UID(): [result]}
+
+
+class mailto_link_from_contacts:
+    def __init__(self, context):
+        self.context = context
+
+    def __call__(self, field):
+        contacts = field.get(self.context)
+        if not type(contacts) in (list, tuple):
+            contacts = [contacts, ]
+        ret = []
+        for contact in contacts:
+            mailto = "<a href='mailto:%s'>%s</a>" % (
+                contact.getEmailAddress(), contact.getFullname())
+            ret.append(mailto)
+        return ",".join(ret)
+
+
+def mailto_link_from_ccemails(ccemails):
+    def __init__(self, context):
+        self.context = context
+
+    def __call__(self, field):
+        ccemails = field.get(self.context)
+        addresses = ccemails.split(",")
+        ret = []
+        for address in addresses:
+            mailto = "<a href='mailto:%s'>%s</a>" % (
+                address, address)
+            ret.append(mailto)
+        return ",".join(ret)

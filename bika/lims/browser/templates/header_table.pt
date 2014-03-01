@@ -40,7 +40,13 @@
                     i18n:attributes="title title_required;"> </span>
             </td>
             <td colspan="5">
-              <metal:field use-macro="python:context.widget(fieldName, mode=mode)"/>
+              <tal:x condition="python:mode!='structure'">
+                <metal:field
+                  use-macro="python:context.widget(fieldName, mode=mode)"/>
+              </tal:x>
+              <span
+                tal:condition="python:mode=='structure' and action['html']"
+                tal:content="structure action/html"/>
             </td>
           </tal:def>
         </tr>
@@ -68,7 +74,13 @@
                         i18n:attributes="title title_required;"> </span>
                 </td>
                 <td tal:attributes="class python:row_nr%2 and 'value odd' or 'value even'">
-                  <metal:field use-macro="python:context.widget(fieldName, mode=mode)"/>
+                  <tal:x condition="python:mode!='structure'">
+                    <metal:field
+                      use-macro="python:context.widget(fieldName, mode=mode)"/>
+                  </tal:x>
+                  <span
+                    tal:condition="python:mode=='structure' and action['html']"
+                    tal:content="structure action/html"/>
                 </td>
               </tal:def>
             </tal:skip_blanks>

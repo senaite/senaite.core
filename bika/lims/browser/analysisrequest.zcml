@@ -31,6 +31,25 @@
     />
 
     <adapter
+      for="bika.lims.interfaces.IAnalysisRequest"
+      factory="bika.lims.browser.analysisrequest.mailto_link_from_contacts"
+      provides="bika.lims.interfaces.IHeaderTableFieldRenderer"
+      name="Contact"
+    />
+    <adapter
+      for="bika.lims.interfaces.IAnalysisRequest"
+      factory="bika.lims.browser.analysisrequest.mailto_link_from_contacts"
+      provides="bika.lims.interfaces.IHeaderTableFieldRenderer"
+      name="CContact"
+    />
+    <adapter
+      for="bika.lims.interfaces.IAnalysisRequest"
+      factory="bika.lims.browser.analysisrequest.mailto_link_from_ccemails"
+      provides="bika.lims.interfaces.IHeaderTableFieldRenderer"
+      name="CCEmails"
+    />
+
+    <adapter
       name="ar-pi"
       for="bika.lims.interfaces.IAnalysisRequest"
       factory="bika.lims.browser.analysisrequest.PriorityIcons"
