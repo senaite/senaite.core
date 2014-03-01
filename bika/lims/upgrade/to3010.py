@@ -35,4 +35,12 @@ def upgrade(tool):
     mp('Access contents information', ['Manager', 'LabManager', 'LabClerk'], 0)
     portal.supplyorders.reindexObject()
 
+    # /pricelists folder permissions
+    mp = portal.pricelists.manage_permission
+    mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', ], 0)
+    mp(permissions.View, ['Manager', 'LabManager', 'LabClerk'], 0)
+    mp('Access contents information', ['Manager', 'LabManager', 'LabClerk'], 0)
+    mp(addPriceList, ['Manager', 'LabManager', 'LabClerk'], 0)
+    portal.pricelists.reindexObject()
+
     return True
