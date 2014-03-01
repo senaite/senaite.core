@@ -1,0 +1,1076 @@
+# 
+# Translators:
+# burakcam <burakcam@akdeniz.edu.tr>, 2014
+msgid ""
+msgstr ""
+"Project-Id-Version: Bika-LIMS\n"
+"POT-Creation-Date: 2012-10-20 09:21+0000\n"
+"PO-Revision-Date: 2014-02-24 09:33+0000\n"
+"Last-Translator: burakcam <burakcam@akdeniz.edu.tr>\n"
+"Language-Team: Turkish (Turkey) (http://www.transifex.com/projects/p/bika-lims/language/tr_TR/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Domain: plone\n"
+"Language: tr_TR\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Preferred-Encodings: utf-8 latin1\n"
+
+msgid "label_schema_Accounting"
+msgstr "Muhasebe"
+
+msgid "label_schema_Address"
+msgstr "Adres"
+
+msgid "label_schema_Bank details"
+msgstr "Banka Bilgileri"
+
+msgid "label_schema_Calculation"
+msgstr "Hesaplama"
+
+msgid "label_schema_Dates"
+msgstr "Tarihler"
+
+msgid "label_schema_Description"
+msgstr "Tanım"
+
+msgid "label_schema_Email Telephone Fax"
+msgstr "E-Posta Telefon Faks"
+
+msgid "label_schema_ID Server"
+msgstr "ID Sunucusu"
+
+msgid "label_schema_Labels"
+msgstr "Etiketler"
+
+msgid "label_schema_Layout"
+msgstr "Düzenleme"
+
+msgid "label_schema_Location"
+msgstr "Konum"
+
+msgid "label_schema_Method"
+msgstr "Metot"
+
+msgid "label_schema_Container and Preservation"
+msgstr "Numune Kabı ve Muhafaza"
+
+msgid "label_schema_Preferences"
+msgstr "Tercihler"
+
+msgid "label_schema_Publication preference"
+msgstr "Yayınlanma tercihleri"
+
+msgid "label_schema_Reference Values"
+msgstr "Referans Değerler"
+
+msgid "label_schema_Result Options"
+msgstr "Sonuç Seçenekleri"
+
+msgid "label_schema_Results Reports"
+msgstr "Sonuç Raporları"
+
+msgid "label_schema_Security"
+msgstr "Güvenlik"
+
+msgid "label_schema_Uncertainties"
+msgstr "Belirsizlikler"
+
+msgid "label_schema_Sample Partitions"
+msgstr "Numune Bölümleri"
+
+msgid "label_schema_Analyses"
+msgstr "Analizler"
+
+#. Default: "Activate"
+# File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
+# line: -1
+msgid "activate_transition_title"
+msgstr "Etkinleştir"
+
+#. Default: "Assign"
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+# File:
+# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
+# line: -1
+# File:
+# ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml,
+# line: -1
+msgid "assign_transition_title"
+msgstr "Sevk Et"
+
+#. Default: "Add attachment"
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+msgid "attach_transition_title"
+msgstr "Eklenti ekle"
+
+#. Default: "Cancel"
+# File:
+# ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
+# line: -1
+msgid "cancel_transition_title"
+msgstr "İptal Et"
+
+#. Default: "Close"
+# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
+# line: -1
+msgid "close_transition_title"
+msgstr "Kapalı"
+
+#. Default: "Deactivate"
+# File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
+# line: -1
+msgid "deactivate_transition_title"
+msgstr "Devre Dışı Bırak"
+
+#. Default: "Dispatch order"
+# File: ../profiles/default/workflows/bika_order_workflow/definition.xml,
+# line: -1
+msgid "dispatch_transition_title"
+msgstr "Gönderme sırası"
+
+#. Default: "Dispose"
+# File:
+# ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
+# line: -1
+msgid "dispose_transition_title"
+msgstr "İmha"
+
+#. Default: "Duplicate"
+msgid "duplicate_transition_title"
+msgstr "Tekerrür"
+
+#. Default: "Expire"
+# File:
+# ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
+# line: -1
+msgid "expire_transition_title"
+msgstr "Sona erme"
+
+#. Default: "Import"
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+msgid "import_transition_title"
+msgstr "İçe aktar"
+
+#. Default: "Open"
+# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
+# line: -1
+msgid "open_transition_title"
+msgstr "Açık"
+
+#. Default: "Prepublish"
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+msgid "prepublish_transition_title"
+msgstr "Ön-Yayınlama"
+
+#. Default: "Preserve"
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
+# line: -1
+msgid "preserve_transition_title"
+msgstr "Muhafaza"
+
+#. Default: "Publish"
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+msgid "publish_transition_title"
+msgstr "Yayınla"
+
+#. Default: "Reassign"
+msgid "reassign_transition_title"
+msgstr "Yeniden Sevk Et"
+
+#. Default: "Receive sample"
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
+# line: -1
+msgid "receive_transition_title"
+msgstr "Numune alma"
+
+#. Default: "Reinstate"
+# File:
+# ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
+# line: -1
+msgid "reinstate_transition_title"
+msgstr "Eski haline getir"
+
+#. Default: "Reject"
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+# File:
+# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml,
+# line: -1
+msgid "reject_transition_title"
+msgstr "Reddet"
+
+#. Default: "Republish"
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+msgid "republish_transition_title"
+msgstr "Yeniden yayınla"
+
+#. Default: "Retract"
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+msgid "retract_transition_title"
+msgstr "Geri çekme"
+
+#. Default: "Retract worksheet"
+# File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml,
+# line: -1
+msgid "retract_worksheet_transition_title"
+msgstr "Çalışmayı geri çekme"
+
+#. Default: "Sample"
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File: ../profiles/default/workflows/bika_sample_worflow/definition.xml,
+# line: -1
+msgid "sample_transition_title"
+msgstr "Numune"
+
+#. Default: "Save analyses"
+msgid "save_analyses_button_transition_title"
+msgstr "Analizleri kaydet"
+
+#. Default: "Save partitions"
+msgid "save_partitions_button_transition_title"
+msgstr "Bölümleri kaydet"
+
+#. Default: "Save selection"
+msgid "save_selection_button_transition_title"
+msgstr "Seçimi kaydet"
+
+#. Default: "Submit ARImport"
+# File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
+# line: -1
+msgid "submit_arimport_transition_title"
+msgstr "AR İçe Aktarımını Gönder"
+
+#. Default: "Submit for verification"
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+msgid "submit_transition_title"
+msgstr "Doğrulama için gönder"
+
+#. Default: "Remove"
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+# File:
+# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
+# line: -1
+# File:
+# ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml,
+# line: -1
+msgid "unassign_transition_title"
+msgstr "Kaldır"
+
+#. Default: "Verify"
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+msgid "verify_transition_title"
+msgstr "Doğrula"
+
+# File: ../profiles/default/types/ARTemplate.xml, line: -1
+msgid "AR Template"
+msgstr "AR Şablonlar"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/ARTemplates.xml, line: -1
+# File: ../profiles/default/types/Client.xml, line: -1
+msgid "AR Templates"
+msgstr "Analiz Talepleri -AR- Şablonları"
+
+# File:
+# ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_one_state_workflow/definition.xml,
+# line: -1
+msgid "Active"
+msgstr "Etkin"
+
+# File: ../profiles/default/types/Worksheet.xml, line: -1
+msgid "Add Analyses"
+msgstr "Analiz Ekle"
+
+# File: ../profiles/default/types/Worksheet.xml, line: -1
+msgid "Add Blank Reference"
+msgstr "Kör Referans Ekle"
+
+# File: ../profiles/default/types/Worksheet.xml, line: -1
+msgid "Add Control Reference"
+msgstr "Kontrol Referans Ekle"
+
+# File: ../profiles/default/types/Worksheet.xml, line: -1
+msgid "Add Duplicate"
+msgstr "Tekerrür Ekle"
+
+# File: ../profiles/default/types/ReportFolder.xml, line: -1
+msgid "Administration"
+msgstr "Yönetim"
+
+# File: ../profiles/default/types/ReferenceSample.xml, line: -1
+# File: ../profiles/default/types/Sample.xml, line: -1
+msgid "Analyses"
+msgstr "Analizler"
+
+# File: ../profiles/default/types/Analysis.xml, line: -1
+msgid "Analysis"
+msgstr "Analiz"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/AnalysisCategories.xml, line: -1
+msgid "Analysis Categories"
+msgstr "Analiz Kategorileri"
+
+# File: ../profiles/default/types/AnalysisCategory.xml, line: -1
+msgid "Analysis Category"
+msgstr "Analiz Kategorisi"
+
+# File: ../profiles/default/types/AnalysisProfile.xml, line: -1
+msgid "Analysis Profile"
+msgstr "Analiz Profili"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/AnalysisProfiles.xml, line: -1
+# File: ../profiles/default/types/Client.xml, line: -1
+msgid "Analysis Profiles"
+msgstr "Analiz Profilleri"
+
+# File: ../profiles/default/types/AnalysisRequest.xml, line: -1
+msgid "Analysis Request"
+msgstr "Analiz Talebi"
+
+# File: ../profiles/default/types/AnalysisRequestQuery.xml, line: -1
+msgid "Analysis Request Query"
+msgstr "Analiz Talebi Sorgulaması"
+
+# File: ../profiles/default/actions.xml, line: -1
+# File: ../profiles/default/types/AnalysisRequestsFolder.xml, line: -1
+# File: ../profiles/default/types/Batch.xml, line: -1
+msgid "Analysis Requests"
+msgstr "Analiz Talepleri"
+
+# File: ../profiles/default/types/AnalysisService.xml, line: -1
+msgid "Analysis Service"
+msgstr "Analiz Hizmeti"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/AnalysisServices.xml, line: -1
+msgid "Analysis Services"
+msgstr "Analiz Hizmetleri"
+
+# File: ../profiles/default/types/AnalysisSpec.xml, line: -1
+msgid "Analysis Specification"
+msgstr "Analiz Özellikleri"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/AnalysisSpecs.xml, line: -1
+# File: ../profiles/default/types/Client.xml, line: -1
+msgid "Analysis Specifications"
+msgstr "Analiz Özellikleri"
+
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+# File:
+# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
+# line: -1
+# File:
+# ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml,
+# line: -1
+msgid "Assigned"
+msgstr "Sevk Edildi"
+
+# File: ../profiles/default/types/Attachment.xml, line: -1
+msgid "Attachment"
+msgstr "Eklenti"
+
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+msgid "Attachment Outstanding"
+msgstr "Eklenti Bekleniyor"
+
+# File: ../profiles/default/types/AttachmentType.xml, line: -1
+msgid "Attachment Type"
+msgstr "Eklenti Türü"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/AttachmentTypes.xml, line: -1
+msgid "Attachment Types"
+msgstr "Eklenti Türleri"
+
+# File: ../profiles/default/types/Client.xml, line: -1
+msgid "Attachments"
+msgstr "Eklentiler"
+
+# File: ../profiles/default/types/Batch.xml, line: -1
+msgid "Batch"
+msgstr "Toplu İş"
+
+# File: ../profiles/default/types/BatchLabel.xml, line: -1
+msgid "Batch Label"
+msgstr "Toplu İş Etiketi"
+
+# File: ../profiles/default/types/BatchLabels.xml, line: -1
+msgid "Batch Labels"
+msgstr "Toplu İş Etiketleri"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+msgid "Batch labels"
+msgstr "Toplu iş etiketleri"
+
+# File: ../profiles/default/types/BatchFolder.xml, line: -1
+# File: ../profiles/default/types/Client.xml, line: -1
+msgid "Batches"
+msgstr "Toplu İşler"
+
+# File: ../profiles/default/types/BikaSetup.xml, line: -1
+msgid "Bika Setup"
+msgstr "Bika Ayarları"
+
+# File: ../profiles/default/types/Calculation.xml, line: -1
+msgid "Calculation"
+msgstr "Hesaplama"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/Calculations.xml, line: -1
+msgid "Calculations"
+msgstr "Hesaplamalar"
+
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Calibrations"
+msgstr "Kalibrasyonlar"
+
+# File:
+# ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
+# line: -1
+msgid "Cancelled"
+msgstr "İptal edildi"
+
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Certifications"
+msgstr "Sertifikasyonlar"
+
+# File: ../profiles/default/types/Client.xml, line: -1
+msgid "Client"
+msgstr "Müşteri"
+
+# File: ../profiles/default/actions.xml, line: -1
+# File: ../profiles/default/types/ClientFolder.xml, line: -1
+msgid "Clients"
+msgstr "Müşteriler"
+
+# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
+# line: -1
+msgid "Closed"
+msgstr "Kapandı"
+
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
+# line: -1
+msgid "Comments about the last transition"
+msgstr "Son işlem hakkındaki yorumlar"
+
+# File: ../profiles/default/types/Client.xml, line: -1
+# File: ../profiles/default/types/Supplier.xml, line: -1
+msgid "Contacts"
+msgstr "Yetkililer"
+
+# File: ../profiles/default/types/Container.xml, line: -1
+msgid "Container"
+msgstr "Numune Kabı"
+
+# File: ../profiles/default/types/ContainerType.xml, line: -1
+msgid "Container Type"
+msgstr "Numune Kabı Türü"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/ContainerTypes.xml, line: -1
+msgid "Container Types"
+msgstr "Numune Kabı Türleri"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/Containers.xml, line: -1
+msgid "Containers"
+msgstr "Numune Kapları"
+
+# File:
+# ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
+# line: -1
+msgid "Current"
+msgstr "Geçerli"
+
+# File: ../profiles/default/types/Department.xml, line: -1
+msgid "Department"
+msgstr "Bölüm"
+
+# File: ../profiles/default/types/Departments.xml, line: -1
+msgid "Departments"
+msgstr "Bölümler"
+
+# File: ../profiles/default/workflows/bika_order_workflow/definition.xml,
+# line: -1
+msgid "Dispatched"
+msgstr "Gönderildi"
+
+# File:
+# ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
+# line: -1
+msgid "Disposed"
+msgstr "İstek Yapıldı"
+
+# File: ../profiles/default/types/DuplicateAnalysis.xml, line: -1
+msgid "Duplicate Analysis"
+msgstr "Tekerrür Analizi"
+
+# File: ../profiles/default/types/Pricelist.xml, line: -1
+msgid "Email pricelist"
+msgstr "Fiyat listesini e-posta gönder"
+
+# File:
+# ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
+# line: -1
+msgid "Expired"
+msgstr "Süresi doldu"
+
+# File: ../profiles/default/types/Worksheet.xml, line: -1
+msgid "Export"
+msgstr "Dışa aktar"
+
+# File: ../profiles/default/types/InvoiceBatch.xml, line: -1
+msgid "Export batch"
+msgstr "Toplu iş listesini dışa aktar"
+
+# File: ../profiles/default/actions.xml, line: -1
+msgid "Extracts"
+msgstr "Ekstraktlar"
+
+# File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
+# line: -1
+msgid "Imported"
+msgstr "İçe aktarıldı"
+
+# File: ../profiles/default/types/Client.xml, line: -1
+msgid "Imports"
+msgstr "İçe Aktarılanlar"
+
+# File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
+# line: -1
+msgid "Inactive"
+msgstr "Pasif"
+
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Instrument"
+msgstr "Cihaz"
+
+# File: ../profiles/default/types/InstrumentType.xml, line: -1
+msgid "Instrument Type"
+msgstr "Cihaz türü"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/InstrumentTypes.xml, line: -1
+msgid "Instrument Types"
+msgstr "Cihaz Türleri"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/InstrumentType.xml, line: -1
+# File: ../profiles/default/types/Instruments.xml, line: -1
+msgid "Instruments"
+msgstr "Cihazlar"
+
+# File: ../profiles/default/types/Invoice.xml, line: -1
+msgid "Invoice"
+msgstr "Fatura"
+
+# File: ../profiles/default/types/InvoiceBatch.xml, line: -1
+msgid "Invoice batch"
+msgstr "Fatura toplu-iş"
+
+# File: ../profiles/default/types/InvoiceFolder.xml, line: -1
+msgid "Invoice batches"
+msgstr "Fatura toplu-işleri"
+
+# File: ../profiles/default/types/InvoiceBatch.xml, line: -1
+# File: ../profiles/default/types/InvoiceFolder.xml, line: -1
+msgid "Invoices"
+msgstr "Faturalar"
+
+# File: ../profiles/default/types/LabContact.xml, line: -1
+msgid "Lab Contact"
+msgstr "Lab Yetkilisi"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/LabContacts.xml, line: -1
+msgid "Lab Contacts"
+msgstr "Lab Yetkilileri"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+msgid "Lab Departments"
+msgstr "Lab Bölümleri"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/LabProducts.xml, line: -1
+msgid "Lab Products"
+msgstr "Lab Ürünleri"
+
+# File: ../profiles/default/types/Laboratory.xml, line: -1
+msgid "Laboratory"
+msgstr "Laboratuvar"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+msgid "Laboratory Information"
+msgstr "Laboratuvar Bilgisi"
+
+# File: ../profiles/default/types/AnalysisRequest.xml, line: -1
+# File: ../profiles/default/types/Sample.xml, line: -1
+# File: ../profiles/default/types/SamplePartition.xml, line: -1
+msgid "Large Sticker"
+msgstr "Geniş Etiket"
+
+# File: ../profiles/default/types/AnalysisProfile.xml, line: -1
+# File: ../profiles/default/types/AnalysisRequest.xml, line: -1
+# File: ../profiles/default/types/AnalysisService.xml, line: -1
+msgid "Log"
+msgstr "Kayıt"
+
+# File: ../profiles/default/types/Contact.xml, line: -1
+# File: ../profiles/default/types/LabContact.xml, line: -1
+msgid "Login details"
+msgstr "Oturum açma detayları"
+
+# File: ../profiles/default/types/AnalysisRequest.xml, line: -1
+msgid "Manage Analyses"
+msgstr "Analizleri Yönet"
+
+# File: ../profiles/default/types/AnalysisRequest.xml, line: -1
+# File: ../profiles/default/types/Worksheet.xml, line: -1
+msgid "Manage Results"
+msgstr "Sonuçları Yönet"
+
+# File: ../profiles/default/types/Manufacturer.xml, line: -1
+msgid "Manufacturer"
+msgstr "Üretici"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/Manufacturers.xml, line: -1
+msgid "Manufacturers"
+msgstr "Üreticiler"
+
+# File: ../profiles/default/types/Method.xml, line: -1
+msgid "Method"
+msgstr "Metot"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/Methods.xml, line: -1
+msgid "Methods"
+msgstr "Metotlar"
+
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+msgid "Not requested"
+msgstr "Talep Edilmedi"
+
+# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml,
+# line: -1
+msgid "Open"
+msgstr "Açık"
+
+# File: ../profiles/default/workflows/bika_order_workflow/definition.xml,
+# line: -1
+msgid "Order pending"
+msgstr "Sipariş Beklemede"
+
+# File: ../profiles/default/actions.xml, line: -1
+# File: ../profiles/default/types/Client.xml, line: -1
+msgid "Orders"
+msgstr "Siparişler"
+
+# File: ../profiles/default/types/Preservation.xml, line: -1
+msgid "Preservation"
+msgstr "Muhafaza"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/Preservations.xml, line: -1
+msgid "Preservations"
+msgstr "Muhafaza"
+
+# File: ../profiles/default/types/Pricelist.xml, line: -1
+msgid "Pricelist"
+msgstr "Fiyat listesi"
+
+# File: ../profiles/default/types/PricelistFolder.xml, line: -1
+msgid "Pricelists"
+msgstr "Fiyat Listeleri"
+
+# File: ../profiles/default/actions.xml, line: -1
+msgid "Prices"
+msgstr "Fiyatlar"
+
+# File: ../profiles/default/types/InvoiceBatch.xml, line: -1
+msgid "Print batch"
+msgstr "Çıktı toplu-iş"
+
+# File: ../profiles/default/types/Invoice.xml, line: -1
+msgid "Print invoice"
+msgstr "Faturayı Yazdır"
+
+# File: ../profiles/default/types/SupplyOrder.xml, line: -1
+msgid "Print order"
+msgstr "Siparişi yazdır"
+
+# File: ../profiles/default/types/Pricelist.xml, line: -1
+msgid "Print pricelist"
+msgstr "Fiyat Listesini yazdır"
+
+# File: ../profiles/default/types/ReportFolder.xml, line: -1
+msgid "Productivity"
+msgstr "Üretkenlik"
+
+# File: ../profiles/default/types/ReportFolder.xml, line: -1
+msgid "Quality Control"
+msgstr "Kalite Kontrol"
+
+# File: ../profiles/default/types/QueryFolder.xml, line: -1
+msgid "Queries"
+msgstr "Sorgular"
+
+# File: ../profiles/default/actions.xml, line: -1
+msgid "Query"
+msgstr "Sorgu"
+
+# File: ../profiles/default/types/AnalysisRequestQuery.xml, line: -1
+msgid "Query analysis requests on various criteria"
+msgstr "Çeşitli kriterlere göre analiz taleplerini sorgula"
+
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+msgid "Received"
+msgstr "Alındı"
+
+# File: ../profiles/default/types/ReferenceAnalysis.xml, line: -1
+msgid "Reference Analysis"
+msgstr "Referans Analiz"
+
+# File: ../profiles/default/types/ReferenceDefinition.xml, line: -1
+msgid "Reference Definition"
+msgstr "Referans Tanımı"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/ReferenceDefinitions.xml, line: -1
+msgid "Reference Definitions"
+msgstr "Referans Tanımları"
+
+# File: ../profiles/default/types/ReferenceSample.xml, line: -1
+msgid "Reference Sample"
+msgstr "Referans Numune"
+
+# File: ../profiles/default/actions.xml, line: -1
+# File: ../profiles/default/types/ReferenceSamplesFolder.xml, line: -1
+# File: ../profiles/default/types/Supplier.xml, line: -1
+msgid "Reference Samples"
+msgstr "Referans Numuneler"
+
+# File: ../profiles/default/types/ReferenceSample.xml, line: -1
+msgid "Reference Values"
+msgstr "Referans Değerleri"
+
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
+# line: -1
+msgid "Registered"
+msgstr "Kayıt Edildi"
+
+# File: ../profiles/default/actions.xml, line: -1
+# File: ../profiles/default/types/Report.xml, line: -1
+msgid "Report"
+msgstr "Rapor"
+
+# File: ../profiles/default/types/ReportFolder.xml, line: -1
+msgid "Reports"
+msgstr "Raporlar"
+
+# File: ../profiles/default/types/AnalysisRequest.xml, line: -1
+msgid "Results not requested"
+msgstr "Sonuç talep edilmedi"
+
+# File: ../profiles/default/types/Sample.xml, line: -1
+msgid "Sample"
+msgstr "Numune"
+
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
+# line: -1
+msgid "Sample Due"
+msgstr "Numune Beklenmekte"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/SampleMatrices.xml, line: -1
+msgid "Sample Matrices"
+msgstr "Numune Matrisleri"
+
+# File: ../profiles/default/types/SampleMatrix.xml, line: -1
+msgid "Sample Matrix"
+msgstr "Numune Matrisi"
+
+# File: ../profiles/default/types/SamplePartition.xml, line: -1
+msgid "Sample Partition"
+msgstr "Numune Bölümü"
+
+# File: ../profiles/default/types/Sample.xml, line: -1
+msgid "Sample Partitions"
+msgstr "Numune Bölümleri"
+
+# File: ../profiles/default/types/SamplePoint.xml, line: -1
+msgid "Sample Point"
+msgstr "Örnekleme Noktası"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/SamplePoints.xml, line: -1
+msgid "Sample Points"
+msgstr "Örnekleme Noktaları"
+
+# File: ../profiles/default/types/SampleType.xml, line: -1
+msgid "Sample Type"
+msgstr "Numune Türü"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/SampleTypes.xml, line: -1
+msgid "Sample Types"
+msgstr "Numune Türleri"
+
+# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
+# line: -1
+msgid "Sample received"
+msgstr "Numune alındı"
+
+# File: ../profiles/default/types/Client.xml, line: -1
+msgid "SamplePoints"
+msgstr "ÖrneklemeNoktası"
+
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
+# line: -1
+msgid "Sampled"
+msgstr "Numune alınmış"
+
+# File: ../profiles/default/actions.xml, line: -1
+# File: ../profiles/default/types/Batch.xml, line: -1
+# File: ../profiles/default/types/Client.xml, line: -1
+msgid "Samples"
+msgstr "Numuneler"
+
+# File: ../profiles/default/types/SamplesFolder.xml, line: -1
+msgid "SamplesFolder"
+msgstr "NumuneKlasörü"
+
+# File: ../profiles/default/types/SamplingDeviation.xml, line: -1
+msgid "Sampling Deviation"
+msgstr "Örnekleme Sapması"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/SamplingDeviations.xml, line: -1
+msgid "Sampling Deviations"
+msgstr "Örnekleme Sapmaları"
+
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Schedule"
+msgstr "Planlama"
+
+# File: ../profiles/default/types/AnalysisRequest.xml, line: -1
+# File: ../profiles/default/types/Sample.xml, line: -1
+# File: ../profiles/default/types/SamplePartition.xml, line: -1
+msgid "Small Sticker"
+msgstr "Küçük Etiket"
+
+# File: ../profiles/default/types/ReferenceSample.xml, line: -1
+msgid "Sticker"
+msgstr "Etiket"
+
+# File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
+# line: -1
+msgid "Submitted"
+msgstr "Gönderildi"
+
+# File: ../profiles/default/types/Supplier.xml, line: -1
+msgid "Supplier"
+msgstr "Tedarikçi"
+
+# File: ../profiles/default/actions.xml, line: -1
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/Suppliers.xml, line: -1
+msgid "Suppliers"
+msgstr "Tedarikçiler"
+
+# File: ../profiles/default/types/SupplyOrder.xml, line: -1
+msgid "Supply Order"
+msgstr "Tedarikçiye Sipariş"
+
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
+# line: -1
+msgid "The last transition"
+msgstr "Son işlem"
+
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
+# line: -1
+msgid "Time of the last transition"
+msgstr "Son işlem zamanı"
+
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
+# line: -1
+msgid "To Be Preserved"
+msgstr "Muhafaza Edilecek"
+
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
+# line: -1
+msgid "To Be Sampled"
+msgstr "Numune Alınacak"
+
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
+# line: -1
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+msgid "To be verified"
+msgstr "Doğrulanacak"
+
+# File:
+# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
+# line: -1
+# File:
+# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
+# line: -1
+# File:
+# ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml,
+# line: -1
+msgid "Unassigned"
+msgstr "Sevk edilmedi"
+
+# File:
+# ../profiles/default/workflows/bika_publication_workflow/definition.xml,
+# line: -1
+msgid "Unpublished"
+msgstr "Yayınlanmadı"
+
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Validations"
+msgstr "Validasyonlar"
+
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
+# line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
+# -1
+# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
+# line: -1
+msgid "Verified"
+msgstr "Doğrulandı"
+
+# File: ../profiles/default/types/Worksheet.xml, line: -1
+msgid "Worksheet"
+msgstr "Çalışma"
+
+# File: ../profiles/default/types/WorksheetTemplate.xml, line: -1
+msgid "Worksheet Template"
+msgstr "Çalışma Şablonu"
+
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/WorksheetTemplates.xml, line: -1
+msgid "Worksheet Templates"
+msgstr "Çalışma Şablonları"
+
+# File: ../profiles/default/actions.xml, line: -1
+# File: ../profiles/default/types/WorksheetFolder.xml, line: -1
+msgid "Worksheets"
+msgstr "Çalışmalar"
