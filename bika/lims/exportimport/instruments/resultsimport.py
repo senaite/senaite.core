@@ -614,7 +614,7 @@ class AnalysisResultsImporter(Logger):
         if criteria:
             ars = self._getObjects(objid, criteria, arstates)
             if not ars or len(ars) == 0:
-                return self._getZODBAnalysesFromAR(self, objid, None,
+                return self._getZODBAnalysesFromAR(objid, None,
                             allowedsearches, arstates)
         else:
             sortorder = ['arid', 'sid', 'csid', 'aruid'];
