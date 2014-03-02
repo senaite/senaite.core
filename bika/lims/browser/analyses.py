@@ -448,14 +448,15 @@ class AnalysesView(BikaListingView):
 
                 items[i]['Specification'] = rngstr
 
-                for name, adapter in getAdapters((obj, ), IFieldIcons):
-                    auid = obj.UID()
-                    alerts = adapter(specification=spec)
-                    if alerts:
-                        if auid in self.field_icons:
-                            self.field_icons[auid].extend(alerts[auid])
-                        else:
-                            self.field_icons[auid] = alerts[auid]
+                # # This is redundant, done already, in bika_listing.py.
+                # for name, adapter in getAdapters((obj, ), IFieldIcons):
+                #     auid = obj.UID()
+                #     alerts = adapter(specification=spec)
+                #     if alerts:
+                #         if auid in self.field_icons:
+                #             self.field_icons[auid].extend(alerts[auid])
+                #         else:
+                #             self.field_icons[auid] = alerts[auid]
             else:
                 if 'Result' in items[i]['allow_edit']:
                     items[i]['allow_edit'].remove('Result')
