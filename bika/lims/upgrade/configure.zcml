@@ -138,5 +138,14 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Re-import workflows to correct InvoiceBatch workflow"
+        description=""
+        source="3010"
+        destination="3011"
+        handler="bika.lims.upgrade.to3011.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
 

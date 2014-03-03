@@ -3,7 +3,7 @@
 from DateTime import DateTime
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
-from Products.CMFCore  import permissions
+from Products.CMFCore import permissions
 from bika.lims import bikaMessageFactory as _
 from bika.lims.config import PostInvoiceBatch, ManageInvoices, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -13,17 +13,17 @@ from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     DateTimeField('BatchStartDate',
-        required = 1,
-        default_method = 'current_date',
-        widget = CalendarWidget(
-            label = _("Start Date"),
+        required=1,
+        default_method='current_date',
+        widget=CalendarWidget(
+            label=_("Start Date"),
         ),
     ),
     DateTimeField('BatchEndDate',
-        required = 1,
-        default_method = 'current_date',
-        widget = CalendarWidget(
-            label = _("End Date"),
+        required=1,
+        default_method='current_date',
+        widget=CalendarWidget(
+            label=_("End Date"),
         ),
     ),
 ),
@@ -31,7 +31,9 @@ schema = BikaSchema.copy() + Schema((
 
 schema['title'].default = DateTime().strftime('%b %Y')
 
+
 class InvoiceBatch(BaseFolder):
+
     """ Container for Invoice instances """
     implements(IInvoiceBatch)
     security = ClassSecurityInfo()
@@ -82,20 +84,19 @@ class InvoiceBatch(BaseFolder):
     #         mixed.sort()
     #         lines = [t[1] for t in mixed]
 
-    #         #iterate through each invoice line
+    # iterate through each invoice line
     #         for line in lines:
     #             if new_invoice or line.getClientOrderNumber() != _ordNum:
     #                 new_invoice = False
     #                 _ordNum = line.getClientOrderNumber()
 
-    #                 #create header csv entry as a list
+    # create header csv entry as a list
     #                 header = [ \
     #                     "Header", _invNum, " ", " ", _clientNum, _periodNum, \
     #                     _invDate, _ordNum, "N", 0, _message1, _message2, \
     #                     _message3, "", "", "", "", "", "", 0, "", "", "", "", \
     #                     0, "", "", "N"]
     #                 rows.append(header)
-
 
     #             _quant = 1
     #             _unitp = line.getSubtotal()
@@ -108,33 +109,28 @@ class InvoiceBatch(BaseFolder):
     #                 _icode = "001"
     #             _ltype = "4"
     #             _ccode = ""
-
-    #             #create detail csv entry as a list
+    # create detail csv entry as a list
     #             detail = ["Detail", 0, _quant, _unitp, _inclp, \
     #                       "", "01", "0", "0", _icode, _desc, \
     #                       _ltype, _ccode, ""]
     #             rows.append(detail)
-
-    #     #convert lists to csv string
+    # convert lists to csv string
     #     ramdisk = StringIO()
     #     writer = csv.writer(ramdisk, delimiter = delimiter)
     #     assert(writer)
-
     #     writer.writerows(rows)
     #     result = ramdisk.getvalue()
     #     ramdisk.close()
-
-    #     #stream file to browser
+    # stream file to browser
     #     setheader = RESPONSE.setHeader
     #     setheader('Content-Length', len(result))
     #     setheader('Content-Type',
     #         'text/x-comma-separated-values')
     #     setheader('Content-Disposition', 'inline; filename=%s' % filename)
     #     RESPONSE.write(result)
-
     #     return
-
     security.declareProtected(ManageInvoices, 'invoices')
+
     def invoices(self):
         return self.objectValues('Invoice')
 
@@ -147,6 +143,7 @@ class InvoiceBatch(BaseFolder):
     #         REQUEST.RESPONSE.redirect('invoicebatch_invoices')
 
     security.declareProtected(ManageInvoices, 'create_batch')
+
     def create_batch(self):
         """ Create batch invoices
         """
@@ -190,8 +187,8 @@ class InvoiceBatch(BaseFolder):
         # Redirect to the appropriate view
         self.REQUEST.RESPONSE.redirect('invoices')
 
-
     security.declareProtected(ManageInvoices, 'createInvoice')
+
     def createInvoice(self, client_uid, items):
         """ Creates and invoice for a client and a set of items
         """
@@ -199,8 +196,8 @@ class InvoiceBatch(BaseFolder):
         self.invokeFactory(id=invoice_id, type_name='Invoice')
         invoice = self._getOb(invoice_id)
         invoice.edit(
-            Client = client_uid,
-            InvoiceDate = DateTime(),
+            Client=client_uid,
+            InvoiceDate=DateTime(),
         )
         invoice.processForm()
         for item in items:
@@ -226,7 +223,8 @@ class InvoiceBatch(BaseFolder):
         invoice.reindexObject()
 
     security.declareProtected(permissions.ModifyPortalContent, 'processForm')
-    def processForm(self, data = 1, metadata = 0, REQUEST = None, values = None):
+
+    def processForm(self, data=1, metadata=0, REQUEST=None, values=None):
         """ Override BaseObject.processForm so that we can perform setup
             task once the form is filled in
         """
@@ -235,8 +233,15 @@ class InvoiceBatch(BaseFolder):
         self.create_batch()
 
     security.declarePublic('current_date')
+
     def current_date(self):
         """ return current date """
         return DateTime()
+
+    def guard_cancel_transition(self):
+        return True
+
+    def guard_reinstate_transition(self):
+        return True
 
 registerType(InvoiceBatch, PROJECTNAME)

@@ -187,6 +187,7 @@
   <type type_id="Invoice"/>
 
   <type type_id="InvoiceBatch">
+   <bound-workflow workflow_id="bika_one_state_workflow"/>
     <bound-workflow workflow_id="bika_cancellation_workflow"/>
   </type>
 

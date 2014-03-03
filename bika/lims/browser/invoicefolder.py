@@ -32,16 +32,16 @@ class InvoiceFolderContentsView(BikaListingView):
         self.review_states = [
             {
                 'id': 'default',
-                'contentFilter': {'cancellation_state':'active'},
+                'contentFilter': {'cancellation_state': 'active'},
                 'title': _('Active'),
-                'transitions': [{'id':'cancel'}],
+                'transitions': [{'id': 'cancel'}],
                 'columns': ['title', 'start', 'end'],
             },
             {
                 'id': 'cancelled',
-                'contentFilter': {'cancellation_state':'cancelled'},
+                'contentFilter': {'cancellation_state': 'cancelled'},
                 'title': _('Cancelled'),
-                'transitions': [{'id':'reinstate'}],
+                'transitions': [{'id': 'reinstate'}],
                 'columns': ['title', 'start', 'end'],
             },
         ]
@@ -58,7 +58,11 @@ class InvoiceFolderContentsView(BikaListingView):
         return super(InvoiceFolderContentsView, self).__call__()
 
     def getInvoiceBatches(self, contentFilter={}):
-        return self.context.objectValues()
+        wf = getToolByName(self.context, 'portal_workflow')
+        desired_state = contentFilter.get('cancellation_state', 'active')
+        values = self.context.objectValues()
+        return [ib for ib in values if
+                wf.getInfoFor(ib, 'cancellation_state') == desired_state]
 
     def folderitems(self):
         self.contentsMethod = self.getInvoiceBatches
