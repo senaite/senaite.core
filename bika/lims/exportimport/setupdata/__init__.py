@@ -1755,14 +1755,14 @@ class Invoice_Batches(WorksheetImporter):
             _id = folder.invokeFactory('InvoiceBatch', id=tmpID())
             obj = folder[_id]
             if not row['title']:
-                message = "InvoiceBatch has no Title"
-                raise Exception(message)
+                message = _("InvoiceBatch has no Title")
+                raise Exception(self.context.translate(message))
             if not row['start']:
-                message = "InvoiceBatch has no Start Date"
-                raise Exception(message)
+                message = _("InvoiceBatch has no Start Date")
+                raise Exception(self.context.translate(message))
             if not row['end']:
-                message = "InvoiceBatch has no End Date"
-                raise Exception(message)
+                message = _("InvoiceBatch has no End Date")
+                raise Exception(self.context.translate(message))
             obj.edit(
                 title=row['title'],
                 BatchStartDate=row['start'],
