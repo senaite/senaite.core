@@ -29,15 +29,14 @@ class Report(BrowserView):
         query = {"portal_type": "Analysis",
                  "sort_order": "reverse"}
 
-        if self.request.form.get("spec", ""):
-            spec_uid = self.request.form["spec"]
-            spec_obj = bsc(UID=spec_uid).getObject()
-            spec_title = spec_obj.Title()
-        else:
-            spec_uid = ""
-            spec_obj = None
-            spec_title = ""
-
+        spec_uid = self.request.form.get("spec", False)
+        spec_obj = None
+        spec_title = ""
+        if spec_uid:
+            brains = bsc(UID=spec_uid)
+            if brains:
+                spec_obj = brains[0].getObject()
+                spec_title = spec_obj.Title()
         parms.append(
             {"title": _("Range spec"),
              "value": spec_title,
