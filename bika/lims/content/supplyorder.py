@@ -1,53 +1,47 @@
-import sys
-
-from DateTime import DateTime
-
 from AccessControl import ClassSecurityInfo
-from Products.ATContentTypes.content import schemata
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.widgets import DateTimeWidget
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import ISupplyOrder
+from DateTime import DateTime
 from Products.Archetypes import atapi
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.permissions import ListFolderContents, \
-     ModifyPortalContent, View
-from Products.CMFCore import permissions
-from Products.CMFPlone.utils import safe_unicode
-from Products.CMFPlone.interfaces import IConstrainTypes
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from zope.interface import implements
+from Products.CMFCore.permissions import View
+from Products.CMFPlone.interfaces import IConstrainTypes
+from Products.CMFPlone.utils import safe_unicode
 from zope.component import getAdapter
+from zope.interface import implements
 
-from bika.lims import bikaMessageFactory as _
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.config import ManageBika, PROJECTNAME
-from bika.lims.interfaces import ISupplyOrder
-from bika.lims.browser.widgets import DateTimeWidget
+import sys
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField(
       'Contact',
-      required = 1,
-      vocabulary = 'getContacts',
-      default_method = 'getContactUIDForUser',
-      vocabulary_display_path_bound = sys.maxint,
-      allowed_types = ('Contact',),
-      referenceClass = HoldingReference,
-      relationship = 'SupplyOrderContact',
+      required=1,
+      vocabulary='getContacts',
+      default_method='getContactUIDForUser',
+      vocabulary_display_path_bound=sys.maxsize,
+      allowed_types=('Contact',),
+      referenceClass=HoldingReference,
+      relationship='SupplyOrderContact',
       widget=ReferenceWidget(
         render_own_label=True,
       ),
     ),
     StringField('OrderNumber',
-                required = 1,
-                searchable = True,
-                widget = StringWidget(
-                    label = _("Order Number"),
+                required=1,
+                searchable=True,
+                widget=StringWidget(
+                    label=_("Order Number"),
                     ),
                 ),
     ReferenceField('Invoice',
-                   vocabulary_display_path_bound = sys.maxint,
-                   allowed_types = ('Invoice',),
-                   referenceClass = HoldingReference,
-                   relationship = 'OrderInvoice',
+                   vocabulary_display_path_bound=sys.maxsize,
+                   allowed_types=('Invoice',),
+                   referenceClass=HoldingReference,
+                   relationship='OrderInvoice',
                    ),
     DateTimeField(
       'OrderDate',
@@ -66,31 +60,31 @@ schema = BikaSchema.copy() + Schema((
       ),
     ),
     DateTimeField('DateDispatched',
-                  widget = DateTimeWidget(
-                      label = _("Date Dispatched"),
+                  widget=DateTimeWidget(
+                      label=_("Date Dispatched"),
                       ),
                   ),
     TextField('Remarks',
-        searchable = True,
-        default_content_type = 'text/plain',
-        allowed_content_types= ('text/plain', ),
+        searchable=True,
+        default_content_type='text/plain',
+        allowed_content_types=('text/plain', ),
         default_output_type="text/plain",
         widget = TextAreaWidget(
-            macro = "bika_widgets/remarks",
-            label = _('Remarks'),
-            append_only = True,
+            macro="bika_widgets/remarks",
+            label=_('Remarks'),
+            append_only=True,
         ),
     ),
     ComputedField('ClientUID',
                   expression = 'here.aq_parent.UID()',
                   widget = ComputedWidget(
-                      visible = False,
+                      visible=False,
                       ),
                   ),
     ComputedField('ProductUID',
                   expression = 'context.getProductUIDs()',
                   widget = ComputedWidget(
-                      visible = False,
+                      visible=False,
                       ),
                   ),
 ),
@@ -113,7 +107,7 @@ class SupplyOrder(BaseFolder):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    def hasBeenInvoiced(self):
+    def getInvoiced(self):
         if self.getInvoice():
             return True
         else:
@@ -131,6 +125,7 @@ class SupplyOrder(BaseFolder):
         return adapter()
 
     security.declarePublic('getContactUIDForUser')
+
     def getContactUIDForUser(self):
         """ get the UID of the contact associated with the authenticated
             user
@@ -138,36 +133,40 @@ class SupplyOrder(BaseFolder):
         user = self.REQUEST.AUTHENTICATED_USER
         user_id = user.getUserName()
         r = self.portal_catalog(
-            portal_type = 'Contact',
-            getUsername = user_id
+            portal_type='Contact',
+            getUsername=user_id
         )
         if len(r) == 1:
             return r[0].UID
 
     security.declareProtected(View, 'getTotalQty')
+
     def getTotalQty(self):
         """ Compute total qty """
         return sum(
-            [obj.getQuantity() \
+            [obj.getQuantity()
              for obj in self.objectValues('SupplyOrderItem')])
 
     security.declareProtected(View, 'getSubtotal')
+
     def getSubtotal(self):
         """ Compute Subtotal """
         return sum(
-            [float(obj.getTotal()) \
+            [float(obj.getTotal())
              for obj in self.objectValues('SupplyOrderItem')])
 
     security.declareProtected(View, 'getVAT')
+
     def getVAT(self):
         """ Compute VAT """
         return self.getTotal() - self.getSubtotal()
 
     security.declareProtected(View, 'getTotal')
+
     def getTotal(self):
         """ Compute TotalPrice """
         return sum(
-            [float(obj.getTotalIncludingVAT()) \
+            [float(obj.getTotalIncludingVAT())
              for obj in self.objectValues('SupplyOrderItem')])
 
     def workflow_script_dispatch(self, state_info):
@@ -176,6 +175,7 @@ class SupplyOrder(BaseFolder):
         self.reindexObject()
 
     security.declareProtected(View, 'getProductUIDs')
+
     def getProductUIDs(self):
         """ return the uids of the products referenced by order items
         """
@@ -187,10 +187,10 @@ class SupplyOrder(BaseFolder):
         return uids
 
     security.declarePublic('current_date')
+
     def current_date(self):
         """ return current date """
         return DateTime()
-
 
 
 atapi.registerType(SupplyOrder, PROJECTNAME)

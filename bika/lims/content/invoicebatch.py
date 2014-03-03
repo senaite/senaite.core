@@ -5,7 +5,7 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from Products.CMFCore import permissions
 from bika.lims import bikaMessageFactory as _
-from bika.lims.config import PostInvoiceBatch, ManageInvoices, PROJECTNAME
+from bika.lims.config import ManageInvoices, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IInvoiceBatch
 from bika.lims.utils import get_invoice_item_description
@@ -129,6 +129,7 @@ class InvoiceBatch(BaseFolder):
     #     setheader('Content-Disposition', 'inline; filename=%s' % filename)
     #     RESPONSE.write(result)
     #     return
+
     security.declareProtected(ManageInvoices, 'invoices')
 
     def invoices(self):
