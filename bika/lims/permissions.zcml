@@ -125,11 +125,6 @@
 #       'sample_due', 'sample_received', 'to_be_verified', 'attachment_due'
 <permission id="bika.lims.EditSamplePartition" title="BIKA: Edit Sample Partition"/>
 
-# Edit Client
-# ----------------------------------------------
-# Allows access to 'Edit' and 'Contacts' tabs from Client View
-<permission id="bika.lims.EditClient" title="BIKA: Edit Client"/>
-
 # Batch specific permissions
 # ----------------------------------------------
 <permission id="bika.lims.EditBatch" title="BIKA: Edit Batch"/>

@@ -56,6 +56,7 @@ class BikaGenerator:
                        'worksheets',
                        'reports',
                        'queries',
+                       'supplyorders',
                        ):
             obj = portal._getOb(obj_id)
             obj.unmarkCreationFlag()
@@ -244,7 +245,6 @@ class BikaGenerator:
         mp(EditResults, ['Manager', 'LabManager', 'Analyst'], 1)
         mp(EditFieldResults, ['Manager', 'LabManager', 'Sampler'], 1)
         mp(EditSamplePartition, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 1)
-        mp(EditClient, ['Manager', 'LabManager', 'LabClerk'], 1)
 
         mp('Access contents information', ['Authenticated'], 1)
         mp(permissions.View, ['Authenticated'], 1)
@@ -287,9 +287,13 @@ class BikaGenerator:
             mp = obj.manage_permission
             mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver'], 0)
             mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst', 'Sampler', 'Preserver'], 0)
-            mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
+            mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
             mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 0)
             obj.reindexObject()
+            for contact in portal.clients.objectValues('Contact'):
+                mp = contact.manage_permission
+                mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Analyst', 'Sampler', 'Preserver'], 0)
+                mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
 
         # /worksheets folder permissions
         mp = portal.worksheets.manage_permission
