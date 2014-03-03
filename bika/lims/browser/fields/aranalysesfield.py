@@ -114,7 +114,7 @@ class ARAnalysesField(ObjectField):
 
             # override defaults from service->InterimFields
             service_interims = service.getInterimFields()
-            sif = dict([[x['keyword'], x['value']]
+            sif = dict([[x['keyword'], x.get('value', '')]
                         for x in service_interims])
             for i, i_f in enumerate(interim_fields):
                 if i_f['keyword'] in sif:
