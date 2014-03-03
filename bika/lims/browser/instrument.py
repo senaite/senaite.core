@@ -17,6 +17,8 @@ from bika.lims.browser.analyses import QCAnalysesView
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from zExceptions import Forbidden
+
 import plone
 import json
 
@@ -564,8 +566,11 @@ class ajaxGetInstrumentMethod(BrowserView):
         uid: unique identifier of the instrument
     """
     def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
         methoddict = {}
+        try:
+            plone.protect.CheckAuthenticator(self.request)
+        except Forbidden:
+            return json.dumps(methoddict)
         bsc = getToolByName(self, 'bika_setup_catalog')
         instrument = bsc(portal_type='Instrument', UID=self.request.get("uid", '0'))
         if instrument and len(instrument) == 1:
@@ -575,21 +580,25 @@ class ajaxGetInstrumentMethod(BrowserView):
                               'title': method.Title()}
         return json.dumps(methoddict)
 
+
 class ajaxGetOutOfDateInstruments(BrowserView):
     """ Returns an array of json dict with the instruments currently
         out of date regards to their calibration certificates
     """
     def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
         out = []
+        try:
+            plone.protect.CheckAuthenticator(self.request)
+        except Forbidden:
+            return json.dumps(out)
+
         bsc = getToolByName(self, 'bika_setup_catalog')
         insts = bsc(portal_type='Instrument')
         for i in insts:
-            i = i.getObject();
+            i = i.getObject()
             if i.isOutOfDate():
                 instr = {'uid': i.UID(),
                          'title': i.Title(),
                          'url': i.absolute_url_path()}
                 out.append(instr)
         return json.dumps(out)
-
