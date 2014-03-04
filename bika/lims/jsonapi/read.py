@@ -2,22 +2,22 @@ from bika.lims import logger
 from bika.lims.interfaces import IJSONReadExtender
 from plone.jsonapi.core import router
 from plone.jsonapi.core.interfaces import IRouteProvider
+from plone.protect.authenticator import AuthenticatorView
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.i18nl10n import ulocalized_time
 from zope import interface
 from zope.component import getAdapters
 import App
-import Missing
 import json
-from plone.protect.authenticator import AuthenticatorView
-
+import Missing
+import re
 
 
 def read(context, request):
 
     tag = AuthenticatorView(context, request).authenticator()
     pattern = '<input .*name="(\w+)".*value="(\w+)"'
-    _authenticator = match(pattern, tag).groups()[1]
+    _authenticator = re.match(pattern, tag).groups()[1]
 
     ret = {
         "url": router.url_for("read", force_external=True),
