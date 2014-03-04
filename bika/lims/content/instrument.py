@@ -232,7 +232,7 @@ class Instrument(ATFolder):
         """ Returns the certifications of the instrument. Both internal
             and external certifitions
         """
-        return self.objectValues('InstrumentCertification')
+        return [c for c in self.objectValues('InstrumentCertification') if c]
 
     def getValidCertifications(self):
         """ Returns the certifications fully valid
