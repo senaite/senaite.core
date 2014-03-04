@@ -84,7 +84,6 @@ def initialize(context):
     from content.preservation import Preservation
     from content.pricelist import Pricelist
     from content.pricelistfolder import PricelistFolder
-    from content.pricelistlineitem import PricelistLineItem
     from content.queryfolder import QueryFolder
     from content.query import Query
     from content.referenceanalysis import ReferenceAnalysis

@@ -147,5 +147,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
-</configure>
+<genericsetup:upgradeStep
+        title="Remove AT pricelist lineitem"
+        description=""
+        source="3012"
+        destination="3013"
+        handler="bika.lims.upgrade.to3013.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
 
+</configure>

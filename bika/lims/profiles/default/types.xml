@@ -65,7 +65,6 @@
  <object name="Preservations" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Pricelist" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="PricelistFolder" meta_type="Factory-based Type Information with dynamic views"/>
- <object name="PricelistLineItem" meta_type="Factory-based Type Information"/>
  <object name="QueryFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Query" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceAnalysis" meta_type="Factory-based Type Information with dynamic views"/>

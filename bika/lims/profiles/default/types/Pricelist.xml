@@ -9,13 +9,12 @@
  <property name="content_icon">++resource++bika.lims.images/pricelist.png</property>
  <property name="content_meta_type">Pricelist</property>
  <property name="product">bika.lims</property>
- <property name="factory">AddPricelist</property>
+ <property name="factory">addPricelist</property>
  <property name="add_view_expr"></property>
  <property name="link_target"></property>
  <property name="global_allow">False</property>
  <property name="filter_content_types">True</property>
  <property name="allowed_content_types">
-  <element value="PricelistLineItem"/>
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>

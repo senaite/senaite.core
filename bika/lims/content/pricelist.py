@@ -1,17 +1,15 @@
 from AccessControl import ClassSecurityInfo
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.widgets.datetimewidget import DateTimeWidget
+from bika.lims.config import PRICELIST_TYPES, PROJECTNAME
+from bika.lims.content.bikaschema import BikaFolderSchema
+from bika.lims.interfaces import IPricelist
 from DateTime import DateTime
-from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
+from persistent.mapping import PersistentMapping
+from plone.app.folder import folder
 from Products.Archetypes.public import *
 from Products.CMFCore import permissions
-from bika.lims import bikaMessageFactory as _
-from bika.lims.config import ManagePricelists, ManageBika, PRICELIST_TYPES, PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.browser.widgets.datetimewidget import DateTimeWidget
-from bika.lims.interfaces import IPricelist
 from zope.interface import implements
-import sys
-from plone.app.folder import folder
-from bika.lims.content.bikaschema import BikaFolderSchema
 
 
 schema = BikaFolderSchema.copy() + Schema((
@@ -76,21 +74,21 @@ def apply_discount(price=None, discount=None):
 
 
 def get_vat_amount(price, vat_perc):
-    return float(price) * float(vat_perc)/100
+    return float(price) * float(vat_perc) / 100
+
+
+class PricelistLineItem(PersistentMapping):
+    pass
 
 
 def create_price_list(instance):
     """ Create price list line items
     """
     # Remove existing line items
-    instance.manage_delObjects(instance.objectIds())
-
+    instance.pricelist_lineitems = []
     for p in instance.portal_catalog(portal_type=instance.getType(),
                                      inactive_state="active"):
         obj = p.getObject()
-        item_id = obj.generateUniqueId("PricelistLineItem")
-        instance.invokeFactory(id=item_id, type_name="PricelistLineItem")
-        item = instance._getOb(item_id)
         itemDescription = None
         itemAccredited = False
         if instance.getType() == "LabProduct":
@@ -147,16 +145,16 @@ def create_price_list(instance):
         if instance.getDescriptions():
             itemDescription = obj.Description()
 
-        item.unmarkCreationFlag()
-        item.edit(
-            title=itemTitle,
-            ItemDescription=itemDescription,
-            Accredited=itemAccredited,
-            Subtotal="%0.2f" % price,
-            VATTotal="%0.2f" % vat,
-            Total="%0.2f" % totalprice,
-            CategoryTitle=cat,
-        )
+        li = PricelistLineItem()
+        li['title'] = itemTitle
+        li['ItemDescription'] = itemDescription
+        li['CategoryTitle'] = cat
+        li['Accredited'] = itemAccredited
+        li['Subtotal'] = "%0.2f" % price
+        li['VATTotal'] = "%0.2f" % vat
+        li['Total'] = "%0.2f" % totalprice
+        instance.pricelist_lineitems.append(li)
+
     obj.REQUEST.RESPONSE.redirect('base_view')
 
 

@@ -1,0 +1,29 @@
+from Acquisition import aq_inner
+from Acquisition import aq_parent
+from bika.lims.permissions import *
+from Products.Archetypes.BaseContent import BaseContent
+from bika.lims.upgrade import stub
+
+
+def upgrade(tool):
+    portal = aq_parent(aq_inner(tool))
+    setup = portal.portal_setup
+
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
+
+    stub('bika.lims.content.pricelistlineitem', 'PricelistLineItem',
+        BaseContent)
+    for pl in portal['pricelists'].objectValues():
+        pl.pricelist_lineitems = []
+        for pli in pl.objectValues():
+            item = dict(
+                title=pli.title,
+                ItemDescription=pli.ItemDescription,
+                Accredited=pli.Accredited,
+                Subtotal="%d.%d" % (pli.Subtotal[0], pli.Subtotal[1]),
+                VATTotal="%d.%d" % (pli.VATTotal[0], pli.VATTotal[1]),
+                Total="%d.%d" % (pli.Total[0], pli.Total[1]),
+                CategoryTitle=pli.CategoryTitle,
+            )
+            pl.pricelist_lineitems.append(item)
+    return True

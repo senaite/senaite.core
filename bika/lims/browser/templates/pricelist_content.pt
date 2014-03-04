@@ -31,21 +31,21 @@
         </tr>
     </thead>
     <tbody>
-        <tal:items repeat="item python:context.objectValues()">
+        <tal:items repeat="item python:context.pricelist_lineitems">
             <tal:item>
                 <tr>
                     <td tal:content="item/title"></td>
                     <td>
                         <span i18n:translate="label_currency_abbreviation">R</span>
-                        <span tal:content="item/getSubtotal">0.00</span>
+                        <span tal:content="item/Subtotal">0.00</span>
                     </td>
                     <td>
                         <span i18n:translate="label_currency_abbreviation">R</span>
-                        <span tal:content="item/getVATTotal">0.00</span>
+                        <span tal:content="item/VATTotal">0.00</span>
                     </td>
                     <td>
                         <span i18n:translate="label_currency_abbreviation">R</span>
-                        <span tal:content="item/getTotal">0.00</span>
+                        <span tal:content="item/Total">0.00</span>
                     </td>
                 </tr>
             </tal:item>
