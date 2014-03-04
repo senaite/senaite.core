@@ -168,6 +168,11 @@ msgstr "Berekening"
 msgid "Calculations"
 msgstr "Berekeninge"
 
+#
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Certificates"
+msgstr ""
+
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Client"
 msgstr "Kliënt"
@@ -523,6 +528,11 @@ msgstr "Verskaffers"
 # File: ../profiles/default/types/SupplyOrder.xml, line: -1
 msgid "Supply Order"
 msgstr "Verskaffersbestelling"
+
+#
+# File: ../profiles/default/types/SupplyOrderFolder.xml, line: -1
+msgid "Supply Orders"
+msgstr ""
 
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Worksheet"

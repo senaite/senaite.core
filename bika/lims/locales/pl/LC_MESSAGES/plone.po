@@ -167,6 +167,11 @@ msgstr "Obliczanie"
 msgid "Calculations"
 msgstr "Obliczenia"
 
+#
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Certificates"
+msgstr ""
+
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Client"
 msgstr "Klient"
@@ -522,6 +527,11 @@ msgstr "Dostawcy"
 # File: ../profiles/default/types/SupplyOrder.xml, line: -1
 msgid "Supply Order"
 msgstr "Supply Order"
+
+#
+# File: ../profiles/default/types/SupplyOrderFolder.xml, line: -1
+msgid "Supply Orders"
+msgstr ""
 
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Worksheet"

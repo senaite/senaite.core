@@ -439,6 +439,16 @@ msgid "All reference samples in the system are displayed here."
 msgstr ""
 
 #
+# File: ../content/analysisservice.py, line: 251
+msgid "Allow instrument entry of results"
+msgstr ""
+
+#
+# File: ../content/analysisservice.py, line: 237
+msgid "Allow manual entry of results"
+msgstr ""
+
+#
 # File: ../exportimport/instruments/resultsimport.py, line: 283
 msgid "Allowed Analysis Request states: %s"
 msgstr ""
@@ -1167,6 +1177,11 @@ msgid "Calibration"
 msgstr ""
 
 #
+# File: ../browser/templates/instrument_certifications.pt, line: 40
+msgid "Calibration Certificates"
+msgstr ""
+
+#
 # File: ../browser/instrument.py, line: 138
 # File: ../content/instrumentcalibration.py, line: 47
 msgid "Calibrator"
@@ -1239,8 +1254,18 @@ msgid "Category cannot be deactivated because it contains Analysis Services"
 msgstr ""
 
 #
-# File: ../browser/instrument.py, line: 191
-msgid "Certification Num"
+# File: ../browser/instrument.py, line: 504
+msgid "Cert. Num"
+msgstr ""
+
+#
+# File: ../content/instrumentcertification.py, line: 92
+msgid "Certificate Code"
+msgstr ""
+
+#
+# File: ../content/instrumentcertification.py, line: 72
+msgid "Certificate Document"
 msgstr ""
 
 #
@@ -1712,8 +1737,8 @@ msgid "Date Submitted"
 msgstr ""
 
 #
-# File: ../content/instrumentcertification.py, line: 46
-msgid "Date from which the certification is valid"
+# File: ../content/instrumentcertification.py, line: 57
+msgid "Date from which the calibration certificate is valid"
 msgstr ""
 
 #
@@ -1737,8 +1762,8 @@ msgid "Date received"
 msgstr ""
 
 #
-# File: ../content/instrumentcertification.py, line: 55
-msgid "Date until the certification is valid"
+# File: ../content/instrumentcertification.py, line: 66
+msgid "Date until the certificate is valid"
 msgstr ""
 
 #
@@ -1749,8 +1774,8 @@ msgid "Date until the instrument will not be available"
 msgstr ""
 
 #
-# File: ../content/instrumentcertification.py, line: 37
-msgid "Date when the certification was granted"
+# File: ../content/instrumentcertification.py, line: 48
+msgid "Date when the calibration certificate was granted"
 msgstr ""
 
 #
@@ -1766,6 +1791,11 @@ msgstr ""
 # File: ../content/bikasetup.py, line: 202
 # File: ../content/client.py, line: 89
 msgid "Default AR Specifications"
+msgstr ""
+
+#
+# File: ../content/analysisservice.py, line: 402
+msgid "Default Calculation"
 msgstr ""
 
 #
@@ -1790,6 +1820,11 @@ msgid "Default Priority?"
 msgstr ""
 
 #
+# File: ../content/analysisservice.py, line: 403
+msgid "Default calculation to be used from the default Method selected. The Calculation for a method can be assigned in the Method edit view."
+msgstr ""
+
+#
 # File: ../content/client.py, line: 64
 msgid "Default categories"
 msgstr ""
@@ -1802,6 +1837,16 @@ msgstr ""
 #
 # File: ../browser/templates/analysisservice_popup.pt, line: 232
 msgid "Default containers: ${container_list}"
+msgstr ""
+
+#
+# File: ../content/analysisservice.py, line: 301
+msgid "Default instrument"
+msgstr ""
+
+#
+# File: ../content/analysisservice.py, line: 361
+msgid "Default method. If 'Allow instrument entry of results' is selected, the Default method to be used will be the method set in the Default Instrument. Otherwise, the Method to be used can be set manually."
 msgstr ""
 
 #
@@ -1823,6 +1868,11 @@ msgstr ""
 # File: ../content/bikasetup.py, line: 203
 # File: ../content/client.py, line: 90
 msgid "DefaultARSpecs_description"
+msgstr ""
+
+#
+# File: ../content/analysisservice.py, line: 433
+msgid "Deferred Calculation"
 msgstr ""
 
 #
@@ -2499,11 +2549,6 @@ msgid "Instrument Calibrations"
 msgstr ""
 
 #
-# File: ../browser/instrument.py, line: 187
-msgid "Instrument Certifications"
-msgstr ""
-
-#
 # File: ../exportimport/import.pt, line: 32
 msgid "Instrument Import"
 msgstr ""
@@ -2559,6 +2604,11 @@ msgid "Internal Calibration Tests"
 msgstr ""
 
 #
+# File: ../content/instrumentcertification.py, line: 33
+msgid "Internal Certificate"
+msgstr ""
+
+#
 # File: ../browser/analysisrequest.py, line: 2498
 msgid "Invalid"
 msgstr ""
@@ -2602,6 +2652,21 @@ msgstr ""
 #
 # File: ../browser/invoicebatch.py, line: 19
 msgid "Invoice Number"
+msgstr ""
+
+#
+# File: ../exportimport/setupdata/__init__.py, line: 1764
+msgid "InvoiceBatch has no End Date"
+msgstr ""
+
+#
+# File: ../exportimport/setupdata/__init__.py, line: 1761
+msgid "InvoiceBatch has no Start Date"
+msgstr ""
+
+#
+# File: ../exportimport/setupdata/__init__.py, line: 1758
+msgid "InvoiceBatch has no Title"
 msgstr ""
 
 #
@@ -2773,6 +2838,11 @@ msgstr ""
 #
 # File: ../content/method.py, line: 27
 msgid "Load documents describing the method here"
+msgstr ""
+
+#
+# File: ../content/instrumentcertification.py, line: 73
+msgid "Load the certificate document here"
 msgstr ""
 
 #
@@ -3047,6 +3117,11 @@ msgstr ""
 #
 # File: ../exportimport/instruments/resultsimport.py, line: 312
 msgid "More than one analysis found for %s and %s"
+msgstr ""
+
+#
+# File: ../content/analysisservice.py, line: 273
+msgid "More than one instrument can do an Analysis Service. The instruments selected here are displayed in the Analysis Request creation view for its selection when this Analysis Service is selected."
 msgstr ""
 
 #
@@ -3404,8 +3479,8 @@ msgid "Orders: %s"
 msgstr ""
 
 #
-# File: ../content/instrumentcertification.py, line: 30
-msgid "Organization responsible of granting the certification"
+# File: ../content/instrumentcertification.py, line: 41
+msgid "Organization responsible of granting the calibration certificate"
 msgstr ""
 
 #
@@ -3427,6 +3502,11 @@ msgstr ""
 #
 # File: ../browser/reports/templates/productivity.pt, line: 385
 msgid "Other productivity reports"
+msgstr ""
+
+#
+# File: ../browser/instrument.py, line: 554
+msgid "Out of date"
 msgstr ""
 
 #
@@ -4475,11 +4555,6 @@ msgid "Select analyses to include in this template"
 msgstr ""
 
 #
-# File: ../content/analysisservice.py, line: 240
-msgid "Select analysis method"
-msgstr ""
-
-#
 # File: ../browser/templates/worksheetfolder.pt, line: 32
 msgid "Select analyst"
 msgstr ""
@@ -4490,8 +4565,28 @@ msgid "Select if analyses to be excluded from invoice"
 msgstr ""
 
 #
+# File: ../content/instrumentcertification.py, line: 34
+msgid "Select if is an in-house calibration certificate"
+msgstr ""
+
+#
+# File: ../content/analysisservice.py, line: 378
+msgid "Select if the calculation to be used is the calculation set by default in the default method. If unselected, the calculation can be selected manually"
+msgstr ""
+
+#
 # File: ../content/pricelist.py, line: 37
 msgid "Select if the descriptions should be included"
+msgstr ""
+
+#
+# File: ../content/analysisservice.py, line: 238
+msgid "Select if the results for this Analysis Service can be set manually."
+msgstr ""
+
+#
+# File: ../content/analysisservice.py, line: 252
+msgid "Select if the results for this Analysis Service can be set using an Instrument."
 msgstr ""
 
 #
@@ -4818,6 +4913,11 @@ msgstr ""
 #
 # File: ../content/artemplate.py, line: 154
 msgid "The Analysis Profile selection for this template"
+msgstr ""
+
+#
+# File: ../content/analysisservice.py, line: 331
+msgid "The Analysis Service can be performed by using more than one Method. The methods selected here are displayed in the Analysis Request creation view for its selection when this Analaysis Service is selected"
 msgstr ""
 
 #
@@ -5297,6 +5397,11 @@ msgstr ""
 #
 # File: ../content/labcontact.py, line: 29
 msgid "Upload a scanned signature to be used on printed analysis results reports. Ideal size is 250 pixels wide by 150 high"
+msgstr ""
+
+#
+# File: ../content/analysisservice.py, line: 377
+msgid "Use default calculation"
 msgstr ""
 
 #
