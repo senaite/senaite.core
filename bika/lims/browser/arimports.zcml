@@ -22,16 +22,18 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+<!--
     <browser:page
-      for="bika.lims.interfaces.IClient"
+      for="bika.lims.interfaces.IARImportFolder"
       name="arimport_add"
       class="bika.lims.browser.arimports.ClientARImportAddView"
       permission="bika.lims.ManageARImport"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
+-->
 
     <browser:page
-      for="bika.lims.interfaces.IClient"
+      for="bika.lims.interfaces.IARImportFolder"
       name="arimports"
       class="bika.lims.browser.arimports.ClientARImportsView"
       permission="bika.lims.ManageARImport"

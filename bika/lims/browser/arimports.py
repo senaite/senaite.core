@@ -70,7 +70,9 @@ class GlobalARImportsView(BikaListingView):
                 'portal_type': 'ARImport',
                 'sort_on':'sortable_title',
                 }
-        self.context_actions = \
+        self.context_actions = {}
+        if self.context.portal_type == 'Client':
+            self.context_actions = \
                 {_('AR Import'):
                            {'url': 'arimport_add',
                             'icon': '++resource++bika.lims.images/add.png'}}
