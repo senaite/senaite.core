@@ -9,14 +9,22 @@ from zope.component import getAdapters
 import App
 import Missing
 import json
+from plone.protect.authenticator import AuthenticatorView
+
 
 
 def read(context, request):
+
+    tag = AuthenticatorView(context, request).authenticator()
+    pattern = '<input .*name="(\w+)".*value="(\w+)"'
+    _authenticator = match(pattern, tag).groups()[1]
+
     ret = {
         "url": router.url_for("read", force_external=True),
         "success": True,
         "error": False,
         "objects": [],
+        "_authenticator": _authenticator,
     }
     debug_mode = App.config.getConfiguration().debug_mode
     catalog_name = request.get("catalog_name", "portal_catalog")
