@@ -9,7 +9,7 @@
  <property name="content_icon">++resource++bika.lims.images/pricelist.png</property>
  <property name="content_meta_type">PricelistFolder</property>
  <property name="product">bika.lims</property>
- <property name="factory">AddPricelistFolder</property>
+ <property name="factory">addPricelistFolder</property>
  <property name="add_view_expr"></property>
  <property name="link_target"></property>
  <property name="global_allow">False</property>
