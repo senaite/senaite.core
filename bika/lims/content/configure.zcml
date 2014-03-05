@@ -6,6 +6,12 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="bika">
 
+    <subscriber
+      for="bika.lims.interfaces.IPricelist
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler="bika.lims.content.pricelist.ObjectModifiedEventHandler"
+    />
+
     <browser:page
       for="bika.lims.interfaces.IMethods"
       name="folder_view"

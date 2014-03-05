@@ -10,6 +10,9 @@ from plone.app.folder import folder
 from Products.Archetypes.public import *
 from Products.CMFCore import permissions
 from zope.interface import implements
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore import permissions
+
 
 
 schema = BikaFolderSchema.copy() + Schema((
@@ -81,83 +84,6 @@ class PricelistLineItem(PersistentMapping):
     pass
 
 
-def create_price_list(instance):
-    """ Create price list line items
-    """
-    # Remove existing line items
-    instance.pricelist_lineitems = []
-    for p in instance.portal_catalog(portal_type=instance.getType(),
-                                     inactive_state="active"):
-        obj = p.getObject()
-        itemDescription = None
-        itemAccredited = False
-        if instance.getType() == "LabProduct":
-            if obj.getVolume() or obj.getUnit():
-                print_detail = " ("
-            if obj.getVolume():
-                print_detail = print_detail + str(obj.getVolume())
-            if obj.getUnit():
-                print_detail = print_detail + str(obj.getUnit())
-            if print_detail:
-                print_detail = print_detail + ")"
-                itemTitle = obj.Title() + print_detail
-            else:
-                itemTitle = obj.Title()
-            cat = None
-            if obj.getPrice():
-                price = float(obj.getPrice())
-                totalprice = float(obj.getTotalPrice())
-                vat = totalprice - price
-            else:
-                price = 0
-                totalprice = 0
-                vat = 0
-        elif instance.getType() == "AnalysisService":
-            #
-            if str(obj.getUnit()):
-                print_detail = " (" + str(obj.getUnit()) + ")"
-                itemTitle = obj.Title() + print_detail
-            else:
-                itemTitle = obj.Title()
-            itemAccredited = obj.getAccredited()
-            #
-            cat = obj.getCategoryTitle()
-            if instance.getBulkDiscount():
-                    price = float(obj.getBulkPrice())
-                    vat = get_vat_amount(price, obj.getVAT())
-                    totalprice = price + vat
-            else:
-                if instance.getBulkPrice():
-                    discount = instance.getBulkPrice()
-                    price = float(obj.getPrice())
-                    price = apply_discount(price, discount)
-                    vat = get_vat_amount(price, obj.getVAT())
-                    totalprice = price + vat
-                elif obj.getPrice():
-                    price = float(obj.getPrice())
-                    vat = get_vat_amount(price, obj.getVAT())
-                    totalprice = price + vat
-                else:
-                    totalprice = 0
-                    price = 0
-                    vat = 0
-
-        if instance.getDescriptions():
-            itemDescription = obj.Description()
-
-        li = PricelistLineItem()
-        li['title'] = itemTitle
-        li['ItemDescription'] = itemDescription
-        li['CategoryTitle'] = cat
-        li['Accredited'] = itemAccredited
-        li['Subtotal'] = "%0.2f" % price
-        li['VATTotal'] = "%0.2f" % vat
-        li['Total'] = "%0.2f" % totalprice
-        instance.pricelist_lineitems.append(li)
-
-    obj.REQUEST.RESPONSE.redirect('base_view')
-
-
 class Pricelist(folder.ATFolder):
     implements(IPricelist)
     security = ClassSecurityInfo()
@@ -179,12 +105,85 @@ class Pricelist(folder.ATFolder):
     security.declareProtected(permissions.ModifyPortalContent,
                               'processForm')
 
-    def processForm(self, data=1, metadata=0, REQUEST=None, values=None):
-        """ Override BaseObject.processForm so that we can create
-            invoice lineitems once the form is filled in
-        """
-        BaseFolder.processForm(self, data=data, metadata=metadata,
-            REQUEST=REQUEST, values=values)
-        create_price_list(self)
-
 registerType(Pricelist, PROJECTNAME)
+
+
+def ObjectModifiedEventHandler(instance, event):
+    """ Various types need automation on edit.
+    """
+    if not hasattr(instance, 'portal_type'):
+        return
+
+    if instance.portal_type == 'Pricelist':
+        """ Create price list line items
+        """
+        # Remove existing line items
+        instance.pricelist_lineitems = []
+        for p in instance.portal_catalog(portal_type=instance.getType(),
+                                         inactive_state="active"):
+            obj = p.getObject()
+            itemDescription = None
+            itemAccredited = False
+            if instance.getType() == "LabProduct":
+                if obj.getVolume() or obj.getUnit():
+                    print_detail = " ("
+                if obj.getVolume():
+                    print_detail = print_detail + str(obj.getVolume())
+                if obj.getUnit():
+                    print_detail = print_detail + str(obj.getUnit())
+                if print_detail:
+                    print_detail = print_detail + ")"
+                    itemTitle = obj.Title() + print_detail
+                else:
+                    itemTitle = obj.Title()
+                cat = None
+                if obj.getPrice():
+                    price = float(obj.getPrice())
+                    totalprice = float(obj.getTotalPrice())
+                    vat = totalprice - price
+                else:
+                    price = 0
+                    totalprice = 0
+                    vat = 0
+            elif instance.getType() == "AnalysisService":
+                #
+                if str(obj.getUnit()):
+                    print_detail = " (" + str(obj.getUnit()) + ")"
+                    itemTitle = obj.Title() + print_detail
+                else:
+                    itemTitle = obj.Title()
+                itemAccredited = obj.getAccredited()
+                #
+                cat = obj.getCategoryTitle()
+                if instance.getBulkDiscount():
+                        price = float(obj.getBulkPrice())
+                        vat = get_vat_amount(price, obj.getVAT())
+                        totalprice = price + vat
+                else:
+                    if instance.getBulkPrice():
+                        discount = instance.getBulkPrice()
+                        price = float(obj.getPrice())
+                        price = apply_discount(price, discount)
+                        vat = get_vat_amount(price, obj.getVAT())
+                        totalprice = price + vat
+                    elif obj.getPrice():
+                        price = float(obj.getPrice())
+                        vat = get_vat_amount(price, obj.getVAT())
+                        totalprice = price + vat
+                    else:
+                        totalprice = 0
+                        price = 0
+                        vat = 0
+
+            if instance.getDescriptions():
+                itemDescription = obj.Description()
+
+            li = PricelistLineItem()
+            li['title'] = itemTitle
+            li['ItemDescription'] = itemDescription
+            li['CategoryTitle'] = cat
+            li['Accredited'] = itemAccredited
+            li['Subtotal'] = "%0.2f" % price
+            li['VATTotal'] = "%0.2f" % vat
+            li['Total'] = "%0.2f" % totalprice
+            instance.pricelist_lineitems.append(li)
