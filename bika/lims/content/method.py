@@ -98,9 +98,6 @@ class Method(BaseFolder):
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
-    instruments = None
-    instrumentsdl = None
-    calculationsdl = None
 
     _at_rename_after_creation = True
     def _renameAfterCreation(self, check_auto_id=False):
@@ -120,22 +117,18 @@ class Method(BaseFolder):
             registered in Bika-Setup. Used to fill the Calculation
             ReferenceWidget.
         """
-        if not self.calculationsdl:
-            bsc = getToolByName(self, 'bika_setup_catalog')
-            items = [(c.UID, c.Title) \
-                    for c in bsc(portal_type='Calculation',
-                                 inactive_state = 'active')]
-            items.sort(lambda x,y: cmp(x[1], y[1]))
-            items.insert(0, ('', self.translate(_('None'))))
-            self.calculationsdl = DisplayList(list(items))
-        return self.calculationsdl
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(c.UID, c.Title) \
+                for c in bsc(portal_type='Calculation',
+                             inactive_state = 'active')]
+        items.sort(lambda x,y: cmp(x[1], y[1]))
+        items.insert(0, ('', self.translate(_('None'))))
+        return DisplayList(list(items))
 
     def getInstruments(self):
         """ Instruments capable to perform this method
         """
-        if not self.instruments:
-            self.instruments = self.getBackReferences('InstrumentMethod')
-        return self.instruments
+        return self.getBackReferences('InstrumentMethod')
 
     def getInstrumentUIDs(self):
         """ UIDs of the instruments capable to perform this method
@@ -153,14 +146,12 @@ class Method(BaseFolder):
         """ Available instruments registered in the system
             Only instruments with state=active will be fetched
         """
-        if not self.instrumentsdl:
-            bsc = getToolByName(self, 'bika_setup_catalog')
-            items = [(i.UID, i.Title) \
-                    for i in bsc(portal_type='Instrument',
-                                 inactive_state = 'active')]
-            items.sort(lambda x,y: cmp(x[1], y[1]))
-            self.instrumentsdl = DisplayList(list(items))
-        return self.instrumentsdl
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(i.UID, i.Title) \
+                for i in bsc(portal_type='Instrument',
+                             inactive_state = 'active')]
+        items.sort(lambda x,y: cmp(x[1], y[1]))
+        return DisplayList(list(items))
 
 
 registerType(Method, PROJECTNAME)

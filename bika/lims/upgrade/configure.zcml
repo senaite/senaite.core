@@ -148,6 +148,15 @@
         profile="bika.lims:default"/>
 
 <genericsetup:upgradeStep
+        title="Remove Instrument's Maintenance, Validations, Calibrations and Schedule tabs"
+        description=""
+        source="3011"
+        destination="3012"
+        handler="bika.lims.upgrade.to3012.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
         title="Remove AT pricelist lineitem"
         description=""
         source="3012"
@@ -155,5 +164,7 @@
         handler="bika.lims.upgrade.to3013.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
+
+
 
 </configure>
