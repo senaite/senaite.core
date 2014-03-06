@@ -17,7 +17,7 @@ class Update(object):
     def routes(self):
         return (
             ("/update", "update", self.update, dict(methods=['GET', 'POST'])),
-            ("/updates", "updates", self.update, dict(methods=['GET', 'POST'])),
+            ("/update_many", "update_many", self.update_many, dict(methods=['GET', 'POST'])),
         )
 
     def update(self, context, request):
@@ -49,7 +49,7 @@ class Update(object):
         if not obj_path.startswith("/"):
             obj_path = "/" + obj_path
         site_path = request['PATH_INFO'].replace("/@@API/update", "")
-        obj = context.restrictedTraverse(site_path + obj_path)
+        obj = context.restrictedTraverse(str(site_path + obj_path))
 
         try:
             set_fields_from_request(obj, request)
@@ -62,8 +62,8 @@ class Update(object):
 
         return ret
 
-    def updates(self, context, request):
-        """/@@API/updates: Update existing object values
+    def update_many(self, context, request):
+        """/@@API/update_many: Update existing object values
 
         This is a wrapper around the update method, allowing multiple updates
         to be combined into a single request.
@@ -84,7 +84,7 @@ class Update(object):
         }
         """
         ret = {
-            "url": router.url_for("updates", force_external=True),
+            "url": router.url_for("update_many", force_external=True),
             "success": False,
             "error": True,
             "updates": [],
@@ -93,15 +93,17 @@ class Update(object):
         input_values = json.loads(request.get('input_values', '[]'))
         if not input_values:
             raise BadRequest("missing input_values")
-        site_path = request['PATH_INFO'].replace("/@@API/updates", "")
+        site_path = request['PATH_INFO'].replace("/@@API/update_many", "")
 
         for obj_path, i in input_values.items():
             savepoint = transaction.savepoint()
             if not obj_path.startswith("/"):
                 obj_path = "/" + obj_path
-            obj = context.restrictedTraverse(site_path + obj_path)
+            if obj_path.startswith(site_path):
+                obj_path = obj_path[len(site_path):]
+            obj = context.restrictedTraverse(str(site_path + obj_path))
             this_ret = {
-                "url": router.url_for("updates", force_external=True),
+                "url": router.url_for("update_many", force_external=True),
                 "success": False,
                 "error": True,
             }

@@ -133,7 +133,7 @@ class Create(object):
         if not obj_path.startswith("/"):
             obj_path = "/" + obj_path
         site_path = request['PATH_INFO'].replace("/@@API/create", "")
-        parent = context.restrictedTraverse(site_path + obj_path)
+        parent = context.restrictedTraverse(str(site_path + obj_path))
         # XXX normal permissions should still apply for this user
         if not getSecurityManager().checkPermission("AccessJSONAPI", parent):
             msg = "You don't have the '{0}' permission on {1}".format(
