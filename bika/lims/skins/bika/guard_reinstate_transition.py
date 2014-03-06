@@ -8,7 +8,7 @@
 ##title=
 ##
 
-from bika.lims import CancelAndReinstate
+from bika.lims.permissions import CancelAndReinstate
 
 workflow = context.portal_workflow
 checkPermission = context.portal_membership.checkPermission
