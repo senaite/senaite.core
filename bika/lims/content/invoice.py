@@ -5,6 +5,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IInvoice
 from DateTime import DateTime
 from decimal import Decimal
+from persistent.mapping import PersistentMapping
 from Products.Archetypes.public import *
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from Products.CMFCore.permissions import View
@@ -14,60 +15,60 @@ import sys
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('Client',
-        required = 1,
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('Client',),
-        relationship = 'ClientInvoice',
+        required=1,
+        vocabulary_display_path_bound=sys.maxsize,
+        allowed_types=('Client',),
+        relationship='ClientInvoice',
     ),
     DateTimeField('InvoiceDate',
-        required = 1,
-        default_method = 'current_date',
-        widget = DateTimeWidget(
-            label = _("Date"),
+        required=1,
+        default_method='current_date',
+        widget=DateTimeWidget(
+            label=_("Date"),
         ),
     ),
     TextField('Remarks',
-        searchable = True,
-        default_content_type = 'text/plain',
-        allowed_content_types= ('text/plain', ),
+        searchable=True,
+        default_content_type='text/plain',
+        allowed_content_types=('text/plain', ),
         default_output_type="text/plain",
-        widget = TextAreaWidget(
-            macro = "bika_widgets/remarks",
-            label = _('Remarks'),
-            append_only = True,
+        widget=TextAreaWidget(
+            macro="bika_widgets/remarks",
+            label=_('Remarks'),
+            append_only=True,
         ),
     ),
     ComputedField('Subtotal',
-        expression = 'context.getSubtotal()',
-        widget = ComputedWidget(
-            label = _("Subtotal"),
-            visible = False,
+        expression='context.getSubtotal()',
+        widget=ComputedWidget(
+            label=_("Subtotal"),
+            visible=False,
         ),
     ),
     ComputedField('VATTotal',
-        expression = 'context.getVATTotal()',
-        widget = ComputedWidget(
-            label = _("VAT Total"),
-            visible = False,
+        expression='context.getVATTotal()',
+        widget=ComputedWidget(
+            label=_("VAT Total"),
+            visible=False,
         ),
     ),
     ComputedField('Total',
-        expression = 'context.getTotal()',
-        widget = ComputedWidget(
-            label = _("Total"),
-            visible = False,
+        expression='context.getTotal()',
+        widget=ComputedWidget(
+            label=_("Total"),
+            visible=False,
         ),
     ),
     ComputedField('ClientUID',
-        expression = 'here.getClient() and here.getClient().UID()',
-        widget = ComputedWidget(
-            visible = False,
+        expression='here.getClient() and here.getClient().UID()',
+        widget=ComputedWidget(
+            visible=False,
         ),
     ),
     ComputedField('InvoiceSearchableText',
-        expression = 'here.getInvoiceSearchableText()',
-        widget = ComputedWidget(
-            visible = False,
+        expression='here.getInvoiceSearchableText()',
+        widget=ComputedWidget(
+            visible=False,
         ),
     ),
 ),
@@ -77,6 +78,11 @@ TitleField = schema['title']
 TitleField.required = 0
 TitleField.widget.visible = False
 
+
+class InvoiceLineItem(PersistentMapping):
+    pass
+
+
 class Invoice(BaseFolder):
     implements(IInvoice)
     security = ClassSecurityInfo()
@@ -84,6 +90,7 @@ class Invoice(BaseFolder):
     schema = schema
 
     _at_rename_after_creation = True
+
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
@@ -93,30 +100,30 @@ class Invoice(BaseFolder):
         return safe_unicode(self.getId()).encode('utf-8')
 
     security.declareProtected(View, 'getSubtotal')
+
     def getSubtotal(self):
         """ Compute Subtotal """
-        return sum(
-            [Decimal(obj.getSubtotal()) \
-             for obj in self.objectValues('InvoiceLineItem')])
+        return sum([float(obj['Subtotal']) for obj in self.invoice_lineitems])
 
     security.declareProtected(View, 'getVATTotal')
+
     def getVATTotal(self):
         """ Compute VAT """
         return Decimal(self.getTotal()) - Decimal(self.getSubtotal())
 
     security.declareProtected(View, 'getTotal')
+
     def getTotal(self):
         """ Compute Total """
-        return sum(
-            [Decimal(obj.getTotal()) \
-             for obj in self.objectValues('InvoiceLineItem')])
+        return sum([float(obj['Total']) for obj in self.invoice_lineitems])
 
     security.declareProtected(View, 'getInvoiceSearchableText')
+
     def getInvoiceSearchableText(self):
         """ Aggregate text of all line items for querying """
         s = ''
-        for item in self.objectValues('InvoiceLineItem'):
-            s = s + item.getItemDescription()
+        for item in self.invoice_lineitems:
+            s = s + item['ItemDescription']
         return s
 
     # XXX workflow script
@@ -125,6 +132,7 @@ class Invoice(BaseFolder):
         self.setDateDispatched(DateTime())
 
     security.declarePublic('current_date')
+
     def current_date(self):
         """ return current date """
         return DateTime()

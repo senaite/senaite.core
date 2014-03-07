@@ -72,7 +72,6 @@ def initialize(context):
     from content.invoice import Invoice
     from content.invoicebatch import InvoiceBatch
     from content.invoicefolder import InvoiceFolder
-    from content.invoicelineitem import InvoiceLineItem
     from content.labcontact import LabContact
     from content.laboratory import Laboratory
     from content.labproduct import LabProduct

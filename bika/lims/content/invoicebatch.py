@@ -79,7 +79,7 @@ class InvoiceBatch(BaseFolder):
     #         _message2 = ''
     #         _message3 = ''
 
-    #         items = invoice.objectValues('InvoiceLineItem')
+    # items = invoice.invoice_lineitems # objectValues('InvoiceLineItem')
     #         mixed = [(item.getClientOrderNumber(), item) for item in items]
     #         mixed.sort()
     #         lines = [t[1] for t in mixed]
@@ -143,51 +143,6 @@ class InvoiceBatch(BaseFolder):
     #     if REQUEST:
     #         REQUEST.RESPONSE.redirect('invoicebatch_invoices')
 
-    security.declareProtected(ManageInvoices, 'create_batch')
-
-    def create_batch(self):
-        """ Create batch invoices
-        """
-        start = self.getBatchStartDate()
-        end = self.getBatchEndDate()
-        # Query for ARs in date range
-        query = {
-            'portal_type': 'AnalysisRequest',
-            'review_state': 'published',
-            'getInvoiceExclude': False,
-            'getDatePublished': {
-                'range': 'min:max',
-                'query': [start, end]
-            }
-        }
-        ars = self.bika_catalog(query)
-        # Query for Orders in date range
-        query = {
-            'portal_type': 'SupplyOrder',
-            'review_state': 'dispatched',
-            'getDateDispatched': {
-                'range': 'min:max',
-                'query': [start, end]
-            }
-        }
-        orders = self.portal_catalog(query)
-        # Make list of clients from found ARs and Orders
-        clients = {}
-        for rs in (ars, orders):
-            for p in rs:
-                obj = p.getObject()
-                if obj.getInvoiced():
-                    continue
-                client_uid = obj.aq_parent.UID()
-                l = clients.get(client_uid, [])
-                l.append(obj)
-                clients[client_uid] = l
-        # Create an invoice for each client
-        for client_uid, items in clients.items():
-            self.createInvoice(client_uid, items)
-        # Redirect to the appropriate view
-        self.REQUEST.RESPONSE.redirect('invoices')
-
     security.declareProtected(ManageInvoices, 'createInvoice')
 
     def createInvoice(self, client_uid, items):
@@ -202,36 +157,21 @@ class InvoiceBatch(BaseFolder):
         )
         invoice.processForm()
         for item in items:
-            lineitem_id = self.generateUniqueId('InvoiceLineItem')
-            invoice.invokeFactory(id=lineitem_id, type_name='InvoiceLineItem')
-            lineitem = invoice._getOb(lineitem_id)
+            lineitem = InvoiceLineItem()
             if item.portal_type == 'AnalysisRequest':
-                lineitem.setItemDate(item.getDatePublished())
-                lineitem.setClientOrderNumber(item.getClientOrderNumber())
+                lineitem['Item'] = Date(item.getDatePublished())
+                lineitem['ClientOrderNumber'] = item.getClientOrderNumber()
                 item_description = get_invoice_item_description(item)
                 l = [item.getRequestID(), item_description]
                 description = ' '.join(l)
             elif item.portal_type == 'SupplyOrder':
-                lineitem.setItemDate(item.getDateDispatched())
+                lineitem['ItemDate'] = item.getDateDispatched()
                 description = item.getOrderNumber()
-            lineitem.setItemDescription(description)
-            lineitem.setSubtotal(str(item.getSubtotal()))
-            lineitem.setVATTotal(str(item.getVATTotal()))
-            lineitem.setTotal(str(item.getTotal()))
-            lineitem.reindexObject()
-            item.setInvoice(invoice)
-            lineitem.processForm()
+            lineitem['ItemDescription'] = description
+            lineitem['Subtotal'] = str(item.getSubtotal())
+            lineitem['VATTotal'] = str(item.getVATTotal())
+            lineitem['Total'] = str(item.getTotal())
         invoice.reindexObject()
-
-    security.declareProtected(permissions.ModifyPortalContent, 'processForm')
-
-    def processForm(self, data=1, metadata=0, REQUEST=None, values=None):
-        """ Override BaseObject.processForm so that we can perform setup
-            task once the form is filled in
-        """
-        BaseFolder.processForm(self, data=data, metadata=metadata,
-            REQUEST=REQUEST, values=values)
-        self.create_batch()
 
     security.declarePublic('current_date')
 
@@ -246,3 +186,51 @@ class InvoiceBatch(BaseFolder):
         return True
 
 registerType(InvoiceBatch, PROJECTNAME)
+
+
+def ObjectModifiedEventHandler(instance, event):
+    """ Various types need automation on edit.
+    """
+    if not hasattr(instance, 'portal_type'):
+        return
+
+    if instance.portal_type == 'InvoiceBatch':
+        """ Create batch invoices
+        """
+        start = instance.getBatchStartDate()
+        end = instance.getBatchEndDate()
+        # Query for ARs in date range
+        query = {
+            'portal_type': 'AnalysisRequest',
+            'review_state': 'published',
+            'getInvoiceExclude': False,
+            'getDatePublished': {
+                'range': 'min:max',
+                'query': [start, end]
+            }
+        }
+        ars = instance.bika_catalog(query)
+        # Query for Orders in date range
+        query = {
+            'portal_type': 'SupplyOrder',
+            'review_state': 'dispatched',
+            'getDateDispatched': {
+                'range': 'min:max',
+                'query': [start, end]
+            }
+        }
+        orders = instance.portal_catalog(query)
+        # Make list of clients from found ARs and Orders
+        clients = {}
+        for rs in (ars, orders):
+            for p in rs:
+                obj = p.getObject()
+                if obj.getInvoiced():
+                    continue
+                client_uid = obj.aq_parent.UID()
+                l = clients.get(client_uid, [])
+                l.append(obj)
+                clients[client_uid] = l
+        # Create an invoice for each client
+        for client_uid, items in clients.items():
+            instance.createInvoice(client_uid, items)

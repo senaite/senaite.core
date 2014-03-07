@@ -193,8 +193,6 @@
 
   <type type_id="InvoiceFolder"/>
 
-  <type type_id="InvoiceLineItem"/>
-
   <type type_id="LabContacts"/>
   <type type_id="LabContact">
    <bound-workflow workflow_id="bika_one_state_workflow"/>

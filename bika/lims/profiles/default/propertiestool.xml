@@ -61,7 +61,6 @@
     <element value="InstrumentType"/>
     <element value="InstrumentValidation"/>
     <element value="InvoiceBatch"/>
-    <element value="InvoiceLineItem"/>
     <element value="LabContact"/>
     <element value="LabProduct"/>
     <element value="LogEntry"/>

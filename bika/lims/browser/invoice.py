@@ -50,14 +50,14 @@ class InvoiceView(BrowserView):
                 self.clientAddress = address
                 break
         # Gather the line items
-        items = context.objectValues('InvoiceLineItem')
+        items = context.invoice_lineitemms
         self.items = [{
-            'invoiceDate': self.ulocalized_time(item.getItemDate()),
-            'description': item.getItemDescription(),
-            'orderNo': item.getClientOrderNumber(),
-            'subtotal': item.getSubtotal(),
-            'vatTotal': item.getVATTotal(),
-            'total': item.getTotal(),
+            'invoiceDate': self.ulocalized_time(item['ItemDate']),
+            'description': item['ItemDescription'],
+            'orderNo': item['ClientOrderNumber'],
+            'subtotal': item['Subtotal'],
+            'vatTotal': item['ATTotal'],
+            'total': item['Total'],
         } for item in items]
         # Render the template
         return self.template()
