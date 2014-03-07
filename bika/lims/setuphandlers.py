@@ -288,6 +288,7 @@ class BikaGenerator:
             mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver'], 0)
             mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst', 'Sampler', 'Preserver'], 0)
             mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
+            mp(AddSupplyOrder, ['Manager', 'LabManager', 'Owner'], 0)
             mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 0)
             obj.reindexObject()
             for contact in portal.clients.objectValues('Contact'):

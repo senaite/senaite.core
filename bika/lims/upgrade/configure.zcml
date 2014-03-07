@@ -165,6 +165,15 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Missing permission"
+        description=""
+        source="3013"
+        destination="3014"
+        handler="bika.lims.upgrade.to3014.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 
 
 </configure>
