@@ -207,7 +207,7 @@ class ResultOutOfRange(object):
                 continue
             adapters = getAdapters((obj, ), IFieldIcons)
             for name, adapter in adapters:
-                alerts = adapter(obj)
+                alerts = adapter()
                 if alerts:
                     if uid in field_icons:
                         field_icons[uid].extend(alerts[uid])
