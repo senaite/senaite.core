@@ -358,20 +358,6 @@ class Analysis(BaseContent):
         self.setResult(result)
         return True
 
-    # def getInterimFields(self):
-
-        service = self.getService()
-        service_interims = service.getInterimFields()
-        calculation = service.getCalculation()
-        calc_interims = ca.getInterimFields()
-
-
-
-        InterimFields = self.Schema().getField('InterimFields').get(self)
-
-
-
-
 
     def get_default_specification(self):
         bsc = getToolByName(self, "bika_setup_catalog")
