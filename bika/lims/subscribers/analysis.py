@@ -315,7 +315,7 @@ def AfterTransitionEventHandler(instance, event):
         # Support multiple retractions by renaming to *-0, *-1, etc
         parent = instance.aq_parent
         analyses = [x for x in parent.objectValues('Analysis')
-                    if x.getId().split("-")[0] == instance.getKeyword()]
+                    if x.getId().startswith(instance.id)]
         kw = instance.getKeyword()
         parent.manage_renameObject(kw, "{0}-{1}".format(kw, len(analyses)))
         # Create new analysis and copy values from retracted
