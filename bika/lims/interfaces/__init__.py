@@ -326,6 +326,11 @@ class ISampleTypes(Interface):
     ""
 
 
+class ISRTemplates(Interface):
+
+    ""
+
+
 class ISupplier(Interface):
 
     ""

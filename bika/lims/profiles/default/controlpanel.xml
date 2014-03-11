@@ -65,7 +65,7 @@
 	i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
- 
+
   <configlet title="Sample Conditions" action_id="bika_sampleconditions"
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/samplecondition.png"
@@ -119,7 +119,7 @@
 	i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
- 
+
  <configlet title="Instrument Types" action_id="bika_instrumenttypes"
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/instrumenttype.png"
@@ -209,7 +209,7 @@
 	i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
- 
+
  <configlet title="Manufacturers"
     action_id="bika_manufacturers"
     appId="bika.lims" category="bika" condition_expr=""
@@ -219,7 +219,7 @@
 	i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
- 
+
  <configlet title="Suppliers"
     action_id="bika_suppliers"
     appId="bika.lims" category="bika" condition_expr=""
@@ -238,7 +238,7 @@
 	i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
- 
+
   <configlet title="Batch labels" action_id="bika_batchlabels"
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/batchlabel.png"
@@ -266,4 +266,14 @@
 	i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
+
+ <configlet title="SR Templates" action_id="bika_srtemplates"
+    appId="bika.lims" category="bika" condition_expr=""
+    icon_expr="string:++resource++bika.lims.images/artemplate.png"
+    url_expr="string:$portal_url/bika_setup/bika_srtemplates"
+    visible="True"
+    i18n:attributes="title">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
 </object>

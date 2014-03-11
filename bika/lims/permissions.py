@@ -29,6 +29,7 @@ AddSampleMatrix = 'BIKA: Add SampleMatrix'
 AddSamplePartition = 'BIKA: Add SamplePartition'
 AddSamplePoint = 'BIKA: Add SamplePoint'
 AddSamplingDeviation = 'BIKA: Add SamplingDeviation'
+AddSRTemplate = 'BIKA: Add SRTemplate'
 AddQuery = 'BIKA: Add Query'
 
 # Default Archetypes Add Permission
