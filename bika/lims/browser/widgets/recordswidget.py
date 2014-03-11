@@ -22,6 +22,11 @@ class RecordsWidget(ATRecordsWidget):
         values to be saved
         """
 
+        # a poor workaround for Plone repeating itself.
+        # XXX this is important XXX
+        key = field.getName() + '_value'
+        if key in instance.REQUEST:
+            return instance.REQUEST[key], {}
         value = form.get(field.getName(), empty_marker)
 
         if not value:
@@ -31,6 +36,13 @@ class RecordsWidget(ATRecordsWidget):
         if emptyReturnsMarker and value == '':
             return empty_marker
 
+        # we make sure that empty "value" inputs are saved as "" empty string.
+        for i in range(len(value)):
+            value[i] = dict(value[i])
+            if 'value' not in value[i]:
+                value[i]['value'] = ''
+
+        instance.REQUEST[key] = value
         return value, {}
 
     def jsondumps(self, val):
