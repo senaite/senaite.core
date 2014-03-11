@@ -1,16 +1,20 @@
 #
 # Translators:
-# <campbell@bikalabs.com>, 2012.
-# <campbell@bikalabs.com>, 2012.
-# Carlos Javier García Quintana <garciaquintana_carlos@yahoo.com.mx>, 2013.
-# Jordi Puiggené <jordi.puiggene@gmail.com>, 2012.
+# Alfonso de la Guarda Reyes <alfonsodg@gmail.com>, 2013
+# campbell_bika <campbell@bikalabs.com>, 2012
+# campbell_bika <campbell@bikalabs.com>, 2012
+# campbell_bika <campbell@bikalabs.com>, 2012
+# cgarcia <garciaquintana_carlos@yahoo.com.mx>, 2013
+# cgarcia <garciaquintana_carlos@yahoo.com.mx>, 2013
+# Jordi Puiggené <jordi.puiggene@gmail.com>, 2012
+# SSchott <sschottv@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2012-10-20 09:21+0000\n"
-"PO-Revision-Date: 2013-03-19 20:20+0000\n"
-"Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2013-11-20 12:25+0000\n"
+"Last-Translator: SSchott <sschottv@gmail.com>\n"
+"Language-Team: Spanish (http://www.transifex.com/projects/p/bika-lims/language/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,7 +23,6 @@ msgstr ""
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: plone\n"
-"Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
 "Language: es\n"
 
 #
@@ -38,6 +41,7 @@ msgstr "Plantilla de solicitud de análisis"
 msgid "AR Templates"
 msgstr "Plantillas de solicitud de análisis"
 
+#
 # File: ../profiles/default/types/ARReport.xml, line: -1
 msgid "ARReport"
 msgstr ""
@@ -170,6 +174,10 @@ msgstr "Cálculo"
 msgid "Calculations"
 msgstr "Cálculos"
 
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Calibrations"
+msgstr "Calibraciones"
+
 #
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Certificates"
@@ -241,12 +249,12 @@ msgstr "Equipo"
 
 # File: ../profiles/default/types/InstrumentType.xml, line: -1
 msgid "Instrument Type"
-msgstr ""
+msgstr "Tipo de Instrumento"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/InstrumentTypes.xml, line: -1
 msgid "Instrument Types"
-msgstr ""
+msgstr "Tipos de Instrumento"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/InstrumentType.xml, line: -1
@@ -322,12 +330,12 @@ msgstr "Administrar resultados"
 
 # File: ../profiles/default/types/Manufacturer.xml, line: -1
 msgid "Manufacturer"
-msgstr ""
+msgstr "Fabricante"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Manufacturers.xml, line: -1
 msgid "Manufacturers"
-msgstr ""
+msgstr "Fabricantes"
 
 # File: ../profiles/default/types/Method.xml, line: -1
 msgid "Method"
@@ -379,6 +387,7 @@ msgstr "Imprimir la lista de precios"
 msgid "Productivity"
 msgstr "Productividad"
 
+#
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 msgid "Published results"
 msgstr ""
@@ -387,10 +396,9 @@ msgstr ""
 msgid "Quality Control"
 msgstr "Control de calidad"
 
-#
 # File: ../profiles/default/types/QueryFolder.xml, line: -1
 msgid "Queries"
-msgstr ""
+msgstr "Consultas"
 
 # File: ../profiles/default/actions.xml, line: -1
 msgid "Query"
@@ -421,7 +429,7 @@ msgstr "Muestras de referencia"
 
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
 msgid "Reference Values"
-msgstr ""
+msgstr "Valores de referencia"
 
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/Report.xml, line: -1
@@ -440,10 +448,12 @@ msgstr "No se han solicitado resultados"
 msgid "Sample"
 msgstr "Muestra"
 
+#
 # File: ../profiles/default/types/SampleCondition.xml, line: -1
 msgid "Sample Condition"
 msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/SampleConditions.xml, line: -1
 msgid "Sample Conditions"
@@ -507,6 +517,10 @@ msgstr "Desviación en el muestreo"
 msgid "Sampling Deviations"
 msgstr "Desviaciones en el muestreo"
 
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Schedule"
+msgstr "Tarea programada"
+
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Sample.xml, line: -1
 # File: ../profiles/default/types/SamplePartition.xml, line: -1
@@ -519,7 +533,7 @@ msgstr "Etiqueta"
 
 # File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Supplier"
-msgstr ""
+msgstr "Proveedor"
 
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/controlpanel.xml, line: -1
@@ -535,6 +549,10 @@ msgstr "Pedido de proveedor"
 # File: ../profiles/default/types/SupplyOrderFolder.xml, line: -1
 msgid "Supply Orders"
 msgstr ""
+
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Validations"
+msgstr "Validaciones"
 
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Worksheet"
@@ -692,7 +710,7 @@ msgid "label_schema_Publication preference"
 msgstr "Publication preference"
 
 msgid "label_schema_Reference Values"
-msgstr ""
+msgstr "Valores de referencia"
 
 msgid "label_schema_Result Options"
 msgstr "Result Options"

@@ -1,12 +1,13 @@
 #
 # Translators:
+# Frederico Ribeiro <freddy.boc@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2012-10-20 09:21+0000\n"
-"PO-Revision-Date: 2013-03-19 20:20+0000\n"
-"Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2013-11-20 12:25+0000\n"
+"Last-Translator: Frederico Ribeiro <freddy.boc@gmail.com>\n"
+"Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/bika-lims/language/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -15,7 +16,6 @@ msgstr ""
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: plone\n"
-"Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
 "Language: pt_BR\n"
 
 #
@@ -26,14 +26,15 @@ msgstr ""
 
 # File: ../profiles/default/types/ARTemplate.xml, line: -1
 msgid "AR Template"
-msgstr ""
+msgstr "AR Template"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/ARTemplates.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "AR Templates"
-msgstr ""
+msgstr "AR Templates"
 
+#
 # File: ../profiles/default/types/ARReport.xml, line: -1
 msgid "ARReport"
 msgstr ""
@@ -44,19 +45,19 @@ msgstr "Adicionar análises"
 
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Add Blank Reference"
-msgstr ""
+msgstr "Adicionar referência em branco"
 
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Add Control Reference"
-msgstr ""
+msgstr "Adicionar Controle de Referência"
 
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Add Duplicate"
-msgstr ""
+msgstr "Adicionar Cópia"
 
 # File: ../profiles/default/types/ReportFolder.xml, line: -1
 msgid "Administration"
-msgstr ""
+msgstr "Administração"
 
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
 # File: ../profiles/default/types/Sample.xml, line: -1
@@ -70,25 +71,25 @@ msgstr "Análise"
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/AnalysisCategories.xml, line: -1
 msgid "Analysis Categories"
-msgstr ""
+msgstr "Analisar Categorias"
 
 # File: ../profiles/default/types/AnalysisCategory.xml, line: -1
 msgid "Analysis Category"
-msgstr ""
+msgstr "Analisar Categoria"
 
 # File: ../profiles/default/types/AnalysisProfile.xml, line: -1
 msgid "Analysis Profile"
-msgstr ""
+msgstr "Análise de perfil"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/AnalysisProfiles.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Analysis Profiles"
-msgstr ""
+msgstr "Análises de perfil"
 
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 msgid "Analysis Request"
-msgstr ""
+msgstr "Pedido de análise"
 
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/AnalysisRequestsFolder.xml, line: -1
@@ -103,68 +104,72 @@ msgstr "Serviços de Análise"
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/AnalysisServices.xml, line: -1
 msgid "Analysis Services"
-msgstr ""
+msgstr "Serviço de Análise"
 
 # File: ../profiles/default/types/AnalysisSpec.xml, line: -1
 msgid "Analysis Specification"
-msgstr ""
+msgstr "Especificações de Análise"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/AnalysisSpecs.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Analysis Specifications"
-msgstr ""
+msgstr "Especificações de Análise"
 
 # File: ../profiles/default/types/Attachment.xml, line: -1
 msgid "Attachment"
-msgstr ""
+msgstr "Anexo"
 
 # File: ../profiles/default/types/AttachmentType.xml, line: -1
 msgid "Attachment Type"
-msgstr ""
+msgstr "Tipo de Anexo"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/AttachmentTypes.xml, line: -1
 msgid "Attachment Types"
-msgstr ""
+msgstr "Tipos de Anexo"
 
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Attachments"
-msgstr ""
+msgstr "Anexos"
 
 # File: ../profiles/default/types/Batch.xml, line: -1
 msgid "Batch"
-msgstr ""
+msgstr "Em lote"
 
 # File: ../profiles/default/types/BatchLabel.xml, line: -1
 msgid "Batch Label"
-msgstr ""
+msgstr "Etiqueta em lote"
 
 # File: ../profiles/default/types/BatchLabels.xml, line: -1
 msgid "Batch Labels"
-msgstr ""
+msgstr "Etiquetas em lote"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 msgid "Batch labels"
-msgstr ""
+msgstr "Etiqueta em lotes"
 
 # File: ../profiles/default/types/BatchFolder.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Batches"
-msgstr ""
+msgstr "Em lotes"
 
 # File: ../profiles/default/types/BikaSetup.xml, line: -1
 msgid "Bika Setup"
-msgstr ""
+msgstr "Bika Configuração"
 
 # File: ../profiles/default/types/Calculation.xml, line: -1
 msgid "Calculation"
-msgstr ""
+msgstr "Cálculo"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Calculations.xml, line: -1
 msgid "Calculations"
-msgstr ""
+msgstr "Cálculos"
+
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Calibrations"
+msgstr "Calibração"
 
 #
 # File: ../profiles/default/types/Instrument.xml, line: -1
@@ -178,7 +183,7 @@ msgstr "Cliente"
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/ClientFolder.xml, line: -1
 msgid "Clients"
-msgstr ""
+msgstr "Clientes"
 
 # File: ../profiles/default/types/Client.xml, line: -1
 # File: ../profiles/default/types/Supplier.xml, line: -1
@@ -187,68 +192,68 @@ msgstr "Contatos"
 
 # File: ../profiles/default/types/Container.xml, line: -1
 msgid "Container"
-msgstr ""
+msgstr "Recipiente"
 
 # File: ../profiles/default/types/ContainerType.xml, line: -1
 msgid "Container Type"
-msgstr ""
+msgstr "Tipo de Recipiente"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/ContainerTypes.xml, line: -1
 msgid "Container Types"
-msgstr ""
+msgstr "Tipos de Recipientes"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Containers.xml, line: -1
 msgid "Containers"
-msgstr ""
+msgstr "Recipientes"
 
 # File: ../profiles/default/types/Department.xml, line: -1
 msgid "Department"
-msgstr ""
+msgstr "Departamento"
 
 # File: ../profiles/default/types/Departments.xml, line: -1
 msgid "Departments"
-msgstr ""
+msgstr "Departamentos"
 
 # File: ../profiles/default/types/DuplicateAnalysis.xml, line: -1
 msgid "Duplicate Analysis"
-msgstr ""
+msgstr "Análise repetida"
 
 # File: ../profiles/default/types/Pricelist.xml, line: -1
 msgid "Email pricelist"
-msgstr ""
+msgstr "Endereço de e-mail"
 
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Export"
-msgstr ""
+msgstr "Exportar"
 
 # File: ../profiles/default/actions.xml, line: -1
 msgid "Extracts"
-msgstr ""
+msgstr "Extrair"
 
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Imports"
-msgstr ""
+msgstr "Importar"
 
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Instrument"
-msgstr ""
+msgstr "Instrumento"
 
 # File: ../profiles/default/types/InstrumentType.xml, line: -1
 msgid "Instrument Type"
-msgstr ""
+msgstr "Tipo de instrumento"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/InstrumentTypes.xml, line: -1
 msgid "Instrument Types"
-msgstr ""
+msgstr "Tipos  de Instrumento"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/InstrumentType.xml, line: -1
 # File: ../profiles/default/types/Instruments.xml, line: -1
 msgid "Instruments"
-msgstr ""
+msgstr "Instrumentos"
 
 #
 # File: ../profiles/default/types/Instrument.xml, line: -1
@@ -257,30 +262,30 @@ msgstr ""
 
 # File: ../profiles/default/types/Invoice.xml, line: -1
 msgid "Invoice"
-msgstr ""
+msgstr "Faturas"
 
 # File: ../profiles/default/types/InvoiceBatch.xml, line: -1
 # File: ../profiles/default/types/InvoiceFolder.xml, line: -1
 msgid "Invoices"
-msgstr ""
+msgstr "Faturas"
 
 # File: ../profiles/default/types/LabContact.xml, line: -1
 msgid "Lab Contact"
-msgstr ""
+msgstr "Lab Contatos"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/LabContacts.xml, line: -1
 msgid "Lab Contacts"
-msgstr ""
+msgstr "Lab Contatos"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 msgid "Lab Departments"
-msgstr ""
+msgstr "Lab Departamentos"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/LabProducts.xml, line: -1
 msgid "Lab Products"
-msgstr ""
+msgstr "Lab Produtos"
 
 # File: ../profiles/default/types/Laboratory.xml, line: -1
 msgid "Laboratory"
@@ -288,13 +293,13 @@ msgstr "Laboratório"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 msgid "Laboratory Information"
-msgstr ""
+msgstr "Informação do Laboratório"
 
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Sample.xml, line: -1
 # File: ../profiles/default/types/SamplePartition.xml, line: -1
 msgid "Large Sticker"
-msgstr ""
+msgstr "Lista de preço"
 
 # File: ../profiles/default/types/AnalysisProfile.xml, line: -1
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
@@ -305,25 +310,25 @@ msgstr "Registo"
 # File: ../profiles/default/types/Contact.xml, line: -1
 # File: ../profiles/default/types/LabContact.xml, line: -1
 msgid "Login details"
-msgstr ""
+msgstr "Detalhes do Login"
 
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 msgid "Manage Analyses"
-msgstr ""
+msgstr "Gerenciador de análises"
 
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Manage Results"
-msgstr ""
+msgstr "Gerenciar Resultados"
 
 # File: ../profiles/default/types/Manufacturer.xml, line: -1
 msgid "Manufacturer"
-msgstr ""
+msgstr "Fabricante"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Manufacturers.xml, line: -1
 msgid "Manufacturers"
-msgstr ""
+msgstr "Fabricantes"
 
 # File: ../profiles/default/types/Method.xml, line: -1
 msgid "Method"
@@ -337,28 +342,28 @@ msgstr "Métodos"
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Orders"
-msgstr ""
+msgstr "Pedidos"
 
 # File: ../profiles/default/types/Preservation.xml, line: -1
 msgid "Preservation"
-msgstr ""
+msgstr "Preservação"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Preservations.xml, line: -1
 msgid "Preservations"
-msgstr ""
+msgstr "Preservações"
 
 # File: ../profiles/default/types/Pricelist.xml, line: -1
 msgid "Pricelist"
-msgstr ""
+msgstr "Lista de preço"
 
 # File: ../profiles/default/types/PricelistFolder.xml, line: -1
 msgid "Pricelists"
-msgstr ""
+msgstr "Listas de  preços"
 
 # File: ../profiles/default/actions.xml, line: -1
 msgid "Prices"
-msgstr ""
+msgstr "Preço"
 
 #
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
@@ -369,55 +374,55 @@ msgstr ""
 
 # File: ../profiles/default/types/Pricelist.xml, line: -1
 msgid "Print pricelist"
-msgstr ""
+msgstr "Imprimir lista de compra"
 
 # File: ../profiles/default/types/ReportFolder.xml, line: -1
 msgid "Productivity"
-msgstr ""
+msgstr "Produtividade"
 
+#
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 msgid "Published results"
 msgstr ""
 
 # File: ../profiles/default/types/ReportFolder.xml, line: -1
 msgid "Quality Control"
-msgstr ""
+msgstr "Controle de qualidade"
 
-#
 # File: ../profiles/default/types/QueryFolder.xml, line: -1
 msgid "Queries"
-msgstr ""
+msgstr "Pesquisas"
 
 # File: ../profiles/default/actions.xml, line: -1
 msgid "Query"
-msgstr ""
+msgstr "Pesquisa"
 
 # File: ../profiles/default/types/ReferenceAnalysis.xml, line: -1
 msgid "Reference Analysis"
-msgstr ""
+msgstr "Análise de Referência"
 
 # File: ../profiles/default/types/ReferenceDefinition.xml, line: -1
 msgid "Reference Definition"
-msgstr ""
+msgstr "Definição de Referência"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/ReferenceDefinitions.xml, line: -1
 msgid "Reference Definitions"
-msgstr ""
+msgstr "Definições de Referências"
 
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
 msgid "Reference Sample"
-msgstr ""
+msgstr "Amostra de Referência"
 
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/ReferenceSamplesFolder.xml, line: -1
 # File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Reference Samples"
-msgstr ""
+msgstr "Amostras de Referência"
 
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
 msgid "Reference Values"
-msgstr ""
+msgstr "Valor de referência"
 
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/Report.xml, line: -1
@@ -426,20 +431,22 @@ msgstr "Relatório"
 
 # File: ../profiles/default/types/ReportFolder.xml, line: -1
 msgid "Reports"
-msgstr ""
+msgstr "Relatórios"
 
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 msgid "Results not requested"
-msgstr ""
+msgstr "Resultado não requerido"
 
 # File: ../profiles/default/types/Sample.xml, line: -1
 msgid "Sample"
-msgstr ""
+msgstr "Amostra"
 
+#
 # File: ../profiles/default/types/SampleCondition.xml, line: -1
 msgid "Sample Condition"
 msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/SampleConditions.xml, line: -1
 msgid "Sample Conditions"
@@ -448,89 +455,97 @@ msgstr ""
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/SampleMatrices.xml, line: -1
 msgid "Sample Matrices"
-msgstr ""
+msgstr "Matrizes de Amostras"
 
 # File: ../profiles/default/types/SampleMatrix.xml, line: -1
 msgid "Sample Matrix"
-msgstr ""
+msgstr "Matriz de Amostras"
 
 # File: ../profiles/default/types/SamplePartition.xml, line: -1
 msgid "Sample Partition"
-msgstr ""
+msgstr "Partições de Amostra"
 
 # File: ../profiles/default/types/Sample.xml, line: -1
 msgid "Sample Partitions"
-msgstr ""
+msgstr "Partições de Amostra"
 
 # File: ../profiles/default/types/SamplePoint.xml, line: -1
 msgid "Sample Point"
-msgstr ""
+msgstr "Local de Amostragem"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/SamplePoints.xml, line: -1
 msgid "Sample Points"
-msgstr ""
+msgstr "Locais de Amostragem"
 
 # File: ../profiles/default/types/SampleType.xml, line: -1
 msgid "Sample Type"
-msgstr ""
+msgstr "Tipo de amostra"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/SampleTypes.xml, line: -1
 msgid "Sample Types"
-msgstr ""
+msgstr "Tipos de amostras"
 
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "SamplePoints"
-msgstr ""
+msgstr "Pontos de amostragem"
 
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/Batch.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Samples"
-msgstr ""
+msgstr "Amostras"
 
 # File: ../profiles/default/types/SamplesFolder.xml, line: -1
 msgid "SamplesFolder"
-msgstr ""
+msgstr "Amostras de pasta"
 
 # File: ../profiles/default/types/SamplingDeviation.xml, line: -1
 msgid "Sampling Deviation"
-msgstr ""
+msgstr "Desvio de Amostragem"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/SamplingDeviations.xml, line: -1
 msgid "Sampling Deviations"
-msgstr ""
+msgstr "Desvios de Amostragens"
+
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Schedule"
+msgstr "Agenda"
 
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Sample.xml, line: -1
 # File: ../profiles/default/types/SamplePartition.xml, line: -1
 msgid "Small Sticker"
-msgstr ""
+msgstr "Etiqueta pequena"
 
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
 msgid "Sticker"
-msgstr ""
+msgstr "Etiqueta"
 
 # File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Supplier"
-msgstr ""
+msgstr "Fornecedor"
 
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Suppliers.xml, line: -1
 msgid "Suppliers"
-msgstr ""
+msgstr "Fornecedor"
 
 # File: ../profiles/default/types/SupplyOrder.xml, line: -1
 msgid "Supply Order"
-msgstr ""
+msgstr "Ordem de fornecimento"
 
 #
 # File: ../profiles/default/types/SupplyOrderFolder.xml, line: -1
 msgid "Supply Orders"
 msgstr ""
+
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Validations"
+msgstr "Validação"
 
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Worksheet"
@@ -538,12 +553,12 @@ msgstr "Ficha de trabalho"
 
 # File: ../profiles/default/types/WorksheetTemplate.xml, line: -1
 msgid "Worksheet Template"
-msgstr ""
+msgstr "Tema da Ficha de Trabalho"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/WorksheetTemplates.xml, line: -1
 msgid "Worksheet Templates"
-msgstr ""
+msgstr "Tema da Ficha de Trabalho"
 
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/WorksheetFolder.xml, line: -1
@@ -554,7 +569,7 @@ msgstr "Fichas de trabalho"
 # line: -1
 #. Default: "Activate"
 msgid "activate_transition_title"
-msgstr ""
+msgstr "Ativado"
 
 # File:
 # ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
@@ -567,7 +582,7 @@ msgstr ""
 # line: -1
 #. Default: "Assign"
 msgid "assign_transition_title"
-msgstr ""
+msgstr "Assinatura"
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
@@ -578,32 +593,32 @@ msgstr ""
 # line: -1
 #. Default: "Add attachment"
 msgid "attach_transition_title"
-msgstr ""
+msgstr "Adicionar Anexo"
 
 # File:
 # ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
 # line: -1
 #. Default: "Cancel"
 msgid "cancel_transition_title"
-msgstr ""
+msgstr "Cancelar"
 
 # File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
 # line: -1
 #. Default: "Close"
 msgid "close_transition_title"
-msgstr ""
+msgstr "fechar"
 
 # File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
 # line: -1
 #. Default: "Deactivate"
 msgid "deactivate_transition_title"
-msgstr ""
+msgstr "Desativar"
 
 # File: ../profiles/default/workflows/bika_order_workflow/definition.xml,
 # line: -1
 #. Default: "Dispatch order"
 msgid "dispatch_transition_title"
-msgstr ""
+msgstr "Ordem de despacho"
 
 # File:
 # ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
@@ -612,11 +627,11 @@ msgstr ""
 # line: -1
 #. Default: "Dispose"
 msgid "dispose_transition_title"
-msgstr ""
+msgstr "Descartar"
 
 #. Default: "Duplicate"
 msgid "duplicate_transition_title"
-msgstr ""
+msgstr "duplicado"
 
 # File:
 # ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
@@ -625,13 +640,13 @@ msgstr ""
 # line: -1
 #. Default: "Expire"
 msgid "expire_transition_title"
-msgstr ""
+msgstr "Expirar"
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
 #. Default: "Import"
 msgid "import_transition_title"
-msgstr ""
+msgstr "Importar"
 
 #
 # This is for the "retract_ar" transition, to invalidate a published AR.
@@ -640,82 +655,82 @@ msgid "invalidate_transition_title"
 msgstr "Invalidate"
 
 msgid "label_schema_Accounting"
-msgstr ""
+msgstr "Contabilidade"
 
 msgid "label_schema_Address"
-msgstr ""
+msgstr "Endereço"
 
 msgid "label_schema_Analyses"
-msgstr ""
+msgstr "Análise"
 
 msgid "label_schema_Bank details"
-msgstr ""
+msgstr "Detalhes em branco"
 
 msgid "label_schema_Calculation"
-msgstr ""
+msgstr "Calculando"
 
 msgid "label_schema_Container and Preservation"
-msgstr ""
+msgstr "Recipiente e Presevação"
 
 msgid "label_schema_Dates"
-msgstr ""
+msgstr "Datas"
 
 msgid "label_schema_Description"
-msgstr ""
+msgstr "Descrição"
 
 msgid "label_schema_Email Telephone Fax"
-msgstr ""
+msgstr "Email Telefone Fax"
 
 msgid "label_schema_ID Server"
-msgstr ""
+msgstr "ID Servidor"
 
 msgid "label_schema_Labels"
-msgstr ""
+msgstr "Rótulos"
 
 msgid "label_schema_Layout"
-msgstr ""
+msgstr "Layout"
 
 msgid "label_schema_Location"
-msgstr ""
+msgstr "Localização"
 
 msgid "label_schema_Method"
-msgstr ""
+msgstr "Método"
 
 msgid "label_schema_Preferences"
-msgstr ""
+msgstr "Preferências"
 
 msgid "label_schema_Publication preference"
-msgstr ""
+msgstr "Publicação de referências"
 
 msgid "label_schema_Reference Values"
-msgstr ""
+msgstr "Valor de referência"
 
 msgid "label_schema_Result Options"
-msgstr ""
+msgstr "Opção de resultados"
 
 msgid "label_schema_Results Reports"
-msgstr ""
+msgstr "Relatório de resultados"
 
 msgid "label_schema_Sample Partitions"
-msgstr ""
+msgstr "Partições de Amostra"
 
 msgid "label_schema_Security"
-msgstr ""
+msgstr "Segurança"
 
 msgid "label_schema_Uncertainties"
-msgstr ""
+msgstr "Incertezas"
 
 # File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
 # line: -1
 #. Default: "Open"
 msgid "open_transition_title"
-msgstr ""
+msgstr "abrir"
 
 # File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
 # -1
 #. Default: "Prepublish"
 msgid "prepublish_transition_title"
-msgstr ""
+msgstr "Pré-publicação"
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
@@ -725,7 +740,7 @@ msgstr ""
 # line: -1
 #. Default: "Preserve"
 msgid "preserve_transition_title"
-msgstr ""
+msgstr "Preservar"
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
@@ -733,11 +748,11 @@ msgstr ""
 # -1
 #. Default: "Publish"
 msgid "publish_transition_title"
-msgstr ""
+msgstr "Públicado"
 
 #. Default: "Reassign"
 msgid "reassign_transition_title"
-msgstr ""
+msgstr "assinar novamente"
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
@@ -747,14 +762,14 @@ msgstr ""
 # line: -1
 #. Default: "Receive sample"
 msgid "receive_transition_title"
-msgstr ""
+msgstr "Receber amostra"
 
 # File:
 # ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
 # line: -1
 #. Default: "Reinstate"
 msgid "reinstate_transition_title"
-msgstr ""
+msgstr "Restabelecer"
 
 # File:
 # ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
@@ -766,13 +781,13 @@ msgstr ""
 # line: -1
 #. Default: "Reject"
 msgid "reject_transition_title"
-msgstr ""
+msgstr "Rejeitado"
 
 # File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
 # -1
 #. Default: "Republish"
 msgid "republish_transition_title"
-msgstr ""
+msgstr "Republicado"
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
@@ -783,13 +798,13 @@ msgstr ""
 # line: -1
 #. Default: "Retract"
 msgid "retract_transition_title"
-msgstr ""
+msgstr "Retrair"
 
 # File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml,
 # line: -1
 #. Default: "Retract worksheet"
 msgid "retract_worksheet_transition_title"
-msgstr ""
+msgstr "Retrari Planilha"
 
 #
 # This is for the "revert" transition, which is meant to look like a
@@ -806,25 +821,25 @@ msgstr "Retract"
 # line: -1
 #. Default: "Sample"
 msgid "sample_transition_title"
-msgstr ""
+msgstr "Amostra"
 
 #. Default: "Save analyses"
 msgid "save_analyses_button_transition_title"
-msgstr ""
+msgstr "Salvar análise"
 
 #. Default: "Save partitions"
 msgid "save_partitions_button_transition_title"
-msgstr ""
+msgstr "Salvar partição"
 
 #. Default: "Save selection"
 msgid "save_selection_button_transition_title"
-msgstr ""
+msgstr "Salvar Seleção"
 
 # File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
 # line: -1
 #. Default: "Submit ARImport"
 msgid "submit_arimport_transition_title"
-msgstr ""
+msgstr "Submeter Relatório AR"
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
@@ -835,7 +850,7 @@ msgstr ""
 # line: -1
 #. Default: "Submit for verification"
 msgid "submit_transition_title"
-msgstr ""
+msgstr "Enviar para verificação"
 
 # File:
 # ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
@@ -848,7 +863,7 @@ msgstr ""
 # line: -1
 #. Default: "Remove"
 msgid "unassign_transition_title"
-msgstr ""
+msgstr "Remover"
 
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
@@ -859,5 +874,5 @@ msgstr ""
 # line: -1
 #. Default: "Verify"
 msgid "verify_transition_title"
-msgstr ""
+msgstr "verificar"
 

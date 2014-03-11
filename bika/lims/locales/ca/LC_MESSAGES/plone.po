@@ -1,15 +1,16 @@
 #
 # Translators:
-# <campbell@bikalabs.com>, 2012.
-# <campbell@bikalabs.com>, 2012.
-# Jordi Puiggené <jordi.puiggene@gmail.com>, 2012.
+# campbell_bika <campbell@bikalabs.com>, 2012
+# campbell_bika <campbell@bikalabs.com>, 2012
+# campbell_bika <campbell@bikalabs.com>, 2012
+# Jordi Puiggené <jordi.puiggene@gmail.com>, 2012-2013
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2012-10-20 09:21+0000\n"
-"PO-Revision-Date: 2013-03-19 20:20+0000\n"
-"Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2013-11-20 12:25+0000\n"
+"Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>\n"
+"Language-Team: Catalan (http://www.transifex.com/projects/p/bika-lims/language/ca/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -18,7 +19,6 @@ msgstr ""
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: plone\n"
-"Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
 "Language: ca\n"
 
 #
@@ -37,6 +37,7 @@ msgstr "Plantilla de sol·licitud d'anàlisi"
 msgid "AR Templates"
 msgstr "Plantilles de sol·licituds d'anàlisi"
 
+#
 # File: ../profiles/default/types/ARReport.xml, line: -1
 msgid "ARReport"
 msgstr ""
@@ -110,7 +111,7 @@ msgstr "Serveis d'anàlisi"
 
 # File: ../profiles/default/types/AnalysisSpec.xml, line: -1
 msgid "Analysis Specification"
-msgstr "Especificacion d'anàlisi"
+msgstr "Especificacions d'anàlisi"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/AnalysisSpecs.xml, line: -1
@@ -141,15 +142,15 @@ msgstr "Lot"
 
 # File: ../profiles/default/types/BatchLabel.xml, line: -1
 msgid "Batch Label"
-msgstr ""
+msgstr "Etiqueta de lot"
 
 # File: ../profiles/default/types/BatchLabels.xml, line: -1
 msgid "Batch Labels"
-msgstr ""
+msgstr "Etiquetes per a lots"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 msgid "Batch labels"
-msgstr ""
+msgstr "Etiquetes per a lots"
 
 # File: ../profiles/default/types/BatchFolder.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
@@ -162,12 +163,16 @@ msgstr "Configuració de Bika"
 
 # File: ../profiles/default/types/Calculation.xml, line: -1
 msgid "Calculation"
-msgstr "Càlcul"
+msgstr "Funció de càlcul"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Calculations.xml, line: -1
 msgid "Calculations"
-msgstr "Càlculs"
+msgstr "Funcions de càlcul"
+
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Calibrations"
+msgstr "Calibratges"
 
 #
 # File: ../profiles/default/types/Instrument.xml, line: -1
@@ -190,21 +195,21 @@ msgstr "Contactes"
 
 # File: ../profiles/default/types/Container.xml, line: -1
 msgid "Container"
-msgstr "Contenidor"
+msgstr "Recipient"
 
 # File: ../profiles/default/types/ContainerType.xml, line: -1
 msgid "Container Type"
-msgstr "Tipus de contenidor"
+msgstr "Tipus de recipient"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/ContainerTypes.xml, line: -1
 msgid "Container Types"
-msgstr "Tipus de contenidors"
+msgstr "Tipus de recipients"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Containers.xml, line: -1
 msgid "Containers"
-msgstr "Contenidors"
+msgstr "Recipients"
 
 # File: ../profiles/default/types/Department.xml, line: -1
 msgid "Department"
@@ -216,7 +221,7 @@ msgstr "Departaments"
 
 # File: ../profiles/default/types/DuplicateAnalysis.xml, line: -1
 msgid "Duplicate Analysis"
-msgstr "Anàlisis duplicats"
+msgstr "Anàlisi duplicada"
 
 # File: ../profiles/default/types/Pricelist.xml, line: -1
 msgid "Email pricelist"
@@ -232,7 +237,7 @@ msgstr "Extractes"
 
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Imports"
-msgstr "Imports"
+msgstr "Importacions"
 
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Instrument"
@@ -240,12 +245,12 @@ msgstr "Equip"
 
 # File: ../profiles/default/types/InstrumentType.xml, line: -1
 msgid "Instrument Type"
-msgstr ""
+msgstr "Tipus d'equip"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/InstrumentTypes.xml, line: -1
 msgid "Instrument Types"
-msgstr ""
+msgstr "Tipus d'equips"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/InstrumentType.xml, line: -1
@@ -269,7 +274,7 @@ msgstr "Factures"
 
 # File: ../profiles/default/types/LabContact.xml, line: -1
 msgid "Lab Contact"
-msgstr "Contactes del laboratori"
+msgstr "Contacte del laboratori"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/LabContacts.xml, line: -1
@@ -291,7 +296,7 @@ msgstr "Laboratori"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 msgid "Laboratory Information"
-msgstr "Informació del laboratori"
+msgstr "Dades del laboratori"
 
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Sample.xml, line: -1
@@ -321,12 +326,12 @@ msgstr "Administra els resultats"
 
 # File: ../profiles/default/types/Manufacturer.xml, line: -1
 msgid "Manufacturer"
-msgstr ""
+msgstr "Fabricant"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Manufacturers.xml, line: -1
 msgid "Manufacturers"
-msgstr ""
+msgstr "Fabricants"
 
 # File: ../profiles/default/types/Method.xml, line: -1
 msgid "Method"
@@ -344,12 +349,12 @@ msgstr "Comandes"
 
 # File: ../profiles/default/types/Preservation.xml, line: -1
 msgid "Preservation"
-msgstr "Conservació"
+msgstr "Mètode de conservació"
 
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Preservations.xml, line: -1
 msgid "Preservations"
-msgstr "Conservacions"
+msgstr "Mètodes de conservació"
 
 # File: ../profiles/default/types/Pricelist.xml, line: -1
 msgid "Pricelist"
@@ -378,6 +383,7 @@ msgstr "Imprimeix la llista de preus"
 msgid "Productivity"
 msgstr "Productivitat"
 
+#
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 msgid "Published results"
 msgstr ""
@@ -386,10 +392,9 @@ msgstr ""
 msgid "Quality Control"
 msgstr "Control de qualitat"
 
-#
 # File: ../profiles/default/types/QueryFolder.xml, line: -1
 msgid "Queries"
-msgstr ""
+msgstr "Consultes"
 
 # File: ../profiles/default/actions.xml, line: -1
 msgid "Query"
@@ -397,7 +402,7 @@ msgstr "Consulta"
 
 # File: ../profiles/default/types/ReferenceAnalysis.xml, line: -1
 msgid "Reference Analysis"
-msgstr "Anàlisis de referència"
+msgstr "Anàlisi de referència"
 
 # File: ../profiles/default/types/ReferenceDefinition.xml, line: -1
 msgid "Reference Definition"
@@ -420,7 +425,7 @@ msgstr "Mostres de referència"
 
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
 msgid "Reference Values"
-msgstr ""
+msgstr "Valors de referència"
 
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/Report.xml, line: -1
@@ -439,10 +444,12 @@ msgstr "No s'han sol·licitat resultats"
 msgid "Sample"
 msgstr "Mostra"
 
+#
 # File: ../profiles/default/types/SampleCondition.xml, line: -1
 msgid "Sample Condition"
 msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/SampleConditions.xml, line: -1
 msgid "Sample Conditions"
@@ -506,6 +513,10 @@ msgstr "Sampling Deviation"
 msgid "Sampling Deviations"
 msgstr "Sampling Deviations"
 
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Schedule"
+msgstr "Programació"
+
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Sample.xml, line: -1
 # File: ../profiles/default/types/SamplePartition.xml, line: -1
@@ -518,7 +529,7 @@ msgstr "Etiqueta"
 
 # File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Supplier"
-msgstr ""
+msgstr "Proveïdor"
 
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/controlpanel.xml, line: -1
@@ -534,6 +545,10 @@ msgstr "Comanda de proveïdor"
 # File: ../profiles/default/types/SupplyOrderFolder.xml, line: -1
 msgid "Supply Orders"
 msgstr ""
+
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Validations"
+msgstr "Validacions"
 
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Worksheet"
@@ -691,7 +706,7 @@ msgid "label_schema_Publication preference"
 msgstr "Publication preference"
 
 msgid "label_schema_Reference Values"
-msgstr ""
+msgstr "Valors de referència"
 
 msgid "label_schema_Result Options"
 msgstr "Result Options"

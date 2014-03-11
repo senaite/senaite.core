@@ -1,13 +1,14 @@
 #
 # Translators:
-# <limstranslate@gmail.com>, 2013.
+# limsgr <limstranslate@gmail.com>, 2013
+# limsgr <limstranslate@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2012-10-20 09:21+0000\n"
-"PO-Revision-Date: 2013-03-19 20:20+0000\n"
+"PO-Revision-Date: 2013-11-20 12:25+0000\n"
 "Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language-Team: Greek (http://www.transifex.com/projects/p/bika-lims/language/el/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -16,7 +17,6 @@ msgstr ""
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: plone\n"
-"Report-Msgid-Bugs-To: http://github.com/bikalabs/Bika-LIMS/issues\n"
 "Language: el\n"
 
 #
@@ -35,6 +35,7 @@ msgstr ""
 msgid "AR Templates"
 msgstr ""
 
+#
 # File: ../profiles/default/types/ARReport.xml, line: -1
 msgid "ARReport"
 msgstr ""
@@ -166,6 +167,10 @@ msgstr "Υπολογισμός"
 # File: ../profiles/default/types/Calculations.xml, line: -1
 msgid "Calculations"
 msgstr "Υπολογισμοί"
+
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Calibrations"
+msgstr ""
 
 #
 # File: ../profiles/default/types/Instrument.xml, line: -1
@@ -376,6 +381,7 @@ msgstr "Εκτύπωση τιμοκαταλόγου"
 msgid "Productivity"
 msgstr "Παραγωγικότητα"
 
+#
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 msgid "Published results"
 msgstr ""
@@ -384,7 +390,6 @@ msgstr ""
 msgid "Quality Control"
 msgstr ""
 
-#
 # File: ../profiles/default/types/QueryFolder.xml, line: -1
 msgid "Queries"
 msgstr ""
@@ -437,10 +442,12 @@ msgstr ""
 msgid "Sample"
 msgstr "Δείγμα"
 
+#
 # File: ../profiles/default/types/SampleCondition.xml, line: -1
 msgid "Sample Condition"
 msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/SampleConditions.xml, line: -1
 msgid "Sample Conditions"
@@ -504,6 +511,10 @@ msgstr ""
 msgid "Sampling Deviations"
 msgstr ""
 
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Schedule"
+msgstr ""
+
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Sample.xml, line: -1
 # File: ../profiles/default/types/SamplePartition.xml, line: -1
@@ -531,6 +542,10 @@ msgstr "Παραγγελία Προμηθειών"
 #
 # File: ../profiles/default/types/SupplyOrderFolder.xml, line: -1
 msgid "Supply Orders"
+msgstr ""
+
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Validations"
 msgstr ""
 
 # File: ../profiles/default/types/Worksheet.xml, line: -1

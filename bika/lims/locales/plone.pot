@@ -407,6 +407,10 @@ msgid "Calculations"
 msgstr ""
 #
 # File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Calibrations"
+msgstr ""
+#
+# File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Certificates"
 msgstr ""
 #
@@ -740,6 +744,10 @@ msgstr ""
 msgid "Sampling Deviations"
 msgstr ""
 #
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Schedule"
+msgstr ""
+#
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Sample.xml, line: -1
 # File: ../profiles/default/types/SamplePartition.xml, line: -1
@@ -766,6 +774,10 @@ msgstr ""
 #
 # File: ../profiles/default/types/SupplyOrderFolder.xml, line: -1
 msgid "Supply Orders"
+msgstr ""
+#
+# File: ../profiles/default/types/Instrument.xml, line: -1
+msgid "Validations"
 msgstr ""
 #
 # File: ../profiles/default/types/Worksheet.xml, line: -1
