@@ -114,10 +114,6 @@ class Batch(ATFolder):
         client = self.Schema().getField('Client').get(self)
         if client:
             return client
-        else:
-            ars = self.getAnalysisRequests()
-            if ars:
-                client = ars[0].aq_parent
         return client
 
     def getClientTitle(self):
