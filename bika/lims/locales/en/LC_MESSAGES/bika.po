@@ -1065,7 +1065,7 @@ msgstr ""
 
 #
 # File: ../content/client.py, line: 36
-# File: ../content/pricelist.py, line: 29
+# File: ../content/pricelist.py, line: 30
 msgid "Bulk discount applies"
 msgstr ""
 
@@ -1941,7 +1941,7 @@ msgid "Discount"
 msgstr ""
 
 #
-# File: ../content/pricelist.py, line: 34
+# File: ../content/pricelist.py, line: 35
 msgid "Discount %"
 msgstr ""
 
@@ -2181,7 +2181,7 @@ msgid "Enter an email address. This is necessary in case the password is lost. W
 msgstr ""
 
 #
-# File: ../content/pricelist.py, line: 35
+# File: ../content/pricelist.py, line: 36
 msgid "Enter discount percentage value"
 msgstr ""
 
@@ -2451,7 +2451,7 @@ msgstr ""
 #
 # File: ../browser/arimports.py, line: 90
 # File: ../browser/arpriorities.py, line: 57
-# File: ../browser/templates/arimport_add_form.pt, line: 61
+# File: ../browser/templates/arimport_add_form.pt, line: 62
 msgid "Import"
 msgstr ""
 
@@ -2486,7 +2486,7 @@ msgid "Include and display pricing information"
 msgstr ""
 
 #
-# File: ../content/pricelist.py, line: 41
+# File: ../content/pricelist.py, line: 42
 msgid "Include descriptions"
 msgstr ""
 
@@ -3337,7 +3337,7 @@ msgstr ""
 #
 # File: ../content/bikasetup.py, line: 40
 # File: ../content/instrument.py, line: 148
-# File: ../content/method.py, line: 129
+# File: ../content/method.py, line: 125
 msgid "None"
 msgstr ""
 
@@ -3463,7 +3463,7 @@ msgstr ""
 #
 # File: ../browser/client.py, line: 729
 # File: ../browser/supplyorderfolder.py, line: 30
-# File: ../content/invoicelineitem.py, line: 32
+# File: ../content/supplyorder.py, line: 37
 msgid "Order Number"
 msgstr ""
 
@@ -3747,7 +3747,7 @@ msgid "Price excluding VAT"
 msgstr ""
 
 #
-# File: ../content/pricelist.py, line: 23
+# File: ../content/pricelist.py, line: 24
 msgid "Pricelist for"
 msgstr ""
 
@@ -4576,7 +4576,7 @@ msgid "Select if the calculation to be used is the calculation set by default in
 msgstr ""
 
 #
-# File: ../content/pricelist.py, line: 42
+# File: ../content/pricelist.py, line: 43
 msgid "Select if the descriptions should be included"
 msgstr ""
 
@@ -5467,8 +5467,7 @@ msgid "VAT Amount"
 msgstr ""
 
 #
-# File: ../content/invoice.py, line: 50
-# File: ../content/invoicelineitem.py, line: 46
+# File: ../content/invoice.py, line: 51
 msgid "VAT Total"
 msgstr ""
 
@@ -6041,13 +6040,13 @@ msgid "label_filename"
 msgstr ""
 
 #
-# File: ../browser/templates/arimport_add_form.pt, line: 57
+# File: ../browser/templates/arimport_add_form.pt, line: 58
 #. Default: "Select Analysis request data file"
 msgid "label_import_ar_file"
 msgstr ""
 
 #
-# File: ../browser/templates/arimport_add_form.pt, line: 34
+# File: ../browser/templates/arimport_add_form.pt, line: 35
 #. Default: "Import option"
 msgid "label_import_option"
 msgstr ""

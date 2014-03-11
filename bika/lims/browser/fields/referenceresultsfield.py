@@ -9,14 +9,15 @@ from Products.validation.validators.RegexValidator import RegexValidator
 import sys
 from bika.lims import bikaMessageFactory as _
 
+
 class ReferenceResultsField(RecordsField):
+
     """a list of reference sample results """
     _properties = RecordsField._properties.copy()
     _properties.update({
-        'type' : 'referenceresult',
-        'subfields' : ('uid', 'result', 'min', 'max', 'error'),
-        'required_subfields' : ('uid','result','min','max'),
-        'subfield_labels':{'uid': _('Analysis Service'),
+        'type': 'referenceresult',
+        'subfields': ('uid', 'result', 'min', 'max', 'error'),
+        'subfield_labels': {'uid': _('Analysis Service'),
                            'result': _('Expected Result'),
                            'error': _('Permitted Error %'),
                            'min': _('Min'),
@@ -25,6 +26,6 @@ class ReferenceResultsField(RecordsField):
     security = ClassSecurityInfo()
 
 registerField(ReferenceResultsField,
-              title = "Reference Values",
-              description = "Used for storing reference results",
+              title="Reference Values",
+              description="Used for storing reference results",
               )

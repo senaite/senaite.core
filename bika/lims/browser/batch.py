@@ -58,9 +58,9 @@ class BatchAnalysisRequestsView(AnalysisRequestsView, AnalysisRequestAddView):
                     'url': self.context.absolute_url() + "/portal_factory/"
                     "AnalysisRequest/Request new analyses/ar_add?col_count=1",
                     'icon': '++resource++bika.lims.images/add.png'}
-            else:
-                msg = _("Client contact required before request may be submitted")
-                addPortalMessage(self.context.translate(msg))
+            # else:
+            #     msg = _("Client contact required before request may be submitted")
+            #     addPortalMessage(self.context.translate(msg))
         return super(BatchAnalysisRequestsView, self).__call__()
 
     def getMemberDiscountApplies(self):

@@ -54,7 +54,7 @@
          url_expr="string:${object_url}/contacts"
          i18n:attributes="title"
          visible="True">
-  <permission value="List folder contents"/>
+  <permission value="View"/>
  </action>
 
  <action action_id="instruments"
@@ -63,6 +63,6 @@
          url_expr="string:${object_url}/instruments"
          i18n:attributes="title"
          visible="True">
-  <permission value="List folder contents"/>
+  <permission value="View"/>
  </action>
 </object>

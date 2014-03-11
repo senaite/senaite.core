@@ -545,6 +545,25 @@ class IHeaderTableFieldRenderer(Interface):
 
     If no adapter is found, and the field is not a reference, it is rendered
     with the normal AT field view machine.
+
+    In a ZCML somewhere:
+
+        <adapter
+          for="bika.lims.interfaces.IAnalysisRequest"
+          factory="package.module.spanner"
+          provides="bika.lims.interfaces.IHeaderTableFieldRenderer"
+          name="NameOfArchetypesField"
+        />
+
+    and the callable:
+
+        class spanner:
+            def __init__(self, context):
+                self.context = context
+            def __call__(self, field):
+                field_content = field.get(self.context)
+                return "<span>%"+field_content+"</span>"
+
     """
 
     def __call__(field):

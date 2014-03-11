@@ -2918,7 +2918,8 @@ class PriorityIcons(object):
             if icon:
                 result['icon'] = icon.absolute_url()
 
-        return {self.context.UID(): [result]}
+            return {self.context.UID(): [result]}
+        return {}
 
 
 class mailto_link_from_contacts:

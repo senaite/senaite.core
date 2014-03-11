@@ -183,4 +183,22 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Add AR Priorities update"
+        description=""
+        source="3015"
+        destination="3016"
+        handler="bika.lims.upgrade.to3016.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Fixed Supplier Contact issues"
+        description=""
+        source="3016"
+        destination="3017"
+        handler="bika.lims.upgrade.to3017.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
