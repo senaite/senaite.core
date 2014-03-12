@@ -152,27 +152,48 @@ $(document).ready(function(){
 
     // Check instrument validity and add an alert if needed
     $.ajax({
-        url: window.portal_url + "/get_instruments_outofdate",
+        url: window.portal_url + "/get_instruments_alerts",
         type: 'POST',
         data: {'_authenticator': $('input[name="_authenticator"]').val() },
         dataType: 'json'
     }).done(function(data) {
-        if (data != null && data.length > 0) {
+        if (data != null) {
             $('#portal-alert').remove();
             var html = "<div id='portal-alert' style='display:none'>";
-            html += "<p class='title'>"+data.length+_(" instruments are out-of-date")+":</p>";
-            html += "<p>";
-            $.each(data, function(index, value){
-                var hrefinstr = value['url']+"/certifications";
-                var titleinstr = value['title'];
-                var anchor = "<a href='"+hrefinstr+"'>"+titleinstr+"</a>";
-                if (index == 0) {
-                    html += anchor;
-                } else {
-                    html += ", "+anchor;
-                }
-            })
-            html += "</p>";
+            var outofdate = data['out-of-date'];
+            if (outofdate.length > 0) {
+                // Out of date alert
+                html += "<p class='title'>"+outofdate.length+_(" instruments are out-of-date")+":</p>";
+                html += "<p>";
+                $.each(outofdate, function(index, value){
+                    var hrefinstr = value['url']+"/certifications";
+                    var titleinstr = value['title'];
+                    var anchor = "<a href='"+hrefinstr+"'>"+titleinstr+"</a>";
+                    if (index == 0) {
+                        html += anchor;
+                    } else {
+                        html += ", "+anchor;
+                    }
+                })
+                html += "</p>";
+            }
+            var qcfail = data['qc-fail'];
+            if (qcfail.length > 0) {
+                // QC Fail alert
+                html += "<p class='title'>"+qcfail.length+_(" instruments with QC Internal Calibration Tests failed")+":</p>";
+                html += "<p>";
+                $.each(qcfail, function(index, value){
+                    var hrefinstr = value['url']+"/referenceanalyses";
+                    var titleinstr = value['title'];
+                    var anchor = "<a href='"+hrefinstr+"'>"+titleinstr+"</a>";
+                    if (index == 0) {
+                        html += anchor;
+                    } else {
+                        html += ", "+anchor;
+                    }
+                })
+                html += "</p>";
+            }
             html += "</div>"
             $('#portal-header').append(html);
             $('#portal-alert').fadeIn(2000);

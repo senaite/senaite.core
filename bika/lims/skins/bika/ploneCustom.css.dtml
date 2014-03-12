@@ -1005,12 +1005,13 @@ h2 a.add-button {
     margin-bottom: 10px;
     margin-left: -1.125%;
     margin-right: -1.125%;
-    padding: 20px 20px 20px 70px;
+    padding: 5px 20px 20px 70px;
 }
 #portal-alert p.title {
     color: #1F1F1F;
     font-size: 1.1em;
     font-weight: bold;
     margin-bottom: 8px;
+    margin-top: 15px;
 }
 </dtml-with>

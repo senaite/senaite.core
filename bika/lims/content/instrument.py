@@ -246,6 +246,66 @@ class Instrument(ATFolder):
                 certs.append(c)
         return certs
 
+    def isValid(self):
+        """ Returns if the current instrument is not out-of-date regards
+            to its certificates and if the latest QC succeed
+        """
+        valid = self.isOutOfDate() == False
+        if valid == True:
+            valid = self.isQCValid()
+        return valid
+
+    def getLatestReferenceAnalyses(self):
+        """ Returns a list with the latest QC analysis performed
+            for this instrument and Analysis Service
+        """
+        latest = {}
+        # Since the results file importer uses Date from the results
+        # file as Analysis 'Capture Date', we cannot assume the last
+        # item from the list is the latest analysis done, so we must
+        # pick up the latest analysis using the Results Capture Date
+        for ref in self.getReferenceAnalyses():
+            uid = ref.getServiceUID()
+            if uid in latest:
+                last = latest[uid]
+                if ref.getResultCaptureDate() > last.getResultCaptureDate():
+                    latest[uid] = ref
+            else:
+                latest[uid] = ref
+        return [r for r in latest.itervalues()]
+
+    def isQCValid(self):
+        """ Returns True if the instrument succeed for all the latest
+            Analysis QCs performed (for diferent types of AS)
+        """
+        for last in self.getLatestReferenceAnalyses():
+            rr = last.aq_parent.getResultsRangeDict()
+            uid = last.getServiceUID()
+            if uid not in rr:
+                # This should never happen.
+                # All QC Samples must have specs for its own AS
+                continue
+
+            specs = rr[uid];
+            try:
+                smin = float(specs.get('min', 0))
+                smax = float(specs.get('max', 0))
+                error = float(specs.get('error', 0))
+                target = float(specs.get('result', 0))
+                result = float(last.getResult())
+                error_amount = ((target / 100) * error) if target > 0 else 0
+                upper  = smax + error_amount
+                lower = smin - error_amount
+                if result < lower or result > upper:
+                    return False
+            except:
+                # This should never happen.
+                # All Reference Analysis Results and QC Samples specs
+                # must be floatable
+                continue
+
+        return True
+
     def isOutOfDate(self):
         """ Returns if the current instrument is out-of-date regards to
             its certifications

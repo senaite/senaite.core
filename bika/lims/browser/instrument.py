@@ -581,12 +581,20 @@ class ajaxGetInstrumentMethod(BrowserView):
         return json.dumps(methoddict)
 
 
-class ajaxGetOutOfDateInstruments(BrowserView):
-    """ Returns an array of json dict with the instruments currently
-        out of date regards to their calibration certificates
+class ajaxGetInstrumentsAlerts(BrowserView):
+    """ Returns a json dict with instrument alerts
+        with the following structure:
+        {'out-of-date': [{uid: <instr_uid>,
+                          title: <instr_title>,
+                          url: <instr_absolute_path>},]
+         'qc-fail': [{uid: <instr_uid>,
+                      title: <instr_title>,
+                      url: <instr_absolute_path>},]
+        }
     """
     def __call__(self):
-        out = []
+        out = {'out-of-date':[],
+               'qc-fail':[]}
         try:
             plone.protect.CheckAuthenticator(self.request)
         except Forbidden:
@@ -600,5 +608,10 @@ class ajaxGetOutOfDateInstruments(BrowserView):
                 instr = {'uid': i.UID(),
                          'title': i.Title(),
                          'url': i.absolute_url_path()}
-                out.append(instr)
+                out['out-of-date'].append(instr)
+            elif not i.isQCValid():
+                instr = {'uid': i.UID(),
+                         'title': i.Title(),
+                         'url': i.absolute_url_path()}
+                out['qc-fail'].append(instr)
         return json.dumps(out)
