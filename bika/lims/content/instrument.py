@@ -250,10 +250,7 @@ class Instrument(ATFolder):
         """ Returns if the current instrument is not out-of-date regards
             to its certificates and if the latest QC succeed
         """
-        valid = self.isOutOfDate() == False
-        if valid == True:
-            valid = self.isQCValid()
-        return valid
+        return False if self.isOutOfDate() else self.isQCValid()
 
     def getLatestReferenceAnalyses(self):
         """ Returns a list with the latest QC analysis performed
