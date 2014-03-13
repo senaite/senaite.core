@@ -362,6 +362,11 @@ class AnalysesView(BikaListingView):
                   or
                   (poc != 'field' and getSecurityManager().checkPermission(EditResults, obj)) )
 
+            # Prevent from being edited if the instrument assigned
+            # is not valid (out-of-date or uncalibrated)
+            can_edit_analysis = obj.isInstrumentValid() \
+                                if can_edit_analysis == True else False
+
             if can_edit_analysis:
                 items[i]['allow_edit'] = ['Method',
                                           'Instrument',

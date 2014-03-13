@@ -633,7 +633,7 @@ class ManageResultsView(BrowserView):
                 inv = '%s (%s)' % (an.Title(), an.getInstrument().Title())
                 invalid.append(inv)
         if len(invalid) > 0:
-            message = _("Some analyses use out-of-date or uncalibrated instruments")
+            message = _("Some analyses use out-of-date or uncalibrated instruments. Results edition not allowed")
             message = "%s: %s" % (message, (', '.join(invalid)))
             self.context.plone_utils.addPortalMessage(message, 'warn')
 
