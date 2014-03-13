@@ -201,4 +201,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Fix error ARPriorities introduced in 3016"
+        description=""
+        source="3017"
+        destination="3018"
+        handler="bika.lims.upgrade.to3018.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>

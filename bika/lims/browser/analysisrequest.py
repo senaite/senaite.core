@@ -2703,7 +2703,6 @@ class WidgetVisibility(_WV):
                 'Specification',
                 'Sample',
                 'SamplePoint',
-                'Specification',
                 'SampleType',
                 'Template',
             ]
