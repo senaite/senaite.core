@@ -16,6 +16,7 @@ from plone.app.folder.folder import ATFolder
 from zope.interface import implements
 from datetime import date
 from DateTime import DateTime
+from bika.lims.config import QCANALYSIS_TYPES
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 
@@ -137,6 +138,19 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
+
+    # Private method. Use getLatestReferenceAnalyses() instead.
+    # See getLatestReferenceAnalyses() method for further info.
+    ReferenceField('_LatestReferenceAnalyses',
+        required = 0,
+        multiValued = 1,
+        allowed_types = ('ReferenceAnalysis'),
+        relationship = 'InstrumentLatestReferenceAnalyses',
+        widget = ReferenceWidget(
+            visible = False,
+        ),
+    ),
+
 ))
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
@@ -253,23 +267,42 @@ class Instrument(ATFolder):
         return False if self.isOutOfDate() else self.isQCValid()
 
     def getLatestReferenceAnalyses(self):
-        """ Returns a list with the latest QC analysis performed
-            for this instrument and Analysis Service
+        """ Returns a list with the latest Reference analyses performed
+            for this instrument and Analysis Service.
+            References the latest ReferenceAnalysis done for this instrument.
+            Duplicate Analyses and Regular Analyses are not included.
+            Only contains the last ReferenceAnalysis done for this
+            instrument, Analysis Service and Reference type (blank or control).
+            The list is created 'on-fly' if the method hasn't been already
+            called or a new ReferenceAnalysis has been added by using
+            addReferences() since its last call. Otherwise, uses the
+            private accessor _LatestReferenceAnalyses as a cache
+            (prevents overload).
+            As an example:
+            [0]: RefAnalysis for Ethanol, QC-001 (Blank)
+            [1]: RefAnalysis for Ethanol, QC-002 (Control)
+            [2]: RefAnalysis for Methanol, QC-001 (Blank)
         """
-        latest = {}
-        # Since the results file importer uses Date from the results
-        # file as Analysis 'Capture Date', we cannot assume the last
-        # item from the list is the latest analysis done, so we must
-        # pick up the latest analysis using the Results Capture Date
-        for ref in self.getReferenceAnalyses():
-            uid = ref.getServiceUID()
-            if uid in latest:
-                last = latest[uid]
+        field = self.getField('_LatestReferenceAnalyses')
+        refs = field and field.get(self) or []
+        if len(refs) == 0:
+            latest = {}
+            # Since the results file importer uses Date from the results
+            # file as Analysis 'Capture Date', we cannot assume the last
+            # item from the list is the latest analysis done, so we must
+            # pick up the latest analyses using the Results Capture Date
+            for ref in self.getReferenceAnalyses():
+                antype = QCANALYSIS_TYPES.getValue(ref.getReferenceType())
+                key = '%s.%s' % (ref.getServiceUID(), antype)
+                last = latest.get(key, ref)
                 if ref.getResultCaptureDate() > last.getResultCaptureDate():
-                    latest[uid] = ref
-            else:
-                latest[uid] = ref
-        return [r for r in latest.itervalues()]
+                    latest[key] = ref
+                else:
+                    latest[key] = last
+            refs = [r for r in latest.itervalues()]
+            # Add to the cache
+            self.getField('_LatestReferenceAnalyses').set(self, refs)
+        return refs
 
     def isQCValid(self):
         """ Returns True if the instrument succeed for all the latest
@@ -405,6 +438,8 @@ class Instrument(ATFolder):
 
         self.setAnalyses(self.getAnalyses() + addedanalyses)
 
+        # Initialize LatestReferenceAnalyses cache
+        self.getField('_LatestReferenceAnalyses').set(self, refs)
         return addedanalyses
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
