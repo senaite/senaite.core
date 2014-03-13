@@ -159,6 +159,9 @@ schema = BikaSchema.copy() + Schema((
     ComputedField('DateSampled',
         expression = 'context.aq_parent.getSample().getDateSampled()',
     ),
+    ComputedField('InstrumentValid',
+        expression = 'context.isInstrumentInvalid()'
+    ),
 ),
 )
 
@@ -437,5 +440,23 @@ class Analysis(BaseContent):
 
     def getTotalPrice(self):
         return float(self.getPrice()) + float(self.getVATAmount())
+
+    def isInstrumentValid(self):
+        """ Checks if the instrument selected for this analysis service
+            is valid. Returns false if an out-of-date or uncalibrated
+            instrument is assigned. Returns true if the Analysis has
+            no instrument assigned or is valid.
+        """
+        # TODO : Remove when analysis - instrument being assigned directly
+        if not self.getInstrument():
+            instr = self.getService().getInstrument() \
+                    if self.getService().getInstrumentEntryOfResults() \
+                    else None
+            if instr:
+                self.setInstrument(instr)
+        # ---8<--------
+
+        return self.getInstrument().isValid() \
+                if self.getInstrument() else True
 
 atapi.registerType(Analysis, PROJECTNAME)
