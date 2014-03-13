@@ -544,6 +544,9 @@ class ManageResultsView(BrowserView):
         self.analystname = getAnalystName(self.context)
         self.instrumenttitle = self.context.getInstrument() and self.context.getInstrument().Title() or ''
 
+        # Check if the instruments used are valid
+        self.checkInstrumentsValidity()
+
         return self.template()
 
     def getInstruments(self):
@@ -615,6 +618,24 @@ class ManageResultsView(BrowserView):
             if andict['interims']:
                 outdict[service.getKeyword()] = andict
         return outdict
+
+    def checkInstrumentsValidity(self):
+        """ Checks the validity of the instruments used in the Analyses
+            If an analysis with an invalid instrument (out-of-date or
+            with calibration tests failed) is found, a warn message
+            will be displayed.
+        """
+        invalid = []
+        ans = [a for a in self.context.getAnalyses()]
+        for an in ans:
+            valid = an.isInstrumentValid()
+            if not valid:
+                inv = '%s (%s)' % (an.Title(), an.getInstrument().Title())
+                invalid.append(inv)
+        if len(invalid) > 0:
+            message = _("Some analyses use out-of-date or uncalibrated instruments")
+            message = "%s: %s" % (message, (', '.join(invalid)))
+            self.context.plone_utils.addPortalMessage(message, 'warn')
 
 
 class AddAnalysesView(BikaListingView):
