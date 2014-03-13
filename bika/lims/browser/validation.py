@@ -13,9 +13,6 @@ class InlineValidationView(_IVV):
         '''
         res = {'errmsg': ''}
 
-        if value not in self.request:
-            return json.dumps(res)
-
         rc = getToolByName(aq_inner(self.context), 'reference_catalog')
         instance = rc.lookupObject(uid)
         # make sure this works for portal_factory items
