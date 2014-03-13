@@ -1,0 +1,32 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="plone">
+<head><title></title></head>
+<body>
+
+<metal:view_macro define-macro="view">
+   <span id="srtemplateartemplateswidget">
+        <span tal:content="structure python:widget.ARTemplates(field)"/>
+    </span>
+</metal:view_macro>
+
+<metal:edit_macro define-macro="edit">
+<metal:use use-macro="field_macro | context/widgets/field/macros/edit">
+
+    <metal:body_macro fill-slot="widget_body">
+    <div id="folderlisting-main-table">
+      <span
+        id="analyses"
+        tal:content="
+          structure python:widget.ARTemplates(field, allow_edit=True)">
+      </span>
+    </div>
+    </metal:body_macro>
+
+</metal:use>
+</metal:edit_macro>
+
+</body>
+</html>

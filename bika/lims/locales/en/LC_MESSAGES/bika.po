@@ -231,6 +231,7 @@ msgstr ""
 
 #
 # File: ../browser/client.py, line: 409
+# File: ../content/srtemplate.py, line: 35
 # File: ../controlpanel/bika_artemplates.py, line: 33
 msgid "AR Templates"
 msgstr ""
@@ -358,6 +359,7 @@ msgstr ""
 
 #
 # File: ../controlpanel/bika_artemplates.py, line: 35
+# File: ../controlpanel/bika_srtemplates.py, line: 36
 msgid "Add Template"
 msgstr ""
 
@@ -634,7 +636,7 @@ msgstr ""
 
 #
 # File: ../browser/batch.py, line: 167
-# File: ../browser/fields/referenceresultsfield.py, line: 19
+# File: ../browser/fields/referenceresultsfield.py, line: 20
 # File: ../browser/reports/productivity_analysestats_overtime.py, line: 38
 msgid "Analysis Service"
 msgstr ""
@@ -1042,7 +1044,7 @@ msgid "Billing address"
 msgstr ""
 
 #
-# File: ../browser/supplier.py, line: 190
+# File: ../browser/supplier.py, line: 145
 # File: ../browser/templates/referencesample_view.pt, line: 55
 # File: ../config.py, line: 50
 msgid "Blank"
@@ -1076,7 +1078,7 @@ msgstr ""
 
 #
 # File: ../browser/client.py, line: 801
-# File: ../browser/supplier.py, line: 42
+# File: ../browser/supplier.py, line: 183
 msgid "Business Phone"
 msgstr ""
 
@@ -1410,7 +1412,6 @@ msgid "Client Sample ID"
 msgstr ""
 
 #
-# File: ../browser/batch.py, line: 62
 # File: ../browser/client.py, line: 295
 msgid "Client contact required before request may be submitted"
 msgstr ""
@@ -1480,7 +1481,7 @@ msgstr ""
 
 #
 # File: ../browser/client.py, line: 793
-# File: ../browser/supplier.py, line: 37
+# File: ../browser/supplier.py, line: 178
 # File: ../browser/templates/pricelist_email_form.pt, line: 27
 msgid "Contacts"
 msgstr ""
@@ -1597,7 +1598,7 @@ msgstr ""
 
 #
 # File: ../browser/referencesample.py, line: 230
-# File: ../browser/supplier.py, line: 108
+# File: ../browser/supplier.py, line: 63
 msgid "Current"
 msgstr ""
 
@@ -1676,7 +1677,7 @@ msgid "Date Loaded"
 msgstr ""
 
 #
-# File: ../browser/supplier.py, line: 99
+# File: ../browser/supplier.py, line: 54
 # File: ../browser/templates/referencesample_sticker.pt, line: 71
 # File: ../browser/templates/referencesample_view.pt, line: 106
 msgid "Date Opened"
@@ -1969,7 +1970,7 @@ msgstr ""
 #
 # File: ../browser/referencesample.py, line: 250
 # File: ../browser/sample.py, line: 559
-# File: ../browser/supplier.py, line: 130
+# File: ../browser/supplier.py, line: 85
 msgid "Disposed"
 msgstr ""
 
@@ -2123,7 +2124,7 @@ msgstr ""
 #
 # File: ../browser/client.py, line: 800
 # File: ../browser/clientfolder.py, line: 37
-# File: ../browser/supplier.py, line: 41
+# File: ../browser/supplier.py, line: 182
 msgid "Email Address"
 msgstr ""
 
@@ -2227,7 +2228,7 @@ msgid "Exclude from invoice"
 msgstr ""
 
 #
-# File: ../browser/fields/referenceresultsfield.py, line: 20
+# File: ../browser/fields/referenceresultsfield.py, line: 21
 # File: ../browser/widgets/referenceresultswidget.py, line: 42
 msgid "Expected Result"
 msgstr ""
@@ -2240,13 +2241,13 @@ msgstr ""
 #
 # File: ../browser/referencesample.py, line: 240
 # File: ../browser/sample.py, line: 537
-# File: ../browser/supplier.py, line: 119
+# File: ../browser/supplier.py, line: 74
 msgid "Expired"
 msgstr ""
 
 #
 # File: ../browser/referencesample.py, line: 221
-# File: ../browser/supplier.py, line: 101
+# File: ../browser/supplier.py, line: 56
 # File: ../browser/templates/referencesample_sticker.pt, line: 81
 msgid "Expiry Date"
 msgstr ""
@@ -2262,7 +2263,7 @@ msgstr ""
 #
 # File: ../browser/clientfolder.py, line: 39
 # File: ../browser/mailtemplates/analysisrequest_results.pt, line: 77
-# File: ../browser/supplier.py, line: 44
+# File: ../browser/supplier.py, line: 185
 msgid "Fax"
 msgstr ""
 
@@ -2344,7 +2345,7 @@ msgstr ""
 
 #
 # File: ../browser/client.py, line: 797
-# File: ../browser/supplier.py, line: 40
+# File: ../browser/supplier.py, line: 181
 # File: ../content/person.py, line: 50
 msgid "Full Name"
 msgstr ""
@@ -2386,7 +2387,7 @@ msgstr ""
 #
 # File: ../browser/analysisrequest.py, line: 2253
 # File: ../browser/sample.py, line: 671
-# File: ../browser/supplier.py, line: 196
+# File: ../browser/supplier.py, line: 151
 msgid "Hazardous"
 msgstr ""
 
@@ -2515,6 +2516,11 @@ msgstr ""
 # File: ../browser/fields/historyawarereferencefield.py, line: 85
 # File: ../skins/bika/update_version_before_edit.cpy, line: 22
 msgid "Initial revision"
+msgstr ""
+
+#
+# File: ../content/srtemplate.py, line: 24
+msgid "Instructions"
 msgstr ""
 
 #
@@ -2763,7 +2769,7 @@ msgstr ""
 
 #
 # File: ../content/laboratory.py, line: 109
-# File: ../setuphandlers.py, line: 97
+# File: ../setuphandlers.py, line: 98
 msgid "Laboratory"
 msgstr ""
 
@@ -2924,7 +2930,7 @@ msgid "Manual entry of results"
 msgstr ""
 
 #
-# File: ../browser/supplier.py, line: 91
+# File: ../browser/supplier.py, line: 46
 # File: ../browser/templates/referencesample_sticker.pt, line: 51
 # File: ../browser/templates/referencesample_view.pt, line: 60
 msgid "Manufacturer"
@@ -2937,7 +2943,7 @@ msgstr ""
 
 #
 # File: ../browser/analysisrequest.py, line: 1135
-# File: ../browser/fields/referenceresultsfield.py, line: 23
+# File: ../browser/fields/referenceresultsfield.py, line: 24
 # File: ../browser/referencesample.py, line: 130
 msgid "Max"
 msgstr ""
@@ -3044,7 +3050,7 @@ msgstr ""
 
 #
 # File: ../browser/analysisrequest.py, line: 1134
-# File: ../browser/fields/referenceresultsfield.py, line: 22
+# File: ../browser/fields/referenceresultsfield.py, line: 23
 # File: ../browser/referencesample.py, line: 129
 msgid "Min"
 msgstr ""
@@ -3078,7 +3084,7 @@ msgstr ""
 
 #
 # File: ../browser/client.py, line: 802
-# File: ../browser/supplier.py, line: 43
+# File: ../browser/supplier.py, line: 184
 # File: ../controlpanel/bika_labcontacts.py, line: 46
 msgid "Mobile Phone"
 msgstr ""
@@ -3587,7 +3593,7 @@ msgstr ""
 
 #
 # File: ../browser/analysisrequest.py, line: 1136
-# File: ../browser/fields/referenceresultsfield.py, line: 21
+# File: ../browser/fields/referenceresultsfield.py, line: 22
 # File: ../browser/widgets/analysisspecificationwidget.py, line: 41
 msgid "Permitted Error %"
 msgstr ""
@@ -3948,7 +3954,7 @@ msgstr ""
 
 #
 # File: ../browser/referencesample.py, line: 210
-# File: ../browser/supplier.py, line: 92
+# File: ../browser/supplier.py, line: 47
 # File: ../browser/templates/referencesample_view.pt, line: 75
 msgid "Reference Definition"
 msgstr ""
@@ -3967,7 +3973,7 @@ msgstr ""
 
 #
 # File: ../browser/referencesample.py, line: 183
-# File: ../browser/supplier.py, line: 72
+# File: ../browser/supplier.py, line: 27
 msgid "Reference Samples"
 msgstr ""
 
@@ -4279,6 +4285,11 @@ msgid "Review state"
 msgstr ""
 
 #
+# File: ../controlpanel/bika_srtemplates.py, line: 33
+msgid "SR Templates"
+msgstr ""
+
+#
 # File: ../content/person.py, line: 17
 #. Default: "Title"
 msgid "Salutation"
@@ -4513,6 +4524,11 @@ msgstr ""
 #
 # File: ../content/bikasetup.py, line: 279
 msgid "Select 'Register' if you want labels to be automatically printed when new ARs or sample records are created. Select 'Receive' to print labels when ARs or Samples are received. Select 'None' to disable automatic printing"
+msgstr ""
+
+#
+# File: ../content/srtemplate.py, line: 36
+msgid "Select AR Templates to include"
 msgstr ""
 
 #
