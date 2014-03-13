@@ -11,6 +11,7 @@ function AnalysisServiceEditView() {
     that.load = function() {
 
         $('#Instruments').live('change', function() {
+            validateInstruments();
             loadDefaultInstrument();
             loadMethods();
             loadDefaultMethod();
@@ -91,6 +92,7 @@ function AnalysisServiceEditView() {
             if ($('#Instruments').val() == null) {
                 $('#Instruments').val($('#Instrument option').first().val());
             }
+            validateInstruments();
         } else {
             $('#archetypes-fieldname-Instruments').hide();
         }
@@ -292,6 +294,40 @@ function AnalysisServiceEditView() {
             } else {
                 $("#archetypes-fieldname-InterimFields").hide();
             }
+        });
+    }
+
+    /**
+     * Checks if the selected instruments aren't out-of-date and their
+     * latest Internal Calibration Tests are valid. If an invalid
+     * instrument gets selected, shows an alert to the user
+     */
+    function validateInstruments() {
+        window.jarn.i18n.loadCatalog("bika");
+        window.jarn.i18n.loadCatalog("plone");
+        var _ = window.jarn.i18n.MessageFactory("bika");
+        $('#invalid-instruments-alert').remove();
+        $.each($('#Instruments').val(), function(index, value) {
+            // Is valid?
+            var request_data = {
+                catalog_name: "uid_catalog",
+                UID: value
+            };
+            window.bika.lims.jsonapi_read(request_data, function(data) {
+                if (data.objects[0].Valid != '1') {
+                    var title = data.objects[0].Title;
+                    if ($('#invalid-instruments-alert').length > 0) {
+                        $('#invalid-instruments-alert dd').first().append(", " + title);
+                    } else {
+                        var errmsg = _("Some of the selected instruments are out-of-date or with failed calibration tests");
+                        var html = "<div id='invalid-instruments-alert' class='alert'>"+
+                                   "    <dt>" + errmsg + ":</dt>"+
+                                   "    <dd>" + title + "</dd>"+
+                                   "</div>";
+                        $('#analysisservice-base-edit').before(html);
+                    }
+                }
+            });
         });
     }
 

@@ -151,6 +151,13 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         ),
     ),
 
+    ComputedField('Valid',
+        expression = "'1' if context.isValid() else '0'",
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
+
 ))
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
