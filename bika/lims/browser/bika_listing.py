@@ -680,7 +680,8 @@ class BikaListingView(BrowserView):
                 if not auid:
                     continue
                 alerts = adapter()
-                if alerts:
+                logger.info(str(alerts))
+                if alerts and auid in alerts:
                     if auid in self.field_icons:
                         self.field_icons[auid].extend(alerts[auid])
                     else:
