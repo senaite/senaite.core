@@ -74,7 +74,6 @@
                 thissize file/get_size | python:file and len(file) or 0;
                 filesize python:test((thissize < 1024), '%sb' %(thissize), '%sKb' %(thissize / 1024));
                 icon file/getBestIcon | nothing;
-                type python:attachment.getAttachmentType().Title();
                 mimetype python:here.lookupMime(file.getContentType())">
 <img tal:condition="icon" src=""
     tal:attributes="src string:${here/portal_url}/$icon"/>
@@ -84,14 +83,14 @@
 <a href=""
     tal:condition="update_attachments"
     tal:attributes="href string:${attachment/absolute_url}/attachment_edit">
-<span class="discreet" tal:content="type">type</span>
+<span class="discreet" tal:content="python:attachment.getAttachmentType().Title() if attachment.getAttachmentType() else ''">type</span>
 <span class="discreet" tal:content="mimetype">mimetype</span> &mdash;
 <span class="discreet" tal:content="filesize">0Kb</span>
 </a>
 <a href=""
     tal:condition="not: update_attachments"
     tal:attributes="href string:${attachment/absolute_url}/attachment_view">
-<span class="discreet" tal:content="type">type</span>
+<span class="discreet" tal:content="python:attachment.getAttachmentType().Title() if attachment.getAttachmentType() else ''">type</span>
 <span class="discreet" tal:content="mimetype">mimetype</span> &mdash;
 <span class="discreet" tal:content="filesize">0Kb</span>
 </a>
@@ -121,7 +120,6 @@
                 thissize file/get_size | python:file and len(file) or 0;
                 filesize python:test((thissize < 1024), '%sb' %(thissize), '%sKb' %(thissize / 1024));
                 icon file/getBestIcon | nothing;
-                type python:attachment.getAttachmentType().Title();
                 mimetype python:here.lookupMime(file.getContentType())">
 <img tal:condition="icon" src=""
     tal:attributes="src string:${here/portal_url}/images/$icon"/>
@@ -131,14 +129,14 @@
 <a href=""
     tal:condition="update_attachments"
     tal:attributes="href string:${attachment/absolute_url}/attachment_edit">
-<span class="discreet" tal:content="type">Filename</span>
+<span class="discreet" tal:content="python:attachment.getAttachmentType().Title() if attachment.getAttachmentType() else ''">Filename</span>
 <span class="discreet" tal:content="mimetype">ContentType</span> &mdash;
 <span class="discreet" tal:content="filesize">0Kb</span>
 </a>
 <a href=""
     tal:condition="not: update_attachments"
     tal:attributes="href string:${attachment/absolute_url}/attachment_view">
-<span class="discreet" tal:content="type">Filename</span>
+<span class="discreet" tal:content="python:attachment.getAttachmentType().Title() if attachment.getAttachmentType() else ''">Filename</span>
 <span class="discreet" tal:content="mimetype">ContentType</span> &mdash;
 <span class="discreet" tal:content="filesize">0Kb</span>
 </a>
