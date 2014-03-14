@@ -114,13 +114,11 @@ def AfterTransitionEventHandler(instance, event):
 def ObjectInitializedEventHandler(instance, event):
 
     if instance.portal_type != "AnalysisRequest":
-        #import pdb; pdb.set_trace()
         return
 
     priority = instance.getPriority()
     if priority:
-        #print 'Got priority'
         return
     
-    instance.setPriority(instance.getDefaultPriority())
+    instance.setDefaultPriority()
     return
