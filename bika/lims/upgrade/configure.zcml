@@ -201,4 +201,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Migrate WorksheetInstrument relations to AnalysisInstrument"
+        description="Assignment of Instruments to a Worksheet is no longer used. The assignment is performed to each Analysis directly"
+        source="3017"
+        destination="3018"
+        handler="bika.lims.upgrade.to3018.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>

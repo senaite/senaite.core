@@ -65,11 +65,12 @@ schema = BikaSchema.copy() + Schema((
     ),
     StringField('Analyst',
     ),
-    ReferenceField('Instrument',
-        required = 0,
-        allowed_types = ('Instrument',),
-        relationship = 'WorksheetInstrument',
-        referenceClass = HoldingReference,
+    ReferenceField(
+        'Instrument',
+        required=0,
+        allowed_types=('Instrument',),
+        relationship='AnalysisInstrument',
+        referenceClass=HoldingReference,
     ),
 
     BooleanField('Retested',
@@ -146,5 +147,23 @@ class ReferenceAnalysis(BaseContent):
     def current_date(self):
         """ return current date """
         return DateTime()
+
+    def isInstrumentValid(self):
+        """ Checks if the instrument selected for this analysis service
+            is valid. Returns false if an out-of-date or uncalibrated
+            instrument is assigned. Returns true if the Analysis has
+            no instrument assigned or is valid.
+        """
+        # TODO : Remove when analysis - instrument being assigned directly
+        if not self.getInstrument():
+            instr = self.getService().getInstrument() \
+                    if self.getService().getInstrumentEntryOfResults() \
+                    else None
+            if instr:
+                self.setInstrument(instr)
+        # ---8<--------
+
+        return self.getInstrument().isValid() \
+                if self.getInstrument() else True
 
 registerType(ReferenceAnalysis, PROJECTNAME)
