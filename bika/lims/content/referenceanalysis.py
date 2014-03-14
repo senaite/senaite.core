@@ -72,6 +72,12 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisInstrument',
         referenceClass=HoldingReference,
     ),
+    ReferenceField('Method',
+        required = 0,
+        allowed_types = ('Method',),
+        relationship = 'AnalysisMethod',
+        referenceClass = HoldingReference,
+    ),
 
     BooleanField('Retested',
         default = False,
@@ -165,5 +171,32 @@ class ReferenceAnalysis(BaseContent):
 
         return self.getInstrument().isValid() \
                 if self.getInstrument() else True
+
+    def isInstrumentAllowed(self, instrument):
+        """ Checks if the specified instrument can be set for this
+            analysis, according to the Method and Analysis Service.
+            If the Analysis Service hasn't set 'Allows instrument entry'
+            of results, returns always False. Otherwise, checks if the
+            method assigned is supported by the instrument specified.
+            The behavoir when no method assigned is different from
+            Regular analyses: when no method assigned, the available
+            methods for the analysis service are checked and returns
+            true if at least one of the methods has support for the
+            instrument specified.
+        """
+        service = self.getService()
+        if service.getInstrumentEntryOfResults():
+            return False
+
+        method = self.getMethod()
+        instruments = []
+        if not method:
+            # Look for Analysis Service methods and instrument support
+            instruments = [i.UID() for i in service.getInstruments()]
+        else:
+            instruments = method.getInstrumentUIDs();
+
+        instruid = instrument.UID()
+        return instruid in instruments
 
 registerType(ReferenceAnalysis, PROJECTNAME)

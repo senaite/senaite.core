@@ -459,4 +459,25 @@ class Analysis(BaseContent):
         return self.getInstrument().isValid() \
                 if self.getInstrument() else True
 
+    def isInstrumentAllowed(self, instrument):
+        """ Checks if the specified instrument can be set for this
+            analysis, according to the Method and Analysis Service.
+            If the Analysis Service hasn't set 'Allows instrument entry'
+            of results, returns always False. Otherwise, checks if the
+            method assigned is supported by the instrument specified.
+            Returns false, If the analysis hasn't any method assigned.
+            NP: The methods allowed for selection are defined at
+            Analysis Service level.
+        """
+        service = self.getService()
+        if service.getInstrumentEntryOfResults():
+            return False
+
+        method = self.getMethod()
+        if not method:
+            return False
+
+        instruid = instrument.UID()
+        return instruid in method.getInstrumentUIDs()
+
 atapi.registerType(Analysis, PROJECTNAME)

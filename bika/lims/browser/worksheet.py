@@ -550,6 +550,7 @@ class ManageResultsView(BrowserView):
         return self.template()
 
     def getInstruments(self):
+        # TODO: Return only the allowed instruments for at least one contained analysis
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('', '')] + [(o.UID, o.Title) for o in
                                bsc(portal_type = 'Instrument',

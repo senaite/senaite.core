@@ -46,6 +46,7 @@ schema = BikaSchema.copy() + Schema((
     StringField('Analyst',
         searchable = True,
     ),
+    # TODO Remove. Instruments must be assigned directly to each analysis.
     ReferenceField('Instrument',
         required = 0,
         allowed_types = ('Instrument',),
@@ -479,5 +480,20 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     def current_date(self):
         """ return current date """
         return DateTime()
+
+    def setInstrument(self, instrument)
+        """ Sets the specified instrument to the Analysis from the
+            Worksheet. Only sets the instrument if the Analysis
+            allows it, according to its Analysis Service and Method.
+            If an analysis has already assigned an instrument, it won't
+            be overriden.
+            The Analyses that don't allow the instrument specified will
+            not be modified.
+        """
+        analyses = [an for an in self.getAnalyses() \
+                    if not an.getInstrument() \
+                        and an.isInstrumentAllowed(instrument)]
+        for an in analyses:
+            an.setInstrument(instrument)
 
 registerType(Worksheet, PROJECTNAME)
