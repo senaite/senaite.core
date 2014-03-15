@@ -2,11 +2,12 @@
 
 Library          Selenium2Library  timeout=10  implicit_wait=0.1
 Library          String
+Library          DebugLibrary
 Library  Remote  ${PLONE_URL}/RobotRemote
 Resource         keywords.txt
 Variables        plone/app/testing/interfaces.py
 Suite Setup      Start browser
-# Suite Teardown   Close All Browsers
+Suite Teardown   Close All Browsers
 
 *** Variables ***
 
@@ -16,7 +17,7 @@ ${PLONEURL}        http://localhost:55001/plone
 *** Test Cases ***
 
 
-Add new items in all bika_setup categories
+Add and test new items in all bika_setup categories
 #Update Laboratory Information
     Go to  ${PLONEURL}/bika_setup/laboratory/#fieldsetlegend-accreditation
     wait until page contains   Confidence
@@ -58,7 +59,7 @@ Add new items in all bika_setup categories
     Wait Until Page Contains  AR Templates
     Click link  Add Template
     Wait Until Page Contains Element  title
-    Input Text  title          New Object
+    Input Text  title          New AR Template
     Input Text  description    Temporary test object
     Input Text  SamplePoint   Borehole 12
     Input Text  SampleType    Water
@@ -69,7 +70,7 @@ Add new items in all bika_setup categories
     Select from list  preservation_uid.part-1:records     \
     Click Button  Add
     Select from list  container_uid.part-2:records        \
-    Select from list  preservation_uid.part-2:records     H2S04
+    Select from list  preservation_uid.part-2:records     H2SO4
     Click Link  Analyses
     Wait Until Page Contains Element  AnalysisProfile:list
     Select from list   AnalysisProfile:list    Trace Metals
@@ -80,7 +81,7 @@ Add new items in all bika_setup categories
     Go to  ${PLONEURL}/bika_setup/bika_attachmenttypes
     Click link  Add
     Wait Until Page Contains Element  title
-    Input Text  title          New Object
+    Input Text  title          New Attachment Tyoe
     Input Text  description    Temporary test object
     Click Button  Save
     Wait Until Page Contains  Changes saved.
@@ -135,7 +136,7 @@ Add new items in all bika_setup categories
     Go to  ${PLONEURL}/bika_setup/bika_containertypes
     Click link  Add
     Wait Until Page Contains Element  title
-    Input Text  title          New Object
+    Input Text  title          New Container Type
     Input Text  description    Temporary test object
     Click Button  Save
     Wait Until Page Contains  Changes saved.
@@ -197,7 +198,7 @@ Add new items in all bika_setup categories
     Go to  ${PLONEURL}/bika_setup/bika_samplematrices
     Click link  Add
     Wait Until Page Contains Element  title
-    Input Text  title          New Object
+    Input Text  title          New Sample Matrix
     Input Text  description    Temporary test object
     Click Button  Save
     Wait Until Page Contains  Changes saved.
@@ -217,7 +218,7 @@ Add new items in all bika_setup categories
     Go to  ${PLONEURL}/bika_setup/bika_samplepoints
     Click link  Add
     Wait Until Page Contains Element  title
-    Input Text  title          New Object
+    Input Text  title          New Sample Point
     Input Text  description    Temporary test object
     Input Text  SamplingFrequency.days:record:ignore_empty  30
     Input Text  SamplingFrequency.hours:record:ignore_empty  0
@@ -250,7 +251,7 @@ Add new items in all bika_setup categories
     Go to  ${PLONEURL}/bika_setup/bika_samplingdeviations
     Click link  Add
     Wait Until Page Contains Element  title
-    Input Text  title          New Object
+    Input Text  title          New Sampling Deviation
     Input Text  description    Temporary test object
     Click Button  Save
     Wait Until Page Contains  Changes saved.
@@ -283,7 +284,7 @@ Add new items in all bika_setup categories
     Go to  ${PLONEURL}/bika_setup/bika_departments
     Click link  Add
     Wait Until Page Contains Element  title
-    Input Text  title          New Object
+    Input Text  title          New Department
     Input Text  description    Temporary test object
     Select from list  Manager:list   Lab Manager 1
     Click Button  Save
@@ -357,7 +358,7 @@ Add new items in all bika_setup categories
     Wait until page contains    ===
     Click link  Add
     Wait Until Page Contains Element  title
-    Input Text        title           New Object
+    Input Text        title           New Reference
     Select From List  ReferenceDefinition:list
     Select Checkbox   Blank
     Select Checkbox   Hazardous
@@ -422,7 +423,7 @@ Add new items in all bika_setup categories
     Go to  ${PLONEURL}/bika_setup/bika_manufacturers
     Click link  Add
     Wait Until Page Contains Element  title
-    Input Text  title          New Object
+    Input Text  title          New Manufacturer
     Input Text  description    Temporary test object
     Click Button  Save
     Wait Until Page Contains  Changes saved.
@@ -432,30 +433,19 @@ Add new items in all bika_setup categories
     Page should contain  Instrument Types
     Click link  Add
     Wait Until Page Contains Element  title
-    Input Text  title          New Object
+    Input Text  title          New Instrument Type
     Input Text  description    Temporary test object
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 
 #Instrument
 
-    #XXX Hack this in here - actually should modify setup data sheets!
-    Go to  ${PLONEURL}/bika_setup/bika_instrumenttypes
-    Page should contain  Instrument Types
-    Click link  Add
-    Wait Until Page Contains Element  title
-    Input Text  title          New Object
-    Input Text  description    Temporary test object
-    Click Button  Save
-    Wait Until Page Contains  Changes saved.
-    #XXX
-
     Go to   ${PLONEURL}/bika_setup/bika_instruments
     Click link  Add
     Wait Until Page Contains Element  title
-    Input Text  title                 New Object
+    Input Text  title                 New Instrument
     Input Text  description           Temporary test object
-    Select From List  InstrumentType  Auto titrator
+    Select From List  InstrumentType  New Instrument Type
     Select From List  Manufacturer    Boss
     Select From List  Supplier        Instruments Inc
     Input Text  Model                 Instrument Model 0123
@@ -486,7 +476,7 @@ Add new items in all bika_setup categories
     Page should contain  Containers
     Click link  Add
     Wait Until Page Contains Element  title
-    Input Text  title          New Object
+    Input Text  title          New Container
     Input Text  description    Temporary test object
     Select From List   ContainerType:list
     Input Text  Capacity  20 ml
@@ -499,7 +489,7 @@ Add new items in all bika_setup categories
     Go to  ${PLONEURL}/bika_setup/bika_sampletypes
     Click link  Add
     Wait Until Page Contains Element  title
-    Input Text  title          New Object
+    Input Text  title          New Sample Type
     Input Text  description    Temporary test object
     Input Text  RetentionPeriod.days:record:ignore_empty  30
     Input Text  RetentionPeriod.hours:record:ignore_empty  0
@@ -517,7 +507,7 @@ Add new items in all bika_setup categories
     Wait Until Page Contains  Analysis Categories
     Click link  Add
     Wait Until Page Contains Element  title
-    Input Text  title          New Object
+    Input Text  title          New Category
     Input Text  description    Temporary test object
     Select From List  Department:list
     Click Button  Save
@@ -589,7 +579,7 @@ Add new items in all bika_setup categories
     Wait Until Page Contains  Analysis Profile
     Click link  Add Profile
     Wait Until Page Contains Element  title
-    Input Text  title          New Object
+    Input Text  title          New Profile
     Input Text  description    Temporary test object
     Input Text  ProfileKey  Profile Key
     Click link  Analyses
@@ -619,7 +609,7 @@ Add new items in all bika_setup categories
     Wait Until Page Contains  Reference Definition
     Click link  Add
     Wait Until Page Contains Element  title
-    Input Text  title          New Object
+    Input Text  title          New Reference Definition
     Input Text  description    Temporary test object
     Select Checkbox  Blank
     Select Checkbox  Hazardous
@@ -638,7 +628,7 @@ Add new items in all bika_setup categories
     Wait Until Page Contains  Worksheet Template
     Click link  Add
     Wait Until Page Contains Element  title
-    Input Text  title          New Object
+    Input Text  title          New Worksheet Template
     Input Text  description    Temporary test object
     Select From List  Instrument:list
     Click link  Layout

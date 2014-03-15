@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '3.0rc3.5.2'
+version = '3.0'
 
 setup(name='bika.lims',
       version=version,
@@ -49,4 +49,3 @@ setup(name='bika.lims',
       target = plone
       """,
       )
-/home/campbell/Plone/zinstance/parts/test/test_client_views/View_client_screens_as_Client_Contact/log.html

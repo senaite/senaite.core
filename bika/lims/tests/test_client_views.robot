@@ -3,9 +3,9 @@
 Library                 Selenium2Library  timeout=10  implicit_wait=0.1
 Library                 Collections
 Library                 DebugLibrary
+Library                 DebugLibrary
 Resource                keywords.txt
 Variables               plone/app/testing/interfaces.py
-
 
 Suite Setup             Start browser
 Suite Teardown          Close All Browsers
@@ -20,6 +20,7 @@ ${PLONEURL}        http://localhost:55001/plone
 View client screens as Client Contact.
 
     Log in                     ritamo    ritamo
+    sleep      1
 
     Go to                      ${PLONEURL}/clients/client-1/ar_add?col_count=1
     ${ar_id}=                  Complete ar_add form with template    Lab: Borehole 12 Hardness
@@ -83,6 +84,8 @@ Start browser
 
 Complete ar_add form with template
     [Arguments]  ${template}=
+
+    wait until page contains element    ar_0_SamplingDate
 
     @{time} =               Get Time        year month day hour min sec
 

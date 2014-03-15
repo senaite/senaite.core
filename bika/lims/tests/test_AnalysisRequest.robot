@@ -18,6 +18,12 @@ ${ar_factory_url}  ar_add
 
 Analysis Request with no samping or preservation workflow
 
+    Go to        ${PLONEURL}/bika_setup/edit
+    Click link  Analyses
+    Unselect Checkbox  SamplingWorkflowEnabled
+    Click Button  Save
+    Wait Until Page Contains  Changes saved.
+
     Go to                     ${PLONEURL}/clients/client-1/${ar_factory_url}?col_count=1
     ${ar_id}=                 Complete ar_add form with template    Lab: Borehole 12 Hardness
     Go to                     ${PLONEURL}/clients/client-1/analysisrequests
