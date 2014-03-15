@@ -1,3 +1,12 @@
+3.0 (2014-03-15)
+----------------
+
+- Fix some out-dated dependencies that prevented the app from loading.
+
+
+- Development of the current bika 3.0 code has slowed, and our efforts have been focused on 
+the 3.01a branch for some time.
+
 3.0rc3.5.1 (2013-10-25)
 -----------------------
 

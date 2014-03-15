@@ -759,7 +759,7 @@ class AnalysisRequestViewView(BrowserView):
         """
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         res = [(o.getObject().Title(), o.getObject()) \
-               for o in bsc(portal_type = 'ContainerType')]
+               for o in bsc(portal_type = 'ContainerType', inactive_state='active')]
         res.sort(lambda x,y:cmp(x[0], y[0]))
         return res
 
