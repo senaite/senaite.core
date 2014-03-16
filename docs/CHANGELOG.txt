@@ -1,7 +1,42 @@
-3.01a.dev0 (unreleased)
------------------------
+3.01a (unreleased)
+------------------
 
-- Nothing here, yet.
+Product and Analysis specifications per AR
+Incorrect published results invalidation workflow
+Improved re-testing workflow
+Adjustment factors on worksheets
+Using '< n' and '> n' results values
+Sample Storage locations
+Sample Categories
+Analysis Prioritisation
+Bulk AR creation from file
+Results reports inclusion of relevant QC results
+
+Instrument management module
+    Calibration certificates, maintenance, Instrument QC
+    Method, Instrument and Analysis integrity
+
+Instrument interfaces
+     Agilent MS 'Masshunter Quant'
+     Thermo Gallery
+     Foss Winescan FT 120, Auto
+
+Supply Inventory and Orders
+
+Invoices
+   Per AR, Analysis per Invoice line.
+   Per Supply Order, inventory item per Invoice line
+   Invoices by email
+   Invoice 'batches' for selected time period, ARs aand Orders per Invoice line
+   Invoice batch export to accounts systems
+   Price lists. Analysis Services and Supplies
+
+JSON interface
+
+Further enhancements
+    AR Batching features
+    Management Report features - exports to CSV
+    Results Report features
 
 3.0rc3.5 (2013-10-24)
 ---------------------

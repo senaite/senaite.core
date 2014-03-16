@@ -19,5 +19,6 @@ selenium-screenshot*
 *project
 *workspace
 *.tags*
+*MANIFEST*
 
 
