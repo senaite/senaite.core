@@ -98,16 +98,19 @@ class ResultOutOfRange(object):
         path = '++resource++bika.lims.images'
         if outofrange:
             rngstr = "{0} {1}, {2} {3}".format(
-                translate(_("min")), str(Min),
-                translate(_("max")), str(Max))
+                translate(_("min")).decode('utf-8'), str(Min),
+                translate(_("max")).decode('utf-8'), str(Max))
 
             if acceptable:
                 message = "{0} ({1})".format(
-                    translate(_('Result in shoulder range')), rngstr)
+                    translate(_('Result in shoulder range')).decode('utf-8'),
+                    rngstr
+                )
             else:
                 message = "{0} ({1})".format(
-                    translate(_('Result out of range')), rngstr)
-
+                    translate(_('Result out of range')).decode('utf-8'),
+                    rngstr
+                )
             alerts[self.context.UID()] = [{
                 'icon': path + '/warning.png' if acceptable else
                 path + '/exclamation.png',
