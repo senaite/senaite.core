@@ -4,15 +4,15 @@
 """
 
 from AccessControl import ClassSecurityInfo
+from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims.browser.widgets import AnalysisProfileAnalysesWidget
+from bika.lims.browser.widgets import ServicesWidget
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
-from bika.lims import PMF, bikaMessageFactory as _
-from bika.lims.browser.widgets import ServicesWidget
-from bika.lims.browser.widgets import AnalysisProfileAnalysesWidget
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
 from zope.interface import Interface, implements
 import sys
 

@@ -522,6 +522,17 @@ msgid "Results not requested"
 msgstr ""
 
 #
+# File: ../profiles/default/types/SRTemplate.xml, line: -1
+msgid "SR Template"
+msgstr ""
+
+#
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/SRTemplates.xml, line: -1
+msgid "SR Templates"
+msgstr ""
+
+#
 # File: ../profiles/default/types/Sample.xml, line: -1
 msgid "Sample"
 msgstr ""
@@ -750,6 +761,10 @@ msgstr "Import"
 #. Default: "Invalidate"
 msgid "invalidate_transition_title"
 msgstr "Invalidate"
+
+#
+msgid "label_schema_AR Templates"
+msgstr "AR Templates"
 
 #
 msgid "label_schema_Accounting"

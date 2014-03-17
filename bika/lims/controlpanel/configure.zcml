@@ -75,7 +75,7 @@
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
-    
+
     <browser:page
       for="bika.lims.interfaces.ISampleConditions"
       name="folder_view"
@@ -131,7 +131,7 @@
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
-    
+
     <browser:page
       for="bika.lims.interfaces.IInstrumentTypes"
       name="folder_view"
@@ -179,7 +179,7 @@
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
-    
+
     <browser:page
       for="bika.lims.interfaces.IManufacturers"
       name="folder_view"
@@ -192,6 +192,14 @@
       for="bika.lims.interfaces.IReferenceDefinitions"
       name="folder_view"
       class=".bika_referencedefinitions.ReferenceDefinitionsView"
+      permission="bika.lims.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.ISRTemplates"
+      name="folder_view"
+      class=".bika_srtemplates.TemplatesView"
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -211,7 +219,7 @@
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
-    
+
     <browser:page
       for="bika.lims.interfaces.IBatchLabels"
       name="folder_view"

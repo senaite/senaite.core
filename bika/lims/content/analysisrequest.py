@@ -839,7 +839,7 @@ class AnalysisRequest(BaseFolder):
             else:
                 return "0.00"
 
-    def getDefaultPriority(self):
+    def setDefaultPriority(self):
         """ compute default priority """
         bsc = getToolByName(self, 'bika_setup_catalog')
         priorities = bsc(
@@ -848,10 +848,11 @@ class AnalysisRequest(BaseFolder):
         for brain in priorities:
             obj = brain.getObject()
             if obj.getIsDefault():
-                return obj
+                self.setPriority(obj)
+                return
 
-        logging.error('Priority: no priority specified')
-        return None
+        logging.error('Priority: no default priority found')
+        return 
 
     security.declareProtected(View, 'getResponsible')
     def getResponsible(self):

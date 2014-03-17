@@ -86,6 +86,7 @@ class BikaGenerator:
                        'bika_samplingdeviations',
                        'bika_samplepoints',
                        'bika_sampletypes',
+                       'bika_srtemplates',
                        'bika_suppliers',
                        'bika_referencedefinitions',
                        'bika_worksheettemplates'):
@@ -194,6 +195,7 @@ class BikaGenerator:
         mp(AddSamplePartition, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
         mp(AddSamplePoint, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddSamplingDeviation, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
+        mp(AddSRTemplate, ['Manager', 'Owner', 'LabManager'], 0)
         mp(AddQuery, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 0)
 
         mp(permissions.AddPortalContent, ['Manager', 'Owner', 'LabManager'], 1)
@@ -677,6 +679,7 @@ class BikaGenerator:
         at.setCatalogsByType('Manufacturer', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('Preservation', ['bika_setup_catalog', ])
         at.setCatalogsByType('ReferenceDefinition', ['bika_setup_catalog', 'portal_catalog'])
+        at.setCatalogsByType('SRTemplate', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('Supplier', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('Unit', ['bika_setup_catalog', ])
         at.setCatalogsByType('WorksheetTemplate', ['bika_setup_catalog', 'portal_catalog'])

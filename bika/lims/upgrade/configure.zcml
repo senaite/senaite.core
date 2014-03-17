@@ -210,4 +210,22 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Update ARPriorities permissions and workflow"
+        description=""
+        source="3018"
+        destination="3019"
+        handler="bika.lims.upgrade.to3019.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Set default Priority on ARs"
+        description=""
+        source="3019"
+        destination="3020"
+        handler="bika.lims.upgrade.to3020.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
