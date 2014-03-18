@@ -65,6 +65,8 @@ schema = BikaSchema.copy() + Schema((
     ),
     StringField('Analyst',
     ),
+    TextField('Remarks',
+    ),
     ReferenceField(
         'Instrument',
         required=0,
@@ -155,7 +157,7 @@ class ReferenceAnalysis(BaseContent):
         return DateTime()
 
     def isInstrumentValid(self):
-        """ Checks if the instrument selected for this analysis service
+        """ Checks if the instrument selected for this analysis
             is valid. Returns false if an out-of-date or uncalibrated
             instrument is assigned. Returns true if the Analysis has
             no instrument assigned or is valid.
@@ -185,18 +187,47 @@ class ReferenceAnalysis(BaseContent):
             instrument specified.
         """
         service = self.getService()
-        if service.getInstrumentEntryOfResults():
+        if service.getInstrumentEntryOfResults() == False:
             return False
+
+        if isinstance(instrument, str):
+            uid = instrument
+        else:
+            uid = instrument.UID()
 
         method = self.getMethod()
         instruments = []
         if not method:
             # Look for Analysis Service methods and instrument support
-            instruments = [i.UID() for i in service.getInstruments()]
+            instruments = service.getRawInstruments()
         else:
-            instruments = method.getInstrumentUIDs();
+            instruments = method.getInstrumentUIDs()
 
-        instruid = instrument.UID()
-        return instruid in instruments
+        return uid in instruments
+
+    def isMethodAllowed(self, method):
+        """ Checks if the ref analysis can follow the method specified.
+            Looks for manually selected methods when AllowManualResultsEntry
+            is set and looks for instruments methods when
+            AllowInstrumentResultsEntry is set.
+            method param can be either an uid or an object
+        """
+        if isinstance(method, str):
+            uid = method
+        else:
+            uid = method.UID()
+
+        service = self.getService()
+        if service.getManualEntryOfResults() == True \
+            and uid in service.getRawMethods():
+            return True
+
+        if service.getInstrumentEntryOfResults() == True:
+            for ins in service.getInstruments():
+                if uid == ins.getRawMethod():
+                    return True
+
+        return False
+
 
 registerType(ReferenceAnalysis, PROJECTNAME)

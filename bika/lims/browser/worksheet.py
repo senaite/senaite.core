@@ -47,91 +47,12 @@ class WorksheetWorkflowAction(WorkflowAction):
         bac = getToolByName(self.context, 'bika_analysis_catalog')
         action, came_from = WorkflowAction._get_form_workflow_action(self)
 
-        # XXX combine data from multiple bika listing tables.
-        item_data = {}
-        if 'item_data' in form:
-            if type(form['item_data']) == list:
-                for i_d in form['item_data']:
-                    for i, d in json.loads(i_d).items():
-                        item_data[i] = d
-            else:
-                item_data = json.loads(form['item_data'])
 
-        if action == 'submit' and self.request.form.has_key("Result"):
-            selected_analyses = WorkflowAction._get_selected_items(self)
-            results = {}
-            hasInterims = {}
+        if action == 'submit':
 
-            # first save results for entire form
-            for uid, result in self.request.form['Result'][0].items():
-                if uid in selected_analyses:
-                    analysis = selected_analyses[uid]
-                else:
-                    analysis = rc.lookupObject(uid)
-                if not analysis:
-                    # ignore result if analysis object no longer exists
-                    continue
-                if not(getSecurityManager().checkPermission(EditResults, analysis)):
-                    # or changes no longer allowed
-                    continue
-                if not isActive(analysis):
-                    # or it's cancelled
-                    continue
-                results[uid] = result
-                interimFields = item_data[uid]
-                if len(interimFields) > 0:
-                    hasInterims[uid] = True
-                else:
-                    hasInterims[uid] = False
-                # Don't know why analysis.edit() doesn't works if
-                # logged in as analyst
-                # https://github.com/bikalabs/Bika-LIMS/issues/956
-                # https://github.com/bikalabs/Bika-LIMS/issues/965
-                retested = 'retested' in form and uid in form['retested']
-                remarks = form.get('Remarks', [{}, ])[0].get(uid, '')
-                analysis.setInterimFields(interimFields)
-                analysis.setRetested(retested)
-                analysis.setRemarks(remarks)
-                analysis.setResult(result)
+            # Submit the form. Saves the results, methods, etc.
+            self.submit()
 
-            # discover which items may be submitted
-            submissable = []
-            for uid, analysis in selected_analyses.items():
-                if uid not in results or not results[uid]:
-                    continue
-                can_submit = True
-                if hasattr(analysis, 'getDependencies'):
-                    dependencies = analysis.getDependencies()
-                    for dependency in dependencies:
-                        dep_state = workflow.getInfoFor(dependency, 'review_state')
-                        if hasInterims[uid]:
-                            if dep_state in ('to_be_sampled', 'to_be_preserved',
-                                             'sample_due', 'sample_received',
-                                             'attachment_due', 'to_be_verified',):
-                                can_submit = False
-                                break
-                        else:
-                            if dep_state in ('to_be_sampled', 'to_be_preserved',
-                                             'sample_due', 'sample_received',):
-                                can_submit = False
-                                break
-                    for dependency in dependencies:
-                        if workflow.getInfoFor(dependency, 'review_state') in \
-                           ('to_be_sampled', 'to_be_preserved',
-                            'sample_due', 'sample_received'):
-                            can_submit = False
-                if can_submit:
-                    submissable.append(analysis)
-
-            # and then submit them.
-            for analysis in submissable:
-                doActionFor(analysis, 'submit')
-
-            message = PMF("Changes saved.")
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            self.destination_url = self.request.get_header("referer",
-                                   self.context.absolute_url())
-            self.request.response.redirect(self.destination_url)
         ## assign
         elif action == 'assign':
             if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
@@ -184,6 +105,93 @@ class WorksheetWorkflowAction(WorkflowAction):
         else:
             # default bika_listing.py/WorkflowAction for other transitions
             WorkflowAction.__call__(self)
+
+    def submit(self):
+        """ Saves the form
+        """
+
+        form = self.request.form
+        remarks = form.get('Remarks', [{}])[0]
+        results = form.get('Result',[{}])[0]
+        retested = form.get('retested', {})
+        methods = form.get('Method', [{}])[0]
+        instruments = form.get('Instrument', [{}])[0]
+        selected = WorkflowAction._get_selected_items(self)
+        sm = getSecurityManager()
+
+        hasInterims = {}
+
+        # XXX combine data from multiple bika listing tables.
+        item_data = {}
+        if 'item_data' in form:
+            if type(form['item_data']) == list:
+                for i_d in form['item_data']:
+                    for i, d in json.loads(i_d).items():
+                        item_data[i] = d
+            else:
+                item_data = json.loads(form['item_data'])
+
+        # Iterate for each selected analysis and save its data as needed
+        for uid, analysis in selected.items():
+
+            allow_edit = sm.checkPermission(EditResults, analysis)
+            analysis_active = isActive(analysis)
+
+            # Need to save remarks?
+            if uid in remarks and allow_edit and analysis_active:
+                analysis.setRemarks(remarks[uid])
+
+            # Retested?
+            if uid in retested and allow_edit and analysis_active:
+                analysis.setRetested(retested[uid])
+
+            # Need to save the method?
+            if uid in methods and analysis_active:
+                # TODO: Add SetAnalysisMethod permission
+                # allow_setmethod = sm.checkPermission(SetAnalysisMethod)
+                allow_setmethod = True
+                # ---8<-----
+                if allow_setmethod == True and analysis.isMethodAllowed(methods[uid]):
+                    analysis.setMethod(methods[uid])
+
+            # Need to save the instrument?
+            if uid in instruments and analysis_active:
+                # TODO: Add SetAnalysisInstrument permission
+                # allow_setinstrument = sm.checkPermission(SetAnalysisInstrument)
+                allow_setinstrument = True
+                # ---8<-----
+                if allow_setinstrument == True:
+                    # The current analysis allows the instrument regards
+                    # to its analysis service and method?
+                    if analysis.isInstrumentAllowed(instruments[uid]):
+                        analysis.setInstrument(instruments[uid])
+
+            # Need to save results?
+            if uid in results and results[uid] and allow_edit \
+                and analysis_active:
+                interims = item_data.get(uid, [])
+                analysis.setInterimFields(interims)
+                analysis.setResult(results[uid])
+
+                can_submit = True
+                deps = analysis.getDependencies() \
+                        if hasattr(analysis, 'getDependencies') else []
+                for dependency in deps:
+                    if workflow.getInfoFor(dependency, 'review_state') in \
+                       ('to_be_sampled', 'to_be_preserved',
+                        'sample_due', 'sample_received'):
+                        can_submit = False
+                        break
+                if can_submit:
+                    # doActionFor transitions the analysis to verif pending,
+                    # so must only be done when results are submitted.
+                    doActionFor(analysis, 'submit')
+
+        message = PMF("Changes saved.")
+        self.context.plone_utils.addPortalMessage(message, 'info')
+        self.destination_url = self.request.get_header("referer",
+                               self.context.absolute_url())
+        self.request.response.redirect(self.destination_url)
 
 
 class ResultOutOfRange(object):

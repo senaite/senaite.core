@@ -133,7 +133,7 @@ class Method(BaseFolder):
     def getInstrumentUIDs(self):
         """ UIDs of the instruments capable to perform this method
         """
-        return [i.UID for i in self.getInstruments()]
+        return [i.UID() for i in self.getInstruments()]
 
     def getInstrumentsDisplayList(self):
         """ DisplayList containing the Instruments capable to perform

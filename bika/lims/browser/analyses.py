@@ -372,9 +372,16 @@ class AnalysesView(BikaListingView):
             items[i]['Attachments'] = ''
 
             item['allow_edit'] = []
+            allowed_method_states = ['to_be_sampled',
+                                     'to_be_preserved',
+                                     'sample_received',
+                                     'sample_registered',
+                                     'sampled',
+                                     'assigned']
             # TODO: Only the labmanager must be able to change the method
             # can_set_method = getSecurityManager().checkPermission(SetAnalysisMethod, obj)
-            can_set_method = True
+            can_set_method = self.allow_edit \
+                 and item['review_state'] in allowed_method_states
             method = obj.getMethod() if hasattr(obj, 'getMethod') \
                         else service.getMethod()
             if can_set_method:
@@ -391,7 +398,9 @@ class AnalysesView(BikaListingView):
             # Only the labmanager must be able to change the instrument to be used. Also,
             # the instrument selection should be done in accordance with the method selected
             # can_set_instrument = service.getInstrumentEntryOfResults() and getSecurityManager().checkPermission(SetAnalysisInstrument, obj)
-            can_set_instrument = service.getInstrumentEntryOfResults()
+            can_set_instrument = service.getInstrumentEntryOfResults() \
+                and self.allow_edit \
+                and item['review_state'] in allowed_method_states
             instrument = obj.getInstrument() if hasattr(obj, 'getInstrument') else None
             if service.getInstrumentEntryOfResults() == False:
                 item['Instrument'] = ''
@@ -428,7 +437,7 @@ class AnalysesView(BikaListingView):
             # choices defined on Service apply to result fields.
             choices = service.getResultOptions()
             if choices:
-                items[i]['choices'] = {'Result': choices}
+                item['choices']['Result'] = choices
 
             # permission to view this item's results
             can_view_result = \

@@ -468,16 +468,46 @@ class Analysis(BaseContent):
             Returns false, If the analysis hasn't any method assigned.
             NP: The methods allowed for selection are defined at
             Analysis Service level.
+            instrument param can be either an uid or an object
         """
+        if isinstance(instrument, str):
+            uid = instrument
+        else:
+            uid = instrument.UID()
+
         service = self.getService()
-        if service.getInstrumentEntryOfResults():
+        if service.getInstrumentEntryOfResults() == False:
+            return False
+
+        if not self.getMethod():
             return False
 
         method = self.getMethod()
-        if not method:
-            return False
+        return uid in method.getInstrumentUIDs()
 
-        instruid = instrument.UID()
-        return instruid in method.getInstrumentUIDs()
+    def isMethodAllowed(self, method):
+        """ Checks if the analysis can follow the method specified.
+            Looks for manually selected methods when AllowManualEntry
+            is set and instruments methods when AllowInstrumentResultsEntry
+            is set.
+            method param can be either an uid or an object
+        """
+        if isinstance(method, str):
+            uid = method
+        else:
+            uid = method.UID()
+
+        service = self.getService()
+        if service.getManualEntryOfResults() == True \
+            and uid in service.getRawMethods():
+            return True
+
+        if service.getInstrumentEntryOfResults() == True:
+            for ins in service.getInstruments():
+                if uid == ins.getRawMethod():
+                    return True
+
+        return False
+
 
 atapi.registerType(Analysis, PROJECTNAME)
