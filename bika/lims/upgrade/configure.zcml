@@ -228,4 +228,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Add ARPriority to bika_setup_catalog"
+        description=""
+        source="3020"
+        destination="3021"
+        handler="bika.lims.upgrade.to3021.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
