@@ -12,7 +12,6 @@ def upgrade(tool):
 
     portal = aq_parent(aq_inner(tool))
     setup = portal.portal_setup
-    import pdb; pdb.set_trace()
     portal = aq_parent(aq_inner(tool))
     bac = getToolByName(portal, 'bika_analysis_catalog')
     rc=getToolByName(portal, REFERENCE_CATALOG)
@@ -29,4 +28,5 @@ def upgrade(tool):
                 break
         if instrument:
             an.Schema().getField('Instrument').set(an, instrument.UID())
+            instrument.addAnalysis(an)
     return True

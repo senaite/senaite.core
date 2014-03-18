@@ -117,6 +117,7 @@ class WorksheetWorkflowAction(WorkflowAction):
         methods = form.get('Method', [{}])[0]
         instruments = form.get('Instrument', [{}])[0]
         selected = WorkflowAction._get_selected_items(self)
+        rc = getToolByName(self.context, REFERENCE_CATALOG)
         sm = getSecurityManager()
 
         hasInterims = {}
@@ -164,7 +165,12 @@ class WorksheetWorkflowAction(WorkflowAction):
                     # The current analysis allows the instrument regards
                     # to its analysis service and method?
                     if analysis.isInstrumentAllowed(instruments[uid]):
+                        previnstr = analysis.getInstrument()
+                        if previnstr:
+                            previnstr.removeAnalysis(analysis)
                         analysis.setInstrument(instruments[uid])
+                        instrument = rc.lookupObject(instruments[uid])
+                        instrument.addAnalysis(analysis)
 
             # Need to save results?
             if uid in results and results[uid] and allow_edit \

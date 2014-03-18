@@ -358,7 +358,7 @@ class InstrumentReferenceAnalysesViewView(BrowserView):
             self._analysesview.allow_edit = False
             self._analysesview.show_select_column = False
             self._analysesview.show_workflow_action_buttons = False
-            self._analysesview.form_id = "%s_qcanalyses"
+            self._analysesview.form_id = "%s_qcanalyses" % self.context.UID()
             self._analysesview.review_states[0]['transitions'] = [{}]
 
         return self._analysesview

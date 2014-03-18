@@ -45,8 +45,10 @@
                 });
 
                 // Draw the chart and filter rows
-                filterRows();
-                drawControlChart();
+                if ($('#selanalyses').val()) {
+                    filterRows();
+                    drawControlChart();
+                }
 
                 $('#selanalyses').change(function(e) {
                     drawControlChart();

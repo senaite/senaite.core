@@ -395,6 +395,36 @@ class Instrument(ATFolder):
         return [analysis for analysis in self.getAnalyses() \
                 if analysis.portal_type=='ReferenceAnalysis']
 
+    def addAnalysis(self, analysis):
+        """ Add regular analysis (included WS QCs) to this instrument
+            If the analysis has
+        """
+        targetuid = analysis.getRawInstrument()
+        if not targetuid:
+            return
+        if targetuid != self.UID():
+            raise Exception("Invalid instrument")
+        ans = self.getRawAnalyses() if self.getRawAnalyses() else []
+        ans.append(analysis.UID())
+        self.setAnalyses(ans)
+        self.cleanReferenceAnalysesCache()
+
+    def removeAnalysis(self, analysis):
+        """ Remove a regular analysis assigned to this instrument
+        """
+        targetuid = analysis.getRawInstrument()
+        if not targetuid:
+            return
+        if targetuid != self.UID():
+            raise Exception("Invalid instrument")
+        uid = analysis.UID()
+        ans = [a for a in self.getRawAnalyses() if a != uid]
+        self.setAnalyses(ans)
+        self.cleanReferenceAnalysesCache()
+
+    def cleanReferenceAnalysesCache(self):
+        self.getField('_LatestReferenceAnalyses').set(self, [])
+
     def addReferences(self, reference, service_uids):
         """ Add reference analyses to reference
         """
@@ -446,7 +476,7 @@ class Instrument(ATFolder):
         self.setAnalyses(self.getAnalyses() + addedanalyses)
 
         # Initialize LatestReferenceAnalyses cache
-        self.getField('_LatestReferenceAnalyses').set(self, refs)
+        self.cleanReferenceAnalysesCache()
         return addedanalyses
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
