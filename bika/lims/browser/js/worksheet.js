@@ -198,6 +198,8 @@ $(document).ready(function(){
                   '_authenticator': $('input[name="_authenticator"]').val()},
           success: function(data, textStatus, jqXHR){
                portalMessage("Changes saved.");
+               # TODO: refresh all the Analysis-Instrument selectors for all the analyses
+               # of the worksheet table
           },
           error: function(data, jqXHR, textStatus, errorThrown){
                 $(".manage_results_header .instrument")
