@@ -258,6 +258,7 @@ class WorksheetAnalysesView(AnalysesView):
             'retested': {'title': "<img src='++resource++bika.lims.images/retested.png' title='%s'/>" % _('Retested'),
                          'type':'boolean'},
             'Attachments': {'title': _('Attachments')},
+            'Instrument': {'title': _('Instrument')},
             'state_title': {'title': _('State')},
         }
         self.review_states = [
@@ -271,6 +272,7 @@ class WorksheetAnalysesView(AnalysesView):
              'columns':['Pos',
                         'Service',
                         'Method',
+                        'Instrument',
                         'Result',
                         'Uncertainty',
                         'DueDate',
@@ -296,7 +298,7 @@ class WorksheetAnalysesView(AnalysesView):
             service = obj.getService()
             method = service.getMethod()
             items[x]['Service'] = service.Title()
-            items[x]['Method'] = method and method.Title() or ''
+            #items[x]['Method'] = method and method.Title() or ''
             items[x]['class']['Service'] = 'service_title'
             items[x]['Category'] = service.getCategory() and service.getCategory().Title() or ''
             if obj.portal_type == "ReferenceAnalysis":
@@ -305,6 +307,8 @@ class WorksheetAnalysesView(AnalysesView):
                 items[x]['DueDate'] = self.ulocalized_time(obj.getDueDate())
 
             items[x]['Order'] = ''
+            instrument = obj.getInstrument()
+            #items[x]['Instrument'] = instrument and instrument.Title() or ''
 
         # insert placeholder row items in the gaps
         empties = []
@@ -334,7 +338,7 @@ class WorksheetAnalysesView(AnalysesView):
                     'Pos': pos,
                     'Service': '',
                     'Attachments': '',
-                    'state_title': 's'})
+                    'state_title': 's',})
                 item['replace'] = {
                     'Pos': "<table width='100%' cellpadding='0' cellspacing='0'>" + \
                             "<tr><td class='pos'>%s</td>" % pos + \

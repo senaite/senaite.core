@@ -489,11 +489,16 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             be overriden.
             The Analyses that don't allow the instrument specified will
             not be modified.
+            Returns the number of analyses affected
         """
         analyses = [an for an in self.getAnalyses() \
                     if not an.getInstrument() \
                         and an.isInstrumentAllowed(instrument)]
+        total = 0
         for an in analyses:
-            an.setInstrument(instrument)
+            success = an.setInstrument(instrument)
+            if success == True:
+                total += 1
+        return total
 
 registerType(Worksheet, PROJECTNAME)
