@@ -1316,10 +1316,13 @@ class ajaxSetInstrument():
         self.request = request
 
     def __call__(self):
-        uc = getToolByName(self.context, 'uid_catalog')
+        rc = getToolByName(self.context, REFERENCE_CATALOG)
         plone.protect.CheckAuthenticator(self.request)
         plone.protect.PostOnly(self.request)
-        value = request.get('value', '')
-##        if not value:
-##            return
-        self.context.setInstrument(value)
+        value = self.request.get('value', '')
+        if not value:
+            raise Exception("Invalid instrument")
+        instrument = rc.lookupObject(value)
+        if not instrument:
+            raise Exception("Unable to lookup instrument")
+        self.context.setInstrument(instrument)

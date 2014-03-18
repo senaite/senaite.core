@@ -481,7 +481,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """ return current date """
         return DateTime()
 
-    def setInstrument(self, instrument)
+    def setInstrument(self, instrument):
         """ Sets the specified instrument to the Analysis from the
             Worksheet. Only sets the instrument if the Analysis
             allows it, according to its Analysis Service and Method.
