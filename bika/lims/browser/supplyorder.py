@@ -68,7 +68,7 @@ class EditView(BrowserView):
             context.processForm()
             # Process the order item data
             for k, v in request.form.items():
-                if k.startswith('product_') and int(v) > 0:
+                if k.startswith('product_') and int(v) > -1:
                     k = k.replace('product_', '')
                     product = setup.bika_labproducts[k]
                     # Create a item if it doesn't yet exist
