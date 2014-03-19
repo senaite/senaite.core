@@ -416,10 +416,9 @@ class Analysis(BaseContent):
     def getPriority(self):
         """ get priority from AR
         """
-        ar = self.aq_parent
-        priority = ar.getPriority()
-        if priority:
-            return priority
+        # this analysis could be in a worksheet or instrument, careful
+        return self.aq_parent.getPriority() \
+            if hasattr(self.aq_parent, 'getPriority') else None
 
     def getPrice(self):
         price = self.getService().getPrice()
