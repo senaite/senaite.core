@@ -50,7 +50,7 @@ class InvoiceView(BrowserView):
                 self.clientAddress = address
                 break
         # Gather the line items
-        items = context.invoice_lineitemms
+        items = context.invoice_lineitems
         self.items = [{
             'invoiceDate': self.ulocalized_time(item['ItemDate']),
             'description': item['ItemDescription'],
