@@ -479,6 +479,31 @@ class Instrument(ATFolder):
         self.cleanReferenceAnalysesCache()
         return addedanalyses
 
+    def getAnalysesToRetract(self, allanalyses=True, outofdate=False):
+        """ If the instrument is not valid due to fail on latest QC
+            Tests or a Calibration Test, returns the validation-pending
+            Analyses with this instrument assigned.
+            If allanalyses is False, only returns the analyses from
+            the same Analysis Service as the failed QC/s or Calibration
+            Tests.
+            Only regular and duplicate analyses are returned.
+            By default, only checks if latest QCs for this instrument are
+            valid. If the instrument is out of date but the latest QC
+            is valid, the method will retorn an empty list.
+            Use outofdate=True to take also into account if the
+            instrument's calibration certificate is out of date.
+        """
+        isvalid = self.isQCValid() if outofdate else self.isValid()
+        if isvalid:
+            return []
+
+        bac = getToolByName(self, 'bika_analysis_catalog')
+        prox = bac(portal_type=['Analysis', 'DuplicateAnalysis'],
+                   review_state='to_be_verified')
+        ans = [p.getObject() for p in prox]
+        return [a for a in ans if a.getRawInstrument() == self.UID()]
+
+
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 
 registerType(Instrument, PROJECTNAME)

@@ -1,3 +1,4 @@
+# coding=utf-8
 from AccessControl import getSecurityManager
 from bika.lims import bikaMessageFactory as _
 from bika.lims import EditResults, EditWorksheet, ManageWorksheets
@@ -193,12 +194,61 @@ class WorksheetWorkflowAction(WorkflowAction):
                     # so must only be done when results are submitted.
                     doActionFor(analysis, 'submit')
 
+        # Maybe some analyses need to be retracted due to a QC failure
+        # Done here because don't know if the last selected analysis is
+        # a valid QC for the instrument used in previous analyses.
+        # If we add this logic in subscribers.analyses, there's the
+        # possibility to retract analyses before the QC being reached.
+        self.retractInvalidAnalyses()
+
         message = PMF("Changes saved.")
         self.context.plone_utils.addPortalMessage(message, 'info')
         self.destination_url = self.request.get_header("referer",
                                self.context.absolute_url())
         self.request.response.redirect(self.destination_url)
 
+    def retractInvalidAnalyses(self):
+        """ Retract the analyses with validation pending status for which
+            the instrument used failed a QC Test.
+        """
+        toretract = {}
+        selected = WorkflowAction._get_selected_items(self)
+        instrums = [a.getInstrument() for a in selected.itervalues() \
+                    if a.portal_type == 'ReferenceAnalysis' \
+                    and a.getInstrument()]
+        for instr in instrums:
+            analyses = instr.getAnalysesToRetract()
+            for a in analyses:
+                if a.UID() not in toretract:
+                    toretract[a.UID] = a
+
+        retracted = []
+        for analysis in toretract.itervalues():
+            try:
+                # retract the analysis
+                doActionFor(analysis, 'retract')
+                retracted.append(analysis)
+
+                # TODO: Add a log entry for this AS
+
+            except:
+                # Already retracted as a dependant from a previous one?
+                pass
+
+        if len(toretract) > 0:
+            # TODO: generate a list with the retracted analyses
+
+            # TODO: send an email with the list to the labmanager
+
+            # TODO: generate a pdf from the list
+
+            # TODO: attach the pdf to the Instrument
+
+            # TODO: mostra una finestra amb els resultats publicats d'AS
+            # que han utilitzat l'instrument des de la seva última
+            # calibració vàlida, amb els emails, telèfons dels
+            # contactes associats per a una intervenció manual
+            pass
 
 class ResultOutOfRange(object):
     """Return alerts for any analyses inside the context worksheet
@@ -650,7 +700,8 @@ class ManageResultsView(BrowserView):
             valid = an.isInstrumentValid()
             if not valid:
                 inv = '%s (%s)' % (an.Title(), an.getInstrument().Title())
-                invalid.append(inv)
+                if inv not in invalid:
+                    invalid.append(inv)
         if len(invalid) > 0:
             message = _("Some analyses use out-of-date or uncalibrated instruments. Results edition not allowed")
             message = "%s: %s" % (message, (', '.join(invalid)))

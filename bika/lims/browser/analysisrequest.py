@@ -1341,7 +1341,8 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
             valid = an.isInstrumentValid()
             if not valid:
                 inv = '%s (%s)' % (an.Title(), an.getInstrument().Title())
-                invalid.append(inv)
+                if inv not in invalid:
+                    invalid.append(inv)
         if len(invalid) > 0:
             message = _("Some analyses use out-of-date or uncalibrated instruments. Results edition not allowed")
             message = "%s: %s" % (message, (', '.join(invalid)))

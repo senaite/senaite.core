@@ -244,6 +244,8 @@ class AnalysesView(BikaListingView):
             all the instruments available from the service default method.
             If the instrument's Service has the property
             getInstrumentEntryOfResults unset, always returns empty.
+            If the analysis is a QC, the invalid instruments not
+            out-of-date are also returned.
         """
         ret = []
         instruments = []
@@ -264,6 +266,13 @@ class AnalysesView(BikaListingView):
             instruments = [brain.getObject() for brain in brains]
 
         for ins in instruments:
+            if analysis \
+                and analysis.portal_type in ['ReferenceAnalysis',
+                                             'DuplicateAnalysis'] \
+                and not ins.isOutOfDate():
+                # Add the 'invalid', but in-date instrument
+                ret.append({'ResultValue': ins.UID(),
+                            'ResultText': ins.Title()})
             if ins.isValid():
                 # Only add the 'valid' instruments: certificate
                 # on-date and valid internal calibration tests
@@ -372,48 +381,6 @@ class AnalysesView(BikaListingView):
             items[i]['Attachments'] = ''
 
             item['allow_edit'] = []
-            allowed_method_states = ['to_be_sampled',
-                                     'to_be_preserved',
-                                     'sample_received',
-                                     'sample_registered',
-                                     'sampled',
-                                     'assigned']
-            # TODO: Only the labmanager must be able to change the method
-            # can_set_method = getSecurityManager().checkPermission(SetAnalysisMethod, obj)
-            can_set_method = self.allow_edit \
-                 and item['review_state'] in allowed_method_states
-            method = obj.getMethod() if hasattr(obj, 'getMethod') \
-                        else service.getMethod()
-            if can_set_method:
-                item['Method'] = method.UID() if method else ''
-                item['choices']['Method'] = self.get_methods_vocabulary(obj)
-            elif method:
-                item['Method'] = method.Title()
-                item['replace']['Method'] = "<a href='%s'>%s</a>" % \
-                        (method.absolute_url(), method.Title())
-            else:
-                item['Method'] = ''
-
-            # TODO: Instrument selector dynamic behavior in worksheet Results
-            # Only the labmanager must be able to change the instrument to be used. Also,
-            # the instrument selection should be done in accordance with the method selected
-            # can_set_instrument = service.getInstrumentEntryOfResults() and getSecurityManager().checkPermission(SetAnalysisInstrument, obj)
-            can_set_instrument = service.getInstrumentEntryOfResults() \
-                and self.allow_edit \
-                and item['review_state'] in allowed_method_states
-            instrument = obj.getInstrument() if hasattr(obj, 'getInstrument') else None
-            if service.getInstrumentEntryOfResults() == False:
-                item['Instrument'] = ''
-                item['replace']['Instrument'] = _("Manual entry")
-            elif can_set_instrument:
-                item['Instrument'] = instrument.UID() if instrument else ''
-                item['choices']['Instrument'] = self.get_instruments_vocabulary(obj)
-            elif instrument:
-                item['Instrument'] = instrument.Title()
-                item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
-                        (instrument.absolute_url(), instrument.Title())
-            else:
-                item['Instrument'] = ''
 
             Analyst = obj.getAnalyst()
             items[i]['Analyst'] = Analyst
@@ -452,9 +419,12 @@ class AnalysesView(BikaListingView):
                   (poc != 'field' and getSecurityManager().checkPermission(EditResults, obj)) )
 
             # Prevent from being edited if the instrument assigned
-            # is not valid (out-of-date or uncalibrated)
-            can_edit_analysis = obj.isInstrumentValid() \
-                                if can_edit_analysis == True else False
+            # is not valid (out-of-date or uncalibrated), except if
+            # the analysis is a QC with assigned status
+            can_edit_analysis = can_edit_analysis \
+                and (obj.isInstrumentValid() \
+                    or (obj.portal_type == 'ReferenceAnalysis' \
+                        and item['review_state'] in allowed_method_states))
 
             if can_edit_analysis:
                 items[i]['allow_edit'].extend(['Analyst',
@@ -470,12 +440,51 @@ class AnalysesView(BikaListingView):
                    (items[i]['calculation'] and self.interim_fields[obj.UID()]):
                     items[i]['allow_edit'].append('retested')
 
-                if can_set_method:
-                    items[i]['allow_edit'].append('Method')
+            allowed_method_states = ['to_be_sampled',
+                                     'to_be_preserved',
+                                     'sample_received',
+                                     'sample_registered',
+                                     'sampled',
+                                     'assigned']
 
-                if can_set_instrument:
-                    items[i]['allow_edit'].append('Instrument')
+            # TODO: Only the labmanager must be able to change the method
+            # can_set_method = getSecurityManager().checkPermission(SetAnalysisMethod, obj)
+            can_set_method = can_edit_analysis \
+                and item['review_state'] in allowed_method_states
+            method = obj.getMethod() if hasattr(obj, 'getMethod') \
+                        else service.getMethod()
+            if can_set_method:
+                item['Method'] = method.UID() if method else ''
+                item['choices']['Method'] = self.get_methods_vocabulary(obj)
+                item['allow_edit'].append('Method')
+            elif method:
+                item['Method'] = method.Title()
+                item['replace']['Method'] = "<a href='%s'>%s</a>" % \
+                        (method.absolute_url(), method.Title())
+            else:
+                item['Method'] = ''
 
+            # TODO: Instrument selector dynamic behavior in worksheet Results
+            # Only the labmanager must be able to change the instrument to be used. Also,
+            # the instrument selection should be done in accordance with the method selected
+            # can_set_instrument = service.getInstrumentEntryOfResults() and getSecurityManager().checkPermission(SetAnalysisInstrument, obj)
+            can_set_instrument = service.getInstrumentEntryOfResults() \
+                and can_edit_analysis \
+                and item['review_state'] in allowed_method_states
+            instrument = obj.getInstrument() if hasattr(obj, 'getInstrument') else None
+            if service.getInstrumentEntryOfResults() == False:
+                item['Instrument'] = ''
+                item['replace']['Instrument'] = _("Manual entry")
+            elif can_set_instrument:
+                item['Instrument'] = instrument.UID() if instrument else ''
+                item['choices']['Instrument'] = self.get_instruments_vocabulary(obj)
+                item['allow_edit'].append('Instrument')
+            elif instrument:
+                item['Instrument'] = instrument.Title()
+                item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
+                        (instrument.absolute_url(), instrument.Title())
+            else:
+                item['Instrument'] = ''
 
             # If the user can attach files to analyses, show the attachment col
             can_add_attachment = \
