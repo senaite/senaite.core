@@ -6,6 +6,12 @@ from bika.lims.interfaces import IFieldIcons
 from bika.lims.permissions import *
 from zope.component import adapts
 from zope.interface import implements
+from bika.lims.browser import BrowserView
+from pkg_resources import resource_filename
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFPlone.utils import safe_unicode
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 
 class ResultOutOfRange(object):
@@ -109,3 +115,49 @@ class ResultOutOfRange(object):
         else:
             # Analysis without specification values. Assume in range
             return {}
+
+class AnalysesRetractedListReport(BrowserView):
+    """ Generates a report with a list of analyses retracted
+    """
+    template = ViewPageTemplateFile("templates/analyses_retractedlist.pt")
+
+    def __init__(self, context, request, title='Retracted analyses', analyses=[]):
+        self.analyses = analyses
+        self.title = title
+        self._data = None
+
+    def __call__(self):
+        return self.template()
+
+    def getData(self):
+        if not self._data:
+            self._data = []
+            for an in self.analyses:
+                item = {'ar':'',
+                        'ar_url':'',
+                        'ar_id':'',
+                        'ar_html':'',
+                        'ws':'',
+                        'ws_url':'',
+                        'ws_id':'',
+                        'ws_html':'',
+                        'an': an,
+                        'an_id': an.id,
+                        'an_title': an.Title}
+
+                if an.aq_parent and an.aq_parent.portal_type == 'AnalysisRequest':
+                    item['ar'] = an.aq_parent
+                    item['ar_url'] = an.aq_parent.absolute_url()
+                    item['ar_id'] = an.aq_parent.getRequestID()
+                    item['ar_html'] = "<a href='%s'>%s</a>" \
+                        % (item['ar_url'], item['ar_id'])
+                ws = an.getBackReferences("WorksheetAnalysis")
+                if ws and len(ws) > 0:
+                    ws = ws[0].getObject()
+                    item['ws'] = ws
+                    item['ws_url'] = ws.absolute_url()
+                    item['ws_id'] = ws.id
+                    item['ws_html'] = "<a href='%s'>%s</a>" \
+                        % (item['ws_url'], item['ws_id'])
+                self._data.append(item)
+        return self._data

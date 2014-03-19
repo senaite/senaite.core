@@ -29,6 +29,14 @@ from zope.component import getAdapters
 from zope.component import getMultiAdapter
 from zope.i18n import translate
 from zope.interface import implements
+from smtplib import SMTPRecipientsRefused
+from smtplib import SMTPServerDisconnected
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.Utils import formataddr
+from bika.lims.utils import encode_header, createPdf, attachPdf, tmpID
+from os.path import join
+from bika.lims.broser.referenceanalysis import AnalysesRetractedListReport
 
 import plone
 import json
@@ -212,11 +220,20 @@ class WorksheetWorkflowAction(WorkflowAction):
             the instrument used failed a QC Test.
         """
         toretract = {}
+        instruments = {}
+        rc = getToolByName(self.context, REFERENCE_CATALOG)
         selected = WorkflowAction._get_selected_items(self)
-        instrums = [a.getInstrument() for a in selected.itervalues() \
-                    if a.portal_type == 'ReferenceAnalysis' \
-                    and a.getInstrument()]
-        for instr in instrums:
+        for uid in selected.iterkeys():
+            # We need to do this instead of using the dict values
+            # directly because all these analyses have been saved before
+            # and don't know if they already had an instrument assigned
+            an = rc.lookupObject(uid)
+            if an.portal_type == 'ReferenceAnalysis':
+                instrument = an.getInstrument()
+                if instrument and instrument.UID() not in instruments:
+                    instruments[instrument.UID()] = instrument
+
+        for instr in instruments.itervalues():
             analyses = instr.getAnalysesToRetract()
             for a in analyses:
                 if a.UID() not in toretract:
@@ -235,14 +252,60 @@ class WorksheetWorkflowAction(WorkflowAction):
                 # Already retracted as a dependant from a previous one?
                 pass
 
-        if len(toretract) > 0:
-            # TODO: generate a list with the retracted analyses
+        if len(retracted) > 0:
+            # Create the Retracted Analyses List
+            html = AnalysesRetractedListReport(self.context,
+                                               self.request,
+                                               'Retracted analyses',
+                                               retracted)
+            html = safe_unicode(html).encode('utf-8')
 
-            # TODO: send an email with the list to the labmanager
-
-            # TODO: generate a pdf from the list
+            # Generate the pdf
+            outpath = join(Globals.INSTANCE_HOME, 'var')
+            filepath = join(outpath, tmpID() + ".pdf")
+            pdf = createPdf(html, filepath)
 
             # TODO: attach the pdf to the Instrument
+
+            # Create the email
+            added = []
+            to = ''
+            for analysis in retracted:
+                department = analysis.getService().getDepartment()
+                if department is None:
+                    continue
+                department_id = department.UID()
+                if department_id in added:
+                    continue
+                added.append(department_id)
+                manager = department.getManager()
+                if manager is None:
+                    continue
+                manager_id = manager.UID()
+                if manager_id not in added and manager.getEmailAddress():
+                    added.append(manager_id)
+                    name = to_unicode(manager.getFullname())
+                    email = to_unicode(manager.getEmailAddress())
+                    to = ','.join(to, formataddr((encode_header(name), email)))
+
+            mime_msg = MIMEMultipart('related')
+            mime_msg['Subject'] = self.get_mail_subject(ar)[0]
+            mime_msg['From'] = formataddr(
+                        (encode_header(lab.getName()),
+                         lab.getEmailAddress()))
+            mime_msg['To'] = to
+            mime_msg.preamble = 'This is a multi-part MIME message.'
+            msg_txt = MIMEText(html, _subtype='html')
+            mime_msg.attach(msg_txt)
+
+            # Send the email
+            try:
+                host = getToolByName(self.context, 'MailHost')
+                host.send(mime_msg.as_string(), immediate=True)
+            except SMTPServerDisconnected as msg:
+                raise SMTPServerDisconnected(msg)
+            except SMTPRecipientsRefused as msg:
+                raise WorkflowException(str(msg))
 
             # TODO: mostra una finestra amb els resultats publicats d'AS
             # que han utilitzat l'instrument des de la seva última
