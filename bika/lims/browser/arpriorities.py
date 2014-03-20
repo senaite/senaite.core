@@ -27,7 +27,7 @@ class GlobalARPrioritiesView(BikaListingView):
         request.set('disable_plone.rightcolumn', 1)
         request.set('disable_border', 1)
 
-        self.catalog = "portal_catalog"
+        self.catalog = "bika_setup_catalog"
         self.contentFilter = {
                 'portal_type': 'ARPriority',
                 'path': {'query': '/'.join(context.getPhysicalPath())},
