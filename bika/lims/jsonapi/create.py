@@ -6,8 +6,8 @@ from bika.lims.jsonapi import resolve_request_lookup
 from bika.lims.permissions import AccessJSONAPI
 from bika.lims.utils import tmpID
 from bika.lims.workflow import doActionFor
-from plone.jsonapi import router
-from plone.jsonapi.interfaces import IRouteProvider
+from plone.jsonapi.core import router
+from plone.jsonapi.core.interfaces import IRouteProvider
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
 from zExceptions import BadRequest
