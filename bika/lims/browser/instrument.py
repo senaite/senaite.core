@@ -358,7 +358,7 @@ class InstrumentReferenceAnalysesViewView(BrowserView):
             self._analysesview.allow_edit = False
             self._analysesview.show_select_column = False
             self._analysesview.show_workflow_action_buttons = False
-            self._analysesview.form_id = "%s_qcanalyses"
+            self._analysesview.form_id = "%s_qcanalyses" % self.context.UID()
             self._analysesview.review_states[0]['transitions'] = [{}]
 
         return self._analysesview
@@ -380,18 +380,22 @@ class InstrumentReferenceAnalysesView(AnalysesView):
                                                        'sortable': False}
         self.columns['Partition'] = {'title': _('Reference Sample'),
                                      'sortable': False}
+        self.columns['Retractions'] = {'title': '',
+                                                  'sortable': False}
         self.review_states[0]['columns'] = ['Service',
                                             'getReferenceAnalysesGroupID',
                                             'Partition',
                                             'Result',
                                             'Uncertainty',
-                                            'CaptureDate']
+                                            'CaptureDate',
+                                            'Retractions']
+
 
         analyses = self.context.getReferenceAnalyses()
         asuids = [an.UID() for an in analyses]
         self.catalog = 'bika_analysis_catalog'
         self.contentFilter = {'UID': asuids,
-                              'sort_on': 'sortable_title'}
+                              'sort_on': 'getResultCaptureDate'}
         self.anjson = {}
 
     def folderitems(self):
@@ -414,8 +418,27 @@ class InstrumentReferenceAnalysesView(AnalysesView):
                 items[i]['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getService().getKeyword())
 
             items[i]['before']['Service'] = imgtype
-            items[i]['sortcode'] = '%s_%s' % (obj.getReferenceAnalysesGroupID(),
-                                              obj.getService().getKeyword())
+
+            # Get retractions field
+            pdf = obj.getRetractedAnalysesPdfReport()
+            title = ''
+            anchor = ''
+            if pdf:
+                filesize = 0
+                title = _('Retractions')
+                anchor = "<a class='pdf' target='_blank' href='%s/at_download/RetractedAnalysesPdfReport'>%s</a>" % \
+                         (obj.absolute_url(), _("Retractions"))
+                try:
+                    filesize = pdf.get_size()
+                    filesize = filesize / 1024 if filesize > 0 else 0
+                except:
+                    # POSKeyError: 'No blob file'
+                    # Show the record, but not the link
+                    title = _('Unavailable')
+                    anchor = title
+            items[i]['Retractions'] = title
+            items[i]['replace']['Retractions'] = anchor
+
 
             # Create json
             qcid = obj.aq_parent.id;
@@ -456,8 +479,8 @@ class InstrumentReferenceAnalysesView(AnalysesView):
                 except:
                     pass
 
-        # Sort items
-        items = sorted(items, key = itemgetter('sortcode'))
+        # Show the latest Results
+        items.reverse()
         return items
 
     def get_analyses_json(self):
@@ -581,12 +604,20 @@ class ajaxGetInstrumentMethod(BrowserView):
         return json.dumps(methoddict)
 
 
-class ajaxGetOutOfDateInstruments(BrowserView):
-    """ Returns an array of json dict with the instruments currently
-        out of date regards to their calibration certificates
+class ajaxGetInstrumentsAlerts(BrowserView):
+    """ Returns a json dict with instrument alerts
+        with the following structure:
+        {'out-of-date': [{uid: <instr_uid>,
+                          title: <instr_title>,
+                          url: <instr_absolute_path>},]
+         'qc-fail': [{uid: <instr_uid>,
+                      title: <instr_title>,
+                      url: <instr_absolute_path>},]
+        }
     """
     def __call__(self):
-        out = []
+        out = {'out-of-date':[],
+               'qc-fail':[]}
         try:
             plone.protect.CheckAuthenticator(self.request)
         except Forbidden:
@@ -600,5 +631,10 @@ class ajaxGetOutOfDateInstruments(BrowserView):
                 instr = {'uid': i.UID(),
                          'title': i.Title(),
                          'url': i.absolute_url_path()}
-                out.append(instr)
+                out['out-of-date'].append(instr)
+            elif not i.isQCValid():
+                instr = {'uid': i.UID(),
+                         'title': i.Title(),
+                         'url': i.absolute_url_path()}
+                out['qc-fail'].append(instr)
         return json.dumps(out)

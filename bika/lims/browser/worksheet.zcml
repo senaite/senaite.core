@@ -100,7 +100,7 @@
 
     <browser:page
       for="bika.lims.interfaces.IWorksheet"
-      name="setInstrument"
+      name="set_instrument"
       class="bika.lims.browser.worksheet.ajaxSetInstrument"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"

@@ -159,6 +159,9 @@ schema = BikaSchema.copy() + Schema((
     ComputedField('DateSampled',
         expression = 'context.aq_parent.getSample().getDateSampled()',
     ),
+    ComputedField('InstrumentValid',
+        expression = 'context.isInstrumentInvalid()'
+    ),
 ),
 )
 
@@ -436,5 +439,74 @@ class Analysis(BaseContent):
 
     def getTotalPrice(self):
         return float(self.getPrice()) + float(self.getVATAmount())
+
+    def isInstrumentValid(self):
+        """ Checks if the instrument selected for this analysis service
+            is valid. Returns false if an out-of-date or uncalibrated
+            instrument is assigned. Returns true if the Analysis has
+            no instrument assigned or is valid.
+        """
+        # TODO : Remove when analysis - instrument being assigned directly
+        if not self.getInstrument():
+            instr = self.getService().getInstrument() \
+                    if self.getService().getInstrumentEntryOfResults() \
+                    else None
+            if instr:
+                self.setInstrument(instr)
+        # ---8<--------
+
+        return self.getInstrument().isValid() \
+                if self.getInstrument() else True
+
+    def isInstrumentAllowed(self, instrument):
+        """ Checks if the specified instrument can be set for this
+            analysis, according to the Method and Analysis Service.
+            If the Analysis Service hasn't set 'Allows instrument entry'
+            of results, returns always False. Otherwise, checks if the
+            method assigned is supported by the instrument specified.
+            Returns false, If the analysis hasn't any method assigned.
+            NP: The methods allowed for selection are defined at
+            Analysis Service level.
+            instrument param can be either an uid or an object
+        """
+        if isinstance(instrument, str):
+            uid = instrument
+        else:
+            uid = instrument.UID()
+
+        service = self.getService()
+        if service.getInstrumentEntryOfResults() == False:
+            return False
+
+        if not self.getMethod():
+            return False
+
+        method = self.getMethod()
+        return uid in method.getInstrumentUIDs()
+
+    def isMethodAllowed(self, method):
+        """ Checks if the analysis can follow the method specified.
+            Looks for manually selected methods when AllowManualEntry
+            is set and instruments methods when AllowInstrumentResultsEntry
+            is set.
+            method param can be either an uid or an object
+        """
+        if isinstance(method, str):
+            uid = method
+        else:
+            uid = method.UID()
+
+        service = self.getService()
+        if service.getManualEntryOfResults() == True \
+            and uid in service.getRawMethods():
+            return True
+
+        if service.getInstrumentEntryOfResults() == True:
+            for ins in service.getInstruments():
+                if uid == ins.getRawMethod():
+                    return True
+
+        return False
+
 
 atapi.registerType(Analysis, PROJECTNAME)

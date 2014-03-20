@@ -1,0 +1,30 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="bika">
+
+<head>
+</head>
+
+<body tal:define="analyses python:view.getData()">
+    <h1 i18n:translate="">Retracted analyses</h1>
+    <ul>
+        <tal:analyses tal:repeat="row python:view.getData()">
+            <li>
+                <span tal:content="python: row['an_title']"></span>
+                <tal:ar condition="python: row['ar']">
+                    ,&nbsp;<span i18n:translate="">Analysis Request</span>:&nbsp;
+                    <a tal:attributes="href python:row['ar_url']"
+                       tal:content="python: row['ar_id']"></a>
+                </tal:ar>
+                <tal:ar condition="python: row['ws']">
+                    ,&nbsp;<span i18n:translate="">Worksheet</span>:&nbsp;
+                    <a tal:attributes="href python: row['ws_url']"
+                       tal:content="python: row['ws_id']"></a>
+                </tal:ar>
+            </li>
+        </tal:analyses>
+    </ul>
+</body>
+</html>

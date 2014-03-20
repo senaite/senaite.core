@@ -17,6 +17,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims import bikaMessageFactory as _
 from zope.interface import implements
+from plone.app.blob.field import BlobField
 
 #try:
 #    from BikaCalendar.config import TOOL_NAME as BIKA_CALENDAR_TOOL # XXX
@@ -65,13 +66,23 @@ schema = BikaSchema.copy() + Schema((
     ),
     StringField('Analyst',
     ),
-    ReferenceField('Instrument',
+    TextField('Remarks',
+    ),
+    ReferenceField(
+        'Instrument',
+        required=0,
+        allowed_types=('Instrument',),
+        relationship='AnalysisInstrument',
+        referenceClass=HoldingReference,
+    ),
+    ReferenceField('Method',
         required = 0,
-        allowed_types = ('Instrument',),
-        relationship = 'WorksheetInstrument',
+        allowed_types = ('Method',),
+        relationship = 'AnalysisMethod',
         referenceClass = HoldingReference,
     ),
-
+    BlobField('RetractedAnalysesPdfReport',
+    ),
     BooleanField('Retested',
         default = False,
         widget = BooleanWidget(
@@ -146,5 +157,79 @@ class ReferenceAnalysis(BaseContent):
     def current_date(self):
         """ return current date """
         return DateTime()
+
+    def isInstrumentValid(self):
+        """ Checks if the instrument selected for this analysis
+            is valid. Returns false if an out-of-date or uncalibrated
+            instrument is assigned. Returns true if the Analysis has
+            no instrument assigned or is valid.
+        """
+        # TODO : Remove when analysis - instrument being assigned directly
+        if not self.getInstrument():
+            instr = self.getService().getInstrument() \
+                    if self.getService().getInstrumentEntryOfResults() \
+                    else None
+            if instr:
+                self.setInstrument(instr)
+        # ---8<--------
+
+        return self.getInstrument().isValid() \
+                if self.getInstrument() else True
+
+    def isInstrumentAllowed(self, instrument):
+        """ Checks if the specified instrument can be set for this
+            analysis, according to the Method and Analysis Service.
+            If the Analysis Service hasn't set 'Allows instrument entry'
+            of results, returns always False. Otherwise, checks if the
+            method assigned is supported by the instrument specified.
+            The behavoir when no method assigned is different from
+            Regular analyses: when no method assigned, the available
+            methods for the analysis service are checked and returns
+            true if at least one of the methods has support for the
+            instrument specified.
+        """
+        service = self.getService()
+        if service.getInstrumentEntryOfResults() == False:
+            return False
+
+        if isinstance(instrument, str):
+            uid = instrument
+        else:
+            uid = instrument.UID()
+
+        method = self.getMethod()
+        instruments = []
+        if not method:
+            # Look for Analysis Service methods and instrument support
+            instruments = service.getRawInstruments()
+        else:
+            instruments = method.getInstrumentUIDs()
+
+        return uid in instruments
+
+    def isMethodAllowed(self, method):
+        """ Checks if the ref analysis can follow the method specified.
+            Looks for manually selected methods when AllowManualResultsEntry
+            is set and looks for instruments methods when
+            AllowInstrumentResultsEntry is set.
+            method param can be either an uid or an object
+        """
+        if isinstance(method, str):
+            uid = method
+        else:
+            uid = method.UID()
+
+        service = self.getService()
+        if service.getManualEntryOfResults() == True \
+            and uid in service.getRawMethods():
+            return True
+
+        if service.getInstrumentEntryOfResults() == True:
+            for ins in service.getInstruments():
+                if uid == ins.getRawMethod():
+                    return True
+
+        return False
+
 
 registerType(ReferenceAnalysis, PROJECTNAME)

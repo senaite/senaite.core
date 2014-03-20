@@ -62,9 +62,10 @@
 
     <browser:page
       for="*"
-      name="get_instruments_outofdate"
-      class="bika.lims.browser.instrument.ajaxGetOutOfDateInstruments"
+      name="get_instruments_alerts"
+      class="bika.lims.browser.instrument.ajaxGetInstrumentsAlerts"
       permission="cmf.ModifyPortalContent"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
+
 </configure>

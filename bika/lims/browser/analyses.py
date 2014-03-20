@@ -195,22 +195,89 @@ class AnalysesView(BikaListingView):
             specstr = '< %s' % spec['max']
         return specstr
 
-    def get_methods_vocabulary(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        brains = bsc(portal_type='Method', inactive_state='active')
+    def get_methods_vocabulary(self, analysis = None):
+        """ Returns a vocabulary with the methods available for the
+            analysis specified.
+            If the service has the getInstrumentEntryOfResults(), returns
+            the methods available from the instruments capable to perform
+            the service. If getInstrumentEntryOfResults() is unset, the
+            methods assigned manually to that service are returned.
+            If the analysis is None, retrieves all the
+            active methods from the catalog.
+        """
         ret = []
-        for brain in brains:
-            ret.append({'ResultValue': brain.UID,
-                        'ResultText': brain.title})
+        if analysis:
+            methods = []
+            service = analysis.getService()
+            if service.getInstrumentEntryOfResults() == False:
+                # Only the methods manually set from the service
+                methods = analysis.getService().getMethods()
+            else:
+                # The methods from the instruments capable to perform
+                # the analysis service
+                instruments = service.getInstruments()
+                for ins in instruments:
+                    method = ins.getMethod()
+                    if method and method not in methods:
+                       methods.append(method)
+
+            for method in methods:
+                ret.append({'ResultValue': method.UID(),
+                            'ResultText': method.Title()})
+        else:
+            # All active methods
+            bsc = getToolByName(self.context, 'bika_setup_catalog')
+            brains = bsc(portal_type='Method', inactive_state='active')
+            for brain in brains:
+                ret.append({'ResultValue': brain.UID,
+                            'ResultText': brain.title})
         return ret
 
-    def get_instruments_vocabulary(self):
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        brains = bsc(portal_type='Instrument', inactive_state='active')
+    def get_instruments_vocabulary(self, analysis = None):
+        """ Returns a vocabulary with the instruments available (active,
+            not out-of-date, with valid internal calibrations) for
+            the analysis specified. If the analysis is None, retrieves
+            all the active instruments from the catalog.
+            If the instrument is not None and the instrument has a method
+            assigned, returns the instruments capable to perform the
+            method. If the instrument hasn't any method assigned, returns
+            all the instruments available from the service default method.
+            If the instrument's Service has the property
+            getInstrumentEntryOfResults unset, always returns empty.
+            If the analysis is a QC, the invalid instruments not
+            out-of-date are also returned.
+        """
         ret = []
-        for brain in brains:
-            ret.append({'ResultValue': brain.UID,
-                        'ResultText': brain.title})
+        instruments = []
+        if analysis:
+            service = analysis.getService()
+            if service.getInstrumentEntryOfResults() == False:
+                return []
+
+            method = analysis.getMethod() \
+                    if hasattr(analysis, 'getMethod') else None
+            instruments = method.getInstruments() if method \
+                          else analysis.getService().getInstruments()
+
+        else:
+            # All active instruments
+            bsc = getToolByName(self.context, 'bika_setup_catalog')
+            brains = bsc(portal_type='Instrument', inactive_state='active')
+            instruments = [brain.getObject() for brain in brains]
+
+        for ins in instruments:
+            if analysis \
+                and analysis.portal_type in ['ReferenceAnalysis',
+                                             'DuplicateAnalysis'] \
+                and not ins.isOutOfDate():
+                # Add the 'invalid', but in-date instrument
+                ret.append({'ResultValue': ins.UID(),
+                            'ResultText': ins.Title()})
+            if ins.isValid():
+                # Only add the 'valid' instruments: certificate
+                # on-date and valid internal calibration tests
+                ret.append({'ResultValue': ins.UID(),
+                            'ResultText': ins.Title()})
         return ret
 
     def getAnalysts(self):
@@ -313,18 +380,7 @@ class AnalysesView(BikaListingView):
             items[i]['CaptureDate'] = cd and self.ulocalized_time(cd, long_format=1) or ''
             items[i]['Attachments'] = ''
 
-            method = obj.getMethod() if hasattr(obj, 'getMethod') else None
-            if not method:
-                method = service.getMethod()
-            items[i]['Method'] = method.Title() if method else ''
-            if method:
-                items[i]['replace']['Method'] = "<a href='%s'>%s</a>" % \
-                    (method.absolute_url(), method.Title())
-            item['choices']['Method'] = self.get_methods_vocabulary()
-
-            instrument = obj.getInstrument()
-            items[i]['Instrument'] = instrument.Title() if instrument else ''
-            item['choices']['Instrument'] = self.get_instruments_vocabulary()
+            item['allow_edit'] = []
 
             Analyst = obj.getAnalyst()
             items[i]['Analyst'] = Analyst
@@ -348,7 +404,7 @@ class AnalysesView(BikaListingView):
             # choices defined on Service apply to result fields.
             choices = service.getResultOptions()
             if choices:
-                items[i]['choices'] = {'Result': choices}
+                item['choices']['Result'] = choices
 
             # permission to view this item's results
             can_view_result = \
@@ -362,12 +418,18 @@ class AnalysesView(BikaListingView):
                   or
                   (poc != 'field' and getSecurityManager().checkPermission(EditResults, obj)) )
 
+            # Prevent from being edited if the instrument assigned
+            # is not valid (out-of-date or uncalibrated), except if
+            # the analysis is a QC with assigned status
+            can_edit_analysis = can_edit_analysis \
+                and (obj.isInstrumentValid() \
+                    or (obj.portal_type == 'ReferenceAnalysis' \
+                        and item['review_state'] in allowed_method_states))
+
             if can_edit_analysis:
-                items[i]['allow_edit'] = ['Method',
-                                          'Instrument',
-                                          'Analyst',
-                                          'Result',
-                                          'Remarks', ]
+                items[i]['allow_edit'].extend(['Analyst',
+                                               'Result',
+                                               'Remarks'])
                 # if the Result field is editable, our interim fields are too
                 for f in self.interim_fields[obj.UID()]:
                     items[i]['allow_edit'].append(f['keyword'])
@@ -377,6 +439,52 @@ class AnalysesView(BikaListingView):
                 if not items[i]['calculation'] or \
                    (items[i]['calculation'] and self.interim_fields[obj.UID()]):
                     items[i]['allow_edit'].append('retested')
+
+            allowed_method_states = ['to_be_sampled',
+                                     'to_be_preserved',
+                                     'sample_received',
+                                     'sample_registered',
+                                     'sampled',
+                                     'assigned']
+
+            # TODO: Only the labmanager must be able to change the method
+            # can_set_method = getSecurityManager().checkPermission(SetAnalysisMethod, obj)
+            can_set_method = can_edit_analysis \
+                and item['review_state'] in allowed_method_states
+            method = obj.getMethod() if hasattr(obj, 'getMethod') \
+                        else service.getMethod()
+            if can_set_method:
+                item['Method'] = method.UID() if method else ''
+                item['choices']['Method'] = self.get_methods_vocabulary(obj)
+                item['allow_edit'].append('Method')
+            elif method:
+                item['Method'] = method.Title()
+                item['replace']['Method'] = "<a href='%s'>%s</a>" % \
+                        (method.absolute_url(), method.Title())
+            else:
+                item['Method'] = ''
+
+            # TODO: Instrument selector dynamic behavior in worksheet Results
+            # Only the labmanager must be able to change the instrument to be used. Also,
+            # the instrument selection should be done in accordance with the method selected
+            # can_set_instrument = service.getInstrumentEntryOfResults() and getSecurityManager().checkPermission(SetAnalysisInstrument, obj)
+            can_set_instrument = service.getInstrumentEntryOfResults() \
+                and can_edit_analysis \
+                and item['review_state'] in allowed_method_states
+            instrument = obj.getInstrument() if hasattr(obj, 'getInstrument') else None
+            if service.getInstrumentEntryOfResults() == False:
+                item['Instrument'] = ''
+                item['replace']['Instrument'] = _("Manual entry")
+            elif can_set_instrument:
+                item['Instrument'] = instrument.UID() if instrument else ''
+                item['choices']['Instrument'] = self.get_instruments_vocabulary(obj)
+                item['allow_edit'].append('Instrument')
+            elif instrument:
+                item['Instrument'] = instrument.Title()
+                item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
+                        (instrument.absolute_url(), instrument.Title())
+            else:
+                item['Instrument'] = ''
 
             # If the user can attach files to analyses, show the attachment col
             can_add_attachment = \

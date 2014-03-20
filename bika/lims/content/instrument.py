@@ -16,6 +16,7 @@ from plone.app.folder.folder import ATFolder
 from zope.interface import implements
 from datetime import date
 from DateTime import DateTime
+from bika.lims.config import QCANALYSIS_TYPES
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 
@@ -137,6 +138,26 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
+
+    # Private method. Use getLatestReferenceAnalyses() instead.
+    # See getLatestReferenceAnalyses() method for further info.
+    ReferenceField('_LatestReferenceAnalyses',
+        required = 0,
+        multiValued = 1,
+        allowed_types = ('ReferenceAnalysis'),
+        relationship = 'InstrumentLatestReferenceAnalyses',
+        widget = ReferenceWidget(
+            visible = False,
+        ),
+    ),
+
+    ComputedField('Valid',
+        expression = "'1' if context.isValid() else '0'",
+        widget = ComputedWidget(
+            visible = False,
+        ),
+    ),
+
 ))
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
@@ -246,6 +267,82 @@ class Instrument(ATFolder):
                 certs.append(c)
         return certs
 
+    def isValid(self):
+        """ Returns if the current instrument is not out-of-date regards
+            to its certificates and if the latest QC succeed
+        """
+        return False if self.isOutOfDate() else self.isQCValid()
+
+    def getLatestReferenceAnalyses(self):
+        """ Returns a list with the latest Reference analyses performed
+            for this instrument and Analysis Service.
+            References the latest ReferenceAnalysis done for this instrument.
+            Duplicate Analyses and Regular Analyses are not included.
+            Only contains the last ReferenceAnalysis done for this
+            instrument, Analysis Service and Reference type (blank or control).
+            The list is created 'on-fly' if the method hasn't been already
+            called or a new ReferenceAnalysis has been added by using
+            addReferences() since its last call. Otherwise, uses the
+            private accessor _LatestReferenceAnalyses as a cache
+            (prevents overload).
+            As an example:
+            [0]: RefAnalysis for Ethanol, QC-001 (Blank)
+            [1]: RefAnalysis for Ethanol, QC-002 (Control)
+            [2]: RefAnalysis for Methanol, QC-001 (Blank)
+        """
+        field = self.getField('_LatestReferenceAnalyses')
+        refs = field and field.get(self) or []
+        if len(refs) == 0:
+            latest = {}
+            # Since the results file importer uses Date from the results
+            # file as Analysis 'Capture Date', we cannot assume the last
+            # item from the list is the latest analysis done, so we must
+            # pick up the latest analyses using the Results Capture Date
+            for ref in self.getReferenceAnalyses():
+                antype = QCANALYSIS_TYPES.getValue(ref.getReferenceType())
+                key = '%s.%s' % (ref.getServiceUID(), antype)
+                last = latest.get(key, ref)
+                if ref.getResultCaptureDate() > last.getResultCaptureDate():
+                    latest[key] = ref
+                else:
+                    latest[key] = last
+            refs = [r for r in latest.itervalues()]
+            # Add to the cache
+            self.getField('_LatestReferenceAnalyses').set(self, refs)
+        return refs
+
+    def isQCValid(self):
+        """ Returns True if the instrument succeed for all the latest
+            Analysis QCs performed (for diferent types of AS)
+        """
+        for last in self.getLatestReferenceAnalyses():
+            rr = last.aq_parent.getResultsRangeDict()
+            uid = last.getServiceUID()
+            if uid not in rr:
+                # This should never happen.
+                # All QC Samples must have specs for its own AS
+                continue
+
+            specs = rr[uid];
+            try:
+                smin = float(specs.get('min', 0))
+                smax = float(specs.get('max', 0))
+                error = float(specs.get('error', 0))
+                target = float(specs.get('result', 0))
+                result = float(last.getResult())
+                error_amount = ((target / 100) * error) if target > 0 else 0
+                upper  = smax + error_amount
+                lower = smin - error_amount
+                if result < lower or result > upper:
+                    return False
+            except:
+                # This should never happen.
+                # All Reference Analysis Results and QC Samples specs
+                # must be floatable
+                continue
+
+        return True
+
     def isOutOfDate(self):
         """ Returns if the current instrument is out-of-date regards to
             its certifications
@@ -298,6 +395,36 @@ class Instrument(ATFolder):
         return [analysis for analysis in self.getAnalyses() \
                 if analysis.portal_type=='ReferenceAnalysis']
 
+    def addAnalysis(self, analysis):
+        """ Add regular analysis (included WS QCs) to this instrument
+            If the analysis has
+        """
+        targetuid = analysis.getRawInstrument()
+        if not targetuid:
+            return
+        if targetuid != self.UID():
+            raise Exception("Invalid instrument")
+        ans = self.getRawAnalyses() if self.getRawAnalyses() else []
+        ans.append(analysis.UID())
+        self.setAnalyses(ans)
+        self.cleanReferenceAnalysesCache()
+
+    def removeAnalysis(self, analysis):
+        """ Remove a regular analysis assigned to this instrument
+        """
+        targetuid = analysis.getRawInstrument()
+        if not targetuid:
+            return
+        if targetuid != self.UID():
+            raise Exception("Invalid instrument")
+        uid = analysis.UID()
+        ans = [a for a in self.getRawAnalyses() if a != uid]
+        self.setAnalyses(ans)
+        self.cleanReferenceAnalysesCache()
+
+    def cleanReferenceAnalysesCache(self):
+        self.getField('_LatestReferenceAnalyses').set(self, [])
+
     def addReferences(self, reference, service_uids):
         """ Add reference analyses to reference
         """
@@ -331,7 +458,7 @@ class Instrument(ATFolder):
             # the same Reference Sample and same Worksheet)
             # https://github.com/bikalabs/Bika-LIMS/issues/931
             ref_analysis.setReferenceAnalysesGroupID(refgid)
-            ref_analysis.reindexObject(idxs=["getReferenceAnalysesGroupID"])
+            ref_analysis.reindexObject()
 
             # copy the interimfields
             calculation = service.getCalculation()
@@ -348,7 +475,34 @@ class Instrument(ATFolder):
 
         self.setAnalyses(self.getAnalyses() + addedanalyses)
 
+        # Initialize LatestReferenceAnalyses cache
+        self.cleanReferenceAnalysesCache()
         return addedanalyses
+
+    def getAnalysesToRetract(self, allanalyses=True, outofdate=False):
+        """ If the instrument is not valid due to fail on latest QC
+            Tests or a Calibration Test, returns the validation-pending
+            Analyses with this instrument assigned.
+            If allanalyses is False, only returns the analyses from
+            the same Analysis Service as the failed QC/s or Calibration
+            Tests.
+            Only regular and duplicate analyses are returned.
+            By default, only checks if latest QCs for this instrument are
+            valid. If the instrument is out of date but the latest QC
+            is valid, the method will retorn an empty list.
+            Use outofdate=True to take also into account if the
+            instrument's calibration certificate is out of date.
+        """
+        isvalid = self.isQCValid() if outofdate else self.isValid()
+        if isvalid:
+            return []
+
+        bac = getToolByName(self, 'bika_analysis_catalog')
+        prox = bac(portal_type=['Analysis', 'DuplicateAnalysis'],
+                   review_state='to_be_verified')
+        ans = [p.getObject() for p in prox]
+        return [a for a in ans if a.getRawInstrument() == self.UID()]
+
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 

@@ -1303,7 +1303,6 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
     def __call__(self):
         ar = self.context
         workflow = getToolByName(ar, 'portal_workflow')
-
         if workflow.getInfoFor(ar, 'cancellation_state') == "cancelled":
             self.request.response.redirect(ar.absolute_url())
         elif not(getSecurityManager().checkPermission(EditResults, ar)):
@@ -1324,10 +1323,30 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
                                                          {'id':'verify'}]
                     t.show_select_column = True
                     self.tables[POINTS_OF_CAPTURE.getValue(poc)] = t.contents_table()
+            self.checkInstrumentsValidity()
             return self.template()
 
     def createAnalysesView(self, context, request, **kwargs):
         return AnalysesView(context, request, **kwargs)
+
+    def checkInstrumentsValidity(self):
+        """ Checks the validity of the instruments used in the Analyses
+            If an analysis with an invalid instrument (out-of-date or
+            with calibration tests failed) is found, a warn message
+            will be displayed.
+        """
+        invalid = []
+        ans = [a.getObject() for a in self.context.getAnalyses()]
+        for an in ans:
+            valid = an.isInstrumentValid()
+            if not valid:
+                inv = '%s (%s)' % (an.Title(), an.getInstrument().Title())
+                if inv not in invalid:
+                    invalid.append(inv)
+        if len(invalid) > 0:
+            message = _("Some analyses use out-of-date or uncalibrated instruments. Results edition not allowed")
+            message = "%s: %s" % (message, (', '.join(invalid)))
+            self.context.plone_utils.addPortalMessage(message, 'warn')
 
 
 class AnalysisRequestResultsNotRequestedView(AnalysisRequestManageResultsView):

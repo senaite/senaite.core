@@ -45,10 +45,9 @@ schema = schema.copy() + Schema((
         'Instrument',
         required=0,
         allowed_types=('Instrument',),
-        relationship='WorksheetInstrument',
+        relationship='AnalysisInstrument',
         referenceClass=HoldingReference,
     ),
-
     ComputedField(
         'SamplePartition',
         expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getSamplePartition()',

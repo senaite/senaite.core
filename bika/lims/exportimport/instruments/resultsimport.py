@@ -377,7 +377,7 @@ class AnalysisResultsImporter(Logger):
                         continue
 
                     else:
-                        # More than one reference sample found!
+                        # No reference sample found!
                         self.err(_("No Reference Sample found for '%s'") % objid)
                         continue
 
@@ -650,28 +650,30 @@ class AnalysisResultsImporter(Logger):
             elif criteria == 'rgid':
                 return [an.getObject() for an in refans]
 
-            else:
+            elif len(refans) == 1:
+                # The search has been made using the internal identifier
+                # from a Reference Analysis (id or uid). That is not usual.
                 an = refans[0].getObject()
                 wss = an.getBackReferences('WorksheetAnalysis')
                 if wss and len(wss) > 0:
-                    analyses = [an for an in wss.getAnalyses() \
-                                if (an.portal_type == 'ReferenceAnalysis' \
-                                    or an.portal_type == 'DuplicateAnalysis')
-                                and an.getReferenceAnalysesGroupID() \
-                                    == refans.getReferenceAnalysesGroupID()]
+                    # A regular QC test (assigned to a Worksheet)
+                    return [an,]
+                elif an.getInstrument():
+                    # An Internal Calibration Test
+                    return [an,]
                 else:
-                    # Look if the reference analysis have an instrument
-                    # linked but not a WS, so its a Calibration Test
-                    inst = an.getBackReferences('WorksheetInstrument');
-                    if inst and len(inst) > 0:
-                        # At least one Instrument found for this
-                        # ReferenceAnalysis.
-                        # TODO: Repasar el tema de ReferenceAnalysesGroupID()
-                        return [an for an in instrument.getAnalyses() \
-                                    if an.getReferenceAnalysesGroupID() \
-                                    == refans.getReferenceAnalysesGroupID()]
-                    else:
-                        return []
+                    # Oops. This should never happen!
+                    # A ReferenceAnalysis must be always assigned to
+                    # a Worksheet (Regular QC) or to an Instrument
+                    # (Internal Calibration Test)
+                    self.err(_("The Reference Analysis %s has neither instrument nor worksheet assigned") % objid)
+                    return []
+            else:
+                # This should never happen!
+                # Fetching ReferenceAnalysis for its id or uid should
+                # *always* return a unique result
+                self.err(_("More than one Reference Analysis found for %s") % objid)
+                return []
 
         else:
             sortorder = ['rgid', 'rid', 'ruid'];
