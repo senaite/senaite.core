@@ -36,7 +36,6 @@
   <include file="worksheetfolder.zcml"/>
   <include file="viewlets.zcml"/>
   <include file="arimports.zcml"/>
-  <include file="arpriorities.zcml"/>
 
   <include package=".fields"/>
   <include package=".widgets"/>
