@@ -102,12 +102,6 @@
       permission="bika.lims.ManageARImport"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
-  <browser:page
-      for="bika.lims.interfaces.IARPriorities"
-      name="arpriorities"
-      class="bika.lims.browser.arpriorities.GlobalARPrioritiesView"
-      permission="bika.lims.permissions.ManageARPriority"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
+
 
 </configure>
