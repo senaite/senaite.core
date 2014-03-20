@@ -177,8 +177,7 @@ class AnalysesRetractedListReport(BrowserView):
         outpath = join(Globals.INSTANCE_HOME, 'var')
         filepath = join(outpath, tmpID() + ".pdf")
         html = safe_unicode(self.template()).encode('utf-8')
-        pdf = createPdf(html, filepath)
-        return pdf
+        return createPdf(html, filepath)
 
     def sendEmail(self):
         added = []

@@ -215,6 +215,7 @@ class WorksheetWorkflowAction(WorkflowAction):
         """
         toretract = {}
         instruments = {}
+        refs = []
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         selected = WorkflowAction._get_selected_items(self)
         for uid in selected.iterkeys():
@@ -223,6 +224,7 @@ class WorksheetWorkflowAction(WorkflowAction):
             # and don't know if they already had an instrument assigned
             an = rc.lookupObject(uid)
             if an.portal_type == 'ReferenceAnalysis':
+                refs.append(an)
                 instrument = an.getInstrument()
                 if instrument and instrument.UID() not in instruments:
                     instruments[instrument.UID()] = instrument
@@ -254,8 +256,11 @@ class WorksheetWorkflowAction(WorkflowAction):
                                                'Retracted analyses',
                                                retracted)
 
-            # TODO: attach the pdf to the Instrument
+            # Attach the pdf to the ReferenceAnalysis (accessible
+            # from Instrument's Internal Calibration Tests list
             pdf = rep.toPdf()
+            for ref in refs:
+                ref.setRetractedAnalysesPdfReport(pdf)
 
             # Send the email
             try:

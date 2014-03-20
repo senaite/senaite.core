@@ -458,7 +458,7 @@ class Instrument(ATFolder):
             # the same Reference Sample and same Worksheet)
             # https://github.com/bikalabs/Bika-LIMS/issues/931
             ref_analysis.setReferenceAnalysesGroupID(refgid)
-            ref_analysis.reindexObject(idxs=["getReferenceAnalysesGroupID"])
+            ref_analysis.reindexObject()
 
             # copy the interimfields
             calculation = service.getCalculation()

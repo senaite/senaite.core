@@ -17,6 +17,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims import bikaMessageFactory as _
 from zope.interface import implements
+from plone.app.blob.field import BlobField
 
 #try:
 #    from BikaCalendar.config import TOOL_NAME as BIKA_CALENDAR_TOOL # XXX
@@ -80,7 +81,8 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisMethod',
         referenceClass = HoldingReference,
     ),
-
+    BlobField('RetractedAnalysesPdfReport',
+    ),
     BooleanField('Retested',
         default = False,
         widget = BooleanWidget(

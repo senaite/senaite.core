@@ -380,12 +380,16 @@ class InstrumentReferenceAnalysesView(AnalysesView):
                                                        'sortable': False}
         self.columns['Partition'] = {'title': _('Reference Sample'),
                                      'sortable': False}
+        self.columns['Retractions'] = {'title': '',
+                                                  'sortable': False}
         self.review_states[0]['columns'] = ['Service',
                                             'getReferenceAnalysesGroupID',
                                             'Partition',
                                             'Result',
                                             'Uncertainty',
-                                            'CaptureDate']
+                                            'CaptureDate',
+                                            'Retractions']
+
 
         analyses = self.context.getReferenceAnalyses()
         asuids = [an.UID() for an in analyses]
@@ -414,6 +418,27 @@ class InstrumentReferenceAnalysesView(AnalysesView):
                 items[i]['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getService().getKeyword())
 
             items[i]['before']['Service'] = imgtype
+
+            # Get retractions field
+            pdf = obj.getRetractedAnalysesPdfReport()
+            title = ''
+            anchor = ''
+            if pdf:
+                filesize = 0
+                title = _('Retractions')
+                anchor = "<a class='pdf' target='_blank' href='%s/at_download/RetractedAnalysesPdfReport'>%s</a>" % \
+                         (obj.absolute_url(), _("Retractions"))
+                try:
+                    filesize = pdf.get_size()
+                    filesize = filesize / 1024 if filesize > 0 else 0
+                except:
+                    # POSKeyError: 'No blob file'
+                    # Show the record, but not the link
+                    title = _('Unavailable')
+                    anchor = title
+            items[i]['Retractions'] = title
+            items[i]['replace']['Retractions'] = anchor
+
 
             # Create json
             qcid = obj.aq_parent.id;
