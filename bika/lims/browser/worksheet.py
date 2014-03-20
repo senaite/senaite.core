@@ -30,6 +30,8 @@ from zope.component import getMultiAdapter
 from zope.i18n import translate
 from zope.interface import implements
 from bika.lims.browser.referenceanalysis import AnalysesRetractedListReport
+from DateTime import DateTime
+from Products.CMFPlone.i18nl10n import ulocalized_time
 
 import plone
 import json
@@ -238,12 +240,14 @@ class WorksheetWorkflowAction(WorkflowAction):
         retracted = []
         for analysis in toretract.itervalues():
             try:
+                # add a remark to this analysis
+                failedtxt = ulocalized_time(DateTime(), long_format=0)
+                failedtxt = '%s: %s' % (failedtxt, _("Instrument failed reference test"))
+                analysis.setRemarks(failedtxt)
+
                 # retract the analysis
                 doActionFor(analysis, 'retract')
                 retracted.append(analysis)
-
-                # TODO: Add a log entry for this AS
-
             except:
                 # Already retracted as a dependant from a previous one?
                 pass
