@@ -391,7 +391,7 @@ class InstrumentReferenceAnalysesView(AnalysesView):
         asuids = [an.UID() for an in analyses]
         self.catalog = 'bika_analysis_catalog'
         self.contentFilter = {'UID': asuids,
-                              'sort_on': 'sortable_title'}
+                              'sort_on': 'getResultCaptureDate'}
         self.anjson = {}
 
     def folderitems(self):
@@ -414,8 +414,6 @@ class InstrumentReferenceAnalysesView(AnalysesView):
                 items[i]['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getService().getKeyword())
 
             items[i]['before']['Service'] = imgtype
-            items[i]['sortcode'] = '%s_%s' % (obj.getReferenceAnalysesGroupID(),
-                                              obj.getService().getKeyword())
 
             # Create json
             qcid = obj.aq_parent.id;
@@ -456,8 +454,8 @@ class InstrumentReferenceAnalysesView(AnalysesView):
                 except:
                     pass
 
-        # Sort items
-        items = sorted(items, key = itemgetter('sortcode'))
+        # Show the latest Results
+        items.reverse()
         return items
 
     def get_analyses_json(self):

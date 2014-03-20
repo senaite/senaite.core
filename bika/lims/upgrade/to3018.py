@@ -29,4 +29,22 @@ def upgrade(tool):
         if instrument:
             an.Schema().getField('Instrument').set(an, instrument.UID())
             instrument.addAnalysis(an)
+
+    # Set indexes
+    portal = aq_parent(aq_inner(tool))
+    bac = getToolByName(portal, 'bika_analysis_catalog')
+    addIndexAndColumn(bac, 'getResultCaptureDate', 'DateIndex')
+    bac.clearFindAndRebuild()
+
+
+def addIndexAndColumn(catalog, index, indextype):
+    try:
+        catalog.addIndex(index, indextype)
+    except:
+        pass
+    try:
+        catalog.addColumn(index)
+    except:
+        pass
+
     return True

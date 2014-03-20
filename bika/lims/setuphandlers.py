@@ -529,6 +529,7 @@ class BikaGenerator:
         addColumn(bac, 'cancellation_state')
         addColumn(bac, 'getRequestID')
         addColumn(bac, 'getReferenceAnalysesGroupID')
+        addColumn(bac, 'getResultCaptureDate')
 
         # bika_catalog
 
