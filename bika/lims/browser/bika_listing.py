@@ -681,10 +681,12 @@ class BikaListingView(BrowserView):
                     continue
                 alerts = adapter()
                 if alerts:
-                    if auid in self.field_icons:
+                    if auid in self.field_icons and auid in alerts:
                         self.field_icons[auid].extend(alerts[auid])
-                    else:
+                    elif uid in alerts:
                         self.field_icons[auid] = alerts[auid]
+                    else:
+                        pass
 
             # Search for values for all columns in obj
             for key in self.columns.keys():
