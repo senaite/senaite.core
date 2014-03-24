@@ -2739,11 +2739,7 @@ class WidgetVisibility(_WV):
                 'Specification',
                 'Sample',
                 'SamplePoint',
-<<<<<<< HEAD
-=======
                 'StorageLocation',
-                'Specification',
->>>>>>> 69cfd27... Added storage location to Ar and Sample
                 'SampleType',
                 'Template',
             ]
