@@ -167,6 +167,10 @@ class ClientARImportsView(GlobalARImportsView):
                 'path': {'query': '/'.join(context.getPhysicalPath())},
                 'sort_on':'sortable_title',
                 }
+        self.context_actions = \
+                {_('AR Import'):
+                           {'url': 'arimport_add',
+                            'icon': '++resource++bika.lims.images/add.png'}}
         self.columns = {
             'title': {'title': _('Import')},
             'getDateImported': {'title': _('Date Imported')},
