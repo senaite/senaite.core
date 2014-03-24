@@ -3,11 +3,7 @@
 
 <stylesheet
     id="++resource++bika.lims.css/hide_contentmenu.css"
-<<<<<<< HEAD
-    expression="python:here.portal_type in ['Batch', 'Client', 'AnalysisRequest', 'Worksheet', 'Sample', 'AnalysisCategory', 'AnalysisProfile', 'ARTemplate', 'AnalysisService', 'AnalysisSpec', 'Attachment', 'Calculation', 'Instrument', 'LabContact', 'Laboratory', 'Method', 'Department', 'ReferenceDefinition', 'ReportFolder', 'SampleType', 'SamplePoint', 'WorksheetTemplate', 'LabProduct', 'ReferenceSample', 'Preservation', 'PricelistFolder', 'Instrument', 'Instruments', 'SupplyOrderFolder']"
-=======
-    expression="python:here.portal_type in ['Batch', 'Client', 'AnalysisRequest', 'Worksheet', 'Sample', 'AnalysisCategory', 'AnalysisProfile', 'ARTemplate', 'AnalysisService', 'AnalysisSpec', 'Attachment', 'Calculation', 'Instrument', 'LabContact', 'Laboratory', 'Method', 'Department', 'ReferenceDefinition', 'ReportFolder', 'SampleType', 'SamplePoint', 'StorageLocation', 'WorksheetTemplate', 'LabProduct', 'ReferenceSample', 'Preservation']"
->>>>>>> 9b5f9a0... Added StorageLocation type
+    expression="python:here.portal_type in ['Batch', 'Client', 'AnalysisRequest', 'Worksheet', 'Sample', 'AnalysisCategory', 'AnalysisProfile', 'ARTemplate', 'AnalysisService', 'AnalysisSpec', 'Attachment', 'Calculation', 'Instrument', 'LabContact', 'Laboratory', 'Method', 'Department', 'ReferenceDefinition', 'ReportFolder', 'SampleType', 'SamplePoint', 'StorageLocation', 'WorksheetTemplate', 'LabProduct', 'ReferenceSample', 'Preservation', 'PricelistFolder', 'Instrument', 'Instruments', 'SupplyOrderFolder']"
     media="screen"
     rel="stylesheet"
     rendering="link"
@@ -15,11 +11,7 @@
 
 <stylesheet
     id="++resource++bika.lims.css/hide_editable_border.css"
-<<<<<<< HEAD
-    expression="python:here.portal_type in ['AnalysisCategories', 'AnalysisCategory', 'AnalysisServices', 'AnalysisSpecs', 'AnalysisProfile', 'AnalysisProfiles', 'ARTemplate', 'ARTemplates', 'AttachmentType', 'AttachmentTypes', 'BatchFolder', 'BikaSetup', 'Calculations', 'ClientFolder', 'Container', 'Containers', 'ContainerType', 'ContainerTypes', 'Department', 'Departments', 'Instruments', 'InstrumentTypes', 'LabContacts', 'Laboratory', 'LabProduct', 'LabProducts', 'Manufacturers', 'Methods', 'Preservation', 'Preservations', 'ReferenceDefinition', 'ReferenceDefinitions', 'SamplePoints', 'SampleTypes', 'WorksheetTemplates', 'SamplingDeviations', 'SamplingDeviation', 'SampleMatrices', 'SampleMatrix', 'Suppliers', 'BatchLabel', 'BatchLabels', 'SampleConditions', 'SampleCondition', 'PricelistFolder', 'SupplyOrderFolder']"
-=======
-    expression="python:here.portal_type in ['AnalysisCategories', 'AnalysisCategory', 'AnalysisServices', 'AnalysisSpecs', 'AnalysisProfile', 'AnalysisProfiles', 'ARTemplate', 'ARTemplates', 'AttachmentType', 'AttachmentTypes', 'BatchFolder', 'BikaSetup', 'Calculations', 'ClientFolder', 'Container', 'Containers', 'ContainerType', 'ContainerTypes', 'Department', 'Departments', 'Instruments', 'InstrumentTypes', 'LabContacts', 'Laboratory', 'LabProduct', 'LabProducts', 'Manufacturers', 'Methods', 'Preservation', 'Preservations', 'ReferenceDefinition', 'ReferenceDefinitions', 'SamplePoints', 'StorageLocations', 'SampleTypes', 'WorksheetTemplates', 'SamplingDeviations', 'SamplingDeviation', 'SampleMatrices', 'SampleMatrix', 'Suppliers', 'BatchLabel', 'BatchLabels', 'SampleConditions', 'SampleCondition']"
->>>>>>> 9b5f9a0... Added StorageLocation type
+    expression="python:here.portal_type in ['AnalysisCategories', 'AnalysisCategory', 'AnalysisServices', 'AnalysisSpecs', 'AnalysisProfile', 'AnalysisProfiles', 'ARTemplate', 'ARTemplates', 'AttachmentType', 'AttachmentTypes', 'BatchFolder', 'BikaSetup', 'Calculations', 'ClientFolder', 'Container', 'Containers', 'ContainerType', 'ContainerTypes', 'Department', 'Departments', 'Instruments', 'InstrumentTypes', 'LabContacts', 'Laboratory', 'LabProduct', 'LabProducts', 'Manufacturers', 'Methods', 'Preservation', 'Preservations', 'ReferenceDefinition', 'ReferenceDefinitions', 'SamplePoints', 'StorageLocations', 'SampleTypes', 'WorksheetTemplates', 'SamplingDeviations', 'SamplingDeviation', 'SampleMatrices', 'SampleMatrix', 'Suppliers', 'BatchLabel', 'BatchLabels', 'SampleConditions', 'SampleCondition', 'PricelistFolder', 'SupplyOrderFolder']"
     media="screen"
     rel="stylesheet"
     rendering="link"

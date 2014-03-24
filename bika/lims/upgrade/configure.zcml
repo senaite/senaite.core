@@ -245,4 +245,13 @@
         handler="bika.lims.upgrade.to3022.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Add Storage Locations"
+        description="Add Storage Locations for ARs and Samples"
+        source="3022"
+        destination="3023"
+        handler="bika.lims.upgrade.to3023.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
 </configure>

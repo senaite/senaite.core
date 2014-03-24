@@ -55,11 +55,7 @@
     <element value="DuplicateAnalysis"/>
     <element value="Instrument"/>
     <element value="InstrumentCalibration"/>
-<<<<<<< HEAD
-    <element value="InstrumentCertification"/>
-=======
 	<element value="InstrumentCertification"/>
->>>>>>> 9b5f9a0... Added StorageLocation type
     <element value="InstrumentMaintenanceTask"/>
     <element value="InstrumentScheduledTask"/>
     <element value="InstrumentType"/>
