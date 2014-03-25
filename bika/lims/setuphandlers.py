@@ -87,6 +87,7 @@ class BikaGenerator:
                        'bika_samplepoints',
                        'bika_sampletypes',
                        'bika_srtemplates',
+                       'bika_storagelocations',
                        'bika_suppliers',
                        'bika_referencedefinitions',
                        'bika_worksheettemplates'):
@@ -194,7 +195,7 @@ class BikaGenerator:
         mp(AddSampleMatrix, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddSamplePartition, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
         mp(AddSamplePoint, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
-        mp(AddStorageLocation, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
+        mp(AddStorageLocation, ['Manager', 'Owner', 'LabManager', ], 1)
         mp(AddSamplingDeviation, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddSRTemplate, ['Manager', 'Owner', 'LabManager'], 0)
         mp(AddQuery, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 0)
@@ -514,7 +515,6 @@ class BikaGenerator:
         addIndex(bac, 'getResultCaptureDate', 'DateIndex')
         addIndex(bac, 'getSampleTypeUID', 'FieldIndex')
         addIndex(bac, 'getSamplePointUID', 'FieldIndex')
-        addIndex(bac, 'getStorageLocationUID', 'FieldIndex')
         addIndex(bac, 'getRetested', 'FieldIndex')
         addIndex(bac, 'getReferenceAnalysesGroupID', 'FieldIndex')
 
@@ -606,8 +606,6 @@ class BikaGenerator:
         addIndex(bc, 'getSampleID', 'FieldIndex')
         addIndex(bc, 'getSamplePointTitle', 'FieldIndex')
         addIndex(bc, 'getSamplePointUID', 'FieldIndex')
-        addIndex(bc, 'getStorageLocationTitle', 'FieldIndex')
-        addIndex(bc, 'getStorageLocationUID', 'FieldIndex')
         addIndex(bc, 'getSampler', 'FieldIndex')
         addIndex(bc, 'getSampleTypeTitle', 'FieldIndex')
         addIndex(bc, 'getSampleTypeUID', 'FieldIndex')
@@ -639,7 +637,6 @@ class BikaGenerator:
         addColumn(bc, 'getClientTitle')
         addColumn(bc, 'getProfileTitle')
         addColumn(bc, 'getSamplePointTitle')
-        addColumn(bc, 'getStorageLocationTitle')
         addColumn(bc, 'getSampleTypeTitle')
         addColumn(bc, 'getAnalysisCategory')
         addColumn(bc, 'getAnalysisService')
@@ -742,8 +739,6 @@ class BikaGenerator:
         addIndex(bsc, 'getPrice', 'FieldIndex')
         addIndex(bsc, 'getSamplePointTitle', 'KeywordIndex')
         addIndex(bsc, 'getSamplePointUID', 'FieldIndex')
-        addIndex(bsc, 'getStorageLocationTitle', 'KeywordIndex')
-        addIndex(bsc, 'getStorageLocationUID', 'FieldIndex')
         addIndex(bsc, 'getSampleTypeTitle', 'KeywordIndex')
         addIndex(bsc, 'getSampleTypeUID', 'FieldIndex')
         addIndex(bsc, 'getServiceTitle', 'FieldIndex')
@@ -798,8 +793,6 @@ class BikaGenerator:
         addColumn(bsc, 'getPrice')
         addColumn(bsc, 'getSamplePointTitle')
         addColumn(bsc, 'getSamplePointUID')
-        addColumn(bsc, 'getStorageLocationTitle')
-        addColumn(bsc, 'getStorageLocationUID')
         addColumn(bsc, 'getSampleTypeTitle')
         addColumn(bsc, 'getSampleTypeUID')
         addColumn(bsc, 'getServiceTitle')

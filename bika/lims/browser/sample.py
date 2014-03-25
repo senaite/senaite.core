@@ -438,8 +438,7 @@ class SamplesView(BikaListingView):
             'getSamplePointTitle': {'title': _('Sample Point'),
                                     'index': 'getSamplePointTitle',
                                     'toggle': False},
-            'getStorageLocationTitle': {'title': _('Sample Point'),
-                                    'index': 'getStorageLocationTitle',
+            'getStorageLocation': {'title': _('Storage Location'),
                                     'toggle': False},
             'SamplingDeviation': {'title': _('Sampling Deviation'),
                                   'toggle': False},
@@ -481,7 +480,7 @@ class SamplesView(BikaListingView):
                          'getClientSampleID',
                          'getSampleTypeTitle',
                          'getSamplePointTitle',
-                         'getStorageLocationTitle',
+                         'getStorageLocation',
                          'SamplingDeviation',
                          'AdHoc',
                          'getSamplingDate',
@@ -512,7 +511,7 @@ class SamplesView(BikaListingView):
                          'getPreserver',
                          'getSampleTypeTitle',
                          'getSamplePointTitle',
-                         'getStorageLocationTitle',
+                         'getStorageLocation',
                          'SamplingDeviation',
                          'AdHoc',
                          'state_title']},
@@ -530,7 +529,7 @@ class SamplesView(BikaListingView):
                          'getClientSampleID',
                          'getSampleTypeTitle',
                          'getSamplePointTitle',
-                         'getStorageLocationTitle',
+                         'getStorageLocation',
                          'SamplingDeviation',
                          'AdHoc',
                          'getSamplingDate',
@@ -553,7 +552,7 @@ class SamplesView(BikaListingView):
                          'getClientSampleID',
                          'getSampleTypeTitle',
                          'getSamplePointTitle',
-                         'getStorageLocationTitle',
+                         'getStorageLocation',
                          'SamplingDeviation',
                          'AdHoc',
                          'getSamplingDate',
@@ -576,7 +575,7 @@ class SamplesView(BikaListingView):
                          'getClientSampleID',
                          'getSampleTypeTitle',
                          'getSamplePointTitle',
-                         'getStorageLocationTitle',
+                         'getStorageLocation',
                          'SamplingDeviation',
                          'AdHoc',
                          'getSamplingDate',
@@ -600,7 +599,7 @@ class SamplesView(BikaListingView):
                          'getClientSampleID',
                          'getSampleTypeTitle',
                          'getSamplePointTitle',
-                         'getStorageLocationTitle',
+                         'getStorageLocation',
                          'SamplingDeviation',
                          'AdHoc',
                          'getSamplingDate',
@@ -644,6 +643,7 @@ class SamplesView(BikaListingView):
             deviation = obj.getSamplingDeviation()
             items[x]['SamplingDeviation'] = deviation and deviation.Title() or ''
 
+            items[x]['getStorageLocation'] = obj.getStorageLocation() and obj.getStorageLocation().Title() or ''
             items[x]['AdHoc'] = obj.getAdHoc() and True or ''
 
             samplingdate = obj.getSamplingDate()

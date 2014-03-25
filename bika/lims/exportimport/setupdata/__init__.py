@@ -872,19 +872,9 @@ class Storage_Locations(WorksheetImporter):
         for row in self.get_rows(3):
             if not row['Address']:
                 continue
-            if row['Client_title']:
-                client_title = row['Client_title']
-                client = pc(portal_type="Client", getName=client_title)
-                if len(client) == 0:
-                    raise IndexError(
-                            "Storage location %s: Client invalid: '%s'" % (
-                                row['title'], client_title))
-                folder = client[0].getObject()
-            else:
-                folder = setup_folder
 
-            _id = folder.invokeFactory('StorageLocation', id=tmpID())
-            obj = folder[_id]
+            _id = setup_folder.invokeFactory('StorageLocation', id=tmpID())
+            obj = setup_folder[_id]
             obj.edit(
                 title=row['Address'],
                 SiteTitle=row['SiteTitle'],

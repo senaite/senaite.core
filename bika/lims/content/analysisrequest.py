@@ -1342,6 +1342,18 @@ class AnalysisRequest(BaseFolder):
         if sample:
             return sample.getComposite()
 
+    security.declarePublic('setStorageLocation')
+    def setStorageLocation(self, value):
+        sample = self.getSample()
+        if sample and value:
+            return sample.setStorageLocation(value)
+
+    security.declarePublic('getStorageLocation')
+    def getStorageLocation(self):
+        sample = self.getSample()
+        if sample:
+            return sample.getStorageLocation()
+
     security.declarePublic('setAdHoc')
     def setAdHoc(self, value):
         sample = self.getSample()

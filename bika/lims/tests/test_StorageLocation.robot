@@ -27,7 +27,6 @@ Test Storage Location
 
     Check Bika Setup imported correctly
     Create Setup Location
-    Create Client Location
     Check AR Creation
 
 *** Keywords ***
@@ -50,16 +49,6 @@ Create Setup Location
     Create Location             BIKA  FR1  S3
     Go to                       ${PLONEURL}/bika_setup/bika_storagelocations
     Page should contain         BIKA.FR1.S3
-
-Create Client Location
-    Go to                       ${PLONEURL}/clients/client-1/storagelocations
-    Wait until page contains    Storage Locations
-    Click Link                  link=Add
-    Wait until page contains    Add Storage Location
-    Page Should Contain         Address
-    Create Location             HAM  FZ1  S4
-    Go to                       ${PLONEURL}/clients/client-1/storagelocations
-    Page should contain         HAM.FZ1.S4
 
 Create Location
     [Arguments]  ${centre}  ${unit}  ${shelf}
