@@ -315,6 +315,14 @@ class ISamplePoints(Interface):
 
     ""
 
+class IStorageLocation(Interface):
+
+    ""
+
+class IStorageLocations(Interface):
+
+    ""
+
 
 class ISampleType(Interface):
 

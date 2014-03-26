@@ -863,6 +863,34 @@ class Sample_Point_Sample_Types(WorksheetImporter):
                 samplepoints.append(samplepoint)
                 sampletype.setSamplePoints(samplepoints)
 
+class Storage_Locations(WorksheetImporter):
+
+    def Import(self):
+        setup_folder = self.context.bika_setup.bika_storagelocations
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        pc = getToolByName(self.context, 'portal_catalog')
+        for row in self.get_rows(3):
+            if not row['Address']:
+                continue
+
+            _id = setup_folder.invokeFactory('StorageLocation', id=tmpID())
+            obj = setup_folder[_id]
+            obj.edit(
+                title=row['Address'],
+                SiteTitle=row['SiteTitle'],
+                SiteCode=row['SiteCode'],
+                SiteDescription=row['SiteDescription'],
+                LocationTitle=row['LocationTitle'],
+                LocationCode=row['LocationCode'],
+                LocationDescription=row['LocationDescription'],
+                LocationType=row['LocationType'],
+                ShelfTitle=row['ShelfTitle'],
+                ShelfCode=row['ShelfCode'],
+                ShelfDescription=row['ShelfDescription'],
+            )
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
+
 
 class Sample_Conditions(WorksheetImporter):
 

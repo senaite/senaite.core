@@ -24,6 +24,7 @@ def contentmenu_factories_available(self):
         'ReportFolder',
         'SampleType',
         'SamplePoint',
+        'StorageLocation',
         'WorksheetTemplate',
         'LabProduct',
         'ReferenceSample',

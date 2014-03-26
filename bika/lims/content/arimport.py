@@ -370,6 +370,7 @@ class ARImport(BaseFolder):
                 ClientSampleID = aritem.getClientSid(),
                 SampleType = aritem.getSampleType(),
                 DateSampled = sample_date,
+                SamplingDate = sample_date,
                 DateReceived = DateTime(),
                 )
             sample._renameAfterCreation()
@@ -573,6 +574,7 @@ class ARImport(BaseFolder):
                 ClientSampleID = aritem.getClientSid(),
                 SampleType = aritem.getSampleType(),
                 DateSampled = sample_date,
+                SamplingDate = sample_date,
                 DateReceived = DateTime(),
                 Remarks = aritem.getClientRemarks(),
                 )

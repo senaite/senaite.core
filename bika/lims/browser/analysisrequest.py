@@ -544,6 +544,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         newar.setSamplingDate(ar.getSamplingDate())
         newar.setSampleType(ar.getSampleType())
         newar.setSamplePoint(ar.getSamplePoint())
+        newar.setStorageLocation(ar.getStorageLocation())
         newar.setSamplingDeviation(ar.getSamplingDeviation())
         newar.setPriority(ar.getPriority())
         newar.setSampleCondition(ar.getSampleCondition())
@@ -1545,6 +1546,8 @@ class ajaxAnalysisRequestSubmit():
                 saved_form = self.request.form
                 self.request.form = resolved_values
                 sample.setSampleType(resolved_values['SampleType'])
+                sample.setSamplePoint(resolved_values['SamplePoint'])
+                sample.setStorageLocation(resolved_values['StorageLocation'])
                 sample.processForm()
                 self.request.form = saved_form
                 if SamplingWorkflowEnabled:
@@ -1818,6 +1821,8 @@ class AnalysisRequestsView(BikaListingView):
             'getSamplePointTitle': {'title': _('Sample Point'),
                                     'index': 'getSamplePointTitle',
                                     'toggle': False},
+            'getStorageLocation': {'title': _('Storage Location'),
+                                    'toggle': False},
             'SamplingDeviation': {'title': _('Sampling Deviation'),
                                   'toggle': False},
             'Priority': {'title': _('Priority'),
@@ -1887,6 +1892,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getTemplateTitle',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
                         'AdHoc',
@@ -1927,6 +1933,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getPreserver',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
                         'AdHoc',
@@ -1953,6 +1960,7 @@ class AnalysisRequestsView(BikaListingView):
                         'ClientContact',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
                         'AdHoc',
@@ -1985,6 +1993,7 @@ class AnalysisRequestsView(BikaListingView):
                         'ClientContact',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
                         'AdHoc',
@@ -2013,6 +2022,7 @@ class AnalysisRequestsView(BikaListingView):
                         'ClientContact',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
                         'AdHoc',
@@ -2041,6 +2051,7 @@ class AnalysisRequestsView(BikaListingView):
                         'ClientContact',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
                         'AdHoc',
@@ -2074,6 +2085,7 @@ class AnalysisRequestsView(BikaListingView):
                         'ClientContact',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
                         'AdHoc',
@@ -2104,6 +2116,7 @@ class AnalysisRequestsView(BikaListingView):
                         'ClientContact',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
                         'AdHoc',
@@ -2144,6 +2157,7 @@ class AnalysisRequestsView(BikaListingView):
                         'ClientContact',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
                         'AdHoc',
@@ -2185,6 +2199,7 @@ class AnalysisRequestsView(BikaListingView):
                         'ClientContact',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
                         'AdHoc',
@@ -2248,6 +2263,7 @@ class AnalysisRequestsView(BikaListingView):
             priority = obj.getPriority()
             items[x]['Priority'] = priority and priority.Title() or ''
 
+            items[x]['getStorageLocation'] = sample.getStorageLocation() and sample.getStorageLocation().Title() or ''
             items[x]['AdHoc'] = sample.getAdHoc() and True or ''
 
             after_icons = ""
@@ -2673,6 +2689,7 @@ class WidgetVisibility(_WV):
                 'Specification',
                 'PublicationSpecification',
                 'SamplePoint',
+                'StorageLocation',
                 'ClientOrderNumber',
                 'ClientReference',
                 'ClientSampleID',
@@ -2722,6 +2739,7 @@ class WidgetVisibility(_WV):
                 'Specification',
                 'Sample',
                 'SamplePoint',
+                'StorageLocation',
                 'SampleType',
                 'Template',
             ]
@@ -2753,6 +2771,7 @@ class WidgetVisibility(_WV):
                 'Specification',
                 'SamplingDate',
                 'SamplePoint',
+                'StorageLocation',
                 'SamplingDeviation',
                 'Priority',
                 'Template',
@@ -2782,6 +2801,7 @@ class WidgetVisibility(_WV):
                 'Sample',
                 'SampleCondition',
                 'SamplePoint',
+                'StorageLocation',
                 'Specification',
                 'SampleType',
                 'SamplingDate',
@@ -2812,6 +2832,7 @@ class WidgetVisibility(_WV):
                 'Sample',
                 'SampleCondition',
                 'SamplePoint',
+                'StorageLocation',
                 'Specification',
                 'SampleType',
                 'SamplingDate',
