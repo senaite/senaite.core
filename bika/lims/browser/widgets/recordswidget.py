@@ -23,7 +23,6 @@ class RecordsWidget(ATRecordsWidget):
         """
 
         value = form.get(field.getName(), empty_marker)
-
         if not value:
             return value, {}
         if value is empty_marker:
@@ -31,7 +30,15 @@ class RecordsWidget(ATRecordsWidget):
         if emptyReturnsMarker and value == '':
             return empty_marker
 
-        return value, {}
+        # Discard records with empty values for all subfields
+        outvalues = []
+        for val in value:
+            for k, v in val.items():
+                if v:
+                    outvalues.append(val)
+                    break
+
+        return outvalues, {}
 
     def jsondumps(self, val):
         return json.dumps(val)
