@@ -25,9 +25,9 @@ class InvoiceView(BrowserView):
         # Gather general data
         self.invoiceId = context.getId()
         self.invoiceDate = self.ulocalized_time(context.getInvoiceDate())
-        self.subtotal = context.getSubtotal()
-        self.vatTotal = context.getVATTotal()
-        self.total = context.getTotal()
+        self.subtotal = '%0.2f' % context.getSubtotal()
+        self.vatTotal = '%0.2f' % context.getVATTotal()
+        self.total = '%0.2f' % context.getTotal()
         # Create the batch range
         start = self.ulocalized_time(batch.getBatchStartDate())
         end = self.ulocalized_time(batch.getBatchEndDate())
@@ -56,7 +56,7 @@ class InvoiceView(BrowserView):
             'description': item['ItemDescription'],
             'orderNo': item['ClientOrderNumber'],
             'subtotal': item['Subtotal'],
-            'vatTotal': item['ATTotal'],
+            'vatTotal': item['VATTotal'],
             'total': item['Total'],
         } for item in items]
         # Render the template

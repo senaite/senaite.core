@@ -1,34 +1,37 @@
 from AccessControl import ModuleSecurityInfo, allow_module
-from DateTime import DateTime
-from Products.Archetypes.public import DisplayList
-from Products.CMFCore.utils import getToolByName
-from Products.ATContentTypes.utils import DT2dt,dt2DT
-from Products.CMFPlone.TranslationServiceTool import TranslationServiceTool
-from bika.lims.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
 from bika.lims import interfaces
 from bika.lims import logger
+from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
+from cStringIO import StringIO
+from DateTime import DateTime
+from email import Encoders
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.MIMEBase import MIMEBase
 from email.Utils import formataddr
-from plone.i18n.normalizer.interfaces import IIDNormalizer
-from zope.component import getUtility
-from zope.interface import providedBy
 from magnitude import mg, MagnitudeError
+from plone.i18n.normalizer.interfaces import IIDNormalizer
+from Products.Archetypes.public import DisplayList
+from Products.ATContentTypes.utils import DT2dt,dt2DT
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.TranslationServiceTool import TranslationServiceTool
+from zope.component import getUtility
+from zope.i18n.locales import locales
+from zope.interface import providedBy
 import copy,re,urllib
+import Globals
 import json
 import plone.protect
 import transaction
-import warnings
-from email.MIMEBase import MIMEBase
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email import Encoders
-from cStringIO import StringIO
 import urllib2
-import Globals
+import warnings
+
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
 allow_module('csv')
+
 
 def to_utf8(text):
     if text == None:
@@ -353,3 +356,11 @@ def get_invoice_item_description(obj):
     item_description = orderno + ' ' + clientref + ' ' + clientsid + ' ' + sampleID + ' ' + sampletype + ' ' + samplepoint
     return item_description
 
+
+def currency_format(context, locale):
+    locale = locales.getLocale(locale)
+    currency = context.bika_setup.getCurrency()
+    symbol = locale.numbers.currencies[currency].symbol
+    def format(val):
+        return '%s %0.2f' % (symbol, val)
+    return format
