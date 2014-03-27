@@ -3,6 +3,7 @@ from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IFieldIcons
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.utils import to_utf8
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.PythonScripts.standard import html_quote
@@ -11,7 +12,6 @@ from zope.component import adapts
 from zope.component import getAdapters
 from zope.interface import implements
 
-import App
 import json
 import math
 import plone
@@ -47,7 +47,7 @@ class CalculationResultAlerts(object):
         if indet:
             alert = {'field': 'Result',
                      'icon': path + '/exclamation.png',
-                     'msg': translate(_("Indeterminate result"))}
+                     'msg': to_utf8(translate(_("Indeterminate result")))}
             if uid in alerts:
                 alerts[uid].append(alert)
             else:
@@ -184,7 +184,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 alert = {'field': 'Result',
                          'icon': path + '/exclamation.png',
                          'msg': "{0}: {1} ({2}) ".format(
-                             translate(_("Type Error")),
+                             to_utf8(translate(_("Type Error"))),
                              html_quote(str(e.args[0])),
                              formula)}
                 if uid in self.alerts:
@@ -199,7 +199,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 alert = {'field': 'Result',
                          'icon': path + '/exclamation.png',
                          'msg': "{0}: {1} ({2}) ".format(
-                             translate(_("Division by zero")),
+                             to_utf8(translate(_("Division by zero"))),
                              html_quote(str(e.args[0])),
                              formula)}
                 if uid in self.alerts:
@@ -211,7 +211,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 alert = {'field': 'Result',
                          'icon': path + '/exclamation.png',
                          'msg': "{0}: {1} ({2}) ".format(
-                             translate(_("Key Error")),
+                             to_utf8(translate(_("Key Error"))),
                              html_quote(str(e.args[0])),
                              formula)}
                 if uid in self.alerts:
@@ -364,6 +364,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         return json.dumps({'alerts': self.alerts,
                            'uncertainties': self.uncertainties,
                            'results': results})
+
 
 class ajaxGetMethodCalculation(BrowserView):
     """ Returns the calculation assigned to the defined method.

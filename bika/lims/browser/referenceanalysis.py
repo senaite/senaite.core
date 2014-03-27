@@ -4,6 +4,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.permissions import *
+from bika.lims.utils import to_utf8
 from zope.component import adapts
 from zope.interface import implements
 from bika.lims.browser import BrowserView
@@ -30,15 +31,15 @@ class ResultOutOfRange(object):
         path = '++resource++bika.lims.images'
         if outofrange:
             rngstr = "{0} {1}, {2}, {3}".format(
-                translate(_("min")), str(spec.get('min', '')),
-                translate(_("max")), str(spec.get('max', '')))
+                to_utf8(translate(_("min"))), str(spec['min']),
+                to_utf8(translate(_("max"))), str(spec['max']))
 
             if acceptable:
                 message = "{0} ({1})".format(
-                    translate(_('Result in shoulder range')), rngstr)
+                    to_utf8(translate(_('Result in shoulder range'))), rngstr)
             else:
                 message = "{0} ({1})".format(
-                    translate(_('Result out of range')), rngstr)
+                    to_utf8(translate(_('Result out of range'))), rngstr)
 
             alerts[self.context.UID()] = [{
                 'icon': path + '/warning.png' if acceptable else

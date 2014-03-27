@@ -9,7 +9,6 @@ from Products.CMFPlone.browser.navtree import getNavigationRoot
 from Products.CMFPlone.PloneBatch import Batch
 from zope.component import getMultiAdapter
 from zope.component import getUtility
-from zope.i18n import translate
 from zope.publisher.browser import BrowserView
 
 import json

@@ -18,6 +18,7 @@ from bika.lims.utils import changeWorkflowState, tmpID
 from bika.lims.utils import changeWorkflowState, to_unicode
 from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
+from bika.lims.utils import to_utf8
 from operator import itemgetter
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
@@ -678,12 +679,12 @@ class SamplesView(BikaListingView):
             if obj.getSampleType().getHazardous():
                 after_icons += "<img title='%s' " \
                     "src='%s/++resource++bika.lims.images/hazardous.png'>" % \
-                    (self.context.translate(_("Hazardous")),
+                    (to_utf8(translate(_("Hazardous"))),
                      self.portal_url)
             if obj.getSamplingDate() > DateTime():
                 after_icons += "<img title='%s' " \
                     "src='%s/++resource++bika.lims.images/calendar.png' >" % \
-                    (self.context.translate(_("Future dated sample")),
+                    (to_utf8(translate(_("Future dated sample"))),
                      self.portal_url)
             if after_icons:
                 items[x]['after']['getSampleID'] = after_icons

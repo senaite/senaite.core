@@ -9,6 +9,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaFolderSchema
+from bika.lims.utils import to_utf8
 from plone.app.layout.globals.interfaces import IViewView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
@@ -72,16 +73,16 @@ class AnalysisServicesWorkflowAction(WorkflowAction):
                 created.append(_id)
 
             if len(created) > 1:
-                message = self.context.translate(
+                message = to_utf8(self.context.translate(
                     _('Services ${services} were successfully created.',
-                      mapping = {'services': ', '.join(created)}))
+                      mapping = {'services': ', '.join(created)})))
                 self.destination_url = \
                     self.request.get_header("referer",
                                             self.context.absolute_url())
             else:
-                message = self.context.translate(
+                message = to__utf8(self.context.translate(
                     _('Analysis request ${service} was successfully created.',
-                    mapping = {'service': ', '.join(created)}))
+                    mapping = {'service': ', '.join(created)})))
                 self.destination_url = folder[_id].absolute_url() + "/base_edit"
 
             self.context.plone_utils.addPortalMessage(message, 'info')

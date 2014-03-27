@@ -8,6 +8,7 @@ from bika.lims.interfaces import IFieldIcons
 from bika.lims.permissions import *
 from bika.lims.utils import isActive
 from bika.lims.utils import getUsers
+from bika.lims.utils import to_utf8
 from DateTime import DateTime
 from operator import itemgetter
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -91,7 +92,7 @@ class AnalysesView(BikaListingView):
                 'sortable': False},
             'retested': {
                 'title': "<img title='%s' src='%s/++resource++bika.lims.images/retested.png'/>"%\
-                    (context.translate(_('Retested')), self.portal_url),
+                    (to_utf8(context.translate(_('Retested'))), self.portal_url),
                 'type':'boolean',
                 'sortable': False},
             'Attachments': {
@@ -598,10 +599,10 @@ class AnalysesView(BikaListingView):
                                     str("%%.%sf" % precision) % float(result) or result
                             except:
                                 items[i]['formatted_result'] = result
-                                indet = self.context.translate(_('Indet'))
+                            indet = to_utf8(self.context.translate(_('Indet')))
                                 if result == indet:
                                     # 'Indeterminate' results flag a specific error
-                                    Indet = self.context.translate(_("Indeterminate result"))
+                                Indet = to_utf8(self.context.translate(_("Indeterminate result")))
                                     items[i]['after']['Result'] = \
                                         '<img width="16" height="16" title="%s"' % Indet + \
                                         'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
@@ -680,7 +681,7 @@ class AnalysesView(BikaListingView):
                     items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                         (self.ulocalized_time(duedate, long_format=1),
                          self.portal_url,
-                         self.context.translate(_("Late Analysis")))
+                         to_utf8(self.context.translate(_("Late Analysis"))))
 
             # Submitting user may not verify results (admin can though)
             if items[i]['review_state'] == 'to_be_verified' and \
@@ -698,7 +699,7 @@ class AnalysesView(BikaListingView):
                     if self_submitted:
                         items[i]['after']['state_title'] = \
                              "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" % \
-                             (self.context.translate(_("Cannot verify: Submitted by current user")))
+                             (to_utf8(self.context.translate(_("Cannot verify: Submitted by current user"))))
                 except WorkflowException:
                     pass
 
@@ -713,9 +714,9 @@ class AnalysesView(BikaListingView):
                         ws = br[0]
                         items[i]['after']['state_title'] = \
                              "<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='%s'/></a>" % \
-                             (ws.absolute_url(), self.context.translate(
+                             (ws.absolute_url(), to_utf8(self.context.translate(
                                  _("Assigned to: ${worksheet_id}",
-                                   mapping={'worksheet_id': ws.id})))
+                                   mapping={'worksheet_id': ws.id}))))
 
         # the TAL requires values for all interim fields on all
         # items, so we set blank values in unused cells

@@ -19,6 +19,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IReferenceSample
 from bika.lims.utils import sortable_title, tmpID
 from bika.lims.utils import to_unicode as _u
+from bika.lims.utils import to_utf8
 from zope.interface import implements
 import sys, time
 
@@ -178,9 +179,9 @@ class ReferenceSample(BaseFolder):
                 return ''
             title = _u(o.Title())
             if o.getBlank():
-                title += " %s" % self.translate(_('(Blank)'))
+                title += " %s" % to_utf8(self.translate(_('(Blank)')))
             if o.getHazardous():
-                title += " %s" % self.translate(_('(Hazardous)'))
+                title += " %s" % to_utf8(self.translate(_('(Hazardous)')))
 
             return title
 

@@ -14,13 +14,12 @@
 <body tal:define="
       plone_view python:view.context.restrictedTraverse('@@plone');
       portal python:context.portal_url.getPortalObject();
-      lab_accredited view/laboratory/getLaboratoryAccredited;
+      lab_accredited view/laboratory/obj/getLaboratoryAccredited;
       global columns python:0;
-      pub_pref view/pub_pref;
+      pub_pref view/contact/getPublicationPreference;
       accredited python:lab_accredited and view.any_accredited;
       global invoice_exclude python:False;
-      ar nocall:view/ar;
-      dry ar/getReportDryMatter;
+      dry view/ar/obj/getReportDryMatter;
       remarksenabled python:view.context.bika_setup.getEnableAnalysisRemarks();">
 
     <div id='header'>
@@ -28,15 +27,15 @@
             type="code128"
             align="baseline"
             barheight="30px"
-            tal:attributes="value ar/RequestID;
-                            humanreadable ar/RequestID;">
+            tal:attributes="value view/ar/obj/getRequestID;
+                            humanreadable view/ar/obj/getRequestID;">
         </pdf:barcode>
     </div>
 
     <table id="section-header">
         <tr>
             <td id="lab-logo">
-                <a tal:attributes="href string:${portal/bika_setup/laboratory/getLabURL}/">
+                <a tal:attributes="href view/laboratory/getLabURL">
                     <img tal:attributes="src string:${portal/absolute_url}/logo_print.jpg;"/></a>
             </td>
             <td id="accreditation-logo"
@@ -52,18 +51,18 @@
     </table>
     <p>&nbsp;</p>
 
-    <!-- Address and Lab info -->
+<!-- Address and Lab info -->
     <table id="section-info">
         <tr>
             <td id="client-info">
                 <table>
                     <tr><td id="client-contact" tal:content="view/contact/getFullname"></td></tr>
-                    <tr><td id="client-name" tal:content="view/client/Title"></td></tr>
-                    <tr><td id="client-address" tal:content="structure view/client_address"></td></tr>
+                    <tr><td id="client-name" tal:content="view/client/Name"></td></tr>
+                    <tr><td id="client-address" tal:content="structure view/client/address"></td></tr>
                     <tr>
                         <td id="client-email">
                             <a tal:content="view/contact/getEmailAddress"
-                               tal:attributes="url python:'mailto:%s' % view.contact.getEmailAddress();"></a>
+                               tal:attributes="url python:'mailto:%s' % view.contact['getEmailAddress'];"></a>
                         </td>
                     </tr>
                     <tr tal:condition="view/client/getPhone">
@@ -83,7 +82,7 @@
             <td id="lab-info">
                 <table>
                     <tr><td id="lab-title" tal:content='view/laboratory/Title'></td></tr>
-                    <tr><td id="lab-address" tal:content='structure view/lab_address'></td></tr>
+                    <tr><td id="lab-address" tal:content='structure view/laboratory/address'></td></tr>
 
                     <tr tal:condition="view/laboratory/getLabURL">
                         <td id="lab-URL">
@@ -97,74 +96,82 @@
     </table>
     <p>&nbsp;</p>
 
-    <!-- Alert section (invalidated ar, etc.) -->
-    <div id="section-alert" tal:condition="python:ar.isInvalid()">
+<!-- Alert section (invalidated ar, etc.) -->
+    <div id="section-alert" tal:condition="python:view.ar['obj'].isInvalid()">
         <span class='emphasize' i18n:translate="">This Analysis Request has been invalidated due to erroneously published results</span><br/>
-        <tal:invalidreport tal:condition="python:ar.getChildAnalysisRequest()">
-           <a tal:attributes="href python:ar.absolute_url();"
-              tal:content="ar/RequestID"></a>&nbsp;
+        <tal:invalidreport tal:condition="python:view.ar['obj'].getChildAnalysisRequest()">
+           <a tal:attributes="href python:view.ar['obj'].absolute_url();"
+              tal:content="python:view.ar['obj'].getRequestID()"></a>&nbsp;
            <span i18n:translate="">has been replaced by</span>&nbsp;
-           <a tal:attributes="href python:ar.getLastChild().absolute_url()"
-              tal:content="python:ar.getLastChild().getRequestID()"></a>
+           <a tal:attributes="href python:view.ar['obj'].getLastChild().absolute_url()"
+              tal:content="python:view.ar['obj'].getLastChild().getRequestID()"></a>
         </tal:invalidreport>
     </div>
 
-    <!-- AR Summary section -->
+<!-- AR Summary section -->
     <div id="section-summary">
         <h1 i18n:translate="">Summary</h1>
         <table>
             <tr>
                 <td class="label" i18n:translate="">Request ID</td>
                 <td>
-                    <a tal:content="ar/getRequestID"
-                       tal:attributes="href ar/absolute_url;"></a>
+                    <a tal:content="view/ar/obj/getRequestID"
+                       tal:attributes="href view/ar/obj/absolute_url;"></a>
                 </td>
             </tr>
+
             <tr>
                 <td class="label" i18n:translate="">Sample ID</td>
                 <td>
-                    <a tal:define="sample ar/getSample"
-                       tal:content="sample/getSampleID"
-                       tal:attributes="href sample/absolute_url"></a>
+                    <a
+                       tal:content="view/sample/obj/getSampleID"
+                       tal:attributes="href view/sample/obj/absolute_url"></a>
                 </td>
             </tr>
-            <tr tal:condition="python: ar.getBatch()">
+
+            <tr tal:condition="python: view.batch['obj'] is not None">
                 <td class="label" i18n:translate="">Batch ID</td>
                 <td>
-                    <a tal:content="python: ar.getBatch().getBatchID()"
-                       tal:attributes="href python:ar.getBatch().absolute_url()"></a>
+                    <a tal:content="view/batch/obj/getBatchID"
+                       tal:attributes="href python:view.batch['obj'].absolute_url()"></a>
                 </td>
             </tr>
-            <tr tal:condition="python: ar.getBatch() and ar.getBatch().getClientBatchID()">
+
+            <tr tal:condition="python: view.batch['obj'] is not None">
                 <td class="label" i18n:translate="">Client Batch ID</td>
-                <td tal:content="python:ar.getBatch().getClientBatchID()"></td>
+                <td tal:content="view/batch/getClientBatchID|nothing"></td>
             </tr>
+
             <tr>
                 <td class="label" i18n:translate="">Client</td>
                 <td>
-                <a tal:attributes="href ar/aq_parent/absolute_url"
-                   tal:content="ar/aq_parent/Title"></a>
+                <a tal:attributes="href view/client/obj/absolute_url"
+                   tal:content="view/client/Name"></a>
                 </td>
             </tr>
+
             <tr>
                 <td class="label" i18n:translate="">Client SID</td>
-                <td tal:content="python: ar.getSample().getClientSampleID()"></td>
+                <td tal:content="view/sample/getClientSampleID"></td>
             </tr>
+
             <tr>
                 <td class="label" i18n:translate="">Sample Type</td>
-                <td tal:content="python: ar.getSample().getSampleType().Title()"></td>
+                <td tal:content="view/sample/sampletype_title"></td>
             </tr>
+
             <tr>
                 <td class="label" i18n:translate="">Specification</td>
                 <td tal:content="view/get_active_spec_title"></td>
             </tr>
+
             <tr>
                 <td class="label" i18n:translate="">Date Received</td>
-                <td tal:content="python: view.ulocalized_time(ar.getDateReceived(), long_format=1)">2013-05-31 02:02 PM</td>
+                <td tal:content="python: view.ulocalized_time(view.ar['obj'].getDateReceived(), long_format=1)">2013-05-31 02:02 PM</td>
             </tr>
             <tr>
                 <td class="label" i18n:translate="">Date Published</td>
-                <td tal:content="python: view.ulocalized_time(ar.getDatePublished(), long_format=1)">2013-06-03 12:02 PM</td>
+                <td tal:content="python: view.ulocalized_time(view.ar['obj'].getDatePublished(), long_format=1)">2013-06-03 12:02 PM</td>
             </tr>
             <tr tal:condition="view/reporter">
                 <td class="label" i18n:translate="">Published by</td>
@@ -172,21 +179,20 @@
                     <tal:email tal:condition="view/reporter_email">
                         (<a tal:define="email view/reporter_email"
                            tal:content="email"
-                           tal:attributes="href string:mailto:${email}">
-                           johnpublisher@example.com</a>)
+                           tal:attributes="href string:mailto:${email}"></a>)
                     </tal:email>
                 </td>
             </tr>
-            <tr tal:define="value python:ar.getBatch() and ar.getBatch().getBatchLabels() or [];"
-                tal:condition="value">
+            <tr tal:condition="python: view.batch['obj'] is not None and batch['obj'].getBatchLabels">
                 <td class="label" i18n:translate="">Batch Labels</td>
-                <td tal:content="structure python:', '.join(view.get_titles_for_uids(*value))">Arizona, Clinic tests, blood</td>
+                <td tal:define="value python:view.batch['obj'].get('getBatchLabels', []);"
+                    tal:content="structure python:', '.join(view.get_titles_for_uids(*value))"></td>
             </tr>
         </table>
     </div>
     <pdf:nextpage />
 
-    <!-- AR Results section -->
+<!-- AR Results section -->
     <div id="section-results">
         <h1 i18n:translate="">Results</h1>
         <tal:poc tal:repeat="poc python:view.services.keys()">
@@ -207,8 +213,8 @@
                 <tal:analyses tal:repeat="service python:view.services[poc][cat]">
                 <tal:analysis tal:define="analysis_service_id service/getId;
                                 analysis_keyword python:service.getKeyword();
-                                analysis_found python:analysis_keyword in ar;
-                                analysis python:ar[analysis_keyword] if analysis_found else None;
+                                analysis_found python:analysis_keyword in view.ar['obj'];
+                                analysis python:view.ar['obj'][analysis_keyword] if analysis_found else None;
                                 analysis_result python: analysis.getFormattedResult();
                                 analysis_result_dm python: analysis.getResultDM();
                                 analysis_uncertainty analysis/getUncertainty|nothing;
@@ -258,7 +264,7 @@
         </tal:poc>
     </div>
 
-    <!-- QC Results section -->
+<!-- QC Results section -->
     <div id="section-qcresults"
          tal:condition="python:len(view.qcservices)>0">
 
@@ -357,16 +363,16 @@
     </div>
     <pdf:nextpage />
 
-    <!--  Remarks section -->
-    <div id="section-remarks" tal:condition="python: ar.getRemarks()">
+<!--  Remarks section -->
+    <div id="section-remarks" tal:condition="python: view.ar['obj'].getRemarks()">
         <h1 i18n:translate="">Remarks</h1>
-        <p tal:content="structure python:ar.getRemarks()"></p>
+        <p tal:content="structure python:view.ar['obj'].getRemarks()"></p>
     </div>
 
-    <!-- Attachments section -->
+<!-- Attachments section -->
     <div id="section-attachments"
-        tal:define="ar_attachments python:(ar.getAttachment() and len(ar.getAttachment())>0) and ar.getAttachment() or None;
-                    an_attachments python:[an.getAttachment() for an in ar.getAnalyses(full_objects=True) if an.getAttachment()];">
+        tal:define="ar_attachments python:(view.ar['obj'].getAttachment() and len(view.ar['obj'].getAttachment())>0) and ar.getAttachment() or None;
+                    an_attachments python:[an.getAttachment() for an in view.ar['obj'].getAnalyses(full_objects=True) if an.getAttachment()];">
         <h1 i18n:translate="" tal:condition="python: ar_attachments or len(an_attachments)>0">Attachments</h1>
         <h2 i18n:translate="" tal:condition="ar_attachments">Analysis request attachments</h2>
         <ul tal:condition="ar_attachments">
@@ -407,11 +413,11 @@
         </table>
     </div>
 
-    <!-- Signatures section -->
+<!-- Signatures section -->
 
         <table id="section-signatures">
             <tr>
-                <td tal:define="mngr_info python:view.get_managers_from_request(ar);
+                <td tal:define="mngr_info python:view.get_managers_from_request(view.ar['obj']);
                                 mngr_ids python:mngr_info['ids'];
                                 managers python:mngr_info['dict'];"
                     tal:repeat="manager mngr_ids"
@@ -444,12 +450,12 @@
             </tr>
         </table>
 
-    <!-- Discreeter section -->
+<!-- Discreeter section -->
     <div id="section-discreeter">
         <div id="discreeter-outofrange">* Result out of client specified range.</div>
         <div tal:condition="view/any_drymatter" i18n:translate="">Reported as dry matter</div>
         <div tal:condition="invoice_exclude" i18n:translate="">Not invoiced</div>
-        <div tal:condition="lab_accredited" i18n:translate="">Methods included in the <tal:block replace="view/laboratory/AccreditationBody" i18n:name="accreditation_body"/> schedule of Accreditation for this Laboratory. Analysis remarks are not accredited</div>
+        <div tal:condition="lab_accredited" i18n:translate="">Methods included in the <tal:block replace="view/laboratory/getAccreditationBody" i18n:name="accreditation_body"/> schedule of Accreditation for this Laboratory. Analysis remarks are not accredited</div>
         <div i18n:translate="">Analysis results relate only to the samples tested.</div>
         <div i18n:translate="">This document shall not be reproduced except in full, without the written approval of <tal:block replace="view/laboratory/Title" i18n:name="name_lab"/></div>
         <div tal:define="confidence_level view/laboratory/Confidence | nothing;"

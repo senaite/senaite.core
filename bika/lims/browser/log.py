@@ -2,6 +2,7 @@ from AccessControl.SecurityManagement import newSecurityManager
 from Acquisition import aq_inner, aq_parent
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.utils import to_utf8
 from DateTime import DateTime
 from operator import itemgetter
 from plone.app.layout.globals.interfaces import IViewView
@@ -36,7 +37,7 @@ class LogView(BikaListingView):
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/%s_big.png" % \
             context.portal_type.lower()
-        self.title = safe_unicode(self.context.Title()) + " " + safe_unicode(self.context.translate(_("Log"))).encode('utf-8')
+        self.title = to_utf8(self.context.Title()) + " " + to_utf8(self.context.translate(_("Log")))
         self.description = ""
 
         self.columns = {

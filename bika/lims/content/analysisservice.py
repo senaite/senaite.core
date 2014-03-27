@@ -82,7 +82,7 @@ def getContainers(instance,
                 items.append((container.UID(), container.Title()))
 
     ts = getToolByName(instance, 'translation_service').translate
-    cat_str = ts(_('Container Type'))
+    cat_str = _c(ts(_('Container Type')))
     containertypes = [c.getContainerType() for c in containers]
     containertypes = dict([(ct.UID(), ct.Title())
                            for ct in containertypes if ct])

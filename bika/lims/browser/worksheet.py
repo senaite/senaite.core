@@ -13,6 +13,7 @@ from bika.lims.interfaces import IFieldIcons
 from bika.lims.interfaces import IWorksheet
 from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
+from bika.lims.utils import to_utf8
 from bika.lims.utils import getUsers, isActive, tmpID
 from DateTime import DateTime
 from DocumentTemplate import sequence
@@ -27,7 +28,6 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import adapts
 from zope.component import getAdapters
 from zope.component import getMultiAdapter
-from zope.i18n import translate
 from zope.interface import implements
 from bika.lims.browser.referenceanalysis import AnalysesRetractedListReport
 from DateTime import DateTime
@@ -818,13 +818,12 @@ class AddAnalysesView(BikaListingView):
                 self.context.applyWorksheetTemplate(wst)
                 if len(self.context.getLayout()) != len(layout):
                     self.context.plone_utils.addPortalMessage(
-                        self.context.translate(PMF("Changes saved.")))
+                        to_utf8(translate(PMF("Changes saved."))))
                     self.request.RESPONSE.redirect(self.context.absolute_url() +
                                                    "/manage_results")
                 else:
                     self.context.plone_utils.addPortalMessage(
-                        self.context.translate(
-                            _("No analyses were added to this worksheet.")))
+                        to_utf8(translate(_("No analyses were added to this worksheet."))))
                     self.request.RESPONSE.redirect(self.context.absolute_url() +
                                                    "/add_analyses")
 
@@ -859,7 +858,7 @@ class AddAnalysesView(BikaListingView):
             if DueDate < DateTime():
                 items[x]['after']['DueDate'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                     (self.context.absolute_url(),
-                     self.context.translate(_("Late Analysis")))
+                     to_utf8(self.context.translate(_("Late Analysis"))))
             items[x]['CategoryTitle'] = service.getCategory() and service.getCategory().Title() or ''
 
             if getSecurityManager().checkPermission(EditResults, obj.aq_parent):
@@ -1249,7 +1248,7 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
 
                 after_icons = "<a href='%s' target='_blank'><img src='++resource++bika.lims.images/referencesample.png' title='%s: %s'></a>" % \
                     (obj.absolute_url(), \
-                     self.context.translate(_("Reference sample")), obj.Title())
+                     to_utf8(translate(_("Reference sample"))), obj.Title())
                 items[x]['before']['ID'] = after_icons
 
                 new_items.append(items[x])
@@ -1263,7 +1262,7 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
         self.service_uids = self.request.get('service_uids', '').split(",")
         self.control_type = self.request.get('control_type', '')
         if not self.control_type:
-            return self.context.translate(_("No control type specified"))
+            return to_utf8(self.context.translate(_("No control type specified")))
         return super(ajaxGetWorksheetReferences, self).contents_table()
 
 class ExportView(BrowserView):
@@ -1276,14 +1275,14 @@ class ExportView(BrowserView):
         instrument = self.context.getInstrument()
         if not instrument:
             self.context.plone_utils.addPortalMessage(
-                self.context.translate(_("You must select an instrument")), 'info')
+                to_utf8(translate(_("You must select an instrument"))), 'info')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 
         exim = instrument.getDataInterface()
         if not exim:
             self.context.plone_utils.addPortalMessage(
-                self.context.translate(_("Instrument has no data interface selected")), 'info')
+                to_utf8(translate(_("Instrument has no data interface selected"))), 'info')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 
@@ -1295,7 +1294,7 @@ class ExportView(BrowserView):
         # search instruments module for 'exim' module
         if not hasattr(instruments, exim):
             self.context.plone_utils.addPortalMessage(
-                self.context.translate(_("Instrument exporter not found")), 'error')
+                to_utf8(translate(_("Instrument exporter not found"))), 'error')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 

@@ -1,9 +1,9 @@
-from DateTime import DateTime
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import to_utf8
 import transaction
+
 
 def AfterTransitionEventHandler(instance, event):
 
@@ -13,7 +13,6 @@ def AfterTransitionEventHandler(instance, event):
 
     wf = getToolByName(instance, 'portal_workflow')
     bsc = getToolByName(instance, 'bika_setup_catalog')
-    rc = getToolByName(instance, REFERENCE_CATALOG)
     pu = getToolByName(instance, 'plone_utils')
 
     if event.transition.id == "activate":
@@ -27,8 +26,8 @@ def AfterTransitionEventHandler(instance, event):
         if inactive_services:
             msg = _("Cannot activate calculation, because the following "
                     "service dependencies are inactive: ${inactive_services}",
-                    mapping = {'inactive_services': ", ".join(inactive_services)})
-            message = instance.translate(msg)
+                    mapping={'inactive_services': ", ".join(inactive_services)})
+            message = to_utf8(instance.translate(msg))
             pu.addPortalMessage(message, 'error')
             transaction.get().abort()
             raise WorkflowException
@@ -46,8 +45,8 @@ def AfterTransitionEventHandler(instance, event):
         if calc_services:
             msg = _('Cannot deactivate calculation, because it is in use by the '
                     'following services: ${calc_services}',
-                    mapping = {'calc_services': ", ".join(calc_services)})
-            message = instance.translate(msg)
+                    mapping={'calc_services': ", ".join(calc_services)})
+            message = to_utf8(instance.translate(msg))
             pu.addPortalMessage(message, 'error')
             transaction.get().abort()
             raise WorkflowException

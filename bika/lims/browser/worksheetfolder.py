@@ -46,7 +46,7 @@ class WorksheetFolderWorkflowAction(WorkflowAction):
                         changes = True
 
                 if changes:
-                    message = self.context.translate(PMF('Changes saved.'))
+                    message = _c(self.context.translate(PMF('Changes saved.')))
                     self.context.plone_utils.addPortalMessage(message, 'info')
 
             self.destination_url = self.request.get_header("referer",
@@ -428,7 +428,7 @@ class AddWorksheetView(BrowserView):
         instrument = self.request.get('instrument', '')
 
         if not analyst:
-            message = self.context.translate("Analyst must be specified.")
+            message = _c(self.context.translate("Analyst must be specified."))
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
@@ -462,6 +462,6 @@ class AddWorksheetView(BrowserView):
         if ws.getLayout():
             self.request.RESPONSE.redirect(ws.absolute_url() + "/manage_results")
         else:
-            msg = self.context.translate(_("No analyses were added"))
+            msg = _c(self.context.translate(_("No analyses were added")))
             self.context.plone_utils.addPortalMessage(msg)
             self.request.RESPONSE.redirect(ws.absolute_url() + "/add_analyses")

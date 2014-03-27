@@ -3,6 +3,7 @@ from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import ISetupDataSetList
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims.utils import tmpID, to_unicode
+from bika.lims.utils import to_utf8
 from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from zope.interface import implements
@@ -1784,13 +1785,13 @@ class Invoice_Batches(WorksheetImporter):
             obj = folder[_id]
             if not row['title']:
                 message = _("InvoiceBatch has no Title")
-                raise Exception(self.context.translate(message))
+                raise Exception(to_utf8(self.context.translate(message)))
             if not row['start']:
                 message = _("InvoiceBatch has no Start Date")
-                raise Exception(self.context.translate(message))
+                raise Exception(to_utf8(self.context.translate(message)))
             if not row['end']:
                 message = _("InvoiceBatch has no End Date")
-                raise Exception(self.context.translate(message))
+                raise Exception(to_utf8(self.context.translate(message)))
             obj.edit(
                 title=row['title'],
                 BatchStartDate=row['start'],

@@ -2,6 +2,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.controlpanel.bika_instruments import InstrumentsView
 from bika.lims import bikaMessageFactory as _
 from Products.CMFCore.utils import getToolByName
+from bika.lims.utils import to_utf8
 
 class SupplierInstrumentsView(InstrumentsView):
 
@@ -141,14 +142,14 @@ class ReferenceSamplesView(BikaListingView):
                 after_icons += "<img\
                 src='%s/++resource++bika.lims.images/blank.png' \
                 title='%s'>" % (self.portal_url,
-                                self.context.translate(
-                                    _('Blank')))
+                                to_utf8(self.context.translate(
+                                    _('Blank'))))
             if obj.getHazardous():
                 after_icons += "<img\
                 src='%s/++resource++bika.lims.images/hazardous.png' \
                 title='%s'>" % (self.portal_url,
-                                self.context.translate(
-                                _('Hazardous')))
+                                to_utf8(self.context.translate(
+                                _('Hazardous'))))
             items[x]['replace']['ID'] = "<a href='%s/base_view'>%s</a>&nbsp;%s" % \
                  (items[x]['url'], items[x]['ID'], after_icons)
             outitems.append(items[x])

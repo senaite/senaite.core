@@ -2,6 +2,7 @@
 from Acquisition import aq_get
 from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IDisplayListVocabulary
+from bika.lims.utils import to_utf8
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
@@ -45,8 +46,9 @@ class CatalogVocabulary(object):
             key = callable(key) and key() or key
             value = obj[self.value]
             value = callable(value) and value() or value
-            items.append((key,
-                         translate(safe_unicode(value), context=request)))
+            items.append(
+                (key, to_utf8(translate(safe_unicode(value), context=request)))
+            )
 
         return DisplayList(items)
 
@@ -79,8 +81,8 @@ class BikaContentVocabulary(object):
                     continue
                 objects.sort(lambda x, y: cmp(x.Title().lower(),
                                               y.Title().lower()))
-                xitems = [(translate(safe_unicode(item.Title()),
-                                     context=request),
+                xitems = [(to_utf8(translate(safe_unicode(item.Title()),
+                                     context=request)),
                            item.Title())
                           for item in objects]
                 xitems = [SimpleTerm(i[1], i[1], i[0]) for i in xitems]
@@ -95,12 +97,13 @@ class BikaCatalogTypesVocabulary(object):
     implements(IVocabularyFactory)
 
     def __call__(self, context):
+        translate = context.translate
         types = (
-            ('AnalysisRequest', context.translate(_('Analysis Request'))),
-            ('Batch',  context.translate(_('Batch'))),
-            ('Sample',  context.translate(_('Sample'))),
-            ('ReferenceSample',  context.translate(_('Reference Sample'))),
-            ('Worksheet',  context.translate(_('Worksheet')))
+            ('AnalysisRequest', translate(to_utf8(_('Analysis Request')))),
+            ('Batch',  translate(to_utf8(_('Batch')))),
+            ('Sample',  translate(to_utf8(_('Sample')))),
+            ('ReferenceSample',  translate(to_utf8(_('Reference Sample')))),
+            ('Worksheet',  translate(to_utf8(_('Worksheet'))))
         )
         items = [SimpleTerm(i[0], i[0], i[1]) for i in types]
         return SimpleVocabulary(items)
@@ -299,8 +302,8 @@ class ClientContactVocabulary(object):
             objects = list(client.objectValues('Contact'))
             objects.sort(lambda x, y: cmp(x.getFullname().lower(),
                                           y.getFullname().lower()))
-            xitems = [(translate(safe_unicode(item.getFullname()),
-                                 context=request),
+            xitems = [(to_utf8(translate(safe_unicode(item.getFullname()),
+                                 context=request)),
                        item.getFullname())
                       for item in objects]
             xitems = [SimpleTerm(i[1], i[1], i[0]) for i in xitems]
@@ -355,7 +358,7 @@ class AnalysisRequestWorkflowStateVocabulary(object):
 
         wf = wftool.getWorkflowById('bika_ar_workflow')
         items = wftool.listWFStatesByTitle(filter_similar=True)
-        items_dict = dict([(i[1], translate(i[0], context=request))
+        items_dict = dict([(i[1], to_utf8(translate(i[0], context=request)))
                            for i in items])
         items_list = [(k, v) for k, v in items_dict.items()]
         items_list.sort(lambda x, y: cmp(x[1], y[1]))
