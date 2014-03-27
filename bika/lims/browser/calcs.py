@@ -169,7 +169,6 @@ class ajaxCalculateAnalysisEntry(BrowserView):
             # convert formula to a valid python string, ready for interpolation
             formula = calculation.getFormula()
             formula = formula.replace('[', '%(').replace(']', ')f')
-            calcsucceed = False
             try:
                 formula = eval("'%s'%%mapping" % formula,
                                {"__builtins__": None,
@@ -180,7 +179,6 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 result = eval(formula)
                 Result['result'] = result
                 self.current_results[uid] = result
-                calcsucceed = True
             except TypeError as e:
                 # non-numeric arguments in interim mapping?
                 alert = {'field': 'Result',
@@ -229,7 +227,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         specs = specs.get(analysis.getKeyword(), {})
         hidemin = specs.get('hidemin', '')
         hidemax = specs.get('hidemax', '')
-        if calcsucceed:
+        if Result.get('result', ''):
             fresult = Result['result']
             try:
                 belowmin = hidemin and fresult < float(hidemin) or False

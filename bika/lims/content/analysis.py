@@ -263,6 +263,38 @@ class Analysis(BaseContent):
     def getSample(self):
         return self.aq_parent.getSample()
 
+    def getAnalysisSpecs(self, specification=None):
+        """ Retrieves the analysis specs to be applied to this analysis.
+            Allowed values for specification= 'client', 'lab', None
+            If specification is None, client specification gets priority from
+            lab specification.
+            If no specification available for this analysis, returns None
+        """
+        sampletype = self.getSample().getSampleType()
+        sampletype_uid = sampletype and sampletype.UID() or ''
+        bsc = getToolByName(self, 'bika_setup_catalog')
+
+        # retrieves the desired specs if None specs defined
+        if not specification:
+            proxies = bsc(portal_type='AnalysisSpec',
+                          getClientUID=self.getClientUID(),
+                          getSampleTypeUID=sampletype_uid)
+
+            if len(proxies) == 0:
+                # No client specs available, retrieve lab specs
+                labspecsuid = self.bika_setup.bika_analysisspecs.UID()
+                proxies = bsc(portal_type='AnalysisSpec',
+                              getSampleTypeUID=sampletype_uid,
+                              getClientUID=labspecsuid)
+        else:
+            specuid = specification == "client" and self.getClientUID() or \
+                    self.bika_setup.bika_analysisspecs.UID()
+            proxies = bsc(portal_type='AnalysisSpec',
+                              getSampleTypeUID=sampletype_uid,
+                              getClientUID=specuid)
+
+        return (proxies and len(proxies) > 0) and proxies[0].getObject() or None
+
     def calculateResult(self, override=False, cascade=False):
         """ Calculates the result for the current analysis if it depends of
             other analysis/interim fields. Otherwise, do nothing
