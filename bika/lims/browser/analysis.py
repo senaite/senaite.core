@@ -32,7 +32,7 @@ def isOutOfShoulderRange(result, Min, Max, error):
     error_min = result - error_amount
     error_max = result + error_amount
     if (spec_min and result < spec_min and error_max >= spec_min) \
-            or (spec_max and result > spec_max and error_min <= spec_max):
+        or (spec_max and result > spec_max and error_min <= spec_max):
         return True
     # Default: in range
     return False

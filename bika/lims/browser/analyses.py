@@ -381,6 +381,7 @@ class AnalysesView(BikaListingView):
             items[i]['Attachments'] = ''
 
             item['allow_edit'] = []
+            client_or_lab = ""
 
             Analyst = obj.getAnalyst()
             items[i]['Analyst'] = Analyst
@@ -518,27 +519,50 @@ class AnalysesView(BikaListingView):
                         else:
                             items[i]['formatted_result'] = result
                     else:
+                        belowmin = False
+                        abovemax = False
+                        itspecs = self.specs.get(items[i].get('st_uid', {}), {})
+                        tgtspecs = client_or_lab or 'lab'
+                        itspecs = itspecs.get(tgtspecs,{}).get(items[i]['Keyword'],{})
+                        hidemin = itspecs.get('hidemin', '')
+                        hidemax = itspecs.get('hidemax', '')
                         try:
-                            items[i]['formatted_result'] = precision and \
-                                str("%%.%sf" % precision) % float(result) or result
+                            belowmin = hidemin and float(result) < float(hidemin) or False
                         except:
-                            items[i]['formatted_result'] = result
-                            indet = self.context.translate(_('Indet'))
-                            if result == indet:
-                                # 'Indeterminate' results flag a specific error
-                                Indet = self.context.translate(_("Indeterminate result"))
-                                items[i]['after']['Result'] = \
-                                    '<img width="16" height="16" title="%s"' % Indet + \
-                                    'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
-                                    (self.portal_url)
-                            # result being unfloatable is no longer an error.
-                            # else:
-                            #     # result being un-floatable, is an error.
-                            #     msg = self.context.translate(_("Invalid result"))
-                            #     items[i]['after']['Result'] = \
-                            #         '<img width="16" height="16" title="%s"' % msg + \
-                            #         'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
-                            #         (self.portal_url)
+                            belowmin = False
+                            pass
+                        try:
+                            abovemax = hidemax and float(result) > float(hidemax) or False
+                        except:
+                            abovemax = False
+                            pass
+
+                        if belowmin == True:
+                            items[i]['formatted_result'] = '< %s' % hidemin
+                        elif abovemax == True:
+                            items[i]['formatted_result'] = '> %s' % hidemax
+                        else:
+                            try:
+                                items[i]['formatted_result'] = precision and \
+                                    str("%%.%sf" % precision) % float(result) or result
+                            except:
+                                items[i]['formatted_result'] = result
+                                indet = self.context.translate(_('Indet'))
+                                if result == indet:
+                                    # 'Indeterminate' results flag a specific error
+                                    Indet = self.context.translate(_("Indeterminate result"))
+                                    items[i]['after']['Result'] = \
+                                        '<img width="16" height="16" title="%s"' % Indet + \
+                                        'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
+                                        (self.portal_url)
+                                # result being unfloatable is no longer an error.
+                                # else:
+                                #     # result being un-floatable, is an error.
+                                #     msg = self.context.translate(_("Invalid result"))
+                                #     items[i]['after']['Result'] = \
+                                #         '<img width="16" height="16" title="%s"' % msg + \
+                                #         'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
+                                #         (self.portal_url)
                 items[i]['Uncertainty'] = obj.getUncertainty(result)
 
                 spec = self.get_active_spec_dict(obj)

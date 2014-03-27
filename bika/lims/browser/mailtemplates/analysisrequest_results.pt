@@ -209,7 +209,7 @@
                                 analysis_keyword python:service.getKeyword();
                                 analysis_found python:analysis_keyword in ar;
                                 analysis python:ar[analysis_keyword] if analysis_found else None;
-                                analysis_result python: view.formattedResult(analysis);
+                                analysis_result python: analysis.getFormattedResult();
                                 analysis_result_dm python: analysis.getResultDM();
                                 analysis_uncertainty analysis/getUncertainty|nothing;
                                 analysis_accredited python:accredited and service.getAccredited();

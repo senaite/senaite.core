@@ -169,7 +169,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
             # convert formula to a valid python string, ready for interpolation
             formula = calculation.getFormula()
             formula = formula.replace('[', '%(').replace(']', ')f')
-
+            calcsucceed = False
             try:
                 formula = eval("'%s'%%mapping" % formula,
                                {"__builtins__": None,
@@ -180,6 +180,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 result = eval(formula)
                 Result['result'] = result
                 self.current_results[uid] = result
+                calcsucceed = True
             except TypeError as e:
                 # non-numeric arguments in interim mapping?
                 alert = {'field': 'Result',
@@ -219,14 +220,40 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                     self.alerts[uid].append(alert)
                 else:
                     self.alerts[uid] = [alert, ]
-        try:
-            # format calculation result to service precision
-            Result['formatted_result'] = precision and Result['result'] and \
-                str("%%.%sf" % precision) % Result[
-                    'result'] or Result['result']
-        except:
-            # non-float
-            Result['formatted_result'] = Result['result']
+
+        # format result
+        belowmin = False
+        abovemax = False
+        specs = analysis.getAnalysisSpecs()
+        specs = specs.getResultsRangeDict() if specs is not None else {}
+        specs = specs.get(analysis.getKeyword(), {})
+        hidemin = specs.get('hidemin', '')
+        hidemax = specs.get('hidemax', '')
+        if calcsucceed:
+            fresult = Result['result']
+            try:
+                belowmin = hidemin and fresult < float(hidemin) or False
+            except:
+                belowmin = False
+                pass
+            try:
+                abovemax = hidemax and fresult > float(hidemax) or False
+            except:
+                abovemax = False
+                pass
+        if belowmin == True:
+            Result['formatted_result'] = '< %s' % hidemin
+        elif abovemax == True:
+            Result['formatted_result'] = '> %s' % hidemax
+        else:
+            try:
+                # format calculation result to service precision
+                Result['formatted_result'] = precision and Result['result'] and \
+                    str("%%.%sf" % precision) % Result[
+                        'result'] or Result['result']
+            except:
+                # non-float
+                Result['formatted_result'] = Result['result']
 
         # calculate Dry Matter result
         # if parent is not an AR, it's never going to be calculable

@@ -34,6 +34,7 @@ from DateTime import DateTime
 from Products.CMFPlone.i18nl10n import ulocalized_time
 
 import plone
+import plone.protect
 import json
 
 
@@ -1397,7 +1398,7 @@ class ajaxSetAnalyst():
         mtool = getToolByName(self, 'portal_membership')
         plone.protect.CheckAuthenticator(self.request)
         plone.protect.PostOnly(self.request)
-        value = request.get('value', '')
+        value = self.request.get('value', '')
         if not value:
             return
         if not mtool.getMemberById(value):
