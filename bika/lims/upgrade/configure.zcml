@@ -254,4 +254,13 @@
         handler="bika.lims.upgrade.to3023.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Set Default Priorities"
+        description="Set the default priority on existing ARs"
+        source="3023"
+        destination="3024"
+        handler="bika.lims.upgrade.to3024.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
 </configure>
