@@ -41,6 +41,8 @@ class RecordsWidget(ATRecordsWidget):
             value[i] = dict(value[i])
             if 'value' not in value[i]:
                 value[i]['value'] = ''
+
+        instance.REQUEST[key] = value
         return value, {}
 
     def jsondumps(self, val):
