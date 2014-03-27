@@ -263,4 +263,13 @@
         handler="bika.lims.upgrade.to3024.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Reimport some tools due to pur-cr3 merge"
+        description=""
+        source="3024"
+        destination="3025"
+        handler="bika.lims.upgrade.to3025.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
 </configure>

@@ -15,6 +15,7 @@ from bika.lims.browser.header_table import HeaderTableView
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.permissions import *
 from bika.lims.utils import changeWorkflowState, tmpID
+from bika.lims.utils import changeWorkflowState, to_unicode
 from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
 from operator import itemgetter
@@ -778,7 +779,7 @@ class ajaxGetSampleTypeInfo(BrowserView):
         elif title:
             try:
                 bsc = getToolByName(self.context, 'bika_setup_catalog')
-                proxies = bsc(portal_type='SampleType', title=title)
+                proxies = bsc(portal_type='SampleType', title=to_unicode(title))
             except ParseError:
                 pass
 

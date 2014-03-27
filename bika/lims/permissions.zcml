@@ -7,9 +7,9 @@
     i18n_domain="bika">
 
 <!--
-	All permissions are defined here.
-	They are also defined in permissions.py.
-	The two files must be kept in sync.
+    All permissions are defined here.
+    They are also defined in permissions.py.
+    The two files must be kept in sync.
 /-->
 
 # Add Permissions:
@@ -125,6 +125,11 @@
 #       'sample_registered', 'to_be_sampled', 'sampled', 'to_be_preserved',
 #       'sample_due', 'sample_received', 'to_be_verified', 'attachment_due'
 <permission id="bika.lims.EditSamplePartition" title="BIKA: Edit Sample Partition"/>
+
+# Edit Client
+# ----------------------------------------------
+# Allows access to 'Edit' and 'Contacts' tabs from Client View
+<permission id="bika.lims.EditClient" title="BIKA: Edit Client"/>
 
 # Batch specific permissions
 # ----------------------------------------------

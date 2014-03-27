@@ -284,6 +284,7 @@ class BikaListingView(BrowserView):
         self.view_url = self.base_url
 
         self.translate = self.context.translate
+        self.show_all = False
 
     def _process_request(self):
         # Use this function from a template that is using bika_listing_table
@@ -522,7 +523,7 @@ class BikaListingView(BrowserView):
         workflow = getToolByName(context, 'portal_workflow')
         site_properties = portal_properties.site_properties
         norm = getUtility(IIDNormalizer).normalize
-        show_all = self.request.get('show_all', '').lower() == 'true'
+        show_all = self.request.get('show_all', '').lower() == 'true' or self.show_all==True
         pagenumber = int(self.request.get('pagenumber', 1) or 1)
         pagesize = self.pagesize
         start = (pagenumber - 1) * pagesize
@@ -549,7 +550,6 @@ class BikaListingView(BrowserView):
                 brains = self.contentsMethod(self.contentFilter)
         else:
             brains = self.contentsMethod(self.contentFilter)
-
         results = []
         self.page_start_index = ""
         for i, obj in enumerate(brains):
