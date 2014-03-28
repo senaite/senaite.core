@@ -599,10 +599,10 @@ class AnalysesView(BikaListingView):
                                     str("%%.%sf" % precision) % float(result) or result
                             except:
                                 items[i]['formatted_result'] = result
-                            indet = to_utf8(self.context.translate(_('Indet')))
+                                indet = to_utf8(self.context.translate(_('Indet')))
                                 if result == indet:
                                     # 'Indeterminate' results flag a specific error
-                                Indet = to_utf8(self.context.translate(_("Indeterminate result")))
+                                    Indet = to_utf8(self.context.translate(_("Indeterminate result")))
                                     items[i]['after']['Result'] = \
                                         '<img width="16" height="16" title="%s"' % Indet + \
                                         'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
