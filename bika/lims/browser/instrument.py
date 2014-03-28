@@ -9,6 +9,7 @@ from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import QCANALYSIS_TYPES
+from bika.lims.utils import to_utf8
 from bika.lims.permissions import *
 from operator import itemgetter
 from bika.lims.browser import BrowserView
@@ -574,7 +575,7 @@ class InstrumentCertificationsView(BikaListingView):
             elif uid == latest:
                 # Latest valid certificate
                 img = "<img title='%s' src='%s/++resource++bika.lims.images/exclamation.png'/>&nbsp;" \
-                % (self.context.translate(_('Out of date')), self.portal_url)
+                % (to_utf8(self.context.translate(_('Out of date'))), self.portal_url)
                 items[x]['replace']['getValidTo'] = '%s %s' % (items[x]['getValidTo'], img)
                 items[x]['state_class'] = '%s %s' % (items[x]['state_class'], 'inactive outofdate')
             else:

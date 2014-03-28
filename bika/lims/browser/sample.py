@@ -15,8 +15,10 @@ from bika.lims.browser.header_table import HeaderTableView
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.permissions import *
 from bika.lims.utils import changeWorkflowState, tmpID
+from bika.lims.utils import changeWorkflowState, to_unicode
 from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
+from bika.lims.utils import to_utf8
 from operator import itemgetter
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
@@ -438,6 +440,8 @@ class SamplesView(BikaListingView):
             'getSamplePointTitle': {'title': _('Sample Point'),
                                     'index': 'getSamplePointTitle',
                                     'toggle': False},
+            'getStorageLocation': {'title': _('Storage Location'),
+                                    'toggle': False},
             'SamplingDeviation': {'title': _('Sampling Deviation'),
                                   'toggle': False},
             'AdHoc': {'title': _('Ad-Hoc'),
@@ -478,6 +482,7 @@ class SamplesView(BikaListingView):
                          'getClientSampleID',
                          'getSampleTypeTitle',
                          'getSamplePointTitle',
+                         'getStorageLocation',
                          'SamplingDeviation',
                          'AdHoc',
                          'getSamplingDate',
@@ -508,6 +513,7 @@ class SamplesView(BikaListingView):
                          'getPreserver',
                          'getSampleTypeTitle',
                          'getSamplePointTitle',
+                         'getStorageLocation',
                          'SamplingDeviation',
                          'AdHoc',
                          'state_title']},
@@ -525,6 +531,7 @@ class SamplesView(BikaListingView):
                          'getClientSampleID',
                          'getSampleTypeTitle',
                          'getSamplePointTitle',
+                         'getStorageLocation',
                          'SamplingDeviation',
                          'AdHoc',
                          'getSamplingDate',
@@ -547,6 +554,7 @@ class SamplesView(BikaListingView):
                          'getClientSampleID',
                          'getSampleTypeTitle',
                          'getSamplePointTitle',
+                         'getStorageLocation',
                          'SamplingDeviation',
                          'AdHoc',
                          'getSamplingDate',
@@ -569,6 +577,7 @@ class SamplesView(BikaListingView):
                          'getClientSampleID',
                          'getSampleTypeTitle',
                          'getSamplePointTitle',
+                         'getStorageLocation',
                          'SamplingDeviation',
                          'AdHoc',
                          'getSamplingDate',
@@ -592,6 +601,7 @@ class SamplesView(BikaListingView):
                          'getClientSampleID',
                          'getSampleTypeTitle',
                          'getSamplePointTitle',
+                         'getStorageLocation',
                          'SamplingDeviation',
                          'AdHoc',
                          'getSamplingDate',
@@ -635,6 +645,7 @@ class SamplesView(BikaListingView):
             deviation = obj.getSamplingDeviation()
             items[x]['SamplingDeviation'] = deviation and deviation.Title() or ''
 
+            items[x]['getStorageLocation'] = obj.getStorageLocation() and obj.getStorageLocation().Title() or ''
             items[x]['AdHoc'] = obj.getAdHoc() and True or ''
 
             samplingdate = obj.getSamplingDate()
@@ -668,12 +679,12 @@ class SamplesView(BikaListingView):
             if obj.getSampleType().getHazardous():
                 after_icons += "<img title='%s' " \
                     "src='%s/++resource++bika.lims.images/hazardous.png'>" % \
-                    (self.context.translate(_("Hazardous")),
+                    (to_utf8(translate(_("Hazardous"))),
                      self.portal_url)
             if obj.getSamplingDate() > DateTime():
                 after_icons += "<img title='%s' " \
                     "src='%s/++resource++bika.lims.images/calendar.png' >" % \
-                    (self.context.translate(_("Future dated sample")),
+                    (to_utf8(translate(_("Future dated sample"))),
                      self.portal_url)
             if after_icons:
                 items[x]['after']['getSampleID'] = after_icons
@@ -757,6 +768,7 @@ class ajaxGetSampleTypeInfo(BrowserView):
                'ContainerTypeUID': '',
                'ContainerTypeTitle': '',
                'SamplePoints': ('',),
+               'StorageLocations': ('',),
                }
         proxies = None
         if uid:
@@ -768,7 +780,7 @@ class ajaxGetSampleTypeInfo(BrowserView):
         elif title:
             try:
                 bsc = getToolByName(self.context, 'bika_setup_catalog')
-                proxies = bsc(portal_type='SampleType', title=title)
+                proxies = bsc(portal_type='SampleType', title=to_unicode(title))
             except ParseError:
                 pass
 
@@ -789,6 +801,7 @@ class ajaxGetSampleTypeInfo(BrowserView):
                'ContainerTypeTitle': st.getContainerType() and \
                                      st.getContainerType().Title() or '',
                'SamplePoints': dict((sp.UID(),sp.Title()) for sp in st.getSamplePoints()),
+               'StorageLocations': dict((sp.UID(),sp.Title()) for sp in st.getStorageLocations()),
                }
 
         return json.dumps(ret)
@@ -809,6 +822,7 @@ class WidgetVisibility(_WV):
                 'SamplingDate',
                 'SampleType',
                 'SamplePoint',
+                'StorageLocation',
                 'ClientReference',
                 'ClientSampleID',
                 'SamplingDeviation',
@@ -830,6 +844,7 @@ class WidgetVisibility(_WV):
                 'Composite',
                 'SampleCondition',
                 'SamplePoint',
+                'StorageLocation',
                 'SampleType',
                 'SamplingDate',
                 'SamplingDeviation',
@@ -848,6 +863,7 @@ class WidgetVisibility(_WV):
                 'DateReceived',
                 'SampleCondition',
                 'SamplePoint',
+                'StorageLocation',
                 'SampleType',
                 'SamplingDate',
                 'SamplingDeviation',
@@ -862,6 +878,7 @@ class WidgetVisibility(_WV):
                 'DateReceived',
                 'SampleCondition',
                 'SamplePoint',
+                'StorageLocation',
                 'SampleType',
                 'SamplingDate',
                 'SamplingDeviation',
@@ -876,6 +893,7 @@ class WidgetVisibility(_WV):
                 'DateReceived',
                 'SampleCondition',
                 'SamplePoint',
+                'StorageLocation',
                 'SampleType',
                 'SamplingDate',
                 'SamplingDeviation',

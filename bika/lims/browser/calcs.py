@@ -3,6 +3,7 @@ from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IFieldIcons
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.utils import to_utf8
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.PythonScripts.standard import html_quote
@@ -11,7 +12,6 @@ from zope.component import adapts
 from zope.component import getAdapters
 from zope.interface import implements
 
-import App
 import json
 import math
 import plone
@@ -47,7 +47,7 @@ class CalculationResultAlerts(object):
         if indet:
             alert = {'field': 'Result',
                      'icon': path + '/exclamation.png',
-                     'msg': translate(_("Indeterminate result"))}
+                     'msg': to_utf8(translate(_("Indeterminate result")))}
             if uid in alerts:
                 alerts[uid].append(alert)
             else:
@@ -169,7 +169,6 @@ class ajaxCalculateAnalysisEntry(BrowserView):
             # convert formula to a valid python string, ready for interpolation
             formula = calculation.getFormula()
             formula = formula.replace('[', '%(').replace(']', ')f')
-
             try:
                 formula = eval("'%s'%%mapping" % formula,
                                {"__builtins__": None,
@@ -185,7 +184,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 alert = {'field': 'Result',
                          'icon': path + '/exclamation.png',
                          'msg': "{0}: {1} ({2}) ".format(
-                             translate(_("Type Error")),
+                             to_utf8(translate(_("Type Error"))),
                              html_quote(str(e.args[0])),
                              formula)}
                 if uid in self.alerts:
@@ -200,7 +199,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 alert = {'field': 'Result',
                          'icon': path + '/exclamation.png',
                          'msg': "{0}: {1} ({2}) ".format(
-                             translate(_("Division by zero")),
+                             to_utf8(translate(_("Division by zero"))),
                              html_quote(str(e.args[0])),
                              formula)}
                 if uid in self.alerts:
@@ -212,21 +211,47 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 alert = {'field': 'Result',
                          'icon': path + '/exclamation.png',
                          'msg': "{0}: {1} ({2}) ".format(
-                             translate(_("Key Error")),
+                             to_utf8(translate(_("Key Error"))),
                              html_quote(str(e.args[0])),
                              formula)}
                 if uid in self.alerts:
                     self.alerts[uid].append(alert)
                 else:
                     self.alerts[uid] = [alert, ]
-        try:
-            # format calculation result to service precision
-            Result['formatted_result'] = precision and Result['result'] and \
-                str("%%.%sf" % precision) % Result[
-                    'result'] or Result['result']
-        except:
-            # non-float
-            Result['formatted_result'] = Result['result']
+
+        # format result
+        belowmin = False
+        abovemax = False
+        specs = analysis.getAnalysisSpecs()
+        specs = specs.getResultsRangeDict() if specs is not None else {}
+        specs = specs.get(analysis.getKeyword(), {})
+        hidemin = specs.get('hidemin', '')
+        hidemax = specs.get('hidemax', '')
+        if Result.get('result', ''):
+            fresult = Result['result']
+            try:
+                belowmin = hidemin and fresult < float(hidemin) or False
+            except:
+                belowmin = False
+                pass
+            try:
+                abovemax = hidemax and fresult > float(hidemax) or False
+            except:
+                abovemax = False
+                pass
+        if belowmin == True:
+            Result['formatted_result'] = '< %s' % hidemin
+        elif abovemax == True:
+            Result['formatted_result'] = '> %s' % hidemax
+        else:
+            try:
+                # format calculation result to service precision
+                Result['formatted_result'] = precision and Result['result'] and \
+                    str("%%.%sf" % precision) % Result[
+                        'result'] or Result['result']
+            except:
+                # non-float
+                Result['formatted_result'] = Result['result']
 
         # calculate Dry Matter result
         # if parent is not an AR, it's never going to be calculable
@@ -339,6 +364,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         return json.dumps({'alerts': self.alerts,
                            'uncertainties': self.uncertainties,
                            'results': results})
+
 
 class ajaxGetMethodCalculation(BrowserView):
     """ Returns the calculation assigned to the defined method.

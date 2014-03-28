@@ -93,6 +93,14 @@
     />
 
     <browser:page
+      for="bika.lims.interfaces.IStorageLocations"
+      name="folder_view"
+      class=".bika_storagelocations.StorageLocationsView"
+      permission="bika.lims.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
       for="bika.lims.interfaces.ISamplePoints"
       name="folder_view"
       class=".bika_samplepoints.SamplePointsView"
@@ -229,6 +237,14 @@
     />
 
     <!-- For autocomplete dropdown -->
+    <browser:page
+      for="*"
+      name="ajax_storagelocations"
+      class=".bika_storagelocations.ajax_StorageLocations"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
     <browser:page
       for="*"
       name="ajax_samplepoints"

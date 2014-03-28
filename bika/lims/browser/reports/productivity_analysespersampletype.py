@@ -5,7 +5,7 @@ from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.client import ClientSamplesView
-from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client
+from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client, to_utf8
 from bika.lims.interfaces import IReportFolder
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -132,7 +132,6 @@ class Report(BrowserView):
                 'datalines': datalines,
                 'footings': footlines}
 
-
         if self.request.get('output_format', '') == 'CSV':
             import csv
             import StringIO
@@ -158,5 +157,5 @@ class Report(BrowserView):
                 "attachment;filename=\"analysespersampletype_%s.csv\"" % date)
             self.request.RESPONSE.write(report_data)
         else:
-            return {'report_title': self.context.translate(headings['header']),
+            return {'report_title': to_utf8(self.context.translate(headings['header'])),
                     'report_data': self.template()}

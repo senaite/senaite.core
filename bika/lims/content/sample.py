@@ -20,6 +20,7 @@ from zope.interface import implements
 from bika.lims.browser.widgets import ReferenceWidget
 
 import sys
+from bika.lims.utils import to_unicode
 
 schema = BikaSchema.copy() + Schema((
     StringField('SampleID',
@@ -124,6 +125,27 @@ schema = BikaSchema.copy() + Schema((
         expression = "here.getSamplePoint() and here.getSamplePoint().Title() or ''",
         widget = ComputedWidget(
             visible=False,
+        ),
+    ),
+    ReferenceField(
+        'StorageLocation',
+        allowed_types='StorageLocation',
+        relationship='AnalysisRequestStorageLocation',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        widget=ReferenceWidget(
+            label=_("Storage Location"),
+            description=_("Location where sample is kept"),
+            size=20,
+            render_own_label=True,
+            visible={'edit': 'visible',
+                     'view': 'visible',
+                     'add': 'visible',
+                     'secondary': 'invisible'},
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
+            showOn=True,
         ),
     ),
     BooleanField('SamplingWorkflowEnabled',
@@ -381,7 +403,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
             pass
         else:
             bsc = getToolByName(self, 'bika_setup_catalog')
-            sampletypes = bsc(portal_type='SampleType', title=value)
+            sampletypes = bsc(portal_type='SampleType', title=to_unicode(value))
             if sampletypes:
                 value = sampletypes[0].UID
             else:
@@ -404,7 +426,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
             pass
         else:
             bsc = getToolByName(self, 'bika_setup_catalog')
-            sampletypes = bsc(portal_type='SamplePoint', title=value)
+            sampletypes = bsc(portal_type='SamplePoint', title=to_unicode(value))
             if sampletypes:
                 value = sampletypes[0].UID
             else:

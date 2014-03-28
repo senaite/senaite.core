@@ -6,6 +6,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.client import ClientSamplesView
 from bika.lims.utils import formatDateQuery, formatDateParms
+from bika.lims.utils import to_utf8
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
@@ -159,7 +160,7 @@ class Report(BrowserView):
                 'datalines': datalines,
                 'footings': footlines}
 
-        title = self.context.translate(headings['header'])
+        title = to_utf8(self.context.translate(headings['header']))
 
         return {'report_title': title,
                 'report_data': self.template()}

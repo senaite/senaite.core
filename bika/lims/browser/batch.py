@@ -13,6 +13,7 @@ from bika.lims.permissions import *
 from bika.lims.subscribers import doActionFor, skip
 from bika.lims.utils import isActive
 from bika.lims.utils import createPdf
+from bika.lims.utils import to_utf8
 from bika.lims.vocabularies import CatalogVocabulary
 from cStringIO import StringIO
 from DateTime import DateTime
@@ -54,7 +55,8 @@ class BatchAnalysisRequestsView(AnalysisRequestsView, AnalysisRequestAddView):
             # Client contact required (if client is associated)
             client = self.context.getClient()
             if hasattr(client, 'getContacts') and client.getContacts():
-                self.context_actions[self.context.translate(_('Add new'))] = {
+                msg = to_utf8(self.context.translate(_('Add new')))
+                self.context_actions[msg] = {
                     'url': self.context.absolute_url() + "/portal_factory/"
                     "AnalysisRequest/Request new analyses/ar_add?col_count=1",
                     'icon': '++resource++bika.lims.images/add.png'}

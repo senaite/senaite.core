@@ -13,6 +13,7 @@ from Products.statusmessages.interfaces import IStatusMessage
 from bika.lims import PMF, logger, bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.interfaces import IClient
 from bika.lims.permissions import *
 from bika.lims.utils import tmpID
 from plone.app.layout.globals.interfaces import IViewView
@@ -71,6 +72,11 @@ class GlobalARImportsView(BikaListingView):
                 'sort_on':'sortable_title',
                 }
         self.context_actions = {}
+        if IClient.providedBy(self.context):
+            self.context_actions = \
+                {_('AR Import'):
+                           {'url': 'arimport_add',
+                            'icon': '++resource++bika.lims.images/add.png'}}
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = False
@@ -159,7 +165,9 @@ class GlobalARImportsView(BikaListingView):
     def getAR(self):
         import pdb; pdb.set_trace()
 
+
 class ClientARImportsView(GlobalARImportsView):
+
     def __init__(self, context, request):
         super(ClientARImportsView, self).__init__(context, request)
         self.contentFilter = {
@@ -167,10 +175,6 @@ class ClientARImportsView(GlobalARImportsView):
                 'path': {'query': '/'.join(context.getPhysicalPath())},
                 'sort_on':'sortable_title',
                 }
-        self.context_actions = \
-                {_('AR Import'):
-                           {'url': 'arimport_add',
-                            'icon': '++resource++bika.lims.images/add.png'}}
         self.columns = {
             'title': {'title': _('Import')},
             'getDateImported': {'title': _('Date Imported')},

@@ -38,10 +38,10 @@ class AccreditationView(AnalysisServicesView):
         else:
             msg = _("The lab is not accredited, or accreditation has not "
                     "been configured. ")
-        self.description = context.translate(_c(msg))
+        self.description = _c(context.translate(_(msg)))
         msg = _("All Accredited analysis services are listed here.")
         self.description = "%s<p><br/>%s</p>"%(self.description,
-                                               context.translate(_c(msg)))
+                                               _c(context.translate(_(msg))))
 
         self.show_select_column = False
         request.set('disable_border', 1)

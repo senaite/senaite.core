@@ -11,7 +11,6 @@ from bika.lims.browser.fields import CoordinateField
 from bika.lims.browser.widgets import CoordinateWidget
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.widgets import DurationWidget
-from zope.i18n import translate
 from bika.lims import PMF, bikaMessageFactory as _
 from zope.interface import implements
 import json

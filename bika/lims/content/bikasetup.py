@@ -15,6 +15,7 @@ from bika.lims.browser.fields import DurationField
 from plone.app.folder import folder
 from zope.interface import implements
 import sys
+from bika.lims.locales import COUNTRIES
 
 class PrefixesField(RecordsField):
     """a list of prefixes per portal_type"""
@@ -68,6 +69,14 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     BooleanField(
+        'AllowClerksToEditClients',
+        schemata="Security",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Allow Lab Clerks to create and edit clients"),
+        )
+    ),
+    BooleanField(
         'ShowPrices',
         schemata="Accounting",
         default=True,
@@ -84,6 +93,17 @@ schema = BikaFolderSchema.copy() + Schema((
             label = _("Currency"),
             description = _("Select the currency the site will use to display "
                             "prices."),
+            format='select',
+        )
+    ),
+    StringField('DefaultCountry',
+        schemata = "Accounting",
+        required = 1,
+        vocabulary = 'getCountries',
+        default = '',
+        widget = SelectionWidget(
+            label = _("Country"),
+            description = _("Select the country the site will show by default"),
             format='select',
         )
     ),
@@ -413,6 +433,11 @@ class BikaSetup(folder.ATFolder):
             return prefix[0]['prefix']
         else:
             return portal_type
+
+    def getCountries(self):
+        items = [(x['ISO'], x['Country']) for x in COUNTRIES]
+        items.sort(lambda x,y: cmp(x[1], y[1]))
+        return items
 
 
 registerType(BikaSetup, PROJECTNAME)

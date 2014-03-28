@@ -15,7 +15,6 @@ class SupplyOrderFolderView(BikaListingView):
         self.context_actions = {}
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url
-        self.translate = self.context.translate
         self.show_table_only = False
         self.show_sort_column = False
         self.show_select_row = False

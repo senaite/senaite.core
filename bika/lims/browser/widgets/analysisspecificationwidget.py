@@ -8,6 +8,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from zope.i18n.locales import locales
 from operator import itemgetter
 import json
+from bika.lims.utils import isnumber
 
 class AnalysisSpecificationView(BikaListingView):
     """ bika listing to display Analysis Services (AS) table for an
@@ -39,6 +40,9 @@ class AnalysisSpecificationView(BikaListingView):
             'min': {'title': _('Min'), 'sortable': False,},
             'max': {'title': _('Max'), 'sortable': False,},
             'error': {'title': _('Permitted Error %'), 'sortable': False},
+            'hidemin': {'title': _('< Min'), 'sortable': False},
+            'hidemax': {'title': _('> Max'), 'sortable': False},
+            'rangecomment': {'title': _('Range comment'), 'sortable': False, 'toggle': False}
         }
 
         self.review_states = [
@@ -46,7 +50,8 @@ class AnalysisSpecificationView(BikaListingView):
              'title': _('All'),
              'contentFilter':{},
              'transitions': [],
-             'columns': ['service', 'min', 'max', 'error'],
+             'columns': ['service', 'min', 'max', 'error',
+                         'hidemin', 'hidemax', 'rangecomment'],
              },
         ]
 
@@ -77,7 +82,10 @@ class AnalysisSpecificationView(BikaListingView):
                 specresults = {'keyword': service.getKeyword(),
                         'min': '',
                         'max': '',
-                        'error': ''}
+                        'error': '',
+                        'hidemin': '',
+                        'hidemax': '',
+                        'rangecomment': ''}
 
             after_icons = ' <span class="discreet">(%s)</span>&nbsp;&nbsp;' % service.getKeyword()
             if service.getAccredited():
@@ -124,9 +132,12 @@ class AnalysisSpecificationView(BikaListingView):
                 'relative_url': service.absolute_url(),
                 'view_url': service.absolute_url(),
                 'service': service.Title(),
-                'error': specresults['error'],
-                'min': specresults['min'],
-                'max': specresults['max'],
+                'error': specresults.get('error', ''),
+                'min': specresults.get('min', ''),
+                'max': specresults.get('max', ''),
+                'hidemin': specresults.get('hidemin',''),
+                'hidemax': specresults.get('hidemax',''),
+                'rangecomment': specresults.get('rangecomment', ''),
                 'replace': {},
                 'before': {},
                 'after': {'service':after_icons,
@@ -136,7 +147,8 @@ class AnalysisSpecificationView(BikaListingView):
                 'choices':{},
                 'class': "state-%s" % (state),
                 'state_class': "state-%s" % (state),
-                'allow_edit': ['min', 'max', 'error'],
+                'allow_edit': ['min', 'max', 'error', 'hidemin', 'hidemax',
+                               'rangecomment'],
             }
             items.append(item)
 
@@ -159,22 +171,36 @@ class AnalysisSpecificationWidget(TypesWidget):
     security.declarePublic('process_form')
     def process_form(self, instance, field, form, empty_marker = None, emptyReturnsMarker = False):
         """ Return a list of dictionaries fit for AnalysisSpecsResultsField
-            consumption.  Only services which have float()able entries in
-            result,min and max field will be included.
+            consumption. If neither hidemin nor hidemax are specified, only
+            services which have float()able entries in result,min and max field
+            will be included. If hidemin and/or hidemax specified, results
+            might contain empty min and/or max fields.
         """
         value = []
         if 'service' in form:
             for uid, keyword in form['keyword'][0].items():
-                try:
-                    float(form['min'][0][uid])
-                    float(form['max'][0][uid])
-                except:
+
+                hidemin = form['hidemin'][0].get(uid, '') if 'hidemin' in form else ''
+                hidemax = form['hidemax'][0].get(uid, '') if 'hidemax' in form else ''
+                mins = form['min'][0].get(uid, '') if 'min' in form else ''
+                maxs = form['max'][0].get(uid, '') if 'max' in form else ''
+                err = form['error'][0].get(uid, '') if 'error' in form else ''
+                rangecomment = form['rangecomment'][0].get(uid, '') if 'rangecomment' in form else ''
+
+                if not isnumber(hidemin) and not isnumber(hidemax) and \
+                   (not isnumber(mins) or not isnumber(maxs)):
+                    # If neither hidemin nor hidemax have been specified,
+                    # min and max values are mandatory.
                     continue
-                value.append({'keyword':keyword,
-                              'uid':uid,
-                              'min':form['min'][0][uid],
-                              'max':form['max'][0][uid],
-                              'error':form['error'][0][uid]})
+
+                value.append({'keyword': keyword,
+                              'uid': uid,
+                              'min': mins if isnumber(mins) else '',
+                              'max': maxs if isnumber(maxs) else '',
+                              'hidemin': hidemin if isnumber(hidemin) else '',
+                              'hidemax': hidemax if isnumber(hidemax) else '',
+                              'error': err if isnumber(err) else '0',
+                              'rangecomment': rangecomment})
         return value, {}
 
     security.declarePublic('AnalysisSpecificationResults')

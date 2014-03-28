@@ -3,6 +3,7 @@ from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import formatDateQuery, formatDateParms, formatDuration
+from bika.lims.utils import to_utf8
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 
@@ -190,5 +191,5 @@ class Report(BrowserView):
                 "attachment;filename=\"analysesperservice_%s.csv\"" % date)
             self.request.RESPONSE.write(report_data)
         else:
-            return {'report_title': self.context.translate(headings['header']),
+            return {'report_title': to_utf8(self.context.translate(headings['header'])),
                     'report_data': self.template()}

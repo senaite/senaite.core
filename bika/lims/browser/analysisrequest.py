@@ -33,6 +33,7 @@ from bika.lims.utils import isActive
 from bika.lims.utils import logged_in_client
 from bika.lims.utils import tmpID
 from bika.lims.utils import to_unicode as _u
+from bika.lims.utils import to_utf8
 from bika.lims.vocabularies import CatalogVocabulary
 from DateTime import DateTime
 from email.mime.multipart import MIMEMultipart
@@ -124,8 +125,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
             objects = WorkflowAction._get_selected_items(self)
             if not objects:
-                message = self.context.translate(
-                    _("No items have been selected"))
+                message = self.context.translate(_("No items have been selected"))
                 self.context.plone_utils.addPortalMessage(message, 'info')
                 if self.context.portal_type == 'Sample':
                     # in samples his table is on 'Partitions' tab
@@ -145,8 +145,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
             objects = WorkflowAction._get_selected_items(self)
             if not objects:
-                message = self.context.translate(
-                    _("No analyses have been selected"))
+                message = self.context.translate(_("No analyses have been selected"))
                 self.context.plone_utils.addPortalMessage(message, 'info')
                 self.destination_url = self.context.absolute_url() + "/analyses"
                 self.request.response.redirect(self.destination_url)
@@ -234,12 +233,12 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             message = None
             if len(transitioned) > 1:
                 message = _('${items} are waiting to be received.',
-                            mapping = {'items': ', '.join(transitioned)})
+                            mapping={'items': ', '.join(transitioned)})
                 message = self.context.translate(message)
                 self.context.plone_utils.addPortalMessage(message, 'info')
             elif len(transitioned) == 1:
                 message = _('${item} is waiting to be received.',
-                            mapping = {'item': ', '.join(transitioned)})
+                            mapping={'item': ', '.join(transitioned)})
                 message = self.context.translate(message)
                 self.context.plone_utils.addPortalMessage(message, 'info')
             if not message:
@@ -416,8 +415,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                                    action,
                                    [self.context, ])()
             if len(transitioned) == 1:
-                message = self.context.translate('${items} published.',
-                                    mapping = {'items': ', '.join(transitioned)})
+                message = to_utf8(self.context.translate('${items} published.',
+                                    mapping={'items': ', '.join(transitioned)}))
             else:
                 message = self.context.translate(_("No items were published"))
             self.context.plone_utils.addPortalMessage(message, 'info')
@@ -514,7 +513,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 message = self.context.translate(
                         _('Unable to send an email to alert lab '
                           'client contacts that the Analysis Request has been '
-                          'retracted: %s')) % msg
+                          'retracted: ${error}', mapping={'error': msg}))
                 self.context.plone_utils.addPortalMessage(message, 'warning')
 
             message = self.context.translate('${items} invalidated.',
@@ -544,6 +543,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         newar.setSamplingDate(ar.getSamplingDate())
         newar.setSampleType(ar.getSampleType())
         newar.setSamplePoint(ar.getSamplePoint())
+        newar.setStorageLocation(ar.getStorageLocation())
         newar.setSamplingDeviation(ar.getSamplingDeviation())
         newar.setPriority(ar.getPriority())
         newar.setSampleCondition(ar.getSampleCondition())
@@ -779,14 +779,15 @@ class AnalysisRequestViewView(BrowserView):
         for profile in client.objectValues("AnalysisProfile"):
             if isActive(profile):
                 profiles.append((profile.Title(), profile))
-        profiles.sort(lambda x,y:cmp(x[0], y[0]))
+        profiles.sort(lambda x, y: cmp(x[0], y[0]))
         res += profiles
         profiles = []
         for profile in self.context.bika_setup.bika_analysisprofiles.objectValues("AnalysisProfile"):
             if isActive(profile):
-                profiles.append(("%s: %s" % (self.context.translate(_('Lab')), profile.Title().decode('utf-8')),
-                                  profile))
-        profiles.sort(lambda x,y:cmp(x[0], y[0]))
+                lab = to_utf8(self.context.translate(_('Lab')))
+                title = to_utf8(profile.Title())
+                profiles.append(("%s: %s" % (lab, title), profile))
+        profiles.sort(lambda x, y: cmp(x[0], y[0]))
         res += profiles
         return res
 
@@ -800,14 +801,15 @@ class AnalysisRequestViewView(BrowserView):
         for template in client.objectValues("ARTemplate"):
             if isActive(template):
                 templates.append((template.Title(), template))
-        templates.sort(lambda x,y:cmp(x[0], y[0]))
+        templates.sort(lambda x, y: cmp(x[0], y[0]))
         res += templates
         templates = []
         for template in self.context.bika_setup.bika_artemplates.objectValues("ARTemplate"):
             if isActive(template):
-                templates.append(("%s: %s" % (self.context.translate(_('Lab')), template.Title().decode('utf-8')),
-                                  template))
-        templates.sort(lambda x,y:cmp(x[0], y[0]))
+                lab = to_utf8(self.context.translate(_('Lab')))
+                title = to_utf8(template.Title())
+                templates.append(("%s: %s" % (lab, title), template))
+        templates.sort(lambda x, y: cmp(x[0], y[0]))
         res += templates
         return res
 
@@ -1006,11 +1008,12 @@ class AnalysisRequestViewView(BrowserView):
         if workflow.getInfoFor(ar, 'review_state') == 'invalid':
             childar = hasattr(ar, 'getChildAnalysisRequest') \
                         and ar.getChildAnalysisRequest() or None
-            anchor = childar and ("<a href='%s'>%s</a>"%(childar.absolute_url(),childar.getRequestID())) or None
+            anchor = childar and ("<a href='%s'>%s</a>" % (childar.absolute_url(), childar.getRequestID())) or None
             if anchor:
-                custom['ChildAR'] = {'title': self.context.translate(
-                                            _("AR for retested results")),
-                                     'value': anchor}
+                custom['ChildAR'] = {
+                    'title': to_utf8(self.context.translate(_("AR for retested results"))),
+                    'value': anchor
+                }
 
         # If is an AR automatically generated due to a Retraction, show it's
         # parent AR information
@@ -1018,9 +1021,10 @@ class AnalysisRequestViewView(BrowserView):
             and ar.getParentAnalysisRequest():
             par = ar.getParentAnalysisRequest()
             anchor = "<a href='%s'>%s</a>" % (par.absolute_url(), par.getRequestID())
-            custom['ParentAR'] = {'title': self.context.translate(
-                                        _("Invalid AR retested")),
-                                  'value': anchor}
+            custom['ParentAR'] = {
+                'title': to_utf8(self.context.translate(_("Invalid AR retested"))),
+                'value': anchor
+            }
 
         return custom
 
@@ -1269,27 +1273,31 @@ class AnalysisRequestAnalysesView(BikaListingView):
             if obj.getAccredited():
                 after_icons += "<img\
                 src='%s/++resource++bika.lims.images/accredited.png'\
-                title='%s'>"%(self.portal_url,
-                              self.context.translate(
-                                  _("Accredited")))
+                title='%s'>" % (
+                    self.portal_url,
+                    to_utf8(self.context.translate(_("Accredited")))
+                )
             if obj.getReportDryMatter():
                 after_icons += "<img\
                 src='%s/++resource++bika.lims.images/dry.png'\
-                title='%s'>"%(self.portal_url,
-                              self.context.translate(
-                                  _("Can be reported as dry matter")))
+                title='%s'>" % (
+                    self.portal_url,
+                    to_utf8(self.context.translate(_("Can be reported as dry matter")))
+                )
             if obj.getAttachmentOption() == 'r':
                 after_icons += "<img\
                 src='%s/++resource++bika.lims.images/attach_reqd.png'\
-                title='%s'>"%(self.portal_url,
-                              self.context.translate(
-                              _("Attachment required")))
+                title='%s'>" % (
+                    self.portal_url,
+                    to_utf8(self.context.translate(_("Attachment required")))
+                )
             if obj.getAttachmentOption() == 'n':
                 after_icons += "<img\
                 src='%s/++resource++bika.lims.images/attach_no.png'\
-                title='%s'>"%(self.portal_url,
-                              self.context.translate(
-                                  _('Attachment not permitted')))
+                title='%s'>" % (
+                    self.portal_url,
+                    to_utf8(self.context.translate(_('Attachment not permitted')))
+                )
             if after_icons:
                 items[x]['after']['Title'] = after_icons
 
@@ -1444,10 +1452,11 @@ class ajaxAnalysisRequestSubmit():
             self.context.bika_setup.getSamplingWorkflowEnabled()
 
         errors = {}
-        def error(field = None, column = None, message = None):
+
+        def error(field=None, column=None, message=None):
             if not message:
-                message = self.context.translate(
-                    PMF('Input is required but no input given.'))
+                message = to_utf8(self.context.translate(
+                    PMF('Input is required but no input given.')))
             if (column or field):
                 error_key = " %s.%s" % (int(column) + 1, field or '')
             else:
@@ -1467,8 +1476,8 @@ class ajaxAnalysisRequestSubmit():
             columns.append(column)
 
         if len(columns) == 0:
-            error(message = self.context.translate(_("No analyses have been selected")))
-            return json.dumps({'errors':errors})
+            error(message=to_utf8(self.context.translate(_("No analyses have been selected"))))
+            return json.dumps({'errors': errors})
 
         # Now some basic validation
         required_fields = [field.getName() for field
@@ -1545,6 +1554,8 @@ class ajaxAnalysisRequestSubmit():
                 saved_form = self.request.form
                 self.request.form = resolved_values
                 sample.setSampleType(resolved_values['SampleType'])
+                sample.setSamplePoint(resolved_values['SamplePoint'])
+                sample.setStorageLocation(resolved_values['StorageLocation'])
                 sample.processForm()
                 self.request.form = saved_form
                 if SamplingWorkflowEnabled:
@@ -1721,15 +1732,11 @@ class ajaxAnalysisRequestSubmit():
                         wftool.doActionFor(part, 'preserve')
 
         if len(ARs) > 1:
-            message = self.context.translate(
-                _("Analysis requests ${ARs} were "
-                  "successfully created.",
-                  mapping = {'ARs': ', '.join(ARs)}))
+            message = _("Analysis requests ${ARs} were successfully created.",
+                  mapping={'ARs': ', '.join(ARs)})
         else:
-            message = self.context.translate(
-                _("Analysis request ${AR} was "
-                  "successfully created.",
-                  mapping = {'AR': ARs[0]}))
+            message = _("Analysis request ${AR} was successfully created.",
+                  mapping={'AR': ARs[0]})
 
         self.context.plone_utils.addPortalMessage(message, 'info')
 
@@ -1818,6 +1825,8 @@ class AnalysisRequestsView(BikaListingView):
             'getSamplePointTitle': {'title': _('Sample Point'),
                                     'index': 'getSamplePointTitle',
                                     'toggle': False},
+            'getStorageLocation': {'title': _('Storage Location'),
+                                    'toggle': False},
             'SamplingDeviation': {'title': _('Sampling Deviation'),
                                   'toggle': False},
             'Priority': {'title': _('Priority'),
@@ -1887,6 +1896,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getTemplateTitle',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
                         'AdHoc',
@@ -1927,6 +1937,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getPreserver',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
                         'AdHoc',
@@ -1953,6 +1964,7 @@ class AnalysisRequestsView(BikaListingView):
                         'ClientContact',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
                         'AdHoc',
@@ -1985,6 +1997,7 @@ class AnalysisRequestsView(BikaListingView):
                         'ClientContact',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
                         'AdHoc',
@@ -2013,6 +2026,7 @@ class AnalysisRequestsView(BikaListingView):
                         'ClientContact',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
                         'AdHoc',
@@ -2041,6 +2055,7 @@ class AnalysisRequestsView(BikaListingView):
                         'ClientContact',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
                         'AdHoc',
@@ -2074,6 +2089,7 @@ class AnalysisRequestsView(BikaListingView):
                         'ClientContact',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
                         'AdHoc',
@@ -2104,6 +2120,7 @@ class AnalysisRequestsView(BikaListingView):
                         'ClientContact',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
                         'AdHoc',
@@ -2116,7 +2133,7 @@ class AnalysisRequestsView(BikaListingView):
             {'id':'assigned',
              'title': "<img title='%s'\
                        src='%s/++resource++bika.lims.images/assigned.png'/>" % (
-                       self.context.translate(_("Assigned")), self.portal_url),
+                       to_utf8(self.context.translate(_("Assigned"))), self.portal_url),
              'contentFilter': {'worksheetanalysis_review_state': 'assigned',
                                'review_state': ('sample_received', 'to_be_verified',
                                                 'attachment_due', 'verified',
@@ -2144,6 +2161,7 @@ class AnalysisRequestsView(BikaListingView):
                         'ClientContact',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
                         'AdHoc',
@@ -2156,7 +2174,7 @@ class AnalysisRequestsView(BikaListingView):
             {'id':'unassigned',
              'title': "<img title='%s'\
                        src='%s/++resource++bika.lims.images/unassigned.png'/>" % (
-                       self.context.translate(_("Unassigned")), self.portal_url),
+                       to_utf8(self.context.translate(_("Unassigned"))), self.portal_url),
              'contentFilter': {'worksheetanalysis_review_state': 'unassigned',
                                'review_state': ('sample_received', 'to_be_verified',
                                                 'attachment_due', 'verified',
@@ -2185,6 +2203,7 @@ class AnalysisRequestsView(BikaListingView):
                         'ClientContact',
                         'getSampleTypeTitle',
                         'getSamplePointTitle',
+                        'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
                         'AdHoc',
@@ -2248,28 +2267,29 @@ class AnalysisRequestsView(BikaListingView):
             priority = obj.getPriority()
             items[x]['Priority'] = priority and priority.Title() or ''
 
+            items[x]['getStorageLocation'] = sample.getStorageLocation() and sample.getStorageLocation().Title() or ''
             items[x]['AdHoc'] = sample.getAdHoc() and True or ''
 
             after_icons = ""
             state = workflow.getInfoFor(obj, 'worksheetanalysis_review_state')
             if state == 'assigned':
                 after_icons += "<img src='%s/++resource++bika.lims.images/worksheet.png' title='%s'/>" % \
-                    (self.portal_url, self.context.translate(_("All analyses assigned")))
+                    (self.portal_url, to_utf8(self.context.translate(_("All analyses assigned"))))
             if workflow.getInfoFor(obj, 'review_state') == 'invalid':
                 after_icons += "<img src='%s/++resource++bika.lims.images/delete.png' title='%s'/>" % \
-                    (self.portal_url, self.context.translate(_("Results have been withdrawn")))
+                    (self.portal_url, to_utf8(self.context.translate(_("Results have been withdrawn"))))
             if obj.getLate():
                 after_icons += "<img src='%s/++resource++bika.lims.images/late.png' title='%s'>" % \
-                    (self.portal_url, self.context.translate(_("Late Analyses")))
+                    (self.portal_url, to_utf8(self.context.translate(_("Late Analyses"))))
             if samplingdate > DateTime():
                 after_icons += "<img src='%s/++resource++bika.lims.images/calendar.png' title='%s'>" % \
-                    (self.portal_url, self.context.translate(_("Future dated sample")))
+                    (self.portal_url, to_utf8(self.context.translate(_("Future dated sample"))))
             if obj.getInvoiceExclude():
                 after_icons += "<img src='%s/++resource++bika.lims.images/invoice_exclude.png' title='%s'>" % \
-                    (self.portal_url, self.context.translate(_("Exclude from invoice")))
+                    (self.portal_url, to_utf8(self.context.translate(_("Exclude from invoice"))))
             if sample.getSampleType().getHazardous():
                 after_icons += "<img src='%s/++resource++bika.lims.images/hazardous.png' title='%s'>" % \
-                    (self.portal_url, self.context.translate(_("Hazardous")))
+                    (self.portal_url, to_utf8(self.context.translate(_("Hazardous"))))
             if after_icons:
                 items[x]['after']['getRequestID'] = after_icons
 
@@ -2355,7 +2375,7 @@ class AnalysisRequestsView(BikaListingView):
                     if self_submitted:
                         items[x]['after']['state_title'] = \
                              "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" % \
-                             (self.context.translate(_("Cannot verify: Submitted by current user")))
+                             (to_utf8(self.context.translate(_("Cannot verify: Submitted by current user"))))
                 except Exception:
                     pass
 
@@ -2393,6 +2413,7 @@ class AnalysisRequestPublishedResults(BikaListingView):
 
     def __init__(self, context, request):
         super(AnalysisRequestPublishedResults, self).__init__(context, request)
+
         self.catalog = "bika_catalog"
         self.contentFilter = {'portal_type': 'ARReport',
                               'sort_order': 'reverse'}
@@ -2435,8 +2456,9 @@ class AnalysisRequestPublishedResults(BikaListingView):
                         and ar.getChildAnalysisRequest() or None
             childid = childar and childar.getRequestID() or None
             message = _('This Analysis Request has been withdrawn and is shown '
-                        'for trace-ability purposes only. Retest: %s.') \
-                        % (childid or '')
+                        'for trace-ability purposes only. Retest: '
+                        '${retest_child_id}.',
+                        mapping={'retest_child_id': childid or ''})
             self.context.plone_utils.addPortalMessage(
                 self.context.translate(message), 'warning')
 
@@ -2448,7 +2470,8 @@ class AnalysisRequestPublishedResults(BikaListingView):
             message = _('This Analysis Request has been '
                         'generated automatically due to '
                         'the retraction of the Analysis '
-                        'Request %s.') % par.getRequestID()
+                        'Request ${retracted_request_id}.',
+                        mapping={'retracted_request_id': par.getRequestID()})
             self.context.plone_utils.addPortalMessage(
                 self.context.translate(message), 'info')
 
@@ -2517,10 +2540,11 @@ class AnalysisRequestLog(LogView):
                         and ar.getChildAnalysisRequest() or None
             childid = childar and childar.getRequestID() or None
             message = _('This Analysis Request has been withdrawn and is shown '
-                        'for trace-ability purposes only. Retest: %s.') \
-                        % (childid or '')
+                        'for trace-ability purposes only. Retest: '
+                        '${retest_child_id}.',
+                        mapping={'retest_child_id': childid or ''})
             self.context.plone_utils.addPortalMessage(
-                self.context.translate(message), 'warning')
+                to_utf8(self.context.translate(message)), 'warning')
 
         # If is an AR automatically generated due to a Retraction, show it's
         # parent AR information
@@ -2530,9 +2554,10 @@ class AnalysisRequestLog(LogView):
             message = _('This Analysis Request has been '
                         'generated automatically due to '
                         'the retraction of the Analysis '
-                        'Request %s.') % par.getRequestID()
+                        'Request ${retracted_request_id}.',
+                        mapping={'retracted_request_id': par.getRequestID()})
             self.context.plone_utils.addPortalMessage(
-                self.context.translate(message), 'info')
+                to_utf8(self.context.translate(message)), 'info')
 
         template = LogView.__call__(self)
         return template
@@ -2673,6 +2698,7 @@ class WidgetVisibility(_WV):
                 'Specification',
                 'PublicationSpecification',
                 'SamplePoint',
+                'StorageLocation',
                 'ClientOrderNumber',
                 'ClientReference',
                 'ClientSampleID',
@@ -2722,6 +2748,7 @@ class WidgetVisibility(_WV):
                 'Specification',
                 'Sample',
                 'SamplePoint',
+                'StorageLocation',
                 'SampleType',
                 'Template',
             ]
@@ -2753,6 +2780,7 @@ class WidgetVisibility(_WV):
                 'Specification',
                 'SamplingDate',
                 'SamplePoint',
+                'StorageLocation',
                 'SamplingDeviation',
                 'Priority',
                 'Template',
@@ -2782,6 +2810,7 @@ class WidgetVisibility(_WV):
                 'Sample',
                 'SampleCondition',
                 'SamplePoint',
+                'StorageLocation',
                 'Specification',
                 'SampleType',
                 'SamplingDate',
@@ -2812,6 +2841,7 @@ class WidgetVisibility(_WV):
                 'Sample',
                 'SampleCondition',
                 'SamplePoint',
+                'StorageLocation',
                 'Specification',
                 'SampleType',
                 'SamplingDate',

@@ -8,6 +8,7 @@ from bika.lims.interfaces import IFieldIcons
 from bika.lims.permissions import *
 from bika.lims.utils import isActive
 from bika.lims.utils import getUsers
+from bika.lims.utils import to_utf8
 from DateTime import DateTime
 from operator import itemgetter
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -91,7 +92,7 @@ class AnalysesView(BikaListingView):
                 'sortable': False},
             'retested': {
                 'title': "<img title='%s' src='%s/++resource++bika.lims.images/retested.png'/>"%\
-                    (context.translate(_('Retested')), self.portal_url),
+                    (to_utf8(context.translate(_('Retested'))), self.portal_url),
                 'type':'boolean',
                 'sortable': False},
             'Attachments': {
@@ -327,7 +328,7 @@ class AnalysesView(BikaListingView):
 
         self.interim_fields = {}
         self.interim_columns = {}
-        # self.specs = {}
+        self.specs = {}
         for i, item in enumerate(items):
             # self.contentsMethod may return brains or objects.
             obj = hasattr(items[i]['obj'], 'getObject') and \
@@ -381,6 +382,58 @@ class AnalysesView(BikaListingView):
             items[i]['Attachments'] = ''
 
             item['allow_edit'] = []
+            client_or_lab = ""
+
+            if obj.portal_type == 'ReferenceAnalysis':
+                items[i]['st_uid'] = obj.aq_parent.UID()
+            elif obj.portal_type == 'DuplicateAnalysis' and \
+                obj.getAnalysis().portal_type == 'ReferenceAnalysis':
+                items[i]['st_uid'] = obj.aq_parent.UID()
+            else:
+                if self.context.portal_type == 'AnalysisRequest':
+                    sample = self.context.getSample()
+                    st_uid = sample.getSampleType().UID()
+                    items[i]['st_uid'] = st_uid
+                    if st_uid not in self.specs:
+                        proxies = bsc(portal_type = 'AnalysisSpec',
+                                      getSampleTypeUID = st_uid)
+                elif self.context.portal_type == "Worksheet":
+                    if obj.portal_type == "DuplicateAnalysis":
+                        sample = obj.getAnalysis().getSample()
+                    else:
+                        sample = obj.aq_parent.getSample()
+                    st_uid = sample.getSampleType().UID()
+                    items[i]['st_uid'] = st_uid
+                    if st_uid not in self.specs:
+                        proxies = bsc(portal_type = 'AnalysisSpec',
+                                      getSampleTypeUID = st_uid)
+                elif self.context.portal_type == 'Sample':
+                    st_uid = self.context.getSampleType().UID()
+                    items[i]['st_uid'] = st_uid
+                    if st_uid not in self.specs:
+                        proxies = bsc(portal_type = 'AnalysisSpec',
+                                      getSampleTypeUID = st_uid)
+                else:
+                    proxies = []
+                if st_uid not in self.specs:
+                    for spec in (p.getObject() for p in proxies):
+                        if spec.getClientUID() == obj.getClientUID():
+                            client_or_lab = 'client'
+                        elif spec.getClientUID() == self.context.bika_setup.bika_analysisspecs.UID():
+                            client_or_lab = 'lab'
+                        else:
+                            continue
+                        for keyword, results_range in \
+                            spec.getResultsRangeDict().items():
+                            # hidden form field 'specs' keyed by sampletype uid:
+                            # {st_uid: {'lab/client':{keyword:{min,max,error}}}}
+                            if st_uid in self.specs:
+                                if client_or_lab in self.specs[st_uid]:
+                                    self.specs[st_uid][client_or_lab][keyword] = results_range
+                                else:
+                                    self.specs[st_uid][client_or_lab] = {keyword: results_range}
+                            else:
+                                self.specs[st_uid] = {client_or_lab: {keyword: results_range}}
 
             Analyst = obj.getAnalyst()
             items[i]['Analyst'] = Analyst
@@ -518,27 +571,50 @@ class AnalysesView(BikaListingView):
                         else:
                             items[i]['formatted_result'] = result
                     else:
+                        belowmin = False
+                        abovemax = False
+                        itspecs = self.specs.get(items[i].get('st_uid', {}), {})
+                        tgtspecs = client_or_lab or 'lab'
+                        itspecs = itspecs.get(tgtspecs,{}).get(items[i]['Keyword'],{})
+                        hidemin = itspecs.get('hidemin', '')
+                        hidemax = itspecs.get('hidemax', '')
                         try:
-                            items[i]['formatted_result'] = precision and \
-                                str("%%.%sf" % precision) % float(result) or result
+                            belowmin = hidemin and float(result) < float(hidemin) or False
                         except:
-                            items[i]['formatted_result'] = result
-                            indet = self.context.translate(_('Indet'))
-                            if result == indet:
-                                # 'Indeterminate' results flag a specific error
-                                Indet = self.context.translate(_("Indeterminate result"))
-                                items[i]['after']['Result'] = \
-                                    '<img width="16" height="16" title="%s"' % Indet + \
-                                    'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
-                                    (self.portal_url)
-                            # result being unfloatable is no longer an error.
-                            # else:
-                            #     # result being un-floatable, is an error.
-                            #     msg = self.context.translate(_("Invalid result"))
-                            #     items[i]['after']['Result'] = \
-                            #         '<img width="16" height="16" title="%s"' % msg + \
-                            #         'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
-                            #         (self.portal_url)
+                            belowmin = False
+                            pass
+                        try:
+                            abovemax = hidemax and float(result) > float(hidemax) or False
+                        except:
+                            abovemax = False
+                            pass
+
+                        if belowmin == True:
+                            items[i]['formatted_result'] = '< %s' % hidemin
+                        elif abovemax == True:
+                            items[i]['formatted_result'] = '> %s' % hidemax
+                        else:
+                            try:
+                                items[i]['formatted_result'] = precision and \
+                                    str("%%.%sf" % precision) % float(result) or result
+                            except:
+                                items[i]['formatted_result'] = result
+                            indet = to_utf8(self.context.translate(_('Indet')))
+                                if result == indet:
+                                    # 'Indeterminate' results flag a specific error
+                                Indet = to_utf8(self.context.translate(_("Indeterminate result")))
+                                    items[i]['after']['Result'] = \
+                                        '<img width="16" height="16" title="%s"' % Indet + \
+                                        'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
+                                        (self.portal_url)
+                                # result being unfloatable is no longer an error.
+                                # else:
+                                #     # result being un-floatable, is an error.
+                                #     msg = self.context.translate(_("Invalid result"))
+                                #     items[i]['after']['Result'] = \
+                                #         '<img width="16" height="16" title="%s"' % msg + \
+                                #         'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
+                                #         (self.portal_url)
                 items[i]['Uncertainty'] = obj.getUncertainty(result)
 
                 spec = self.get_active_spec_dict(obj)
@@ -605,7 +681,7 @@ class AnalysesView(BikaListingView):
                     items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                         (self.ulocalized_time(duedate, long_format=1),
                          self.portal_url,
-                         self.context.translate(_("Late Analysis")))
+                         to_utf8(self.context.translate(_("Late Analysis"))))
 
             # Submitting user may not verify results (admin can though)
             if items[i]['review_state'] == 'to_be_verified' and \
@@ -623,7 +699,7 @@ class AnalysesView(BikaListingView):
                     if self_submitted:
                         items[i]['after']['state_title'] = \
                              "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" % \
-                             (self.context.translate(_("Cannot verify: Submitted by current user")))
+                             (to_utf8(self.context.translate(_("Cannot verify: Submitted by current user"))))
                 except WorkflowException:
                     pass
 
@@ -638,9 +714,9 @@ class AnalysesView(BikaListingView):
                         ws = br[0]
                         items[i]['after']['state_title'] = \
                              "<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='%s'/></a>" % \
-                             (ws.absolute_url(), self.context.translate(
+                             (ws.absolute_url(), to_utf8(self.context.translate(
                                  _("Assigned to: ${worksheet_id}",
-                                   mapping={'worksheet_id': ws.id})))
+                                   mapping={'worksheet_id': ws.id}))))
 
         # the TAL requires values for all interim fields on all
         # items, so we set blank values in unused cells

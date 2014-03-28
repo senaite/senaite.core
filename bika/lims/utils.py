@@ -1,76 +1,57 @@
 from AccessControl import ModuleSecurityInfo, allow_module
-from bika.lims import bikaMessageFactory as _
-from bika.lims import interfaces
 from bika.lims import logger
 from bika.lims.browser import BrowserView
-from bika.lims.config import POINTS_OF_CAPTURE
-from cStringIO import StringIO
 from DateTime import DateTime
 from email import Encoders
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from email.MIMEBase import MIMEBase
-from email.Utils import formataddr
-from magnitude import mg, MagnitudeError
-from plone.i18n.normalizer.interfaces import IIDNormalizer
 from Products.Archetypes.public import DisplayList
-from Products.ATContentTypes.utils import DT2dt,dt2DT
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.TranslationServiceTool import TranslationServiceTool
-from zope.component import getUtility
+from Products.CMFPlone.utils import safe_unicode
 from zope.i18n.locales import locales
-from zope.interface import providedBy
-import copy,re,urllib
 import Globals
-import json
-import plone.protect
-import transaction
+import re
 import urllib2
-import warnings
-
+import os
+import App
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
 allow_module('csv')
 
 
 def to_utf8(text):
-    if text == None:
+    if text is None:
         text = ''
-    if type(text) == unicode:
-        return text.encode('utf-8')
-    else:
-        try:
-            text = text.decode('utf-8')
-        except:
-            pass
-        return unicode(text).encode('utf-8')
+    return safe_unicode(text).encode('utf-8')
+
 
 def to_unicode(text):
-    if text == None:
+    if text is None:
         text = ''
-    if type(text) == str:
-        return text.decode('utf-8')
-    else:
-        return text
+    return safe_unicode(text)
 
 
 # Wrapper for PortalTransport's sendmail - don't know why there sendmail
 # method is marked private
 ModuleSecurityInfo('Products.bika.utils').declarePublic('sendmail')
-#Protected( Publish, 'sendmail')
+# Protected( Publish, 'sendmail')
+
+
 def sendmail(portal, from_addr, to_addrs, msg):
     mailspool = portal.portal_mailspool
     mailspool.sendmail(from_addr, to_addrs, msg)
 
+
 class js_log(BrowserView):
+
     def __call__(self, message):
         """Javascript sends a string for us to place into the log.
         """
         self.logger.info(message)
 
 ModuleSecurityInfo('Products.bika.utils').declarePublic('printfile')
+
+
 def printfile(portal, from_addr, to_addrs, msg):
-    import os
 
     """ set the path, then the cmd 'lpr filepath'
     temp_path = 'C:/Zope2/Products/Bika/version.txt'
@@ -79,13 +60,14 @@ def printfile(portal, from_addr, to_addrs, msg):
     """
     pass
 
+
 def getUsers(context, roles, allow_empty=True):
     """ Present a DisplayList containing users in the specified
         list of roles
     """
     mtool = getToolByName(context, 'portal_membership')
-    pairs = allow_empty and [['','']] or []
-    users = mtool.searchForMembers(roles = roles)
+    pairs = allow_empty and [['', '']] or []
+    users = mtool.searchForMembers(roles=roles)
     for user in users:
         uid = user.getId()
         fullname = user.getProperty('fullname')
@@ -94,6 +76,7 @@ def getUsers(context, roles, allow_empty=True):
         pairs.append((uid, fullname))
     pairs.sort(lambda x, y: cmp(x[1], y[1]))
     return DisplayList(pairs)
+
 
 def isActive(obj):
     """ Check if obj is inactive or cancelled.
@@ -106,6 +89,7 @@ def isActive(obj):
        wf.getInfoFor(obj, 'cancellation_state', 'active') == 'cancelled':
         return False
     return True
+
 
 def formatDateQuery(context, date_id):
     """ Obtain and reformat the from and to dates
@@ -128,6 +112,7 @@ def formatDateQuery(context, date_id):
 
     return date_query
 
+
 def formatDateParms(context, date_id):
     """ Obtain and reformat the from and to dates
         into a printable date parameter construct
@@ -137,13 +122,14 @@ def formatDateParms(context, date_id):
 
     date_parms = {}
     if from_date and to_date:
-        date_parms = 'from %s to %s' %(from_date, to_date)
+        date_parms = 'from %s to %s' % (from_date, to_date)
     elif from_date:
-        date_parms = 'from %s' %(from_date)
+        date_parms = 'from %s' % (from_date)
     elif to_date:
-        date_parms = 'to %s' %(to_date)
+        date_parms = 'to %s' % (to_date)
 
     return date_parms
+
 
 def formatDuration(context, totminutes):
     """ Format a time period in a usable manner: eg. 3h24m
@@ -167,7 +153,9 @@ def formatDuration(context, totminutes):
 hqre = re.compile(r'^[A-z0-9!"#$%%&\'()*+,-./:;<=>?@\[\]^_`{|}~ ]+$')
 
 ModuleSecurityInfo('Products.bika.utils').declarePublic('encode_header')
-def encode_header(header, charset = 'utf-8'):
+
+
+def encode_header(header, charset='utf-8'):
     """ Will encode in quoted-printable encoding only if header
     contains non latin characters
     """
@@ -181,7 +169,7 @@ def encode_header(header, charset = 'utf-8'):
         return header
 
     quoted = ''
-    #max_encoded = 76 - len(charset) - 7
+    # max_encoded = 76 - len(charset) - 7
     for c in header:
         # Space may be represented as _ instead of =20 for readability
         if c == ' ':
@@ -192,9 +180,9 @@ def encode_header(header, charset = 'utf-8'):
         # Otherwise, replace with hex value like =E2
         else:
             quoted += "=%02X" % ord(c)
-            plain = 0
 
     return '=?%s?q?%s?=' % (charset, quoted)
+
 
 def zero_fill(matchobj):
     return matchobj.group().zfill(8)
@@ -202,6 +190,8 @@ def zero_fill(matchobj):
 num_sort_regex = re.compile('\d+')
 
 ModuleSecurityInfo('Products.bika.utils').declarePublic('sortable_title')
+
+
 def sortable_title(portal, title):
     """Convert title to sortable title
     """
@@ -215,7 +205,7 @@ def sortable_title(portal, title):
     # Truncate to prevent bloat
     for charset in [def_charset, 'latin-1', 'utf-8']:
         try:
-            sortabletitle = unicode(sortabletitle, charset)[:30]
+            sortabletitle = safe_unicode(sortabletitle, charset)[:30]
             sortabletitle = sortabletitle.encode(def_charset or 'utf-8')
             break
         except UnicodeError:
@@ -226,13 +216,14 @@ def sortable_title(portal, title):
             break
     return sortabletitle
 
+
 def logged_in_client(context, member=None):
     if not member:
-        membership_tool=getToolByName(context, 'portal_membership')
+        membership_tool = getToolByName(context, 'portal_membership')
         member = membership_tool.getAuthenticatedMember()
 
     client = None
-    groups_tool=context.portal_groups
+    groups_tool = context.portal_groups
     member_groups = [groups_tool.getGroupById(group.id).getGroupName()
                  for group in groups_tool.getGroupsByUserId(member.id)]
 
@@ -241,6 +232,7 @@ def logged_in_client(context, member=None):
             if member.id in obj.users_with_local_role('Owner'):
                 client = obj
     return client
+
 
 def changeWorkflowState(content, wf_id, state_id, acquire_permissions=False,
                         portal_workflow=None, **kw):
@@ -278,9 +270,9 @@ def changeWorkflowState(content, wf_id, state_id, acquire_permissions=False,
     # Updating wf_state from keyword args
     for k in kw.keys():
         # Remove unknown items
-        if not wf_state.has_key(k):
+        if k not in wf_state:
             del kw[k]
-    if kw.has_key('review_state'):
+    if 'review_state' in kw:
         del kw['review_state']
     wf_state.update(kw)
 
@@ -300,13 +292,22 @@ def changeWorkflowState(content, wf_id, state_id, acquire_permissions=False,
 
 
 def tmpID():
-    import os, binascii
+    import binascii
     return binascii.hexlify(os.urandom(16))
 
 
+def isnumber(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+
 def createPdf(htmlreport, outfile=None, css=None):
+    debug_mode = App.config.getConfiguration().debug_mode
     # XXX css must be a local file - urllib fails under robotframework tests.
-    css_def = '';
+    css_def = ''
     if css:
         if css.startswith("http://") or css.startswith("https://"):
             # Download css file in temp dir
@@ -316,23 +317,25 @@ def createPdf(htmlreport, outfile=None, css=None):
             localFile.write(u.read())
             localFile.close()
         else:
-            _cssfile=css
-        cssfile= open(_cssfile, 'r')
+            _cssfile = css
+        cssfile = open(_cssfile, 'r')
         css_def = cssfile.read()
-    from weasyprint import HTML, CSS
-    htmlfilepath = Globals.INSTANCE_HOME + "/var/" + tmpID() + ".html"
-    htmlfile = open(htmlfilepath, 'w')
-    htmlfile.write(htmlreport)
-    htmlfile.close()
     if not outfile:
         outfile = Globals.INSTANCE_HOME + "/var/" + tmpID() + ".pdf"
+
+    from weasyprint import HTML, CSS
+    import os
     if css:
-        HTML(htmlfilepath).write_pdf(outfile,
+        HTML(string=htmlreport, encoding='utf-8').write_pdf(outfile,
             stylesheets=[CSS(string=css_def)])
     else:
-        HTML(htmlfilepath).write_pdf(outfile)
-    return open(outfile, 'r').read();
+        HTML(string=htmlreport, encoding='utf-8').write_pdf(outfile)
 
+    if debug_mode:
+        htmlfilepath = Globals.INSTANCE_HOME + "/var/" + tmpID() + ".html"
+        htmlfile = open(htmlfilepath, 'w')
+        htmlfile.write(htmlreport)
+        htmlfile.close()
 
 def attachPdf(mimemultipart, pdfreport, filename=None):
     part = MIMEBase('application', "application/pdf")

@@ -87,6 +87,7 @@ class BikaGenerator:
                        'bika_samplepoints',
                        'bika_sampletypes',
                        'bika_srtemplates',
+                       'bika_storagelocations',
                        'bika_suppliers',
                        'bika_referencedefinitions',
                        'bika_worksheettemplates'):
@@ -194,6 +195,7 @@ class BikaGenerator:
         mp(AddSampleMatrix, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddSamplePartition, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
         mp(AddSamplePoint, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
+        mp(AddStorageLocation, ['Manager', 'Owner', 'LabManager', ], 1)
         mp(AddSamplingDeviation, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddSRTemplate, ['Manager', 'Owner', 'LabManager'], 0)
         mp(AddQuery, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 0)
@@ -667,6 +669,7 @@ class BikaGenerator:
         at.setCatalogsByType('SampleMatrix', ['bika_setup_catalog', ])
         at.setCatalogsByType('SampleType', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('SamplePoint', ['bika_setup_catalog', 'portal_catalog'])
+        at.setCatalogsByType('StorageLocation', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('SamplingDeviation', ['bika_setup_catalog', ])
         at.setCatalogsByType('Instrument', ['bika_setup_catalog', ])
         at.setCatalogsByType('InstrumentType', ['bika_setup_catalog', ])
@@ -735,8 +738,8 @@ class BikaGenerator:
         addIndex(bsc, 'getPointOfCapture', 'FieldIndex')
         addIndex(bsc, 'getPrice', 'FieldIndex')
         addIndex(bsc, 'getSamplePointTitle', 'KeywordIndex')
-        addIndex(bsc, 'getSampleTypeTitle', 'KeywordIndex')
         addIndex(bsc, 'getSamplePointUID', 'FieldIndex')
+        addIndex(bsc, 'getSampleTypeTitle', 'KeywordIndex')
         addIndex(bsc, 'getSampleTypeUID', 'FieldIndex')
         addIndex(bsc, 'getServiceTitle', 'FieldIndex')
         addIndex(bsc, 'getServiceUID', 'FieldIndex')
@@ -789,8 +792,8 @@ class BikaGenerator:
         addColumn(bsc, 'getPointOfCapture')
         addColumn(bsc, 'getPrice')
         addColumn(bsc, 'getSamplePointTitle')
-        addColumn(bsc, 'getSampleTypeTitle')
         addColumn(bsc, 'getSamplePointUID')
+        addColumn(bsc, 'getSampleTypeTitle')
         addColumn(bsc, 'getSampleTypeUID')
         addColumn(bsc, 'getServiceTitle')
         addColumn(bsc, 'getServiceUID')

@@ -18,7 +18,6 @@ msgstr ""
 "Language: id\n"
 
 #
-# File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/ARPriorities.xml, line: -1
 msgid "AR Priorities"
 msgstr ""
@@ -637,6 +636,22 @@ msgstr ""
 #
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
 msgid "Sticker"
+msgstr ""
+
+#
+# File: ../profiles/default/types/StorageLocation.xml, line: -1
+msgid "Storage Location"
+msgstr ""
+
+#
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/StorageLocations.xml, line: -1
+msgid "Storage Locations"
+msgstr ""
+
+#
+# File: ../profiles/default/types/Client.xml, line: -1
+msgid "StorageLocations"
 msgstr ""
 
 #

@@ -3,6 +3,7 @@ from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import ISetupDataSetList
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims.utils import tmpID, to_unicode
+from bika.lims.utils import to_utf8
 from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from zope.interface import implements
@@ -862,6 +863,34 @@ class Sample_Point_Sample_Types(WorksheetImporter):
             if samplepoint not in samplepoints:
                 samplepoints.append(samplepoint)
                 sampletype.setSamplePoints(samplepoints)
+
+class Storage_Locations(WorksheetImporter):
+
+    def Import(self):
+        setup_folder = self.context.bika_setup.bika_storagelocations
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        pc = getToolByName(self.context, 'portal_catalog')
+        for row in self.get_rows(3):
+            if not row['Address']:
+                continue
+
+            _id = setup_folder.invokeFactory('StorageLocation', id=tmpID())
+            obj = setup_folder[_id]
+            obj.edit(
+                title=row['Address'],
+                SiteTitle=row['SiteTitle'],
+                SiteCode=row['SiteCode'],
+                SiteDescription=row['SiteDescription'],
+                LocationTitle=row['LocationTitle'],
+                LocationCode=row['LocationCode'],
+                LocationDescription=row['LocationDescription'],
+                LocationType=row['LocationType'],
+                ShelfTitle=row['ShelfTitle'],
+                ShelfCode=row['ShelfCode'],
+                ShelfDescription=row['ShelfDescription'],
+            )
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
 
 
 class Sample_Conditions(WorksheetImporter):
@@ -1756,13 +1785,13 @@ class Invoice_Batches(WorksheetImporter):
             obj = folder[_id]
             if not row['title']:
                 message = _("InvoiceBatch has no Title")
-                raise Exception(self.context.translate(message))
+                raise Exception(to_utf8(self.context.translate(message)))
             if not row['start']:
                 message = _("InvoiceBatch has no Start Date")
-                raise Exception(self.context.translate(message))
+                raise Exception(to_utf8(self.context.translate(message)))
             if not row['end']:
                 message = _("InvoiceBatch has no End Date")
-                raise Exception(self.context.translate(message))
+                raise Exception(to_utf8(self.context.translate(message)))
             obj.edit(
                 title=row['title'],
                 BatchStartDate=row['start'],

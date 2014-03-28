@@ -245,4 +245,31 @@
         handler="bika.lims.upgrade.to3022.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Add Storage Locations"
+        description="Add Storage Locations for ARs and Samples"
+        source="3022"
+        destination="3023"
+        handler="bika.lims.upgrade.to3023.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Set Default Priorities"
+        description="Set the default priority on existing ARs"
+        source="3023"
+        destination="3024"
+        handler="bika.lims.upgrade.to3024.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Reimport some tools due to pur-cr3 merge"
+        description=""
+        source="3024"
+        destination="3025"
+        handler="bika.lims.upgrade.to3025.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
 </configure>
