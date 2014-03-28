@@ -43,7 +43,7 @@ class ARPrioritiesView(BikaListingView):
             'sortKey': {'title': _('Sort Key')},
             'pricePremium': {'title': _('Premium')},
             'isDefault': {'title': _('Default')},
-            'state_title': {'title': _('State')},
+            'inactive_state': {'title': _('State')},
         }
         self.review_states = [
             {'id': 'default',
@@ -53,7 +53,7 @@ class ARPrioritiesView(BikaListingView):
                          'sortKey',
                          'pricePremium',
                          'isDefault',
-                         'state_title']},
+                         'inactive_state']},
             {'id': 'draft',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
