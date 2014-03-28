@@ -630,7 +630,6 @@ msgstr ""
 msgid "Queries"
 msgstr ""
 #
-# File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/Query.xml, line: -1
 msgid "Query"
 msgstr ""
@@ -776,10 +775,6 @@ msgstr ""
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/StorageLocations.xml, line: -1
 msgid "Storage Locations"
-msgstr ""
-#
-# File: ../profiles/default/types/Client.xml, line: -1
-msgid "StorageLocations"
 msgstr ""
 #
 # File: ../profiles/default/types/Supplier.xml, line: -1

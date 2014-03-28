@@ -205,11 +205,23 @@ msgid "9"
 msgstr ""
 
 #
+# File: ../browser/widgets/analysisspecificationwidget.py, line: 43
+# File: ../content/analysisspec.py, line: 73
+msgid "< Min"
+msgstr ""
+
+#
 msgid "<p>${service} requires the following services to be selected:</p><br/><p>${deps}</p><br/><p>Do you want to apply these selections now?</p>"
 msgstr ""
 
 #
 msgid "<p>The following services depend on ${service}, and will be unselected if you continue:</p><br/><p>${deps}</p><br/><p>Do you want to remove these selections now?</p>"
+msgstr ""
+
+#
+# File: ../browser/widgets/analysisspecificationwidget.py, line: 44
+# File: ../content/analysisspec.py, line: 74
+msgid "> Max"
 msgstr ""
 
 #
@@ -427,6 +439,11 @@ msgstr ""
 #
 # File: ../browser/referencesample.py, line: 184
 msgid "All reference samples in the system are displayed here."
+msgstr ""
+
+#
+# File: ../content/bikasetup.py, line: 76
+msgid "Allow Lab Clerks to create and edit clients"
 msgstr ""
 
 #
@@ -1311,6 +1328,11 @@ msgstr ""
 # File: ../content/analysisspec.py, line: 75
 # File: ../content/referencedefinition.py, line: 28
 msgid "Click on Analysis Categories (against shaded background) to see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert."
+msgstr ""
+
+#
+# File: ../content/analysisspec.py, line: 79
+msgid "Click on Analysis Categories (against shaded background) to see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert. If the result is below '< Min' the result will be shown as '< [min]'. The same applies for results above '> Max'"
 msgstr ""
 
 #
@@ -3963,8 +3985,23 @@ msgid "Quantity"
 msgstr ""
 
 #
+# File: ../profiles/default/actions.xml, line: -1
+msgid "Query"
+msgstr ""
+
+#
 # File: ../content/arimport.py, line: 167
 msgid "QuoteID"
+msgstr ""
+
+#
+# File: ../content/analysisspec.py, line: 75
+msgid "Range Comment"
+msgstr ""
+
+#
+# File: ../browser/widgets/analysisspecificationwidget.py, line: 45
+msgid "Range comment"
 msgstr ""
 
 #
@@ -3975,6 +4012,11 @@ msgstr ""
 #
 # File: ../content/analysisservice.py, line: 603
 msgid "Range min"
+msgstr ""
+
+#
+# File: ../browser/templates/bika_listing_table.pt, line: 558
+msgid "Range remarks:"
 msgstr ""
 
 #
@@ -4703,6 +4745,11 @@ msgstr ""
 # File: ../browser/templates/worksheet_add_analyses.pt, line: 45
 # File: ../browser/templates/worksheetfolder.pt, line: 47
 msgid "Select template"
+msgstr ""
+
+#
+# File: ../content/bikasetup.py, line: 106
+msgid "Select the country the site will show by default"
 msgstr ""
 
 #

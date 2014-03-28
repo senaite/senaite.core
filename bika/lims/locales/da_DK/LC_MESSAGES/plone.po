@@ -653,11 +653,6 @@ msgid "Storage Locations"
 msgstr ""
 
 #
-# File: ../profiles/default/types/Client.xml, line: -1
-msgid "StorageLocations"
-msgstr ""
-
-#
 # File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Supplier"
 msgstr ""

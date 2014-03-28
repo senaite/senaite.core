@@ -1,866 +1,999 @@
-# 
-# Translators:
 msgid ""
 msgstr ""
-"Project-Id-Version: Bika-LIMS\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "POT-Creation-Date: 2012-10-20 09:21+0000\n"
-"PO-Revision-Date: 2014-03-11 08:31+0000\n"
-"Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Domain: plone\n"
-"Language: en\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Preferred-Encodings: utf-8 latin1\n"
+"Domain: DOMAIN\n"
 
-msgid "label_schema_Accounting"
-msgstr "[Ȧƈƈǿŭƞŧīƞɠ ϱǲϐϵſ衋靐ςǋǋ]"
-
-msgid "label_schema_Address"
-msgstr "[Ȧḓḓřḗşş ǈϰϕΰϵǅǲ]"
-
-msgid "label_schema_Bank details"
-msgstr "[Ɓȧƞķ ḓḗŧȧīŀş ẛ靐ϰẛ ΰϵẛſſ]"
-
-msgid "label_schema_Calculation"
-msgstr "[Ƈȧŀƈŭŀȧŧīǿƞ ΐϰϖϖǲıẛ衋ς靐ǅ]"
-
-msgid "label_schema_Dates"
-msgstr "[Ḓȧŧḗş ϑϕǈϵǅ]"
-
-msgid "label_schema_Description"
-msgstr "[Ḓḗşƈřīƥŧīǿƞ ǋϑϑ衋ſϵϖ鶱ſςϐ]"
-
-msgid "label_schema_Email Telephone Fax"
-msgstr "[Ḗḿȧīŀ Ŧḗŀḗƥħǿƞḗ Ƒȧẋ ϵǅıϕς ǲΐϵςϐ]"
-
-msgid "label_schema_ID Server"
-msgstr "[ĪḒ Şḗřṽḗř ϕ靐 ǈſǅϐςς]"
-
-msgid "label_schema_Labels"
-msgstr "[Ŀȧƀḗŀş ΰϱς靐ςǲ]"
-
-msgid "label_schema_Layout"
-msgstr "[Ŀȧẏǿŭŧ ǋǲ靐ϕϑϖ]"
-
-msgid "label_schema_Location"
-msgstr "[Ŀǿƈȧŧīǿƞ ϑǋϑϑǅϖϰı]"
-
-msgid "label_schema_Method"
-msgstr "[Ḿḗŧħǿḓ ϵ衋ϐǈſϱ]"
-
-msgid "label_schema_Container and Preservation"
-msgstr "[Ƈǿƞŧȧīƞḗř ȧƞḓ Ƥřḗşḗřṽȧŧīǿƞ ǲ鶱ϐϵϑı鶱ϕı ϕ]"
-
-msgid "label_schema_Preferences"
-msgstr "[Ƥřḗƒḗřḗƞƈḗş 靐鶱鶱ı鶱靐ΰǋΰΐϰ]"
-
-msgid "label_schema_Publication preference"
-msgstr "[Ƥŭƀŀīƈȧŧīǿƞ ƥřḗƒḗřḗƞƈḗ ǅϖẛϱΐϑ鶱靐ΐǋǅ]"
-
-msgid "label_schema_Reference Values"
-msgstr "[Řḗƒḗřḗƞƈḗ Ṽȧŀŭḗş ǋϖϑẛǅ衋ı衋ǋ ǅ]"
-
-msgid "label_schema_Result Options"
-msgstr "[Řḗşŭŀŧ Ǿƥŧīǿƞş ǲΐǈ衋ΰϰ ΰẛẛǋſ]"
-
-msgid "label_schema_Results Reports"
-msgstr "[Řḗşŭŀŧş Řḗƥǿřŧş ϐıſ衋ıẛǅ ϐ衋]"
-
-msgid "label_schema_Security"
-msgstr "[Şḗƈŭřīŧẏ ǅıϰϱẛǅϖ靐]"
-
-msgid "label_schema_Uncertainties"
-msgstr "[Ŭƞƈḗřŧȧīƞŧīḗş 衋ϖ衋ϑſϱϖ衋鶱衋ǲ]"
-
-msgid "label_schema_Sample Partitions"
-msgstr "[Şȧḿƥŀḗ Ƥȧřŧīŧīǿƞş ϕſǅǅ衋靐 ϖẛǈϱϕ]"
-
-msgid "label_schema_Analyses"
-msgstr "[Ȧƞȧŀẏşḗş ǋϐϱϕϐ鶱ϱǅ]"
-
-#. Default: "Activate"
-# File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
-# line: -1
-msgid "activate_transition_title"
-msgstr "[Ȧƈŧīṽȧŧḗ ϰϑǅϱ靐ϰǲϱ]"
-
-#. Default: "Assign"
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml,
-# line: -1
-msgid "assign_transition_title"
-msgstr "[Ȧşşīɠƞ 鶱ϱǈς衋ϵ]"
-
-#. Default: "Add attachment"
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-msgid "attach_transition_title"
-msgstr "[Ȧḓḓ ȧŧŧȧƈħḿḗƞŧ ϑǈ靐 衋ϵϰ鶱ǋẛıǋ]"
-
-#. Default: "Cancel"
-# File:
-# ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
-# line: -1
-msgid "cancel_transition_title"
-msgstr "[Ƈȧƞƈḗŀ ϕ衋衋ςıϕ]"
-
-#. Default: "Close"
-# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
-# line: -1
-msgid "close_transition_title"
-msgstr "[Ƈŀǿşḗ ϰϱϕϐΐ]"
-
-#. Default: "Deactivate"
-# File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
-# line: -1
-msgid "deactivate_transition_title"
-msgstr "[Ḓḗȧƈŧīṽȧŧḗ ϐϐ衋ẛϐ鶱ſϱϖϕ]"
-
-#. Default: "Dispatch order"
-# File: ../profiles/default/workflows/bika_order_workflow/definition.xml,
-# line: -1
-msgid "dispatch_transition_title"
-msgstr "[Ḓīşƥȧŧƈħ ǿřḓḗř ς鶱靐鶱ıςǈ靐 ϱςϵ]"
-
-#. Default: "Dispose"
-# File:
-# ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
-# line: -1
-msgid "dispose_transition_title"
-msgstr "[Ḓīşƥǿşḗ ẛϑǅǋϐ衋ẛ]"
-
-#. Default: "Duplicate"
-msgid "duplicate_transition_title"
-msgstr "[Ḓŭƥŀīƈȧŧḗ ϵϕ靐ǈϱǅıϕΰ]"
-
-#. Default: "Expire"
-# File:
-# ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
-# line: -1
-msgid "expire_transition_title"
-msgstr "[Ḗẋƥīřḗ ϱϱ衋ıϕ靐]"
-
-#. Default: "Import"
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-msgid "import_transition_title"
-msgstr "[Īḿƥǿřŧ ϵϖϕϕϑǲ]"
-
-#. Default: "Open"
-# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
-# line: -1
-msgid "open_transition_title"
-msgstr "[Ǿƥḗƞ ǋǲΰΰ]"
-
-#. Default: "Prepublish"
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-msgid "prepublish_transition_title"
-msgstr "[Ƥřḗƥŭƀŀīşħ ǋ靐ϰϱϑıΐϐ靐衋]"
-
-#. Default: "Preserve"
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
-# line: -1
-msgid "preserve_transition_title"
-msgstr "[Ƥřḗşḗřṽḗ ıſΐǈı衋ϕ鶱]"
-
-#. Default: "Publish"
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-msgid "publish_transition_title"
-msgstr "[Ƥŭƀŀīşħ ϵΰϱǲ靐ϰϱ]"
-
-#. Default: "Reassign"
-msgid "reassign_transition_title"
-msgstr "[Řḗȧşşīɠƞ ϖſϑϱϑ鶱ΐς]"
-
-#. Default: "Receive sample"
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
-# line: -1
-msgid "receive_transition_title"
-msgstr "[Řḗƈḗīṽḗ şȧḿƥŀḗ ΰſΐǈςǲϖ ϕςϕẛ]"
-
-#. Default: "Reinstate"
-# File:
-# ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
-# line: -1
-msgid "reinstate_transition_title"
-msgstr "[Řḗīƞşŧȧŧḗ ẛẛıϱϖǋϑϱ衋]"
-
-#. Default: "Reject"
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml,
-# line: -1
-msgid "reject_transition_title"
-msgstr "[Řḗĵḗƈŧ ǋϐ鶱ſ鶱鶱]"
-
-#. Default: "Republish"
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-msgid "republish_transition_title"
-msgstr "[Řḗƥŭƀŀīşħ ϖϑΐẛı靐ΰıΐ]"
-
-#. Default: "Retract"
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-msgid "retract_transition_title"
-msgstr "[Řḗŧřȧƈŧ ϖ衋ϕϑſϐϰ]"
-
-#. Default: "Retract"
-# This is for the "revert" transition, which is meant to look like a
-# "retract".
-msgid "revert_transition_title"
-msgstr "[Řḗŧřȧƈŧ ΐϑǈıΰẛϵ]"
-
-#. Default: "Invalidate"
-# This is for the "retract_ar" transition, to invalidate a published AR.
-msgid "invalidate_transition_title"
-msgstr "[Īƞṽȧŀīḓȧŧḗ ϕ靐ϵΐǲıı靐ǈǲ]"
-
-#. Default: "Retract worksheet"
-# File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml,
-# line: -1
-msgid "retract_worksheet_transition_title"
-msgstr "[Řḗŧřȧƈŧ ẇǿřķşħḗḗŧ ΐǋ靐ΰǋςϱ ǋΰΰǈ]"
-
-#. Default: "Sample"
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File: ../profiles/default/workflows/bika_sample_worflow/definition.xml,
-# line: -1
-msgid "sample_transition_title"
-msgstr "[Şȧḿƥŀḗ ǈϰϑϰǅϰ]"
-
-#. Default: "Save analyses"
-msgid "save_analyses_button_transition_title"
-msgstr "[Şȧṽḗ ȧƞȧŀẏşḗş ϰǲſı ẛ鶱ϵς靐ϐ]"
-
-#. Default: "Save partitions"
-msgid "save_partitions_button_transition_title"
-msgstr "[Şȧṽḗ ƥȧřŧīŧīǿƞş ϵẛǲǅ 鶱ϵ鶱鶱靐]"
-
-#. Default: "Save selection"
-msgid "save_selection_button_transition_title"
-msgstr "[Şȧṽḗ şḗŀḗƈŧīǿƞ ϕϱςǲ ıϑϕ靐ϖǅϕ]"
-
-#. Default: "Submit ARImport"
-# File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
-# line: -1
-msgid "submit_arimport_transition_title"
-msgstr "[Şŭƀḿīŧ ȦŘĪḿƥǿřŧ ϕǋ鶱衋ǲı ϖςǅ]"
-
-#. Default: "Submit for verification"
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-msgid "submit_transition_title"
-msgstr "[Şŭƀḿīŧ ƒǿř ṽḗřīƒīƈȧŧīǿƞ ΐǲϖϱ衋ϑ ϖΰſ]"
-
-#. Default: "Remove"
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml,
-# line: -1
-msgid "unassign_transition_title"
-msgstr "[Řḗḿǿṽḗ ǈϵςϵǅΐ]"
-
-#. Default: "Verify"
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-msgid "verify_transition_title"
-msgstr "[Ṽḗřīƒẏ 靐ǲϑıϰǋ]"
-
-# File: ../profiles/default/controlpanel.xml, line: -1
+#
 # File: ../profiles/default/types/ARPriorities.xml, line: -1
 msgid "AR Priorities"
-msgstr "[ȦŘ Ƥřīǿřīŧīḗş 靐ϱ ϕ靐ǅϖϱϰǲϐ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/ARTemplate.xml, line: -1
 msgid "AR Template"
-msgstr "[ȦŘ Ŧḗḿƥŀȧŧḗ ϑǅ ϑǅςϱſΐıǈ]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/ARTemplates.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "AR Templates"
-msgstr "[ȦŘ Ŧḗḿƥŀȧŧḗş ϵ靐 ϱſſϰϕǈϑ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/ARReport.xml, line: -1
 msgid "ARReport"
-msgstr "[ȦŘŘḗƥǿřŧ ẛϵ鶱ı靐鶱ǲſ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Add Analyses"
-msgstr "[Ȧḓḓ Ȧƞȧŀẏşḗş ϖϖǲ 鶱ϕϵıΰǋ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Add Blank Reference"
-msgstr "[Ȧḓḓ Ɓŀȧƞķ Řḗƒḗřḗƞƈḗ ı靐ẛ ϵϕϑǲǋ ı]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Add Control Reference"
-msgstr "[Ȧḓḓ Ƈǿƞŧřǿŀ Řḗƒḗřḗƞƈḗ ϑı靐 衋ςǋΰϐǋ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Add Duplicate"
-msgstr "[Ȧḓḓ Ḓŭƥŀīƈȧŧḗ ǲ衋ı ϕςς衋ǲǈΰ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/ReportFolder.xml, line: -1
 msgid "Administration"
-msgstr "[Ȧḓḿīƞīşŧřȧŧīǿƞ ϖǅϑ靐ϰϖςςϖϵΐϰ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
 # File: ../profiles/default/types/Sample.xml, line: -1
 msgid "Analyses"
-msgstr "[Ȧƞȧŀẏşḗş ǲǈϕẛϕǅẛı]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Analysis.xml, line: -1
 msgid "Analysis"
-msgstr "[Ȧƞȧŀẏşīş ϕϕǈǲ靐ϑǅǅ]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/AnalysisCategories.xml, line: -1
 msgid "Analysis Categories"
-msgstr "[Ȧƞȧŀẏşīş Ƈȧŧḗɠǿřīḗş ǅΰııϕſ鶱ΰ ı鶱]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/AnalysisCategory.xml, line: -1
 msgid "Analysis Category"
-msgstr "[Ȧƞȧŀẏşīş Ƈȧŧḗɠǿřẏ ΰϕϵǲΰ衋ς衋 ϰϖϱ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/AnalysisProfile.xml, line: -1
 msgid "Analysis Profile"
-msgstr "[Ȧƞȧŀẏşīş Ƥřǿƒīŀḗ ςϐǋ鶱ǲϕϖ衋 ǲϰ]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/AnalysisProfiles.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Analysis Profiles"
-msgstr "[Ȧƞȧŀẏşīş Ƥřǿƒīŀḗş ǈ靐ϖϰϱϰıẛ ϐΐϕ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 msgid "Analysis Request"
-msgstr "[Ȧƞȧŀẏşīş Řḗɋŭḗşŧ ςǋϖϐϰıẛẛ ϰϕ]"
+msgstr ""
 
+#
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/AnalysisRequestsFolder.xml, line: -1
 # File: ../profiles/default/types/Batch.xml, line: -1
 msgid "Analysis Requests"
-msgstr "[Ȧƞȧŀẏşīş Řḗɋŭḗşŧş ς靐ΰẛ靐ẛǋǲ ẛ鶱衋]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/AnalysisService.xml, line: -1
 msgid "Analysis Service"
-msgstr "[Ȧƞȧŀẏşīş Şḗřṽīƈḗ ǈſǲϰϑςςϱ ǈϖ]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/AnalysisServices.xml, line: -1
 msgid "Analysis Services"
-msgstr "[Ȧƞȧŀẏşīş Şḗřṽīƈḗş ϑ靐ϕẛ靐ǲǅϐ ϱΐϖ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/AnalysisSpec.xml, line: -1
 msgid "Analysis Specification"
-msgstr "[Ȧƞȧŀẏşīş Şƥḗƈīƒīƈȧŧīǿƞ ẛſıϰϕϰſı ǲϕ]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/AnalysisSpecs.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Analysis Specifications"
-msgstr "[Ȧƞȧŀẏşīş Şƥḗƈīƒīƈȧŧīǿƞş ϵǲǋıẛϰϖǅ 衋ϕ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Attachment.xml, line: -1
 msgid "Attachment"
-msgstr "[Ȧŧŧȧƈħḿḗƞŧ 鶱靐衋ǈǈςϑϕϱϰ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/AttachmentType.xml, line: -1
 msgid "Attachment Type"
-msgstr "[Ȧŧŧȧƈħḿḗƞŧ Ŧẏƥḗ ςẛǋΐǲǈϖΐ鶱ı]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/AttachmentTypes.xml, line: -1
 msgid "Attachment Types"
-msgstr "[Ȧŧŧȧƈħḿḗƞŧ Ŧẏƥḗş ϕϵẛ鶱ſ鶱ϐϐẛϕ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Attachments"
-msgstr "[Ȧŧŧȧƈħḿḗƞŧş ϕϑ鶱ǅϐϑΐϵǋıı]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Batch.xml, line: -1
 msgid "Batch"
-msgstr "[Ɓȧŧƈħ ΐϐẛ鶱ϖ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/BatchLabel.xml, line: -1
 msgid "Batch Label"
-msgstr "[Ɓȧŧƈħ Ŀȧƀḗŀ ςǈΰΐẛ ΰǋΰϱϖ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/BatchLabels.xml, line: -1
 msgid "Batch Labels"
-msgstr "[Ɓȧŧƈħ Ŀȧƀḗŀş ϱϵςϕ鶱 ǋϰϐ鶱]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 msgid "Batch labels"
-msgstr "[Ɓȧŧƈħ ŀȧƀḗŀş ǈΐϕϕ靐 ϑΐǈǋ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/BatchFolder.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Batches"
-msgstr "[Ɓȧŧƈħḗş ϱΐςϑΐϰϕ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/BikaSetup.xml, line: -1
 msgid "Bika Setup"
-msgstr "[Ɓīķȧ Şḗŧŭƥ ΐϑϑ靐 ϰϰ衋ϱẛ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Calculation.xml, line: -1
 msgid "Calculation"
-msgstr "[Ƈȧŀƈŭŀȧŧīǿƞ ıϖΐ衋ϖ衋ıϖϑǅΰ]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Calculations.xml, line: -1
 msgid "Calculations"
-msgstr "[Ƈȧŀƈŭŀȧŧīǿƞş ǋǅϕΰϵϵϱǲϐϱ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Calibrations"
-msgstr "[Ƈȧŀīƀřȧŧīǿƞş ſǲϕϕǋϐǋϱıΐ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Certificates"
-msgstr "[Ƈḗřŧīƒīƈȧŧḗş ǅ鶱ϐϵςςſǈϑς]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Client"
-msgstr "[Ƈŀīḗƞŧ ΰςǋς靐ǅ]"
+msgstr ""
 
+#
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/ClientFolder.xml, line: -1
 msgid "Clients"
-msgstr "[Ƈŀīḗƞŧş ſǈ靐ΐϕ衋ǈ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Client.xml, line: -1
 # File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Contacts"
-msgstr "[Ƈǿƞŧȧƈŧş ǲςϱϑ衋ϵϱǅ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Container.xml, line: -1
 msgid "Container"
-msgstr "[Ƈǿƞŧȧīƞḗř ſϱϖϑς靐ϱẛǅ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/ContainerType.xml, line: -1
 msgid "Container Type"
-msgstr "[Ƈǿƞŧȧīƞḗř Ŧẏƥḗ ǲ鶱ẛſςıϐǋϖ ϖς]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/ContainerTypes.xml, line: -1
 msgid "Container Types"
-msgstr "[Ƈǿƞŧȧīƞḗř Ŧẏƥḗş ẛ鶱ϰ鶱衋ǅϱϰϱ]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Containers.xml, line: -1
 msgid "Containers"
-msgstr "[Ƈǿƞŧȧīƞḗřş ſ靐衋ςſ衋ǈ靐ϕϖ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Department.xml, line: -1
 msgid "Department"
-msgstr "[Ḓḗƥȧřŧḿḗƞŧ ϐǋ靐ǲſſǅϱıς]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Departments.xml, line: -1
 msgid "Departments"
-msgstr "[Ḓḗƥȧřŧḿḗƞŧş ϑ鶱ςϕſǈıǋςϵϖ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/DuplicateAnalysis.xml, line: -1
 msgid "Duplicate Analysis"
-msgstr "[Ḓŭƥŀīƈȧŧḗ Ȧƞȧŀẏşīş 鶱ǈςǋϑϐǈΐϐ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Pricelist.xml, line: -1
 msgid "Email pricelist"
-msgstr "[Ḗḿȧīŀ ƥřīƈḗŀīşŧ ςǈǲǈς 鶱ΐϐϕ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Export"
-msgstr "[Ḗẋƥǿřŧ ſϱ靐ΰẛẛ]"
+msgstr ""
 
+#
 # File: ../profiles/default/actions.xml, line: -1
 msgid "Extracts"
-msgstr "[Ḗẋŧřȧƈŧş ΐϱΰϑϱΰ鶱ϕ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Imports"
-msgstr "[Īḿƥǿřŧş ϱǅıǈςϱϕ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Instrument"
-msgstr "[Īƞşŧřŭḿḗƞŧ ı鶱ϐſϰ靐ẛΰ衋靐]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/InstrumentType.xml, line: -1
 msgid "Instrument Type"
-msgstr "[Īƞşŧřŭḿḗƞŧ Ŧẏƥḗ ẛǈǲΐ靐ϕϱıǅϰ]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/InstrumentTypes.xml, line: -1
 msgid "Instrument Types"
-msgstr "[Īƞşŧřŭḿḗƞŧ Ŧẏƥḗş ςǲϱǲẛǲϐǲǋ衋]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/InstrumentType.xml, line: -1
 # File: ../profiles/default/types/Instruments.xml, line: -1
 msgid "Instruments"
-msgstr "[Īƞşŧřŭḿḗƞŧş ϕ靐ϱϰϰϖǈΐϕıϵ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Internal Calibration Tests"
-msgstr "[Īƞŧḗřƞȧŀ Ƈȧŀīƀřȧŧīǿƞ Ŧḗşŧş ı衋ſϖſ鶱ſ靐 ϑΐ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Invoice.xml, line: -1
 msgid "Invoice"
-msgstr "[Īƞṽǿīƈḗ ǅſϰıς靐ϰ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/InvoiceFolder.xml, line: -1
 msgid "Invoices"
-msgstr "[Īƞṽǿīƈḗş ǋϰςϱǅϐ衋靐]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/LabContact.xml, line: -1
 msgid "Lab Contact"
-msgstr "[Ŀȧƀ Ƈǿƞŧȧƈŧ ΐǅǈ ǲϕϵςϕıϵ]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/LabContacts.xml, line: -1
 msgid "Lab Contacts"
-msgstr "[Ŀȧƀ Ƈǿƞŧȧƈŧş ϖϖẛ ϐΰς靐ǲı]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 msgid "Lab Departments"
-msgstr "[Ŀȧƀ Ḓḗƥȧřŧḿḗƞŧş 鶱ϵǋ ϐ衋ΰıςΰ]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/LabProducts.xml, line: -1
 msgid "Lab Products"
-msgstr "[Ŀȧƀ Ƥřǿḓŭƈŧş ſΐϰ ǋı鶱ſϕϰ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Laboratory.xml, line: -1
 msgid "Laboratory"
-msgstr "[Ŀȧƀǿřȧŧǿřẏ ϐΰΐẛϵẛ靐ǅϱς]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 msgid "Laboratory Information"
-msgstr "[Ŀȧƀǿřȧŧǿřẏ Īƞƒǿřḿȧŧīǿƞ ϖϱǲΐςϵΰϑϑ靐]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Sample.xml, line: -1
 # File: ../profiles/default/types/SamplePartition.xml, line: -1
 msgid "Large Sticker"
-msgstr "[Ŀȧřɠḗ Şŧīƈķḗř ϰẛϕϖı 鶱衋ϱǅΰ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/AnalysisProfile.xml, line: -1
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/AnalysisService.xml, line: -1
 msgid "Log"
-msgstr "[Ŀǿɠ ςǲı]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Contact.xml, line: -1
 # File: ../profiles/default/types/LabContact.xml, line: -1
 msgid "Login details"
-msgstr "[Ŀǿɠīƞ ḓḗŧȧīŀş ǲſΰϑϰ ϱǅ靐ϵϱ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 msgid "Manage Analyses"
-msgstr "[Ḿȧƞȧɠḗ Ȧƞȧŀẏşḗş ſΐǈǲǋΰ ıϱǋ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Manage Results"
-msgstr "[Ḿȧƞȧɠḗ Řḗşŭŀŧş ΰΰϑǲϐẛ ϱΐ衋ϑϖ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Manufacturer.xml, line: -1
 msgid "Manufacturer"
-msgstr "[Ḿȧƞŭƒȧƈŧŭřḗř 靐ǋ衋ıǋς鶱ΰſϕ]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Manufacturers.xml, line: -1
 msgid "Manufacturers"
-msgstr "[Ḿȧƞŭƒȧƈŧŭřḗřş ϐẛϰǈẛϵſ鶱ςϐǲ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Method.xml, line: -1
 msgid "Method"
-msgstr "[Ḿḗŧħǿḓ ſẛϐ衋ϕϕ]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Methods.xml, line: -1
 msgid "Methods"
-msgstr "[Ḿḗŧħǿḓş ϑϐǅΐ衋ẛǈ]"
+msgstr ""
 
+#
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Orders"
-msgstr "[Ǿřḓḗřş ϑ靐ϱϱẛ鶱]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Preservation.xml, line: -1
 msgid "Preservation"
-msgstr "[Ƥřḗşḗřṽȧŧīǿƞ 靐ΐıϰ靐ǈϰϰǲϖ]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Preservations.xml, line: -1
 msgid "Preservations"
-msgstr "[Ƥřḗşḗřṽȧŧīǿƞş ϰς靐ǋϵϑϖϰϑ鶱ΐ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Pricelist.xml, line: -1
 msgid "Pricelist"
-msgstr "[Ƥřīƈḗŀīşŧ ſϑϱϖıΰϰϑǲ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/PricelistFolder.xml, line: -1
 msgid "Pricelists"
-msgstr "[Ƥřīƈḗŀīşŧş ϵΐϑ衋ϱẛǲǈǈǲ]"
+msgstr ""
 
+#
 # File: ../profiles/default/actions.xml, line: -1
 msgid "Prices"
-msgstr "[Ƥřīƈḗş 鶱ǈ鶱ſϰϐ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Invoice.xml, line: -1
 # File: ../profiles/default/types/SupplyOrder.xml, line: -1
 msgid "Print"
-msgstr "[Ƥřīƞŧ 衋ςϑı衋]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Pricelist.xml, line: -1
 msgid "Print pricelist"
-msgstr "[Ƥřīƞŧ ƥřīƈḗŀīşŧ ǈϱ靐ǅ靐 ϐϵ鶱ǅ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/ReportFolder.xml, line: -1
 msgid "Productivity"
-msgstr "[Ƥřǿḓŭƈŧīṽīŧẏ ΐıı衋ϑſǋıϵϖ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 msgid "Published results"
-msgstr "[Ƥŭƀŀīşħḗḓ řḗşŭŀŧş 衋ſϰϐſẛΐǅ靐 ſ鶱]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/ReportFolder.xml, line: -1
 msgid "Quality Control"
-msgstr "[Ɋŭȧŀīŧẏ Ƈǿƞŧřǿŀ ΐΰǲẛϱ衋ϱ ςẛ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/QueryFolder.xml, line: -1
 msgid "Queries"
-msgstr "[Ɋŭḗřīḗş ıẛϖı鶱鶱ϑ]"
+msgstr ""
 
-# File: ../profiles/default/actions.xml, line: -1
+#
 # File: ../profiles/default/types/Query.xml, line: -1
 msgid "Query"
-msgstr "[Ɋŭḗřẏ ϱ鶱ϐςϐ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/ReferenceAnalysis.xml, line: -1
 msgid "Reference Analysis"
-msgstr "[Řḗƒḗřḗƞƈḗ Ȧƞȧŀẏşīş 衋ϱϑıǋϕ鶱靐ϑ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/ReferenceDefinition.xml, line: -1
 msgid "Reference Definition"
-msgstr "[Řḗƒḗřḗƞƈḗ Ḓḗƒīƞīŧīǿƞ ςϐϰϕϱϖǅǈ衋 衋ΰ]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/ReferenceDefinitions.xml, line: -1
 msgid "Reference Definitions"
-msgstr "[Řḗƒḗřḗƞƈḗ Ḓḗƒīƞīŧīǿƞş ϱ衋ϖϕΐẛǅſ衋]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
 msgid "Reference Sample"
-msgstr "[Řḗƒḗřḗƞƈḗ Şȧḿƥŀḗ ǅǲǅϖϵϱϐǈϑ ẛ]"
+msgstr ""
 
+#
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/ReferenceSamplesFolder.xml, line: -1
 # File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Reference Samples"
-msgstr "[Řḗƒḗřḗƞƈḗ Şȧḿƥŀḗş ǅ衋ǲςϰıẛϱϑ ΰǈ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
 msgid "Reference Values"
-msgstr "[Řḗƒḗřḗƞƈḗ Ṽȧŀŭḗş ǋ衋衋ϐϐϵǋǅ鶱 ΐ]"
+msgstr ""
 
+#
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/Report.xml, line: -1
 msgid "Report"
-msgstr "[Řḗƥǿřŧ ǈǲıϱſẛ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/ReportFolder.xml, line: -1
 msgid "Reports"
-msgstr "[Řḗƥǿřŧş ẛǈ衋ẛΐǅẛ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 msgid "Results not requested"
-msgstr "[Řḗşŭŀŧş ƞǿŧ řḗɋŭḗşŧḗḓ ϕΰ衋鶱ΰǋǋ ϑǅ]"
+msgstr ""
 
+#
+# File: ../profiles/default/types/SRTemplate.xml, line: -1
+msgid "SR Template"
+msgstr ""
+
+#
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/SRTemplates.xml, line: -1
+msgid "SR Templates"
+msgstr ""
+
+#
 # File: ../profiles/default/types/Sample.xml, line: -1
 msgid "Sample"
-msgstr "[Şȧḿƥŀḗ ϱſſςϐϰ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/SampleCondition.xml, line: -1
 msgid "Sample Condition"
-msgstr "[Şȧḿƥŀḗ Ƈǿƞḓīŧīǿƞ ſϑǲ鶱靐ϐ ϖϵ靐ϱ]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/SampleConditions.xml, line: -1
 msgid "Sample Conditions"
-msgstr "[Şȧḿƥŀḗ Ƈǿƞḓīŧīǿƞş ϖǲ衋ǈϑǅ ı靐ǅϱ靐]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/SampleMatrices.xml, line: -1
 msgid "Sample Matrices"
-msgstr "[Şȧḿƥŀḗ Ḿȧŧřīƈḗş ΐǅςϱϕ鶱 衋ΰǅ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/SampleMatrix.xml, line: -1
 msgid "Sample Matrix"
-msgstr "[Şȧḿƥŀḗ Ḿȧŧřīẋ ǅϕϵẛϰ衋 衋ǋϐϑ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/SamplePartition.xml, line: -1
 msgid "Sample Partition"
-msgstr "[Şȧḿƥŀḗ Ƥȧřŧīŧīǿƞ ϵ衋衋鶱ǈς ſǅΰı]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Sample.xml, line: -1
 msgid "Sample Partitions"
-msgstr "[Şȧḿƥŀḗ Ƥȧřŧīŧīǿƞş 鶱ϵΐϱϐϵ 鶱ϱϑϱ鶱]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/SamplePoint.xml, line: -1
 msgid "Sample Point"
-msgstr "[Şȧḿƥŀḗ Ƥǿīƞŧ ΰςϰ靐ſ衋 ςẛ靐]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/SamplePoints.xml, line: -1
 msgid "Sample Points"
-msgstr "[Şȧḿƥŀḗ Ƥǿīƞŧş ſıϑǋẛϑ ẛΰ鶱鶱]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/SampleType.xml, line: -1
 msgid "Sample Type"
-msgstr "[Şȧḿƥŀḗ Ŧẏƥḗ ẛǅıſϑϱ ıẛıǋ]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/SampleTypes.xml, line: -1
 msgid "Sample Types"
-msgstr "[Şȧḿƥŀḗ Ŧẏƥḗş ẛǲ靐ǲϰ衋 ΐ衋靐]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "SamplePoints"
-msgstr "[ŞȧḿƥŀḗƤǿīƞŧş ϖςǲ鶱ıǋǈ鶱ϵϱ]"
+msgstr ""
 
+#
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/Batch.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Samples"
-msgstr "[Şȧḿƥŀḗş ϱǈ衋ΐΐϕ衋]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/SamplesFolder.xml, line: -1
 msgid "SamplesFolder"
-msgstr "[ŞȧḿƥŀḗşƑǿŀḓḗř ẛϑϰǅϰςϑϖς鶱ΰ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/SamplingDeviation.xml, line: -1
 msgid "Sampling Deviation"
-msgstr "[Şȧḿƥŀīƞɠ Ḓḗṽīȧŧīǿƞ ẛǲϰǲıſϖ靐 ϵ]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/SamplingDeviations.xml, line: -1
 msgid "Sampling Deviations"
-msgstr "[Şȧḿƥŀīƞɠ Ḓḗṽīȧŧīǿƞş ϕϰϰϕǋϱǲẛ ẛΐ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Schedule"
-msgstr "[Şƈħḗḓŭŀḗ ẛϕǲẛǋςǈǋ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/AnalysisRequest.xml, line: -1
 # File: ../profiles/default/types/Sample.xml, line: -1
 # File: ../profiles/default/types/SamplePartition.xml, line: -1
 msgid "Small Sticker"
-msgstr "[Şḿȧŀŀ Şŧīƈķḗř 鶱ıẛǅ衋 ϐẛϐǋϖ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
 msgid "Sticker"
-msgstr "[Şŧīƈķḗř ϑςϵΐϖϕǲ]"
+msgstr ""
 
+#
+# File: ../profiles/default/types/StorageLocation.xml, line: -1
+msgid "Storage Location"
+msgstr ""
+
+#
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/StorageLocations.xml, line: -1
+msgid "Storage Locations"
+msgstr ""
+
+#
 # File: ../profiles/default/types/Supplier.xml, line: -1
 msgid "Supplier"
-msgstr "[Şŭƥƥŀīḗř ǋſǈϕǲẛǲ衋]"
+msgstr ""
 
+#
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/Suppliers.xml, line: -1
 msgid "Suppliers"
-msgstr "[Şŭƥƥŀīḗřş ΰςǋϱϕϑǈϑ鶱]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/SupplyOrder.xml, line: -1
 msgid "Supply Order"
-msgstr "[Şŭƥƥŀẏ Ǿřḓḗř ǋϰϑẛǋǋ ǲ衋ǲ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/SupplyOrderFolder.xml, line: -1
 msgid "Supply Orders"
-msgstr "[Şŭƥƥŀẏ Ǿřḓḗřş ǅǋıǅϑ鶱 ıΰϱϖ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Instrument.xml, line: -1
 msgid "Validations"
-msgstr "[Ṽȧŀīḓȧŧīǿƞş ϕıẛſΰςςǈϰı鶱]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/Worksheet.xml, line: -1
 msgid "Worksheet"
-msgstr "[Ẇǿřķşħḗḗŧ ǋΐ衋ǅ靐ςſϑϕ]"
+msgstr ""
 
+#
 # File: ../profiles/default/types/WorksheetTemplate.xml, line: -1
 msgid "Worksheet Template"
-msgstr "[Ẇǿřķşħḗḗŧ Ŧḗḿƥŀȧŧḗ ΰıΐϱς衋ϱǅı]"
+msgstr ""
 
+#
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/WorksheetTemplates.xml, line: -1
 msgid "Worksheet Templates"
-msgstr "[Ẇǿřķşħḗḗŧ Ŧḗḿƥŀȧŧḗş ǲϕǈ靐衋ϰϕΐǲ ϖ]"
+msgstr ""
 
+#
 # File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/WorksheetFolder.xml, line: -1
 msgid "Worksheets"
-msgstr "[Ẇǿřķşħḗḗŧş 衋ıǈϕΰǈϕſϕϱ]"
+msgstr ""
+
+#
+# File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml, line: -1
+#. Default: "Activate"
+msgid "activate_transition_title"
+msgstr "Activate"
+
+#
+# File: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml, line: -1
+#. Default: "Assign"
+msgid "assign_transition_title"
+msgstr "Assign"
+
+#
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml, line: -1
+#. Default: "Add attachment"
+msgid "attach_transition_title"
+msgstr "Add attachment"
+
+#
+# File: ../profiles/default/workflows/bika_cancellation_workflow/definition.xml, line: -1
+#. Default: "Cancel"
+msgid "cancel_transition_title"
+msgstr "Cancel"
+
+#
+# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml, line: -1
+#. Default: "Close"
+msgid "close_transition_title"
+msgstr "Close"
+
+#
+# File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml, line: -1
+#. Default: "Deactivate"
+msgid "deactivate_transition_title"
+msgstr "Deactivate"
+
+#
+# File: ../profiles/default/workflows/bika_order_workflow/definition.xml, line: -1
+#. Default: "Dispatch order"
+msgid "dispatch_transition_title"
+msgstr "Dispatch order"
+
+#
+# File: ../profiles/default/workflows/bika_referencesample_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml, line: -1
+#. Default: "Dispose"
+msgid "dispose_transition_title"
+msgstr "Dispose"
+
+#
+#. Default: "Duplicate"
+msgid "duplicate_transition_title"
+msgstr "Duplicate"
+
+#
+# File: ../profiles/default/workflows/bika_referencesample_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml, line: -1
+#. Default: "Expire"
+msgid "expire_transition_title"
+msgstr "Expire"
+
+#
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml, line: -1
+#. Default: "Import"
+msgid "import_transition_title"
+msgstr "Import"
+
+#
+# This is for the "retract_ar" transition, to invalidate a published AR.
+#. Default: "Invalidate"
+msgid "invalidate_transition_title"
+msgstr "Invalidate"
+
+#
+msgid "label_schema_AR Templates"
+msgstr "AR Templates"
+
+#
+msgid "label_schema_Accounting"
+msgstr "Accounting"
+
+#
+msgid "label_schema_Address"
+msgstr "Address"
+
+#
+msgid "label_schema_Analyses"
+msgstr "Analyses"
+
+#
+msgid "label_schema_Bank details"
+msgstr "Bank details"
+
+#
+msgid "label_schema_Calculation"
+msgstr "Calculation"
+
+#
+msgid "label_schema_Container and Preservation"
+msgstr "Container and Preservation"
+
+#
+msgid "label_schema_Dates"
+msgstr "Dates"
+
+#
+msgid "label_schema_Description"
+msgstr "Description"
+
+#
+msgid "label_schema_Email Telephone Fax"
+msgstr "Email Telephone Fax"
+
+#
+msgid "label_schema_ID Server"
+msgstr "ID Server"
+
+#
+msgid "label_schema_Labels"
+msgstr "Labels"
+
+#
+msgid "label_schema_Layout"
+msgstr "Layout"
+
+#
+msgid "label_schema_Location"
+msgstr "Location"
+
+#
+msgid "label_schema_Method"
+msgstr "Method"
+
+#
+msgid "label_schema_Preferences"
+msgstr "Preferences"
+
+#
+msgid "label_schema_Publication preference"
+msgstr "Publication preference"
+
+#
+msgid "label_schema_Reference Values"
+msgstr "Reference Values"
+
+#
+msgid "label_schema_Result Options"
+msgstr "Result Options"
+
+#
+msgid "label_schema_Results Reports"
+msgstr "Results Reports"
+
+#
+msgid "label_schema_Sample Partitions"
+msgstr "Sample Partitions"
+
+#
+msgid "label_schema_Security"
+msgstr "Security"
+
+#
+msgid "label_schema_Uncertainties"
+msgstr "Uncertainties"
+
+#
+# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml, line: -1
+#. Default: "Open"
+msgid "open_transition_title"
+msgstr "Open"
+
+#
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line: -1
+#. Default: "Prepublish"
+msgid "prepublish_transition_title"
+msgstr "Prepublish"
+
+#
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml, line: -1
+#. Default: "Preserve"
+msgid "preserve_transition_title"
+msgstr "Preserve"
+
+#
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line: -1
+#. Default: "Publish"
+msgid "publish_transition_title"
+msgstr "Publish"
+
+#
+#. Default: "Reassign"
+msgid "reassign_transition_title"
+msgstr "Reassign"
+
+#
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml, line: -1
+#. Default: "Receive sample"
+msgid "receive_transition_title"
+msgstr "Receive sample"
+
+#
+# File: ../profiles/default/workflows/bika_cancellation_workflow/definition.xml, line: -1
+#. Default: "Reinstate"
+msgid "reinstate_transition_title"
+msgstr "Reinstate"
+
+#
+# File: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml, line: -1
+#. Default: "Reject"
+msgid "reject_transition_title"
+msgstr "Reject"
+
+#
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line: -1
+#. Default: "Republish"
+msgid "republish_transition_title"
+msgstr "Republish"
+
+#
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml, line: -1
+#. Default: "Retract"
+msgid "retract_transition_title"
+msgstr "Retract"
+
+#
+# File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml, line: -1
+#. Default: "Retract worksheet"
+msgid "retract_worksheet_transition_title"
+msgstr "Retract worksheet"
+
+#
+# This is for the "revert" transition, which is meant to look like a
+# "retract".
+#. Default: "Retract"
+msgid "revert_transition_title"
+msgstr "Retract"
+
+#
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_sample_worflow/definition.xml, line: -1
+#. Default: "Sample"
+msgid "sample_transition_title"
+msgstr "Sample"
+
+#
+#. Default: "Save analyses"
+msgid "save_analyses_button_transition_title"
+msgstr "Save analyses"
+
+#
+#. Default: "Save partitions"
+msgid "save_partitions_button_transition_title"
+msgstr "Save partitions"
+
+#
+#. Default: "Save selection"
+msgid "save_selection_button_transition_title"
+msgstr "Save selection"
+
+#
+# File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml, line: -1
+#. Default: "Submit ARImport"
+msgid "submit_arimport_transition_title"
+msgstr "Submit ARImport"
+
+#
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml, line: -1
+#. Default: "Submit for verification"
+msgid "submit_transition_title"
+msgstr "Submit for verification"
+
+#
+# File: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml, line: -1
+#. Default: "Remove"
+msgid "unassign_transition_title"
+msgstr "Remove"
+
+#
+# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line: -1
+# File: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml, line: -1
+#. Default: "Verify"
+msgid "verify_transition_title"
+msgstr "Verify"
+
