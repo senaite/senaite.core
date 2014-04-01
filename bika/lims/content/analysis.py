@@ -598,4 +598,31 @@ class Analysis(BaseContent):
             precision = ''
         return str("%%.%sf" % precision) % result
 
+    def getAnalyst(self):
+        """ Returns the identifier of the assigned analyst. If there is
+            no analyst assigned, and this analysis is attached to a
+            worksheet, retrieves the analyst assigned to the parent
+            worksheet
+        """
+        field = self.getField('Analyst')
+        analyst = field and field.get(self) or ''
+        if not analyst:
+            # Is assigned to a worksheet?
+            wss = self.getBackReferences('WorksheetAnalysis')
+            if len(wss) > 0:
+                analyst = wss[0].getAnalyst()
+                field.set(self, analyst)
+        return analyst if analyst else ''
+
+    def getAnalystName(self):
+        """ Returns the name of the currently assigned analyst
+        """
+        mtool = getToolByName(self, 'portal_membership')
+        analyst = self.getAnalyst().strip()
+        analyst_member = mtool.getMemberById(analyst)
+        if analyst_member != None:
+            return analyst_member.getProperty('fullname')
+        else:
+            return ''
+
 atapi.registerType(Analysis, PROJECTNAME)

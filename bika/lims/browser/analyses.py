@@ -61,18 +61,15 @@ class AnalysesView(BikaListingView):
             'Method': {
                 'title': _('Method'),
                 'sortable': False,
-                'toggle': True,
-                'type':'choices'},
+                'toggle': True},
             'Instrument': {
                 'title': _('Instrument'),
                 'sortable': False,
-                'toggle': True,
-                'type':'choices'},
+                'toggle': True},
             'Analyst': {
                 'title': _('Analyst'),
                 'sortable': False,
-                'toggle': True,
-                'type':'choices'},
+                'toggle': True},
             'state_title': {
                 'title': _('Status'),
                 'sortable': False},
@@ -329,6 +326,7 @@ class AnalysesView(BikaListingView):
         self.interim_fields = {}
         self.interim_columns = {}
         self.specs = {}
+        show_methodinstr_columns = False
         for i, item in enumerate(items):
             # self.contentsMethod may return brains or objects.
             obj = hasattr(items[i]['obj'], 'getObject') and \
@@ -435,10 +433,6 @@ class AnalysesView(BikaListingView):
                             else:
                                 self.specs[st_uid] = {client_or_lab: {keyword: results_range}}
 
-            Analyst = obj.getAnalyst()
-            items[i]['Analyst'] = Analyst
-            item['choices']['Analyst'] = self.getAnalysts()
-
             if checkPermission(ManageBika, self.context):
                 service_uid = service.UID()
                 latest = rc.lookupObject(service_uid).version_id
@@ -508,14 +502,20 @@ class AnalysesView(BikaListingView):
                         else service.getMethod()
             if can_set_method:
                 item['Method'] = method.UID() if method else ''
-                item['choices']['Method'] = self.get_methods_vocabulary(obj)
-                item['allow_edit'].append('Method')
+                voc = self.get_methods_vocabulary(obj)
+                # Show the dropbox only if at least one method available
+                if voc:
+                    item['choices']['Method'] = voc
+                    item['allow_edit'].append('Method')
+                    show_methodinstr_columns = True
             elif method:
                 item['Method'] = method.Title()
                 item['replace']['Method'] = "<a href='%s'>%s</a>" % \
                         (method.absolute_url(), method.Title())
+                show_methodinstr_columns = True
             else:
                 item['Method'] = ''
+                item['replace']['Method'] = ''
 
             # TODO: Instrument selector dynamic behavior in worksheet Results
             # Only the labmanager must be able to change the instrument to be used. Also,
@@ -527,17 +527,27 @@ class AnalysesView(BikaListingView):
             instrument = obj.getInstrument() if hasattr(obj, 'getInstrument') else None
             if service.getInstrumentEntryOfResults() == False:
                 item['Instrument'] = ''
-                item['replace']['Instrument'] = _("Manual entry")
+                item['replace']['Instrument'] = ''
             elif can_set_instrument:
                 item['Instrument'] = instrument.UID() if instrument else ''
                 item['choices']['Instrument'] = self.get_instruments_vocabulary(obj)
                 item['allow_edit'].append('Instrument')
+                show_methodinstr_columns = True
             elif instrument:
                 item['Instrument'] = instrument.Title()
                 item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
                         (instrument.absolute_url(), instrument.Title())
+                show_methodinstr_columns = True
             else:
                 item['Instrument'] = ''
+                item['replace']['Instrument'] = ''
+
+            # Sets the analyst assigned to this analysis
+            if can_edit_analysis:
+                items[i]['Analyst'] = obj.getAnalyst()
+                item['choices']['Analyst'] = self.getAnalysts()
+            else:
+                items[i]['Analyst'] = obj.getAnalystName()
 
             # If the user can attach files to analyses, show the attachment col
             can_add_attachment = \
@@ -787,6 +797,13 @@ class AnalysesView(BikaListingView):
         # self.json_specs = json.dumps(self.specs)
         self.json_interim_fields = json.dumps(self.interim_fields)
         self.items = items
+
+        # Method and Instrument columns must be shown or hidden at the
+        # same time, because the value assigned to one causes
+        # a value reassignment to the other (one method can be performed
+        # by different instruments)
+        self.columns['Method']['toggle'] = show_methodinstr_columns
+        self.columns['Instrument']['toggle'] = show_methodinstr_columns
 
         return items
 
