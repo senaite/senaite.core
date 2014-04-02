@@ -1262,6 +1262,9 @@ $(document).ready(function() {
 	// var y = curDate.getFullYear();
 	// var limitString = "1900:" + y;
 	// var dateFormat = _("date_format_short_datepicker");
+	// if (dateFormat == 'date_format_short_datepicker'){
+	// 	dateFormat = 'yy-mm-dd';
+	// }
 
 	ar_rename_elements();
 	ar_referencewidget_lookups();
