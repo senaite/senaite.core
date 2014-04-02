@@ -2733,6 +2733,8 @@ class WidgetVisibility(_WV):
                 'Composite',
                 'InvoiceExclude'
                 'SampleCondition',
+                'SamplePoint',
+                'SampleType',
                 'SamplingDate',
                 'SamplingDeviation',
                 'Priority',
@@ -2747,9 +2749,7 @@ class WidgetVisibility(_WV):
                 'ReportDryMatter',
                 'Specification',
                 'Sample',
-                'SamplePoint',
                 'StorageLocation',
-                'SampleType',
                 'Template',
             ]
         elif state in ('sample_received', ):
@@ -2762,6 +2762,8 @@ class WidgetVisibility(_WV):
                 'ClientOrderNumber',
                 'ClientReference',
                 'ClientSampleID',
+                'SampleType',
+                'SamplePoint',
                 'InvoiceExclude',
             ]
             ret['view']['visible'] = [
@@ -2776,10 +2778,8 @@ class WidgetVisibility(_WV):
                 'ReportDryMatter',
                 'Sample',
                 'SampleCondition',
-                'SampleType',
                 'Specification',
                 'SamplingDate',
-                'SamplePoint',
                 'StorageLocation',
                 'SamplingDeviation',
                 'Priority',
