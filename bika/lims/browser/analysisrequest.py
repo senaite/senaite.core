@@ -2964,7 +2964,7 @@ class PriorityIcons(object):
             result['msg'] = priority.Title()
             icon = priority.getSmallIcon()
             if icon:
-                result['icon'] = icon.absolute_url()
+                result['icon'] = '/'.join(icon.getPhysicalPath())
 
             return {self.context.UID(): [result]}
         return {}
