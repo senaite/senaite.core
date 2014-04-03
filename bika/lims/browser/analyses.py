@@ -498,7 +498,8 @@ class AnalysesView(BikaListingView):
             # can_set_method = getSecurityManager().checkPermission(SetAnalysisMethod, obj)
             can_set_method = can_edit_analysis \
                 and item['review_state'] in allowed_method_states
-            method = obj.getMethod() if hasattr(obj, 'getMethod') \
+            method = obj.getMethod() \
+                        if hasattr(obj, 'getMethod') and obj.getMethod() \
                         else service.getMethod()
             if can_set_method:
                 item['Method'] = method.UID() if method else ''

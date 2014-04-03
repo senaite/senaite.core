@@ -490,6 +490,14 @@ class Analysis(BaseContent):
         return self.getInstrument().isValid() \
                 if self.getInstrument() else True
 
+    def getDefaultInstrument(self):
+        """ Returns the default instrument for this analysis according
+            to its parent analysis service
+        """
+        return self.getService().getInstrument() \
+            if self.getService().getInstrumentEntryOfResults() \
+            else None
+
     def isInstrumentAllowed(self, instrument):
         """ Checks if the specified instrument can be set for this
             analysis, according to the Method and Analysis Service.
@@ -539,6 +547,15 @@ class Analysis(BaseContent):
                     return True
 
         return False
+
+    def getDefaultMethod(self):
+        """ Returns the default method for this Analysis
+            according to its current instrument. If the Analysis hasn't
+            set yet an Instrument, looks to the Service
+        """
+        instr = self.getInstrument() \
+            if self.getInstrument else self.getDefaultInstrument()
+        return instr.getMethod() if instr else None
 
     def getFormattedResult(self):
         """Formatted result:

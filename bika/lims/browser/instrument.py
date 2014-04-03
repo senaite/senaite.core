@@ -401,7 +401,7 @@ class InstrumentReferenceAnalysesView(AnalysesView):
 
     def folderitems(self):
         items = AnalysesView.folderitems(self)
-        items.sort(key=itemgetter('CaptureDate'), reverse=False)
+        items.sort(key=itemgetter('CaptureDate'), reverse=True)
         for i in range(len(items)):
             obj = items[i]['obj']
             imgtype = ""
@@ -481,8 +481,6 @@ class InstrumentReferenceAnalysesView(AnalysesView):
                 except:
                     pass
 
-        # Show the latest Results
-        items.reverse()
         return items
 
     def get_analyses_json(self):
