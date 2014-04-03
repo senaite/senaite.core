@@ -336,6 +336,7 @@ def createPdf(htmlreport, outfile=None, css=None):
         htmlfile = open(htmlfilepath, 'w')
         htmlfile.write(htmlreport)
         htmlfile.close()
+    return open(outfile, 'r').read();
 
 def attachPdf(mimemultipart, pdfreport, filename=None):
     part = MIMEBase('application', "application/pdf")
