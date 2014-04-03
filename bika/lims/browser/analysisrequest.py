@@ -2423,7 +2423,7 @@ class AnalysisRequestPublishedResults(BikaListingView):
         responsible of that publication, the emails of the addressees (and/or)
         client contact names with the publication mode used (pdf, email, etc.)
     """
-    implements(IViewView)
+    # implements(IViewView)
 
     def __init__(self, context, request):
         super(AnalysisRequestPublishedResults, self).__init__(context, request)

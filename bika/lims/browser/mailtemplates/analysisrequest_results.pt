@@ -183,7 +183,7 @@
                     </tal:email>
                 </td>
             </tr>
-            <tr tal:condition="python: view.batch['obj'] is not None and batch['obj'].getBatchLabels">
+            <tr tal:condition="python: view.batch['obj'] is not None and view.batch['obj'].getBatchLabels">
                 <td class="label" i18n:translate="">Batch Labels</td>
                 <td tal:define="value python:view.batch['obj'].get('getBatchLabels', []);"
                     tal:content="structure python:', '.join(view.get_titles_for_uids(*value))"></td>

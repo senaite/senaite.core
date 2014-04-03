@@ -147,7 +147,7 @@ class doPublish(BrowserView):
         # This for loop prints each AR individually to a PDF stored in the AR,
         # and sends whatever publication is required
         #
-        for ar in self.analysis_requests:
+        for ar_nr, ar in enumerate(self.analysis_requests):
             ### AR attributes
             self.ar = {
                 'obj': ar,
@@ -157,9 +157,8 @@ class doPublish(BrowserView):
             batch = ar.getBatch()
             self.batch = {
                 'obj': batch,
-                'getClientBatchID': batch.getClientBatchID(),
+                'getClientBatchID': to_utf8(batch.getClientBatchID()),
                 'getBatchLabels': batch.getBatchLabels(),
-
             } if batch else {'obj': None}
 
             ### Sample attributes
@@ -195,7 +194,7 @@ class doPublish(BrowserView):
                 'getPhone': to_utf8(client.getPhone()),
                 'getFax': to_utf8(client.getFax()),
                 'address': to_utf8(client_address),
-                }
+            }
 
             self.Footer = to_utf8(self.context.bika_setup.getResultFooter())
 
