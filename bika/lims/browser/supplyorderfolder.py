@@ -5,10 +5,11 @@ from zope.interface import implements
 
 
 class SupplyOrderFolderView(BikaListingView):
+
     implements(IViewView)
 
     def __init__(self, context, request):
-        super(BikaListingView, self).__init__(context, request)
+        super(SupplyOrderFolderView, self).__init__(context, request)
         self.contentFilter = {'portal_type': 'SupplyOrder',
                               'sort_on': 'sortable_title',
                               'sort_order': 'reverse'}
