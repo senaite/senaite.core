@@ -19,6 +19,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zExceptions import Forbidden
+from operator import itemgetter
 
 import plone
 import json
@@ -395,12 +396,12 @@ class InstrumentReferenceAnalysesView(AnalysesView):
         analyses = self.context.getReferenceAnalyses()
         asuids = [an.UID() for an in analyses]
         self.catalog = 'bika_analysis_catalog'
-        self.contentFilter = {'UID': asuids,
-                              'sort_on': 'getResultCaptureDate'}
+        self.contentFilter = {'UID': asuids}
         self.anjson = {}
 
     def folderitems(self):
         items = AnalysesView.folderitems(self)
+        items.sort(key=itemgetter('CaptureDate'), reverse=False)
         for i in range(len(items)):
             obj = items[i]['obj']
             imgtype = ""
