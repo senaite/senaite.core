@@ -160,7 +160,7 @@ schema = BikaSchema.copy() + Schema((
         expression = 'context.aq_parent.getSample().getDateSampled()',
     ),
     ComputedField('InstrumentValid',
-        expression = 'context.isInstrumentInvalid()'
+        expression = 'context.isInstrumentValid()'
     ),
 ),
 )
