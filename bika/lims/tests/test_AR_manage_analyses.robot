@@ -1,8 +1,7 @@
 *** Settings ***
 
-Library          Selenium2Library  timeout=10  implicit_wait=0.2
+Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
-Library  Remote  ${PLONE_URL}/RobotRemote
 Resource         keywords.txt
 Variables        plone/app/testing/interfaces.py
 Suite Setup      Start browser
@@ -16,6 +15,7 @@ ${PLONEURL}             http://localhost:55001/plone
 *** Test Cases ***
 
 Test Manage Analyses
+    Log in     test_labmanager    test_labmanager
     Create AnalysisRequests
     H2O-0001-R01 state should be sample_due
     Set Selenium Timeout        300
@@ -40,9 +40,8 @@ Test Manage Analyses
 *** Keywords ***
 
 Start browser
-    Log in                      test_labmanager  test_labmanager
-    Set selenium speed   ${SELENIUM_SPEED}
-    Open browser         http://localhost:55001/plone/login
+    Open browser                http://localhost:55001/plone
+    Set selenium speed          ${SELENIUM_SPEED}
 
 Create AnalysisRequests
     [Documentation]     Add and receive some ARs.

@@ -1,7 +1,6 @@
 *** Settings ***
 
 Library                 Selenium2Library  timeout=2  implicit_wait=0.2
-Library  Remote  ${PLONE_URL}/RobotRemote
 Resource                keywords.txt
 Variables               plone/app/testing/interfaces.py
 Suite Setup             Start browser
@@ -23,11 +22,11 @@ Create two different ARs from the same sample.
 *** Keywords ***
 
 Start browser
-    Log in                      test_labmanager  test_labmanager
-    Set selenium speed   ${SELENIUM_SPEED}
-    Open browser         ${PLONEURL}/clients
+    Open browser                ${PLONEURL}/login
+    Set selenium speed          ${SELENIUM_SPEED}
 
 Create AR
+    Log in                      test_labmanager  test_labmanager
     @{time} =                   Get Time        year month day hour min sec
     Go to                       ${PLONEURL}/clients/client-1
     Wait until page contains element    css=body.portaltype-client
@@ -51,6 +50,7 @@ Create AR
 
 
 Create Secondary AR
+    Log in                      test_labmanager  test_labmanager
     @{time} =                   Get Time        year month day hour min sec
     Go to                       ${PLONEURL}/clients/client-1
     Wait until page contains element    css=body.portaltype-client
@@ -69,6 +69,7 @@ Create Secondary AR
 
 
 In a client context, only allow selecting samples from that client.
+    Log in                      test_labmanager  test_labmanager
     @{time} =                   Get Time        year month day hour min sec
     Go to                       ${PLONEURL}/clients/client-2
     Wait until page contains element    css=body.portaltype-client

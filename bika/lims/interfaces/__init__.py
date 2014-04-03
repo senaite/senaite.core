@@ -354,6 +354,14 @@ class ISupplyOrderFolder(Interface):
     ""
 
 
+class ISubGroups(Interface):
+    """Sub-groups configuration folder"""
+
+
+class ISubGroup(Interface):
+    """Sub-Group"""
+
+
 class IPreservations(Interface):
 
     ""

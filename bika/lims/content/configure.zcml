@@ -6,6 +6,8 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="bika">
 
+    <adapter name="BatchDate" factory=".batch.BatchDate" />
+
     <subscriber
       for="bika.lims.interfaces.IPricelist
            zope.lifecycleevent.interfaces.IObjectModifiedEvent"

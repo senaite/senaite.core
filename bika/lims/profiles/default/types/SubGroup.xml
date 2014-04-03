@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<object name="SubGroup"
+        meta_type="Factory-based Type Information with dynamic views"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        i18n:domain="plone">
+ <property name="title" i18n:translate="">Sub-group</property>
+ <property name="description"></property>
+ <property name="content_icon">++resource++bika.lims.images/batch.png</property>
+ <property name="content_meta_type">SubGroup</property>
+ <property name="product">bika.lims</property>
+ <property name="factory">addSubGroup</property>
+ <property name="add_view_expr"></property>
+ <property name="link_target"></property>
+ <property name="global_allow">False</property>
+ <property name="filter_content_types">False</property>
+ <property name="allowed_content_types"/>
+ <property name="allow_discussion">False</property>
+ <property name="default_view_fallback">False</property>
+
+ <alias from="(Default)" to="base_edit"/>
+ <alias from="view" to="base_edit"/>
+ <alias from="edit" to="base_edit"/>
+
+ <action title="View"
+         action_id="view"
+         category="object"
+         condition_expr=""
+         url_expr="string:${object_url}"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="False">
+  <permission value="View"/>
+ </action>
+
+ <action title="Edit"
+         action_id="edit"
+         category="object"
+         condition_expr=""
+         url_expr="string:${object_url}/edit"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="False">
+  <permission value="Modify portal content"/>
+ </action>
+
+</object>

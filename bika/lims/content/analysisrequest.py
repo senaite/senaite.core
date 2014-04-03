@@ -195,6 +195,34 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
+    ReferenceField(
+        'SubGroup',
+        required=False,
+        allowed_types=('SubGroup',),
+        referenceClass = HoldingReference,
+        relationship = 'AnalysisRequestSubGroup',
+        widget=ReferenceWidget(
+            label=_('Sub-group'),
+            size=20,
+            render_own_label=True,
+            visible={'edit': 'visible',
+                     'view': 'visible',
+                     'add': 'visible'},
+            catalog_name='bika_setup_catalog',
+            colModel=[
+                {'columnName': 'Title', 'width': '30',
+                 'label': _('Title'), 'align': 'left'},
+                {'columnName': 'Description', 'width': '70',
+                 'label': _('Description'), 'align': 'left'},
+                {'columnName': 'SortKey', 'hidden': True},
+                {'columnName': 'UID', 'hidden': True},
+            ],
+            base_query={'inactive_state': 'active'},
+            sidx='SortKey',
+            sord='asc',
+            showOn=True,
+        ),
+    ),
     ComputedField(
         'BatchUID',
         expression='context.getBatch() and context.getBatch().UID() or None',
@@ -873,7 +901,7 @@ class AnalysisRequest(BaseFolder):
                 return
 
         logging.error('Priority: no default priority found')
-        return 
+        return
 
     security.declareProtected(View, 'getResponsible')
     def getResponsible(self):

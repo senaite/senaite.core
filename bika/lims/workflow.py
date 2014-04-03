@@ -37,20 +37,23 @@ def doActionFor(instance, action_id):
         try:
             workflow.doActionFor(instance, action_id)
             actionperformed = True
-        except WorkflowException, e:
+        except WorkflowException as e:
             message = str(e)
             pass
     return actionperformed, message
 
 
-def default(self, state_info):
-    # Delegate to action on instance
-    action_id = state_info['transition'].getId()
-    prefix = 'workflow_script_'
-    method_id = prefix + action_id
-    method = getattr(state_info['object'], method_id, None)
-    if method is not None:
-        method(state_info)
+def AfterTransitionEventHandler(instance, event):
+    """This will run the workflow_script_* on any
+    content type that has one.
+    """
+    # creation doesn't have a 'transition'
+    if not event.transition:
+        return
+    key = 'workflow_script_' + event.transition.id
+    method = getattr(instance, key, False)
+    if method:
+        method(instance)
 
 
 def getCurrentState(obj, stateflowid):

@@ -213,6 +213,14 @@
     />
 
     <browser:page
+      for="bika.lims.interfaces.ISubGroups"
+      name="folder_view"
+      class=".bika_subgroups.SubGroupsView"
+      permission="bika.lims.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
       for="bika.lims.interfaces.ISuppliers"
       name="folder_view"
       class=".bika_suppliers.SuppliersView"

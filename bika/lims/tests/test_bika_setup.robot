@@ -1,8 +1,7 @@
 *** Settings ***
 
-Library          Selenium2Library  timeout=10  implicit_wait=0.2
+Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
-Library  Remote  ${PLONE_URL}/RobotRemote
 Resource         keywords.txt
 Variables        plone/app/testing/interfaces.py
 Suite Setup      Start browser
@@ -462,8 +461,6 @@ Repetitive Bika Setup stuff
     # Select From List  DataInterface:list
     # Input Text  DataInterfaceOptions-Key-0  Data Interface Options Key
     # Input Text  DataInterfaceOptions-Value-0  Data Interface Options Value
-    Click Button  Save
-    sleep  0.5
 
     Click link  Procedures
     Wait Until Page Contains Element  InlabCalibrationProcedure
@@ -549,10 +546,24 @@ Repetitive Bika Setup stuff
 
     Click link                          Method
     Wait Until Page Contains Element    Instrument
-    Select From dropdown                Method                           Titration
-    Select From dropdown                Instrument                       Blott Titrator
-    Select From dropdown                Calculation                      Titration
-    Wait until page contains element    InterimFields-title-2            # 0=tv,1=tf,2=blank
+
+    # when instrument is selected method is disabled - instrument sets it.
+    select checkbox                     InstrumentEntryOfResults
+    select from list                    Instruments    AA 1   AA 2   Blott Titrator
+    select from list                    Instrument     AA 1
+    Run keyword and expect error        ValueError: Option 'Fiastar' not in list 'Instrument'.    select from list   Instrument   Fiastar
+    element should be disabled          _Method
+
+    # Now remove instrument and set method fields manually
+    unselect checkbox                   InstrumentEntryOfResults
+    select from list                    Methods    12 dB SINAD   AES   ELISA
+    Run keyword and expect error        ValueError: Option 'Elution' not in list '_Method'.    Select from list   _Method   Elution
+    select from list                    _Method    AES
+
+    # Set calculation fields manually
+    unselect checkbox                   UseDefaultCalculation
+    Select From list                    DeferredCalculation              Titration
+    Wait until page contains element    InterimFields-title-2
     Input Text                          InterimFields-keyword-2          Other
     Input Text                          InterimFields-title-2            Other Field Title
     Input Text                          InterimFields-value-2            22
@@ -589,6 +600,7 @@ Repetitive Bika Setup stuff
 
     Click Button                        Save
     Wait Until Page Contains            Changes saved.
+
 
 # AnalysisProfiles
     Go to    ${PLONEURL}/bika_setup/bika_analysisprofiles
@@ -742,9 +754,10 @@ Repetitive Bika Setup stuff
 *** Keywords ***
 
 Start browser
+    Open browser                http://localhost:55001/plone
+    Set selenium speed          ${SELENIUM_SPEED}
     Log in                      test_labmanager  test_labmanager
-    Set selenium speed  ${SELENIUM_SPEED}
-    Open browser        ${PLONEURL}/bika_setup/edit
+    go to                       ${PLONEURL}/bika_setup/edit
     Click link  Analyses
     Select Checkbox  SamplingWorkflowEnabled
     Click Button  Save

@@ -185,6 +185,21 @@ class WorksheetImporter:
             return brains[0].getObject()
 
 
+class Sub_Groups(WorksheetImporter):
+
+    def Import(self):
+        folder = self.context.bika_setup.bika_subgroups
+        for row in self.get_rows(3):
+            if 'title' in row and row['title']:
+                _id = folder.invokeFactory('SubGroup', id=tmpID())
+                obj = folder[_id]
+                obj.edit(title=row['title'],
+                         description=row['description'],
+                         SortKey=row['SortKey'])
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
+
+
 class Lab_Information(WorksheetImporter):
 
     def Import(self):

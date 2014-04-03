@@ -37,6 +37,7 @@ class BatchFolderContentsView(BikaListingView):
         self.columns = {
             'BatchID': {'title': _('Batch ID')},
             'Description': {'title': _('Description')},
+            'BatchDate': {'title': _('Date')},
             'state_title': {'title': _('State'), 'sortable': False},
         }
 
@@ -47,6 +48,7 @@ class BatchFolderContentsView(BikaListingView):
              'title': _('Open'),
              'transitions': [{'id':'close'},{'id':'cancel'}],
              'columns':['BatchID',
+                        'BatchDate',
                         'Description',
                         'state_title', ]
              },
@@ -56,6 +58,7 @@ class BatchFolderContentsView(BikaListingView):
              'title': _('Closed'),
              'transitions': [{'id':'open'}],
              'columns':['BatchID',
+                        'BatchDate',
                         'Description',
                         'state_title', ]
              },
@@ -64,6 +67,7 @@ class BatchFolderContentsView(BikaListingView):
              'transitions': [{'id':'reinstate'}],
              'contentFilter': {'cancellation_state': 'cancelled'},
              'columns':['BatchID',
+                        'BatchDate',
                         'Description',
                         'state_title', ]
              },
@@ -72,6 +76,7 @@ class BatchFolderContentsView(BikaListingView):
              'transitions': [],
              'contentFilter':{},
              'columns':['BatchID',
+                        'BatchDate',
                         'Description',
                         'state_title', ]
              },
@@ -100,6 +105,12 @@ class BatchFolderContentsView(BikaListingView):
             bid = obj.getBatchID()
             items[x]['BatchID'] = bid
             items[x]['replace']['BatchID'] = "<a href='%s/%s'>%s</a>" % (items[x]['url'], 'analysisrequests', bid)
+
+            date = obj.Schema().getField('BatchDate').get(obj)
+            if callable(date):
+                date = date()
+            items[x]['BatchDate'] = date
+            items[x]['replace']['BatchDate'] = self.ulocalized_time(date)
 
         return items
 

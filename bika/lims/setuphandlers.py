@@ -88,6 +88,7 @@ class BikaGenerator:
                        'bika_sampletypes',
                        'bika_srtemplates',
                        'bika_storagelocations',
+                       'bika_subgroups',
                        'bika_suppliers',
                        'bika_referencedefinitions',
                        'bika_worksheettemplates'):
@@ -198,6 +199,7 @@ class BikaGenerator:
         mp(AddStorageLocation, ['Manager', 'Owner', 'LabManager', ], 1)
         mp(AddSamplingDeviation, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddSRTemplate, ['Manager', 'Owner', 'LabManager'], 0)
+        mp(AddSubGroup, ['Manager', 'LabManager', 'LabClerk'], 0)
         mp(AddQuery, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 0)
 
         mp(permissions.AddPortalContent, ['Manager', 'Owner', 'LabManager'], 1)
@@ -583,6 +585,7 @@ class BikaGenerator:
         addIndex(bc, 'getAnalyst', 'FieldIndex')
         addIndex(bc, 'getAnalysts', 'KeywordIndex')
         addIndex(bc, 'getBatchUID', 'FieldIndex')
+        addIndex(bc, 'BatchDate', 'DateIndex')
         addIndex(bc, 'getClientOrderNumber', 'FieldIndex')
         addIndex(bc, 'getClientReference', 'FieldIndex')
         addIndex(bc, 'getClientSampleID', 'FieldIndex')
@@ -684,6 +687,7 @@ class BikaGenerator:
         at.setCatalogsByType('Preservation', ['bika_setup_catalog', ])
         at.setCatalogsByType('ReferenceDefinition', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('SRTemplate', ['bika_setup_catalog', 'portal_catalog'])
+        at.setCatalogsByType('SubGroup', ['bika_setup_catalog', ])
         at.setCatalogsByType('Supplier', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('Unit', ['bika_setup_catalog', ])
         at.setCatalogsByType('WorksheetTemplate', ['bika_setup_catalog', 'portal_catalog'])

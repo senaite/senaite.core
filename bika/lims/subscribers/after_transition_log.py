@@ -20,7 +20,7 @@ def AfterTransitionEventHandler(instance, event):
         return
 
     if not skip(instance, event.transition.id, peek=True):
-        logger.info("Started transition %s on %s" %
+        logger.debug("Started transition %s on %s" %
                     (event.transition.id, instance))
 ##    else:
 ##        logger.info("Ignored transition %s on %s" %

@@ -12,19 +12,6 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 import transaction
 import zope.event
 
-def AfterTransitionEventHandler(instance, event):
-
-    if instance.portal_type != "ARImport":
-        print 'How does this happen'
-        return
-
-    # creation doesn't have a 'transition'
-    if not event.transition:
-        return
-
-    if event.transition.id == 'submit':
-        instance.workflow_script_submit()
-    
 
 def ARImportModifiedEventHandler(instance, event):
 
