@@ -291,4 +291,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Remove persistent broken line-items"
+        description=""
+        source="3027"
+        destination="3028"
+        handler="bika.lims.upgrade.to3028.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
