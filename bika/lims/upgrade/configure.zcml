@@ -282,4 +282,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Hide broken queries"
+        description=""
+        source="3026"
+        destination="3027"
+        handler="bika.lims.upgrade.to3027.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
