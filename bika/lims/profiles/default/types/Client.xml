@@ -170,7 +170,7 @@
          link_target=""
          url_expr="string:${object_url}/attachments"
          i18n:attributes="title"
-         visible="True">
+         visible="False">
   <permission value="View"/>
  </action>
 

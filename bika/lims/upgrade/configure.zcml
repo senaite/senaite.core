@@ -272,4 +272,14 @@
         handler="bika.lims.upgrade.to3025.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Hide Attachments from client views"
+        description=""
+        source="3025"
+        destination="3026"
+        handler="bika.lims.upgrade.to3026.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
