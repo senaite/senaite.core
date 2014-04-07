@@ -900,7 +900,8 @@ class AnalysisRequest(BaseFolder):
                 self.setPriority(obj)
                 return
 
-        logging.error('Priority: no default priority found')
+        # priority is not a required field.  No default means...
+        logging.info('Priority: no default priority found')
         return
 
     security.declareProtected(View, 'getResponsible')
