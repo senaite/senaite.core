@@ -160,7 +160,7 @@ $(document).ready(function(){
         data: {'_authenticator': $('input[name="_authenticator"]').val() },
         dataType: 'json'
     }).done(function(data) {
-        if (data != null) {
+        if (data['out-of-date'].length > 0 || data['qc-fail'].length > 0) {
             $('#portal-alert').remove();
             var html = "<div id='portal-alert' style='display:none'>";
             var outofdate = data['out-of-date'];
