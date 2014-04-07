@@ -62,6 +62,7 @@
 
  <action title="Add Control Reference"
          action_id="add_control"
+         category="object"
          condition_expr="python:context.portal_workflow.getInfoFor(context, 'review_state') not in ['verified', 'published']"
          icon_expr=""
          link_target=""
