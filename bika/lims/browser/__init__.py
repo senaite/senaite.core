@@ -21,8 +21,14 @@ class BrowserView(BrowserView):
     security.declarePublic('ulocalized_time')
     def ulocalized_time(self, time, long_format=None, time_only=None):
         if time:
-            return ulocalized_time(time, long_format, time_only, self.context,
-                                   'bika', self.request)
+            time_str = ulocalized_time(time, long_format, time_only, self.context,
+                                       'bika', self.request)
+
+            # no printing times if they were not specified in inputs
+            if not time_only and time_str.find("00:00:00") > -1:
+                return time_str.split("00:00:00")[0]
+            else:
+                return time_str
 
     @lazy_property
     def portal(self):
