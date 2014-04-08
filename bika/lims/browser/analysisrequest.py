@@ -2785,6 +2785,7 @@ class WidgetVisibility(_WV):
                 'SampleType',
                 'SamplePoint',
                 'InvoiceExclude',
+                'Priority',
             ]
             ret['view']['visible'] = [
                 'Contact',
@@ -2802,7 +2803,6 @@ class WidgetVisibility(_WV):
                 'SamplingDate',
                 'StorageLocation',
                 'SamplingDeviation',
-                'Priority',
                 'Template',
             ]
         # include this in to_be_verified - there may be verified analyses to
@@ -2811,6 +2811,7 @@ class WidgetVisibility(_WV):
             ret['header_table']['visible'].remove('DatePublished')
             ret['edit']['visible'] = [
                 'PublicationSpecification',
+                'Priority',
             ]
             ret['view']['visible'] = [
                 'Contact',
@@ -2836,7 +2837,6 @@ class WidgetVisibility(_WV):
                 'SampleType',
                 'SamplingDate',
                 'SamplingDeviation',
-                'Priority',
                 'Template',
             ]
         elif state in ('published', ):
