@@ -222,26 +222,28 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         # format result
         belowmin = False
         abovemax = False
-        specs = analysis.getAnalysisSpecs()
-        specs = specs.getResultsRangeDict() if specs is not None else {}
-        specs = specs.get(analysis.getKeyword(), {})
-        hidemin = specs.get('hidemin', '')
-        hidemax = specs.get('hidemax', '')
-        if Result.get('result', ''):
-            fresult = Result['result']
-            try:
-                belowmin = hidemin and fresult < float(hidemin) or False
-            except:
-                belowmin = False
-                pass
-            try:
-                abovemax = hidemax and fresult > float(hidemax) or False
-            except:
-                abovemax = False
-                pass
-        if belowmin == True:
+        # Some analyses will not have AnalysisSpecs, eg, ReferenceAnalysis
+        if hasattr(analysis, 'getAnalysisSpecs'):
+            specs = analysis.getAnalysisSpecs()
+            specs = specs.getResultsRangeDict() if specs is not None else {}
+            specs = specs.get(analysis.getKeyword(), {})
+            hidemin = specs.get('hidemin', '')
+            hidemax = specs.get('hidemax', '')
+            if Result.get('result', ''):
+                fresult = Result['result']
+                try:
+                    belowmin = hidemin and fresult < float(hidemin) or False
+                except:
+                    belowmin = False
+                    pass
+                try:
+                    abovemax = hidemax and fresult > float(hidemax) or False
+                except:
+                    abovemax = False
+                    pass
+        if belowmin is True:
             Result['formatted_result'] = '< %s' % hidemin
-        elif abovemax == True:
+        elif abovemax is True:
             Result['formatted_result'] = '> %s' % hidemax
         else:
             try:
