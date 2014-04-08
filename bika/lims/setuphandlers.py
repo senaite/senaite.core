@@ -220,7 +220,6 @@ class BikaGenerator:
         mp(ManageBika, ['Manager', 'LabManager'], 1)
         mp(ManageClients, ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(ManageLoginDetails, ['Manager', 'LabManager'], 1)
-        mp(ManageOrders, ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(ManageReference, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(ManageSuppliers, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(ManageSamples, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'RegulatoryInspector'], 1)
@@ -402,6 +401,16 @@ class BikaGenerator:
         mp(permissions.View, ['Manager', 'Member', 'Authenticated', 'Anonymous'], 1)
         mp('Access contents information', ['Manager', 'Member', 'Authenticated', 'Anonymous'], 1)
         portal.methods.reindexObject()
+
+        # /orders folder permissions
+        mp = portal.orders.manage_permission
+        mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
+        mp(ManagePricelists, ['Manager', 'LabManager', 'Owner'], 1)
+        mp(permissions.ListFolderContents, ['Member'], 1)
+        mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
+        mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
+        mp(permissions.View, ['Manager', 'LabManager'], 0)
+        portal.orders.reindexObject()
 
         # Add Analysis Services View permission to Clients
         # (allow Clients to add attachments to Analysis Services from an AR)

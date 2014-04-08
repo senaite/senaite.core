@@ -300,4 +300,12 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Fix Supply Order permissions"
+        description=""
+        source="3028"
+        destination="3029"
+        handler="bika.lims.upgrade.to3029.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
 </configure>

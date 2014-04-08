@@ -60,7 +60,6 @@ ADD_CONTENT_PERMISSIONS = {
 # Very Old permissions:
 # ---------------------
 ManageBika = 'BIKA: Manage Bika'
-ManageOrders = 'BIKA: Manage Orders'
 DispatchOrder = 'BIKA: Dispatch Order'
 ManageAnalysisRequests = 'BIKA: Manage Analysis Requests'
 ManageSamples = 'BIKA: Manage Samples'

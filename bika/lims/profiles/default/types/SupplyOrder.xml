@@ -59,7 +59,7 @@
          url_expr="string:${object_url}/print"
          i18n:attributes="title"
          visible="True">
-  <permission value="BIKA: Manage Orders"/>
+  <permission value="View"/>
  </action>
 
  <action title="Log"

@@ -97,18 +97,6 @@
 			</property>
 			<property name="visible">False</property>
 		</object>
-		<object name="orders" meta_type="CMF Action" i18n:domain="plone">
-			<property name="title" i18n:translate="">Orders</property>
-			<property name="description" i18n:translate=""/>
-			<property name="url_expr">string:$portal_url/orders</property>
-			<property name="link_target"/>
-			<property name="icon_expr"/>
-			<property name="available_expr"/>
-			<property name="permissions">
-				<element value="BIKA: Manage Orders"/>
-			</property>
-			<property name="visible">False</property>
-		</object>
 		<object name="suppliers" meta_type="CMF Action" i18n:domain="plone">
 			<property name="title" i18n:translate="">Suppliers</property>
 			<property name="description" i18n:translate=""/>
