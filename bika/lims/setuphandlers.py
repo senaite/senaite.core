@@ -402,15 +402,15 @@ class BikaGenerator:
         mp('Access contents information', ['Manager', 'Member', 'Authenticated', 'Anonymous'], 1)
         portal.methods.reindexObject()
 
-        # /orders folder permissions
-        mp = portal.orders.manage_permission
+        # /supplyorders folder permissions
+        mp = portal.supplyorders.manage_permission
         mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
         mp(ManagePricelists, ['Manager', 'LabManager', 'Owner'], 1)
         mp(permissions.ListFolderContents, ['Member'], 1)
         mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
         mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
         mp(permissions.View, ['Manager', 'LabManager'], 0)
-        portal.orders.reindexObject()
+        portal.supplyorders.reindexObject()
 
         # Add Analysis Services View permission to Clients
         # (allow Clients to add attachments to Analysis Services from an AR)

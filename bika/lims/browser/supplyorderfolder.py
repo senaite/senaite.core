@@ -23,7 +23,7 @@ class SupplyOrderFolderView(BikaListingView):
         self.pagesize = 25
         self.form_id = "orders"
 
-        self.icon = self.portal_url + "/++resource++bika.lims.images/order_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/supplyorder_big.png"
         self.title = _("Orders")
 
         self.columns = {
