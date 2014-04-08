@@ -12,6 +12,9 @@ from bika.lims.browser.header_table import HeaderTableView
 from bika.lims.browser.log import LogView
 from bika.lims.browser.publish import doPublish
 from bika.lims.browser.sample import SamplePartitionsView
+from bika.lims.jsonapi import get_include_fields
+from bika.lims.jsonapi import load_brain_metadata
+from bika.lims.jsonapi import load_field_values
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.config import VERIFIED_STATES
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
@@ -2898,13 +2901,15 @@ class JSONReadExtender(object):
 
     def ar_analysis_values(self):
         ret = []
-        workflow = getToolByName(self.context, 'portal_workflow')
         analyses = self.context.getAnalyses(cancellation_state='active')
+
         for proxy in analyses:
             analysis = proxy.getObject()
             service = analysis.getService()
             if proxy.review_state == 'retracted':
+                # these are scraped up when Retested analyses are found below.
                 continue
+
             # things that are manually inserted into the analysis.
             method = analysis.getMethod()
             if not method:
@@ -2914,29 +2919,13 @@ class JSONReadExtender(object):
                 "Method": method.Title() if method else '',
                 "specification": analysis.specification if hasattr(analysis, "specification") else {},
             })
+
             # Place all proxy attributes into the result.
-            for index in proxy.indexes():
-                if index in proxy:
-                    val = getattr(proxy, index)
-                    if val != Missing.Value:
-                        try:
-                            json.dumps(val)
-                        except:
-                            continue
-                        ret[-1][index] = val
-            # Then schema field values
-            schema = analysis.Schema()
-            for field in schema.fields():
-                accessor = field.getAccessor(analysis)
-                if accessor and callable(accessor):
-                    val = accessor()
-                    if hasattr(val, 'Title') and callable(val.Title):
-                        val = val.Title()
-                    try:
-                        json.dumps(val)
-                    except:
-                        val = str(val)
-                    ret[-1][field.getName()] = val
+            ret[-1].update(load_brain_metadata(proxy, self.include_fields))
+
+            # Place all schema fields ino the result.
+            ret[-1].update(load_field_values(analysis, self.include_fields))
+
             if analysis.getRetested():
                 retracted = self.context.getAnalyses(review_state='retracted',
                                             title=analysis.Title(),
@@ -2949,17 +2938,12 @@ class JSONReadExtender(object):
                 ret[-1]['Previous Results'] = prevs
         return ret
 
-    def __call__(self, request, obj_data):
-        ret = obj_data.copy()
-        include_fields = []
-        if "include_fields" in request:
-            include_fields = [x.strip() for x in request.get("include_fields", "").split(",")
-                              if x.strip()]
-        if "include_fields[]" in request:
-            include_fields = request['include_fields[]']
-        if not include_fields or "Analyses" in include_fields:
-            ret['Analyses'] = self.ar_analysis_values()
-        return ret
+    def __call__(self, request, data):
+        self.include_fields = get_include_fields(request)
+        if not self.include_fields or "Analyses" in self.include_fields:
+            data['Analyses'] = self.ar_analysis_values()
+        return data
+
 
 class PriorityIcons(object):
 

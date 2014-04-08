@@ -463,7 +463,8 @@ class IJSONReadExtender(Interface):
 
     def __call__(obj_data):
         """obj_data is the current python dictionary that will go to json.
-        it should be returned complete with modifications."""
+        it should be modified in place, there is no need to return a value.
+        """
 
 class ISetupDataImporter(Interface):
 
