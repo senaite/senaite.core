@@ -99,12 +99,6 @@
            Products.DCWorkflow.interfaces.IAfterTransitionEvent"
       handler="bika.lims.subscribers.analysisservice.AfterTransitionEventHandler"
     />
-    <!-- Workflow action to prevent inappropriate re-activation of Calculations -->
-    <subscriber
-      for="bika.lims.interfaces.ICalculation
-           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
-      handler="bika.lims.subscribers.calculation.AfterTransitionEventHandler"
-    />
 
     <subscriber
         for="bika.lims.interfaces.IARImport
