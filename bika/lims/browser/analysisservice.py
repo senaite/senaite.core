@@ -192,21 +192,17 @@ class JSONReadExtender(object):
         }
         return ret
 
-    def __call__(self, request, obj_data):
-        ret = obj_data.copy()
-
+    def __call__(self, request, data):
         calc = self.context.getCalculation()
         if calc:
             services = [self.service_info(service) for service
                 in calc.getCalculationDependencies(flat=True)
                 if service.UID() != self.context.UID()]
-            ret["ServiceDependencies"] = services
+            data["ServiceDependencies"] = services
             services = [self.service_info(service) for service
                 in calc.getCalculationDependants()
                 if service.UID() != self.context.UID()]
-            ret["ServiceDependants"] = services
+            data["ServiceDependants"] = services
         else:
-            ret["ServiceDependencies"] = []
-            ret["ServiceDependants"] = []
-
-        return ret
+            data["ServiceDependencies"] = []
+            data["ServiceDependants"] = []
