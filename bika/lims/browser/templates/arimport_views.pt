@@ -12,82 +12,98 @@
      tal:define="
         wtool context/portal_workflow;
         review_state python:wtool.getInfoFor(context, 'review_state', '');
-        left_col python:review_state == 'submitted' and 6 or 5;
-        right_col python:review_state == 'submitted' and 8 or 7">
+        left_col python:1;
+        right_col python:6">
     <table
         summary="ARImport view"
-        class="arimport"
-        cellpadding="0" cellspacing="0">
+        class="header_table"
+        style="width:100%;">
 
-        <thead>
+     <tbody>
 
-        <tr>
-            <th i18n:translate="label_clientname">Client</th>
-            <td class="left" tal:attributes="colspan python:left_col"
-                tal:content="context/getClientTitle">This Client</td>
-            <th i18n:translate="label_clientid">Client ID</th>
+        <tr class="odd">
+            <td i18n:translate="label_clientname" 
+                tal:attributes="colspan python:left_col">Client</td>
             <td class="left" tal:attributes="colspan python:right_col"
+                tal:content="context/getClientTitle">This Client</td>
+            <td i18n:translate="label_clientid"
+                tal:attributes="colspan python:left_col">Client ID</td>
+            <td tal:attributes="colspan python:right_col"
                 tal:content="context/ClientID">SmithTT</td>
         </tr>
-        <tr tal:define="contact context/getContact | nothing;">
-            <th i18n:translate="label_contact">Contact Name</th>
-            <td class="left" tal:attributes="colspan python:left_col">
+        <tr class="even" tal:define="contact context/getContact | nothing;">
+            <td i18n:translate="label_contact"
+                tal:attributes="colspan python:left_col"> Contact Name</td>
+            <td class="left" tal:attributes="colspan python:right_col">
                 <span tal:condition="contact"
                       tal:content="contact/Title">JonesJJ</span>
             </td>
-            <th i18n:translate="label_contactid">Contact ID</th>
-            <td class="left" tal:attributes="colspan python:right_col"
+            <td i18n:translate="label_contactid"
+                tal:attributes="colspan python:left_col">Contact ID</td>
+            <td class="right" tal:attributes="colspan python:right_col"
                 tal:content="context/getContactID">JonesJJ</td>
         </tr>
 
-        <tr tal:define="cccontact context/getCCContact | nothing;">
+        <tr class="odd" tal:define="cccontact context/getCCContact | nothing;">
             <tal:cccontact_found tal:condition="cccontact">
-                <th i18n:translate="label_cc">CC</th>
-                <td class="left" tal:attributes="colspan python:left_col"
+                <td i18n:translate="label_cc"
+                tal:attributes="colspan python:left_col">CC</td>
+                <td class="left" tal:attributes="colspan python:right_col"
                     tal:content="cccontact/Title">jonesba</td>
             </tal:cccontact_found>
             <tal:cccontact_not_found tal:condition="not:cccontact">
-                <th i18n:translate="label_cccontactid">CC Contact ID</th>
-                <td class="left" tal:attributes="colspan python:left_col"
+                <td i18n:translate="label_cccontactid"
+                tal:attributes="colspan python:left_col">CC Contact ID</td>
+                <td class="left" tal:attributes="colspan python:right_col"
                     tal:content="context/getCCContactID">JonesJJ</td>
             </tal:cccontact_not_found>
-            <th i18n:translate="label_blank"></th>
+            <td i18n:translate="label_blank"
+                tal:attributes="colspan python:left_col"></td>
             <td class="left"  tal:attributes="colspan python:right_col"></td>
         </tr>
 
-        <tr>
-            <th i18n:translate="label_ccemails">CC Emails - Report</th>
-            <td class="left" tal:attributes="colspan python:left_col" 
+        <tr class="even">
+            <td i18n:translate="label_ccemails"
+                tal:attributes="colspan python:left_col">CC Emails - Report</td>
+            <td class="left" tal:attributes="colspan python:right_col" 
                 tal:content="context/getCCEmailsReport">x@y.com</td>
-            <th i18n:translate="label_CCNamesReport">CC Names - Report</th>
+            <td i18n:translate="label_CCNamesReport"
+                tal:attributes="colspan python:left_col">CC Names - Report</td>
             <td class="left"  tal:attributes="colspan python:right_col"
                 tal:content="context/getCCNamesReport">Mike</td>
         </tr>
 
-        <tr>
-            <th i18n:translate="label_CCEmailsInvoice">CC Emails - Invoice</th>
-            <td class="left"  tal:attributes="colspan python:left_col"
+        <tr class="odd">
+            <td i18n:translate="label_CCEmailsInvoice"
+                tal:attributes="colspan python:left_col">CC Emails - Invoice</td>
+            <td class="left"  tal:attributes="colspan python:right_col"
                 tal:content="context/getCCEmailsInvoice">123</td>
-            <th i18n:translate="label_blank"></th>
+            <td i18n:translate="label_blank"
+                tal:attributes="colspan python:left_col" ></td>
             <td class="left"  tal:attributes="colspan python:right_col"></td>
         </tr>
 
-        <tr>
-            <th i18n:translate="label_OrderID">Order</th>
-            <td class="left"  tal:attributes="colspan python:left_col"
+        <tr class="even">
+            <td i18n:translate="label_OrderID"
+                tal:attributes="colspan python:left_col"> Order</td>
+            <td class="left"  tal:attributes="colspan python:right_col"
                 tal:content="context/getOrderID">123</td>
-            <th i18n:translate="label_ClientReference">Client Reference</th>
+            <td i18n:translate="label_ClientReference"
+                tal:attributes="colspan python:left_col">
+            Client Reference</td>
             <td class="left"  tal:attributes="colspan python:right_col"
                 tal:content="context/getQuoteID">123</td>
         </tr>
 
-        <tr>
-            <th i18n:translate="label_filename">File name</th>
-            <td class="left" tal:attributes="colspan python:left_col">
+        <tr class="odd">
+            <td i18n:translate="label_filename"
+                tal:attributes="colspan python:left_col" >File name</td>
+            <td class="left" tal:attributes="colspan python:right_col">
                 <span tal:content="context/getFileName | nothing">AR-001</span>
                 <a tal:attributes="href string:${context/absolute_url}/at_download/OriginalFile" > Download ...</a>
             </td>
-            <th i18n:translate="label_status">Status</th>
+            <td i18n:translate="label_status"
+                tal:attributes="colspan python:left_col" >Status</td>
             <td class="left"  tal:attributes="colspan python:right_col"
                 tal:define="status python:context.getStatus() and 'Valid' or 'Invalid'">
                 <span tal:content="status">Valid</span>
@@ -96,30 +112,40 @@
             </td>
         </tr>
 
-        <tr tal:define="date_applied view/getDateApplied">
-            <th i18n:translate="label_dateimported">Date imported</th>
-            <td class="left"  tal:attributes="colspan python:left_col"
+        <tr class="even" tal:define="date_applied view/getDateApplied">
+            <td i18n:translate="label_dateimported"
+                tal:attributes="colspan python:left_col">Date imported</td>
+            <td class="left"  tal:attributes="colspan python:right_col"
                 tal:content="view/getDateImported">2005-01-01 10:00</td>
-            <th> 
-            <span i18n:translate="label_dateapplied"
-                tal:condition="date_applied">Date applied</span>
-            </th>
+            <td tal:attributes="colspan python:left_col"> 
+                <span i18n:translate="label_dateapplied"
+                    tal:condition="date_applied">Date applied</span>
+                <span i18n:translate="label_dateapplied"
+                    tal:condition="not:date_applied"></span>
+            </td>
             <td class="left"
                 tal:attributes="colspan python:right_col">
-            <span tal:condition="date_applied"
-                tal:content="date_applied" >2005-01-01 10:00</span>
+                <span tal:condition="date_applied"
+                    tal:content="date_applied" >2005-01-01 10:00</span>
             </td>
         </tr>
-        <tr>
-            <th i18n:translate="label_samplepoint">Sample Point</th>
-            <td class="left"  tal:attributes="colspan python:left_col"
+        <tr class="odd">
+            <td i18n:translate="label_samplepoint"
+                tal:attributes="colspan python:left_col">Sample Point</td>
+            <td class="left"  tal:attributes="colspan python:right_col"
                 tal:content="context/getSamplePoint">This sample point</td>
-            <th i18n:translate="label_blank"></th>
-            <td class="left"  tal:attributes="colspan python:left_col"></td>
+            <td i18n:translate="label_blank"
+                tal:attributes="colspan python:left_col"></td>
+            <td class="left"  tal:attributes="colspan python:right_col"></td>
         </tr>
-      </thead>
-      <tbody tal:define="arimport python:context;
-                         classic python:context.getImportOption()=='c'">
+      </tbody>
+    </table>
+
+    <table class="bika-listing-table"
+           style="margin-top:1em"
+           tal:define="arimport python:context;
+                       classic python:context.getImportOption()=='c'">
+      <thead>
         <tr>
             <th class="center" i18n:translate="label_samplename">Sample</th>
             <tal:submitted
@@ -134,23 +160,27 @@
             <th class="center" i18n:translate="label_containertype">Container Type</th>
             <th class="center" i18n:translate="label_report_dry_matter">Report as DM</th>
             <th class="center" i18n:translate="label_priority">Priority</th>
-            <th class="center" i18n:translate="label_orderid">Order ID</th>
             <th class="center" tal:condition="classic" 
                 i18n:translate="label_analyses">Analyses</th>
             <th class="center" tal:condition="not: classic" 
                 i18n:translate="label_profile">Profile</th>
             <th class="center" i18n:translate="label_valid">Valid</th>
         </tr>
+      </thead>
+      <tbody>
         <tal:items
             tal:define="aritems python:arimport.objectValues('ARImportItem')"
             tal:repeat="aritem aritems">
-          <tr>
+          <tr tal:define="bgstyle python:'background:#FFFCA7'"
+               tal:attributes="style bgstyle">
             <td class="left"
+                tal:attributes="style bgstyle"
                 tal:condition="python:review_state == 'submitted'">
-                    <a tal:attributes="href string:${aritem/absolute_url}/base_view"
+                    <a tal:attributes="href string:${aritem/absolute_url}/base_view;"
                        tal:content="aritem/getSampleName | nothing">AR-001</a>
             </td>
             <td class="left"
+                tal:attributes="style bgstyle"
                 tal:condition="python:review_state != 'submitted'">
                     <a tal:attributes="href string:${aritem/absolute_url}/edit"
                        tal:content="aritem/Title | nothing">AR-001</a>
@@ -160,9 +190,11 @@
                             sample aritem/getSample| nothing"
                 tal:condition="python:review_state == 'submitted'">
                 <td class="left"
+                    tal:attributes="style bgstyle"
                     tal:condition="python:not ar"
                     tal:content="aritem/getSampleName">Sample 1</td>
                 <td class="left"
+                    tal:attributes="style bgstyle"
                     tal:condition="python:ar">
                     <a tal:attributes="href ar/absolute_url | nothing"
                        tal:content="ar/Title | nothing">AR-001</a>
@@ -174,16 +206,24 @@
                     </a>
                 </td>
             </tal:submitted>
-            <td tal:content="aritem/getClientRef">R1</td>
-            <td tal:content="aritem/getClientSid">S1</td>
-            <td tal:content="aritem/getSampleDate">Sampledate</td>
-            <td tal:content="aritem/getSampleType">SampleType</td>
-            <td tal:content="aritem/getPickingSlip">PickingSlip</td>
-            <td tal:content="aritem/getContainerType">PickingSlip</td>
-            <td tal:content="aritem/getReportDryMatter">ReportDM</td>
-            <td tal:content="aritem/getPriority">ReportDM</td>
-            <td tal:content="aritem/getOrderID">OrderID</td>
-            <td tal:condition="classic">
+            <td tal:attributes="style bgstyle"
+                tal:content="aritem/getClientRef">R1</td>
+            <td tal:attributes="style bgstyle"
+                tal:content="aritem/getClientSid">S1</td>
+            <td tal:attributes="style bgstyle"
+                tal:content="aritem/getSampleDate">Sampledate</td>
+            <td tal:attributes="style bgstyle"
+                tal:content="aritem/getSampleType">SampleType</td>
+            <td tal:attributes="style bgstyle"
+                tal:content="aritem/getPickingSlip">PickingSlip</td>
+            <td tal:attributes="style bgstyle"
+                tal:content="aritem/getContainerType">PickingSlip</td>
+            <td tal:attributes="style bgstyle"
+                tal:content="aritem/getReportDryMatter">ReportDM</td>
+            <td tal:attributes="style bgstyle"
+                tal:content="aritem/getPriority">ReportDM</td>
+            <td tal:attributes="style bgstyle"
+                tal:condition="classic">
               <a  onMouseover=""
                   onMouseout=""
                   tal:attributes="
@@ -203,13 +243,15 @@
                   </table>
               </div>
             </td>
-            <td tal:condition="python: not classic">
+            <td tal:attributes="style bgstyle"
+                tal:condition="python: not classic">
                 <span tal:condition="python: len(aritem.getAnalysisProfile()) == 1"
                       tal:content="python: aritem.getAnalysisProfile()[0]">Profile</span>
                 <span tal:condition="python: len(aritem.getAnalysisProfile()) != 1">Error</span>
             </td>
             <td class="left"
-                tal:define="valid python:len(aritem.getRemarks()) == 0 ">
+                tal:attributes="style bgstyle"
+                    tal:define="valid python:len(aritem.getRemarks()) == 0 ">
                 <span tal:condition="valid">Yes</span>
                 <span tal:condition="not: valid" style="color:red;">No</span>
             </td>

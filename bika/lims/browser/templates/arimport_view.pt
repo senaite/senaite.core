@@ -18,6 +18,10 @@
 
 <div metal:fill-slot="main">
 
+    <h1>
+        <span class="documentFirstHeading"
+              tal:content="here/title"></span>
+    </h1>
 
     <div tal:condition="python:view.getImportOption() in ('c', 'p')">
         <metal:block use-macro="context/arimport_views/macros/arimport_view"/>
