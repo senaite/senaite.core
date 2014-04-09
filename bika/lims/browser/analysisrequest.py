@@ -37,6 +37,7 @@ from bika.lims.utils import logged_in_client
 from bika.lims.utils import tmpID
 from bika.lims.utils import to_unicode as _u
 from bika.lims.utils import to_utf8
+from bika.lims.workflow import get_workflow_actions
 from bika.lims.vocabularies import CatalogVocabulary
 from DateTime import DateTime
 from email.mime.multipart import MIMEMultipart
@@ -2911,20 +2912,30 @@ class JSONReadExtender(object):
                 continue
 
             # things that are manually inserted into the analysis.
+            # These things will be included even if they are not present in
+            # include_fields in the request.
             method = analysis.getMethod()
             if not method:
                 method = service.getMethod()
-            ret.append({
+            analysis_data = {
                 "Uncertainty": analysis.getService().getUncertainty(analysis.getResult()),
                 "Method": method.Title() if method else '',
                 "specification": analysis.specification if hasattr(analysis, "specification") else {},
-            })
-
-            # Place all proxy attributes into the result.
-            ret[-1].update(load_brain_metadata(proxy, self.include_fields))
+            }
 
             # Place all schema fields ino the result.
-            ret[-1].update(load_field_values(analysis, self.include_fields))
+            analysis_data.update(load_brain_metadata(proxy, []))
+
+            # Place all schema fields ino the result.
+            analysis_data.update(load_field_values(analysis, []))
+
+            # # call any adapters that care to modify the Analysis data.
+            # adapters = getAdapters((analysis, ), IJSONReadExtender)
+            # for name, adapter in adapters:
+            #     adapter(request, analysis_data)
+
+            if self.include_fields and "transitions" in self.include_fields:
+                analysis_data['transitions'] = get_workflow_actions(analysis)
 
             if analysis.getRetested():
                 retracted = self.context.getAnalyses(review_state='retracted',
@@ -2935,10 +2946,12 @@ class JSONReadExtender(object):
                           'Result': p.getResult(),
                           'InterimFields': p.getInterimFields()}
                          for p in prevs]
-                ret[-1]['Previous Results'] = prevs
+                analysis_data['Previous Results'] = prevs
+            ret.append(analysis_data)
         return ret
 
     def __call__(self, request, data):
+        self.request = request
         self.include_fields = get_include_fields(request)
         if not self.include_fields or "Analyses" in self.include_fields:
             data['Analyses'] = self.ar_analysis_values()

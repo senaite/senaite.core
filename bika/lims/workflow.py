@@ -10,6 +10,7 @@ from zope.component import adapts
 from zope.interface import implements
 from bika.lims.jsonapi import get_include_fields
 
+
 def skip(instance, action, peek=False, unskip=False):
     """Returns True if the transition is to be SKIPPED
 
@@ -63,6 +64,22 @@ def AfterTransitionEventHandler(instance, event):
         method(instance)
 
 
+def get_workflow_actions(obj):
+    """ Compile a list of possible workflow transitions for this object
+    """
+
+    def translate(id):
+        translate = obj.translate
+        return to_utf8(translate(PMF(id + "_transition_title")))
+
+    workflow = getToolByName(obj, 'portal_workflow')
+    actions = [{"id": t["id"],
+                "title": translate(t["id"])}
+               for t in workflow.getTransitionsFor(obj)]
+
+    return actions
+
+
 def getCurrentState(obj, stateflowid):
     """ The current state of the object for the state flow id specified
         Return empty if there's no workflow state for the object and flow id
@@ -94,6 +111,7 @@ CancellationTransitions = enum(cancel='cancel',
 
 
 class JSONReadExtender(object):
+
     """- Adds the list of possible transitions to each object, if 'transitions'
     is specified in the include_fields.
     """
@@ -103,23 +121,7 @@ class JSONReadExtender(object):
     def __init__(self, context):
         self.context = context
 
-    def translate(self, id):
-        translate = self.context.translate
-        return to_utf8(translate(PMF(id + "_transition_title")))
-
-    def get_workflow_actions(self, obj):
-        """ Compile a list of possible workflow transitions for this object
-        """
-
-        workflow = getToolByName(self.context, 'portal_workflow')
-
-        actions = [{"id": t["id"],
-                    "title": self.translate(t["id"])}
-                   for t in workflow.getTransitionsFor(obj)]
-
-        return actions
-
     def __call__(self, request, data):
         include_fields = get_include_fields(request)
         if include_fields and "transitions" in include_fields:
-            data['transitions'] = self.get_workflow_actions(self.context)
+            data['transitions'] = get_workflow_actions(self.context)

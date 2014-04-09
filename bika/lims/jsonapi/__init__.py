@@ -74,6 +74,8 @@ def load_field_values(instance, include_fields):
                 else:
                     ret[fieldname+"_uid"] = val.UID()
                     val = val.Title()
+            if field.type == 'boolean':
+                val = True if val else False
         else:
             val = ''
         try:
