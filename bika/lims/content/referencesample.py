@@ -373,12 +373,12 @@ class ReferenceSample(BaseFolder):
         return specstr
 
     # XXX workflow methods
-    def workflow_script_expire(self, state_info):
+    def workflow_script_expire(self):
         """ expire sample """
         self.setDateExpired(DateTime())
         self.reindexObject()
 
-    def workflow_script_dispose(self, state_info):
+    def workflow_script_dispose(self):
         """ expire sample """
         self.setDateDisposed(DateTime())
         self.reindexObject()
