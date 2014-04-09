@@ -76,8 +76,6 @@ def load_field_values(instance, include_fields):
                     val = val.Title()
             if field.type == 'boolean':
                 val = True if val else False
-        else:
-            val = ''
         try:
             json.dumps(val)
         except:
