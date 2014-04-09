@@ -53,7 +53,7 @@ def AfterTransitionEventHandler(instance, event):
     key = 'workflow_script_' + event.transition.id
     method = getattr(instance, key, False)
     if method:
-        method(instance)
+        method()
 
 
 def getCurrentState(obj, stateflowid):
