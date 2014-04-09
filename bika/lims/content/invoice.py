@@ -127,7 +127,7 @@ class Invoice(BaseFolder):
         return s
 
     # XXX workflow script
-    def workflow_script_dispatch(self, state_info):
+    def workflow_script_dispatch(self):
         """ dispatch order """
         self.setDateDispatched(DateTime())
 

@@ -169,7 +169,7 @@ class SupplyOrder(BaseFolder):
             [float(obj.getTotalIncludingVAT())
              for obj in self.objectValues('SupplyOrderItem')])
 
-    def workflow_script_dispatch(self, state_info):
+    def workflow_script_dispatch(self):
         """ dispatch order """
         self.setDateDispatched(DateTime())
         self.reindexObject()

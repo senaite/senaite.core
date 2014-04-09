@@ -61,7 +61,7 @@ def AfterTransitionEventHandler(instance, event):
     key = 'workflow_script_' + event.transition.id
     method = getattr(instance, key, False)
     if method:
-        method(instance)
+        method()
 
 
 def get_workflow_actions(obj):
