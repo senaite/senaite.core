@@ -167,13 +167,23 @@ class InvoiceBatch(BaseFolder):
                 item_description = get_invoice_item_description(item)
                 l = [item.getRequestID(), item_description]
                 description = ' '.join(l)
+                lineitem['ItemDescription'] = description
+                ar_inv = item.getInvoice()
+                if ar_inv:
+                    lineitem['Subtotal'] = str(ar_inv.getSubtotal())
+                    lineitem['VATTotal'] = str(ar_inv.getVATTotal())
+                    lineitem['Total'] = str(ar_inv.getTotal())
+                else:
+                    lineitem['Subtotal'] = ""
+                    lineitem['VATTotal'] = ""
+                    lineitem['Total'] = ""
             elif item.portal_type == 'SupplyOrder':
                 lineitem['ItemDate'] = item.getDateDispatched()
                 description = item.getOrderNumber()
-            lineitem['ItemDescription'] = description
-            lineitem['Subtotal'] = '%0.2f' % item.getSubtotal()
-            lineitem['VATTotal'] = '%0.2f' % item.getVATTotal()
-            lineitem['Total'] = '%0.2f' % item.getTotal()
+                lineitem['ItemDescription'] = description
+                lineitem['Subtotal'] = '%0.2f' % item.getSubtotal()
+                lineitem['VATTotal'] = '%0.2f' % item.getVATTotal()
+                lineitem['Total'] = '%0.2f' % item.getTotal()
             invoice.invoice_lineitems.append(lineitem)
         invoice.reindexObject()
 
