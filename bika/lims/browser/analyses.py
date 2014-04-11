@@ -465,6 +465,14 @@ class AnalysesView(BikaListingView):
                   or
                   (poc != 'field' and getSecurityManager().checkPermission(EditResults, obj)) )
 
+
+            allowed_method_states = ['to_be_sampled',
+                                     'to_be_preserved',
+                                     'sample_received',
+                                     'sample_registered',
+                                     'sampled',
+                                     'assigned']
+
             # Prevent from being edited if the instrument assigned
             # is not valid (out-of-date or uncalibrated), except if
             # the analysis is a QC with assigned status
@@ -487,12 +495,6 @@ class AnalysesView(BikaListingView):
                    (items[i]['calculation'] and self.interim_fields[obj.UID()]):
                     items[i]['allow_edit'].append('retested')
 
-            allowed_method_states = ['to_be_sampled',
-                                     'to_be_preserved',
-                                     'sample_received',
-                                     'sample_registered',
-                                     'sampled',
-                                     'assigned']
 
             # TODO: Only the labmanager must be able to change the method
             # can_set_method = getSecurityManager().checkPermission(SetAnalysisMethod, obj)
