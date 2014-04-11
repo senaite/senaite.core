@@ -1091,12 +1091,12 @@ function setTemplate(column, template_title){
 					poc_cat_services[poc_title][service.CategoryUID] = [];
 				}
 				poc_cat_services[poc_title][service.CategoryUID].push(service.UID);
-	    if (analyses[i]['service_uid'] == null) {
-	        // Exclude empty objects from being processed.
-	        // Sometimes, template_data['Analyses'] returns an array with an
-	        // undefined array value.
-	        continue;
-	    }
+	    // if (analyses[i]['service_uid'] == null) {
+	    //     // Exclude empty objects from being processed.
+	    //     // Sometimes, template_data['Analyses'] returns an array with an
+	    //     // undefined array value.
+	    //     continue;
+	    // }
 			}
 			// expand categories, select, and enable controls for template services
 			for (var p in poc_cat_services) {
