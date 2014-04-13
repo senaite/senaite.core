@@ -827,10 +827,12 @@ class BikaGenerator:
     def setupTopLevelFolders(self, context):
         workflow = getToolByName(context, "portal_workflow")
         obj_id = 'arimports'
-        if obj_id not in context.objectIds():
-            #context.invokeFactory('Folder', obj_id)
+        if obj_id in context.objectIds():
             obj = context._getOb(obj_id)
-            workflow.doActionFor(obj, "hide")
+            try:
+                workflow.doActionFor(obj, "hide")
+            except:
+                pass
             obj.setLayout('@@arimports')
             alsoProvides(obj, IARImportFolder)
             alsoProvides(obj, IHaveNoBreadCrumbs)
