@@ -13,6 +13,14 @@ import re
 import transaction
 
 
+def Float(thing):
+    try:
+        f = float(thing)
+    except ValueError:
+        f = 0.0
+    return f
+
+
 class SetupDataSetList(SDL):
 
     implements(ISetupDataSetList)
@@ -1128,23 +1136,14 @@ class Analysis_Services(WorksheetImporter):
                 'hours': int(row['MaxTimeAllowed_hours'] and row['MaxTimeAllowed_hours'] or 0),
                 'minutes': int(row['MaxTimeAllowed_minutes'] and row['MaxTimeAllowed_minutes'] or 0),
             }
-            category = self.get_object(bsc, 'AnalysisCategory',
-                                       row.get('AnalysisCategory_title'))
-            department = self.get_object(bsc, 'Department',
-                                         row.get('Department_title'))
-            method = self.get_object(bsc, 'Method',
-                                     row.get('Method'))
-            instrument = self.get_object(bsc, 'Instrument',
-                                         row.get('Instrument_title'))
-            calculation = self.get_object(bsc, 'Calculation',
-                                          row.get('Calculation_title'))
-            container = self.get_object(bsc, 'Container',
-                                        row.get('Container_title'))
-            preservation = self.get_object(bsc, 'Preservation',
-                                           row.get('Preservation_title'))
-            priority = self.get_object(bsc, 'ARPriority',
-                                           row.get('Priority_title'))
-
+            category = self.get_object(bsc, 'AnalysisCategory', row.get('AnalysisCategory_title'))
+            department = self.get_object(bsc, 'Department', row.get('Department_title'))
+            method = self.get_object(bsc, 'Method', row.get('Method'))
+            instrument = self.get_object(bsc, 'Instrument', row.get('Instrument_title'))
+            calculation = self.get_object(bsc, 'Calculation', row.get('Calculation_title'))
+            container = self.get_object(bsc, 'Container', row.get('Container_title'))
+            preservation = self.get_object(bsc, 'Preservation', row.get('Preservation_title'))
+            priority = self.get_object(bsc, 'ARPriority', row.get('Priority_title'))
             obj.edit(
                 title=row['title'],
                 description=row.get('description', ''),
@@ -1157,15 +1156,13 @@ class Analysis_Services(WorksheetImporter):
                 Unit=row['Unit'] and row['Unit'] or None,
                 Precision=row['Precision'] and str(row['Precision']) or '0',
                 MaxTimeAllowed=MTA,
-                Price=row['Price'] and "%02f" % (
-                    float(row['Price'])) or "0,00",
-                BulkPrice=row['BulkPrice'] and "%02f" % (
-                    float(row['BulkPrice'])) or "0.00",
-                VAT=row['VAT'] and "%02f" % (float(row['VAT'])) or "0.00",
+                Price="%02f" % Float(row['Price']),
+                BulkPrice="%02f" % Float(row['BulkPrice']),
+                VAT="%02f" % Float(row['VAT']),
                 Method=method,
                 Instrument=instrument,
                 Calculation=calculation,
-                DuplicateVariation="%02f" % float(row['DuplicateVariation']),
+                DuplicateVariation="%02f" % Float(row['DuplicateVariation']),
                 Accredited=self.to_bool(row['Accredited']),
                 InterimFields=hasattr(self, 'service_interims') and self.service_interims.get(
                     row['title'], []) or [],
@@ -1476,8 +1473,8 @@ class Setup(WorksheetImporter):
             AutoLogOff=int(values['AutoLogOff']),
             ShowPricing=values.get('ShowPricing', True),
             Currency=values['Currency'],
-            MemberDiscount=str(float(values['MemberDiscount'])),
-            VAT=str(float(values['VAT'])),
+            MemberDiscount=str(Float(values['MemberDiscount'])),
+            VAT=str(Float(values['VAT'])),
             MinimumResults=int(values['MinimumResults']),
             BatchEmail=int(values['BatchEmail']),
             SamplingWorkflowEnabled=values['SamplingWorkflowEnabled'],
