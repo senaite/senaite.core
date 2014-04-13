@@ -56,7 +56,7 @@ class BikaGenerator:
                        'worksheets',
                        'reports',
                        'queries',
-                       'supplyorders',
+                       'arimports',
                        ):
             obj = portal._getOb(obj_id)
             obj.unmarkCreationFlag()
@@ -425,6 +425,18 @@ class BikaGenerator:
         mp('Access contents information', ['Authenticated', 'Analyst', 'Client'], 1)
         mp(permissions.View, ['Authenticated', 'Analyst', 'Client'], 1)
         portal.bika_setup.bika_attachmenttypes.reindexObject()
+
+        # /arimports folder permissions
+        mp = portal.arimports.manage_permission
+        mp(ManageARImport, ['Manager', 'LabManager', 'Owner'], 1)
+        mp(permissions.ListFolderContents, ['Member'], 1)
+        mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
+        mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
+        mp(permissions.View, ['Manager', 'LabManager'], 0)
+        portal.arimports.reindexObject()
+        # Add interfaces to simple folder
+        alsoProvides(portal.arimports, IARImportFolder)
+        alsoProvides(portal.arimports, IHaveNoBreadCrumbs)
 
     def setupVersioning(self, portal):
         portal_repository = getToolByName(portal, 'portal_repository')
@@ -840,7 +852,7 @@ def setupVarious(context):
     gen.setupGroupsAndRoles(site)
     gen.setupPortalContent(site)
     gen.setupPermissions(site)
-    gen.setupTopLevelFolders(site)
+    #gen.setupTopLevelFolders(site)
     try:
         from Products.CMFEditions.setuphandlers import DEFAULT_POLICIES
         # we're on plone < 4.1, configure versionable types manually
