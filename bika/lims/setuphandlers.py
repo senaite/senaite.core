@@ -434,9 +434,6 @@ class BikaGenerator:
         mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
         mp(permissions.View, ['Manager', 'LabManager'], 0)
         portal.arimports.reindexObject()
-        # Add interfaces to simple folder
-        alsoProvides(portal.arimports, IARImportFolder)
-        alsoProvides(portal.arimports, IHaveNoBreadCrumbs)
 
     def setupVersioning(self, portal):
         portal_repository = getToolByName(portal, 'portal_repository')
@@ -828,13 +825,12 @@ class BikaGenerator:
         addColumn(bsc, 'getVolume')
 
     def setupTopLevelFolders(self, context):
+        workflow = getToolByName(context, "portal_workflow")
         obj_id = 'arimports'
         if obj_id not in context.objectIds():
-            context.invokeFactory('Folder', obj_id)
+            #context.invokeFactory('Folder', obj_id)
             obj = context._getOb(obj_id)
-            obj.setTitle('AR Imports')
-            workflow = getToolByName(context, "portal_workflow")
-            workflow.doActionFor(obj, "publish")
+            workflow.doActionFor(obj, "hide")
             obj.setLayout('@@arimports')
             alsoProvides(obj, IARImportFolder)
             alsoProvides(obj, IHaveNoBreadCrumbs)
@@ -852,7 +848,7 @@ def setupVarious(context):
     gen.setupGroupsAndRoles(site)
     gen.setupPortalContent(site)
     gen.setupPermissions(site)
-    #gen.setupTopLevelFolders(site)
+    gen.setupTopLevelFolders(site)
     try:
         from Products.CMFEditions.setuphandlers import DEFAULT_POLICIES
         # we're on plone < 4.1, configure versionable types manually
