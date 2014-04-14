@@ -2756,6 +2756,7 @@ class WidgetVisibility(_WV):
                 'SamplePoint',
                 'SampleType',
                 'SamplingDate',
+                'StorageLocation',
                 'SamplingDeviation',
                 'Priority',
             ]
@@ -2769,7 +2770,6 @@ class WidgetVisibility(_WV):
                 'ReportDryMatter',
                 'Specification',
                 'Sample',
-                'StorageLocation',
                 'Template',
             ]
         elif state in ('sample_received', ):
@@ -2785,6 +2785,7 @@ class WidgetVisibility(_WV):
                 'ClientSampleID',
                 'SampleType',
                 'SamplePoint',
+                'StorageLocation',
                 'InvoiceExclude',
                 'Priority',
             ]
@@ -2802,7 +2803,6 @@ class WidgetVisibility(_WV):
                 'SampleCondition',
                 'Specification',
                 'SamplingDate',
-                'StorageLocation',
                 'SamplingDeviation',
                 'Template',
             ]
@@ -2812,6 +2812,7 @@ class WidgetVisibility(_WV):
             ret['header_table']['visible'].remove('DatePublished')
             ret['edit']['visible'] = [
                 'PublicationSpecification',
+                'StorageLocation',
                 'Priority',
             ]
             ret['view']['visible'] = [
@@ -2833,7 +2834,6 @@ class WidgetVisibility(_WV):
                 'Sample',
                 'SampleCondition',
                 'SamplePoint',
-                'StorageLocation',
                 'Specification',
                 'SampleType',
                 'SamplingDate',
@@ -2842,6 +2842,7 @@ class WidgetVisibility(_WV):
             ]
         elif state in ('published', ):
             ret['edit']['visible'] = [
+                'StorageLocation',
                 'PublicationSpecification',
             ]
             ret['view']['visible'] = [
@@ -2864,7 +2865,6 @@ class WidgetVisibility(_WV):
                 'Sample',
                 'SampleCondition',
                 'SamplePoint',
-                'StorageLocation',
                 'Specification',
                 'SampleType',
                 'SamplingDate',
