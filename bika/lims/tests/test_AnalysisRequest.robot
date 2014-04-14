@@ -1,18 +1,19 @@
 *** Settings ***
 
-Library                 Selenium2Library  timeout=5  implicit_wait=0.2
-Library                 Collections
-Library                 DebugLibrary
-Resource                keywords.txt
-Variables               plone/app/testing/interfaces.py
-
-Suite Setup             Start browser
-# Suite Teardown          Close All Browsers
+Library          Selenium2Library  timeout=5  implicit_wait=0.2
+Library          String
+Library          DebugLibrary
+Resource         keywords.txt
+Library          bika.lims.testing.Keywords
+Resource         plone/app/robotframework/selenium.robot
+Resource         plone/app/robotframework/saucelabs.robot
+Variables        plone/app/testing/interfaces.py
+Variables        bika/lims/tests/variables.py
+Suite Setup      Start browser
+Suite Teardown   Close All Browsers
 
 *** Variables ***
 
-${SELENIUM_SPEED}  0
-${PLONEURL}        http://localhost:55001/plone
 ${ar_factory_url}  portal_factory/AnalysisRequest/Request%20new%20analyses/ar_add
 
 *** Test Cases ***
@@ -67,7 +68,10 @@ Check that the Contact CC auto-fills correctly when a contact is selected
 # XXX field analyses
 # XXX copy across in all fields
 
-
+Create two different ARs from the same sample.
+    Create Primary AR
+    Create Secondary AR
+    In a client context, only allow selecting samples from that client.
 
 *** Keywords ***
 
@@ -77,6 +81,63 @@ Start browser
     Wait until page contains            You are now logged in
     Set selenium speed                  ${SELENIUM_SPEED}
 
+Create Primary AR
+    Log in                      test_labmanager  test_labmanager
+    @{time} =                   Get Time        year month day hour min sec
+    Go to                       ${PLONEURL}/clients/client-1
+    Wait until page contains element    css=body.portaltype-client
+    Click Link                  Add
+    Wait until page contains    Request new analyses
+    Select from dropdown        ar_0_Contact                Rita
+    Select from dropdown        ar_0_Template               Bore
+    Select Date                 ar_0_SamplingDate           @{time}[2]
+    Set Selenium Timeout        30
+    Click Button                Save
+    Set Selenium Timeout        10
+    Wait until page contains    created
+    ${ar_id} =                  Get text      //dl[contains(@class, 'portalMessage')][2]/dd
+    ${ar_id} =                  Set Variable  ${ar_id.split()[2]}
+    Go to                       http://localhost:55001/plone/clients/client-1/analysisrequests
+    Wait until page contains    ${ar_id}
+    Select checkbox             xpath=//input[@item_title="${ar_id}"]
+    Click button                xpath=//input[@value="Receive sample"]
+    Wait until page contains    saved
+    [return]                    ${ar_id}
+
+
+Create Secondary AR
+    Log in                      test_labmanager  test_labmanager
+    @{time} =                   Get Time        year month day hour min sec
+    Go to                       ${PLONEURL}/clients/client-1
+    Wait until page contains element    css=body.portaltype-client
+    Click Link                  Add
+    Wait until page contains    Request new analyses
+    Select from dropdown        ar_0_Contact                Rita
+    Select from dropdown        ar_0_Template               Bruma
+    select from dropdown        ar_0_Sample
+    Set Selenium Timeout        30
+    Click Button                Save
+    Set Selenium Timeout        2
+    Wait until page contains    created
+    ${ar_id} =                  Get text      //dl[contains(@class, 'portalMessage')][2]/dd
+    ${ar_id} =                  Set Variable  ${ar_id.split()[2]}
+    [return]                    ${ar_id}
+
+
+In a client context, only allow selecting samples from that client.
+    Log in                      test_labmanager  test_labmanager
+    @{time} =                   Get Time        year month day hour min sec
+    Go to                       ${PLONEURL}/clients/client-2
+    Wait until page contains element    css=body.portaltype-client
+    Click Link                  Add
+    Wait until page contains    Request new analyses
+    Select from dropdown        ar_0_Contact               Johanna
+    Select from dropdown        ar_0_Template              Bore    1
+    Run keyword and expect error
+    ...   ValueError: Element locator 'xpath=//div[contains(@class,'cg-colItem')][1]' did not match any elements.
+    ...   Select from dropdown        ar_0_Sample
+
+
 Complete ar_add form with template ${template}
     Wait until page contains    Request new analyses
     @{time} =                   Get Time        year month day hour min sec
@@ -84,7 +145,7 @@ Complete ar_add form with template ${template}
     Select from dropdown        ar_0_Contact       Rita
     Select from dropdown        ar_0_Priority           High
     Select from dropdown        ar_0_Template       ${template}
-    Sleep                       10s
+    Sleep                       5
     Click Button                Save
     Wait until page contains    created
     ${ar_id} =                  Get text      //dl[contains(@class, 'portalMessage')][2]/dd

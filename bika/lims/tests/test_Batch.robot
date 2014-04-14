@@ -4,6 +4,9 @@ Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
 Library          DebugLibrary
 Resource         keywords.txt
+Library          bika.lims.testing.Keywords
+Resource         plone/app/robotframework/selenium.robot
+Resource         plone/app/robotframework/saucelabs.robot
 Variables        plone/app/testing/interfaces.py
 Variables        bika/lims/tests/variables.py
 Suite Setup      Start browser
@@ -72,7 +75,6 @@ Test batch inherited ARs
     click element                       InheritedObjectsUI_more
     click element                       InheritedObjectsUI_more
     click element                       InheritedObjectsUI_more
-    sleep   30
     select from dropdown                InheritedObjectsUI-Title-0    0001
     select from dropdown                InheritedObjectsUI-Title-1    0002
     select from dropdown                InheritedObjectsUI-Title-2    0003

@@ -14,8 +14,6 @@ Suite Teardown   Close All Browsers
 
 *** Variables ***
 
-${PATH_TO_TEST} =
-${PLONEURL} =       http://localhost:55001/plone
 ${SITE} =           HAM
 ${UNIT} =           FZ1
 ${SHELF} =          S2
