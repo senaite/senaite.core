@@ -80,7 +80,7 @@ class AnalysisServicesWorkflowAction(WorkflowAction):
                     self.request.get_header("referer",
                                             self.context.absolute_url())
             else:
-                message = to__utf8(self.context.translate(
+                message = to_utf8(self.context.translate(
                     _('Analysis request ${service} was successfully created.',
                     mapping = {'service': ', '.join(created)})))
                 self.destination_url = folder[_id].absolute_url() + "/base_edit"
