@@ -13,11 +13,11 @@ def upgrade(tool):
 
     # /arimports folder permissions
     mp = portal.arimports.manage_permission
-    mp(ManageARImport, ['Manager', 'LabManager', 'Owner'], 1)
-    mp(permissions.ListFolderContents, ['Member'], 1)
-    mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
-    mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
-    mp(permissions.View, ['Manager', 'LabManager'], 0)
+    mp(ManageARImport, ['Manager', ], 1)
+    mp(permissions.ListFolderContents, ['Manager','Member',], 1)
+    mp(permissions.AddPortalContent, ['Manager', ], 0)
+    mp(permissions.DeleteObjects, ['Manager'], 0)
+    mp(permissions.View, ['Manager','Member'], 0)
     portal.arimports.reindexObject()
     try:
         workflow.doActionFor(portal.arimports, "hide")
