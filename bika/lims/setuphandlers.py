@@ -56,7 +56,7 @@ class BikaGenerator:
                        'worksheets',
                        'reports',
                        'queries',
-                       'supplyorders',
+                       'arimports',
                        ):
             obj = portal._getOb(obj_id)
             obj.unmarkCreationFlag()
@@ -425,6 +425,15 @@ class BikaGenerator:
         mp('Access contents information', ['Authenticated', 'Analyst', 'Client'], 1)
         mp(permissions.View, ['Authenticated', 'Analyst', 'Client'], 1)
         portal.bika_setup.bika_attachmenttypes.reindexObject()
+
+        # /arimports folder permissions
+        mp = portal.arimports.manage_permission
+        mp(ManageARImport, ['Manager', ], 1)
+        mp(permissions.ListFolderContents, ['Manager','Member',], 1)
+        mp(permissions.AddPortalContent, ['Manager', ], 0)
+        mp(permissions.DeleteObjects, ['Manager'], 0)
+        mp(permissions.View, ['Manager','Member'], 0)
+        portal.arimports.reindexObject()
 
     def setupVersioning(self, portal):
         portal_repository = getToolByName(portal, 'portal_repository')
@@ -816,13 +825,14 @@ class BikaGenerator:
         addColumn(bsc, 'getVolume')
 
     def setupTopLevelFolders(self, context):
+        workflow = getToolByName(context, "portal_workflow")
         obj_id = 'arimports'
-        if obj_id not in context.objectIds():
-            context.invokeFactory('Folder', obj_id)
+        if obj_id in context.objectIds():
             obj = context._getOb(obj_id)
-            obj.setTitle('AR Imports')
-            workflow = getToolByName(context, "portal_workflow")
-            workflow.doActionFor(obj, "publish")
+            try:
+                workflow.doActionFor(obj, "hide")
+            except:
+                pass
             obj.setLayout('@@arimports')
             alsoProvides(obj, IARImportFolder)
             alsoProvides(obj, IHaveNoBreadCrumbs)
