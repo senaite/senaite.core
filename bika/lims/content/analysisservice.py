@@ -297,8 +297,7 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = SelectionWidget(
             format='select',
-            label=_('Instrument'),
-            description=_("Default instrument")
+            label=_('Default Instrument')
         ),
     ),
     # Returns the Default's instrument title. If no default instrument
@@ -357,8 +356,8 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = SelectionWidget(
             format='select',
-            label=_('Method'),
-            description=_("Default method. If 'Allow instrument entry "
+            label=_('Default Method'),
+            description=_("If 'Allow instrument entry "
                           "of results' is selected, the Default method to "
                           "be used will be the method set in the "
                           "Default Instrument. Otherwise, the Method "
