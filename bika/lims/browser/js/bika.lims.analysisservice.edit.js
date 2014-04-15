@@ -24,6 +24,12 @@ function AnalysisServiceEditView() {
             loadMethods();
             loadDefaultMethod();
             loadCalculations();
+
+            if (!$(this).is(':checked')) {
+                // Unset the Instrument
+                $('#Instrument option').remove();
+                $('#Instrument').val(null);
+            }
         });
 
         $('#Instrument').live('change', function() {
@@ -79,6 +85,7 @@ function AnalysisServiceEditView() {
             // No instruments available, disable the checkbox
             $('#InstrumentEntryOfResults').prop('checked', false);
             $('#InstrumentEntryOfResults').prop('disabled', true);
+            $('#Instrument').val(null);
         }
     }
 
@@ -90,7 +97,7 @@ function AnalysisServiceEditView() {
         if ($('#InstrumentEntryOfResults').is(':checked')) {
             $('#archetypes-fieldname-Instruments').fadeIn('slow');
             if ($('#Instruments').val() == null) {
-                $('#Instruments').val($('#Instrument option').first().val());
+                //$('#Instruments').val($('#Instrument option').first().val());
             }
         } else {
             $('#archetypes-fieldname-Instruments').hide();
@@ -104,12 +111,14 @@ function AnalysisServiceEditView() {
      */
     function loadDefaultInstrument() {
         if ($('#Instrument').attr('data-default') == null) {
-            $('#Instrument').attr('data-default', $('#Instrument').val());
+            var instr = $('#Instrument').val() ? $('#Instrument').val() : '';
+            $('#Instrument').attr('data-default', instr);
         }
         if ($('#InstrumentEntryOfResults').is(':checked')) {
             // Fill the selector with the methods selected above
             $('#Instrument option').remove();
-            $.each($('#Instruments').val(), function(index, value) {
+            var insts = $('#Instruments').val() ? $('#Instruments').val() : [];
+            $.each(insts, function(index, value) {
                 var option = $('#Instruments option[value="'+value+'"]').clone();
                 $('#Instrument').append(option);
             });
@@ -119,13 +128,18 @@ function AnalysisServiceEditView() {
             var definstr = $('#Instrument').attr('data-default');
             if (definstr != '' && $('#Instrument option[value="'+definstr+'"]').length > 0) {
                 $('#Instrument').val(definstr);
+            } else if (insts.length > 0) {
+                $('#Instrument').val(insts[0]);
             } else {
-                $('#Instrument').val($('#Instruments').val()[0]);
+                $('#Instrument option').remove();
+                $('#Instrument').val(null);
             }
             $('#archetypes-fieldname-Instrument').fadeIn('slow');
         } else {
             // If no instrument selected, hide instrument selector
             $('#archetypes-fieldname-Instrument').hide();
+            $('#Instrument option').remove();
+            $('#Instrument').val(null);
         }
     }
     /**
@@ -139,7 +153,7 @@ function AnalysisServiceEditView() {
         } else {
             // Manual entry: show available methods
             if ($('#Methods').val() == null) {
-                $('#Methods').val($('#_Method option').first().val());
+                //$('#Methods').val($('#_Method option').first().val());
             }
             $('#archetypes-fieldname-Methods').fadeIn('slow');
         }
@@ -151,7 +165,8 @@ function AnalysisServiceEditView() {
      */
     function loadDefaultMethod() {
         if ($('#_Method').attr('data-default') == null) {
-            $('#_Method').attr('data-default', $('#_Method').val());
+            var meth = $('#_Method').val() ? $('#_Method').val() : '';
+            $('#_Method').attr('data-default', meth);
         }
         if ($('#TempMethod').length == 0) {
             // Add a hidden selector to allow us to manage the default
@@ -172,31 +187,38 @@ function AnalysisServiceEditView() {
             // Readonly and set default Instrument's method via ajax
             $('#_Method').prop('disabled', true);
             var instruid = $('#Instrument').val();
-            $.ajax({
-                url: window.portal_url + "/get_instrument_method",
-                type: 'POST',
-                data: {'_authenticator': $('input[name="_authenticator"]').val(),
-                       'uid': instruid },
-                dataType: 'json'
-            }).done(function(data) {
-                $('#_Method option').remove();
-                if (data != null && data['uid']) {
-                    $('#_Method').append('<option selected val="'+data['uid']+'">'+data['title']+'</option>');
-                }
-            });
+            if (instruid) {
+                $.ajax({
+                    url: window.portal_url + "/get_instrument_method",
+                    type: 'POST',
+                    data: {'_authenticator': $('input[name="_authenticator"]').val(),
+                           'uid': instruid },
+                    dataType: 'json'
+                }).done(function(data) {
+                    $('#_Method option').remove();
+                    if (data != null && data['uid']) {
+                        $('#_Method').append('<option selected val="'+data['uid']+'">'+data['title']+'</option>');
+                    }
+                });
+            } else {
+                $('#_Method').val('');
+            }
         } else {
             // Non-readonly, fill the selector with the methods selected above
             $('#_Method option').remove();
             $('#_Method').prop('disabled', false);
-            $.each($('#Methods').val(), function(index, value) {
+            var meths = $('#Methods').val() ? $('#Methods').val() : [];
+            $.each(meths, function(index, value) {
                 var option = $('#Methods option[value="'+value+'"]').clone();
                 $('#_Method').append(option);
             });
             var defmethod = $('#_Method').attr('data-default');
             if (defmethod != null && defmethod != '' && $('#_Method option[value="'+defmethod+'"]').length > 0) {
                 $('#_Method').val(defmethod);
-            } else {
+            } else if (meths.length > 0) {
                 $('#_Method').val($('#_Method option').first().val());
+            } else {
+                $('#_Method').val('');
             }
         }
     }
@@ -308,7 +330,8 @@ function AnalysisServiceEditView() {
             window.jarn.i18n.loadCatalog("bika");
             window.jarn.i18n.loadCatalog("plone");
             var _ = window.jarn.i18n.MessageFactory("bika");
-            $.each($('#Instruments').val(), function(index, value) {
+            var insts = $('#Instruments').val() ? $('#Instruments').val() : [];
+            $.each(insts, function(index, value) {
                 // Is valid?
                 var request_data = {
                     catalog_name: "uid_catalog",
@@ -330,6 +353,9 @@ function AnalysisServiceEditView() {
                     }
                 });
             });
+        } else {
+            $('#Instrument option').remove();
+            $('#Instrument').val(null);
         }
     }
 
