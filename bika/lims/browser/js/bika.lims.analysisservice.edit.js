@@ -11,6 +11,10 @@ function AnalysisServiceEditView() {
     that.load = function() {
 
         $('#Instruments').live('change', function() {
+            if ($('#Instruments').val() == null &&
+                $('#InstrumentEntryOfResults').is(':checked')) {
+                $('#InstrumentEntryOfResults').change();
+            }
             validateInstruments();
             loadDefaultInstrument();
             loadMethods();
@@ -24,12 +28,6 @@ function AnalysisServiceEditView() {
             loadMethods();
             loadDefaultMethod();
             loadCalculations();
-
-            if (!$(this).is(':checked')) {
-                // Unset the Instrument
-                $('#Instrument option').remove();
-                $('#Instrument').val(null);
-            }
         });
 
         $('#Instrument').live('change', function() {
@@ -85,7 +83,7 @@ function AnalysisServiceEditView() {
             // No instruments available, disable the checkbox
             $('#InstrumentEntryOfResults').prop('checked', false);
             $('#InstrumentEntryOfResults').prop('disabled', true);
-            $('#Instrument').val(null);
+            loadEmptyInstrument();
         }
     }
 
@@ -97,7 +95,7 @@ function AnalysisServiceEditView() {
         if ($('#InstrumentEntryOfResults').is(':checked')) {
             $('#archetypes-fieldname-Instruments').fadeIn('slow');
             if ($('#Instruments').val() == null) {
-                //$('#Instruments').val($('#Instrument option').first().val());
+                $('#Instruments').val($('#Instrument option').first().val());
             }
         } else {
             $('#archetypes-fieldname-Instruments').hide();
@@ -118,10 +116,14 @@ function AnalysisServiceEditView() {
             // Fill the selector with the methods selected above
             $('#Instrument option').remove();
             var insts = $('#Instruments').val() ? $('#Instruments').val() : [];
-            $.each(insts, function(index, value) {
-                var option = $('#Instruments option[value="'+value+'"]').clone();
-                $('#Instrument').append(option);
-            });
+            if (insts.length > 0) {
+                $.each(insts, function(index, value) {
+                    var option = $('#Instruments option[value="'+value+'"]').clone();
+                    $('#Instrument').append(option);
+                });
+            } else {
+                $('#Instrument').append('<option selected val=""></option>');
+            }
             // Show the Default Instrument selector and
             // apply the first selected instrument from the
             // multiselect field.
@@ -131,15 +133,13 @@ function AnalysisServiceEditView() {
             } else if (insts.length > 0) {
                 $('#Instrument').val(insts[0]);
             } else {
-                $('#Instrument option').remove();
-                $('#Instrument').val(null);
+                loadEmptyInstrument();
             }
             $('#archetypes-fieldname-Instrument').fadeIn('slow');
         } else {
             // If no instrument selected, hide instrument selector
             $('#archetypes-fieldname-Instrument').hide();
-            $('#Instrument option').remove();
-            $('#Instrument').val(null);
+            loadEmptyInstrument();
         }
     }
     /**
@@ -354,9 +354,13 @@ function AnalysisServiceEditView() {
                 });
             });
         } else {
-            $('#Instrument option').remove();
-            $('#Instrument').val(null);
+            loadEmptyInstrument();
         }
+    }
+
+    function loadEmptyInstrument() {
+        $('#Instrument option').remove();
+        $('#Instrument').append('<option selected val=""></option>');
     }
 
     function applyStyles() {
