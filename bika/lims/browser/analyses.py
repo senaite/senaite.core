@@ -503,14 +503,18 @@ class AnalysesView(BikaListingView):
             method = obj.getMethod() \
                         if hasattr(obj, 'getMethod') and obj.getMethod() \
                         else service.getMethod()
-            if can_set_method:
-                item['Method'] = method.UID() if method else ''
-                voc = self.get_methods_vocabulary(obj)
+            if can_set_method and method:
                 # Show the dropbox only if at least one method available
+                voc = self.get_methods_vocabulary(obj)
                 if voc:
+                    item['Method'] = method.UID() if method else ''
                     item['choices']['Method'] = voc
                     item['allow_edit'].append('Method')
-                    show_methodinstr_columns = True
+                else:
+                    item['Method'] = method.Title()
+                    item['replace']['Method'] = "<a href='%s'>%s</a>" % \
+                        (method.absolute_url(), method.Title())
+                show_methodinstr_columns = True
             elif method:
                 item['Method'] = method.Title()
                 item['replace']['Method'] = "<a href='%s'>%s</a>" % \
@@ -531,10 +535,17 @@ class AnalysesView(BikaListingView):
             if service.getInstrumentEntryOfResults() == False:
                 item['Instrument'] = ''
                 item['replace']['Instrument'] = ''
-            elif can_set_instrument:
-                item['Instrument'] = instrument.UID() if instrument else ''
-                item['choices']['Instrument'] = self.get_instruments_vocabulary(obj)
-                item['allow_edit'].append('Instrument')
+            elif can_set_instrument and instrument:
+                # Show the dropbox only if at least one instrument available
+                voc = self.get_instruments_vocabulary(obj)
+                if voc:
+                    item['Instrument'] = instrument.UID() if instrument else ''
+                    item['choices']['Instrument'] = voc
+                    item['allow_edit'].append('Instrument')
+                else:
+                    item['Instrument'] = instrument.Title()
+                    item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
+                        (instrument.absolute_url(), instrument.Title())
                 show_methodinstr_columns = True
             elif instrument:
                 item['Instrument'] = instrument.Title()
