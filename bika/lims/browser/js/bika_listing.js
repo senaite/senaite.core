@@ -154,6 +154,8 @@ $(document).ready(function(){
 		var form_id = $(form).attr('id');
 		$(form).append("<input type='hidden' name='workflow_action_id' value='"+$(this).attr('transition')+"'>");
 
+		// This submit_transition cheat fixes a bug where hitting submit caused
+		// form to be posted before ajax calculation is returned
 		if(this.id=='submit_transition'){
 			var focus = $(".ajax_calculate_focus");
 			if(focus.length > 0){
@@ -169,6 +171,13 @@ $(document).ready(function(){
 					event.preventDefault();
 				}
 			}
+		}
+
+		// An action defined with a URL will be sent there instead of through
+		// workflow
+		if (this.url !== ""){
+			event.preventDefault();
+			window.location.href = url;
 		}
 
 	});
