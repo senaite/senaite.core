@@ -753,6 +753,12 @@ class BikaListingView(BrowserView):
             actions = [a for a in actions
                        if a['id'] not in review_state['hide_transitions']]
 
+        # cheat: until workflow_action is abolished, all URLs defined in
+        # GS workflow setup will be ignored, and the default will apply.
+        # (that means, WorkflowAction-bound URL is called).
+        for i, action in enumerate(actions):
+            actions[i]['url'] = ''
+
         # if there is a review_state['some_state']['custom_actions'] attribute
         # on the BikaListingView, add these actions to the list.
         if 'custom_actions' in review_state:
