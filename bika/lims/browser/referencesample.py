@@ -58,6 +58,14 @@ class ReferenceAnalysesView(AnalysesView):
             'Category': {'title': _('Category'), 'toggle':True},
             'Service': {'title': _('Service'), 'toggle':True},
             'Worksheet': {'title': _('Worksheet'), 'toggle':True},
+            'Method': {
+                'title': _('Method'),
+                'sortable': False,
+                'toggle': True},
+            'Instrument': {
+                'title': _('Instrument'),
+                'sortable': False,
+                'toggle': True},
             'Result': {'title': _('Result'), 'toggle':True},
             'Captured': {'title': _('Captured'), 'toggle':True},
             'Uncertainty': {'title': _('+-'), 'toggle':True},
@@ -76,6 +84,8 @@ class ReferenceAnalysesView(AnalysesView):
                         'Category',
                         'Service',
                         'Worksheet',
+                        'Method',
+                        'Instrument',
                         'Result',
                         'Captured',
                         'Uncertainty',
