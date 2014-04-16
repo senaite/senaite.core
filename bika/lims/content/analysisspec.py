@@ -96,11 +96,11 @@ Schema((
         ),
     ),
 ))
-# schema['description'].schemata = 'Description'
 schema['description'].widget.visible = True
-# schema['title'].schemata = 'Description'
 schema['title'].required = True
-# schema['title'].widget.visible = False
+schema['title'].widget.description = \
+    _("To include this spec as the default for a sample type, set the "
+      "title here to the name of the sample type.")
 
 class AnalysisSpec(BaseFolder, HistoryAwareMixin):
     implements(IAnalysisSpec)
@@ -112,17 +112,6 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
-
-    def Title(self):
-        if not self.id:
-            # this won't work too early in the creation stage
-            return ''
-        if not self.title:
-            title = self.getSampleType().Title() \
-                if self.getSampleType() \
-                else self.id
-            return title
-        return self.title
 
     def contextual_title(self):
         parent = self.aq_parent
