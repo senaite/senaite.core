@@ -153,6 +153,7 @@ function AnalysisServiceEditView() {
         } else {
             // Manual entry: show available methods
             if ($('#Methods').val() == null) {
+                //loadEmptyMethod();
                 //$('#Methods').val($('#_Method option').first().val());
             }
             $('#archetypes-fieldname-Methods').fadeIn('slow');
@@ -181,6 +182,8 @@ function AnalysisServiceEditView() {
                 var option = $('#TempMethod option[value="'+defmethod+'"]').clone();
                 $('#_Method').append(option);
                 $('#_Method').val($('#_Method option').first().val());
+            } else {
+                loadEmptyMethod();
             }
         }
         if ($('#InstrumentEntryOfResults').is(':checked')) {
@@ -201,7 +204,7 @@ function AnalysisServiceEditView() {
                     }
                 });
             } else {
-                $('#_Method').val('');
+                loadEmptyMethod();
             }
         } else {
             // Non-readonly, fill the selector with the methods selected above
@@ -218,7 +221,7 @@ function AnalysisServiceEditView() {
             } else if (meths.length > 0) {
                 $('#_Method').val($('#_Method option').first().val());
             } else {
-                $('#_Method').val('');
+                loadEmptyMethod();
             }
         }
     }
@@ -361,6 +364,11 @@ function AnalysisServiceEditView() {
     function loadEmptyInstrument() {
         $('#Instrument option').remove();
         $('#Instrument').append('<option selected val=""></option>');
+    }
+
+    function loadEmptyMethod() {
+        $('#_Method option').remove();
+        $('#_Method').append('<option selected val=""></option>');
     }
 
     function applyStyles() {
