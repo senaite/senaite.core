@@ -429,7 +429,7 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = SelectionWidget(
             format='select',
-            label= _('Deferred Calculation'),
+            label= _('Alternative Calculation'),
             description = _("If required, select a calculation for the analysis here. "
                             "Calculations can be configured under the calculations item "
                             "in the LIMS set-up"),
