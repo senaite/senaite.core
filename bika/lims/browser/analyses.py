@@ -531,7 +531,18 @@ class AnalysesView(BikaListingView):
             can_set_instrument = service.getInstrumentEntryOfResults() \
                 and can_edit_analysis \
                 and item['review_state'] in allowed_method_states
-            instrument = obj.getInstrument() if hasattr(obj, 'getInstrument') else None
+            instrument = None
+            if service.getInstrumentEntryOfResults() \
+                and hasattr(obj, 'getInstrument') \
+                and obj.getInstrument():
+                    instrument = obj.getInstrument()
+            elif service.getInstrumentEntryOfResults():
+                    instrument = service.getInstrument()
+
+            if method and instrument \
+                and instrument.UID() not in method.getInstrumentUIDs():
+                instrument = None
+
             if service.getInstrumentEntryOfResults() == False:
                 item['Instrument'] = ''
                 item['replace']['Instrument'] = ''
