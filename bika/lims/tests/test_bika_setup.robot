@@ -2,15 +2,17 @@
 
 Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
+Library          DebugLibrary
 Resource         keywords.txt
+Library          bika.lims.testing.Keywords
+Resource         plone/app/robotframework/selenium.robot
+Resource         plone/app/robotframework/saucelabs.robot
 Variables        plone/app/testing/interfaces.py
+Variables        bika/lims/tests/variables.py
 Suite Setup      Start browser
 Suite Teardown   Close All Browsers
 
 *** Variables ***
-
-${SELENIUM_SPEED}  0
-${PLONEURL}        http://localhost:55001/plone
 
 *** Test Cases ***
 
@@ -601,6 +603,24 @@ Repetitive Bika Setup stuff
     Click Button                        Save
     Wait Until Page Contains            Changes saved.
 
+# Duplicate AnalysisServices
+    # first one
+    Go to                               ${PLONEURL}/bika_setup/bika_analysisservices
+    Wait Until Page Contains            Analysis Services
+    click element                       xpath=//th[@cat='Metals']
+    select checkbox                     xpath=//input[@item_title='Calcium']
+    click element                       xpath=//input[@transition='duplicate']
+    Wait until page contains            Analysis service Calcium (Copy) was successfully created.
+
+    # then multiple
+    Go to                               ${PLONEURL}/bika_setup/bika_analysisservices
+    Wait Until Page Contains            Analysis Services
+    click element                       xpath=//th[@cat='Metals']
+    select checkbox                     xpath=//input[@item_title='Copper']
+    select checkbox                     xpath=//input[@item_title='Zinc']
+    click element                       xpath=//input[@transition='duplicate']
+
+    debug
 
 # AnalysisProfiles
     Go to    ${PLONEURL}/bika_setup/bika_analysisprofiles
