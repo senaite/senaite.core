@@ -842,6 +842,7 @@ class QCAnalysesView(AnalysesView):
                                             'getReferenceAnalysesGroupID',
                                             'Partition',
                                             'Method',
+                                            'Instrument',
                                             'Result',
                                             'Uncertainty',
                                             'CaptureDate',
