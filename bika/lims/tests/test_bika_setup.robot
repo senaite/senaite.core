@@ -18,6 +18,7 @@ Suite Teardown   Close All Browsers
 
 
 Repetitive Bika Setup stuff
+
 # Update Laboratory Information
     Go to  ${PLONEURL}/bika_setup/laboratory/base_edit
     Input Text        Name            Laboratory Name
@@ -603,7 +604,7 @@ Repetitive Bika Setup stuff
     Click Button                        Save
     Wait Until Page Contains            Changes saved.
 
-    # Duplicate AnalysisServices - first fail some validation
+    # Duplicate AnalysisServices - first fail some validations
     Go to                      ${PLONEURL}/bika_setup/bika_analysisservices
     Wait Until Page Contains   Analysis Services
     click element              xpath=//th[@cat='Metals']
@@ -611,14 +612,27 @@ Repetitive Bika Setup stuff
     select checkbox            xpath=//input[@item_title='Copper']
     click element              xpath=//input[@transition='duplicate']
     Wait until page contains   Copy analysis services
-    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_title:list']     Calcium
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_title:list']     Calcium2
     input text                 xpath=//tr[@source='Calcium']//input[@name='dst_keyword:list']   CAL2
     input text                 xpath=//tr[@source='Calcium']//input[@name='dst_title:list']     Copper2
     input text                 xpath=//tr[@source='Calcium']//input[@name='dst_keyword:list']   COP2
     click button               Copy
     Wait until page contains   Validation failed
-    Page should contain        No items were created
-
+    Page should contain        No new items were created
+    Go to                      ${PLONEURL}/bika_setup/bika_analysisservices
+    Wait Until Page Contains   Analysis Services
+    click element              xpath=//th[@cat='Metals']
+    select checkbox            xpath=//input[@item_title='Calcium']
+    select checkbox            xpath=//input[@item_title='Copper']
+    click element              xpath=//input[@transition='duplicate']
+    Wait until page contains   Copy analysis services
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_title:list']     Calcium2
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_keyword:list']   CAL2
+    input text                 xpath=//tr[@source='Copper']//input[@name='dst_title:list']     Calcium2
+    input text                 xpath=//tr[@source='Copper']//input[@name='dst_keyword:list']   CAL2
+    click button               Copy
+    Wait until page contains   Validation failed
+    Page should contain        No new items were created
     # Duplicate AnalysisServices - Enter correct values
     Go to                      ${PLONEURL}/bika_setup/bika_analysisservices
     Wait Until Page Contains   Analysis Services
@@ -627,7 +641,7 @@ Repetitive Bika Setup stuff
     select checkbox            xpath=//input[@item_title='Copper']
     click element              xpath=//input[@transition='duplicate']
     Wait until page contains   Copy analysis services
-    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_title:list']     Calcium
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_title:list']     Calcium2
     input text                 xpath=//tr[@source='Calcium']//input[@name='dst_keyword:list']   CAL2
     input text                 xpath=//tr[@source='Copper']//input[@name='dst_title:list']      Copper2
     input text                 xpath=//tr[@source='Copper']//input[@name='dst_keyword:list']    COP2

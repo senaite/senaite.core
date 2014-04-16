@@ -103,6 +103,20 @@ class AnalysisServiceCopy(BrowserView):
             keywords = self.request.form.get('dst_title', [])
             self.created = []
             for i, s in enumerate(sources):
+                if not titles[i]:
+                    message = to_utf8(self.context.translate(
+                        _('Validation failed: title is required')))
+                    self.context.plone_utils.addPortalMessage(message, 'info')
+                    self.savepoint.rollback()
+                    self.created = []
+                    break
+                if not keywords[i]:
+                    message = to_utf8(self.context.translate(
+                        _('Validation failed: keyword is required')))
+                    self.context.plone_utils.addPortalMessage(message, 'info')
+                    self.savepoint.rollback()
+                    self.created = []
+                    break
                 title = self.copy_service(s, titles[i], keywords[i])
                 if title:
                     self.created.append(title)
