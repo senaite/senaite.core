@@ -603,24 +603,36 @@ Repetitive Bika Setup stuff
     Click Button                        Save
     Wait Until Page Contains            Changes saved.
 
-# Duplicate AnalysisServices
-    # first one
-    Go to                               ${PLONEURL}/bika_setup/bika_analysisservices
-    Wait Until Page Contains            Analysis Services
-    click element                       xpath=//th[@cat='Metals']
-    select checkbox                     xpath=//input[@item_title='Calcium']
-    click element                       xpath=//input[@transition='duplicate']
-    Wait until page contains            Analysis service Calcium (Copy) was successfully created.
+    # Duplicate AnalysisServices - first fail some validation
+    Go to                      ${PLONEURL}/bika_setup/bika_analysisservices
+    Wait Until Page Contains   Analysis Services
+    click element              xpath=//th[@cat='Metals']
+    select checkbox            xpath=//input[@item_title='Calcium']
+    select checkbox            xpath=//input[@item_title='Copper']
+    click element              xpath=//input[@transition='duplicate']
+    Wait until page contains   Copy analysis services
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_title:list']     Calcium
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_keyword:list']   CAL2
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_title:list']     Copper2
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_keyword:list']   COP2
+    click button               Copy
+    Wait until page contains   Validation failed
+    Page should contain        No items were created
 
-    # then multiple
-    Go to                               ${PLONEURL}/bika_setup/bika_analysisservices
-    Wait Until Page Contains            Analysis Services
-    click element                       xpath=//th[@cat='Metals']
-    select checkbox                     xpath=//input[@item_title='Copper']
-    select checkbox                     xpath=//input[@item_title='Zinc']
-    click element                       xpath=//input[@transition='duplicate']
-
-    debug
+    # Duplicate AnalysisServices - Enter correct values
+    Go to                      ${PLONEURL}/bika_setup/bika_analysisservices
+    Wait Until Page Contains   Analysis Services
+    click element              xpath=//th[@cat='Metals']
+    select checkbox            xpath=//input[@item_title='Calcium']
+    select checkbox            xpath=//input[@item_title='Copper']
+    click element              xpath=//input[@transition='duplicate']
+    Wait until page contains   Copy analysis services
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_title:list']     Calcium
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_keyword:list']   CAL2
+    input text                 xpath=//tr[@source='Copper']//input[@name='dst_title:list']      Copper2
+    input text                 xpath=//tr[@source='Copper']//input[@name='dst_keyword:list']    COP2
+    click button               Copy
+    Wait until page contains   were successfully
 
 # AnalysisProfiles
     Go to    ${PLONEURL}/bika_setup/bika_analysisprofiles

@@ -1,26 +1,21 @@
-from AccessControl.SecurityInfo import ClassSecurityInfo
-from Products.CMFCore.utils import getToolByName
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
-from Products.Archetypes.ArchetypeTool import registerType
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Five.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims.browser.bika_listing import WorkflowAction
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
-from bika.lims import bikaMessageFactory as _
-from bika.lims.content.bikaschema import BikaFolderSchema
+from bika.lims.idserver import renameAfterCreation
+from bika.lims.interfaces import IAnalysisServices
+from bika.lims.utils import tmpID
 from bika.lims.utils import to_utf8
-from plone.app.layout.globals.interfaces import IViewView
+from bika.lims.validators import ServiceKeywordValidator
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
-from bika.lims.interfaces import IAnalysisServices
-from bika.lims.idserver import renameAfterCreation
+from plone.app.layout.globals.interfaces import IViewView
+from Products.Archetypes import atapi
+from Products.ATContentTypes.content import schemata
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser import BrowserView
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from transaction import savepoint
 from zope.interface.declarations import implements
-from operator import itemgetter
-import plone.protect
-from bika.lims.utils import tmpID
 
 
 class AnalysisServiceCopy(BrowserView):
@@ -35,30 +30,61 @@ class AnalysisServiceCopy(BrowserView):
         'Created'
     ]
 
-    def copy(self, src_uid, dst_title, dst_keyword):
-        folder = self.context.bika_setup.bika_analysisservices
-        uc = getToolByName(self.context, 'uid_catalog')
+    created = []
 
-        # Create new service
-        src_service = uc(UID=src_uid)[0].getObject()
+    def create_service(self, src_uid, dst_title, dst_keyword):
+        folder = self.context.bika_setup.bika_analysisservices
+
         tmp_id = folder.invokeFactory('AnalysisService', id=tmpID())
         _id = renameAfterCreation(folder[tmp_id])
         dst_service = folder[_id]
         dst_service.setKeyword(to_utf8(dst_keyword))
         dst_service.setTitle(to_utf8(dst_title))
         dst_service.unmarkCreationFlag()
+        return dst_service
 
-        # copy field values
-        for field in src_service.Schema().fields():
-            fieldname = field.getName()
-            if field.getType() == "Products.Archetypes.Field.ComputedField" \
-            or fieldname in self.skip_fieldnames:
-                continue
-            getter = field.getAccessor(src_service)
-            setter = dst_service.Schema()[fieldname].getMutator(dst_service)
-            setter(getter())
-        dst_service.reindexObject()
-        return dst_title
+    def validate_service(self, dst_service):
+        # validate entries
+        validator = ServiceKeywordValidator()
+
+        res = validator(dst_service.Title(), instance=dst_service)
+        if res is not True:
+            self.savepoint.rollback()
+            self.created = []
+            self.context.plone_utils.addPortalMessage(res, 'info')
+            # Redirect(self.request.get_header("referer"))
+            return False
+
+        res = validator(dst_service.getKeyword(), instance=dst_service)
+        if res is not True:
+            self.savepoint.rollback()
+            self.created = []
+            self.context.plone_utils.addPortalMessage(res, 'info')
+            # Redirect(self.request.get_header("referer"))
+            return False
+
+        return True
+
+    def copy_service(self, src_uid, dst_title, dst_keyword):
+        uc = getToolByName(self.context, 'uid_catalog')
+
+        src_service = uc(UID=src_uid)[0].getObject()
+        dst_service = self.create_service(src_uid, dst_title, dst_keyword)
+
+        if self.validate_service(dst_service):
+            # copy field values
+            for field in src_service.Schema().fields():
+                fieldname = field.getName()
+                if field.getType() == "Products.Archetypes.Field.ComputedField" \
+                or fieldname in self.skip_fieldnames:
+                    continue
+                getter = field.getAccessor(src_service)
+                setter = dst_service.Schema()[fieldname].getMutator(dst_service)
+                setter(getter())
+            dst_service.reindexObject()
+            return dst_title
+        else:
+            return False
 
     def __call__(self):
         uc = getToolByName(self.context, 'uid_catalog')
@@ -71,22 +97,23 @@ class AnalysisServiceCopy(BrowserView):
                     self.services.append(proxies[0].getObject())
             return self.template()
         else:
+            self.savepoint = savepoint()
             sources = self.request.form.get('uids', [])
             titles = self.request.form.get('dst_title', [])
             keywords = self.request.form.get('dst_title', [])
-            created = []
+            self.created = []
             for i, s in enumerate(sources):
-                title = self.copy(s, titles[i], keywords[i])
-                created.append(title)
-
-            if len(created) > 1:
+                title = self.copy_service(s, titles[i], keywords[i])
+                if title:
+                    self.created.append(title)
+            if len(self.created) > 1:
                 message = to_utf8(self.context.translate(
                     _('${items} were successfully created.',
-                      mapping={'items': ', '.join(created)})))
-            elif len(created) == 1:
+                      mapping={'items': ', '.join(self.created)})))
+            elif len(self.created) == 1:
                 message = to_utf8(self.context.translate(
                     _('${item} was successfully created.',
-                    mapping={'item': created[0]})))
+                    mapping={'item': self.created[0]})))
             else:
                 message = to_utf8(self.context.translate(
                     _('No new items were created.')))
