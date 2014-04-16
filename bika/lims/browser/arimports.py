@@ -163,7 +163,7 @@ class GlobalARImportsView(BikaListingView):
         return toggles
 
     def getAR(self):
-        import pdb; pdb.set_trace()
+        pass
 
 
 class ClientARImportsView(GlobalARImportsView):

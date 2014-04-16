@@ -595,7 +595,6 @@ class ARImport(BaseFolder):
                 logging.error(
                     'Invalid Priority: validation should have prevented this')
                 priority = ''
-                import pdb; pdb.set_trace()
             else:
                 priority = priorities[0].getObject()
 
