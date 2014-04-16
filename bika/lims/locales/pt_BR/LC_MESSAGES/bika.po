@@ -48,6 +48,11 @@ msgid "${items} were published."
 msgstr ""
 
 #
+# File: ../controlpanel/bika_analysisservices.py, line: 84
+msgid "${items} were successfully created."
+msgstr ""
+
+#
 # File: ../browser/client.py, line: 196
 msgid "${items}: partitions are waiting to be received."
 msgstr ""
@@ -66,6 +71,11 @@ msgstr ""
 #
 # File: ../browser/client.py, line: 237
 msgid "${item} published."
+msgstr ""
+
+#
+# File: ../controlpanel/bika_analysisservices.py, line: 88
+msgid "${item} was successfully created."
 msgstr ""
 
 #
@@ -720,11 +730,6 @@ msgstr ""
 #
 # File: ../browser/analysisrequest.py, line: 1738
 msgid "Analysis request ${AR} was successfully created."
-msgstr ""
-
-#
-# File: ../controlpanel/bika_analysisservices.py, line: 84
-msgid "Analysis request ${service} was successfully created."
 msgstr ""
 
 #
@@ -1591,6 +1596,16 @@ msgid "Control analyses"
 msgstr ""
 
 #
+# File: ../controlpanel/templates/analysisservice_copy.pt, line: 48
+msgid "Copy"
+msgstr ""
+
+#
+# File: ../controlpanel/templates/analysisservice_copy.pt, line: 11
+msgid "Copy analysis services"
+msgstr ""
+
+#
 # File: ../skins/bika/bika_widgets/addresswidget.pt, line: 46
 msgid "Copy from"
 msgstr ""
@@ -1845,6 +1860,16 @@ msgid "Default Container Type"
 msgstr ""
 
 #
+# File: ../content/analysisservice.py, line: 300
+msgid "Default Instrument"
+msgstr ""
+
+#
+# File: ../content/analysisservice.py, line: 359
+msgid "Default Method"
+msgstr ""
+
+#
 # File: ../content/analysisservice.py, line: 659
 msgid "Default Preservation"
 msgstr ""
@@ -1872,16 +1897,6 @@ msgstr ""
 #
 # File: ../browser/templates/analysisservice_popup.pt, line: 232
 msgid "Default containers: ${container_list}"
-msgstr ""
-
-#
-# File: ../content/analysisservice.py, line: 301
-msgid "Default instrument"
-msgstr ""
-
-#
-# File: ../content/analysisservice.py, line: 361
-msgid "Default method. If 'Allow instrument entry of results' is selected, the Default method to be used will be the method set in the Default Instrument. Otherwise, the Method to be used can be set manually."
 msgstr ""
 
 #
@@ -2271,6 +2286,11 @@ msgid "Enter the Sample Point's longitude in degrees 0-180, minutes 0-59, second
 msgstr ""
 
 #
+# File: ../controlpanel/templates/analysisservice_copy.pt, line: 18
+msgid "Enter the details of each of the analysis services you want to copy."
+msgstr ""
+
+#
 # File: ../browser/reports/templates/administration_usershistory.pt, line: 78
 msgid "Entity"
 msgstr ""
@@ -2488,8 +2508,18 @@ msgid "ID Server unavailable"
 msgstr ""
 
 #
+# File: ../content/analysisservice.py, line: 360
+msgid "If 'Allow instrument entry of results' is selected, the Default method to be used will be the method set in the Default Instrument. Otherwise, the Method to be used can be set manually."
+msgstr ""
+
+#
 # File: ../content/samplepoint.py, line: 48
 msgid "If a sample is taken periodically at this sample point,  enter frequency here, e.g. weekly"
+msgstr ""
+
+#
+# File: ../content/batch.py, line: 190
+msgid "If no Title value is entered, the Batch ID will be used."
 msgstr ""
 
 #
@@ -2545,6 +2575,11 @@ msgid "Inactive"
 msgstr ""
 
 #
+# File: ../content/batch.py, line: 149
+msgid "Include all analysis requests belonging to the selected objects."
+msgstr ""
+
+#
 # File: ../content/bikasetup.py, line: 75
 msgid "Include and display pricing information"
 msgstr ""
@@ -2573,6 +2608,11 @@ msgstr ""
 #
 # File: ../content/analysisservice.py, line: 209
 msgid "Indicates whether file attachments, e.g. microscope images, are required for this analysis and whether file upload function will be available for it on data capturing screens"
+msgstr ""
+
+#
+# File: ../content/batch.py, line: 148
+msgid "Inherit From"
 msgstr ""
 
 #
@@ -3019,11 +3059,6 @@ msgid "Manager Phone"
 msgstr ""
 
 #
-# File: ../browser/analyses.py, line: 478
-msgid "Manual entry"
-msgstr ""
-
-#
 # File: ../content/method.py, line: 64
 msgid "Manual entry of results"
 msgstr ""
@@ -3399,6 +3434,11 @@ msgid "No items were published"
 msgstr ""
 
 #
+# File: ../controlpanel/bika_analysisservices.py, line: 92
+msgid "No new items were created."
+msgstr ""
+
+#
 # File: ../content/arimportitem.py, line: 48
 msgid "No of containers"
 msgstr ""
@@ -3527,6 +3567,11 @@ msgstr ""
 #
 # File: ../content/arpriority.py, line: 15
 msgid "Numeric value indicating the sort order of objects that are prioritised"
+msgstr ""
+
+#
+# File: ../content/batch.py, line: 144
+msgid "Object ID"
 msgstr ""
 
 #
@@ -4856,11 +4901,6 @@ msgid "Services"
 msgstr ""
 
 #
-# File: ../controlpanel/bika_analysisservices.py, line: 77
-msgid "Services ${services} were successfully created."
-msgstr ""
-
-#
 # File: ../content/instrumentmaintenancetask.py, line: 107
 msgid "Set the maintenance task as closed."
 msgstr ""
@@ -5032,6 +5072,23 @@ msgstr ""
 # File: ../browser/client.py, line: 544
 # File: ../controlpanel/bika_storagelocations.py, line: 34
 msgid "Storage Locations"
+msgstr ""
+
+#
+# File: ../browser/analysisrequest.py, line: 1816
+# File: ../browser/batch/batchbook.py, line: 46
+# File: ../content/analysisrequest.py, line: 205
+msgid "Sub-group"
+msgstr ""
+
+#
+# File: ../controlpanel/bika_subgroups.py, line: 32
+msgid "Sub-groups"
+msgstr ""
+
+#
+# File: ../content/subgroup.py, line: 15
+msgid "Subgroups are sorted with this key in group views"
 msgstr ""
 
 #
@@ -5500,6 +5557,11 @@ msgstr ""
 # File: ../browser/worksheetfolder.py, line: 198
 # File: ../skins/bika/portlet_to_be_verified.pt, line: 31
 msgid "To be verified"
+msgstr ""
+
+#
+# File: ../content/analysisspec.py, line: 102
+msgid "To include this spec as the default for a sample type, set the title here to the name of the sample type."
 msgstr ""
 
 #

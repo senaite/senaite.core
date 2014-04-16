@@ -378,6 +378,10 @@ msgstr ""
 msgid "Batch"
 msgstr ""
 #
+# File: ../profiles/default/types/Batch.xml, line: -1
+msgid "Batch Book"
+msgstr ""
+#
 # File: ../profiles/default/types/BatchLabel.xml, line: -1
 msgid "Batch Label"
 msgstr ""
@@ -578,7 +582,6 @@ msgstr ""
 msgid "Methods"
 msgstr ""
 #
-# File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Orders"
 msgstr ""
@@ -775,6 +778,15 @@ msgstr ""
 # File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/StorageLocations.xml, line: -1
 msgid "Storage Locations"
+msgstr ""
+#
+# File: ../profiles/default/types/SubGroup.xml, line: -1
+msgid "Sub-group"
+msgstr ""
+#
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/SubGroups.xml, line: -1
+msgid "Sub-groups"
 msgstr ""
 #
 # File: ../profiles/default/types/Supplier.xml, line: -1
