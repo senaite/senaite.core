@@ -28,6 +28,7 @@ class BatchFolderContentsView(BikaListingView):
         self.pagesize = 25
 
         self.columns = {
+            'Title': {'title': _('Title')},
             'BatchID': {'title': _('Batch ID')},
             'Description': {'title': _('Description')},
             'BatchDate': {'title': _('Date')},
