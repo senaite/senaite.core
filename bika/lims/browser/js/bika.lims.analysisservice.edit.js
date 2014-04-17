@@ -200,7 +200,7 @@ function AnalysisServiceEditView() {
                 }).done(function(data) {
                     $('#_Method option').remove();
                     if (data != null && data['uid']) {
-                        $('#_Method').append('<option selected val="'+data['uid']+'">'+data['title']+'</option>');
+                        $('#_Method').append('<option selected="selected" value="'+data['uid']+'">'+data['title']+'</option>');
                     }
                 });
             } else {
@@ -211,16 +211,17 @@ function AnalysisServiceEditView() {
             $('#_Method option').remove();
             $('#_Method').prop('disabled', false);
             var meths = $('#Methods').val() ? $('#Methods').val() : [];
-            $.each(meths, function(index, value) {
-                var option = $('#Methods option[value="'+value+'"]').clone();
-                $('#_Method').append(option);
-            });
             var defmethod = $('#_Method').attr('data-default');
-            if (defmethod != null && defmethod != '' && $('#_Method option[value="'+defmethod+'"]').length > 0) {
-                $('#_Method').val(defmethod);
-            } else if (meths.length > 0) {
-                $('#_Method').val($('#_Method option').first().val());
-            } else {
+            var selectionsucceed = false;
+            $.each(meths, function(index, value) {
+                var title = $('#Methods option[value="'+value+'"]').html();
+                var selected = (defmethod == value) ? "selected=\"selected\"" : "";
+                selectionsucceed = (defmethod == value) ? true : selectionsucceed;
+                $('#_Method').append('<option value="'+value+'" '+selected+'>'+title+'</option>');
+            });
+            if (!selectionsucceed && meths.length > 0) {
+                $('#_Method option').first().attr('selected', 'selected');
+            } else if (!selectionsucceed) {
                 loadEmptyMethod();
             }
         }

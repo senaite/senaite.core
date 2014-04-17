@@ -111,7 +111,7 @@ class Method(BaseFolder):
             Otherwise, returns False by default, but its value can be
             modified using the ManualEntryOfResults Boolean Field
         """
-        return len(getInstruments()) == 0 or getManualEntryOfResults()
+        return len(self.getInstruments()) == 0 or self.getManualEntryOfResults()
 
     def _getCalculations(self):
         """ Returns a DisplayList with the available Calculations

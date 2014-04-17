@@ -22,6 +22,7 @@
   <include file="late_analyses.zcml"/>
   <include file="manufacturer.zcml"/>
   <include file="menu.zcml"/>
+  <include file="method.zcml"/>
   <include file="remarks.zcml"/>
   <include file="referenceanalysis.zcml"/>
   <include file="referencesample.zcml"/>

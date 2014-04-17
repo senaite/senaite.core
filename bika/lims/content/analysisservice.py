@@ -361,7 +361,9 @@ schema = BikaSchema.copy() + Schema((
                           "of results' is selected, the Default method to "
                           "be used will be the method set in the "
                           "Default Instrument. Otherwise, the Method "
-                          "to be used can be set manually.")
+                          "to be used can be set manually, but only the "
+                          "Methods with 'Manual entry of results' set "
+                          "will be displayed.")
         ),
     ),
     # Allow/Disallow to set the calculation manually
@@ -811,17 +813,18 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
 
     def _getAvailableMethodsDisplayList(self):
         """ Returns a DisplayList with the available Methods
-            registered in Bika-Setup. Only active Methods are
-            fetched. Used to fill the Methods MultiSelectionWidget
+            registered in Bika-Setup. Only active Methods and those
+            with Manual Entry field active are fetched.
+            Used to fill the Methods MultiSelectionWidget when 'Allow
+            Instrument Entry of Results is not selected'.
         """
-        if not self.methodsdl:
-            bsc = getToolByName(self, 'bika_setup_catalog')
-            items = [(i.UID, i.Title) \
-                    for i in bsc(portal_type='Method',
-                                 inactive_state = 'active')]
-            items.sort(lambda x,y: cmp(x[1], y[1]))
-            self.methodsdl = DisplayList(list(items))
-        return self.methodsdl
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(i.UID, i.Title) \
+                for i in bsc(portal_type='Method',
+                             inactive_state = 'active') \
+                        if i.getObject().isManualEntryOfResults()]
+        items.sort(lambda x,y: cmp(x[1], y[1]))
+        return DisplayList(list(items))
 
     def _getAvailableCalculationsDisplayList(self):
         """ Returns a DisplayList with the available Calculations

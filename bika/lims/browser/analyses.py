@@ -205,6 +205,7 @@ class AnalysesView(BikaListingView):
         """
         ret = []
         if analysis:
+            muids = []
             methods = []
             service = analysis.getService()
             if service.getInstrumentEntryOfResults() == False:
@@ -216,8 +217,9 @@ class AnalysesView(BikaListingView):
                 instruments = service.getInstruments()
                 for ins in instruments:
                     method = ins.getMethod()
-                    if method and method not in methods:
+                    if method and method.UID() not in muids:
                        methods.append(method)
+                       muids.append(method.UID())
 
             for method in methods:
                 ret.append({'ResultValue': method.UID(),
@@ -503,6 +505,7 @@ class AnalysesView(BikaListingView):
             method = obj.getMethod() \
                         if hasattr(obj, 'getMethod') and obj.getMethod() \
                         else service.getMethod()
+
             if can_set_method and method:
                 # Show the dropbox only if at least one method available
                 voc = self.get_methods_vocabulary(obj)
@@ -544,8 +547,9 @@ class AnalysesView(BikaListingView):
                 instrument = None
 
             if service.getInstrumentEntryOfResults() == False:
-                item['Instrument'] = ''
-                item['replace']['Instrument'] = ''
+                item['Instrument'] = _('Manually')
+                msgtitle = _("Instrument entry of results not allowed for %s") % service.Title()
+                item['replace']['Instrument'] = '<a href="#" title="%s">%s</a>' % (msgtitle, _('Manually'))
             elif can_set_instrument and instrument:
                 # Show the dropbox only if at least one instrument available
                 voc = self.get_instruments_vocabulary(obj)
