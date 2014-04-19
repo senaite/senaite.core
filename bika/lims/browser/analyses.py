@@ -656,38 +656,27 @@ class AnalysesView(BikaListingView):
                                 #         (self.portal_url)
                 items[i]['Uncertainty'] = obj.getUncertainty(result)
 
-                spec = self.get_active_spec_dict(obj)
-
-                if spec:
-                    min_val = spec.get('min', '')
-                    min_str = ">{0}".format(min_val) if min_val else ''
-                    max_val = spec.get('max', '')
-                    max_str = "<{0}".format(max_val) if max_val else ''
-                    error_val = spec.get('error', '')
-                    error_str = "{0}%".format(error_val) if error_val else ''
-                    rngstr = ",".join([x for x in [min_str, max_str, error_str] if x])
-                else:
-                    rngstr = ""
-
-                items[i]['Specification'] = rngstr
-
-                # # This is redundant, done already, in bika_listing.py.
-                # for name, adapter in getAdapters((obj, ), IFieldIcons):
-                #     auid = obj.UID()
-                #     alerts = adapter(specification=spec)
-                #     if alerts:
-                #         if auid in self.field_icons:
-                #             self.field_icons[auid].extend(alerts[auid])
-                #         else:
-                #             self.field_icons[auid] = alerts[auid]
             else:
+                items[i]['Specification'] = ""
                 if 'Result' in items[i]['allow_edit']:
                     items[i]['allow_edit'].remove('Result')
                 items[i]['before']['Result'] = \
                     '<img width="16" height="16" ' + \
                     'src="%s/++resource++bika.lims.images/to_follow.png"/>' % \
                     (self.portal_url)
-
+            # Everyone can see valid-ranges
+            spec = self.get_active_spec_dict(obj)
+            if spec:
+                min_val = spec.get('min', '')
+                min_str = ">{0}".format(min_val) if min_val else ''
+                max_val = spec.get('max', '')
+                max_str = "<{0}".format(max_val) if max_val else ''
+                error_val = spec.get('error', '')
+                error_str = "{0}%".format(error_val) if error_val else ''
+                rngstr = ",".join([x for x in [min_str, max_str, error_str] if x])
+            else:
+                rngstr = ""
+            items[i]['Specification'] = rngstr
             # Add this analysis' interim fields to the interim_columns list
             for f in self.interim_fields[obj.UID()]:
                 if f['keyword'] not in self.interim_columns and not f.get('hidden', False):
