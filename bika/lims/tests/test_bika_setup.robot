@@ -682,8 +682,8 @@ Repetitive Bika Setup stuff
     Click link  Add
     Wait Until Page Contains Element  description
     Select From List  SampleType:list
-    Input Text  title    Water Chemistry
-    Input Text  description    Water chemistry alternate
+    Input Text  title    Water Chemistry Alternate
+    Input Text  description    Water chemistry Alternate
     Click Element  xpath=//th[@cat='Water Chemistry']
     Input Text  xpath=//input[@selector='min_analysisservice-4']  3
     Input Text  xpath=//input[@selector='max_analysisservice-4']  4
