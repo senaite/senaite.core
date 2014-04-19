@@ -10,8 +10,8 @@ from zope.interface import implements
 
 
 class AnalysisRequestsView(_ARV, _ARAV):
-    template = ViewPageTemplateFile("../templates/analysisrequests.pt")
-    ar_add = ViewPageTemplateFile("../templates/ar_add.pt")
+    template = ViewPageTemplateFile("../analysisrequest/templates/analysisrequests.pt")
+    ar_add = ViewPageTemplateFile("../analysisrequest/templates/ar_add.pt")
     implements(IViewView)
 
     def __init__(self, context, request):
