@@ -436,13 +436,16 @@ class BikaGenerator:
         portal.bika_setup.bika_attachmenttypes.reindexObject()
 
         # /arimports folder permissions
-        mp = portal.arimports.manage_permission
-        mp(ManageARImport, ['Manager', ], 1)
-        mp(permissions.ListFolderContents, ['Manager','Member',], 1)
-        mp(permissions.AddPortalContent, ['Manager', ], 0)
-        mp(permissions.DeleteObjects, ['Manager'], 0)
-        mp(permissions.View, ['Manager','Member'], 0)
-        portal.arimports.reindexObject()
+        try:
+            mp = portal.arimports.manage_permission
+            mp(ManageARImport, ['Manager', ], 1)
+            mp(permissions.ListFolderContents, ['Manager', 'Member',], 1)
+            mp(permissions.AddPortalContent, ['Manager', ], 0)
+            mp(permissions.DeleteObjects, ['Manager'], 0)
+            mp(permissions.View, ['Manager', 'Member'], 0)
+            portal.arimports.reindexObject()
+        except:
+            pass
 
     def setupVersioning(self, portal):
         portal_repository = getToolByName(portal, 'portal_repository')
