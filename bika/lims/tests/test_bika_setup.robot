@@ -668,7 +668,22 @@ Repetitive Bika Setup stuff
     Click link  Add
     Wait Until Page Contains Element  description
     Select From List  SampleType:list
-    Input Text  description    Temporary test object
+    Input Text  title    Water Chemistry
+    Input Text  description    Water chemistry default spec
+    Click Element  xpath=//th[@cat='Water Chemistry']
+    Input Text  xpath=//input[@selector='min_analysisservice-4']  3
+    Input Text  xpath=//input[@selector='max_analysisservice-4']  4
+    Input Text  xpath=//input[@selector='error_analysisservice-4']  5
+    Click Button  Save
+    Wait Until Page Contains  Changes saved.
+
+    Go to  ${PLONEURL}/bika_setup/bika_analysisspecs
+    Wait Until Page Contains  Analysis Specifications
+    Click link  Add
+    Wait Until Page Contains Element  description
+    Select From List  SampleType:list
+    Input Text  title    Water Chemistry
+    Input Text  description    Water chemistry alternate
     Click Element  xpath=//th[@cat='Water Chemistry']
     Input Text  xpath=//input[@selector='min_analysisservice-4']  3
     Input Text  xpath=//input[@selector='max_analysisservice-4']  4

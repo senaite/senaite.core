@@ -58,9 +58,12 @@ class BikaGenerator:
                        'queries',
                        'arimports',
                        ):
-            obj = portal._getOb(obj_id)
-            obj.unmarkCreationFlag()
-            obj.reindexObject()
+            try:
+                obj = portal._getOb(obj_id)
+                obj.unmarkCreationFlag()
+                obj.reindexObject()
+            except:
+                pass
 
         bika_setup = portal._getOb('bika_setup')
         for obj_id in ('bika_analysiscategories',
@@ -92,9 +95,12 @@ class BikaGenerator:
                        'bika_suppliers',
                        'bika_referencedefinitions',
                        'bika_worksheettemplates'):
-            obj = bika_setup._getOb(obj_id)
-            obj.unmarkCreationFlag()
-            obj.reindexObject()
+            try:
+                obj = bika_setup._getOb(obj_id)
+                obj.unmarkCreationFlag()
+                obj.reindexObject()
+            except:
+                pass
 
         lab = bika_setup.laboratory
         lab.edit(title=_('Laboratory'))
@@ -402,15 +408,18 @@ class BikaGenerator:
         mp('Access contents information', ['Manager', 'Member', 'Authenticated', 'Anonymous'], 1)
         portal.methods.reindexObject()
 
-        # /supplyorders folder permissions
-        mp = portal.supplyorders.manage_permission
-        mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
-        mp(ManagePricelists, ['Manager', 'LabManager', 'Owner'], 1)
-        mp(permissions.ListFolderContents, ['Member'], 1)
-        mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
-        mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
-        mp(permissions.View, ['Manager', 'LabManager'], 0)
-        portal.supplyorders.reindexObject()
+        try:
+            # /supplyorders folder permissions
+            mp = portal.supplyorders.manage_permission
+            mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
+            mp(ManagePricelists, ['Manager', 'LabManager', 'Owner'], 1)
+            mp(permissions.ListFolderContents, ['Member'], 1)
+            mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
+            mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
+            mp(permissions.View, ['Manager', 'LabManager'], 0)
+            portal.supplyorders.reindexObject()
+        except:
+            pass
 
         # Add Analysis Services View permission to Clients
         # (allow Clients to add attachments to Analysis Services from an AR)
