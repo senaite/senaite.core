@@ -379,7 +379,7 @@ class ReferenceSample(BaseFolder):
         self.reindexObject()
 
     def workflow_script_dispose(self):
-        """ expire sample """
+        """ dispose sample """
         self.setDateDisposed(DateTime())
         self.reindexObject()
 

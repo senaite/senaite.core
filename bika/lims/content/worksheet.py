@@ -1,46 +1,45 @@
-from DateTime import DateTime
 from AccessControl import ClassSecurityInfo
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import HistoryAwareReferenceField
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IWorksheet
+from bika.lims.permissions import EditWorksheet
+from bika.lims.workflow import doActionFor
+from bika.lims.workflow import skip
+from DateTime import DateTime
+from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.Archetypes.public import *
+from Products.Archetypes.references import HoldingReference
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.CMFCore.permissions import ListFolderContents, View
+from Products.ATExtensions.ateapi import RecordsField
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from Products.Archetypes.public import *
-from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.Registry import registerField
-from bika.lims.browser.fields import HistoryAwareReferenceField
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.config import PROJECTNAME
-from bika.lims.permissions import EditWorksheet
-from Products.ATExtensions.ateapi import RecordsField
 from zope.interface import implements
-from bika.lims.interfaces import IWorksheet
-from bika.lims import bikaMessageFactory as _
-from Products.Archetypes.references import HoldingReference
-from bika.lims import logger
-from operator import itemgetter
+
 
 schema = BikaSchema.copy() + Schema((
     HistoryAwareReferenceField('WorksheetTemplate',
-        allowed_types = ('WorksheetTemplate',),
-        relationship = 'WorksheetAnalysisTemplate',
+        allowed_types=('WorksheetTemplate',),
+        relationship='WorksheetAnalysisTemplate',
     ),
     ComputedField('WorksheetTemplateTitle',
-        searchable = True,
-        expression = "context.getWorksheetTemplate() and context.getWorksheetTemplate().Title() or ''",
-        widget = ComputedWidget(
-            visible = False,
+        searchable=True,
+        expression="context.getWorksheetTemplate() and context.getWorksheetTemplate().Title() or ''",
+        widget=ComputedWidget(
+            visible=False,
         ),
     ),
     RecordsField('Layout',
-        required = 1,
-        subfields = ('position', 'type', 'container_uid', 'analysis_uid'),
-        subfield_types = {'position':'int'},
+        required=1,
+        subfields=('position', 'type', 'container_uid', 'analysis_uid'),
+        subfield_types={'position': 'int'},
     ),
     # all layout info lives in Layout; Analyses is used for back references.
     ReferenceField('Analyses',
-        required = 1,
-        multiValued = 1,
-        allowed_types = ('Analysis', 'DuplicateAnalysis', 'ReferenceAnalysis',),
+        required=1,
+        multiValued=1,
+        allowed_types=('Analysis', 'DuplicateAnalysis', 'ReferenceAnalysis',),
         relationship = 'WorksheetAnalysis',
     ),
     StringField('Analyst',
@@ -59,9 +58,9 @@ schema = BikaSchema.copy() + Schema((
         allowed_content_types= ('text/plain', ),
         default_output_type="text/plain",
         widget = TextAreaWidget(
-            macro = "bika_widgets/remarks",
-            label = _('Remarks'),
-            append_only = True,
+            macro="bika_widgets/remarks",
+            label=_('Remarks'),
+            append_only=True,
         ),
     ),
 ),
@@ -72,6 +71,7 @@ schema['id'].widget.visible = False
 schema['title'].required = 0
 schema['title'].widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 
+
 class Worksheet(BaseFolder, HistoryAwareMixin):
     security = ClassSecurityInfo()
     implements(IWorksheet)
@@ -79,6 +79,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     schema = schema
 
     _at_rename_after_creation = True
+
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
@@ -92,12 +93,13 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         return list(self.getAnalyses())
 
     security.declareProtected(EditWorksheet, 'addAnalysis')
-    def addAnalysis(self, analysis, position = None):
+
+    def addAnalysis(self, analysis, position=None):
         """- add the analysis to self.Analyses().
            - position is overruled if a slot for this analysis' parent exists
            - if position is None, next available pos is used.
         """
-        wf = getToolByName(self, 'portal_workflow')
+        workflow = getToolByName(self, 'portal_workflow')
 
         analysis_uid = analysis.UID()
         parent_uid = analysis.aq_parent.UID()
@@ -133,9 +135,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                   'container_uid': parent_uid,
                                   'analysis_uid': analysis.UID()}, ])
 
-        allowed_transitions = [t['id'] for t in wf.getTransitionsFor(analysis)]
+        allowed_transitions = [t['id'] for t in workflow.getTransitionsFor(analysis)]
         if 'assign' in allowed_transitions:
-            wf.doActionFor(analysis, 'assign')
+            workflow.doActionFor(analysis, 'assign')
 
         # If a dependency of DryMatter service is added here, we need to
         # make sure that the dry matter analysis itself is also
@@ -148,21 +150,22 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             # if dry matter service in my dependents:
             if dmk in [a.getService().getKeyword() for a in deps]:
                 # get dry matter analysis from AR
-                dma = analysis.aq_parent.getAnalyses(getKeyword = dmk,
-                                                     full_objects = True)[0]
+                dma = analysis.aq_parent.getAnalyses(getKeyword=dmk,
+                                                     full_objects=True)[0]
                 # add it.
                 if dma not in self.getAnalyses():
                     self.addAnalysis(dma)
 
     security.declareProtected(EditWorksheet, 'removeAnalysis')
+
     def removeAnalysis(self, analysis):
         """ delete an analyses from the worksheet and un-assign it
         """
-        wf = getToolByName(self, 'portal_workflow')
+        workflow = getToolByName(self, 'portal_workflow')
 
         # overwrite saved context UID for event subscriber
         self.REQUEST['context_uid'] = self.UID()
-        wf.doActionFor(analysis, 'unassign')
+        workflow.doActionFor(analysis, 'unassign')
         # Note: subscriber might unassign the AR and/or promote the worksheet
 
         # remove analysis from context.Analyses *after* unassign,
@@ -180,7 +183,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     def addReferences(self, position, reference, service_uids):
         """ Add reference analyses to reference, and add to worksheet layout
         """
-        wf = getToolByName(self, 'portal_workflow')
+        workflow = getToolByName(self, 'portal_workflow')
         rc = getToolByName(self, REFERENCE_CATALOG)
         layout = self.getLayout()
         wst = self.getWorksheetTemplate()
@@ -222,26 +225,25 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             ref_analysis.reindexObject(idxs=["getReferenceAnalysesGroupID"])
 
             # copy the interimfields
-            calculation = service.getCalculation()
             if calc:
                 ref_analysis.setInterimFields(calc.getInterimFields())
 
             self.setLayout(
-                self.getLayout() + [{'position' : position,
-                                     'type':ref_type,
-                                     'container_uid' : reference.UID(),
+                self.getLayout() + [{'position': position,
+                                     'type': ref_type,
+                                     'container_uid': reference.UID(),
                                      'analysis_uid': ref_analysis.UID()}])
             self.setAnalyses(
                 self.getAnalyses() + [ref_analysis, ])
-            wf.doActionFor(ref_analysis, 'assign')
-
+            workflow.doActionFor(ref_analysis, 'assign')
 
     security.declareProtected(EditWorksheet, 'addDuplicateAnalyses')
+
     def addDuplicateAnalyses(self, src_slot, dest_slot):
         """ add duplicate analyses to worksheet
         """
         rc = getToolByName(self, REFERENCE_CATALOG)
-        wf = getToolByName(self, 'portal_workflow')
+        workflow = getToolByName(self, 'portal_workflow')
 
         layout = self.getLayout()
         wst = self.getWorksheetTemplate()
@@ -259,11 +261,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                     highest_existing_position = pos
             dest_slot = highest_existing_position + 1
 
-        src_analyses = [rc.lookupObject(slot['analysis_uid']) \
-                        for slot in layout if \
+        src_analyses = [rc.lookupObject(slot['analysis_uid'])
+                        for slot in layout if
                         int(slot['position']) == int(src_slot)]
-        dest_analyses = [rc.lookupObject(slot['analysis_uid']).getAnalysis().UID() \
-                        for slot in layout if \
+        dest_analyses = [rc.lookupObject(slot['analysis_uid']).getAnalysis().UID()
+                        for slot in layout if
                         int(slot['position']) == int(dest_slot)]
 
         refgid = None
@@ -277,7 +279,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 continue
             service = analysis.getService()
             _id = self._findUniqueId(service.getKeyword())
-            self.invokeFactory('DuplicateAnalysis', id = _id)
+            self.invokeFactory('DuplicateAnalysis', id=_id)
             duplicate = self[_id]
             duplicate.setAnalysis(analysis)
 
@@ -286,9 +288,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             # https://github.com/bikalabs/Bika-LIMS/issues/931
             if not refgid:
                 part = analysis.getSamplePartition().id
-                dups = [an.getReferenceAnalysesGroupID() \
-                        for an in self.getAnalyses() \
-                        if an.portal_type == 'DuplicateAnalysis' \
+                dups = [an.getReferenceAnalysesGroupID()
+                        for an in self.getAnalyses()
+                        if an.portal_type == 'DuplicateAnalysis'
                             and an.getSamplePartition().id == part]
                 dups = list(set(dups))
                 postfix = dups and len(dups) + 1 or 1
@@ -301,13 +303,13 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             if calc:
                 duplicate.setInterimFields(calc.getInterimFields())
             self.setLayout(
-                self.getLayout() + [{'position':dest_slot,
-                                     'type':'d',
-                                     'container_uid':analysis.aq_parent.UID(),
+                self.getLayout() + [{'position': dest_slot,
+                                     'type': 'd',
+                                     'container_uid': analysis.aq_parent.UID(),
                                      'analysis_uid': duplicate.UID()}, ]
             )
             self.setAnalyses(self.getAnalyses() + [duplicate, ])
-            wf.doActionFor(duplicate, 'assign')
+            workflow.doActionFor(duplicate, 'assign')
 
     def applyWorksheetTemplate(self, wst):
         """ Add analyses to worksheet according to wst's layout.
@@ -325,10 +327,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         services = wst.getService()
         wst_service_uids = [s.UID() for s in services]
 
-        analyses = bac(portal_type = 'Analysis',
-                       getServiceUID = wst_service_uids,
-                       review_state = 'sample_received',
-                       worksheetanalysis_review_state = 'unassigned',
+        analyses = bac(portal_type='Analysis',
+                       getServiceUID=wst_service_uids,
+                       review_state='sample_received',
+                       worksheetanalysis_review_state='unassigned',
                        cancellation_state = 'active')
         sortedans = []
         for an in analyses:
@@ -337,8 +339,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                               'brain': an});
         sortedans.sort(key=itemgetter('duedate'), reverse=False)
         # collect analyses from the first X ARs.
-        ar_analyses = {} # ar_uid : [analyses]
-        ars = [] # for sorting
+        ar_analyses = {}  # ar_uid : [analyses]
+        ars = []  # for sorting
 
         wst_slots = [row['pos'] for row in wstlayout if row['type'] == 'a']
         ws_slots = [row['position'] for row in layout if row['type'] == 'a']
@@ -361,7 +363,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         positions = [pos for pos in wst_slots if pos not in ws_slots]
         for ar in ars:
             for analysis in ar_analyses[ar]:
-                self.addAnalysis(analysis, position = positions[ars.index(ar)])
+                self.addAnalysis(analysis, position=positions[ars.index(ar)])
 
         # find best maching reference samples for Blanks and Controls
         for t in ('b', 'c'):
@@ -370,10 +372,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             for row in [r for r in wstlayout if
                         r['type'] == t and r['pos'] not in ws_slots]:
                 reference_definition_uid = row[form_key]
-                samples = bc(portal_type = 'ReferenceSample',
-                             review_state = 'current',
-                             inactive_state = 'active',
-                             getReferenceDefinitionUID = reference_definition_uid)
+                samples = bc(portal_type='ReferenceSample',
+                             review_state='current',
+                             inactive_state='active',
+                             getReferenceDefinitionUID=reference_definition_uid)
                 if not samples:
                     break
                 samples = [s.getObject() for s in samples]
@@ -390,7 +392,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                     references[reference_uid]['count'] = 0
                     specs = reference.getResultsRangeDict()
                     for service_uid in wst_service_uids:
-                        if specs.has_key(service_uid):
+                        if service_uid in specs:
                             references[reference_uid]['services'].append(service_uid)
                             references[reference_uid]['count'] += 1
                     if references[reference_uid]['count'] == len(wst_service_uids):
@@ -424,8 +426,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             if src_pos in [int(slot['position']) for slot in layout]:
                 self.addDuplicateAnalyses(src_pos, dest_pos)
 
-
-    def exportAnalyses(self, REQUEST = None, RESPONSE = None):
+    def exportAnalyses(self, REQUEST=None, RESPONSE=None):
         """ Export analyses from this worksheet """
         import bika.lims.InstrumentExport as InstrumentExport
         instrument = REQUEST.form['getInstrument']
@@ -437,6 +438,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         return
 
     security.declarePublic('getWorksheetServices')
+
     def getWorksheetServices(self):
         """ get list of analysis services present on this worksheet
         """
@@ -448,7 +450,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         return services
 
     security.declareProtected(EditWorksheet, 'resequenceWorksheet')
-    def resequenceWorksheet(self, REQUEST = None, RESPONSE = None):
+
+    def resequenceWorksheet(self, REQUEST=None, RESPONSE=None):
         """  Reset the sequence of analyses in the worksheet """
         """ sequence is [{'pos': , 'type': , 'uid', 'key'},] """
         old_seq = self.getLayout()
@@ -457,17 +460,16 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         other_dict = {}
         for seq in old_seq:
             if seq['key'] == '':
-                if not other_dict.has_key(seq['pos']):
+                if seq['pos'] not in other_dict:
                     other_dict[seq['pos']] = []
                 other_dict[seq['pos']].append(seq)
                 continue
-            if not new_dict.has_key(seq['key']):
+            if seq['key'] not in new_dict:
                 new_dict[seq['key']] = []
             analyses = new_dict[seq['key']]
             analyses.append(seq)
             new_dict[seq['key']] = analyses
-        new_keys = new_dict.keys()
-        new_keys.sort()
+        new_keys = sorted(new_dict.keys())
 
         rc = getToolByName(self, REFERENCE_CATALOG)
         seqno = 1
@@ -482,8 +484,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                     analysis = rc.lookupObject(item['uid'])
                     service = analysis.Title()
                     analyses[service] = item
-                a_keys = analyses.keys()
-                a_keys.sort()
+                a_keys = sorted(analyses.keys())
                 for a_key in a_keys:
                     new_seq.append(analyses[a_key])
             seqno += 1
@@ -499,6 +500,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         RESPONSE.redirect('%s/manage_results' % self.absolute_url())
 
     security.declarePublic('current_date')
+
     def current_date(self):
         """ return current date """
         return DateTime()
@@ -513,16 +515,67 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             not be modified.
             Returns the number of analyses affected
         """
-        analyses = [an for an in self.getAnalyses() \
-                    if not an.getInstrument() \
+        analyses = [an for an in self.getAnalyses()
+                    if not an.getInstrument()
                         and an.isInstrumentAllowed(instrument)]
         total = 0
         for an in analyses:
             success = an.setInstrument(instrument)
-            if success == True:
+            if success is True:
                 total += 1
 
         self.getField('Instrument').set(self, instrument)
         return total
+
+    def workflow_script_submit(self):
+        # Don't cascade. Shouldn't be submitting WSs directly for now,
+        # except edge cases where all analyses are already submitted,
+        # but self was held back until an analyst was assigned.
+        workflow = getToolByName(self, 'portal_workflow')
+        self.reindexObject(idxs=["review_state", ])
+        can_attach = True
+        for a in self.getAnalyses():
+            if workflow.getInfoFor(a, 'review_state') in \
+               ('to_be_sampled', 'to_be_preserved', 'sample_due',
+                'sample_received', 'attachment_due', 'assigned',):
+                # Note: referenceanalyses and duplicateanalyses can still have review_state = "assigned".
+                can_attach = False
+                break
+        if can_attach:
+            doActionFor(self, 'attach')
+
+    def workflow_script_attach(self):
+        if skip(self, "attach"):
+            return
+        self.reindexObject(idxs=["review_state", ])
+        # Don't cascade. Shouldn't be attaching WSs for now (if ever).
+        return
+
+    def workflow_script_retract(self):
+        if skip(self, "retract"):
+            return
+        workflow = getToolByName(self, 'portal_workflow')
+        self.reindexObject(idxs=["review_state", ])
+        if not "retract all analyses" in self.REQUEST['workflow_skiplist']:
+            # retract all analyses in this self.
+            # (NB: don't retract if it's verified)
+            analyses = self.getAnalyses()
+            for analysis in analyses:
+                if workflow.getInfoFor(analysis, 'review_state', '') not in ('attachment_due', 'to_be_verified',):
+                    continue
+                doActionFor(analysis, 'retract')
+
+    def workflow_script_verify(self):
+        if skip(self, "verify"):
+            return
+        workflow = getToolByName(self, 'portal_workflow')
+        self.reindexObject(idxs=["review_state", ])
+        if not "verify all analyses" in self.REQUEST['workflow_skiplist']:
+            # verify all analyses in this self.
+            analyses = self.getAnalyses()
+            for analysis in analyses:
+                if workflow.getInfoFor(analysis, 'review_state', '') != 'to_be_verified':
+                    continue
+                doActionFor(analysis, "verify")
 
 registerType(Worksheet, PROJECTNAME)

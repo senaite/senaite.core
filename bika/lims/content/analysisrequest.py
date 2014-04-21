@@ -2,44 +2,30 @@
 """
 import logging
 from AccessControl import ClassSecurityInfo
-from AccessControl.Permissions import delete_objects
-from archetypes.referencebrowserwidget import ReferenceBrowserWidget
 from DateTime import DateTime
-from Products.ATContentTypes.content import schemata
-from Products.ATExtensions.widget.records import RecordsWidget
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.Archetypes.utils import shasattr
 from Products.CMFCore import permissions
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.permissions import View, ModifyPortalContent
+from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone import PloneMessageFactory as _p
-from Products.CMFPlone.utils import transaction_note
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims.browser.fields import ARAnalysesField
 from bika.lims.browser.widgets import DateTimeWidget, DecimalWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.permissions import *
-from archetypes.referencebrowserwidget.widget import ReferenceBrowserWidget
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisRequest
-from bika.lims.interfaces import IBikaCatalog
-from bika.lims.utils import sortable_title, to_unicode
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims.workflow import skip
+from bika.lims.workflow import doActionFor
 from decimal import Decimal
-from email.Utils import formataddr
-from plone.indexer.decorator import indexer
-from types import ListType, TupleType
 from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
 
-import pkg_resources
 import sys
-import time
 
 try:
     from zope.component.hooks import getSite
@@ -68,7 +54,7 @@ schema = BikaSchema.copy() + Schema((
         'Contact',
         required=1,
         default_method='getContactUIDForUser',
-        vocabulary_display_path_bound=sys.maxint,
+        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('Contact',),
         referenceClass=HoldingReference,
         relationship='AnalysisRequestContact',
@@ -95,7 +81,7 @@ schema = BikaSchema.copy() + Schema((
     ReferenceField(
         'CCContact',
         multiValued=1,
-        vocabulary_display_path_bound=sys.maxint,
+        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('Contact',),
         referenceClass=HoldingReference,
         relationship='AnalysisRequestCCContact',
@@ -154,7 +140,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ReferenceField(
         'Sample',
-        vocabulary_display_path_bound=sys.maxint,
+        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('Sample',),
         referenceClass=HoldingReference,
         relationship='AnalysisRequestSample',
@@ -607,7 +593,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ReferenceField(
         'Invoice',
-        vocabulary_display_path_bound=sys.maxint,
+        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('Invoice',),
         referenceClass=HoldingReference,
         relationship='AnalysisRequestInvoice',
@@ -792,6 +778,7 @@ schema = BikaSchema.copy() + Schema((
 
 schema['title'].required = False
 
+
 class AnalysisRequest(BaseFolder):
     implements(IAnalysisRequest)
     security = ClassSecurityInfo()
@@ -869,7 +856,6 @@ class AnalysisRequest(BaseFolder):
                 value.append(val)
         return value
 
-
     def getBatch(self):
         # The parent type may be "Batch" during ar_add.
         # This function fills the hidden field in ar_add.pt
@@ -892,7 +878,7 @@ class AnalysisRequest(BaseFolder):
         """ compute default priority """
         bsc = getToolByName(self, 'bika_setup_catalog')
         priorities = bsc(
-            portal_type = 'ARPriority',
+            portal_type='ARPriority',
             )
         for brain in priorities:
             obj = brain.getObject()
@@ -905,6 +891,7 @@ class AnalysisRequest(BaseFolder):
         return
 
     security.declareProtected(View, 'getResponsible')
+
     def getResponsible(self):
         """ Return all manager info of responsible departments """
         managers = {}
@@ -1247,13 +1234,13 @@ class AnalysisRequest(BaseFolder):
         return child
 
     def getRequestedAnalyses(self):
-        ##
-        ##title=Get requested analyses
-        ##
+        #
+        # title=Get requested analyses
+        #
         result = []
         cats = {}
         workflow = getToolByName(self, 'portal_workflow')
-        for analysis in self.getAnalyses(full_objects = True):
+        for analysis in self.getAnalyses(full_objects=True):
             review_state = workflow.getInfoFor(analysis, 'review_state')
             if review_state == 'not_requested':
                 continue
@@ -1263,11 +1250,11 @@ class AnalysisRequest(BaseFolder):
                 cats[category_name] = {}
             cats[category_name][analysis.Title()] = analysis
         cat_keys = cats.keys()
-        cat_keys.sort(lambda x, y:cmp(x.lower(), y.lower()))
+        cat_keys.sort(lambda x, y: cmp(x.lower(), y.lower()))
         for cat_key in cat_keys:
             analyses = cats[cat_key]
             analysis_keys = analyses.keys()
-            analysis_keys.sort(lambda x, y:cmp(x.lower(), y.lower()))
+            analysis_keys.sort(lambda x, y: cmp(x.lower(), y.lower()))
             for analysis_key in analysis_keys:
                 result.append(analyses[analysis_key])
         return result
@@ -1276,151 +1263,144 @@ class AnalysisRequest(BaseFolder):
     # and read from the sample
 
     security.declarePublic('setSamplingDate')
+
     def setSamplingDate(self, value):
         sample = self.getSample()
         if sample and value:
             return sample.setSamplingDate(value)
 
     security.declarePublic('getSamplingDate')
+
     def getSamplingDate(self):
         sample = self.getSample()
         if sample:
             return sample.getSamplingDate()
 
     security.declarePublic('setSamplePoint')
+
     def setSamplePoint(self, value):
         sample = self.getSample()
         if sample and value:
             return sample.setSamplePoint(value)
 
     security.declarePublic('getSamplepoint')
+
     def getSamplePoint(self):
         sample = self.getSample()
         if sample:
             return sample.getSamplePoint()
 
     security.declarePublic('setSampleType')
+
     def setSampleType(self, value):
         sample = self.getSample()
         if sample and value:
             return sample.setSampleType(value)
 
     security.declarePublic('getSampleType')
+
     def getSampleType(self):
         sample = self.getSample()
         if sample:
             return sample.getSampleType()
 
     security.declarePublic('setClientReference')
+
     def setClientReference(self, value):
         sample = self.getSample()
         if sample and value:
             return sample.setClientReference(value)
 
     security.declarePublic('getClientReference')
+
     def getClientReference(self):
         sample = self.getSample()
         if sample:
             return sample.getClientReference()
 
     security.declarePublic('setClientSampleID')
+
     def setClientSampleID(self, value):
         sample = self.getSample()
         if sample and value:
             return sample.setClientSampleID(value)
 
     security.declarePublic('getClientSampleID')
+
     def getClientSampleID(self):
         sample = self.getSample()
         if sample:
             return sample.getClientSampleID()
 
     security.declarePublic('setSamplingDeviation')
+
     def setSamplingDeviation(self, value):
         sample = self.getSample()
         if sample and value:
             return sample.setSamplingDeviation(value)
 
     security.declarePublic('getSamplingDeviation')
+
     def getSamplingDeviation(self):
         sample = self.getSample()
         if sample:
             return sample.getSamplingDeviation()
 
     security.declarePublic('setSampleCondition')
+
     def setSampleCondition(self, value):
         sample = self.getSample()
         if sample and value:
             return sample.setSampleCondition(value)
 
     security.declarePublic('getSampleCondition')
+
     def getSampleCondition(self):
         sample = self.getSample()
         if sample:
             return sample.getSampleCondition()
 
     security.declarePublic('setComposite')
+
     def setComposite(self, value):
         sample = self.getSample()
         if sample and value:
             return sample.setComposite(value)
 
     security.declarePublic('getComposite')
+
     def getComposite(self):
         sample = self.getSample()
         if sample:
             return sample.getComposite()
 
     security.declarePublic('setStorageLocation')
+
     def setStorageLocation(self, value):
         sample = self.getSample()
         if sample and value:
             return sample.setStorageLocation(value)
 
     security.declarePublic('getStorageLocation')
+
     def getStorageLocation(self):
         sample = self.getSample()
         if sample:
             return sample.getStorageLocation()
 
     security.declarePublic('setAdHoc')
+
     def setAdHoc(self, value):
         sample = self.getSample()
         if sample and value:
             return sample.setAdHoc(value)
 
     security.declarePublic('getAdHoc')
+
     def getAdHoc(self):
         sample = self.getSample()
         if sample:
             return sample.getAdHoc()
-
-
-    def getRequestedAnalyses(self):
-        ##
-        ##title=Get requested analyses
-        ##
-        result = []
-        cats = {}
-        workflow = getToolByName(self, 'portal_workflow')
-        for analysis in self.getAnalyses(full_objects = True):
-            review_state = workflow.getInfoFor(analysis, 'review_state')
-            if review_state == 'not_requested':
-                continue
-            service = analysis.getService()
-            category_name = service.getCategoryTitle()
-            if not category_name in cats:
-                cats[category_name] = {}
-            cats[category_name][analysis.Title()] = analysis
-        cat_keys = cats.keys()
-        cat_keys.sort(lambda x, y:cmp(x.lower(), y.lower()))
-        for cat_key in cat_keys:
-            analyses = cats[cat_key]
-            analysis_keys = analyses.keys()
-            analysis_keys.sort(lambda x, y:cmp(x.lower(), y.lower()))
-            for analysis_key in analysis_keys:
-                result.append(analyses[analysis_key])
-        return result
 
     def guard_unassign_transition(self):
         """Allow or disallow transition depending on our children's states
@@ -1447,5 +1427,140 @@ class AnalysisRequest(BaseFolder):
         if self.getAnalyses(worksheetanalysis_review_state='unassigned'):
             return False
         return True
+
+    def guard_receive_transition(self):
+        """Prevent the receive transition from being available:
+        - if object is cancelled
+        - if any related ARs have field analyses with no result.
+        """
+        # check if object is cancelled
+        workflow = getToolByName(self, 'portal_workflow')
+        state = workflow.getInfoFor(self, 'cancellation_state', "active")
+        if state == "cancelled":
+            return False
+        # check if any related ARs have field analyses with no result.
+        for ar in self.getSample().getAnalysisRequests():
+            field_analyses = ar.getAnalyses(getPointOfCapture='field',
+                                            full_objects=True)
+            no_results = [a for a in field_analyses if a.getResult() == '']
+            if no_results:
+                return False
+        return True
+
+    def workflow_script_receive(self):
+        if skip(self, "receive"):
+            return
+        workflow = getToolByName(self, 'portal_workflow')
+        self.setDateReceived(DateTime())
+        self.reindexObject(idxs=["review_state", "getDateReceived", ])
+        # receive the AR's sample
+        sample = self.getSample()
+        if not skip(sample, 'receive', peek=True):
+            # unless this is a secondary AR
+            if workflow.getInfoFor(sample, 'review_state') == 'sample_due':
+                workflow.doActionFor(sample, 'receive')
+        # receive all analyses in this AR.
+        analyses = self.getAnalyses(review_state='sample_due')
+        for analysis in analyses:
+            if not skip(analysis, 'receive'):
+                workflow.doActionFor(analysis.getObject(), 'receive')
+
+    def workflow_script_preserve(self):
+        if skip(self, "preserve"):
+            return
+        workflow = getToolByName(self, 'portal_workflow')
+        # transition our sample
+        sample = self.getSample()
+        if not skip(sample, "preserve", peek=True):
+            workflow.doActionFor(sample, "preserve")
+
+    def workflow_script_submit(self):
+        if skip(self, "submit"):
+            return
+        self.reindexObject(idxs=["review_state", ])
+
+    def workflow_script_sampling_workflow(self):
+        if skip(self, "sampling_workflow"):
+            return
+        sample = self.getSample()
+        if sample.getSamplingDate() > DateTime():
+            sample.future_dated = True
+
+    def workflow_script_no_sampling_workflow(self):
+        if skip(self, "no_sampling_workflow"):
+            return
+        sample = self.getSample()
+        if sample.getSamplingDate() > DateTime():
+            sample.future_dated = True
+
+    def workflow_script_attach(self):
+        if skip(self, "attach"):
+            return
+        self.reindexObject(idxs=["review_state", ])
+        # Don't cascade. Shouldn't be attaching ARs for now (if ever).
+        return
+
+    def workflow_script_sample(self):
+        if skip(self, "sample"):
+            return
+        # transition our sample
+        workflow = getToolByName(self, 'portal_workflow')
+        sample = self.getSample()
+        if not skip(sample, "sample", peek=True):
+            workflow.doActionFor(sample, "sample")
+
+    # def workflow_script_to_be_preserved(self):
+    #     if skip(self, "to_be_preserved"):
+    #         return
+    #     pass
+
+    # def workflow_script_sample_due(self):
+    #     if skip(self, "sample_due"):
+    #         return
+    #     pass
+
+    # def workflow_script_retract(self):
+    #     if skip(self, "retract"):
+    #         return
+    #     pass
+
+    def workflow_script_verify(self):
+        if skip(self, "verify"):
+            return
+        self.reindexObject(idxs=["review_state", ])
+        if not "verify all analyses" in self.REQUEST['workflow_skiplist']:
+            # verify all analyses in this AR.
+            analyses = self.getAnalyses(review_state='to_be_verified')
+            for analysis in analyses:
+                doActionFor(analysis.getObject(), "verify")
+
+    def workflow_script_publish(self):
+        if skip(self, "publish"):
+            return
+        self.reindexObject(idxs=["review_state", "getDatePublished", ])
+        if not "publish all analyses" in self.REQUEST['workflow_skiplist']:
+            # publish all analyses in this AR. (except not requested ones)
+            analyses = self.getAnalyses(review_state='verified')
+            for analysis in analyses:
+                doActionFor(analysis.getObject(), "publish")
+
+    def workflow_script_reinstate(self):
+        if skip(self, "reinstate"):
+            return
+        self.reindexObject(idxs=["cancellation_state", ])
+        # activate all analyses in this AR.
+        analyses = self.getAnalyses(cancellation_state='cancelled')
+        for analysis in analyses:
+            doActionFor(analysis.getObject(), 'reinstate')
+
+    def workflow_script_cancel(self):
+        if skip(self, "cancel"):
+            return
+        self.reindexObject(idxs=["cancellation_state", ])
+        # deactivate all analyses in this AR.
+        analyses = self.getAnalyses(cancellation_state='active')
+        for analysis in analyses:
+            doActionFor(analysis.getObject(), 'cancel')
+
 
 atapi.registerType(AnalysisRequest, PROJECTNAME)

@@ -20,17 +20,8 @@ checkPermission = context.portal_membership.checkPermission
 if workflow.getInfoFor(context, 'cancellation_state', 'active') == "cancelled":
     return False
 
-# Only Analysis needs to have dependencies checked
-if context.portal_type == "Analysis":
-    for d in context.getDependencies():
-        review_state = workflow.getInfoFor(d, 'review_state')
-        if review_state in ('to_be_sampled', 'to_be_preserved', 'sample_due',
-                            'sample_received', 'attachment_due', 'to_be_verified'):
-            return False
-
 # All kinds of analyses get their submitter and verifier compared
-if context.portal_type in ("Analysis",
-                           "ReferenceAnalysis",
+if context.portal_type in ("ReferenceAnalysis",
                            "DuplicateAnalysis"):
 
     # May we verify results that we ourself submitted?
