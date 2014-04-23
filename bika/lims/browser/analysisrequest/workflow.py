@@ -329,6 +329,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
             methods = self.request.form.get('Method', [{}])[0]
             instruments = self.request.form.get('Instrument', [{}])[0]
+            analysts = self.request.form.get('Analyst', [{}])[0]
 
             # discover which items may be submitted
             submissable = []
@@ -361,6 +362,10 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                             analysis.setInstrument(instruments[uid])
                             instrument = rc.lookupObject(instruments[uid])
                             instrument.addAnalysis(analysis)
+
+                # Need to save the analyst?
+                if uid in analysts and analysis_active:
+                    analysis.setAnalyst(analysts[uid]);
 
                 if uid not in results or not results[uid]:
                     continue
