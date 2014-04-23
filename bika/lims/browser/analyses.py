@@ -547,9 +547,9 @@ class AnalysesView(BikaListingView):
                 instrument = None
 
             if service.getInstrumentEntryOfResults() == False:
-                item['Instrument'] = _('Manually')
+                item['Instrument'] = _('Manual')
                 msgtitle = _("Instrument entry of results not allowed for %s") % service.Title()
-                item['replace']['Instrument'] = '<a href="#" title="%s">%s</a>' % (msgtitle, _('Manually'))
+                item['replace']['Instrument'] = '<a href="#" title="%s">%s</a>' % (msgtitle, _('Manual'))
             elif can_set_instrument and instrument:
                 # Show the dropbox only if at least one instrument available
                 voc = self.get_instruments_vocabulary(obj)
