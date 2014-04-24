@@ -827,6 +827,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
                 for i in bsc(portal_type='Calculation',
                              inactive_state = 'active')]
         items.sort(lambda x,y: cmp(x[1], y[1]))
+        items.insert(0, ('', _("None")))
         return DisplayList(list(items))
 
     def getCalculation(self):
