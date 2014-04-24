@@ -96,10 +96,12 @@ def initialize(context):
     from content.samplematrix import SampleMatrix
     from content.samplepartition import SamplePartition
     from content.samplepoint import SamplePoint
+    from content.storagelocation import StorageLocation
     from content.samplesfolder import SamplesFolder
     from content.sampletype import SampleType
     from content.samplingdeviation import SamplingDeviation
     from content.srtemplate import SRTemplate
+    from content.subgroup import SubGroup
     from content.supplier import Supplier
     from content.suppliercontact import SupplierContact
     from content.supplyorderfolder import SupplyOrderFolder
@@ -131,9 +133,11 @@ def initialize(context):
     from controlpanel.bika_sampleconditions import SampleConditions
     from controlpanel.bika_samplematrices import SampleMatrices
     from controlpanel.bika_samplepoints import SamplePoints
+    from controlpanel.bika_storagelocations import StorageLocations
     from controlpanel.bika_sampletypes import SampleTypes
     from controlpanel.bika_samplingdeviations import SamplingDeviations
     from controlpanel.bika_srtemplates import SRTemplates
+    from controlpanel.bika_subgroups import SubGroups
     from controlpanel.bika_suppliers import Suppliers
     from controlpanel.bika_worksheettemplates import WorksheetTemplates
 

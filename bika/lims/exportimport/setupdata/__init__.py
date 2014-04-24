@@ -3,6 +3,7 @@ from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import ISetupDataSetList
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims.utils import tmpID, to_unicode
+from bika.lims.utils import to_utf8
 from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from zope.interface import implements
@@ -10,6 +11,14 @@ from pkg_resources import resource_filename
 
 import re
 import transaction
+
+
+def Float(thing):
+    try:
+        f = float(thing)
+    except ValueError:
+        f = 0.0
+    return f
 
 
 class SetupDataSetList(SDL):
@@ -182,6 +191,21 @@ class WorksheetImporter:
             return None
         else:
             return brains[0].getObject()
+
+
+class Sub_Groups(WorksheetImporter):
+
+    def Import(self):
+        folder = self.context.bika_setup.bika_subgroups
+        for row in self.get_rows(3):
+            if 'title' in row and row['title']:
+                _id = folder.invokeFactory('SubGroup', id=tmpID())
+                obj = folder[_id]
+                obj.edit(title=row['title'],
+                         description=row['description'],
+                         SortKey=row['SortKey'])
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
 
 
 class Lab_Information(WorksheetImporter):
@@ -863,6 +887,34 @@ class Sample_Point_Sample_Types(WorksheetImporter):
                 samplepoints.append(samplepoint)
                 sampletype.setSamplePoints(samplepoints)
 
+class Storage_Locations(WorksheetImporter):
+
+    def Import(self):
+        setup_folder = self.context.bika_setup.bika_storagelocations
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        pc = getToolByName(self.context, 'portal_catalog')
+        for row in self.get_rows(3):
+            if not row['Address']:
+                continue
+
+            _id = setup_folder.invokeFactory('StorageLocation', id=tmpID())
+            obj = setup_folder[_id]
+            obj.edit(
+                title=row['Address'],
+                SiteTitle=row['SiteTitle'],
+                SiteCode=row['SiteCode'],
+                SiteDescription=row['SiteDescription'],
+                LocationTitle=row['LocationTitle'],
+                LocationCode=row['LocationCode'],
+                LocationDescription=row['LocationDescription'],
+                LocationType=row['LocationType'],
+                ShelfTitle=row['ShelfTitle'],
+                ShelfCode=row['ShelfCode'],
+                ShelfDescription=row['ShelfDescription'],
+            )
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
+
 
 class Sample_Conditions(WorksheetImporter):
 
@@ -1084,23 +1136,14 @@ class Analysis_Services(WorksheetImporter):
                 'hours': int(row['MaxTimeAllowed_hours'] and row['MaxTimeAllowed_hours'] or 0),
                 'minutes': int(row['MaxTimeAllowed_minutes'] and row['MaxTimeAllowed_minutes'] or 0),
             }
-            category = self.get_object(bsc, 'AnalysisCategory',
-                                       row.get('AnalysisCategory_title'))
-            department = self.get_object(bsc, 'Department',
-                                         row.get('Department_title'))
-            method = self.get_object(bsc, 'Method',
-                                     row.get('Method'))
-            instrument = self.get_object(bsc, 'Instrument',
-                                         row.get('Instrument_title'))
-            calculation = self.get_object(bsc, 'Calculation',
-                                          row.get('Calculation_title'))
-            container = self.get_object(bsc, 'Container',
-                                        row.get('Container_title'))
-            preservation = self.get_object(bsc, 'Preservation',
-                                           row.get('Preservation_title'))
-            priority = self.get_object(bsc, 'ARPriority',
-                                           row.get('Priority_title'))
-
+            category = self.get_object(bsc, 'AnalysisCategory', row.get('AnalysisCategory_title'))
+            department = self.get_object(bsc, 'Department', row.get('Department_title'))
+            method = self.get_object(bsc, 'Method', row.get('Method'))
+            instrument = self.get_object(bsc, 'Instrument', row.get('Instrument_title'))
+            calculation = self.get_object(bsc, 'Calculation', row.get('Calculation_title'))
+            container = self.get_object(bsc, 'Container', row.get('Container_title'))
+            preservation = self.get_object(bsc, 'Preservation', row.get('Preservation_title'))
+            priority = self.get_object(bsc, 'ARPriority', row.get('Priority_title'))
             obj.edit(
                 title=row['title'],
                 description=row.get('description', ''),
@@ -1113,15 +1156,13 @@ class Analysis_Services(WorksheetImporter):
                 Unit=row['Unit'] and row['Unit'] or None,
                 Precision=row['Precision'] and str(row['Precision']) or '0',
                 MaxTimeAllowed=MTA,
-                Price=row['Price'] and "%02f" % (
-                    float(row['Price'])) or "0,00",
-                BulkPrice=row['BulkPrice'] and "%02f" % (
-                    float(row['BulkPrice'])) or "0.00",
-                VAT=row['VAT'] and "%02f" % (float(row['VAT'])) or "0.00",
+                Price="%02f" % Float(row['Price']),
+                BulkPrice="%02f" % Float(row['BulkPrice']),
+                VAT="%02f" % Float(row['VAT']),
                 Method=method,
                 Instrument=instrument,
                 Calculation=calculation,
-                DuplicateVariation="%02f" % float(row['DuplicateVariation']),
+                DuplicateVariation="%02f" % Float(row['DuplicateVariation']),
                 Accredited=self.to_bool(row['Accredited']),
                 InterimFields=hasattr(self, 'service_interims') and self.service_interims.get(
                     row['title'], []) or [],
@@ -1432,8 +1473,8 @@ class Setup(WorksheetImporter):
             AutoLogOff=int(values['AutoLogOff']),
             ShowPricing=values.get('ShowPricing', True),
             Currency=values['Currency'],
-            MemberDiscount=str(float(values['MemberDiscount'])),
-            VAT=str(float(values['VAT'])),
+            MemberDiscount=str(Float(values['MemberDiscount'])),
+            VAT=str(Float(values['VAT'])),
             MinimumResults=int(values['MinimumResults']),
             BatchEmail=int(values['BatchEmail']),
             SamplingWorkflowEnabled=values['SamplingWorkflowEnabled'],
@@ -1756,13 +1797,13 @@ class Invoice_Batches(WorksheetImporter):
             obj = folder[_id]
             if not row['title']:
                 message = _("InvoiceBatch has no Title")
-                raise Exception(self.context.translate(message))
+                raise Exception(to_utf8(self.context.translate(message)))
             if not row['start']:
                 message = _("InvoiceBatch has no Start Date")
-                raise Exception(self.context.translate(message))
+                raise Exception(to_utf8(self.context.translate(message)))
             if not row['end']:
                 message = _("InvoiceBatch has no End Date")
-                raise Exception(self.context.translate(message))
+                raise Exception(to_utf8(self.context.translate(message)))
             obj.edit(
                 title=row['title'],
                 BatchStartDate=row['start'],

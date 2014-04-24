@@ -7,6 +7,7 @@ from bika.lims.browser import BrowserView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from bika.lims.browser.analysis import isOutOfRange
 from bika.lims.utils import formatDateQuery, formatDateParms
+from bika.lims.utils import to_utf8
 from gpw import plot
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
@@ -247,7 +248,7 @@ class Report(BrowserView):
             if MinimumResults <= len(dict([(d, d) for d in result_dates])):
                 _plotscript = str(plotscript)%{
                     'title': "",
-                    'xlabel': self.context.translate(_("Date Sampled")),
+                    'xlabel': to_utf8(self.context.translate(_("Date Sampled"))),
                     'ylabel': unit and unit or '',
                     'x_start': "%s" % min(result_dates).strftime(self.date_format_long),
                     'x_end': "%s" % max(result_dates).strftime(self.date_format_long),
@@ -272,7 +273,7 @@ class Report(BrowserView):
 
             table = {
                 'title': "%s: %s" % (
-                    self.context.translate(_("Analysis Service")),
+                    to_utf8(self.context.translate(_("Analysis Service"))),
                     service_title),
                 'parms': parms,
                 'columns': ['Request ID',
@@ -286,16 +287,17 @@ class Report(BrowserView):
 
             self.report_data['tables'].append(table)
 
+        translate = self.context.translate
+
         ## footnotes
         if out_of_range_count:
             msgid = _("Analyses out of range")
-            translate = self.context.translate
             self.report_data['footnotes'].append(
-                "%s %s" % (error_icon, translate(msgid)))
+                "%s %s" % (error_icon, to_utf8(translate(msgid))))
         if in_shoulder_range_count:
             msgid = _("Analyses in error shoulder range")
             self.report_data['footnotes'].append(
-                "%s %s" % (warning_icon, self.context.translate(msgid)))
+                "%s %s" % (warning_icon, to_utf8(translate(msgid))))
 
         self.report_data['parms'].append(
             {"title": _("Analyses out of range"),
@@ -304,7 +306,7 @@ class Report(BrowserView):
             {"title": _("Analyses in error shoulder range"),
              "value": in_shoulder_range_count})
 
-        title = self.context.translate(header)
+        title = to_utf8(translate(header))
         if titles:
             title += " (%s)" % " ".join(titles)
         return {

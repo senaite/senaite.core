@@ -1,3 +1,4 @@
+# see https://gist.github.com/malthe/704910
 import imp
 import sys
 

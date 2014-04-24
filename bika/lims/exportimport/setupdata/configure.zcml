@@ -3,6 +3,12 @@
     xmlns:browser="http://namespaces.zope.org/browser">
 
     <adapter
+      name="Sub_Groups"
+      factory="bika.lims.exportimport.setupdata.Sub_Groups"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
       name="AR_Priorities"
       factory="bika.lims.exportimport.setupdata.AR_Priorities"
       provides="bika.lims.interfaces.ISetupDataImporter"
@@ -259,5 +265,12 @@
       factory="bika.lims.exportimport.setupdata.Lab_Products"
       provides="bika.lims.interfaces.ISetupDataImporter"
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Storage_Locations"
+      factory="bika.lims.exportimport.setupdata.Storage_Locations"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
 
 </configure>

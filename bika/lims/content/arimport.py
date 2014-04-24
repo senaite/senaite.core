@@ -46,7 +46,7 @@ schema = BikaSchema.copy() + Schema((
         searchable = True,
         widget = FileWidget(
             label = _("Original File"),
-            visible={'edit': 'invisible', 
+            visible={'edit': 'invisible',
                      'view': 'visible', 'add': 'invisible'},
         ),
     ),
@@ -370,6 +370,7 @@ class ARImport(BaseFolder):
                 ClientSampleID = aritem.getClientSid(),
                 SampleType = aritem.getSampleType(),
                 DateSampled = sample_date,
+                SamplingDate = sample_date,
                 DateReceived = DateTime(),
                 )
             sample._renameAfterCreation()
@@ -573,6 +574,7 @@ class ARImport(BaseFolder):
                 ClientSampleID = aritem.getClientSid(),
                 SampleType = aritem.getSampleType(),
                 DateSampled = sample_date,
+                SamplingDate = sample_date,
                 DateReceived = DateTime(),
                 Remarks = aritem.getClientRemarks(),
                 )
@@ -593,7 +595,6 @@ class ARImport(BaseFolder):
                 logging.error(
                     'Invalid Priority: validation should have prevented this')
                 priority = ''
-                import pdb; pdb.set_trace()
             else:
                 priority = priorities[0].getObject()
 
@@ -768,7 +769,7 @@ class ARImport(BaseFolder):
         valid_batch = True
         uid = self.UID()
         batches = pc({
-                    'portal_type': 'ARImport', 
+                    'portal_type': 'ARImport',
                     'path': {'query': '/'.join(client.getPhysicalPath())},
                     })
         for brain in batches:
@@ -791,8 +792,8 @@ class ARImport(BaseFolder):
             valid_batch = False
 
         # validate contact
-        contact_found = False 
-        cc_contact_found = False 
+        contact_found = False
+        cc_contact_found = False
 
         if self.getContact():
             contact_found = True
@@ -829,7 +830,7 @@ class ARImport(BaseFolder):
         # validate sample point
         samplepoint = self.getSamplePoint()
         if samplepoint != None:
-            points = pc(portal_type='SamplePoint', 
+            points = pc(portal_type='SamplePoint',
                 Title=samplepoint)
 
         sampletypes = \

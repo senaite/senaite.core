@@ -1,6 +1,6 @@
 *** Settings ***
 
-Library          Selenium2Library  timeout=10  implicit_wait=0.2
+Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
 Resource         keywords.txt
 Library          bika.lims.testing.Keywords
@@ -14,7 +14,6 @@ Suite Teardown   Close All Browsers
 *** Variables ***
 
 ${input_identifier} =  input#arimport_file
-${PATH_TO_TEST} =
 
 *** Test Cases ***
 

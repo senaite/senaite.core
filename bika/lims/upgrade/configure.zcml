@@ -245,4 +245,76 @@
         handler="bika.lims.upgrade.to3022.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Add Storage Locations"
+        description="Add Storage Locations for ARs and Samples"
+        source="3022"
+        destination="3023"
+        handler="bika.lims.upgrade.to3023.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Set Default Priorities"
+        description="Set the default priority on existing ARs"
+        source="3023"
+        destination="3024"
+        handler="bika.lims.upgrade.to3024.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Reimport some tools due to pur-cr3 merge"
+        description=""
+        source="3024"
+        destination="3025"
+        handler="bika.lims.upgrade.to3025.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Hide Attachments from client views"
+        description=""
+        source="3025"
+        destination="3026"
+        handler="bika.lims.upgrade.to3026.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Hide broken queries"
+        description=""
+        source="3026"
+        destination="3027"
+        handler="bika.lims.upgrade.to3027.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Remove persistent broken line-items"
+        description=""
+        source="3027"
+        destination="3028"
+        handler="bika.lims.upgrade.to3028.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Fix Supply Order permissions"
+        description=""
+        source="3028"
+        destination="3029"
+        handler="bika.lims.upgrade.to3029.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Fix ARImports folder permissions"
+        description=""
+        source="3029"
+        destination="3030"
+        handler="bika.lims.upgrade.to3030.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
 </configure>

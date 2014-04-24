@@ -7,9 +7,9 @@
     i18n_domain="bika">
 
 <!--
-	All permissions are defined here.
-	They are also defined in permissions.py.
-	The two files must be kept in sync.
+    All permissions are defined here.
+    They are also defined in permissions.py.
+    The two files must be kept in sync.
 /-->
 
 # Add Permissions:
@@ -29,12 +29,13 @@
 <permission id="bika.lims.permissions.AddSample" title="BIKA: Add Sample"/>
 <permission id="bika.lims.permissions.AddSupplyOrder" title="BIKA: Add SupplyOrder"/>
 <permission id="bika.lims.permissions.AddSamplePoint" title="BIKA: Add SamplePoint"/>
+<permission id="bika.lims.permissions.AddStorageLocation" title="BIKA: Add StorageLocation"/>
 <permission id="bika.lims.permissions.AddSampleMatrix" title="BIKA: Add SampleMatrix"/>
 <permission id="bika.lims.permissions.AddSamplePartition" title="BIKA: Add SamplePartition"/>
 <permission id="bika.lims.permissions.AddSamplingDeviation" title="BIKA: Add SamplingDeviation"/>
 <permission id="bika.lims.permissions.AddQuery" title="BIKA: Add Query"/>
 <permission id="bika.lims.permissions.AddSRTemplate" title="BIKA: Add SRTemplate"/>
-<permission id="bika.lims.ManageOrders" title="BIKA: Manage Orders"/>
+<permission id="bika.lims.permissions.AddSubGroup" title="BIKA: Add Sub-group"/>
 <permission id="bika.lims.DispatchOrder" title="BIKA: Dispatch Order"/>
 <permission id="bika.lims.ManageARImport" title="BIKA: Manage ARImport"/>
 <permission id="bika.lims.permissions.ManageARPriority" title="BIKA: Manage ARPriority"/>
@@ -124,6 +125,11 @@
 #       'sample_registered', 'to_be_sampled', 'sampled', 'to_be_preserved',
 #       'sample_due', 'sample_received', 'to_be_verified', 'attachment_due'
 <permission id="bika.lims.EditSamplePartition" title="BIKA: Edit Sample Partition"/>
+
+# Edit Client
+# ----------------------------------------------
+# Allows access to 'Edit' and 'Contacts' tabs from Client View
+<permission id="bika.lims.EditClient" title="BIKA: Edit Client"/>
 
 # Batch specific permissions
 # ----------------------------------------------

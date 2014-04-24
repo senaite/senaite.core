@@ -13,7 +13,7 @@ Description:,,,,,,,,,,
 Transitions,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager
 Modify portal content,N,N,Y,N,N,N,N,N,N,N
-Delete objects,N,N,Y,N,N,N,N,N,N,Y
+Delete objects,N,N,Y,N,N,N,N,N,N,N
 ,,,,,,,,,,
 [State],,,,,,,,,,
 Id:,pending,,,,,,,,,
@@ -21,8 +21,8 @@ Title:,Order pending,,,,,,,,,
 Description:,,,,,,,,,,
 Transitions,dispatch,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager
-Modify portal content,N,N,Y,Y,N,N,N,Y,Y,Y
-Delete objects,N,N,Y,Y,N,N,N,Y,Y,Y
+Modify portal content,N,N,Y,Y,N,N,N,N,Y,Y
+Delete objects,N,N,Y,Y,N,N,N,N,Y,Y
 ,,,,,,,,,,
 [Transition],,,,,,,,,,
 Id:,dispatch,,,,,,,,,

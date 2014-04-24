@@ -1,14 +1,18 @@
 *** Settings ***
 
-Library                 Selenium2Library  timeout=10  implicit_wait=0.2
-Resource                keywords.txt
-Suite Setup             Start browser
-Suite Teardown          Close All Browsers
+Library          Selenium2Library  timeout=5  implicit_wait=0.2
+Library          String
+Library          DebugLibrary
+Resource         keywords.txt
+Library          bika.lims.testing.Keywords
+Resource         plone/app/robotframework/selenium.robot
+Resource         plone/app/robotframework/saucelabs.robot
+Variables        plone/app/testing/interfaces.py
+Variables        bika/lims/tests/variables.py
+Suite Setup      Start browser
+Suite Teardown   Close All Browsers
 
 *** Variables ***
-
-${SELENIUM_SPEED}  0
-${PLONEURL}        http://localhost:55001/plone
 
 *** Test Cases ***
 
@@ -36,6 +40,7 @@ Test AR specs UI and alerts
 
     # select Apple pulp, there is a Client spec
     Select from dropdown                ar_0_SampleType         Apple Pulp
+    sleep        1
     # when selecting a sampletype the spec is always set if a default is found
     Textfield Value Should Be           ar_0_Specification      Apple Pulp
     # That default spec gets automatically selected
@@ -131,10 +136,13 @@ when selecting a Spec it should be set on the AR.
     Wait until page contains            saved
     go to                               ${PLONEURL}/clients/client-1/BAR-0001-R01/base_view
 
-    Page should contain element         xpath=.//*[contains(@id, 'Specification')]/span[@value='Barley']
+    #spec as an edit field:
+    # Page should contain element         xpath=.//*[contains(@id, 'Specification')]/span[@value='Barley']
+    #spec as a view field:
+    Page should contain element         xpath=.//a[@href='http://localhost:55001/plone/bika_setup/bika_analysisspecs/analysisspec-9']
 
 *** Keywords ***
 
 Start browser
-    Open browser                http://localhost:55001/plone/login
-    Set selenium speed          0
+    Open browser                ${PLONEURL}/login_form
+    Set selenium speed          ${SELENIUM_SPEED}

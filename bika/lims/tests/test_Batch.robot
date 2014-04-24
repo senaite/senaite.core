@@ -1,8 +1,12 @@
 *** Settings ***
 
-Library          Selenium2Library  timeout=10  implicit_wait=0.2
+Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
+Library          DebugLibrary
 Resource         keywords.txt
+Library          bika.lims.testing.Keywords
+Resource         plone/app/robotframework/selenium.robot
+Resource         plone/app/robotframework/saucelabs.robot
 Variables        plone/app/testing/interfaces.py
 Variables        bika/lims/tests/variables.py
 Suite Setup      Start browser
@@ -28,6 +32,69 @@ Test Batch-AR
     # Log in  test_labmanager1  test_labmanager1
     # Verify AR  AP-0001-R01
 
+Test batch inherited ARs
+    Log in                              test_labmanager         test_labmanager
+
+    ## Add batch
+    Go to                               ${PLONEURL}/batches
+    Click Link                          Add
+    Wait until page contains            Add Batch
+    Input Text                          title                   First Batch
+    select from dropdown                Client                  Happy
+    Input Text                          description             contains ARs.
+    Click Button                        Save
+
+    go to                               ${PLONEURL}/batches/B-001/analysisrequests
+    select from list                    col_count           6
+    click link                          Add new
+    wait until page contains            Request new analyses
+    Select from dropdown                ar_0_Contact            Rita
+    Click element                       css=.ContactCopyButton
+    SelectDate                          ar_0_SamplingDate       1
+    Click element                       css=.SamplingDateCopyButton
+    Select from dropdown                ar_0_SampleType         Water
+    Click element                       css=.SampleTypeCopyButton
+    Click element                       css=#cat_lab_Metals
+    Select checkbox                     xpath=//input[@title='Calcium'][1]
+    Click element                       xpath=//img[@name='Calcium']
+    Set Selenium Timeout                30
+    Click Button                        Save
+    Wait until page contains            created
+    Set Selenium Timeout                10
+
+    ## Add second batch
+    Go to                               ${PLONEURL}/batches
+    Click Link                          Add
+    Input Text                          title           Second Batch
+    select from dropdown                Client          Happy
+    Input Text                          description     Inherit, delete, rinse, repeat
+    Click Button                        Save
+
+    go to                               ${PLONEURL}/batches/B-002/base_edit
+    click element                       InheritedObjectsUI_more
+    click element                       InheritedObjectsUI_more
+    click element                       InheritedObjectsUI_more
+    click element                       InheritedObjectsUI_more
+    select from dropdown                InheritedObjectsUI-Title-0    0001
+    select from dropdown                InheritedObjectsUI-Title-1    0002
+    select from dropdown                InheritedObjectsUI-Title-2    0003
+    select from dropdown                InheritedObjectsUI-Title-3    0004
+    select from dropdown                InheritedObjectsUI-Title-4    0005
+    Click button                        Save
+
+    go to                               ${PLONEURL}/batches/B-002/base_edit
+    Click element                       delete-row-0
+    Click button                        Save
+    go to                               ${PLONEURL}/batches/B-002/base_edit
+    page should not contain element     delete-row-5
+    Click element                       delete-row-0
+    Click element                       delete-row-1
+    Click element                       delete-row-2
+    Click element                       delete-row-3
+    select from dropdown                InheritedObjectsUI-Title-4    First Batch
+    click button                        Save
+    go to                               ${PLONEURL}/batches/B-002/batchbook
+
 
 *** Keywords ***
 
@@ -43,6 +110,7 @@ Add Batch
     Wait until page contains     Add Batch
     Input text                   description  Just a regular batch
     Select from dropdown         Client     Happy
+    SelectDate                   BatchDate       1
     Click Button                 xpath=//input[@value="Save"]
     Wait until page contains     saved
 

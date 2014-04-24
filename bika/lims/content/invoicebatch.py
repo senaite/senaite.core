@@ -1,14 +1,16 @@
 """InvoiceBatch is a container for Invoice instances.
 """
-from DateTime import DateTime
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.public import *
-from Products.CMFCore import permissions
 from bika.lims import bikaMessageFactory as _
 from bika.lims.config import ManageInvoices, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.content.invoice import InvoiceLineItem
 from bika.lims.interfaces import IInvoiceBatch
 from bika.lims.utils import get_invoice_item_description
+from DateTime import DateTime
+from Products.Archetypes.public import *
+from Products.CMFCore import permissions
+from zope.container.contained import ContainerModifiedEvent
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -156,21 +158,33 @@ class InvoiceBatch(BaseFolder):
             InvoiceDate=DateTime(),
         )
         invoice.processForm()
+        invoice.invoice_lineitems = []
         for item in items:
             lineitem = InvoiceLineItem()
             if item.portal_type == 'AnalysisRequest':
-                lineitem['Item'] = Date(item.getDatePublished())
+                lineitem['ItemDate'] = item.getDatePublished()
                 lineitem['ClientOrderNumber'] = item.getClientOrderNumber()
                 item_description = get_invoice_item_description(item)
                 l = [item.getRequestID(), item_description]
                 description = ' '.join(l)
+                lineitem['ItemDescription'] = description
+                ar_inv = item.getInvoice()
+                if ar_inv:
+                    lineitem['Subtotal'] = str(ar_inv.getSubtotal())
+                    lineitem['VATTotal'] = str(ar_inv.getVATTotal())
+                    lineitem['Total'] = str(ar_inv.getTotal())
+                else:
+                    lineitem['Subtotal'] = ""
+                    lineitem['VATTotal'] = ""
+                    lineitem['Total'] = ""
             elif item.portal_type == 'SupplyOrder':
                 lineitem['ItemDate'] = item.getDateDispatched()
                 description = item.getOrderNumber()
-            lineitem['ItemDescription'] = description
-            lineitem['Subtotal'] = str(item.getSubtotal())
-            lineitem['VATTotal'] = str(item.getVATTotal())
-            lineitem['Total'] = str(item.getTotal())
+                lineitem['ItemDescription'] = description
+                lineitem['Subtotal'] = '%0.2f' % item.getSubtotal()
+                lineitem['VATTotal'] = '%0.2f' % item.getVATTotal()
+                lineitem['Total'] = '%0.2f' % item.getTotal()
+            invoice.invoice_lineitems.append(lineitem)
         invoice.reindexObject()
 
     security.declarePublic('current_date')
@@ -191,10 +205,12 @@ registerType(InvoiceBatch, PROJECTNAME)
 def ObjectModifiedEventHandler(instance, event):
     """ Various types need automation on edit.
     """
-    if not hasattr(instance, 'portal_type'):
-        return
+    # if not hasattr(instance, 'portal_type'):
+    #     return
 
-    if instance.portal_type == 'InvoiceBatch':
+    # if instance.portal_type == 'InvoiceBatch':
+
+    if not isinstance(event, ContainerModifiedEvent):
         """ Create batch invoices
         """
         start = instance.getBatchStartDate()

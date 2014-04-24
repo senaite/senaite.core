@@ -1,6 +1,14 @@
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName
 from bika.lims import enum
+from bika.lims import PMF
+from bika.lims.interfaces import IJSONReadExtender
+from bika.lims.utils import to_utf8
+from Products.CMFCore.interfaces import IContentish
+from zope.interface import Interface
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.WorkflowCore import WorkflowException
+from zope.component import adapts
+from zope.interface import implements
+from bika.lims.jsonapi import get_include_fields
 
 
 def skip(instance, action, peek=False, unskip=False):
@@ -37,20 +45,39 @@ def doActionFor(instance, action_id):
         try:
             workflow.doActionFor(instance, action_id)
             actionperformed = True
-        except WorkflowException, e:
+        except WorkflowException as e:
             message = str(e)
             pass
     return actionperformed, message
 
 
-def default(self, state_info):
-    # Delegate to action on instance
-    action_id = state_info['transition'].getId()
-    prefix = 'workflow_script_'
-    method_id = prefix + action_id
-    method = getattr(state_info['object'], method_id, None)
-    if method is not None:
-        method(state_info)
+def AfterTransitionEventHandler(instance, event):
+    """This will run the workflow_script_* on any
+    content type that has one.
+    """
+    # creation doesn't have a 'transition'
+    if not event.transition:
+        return
+    key = 'workflow_script_' + event.transition.id
+    method = getattr(instance, key, False)
+    if method:
+        method()
+
+
+def get_workflow_actions(obj):
+    """ Compile a list of possible workflow transitions for this object
+    """
+
+    def translate(id):
+        translate = obj.translate
+        return to_utf8(translate(PMF(id + "_transition_title")))
+
+    workflow = getToolByName(obj, 'portal_workflow')
+    actions = [{"id": t["id"],
+                "title": translate(t["id"])}
+               for t in workflow.getTransitionsFor(obj)]
+
+    return actions
 
 
 def getCurrentState(obj, stateflowid):
@@ -81,3 +108,20 @@ CancellationState = enum(active='active',
 
 CancellationTransitions = enum(cancel='cancel',
                                reinstate='reinstate')
+
+
+class JSONReadExtender(object):
+
+    """- Adds the list of possible transitions to each object, if 'transitions'
+    is specified in the include_fields.
+    """
+
+    implements(IJSONReadExtender)
+
+    def __init__(self, context):
+        self.context = context
+
+    def __call__(self, request, data):
+        include_fields = get_include_fields(request)
+        if include_fields and "transitions" in include_fields:
+            data['transitions'] = get_workflow_actions(self.context)

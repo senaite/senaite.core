@@ -15,7 +15,6 @@ msgstr ""
 "Domain: DOMAIN\n"
 
 #
-# File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/ARPriorities.xml, line: -1
 msgid "AR Priorities"
 msgstr ""
@@ -155,6 +154,11 @@ msgstr ""
 #
 # File: ../profiles/default/types/Batch.xml, line: -1
 msgid "Batch"
+msgstr ""
+
+#
+# File: ../profiles/default/types/Batch.xml, line: -1
+msgid "Batch Book"
 msgstr ""
 
 #
@@ -403,7 +407,6 @@ msgid "Methods"
 msgstr ""
 
 #
-# File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/Client.xml, line: -1
 msgid "Orders"
 msgstr ""
@@ -467,7 +470,6 @@ msgid "Queries"
 msgstr ""
 
 #
-# File: ../profiles/default/actions.xml, line: -1
 # File: ../profiles/default/types/Query.xml, line: -1
 msgid "Query"
 msgstr ""
@@ -634,6 +636,28 @@ msgstr ""
 #
 # File: ../profiles/default/types/ReferenceSample.xml, line: -1
 msgid "Sticker"
+msgstr ""
+
+#
+# File: ../profiles/default/types/StorageLocation.xml, line: -1
+msgid "Storage Location"
+msgstr ""
+
+#
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/StorageLocations.xml, line: -1
+msgid "Storage Locations"
+msgstr ""
+
+#
+# File: ../profiles/default/types/SubGroup.xml, line: -1
+msgid "Sub-group"
+msgstr ""
+
+#
+# File: ../profiles/default/controlpanel.xml, line: -1
+# File: ../profiles/default/types/SubGroups.xml, line: -1
+msgid "Sub-groups"
 msgstr ""
 
 #

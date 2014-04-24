@@ -242,5 +242,58 @@ $(document).ready(function(){
             });
     });
 
+    // Change the instruments to be shown for an analysis when the method selected changes
+    $('table.bika-listing-table select.listing_select_entry[field="Method"]').change(function() {
+        var muid = $(this).val();
+        if (muid) {
+            // Update the instruments selector
+            $(this).closest('tr').find('img.alert-instruments-invalid').remove();
+            var instrselector = $(this).closest('tr').find('select.listing_select_entry[field="Instrument"]');
+            var selectedinstr = $(instrselector).val();
+            $(instrselector).find('option').remove();
+            // Get the available instruments for the method
+            $.ajax({
+                url: window.portal_url + "/get_method_instruments",
+                type: 'POST',
+                data: {'_authenticator': $('input[name="_authenticator"]').val(),
+                       'uid': muid },
+                dataType: 'json'
+            }).done(function(data) {
+                var invalid = []
+                var valid = false;
+                $.each(data, function(index, value) {
+                    if (value['isvalid'] == true) {
+                        var selected = "";
+                        if (selectedinstr == value['uid']) {
+                            selected = "selected";
+                        }
+                        $(instrselector).append('<option value="'+value['uid']+'" '+selected+'>'+value['title']+'</option>');
+                        valid = true;
+                    } else {
+                        invalid.push(value['title'])
+                    }
+                });
+                if (!valid) {
+                    $(instrselector).append('<option selected value=""></option>');
+                }
+                if (invalid.length > 0) {
+                    var title = _("Invalid instruments are not shown: ")+invalid.join(", ");
+                    $(instrselector).parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+title+'")">');
+                }
+            }).fail(function() {
+                $(instrselector).append('<option selected value=""></option>');
+            });
+
+        } else {
+            // Clear instruments selector
+            $(instrselector).find('option').remove();
+            $(instrselector).append('<option selected value=""></option>');
+        }
+    });
+    // Remove empty options
+    $('table.bika-listing-table select.listing_select_entry[field="Method"]').find('option[value=""]').remove();
+    $('table.bika-listing-table select.listing_select_entry[field="Method"]').change();
+
+
 });
 }(jQuery));

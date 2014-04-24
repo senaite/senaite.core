@@ -67,19 +67,23 @@ class HeaderTableView(BrowserView):
                    'html': adapter(field)}
         else:
             if field.getType().find("Reference") > -1:
-                target = field.get(self.context)
-                if target:
+                targets = field.get(self.context)
+                if targets:
+                    if not type(targets) == list:
+                        targets = [targets,]
+                    ret = {}
                     sm = getSecurityManager()
-                    if sm.checkPermission(view, target):
-                        a = "<a href='%s'>%s</a>" % (target.absolute_url(),
-                                                     target.Title())
+                    if all([sm.checkPermission(view, t) for t in targets]):
+                        a = ["<a href='%s'>%s</a>" % (target.absolute_url(),
+                                                      target.Title())
+                             for target in targets]
                         ret = {'fieldName': fieldname,
                                'mode': 'structure',
-                               'html': a}
+                               'html': ", ".join(a)}
                     else:
                         ret = {'fieldName': fieldname,
                                'mode': 'structure',
-                               'html': target.Title()}
+                               'html': ", ".join([t.Title() for t in targets])}
                 else:
                     ret = {'fieldName': fieldname,
                            'mode': 'structure',

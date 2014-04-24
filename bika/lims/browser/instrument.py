@@ -9,6 +9,7 @@ from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import QCANALYSIS_TYPES
+from bika.lims.utils import to_utf8
 from bika.lims.permissions import *
 from operator import itemgetter
 from bika.lims.browser import BrowserView
@@ -18,6 +19,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zExceptions import Forbidden
+from operator import itemgetter
 
 import plone
 import json
@@ -394,12 +396,12 @@ class InstrumentReferenceAnalysesView(AnalysesView):
         analyses = self.context.getReferenceAnalyses()
         asuids = [an.UID() for an in analyses]
         self.catalog = 'bika_analysis_catalog'
-        self.contentFilter = {'UID': asuids,
-                              'sort_on': 'getResultCaptureDate'}
+        self.contentFilter = {'UID': asuids}
         self.anjson = {}
 
     def folderitems(self):
         items = AnalysesView.folderitems(self)
+        items.sort(key=itemgetter('CaptureDate'), reverse=True)
         for i in range(len(items)):
             obj = items[i]['obj']
             imgtype = ""
@@ -479,8 +481,6 @@ class InstrumentReferenceAnalysesView(AnalysesView):
                 except:
                     pass
 
-        # Show the latest Results
-        items.reverse()
         return items
 
     def get_analyses_json(self):
@@ -574,7 +574,7 @@ class InstrumentCertificationsView(BikaListingView):
             elif uid == latest:
                 # Latest valid certificate
                 img = "<img title='%s' src='%s/++resource++bika.lims.images/exclamation.png'/>&nbsp;" \
-                % (self.context.translate(_('Out of date')), self.portal_url)
+                % (to_utf8(self.context.translate(_('Out of date'))), self.portal_url)
                 items[x]['replace']['getValidTo'] = '%s %s' % (items[x]['getValidTo'], img)
                 items[x]['state_class'] = '%s %s' % (items[x]['state_class'], 'inactive outofdate')
             else:

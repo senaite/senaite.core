@@ -18,6 +18,7 @@ from bika.lims.interfaces import IFieldIcons
 from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
 from bika.lims.utils import isActive
+from bika.lims.utils import to_utf8
 from operator import itemgetter
 from plone.app.content.browser import tableview
 from plone.app.content.browser.foldercontents import FolderContentsView, FolderContentsTable
@@ -26,7 +27,6 @@ from plone.i18n.normalizer.interfaces import IIDNormalizer
 from zope.component import getAdapters
 from zope.component import getUtility
 from zope.component._api import getMultiAdapter
-from zope.i18n import translate
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implements
 from zope.interface import Interface
@@ -53,11 +53,13 @@ class WorkflowAction:
     def __init__(self, context, request):
         self.destination_url = ""
         self.context = context
+
         self.request = request
         # Save context UID for benefit of event subscribers.
         self.request['context_uid'] = hasattr(self.context, 'UID') and \
             self.context.UID() or ''
         self.portal = getToolByName(self.context, 'portal_url').getPortalObject()
+
         self.portal_url = self.portal.absolute_url()
 
     def _get_form_workflow_action(self):
@@ -111,13 +113,13 @@ class WorkflowAction:
             if items:
                 trans, dest = self.submitTransition(action, came_from, items)
                 if trans:
-                    message = self.context.translate(PMF('Changes saved.'))
+                    message = to_utf8(self.context.translate(PMF('Changes saved.')))
                     self.context.plone_utils.addPortalMessage(message, 'info')
                 if dest:
                     self.request.response.redirect(dest)
                     return
             else:
-                message = self.context.translate(_('No items selected'))
+                message = to_utf8(self.context.translate(_('No items selected')))
                 self.context.plone_utils.addPortalMessage(message, 'warn')
 
         # Do nothing
@@ -149,7 +151,7 @@ class WorkflowAction:
                     if success:
                         transitioned.append(item.id)
                     else:
-                        message = self.context.translate(message)
+                        message = to_utf8(self.context.translate(message))
                         self.context.plone_utils.addPortalMessage(message, 'error')
         # automatic label printing
         if transitioned and action == 'receive' \
@@ -284,6 +286,7 @@ class BikaListingView(BrowserView):
         self.view_url = self.base_url
 
         self.translate = self.context.translate
+        self.show_all = False
 
     def _process_request(self):
         # Use this function from a template that is using bika_listing_table
@@ -522,7 +525,7 @@ class BikaListingView(BrowserView):
         workflow = getToolByName(context, 'portal_workflow')
         site_properties = portal_properties.site_properties
         norm = getUtility(IIDNormalizer).normalize
-        show_all = self.request.get('show_all', '').lower() == 'true'
+        show_all = self.request.get('show_all', '').lower() == 'true' or self.show_all==True
         pagenumber = int(self.request.get('pagenumber', 1) or 1)
         pagesize = self.pagesize
         start = (pagenumber - 1) * pagesize
@@ -549,7 +552,6 @@ class BikaListingView(BrowserView):
                 brains = self.contentsMethod(self.contentFilter)
         else:
             brains = self.contentsMethod(self.contentFilter)
-
         results = []
         self.page_start_index = ""
         for i, obj in enumerate(brains):
@@ -585,11 +587,10 @@ class BikaListingView(BrowserView):
             else:
                 type_title_msgid = obj.portal_type
 
-            url_href_title = u'%s at %s: %s' % \
-                (self.context.translate(type_title_msgid,
-                                        context = self.request),
-                 path,
-                 safe_unicode(description))
+            url_href_title = '%s at %s: %s' % (
+                to_utf8(self.context.translate(type_title_msgid, context=self.request)),
+                path,
+                to_utf8(description))
 
             modified = self.ulocalized_time(obj.modified()),
 
@@ -642,9 +643,9 @@ class BikaListingView(BrowserView):
             )
             try:
                 review_state = workflow.getInfoFor(obj, 'review_state')
-                state_title = self.context.translate(
+                state_title = to_utf8(self.context.translate(
                     PMF(workflow.getTitleForStateOnType(review_state,
-                                                    obj.portal_type)))
+                                                    obj.portal_type))))
             except:
                 review_state = 'active'
                 state_title = None
@@ -680,7 +681,7 @@ class BikaListingView(BrowserView):
                 if not auid:
                     continue
                 alerts = adapter()
-                logger.info(str(alerts))
+                # logger.info(str(alerts))
                 if alerts and auid in alerts:
                     if auid in self.field_icons:
                         self.field_icons[auid].extend(alerts[auid])
@@ -752,6 +753,12 @@ class BikaListingView(BrowserView):
             actions = [a for a in actions
                        if a['id'] not in review_state['hide_transitions']]
 
+        # cheat: until workflow_action is abolished, all URLs defined in
+        # GS workflow setup will be ignored, and the default will apply.
+        # (that means, WorkflowAction-bound URL is called).
+        for i, action in enumerate(actions):
+            actions[i]['url'] = ''
+
         # if there is a review_state['some_state']['custom_actions'] attribute
         # on the BikaListingView, add these actions to the list.
         if 'custom_actions' in review_state:
@@ -760,7 +767,7 @@ class BikaListingView(BrowserView):
 
         for a,action in enumerate(actions):
             actions[a]['title'] = \
-                self.translate(PMF(actions[a]['id'] + "_transition_title"))
+                to_utf8(self.translate(PMF(actions[a]['id'] + "_transition_title")))
         return actions
 
 class BikaListingTable(tableview.Table):

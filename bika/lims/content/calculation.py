@@ -1,28 +1,31 @@
 from AccessControl import ClassSecurityInfo
-from Products.ATExtensions.ateapi import RecordsField as RecordsField
-from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
-from Products.CMFCore.permissions import ModifyPortalContent, View
-from Products.CMFCore.utils import getToolByName
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
-from bika.lims.interfaces import ICalculation
-from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from zope.interface import implements
-from zope.site.hooks import getSite
+from bika.lims.interfaces import ICalculation
+from bika.lims.utils import to_utf8
+from Products.Archetypes.public import *
+from Products.Archetypes.references import HoldingReference
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from Products.CMFCore.permissions import ModifyPortalContent, View
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.WorkflowCore import WorkflowException
 from zExceptions import Redirect
-import sys,re
-from bika.lims import PMF, bikaMessageFactory as _
+from zope.interface import implements
+import sys
+import re
+import transaction
+
 
 schema = BikaSchema.copy() + Schema((
     InterimFieldsField('InterimFields',
-        schemata = 'Calculation',
-        widget = BikaRecordsWidget(
-            label = _("Calculation Interim Fields"),
-            description =_("Define interim fields such as vessel mass, dilution factors, "
+        schemata='Calculation',
+        widget=BikaRecordsWidget(
+            label=_("Calculation Interim Fields"),
+            description=_("Define interim fields such as vessel mass, dilution factors, "
                            "should your calculation require them. The field title specified "
                            "here will be used as column headers and field descriptors where "
                            "the interim fields are displayed. If 'Apply wide' is enabled "
@@ -32,27 +35,27 @@ schema = BikaSchema.copy() + Schema((
         )
     ),
     HistoryAwareReferenceField('DependentServices',
-        schemata = 'Calculation',
-        required = 1,
-        multiValued = 1,
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('AnalysisService',),
-        relationship = 'CalculationAnalysisService',
-        referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
-            visible = False,
-            label = _("Dependent Analyses"),
+        schemata='Calculation',
+        required=1,
+        multiValued=1,
+        vocabulary_display_path_bound=sys.maxsize,
+        allowed_types=('AnalysisService',),
+        relationship='CalculationAnalysisService',
+        referenceClass=HoldingReference,
+        widget=ReferenceWidget(
+            checkbox_bound=0,
+            visible=False,
+            label=_("Dependent Analyses"),
         ),
     ),
     TextField('Formula',
-        schemata = 'Calculation',
-        validators = ('formulavalidator',),
-        default_content_type = 'text/plain',
-        allowable_content_types = ('text/plain',),
+        schemata='Calculation',
+        validators=('formulavalidator',),
+        default_content_type='text/plain',
+        allowable_content_types=('text/plain',),
         widget = TextAreaWidget(
-            label = _("Calculation Formula"),
-            description = _(
+            label=_("Calculation Formula"),
+            description=_(
                 "calculation_formula_description",
                 "<p>The formula you type here will be dynamically calculated "
                 "when an analysis using this calculation is displayed.</p>"
@@ -73,6 +76,7 @@ schema['title'].schemata = 'Description'
 schema['description'].widget.visible = True
 schema['description'].schemata = 'Description'
 
+
 class Calculation(BaseFolder, HistoryAwareMixin):
     security = ClassSecurityInfo()
     displayContentsTab = False
@@ -80,6 +84,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
     implements(ICalculation)
 
     _at_rename_after_creation = True
+
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
@@ -96,7 +101,6 @@ class Calculation(BaseFolder, HistoryAwareMixin):
 
         self.getField('InterimFields').set(self, new_value)
 
-
     def setFormula(self, Formula=None):
         """Set the Dependent Services from the text of the calculation Formula
         """
@@ -108,8 +112,8 @@ class Calculation(BaseFolder, HistoryAwareMixin):
             DependentServices = []
             keywords = re.compile(r"\[([^\]]+)\]").findall(Formula)
             for keyword in keywords:
-                service = bsc(portal_type = "AnalysisService",
-                              getKeyword = keyword)
+                service = bsc(portal_type="AnalysisService",
+                              getKeyword=keyword)
                 if service:
                     DependentServices.append(service[0].getObject())
 
@@ -167,5 +171,48 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         walk(self.getBackReferences('AnalysisServiceCalculation'))
 
         return backrefs
+
+    def workflow_script_activate(self):
+
+        wf = getToolByName(self, 'portal_workflow')
+        pu = getToolByName(self, 'plone_utils')
+
+        # A calculation cannot be re-activated if services it depends on
+        # are deactivated.
+        services = self.getDependentServices()
+        inactive_services = []
+        for service in services:
+            if wf.getInfoFor(service, "inactive_state") == "inactive":
+                inactive_services.append(service.Title())
+        if inactive_services:
+            msg = _("Cannot activate calculation, because the following "
+                    "service dependencies are inactive: ${inactive_services}",
+                    mapping={'inactive_services': ", ".join(inactive_services)})
+            message = to_utf8(self.translate(msg))
+            pu.addPortalMessage(message, 'error')
+            transaction.get().abort()
+            raise WorkflowException
+
+    def workflow_script_deactivate(self):
+
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        pu = getToolByName(self, 'plone_utils')
+
+        # A calculation cannot be deactivated if active services are using it.
+        services = bsc(portal_type="AnalysisService", inactive_state="active")
+        calc_services = []
+        for service in services:
+            service = service.getObject()
+            calc = service.getCalculation()
+            if calc and calc.UID() == self.UID():
+                calc_services.append(service.Title())
+        if calc_services:
+            msg = _('Cannot deactivate calculation, because it is in use by the '
+                    'following services: ${calc_services}',
+                    mapping={'calc_services': ", ".join(calc_services)})
+            message = to_utf8(self.translate(msg))
+            pu.addPortalMessage(message, 'error')
+            transaction.get().abort()
+            raise WorkflowException
 
 registerType(Calculation, PROJECTNAME)

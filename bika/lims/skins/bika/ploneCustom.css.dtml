@@ -928,11 +928,15 @@ div.uncertaintydiv {
     margin-bottom: 0.1em;
 }
 table.uncertaintytable {
-    background: none repeat scroll 0 0 #D3D3AD;
-    border: 3px solid #636321;
+    background: none repeat scroll 0 0 #FFd3A0;
+    border: 2px solid #222;
     margin: 0 0;
     text-align: center !important;
 }
+table.uncertaintytable td {
+    padding: 5px !important;
+}
+
 .emphatic {
     color: #FF0000;
     font-weight: bold;

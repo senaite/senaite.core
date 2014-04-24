@@ -1091,6 +1091,12 @@ function setTemplate(column, template_title){
 					poc_cat_services[poc_title][service.CategoryUID] = [];
 				}
 				poc_cat_services[poc_title][service.CategoryUID].push(service.UID);
+	    // if (analyses[i]['service_uid'] == null) {
+	    //     // Exclude empty objects from being processed.
+	    //     // Sometimes, template_data['Analyses'] returns an array with an
+	    //     // undefined array value.
+	    //     continue;
+	    // }
 			}
 			// expand categories, select, and enable controls for template services
 			for (var p in poc_cat_services) {
@@ -1256,6 +1262,9 @@ $(document).ready(function() {
 	// var y = curDate.getFullYear();
 	// var limitString = "1900:" + y;
 	// var dateFormat = _("date_format_short_datepicker");
+	// if (dateFormat == 'date_format_short_datepicker'){
+	// 	dateFormat = 'yy-mm-dd';
+	// }
 
 	ar_rename_elements();
 	ar_referencewidget_lookups();

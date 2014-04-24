@@ -8,6 +8,7 @@ from bika.lims.interfaces import IFieldIcons
 from bika.lims.permissions import *
 from bika.lims.utils import isActive
 from bika.lims.utils import getUsers
+from bika.lims.utils import to_utf8
 from DateTime import DateTime
 from operator import itemgetter
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -60,18 +61,15 @@ class AnalysesView(BikaListingView):
             'Method': {
                 'title': _('Method'),
                 'sortable': False,
-                'toggle': True,
-                'type':'choices'},
+                'toggle': True},
             'Instrument': {
                 'title': _('Instrument'),
                 'sortable': False,
-                'toggle': True,
-                'type':'choices'},
+                'toggle': True},
             'Analyst': {
                 'title': _('Analyst'),
                 'sortable': False,
-                'toggle': True,
-                'type':'choices'},
+                'toggle': True},
             'state_title': {
                 'title': _('Status'),
                 'sortable': False},
@@ -91,7 +89,7 @@ class AnalysesView(BikaListingView):
                 'sortable': False},
             'retested': {
                 'title': "<img title='%s' src='%s/++resource++bika.lims.images/retested.png'/>"%\
-                    (context.translate(_('Retested')), self.portal_url),
+                    (to_utf8(context.translate(_('Retested'))), self.portal_url),
                 'type':'boolean',
                 'sortable': False},
             'Attachments': {
@@ -207,6 +205,7 @@ class AnalysesView(BikaListingView):
         """
         ret = []
         if analysis:
+            muids = []
             methods = []
             service = analysis.getService()
             if service.getInstrumentEntryOfResults() == False:
@@ -218,8 +217,9 @@ class AnalysesView(BikaListingView):
                 instruments = service.getInstruments()
                 for ins in instruments:
                     method = ins.getMethod()
-                    if method and method not in methods:
+                    if method and method.UID() not in muids:
                        methods.append(method)
+                       muids.append(method.UID())
 
             for method in methods:
                 ret.append({'ResultValue': method.UID(),
@@ -327,7 +327,8 @@ class AnalysesView(BikaListingView):
 
         self.interim_fields = {}
         self.interim_columns = {}
-        # self.specs = {}
+        self.specs = {}
+        show_methodinstr_columns = False
         for i, item in enumerate(items):
             # self.contentsMethod may return brains or objects.
             obj = hasattr(items[i]['obj'], 'getObject') and \
@@ -381,10 +382,58 @@ class AnalysesView(BikaListingView):
             items[i]['Attachments'] = ''
 
             item['allow_edit'] = []
+            client_or_lab = ""
 
-            Analyst = obj.getAnalyst()
-            items[i]['Analyst'] = Analyst
-            item['choices']['Analyst'] = self.getAnalysts()
+            if obj.portal_type == 'ReferenceAnalysis':
+                items[i]['st_uid'] = obj.aq_parent.UID()
+            elif obj.portal_type == 'DuplicateAnalysis' and \
+                obj.getAnalysis().portal_type == 'ReferenceAnalysis':
+                items[i]['st_uid'] = obj.aq_parent.UID()
+            else:
+                if self.context.portal_type == 'AnalysisRequest':
+                    sample = self.context.getSample()
+                    st_uid = sample.getSampleType().UID()
+                    items[i]['st_uid'] = st_uid
+                    if st_uid not in self.specs:
+                        proxies = bsc(portal_type = 'AnalysisSpec',
+                                      getSampleTypeUID = st_uid)
+                elif self.context.portal_type == "Worksheet":
+                    if obj.portal_type == "DuplicateAnalysis":
+                        sample = obj.getAnalysis().getSample()
+                    else:
+                        sample = obj.aq_parent.getSample()
+                    st_uid = sample.getSampleType().UID()
+                    items[i]['st_uid'] = st_uid
+                    if st_uid not in self.specs:
+                        proxies = bsc(portal_type = 'AnalysisSpec',
+                                      getSampleTypeUID = st_uid)
+                elif self.context.portal_type == 'Sample':
+                    st_uid = self.context.getSampleType().UID()
+                    items[i]['st_uid'] = st_uid
+                    if st_uid not in self.specs:
+                        proxies = bsc(portal_type = 'AnalysisSpec',
+                                      getSampleTypeUID = st_uid)
+                else:
+                    proxies = []
+                if st_uid not in self.specs:
+                    for spec in (p.getObject() for p in proxies):
+                        if spec.getClientUID() == obj.getClientUID():
+                            client_or_lab = 'client'
+                        elif spec.getClientUID() == self.context.bika_setup.bika_analysisspecs.UID():
+                            client_or_lab = 'lab'
+                        else:
+                            continue
+                        for keyword, results_range in \
+                            spec.getResultsRangeDict().items():
+                            # hidden form field 'specs' keyed by sampletype uid:
+                            # {st_uid: {'lab/client':{keyword:{min,max,error}}}}
+                            if st_uid in self.specs:
+                                if client_or_lab in self.specs[st_uid]:
+                                    self.specs[st_uid][client_or_lab][keyword] = results_range
+                                else:
+                                    self.specs[st_uid][client_or_lab] = {keyword: results_range}
+                            else:
+                                self.specs[st_uid] = {client_or_lab: {keyword: results_range}}
 
             if checkPermission(ManageBika, self.context):
                 service_uid = service.UID()
@@ -418,6 +467,14 @@ class AnalysesView(BikaListingView):
                   or
                   (poc != 'field' and getSecurityManager().checkPermission(EditResults, obj)) )
 
+
+            allowed_method_states = ['to_be_sampled',
+                                     'to_be_preserved',
+                                     'sample_received',
+                                     'sample_registered',
+                                     'sampled',
+                                     'assigned']
+
             # Prevent from being edited if the instrument assigned
             # is not valid (out-of-date or uncalibrated), except if
             # the analysis is a QC with assigned status
@@ -440,29 +497,35 @@ class AnalysesView(BikaListingView):
                    (items[i]['calculation'] and self.interim_fields[obj.UID()]):
                     items[i]['allow_edit'].append('retested')
 
-            allowed_method_states = ['to_be_sampled',
-                                     'to_be_preserved',
-                                     'sample_received',
-                                     'sample_registered',
-                                     'sampled',
-                                     'assigned']
 
             # TODO: Only the labmanager must be able to change the method
             # can_set_method = getSecurityManager().checkPermission(SetAnalysisMethod, obj)
             can_set_method = can_edit_analysis \
                 and item['review_state'] in allowed_method_states
-            method = obj.getMethod() if hasattr(obj, 'getMethod') \
+            method = obj.getMethod() \
+                        if hasattr(obj, 'getMethod') and obj.getMethod() \
                         else service.getMethod()
-            if can_set_method:
-                item['Method'] = method.UID() if method else ''
-                item['choices']['Method'] = self.get_methods_vocabulary(obj)
-                item['allow_edit'].append('Method')
+
+            if can_set_method and method:
+                # Show the dropbox only if at least one method available
+                voc = self.get_methods_vocabulary(obj)
+                if voc:
+                    item['Method'] = method.UID() if method else ''
+                    item['choices']['Method'] = voc
+                    item['allow_edit'].append('Method')
+                else:
+                    item['Method'] = method.Title()
+                    item['replace']['Method'] = "<a href='%s'>%s</a>" % \
+                        (method.absolute_url(), method.Title())
+                show_methodinstr_columns = True
             elif method:
                 item['Method'] = method.Title()
                 item['replace']['Method'] = "<a href='%s'>%s</a>" % \
                         (method.absolute_url(), method.Title())
+                show_methodinstr_columns = True
             else:
                 item['Method'] = ''
+                item['replace']['Method'] = ''
 
             # TODO: Instrument selector dynamic behavior in worksheet Results
             # Only the labmanager must be able to change the instrument to be used. Also,
@@ -471,20 +534,49 @@ class AnalysesView(BikaListingView):
             can_set_instrument = service.getInstrumentEntryOfResults() \
                 and can_edit_analysis \
                 and item['review_state'] in allowed_method_states
-            instrument = obj.getInstrument() if hasattr(obj, 'getInstrument') else None
+            instrument = None
+            if service.getInstrumentEntryOfResults() \
+                and hasattr(obj, 'getInstrument') \
+                and obj.getInstrument():
+                    instrument = obj.getInstrument()
+            elif service.getInstrumentEntryOfResults():
+                    instrument = service.getInstrument()
+
+            if method and instrument \
+                and instrument.UID() not in method.getInstrumentUIDs():
+                instrument = None
+
             if service.getInstrumentEntryOfResults() == False:
-                item['Instrument'] = ''
-                item['replace']['Instrument'] = _("Manual entry")
-            elif can_set_instrument:
-                item['Instrument'] = instrument.UID() if instrument else ''
-                item['choices']['Instrument'] = self.get_instruments_vocabulary(obj)
-                item['allow_edit'].append('Instrument')
+                item['Instrument'] = _('Manual')
+                msgtitle = _("Instrument entry of results not allowed for %s") % service.Title()
+                item['replace']['Instrument'] = '<a href="#" title="%s">%s</a>' % (msgtitle, _('Manual'))
+            elif can_set_instrument and instrument:
+                # Show the dropbox only if at least one instrument available
+                voc = self.get_instruments_vocabulary(obj)
+                if voc:
+                    item['Instrument'] = instrument.UID() if instrument else ''
+                    item['choices']['Instrument'] = voc
+                    item['allow_edit'].append('Instrument')
+                else:
+                    item['Instrument'] = instrument.Title()
+                    item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
+                        (instrument.absolute_url(), instrument.Title())
+                show_methodinstr_columns = True
             elif instrument:
                 item['Instrument'] = instrument.Title()
                 item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
                         (instrument.absolute_url(), instrument.Title())
+                show_methodinstr_columns = True
             else:
                 item['Instrument'] = ''
+                item['replace']['Instrument'] = ''
+
+            # Sets the analyst assigned to this analysis
+            if can_edit_analysis:
+                items[i]['Analyst'] = obj.getAnalyst()
+                item['choices']['Analyst'] = self.getAnalysts()
+            else:
+                items[i]['Analyst'] = obj.getAnalystName()
 
             # If the user can attach files to analyses, show the attachment col
             can_add_attachment = \
@@ -518,61 +610,73 @@ class AnalysesView(BikaListingView):
                         else:
                             items[i]['formatted_result'] = result
                     else:
+                        belowmin = False
+                        abovemax = False
+                        itspecs = self.specs.get(items[i].get('st_uid', {}), {})
+                        tgtspecs = client_or_lab or 'lab'
+                        itspecs = itspecs.get(tgtspecs,{}).get(items[i]['Keyword'],{})
+                        hidemin = itspecs.get('hidemin', '')
+                        hidemax = itspecs.get('hidemax', '')
                         try:
-                            items[i]['formatted_result'] = precision and \
-                                str("%%.%sf" % precision) % float(result) or result
+                            belowmin = hidemin and float(result) < float(hidemin) or False
                         except:
-                            items[i]['formatted_result'] = result
-                            indet = self.context.translate(_('Indet'))
-                            if result == indet:
-                                # 'Indeterminate' results flag a specific error
-                                Indet = self.context.translate(_("Indeterminate result"))
-                                items[i]['after']['Result'] = \
-                                    '<img width="16" height="16" title="%s"' % Indet + \
-                                    'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
-                                    (self.portal_url)
-                            # result being unfloatable is no longer an error.
-                            # else:
-                            #     # result being un-floatable, is an error.
-                            #     msg = self.context.translate(_("Invalid result"))
-                            #     items[i]['after']['Result'] = \
-                            #         '<img width="16" height="16" title="%s"' % msg + \
-                            #         'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
-                            #         (self.portal_url)
+                            belowmin = False
+                            pass
+                        try:
+                            abovemax = hidemax and float(result) > float(hidemax) or False
+                        except:
+                            abovemax = False
+                            pass
+
+                        if belowmin == True:
+                            items[i]['formatted_result'] = '< %s' % hidemin
+                        elif abovemax == True:
+                            items[i]['formatted_result'] = '> %s' % hidemax
+                        else:
+                            try:
+                                items[i]['formatted_result'] = precision and \
+                                    str("%%.%sf" % precision) % float(result) or result
+                            except:
+                                items[i]['formatted_result'] = result
+                                indet = to_utf8(self.context.translate(_('Indet')))
+                                if result == indet:
+                                    # 'Indeterminate' results flag a specific error
+                                    Indet = to_utf8(self.context.translate(_("Indeterminate result")))
+                                    items[i]['after']['Result'] = \
+                                        '<img width="16" height="16" title="%s"' % Indet + \
+                                        'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
+                                        (self.portal_url)
+                                # result being unfloatable is no longer an error.
+                                # else:
+                                #     # result being un-floatable, is an error.
+                                #     msg = self.context.translate(_("Invalid result"))
+                                #     items[i]['after']['Result'] = \
+                                #         '<img width="16" height="16" title="%s"' % msg + \
+                                #         'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
+                                #         (self.portal_url)
                 items[i]['Uncertainty'] = obj.getUncertainty(result)
 
-                spec = self.get_active_spec_dict(obj)
-
-                if spec:
-                    min_val = spec.get('min', '')
-                    min_str = ">{0}".format(min_val) if min_val else ''
-                    max_val = spec.get('max', '')
-                    max_str = "<{0}".format(max_val) if max_val else ''
-                    error_val = spec.get('error', '')
-                    error_str = "{0}%".format(error_val) if error_val else ''
-                    rngstr = ",".join([x for x in [min_str, max_str, error_str] if x])
-                else:
-                    rngstr = ""
-
-                items[i]['Specification'] = rngstr
-
-                # # This is redundant, done already, in bika_listing.py.
-                # for name, adapter in getAdapters((obj, ), IFieldIcons):
-                #     auid = obj.UID()
-                #     alerts = adapter(specification=spec)
-                #     if alerts:
-                #         if auid in self.field_icons:
-                #             self.field_icons[auid].extend(alerts[auid])
-                #         else:
-                #             self.field_icons[auid] = alerts[auid]
             else:
+                items[i]['Specification'] = ""
                 if 'Result' in items[i]['allow_edit']:
                     items[i]['allow_edit'].remove('Result')
                 items[i]['before']['Result'] = \
                     '<img width="16" height="16" ' + \
                     'src="%s/++resource++bika.lims.images/to_follow.png"/>' % \
                     (self.portal_url)
-
+            # Everyone can see valid-ranges
+            spec = self.get_active_spec_dict(obj)
+            if spec:
+                min_val = spec.get('min', '')
+                min_str = ">{0}".format(min_val) if min_val else ''
+                max_val = spec.get('max', '')
+                max_str = "<{0}".format(max_val) if max_val else ''
+                error_val = spec.get('error', '')
+                error_str = "{0}%".format(error_val) if error_val else ''
+                rngstr = ",".join([x for x in [min_str, max_str, error_str] if x])
+            else:
+                rngstr = ""
+            items[i]['Specification'] = rngstr
             # Add this analysis' interim fields to the interim_columns list
             for f in self.interim_fields[obj.UID()]:
                 if f['keyword'] not in self.interim_columns and not f.get('hidden', False):
@@ -605,7 +709,7 @@ class AnalysesView(BikaListingView):
                     items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                         (self.ulocalized_time(duedate, long_format=1),
                          self.portal_url,
-                         self.context.translate(_("Late Analysis")))
+                         to_utf8(self.context.translate(_("Late Analysis"))))
 
             # Submitting user may not verify results (admin can though)
             if items[i]['review_state'] == 'to_be_verified' and \
@@ -623,7 +727,7 @@ class AnalysesView(BikaListingView):
                     if self_submitted:
                         items[i]['after']['state_title'] = \
                              "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" % \
-                             (self.context.translate(_("Cannot verify: Submitted by current user")))
+                             (to_utf8(self.context.translate(_("Cannot verify: Submitted by current user"))))
                 except WorkflowException:
                     pass
 
@@ -638,9 +742,9 @@ class AnalysesView(BikaListingView):
                         ws = br[0]
                         items[i]['after']['state_title'] = \
                              "<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='%s'/></a>" % \
-                             (ws.absolute_url(), self.context.translate(
+                             (ws.absolute_url(), to_utf8(self.context.translate(
                                  _("Assigned to: ${worksheet_id}",
-                                   mapping={'worksheet_id': ws.id})))
+                                   mapping={'worksheet_id': ws.id}))))
 
         # the TAL requires values for all interim fields on all
         # items, so we set blank values in unused cells
@@ -712,6 +816,13 @@ class AnalysesView(BikaListingView):
         self.json_interim_fields = json.dumps(self.interim_fields)
         self.items = items
 
+        # Method and Instrument columns must be shown or hidden at the
+        # same time, because the value assigned to one causes
+        # a value reassignment to the other (one method can be performed
+        # by different instruments)
+        self.columns['Method']['toggle'] = show_methodinstr_columns
+        self.columns['Instrument']['toggle'] = show_methodinstr_columns
+
         return items
 
 
@@ -735,6 +846,7 @@ class QCAnalysesView(AnalysesView):
                                             'getReferenceAnalysesGroupID',
                                             'Partition',
                                             'Method',
+                                            'Instrument',
                                             'Result',
                                             'Uncertainty',
                                             'CaptureDate',

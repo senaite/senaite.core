@@ -145,34 +145,43 @@ $(document).ready(function(){
 
 
 	// Workflow Action button was clicked.
-	$('.workflow_action_button').live('click', function(event){
+	$(".workflow_action_button").live("click", function(event){
 
 		// The submit buttons would like to put the translated action title
 		// into the request.  Insert the real action name here to prevent the
 		// WorkflowAction handler from having to look it up (painful/slow).
-		var form = $(this).parents('form');
-		var form_id = $(form).attr('id');
-		$(form).append("<input type='hidden' name='workflow_action_id' value='"+$(this).attr('transition')+"'>");
+		var form = $(this).parents("form");
+		var form_id = $(form).attr("id");
+		$(form).append("<input type='hidden' name='workflow_action_id' value='"+$(this).attr("transition")+"'>");
 
-		if(this.id=='submit_transition'){
+		// This submit_transition cheat fixes a bug where hitting submit caused
+		// form to be posted before ajax calculation is returned
+		if(this.id=="submit_transition"){
 			var focus = $(".ajax_calculate_focus");
 			if(focus.length > 0){
 				var e = $(focus[0]);
-				if ($(e).attr('focus_value') == $(e).val()){
+				if ($(e).attr("focus_value") == $(e).val()){
 					// value did not change - transparent blur handler.
 					$(e).removeAttr("focus_value");
 					$(e).removeClass("ajax_calculate_focus");
 				} else {
 					// The calcs.js code is now responsible for submitting
 					// this form when the calculation ajax is complete
-					$(e).parents('form').attr('submit_after_calculation', 1);
+					$(e).parents("form").attr("submit_after_calculation", 1);
 					event.preventDefault();
 				}
 			}
 		}
 
-	});
+		// If a custom_actions action with a URL is clicked
+		// the form will be submitted there
+		if ($(this).attr("url") !== ""){
+			form = $(this).parents("form");
+			$(form).attr("action", $(this).attr("url"));
+			$(form).submit();
+		}
 
+	});
 
 
 	function positionTooltip(event){

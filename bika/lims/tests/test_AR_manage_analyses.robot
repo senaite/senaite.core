@@ -1,21 +1,22 @@
 *** Settings ***
 
-Library          Selenium2Library  timeout=10  implicit_wait=0.2
+Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
-Library  Remote  ${PLONE_URL}/RobotRemote
 Resource         keywords.txt
+Library          bika.lims.testing.Keywords
+Resource         plone/app/robotframework/selenium.robot
+Resource         plone/app/robotframework/saucelabs.robot
 Variables        plone/app/testing/interfaces.py
+Variables        bika/lims/tests/variables.py
 Suite Setup      Start browser
 Suite Teardown   Close All Browsers
 
 *** Variables ***
 
-${SELENIUM_SPEED}       0
-${PLONEURL}             http://localhost:55001/plone
-
 *** Test Cases ***
 
 Test Manage Analyses
+    Log in     test_labmanager    test_labmanager
     Create AnalysisRequests
     H2O-0001-R01 state should be sample_due
     Set Selenium Timeout        300
@@ -40,9 +41,8 @@ Test Manage Analyses
 *** Keywords ***
 
 Start browser
-    Log in                      test_labmanager  test_labmanager
-    Set selenium speed   ${SELENIUM_SPEED}
-    Open browser         http://localhost:55001/plone/login
+    Open browser                http://localhost:55001/plone
+    Set selenium speed          ${SELENIUM_SPEED}
 
 Create AnalysisRequests
     [Documentation]     Add and receive some ARs.
@@ -57,6 +57,7 @@ Create AnalysisRequests
     Select Date                 ar_0_SamplingDate           1
     select from dropdown        ar_0_Contact                Rita
     Select from dropdown        ar_0_Template               Bore
+    sleep    2
     Set Selenium Timeout        30
     Click Button                Save
     Wait until page contains    created

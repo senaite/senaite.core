@@ -1,0 +1,54 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="bika">
+
+    <browser:page
+      for="bika.lims.interfaces.IBatch"
+      name="analysisrequests"
+      class="bika.lims.browser.batch.analysisrequests.AnalysisRequestsView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IBatch"
+      name="samples"
+      class="bika.lims.browser.batch.samples.SamplesView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IBatch"
+      name="batchbook"
+      class="bika.lims.browser.batch.batchbook.BatchBookView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IBatch"
+      name="publish"
+      class="bika.lims.browser.batch.publish.PublishView"
+      permission="bika.lims.Publish"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IBatch"
+      name="getAnalysisContainers"
+      class="bika.lims.browser.batch.getAnalysisContainers"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <adapter
+      factory="bika.lims.browser.batch.ClientContactVocabularyFactory"
+      for="bika.lims.interfaces.IBatch"
+      provides="bika.lims.interfaces.IDisplayListVocabulary"
+      name="getContacts"
+    />
+
+</configure>

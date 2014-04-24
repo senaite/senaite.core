@@ -21,7 +21,7 @@ class View(BrowserView):
         context.setConstrainTypesMode(1)
         context.setLocallyAllowedTypes(())
         # Collect general data
-        self.orderDate = context.getOrderDate()
+        self.orderDate = self.ulocalized_time(context.getOrderDate())
         self.contact = context.getContact()
         self.contact = self.contact.getFullname() if self.contact else ''
         self.subtotal = '%.2f' % context.getSubtotal()

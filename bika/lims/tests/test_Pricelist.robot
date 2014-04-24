@@ -1,9 +1,11 @@
 *** Settings ***
 
-Library          Selenium2Library  timeout=10  implicit_wait=0.2
+Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
-# Library         DebugLibrary
 Resource         keywords.txt
+Library          bika.lims.testing.Keywords
+Resource         plone/app/robotframework/selenium.robot
+Resource         plone/app/robotframework/saucelabs.robot
 Variables        plone/app/testing/interfaces.py
 Variables        bika/lims/tests/variables.py
 Suite Setup      Start browser
@@ -20,7 +22,6 @@ Test Pricelist-AR
 
     #Add Pricelist
     Go to                        http://localhost:55001/plone/pricelists
-    Sleep   300
     Wait until page contains     Add
     Click Link                   Add
     Wait until page contains     Add Pricelist

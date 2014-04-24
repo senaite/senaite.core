@@ -6,6 +6,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from gpw import plot
+from bika.lims.utils import to_utf8
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
@@ -186,7 +187,7 @@ class Report(BrowserView):
 
         table = {
             'title': "%s: %s (%s)" % (
-                self.context.translate(_("Analysis Service")),
+                to_utf8(self.context.translate(_("Analysis Service"))),
                 service.Title(),
                 service.getKeyword()
             ),
@@ -201,18 +202,19 @@ class Report(BrowserView):
 
         self.report_data['tables'].append(table)
 
+        translate = self.context.translate
+
         ## footnotes
         if out_of_range_count:
             msgid = _("Analyses out of range")
-            translate = self.context.translate
             self.report_data['footnotes'].append(
-                "%s %s" % (error_icon, translate(msgid)))
+                "%s %s" % (error_icon, to_utf8(translate(msgid))))
 
         self.report_data['parms'].append(
             {"title": _("Analyses out of range"),
              "value": out_of_range_count})
 
-        title = self.context.translate(header)
+        title = to_utf8(translate(header))
         if titles:
             title += " (%s)" % " ".join(titles)
         return {

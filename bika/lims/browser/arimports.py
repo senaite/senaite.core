@@ -13,6 +13,7 @@ from Products.statusmessages.interfaces import IStatusMessage
 from bika.lims import PMF, logger, bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.interfaces import IClient
 from bika.lims.permissions import *
 from bika.lims.utils import tmpID
 from plone.app.layout.globals.interfaces import IViewView
@@ -70,7 +71,9 @@ class GlobalARImportsView(BikaListingView):
                 'portal_type': 'ARImport',
                 'sort_on':'sortable_title',
                 }
-        self.context_actions = \
+        self.context_actions = {}
+        if IClient.providedBy(self.context):
+            self.context_actions = \
                 {_('AR Import'):
                            {'url': 'arimport_add',
                             'icon': '++resource++bika.lims.images/add.png'}}
@@ -160,9 +163,11 @@ class GlobalARImportsView(BikaListingView):
         return toggles
 
     def getAR(self):
-        import pdb; pdb.set_trace()
+        pass
+
 
 class ClientARImportsView(GlobalARImportsView):
+
     def __init__(self, context, request):
         super(ClientARImportsView, self).__init__(context, request)
         self.contentFilter = {

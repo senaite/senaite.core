@@ -4,6 +4,12 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
 
+    <subscriber
+      for="bika.lims.interfaces.IInvoiceBatch
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler="bika.lims.content.invoicebatch.ObjectModifiedEventHandler"
+    />
+
     <browser:page
       for="bika.lims.interfaces.IInvoiceBatch"
       name="base_view"

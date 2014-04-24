@@ -10,6 +10,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
 import sys
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import to_utf8
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -63,7 +64,19 @@ schema = BikaSchema.copy() + Schema((
             label=_("Manual entry of results"),
             description=_("The results for the Analysis Services that "
                           "use this method can be set manually"),
+            modes = ('edit'),
         )
+    ),
+
+    # Only shown in readonly view. Not in edit view
+    ComputedField('ManualEntryOfResultsViewField',
+        expression = "context.isManualEntryOfResults()",
+        widget = BooleanWidget(
+            label=_("Manual entry of results"),
+            description=_("The results for the Analysis Services that "
+                          "use this method can be set manually"),
+            modes = ('view'),
+        ),
     ),
 
     # Calculations associated to this method. The analyses services
@@ -110,7 +123,7 @@ class Method(BaseFolder):
             Otherwise, returns False by default, but its value can be
             modified using the ManualEntryOfResults Boolean Field
         """
-        return len(getInstruments()) == 0 or getManualEntryOfResults()
+        return len(self.getInstruments()) == 0 or self.getManualEntryOfResults()
 
     def _getCalculations(self):
         """ Returns a DisplayList with the available Calculations
@@ -122,7 +135,7 @@ class Method(BaseFolder):
                 for c in bsc(portal_type='Calculation',
                              inactive_state = 'active')]
         items.sort(lambda x,y: cmp(x[1], y[1]))
-        items.insert(0, ('', self.translate(_('None'))))
+        items.insert(0, ('', to_utf8(self.translate(_('None')))))
         return DisplayList(list(items))
 
     def getInstruments(self):

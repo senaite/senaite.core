@@ -55,7 +55,7 @@
     <element value="DuplicateAnalysis"/>
     <element value="Instrument"/>
     <element value="InstrumentCalibration"/>
-    <element value="InstrumentCertification"/>
+	<element value="InstrumentCertification"/>
     <element value="InstrumentMaintenanceTask"/>
     <element value="InstrumentScheduledTask"/>
     <element value="InstrumentType"/>
@@ -80,6 +80,7 @@
     <element value="Sample"/>
     <element value="SamplePartition"/>
     <element value="SamplePoint"/>
+    <element value="StorageLocation"/>
     <element value="SampleType"/>
     <element value="BatchLabel"/>
     <element value="Worksheet"/>

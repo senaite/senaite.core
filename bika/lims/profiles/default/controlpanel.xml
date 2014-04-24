@@ -262,7 +262,15 @@
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/arpriority.png"
     url_expr="string:$portal_url/bika_setup/bika_arpriorities"
-    visible="True"
+    visible="True">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Storage Locations" action_id="bika_storagelocations"
+    appId="bika.lims" category="bika" condition_expr=""
+    icon_expr="string:++resource++bika.lims.images/storagelocation.png"
+    url_expr="string:$portal_url/bika_setup/bika_storagelocations"
+	visible="True"
 	i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
@@ -271,6 +279,15 @@
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/artemplate.png"
     url_expr="string:$portal_url/bika_setup/bika_srtemplates"
+    visible="True"
+    i18n:attributes="title">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
+ <configlet title="Sub-groups" action_id="bika_subgroups"
+    appId="bika.lims" category="bika" condition_expr=""
+    icon_expr="string:++resource++bika.lims.images/batch.png"
+    url_expr="string:$portal_url/bika_setup/bika_subgroups"
     visible="True"
     i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>

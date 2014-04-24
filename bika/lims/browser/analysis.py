@@ -4,6 +4,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.permissions import *
+from bika.lims.utils import to_utf8
 from zope.component import adapts
 from zope.interface import implements
 
@@ -32,7 +33,7 @@ def isOutOfShoulderRange(result, Min, Max, error):
     error_min = result - error_amount
     error_max = result + error_amount
     if (spec_min and result < spec_min and error_max >= spec_min) \
-            or (spec_max and result > spec_max and error_min <= spec_max):
+        or (spec_max and result > spec_max and error_min <= spec_max):
         return True
     # Default: in range
     return False
@@ -98,17 +99,17 @@ class ResultOutOfRange(object):
         path = '++resource++bika.lims.images'
         if outofrange:
             rngstr = "{0} {1}, {2} {3}".format(
-                translate(_("min")).decode('utf-8'), str(Min),
-                translate(_("max")).decode('utf-8'), str(Max))
+                to_utf8(translate(_("min"))), str(Min),
+                to_utf8(translate(_("max"))), str(Max))
 
             if acceptable:
                 message = "{0} ({1})".format(
-                    translate(_('Result in shoulder range')).decode('utf-8'),
+                    to_utf8(translate(_('Result in shoulder range'))),
                     rngstr
                 )
             else:
                 message = "{0} ({1})".format(
-                    translate(_('Result out of range')).decode('utf-8'),
+                    to_utf8(translate(_('Result out of range'))),
                     rngstr
                 )
             alerts[self.context.UID()] = [{

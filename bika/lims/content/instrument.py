@@ -12,6 +12,7 @@ from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema, BikaFolderSchema
 from bika.lims.interfaces import IInstrument
+from bika.lims.utils import to_utf8
 from plone.app.folder.folder import ATFolder
 from zope.interface import implements
 from datetime import date
@@ -166,7 +167,7 @@ def getDataInterfaces(context):
     """ Return the current list of data interfaces
     """
     from bika.lims.exportimport import instruments
-    exims = [('',context.translate(_('None')))]
+    exims = [('', to_utf8(context.translate(_('None'))))]
     for exim_id in instruments.__all__:
         exim = instruments.getExim(exim_id)
         exims.append((exim_id, exim.title))
@@ -232,7 +233,7 @@ class Instrument(ATFolder):
                 for c in bsc(portal_type='Method',
                              inactive_state = 'active')]
         items.sort(lambda x,y:cmp(x[1], y[1]))
-        items.insert(0, ('', self.translate(_('None'))))
+        items.insert(0, ('', to_utf8(self.translate(_('None')))))
         return DisplayList(items)
 
     def getInstrumentTypes(self):

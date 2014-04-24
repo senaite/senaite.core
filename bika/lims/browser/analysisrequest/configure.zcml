@@ -54,11 +54,19 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       factory="bika.lims.browser.analysisrequest.PriorityIcons"
     />
+
+    <!--
+    Commented this out in response to issue #1165.
+    XXX TODO: Create an adapter for Range Checking, separate from the IFieldIcons adapter.
+    IFieldIcons should not interfere with out-of-range tests!
+    Still, I don't quite know why this was registered for IAnalysis: @mikejmets?
     <adapter
       name="a-pi"
       for="bika.lims.interfaces.IAnalysis"
       factory="bika.lims.browser.analysisrequest.PriorityIcons"
     />
+    -->
+
     <!-- main site/analysisrequests view -->
     <browser:page
       for="bika.lims.interfaces.IAnalysisRequestsFolder"
@@ -98,7 +106,7 @@
     <browser:page
       for="*"
       name="secondary_ar_sample_info"
-      class="bika.lims.browser.analysisrequest.SecondaryARSampleInfo"
+      class="bika.lims.browser.analysisrequest.add.SecondaryARSampleInfo"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -162,7 +170,7 @@
     <browser:page
       for="*"
       name="analysisrequest_analysisservices"
-      class="bika.lims.browser.analysisrequest.ajaxExpandCategory"
+      class="bika.lims.browser.analysisrequest.add.ajaxExpandCategory"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -170,7 +178,7 @@
     <browser:page
       for="*"
       name="analysisrequest_submit"
-      class="bika.lims.browser.analysisrequest.ajaxAnalysisRequestSubmit"
+      class="bika.lims.browser.analysisrequest.add.ajaxAnalysisRequestSubmit"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

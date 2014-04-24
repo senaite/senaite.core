@@ -315,6 +315,14 @@ class ISamplePoints(Interface):
 
     ""
 
+class IStorageLocation(Interface):
+
+    ""
+
+class IStorageLocations(Interface):
+
+    ""
+
 
 class ISampleType(Interface):
 
@@ -344,6 +352,14 @@ class ISupplyOrder(Interface):
 
 class ISupplyOrderFolder(Interface):
     ""
+
+
+class ISubGroups(Interface):
+    """Sub-groups configuration folder"""
+
+
+class ISubGroup(Interface):
+    """Sub-Group"""
 
 
 class IPreservations(Interface):
@@ -447,7 +463,8 @@ class IJSONReadExtender(Interface):
 
     def __call__(obj_data):
         """obj_data is the current python dictionary that will go to json.
-        it should be returned complete with modifications."""
+        it should be modified in place, there is no need to return a value.
+        """
 
 class ISetupDataImporter(Interface):
 

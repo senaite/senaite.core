@@ -57,6 +57,9 @@ $(document).ready(function(){
     var y = curDate.getFullYear();
     var limitString = "1900:" + y;
     var dateFormat = _("date_format_short_datepicker");
+    if (dateFormat == 'date_format_short_datepicker'){
+        dateFormat = 'yy-mm-dd';
+    }
 
     $("input.datepicker").live("click", function() {
         $(this).datepicker({
@@ -106,7 +109,7 @@ $(document).ready(function(){
         var dialog = $("<div></div>");
         dialog
             .load(window.portal_url + "/analysisservice_popup",
-                {"service_title":$(this).text(),
+				{'service_title':$(this).find("span[class^='state']").html(),
                 "analysis_uid":$(this).parents("tr").attr("uid"),
                 "_authenticator": $("input[name='_authenticator']").val()}
             )
@@ -157,7 +160,7 @@ $(document).ready(function(){
         data: {'_authenticator': $('input[name="_authenticator"]').val() },
         dataType: 'json'
     }).done(function(data) {
-        if (data != null) {
+        if (data['out-of-date'].length > 0 || data['qc-fail'].length > 0) {
             $('#portal-alert').remove();
             var html = "<div id='portal-alert' style='display:none'>";
             var outofdate = data['out-of-date'];

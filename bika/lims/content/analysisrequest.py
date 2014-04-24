@@ -195,6 +195,34 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
+    ReferenceField(
+        'SubGroup',
+        required=False,
+        allowed_types=('SubGroup',),
+        referenceClass = HoldingReference,
+        relationship = 'AnalysisRequestSubGroup',
+        widget=ReferenceWidget(
+            label=_('Sub-group'),
+            size=20,
+            render_own_label=True,
+            visible={'edit': 'visible',
+                     'view': 'visible',
+                     'add': 'visible'},
+            catalog_name='bika_setup_catalog',
+            colModel=[
+                {'columnName': 'Title', 'width': '30',
+                 'label': _('Title'), 'align': 'left'},
+                {'columnName': 'Description', 'width': '70',
+                 'label': _('Description'), 'align': 'left'},
+                {'columnName': 'SortKey', 'hidden': True},
+                {'columnName': 'UID', 'hidden': True},
+            ],
+            base_query={'inactive_state': 'active'},
+            sidx='SortKey',
+            sord='asc',
+            showOn=True,
+        ),
+    ),
     ComputedField(
         'BatchUID',
         expression='context.getBatch() and context.getBatch().UID() or None',
@@ -350,6 +378,27 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             label=_("Sample Point"),
             description=_("Location where sample was taken"),
+            size=20,
+            render_own_label=True,
+            visible={'edit': 'visible',
+                     'view': 'visible',
+                     'add': 'visible',
+                     'secondary': 'invisible'},
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
+            showOn=True,
+        ),
+    ),
+    ReferenceField(
+        'StorageLocation',
+        allowed_types='StorageLocation',
+        relationship='AnalysisRequestStorageLocation',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        widget=ReferenceWidget(
+            label=_("Storage Location"),
+            description=_("Location where sample is kept"),
             size=20,
             render_own_label=True,
             visible={'edit': 'visible',
@@ -723,7 +772,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisRequestPriority',
         mode="rw",
         read_permission=permissions.View,
-        write_permission=ManageARPriority,
+        write_permission=permissions.ModifyPortalContent,
         widget=ReferenceWidget(
             label=_("Priority"),
             size=10,
@@ -851,8 +900,9 @@ class AnalysisRequest(BaseFolder):
                 self.setPriority(obj)
                 return
 
-        logging.error('Priority: no default priority found')
-        return 
+        # priority is not a required field.  No default means...
+        logging.info('Priority: no default priority found')
+        return
 
     security.declareProtected(View, 'getResponsible')
     def getResponsible(self):
@@ -1320,6 +1370,18 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getComposite()
+
+    security.declarePublic('setStorageLocation')
+    def setStorageLocation(self, value):
+        sample = self.getSample()
+        if sample and value:
+            return sample.setStorageLocation(value)
+
+    security.declarePublic('getStorageLocation')
+    def getStorageLocation(self):
+        sample = self.getSample()
+        if sample:
+            return sample.getStorageLocation()
 
     security.declarePublic('setAdHoc')
     def setAdHoc(self, value):

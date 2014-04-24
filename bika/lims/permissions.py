@@ -1,4 +1,4 @@
-"""	All permissions are defined here.
+""" All permissions are defined here.
     They are also defined in permissions.zcml.
     The two files must be kept in sync.
 
@@ -28,8 +28,10 @@ AddSample = 'BIKA: Add Sample'
 AddSampleMatrix = 'BIKA: Add SampleMatrix'
 AddSamplePartition = 'BIKA: Add SamplePartition'
 AddSamplePoint = 'BIKA: Add SamplePoint'
+AddStorageLocation = 'BIKA: Add StorageLocation'
 AddSamplingDeviation = 'BIKA: Add SamplingDeviation'
 AddSRTemplate = 'BIKA: Add SRTemplate'
+AddSubGroup = 'BIKA: Add Sub-group'
 AddQuery = 'BIKA: Add Query'
 
 # Default Archetypes Add Permission
@@ -51,13 +53,13 @@ ADD_CONTENT_PERMISSIONS = {
     'SampleMatrix': AddSampleMatrix,
     'SamplePartition': AddSamplePartition,
     'SamplingDeviation': AddSamplingDeviation,
+    'SubGroup': AddSubGroup,
     'Query': AddQuery,
 }
 
 # Very Old permissions:
 # ---------------------
 ManageBika = 'BIKA: Manage Bika'
-ManageOrders = 'BIKA: Manage Orders'
 DispatchOrder = 'BIKA: Dispatch Order'
 ManageAnalysisRequests = 'BIKA: Manage Analysis Requests'
 ManageSamples = 'BIKA: Manage Samples'
@@ -135,6 +137,11 @@ EditAR = 'BIKA: Edit AR'
 #       'sample_registered', 'to_be_sampled', 'sampled', 'to_be_preserved',
 #       'sample_due', 'sample_received', 'to_be_verified', 'attachment_due'
 EditSamplePartition = 'BIKA: Edit Sample Partition'
+
+# Edit Client
+# ----------------------------------------------
+# Allows access to 'Edit' and 'Contacts' tabs from Client View
+EditClient = 'BIKA: Edit Client'
 
 # Batch-specific permissions
 # ----------------------------------------------

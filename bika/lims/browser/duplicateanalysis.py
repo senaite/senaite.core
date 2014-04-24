@@ -3,6 +3,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IFieldIcons
+from bika.lims.utils import to_utf8
 from bika.lims.permissions import *
 from zope.component import adapts
 from zope.interface import implements
@@ -51,9 +52,9 @@ class ResultOutOfRange(object):
             translate = self.context.translate
             path = "++resource++bika.lims.images"
             message = "{0} ({1} {2}, {3} {4})".format(
-                translate(_('Result out of range')),
-                translate(_("min")), str(range_min),
-                translate(_("max")), str(range_max))
+                to_utf8(translate(_('Result out of range'))),
+                to_utf8(translate(_("min"))), str(range_min),
+                to_utf8(translate(_("max"))), str(range_max))
             return {self.context.UID(): [{
                 'msg': message,
                 'field': 'Result',

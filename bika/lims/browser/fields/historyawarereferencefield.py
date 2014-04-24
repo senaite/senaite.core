@@ -13,6 +13,8 @@ from Products.CMFEditions.Permissions import AccessPreviousVersions
 from Products.Archetypes.config import REFERENCE_CATALOG
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.utils import to_utf8
+
 
 class HistoryAwareReferenceField(ReferenceField):
     """ Version aware references.
@@ -28,6 +30,7 @@ class HistoryAwareReferenceField(ReferenceField):
     security = ClassSecurityInfo()
 
     security.declarePrivate('set')
+
     def set(self, instance, value, **kwargs):
         """ Mutator. """
 
@@ -48,8 +51,7 @@ class HistoryAwareReferenceField(ReferenceField):
         if not isinstance(value, (list, tuple)):
             value = value,
         elif not self.multiValued and len(value) > 1:
-            raise ValueError, \
-                  "Multiple values given for single valued field %r" % self
+            raise ValueError("Multiple values given for single valued field %r" % self)
 
         ts = getToolByName(instance, "translation_service").translate
 
@@ -62,7 +64,7 @@ class HistoryAwareReferenceField(ReferenceField):
                 uids.append(v)
                 targets[v] = rc.lookupObject(v)
             elif hasattr(v, 'UID'):
-                target_uid =  callable(v.UID) and v.UID() or v.UID
+                target_uid = callable(v.UID) and v.UID() or v.UID
                 uids.append(target_uid)
                 targets[target_uid] = v
             else:
@@ -77,12 +79,12 @@ class HistoryAwareReferenceField(ReferenceField):
             # about to be removed anyway (contents of sub)
             version_id = hasattr(targets[uid], 'version_id') and \
                        targets[uid].version_id or None
-            if version_id == None:
+            if version_id is None:
                 # attempt initial save of unversioned targets
                 pr = getToolByName(instance, 'portal_repository')
                 if pr.isVersionable(targets[uid]):
                     pr.save(obj=targets[uid],
-                            comment=ts(_("Initial revision")))
+                            comment=to_utf8(ts(_("Initial revision"))))
             if not hasattr(instance, 'reference_versions'):
                 instance.reference_versions = {}
             if not hasattr(targets[uid], 'version_id'):
@@ -92,7 +94,8 @@ class HistoryAwareReferenceField(ReferenceField):
         # tweak keyword arguments for addReference
         addRef_kw = kwargs.copy()
         addRef_kw.setdefault('referenceClass', self.referenceClass)
-        if addRef_kw.has_key('schema'): del addRef_kw['schema']
+        if 'schema' in addRef_kw:
+            del addRef_kw['schema']
         for uid in add:
             __traceback_info__ = (instance, uid, value, targetUIDs)
             # throws IndexError if uid is invalid
@@ -102,11 +105,11 @@ class HistoryAwareReferenceField(ReferenceField):
             rc.deleteReference(instance, uid, self.relationship)
 
         if self.referencesSortable:
-            if not hasattr( aq_base(instance), 'at_ordered_refs'):
+            if not hasattr(aq_base(instance), 'at_ordered_refs'):
                 instance.at_ordered_refs = {}
 
             instance.at_ordered_refs[self.relationship] = \
-                tuple( filter(None, uids) )
+                tuple(filter(None, uids))
 
         if self.callStorageOnSet:
             #if this option is set the reference fields's values get written
@@ -115,12 +118,14 @@ class HistoryAwareReferenceField(ReferenceField):
             ObjectField.set(self, instance, self.getRaw(instance), **kwargs)
 
     security.declarePrivate('get')
+
     def get(self, instance, aslist=False, **kwargs):
         """get() returns the list of objects referenced under the relationship.
         """
         uc = getToolByName(instance, "uid_catalog")
 
-        try: res = instance.getRefs(relationship=self.relationship)
+        try:
+            res = instance.getRefs(relationship=self.relationship)
         except:
             pass
 
@@ -136,7 +141,7 @@ class HistoryAwareReferenceField(ReferenceField):
                hasattr(r, 'version_id') and \
                uid in instance.reference_versions and \
                instance.reference_versions[uid] != r.version_id and \
-               r.version_id != None:
+               r.version_id is not None:
 
                 version_id = instance.reference_versions[uid]
                 try:
@@ -163,8 +168,8 @@ class HistoryAwareReferenceField(ReferenceField):
                 else:
                     rd = None
 
-        if not self.referencesSortable or not hasattr( aq_base(instance),
-                                                       'at_ordered_refs'):
+        if not self.referencesSortable or not hasattr(aq_base(instance),
+                                                      'at_ordered_refs'):
             if isinstance(rd, dict):
                 return [rd[uid] for uid in rd.keys()]
             else:
@@ -175,6 +180,6 @@ class HistoryAwareReferenceField(ReferenceField):
         return [rd[uid] for uid in order if uid in rd.keys()]
 
 registerField(HistoryAwareReferenceField,
-              title = "History Aware Reference",
-              description = "",
+              title="History Aware Reference",
+              description="",
               )

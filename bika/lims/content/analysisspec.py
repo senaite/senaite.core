@@ -60,15 +60,19 @@ Schema((
         # schemata = 'Specifications',
         required = 1,
         type = 'analysisspec',
-        subfields = ('keyword', 'min', 'max', 'error'),
-        required_subfields = ('keyword', 'min', 'max'),
+        subfields = ('keyword', 'min', 'max', 'error', 'hidemin', 'hidemax',
+                     'rangecomment'),
+        required_subfields = ('keyword', 'error'),
         subfield_validators = {'min':'analysisspecs_validator',
                                'max':'analysisspecs_validator',
-                               'error':'analysisspecs_validator'},
+                               'error':'analysisspecs_validator',},
         subfield_labels = {'keyword': _('Analysis Service'),
                            'min': _('Min'),
                            'max': _('Max'),
-                           'error': _('% Error')},
+                           'error': _('% Error'),
+                           'hidemin': _('< Min'),
+                           'hidemax': _('> Max'),
+                           'rangecomment': _('Range Comment')},
         widget = AnalysisSpecificationWidget(
             checkbox_bound = 0,
             label = _("Specifications"),
@@ -80,7 +84,9 @@ Schema((
                             "considered when evaluating results against minimum and "
                             "maximum values. A result out of range but still in range "
                             "if the % error is taken into consideration, will raise a "
-                            "less severe alert."),
+                            "less severe alert. If the result is below '< Min' "
+                            "the result will be shown as '< [min]'. The same "
+                            "applies for results above '> Max'"),
         ),
     ),
     ComputedField('ClientUID',
@@ -90,11 +96,11 @@ Schema((
         ),
     ),
 ))
-# schema['description'].schemata = 'Description'
 schema['description'].widget.visible = True
-# schema['title'].schemata = 'Description'
 schema['title'].required = True
-# schema['title'].widget.visible = False
+schema['title'].widget.description = \
+    _("To include this spec as the default for a sample type, set the "
+      "title here to the name of the sample type.")
 
 class AnalysisSpec(BaseFolder, HistoryAwareMixin):
     implements(IAnalysisSpec)
@@ -106,17 +112,6 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
-
-    def Title(self):
-        if not self.id:
-            # this won't work too early in the creation stage
-            return ''
-        if not self.title:
-            title = self.getSampleType().Title() \
-                if self.getSampleType() \
-                else self.id
-            return title
-        return self.title
 
     def contextual_title(self):
         parent = self.aq_parent
@@ -139,22 +134,45 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
 
     security.declarePublic('getResultsRangeDict')
     def getResultsRangeDict(self):
+        """
+            Return a dictionary with the specification fields for each
+            service. The keys of the dictionary are the keywords of each
+            analysis service. Each service contains a dictionary in which
+            each key is the name of the spec field:
+            specs['keyword'] = {'min': value,
+                                'max': value,
+                                'error': value,
+                                ... }
+        """
         specs = {}
+        subfields = self.Schema()['ResultsRange'].subfields
         for spec in self.getResultsRange():
             keyword = spec['keyword']
             specs[keyword] = {}
-            specs[keyword]['min'] = spec['min']
-            specs[keyword]['max'] = spec['max']
-            specs[keyword]['error'] = spec['error']
+            for key in subfields:
+                if key not in ['uid', 'keyword']:
+                    specs[keyword][key] = spec.get(key, '')
         return specs
 
     security.declarePublic('getResultsRangeSorted')
     def getResultsRangeSorted(self):
+        """
+            Return an array of dictionaries, sorted by AS title:
+             [{'category': <title of AS category>
+               'service': <title of AS>,
+               'id': <ID of AS>
+               'uid': <UID of AS>
+               'min': <min range spec value>
+               'max': <max range spec value>
+               'error': <error spec value>
+               ...}]
+        """
         tool = getToolByName(self, REFERENCE_CATALOG)
 
         cats = {}
+        subfields = self.Schema()['ResultsRange'].subfields
         for spec in self.getResultsRange():
-            service = tool.lookupObject(spec['service'])
+            service = tool.lookupObject(spec['uid'])
             service_title = service.Title()
             category_title = service.getCategoryTitle()
             if not cats.has_key(category_title):
@@ -163,10 +181,13 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
             cat[service_title] = {'category': category_title,
                                   'service': service_title,
                                   'id': service.getId(),
-                                  'uid': spec['service'],
+                                  'uid': spec['uid'],
                                   'min': spec['min'],
                                   'max': spec['max'],
                                   'error': spec['error'] }
+            for key in subfields:
+                if key not in ['uid', 'keyword']:
+                    cat[service_title][key] = spec.get(key, '')
         cat_keys = cats.keys()
         cat_keys.sort(lambda x, y:cmp(x.lower(), y.lower()))
         sorted_specs = []
@@ -176,7 +197,6 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
             service_keys.sort(lambda x, y:cmp(x.lower(), y.lower()))
             for service_key in service_keys:
                 sorted_specs.append(services[service_key])
-
         return sorted_specs
 
     security.declarePublic('getRemainingSampleTypes')
@@ -190,5 +210,19 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
 
         return DisplayList(sampletypes)
 
+    def getAnalysisSpecsStr(self, keyword):
+        specstr = ''
+        specs = self.getResultsRangeDict()
+        if keyword in specs.keys():
+            specs = specs[keyword]
+            smin = specs.get('min', '')
+            smax = specs.get('max', '')
+            if smin and smax:
+                specstr = '%s - %s' % (smin, smax)
+            elif smin:
+                specstr = '> %s' % specs['min']
+            elif smax:
+                specstr = '< %s' % specs['max']
+        return specstr
 
 atapi.registerType(AnalysisSpec, PROJECTNAME)

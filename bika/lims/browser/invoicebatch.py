@@ -3,6 +3,7 @@ from bika.lims import bikaMessageFactory as _
 from Products.CMFPlone.utils import getToolByName
 from bika.lims.permissions import AddInvoice
 from bika.lims.permissions import ManageInvoices
+from bika.lims.utils import currency_format
 
 
 class InvoiceBatchInvoicesView(BikaListingView):
@@ -60,6 +61,7 @@ class InvoiceBatchInvoicesView(BikaListingView):
     #     return super(InvoiceBatchInvoicesView, self).__call__()
 
     def folderitems(self):
+        currency = currency_format(self.context, 'en')
         self.contentsMethod = self.getInvoices
         items = BikaListingView.folderitems(self)
         for item in items:
@@ -70,7 +72,7 @@ class InvoiceBatchInvoicesView(BikaListingView):
             item['replace']['id'] = number_link
             item['client'] = obj.getClient().Title()
             item['invoicedate'] = self.ulocalized_time(obj.getInvoiceDate())
-            item['subtotal'] = obj.getSubtotal()
-            item['vattotal'] = obj.getVATTotal()
-            item['total'] = obj.getTotal()
+            item['subtotal'] = currency(obj.getSubtotal())
+            item['vattotal'] = currency(obj.getVATTotal())
+            item['total'] = currency(obj.getTotal())
         return items

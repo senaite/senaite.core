@@ -1,3 +1,4 @@
+from Acquisition import aq_parent, aq_inner
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -22,12 +23,12 @@ from bika.lims.subscribers import doActionFor, skip
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import isActive
 from bika.lims.utils import tmpID
+from bika.lims.utils import to_utf8
 from bika.lims.vocabularies import CatalogVocabulary
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.component import adapts
-from zope.i18n import translate
 from zope.interface import implements
 import plone, json
 import zope.event
@@ -47,6 +48,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
     def __call__(self):
         form = self.request.form
         plone.protect.CheckAuthenticator(form)
+        self.context = aq_inner(self.context)
         workflow = getToolByName(self.context, 'portal_workflow')
         bc = getToolByName(self.context, 'bika_catalog')
         rc = getToolByName(self.context, REFERENCE_CATALOG)
@@ -129,7 +131,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                     else:
                         message = _('${items} are waiting to be received.',
                                     mapping = {'items': ', '.join(t)})
-                    message = self.context.translate(message)
+                    message = to_utf8(translate(message))
                     self.context.plone_utils.addPortalMessage(message, 'info')
                 elif len(t) == 1:
                     if state == 'to_be_preserved':
@@ -138,11 +140,11 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                     else:
                         message = _('${item} is waiting to be received.',
                                     mapping = {'item': ', '.join(t)})
-                    message = self.context.translate(message)
+                    message = to_utf8(translate(message))
                     self.context.plone_utils.addPortalMessage(message, 'info')
             if not message:
                 message = _('No changes made.')
-                message = self.context.translate(message)
+                message = to_utf8(translate(message))
                 self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
@@ -197,7 +199,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                 message = _('${item}: ${part} is waiting to be received.',
                             mapping = {'item': ', '.join(transitioned.keys()),
                                        'part': ', '.join(transitioned.values()),})
-            message = self.context.translate(message)
+            message = to_utf8(translate(message))
             self.context.plone_utils.addPortalMessage(message, 'info')
 
             # And then the sample itself
@@ -205,7 +207,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                 doActionFor(sample, action)
                 #message = _('${item} is waiting to be received.',
                 #            mapping = {'item': sample.Title()})
-                #message = self.context.translate(message)
+                #message = to_utf8(translate(message))
                 #self.context.plone_utils.addPortalMessage(message, 'info')
 
             self.destination_url = self.request.get_header(
@@ -236,7 +238,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                             mapping = {'item': ', '.join(transitioned)})
             else:
                 message = _('No items were published')
-            message = self.context.translate(message)
+            message = translate(message)
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
@@ -287,17 +289,18 @@ class ClientAnalysisRequestsView(AnalysisRequestsView):
         wf = getToolByName(self.context, 'portal_workflow')
         mtool = getToolByName(self.context, 'portal_membership')
         addPortalMessage = self.context.plone_utils.addPortalMessage
+        translate = self.context.translate
         # client contact required
         active_contacts = [c for c in self.context.objectValues('Contact') if
                            wf.getInfoFor(c, 'inactive_state', '') == 'active']
         if isActive(self.context):
             if self.context.portal_type == "Client" and not active_contacts:
                 msg = _("Client contact required before request may be submitted")
-                addPortalMessage(self.context.translate(msg))
+                addPortalMessage(to_utf8(translate(msg)))
             else:
                 if mtool.checkPermission(AddAnalysisRequest, self.context):
-                    self.context_actions[self.context.translate(_('Add'))] = {
-                        'url':self.context.absolute_url() + "/portal_factory/"
+                    self.context_actions[to_utf8(translate(_('Add')))] = {
+                        'url': self.context.absolute_url() + "/portal_factory/"
                         "AnalysisRequest/Request new analyses/ar_add",
                         'icon': '++resource++bika.lims.images/add.png'}
         return super(ClientAnalysisRequestsView, self).__call__()
@@ -622,8 +625,7 @@ class SetSpecsToLabDefaults(BrowserView):
                 ResultsRange = labspec.getResultsRange(),
             )
         translate = self.context.translate
-        message = self.context.translate(
-            _("Analysis specifications reset to lab defaults."))
+        message = to_utf8(translate(_("Analysis specifications reset to lab defaults.")))
         self.context.plone_utils.addPortalMessage(message, 'info')
         self.request.RESPONSE.redirect(self.context.absolute_url() +
                                        "/analysisspecs")
@@ -722,7 +724,7 @@ class ClientOrdersView(BikaListingView):
         self.pagesize = 25
         self.form_id = "orders"
 
-        self.icon = self.portal_url + "/++resource++bika.lims.images/order_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/supplyorder_big.png"
         self.title = _("Orders")
 
         self.columns = {

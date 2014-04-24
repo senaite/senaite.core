@@ -82,7 +82,7 @@ def getContainers(instance,
                 items.append((container.UID(), container.Title()))
 
     ts = getToolByName(instance, 'translation_service').translate
-    cat_str = ts(_('Container Type'))
+    cat_str = _c(ts(_('Container Type')))
     containertypes = [c.getContainerType() for c in containers]
     containertypes = dict([(ct.UID(), ct.Title())
                            for ct in containertypes if ct])
@@ -297,8 +297,7 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = SelectionWidget(
             format='select',
-            label=_('Instrument'),
-            description=_("Default instrument")
+            label=_('Default Instrument')
         ),
     ),
     # Returns the Default's instrument title. If no default instrument
@@ -357,12 +356,14 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = SelectionWidget(
             format='select',
-            label=_('Method'),
-            description=_("Default method. If 'Allow instrument entry "
+            label=_('Default Method'),
+            description=_("If 'Allow instrument entry "
                           "of results' is selected, the Default method to "
                           "be used will be the method set in the "
                           "Default Instrument. Otherwise, the Method "
-                          "to be used can be set manually.")
+                          "to be used can be set manually, but only the "
+                          "Methods with 'Manual entry of results' set "
+                          "will be displayed.")
         ),
     ),
     # Allow/Disallow to set the calculation manually
@@ -430,7 +431,7 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = SelectionWidget(
             format='select',
-            label= _('Deferred Calculation'),
+            label= _('Alternative Calculation'),
             description = _("If required, select a calculation for the analysis here. "
                             "Calculations can be configured under the calculations item "
                             "in the LIMS set-up"),
@@ -806,13 +807,16 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
 
     def _getAvailableMethodsDisplayList(self):
         """ Returns a DisplayList with the available Methods
-            registered in Bika-Setup. Only active Methods are
-            fetched. Used to fill the Methods MultiSelectionWidget
+            registered in Bika-Setup. Only active Methods and those
+            with Manual Entry field active are fetched.
+            Used to fill the Methods MultiSelectionWidget when 'Allow
+            Instrument Entry of Results is not selected'.
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(i.UID, i.Title) \
                 for i in bsc(portal_type='Method',
-                             inactive_state = 'active')]
+                             inactive_state = 'active') \
+                        if i.getObject().isManualEntryOfResults()]
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 

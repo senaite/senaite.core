@@ -6,7 +6,7 @@
         purge="True">
  <property name="title" i18n:translate="">Supply Order</property>
  <property name="description"></property>
- <property name="content_icon">++resource++bika.lims.images/order.png</property>
+ <property name="content_icon">++resource++bika.lims.images/supplyorder.png</property>
  <property name="content_meta_type">SupplyOrder</property>
  <property name="product">bika.lims</property>
  <property name="factory">addSupplyOrder</property>
@@ -59,7 +59,7 @@
          url_expr="string:${object_url}/print"
          i18n:attributes="title"
          visible="True">
-  <permission value="BIKA: Manage Orders"/>
+  <permission value="View"/>
  </action>
 
  <action title="Log"
@@ -68,7 +68,7 @@
          condition_expr=""
          icon_expr=""
          link_target=""
-         url_expr="string:${object_url}/status_log"
+         url_expr="string:${object_url}/log"
          i18n:attributes="title"
          visible="True">
      <permission value="BIKA: View Log Tab"/>

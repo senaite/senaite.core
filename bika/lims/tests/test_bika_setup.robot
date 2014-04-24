@@ -1,22 +1,24 @@
 *** Settings ***
 
-Library          Selenium2Library  timeout=10  implicit_wait=0.2
+Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
-Library  Remote  ${PLONE_URL}/RobotRemote
+Library          DebugLibrary
 Resource         keywords.txt
+Library          bika.lims.testing.Keywords
+Resource         plone/app/robotframework/selenium.robot
+Resource         plone/app/robotframework/saucelabs.robot
 Variables        plone/app/testing/interfaces.py
+Variables        bika/lims/tests/variables.py
 Suite Setup      Start browser
 Suite Teardown   Close All Browsers
 
 *** Variables ***
 
-${SELENIUM_SPEED}  0
-${PLONEURL}        http://localhost:55001/plone
-
 *** Test Cases ***
 
 
 Repetitive Bika Setup stuff
+
 # Update Laboratory Information
     Go to  ${PLONEURL}/bika_setup/laboratory/base_edit
     Input Text        Name            Laboratory Name
@@ -462,8 +464,6 @@ Repetitive Bika Setup stuff
     # Select From List  DataInterface:list
     # Input Text  DataInterfaceOptions-Key-0  Data Interface Options Key
     # Input Text  DataInterfaceOptions-Value-0  Data Interface Options Value
-    Click Button  Save
-    sleep  0.5
 
     Click link  Procedures
     Wait Until Page Contains Element  InlabCalibrationProcedure
@@ -549,10 +549,24 @@ Repetitive Bika Setup stuff
 
     Click link                          Method
     Wait Until Page Contains Element    Instrument
-    Select From dropdown                Method                           Titration
-    Select From dropdown                Instrument                       Blott Titrator
-    Select From dropdown                Calculation                      Titration
-    Wait until page contains element    InterimFields-title-2            # 0=tv,1=tf,2=blank
+
+    # when instrument is selected method is disabled - instrument sets it.
+    select checkbox                     InstrumentEntryOfResults
+    select from list                    Instruments    AA 1   AA 2   Blott Titrator
+    select from list                    Instrument     AA 1
+    Run keyword and expect error        ValueError: Option 'Fiastar' not in list 'Instrument'.    select from list   Instrument   Fiastar
+    element should be disabled          _Method
+
+    # Now remove instrument and set method fields manually
+    unselect checkbox                   InstrumentEntryOfResults
+    select from list                    Methods    12 dB SINAD   AES   ELISA
+    Run keyword and expect error        ValueError: Option 'Elution' not in list '_Method'.    Select from list   _Method   Elution
+    select from list                    _Method    AES
+
+    # Set calculation fields manually
+    unselect checkbox                   UseDefaultCalculation
+    Select From list                    DeferredCalculation              Titration
+    Wait until page contains element    InterimFields-title-2
     Input Text                          InterimFields-keyword-2          Other
     Input Text                          InterimFields-title-2            Other Field Title
     Input Text                          InterimFields-value-2            22
@@ -590,6 +604,50 @@ Repetitive Bika Setup stuff
     Click Button                        Save
     Wait Until Page Contains            Changes saved.
 
+    # Duplicate AnalysisServices - first fail some validations
+    Go to                      ${PLONEURL}/bika_setup/bika_analysisservices
+    Wait Until Page Contains   Analysis Services
+    click element              xpath=//th[@cat='Metals']
+    select checkbox            xpath=//input[@item_title='Calcium']
+    select checkbox            xpath=//input[@item_title='Copper']
+    click element              xpath=//input[@transition='duplicate']
+    Wait until page contains   Copy analysis services
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_title:list']     Calcium2
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_keyword:list']   CAL2
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_title:list']     Copper2
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_keyword:list']   COP2
+    click button               Copy
+    Wait until page contains   Validation failed
+    Page should contain        No new items were created
+    Go to                      ${PLONEURL}/bika_setup/bika_analysisservices
+    Wait Until Page Contains   Analysis Services
+    click element              xpath=//th[@cat='Metals']
+    select checkbox            xpath=//input[@item_title='Calcium']
+    select checkbox            xpath=//input[@item_title='Copper']
+    click element              xpath=//input[@transition='duplicate']
+    Wait until page contains   Copy analysis services
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_title:list']     Calcium2
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_keyword:list']   CAL2
+    input text                 xpath=//tr[@source='Copper']//input[@name='dst_title:list']     Calcium2
+    input text                 xpath=//tr[@source='Copper']//input[@name='dst_keyword:list']   CAL2
+    click button               Copy
+    Wait until page contains   Validation failed
+    Page should contain        No new items were created
+    # Duplicate AnalysisServices - Enter correct values
+    Go to                      ${PLONEURL}/bika_setup/bika_analysisservices
+    Wait Until Page Contains   Analysis Services
+    click element              xpath=//th[@cat='Metals']
+    select checkbox            xpath=//input[@item_title='Calcium']
+    select checkbox            xpath=//input[@item_title='Copper']
+    click element              xpath=//input[@transition='duplicate']
+    Wait until page contains   Copy analysis services
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_title:list']     Calcium2
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_keyword:list']   CAL2
+    input text                 xpath=//tr[@source='Copper']//input[@name='dst_title:list']      Copper2
+    input text                 xpath=//tr[@source='Copper']//input[@name='dst_keyword:list']    COP2
+    click button               Copy
+    Wait until page contains   were successfully
+
 # AnalysisProfiles
     Go to    ${PLONEURL}/bika_setup/bika_analysisprofiles
     Wait Until Page Contains  Analysis Profile
@@ -610,7 +668,22 @@ Repetitive Bika Setup stuff
     Click link  Add
     Wait Until Page Contains Element  description
     Select From List  SampleType:list
-    Input Text  description    Temporary test object
+    Input Text  title    Water Chemistry
+    Input Text  description    Water chemistry default spec
+    Click Element  xpath=//th[@cat='Water Chemistry']
+    Input Text  xpath=//input[@selector='min_analysisservice-4']  3
+    Input Text  xpath=//input[@selector='max_analysisservice-4']  4
+    Input Text  xpath=//input[@selector='error_analysisservice-4']  5
+    Click Button  Save
+    Wait Until Page Contains  Changes saved.
+
+    Go to  ${PLONEURL}/bika_setup/bika_analysisspecs
+    Wait Until Page Contains  Analysis Specifications
+    Click link  Add
+    Wait Until Page Contains Element  description
+    Select From List  SampleType:list
+    Input Text  title    Water Chemistry Alternate
+    Input Text  description    Water chemistry Alternate
     Click Element  xpath=//th[@cat='Water Chemistry']
     Input Text  xpath=//input[@selector='min_analysisservice-4']  3
     Input Text  xpath=//input[@selector='max_analysisservice-4']  4
@@ -742,9 +815,10 @@ Repetitive Bika Setup stuff
 *** Keywords ***
 
 Start browser
+    Open browser                http://localhost:55001/plone
+    Set selenium speed          ${SELENIUM_SPEED}
     Log in                      test_labmanager  test_labmanager
-    Set selenium speed  ${SELENIUM_SPEED}
-    Open browser        ${PLONEURL}/bika_setup/edit
+    go to                       ${PLONEURL}/bika_setup/edit
     Click link  Analyses
     Select Checkbox  SamplingWorkflowEnabled
     Click Button  Save

@@ -1,14 +1,15 @@
 <?xml version="1.0"?>
 <object xmlns:i18n="http://xml.zope.org/namespaces/i18n"
 	name="portal_actions"
-	meta_type="Plone Actions Tool">
+	meta_type="Plone Actions Tool"
+	purge="True">
 
 	<action-provider name="portal_actions"/>
 
 	<!-- hide the "sharing" tab on a list of types.
              This is here to avoid hiding the sharing tab globally -->
 
-	<object name="object" meta_type="CMF Action Category">
+	<object name="object" meta_type="CMF Action Category" purge="True">
 		<property name="title"/>
 		<object name="local_roles" meta_type="CMF Action" i18n:domain="plone">
 			<property name="title" i18n:translate="">Sharing</property>
@@ -22,7 +23,7 @@
 		</object>
 	</object>
 
-	<object name="portal_tabs" meta_type="CMF Action Category">
+	<object name="portal_tabs" meta_type="CMF Action Category" purge="True">
 		<property name="title"/>
 		<object name="index_html" meta_type="CMF Action" i18n:domain="plone">
 			<property name="title" i18n:translate="">Home</property>
@@ -96,18 +97,6 @@
 			</property>
 			<property name="visible">False</property>
 		</object>
-		<object name="orders" meta_type="CMF Action" i18n:domain="plone">
-			<property name="title" i18n:translate="">Orders</property>
-			<property name="description" i18n:translate=""/>
-			<property name="url_expr">string:$portal_url/orders</property>
-			<property name="link_target"/>
-			<property name="icon_expr"/>
-			<property name="available_expr"/>
-			<property name="permissions">
-				<element value="BIKA: Manage Orders"/>
-			</property>
-			<property name="visible">False</property>
-		</object>
 		<object name="suppliers" meta_type="CMF Action" i18n:domain="plone">
 			<property name="title" i18n:translate="">Suppliers</property>
 			<property name="description" i18n:translate=""/>
@@ -156,7 +145,7 @@
 			</property>
 			<property name="visible">False</property>
 		</object>
-		<object name="queries" meta_type="CMF Action" i18n:domain="plone">
+		<object name="queries" meta_type="CMF Action" i18n:domain="bika">
 			<property name="title" i18n:translate="">Query</property>
 			<property name="description" i18n:translate=""/>
 			<property name="url_expr">string:$portal_url/queries</property>
@@ -166,7 +155,7 @@
 			<property name="permissions">
 				<element value="List portal members"/>
 			</property>
-			<property name="visible">True</property>
+			<property name="visible">False</property>
 		</object>
 		<object name="reports" meta_type="CMF Action" i18n:domain="plone">
 			<property name="title" i18n:translate="">Report</property>

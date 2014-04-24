@@ -75,6 +75,19 @@
   <permission value="View"/>
  </action>
 
+
+ <action title="Batch Book"
+         action_id="batchbook"
+         category="object"
+         condition_expr=""
+         icon_expr="string:${portal_url}/++resource++bika.lims.images/batchbook.png"
+         link_target=""
+         url_expr="string:${object_url}/batchbook"
+         i18n:attributes="title"
+         visible="True">
+  <permission value="View"/>
+ </action>
+
   <action title="Log"
          action_id="log"
          category="object"

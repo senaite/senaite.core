@@ -160,7 +160,7 @@ schema = BikaSchema.copy() + Schema((
         expression = 'context.aq_parent.getSample().getDateSampled()',
     ),
     ComputedField('InstrumentValid',
-        expression = 'context.isInstrumentInvalid()'
+        expression = 'context.isInstrumentValid()'
     ),
 ),
 )
@@ -262,6 +262,38 @@ class Analysis(BaseContent):
 
     def getSample(self):
         return self.aq_parent.getSample()
+
+    def getAnalysisSpecs(self, specification=None):
+        """ Retrieves the analysis specs to be applied to this analysis.
+            Allowed values for specification= 'client', 'lab', None
+            If specification is None, client specification gets priority from
+            lab specification.
+            If no specification available for this analysis, returns None
+        """
+        sampletype = self.getSample().getSampleType()
+        sampletype_uid = sampletype and sampletype.UID() or ''
+        bsc = getToolByName(self, 'bika_setup_catalog')
+
+        # retrieves the desired specs if None specs defined
+        if not specification:
+            proxies = bsc(portal_type='AnalysisSpec',
+                          getClientUID=self.getClientUID(),
+                          getSampleTypeUID=sampletype_uid)
+
+            if len(proxies) == 0:
+                # No client specs available, retrieve lab specs
+                labspecsuid = self.bika_setup.bika_analysisspecs.UID()
+                proxies = bsc(portal_type='AnalysisSpec',
+                              getSampleTypeUID=sampletype_uid,
+                              getClientUID=labspecsuid)
+        else:
+            specuid = specification == "client" and self.getClientUID() or \
+                    self.bika_setup.bika_analysisspecs.UID()
+            proxies = bsc(portal_type='AnalysisSpec',
+                              getSampleTypeUID=sampletype_uid,
+                              getClientUID=specuid)
+
+        return (proxies and len(proxies) > 0) and proxies[0].getObject() or None
 
     def calculateResult(self, override=False, cascade=False):
         """ Calculates the result for the current analysis if it depends of
@@ -446,17 +478,16 @@ class Analysis(BaseContent):
             instrument is assigned. Returns true if the Analysis has
             no instrument assigned or is valid.
         """
-        # TODO : Remove when analysis - instrument being assigned directly
-        if not self.getInstrument():
-            instr = self.getService().getInstrument() \
-                    if self.getService().getInstrumentEntryOfResults() \
-                    else None
-            if instr:
-                self.setInstrument(instr)
-        # ---8<--------
-
         return self.getInstrument().isValid() \
                 if self.getInstrument() else True
+
+    def getDefaultInstrument(self):
+        """ Returns the default instrument for this analysis according
+            to its parent analysis service
+        """
+        return self.getService().getInstrument() \
+            if self.getService().getInstrumentEntryOfResults() \
+            else None
 
     def isInstrumentAllowed(self, instrument):
         """ Checks if the specified instrument can be set for this
@@ -508,5 +539,98 @@ class Analysis(BaseContent):
 
         return False
 
+    def getDefaultMethod(self):
+        """ Returns the default method for this Analysis
+            according to its current instrument. If the Analysis hasn't
+            set yet an Instrument, looks to the Service
+        """
+        instr = self.getInstrument() \
+            if self.getInstrument else self.getDefaultInstrument()
+        return instr.getMethod() if instr else None
+
+    def getFormattedResult(self):
+        """Formatted result:
+        1. Print ResultText of matching ResultOptions
+        2. If the result is not floatable, return it without being formatted
+        3. If the analysis specs has hidemin or hidemax enabled and the
+           result is out of range, render result as '<min' or '>max'
+        4. If the result is floatable, render it to the correct precision
+        """
+        result = self.getResult()
+        service = self.getService()
+        choices = service.getResultOptions()
+
+        # 1. Print ResultText of mathching ResulOptions
+        match = [x['ResultText'] for x in choices
+                 if str(x['ResultValue']) == str(result)]
+        if match:
+            return match[0]
+
+        # 2. If the result is not floatable, return it without being formatted
+        try:
+            result = float(result)
+        except:
+            return result
+
+        # 3. If the analysis specs has enabled hidemin or hidemax and the
+        #    result is out of range, render result as '<min' or '>max'
+        belowmin = False
+        abovemax = False
+        specs = self.getAnalysisSpecs()
+        specs = specs.getResultsRangeDict() if specs is not None else {}
+        specs = specs.get(self.getKeyword(), {})
+        hidemin = specs.get('hidemin', '')
+        hidemax = specs.get('hidemax', '')
+        try:
+            belowmin = hidemin and result < float(hidemin) or False
+        except:
+            belowmin = False
+            pass
+        try:
+            abovemax = hidemax and result > float(hidemax) or False
+        except:
+            abovemax = False
+            pass
+
+        # 3.1. If result is below min and hidemin enabled, return '<min'
+        if belowmin:
+            return '< %s' % hidemin
+
+        # 3.2. If result is above max and hidemax enabled, return '>max'
+        if abovemax:
+            return '> %s' % hidemax
+
+        # 4. If the result is floatable, render it to the correct precision
+        precision = service.getPrecision()
+        if not precision:
+            precision = ''
+        return str("%%.%sf" % precision) % result
+
+    def getAnalyst(self):
+        """ Returns the identifier of the assigned analyst. If there is
+            no analyst assigned, and this analysis is attached to a
+            worksheet, retrieves the analyst assigned to the parent
+            worksheet
+        """
+        field = self.getField('Analyst')
+        analyst = field and field.get(self) or ''
+        if not analyst:
+            # Is assigned to a worksheet?
+            wss = self.getBackReferences('WorksheetAnalysis')
+            if len(wss) > 0:
+                analyst = wss[0].getAnalyst()
+                field.set(self, analyst)
+        return analyst if analyst else ''
+
+    def getAnalystName(self):
+        """ Returns the name of the currently assigned analyst
+        """
+        mtool = getToolByName(self, 'portal_membership')
+        analyst = self.getAnalyst().strip()
+        analyst_member = mtool.getMemberById(analyst)
+        if analyst_member != None:
+            return analyst_member.getProperty('fullname')
+        else:
+            return ''
 
 atapi.registerType(Analysis, PROJECTNAME)

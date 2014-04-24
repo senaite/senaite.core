@@ -11,6 +11,10 @@ function AnalysisServiceEditView() {
     that.load = function() {
 
         $('#Instruments').live('change', function() {
+            if ($('#Instruments').val() == null &&
+                $('#InstrumentEntryOfResults').is(':checked')) {
+                $('#InstrumentEntryOfResults').change();
+            }
             validateInstruments();
             loadDefaultInstrument();
             loadMethods();
@@ -79,6 +83,7 @@ function AnalysisServiceEditView() {
             // No instruments available, disable the checkbox
             $('#InstrumentEntryOfResults').prop('checked', false);
             $('#InstrumentEntryOfResults').prop('disabled', true);
+            loadEmptyInstrument();
         }
     }
 
@@ -104,28 +109,37 @@ function AnalysisServiceEditView() {
      */
     function loadDefaultInstrument() {
         if ($('#Instrument').attr('data-default') == null) {
-            $('#Instrument').attr('data-default', $('#Instrument').val());
+            var instr = $('#Instrument').val() ? $('#Instrument').val() : '';
+            $('#Instrument').attr('data-default', instr);
         }
         if ($('#InstrumentEntryOfResults').is(':checked')) {
             // Fill the selector with the methods selected above
             $('#Instrument option').remove();
-            $.each($('#Instruments').val(), function(index, value) {
-                var option = $('#Instruments option[value="'+value+'"]').clone();
-                $('#Instrument').append(option);
-            });
+            var insts = $('#Instruments').val() ? $('#Instruments').val() : [];
+            if (insts.length > 0) {
+                $.each(insts, function(index, value) {
+                    var option = $('#Instruments option[value="'+value+'"]').clone();
+                    $('#Instrument').append(option);
+                });
+            } else {
+                $('#Instrument').append('<option selected val=""></option>');
+            }
             // Show the Default Instrument selector and
             // apply the first selected instrument from the
             // multiselect field.
             var definstr = $('#Instrument').attr('data-default');
             if (definstr != '' && $('#Instrument option[value="'+definstr+'"]').length > 0) {
                 $('#Instrument').val(definstr);
+            } else if (insts.length > 0) {
+                $('#Instrument').val(insts[0]);
             } else {
-                $('#Instrument').val($('#Instruments').val()[0]);
+                loadEmptyInstrument();
             }
             $('#archetypes-fieldname-Instrument').fadeIn('slow');
         } else {
             // If no instrument selected, hide instrument selector
             $('#archetypes-fieldname-Instrument').hide();
+            loadEmptyInstrument();
         }
     }
     /**
@@ -139,7 +153,8 @@ function AnalysisServiceEditView() {
         } else {
             // Manual entry: show available methods
             if ($('#Methods').val() == null) {
-                $('#Methods').val($('#_Method option').first().val());
+                //loadEmptyMethod();
+                //$('#Methods').val($('#_Method option').first().val());
             }
             $('#archetypes-fieldname-Methods').fadeIn('slow');
         }
@@ -151,7 +166,8 @@ function AnalysisServiceEditView() {
      */
     function loadDefaultMethod() {
         if ($('#_Method').attr('data-default') == null) {
-            $('#_Method').attr('data-default', $('#_Method').val());
+            var meth = $('#_Method').val() ? $('#_Method').val() : '';
+            $('#_Method').attr('data-default', meth);
         }
         if ($('#TempMethod').length == 0) {
             // Add a hidden selector to allow us to manage the default
@@ -166,37 +182,47 @@ function AnalysisServiceEditView() {
                 var option = $('#TempMethod option[value="'+defmethod+'"]').clone();
                 $('#_Method').append(option);
                 $('#_Method').val($('#_Method option').first().val());
+            } else {
+                loadEmptyMethod();
             }
         }
         if ($('#InstrumentEntryOfResults').is(':checked')) {
             // Readonly and set default Instrument's method via ajax
             $('#_Method').prop('disabled', true);
             var instruid = $('#Instrument').val();
-            $.ajax({
-                url: window.portal_url + "/get_instrument_method",
-                type: 'POST',
-                data: {'_authenticator': $('input[name="_authenticator"]').val(),
-                       'uid': instruid },
-                dataType: 'json'
-            }).done(function(data) {
-                $('#_Method option').remove();
-                if (data != null && data['uid']) {
-                    $('#_Method').append('<option selected val="'+data['uid']+'">'+data['title']+'</option>');
-                }
-            });
+            if (instruid) {
+                $.ajax({
+                    url: window.portal_url + "/get_instrument_method",
+                    type: 'POST',
+                    data: {'_authenticator': $('input[name="_authenticator"]').val(),
+                           'uid': instruid },
+                    dataType: 'json'
+                }).done(function(data) {
+                    $('#_Method option').remove();
+                    if (data != null && data['uid']) {
+                        $('#_Method').append('<option selected="selected" value="'+data['uid']+'">'+data['title']+'</option>');
+                    }
+                });
+            } else {
+                loadEmptyMethod();
+            }
         } else {
             // Non-readonly, fill the selector with the methods selected above
             $('#_Method option').remove();
             $('#_Method').prop('disabled', false);
-            $.each($('#Methods').val(), function(index, value) {
-                var option = $('#Methods option[value="'+value+'"]').clone();
-                $('#_Method').append(option);
-            });
+            var meths = $('#Methods').val() ? $('#Methods').val() : [];
             var defmethod = $('#_Method').attr('data-default');
-            if (defmethod != null && defmethod != '' && $('#_Method option[value="'+defmethod+'"]').length > 0) {
-                $('#_Method').val(defmethod);
-            } else {
-                $('#_Method').val($('#_Method option').first().val());
+            var selectionsucceed = false;
+            $.each(meths, function(index, value) {
+                var title = $('#Methods option[value="'+value+'"]').html();
+                var selected = (defmethod == value) ? "selected=\"selected\"" : "";
+                selectionsucceed = (defmethod == value) ? true : selectionsucceed;
+                $('#_Method').append('<option value="'+value+'" '+selected+'>'+title+'</option>');
+            });
+            if (!selectionsucceed && meths.length > 0) {
+                $('#_Method option').first().attr('selected', 'selected');
+            } else if (!selectionsucceed) {
+                loadEmptyMethod();
             }
         }
     }
@@ -308,7 +334,8 @@ function AnalysisServiceEditView() {
             window.jarn.i18n.loadCatalog("bika");
             window.jarn.i18n.loadCatalog("plone");
             var _ = window.jarn.i18n.MessageFactory("bika");
-            $.each($('#Instruments').val(), function(index, value) {
+            var insts = $('#Instruments').val() ? $('#Instruments').val() : [];
+            $.each(insts, function(index, value) {
                 // Is valid?
                 var request_data = {
                     catalog_name: "uid_catalog",
@@ -330,7 +357,19 @@ function AnalysisServiceEditView() {
                     }
                 });
             });
+        } else {
+            loadEmptyInstrument();
         }
+    }
+
+    function loadEmptyInstrument() {
+        $('#Instrument option').remove();
+        $('#Instrument').append('<option selected val=""></option>');
+    }
+
+    function loadEmptyMethod() {
+        $('#_Method option').remove();
+        $('#_Method').append('<option selected val=""></option>');
     }
 
     function applyStyles() {
