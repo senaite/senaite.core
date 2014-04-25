@@ -18,9 +18,11 @@ from bika.lims.workflow import doActionFor
 from DateTime import DateTime
 from Products.Archetypes import PloneMessageFactory as PMF
 from plone.app.layout.globals.interfaces import IViewView
+from plone.registry.interfaces import IRegistry
 from Products.CMFCore.utils import getToolByName
 from zope.component import adapts
 from zope.component import getAdapters
+from zope.component import queryUtility
 from zope.interface import implements
 
 import json
@@ -270,6 +272,26 @@ class WidgetVisibility(_WV):
                 'Template',
             ]
 
+        optionally_disabled_fields = ()
+        try:
+            registry = queryUtility(IRegistry)
+            hiddenattributes = registry.get('bika.lims.hiddenattributes', ())
+            for alist in hiddenattributes:
+                if alist[0] == self.context.portal_type:
+                    optionally_disabled_fields = alist[1:]
+                    break
+        except:
+            pass
+
+        if optionally_disabled_fields:
+            print 'Disable fields %s' % str(optionally_disabled_fields)
+            for section in ret.keys():
+                for key in ret[section]:
+                    if key == 'visible':
+                        for field in ret[section][key]:
+                            if field in optionally_disabled_fields:
+                                print 'delete field %s' % field
+                                ret[section][key].remove(field)
         return ret
 
 

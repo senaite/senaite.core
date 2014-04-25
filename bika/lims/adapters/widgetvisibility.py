@@ -17,16 +17,16 @@ class WidgetVisibility(object):
         fields = list(self.context.Schema().fields())
 
         # Get optional fields for class
-        registry = queryUtility(IRegistry)
-        if not registry:
-            raise RuntimeError('Registry not found')
-
-        hiddenattributes = registry.get('bika.lims.hiddenattributes', ())
         optionally_disabled_fields = ()
-        for alist in hiddenattributes:
-            if alist[0] == self.context.portal_type:
-                optionally_disabled_fields = alist[1:]
-                break
+        try:
+            registry = queryUtility(IRegistry)
+            hiddenattributes = registry.get('bika.lims.hiddenattributes', ())
+            for alist in hiddenattributes:
+                if alist[0] == self.context.portal_type:
+                    optionally_disabled_fields = alist[1:]
+                    break
+        except:
+            pass
 
         for field in fields:
             if optionally_disabled_fields and \
