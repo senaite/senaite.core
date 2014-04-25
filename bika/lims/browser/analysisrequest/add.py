@@ -61,67 +61,6 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                 ps.append(service.UID())
         return json.dumps(ps)
 
-    def get_at_field_values(self):
-        """Return a list of dictionaries, one for each ar in the copy_from request parameter.  Each dict contains
-        all values from all schema fields.  References are returned as Titles.  reference fields have *_uid keys,
-        added, containing the actual referenced object UID.
-
-        Does not support multi-valued references.  XXX We will have to return a list for these,
-        but currently the ar_add form doesn't know what do do with such - ie: CCContacts.
-
-        Works on any object:
-
-        >>> from bika.lims.browser.analysisrequest.add import AnalysisRequestAddView
-        >>> portal = layer['portal']
-        >>> frontpage = portal['front-page']
-        >>> client = layer['portal']['clients']['client-1']
-        >>> request = layer['request']
-        >>> request['copy_from'] = ",".join([frontpage.UID(), client.UID()])
-        >>> vals = AnalysisRequestAddView(client, request).get_at_field_values()
-        >>> len(vals)
-        2
-        >>> 'AnalysisProfile' in vals[1]['locallyAllowedTypes']
-        True
-        >>> 'DefaultARSpecs' in vals[1]
-        True
-
-        Also works with schemaextender fields.
-
-        Even though all schema values are returned, the JS only uses those that are
-        present on the ar add form.  Still, we leave them all here, to allow additions
-        later without having to come and edit here.
-
-        """
-        skip_fieldnames = ["Sample", "CCContact", ]
-        ret = []
-        uc = getToolByName(self.context, "uid_catalog")
-        uids = self.request.get("copy_from").split(",")
-        for column, uid in enumerate(uids):
-            ret.append({})
-            copy_from_uid_proxies = uc(UID=uid)
-            assert len(copy_from_uid_proxies) == 1
-            obj = copy_from_uid_proxies[0].getObject()
-            schema_fields = obj.Schema().fields()
-            for field in schema_fields:
-                field_name = field.getName()
-                if field.getType() == "Products.Archetypes.Field.ComputedField" \
-                    or field_name in skip_fieldnames:
-                    continue
-                val = field.get(self.context)
-                if field.getType().endswith('ReferenceField'):
-                    if type(val) in (list, tuple) and len(val) == 0:
-                        val = None
-                    elif type(val) in (list, tuple) and len(val) == 1:
-                        val = val[0]
-                        ret[column][field_name] = val.Title() if callable(getattr(val, 'Title', False)) else val.id
-                        ret[column]["%s_uid"%field_name] = val.UID() if val is not None else ""
-                    elif type(val) in (list, tuple):
-                        raise NotImplementedError("Can't include multivalued reference fields in ar copy.")
-                else:
-                    ret[column][field_name] = val
-        return ret
-
-
 class SecondaryARSampleInfo(BrowserView):
     """Return fieldnames and pre-digested values for Sample fields which
     javascript must disable/display while adding secondary ARs
