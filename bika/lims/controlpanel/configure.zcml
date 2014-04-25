@@ -171,12 +171,12 @@
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
-    <!-- Analysis Services Workflow action button clicked -->
+
     <browser:page
       for="bika.lims.interfaces.IAnalysisServices"
-      name="workflow_action"
-      class=".bika_analysisservices.AnalysisServicesWorkflowAction"
-      permission="zope.Public"
+      name="copy"
+      class=".bika_analysisservices.AnalysisServiceCopy"
+      permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

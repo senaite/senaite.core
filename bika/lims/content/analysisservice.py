@@ -297,8 +297,7 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = SelectionWidget(
             format='select',
-            label=_('Instrument'),
-            description=_("Default instrument")
+            label=_('Default Instrument')
         ),
     ),
     # Returns the Default's instrument title. If no default instrument
@@ -357,12 +356,14 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = SelectionWidget(
             format='select',
-            label=_('Method'),
-            description=_("Default method. If 'Allow instrument entry "
+            label=_('Default Method'),
+            description=_("If 'Allow instrument entry "
                           "of results' is selected, the Default method to "
                           "be used will be the method set in the "
                           "Default Instrument. Otherwise, the Method "
-                          "to be used can be set manually.")
+                          "to be used can be set manually, but only the "
+                          "Methods with 'Manual entry of results' set "
+                          "will be displayed.")
         ),
     ),
     # Allow/Disallow to set the calculation manually
@@ -430,7 +431,7 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = SelectionWidget(
             format='select',
-            label= _('Deferred Calculation'),
+            label= _('Alternative Calculation'),
             description = _("If required, select a calculation for the analysis here. "
                             "Calculations can be configured under the calculations item "
                             "in the LIMS set-up"),
@@ -709,10 +710,6 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
     displayContentsTab = False
     implements(IAnalysisService)
 
-    instrumentsdl = None
-    methodsdl = None
-    calculationsdl = None
-
     _at_rename_after_creation = True
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
@@ -801,28 +798,27 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
             registered in Bika-Setup. Only active Instruments are
             fetched. Used to fill the Instruments MultiSelectionWidget
         """
-        if not self.instrumentsdl:
-            bsc = getToolByName(self, 'bika_setup_catalog')
-            items = [(i.UID, i.Title) \
-                    for i in bsc(portal_type='Instrument',
-                                 inactive_state = 'active')]
-            items.sort(lambda x,y: cmp(x[1], y[1]))
-            self.instrumentsdl = DisplayList(list(items))
-        return self.instrumentsdl
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(i.UID, i.Title) \
+                for i in bsc(portal_type='Instrument',
+                             inactive_state = 'active')]
+        items.sort(lambda x,y: cmp(x[1], y[1]))
+        return DisplayList(list(items))
 
     def _getAvailableMethodsDisplayList(self):
         """ Returns a DisplayList with the available Methods
-            registered in Bika-Setup. Only active Methods are
-            fetched. Used to fill the Methods MultiSelectionWidget
+            registered in Bika-Setup. Only active Methods and those
+            with Manual Entry field active are fetched.
+            Used to fill the Methods MultiSelectionWidget when 'Allow
+            Instrument Entry of Results is not selected'.
         """
-        if not self.methodsdl:
-            bsc = getToolByName(self, 'bika_setup_catalog')
-            items = [(i.UID, i.Title) \
-                    for i in bsc(portal_type='Method',
-                                 inactive_state = 'active')]
-            items.sort(lambda x,y: cmp(x[1], y[1]))
-            self.methodsdl = DisplayList(list(items))
-        return self.methodsdl
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(i.UID, i.Title) \
+                for i in bsc(portal_type='Method',
+                             inactive_state = 'active') \
+                        if i.getObject().isManualEntryOfResults()]
+        items.sort(lambda x,y: cmp(x[1], y[1]))
+        return DisplayList(list(items))
 
     def _getAvailableCalculationsDisplayList(self):
         """ Returns a DisplayList with the available Calculations
@@ -830,14 +826,13 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
             fetched. Used to fill the _Calculation and DeferredCalculation
             List fields
         """
-        if not self.calculationsdl:
-            bsc = getToolByName(self, 'bika_setup_catalog')
-            items = [(i.UID, i.Title) \
-                    for i in bsc(portal_type='Calculation',
-                                 inactive_state = 'active')]
-            items.sort(lambda x,y: cmp(x[1], y[1]))
-            self.calculationsdl = DisplayList(list(items))
-        return self.calculationsdl
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(i.UID, i.Title) \
+                for i in bsc(portal_type='Calculation',
+                             inactive_state = 'active')]
+        items.sort(lambda x,y: cmp(x[1], y[1]))
+        items.insert(0, ('', _("None")))
+        return DisplayList(list(items))
 
     def getCalculation(self):
         """ Returns the calculation to be used in this AS.

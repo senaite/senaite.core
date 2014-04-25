@@ -308,4 +308,13 @@
         handler="bika.lims.upgrade.to3029.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Fix ARImports folder permissions"
+        description=""
+        source="3029"
+        destination="3030"
+        handler="bika.lims.upgrade.to3030.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
 </configure>

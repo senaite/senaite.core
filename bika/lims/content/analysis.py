@@ -478,15 +478,6 @@ class Analysis(BaseContent):
             instrument is assigned. Returns true if the Analysis has
             no instrument assigned or is valid.
         """
-        # TODO : Remove when analysis - instrument being assigned directly
-        if not self.getInstrument():
-            instr = self.getService().getInstrument() \
-                    if self.getService().getInstrumentEntryOfResults() \
-                    else None
-            if instr:
-                self.setInstrument(instr)
-        # ---8<--------
-
         return self.getInstrument().isValid() \
                 if self.getInstrument() else True
 

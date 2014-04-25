@@ -3,14 +3,15 @@
 Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
 Resource         keywords.txt
+Library          bika.lims.testing.Keywords
+Resource         plone/app/robotframework/selenium.robot
+Resource         plone/app/robotframework/saucelabs.robot
 Variables        plone/app/testing/interfaces.py
+Variables        bika/lims/tests/variables.py
 Suite Setup      Start browser
 Suite Teardown   Close All Browsers
 
 *** Variables ***
-
-${SELENIUM_SPEED}       0
-${PLONEURL}             http://localhost:55001/plone
 
 *** Test Cases ***
 
@@ -56,6 +57,7 @@ Create AnalysisRequests
     Select Date                 ar_0_SamplingDate           1
     select from dropdown        ar_0_Contact                Rita
     Select from dropdown        ar_0_Template               Bore
+    sleep    2
     Set Selenium Timeout        30
     Click Button                Save
     Wait until page contains    created

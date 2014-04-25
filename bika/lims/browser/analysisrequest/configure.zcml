@@ -106,7 +106,7 @@
     <browser:page
       for="*"
       name="secondary_ar_sample_info"
-      class="bika.lims.browser.analysisrequest.SecondaryARSampleInfo"
+      class="bika.lims.browser.analysisrequest.add.SecondaryARSampleInfo"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -170,7 +170,7 @@
     <browser:page
       for="*"
       name="analysisrequest_analysisservices"
-      class="bika.lims.browser.analysisrequest.ajaxExpandCategory"
+      class="bika.lims.browser.analysisrequest.add.ajaxExpandCategory"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -178,7 +178,7 @@
     <browser:page
       for="*"
       name="analysisrequest_submit"
-      class="bika.lims.browser.analysisrequest.ajaxAnalysisRequestSubmit"
+      class="bika.lims.browser.analysisrequest.add.ajaxAnalysisRequestSubmit"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

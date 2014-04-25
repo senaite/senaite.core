@@ -12,6 +12,14 @@ function MethodEditView() {
 
         loadInstruments();
 
+        $('#ManualEntryOfResults').change(function() {
+            if ($('#_AvailableInstruments option').length == 0
+                && $(this).is(':checked') == false) {
+                $(this).prop('checked', true);
+                return;
+            }
+        });
+
     }
 
     /**
@@ -26,7 +34,6 @@ function MethodEditView() {
         $('#_Instruments').css('width', '250px');
         $('#_Instruments option').prop('selected', true);
         if ($('#_Instruments option').length == 0) {
-            $('#ManualEntryOfResults').prop('disabled', true);
             $('#ManualEntryOfResults').prop('checked', true);
         }
         $('#_AvailableInstruments option').each(function() {

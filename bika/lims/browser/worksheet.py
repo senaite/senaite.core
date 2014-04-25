@@ -121,6 +121,7 @@ class WorksheetWorkflowAction(WorkflowAction):
         retested = form.get('retested', {})
         methods = form.get('Method', [{}])[0]
         instruments = form.get('Instrument', [{}])[0]
+        analysts = self.request.form.get('Analyst', [{}])[0]
         selected = WorkflowAction._get_selected_items(self)
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         sm = getSecurityManager()
@@ -176,6 +177,10 @@ class WorksheetWorkflowAction(WorkflowAction):
                         analysis.setInstrument(instruments[uid])
                         instrument = rc.lookupObject(instruments[uid])
                         instrument.addAnalysis(analysis)
+
+            # Need to save the analyst?
+            if uid in analysts and analysis_active:
+                analysis.setAnalyst(analysts[uid]);
 
             # Need to save results?
             if uid in results and results[uid] and allow_edit \

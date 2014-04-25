@@ -1,0 +1,62 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    metal:use-macro="here/main_template/macros/master"
+    i18n:domain="bika">
+<body>
+
+    <metal:content-title fill-slot="content-title">
+        <h1>
+            <span class="documentFirstHeading" i18n:translate="">
+                Copy analysis services
+            </span>
+        </h1>
+    </metal:content-title>
+
+    <metal:content-description fill-slot="content-description">
+        <div
+            class="documentDescription"
+            i18n:translate=""
+            tal:condition="python:view.services">
+            Enter the details of each of the analysis services you want
+            to copy.
+        </div>
+    </metal:content-description>
+
+    <metal:content-core fill-slot="content-core">
+        <span tal:condition="python:not view.services" i18n:translate="">
+            No analysis services were selected.
+        </span>
+        <form
+            id="copy_form"
+            tal:condition="python:view.services">
+            <table class="invoice-items">
+                <tr>
+                    <th style="text-align:left;">Analysis Service</th>
+                    <th style="text-align:left;">Title</th>
+                    <th style="text-align:left;">Keyword</th>
+                </tr>
+                <tal:x repeat="service view/services">
+                    <tr tal:attributes="source service/Title">
+                        <td style="text-align:left;">
+                            <input type="hidden" name="uids:list" tal:attributes="value service/UID"/>
+                            <span tal:content="service/Title"/>
+                        </td>
+                        <td style="text-align:left;">
+                            <input type="text" name="dst_title:list" size="35"/>
+                        </td>
+                        <td style="text-align:left;">
+                            <input type="text" name="dst_keyword:list" size="15"/>
+                        </td>
+                    </tr>
+                </tal:x>
+            </table>
+            <input type="hidden" name="copy_form_submitted" value="1"/>
+            <input type="submit" value="Copy" i18n:attributes="value"/>
+        </form>
+    </metal:content-core>
+
+</body>
+</html>
+

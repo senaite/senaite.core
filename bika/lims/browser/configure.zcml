@@ -5,7 +5,6 @@
 
   <include file="analysis.zcml"/>
   <include file="analysisservice.zcml"/>
-  <include file="analysisrequest.zcml"/>
   <include file="attachment.zcml"/>
   <include file="batchfolder.zcml"/>
   <include file="bika_listing.zcml"/>
@@ -22,6 +21,7 @@
   <include file="late_analyses.zcml"/>
   <include file="manufacturer.zcml"/>
   <include file="menu.zcml"/>
+  <include file="method.zcml"/>
   <include file="remarks.zcml"/>
   <include file="referenceanalysis.zcml"/>
   <include file="referencesample.zcml"/>
@@ -36,6 +36,7 @@
   <include file="viewlets.zcml"/>
   <include file="arimports.zcml"/>
 
+  <include package=".analysisrequest"/>
   <include package=".batch"/>
 
   <include package=".fields"/>

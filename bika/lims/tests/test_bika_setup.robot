@@ -2,20 +2,23 @@
 
 Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
+Library          DebugLibrary
 Resource         keywords.txt
+Library          bika.lims.testing.Keywords
+Resource         plone/app/robotframework/selenium.robot
+Resource         plone/app/robotframework/saucelabs.robot
 Variables        plone/app/testing/interfaces.py
+Variables        bika/lims/tests/variables.py
 Suite Setup      Start browser
 Suite Teardown   Close All Browsers
 
 *** Variables ***
 
-${SELENIUM_SPEED}  0
-${PLONEURL}        http://localhost:55001/plone
-
 *** Test Cases ***
 
 
 Repetitive Bika Setup stuff
+
 # Update Laboratory Information
     Go to  ${PLONEURL}/bika_setup/laboratory/base_edit
     Input Text        Name            Laboratory Name
@@ -601,6 +604,49 @@ Repetitive Bika Setup stuff
     Click Button                        Save
     Wait Until Page Contains            Changes saved.
 
+    # Duplicate AnalysisServices - first fail some validations
+    Go to                      ${PLONEURL}/bika_setup/bika_analysisservices
+    Wait Until Page Contains   Analysis Services
+    click element              xpath=//th[@cat='Metals']
+    select checkbox            xpath=//input[@item_title='Calcium']
+    select checkbox            xpath=//input[@item_title='Copper']
+    click element              xpath=//input[@transition='duplicate']
+    Wait until page contains   Copy analysis services
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_title:list']     Calcium2
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_keyword:list']   CAL2
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_title:list']     Copper2
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_keyword:list']   COP2
+    click button               Copy
+    Wait until page contains   Validation failed
+    Page should contain        No new items were created
+    Go to                      ${PLONEURL}/bika_setup/bika_analysisservices
+    Wait Until Page Contains   Analysis Services
+    click element              xpath=//th[@cat='Metals']
+    select checkbox            xpath=//input[@item_title='Calcium']
+    select checkbox            xpath=//input[@item_title='Copper']
+    click element              xpath=//input[@transition='duplicate']
+    Wait until page contains   Copy analysis services
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_title:list']     Calcium2
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_keyword:list']   CAL2
+    input text                 xpath=//tr[@source='Copper']//input[@name='dst_title:list']     Calcium2
+    input text                 xpath=//tr[@source='Copper']//input[@name='dst_keyword:list']   CAL2
+    click button               Copy
+    Wait until page contains   Validation failed
+    Page should contain        No new items were created
+    # Duplicate AnalysisServices - Enter correct values
+    Go to                      ${PLONEURL}/bika_setup/bika_analysisservices
+    Wait Until Page Contains   Analysis Services
+    click element              xpath=//th[@cat='Metals']
+    select checkbox            xpath=//input[@item_title='Calcium']
+    select checkbox            xpath=//input[@item_title='Copper']
+    click element              xpath=//input[@transition='duplicate']
+    Wait until page contains   Copy analysis services
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_title:list']     Calcium2
+    input text                 xpath=//tr[@source='Calcium']//input[@name='dst_keyword:list']   CAL2
+    input text                 xpath=//tr[@source='Copper']//input[@name='dst_title:list']      Copper2
+    input text                 xpath=//tr[@source='Copper']//input[@name='dst_keyword:list']    COP2
+    click button               Copy
+    Wait until page contains   were successfully
 
 # AnalysisProfiles
     Go to    ${PLONEURL}/bika_setup/bika_analysisprofiles
@@ -622,7 +668,22 @@ Repetitive Bika Setup stuff
     Click link  Add
     Wait Until Page Contains Element  description
     Select From List  SampleType:list
-    Input Text  description    Temporary test object
+    Input Text  title    Water Chemistry
+    Input Text  description    Water chemistry default spec
+    Click Element  xpath=//th[@cat='Water Chemistry']
+    Input Text  xpath=//input[@selector='min_analysisservice-4']  3
+    Input Text  xpath=//input[@selector='max_analysisservice-4']  4
+    Input Text  xpath=//input[@selector='error_analysisservice-4']  5
+    Click Button  Save
+    Wait Until Page Contains  Changes saved.
+
+    Go to  ${PLONEURL}/bika_setup/bika_analysisspecs
+    Wait Until Page Contains  Analysis Specifications
+    Click link  Add
+    Wait Until Page Contains Element  description
+    Select From List  SampleType:list
+    Input Text  title    Water Chemistry Alternate
+    Input Text  description    Water chemistry Alternate
     Click Element  xpath=//th[@cat='Water Chemistry']
     Input Text  xpath=//input[@selector='min_analysisservice-4']  3
     Input Text  xpath=//input[@selector='max_analysisservice-4']  4

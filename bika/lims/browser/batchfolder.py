@@ -1,19 +1,12 @@
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.permissions import View
-from AccessControl import getSecurityManager
 from bika.lims.permissions import AddBatch
-from bika.lims.permissions import ManageAnalysisRequests
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims import bikaMessageFactory as _
-from bika.lims.interfaces import IBatchFolder
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from bika.lims.browser import BrowserView
 from zope.interface import implements
-from Products.CMFCore import permissions
 import plone
 import json
-from bika.lims.workflow import getCurrentState, StateFlow
 
 
 class BatchFolderContentsView(BikaListingView):
@@ -35,6 +28,7 @@ class BatchFolderContentsView(BikaListingView):
         self.pagesize = 25
 
         self.columns = {
+            'Title': {'title': _('Title')},
             'BatchID': {'title': _('Batch ID')},
             'Description': {'title': _('Description')},
             'BatchDate': {'title': _('Date')},
@@ -42,43 +36,47 @@ class BatchFolderContentsView(BikaListingView):
         }
 
         self.review_states = [  # leave these titles and ids alone
-            {'id':'default',
+            {'id': 'default',
              'contentFilter': {'review_state': 'open',
                                'cancellation_state': 'active'},
              'title': _('Open'),
-             'transitions': [{'id':'close'},{'id':'cancel'}],
-             'columns':['BatchID',
-                        'BatchDate',
-                        'Description',
-                        'state_title', ]
+             'transitions': [{'id': 'close'}, {'id': 'cancel'}],
+             'columns': ['Title',
+                         'BatchID',
+                         'BatchDate',
+                         'Description',
+                         'state_title', ]
              },
-            {'id':'closed',
+            {'id': 'closed',
              'contentFilter': {'review_state': 'closed',
                                'cancellation_state': 'active'},
              'title': _('Closed'),
-             'transitions': [{'id':'open'}],
-             'columns':['BatchID',
-                        'BatchDate',
-                        'Description',
-                        'state_title', ]
+             'transitions': [{'id': 'open'}],
+             'columns': ['Title',
+                         'BatchID',
+                         'BatchDate',
+                         'Description',
+                         'state_title', ]
              },
-            {'id':'cancelled',
+            {'id': 'cancelled',
              'title': _('Cancelled'),
-             'transitions': [{'id':'reinstate'}],
+             'transitions': [{'id': 'reinstate'}],
              'contentFilter': {'cancellation_state': 'cancelled'},
-             'columns':['BatchID',
-                        'BatchDate',
-                        'Description',
-                        'state_title', ]
+             'columns': ['Title',
+                         'BatchID',
+                         'BatchDate',
+                         'Description',
+                         'state_title', ]
              },
-            {'id':'all',
+            {'id': 'all',
              'title': _('All'),
              'transitions': [],
              'contentFilter':{},
-             'columns':['BatchID',
-                        'BatchDate',
-                        'Description',
-                        'state_title', ]
+             'columns': ['Title',
+                         'BatchID',
+                         'BatchDate',
+                         'Description',
+                         'state_title', ]
              },
         ]
 
@@ -106,6 +104,10 @@ class BatchFolderContentsView(BikaListingView):
             items[x]['BatchID'] = bid
             items[x]['replace']['BatchID'] = "<a href='%s/%s'>%s</a>" % (items[x]['url'], 'analysisrequests', bid)
 
+            title = obj.Title()
+            items[x]['Title'] = title
+            items[x]['replace']['Title'] = "<a href='%s/%s'>%s</a>" % (items[x]['url'], 'analysisrequests', title)
+
             date = obj.Schema().getField('BatchDate').get(obj)
             if callable(date):
                 date = date()
@@ -116,8 +118,10 @@ class BatchFolderContentsView(BikaListingView):
 
 
 class ajaxGetBatches(BrowserView):
+
     """ Vocabulary source for jquery combo dropdown box
     """
+
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         searchTerm = self.request['searchTerm'].lower()
@@ -141,7 +145,7 @@ class ajaxGetBatches(BrowserView):
                              'Description': batch.Description(),
                              'BatchUID': batch.UID()})
 
-        rows = sorted(rows, cmp=lambda x,y: cmp(x.lower(), y.lower()), key=itemgetter(sidx and sidx or 'BatchID'))
+        rows = sorted(rows, cmp=lambda x, y: cmp(x.lower(), y.lower()), key=itemgetter(sidx and sidx or 'BatchID'))
         if sord == 'desc':
             rows.reverse()
         pages = len(rows) / int(nr_rows)

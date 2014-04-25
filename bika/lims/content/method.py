@@ -64,7 +64,19 @@ schema = BikaSchema.copy() + Schema((
             label=_("Manual entry of results"),
             description=_("The results for the Analysis Services that "
                           "use this method can be set manually"),
+            modes = ('edit'),
         )
+    ),
+
+    # Only shown in readonly view. Not in edit view
+    ComputedField('ManualEntryOfResultsViewField',
+        expression = "context.isManualEntryOfResults()",
+        widget = BooleanWidget(
+            label=_("Manual entry of results"),
+            description=_("The results for the Analysis Services that "
+                          "use this method can be set manually"),
+            modes = ('view'),
+        ),
     ),
 
     # Calculations associated to this method. The analyses services
@@ -111,7 +123,7 @@ class Method(BaseFolder):
             Otherwise, returns False by default, but its value can be
             modified using the ManualEntryOfResults Boolean Field
         """
-        return len(getInstruments()) == 0 or getManualEntryOfResults()
+        return len(self.getInstruments()) == 0 or self.getManualEntryOfResults()
 
     def _getCalculations(self):
         """ Returns a DisplayList with the available Calculations

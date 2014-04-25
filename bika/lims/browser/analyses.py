@@ -205,6 +205,7 @@ class AnalysesView(BikaListingView):
         """
         ret = []
         if analysis:
+            muids = []
             methods = []
             service = analysis.getService()
             if service.getInstrumentEntryOfResults() == False:
@@ -216,8 +217,9 @@ class AnalysesView(BikaListingView):
                 instruments = service.getInstruments()
                 for ins in instruments:
                     method = ins.getMethod()
-                    if method and method not in methods:
+                    if method and method.UID() not in muids:
                        methods.append(method)
+                       muids.append(method.UID())
 
             for method in methods:
                 ret.append({'ResultValue': method.UID(),
@@ -503,14 +505,19 @@ class AnalysesView(BikaListingView):
             method = obj.getMethod() \
                         if hasattr(obj, 'getMethod') and obj.getMethod() \
                         else service.getMethod()
-            if can_set_method:
-                item['Method'] = method.UID() if method else ''
-                voc = self.get_methods_vocabulary(obj)
+
+            if can_set_method and method:
                 # Show the dropbox only if at least one method available
+                voc = self.get_methods_vocabulary(obj)
                 if voc:
+                    item['Method'] = method.UID() if method else ''
                     item['choices']['Method'] = voc
                     item['allow_edit'].append('Method')
-                    show_methodinstr_columns = True
+                else:
+                    item['Method'] = method.Title()
+                    item['replace']['Method'] = "<a href='%s'>%s</a>" % \
+                        (method.absolute_url(), method.Title())
+                show_methodinstr_columns = True
             elif method:
                 item['Method'] = method.Title()
                 item['replace']['Method'] = "<a href='%s'>%s</a>" % \
@@ -527,14 +534,33 @@ class AnalysesView(BikaListingView):
             can_set_instrument = service.getInstrumentEntryOfResults() \
                 and can_edit_analysis \
                 and item['review_state'] in allowed_method_states
-            instrument = obj.getInstrument() if hasattr(obj, 'getInstrument') else None
+            instrument = None
+            if service.getInstrumentEntryOfResults() \
+                and hasattr(obj, 'getInstrument') \
+                and obj.getInstrument():
+                    instrument = obj.getInstrument()
+            elif service.getInstrumentEntryOfResults():
+                    instrument = service.getInstrument()
+
+            if method and instrument \
+                and instrument.UID() not in method.getInstrumentUIDs():
+                instrument = None
+
             if service.getInstrumentEntryOfResults() == False:
-                item['Instrument'] = ''
-                item['replace']['Instrument'] = ''
-            elif can_set_instrument:
-                item['Instrument'] = instrument.UID() if instrument else ''
-                item['choices']['Instrument'] = self.get_instruments_vocabulary(obj)
-                item['allow_edit'].append('Instrument')
+                item['Instrument'] = _('Manual')
+                msgtitle = _("Instrument entry of results not allowed for %s") % service.Title()
+                item['replace']['Instrument'] = '<a href="#" title="%s">%s</a>' % (msgtitle, _('Manual'))
+            elif can_set_instrument and instrument:
+                # Show the dropbox only if at least one instrument available
+                voc = self.get_instruments_vocabulary(obj)
+                if voc:
+                    item['Instrument'] = instrument.UID() if instrument else ''
+                    item['choices']['Instrument'] = voc
+                    item['allow_edit'].append('Instrument')
+                else:
+                    item['Instrument'] = instrument.Title()
+                    item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
+                        (instrument.absolute_url(), instrument.Title())
                 show_methodinstr_columns = True
             elif instrument:
                 item['Instrument'] = instrument.Title()
@@ -630,38 +656,27 @@ class AnalysesView(BikaListingView):
                                 #         (self.portal_url)
                 items[i]['Uncertainty'] = obj.getUncertainty(result)
 
-                spec = self.get_active_spec_dict(obj)
-
-                if spec:
-                    min_val = spec.get('min', '')
-                    min_str = ">{0}".format(min_val) if min_val else ''
-                    max_val = spec.get('max', '')
-                    max_str = "<{0}".format(max_val) if max_val else ''
-                    error_val = spec.get('error', '')
-                    error_str = "{0}%".format(error_val) if error_val else ''
-                    rngstr = ",".join([x for x in [min_str, max_str, error_str] if x])
-                else:
-                    rngstr = ""
-
-                items[i]['Specification'] = rngstr
-
-                # # This is redundant, done already, in bika_listing.py.
-                # for name, adapter in getAdapters((obj, ), IFieldIcons):
-                #     auid = obj.UID()
-                #     alerts = adapter(specification=spec)
-                #     if alerts:
-                #         if auid in self.field_icons:
-                #             self.field_icons[auid].extend(alerts[auid])
-                #         else:
-                #             self.field_icons[auid] = alerts[auid]
             else:
+                items[i]['Specification'] = ""
                 if 'Result' in items[i]['allow_edit']:
                     items[i]['allow_edit'].remove('Result')
                 items[i]['before']['Result'] = \
                     '<img width="16" height="16" ' + \
                     'src="%s/++resource++bika.lims.images/to_follow.png"/>' % \
                     (self.portal_url)
-
+            # Everyone can see valid-ranges
+            spec = self.get_active_spec_dict(obj)
+            if spec:
+                min_val = spec.get('min', '')
+                min_str = ">{0}".format(min_val) if min_val else ''
+                max_val = spec.get('max', '')
+                max_str = "<{0}".format(max_val) if max_val else ''
+                error_val = spec.get('error', '')
+                error_str = "{0}%".format(error_val) if error_val else ''
+                rngstr = ",".join([x for x in [min_str, max_str, error_str] if x])
+            else:
+                rngstr = ""
+            items[i]['Specification'] = rngstr
             # Add this analysis' interim fields to the interim_columns list
             for f in self.interim_fields[obj.UID()]:
                 if f['keyword'] not in self.interim_columns and not f.get('hidden', False):
@@ -831,6 +846,7 @@ class QCAnalysesView(AnalysesView):
                                             'getReferenceAnalysesGroupID',
                                             'Partition',
                                             'Method',
+                                            'Instrument',
                                             'Result',
                                             'Uncertainty',
                                             'CaptureDate',

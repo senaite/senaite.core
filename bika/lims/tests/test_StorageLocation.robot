@@ -2,7 +2,7 @@
 
 Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
-Library          Dialogs
+Library          DebugLibrary
 Resource         keywords.txt
 Library          bika.lims.testing.Keywords
 Resource         plone/app/robotframework/selenium.robot
@@ -14,8 +14,6 @@ Suite Teardown   Close All Browsers
 
 *** Variables ***
 
-${PATH_TO_TEST} =
-${PLONEURL} =       http://localhost:55001/plone
 ${SITE} =           HAM
 ${UNIT} =           FZ1
 ${SHELF} =          S2
@@ -38,7 +36,7 @@ Start browser
 Check Bika Setup imported correctly
     Go to                       ${PLONEURL}/bika_setup/bika_storagelocations
     Wait until page contains    Storage Locations
-    Page Should Contain         ${SITE}.${UNIT}.${SHELF} 
+    Page Should Contain         ${SITE}.${UNIT}.${SHELF}
 
 Create Setup Location
     Go to                       ${PLONEURL}/bika_setup/bika_storagelocations
@@ -58,7 +56,7 @@ Create Location
     Input Text                  SiteDescription  BIKA Labs site in Grabou
     Input Text                  LocationTitle  Freezer ${unit}
     Input Text                  LocationCode  ${unit}
-    Input Text                  LocationDescription  Freezer 
+    Input Text                  LocationDescription  Freezer
     Input Text                  LocationType  Freezer
     Input Text                  ShelfTitle  Shelf ${shelf}
     Input Text                  ShelfCode  ${shelf}
@@ -70,10 +68,9 @@ Check AR Creation
     Go to                       ${PLONEURL}/clients/client-1
     ${ar_id}=                   Create AR
     Go to                       ${PLONEURL}/clients/client-1/${ar_id}
-    Page should contain         ${SITE}.${UNIT}.${SHELF}
+    Textfield Value Should Be   StorageLocation   ${SITE}.${UNIT}.${SHELF}    Storage location field is not set correctly
     Go to                       ${PLONEURL}/clients/client-1/H2O-0001
-    Wait until page contains    Sample Due
-    Page should contain         Storage Location
+    Textfield Value Should Be   StorageLocation   ${SITE}.${UNIT}.${SHELF}    Storage location field is not set correctly
 
 Create AR
     Click Link                  link=Add
@@ -100,8 +97,3 @@ Create AR
     ${ar_id} =                  Get text      //dl[contains(@class, 'portalMessage')][2]/dd
     ${ar_id} =                  Set Variable  ${ar_id.split()[2]}
     [return]                    ${ar_id}
-
-HangOn
-    Import library  Dialogs
-    Pause execution
-

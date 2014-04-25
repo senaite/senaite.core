@@ -14,7 +14,6 @@ Suite Teardown   Close All Browsers
 *** Variables ***
 
 ${input_identifier} =  input#arimport_file
-${PATH_TO_TEST} =
 
 *** Test Cases ***
 
