@@ -7,16 +7,13 @@ from plone.protect.authenticator import AuthenticatorView
 from bika.lims.jsonapi import load_brain_metadata
 from bika.lims.jsonapi import load_field_values
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.i18nl10n import ulocalized_time
 from zope import interface
 from zope.component import getAdapters
-import App
-import json
 import re
+import App
 
 
 def read(context, request):
-
     tag = AuthenticatorView(context, request).authenticator()
     pattern = '<input .*name="(\w+)".*value="(\w+)"'
     _authenticator = re.match(pattern, tag).groups()[1]
@@ -68,10 +65,10 @@ def read(context, request):
     # batching items
     page_nr = int(request.get("page_nr", 0))
     page_size = int(request.get("page_size", 10))
-    first_item_nr = page_size*page_nr
+    first_item_nr = page_size * page_nr
     if first_item_nr > len(proxies):
         first_item_nr = 0
-    page_proxies = proxies[first_item_nr:first_item_nr+page_size]
+    page_proxies = proxies[first_item_nr:first_item_nr + page_size]
     for proxy in page_proxies:
         obj_data = {}
 

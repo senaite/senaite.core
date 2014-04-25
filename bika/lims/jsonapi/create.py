@@ -150,7 +150,7 @@ class Create(object):
             "url": router.url_for("create", force_external=True),
             "success": True,
             "error": False,
-       }
+        }
 
         try:
             parent.invokeFactory(obj_type, obj_id)
@@ -284,9 +284,9 @@ class Create(object):
         ret['sample_id'] = sample.getId()
 
         parts = [{'services': [],
-                 'container':[],
-                 'preservation':'',
-                 'separate':False}]
+                  'container': [],
+                  'preservation': '',
+                  'separate': False}]
 
         specs = self.get_specs_from_request()
         _id = client.invokeFactory('AnalysisRequest', tmpID())
@@ -298,7 +298,7 @@ class Create(object):
         ret['ar_id'] = ar.getId()
         brains = resolve_request_lookup(context, request, 'Services')
         service_uids = [p.UID for p in brains]
-        new_analyses = ar.setAnalyses(service_uids,  specs=specs)
+        new_analyses = ar.setAnalyses(service_uids, specs=specs)
         ar.setRequestID(ar.getId())
         ar.reindexObject()
         event.notify(ObjectInitializedEvent(ar))

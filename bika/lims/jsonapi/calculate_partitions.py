@@ -23,9 +23,9 @@ class calculate_partitions(object):
     def routes(self):
         return (
             ("/calculate_partitions",
-                "calculate_partitions",
-                self.calculate_partitions,
-                dict(methods=['GET', 'POST'])
+             "calculate_partitions",
+             self.calculate_partitions,
+             dict(methods=['GET', 'POST'])
             ),
         )
 
