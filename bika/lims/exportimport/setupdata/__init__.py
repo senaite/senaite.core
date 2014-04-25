@@ -4,6 +4,7 @@ from bika.lims.interfaces import ISetupDataSetList
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims.utils import tmpID, to_unicode
 from bika.lims.utils import to_utf8
+from bika.lims import bikaMessageFactory as _
 from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from zope.interface import implements

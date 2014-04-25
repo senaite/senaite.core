@@ -8,7 +8,8 @@ import unittest
 OPTIONFLAGS = (doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
 
 DOCTESTS = ['bika.lims.vocabularies',
-            'bika.lims.jsonapi.create']
+            'bika.lims.jsonapi.create',
+            'bika.lims.browser.analysisrequest.add']
 
 
 def test_suite():

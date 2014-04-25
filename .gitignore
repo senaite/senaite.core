@@ -21,5 +21,4 @@ selenium-screenshot*
 *workspace
 *.tags*
 *MANIFEST*
-
-
+/.idea/

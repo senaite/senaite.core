@@ -1,27 +1,26 @@
-from AccessControl import getSecurityManager
+import json
+
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.interfaces import IAnalysisRequestAddView
-from bika.lims.permissions import *
 from bika.lims.browser.analysisrequest import AnalysisRequestViewView
+from bika.lims.jsonapi import load_brain_metadata
+from bika.lims.jsonapi import load_field_values
 from bika.lims.utils import to_utf8
 from bika.lims.utils import tmpID
 from bika.lims.workflow import doActionFor
-from DateTime import DateTime
 from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes import PloneMessageFactory as PMF
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import getAdapter
 from zope.interface import implements
-
-import json
 import plone
 
-class AnalysisRequestAddView(AnalysisRequestViewView):
 
+class AnalysisRequestAddView(AnalysisRequestViewView):
     """ The main AR Add form
     """
     implements(IViewView, IAnalysisRequestAddView)
@@ -38,7 +37,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         try:
             self.col_count = int(self.col_count)
         except:
-            self.col_count == 4
+            self.col_count = 4
 
     def __call__(self):
         self.request.set('disable_border', 1)
@@ -58,13 +57,72 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         for service in bsc(portal_type='AnalysisService'):
             service = service.getObject()
             if service.getPartitionSetup() \
-               or service.getSeparate():
+                or service.getSeparate():
                 ps.append(service.UID())
         return json.dumps(ps)
 
+    def get_at_field_values(self):
+        """Return a list of dictionaries, one for each ar in the copy_from request parameter.  Each dict contains
+        all values from all schema fields.  References are returned as Titles.  reference fields have *_uid keys,
+        added, containing the actual referenced object UID.
+
+        Does not support multi-valued references.  XXX We will have to return a list for these,
+        but currently the ar_add form doesn't know what do do with such - ie: CCContacts.
+
+        Works on any object:
+
+        >>> from bika.lims.browser.analysisrequest.add import AnalysisRequestAddView
+        >>> portal = layer['portal']
+        >>> frontpage = portal['front-page']
+        >>> client = layer['portal']['clients']['client-1']
+        >>> request = layer['request']
+        >>> request['copy_from'] = ",".join([frontpage.UID(), client.UID()])
+        >>> vals = AnalysisRequestAddView(client, request).get_at_field_values()
+        >>> len(vals)
+        2
+        >>> 'AnalysisProfile' in vals[1]['locallyAllowedTypes']
+        True
+        >>> 'DefaultARSpecs' in vals[1]
+        True
+
+        Also works with schemaextender fields.
+
+        Even though all schema values are returned, the JS only uses those that are
+        present on the ar add form.  Still, we leave them all here, to allow additions
+        later without having to come and edit here.
+
+        """
+        skip_fieldnames = ["Sample", "CCContact", ]
+        ret = []
+        uc = getToolByName(self.context, "uid_catalog")
+        uids = self.request.get("copy_from").split(",")
+        for column, uid in enumerate(uids):
+            ret.append({})
+            copy_from_uid_proxies = uc(UID=uid)
+            assert len(copy_from_uid_proxies) == 1
+            obj = copy_from_uid_proxies[0].getObject()
+            schema_fields = obj.Schema().fields()
+            for field in schema_fields:
+                field_name = field.getName()
+                if field.getType() == "Products.Archetypes.Field.ComputedField" \
+                    or field_name in skip_fieldnames:
+                    continue
+                val = field.get(self.context)
+                if field.getType().endswith('ReferenceField'):
+                    if type(val) in (list, tuple) and len(val) == 0:
+                        val = None
+                    elif type(val) in (list, tuple) and len(val) == 1:
+                        val = val[0]
+                        ret[column][field_name] = val.Title() if callable(getattr(val, 'Title', False)) else val.id
+                        ret[column]["%s_uid"%field_name] = val.UID() if val is not None else ""
+                    elif type(val) in (list, tuple):
+                        raise NotImplementedError("Can't include multivalued reference fields in ar copy.")
+                else:
+                    ret[column][field_name] = val
+        return ret
+
 
 class SecondaryARSampleInfo(BrowserView):
-
     """Return fieldnames and pre-digested values for Sample fields which
     javascript must disable/display while adding secondary ARs
     """
@@ -98,7 +156,6 @@ class SecondaryARSampleInfo(BrowserView):
 
 
 class ajaxExpandCategory(BikaListingView):
-
     """ ajax requests pull this view for insertion when category header
     rows are clicked/expanded. """
     template = ViewPageTemplateFile("templates/analysisrequest_analysisservices.pt")
@@ -135,7 +192,6 @@ class ajaxExpandCategory(BikaListingView):
 
 
 class ajaxAnalysisRequestSubmit():
-
     def __init__(self, context, request):
         self.context = context
         self.request = request
@@ -150,7 +206,7 @@ class ajaxAnalysisRequestSubmit():
         uc = getToolByName(self.context, 'uid_catalog')
         bsc = getToolByName(self.context, 'bika_setup_catalog')
 
-        SamplingWorkflowEnabled =\
+        SamplingWorkflowEnabled = \
             self.context.bika_setup.getSamplingWorkflowEnabled()
 
         errors = {}
@@ -183,8 +239,8 @@ class ajaxAnalysisRequestSubmit():
 
         # Now some basic validation
         required_fields = [field.getName() for field
-                          in AnalysisRequestSchema.fields()
-                          if field.required]
+                           in AnalysisRequestSchema.fields()
+                           if field.required]
 
         for column in columns:
             formkey = "ar.%s" % column
@@ -201,7 +257,7 @@ class ajaxAnalysisRequestSubmit():
                 # This one is still special.
                 if field in ['RequestID']:
                     continue
-                # And these are not required if this is a secondary AR
+                    # And these are not required if this is a secondary AR
                 if ar.get('Sample', '') != '' and field in [
                     'SamplingDate',
                     'SampleType'
@@ -264,7 +320,7 @@ class ajaxAnalysisRequestSubmit():
                     wftool.doActionFor(sample, 'sampling_workflow')
                 else:
                     wftool.doActionFor(sample, 'no_sampling_workflow')
-                # Object has been renamed
+                    # Object has been renamed
                 sample.edit(SampleID=sample.getId())
 
             resolved_values['Sample'] = sample
@@ -275,9 +331,9 @@ class ajaxAnalysisRequestSubmit():
             # The result is the same once we are here.
             if not parts:
                 parts = [{'services': [],
-                         'container':[],
-                         'preservation':'',
-                         'separate':False}]
+                          'container': [],
+                          'preservation': '',
+                          'separate': False}]
 
             # Apply DefaultContainerType to partitions without a container
             d_clist = []
@@ -331,10 +387,12 @@ class ajaxAnalysisRequestSubmit():
                             try:
                                 containers.sort(lambda a, b: cmp(
                                     a.getCapacity()
-                                    and mg(float(a.getCapacity().lower().split(" ", 1)[0]), a.getCapacity().lower().split(" ", 1)[1])
+                                    and mg(float(a.getCapacity().lower().split(" ", 1)[0]),
+                                           a.getCapacity().lower().split(" ", 1)[1])
                                     or mg(0, 'ml'),
                                     b.getCapacity()
-                                    and mg(float(b.getCapacity().lower().split(" ", 1)[0]), b.getCapacity().lower().split(" ", 1)[1])
+                                    and mg(float(b.getCapacity().lower().split(" ", 1)[0]),
+                                           b.getCapacity().lower().split(" ", 1)[1])
                                     or mg(0, 'ml')
                                 ))
                             except:
@@ -348,8 +406,8 @@ class ajaxAnalysisRequestSubmit():
                     # If container is pre-preserved, set the part's preservation,
                     # and flag the partition to be transitioned below.
                     if container \
-                       and container.getPrePreserved() \
-                       and container.getPreservation():
+                        and container.getPrePreserved() \
+                        and container.getPreservation():
                         preservation = container.getPreservation().UID()
                         parts[_i]['prepreserved'] = True
                     else:
@@ -435,10 +493,10 @@ class ajaxAnalysisRequestSubmit():
 
         if len(ARs) > 1:
             message = _("Analysis requests ${ARs} were successfully created.",
-                  mapping={'ARs': ', '.join(ARs)})
+                        mapping={'ARs': ', '.join(ARs)})
         else:
             message = _("Analysis request ${AR} was successfully created.",
-                  mapping={'AR': ARs[0]})
+                        mapping={'AR': ARs[0]})
 
         self.context.plone_utils.addPortalMessage(message, 'info')
 
