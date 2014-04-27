@@ -85,7 +85,7 @@ class Report(BrowserView):
         # Footer total data
         totalreceivedcreated_ratio = float(totalreceivedcount) / float(totalcreatedcount)
         totalpublishedcreated_ratio = float(totalpublishedcount) / float(totalcreatedcount)
-        totalpublishedreceived_ratio = float(totalpublishedcount) / float(totalreceivedcount)
+        totalpublishedreceived_ratio = totalreceivedcount and float(totalpublishedcount) / float(totalreceivedcount) or 0
 
         footline = {'Created': totalcreatedcount,
                     'Received': totalreceivedcount,
