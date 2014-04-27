@@ -283,6 +283,7 @@ class WidgetVisibility(_WV):
         except:
             pass
 
+        print 'Disable in AR'
         if optionally_disabled_fields:
             print 'Disable fields %s' % str(optionally_disabled_fields)
             for section in ret.keys():
@@ -1073,6 +1074,18 @@ class AnalysisRequestsView(BikaListingView):
                 except Exception:
                     pass
 
+        optionally_disabled_fields = ()
+        try:
+            registry = queryUtility(IRegistry)
+            hiddenattributes = registry.get('bika.lims.hiddenattributes', ())
+            for alist in hiddenattributes:
+                if alist[0] == 'AnalysisRequest': #TODO 
+                    optionally_disabled_fields = alist[1:]
+                    break
+        except:
+            pass
+        print 'review state filter: %s' % str(optionally_disabled_fields)
+
         # Hide Preservation/Sampling workflow actions if the edit columns
         # are not displayed.
         toggle_cols = self.get_toggle_cols()
@@ -1091,6 +1104,11 @@ class AnalysisRequestsView(BikaListingView):
                         state['hide_transitions'].append('preserve')
                     else:
                         state['hide_transitions'] = ['preserve', ]
+            if optionally_disabled_fields and len(state['columns']) > 0:
+                for field in state['columns']:
+                    if field in optionally_disabled_fields:
+                        print 'delete column %s' % field
+                        state['columns'].remove(field)
             new_states.append(state)
         self.review_states = new_states
 

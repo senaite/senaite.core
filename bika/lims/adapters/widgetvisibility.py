@@ -28,6 +28,7 @@ class WidgetVisibility(object):
         except:
             pass
 
+        print 'Root adapter'
         for field in fields:
             if optionally_disabled_fields and \
                field.__name__ in optionally_disabled_fields:
@@ -40,4 +41,5 @@ class WidgetVisibility(object):
                         ret[k][v] = []
                     ret[k][v].append(field.getName())
 
+        print 'Root: %s' % str(ret.keys())
         return ret
