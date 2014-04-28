@@ -675,7 +675,7 @@ function toggleCat(poc, category_uid, column, selectedservices, force_expand, di
 				var service = rows[i];
 				var service_uid = $(service).attr("id");
 				if(selectedservices.indexOf(service_uid) > -1){
-					var cb = $("input#"+service_uid).filter("[column='"+column+"']");
+					var cb = $("input[value="+service_uid+"]").filter("[column='"+column+"']");
 					$(cb).prop("checked",true);
 					toggle_spec_fields(cb);
 				}
@@ -707,7 +707,7 @@ function toggleCat(poc, category_uid, column, selectedservices, force_expand, di
 				recalc_prices(column);
 				for(i=0;i<selectedservices.length;i++){
 					var service_uid = selectedservices[i];
-					var e = $("input[column='"+column+"']").filter("#"+service_uid);
+                    var e = $("input[value=" + service_uid + "]").filter("[column='" + column + "']");
 					toggle_spec_fields(e);
 				}
 			}
@@ -1250,6 +1250,53 @@ function applyComboFilter(element, filterkey, filtervalue) {
     $(element).attr("search_query", "{}");
 }
 
+function fill_column(data) {
+    // fields which should not be completed from the source AR.
+    var skip_fields = ['Sample', 'Sample_uid'];
+	if(data.objects.length > 0) {
+		var obj = data.objects[0];
+		var col = window.bika.ar_copy_from_col;
+        for (var fieldname in obj) {
+            if (!obj.hasOwnProperty(fieldname)) { continue; }
+            if (skip_fields.indexOf(fieldname) > -1) { continue; }
+            var fieldvalue = obj[fieldname];
+		    var el = $("#ar_"+col+"_"+fieldname);
+		    if (el.length > 0){
+		        $(el).val(fieldvalue);
+		    }
+		}
+		var services = {};
+		var specs = {};
+		var cat_uid, service_uid;
+		var i;
+		for (i = obj.Analyses.length - 1; i >= 0; i--) {
+			var analysis = obj.Analyses[i];
+			cat_uid = analysis.CategoryUID;
+			service_uid = analysis.ServiceUID;
+			if(!(analysis.CategoryUID in services)){
+				services[analysis.CategoryUID] = [];
+			}
+			services[analysis.CategoryUID].push(service_uid);
+			specs[service_uid] = analysis.specification;
+		}
+		for(cat_uid in services){
+			if(!services.hasOwnProperty(cat_uid)){ continue; }
+			var service_uids = services[cat_uid];
+			window.toggleCat("lab", cat_uid, col, service_uids, true);
+			for (i = 0; i < service_uids.length; i++) {
+				service_uid = service_uids[i];
+				// $("[column="+col+"]").filter("#"+service_uid).click(); // toggleCat does this.
+				var spec = specs[service_uid];
+				if(spec){
+					$("[name^='ar."+col+".min']").filter("[uid='"+service_uid+"']").val(spec.min);
+					$("[name^='ar."+col+".max']").filter("[uid='"+service_uid+"']").val(spec.max);
+					$("[name^='ar."+col+".error']").filter("[uid='"+service_uid+"']").val(spec.error);
+				}
+			}
+		}
+	}
+}
+
 $(document).ready(function() {
 
 	// Only if the view is the Analysis Request Add View
@@ -1359,6 +1406,22 @@ $(document).ready(function() {
 				applyComboFilter(element, "getParentUID", clientuid);
 		});
 	}
+
+	var copy_from = window.location.href.split("copy_from=");
+	if(copy_from.length > 1){
+		copy_from = copy_from[1].split("&")[0];
+		copy_from = copy_from.split(",");
+		for (var column = 0; column < copy_from.length; column++) {
+			window.bika.ar_copy_from_col = column;
+			$.ajaxSetup({async:false});
+			window.bika.lims.jsonapi_read({
+				catalog_name: "uid_catalog",
+				UID: copy_from[column]
+			}, fill_column);
+			$.ajaxSetup({async:true});
+		}
+	}
+
 }
 });
 }(jQuery));
