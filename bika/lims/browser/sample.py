@@ -909,18 +909,15 @@ class WidgetVisibility(_WV):
                     optionally_disabled_fields = alist[1:]
                     break
         except:
-            import pdb; pdb.set_trace()
-            pass
+            raise RuntimeError(
+                    'Probem accessing optionally hidden attributes in registry')
 
-        print 'Disable in AR'
         if optionally_disabled_fields:
-            print 'Disable fields %s' % str(optionally_disabled_fields)
             for section in ret.keys():
                 for key in ret[section]:
                     if key == 'visible':
                         for field in ret[section][key]:
                             if field in optionally_disabled_fields:
-                                print 'delete field %s' % field
                                 ret[section][key].remove(field)
 
         return ret

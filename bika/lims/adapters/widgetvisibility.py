@@ -26,9 +26,9 @@ class WidgetVisibility(object):
                     optionally_disabled_fields = alist[1:]
                     break
         except:
-            pass
+            raise RuntimeError(
+                    'Probem accessing optionally hidden attributes in registry')
 
-        print 'Root adapter'
         for field in fields:
             if optionally_disabled_fields and \
                field.__name__ in optionally_disabled_fields:
@@ -41,5 +41,4 @@ class WidgetVisibility(object):
                         ret[k][v] = []
                     ret[k][v].append(field.getName())
 
-        print 'Root: %s' % str(ret.keys())
         return ret

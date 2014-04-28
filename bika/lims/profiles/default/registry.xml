@@ -298,28 +298,6 @@
     <value key="group" i18n:translate="" i18n_domain="plone">Metadata</value>
   </records>
 
-  <!-- Hidden Attributes TODO Dict not working in 4.3 - - >
-  <record name="bika.lims.hiddenattributes">
-     <field type="plone.registry.field.Dict">
-       <title>Site Hidden Attributes</title>
-       <key_type type="plone.registry.field.TextLine">
-         <title>Class</title>
-       </key_type>
-       <value_type type="plone.registry.field.List">
-         <title>Field list</title>
-         <value_type type="plone.registry.field.TextLine">
-           <title>Field Name</title>
-         </value_type>
-       </value_type>
-     </field>
-     <value>
-         <element key="AnalysisRequest">
-             <element>ClientOrderNumber</element>
-             <element>ExcludeFromInvoice</element>
-         </element>
-     </value>
-  </record>
-  -->
   <!-- Hidden Attributes-->
   <record name="bika.lims.hiddenattributes">
      <field type="plone.registry.field.Tuple">

@@ -281,17 +281,15 @@ class WidgetVisibility(_WV):
                     optionally_disabled_fields = alist[1:]
                     break
         except:
-            pass
+            raise RuntimeError(
+                    'Probem accessing optionally hidden attributes in registry')
 
-        print 'Disable in AR'
         if optionally_disabled_fields:
-            print 'Disable fields %s' % str(optionally_disabled_fields)
             for section in ret.keys():
                 for key in ret[section]:
                     if key == 'visible':
                         for field in ret[section][key]:
                             if field in optionally_disabled_fields:
-                                print 'delete field %s' % field
                                 ret[section][key].remove(field)
         return ret
 
@@ -1083,8 +1081,8 @@ class AnalysisRequestsView(BikaListingView):
                     optionally_disabled_fields = alist[1:]
                     break
         except:
-            pass
-        print 'review state filter: %s' % str(optionally_disabled_fields)
+            raise RuntimeError(
+                    'Probem accessing optionally hidden attributes in registry')
 
         # Hide Preservation/Sampling workflow actions if the edit columns
         # are not displayed.
@@ -1107,7 +1105,6 @@ class AnalysisRequestsView(BikaListingView):
             if optionally_disabled_fields and len(state['columns']) > 0:
                 for field in state['columns']:
                     if field in optionally_disabled_fields:
-                        print 'delete column %s' % field
                         state['columns'].remove(field)
             new_states.append(state)
         self.review_states = new_states
