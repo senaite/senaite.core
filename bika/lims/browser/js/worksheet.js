@@ -187,7 +187,7 @@ $(document).ready(function(){
     });
 
     $(".manage_results_header .instrument").change(function(){
-        $("#content-core .instrument-error").remove();        
+        $("#content-core .instrument-error").remove();
         var instruid = $(this).val();
         if (instruid == '') {
             return false;
@@ -201,7 +201,7 @@ $(document).ready(function(){
                portalMessage("Changes saved.");
                // Set the selected instrument to all the analyses which
                // that can be done using that instrument. The rest of
-               // of the instrument picklist will not be changed               
+               // of the instrument picklist will not be changed
                $('select.listing_select_entry[field="Instrument"] option[value="'+instruid+'"]').parent().find('option[value="'+instruid+'"]').prop("selected", false);
                $('select.listing_select_entry[field="Instrument"] option[value="'+instruid+'"]').prop("selected", true);
           },
@@ -298,6 +298,13 @@ $(document).ready(function(){
     $('table.bika-listing-table select.listing_select_entry[field="Method"]').find('option[value=""]').remove();
     $('table.bika-listing-table select.listing_select_entry[field="Method"]').change();
 
+    $('div.worksheet_add_controls select.instrument').change(function() {
+        var val = $(this).val();
+        $('div.worksheet_add_controls div.alert').remove();
+        if (val != '' && val != null) {
+            $('div.worksheet_add_controls').append('<div class="alert">'+_("Only the analyses for which the selected instrument is allowed will be added automatically.")+'</div>');
+        }
+    });
 
 });
 }(jQuery));

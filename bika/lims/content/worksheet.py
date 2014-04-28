@@ -112,14 +112,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # is allowed, set it
         instr = self.getInstrument()
         if instr and analysis.isInstrumentAllowed(instr):
-            # Look for the first analysis method that allows the
-            # instrument selected
-            methods = analysis.getAllowedMethods(False)
-            instr_uid = instr.UID()
-            for method in methods:
-                if instr_uid in method.getInstrumentUIDs():
-                    analysis.setMethod(method)
-                    analysis.setInstrument(instr_uid)
+            # Set the method assigned to the selected instrument
+            analysis.setMethod(instr.getMethod())
+            analysis.setInstrument(instr)
 
         self.setAnalyses(analyses + [analysis, ])
 
