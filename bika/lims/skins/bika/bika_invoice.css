@@ -1,15 +1,28 @@
-table.invoice-header {
-	width: 100%;
-	border-collapse: collapse;
-}
-
-table.invoice-header tr {
-	line-height: 1.5em;
-}
-
-table.invoice-header th,
-table.invoice-header td {
+div.div-table-first-row {
+    line-height: 1.5em;
+    margin-left: 1%;
 	padding: .25em;
+}
+div.div-table-first-row span {
+    padding-left: 1em;
+}
+div.div-table-left {
+    float: left;
+    width: 50%;
+    margin-left: 1%;
+    line-height: 1.5em;
+	padding: .25em;
+}
+div.div-table-left span {
+    padding-left: 1em;
+}
+div.div-table-right {
+    margin-left: 51%;
+    line-height: 1.5em;
+	padding: .25em;
+}
+div.div-table-right span {
+    padding-left: 1em;
 }
 
 table.invoice-items {

@@ -4,9 +4,11 @@ from bika.lims.browser import BrowserView
 from DateTime import DateTime
 from email import Encoders
 from email.MIMEBase import MIMEBase
+from plone.registry.interfaces import IRegistry
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
+from zope.component import queryUtility
 from zope.i18n.locales import locales
 import Globals
 import re
@@ -368,3 +370,19 @@ def currency_format(context, locale):
     def format(val):
         return '%s %0.2f' % (symbol, val)
     return format
+
+
+def isAttributeHidden(classname, fieldname):
+    try:
+        registry = queryUtility(IRegistry)
+        hiddenattributes = registry.get('bika.lims.hiddenattributes', ())
+        for alist in hiddenattributes:
+            if alist[0] == classname:
+                return fieldname in alist[1:]
+    except:
+        raise RuntimeError(
+                'Probem accessing optionally hidden attributes in registry')
+
+    return False
+
+
