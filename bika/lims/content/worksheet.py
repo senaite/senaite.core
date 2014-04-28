@@ -108,6 +108,19 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if analysis_uid in [l['analysis_uid'] for l in layout]:
             return
 
+        # If the ws has an instrument assigned for which the analysis
+        # is allowed, set it
+        instr = self.getInstrument()
+        if instr and analysis.isInstrumentAllowed(instr):
+            # Look for the first analysis method that allows the
+            # instrument selected
+            methods = analysis.getAllowedMethods(False)
+            instr_uid = instr.UID()
+            for method in methods:
+                if instr_uid in method.getInstrumentUIDs():
+                    analysis.setMethod(method)
+                    analysis.setInstrument(instr_uid)
+
         self.setAnalyses(analyses + [analysis, ])
 
         # if our parent has a position, use that one.
@@ -304,6 +317,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     def applyWorksheetTemplate(self, wst):
         """ Add analyses to worksheet according to wst's layout.
             Will not overwrite slots which are filled already.
+            If the selected template has an instrument assigned, it will
+            only be applied to those analyses for which the instrument
+            is allowed
         """
         rc = getToolByName(self, REFERENCE_CATALOG)
         bac = getToolByName(self, "bika_analysis_catalog")
@@ -318,8 +334,13 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                        getServiceUID = wst_service_uids,
                        review_state = 'sample_received',
                        worksheetanalysis_review_state = 'unassigned',
-                       cancellation_state = 'active',
-                       sort_on = 'getDueDate')
+                       cancellation_state = 'active')
+        sortedans = []
+        for an in analyses:
+            sortedans.append({'uid': an.UID,
+                              'duedate': an.getObject().getDueDate() or (DateTime() + 365),
+                              'brain': an});
+        sortedans.sort(key=itemgetter('duedate'), reverse=False)
         # collect analyses from the first X ARs.
         ar_analyses = {} # ar_uid : [analyses]
         ars = [] # for sorting
@@ -327,7 +348,13 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         wst_slots = [row['pos'] for row in wstlayout if row['type'] == 'a']
         ws_slots = [row['position'] for row in layout if row['type'] == 'a']
         nr_slots = len(wst_slots) - len(ws_slots)
-        for analysis in analyses:
+        instr = self.getInstrument()
+        for analysis in sortedans:
+            analysis = analysis['brain']
+            if instr and analysis.getObject().isInstrumentAllowed(instr) == False:
+                # Exclude those analyses for which the ws selected
+                # instrument is not allowed
+                continue
             ar = analysis.getRequestID
             if ar in ar_analyses:
                 ar_analyses[ar].append(analysis.getObject())
@@ -499,6 +526,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             success = an.setInstrument(instrument)
             if success == True:
                 total += 1
+
+        self.getField('Instrument').set(self, instrument)
         return total
 
 registerType(Worksheet, PROJECTNAME)

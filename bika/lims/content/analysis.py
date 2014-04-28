@@ -505,15 +505,7 @@ class Analysis(BaseContent):
         else:
             uid = instrument.UID()
 
-        service = self.getService()
-        if service.getInstrumentEntryOfResults() == False:
-            return False
-
-        if not self.getMethod():
-            return False
-
-        method = self.getMethod()
-        return uid in method.getInstrumentUIDs()
+        return uid in self.getAllowedInstruments()
 
     def isMethodAllowed(self, method):
         """ Checks if the analysis can follow the method specified.
@@ -527,17 +519,52 @@ class Analysis(BaseContent):
         else:
             uid = method.UID()
 
+        return uid in self.getAllowedMethods()
+
+    def getAllowedMethods(self, onlyuids=True):
+        """ Returns the allowed methods for this analysis. If manual
+            entry of results is set, only returns the methods set
+            manually. Otherwise (if Instrument Entry Of Results is set)
+            returns the methods assigned to the instruments allowed for
+            this Analysis
+        """
         service = self.getService()
-        if service.getManualEntryOfResults() == True \
-            and uid in service.getRawMethods():
-            return True
+        uids = []
+        if service.getManualEntryOfResults() == True:
+            # Get only the methods set manually
+            uids = service.getRawMethods()
 
-        if service.getInstrumentEntryOfResults() == True:
-            for ins in service.getInstruments():
-                if uid == ins.getRawMethod():
-                    return True
+        elif service.getInstrumentEntryOfResults() == True:
+            uids = [ins.getRawMethod() for ins in service.getInstruments()]
 
-        return False
+        if onlyuids == False:
+            uc = getToolByName(self, 'uid_catalog')
+            meths = [item.getObject() for item in uc(UID=uids)]
+            return meths
+
+        return uids
+
+    def getAllowedInstruments(self, onlyuids=True):
+        """ Returns the allowed instruments for this analysis. Gets the
+            instruments assigned to the allowed methods
+        """
+        uids = []
+        service = self.getService()
+        if service.getManualEntryOfResults == True:
+            meths = self.getAllowedMethods(False)
+            for meth in meths:
+                uids += meth.getInstrumentUIDs()
+            set(uids)
+
+        elif service.getInstrumentEntryOfResults() == True:
+            uids = service.getRawInstruments()
+
+        if onlyuids == False:
+            uc = getToolByName(self, 'uid_catalog')
+            instrs = [item.getObject() for item in uc(UID=uids)]
+            return instrs
+
+        return uids
 
     def getDefaultMethod(self):
         """ Returns the default method for this Analysis
