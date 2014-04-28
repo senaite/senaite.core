@@ -187,19 +187,23 @@ $(document).ready(function(){
     });
 
     $(".manage_results_header .instrument").change(function(){
-        $("#content-core .instrument-error").remove();
-        if ($(this).val() == '') {
+        $("#content-core .instrument-error").remove();        
+        var instruid = $(this).val();
+        if (instruid == '') {
             return false;
         }
         $.ajax({
           type: 'POST',
           url: window.location.href.replace("/manage_results", "") + "/set_instrument",
-          data: {'value': $(this).val(),
+          data: {'value': instruid,
                   '_authenticator': $('input[name="_authenticator"]').val()},
           success: function(data, textStatus, jqXHR){
                portalMessage("Changes saved.");
-               /* TODO: refresh all the Analysis-Instrument selectors for all the analyses
-                of the worksheet table*/
+               // Set the selected instrument to all the analyses which
+               // that can be done using that instrument. The rest of
+               // of the instrument picklist will not be changed               
+               $('select.listing_select_entry[field="Instrument"] option[value="'+instruid+'"]').parent().find('option[value="'+instruid+'"]').prop("selected", false);
+               $('select.listing_select_entry[field="Instrument"] option[value="'+instruid+'"]').prop("selected", true);
           },
           error: function(data, jqXHR, textStatus, errorThrown){
                 $(".manage_results_header .instrument")

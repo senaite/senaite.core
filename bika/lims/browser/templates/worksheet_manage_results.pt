@@ -54,9 +54,6 @@
                 <span tal:condition="python:not view.isAssignmentAllowed()"
                       tal:content="python:view.getAnalysts().getValue(context.getAnalyst())"></span>
             </td>
-            <!-- TODO: Uncomment after the following being fixed in worksheet.js:
-                        L201: refresh all the Analysis-Instrument selectors for all the analyses
-                        of the worksheet table
             <th i18n:translate="">Instrument</th>
             <td tal:define="instrument python:context.getInstrument()">
                 <span class="context_action_dropdown"
@@ -80,7 +77,6 @@
                 </tal:instrumentlabel>
 
             </td>
-            -->
         </tr>
     </table>
 
