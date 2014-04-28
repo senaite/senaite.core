@@ -122,6 +122,9 @@ def resolve_request_lookup(context, request, fieldname):
 def set_fields_from_request(obj, request):
     """Search request for keys that match field names in obj,
     and call field mutator with request value.
+
+    The list of fields for which schema mutators were found
+    is returned.
     """
     schema = obj.Schema()
     # fields contains all schema-valid field values from the request.
@@ -155,3 +158,4 @@ def set_fields_from_request(obj, request):
                 raise BadRequest(fieldname + ": Invalid JSON/Python variable")
         mutator = field.set(obj, value)
     obj.reindexObject()
+    return fields.keys()

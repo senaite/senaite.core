@@ -97,7 +97,7 @@ class BikaTestLayer(PloneSandboxLayer):
 
         logout()
 
-def getBrowser(portal, loggedIn=True):
+def getBrowser(portal, loggedIn=True, username=TEST_USER_NAME, password=TEST_USER_PASSWORD):
     """Instantiate and return a testbrowser for convenience
     This is done weirdly because I could not figure out how else to
     pass the browser to the doctests"""
@@ -105,8 +105,8 @@ def getBrowser(portal, loggedIn=True):
     browser.handleErrors = False
     if loggedIn:
         browser.open(portal.absolute_url())
-        browser.getControl('Login Name').value = TEST_USER_NAME
-        browser.getControl('Password').value = TEST_USER_PASSWORD
+        browser.getControl('Login Name').value = username
+        browser.getControl('Password').value = password
         browser.getControl('Log in').click()
         assert('You are now logged in' in browser.contents)
     return browser

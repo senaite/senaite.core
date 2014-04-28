@@ -3,7 +3,7 @@ from plone.jsonapi.core import router
 from plone.jsonapi.core.interfaces import IRouteProvider
 from zExceptions import BadRequest
 from zope import interface
-import json
+
 import transaction
 
 
@@ -35,24 +35,67 @@ class Update(object):
             <fieldname>: <current value>
             ...
         }
+
+        So.
+
+        >>> portal = layer['portal']
+        >>> portal_url = portal.absolute_url()
+        >>> from plone.app.testing import SITE_OWNER_NAME
+        >>> from plone.app.testing import SITE_OWNER_PASSWORD
+
+        Update a client's existing address:
+
+        >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
+        >>> browser.open(portal_url+"/@@API/update?", "&".join([
+        ... "obj_path=/clients/client-1",
+        ... "title=Test",
+        ... "PostalAddress={'address': '1 Wendy Way', 'city': 'Johannesburg', 'zip': '9000', 'state': 'Gauteng', 'district': '', 'country':'South Africa'}"
+        ... ]))
+        >>> browser.contents
+        '{..."success": true...}'
+
+        quickly check that it saved:
+
+        >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
+        >>> browser.open(portal_url+"/@@API/read?", "&".join([
+        ... "Title=Happy Hills",
+        ... "include_fields=PostalAddress",
+        ... ]))
+        >>> browser.contents
+        '{...1 Wendy Way...}'
+
+        Try the same with a nonsense fieldname:
+
+        >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
+        >>> browser.open(portal_url+"/@@API/update?", "&".join([
+        ... "obj_path=/clients/client-1",
+        ... "Thing=Fish",
+        ... ]))
+        >>> browser.contents
+        '{...The following request fields were not used: ...Thing...}'
+
         """
         savepoint = transaction.savepoint()
-
+        self.context = context
+        self.request = request
+        self.unused = [x for x in self.request.form.keys()]
         ret = {
             "url": router.url_for("update", force_external=True),
             "success": False,
             "error": True,
         }
-        obj_path = request.get("obj_path", "")
-        if not obj_path:
-            raise BadRequest("missing obj_path")
-        if not obj_path.startswith("/"):
-            obj_path = "/" + obj_path
+        # always require obj_path
+        self.require("obj_path")
+        obj_path = self.request['obj_path']
+        self.used("obj_path")
+
         site_path = request['PATH_INFO'].replace("/@@API/update", "")
         obj = context.restrictedTraverse(str(site_path + obj_path))
 
         try:
-            set_fields_from_request(obj, request)
+            fields = set_fields_from_request(obj, request)
+            for field in fields:
+                self.used(field)
         except:
             savepoint.rollback()
             raise
@@ -60,7 +103,25 @@ class Update(object):
         ret['success'] = True
         ret['error'] = False
 
+        if self.unused:
+            raise BadRequest("The following request fields were not used: %s.  Request aborted." % self.unused)
+
         return ret
+
+
+    def require(self, fieldname, allow_blank=False):
+        """fieldname is required"""
+        if self.request.form and fieldname not in self.request.form.keys():
+            raise Exception("Required field not found in request: %s" % fieldname)
+        if self.request.form and (not self.request.form[fieldname] or allow_blank):
+            raise Exception("Required field %s may not have blank value")
+
+
+    def used(self, fieldname):
+        """fieldname is used, remove from list of unused fields"""
+        if fieldname in self.unused:
+            self.unused.remove(fieldname)
+
 
     def update_many(self, context, request):
         """/@@API/update_many: Update existing object values
@@ -83,6 +144,9 @@ class Update(object):
             updates: return values from update
         }
         """
+        self.context = context
+        self.request = request
+        self.unused = [x for x in self.request.form.keys()]
         ret = {
             "url": router.url_for("update_many", force_external=True),
             "success": False,

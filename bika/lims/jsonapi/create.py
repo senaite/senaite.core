@@ -30,14 +30,19 @@ class Create(object):
             ("/create", "create", self.create, dict(methods=['GET', 'POST'])),
         )
 
+
     def create(self, context, request):
         """/@@API/create: Create new object.
 
         Required parameters:
 
-            - obj_path = path of new object, from plone site root.
-            - obj_id = ID of new object.
             - obj_type = portal_type of new object.
+            - obj_path = path of new object, from plone site root. - Not required for
+             obj_type=AnalysisRequest
+
+        Optionally:
+
+            - obj_id = ID of new object.
 
         All other parameters in the request are matched against the object's
         Schema.  If a matching field is found in the schema, then the value is
@@ -82,44 +87,66 @@ class Create(object):
         >>> portal_url = portal.absolute_url()
         >>> from plone.app.testing import SITE_OWNER_NAME
         >>> from plone.app.testing import SITE_OWNER_PASSWORD
-        >>> browser = layer['getBrowser'](portal, loggedIn=False)
-        >>> browser.open(portal_url)
-        >>> browser.getControl('Login Name').value = SITE_OWNER_NAME
-        >>> browser.getControl('Password').value = SITE_OWNER_PASSWORD
-        >>> browser.getControl('Log in').click()
-        >>> 'You are now logged in' in browser.contents
-        True
 
-        >>> query_str = "".join([
+        Simple AR creation, no obj_path parameter is required:
+
+        >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
+        >>> browser.open(portal_url+"/@@API/create", "&".join([
         ... "obj_type=AnalysisRequest",
-        ... "&Client=portal_type:Client|id:client-1",
-        ... "&SampleType=portal_type:SampleType|title:Apple Pulp",
-        ... "&Contact=portal_type:Contact|getFullname:Rita Mohale",
-        ... "&Services:list=portal_type:AnalysisService|title:Calcium",
-        ... "&Services:list=portal_type:AnalysisService|title:Copper",
-        ... "&Services:list=portal_type:AnalysisService|title:Magnesium",
-        ... "&SamplingDate=2013-09-29",
-        ... "&AR_Specification=portal_type:AnalysisSpec|title:Apple Pulp",
-        ... "&Analysis_Specification:list=Cu:5:10:10",
-        ... "&Analysis_Specification:list=Mg:6:11:11"
-        ... ])
-        >>> url = portal_url+"/@@API/create"
-        >>> browser.open(url, query_str)
+        ... "Client=portal_type:Client|id:client-1",
+        ... "SampleType=portal_type:SampleType|title:Apple Pulp",
+        ... "Contact=portal_type:Contact|getFullname:Rita Mohale",
+        ... "Services:list=portal_type:AnalysisService|title:Calcium",
+        ... "Services:list=portal_type:AnalysisService|title:Copper",
+        ... "Services:list=portal_type:AnalysisService|title:Magnesium",
+        ... "SamplingDate=2013-09-29",
+        ... "AR_Specification=portal_type:AnalysisSpec|title:Apple Pulp",
+        ... "Analysis_Specification:list=Cu:5:10:10",
+        ... "Analysis_Specification:list=Mg:6:11:11"
+        ... ]))
         >>> browser.contents
         '{..."success": true...}'
 
-        """
+        If some parameters are specified and are not located as existing fields or properties
+        of the created instance, the create should fail:
 
+        >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
+        >>> browser.open(portal_url+"/@@API/create?", "&".join([
+        ... "obj_type=Batch",
+        ... "obj_path=/batches",
+        ... "title=Test",
+        ... "Thing=Fish"
+        ... ]))
+        >>> browser.contents
+        '{...The following request fields were not used: ...Thing...}'
+
+        Now we test that the AR create also fails if some fields are spelled wrong
+
+        >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
+        >>> browser.open(portal_url+"/@@API/create", "&".join([
+        ... "obj_type=AnalysisRequest",
+        ... "thing=Fish",
+        ... "Client=portal_type:Client|id:client-1",
+        ... "SampleType=portal_type:SampleType|title:Apple Pulp",
+        ... "Contact=portal_type:Contact|getFullname:Rita Mohale",
+        ... "Services:list=portal_type:AnalysisService|title:Calcium",
+        ... "Services:list=portal_type:AnalysisService|title:Copper",
+        ... "Services:list=portal_type:AnalysisService|title:Magnesium",
+        ... "SamplingDate=2013-09-29"
+        ... ]))
+        >>> browser.contents
+        '{...The following request fields were not used: ...thing...}'
+
+        """
+        savepoint = transaction.savepoint()
         self.context = context
         self.request = request
-
-        savepoint = transaction.savepoint()
-
-        # obj_type is required always.
-        obj_type = request.get("obj_type", "")
-        if not obj_type:
-            raise ValueError("bad or missing obj_type: " + obj_type)
-        # shortcut to create AnalysisRequest objects
+        self.unused = [x for x in self.request.form.keys()]
+        # always require obj_type
+        self.require("obj_type")
+        obj_type = self.request['obj_type']
+        self.used("obj_type")
+        # AnalysisRequest shortcut: creates Sample, Partition, AR, Analyses.
         if obj_type == "AnalysisRequest":
             try:
                 return self._create_ar(context, request)
@@ -127,14 +154,14 @@ class Create(object):
                 savepoint.rollback()
                 raise
         # Other object types require explicit path as their parent
-        obj_path = request.get("obj_path", "")
-        if not obj_path:
-            raise ValueError("bad or missing obj_path: " + obj_path)
+        self.require("obj_path")
+        obj_path = self.request['obj_path']
         if not obj_path.startswith("/"):
             obj_path = "/" + obj_path
+        self.used("obj_path")
         site_path = request['PATH_INFO'].replace("/@@API/create", "")
         parent = context.restrictedTraverse(str(site_path + obj_path))
-        # XXX normal permissions should still apply for this user
+        # normal permissions still apply for this user
         if not getSecurityManager().checkPermission("AccessJSONAPI", parent):
             msg = "You don't have the '{0}' permission on {1}".format(
                 AccessJSONAPI, parent.absolute_url())
@@ -145,6 +172,7 @@ class Create(object):
         if not obj_id:
             _renameAfterCreation = True
             obj_id = tmpID()
+        self.used(obj_id)
 
         ret = {
             "url": router.url_for("create", force_external=True),
@@ -159,7 +187,9 @@ class Create(object):
             if _renameAfterCreation:
                 renameAfterCreation(obj)
             ret['obj_id'] = obj.getId()
-            set_fields_from_request(obj, request)
+            used_fields = set_fields_from_request(obj, request)
+            for field in used_fields:
+                self.used(field)
             obj.reindexObject()
             event.notify(ObjectInitializedEvent(obj))
             obj.at_post_create_script()
@@ -167,14 +197,41 @@ class Create(object):
             savepoint.rollback()
             raise
 
+        if self.unused:
+            raise BadRequest("The following request fields were not used: %s.  Request aborted." % self.unused)
+
         return ret
 
     def get_specs_from_request(self):
+        """Specifications for analyses are given on the request in *Spec
+
+        >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
+        >>> browser.open(portal_url+"/@@API/create", "&".join([
+        ... "obj_type=AnalysisRequest",
+        ... "thing=Fish",
+        ... "Client=portal_type:Client|id:client-1",
+        ... "SampleType=portal_type:SampleType|title:Apple Pulp",
+        ... "Contact=portal_type:Contact|getFullname:Rita Mohale",
+        ... "Services:list=portal_type:AnalysisService|title:Calcium",
+        ... "Services:list=portal_type:AnalysisService|title:Copper",
+        ... "Services:list=portal_type:AnalysisService|title:Magnesium",
+        ... "SamplingDate=2013-09-29",
+        ... "AR_Specification=portal_type:AnalysisSpec|title:Apple Pulp",
+        ... "Analysis_Specification:list=Cu:5:10:10",
+        ... "Analysis_Specification:list=Mg:6:11:11"
+        ... ]))
+        >>> browser.contents
+        '{...The following request fields were not used: ...thing...}'
+
+        """
+
         context = self.context
         request = self.request
         brains = resolve_request_lookup(context, request, "AR_Specification")
         kwspecs = brains[0].getObject().getResultsRangeDict() if brains else {}
         Analysis_Specification = self.request.get("Analysis_Specification", "")
+        self.used("AR_Specification")
+        self.used("Analysis_Specification")
         if not kwspecs and not Analysis_Specification:
             return {}
 
@@ -199,6 +256,18 @@ class Create(object):
                     "error": error,
                 }
         return specs
+
+    def require(self, fieldname, allow_blank=False):
+        """fieldname is required"""
+        if self.request.form and fieldname not in self.request.form.keys():
+            raise Exception("Required field not found in request: %s" % fieldname)
+        if self.request.form and (not self.request.form[fieldname] or allow_blank):
+            raise Exception("Required field %s may not have blank value")
+
+    def used(self, fieldname):
+        """fieldname is used, remove from list of unused fields"""
+        if fieldname in self.unused:
+            self.unused.remove(fieldname)
 
     def _create_ar(self, context, request):
         """Creates AnalysisRequest object, with supporting Sample, Partition
@@ -243,16 +312,15 @@ class Create(object):
             "success": True,
             "error": False,
         }
-        SamplingWorkflowEnabled = \
-            context.bika_setup.getSamplingWorkflowEnabled()
-        required_fields = ['Client',
-                           'SampleType',
-                           'Contact',
-                           'SamplingDate',
-                           'Services']
-        for field in required_fields:
-            if field not in request:
-                raise BadRequest("Missing field {0} in request".format(field))
+        SamplingWorkflowEnabled = context.bika_setup.getSamplingWorkflowEnabled()
+        for field in [
+            'Client',
+            'SampleType',
+            'Contact',
+            'SamplingDate',
+            'Services']:
+            self.require(field)
+            self.used(field)
 
         try:
             client = resolve_request_lookup(context, request, 'Client')[0].getObject()
@@ -270,7 +338,9 @@ class Create(object):
             _id = client.invokeFactory('Sample', id=tmpID())
             sample = client[_id]
             sample.unmarkCreationFlag()
-            set_fields_from_request(sample, request)
+            fields = set_fields_from_request(sample, request)
+            for field in fields:
+                self.used(field)
             sample._renameAfterCreation()
             sample.setSampleID(sample.getId())
             event.notify(ObjectInitializedEvent(sample))
@@ -292,7 +362,9 @@ class Create(object):
         _id = client.invokeFactory('AnalysisRequest', tmpID())
         ar = client[_id]
         ar.unmarkCreationFlag()
-        set_fields_from_request(ar, request)
+        fields = set_fields_from_request(ar, request)
+        for field in fields:
+            self.used(field)
         ar.setSample(sample.UID())
         ar._renameAfterCreation()
         ret['ar_id'] = ar.getId()
@@ -382,5 +454,8 @@ class Create(object):
                 doActionFor(analysis, 'sample_due')
                 if sample_state not in not_receive:
                     doActionFor(analysis, 'receive')
+
+        if self.unused:
+            raise BadRequest("The following request fields were not used: %s.  Request aborted." % self.unused)
 
         return ret
