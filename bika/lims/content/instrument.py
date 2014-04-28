@@ -262,8 +262,12 @@ class Instrument(ATFolder):
         certs = []
         today = date.today()
         for c in self.getCertifications():
-            validfrom = c.getValidFrom().asdatetime().date()
-            validto = c.getValidTo().asdatetime().date()
+            validfrom = c.getValidFrom() if c else None
+            validto = c.getValidTo() if validfrom else None
+            if not validfrom or not validto:
+                continue
+            validfrom = validfrom.asdatetime().date()
+            validto = validto.asdatetime().date()
             if (today >= validfrom and today <= validto):
                 certs.append(c)
         return certs
@@ -350,7 +354,7 @@ class Instrument(ATFolder):
         """
         cert = self.getLatestValidCertification()
         today = date.today()
-        if cert:
+        if cert and cert.getValidTo():
             validto = cert.getValidTo().asdatetime().date();
             if validto > today:
                 return False
@@ -364,8 +368,12 @@ class Instrument(ATFolder):
         lastfrom = None
         lastto = None
         for c in self.getCertifications():
-            validfrom = c.getValidFrom().asdatetime().date()
-            validto = c.getValidTo().asdatetime().date()
+            validfrom = c.getValidFrom() if c else None
+            validto = c.getValidTo() if validfrom else None
+            if not validfrom or not validto:
+                continue
+            validfrom = validfrom.asdatetime().date()
+            validto = validto.asdatetime().date()
             if not cert \
                 or validto > lastto \
                 or (validto == lastto and validfrom > lastfrom):
