@@ -354,9 +354,10 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                         instrument = rc.lookupObject(instruments[uid])
                         instrument.addAnalysis(analysis)
 
-                # Need to save the analyst?
-                if uid in analysts and analysis_active:
-                    analysis.setAnalyst(analysts[uid]);
+            # Need to save the analyst?
+            if uid in analysts and analysis_active:
+                analysis.setAnalyst(analysts[uid]);
+
             if uid not in results or not results[uid]:
                 continue
             can_submit = True
