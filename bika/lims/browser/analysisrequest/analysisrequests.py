@@ -1,6 +1,7 @@
 from AccessControl import getSecurityManager
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.utils import getUsers
 from bika.lims.permissions import *
 from bika.lims.utils import to_utf8
 from DateTime import DateTime
