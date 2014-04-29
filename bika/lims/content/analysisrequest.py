@@ -21,6 +21,7 @@ from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.workflow import skip
 from bika.lims.workflow import doActionFor
+from bika.lims.workflow import isBasicTransitionAllowed
 from decimal import Decimal
 from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
@@ -1405,9 +1406,7 @@ class AnalysisRequest(BaseFolder):
     def guard_unassign_transition(self):
         """Allow or disallow transition depending on our children's states
         """
-        workflow = getToolByName(self, 'portal_workflow')
-        # Can't do anything to the object if it's cancelled
-        if workflow.getInfoFor(self, 'cancellation_state', '') == "cancelled":
+        if not isBasicTransitionAllowed(self):
             return False
         if self.getAnalyses(worksheetanalysis_review_state='unassigned'):
             return True
@@ -1418,9 +1417,7 @@ class AnalysisRequest(BaseFolder):
     def guard_assign_transition(self):
         """Allow or disallow transition depending on our children's states
         """
-        workflow = getToolByName(self, 'portal_workflow')
-        # Can't do anything to the object if it's cancelled
-        if workflow.getInfoFor(self, 'cancellation_state', '') == "cancelled":
+        if not isBasicTransitionAllowed(self):
             return False
         if not self.getAnalyses(worksheetanalysis_review_state='assigned'):
             return False
@@ -1433,10 +1430,7 @@ class AnalysisRequest(BaseFolder):
         - if object is cancelled
         - if any related ARs have field analyses with no result.
         """
-        # check if object is cancelled
-        workflow = getToolByName(self, 'portal_workflow')
-        state = workflow.getInfoFor(self, 'cancellation_state', "active")
-        if state == "cancelled":
+        if not isBasicTransitionAllowed(self):
             return False
         # check if any related ARs have field analyses with no result.
         for ar in self.getSample().getAnalysisRequests():

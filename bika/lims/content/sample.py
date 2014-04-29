@@ -8,6 +8,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISample
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import skip
+from bika.lims.workflow import isBasicTransitionAllowed
 from DateTime import DateTime
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -525,6 +526,8 @@ class Sample(BaseFolder, HistoryAwareMixin):
         - if object is cancelled
         - if any related ARs have field analyses with no result.
         """
+        if not isBasicTransitionAllowed(self):
+            return False
         # check if object is cancelled
         workflow = getToolByName(self, 'portal_workflow')
         state = workflow.getInfoFor(self, 'cancellation_state', "active")

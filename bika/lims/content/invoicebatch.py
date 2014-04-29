@@ -10,6 +10,7 @@ from bika.lims.utils import get_invoice_item_description
 from DateTime import DateTime
 from Products.Archetypes.public import *
 from Products.CMFCore import permissions
+from bika.lims.workflow import isBasicTransitionAllowed
 from zope.container.contained import ContainerModifiedEvent
 from zope.interface import implements
 
@@ -194,9 +195,13 @@ class InvoiceBatch(BaseFolder):
         return DateTime()
 
     def guard_cancel_transition(self):
+        if not isBasicTransitionAllowed(self):
+            return False
         return True
 
     def guard_reinstate_transition(self):
+        if not isBasicTransitionAllowed(self):
+            return False
         return True
 
 registerType(InvoiceBatch, PROJECTNAME)
