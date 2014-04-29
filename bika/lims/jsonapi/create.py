@@ -205,6 +205,11 @@ class Create(object):
     def get_specs_from_request(self):
         """Specifications for analyses are given on the request in *Spec
 
+        >>> portal = layer['portal']
+        >>> portal_url = portal.absolute_url()
+        >>> from plone.app.testing import SITE_OWNER_NAME
+        >>> from plone.app.testing import SITE_OWNER_PASSWORD
+
         >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
         >>> browser.open(portal_url+"/@@API/create", "&".join([
         ... "obj_type=AnalysisRequest",
