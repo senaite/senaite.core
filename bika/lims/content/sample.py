@@ -6,9 +6,8 @@ from bika.lims.browser.widgets.datetimewidget import DateTimeWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISample
-from bika.lims.workflow import doActionFor
+from bika.lims.workflow import doActionFor, isBasicTransitionAllowed
 from bika.lims.workflow import skip
-from bika.lims.workflow import isBasicTransitionAllowed
 from DateTime import DateTime
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -328,6 +327,7 @@ schema = BikaSchema.copy() + Schema((
 ))
 
 
+# noinspection PyUnresolvedReferences
 schema['title'].required = False
 
 
@@ -521,27 +521,6 @@ class Sample(BaseFolder, HistoryAwareMixin):
             return 0
         return last_ar_number
 
-    def guard_receive_transition(self):
-        """Prevent the receive transition from being available:
-        - if object is cancelled
-        - if any related ARs have field analyses with no result.
-        """
-        if not isBasicTransitionAllowed(self):
-            return False
-        # check if object is cancelled
-        workflow = getToolByName(self, 'portal_workflow')
-        state = workflow.getInfoFor(self, 'cancellation_state', "active")
-        if state == "cancelled":
-            return False
-        # check if any related ARs have field analyses with no result.
-        for ar in self.getAnalysisRequests():
-            field_analyses = ar.getAnalyses(getPointOfCapture='field',
-                                            full_objects=True)
-            no_results = [a for a in field_analyses if a.getResult() == '']
-            if no_results:
-                return False
-        return True
-
     def workflow_script_receive(self):
         workflow = getToolByName(self, 'portal_workflow')
         self.setDateReceived(DateTime())
@@ -556,18 +535,13 @@ class Sample(BaseFolder, HistoryAwareMixin):
         # AnalysisRequests are also transitioned
         for ar in self.getAnalysisRequests():
             doActionFor(ar, "receive")
-        # # automatic label printing - redirect - this is done in WorkflowAction.
-        # label_setting = self.bika_setup.getAutoPrintLabels()
-        # if 'receive' in label_setting:
-        #     size = self.bika_setup.getAutoLabelSize()
-        #     q = "/sticker?size=%s&items=%s" % (size, self.getId())
-        #     self.REQUEST.RESPONSE.redirect(self.absolute_url() + q)
 
     def workflow_script_preserve(self):
         """This action can happen in the Sample UI, so we transition all
         self partitions that are still 'to_be_preserved'
         """
         workflow = getToolByName(self, 'portal_workflow')
+        parts = self.objectValues("SamplePartition")
         tbs = [sp for sp in parts
                if workflow.getInfoFor(sp, 'review_state') == 'to_be_preserved']
         for sp in tbs:
@@ -601,6 +575,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
         if skip(self, "to_be_preserved"):
             return
         workflow = getToolByName(self, 'portal_workflow')
+        parts = self.objectValues('SamplePartition')
         # Transition our children
         tbs = [sp for sp in parts
                if workflow.getInfoFor(sp, 'review_state') == 'to_be_preserved']
@@ -619,14 +594,11 @@ class Sample(BaseFolder, HistoryAwareMixin):
             doActionFor(ar, "sample_due")
             ar.reindexObject()
 
-    #---------------------
-    # Secondary workflows:
-    #---------------------
-
     def workflow_script_reinstate(self):
         if skip(self, "reinstate"):
             return
         workflow = getToolByName(self, 'portal_workflow')
+        parts = self.objectValues('SamplePartition')
         self.reindexObject(idxs=["cancellation_state", ])
         # Re-instate all self partitions
         for sp in [sp for sp in parts
@@ -644,6 +616,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
         if skip(self, "cancel"):
             return
         workflow = getToolByName(self, 'portal_workflow')
+        parts = self.objectValues('SamplePartition')
         self.reindexObject(idxs=["cancellation_state", ])
         # Cancel all partitions
         for sp in [sp for sp in parts
@@ -657,5 +630,21 @@ class Sample(BaseFolder, HistoryAwareMixin):
                 if ar_state == 'active':
                     workflow.doActionFor(ar, 'cancel')
 
+    def guard_receive_transition(self):
+        """Prevent the receive transition from being available:
+        - if object is cancelled
+        - if any related ARs have field analyses with no result.
+        """
+        # Can't do anything to the object if it's cancelled
+        if not isBasicTransitionAllowed(self):
+            return False
+        # check if any related ARs have field analyses with no result.
+        for ar in self.getAnalysisRequests():
+            field_analyses = ar.getAnalyses(getPointOfCapture='field',
+                                            full_objects=True)
+            no_results = [a for a in field_analyses if a.getResult() == '']
+            if no_results:
+                return False
+        return True
 
 atapi.registerType(Sample, PROJECTNAME)

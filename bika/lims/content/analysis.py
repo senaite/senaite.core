@@ -1083,12 +1083,12 @@ class Analysis(BaseContent):
                 workflow.doActionFor(ws, "retract")
         # If all analyses in this AR have been assigned,
         # escalate the action to the parent AR
-        if not skip(ar, "assign", peek=True):
-            if not ar.getAnalyses(worksheetanalysis_review_state="unassigned"):
+        if not skip(self, "assign", peek=True):
+            if not self.getAnalyses(worksheetanalysis_review_state="unassigned"):
                 try:
-                    allowed_transitions = [t["id"] for t in workflow.getTransitionsFor(ar)]
+                    allowed_transitions = [t["id"] for t in workflow.getTransitionsFor(self)]
                     if "assign" in allowed_transitions:
-                        workflow.doActionFor(ar, "assign")
+                        workflow.doActionFor(self, "assign")
                 except:
                     pass
 
@@ -1106,9 +1106,9 @@ class Analysis(BaseContent):
         # Escalate the action to the parent AR if it is assigned
         # Note: AR adds itself to the skiplist so we have to take it off again
         #       to allow multiple promotions/demotions (maybe by more than one instance).
-        if workflow.getInfoFor(ar, "worksheetanalysis_review_state") == "assigned":
-            workflow.doActionFor(ar, "unassign")
-            skip(ar, "unassign", unskip=True)
+        if workflow.getInfoFor(self, "worksheetanalysis_review_state") == "assigned":
+            workflow.doActionFor(self, "unassign")
+            skip(self, "unassign", unskip=True)
         # If it has been duplicated on the worksheet, delete the duplicates.
         dups = self.getBackReferences("DuplicateAnalysisAnalysis")
         for dup in dups:

@@ -19,9 +19,8 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.widgets import ReferenceWidget
-from bika.lims.workflow import skip
+from bika.lims.workflow import skip, isBasicTransitionAllowed
 from bika.lims.workflow import doActionFor
-from bika.lims.workflow import isBasicTransitionAllowed
 from decimal import Decimal
 from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
@@ -911,9 +910,9 @@ class AnalysisRequest(BaseFolder):
             manager_id = manager.getId()
             if manager_id not in managers:
                 managers[manager_id] = {}
-                managers[manager_id]['name'] = to_unicode(manager.getFullname())
-                managers[manager_id]['email'] = to_unicode(manager.getEmailAddress())
-                managers[manager_id]['phone'] = to_unicode(manager.getBusinessPhone())
+                managers[manager_id]['name'] = safe_unicode(manager.getFullname())
+                managers[manager_id]['email'] = safe_unicode(manager.getEmailAddress())
+                managers[manager_id]['phone'] = safe_unicode(manager.getBusinessPhone())
                 if manager.getSignature():
                     managers[manager_id]['signature'] = '%s/Signature' % manager.absolute_url()
                 else:
@@ -923,7 +922,7 @@ class AnalysisRequest(BaseFolder):
             if mngr_dept:
                 mngr_dept += ', '
             mngr_dept += department.Title()
-            managers[manager_id]['departments'] = to_unicode(mngr_dept)
+            managers[manager_id]['departments'] = safe_unicode(mngr_dept)
         mngr_keys = managers.keys()
         mngr_info = {}
         mngr_info['ids'] = mngr_keys
