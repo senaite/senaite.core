@@ -515,12 +515,13 @@ class Analysis(BaseContent):
         """
         service = self.getService()
         uids = []
-        if service.getManualEntryOfResults() == True:
+
+        if service.getInstrumentEntryOfResults() == True:
+            uids = [ins.getRawMethod() for ins in service.getInstruments()]
+
+        else:
             # Get only the methods set manually
             uids = service.getRawMethods()
-
-        elif service.getInstrumentEntryOfResults() == True:
-            uids = [ins.getRawMethod() for ins in service.getInstruments()]
 
         if onlyuids == False:
             uc = getToolByName(self, 'uid_catalog')
@@ -535,14 +536,15 @@ class Analysis(BaseContent):
         """
         uids = []
         service = self.getService()
-        if service.getManualEntryOfResults == True:
+
+        if service.getInstrumentEntryOfResults() == True:
+            uids = service.getRawInstruments()
+
+        elif service.getManualEntryOfResults == True:
             meths = self.getAllowedMethods(False)
             for meth in meths:
                 uids += meth.getInstrumentUIDs()
             set(uids)
-
-        elif service.getInstrumentEntryOfResults() == True:
-            uids = service.getRawInstruments()
 
         if onlyuids == False:
             uc = getToolByName(self, 'uid_catalog')

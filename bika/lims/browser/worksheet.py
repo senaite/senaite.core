@@ -152,15 +152,6 @@ class WorksheetWorkflowAction(WorkflowAction):
             if uid in retested and allow_edit and analysis_active:
                 analysis.setRetested(retested[uid])
 
-            # Need to save the method?
-            if uid in methods and analysis_active:
-                # TODO: Add SetAnalysisMethod permission
-                # allow_setmethod = sm.checkPermission(SetAnalysisMethod)
-                allow_setmethod = True
-                # ---8<-----
-                if allow_setmethod == True and analysis.isMethodAllowed(methods[uid]):
-                    analysis.setMethod(methods[uid])
-
             # Need to save the instrument?
             if uid in instruments and analysis_active:
                 # TODO: Add SetAnalysisInstrument permission
@@ -170,13 +161,27 @@ class WorksheetWorkflowAction(WorkflowAction):
                 if allow_setinstrument == True:
                     # The current analysis allows the instrument regards
                     # to its analysis service and method?
-                    if analysis.isInstrumentAllowed(instruments[uid]):
+                    if (instruments[uid]==''):
+                        previnstr = analysis.getInstrument()
+                        if previnstr:
+                            previnstr.removeAnalysis(analysis)
+                        analysis.setInstrument(None);
+                    elif analysis.isInstrumentAllowed(instruments[uid]):
                         previnstr = analysis.getInstrument()
                         if previnstr:
                             previnstr.removeAnalysis(analysis)
                         analysis.setInstrument(instruments[uid])
-                        instrument = rc.lookupObject(instruments[uid])
+                        instrument = analysis.getInstrument()
                         instrument.addAnalysis(analysis)
+
+            # Need to save the method?
+            if uid in methods and analysis_active:
+                # TODO: Add SetAnalysisMethod permission
+                # allow_setmethod = sm.checkPermission(SetAnalysisMethod)
+                allow_setmethod = True
+                # ---8<-----
+                if allow_setmethod == True and analysis.isMethodAllowed(methods[uid]):
+                    analysis.setMethod(methods[uid])
 
             # Need to save the analyst?
             if uid in analysts and analysis_active:

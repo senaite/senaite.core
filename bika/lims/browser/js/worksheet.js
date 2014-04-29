@@ -278,22 +278,25 @@ $(document).ready(function(){
                     }
                 });
                 if (!valid) {
-                    $(instrselector).append('<option selected value=""></option>');
+                    $(instrselector).append('<option selected value="">'+_('None')+'</option>');
+                } else {
+                    $(instrselector).prepend('<option value="">'+_('None')+'</option>');
                 }
                 if (invalid.length > 0) {
                     var title = _("Invalid instruments are not shown: ")+invalid.join(", ");
                     $(instrselector).parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+title+'")">');
                 }
             }).fail(function() {
-                $(instrselector).append('<option selected value=""></option>');
+                $(instrselector).append('<option selected value="">'+_('None')+'</option>');
             });
 
         } else {
             // Clear instruments selector
             $(instrselector).find('option').remove();
-            $(instrselector).append('<option selected value=""></option>');
+            $(instrselector).append('<option selected value="">'+_('None')+'</option>');
         }
     });
+
     // Remove empty options
     $('table.bika-listing-table select.listing_select_entry[field="Method"]').find('option[value=""]').remove();
     $('table.bika-listing-table select.listing_select_entry[field="Method"]').change();

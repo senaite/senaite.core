@@ -8,6 +8,7 @@ from bika.lims.permissions import EditWorksheet
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import skip
 from DateTime import DateTime
+from operator import itemgetter
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
