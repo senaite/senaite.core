@@ -12,6 +12,7 @@ from bika.lims.permissions import *
 from bika.lims.jsonapi import resolve_request_lookup
 from bika.lims.workflow import doActionFor
 from bika.lims.utils import tmpID
+from bika.lims import logger
 from collective.progressbar.events import InitialiseProgressBar
 from collective.progressbar.events import ProgressBar
 from collective.progressbar.events import UpdateProgressEvent
@@ -390,7 +391,7 @@ class ARImport(BaseFolder):
                 sortable_title = aritem.Priority.lower(),
                 )
             if len(priorities) < 1:
-                logging.error(
+                logger.warning(
                     'Invalid Priority: validation should have prevented this')
 
             #Create AR
@@ -592,7 +593,7 @@ class ARImport(BaseFolder):
                 sortable_title = aritem.Priority.lower(),
                 )
             if len(priorities) < 1:
-                logging.error(
+                logger.warning(
                     'Invalid Priority: validation should have prevented this')
                 priority = ''
             else:
