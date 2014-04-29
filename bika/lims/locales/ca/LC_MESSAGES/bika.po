@@ -478,6 +478,11 @@ msgid "Allowed analysis states: %s"
 msgstr ""
 
 #
+# File: ../content/analysisservice.py, line: 437
+msgid "Alternative Calculation"
+msgstr ""
+
+#
 # File: ../content/client.py, line: 66
 msgid "Always expand the selected categories in client views"
 msgstr ""
@@ -1603,6 +1608,11 @@ msgid "Copy from"
 msgstr ""
 
 #
+# File: ../browser/analysisrequest/analysisrequests.py, line: 144
+msgid "Copy to new"
+msgstr ""
+
+#
 # File: ../browser/reports/productivity_analysestats.py, line: 126
 msgid "Count"
 msgstr ""
@@ -1910,11 +1920,6 @@ msgstr ""
 # File: ../content/bikasetup.py, line: 203
 # File: ../content/client.py, line: 90
 msgid "DefaultARSpecs_description"
-msgstr ""
-
-#
-# File: ../content/analysisservice.py, line: 433
-msgid "Deferred Calculation"
 msgstr ""
 
 #
@@ -2500,8 +2505,8 @@ msgid "ID Server unavailable"
 msgstr ""
 
 #
-# File: ../content/analysisservice.py, line: 360
-msgid "If 'Allow instrument entry of results' is selected, the Default method to be used will be the method set in the Default Instrument. Otherwise, the Method to be used can be set manually."
+# File: ../content/analysisservice.py, line: 363
+msgid "If 'Allow instrument entry of results' is selected, the Default method to be used will be the method set in the Default Instrument. Otherwise, the Method to be used can be set manually, but only the Methods with 'Manual entry of results' set will be displayed."
 msgstr ""
 
 #
@@ -2663,6 +2668,11 @@ msgstr ""
 #
 # File: ../browser/instrument.py, line: 202
 msgid "Instrument Validations"
+msgstr ""
+
+#
+# File: ../browser/analyses.py, line: 551
+msgid "Instrument entry of results not allowed for %s"
 msgstr ""
 
 #
@@ -3048,6 +3058,11 @@ msgstr ""
 #
 # File: ../controlpanel/bika_departments.py, line: 46
 msgid "Manager Phone"
+msgstr ""
+
+#
+# File: ../browser/analyses.py, line: 550
+msgid "Manual"
 msgstr ""
 
 #
@@ -3496,6 +3511,11 @@ msgstr ""
 #
 # File: ../browser/analysisrequest.py, line: 2508
 msgid "Not available"
+msgstr ""
+
+#
+# File: ../browser/templates/worksheet_manage_results.pt, line: 75
+msgid "Not defined"
 msgstr ""
 
 #
@@ -4438,6 +4458,11 @@ msgstr ""
 #
 # File: ../browser/templates/analyses_retractedlist.pt, line: 11
 msgid "Retracted analyses"
+msgstr ""
+
+#
+# File: ../browser/instrument.py, line: 439
+msgid "Retraction report unavailable"
 msgstr ""
 
 #
@@ -5466,6 +5491,11 @@ msgid "This Analysis Request has been withdrawn and is shown for trace-ability p
 msgstr ""
 
 #
+# File: ../browser/analysisrequest/published_results.py, line: 67
+msgid "This Analysis Request has been withdrawn and is shown for trace-ability purposes only. Retest:${retest_child_id}."
+msgstr ""
+
+#
 # File: ../subscribers/analysisservice.py, line: 39
 msgid "This Analysis Service cannot be activated because it's calculation is inactive."
 msgstr ""
@@ -5640,11 +5670,6 @@ msgstr ""
 #
 # File: ../browser/analysisrequest.py, line: 2178
 msgid "Unassigned"
-msgstr ""
-
-#
-# File: ../browser/instrument.py, line: 438
-msgid "Unavailable"
 msgstr ""
 
 #
