@@ -317,4 +317,14 @@
         handler="bika.lims.upgrade.to3030.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Add missing folder for sugbroups"
+        description=""
+        source="3030"
+        destination="3031"
+        handler="bika.lims.upgrade.to3031.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
