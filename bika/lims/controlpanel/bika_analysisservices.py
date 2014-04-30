@@ -1,4 +1,4 @@
-from Products.contentmigration.common import _createObjectByType
+from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME

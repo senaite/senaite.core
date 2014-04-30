@@ -1,6 +1,6 @@
 # coding=utf-8
 from Products.CMFCore.utils import getToolByName
-from Products.contentmigration.common import _createObjectByType
+from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import bikaMessageFactory as _
 from bika.lims.exportimport.instruments.logger import Logger
 from bika.lims.idserver import renameAfterCreation

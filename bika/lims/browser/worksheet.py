@@ -1,6 +1,6 @@
 # coding=utf-8
 from AccessControl import getSecurityManager
-from Products.contentmigration.common import _createObjectByType
+from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import bikaMessageFactory as _
 from bika.lims import EditResults, EditWorksheet, ManageWorksheets
 from bika.lims import PMF, logger

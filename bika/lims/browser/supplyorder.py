@@ -1,4 +1,4 @@
-from Products.contentmigration.common import _createObjectByType
+from Products.CMFPlone.utils import _createObjectByType
 from zope import event
 
 from Products.CMFCore.utils import getToolByName

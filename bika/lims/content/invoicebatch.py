@@ -1,7 +1,7 @@
 """InvoiceBatch is a container for Invoice instances.
 """
 from AccessControl import ClassSecurityInfo
-from Products.contentmigration.common import _createObjectByType
+from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import bikaMessageFactory as _
 from bika.lims.config import ManageInvoices, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
