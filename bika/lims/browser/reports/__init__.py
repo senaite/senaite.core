@@ -1,3 +1,4 @@
+from Products.contentmigration.common import _createObjectByType
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
@@ -301,8 +302,7 @@ class SubmitForm(BrowserView):
         if result:
             # Create new report object
             reportid = self.aq_parent.generateUniqueId('Report')
-            self.aq_parent.invokeFactory(id=reportid, type_name="Report")
-            report = self.aq_parent._getOb(reportid)
+            report = _createObjectByType("Report", self.aq_parent, reportid)
             report.edit(Client=clientuid)
             report.processForm()
 

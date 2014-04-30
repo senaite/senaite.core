@@ -1,6 +1,7 @@
 """InvoiceBatch is a container for Invoice instances.
 """
 from AccessControl import ClassSecurityInfo
+from Products.contentmigration.common import _createObjectByType
 from bika.lims import bikaMessageFactory as _
 from bika.lims.config import ManageInvoices, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -152,8 +153,7 @@ class InvoiceBatch(BaseFolder):
         """ Creates and invoice for a client and a set of items
         """
         invoice_id = self.generateUniqueId('Invoice')
-        self.invokeFactory(id=invoice_id, type_name='Invoice')
-        invoice = self._getOb(invoice_id)
+        invoice = _createObjectByType("Invoice", self, invoice_id)
         invoice.edit(
             Client=client_uid,
             InvoiceDate=DateTime(),

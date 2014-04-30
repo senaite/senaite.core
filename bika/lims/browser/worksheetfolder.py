@@ -3,6 +3,7 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import DisplayList
 from DocumentTemplate import sequence
 from Products.CMFCore.utils import getToolByName
+from Products.contentmigration.common import _createObjectByType
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
@@ -437,8 +438,7 @@ class AddWorksheetView(BrowserView):
         wf = getToolByName(self.context, "portal_workflow")
         pm = getToolByName(self.context, "portal_membership")
 
-        _id = self.context.invokeFactory(type_name = 'Worksheet', id=tmpID())
-        ws = self.context[_id]
+        ws = _createObjectByType("Worksheet", self.context, tmpID())
         ws.processForm()
 
         # Set analyst and instrument

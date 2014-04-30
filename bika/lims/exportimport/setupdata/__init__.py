@@ -1,7 +1,7 @@
 from bika.lims.exportimport.dataimport import SetupDataSetList as SDL
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import ISetupDataSetList
-from Products.CMFPlone.utils import safe_unicode
+from Products.CMFPlone.utils import safe_unicode, _createObjectByType
 from bika.lims.utils import tmpID, to_unicode
 from bika.lims.utils import to_utf8
 from bika.lims import bikaMessageFactory as _
@@ -200,8 +200,7 @@ class Sub_Groups(WorksheetImporter):
         folder = self.context.bika_setup.bika_subgroups
         for row in self.get_rows(3):
             if 'title' in row and row['title']:
-                _id = folder.invokeFactory('SubGroup', id=tmpID())
-                obj = folder[_id]
+                obj = _createObjectByType("SubGroup", folder, tmpID())
                 obj.edit(title=row['title'],
                          description=row['description'],
                          SortKey=row['SortKey'])
@@ -258,8 +257,7 @@ class Lab_Contacts(WorksheetImporter):
             if not row['Firstname']:
                 continue
 
-            _id = folder.invokeFactory('LabContact', id=tmpID())
-            obj = folder[_id]
+            obj = _createObjectByType("LabContact", folder, tmpID())
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
             Fullname = row['Firstname'] + " " + row.get('Surname', '')
@@ -324,8 +322,7 @@ class Lab_Departments(WorksheetImporter):
         lab_contacts = [o.getObject() for o in bsc(portal_type="LabContact")]
         for row in self.get_rows(3):
             if row['title']:
-                _id = folder.invokeFactory('Department', id=tmpID())
-                obj = folder[_id]
+                obj = _createObjectByType("Department", folder, tmpID())
                 obj.edit(title=row['title'],
                          description=row.get('description', ''))
                 manager = None
@@ -348,8 +345,7 @@ class Clients(WorksheetImporter):
     def Import(self):
         folder = self.context.clients
         for row in self.get_rows(3):
-            _id = folder.invokeFactory('Client', id=tmpID())
-            obj = folder[_id]
+            obj = _createObjectByType("Client", folder, tmpID())
             if not row['Name']:
                 message = "Client %s has no Name"
                 raise Exception(message)
@@ -381,8 +377,7 @@ class Client_Contacts(WorksheetImporter):
             if len(client) == 0:
                 raise IndexError("Client invalid: '%s'" % row['Client_title'])
             client = client[0].getObject()
-            _id = client.invokeFactory('Contact', id=tmpID())
-            contact = client[_id]
+            contact = _createObjectByType("Contact", client, tmpID())
             fullname = "%(Firstname)s %(Surname)s" % row
             pub_pref = [x.strip() for x in
                         row.get('PublicationPreference', '').split(",")]
@@ -439,8 +434,7 @@ class Container_Types(WorksheetImporter):
         for row in self.get_rows(3):
             if not row['title']:
                 continue
-            _id = folder.invokeFactory('ContainerType', id=tmpID())
-            obj = folder[_id]
+            obj = _createObjectByType("ContainerType", folder, tmpID())
             obj.edit(title=row['title'],
                      description=row.get('description', ''))
             obj.unmarkCreationFlag()
@@ -454,8 +448,7 @@ class Preservations(WorksheetImporter):
         for row in self.get_rows(3):
             if not row['title']:
                 continue
-            _id = folder.invokeFactory('Preservation', id=tmpID())
-            obj = folder[_id]
+            obj = _createObjectByType("Preservation", folder, tmpID())
             RP = {
                 'days': int(row['RetentionPeriod_days'] and row['RetentionPeriod_days'] or 0),
                 'hours': int(row['RetentionPeriod_hours'] and row['RetentionPeriod_hours'] or 0),
@@ -477,8 +470,7 @@ class Containers(WorksheetImporter):
         for row in self.get_rows(3):
             if not row['title']:
                 continue
-            _id = folder.invokeFactory('Container', id=tmpID())
-            obj = folder[_id]
+            obj = _createObjectByType("Container", folder, tmpID())
             obj.edit(
                 title=row['title'],
                 description=row.get('description', ''),
@@ -502,8 +494,7 @@ class Suppliers(WorksheetImporter):
     def Import(self):
         folder = self.context.bika_setup.bika_suppliers
         for row in self.get_rows(3):
-            _id = folder.invokeFactory('Supplier', id=tmpID())
-            obj = folder[_id]
+            obj = _createObjectByType("Supplier", folder, tmpID())
             if row['Name']:
                 obj.edit(
                     Name=row.get('Name', ''),
@@ -534,8 +525,7 @@ class Supplier_Contacts(WorksheetImporter):
             if not folder:
                 continue
             folder = folder[0].getObject()
-            _id = folder.invokeFactory('SupplierContact', id=tmpID())
-            obj = folder[_id]
+            obj = _createObjectByType("SupplierContact", folder, tmpID())
             obj.edit(
                 Firstname=row['Firstname'],
                 Surname=row.get('Surname', ''),
@@ -552,8 +542,7 @@ class Manufacturers(WorksheetImporter):
     def Import(self):
         folder = self.context.bika_setup.bika_manufacturers
         for row in self.get_rows(3):
-            _id = folder.invokeFactory('Manufacturer', id=tmpID())
-            obj = folder[_id]
+            obj = _createObjectByType("Manufacturer", folder, tmpID())
             if row['title']:
                 obj.edit(
                     title=row['title'],
@@ -569,8 +558,7 @@ class Instrument_Types(WorksheetImporter):
     def Import(self):
         folder = self.context.bika_setup.bika_instrumenttypes
         for row in self.get_rows(3):
-                _id = folder.invokeFactory('InstrumentType', id=tmpID())
-                obj = folder[_id]
+                obj = _createObjectByType("InstrumentType", folder, tmpID())
                 obj.edit(
                     title=row['title'],
                     description=row.get('description', ''))
@@ -584,14 +572,13 @@ class Instruments(WorksheetImporter):
         folder = self.context.bika_setup.bika_instruments
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for row in self.get_rows(3):
-            if ('Type' not in row \
-                or 'Supplier' not in row \
+            if ('Type' not in row
+                or 'Supplier' not in row
                 or 'Brand' not in row):
                 logger.info("Unable to import '%s'. Missing supplier, manufacturer or type" % row.get('title',''))
                 continue
 
-            _id = folder.invokeFactory('Instrument', id=tmpID())
-            obj = folder[_id]
+            obj = _createObjectByType("Instrument", folder, tmpID())
 
             obj.edit(
                 title=row['title'],
@@ -625,8 +612,7 @@ class Instrument_Validations(WorksheetImporter):
 
             folder = self.get_object(bsc, 'Instrument', row.get('instrument'))
             if folder:
-                _id = folder.invokeFactory('InstrumentValidation', id=tmpID())
-                obj = folder[_id]
+                obj = _createObjectByType("InstrumentValidation", folder, tmpID())
                 obj.edit(
                     title=row['title'],
                     DownFrom=row.get('downfrom', ''),
@@ -650,8 +636,7 @@ class Instrument_Calibrations(WorksheetImporter):
 
             folder = self.get_object(bsc, 'Instrument', row.get('instrument'))
             if folder:
-                _id = folder.invokeFactory('InstrumentCalibration', id=tmpID())
-                obj = folder[_id]
+                obj = _createObjectByType("InstrumentCalibration", folder, tmpID())
                 obj.edit(
                     title=row['title'],
                     DownFrom=row.get('downfrom', ''),
@@ -675,9 +660,7 @@ class Instrument_Certifications(WorksheetImporter):
 
             folder = self.get_object(bsc, 'Instrument', row.get('instrument',''))
             if folder:
-                _id = folder.invokeFactory(
-                    'InstrumentCertification', id=tmpID())
-                obj = folder[_id]
+                obj = _createObjectByType("InstrumentCertification", folder, tmpID())
                 obj.edit(
                     title=row['title'],
                     Date=row.get('date', ''),
@@ -700,9 +683,7 @@ class Instrument_Maintenance_Tasks(WorksheetImporter):
 
             folder = self.get_object(bsc, 'Instrument',row.get('instrument'))
             if folder:
-                _id = folder.invokeFactory('InstrumentMaintenanceTask',
-                                           id=tmpID())
-                obj = folder[_id]
+                obj = _createObjectByType("InstrumentMaintenanceTask", folder, tmpID())
                 try:
                     cost = "%.2f" % (row.get('cost', 0))
                 except:
@@ -734,8 +715,7 @@ class Instrument_Schedule(WorksheetImporter):
                 continue
             folder = self.get_object(bsc, 'Instrument', row.get('instrument'))
             if folder:
-                _id = folder.invokeFactory('InstrumentScheduledTask',
-                                           id=tmpID())
+                obj = _createObjectByType("InstrumentScheduledTask", folder, tmpID())
                 criteria = [
                     {'fromenabled': row.get('date', None) is not None,
                      'fromdate': row.get('date', ''),
@@ -749,7 +729,6 @@ class Instrument_Schedule(WorksheetImporter):
                                             len(row['repeatuntil']) > 0),
                      'repeatuntil': row.get('repeatuntil')}
                 ]
-                obj = folder[_id]
                 obj.edit(
                     title=row['title'],
                     Type=row['type'],
@@ -767,8 +746,7 @@ class Sample_Matrices(WorksheetImporter):
         for row in self.get_rows(3):
             if not row['title']:
                 continue
-            _id = folder.invokeFactory('SampleMatrix', id=tmpID())
-            obj = folder[_id]
+            obj = _createObjectByType("SampleMatrix", folder, tmpID())
             obj.edit(
                 title=row['title'],
                 description=row.get('description', '')
@@ -783,8 +761,7 @@ class Batch_Labels(WorksheetImporter):
         folder = self.context.bika_setup.bika_batchlabels
         for row in self.get_rows(3):
             if row['title']:
-                _id = folder.invokeFactory('BatchLabel', id=tmpID())
-                obj = folder[_id]
+                obj = _createObjectByType("BatchLabel", folder, tmpID())
                 obj.edit(title=row['title'])
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
@@ -798,8 +775,7 @@ class Sample_Types(WorksheetImporter):
         for row in self.get_rows(3):
             if not row['title']:
                 continue
-            _id = folder.invokeFactory('SampleType', id=tmpID())
-            obj = folder[_id]
+            obj = _createObjectByType("SampleType", folder, tmpID())
             samplematrix = self.get_object(bsc, 'SampleMatrix',
                                            row.get('SampleMatrix_title'))
             containertype = self.get_object(bsc, 'ContainerType',
@@ -850,8 +826,7 @@ class Sample_Points(WorksheetImporter):
             if row['Longitude']:
                 logger.log("Ignored SamplePoint Longitude", 'error')
 
-            _id = folder.invokeFactory('SamplePoint', id=tmpID())
-            obj = folder[_id]
+            obj = _createObjectByType("SamplePoint", folder, tmpID())
             obj.edit(
                 title=row['title'],
                 description=row.get('description', ''),
@@ -898,8 +873,7 @@ class Storage_Locations(WorksheetImporter):
             if not row['Address']:
                 continue
 
-            _id = setup_folder.invokeFactory('StorageLocation', id=tmpID())
-            obj = setup_folder[_id]
+            obj = _createObjectByType("StorageLocation", setup_folder, tmpID())
             obj.edit(
                 title=row['Address'],
                 SiteTitle=row['SiteTitle'],
@@ -923,8 +897,7 @@ class Sample_Conditions(WorksheetImporter):
         folder = self.context.bika_setup.bika_sampleconditions
         for row in self.get_rows(3):
             if row['Title']:
-                _id = folder.invokeFactory('SampleCondition', id=tmpID())
-                obj = folder[_id]
+                obj = _createObjectByType("SampleCondition", folder, tmpID())
                 obj.edit(
                     title=row['Title'],
                     description=row.get('Description', '')
@@ -940,8 +913,7 @@ class Analysis_Categories(WorksheetImporter):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for row in self.get_rows(3):
             if row['title']:
-                _id = folder.invokeFactory('AnalysisCategory', id=tmpID())
-                obj = folder[_id]
+                obj = _createObjectByType("AnalysisCategory", folder, tmpID())
                 obj.edit(
                     title=row['title'],
                     description=row.get('description', ''))
@@ -959,8 +931,7 @@ class Methods(WorksheetImporter):
         folder = self.context.methods
         for row in self.get_rows(3):
             if row['title']:
-                _id = folder.invokeFactory('Method', id=tmpID())
-                obj = folder[_id]
+                obj = _createObjectByType("Method", folder, tmpID())
 
                 obj.edit(
                     title=row['title'],
@@ -986,8 +957,7 @@ class Sampling_Deviations(WorksheetImporter):
         folder = self.context.bika_setup.bika_samplingdeviations
         for row in self.get_rows(3):
             if row['title']:
-                _id = folder.invokeFactory('SamplingDeviation', id=tmpID())
-                obj = folder[_id]
+                obj = _createObjectByType("SamplingDeviation", folder, tmpID())
                 obj.edit(
                     title=row['title'],
                     description=row.get('description', '')
@@ -1033,8 +1003,7 @@ class Calculations(WorksheetImporter):
             interim_keys = [k['keyword'] for k in calc_interims]
             dep_keywords = [k for k in keywords if k not in interim_keys]
 
-            _id = folder.invokeFactory('Calculation', id=tmpID())
-            obj = folder[_id]
+            obj = _createObjectByType("Calculation", folder, tmpID())
             obj.edit(
                 title=calc_title,
                 description=row.get('description', ''),
@@ -1130,8 +1099,7 @@ class Analysis_Services(WorksheetImporter):
             if not row['title']:
                 continue
 
-            _id = folder.invokeFactory('AnalysisService', id=tmpID())
-            obj = folder[_id]
+            obj = _createObjectByType("AnalysisService", folder, tmpID())
             MTA = {
                 'days': int(row['MaxTimeAllowed_days'] and row['MaxTimeAllowed_days'] or 0),
                 'hours': int(row['MaxTimeAllowed_hours'] and row['MaxTimeAllowed_hours'] or 0),
@@ -1228,8 +1196,7 @@ class Analysis_Specifications(WorksheetImporter):
                 resultsrange = bucket[parent][title]["resultsrange"]
                 if st:
                     st_uid = bsc(portal_type="SampleType", title=st)[0].UID
-                _id = folder.invokeFactory("AnalysisSpec", id=tmpID())
-                obj = folder[_id]
+                obj = _createObjectByType("AnalysisSpec", folder, tmpID())
                 obj.edit(title=title)
                 obj.setResultsRange(resultsrange)
                 if st:
@@ -1263,8 +1230,7 @@ class Analysis_Profiles(WorksheetImporter):
         folder = self.context.bika_setup.bika_analysisprofiles
         for row in self.get_rows(3):
             if row['title']:
-                _id = folder.invokeFactory('AnalysisProfile', id=tmpID())
-                obj = folder[_id]
+                obj = _createObjectByType("AnalysisProfile", folder, tmpID())
                 obj.edit(title=row['title'],
                          description=row.get('description', ''),
                          ProfileKey=row['ProfileKey'])
@@ -1344,8 +1310,7 @@ class AR_Templates(WorksheetImporter):
             samplepoint = self.get_object(bsc, 'SamplePoint',
                                          row.get('SamplePoint_title'))
 
-            _id = folder.invokeFactory('ARTemplate', id=tmpID())
-            obj = folder[_id]
+            obj = _createObjectByType("ARTemplate", folder, tmpID())
             obj.edit(
                 title=row['title'],
                 description=row.get('description', ''),
@@ -1386,8 +1351,7 @@ class Reference_Definitions(WorksheetImporter):
         for row in self.get_rows(3):
             if not row['title']:
                 continue
-            _id = folder.invokeFactory('ReferenceDefinition', id=tmpID())
-            obj = folder[_id]
+            obj = _createObjectByType("ReferenceDefinition", folder, tmpID())
             obj.edit(
                 title=row['title'],
                 description=row.get('description', ''),
@@ -1440,8 +1404,7 @@ class Worksheet_Templates(WorksheetImporter):
         folder = self.context.bika_setup.bika_worksheettemplates
         for row in self.get_rows(3):
             if row['title']:
-                _id = folder.invokeFactory('WorksheetTemplate', id=tmpID())
-                obj = folder[_id]
+                obj = _createObjectByType("WorksheetTemplate", folder, tmpID())
                 obj.edit(
                     title=row['title'],
                     description=row.get('description', ''),
@@ -1519,8 +1482,7 @@ class Attachment_Types(WorksheetImporter):
     def Import(self):
         folder = self.context.bika_setup.bika_attachmenttypes
         for row in self.get_rows(3):
-            _id = folder.invokeFactory('AttachmentType', id=tmpID())
-            obj = folder[_id]
+            obj = _createObjectByType("AttachmentType", folder, tmpID())
             obj.edit(
                 title=row['title'],
                 description=row.get('description', ''))
@@ -1565,8 +1527,7 @@ class Reference_Samples(WorksheetImporter):
             service = self.get_object(bsc, 'AnalysisService',
                                       row.get('AnalysisService_title'))
             # Analyses are keyed/named by service keyword
-            sample.invokeFactory('ReferenceAnalysis', id=row['id'])
-            obj = sample[row['id']]
+            obj = _createObjectByType("ReferenceAnalysis", sample, row['id'])
             obj.edit(title=row['id'],
                      ReferenceType=row['ReferenceType'],
                      Result=row['Result'],
@@ -1610,8 +1571,7 @@ class Reference_Samples(WorksheetImporter):
                 continue
             supplier = bsc(portal_type='Supplier',
                            getName=row.get('Supplier_title', ''))[0].getObject()
-            supplier.invokeFactory('ReferenceSample', id=row['id'])
-            obj = supplier[row['id']]
+            obj = _createObjectByType("ReferenceSample", supplier, row['id'])
             ref_def = self.get_object(bsc, 'ReferenceDefinition',
                                       row.get('ReferenceDefinition_title'))
             ref_man = self.get_object(bsc, 'Manufacturer',
@@ -1648,8 +1608,7 @@ class Samples(WorksheetImporter):
                 continue
             client = pc(portal_type="Client",
                         getName=row['Client_title'])[0].getObject()
-            client.invokeFactory('Sample', id=row['id'])
-            obj = client[row['id']]
+            obj = _createObjectByType("Sample", client, row['id'])
             obj.setSampleID(row['id'])
             obj.setClientSampleID(row['ClientSampleID'])
             obj.setSamplingWorkflowEnabled(False)
@@ -1670,8 +1629,7 @@ class Samples(WorksheetImporter):
                 obj.setSamplePoint(sp)
             obj.unmarkCreationFlag()
             # XXX hard-wired, Creating a single partition without proper init, no decent review_state ideas
-            _id = obj.invokeFactory('SamplePartition', 'part-1')
-            part = obj[_id]
+            part = _createObjectByType("SamplePartition", obj, "part-1")
             container = bsc(portal_type='Container', title='None Specified')[0].UID
             part.setContainer(container)
             part.unmarkCreationFlag()
@@ -1694,8 +1652,7 @@ class Analysis_Requests(WorksheetImporter):
             # analyses are keyed/named by keyword
             keyword = service.getKeyword()
             ar = bc(portal_type='AnalysisRequest', id=row['AnalysisRequest_id'])[0].getObject()
-            ar.invokeFactory('Analysis', id=keyword)
-            obj = ar[keyword]
+            obj = _createObjectByType("Analysis", ar, keyword)
             MTA = {
                 'days': int(row['MaxTimeAllowed_days'] and row['MaxTimeAllowed_days'] or 0),
                 'hours': int(row['MaxTimeAllowed_hours'] and row['MaxTimeAllowed_hours'] or 0),
@@ -1754,8 +1711,7 @@ class Analysis_Requests(WorksheetImporter):
                 continue
             client = pc(portal_type="Client",
                         getName=row['Client_title'])[0].getObject()
-            _id = client.invokeFactory('AnalysisRequest', id=row['id'])
-            obj = client[_id]
+            obj = _createObjectByType("AnalysisRequest", client, row['id'])
             contact = pc(portal_type="Contact",
                          getFullname=row['Contact_Fullname'])[0].getObject()
             sample = bc(portal_type="Sample",
@@ -1794,8 +1750,7 @@ class Invoice_Batches(WorksheetImporter):
     def Import(self):
         folder = self.context.invoices
         for row in self.get_rows(3):
-            _id = folder.invokeFactory('InvoiceBatch', id=tmpID())
-            obj = folder[_id]
+            obj = _createObjectByType("InvoiceBatch", folder, tmpID())
             if not row['title']:
                 message = _("InvoiceBatch has no Title")
                 raise Exception(to_utf8(self.context.translate(message)))
@@ -1819,8 +1774,7 @@ class Lab_Products(WorksheetImporter):
         folder = self.context.bika_setup.bika_labproducts
         for row in self.get_rows(3):
             # Create a new object
-            _id = folder.invokeFactory('LabProduct', id=tmpID())
-            obj = folder[_id]
+            obj = _createObjectByType("LabProduct", folder, tmpID())
             # Ensure that all fields are present
             fields = [
                 'title', 'description', 'volume',
@@ -1848,8 +1802,7 @@ class AR_Priorities(WorksheetImporter):
         folder = self.context.bika_setup.bika_arpriorities
         for row in self.get_rows(3):
             if row['title']:
-                _id = folder.invokeFactory('ARPriority', id=tmpID())
-                obj = folder[_id]
+                obj = _createObjectByType("ARPriority", folder, tmpID())
                 obj.edit(title=row['title'],
                          description=row.get('description', ''),
                          pricePremium=row.get('pricePremium', 0),

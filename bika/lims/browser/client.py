@@ -4,6 +4,7 @@ from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF, logger, bikaMessageFactory as _
 from bika.lims.browser import BrowserView
@@ -617,8 +618,7 @@ class SetSpecsToLabDefaults(BrowserView):
                  getClientUID = self.context.bika_setup.bika_analysisspecs.UID())
         ls = [s.getObject() for s in ls]
         for labspec in ls:
-            _id = self.context.invokeFactory(type_name = 'AnalysisSpec', id=tmpID())
-            clientspec = self.context[_id]
+            clientspec = _createObjectByType("AnalysisSpec", self.context, tmpID())
             clientspec.processForm()
             clientspec.edit(
                 SampleType = labspec.getSampleType(),

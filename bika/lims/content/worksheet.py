@@ -15,7 +15,7 @@ from Products.Archetypes.references import HoldingReference
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATExtensions.ateapi import RecordsField
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
+from Products.CMFPlone.utils import safe_unicode, _createObjectByType
 from zope.interface import implements
 
 
@@ -280,8 +280,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 continue
             service = analysis.getService()
             _id = self._findUniqueId(service.getKeyword())
-            self.invokeFactory('DuplicateAnalysis', id=_id)
-            duplicate = self[_id]
+            duplicate = _createObjectByType("DuplicateAnalysis", self, _id)
             duplicate.setAnalysis(analysis)
 
             # Set ReferenceAnalysesGroupID (same id for the analyses from

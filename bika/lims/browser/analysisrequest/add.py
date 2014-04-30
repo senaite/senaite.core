@@ -15,6 +15,7 @@ from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes import PloneMessageFactory as PMF
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.CMFPlone.utils import _createObjectByType
 from zope.component import getAdapter
 from zope.interface import implements
 import plone
@@ -246,8 +247,7 @@ class ajaxAnalysisRequestSubmit():
                 sample = uc(UID=values['Sample_uid'])[0].getObject()
             else:
                 # Primary AR
-                _id = client.invokeFactory('Sample', id=tmpID())
-                sample = client[_id]
+                sample = _createObjectByType("Sample", client, tmpID())
                 saved_form = self.request.form
                 self.request.form = resolved_values
                 sample.setSampleType(resolved_values['SampleType'])
@@ -298,8 +298,7 @@ class ajaxAnalysisRequestSubmit():
 
             saved_form = self.request.form
             self.request.form = resolved_values
-            clientid = client.invokeFactory('AnalysisRequest', id=tmpID())
-            ar = client[clientid]
+            ar = _createObjectByType("AnalysisRequest", client, tmpID())
             ar.setSample(sample)
             ar.processForm()
             self.request.form = saved_form
@@ -315,8 +314,7 @@ class ajaxAnalysisRequestSubmit():
                     parts[_i]['object'] = sample['%s%s' % (part_prefix, _i + 1)]
                     parts_and_services['%s%s' % (part_prefix, _i + 1)] = p['services']
                 else:
-                    _id = sample.invokeFactory('SamplePartition', id=tmpID())
-                    part = sample[_id]
+                    part = _createObjectByType("SamplePartition", sample, tmpID())
                     parts[_i]['object'] = part
                     # Sort available containers by capacity and select the
                     # smallest one possible.

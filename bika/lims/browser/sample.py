@@ -3,6 +3,7 @@ from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
+from Products.contentmigration.common import _createObjectByType
 from bika.lims.adapters.widgetvisibility import WidgetVisibility as _WV
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -252,9 +253,7 @@ class createSamplePartition(BrowserView):
     """
     def __call__(self):
         wf = getToolByName(self.context, 'portal_workflow')
-        _id = self.context.invokeFactory(type_name = 'SamplePartition',
-                                         id=tmpID())
-        part = self.context[_id]
+        part = _createObjectByType("SamplePartition", self.context, tmpID())
         part.processForm()
         SamplingWorkflowEnabled = part.bika_setup.getSamplingWorkflowEnabled()
         ## We force the object to have the same state as the parent

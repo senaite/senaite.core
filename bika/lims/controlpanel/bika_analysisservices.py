@@ -1,3 +1,4 @@
+from Products.contentmigration.common import _createObjectByType
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
@@ -35,8 +36,8 @@ class AnalysisServiceCopy(BrowserView):
     def create_service(self, src_uid, dst_title, dst_keyword):
         folder = self.context.bika_setup.bika_analysisservices
 
-        tmp_id = folder.invokeFactory('AnalysisService', id=tmpID())
-        _id = renameAfterCreation(folder[tmp_id])
+        dst_service = _createObjectByType("AnalysisService", folder, tmpID())
+        _id = renameAfterCreation(dst_service)
         dst_service = folder[_id]
         dst_service.setKeyword(to_utf8(dst_keyword))
         dst_service.setTitle(to_utf8(dst_title))

@@ -2,6 +2,7 @@
 """
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
+from Products.contentmigration.common import _createObjectByType
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.Archetypes.event import ObjectInitializedEvent
@@ -228,8 +229,7 @@ def Import(context,request):
             else:
                 # analysis does not exist;
                 # create new analysis and set 'results_not_requested' state
-                parent.invokeFactory(type_name="Analysis", id = keyword)
-                analysis = parent[keyword]
+                analysis = _createObjectByType("Analysis", parent, keyword)
                 analysis.edit(Service = service,
                               InterimFields = interim_fields,
                               MaxTimeAllowed = service.getMaxTimeAllowed())

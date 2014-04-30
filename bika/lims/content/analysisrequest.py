@@ -11,6 +11,7 @@ from Products.CMFCore import permissions
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
+from Products.CMFPlone.utils import _createObjectByType
 from bika.lims.browser.fields import ARAnalysesField
 from bika.lims.browser.widgets import DateTimeWidget, DecimalWidget
 from bika.lims.config import PROJECTNAME
@@ -1041,8 +1042,7 @@ class AnalysisRequest(BaseFolder):
 
             invoices = self.invoices
             batch_id = invoices.generateUniqueId('InvoiceBatch')
-            invoices.invokeFactory(id=batch_id, type_name='InvoiceBatch')
-            invoice_batch = invoices._getOb(batch_id)
+            invoice_batch = _createObjectByType("InvoiceBatch", invoices, batch_id)
             invoice_batch.edit(
                 title=batch_title,
                 BatchStartDate=start_of_month,
@@ -1077,8 +1077,8 @@ class AnalysisRequest(BaseFolder):
             analysis_uid = None
 
         attachmentid = self.generateUniqueId('Attachment')
-        self.aq_parent.invokeFactory(id=attachmentid, type_name="Attachment")
-        attachment = self.aq_parent._getOb(attachmentid)
+        attachment = _createObjectByType("Attachment", self.aq_parent,
+                                         attachmentid)
         attachment.edit(
             AttachmentFile=this_file,
             AttachmentType=self.REQUEST.form.get('AttachmentType', ''),

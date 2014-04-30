@@ -10,6 +10,7 @@ from plone.jsonapi.core import router
 from plone.jsonapi.core.interfaces import IRouteProvider
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
 from zExceptions import BadRequest
 from zope import event
 from zope import interface
@@ -181,8 +182,7 @@ class Create(object):
         }
 
         try:
-            parent.invokeFactory(obj_type, obj_id)
-            obj = parent[obj_id]
+            obj = _createObjectByType(obj_type, parent, obj_id)
             obj.unmarkCreationFlag()
             if _renameAfterCreation:
                 renameAfterCreation(obj)
@@ -340,8 +340,7 @@ class Create(object):
                 raise Exception("Sample not found")
         else:
             # Primary AR
-            _id = client.invokeFactory('Sample', id=tmpID())
-            sample = client[_id]
+            sample = _createObjectByType("Sample", client, tmpID())
             sample.unmarkCreationFlag()
             fields = set_fields_from_request(sample, request)
             for field in fields:
@@ -364,8 +363,7 @@ class Create(object):
                   'separate': False}]
 
         specs = self.get_specs_from_request()
-        _id = client.invokeFactory('AnalysisRequest', tmpID())
-        ar = client[_id]
+        ar = _createObjectByType("AnalysisRequest", client, tmpID())
         ar.unmarkCreationFlag()
         fields = set_fields_from_request(ar, request)
         for field in fields:
@@ -390,8 +388,7 @@ class Create(object):
                 parts[_i]['object'] = sample['%s%s' % (part_prefix, _i + 1)]
                 parts_and_services['%s%s' % (part_prefix, _i + 1)] = p['services']
             else:
-                _id = sample.invokeFactory('SamplePartition', id=tmpID())
-                part = sample[_id]
+                part = _createObjectByType("SamplePartition", sample, tmpID())
                 parts[_i]['object'] = part
                 container = None
                 preservation = p['preservation']

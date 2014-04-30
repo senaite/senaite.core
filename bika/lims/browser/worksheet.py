@@ -1,5 +1,6 @@
 # coding=utf-8
 from AccessControl import getSecurityManager
+from Products.contentmigration.common import _createObjectByType
 from bika.lims import bikaMessageFactory as _
 from bika.lims import EditResults, EditWorksheet, ManageWorksheets
 from bika.lims import PMF, logger
@@ -604,8 +605,7 @@ class ManageResultsView(BrowserView):
             tool = getToolByName(self.context, REFERENCE_CATALOG)
             if analysis_uid:
                 analysis = tool.lookupObject(analysis_uid)
-                attachmentid = ws.invokeFactory("Attachment", id=tmpID())
-                attachment = ws._getOb(attachmentid)
+                attachment = _createObjectByType("Attachment", ws, tmpID())
                 attachment.edit(
                     AttachmentFile=this_file,
                     AttachmentType=self.request.get('AttachmentType', ''),
@@ -630,8 +630,7 @@ class ManageResultsView(BrowserView):
                     if not review_state in ['assigned', 'sample_received', 'to_be_verified']:
                         continue
 
-                    attachmentid = ws.invokeFactory("Attachment", id=tmpID())
-                    attachment = ws._getOb(attachmentid)
+                    attachment = _createObjectByType("Attachment", ws, tmpID())
                     attachment.edit(
                         AttachmentFile = this_file,
                         AttachmentType = self.request.get('AttachmentType', ''),

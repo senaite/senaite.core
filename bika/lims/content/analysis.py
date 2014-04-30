@@ -12,7 +12,7 @@ from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
+from Products.CMFPlone.utils import safe_unicode, _createObjectByType
 from Products.CMFEditions.ArchivistTool import ArchivistRetrieveError
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
@@ -859,8 +859,7 @@ class Analysis(BaseContent):
         kw = self.getKeyword()
         parent.manage_renameObject(kw, "{0}-{1}".format(kw, len(analyses)))
         # Create new analysis and copy values from retracted
-        parent.invokeFactory("Analysis", id=kw)
-        analysis = parent[kw]
+        analysis = _createObjectByType("Analysis", parent, kw)
         analysis.edit(
             Service=self.getService(),
             Calculation=self.getCalculation(),
