@@ -295,10 +295,7 @@ class Batch(ATFolder):
     def getAnalysisRequests(self):
         """ Return all the Analysis Requests linked to the Batch
         """
-        bc = getToolByName(self, 'bika_catalog')
-        uid = self.UID()
-        return [b.getObject() for b in bc(portal_type='AnalysisRequest',
-                                          getBatchUID=uid)]
+        return self.getBackReferences("AnalysisRequestBatch")
 
     def isOpen(self):
         """ Returns true if the Batch is in 'open' state

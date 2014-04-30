@@ -270,8 +270,9 @@ class ClientBatchesView(BatchFolderContentsView):
         for ar in bc(portal_type = 'AnalysisRequest',
                      getClientUID = self.context.UID()):
             ar = ar.getObject()
-            if ar.getBatchUID():
-                batches[ar.getBatchUID()] = ar.getBatch()
+            batch = ar.getBatch()
+            if batch is not None:
+                batches[batch.UID()] = batch
         return batches.values()
 
 class ClientAnalysisRequestsView(AnalysisRequestsView):

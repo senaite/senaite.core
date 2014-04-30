@@ -108,17 +108,14 @@ class ajaxExpandCategory(BikaListingView):
         return self.template()
 
     def bulk_discount_applies(self):
+        client = None
         if self.context.portal_type == 'AnalysisRequest':
             client = self.context.aq_parent
         elif self.context.portal_type == 'Batch':
-            bc = getToolByName(self.context, 'bika_catalog')
-            proxies = bc(portal_type="AnalysisRequest", getBatchUID=self.context.UID())
-            client = proxies[0].getObject()
+            client = self.context.getClient()
         elif self.context.portal_type == 'Client':
             client = self.context
-        else:
-            return False
-        return client.getBulkDiscount()
+        return client.getBulkDiscount() if client is not None else False
 
     def Services(self, poc, CategoryUID):
         """ return a list of services brains """

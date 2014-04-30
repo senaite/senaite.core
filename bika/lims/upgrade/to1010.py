@@ -27,7 +27,6 @@ def addBatches(tool):
     at.setCatalogsByType('Batch', ['bika_catalog', ])
     at.setCatalogsByType('BatchLabel', ['bika_setup_catalog', ])
     bc = getToolByName(portal, 'bika_catalog')
-    bc.addIndex('getBatchUID', 'FieldIndex')
 
     # Add the BatchFolder at /batches
     typestool.constructContent(type_name="BatchFolder",
