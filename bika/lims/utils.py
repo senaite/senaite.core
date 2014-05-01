@@ -372,6 +372,19 @@ def currency_format(context, locale):
     return format
 
 
+def getHiddenAttributesForClass(classname):
+    try:
+        registry = queryUtility(IRegistry)
+        hiddenattributes = registry.get('bika.lims.hiddenattributes', ())
+        for alist in hiddenattributes:
+            if alist[0] == classname:
+                return alist[1:]
+    except:
+        raise RuntimeError(
+                'Probem accessing optionally hidden attributes in registry')
+
+    return []
+
 def isAttributeHidden(classname, fieldname):
     try:
         registry = queryUtility(IRegistry)

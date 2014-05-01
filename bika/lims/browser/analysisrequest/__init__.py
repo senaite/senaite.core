@@ -13,7 +13,7 @@ from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.permissions import *
 from bika.lims.workflow import get_workflow_actions
 from bika.lims.vocabularies import CatalogVocabulary
-from bika.lims.utils import to_utf8
+from bika.lims.utils import to_utf8, getHiddenAttributesForClass
 from bika.lims.workflow import doActionFor
 from DateTime import DateTime
 from Products.Archetypes import PloneMessageFactory as PMF
@@ -272,24 +272,13 @@ class WidgetVisibility(_WV):
                 'Template',
             ]
 
-        optionally_disabled_fields = ()
-        try:
-            registry = queryUtility(IRegistry)
-            hiddenattributes = registry.get('bika.lims.hiddenattributes', ())
-            for alist in hiddenattributes:
-                if alist[0] == self.context.portal_type:
-                    optionally_disabled_fields = alist[1:]
-                    break
-        except:
-            raise RuntimeError(
-                    'Probem accessing optionally hidden attributes in registry')
-
-        if optionally_disabled_fields:
+        hiddenattributes = getHiddenAttributesForClass(self.context.portal_type)
+        if hiddenattributes:
             for section in ret.keys():
                 for key in ret[section]:
                     if key == 'visible':
                         for field in ret[section][key]:
-                            if field in optionally_disabled_fields:
+                            if field in hiddenattributes:
                                 ret[section][key].remove(field)
         return ret
 
@@ -1072,18 +1061,7 @@ class AnalysisRequestsView(BikaListingView):
                 except Exception:
                     pass
 
-        optionally_disabled_fields = ()
-        try:
-            registry = queryUtility(IRegistry)
-            hiddenattributes = registry.get('bika.lims.hiddenattributes', ())
-            for alist in hiddenattributes:
-                if alist[0] == 'AnalysisRequest': #TODO 
-                    optionally_disabled_fields = alist[1:]
-                    break
-        except:
-            raise RuntimeError(
-                    'Probem accessing optionally hidden attributes in registry')
-
+        hiddenattributes = getHiddenAttributesForClass('AnalysisRequest')
         # Hide Preservation/Sampling workflow actions if the edit columns
         # are not displayed.
         toggle_cols = self.get_toggle_cols()
@@ -1102,9 +1080,9 @@ class AnalysisRequestsView(BikaListingView):
                         state['hide_transitions'].append('preserve')
                     else:
                         state['hide_transitions'] = ['preserve', ]
-            if optionally_disabled_fields and len(state['columns']) > 0:
+            if hiddenattributes and len(state['columns']) > 0:
                 for field in state['columns']:
-                    if field in optionally_disabled_fields:
+                    if field in hiddenattributes:
                         state['columns'].remove(field)
             new_states.append(state)
         self.review_states = new_states
