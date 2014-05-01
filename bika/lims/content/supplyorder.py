@@ -157,7 +157,7 @@ class SupplyOrder(BaseFolder):
 
     security.declareProtected(View, 'getVAT')
 
-    def getVAT(self):
+    def getVATTotal(self):
         """ Compute VAT """
         return self.getTotal() - self.getSubtotal()
 

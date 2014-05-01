@@ -54,7 +54,7 @@ class InvoiceView(BrowserView):
         self.items = [{
             'invoiceDate': self.ulocalized_time(item['ItemDate']),
             'description': item['ItemDescription'],
-            'orderNo': item['ClientOrderNumber'],
+            'orderNo': item['OrderNumber'],
             'subtotal': item['Subtotal'],
             'vatTotal': item['VATTotal'],
             'total': item['Total'],

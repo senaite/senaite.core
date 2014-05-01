@@ -348,17 +348,19 @@ def attachPdf(mimemultipart, pdfreport, filename=None):
 
 
 def get_invoice_item_description(obj):
-    sample = obj.getSample()
-    sampleID = sample.Title()
-    clientref = sample.getClientReference()
-    clientsid = sample.getClientSampleID()
-    samplepoint = sample.getSamplePoint()
-    samplepoint = samplepoint and samplepoint.Title() or ''
-    sampletype = sample.getSampleType()
-    sampletype = sampletype and sampletype.Title() or ''
-    orderno = obj.getClientOrderNumber() or ''
-    item_description = orderno + ' ' + clientref + ' ' + clientsid + ' ' + sampleID + ' ' + sampletype + ' ' + samplepoint
-    return item_description
+    if obj.portal_type == 'AnalysisRequest':
+        sample = obj.getSample()
+        samplepoint = sample.getSamplePoint()
+        samplepoint = samplepoint and samplepoint.Title() or ''
+        sampletype = sample.getSampleType()
+        sampletype = sampletype and sampletype.Title() or ''
+        description = sampletype + ' ' + samplepoint
+    elif obj.portal_type == 'SupplyOrder':
+        products = obj.folderlistingFolderContents()
+        products = [o.getProduct().Title() for o in products]
+        description = ', '.join(products)
+    return description
+
 
 
 def currency_format(context, locale):
