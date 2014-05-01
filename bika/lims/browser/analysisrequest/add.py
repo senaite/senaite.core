@@ -50,7 +50,17 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
 
     def getWidgetVisibility(self):
         adapter = getAdapter(self.context, name='getWidgetVisibility')
-        return adapter()
+        ret = adapter()
+        ordered_ret = {}
+        # respect schemaextender's re-ordering of fields
+        schema_fields = [f.getName() for f in self.context.Schema().fields()]
+        for mode, state_field_lists in ret.items():
+            ordered_ret[mode] = {}
+            for statename, state_fields in state_field_lists.items():
+                ordered_ret[mode][statename] = \
+                    [field for field in schema_fields if field in state_fields]
+        return ordered_ret
+
 
     def partitioned_services(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')

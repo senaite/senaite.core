@@ -71,7 +71,6 @@ class HeaderTableView(BrowserView):
                 if targets:
                     if not type(targets) == list:
                         targets = [targets,]
-                    ret = {}
                     sm = getSecurityManager()
                     if all([sm.checkPermission(view, t) for t in targets]):
                         a = ["<a href='%s'>%s</a>" % (target.absolute_url(),
@@ -95,23 +94,31 @@ class HeaderTableView(BrowserView):
         prominent = []
         adapter = getAdapter(self.context, name='getWidgetVisibility')
         wv = adapter()
-        edit = wv.get('edit', {}).get('visible', [])
-        view = wv.get('view', {}).get('visible', [])
-
-        prominent_fieldnames = wv.get('header_table', {}).get('prominent', [])
+        new_wv = {}
+        # respect schemaextender's re-ordering of fields
+        schema_fields = [f.getName() for f in self.context.Schema().fields()]
+        for viewname, state_field_lists in wv.items():
+            new_wv[mode] = {}
+            for statename, state_fields in state_field_lists.items():
+                print statename, state_fields
+                new_wv[mode][statename] = \
+                    [field for field in schema_fields if field in state_fields]
+        edit_fields = new_wv.get('edit_fields', {}).get('visible', [])
+        view_fields = new_wv.get('view_fields', {}).get('visible', [])
+        # Prominent fields get appended
+        prominent_fieldnames = new_wv.get('header_table', {}).get('prominent', [])
         for fieldname in prominent_fieldnames:
-            if fieldname in view:
+            if fieldname in view_fields:
                 prominent.append(self.render_field_view(fieldname))
-            elif fieldname in edit:
-                prominent.append({'fieldName': fieldname, 'mode': 'edit'})
-
-        visible_fieldnames = wv.get('header_table', {}).get('visible', [])
+            elif fieldname in edit_fields:
+                prominent.append({'fieldName': fieldname, 'mode': 'edit_fields'})
+        # Other visible fields get appended
+        visible_fieldnames = new_wv.get('header_table', {}).get('visible', [])
         for fieldname in visible_fieldnames:
             if fieldname in prominent_fieldnames:
                 continue
-            if fieldname in edit:
-                ret.append({'fieldName': fieldname, 'mode': 'edit'})
-            elif fieldname in view:
+            if fieldname in edit_fields:
+                ret.append({'fieldName': fieldname, 'mode': 'edit_fields'})
+            elif fieldname in view_fields:
                 ret.append(self.render_field_view(fieldname))
-
         return prominent, self.three_column_list(ret)
