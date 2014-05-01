@@ -780,6 +780,9 @@ class AddAnalysesView(BikaListingView):
             'getRequestID': {
                 'title': _('Request ID'),
                 'index': 'getRequestID'},
+            'getPriority': {
+                'title': _('Priority'),
+                'index': 'getPriority'},
             'CategoryTitle': {
                 'title': _('Category'),
                 'index':'getCategoryTitle'},
@@ -802,6 +805,7 @@ class AddAnalysesView(BikaListingView):
              'columns':['Client',
                         'getClientOrderNumber',
                         'getRequestID',
+                        'getPriority',
                         'CategoryTitle',
                         'Title',
                         'getDateReceived',
@@ -861,7 +865,6 @@ class AddAnalysesView(BikaListingView):
             client = obj.aq_parent.aq_parent
             items[x]['getClientOrderNumber'] = obj.getClientOrderNumber()
             items[x]['getDateReceived'] = self.ulocalized_time(obj.getDateReceived())
-
             DueDate = obj.getDueDate()
             items[x]['getDueDate'] = self.ulocalized_time(DueDate)
             if DueDate < DateTime():
@@ -877,6 +880,9 @@ class AddAnalysesView(BikaListingView):
             items[x]['getRequestID'] = obj.aq_parent.getRequestID()
             items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
                  (url, items[x]['getRequestID'])
+            priority = obj.aq_inner.aq_parent.getPriority()
+            items[x]['getPriority'] = priority and priority.Title() or ''
+
 
             items[x]['Client'] = client.Title()
             if hideclientlink == False:
@@ -1432,3 +1438,31 @@ class ajaxSetInstrument():
         if not instrument:
             raise Exception("Unable to lookup instrument")
         self.context.setInstrument(instrument)
+
+class PriorityIcons(object):
+
+    """An icon provider for indicating AR priorities
+    """
+
+    implements(IFieldIcons)
+    #TODO? adapts(IWorksheet)
+
+    def __init__(self, context):
+        self.context = context
+
+    def __call__(self, **kwargs):
+        result = {
+            'msg': '',
+            'field': 'getPriority',
+            'icon': '',
+        }
+        import pdb; pdb.set_trace()
+        priority = False #self.context.getPriority()
+        if priority:
+            result['msg'] = priority.Title()
+            icon = priority.getSmallIcon()
+            if icon:
+                result['icon'] = '/'.join(icon.getPhysicalPath())
+            return {self.context.UID(): [result]}
+        return {}
+
