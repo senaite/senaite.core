@@ -1,4 +1,4 @@
-
+from Products.CMFPlone.utils import _createObjectByType
 from zope import event
 
 from Products.CMFCore.utils import getToolByName
@@ -73,7 +73,7 @@ class EditView(BrowserView):
                     product = setup.bika_labproducts[k]
                     # Create a item if it doesn't yet exist
                     if k not in context:
-                        context.invokeFactory('SupplyOrderItem', k)
+                        _createObjectByType("SupplyOrderItem", context, k)
                     # Fetch and edit the item
                     obj = context[k]
                     obj.edit(

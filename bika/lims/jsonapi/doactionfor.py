@@ -5,7 +5,6 @@ from Products.CMFCore.utils import getToolByName
 from zExceptions import BadRequest
 from zope import interface
 
-import json
 import transaction
 
 

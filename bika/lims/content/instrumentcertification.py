@@ -52,6 +52,7 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField('ValidFrom',
         with_time = 1,
         with_date = 1,
+        required = 1,
         widget = DateTimeWidget(
             label = _("From"),
             description = _("Date from which the calibration certificate is valid"),
@@ -61,6 +62,7 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField('ValidTo',
         with_time = 1,
         with_date = 1,
+        required = 1,
         widget = DateTimeWidget(
             label = _("To"),
             description = _("Date until the certificate is valid"),

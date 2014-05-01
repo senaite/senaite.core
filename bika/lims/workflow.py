@@ -80,6 +80,23 @@ def get_workflow_actions(obj):
     return actions
 
 
+def isBasicTransitionAllowed(context, permission=None):
+    """Most transition guards need to check the same conditions:
+
+    - Is the object active (cancelled or inactive objects can't transition)
+    - Has the user a certain permission, required for transition.  This should
+    normally be set in the guard_permission in workflow definition.
+
+    """
+    workflow = getToolByName(context, "portal_workflow")
+    mtool = getToolByName(context, "portal_membership")
+    if workflow.getInfoFor(context, "cancellation_state", "") == "cancelled" \
+            or workflow.getInfoFor(context, "inactive_state", "") == "inactive" \
+            or (permission and mtool.checkPermission(permission, context)):
+        return False
+    return True
+
+
 def getCurrentState(obj, stateflowid):
     """ The current state of the object for the state flow id specified
         Return empty if there's no workflow state for the object and flow id

@@ -17,6 +17,7 @@ def handle_errors(f):
         except Exception:
             var = traceback.format_exc()
             return error(var)
+
     return decorator
 
 
@@ -69,10 +70,10 @@ def load_field_values(instance, include_fields):
             # I put the UID of all references here in *_uid.
             if field.type == 'reference':
                 if type(val) in (list, tuple):
-                    ret[fieldname+"_uid"] = [v.UID() for v in val]
+                    ret[fieldname + "_uid"] = [v.UID() for v in val]
                     val = [v.Title() for v in val]
                 else:
-                    ret[fieldname+"_uid"] = val.UID()
+                    ret[fieldname + "_uid"] = val.UID()
                     val = val.Title()
             if field.type == 'boolean':
                 val = True if val else False
@@ -90,7 +91,7 @@ def resolve_request_lookup(context, request, fieldname):
     brains = []
     at = getToolByName(context, TOOL_NAME, None)
     entries = request[fieldname] if type(request[fieldname]) in (list, tuple) \
-              else [request[fieldname], ]
+        else [request[fieldname], ]
     for entry in entries:
         contentFilter = {}
         for value in entry.split("|"):
@@ -121,6 +122,9 @@ def resolve_request_lookup(context, request, fieldname):
 def set_fields_from_request(obj, request):
     """Search request for keys that match field names in obj,
     and call field mutator with request value.
+
+    The list of fields for which schema mutators were found
+    is returned.
     """
     schema = obj.Schema()
     # fields contains all schema-valid field values from the request.
@@ -154,3 +158,4 @@ def set_fields_from_request(obj, request):
                 raise BadRequest(fieldname + ": Invalid JSON/Python variable")
         mutator = field.set(obj, value)
     obj.reindexObject()
+    return fields.keys()

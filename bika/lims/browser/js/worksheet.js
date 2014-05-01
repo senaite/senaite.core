@@ -188,18 +188,22 @@ $(document).ready(function(){
 
     $(".manage_results_header .instrument").change(function(){
         $("#content-core .instrument-error").remove();
-        if ($(this).val() == '') {
+        var instruid = $(this).val();
+        if (instruid == '') {
             return false;
         }
         $.ajax({
           type: 'POST',
           url: window.location.href.replace("/manage_results", "") + "/set_instrument",
-          data: {'value': $(this).val(),
+          data: {'value': instruid,
                   '_authenticator': $('input[name="_authenticator"]').val()},
           success: function(data, textStatus, jqXHR){
                portalMessage("Changes saved.");
-               /* TODO: refresh all the Analysis-Instrument selectors for all the analyses
-                of the worksheet table*/
+               // Set the selected instrument to all the analyses which
+               // that can be done using that instrument. The rest of
+               // of the instrument picklist will not be changed
+               $('select.listing_select_entry[field="Instrument"] option[value="'+instruid+'"]').parent().find('option[value="'+instruid+'"]').prop("selected", false);
+               $('select.listing_select_entry[field="Instrument"] option[value="'+instruid+'"]').prop("selected", true);
           },
           error: function(data, jqXHR, textStatus, errorThrown){
                 $(".manage_results_header .instrument")
@@ -244,6 +248,8 @@ $(document).ready(function(){
 
     // Change the instruments to be shown for an analysis when the method selected changes
     $('table.bika-listing-table select.listing_select_entry[field="Method"]').change(function() {
+        var manualentry = true;
+        var methodname = '';
         var muid = $(this).val();
         if (muid) {
             // Update the instruments selector
@@ -251,6 +257,25 @@ $(document).ready(function(){
             var instrselector = $(this).closest('tr').find('select.listing_select_entry[field="Instrument"]');
             var selectedinstr = $(instrselector).val();
             $(instrselector).find('option').remove();
+
+            // Is manual entry allowed for this method?
+            var request_data = {
+                catalog_name: "uid_catalog",
+                UID: muid
+            };
+            window.bika.lims.jsonapi_read(request_data, function(data) {
+                if (data.objects && data.objects.length > 0) {
+                    manualentry = data.objects[0].ManualEntryOfResults;
+                    methodname = data.objects[0].Title;
+                }
+                $(instrselector).closest('tr').find('td.interim input').prop('disabled', !manualentry);
+                $(instrselector).closest('tr').find('td.Result input').prop('disabled', !manualentry);
+                if (!manualentry) {
+                    var title = _("Manual entry of results for method %s is not allowed").replace('%s', methodname);
+                    $(instrselector).closest('tr').find('td.Result input').parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+title+'")">');
+                }
+            });
+
             // Get the available instruments for the method
             $.ajax({
                 url: window.portal_url + "/get_method_instruments",
@@ -274,26 +299,60 @@ $(document).ready(function(){
                     }
                 });
                 if (!valid) {
-                    $(instrselector).append('<option selected value=""></option>');
+                    if (manualentry) {
+                        $(instrselector).append('<option selected value="">'+_('None')+'</option>');
+                        $(instrselector).prop('disabled', false);
+                    } else {
+                        $(instrselector).prop('disabled', true);
+                    }
+                } else if (manualentry) {
+                    $(instrselector).prepend('<option value="">'+_('None')+'</option>');
+                    $(instrselector).prop('disabled', false);
                 }
                 if (invalid.length > 0) {
-                    var title = _("Invalid instruments are not shown: ")+invalid.join(", ");
-                    $(instrselector).parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+title+'")">');
+                    if (valid) {
+                        var title = _("Invalid instruments are not shown: ")+invalid.join(", ");
+                        $(instrselector).parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+title+'")">');
+                    } else if (!valid) {
+                        var title = _("Manual entry of results for method %s is not allowed and no valid instruments found: ").replace('%s', methodname) + invalid.join(", ");
+                        $(instrselector).parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
+                        $(instrselector).closest('tr').find('td.interim input').prop('disabled', true);
+                        $(instrselector).closest('tr').find('td.Result input').prop('disabled', true);
+                    }
                 }
             }).fail(function() {
-                $(instrselector).append('<option selected value=""></option>');
+                $(instrselector).append('<option selected value="">'+_('None')+'</option>');
+                if (!manualentry) {
+                    var title = _("Unable to load instruments: ")+invalid.join(", ");
+                    $(instrselector).parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
+                    $(instrselector).prop('disabled', true);
+                } else {
+                    $(instrselector).prop('disabled', false);
+                }
             });
 
         } else {
-            // Clear instruments selector
+            // Clear instruments selector / No method selected
             $(instrselector).find('option').remove();
-            $(instrselector).append('<option selected value=""></option>');
+            $(instrselector).append('<option selected value="">'+_('None')+'</option>');
+            $(instrselector).prop('disabled', false);
+            $(instrselector).closest('tr').find('td.interim input').prop('disabled', false);
+            $(instrselector).closest('tr').find('td.Result input').prop('disabled', false);
         }
     });
+
     // Remove empty options
+    $('table.bika-listing-table select.listing_select_entry[field="Instrument"]').find('option[value=""]:not(:selected)').remove();
     $('table.bika-listing-table select.listing_select_entry[field="Method"]').find('option[value=""]').remove();
     $('table.bika-listing-table select.listing_select_entry[field="Method"]').change();
 
+    $('div.worksheet_add_controls select.instrument').change(function() {
+        var val = $(this).val();
+        $('div.worksheet_add_controls div.alert').remove();
+        if (val != '' && val != null) {
+            $('div.worksheet_add_controls').append('<div class="alert">'+_("Only the analyses for which the selected instrument is allowed will be added automatically.")+'</div>');
+        }
+    });
 
 });
 }(jQuery));

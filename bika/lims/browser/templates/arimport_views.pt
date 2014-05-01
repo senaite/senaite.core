@@ -121,7 +121,7 @@
                 <span i18n:translate="label_dateapplied"
                     tal:condition="date_applied">Date applied</span>
                 <span i18n:translate="label_dateapplied"
-                    tal:condition="not:date_applied"></span>
+                    tal:condition="not:date_applied">Date applied</span>
             </td>
             <td class="left"
                 tal:attributes="colspan python:right_col">

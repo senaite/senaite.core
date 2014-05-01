@@ -1,4 +1,5 @@
 from AccessControl import ClassSecurityInfo
+from DateTime import DateTime
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATExtensions.Extensions.utils import makeDisplayList
 from Products.ATExtensions.ateapi import RecordField, RecordsField
@@ -14,6 +15,7 @@ from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.validation import validation
 from Products.validation.validators.RegexValidator import RegexValidator
+from Products.CMFCore.WorkflowCore import WorkflowException
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.utils import to_utf8 as _c
 from bika.lims.utils import to_unicode as _u
@@ -28,6 +30,7 @@ from magnitude import mg, MagnitudeError
 from zope import i18n
 from zope.interface import implements
 import sys
+import transaction
 
 def getContainers(instance,
                   minvol=None,
@@ -913,9 +916,39 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
     def getPreservations(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(o.UID, o.Title) for o in
-                 bsc(portal_type='Preservation',
-                     inactive_state = 'active')]
+                 bsc(portal_type='Preservation', inactive_state='active')]
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
+
+    def workflow_script_activate(self):
+        workflow = getToolByName(self, 'portal_workflow')
+        pu = getToolByName(instance, 'plone_utils')
+        # A service cannot be activated if it's calculation is inactive
+        calc = self.getCalculation()
+        if calc and \
+           workflow.getInfoFor(calc, "inactive_state") == "inactive":
+            message = _("This Analysis Service cannot be activated "
+                        "because it's calculation is inactive.")
+            pu.addPortalMessage(message, 'error')
+            transaction.get().abort()
+            raise WorkflowException
+
+    def workflow_scipt_activate(self):
+        bsc = getToolByName(instance, 'bika_setup_catalog')
+        pu = getToolByName(instance, 'plone_utils')
+        if event.transition.id == "deactivate":
+            # A service cannot be deactivated if "active" calculations list it
+            # as a dependency.
+            active_calcs = bsc(portal_type='Calculation', inactive_state="active")
+            calculations = (c.getObject() for c in active_calcs)
+            for calc in calculations:
+                deps = [dep.UID() for dep in calc.getDependentServices()]
+                if instance.UID() in deps:
+                    message = _("This Analysis Service cannot be deactivated "
+                                "because one or more active calculations list "
+                                "it as a dependency")
+                    pu.addPortalMessage(message, 'error')
+                    transaction.get().abort()
+                    raise WorkflowException
 
 registerType(AnalysisService, PROJECTNAME)

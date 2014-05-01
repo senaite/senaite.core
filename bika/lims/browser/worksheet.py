@@ -1,5 +1,6 @@
 # coding=utf-8
 from AccessControl import getSecurityManager
+from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import bikaMessageFactory as _
 from bika.lims import EditResults, EditWorksheet, ManageWorksheets
 from bika.lims import PMF, logger
@@ -152,15 +153,6 @@ class WorksheetWorkflowAction(WorkflowAction):
             if uid in retested and allow_edit and analysis_active:
                 analysis.setRetested(retested[uid])
 
-            # Need to save the method?
-            if uid in methods and analysis_active:
-                # TODO: Add SetAnalysisMethod permission
-                # allow_setmethod = sm.checkPermission(SetAnalysisMethod)
-                allow_setmethod = True
-                # ---8<-----
-                if allow_setmethod == True and analysis.isMethodAllowed(methods[uid]):
-                    analysis.setMethod(methods[uid])
-
             # Need to save the instrument?
             if uid in instruments and analysis_active:
                 # TODO: Add SetAnalysisInstrument permission
@@ -170,13 +162,27 @@ class WorksheetWorkflowAction(WorkflowAction):
                 if allow_setinstrument == True:
                     # The current analysis allows the instrument regards
                     # to its analysis service and method?
-                    if analysis.isInstrumentAllowed(instruments[uid]):
+                    if (instruments[uid]==''):
+                        previnstr = analysis.getInstrument()
+                        if previnstr:
+                            previnstr.removeAnalysis(analysis)
+                        analysis.setInstrument(None);
+                    elif analysis.isInstrumentAllowed(instruments[uid]):
                         previnstr = analysis.getInstrument()
                         if previnstr:
                             previnstr.removeAnalysis(analysis)
                         analysis.setInstrument(instruments[uid])
-                        instrument = rc.lookupObject(instruments[uid])
+                        instrument = analysis.getInstrument()
                         instrument.addAnalysis(analysis)
+
+            # Need to save the method?
+            if uid in methods and analysis_active:
+                # TODO: Add SetAnalysisMethod permission
+                # allow_setmethod = sm.checkPermission(SetAnalysisMethod)
+                allow_setmethod = True
+                # ---8<-----
+                if allow_setmethod == True and analysis.isMethodAllowed(methods[uid]):
+                    analysis.setMethod(methods[uid])
 
             # Need to save the analyst?
             if uid in analysts and analysis_active:
@@ -599,8 +605,7 @@ class ManageResultsView(BrowserView):
             tool = getToolByName(self.context, REFERENCE_CATALOG)
             if analysis_uid:
                 analysis = tool.lookupObject(analysis_uid)
-                attachmentid = ws.invokeFactory("Attachment", id=tmpID())
-                attachment = ws._getOb(attachmentid)
+                attachment = _createObjectByType("Attachment", ws, tmpID())
                 attachment.edit(
                     AttachmentFile=this_file,
                     AttachmentType=self.request.get('AttachmentType', ''),
@@ -625,8 +630,7 @@ class ManageResultsView(BrowserView):
                     if not review_state in ['assigned', 'sample_received', 'to_be_verified']:
                         continue
 
-                    attachmentid = ws.invokeFactory("Attachment", id=tmpID())
-                    attachment = ws._getOb(attachmentid)
+                    attachment = _createObjectByType("Attachment", ws, tmpID())
                     attachment.edit(
                         AttachmentFile = this_file,
                         AttachmentType = self.request.get('AttachmentType', ''),

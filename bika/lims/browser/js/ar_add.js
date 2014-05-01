@@ -1386,28 +1386,25 @@ $(document).ready(function() {
 	window.calculate_parts = calculate_parts;
 	window.toggleCat = toggleCat;
 
-  // Show only the contacts and CC from the selected Client
-	var fromclient = window.location.href.search("/clients/") >= 0;
-	if (fromclient) {
-		for (var col=0; col<parseInt($("#col_count").val(), 10); col++) {
-			var element = $("#ar_" + col + "_Contact");
-			var clientuid = $("#ar_" + col + "_Client_uid").val();
-			applyComboFilter(element, "getParentUID", clientuid);
-				element = $("#ar_" + col + "_CCContact");
-				applyComboFilter(element, "getParentUID", clientuid);
-		}
-	} else {
-		$("[id$='_Client']").bind("change", function() {
-			var col = this.id.split("_")[1];
-			var element = $("#ar_" + col + "_Contact");
-			var clientuid = $(this).attr("uid");
-			applyComboFilter(element, "getParentUID", clientuid);
-				element = $("#ar_" + col + "_CCContact");
-				applyComboFilter(element, "getParentUID", clientuid);
-		});
-	}
+    // Show only the contacts and CC from the selected Client
+    $("[id$='_Client']").bind("change", function() {
+        var col = this.id.split("_")[1];
+        var element = $("#ar_" + col + "_Contact");
+        var clientuid = $(this).attr("uid");
+        applyComboFilter(element, "getParentUID", clientuid);
+        element = $("#ar_" + col + "_CCContact");
+        applyComboFilter(element, "getParentUID", clientuid);
+    });
+    // Initial value of contact list, set by the page's hidden ClientUID.
+    for (var col = 0; col < parseInt($("#col_count").val(), 10); col++) {
+        var element = $("#ar_" + col + "_Contact");
+        var clientuid = $("#ar_" + col + "_Client_uid").val();
+        applyComboFilter(element, "getParentUID", clientuid);
+        element = $("#ar_" + col + "_CCContact");
+        applyComboFilter(element, "getParentUID", clientuid);
+    }
 
-	var copy_from = window.location.href.split("copy_from=");
+    var copy_from = window.location.href.split("copy_from=");
 	if(copy_from.length > 1){
 		copy_from = copy_from[1].split("&")[0];
 		copy_from = copy_from.split(",");

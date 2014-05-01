@@ -1,8 +1,9 @@
 from AccessControl import getSecurityManager
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.utils import getUsers
 from bika.lims.permissions import *
-from bika.lims.utils import to_utf8
+from bika.lims.utils import to_utf8, getUsers
 from DateTime import DateTime
 from Products.Archetypes import PloneMessageFactory as PMF
 from plone.app.layout.globals.interfaces import IViewView
@@ -539,6 +540,7 @@ class AnalysisRequestsView(BikaListingView):
             if (hideclientlink is False):
                 items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
                     (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
+            # noinspection PyUnresolvedReferences
             items[x]['Creator'] = self.user_fullname(obj.Creator())
             items[x]['getRequestID'] = obj.getRequestID()
             items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
@@ -559,8 +561,11 @@ class AnalysisRequestsView(BikaListingView):
             items[x]['SubGroup'] = val.Title() if val else ''
 
             samplingdate = obj.getSample().getSamplingDate()
+            # noinspection PyUnresolvedReferences
             items[x]['SamplingDate'] = self.ulocalized_time(samplingdate, long_format=1)
+            # noinspection PyUnresolvedReferences
             items[x]['getDateReceived'] = self.ulocalized_time(obj.getDateReceived())
+            # noinspection PyUnresolvedReferences
             items[x]['getDatePublished'] = self.ulocalized_time(obj.getDatePublished())
 
             deviation = sample.getSamplingDeviation()
@@ -582,6 +587,7 @@ class AnalysisRequestsView(BikaListingView):
             if obj.getLate():
                 after_icons += "<img src='%s/++resource++bika.lims.images/late.png' title='%s'>" % \
                     (self.portal_url, to_utf8(self.context.translate(_("Late Analyses"))))
+            # noinspection PyCallingNonCallable
             if samplingdate > DateTime():
                 after_icons += "<img src='%s/++resource++bika.lims.images/calendar.png' title='%s'>" % \
                     (self.portal_url, to_utf8(self.context.translate(_("Future dated sample"))))
@@ -594,21 +600,26 @@ class AnalysisRequestsView(BikaListingView):
             if after_icons:
                 items[x]['after']['getRequestID'] = after_icons
 
+            # noinspection PyUnresolvedReferences
             items[x]['Created'] = self.ulocalized_time(obj.created())
 
             SamplingWorkflowEnabled =\
                 self.context.bika_setup.getSamplingWorkflowEnabled()
 
+            # noinspection PyCallingNonCallable
             if not samplingdate > DateTime() and SamplingWorkflowEnabled:
+                # noinspection PyUnresolvedReferences
                 datesampled = self.ulocalized_time(sample.getDateSampled())
 
                 if not datesampled:
+                    # noinspection PyUnresolvedReferences,PyCallingNonCallable
                     datesampled = self.ulocalized_time(
                         DateTime(),
                         long_format=1)
                     items[x]['class']['getDateSampled'] = 'provisional'
                 sampler = sample.getSampler().strip()
                 if sampler:
+                    # noinspection PyUnresolvedReferences
                     items[x]['replace']['getSampler'] = self.user_fullname(sampler)
                 if 'Sampler' in member.getRoles() and not sampler:
                     sampler = member.id
@@ -625,6 +636,7 @@ class AnalysisRequestsView(BikaListingView):
 
             # sampling workflow - inline edits for Sampler and Date Sampled
             checkPermission = self.context.portal_membership.checkPermission
+            # noinspection PyCallingNonCallable
             if checkPermission(SampleSample, obj) \
                 and not samplingdate > DateTime():
                 items[x]['required'] = ['getSampler', 'getDateSampled']
@@ -655,6 +667,7 @@ class AnalysisRequestsView(BikaListingView):
                 items[x]['choices'] = {'getPreserver': users}
                 preserver = username in preservers.keys() and username or ''
                 items[x]['getPreserver'] = preserver
+                # noinspection PyUnresolvedReferences,PyCallingNonCallable
                 items[x]['getDatePreserved'] = self.ulocalized_time(
                     DateTime(),
                     long_format=1)

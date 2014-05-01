@@ -17,7 +17,7 @@ from email.Utils import formataddr
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
+from Products.CMFPlone.utils import safe_unicode, _createObjectByType
 
 import json
 import plone
@@ -58,8 +58,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         # add missing parts
         if nr_parts > nr_existing:
             for i in range(nr_parts - nr_existing):
-                _id = sample.invokeFactory('SamplePartition', id=tmpID())
-                part = sample[_id]
+                part = _createObjectByType("SamplePartition", sample, tmpID())
                 part.setDateReceived = DateTime()
                 part.processForm()
         # remove excess parts
@@ -329,34 +328,42 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         submissable = []
         for uid, analysis in selected_analyses.items():
             analysis_active = isActive(analysis)
-            # Need to save the method?
-            if uid in methods and analysis_active:
-                # TODO: Add SetAnalysisMethod permission
-                # allow_setmethod = sm.checkPermission(SetAnalysisMethod)
-                allow_setmethod = True
-                # ---8<-----
-                if allow_setmethod is True and analysis.isMethodAllowed(methods[uid]):
-                    analysis.setMethod(methods[uid])
+
             # Need to save the instrument?
             if uid in instruments and analysis_active:
                 # TODO: Add SetAnalysisInstrument permission
                 # allow_setinstrument = sm.checkPermission(SetAnalysisInstrument)
                 allow_setinstrument = True
                 # ---8<-----
-                if allow_setinstrument is True:
+                if allow_setinstrument == True:
                     # The current analysis allows the instrument regards
                     # to its analysis service and method?
-                    if analysis.isInstrumentAllowed(instruments[uid]):
+                    if (instruments[uid]==''):
+                        previnstr = analysis.getInstrument()
+                        if previnstr:
+                            previnstr.removeAnalysis(analysis)
+                        analysis.setInstrument(None);
+                    elif analysis.isInstrumentAllowed(instruments[uid]):
                         previnstr = analysis.getInstrument()
                         if previnstr:
                             previnstr.removeAnalysis(analysis)
                         analysis.setInstrument(instruments[uid])
-                        instrument = rc.lookupObject(instruments[uid])
+                        instrument = analysis.getInstrument()
                         instrument.addAnalysis(analysis)
 
-                # Need to save the analyst?
-                if uid in analysts and analysis_active:
-                    analysis.setAnalyst(analysts[uid]);
+            # Need to save the method?
+            if uid in methods and analysis_active:
+                # TODO: Add SetAnalysisMethod permission
+                # allow_setmethod = sm.checkPermission(SetAnalysisMethod)
+                allow_setmethod = True
+                # ---8<-----
+                if allow_setmethod == True and analysis.isMethodAllowed(methods[uid]):
+                    analysis.setMethod(methods[uid])
+
+            # Need to save the analyst?
+            if uid in analysts and analysis_active:
+                analysis.setAnalyst(analysts[uid]);
+
             if uid not in results or not results[uid]:
                 continue
             can_submit = True
@@ -537,8 +544,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         return doPublish(context, request, action, analysis_requests)
 
     def cloneAR(self, ar):
-        _id = ar.aq_parent.invokeFactory('AnalysisRequest', id=tmpID())
-        newar = ar.aq_parent[_id]
+        newar = _createObjectByType("AnalysisRequest", ar.aq_parent, tmpID())
         newar.title = ar.title
         newar.description = ar.description
         newar.setContact(ar.getContact())
@@ -570,8 +576,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         # Set the results for each AR analysis
         ans = ar.getAnalyses(full_objects=True)
         for an in ans:
-            newar.invokeFactory("Analysis", id=an.getKeyword())
-            nan = newar[an.getKeyword()]
+            nan = _createObjectByType("Analysis", newar, an.getKeyword())
             nan.setService(an.getService())
             nan.setCalculation(an.getCalculation())
             nan.setInterimFields(an.getInterimFields())

@@ -5,6 +5,7 @@ from Products.Archetypes.public import *
 from Products.Archetypes.utils import shasattr
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.permissions import ViewRetractedAnalyses
@@ -129,8 +130,7 @@ class ARAnalysesField(ObjectField):
             if hasattr(instance, keyword):
                 analysis = instance._getOb(keyword)
             else:
-                instance.invokeFactory(id=keyword, type_name='Analysis')
-                analysis = instance._getOb(keyword)
+                analysis = _createObjectByType("Analysis", instance, keyword)
                 analysis.setService(service)
                 analysis.setInterimFields(interim_fields)
                 analysis.setMaxTimeAllowed(service.getMaxTimeAllowed())

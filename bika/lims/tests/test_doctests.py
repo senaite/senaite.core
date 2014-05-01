@@ -9,6 +9,7 @@ OPTIONFLAGS = (doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
 
 DOCTESTS = ['bika.lims.vocabularies',
             'bika.lims.jsonapi.create',
+            'bika.lims.jsonapi.update',
             'bika.lims.browser.analysisrequest.add']
 
 

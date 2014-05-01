@@ -278,6 +278,9 @@ class AnalysesView(BikaListingView):
                 # on-date and valid internal calibration tests
                 ret.append({'ResultValue': ins.UID(),
                             'ResultText': ins.Title()})
+
+        ret.insert(0, {'ResultValue': '',
+                       'ResultText': _('None')});
         return ret
 
     def getAnalysts(self):
@@ -534,24 +537,28 @@ class AnalysesView(BikaListingView):
             can_set_instrument = service.getInstrumentEntryOfResults() \
                 and can_edit_analysis \
                 and item['review_state'] in allowed_method_states
+
             instrument = None
+            # If the analysis has an instrument already assigned, use it
             if service.getInstrumentEntryOfResults() \
-                and hasattr(obj, 'getInstrument') \
-                and obj.getInstrument():
+                and hasattr(obj, 'getInstrument'):
                     instrument = obj.getInstrument()
+            # Otherwise, use the Service's default instrument
             elif service.getInstrumentEntryOfResults():
                     instrument = service.getInstrument()
 
-            if method and instrument \
-                and instrument.UID() not in method.getInstrumentUIDs():
-                instrument = None
+            #if method and instrument \
+            #    and instrument.UID() not in method.getInstrumentUIDs():
+            #    instrument = None
 
             if service.getInstrumentEntryOfResults() == False:
+                # Manual entry of results, Instrument not allowed
                 item['Instrument'] = _('Manual')
                 msgtitle = _("Instrument entry of results not allowed for %s") % service.Title()
                 item['replace']['Instrument'] = '<a href="#" title="%s">%s</a>' % (msgtitle, _('Manual'))
-            elif can_set_instrument and instrument:
-                # Show the dropbox only if at least one instrument available
+
+            elif can_set_instrument:
+                # Edition allowed
                 voc = self.get_instruments_vocabulary(obj)
                 if voc:
                     item['Instrument'] = instrument.UID() if instrument else ''
@@ -562,12 +569,16 @@ class AnalysesView(BikaListingView):
                     item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
                         (instrument.absolute_url(), instrument.Title())
                 show_methodinstr_columns = True
+
             elif instrument:
+                # Edition not allowed, but an instrument is set
                 item['Instrument'] = instrument.Title()
                 item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
                         (instrument.absolute_url(), instrument.Title())
                 show_methodinstr_columns = True
+
             else:
+                # Edition not allowed and instrument not set
                 item['Instrument'] = ''
                 item['replace']['Instrument'] = ''
 

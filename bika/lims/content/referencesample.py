@@ -10,6 +10,7 @@ from Products.CMFCore import permissions
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser.fields import ReferenceResultsField
 from bika.lims.browser.widgets import DateTimeWidget as bika_DateTimeWidget
@@ -312,8 +313,7 @@ class ReferenceSample(BaseFolder):
         rc = getToolByName(self, REFERENCE_CATALOG)
         service = rc.lookupObject(service_uid)
 
-        _id = self.invokeFactory(type_name='ReferenceAnalysis', id=tmpID())
-        analysis = self._getOb(_id)
+        analysis = _createObjectByType("ReferenceAnalysis", self, tmpID())
         calculation = service.getCalculation()
         interim_fields = calculation and calculation.getInterimFields() or []
         maxtime = service.getMaxTimeAllowed() and service.getMaxTimeAllowed() \
@@ -328,7 +328,7 @@ class ReferenceSample(BaseFolder):
         duetime = starttime + max_days
 
         analysis.edit(
-            ReferenceAnalysisID = _id,
+            ReferenceAnalysisID = analysis.id,
             ReferenceType = reference_type,
             Service = service,
             Unit = service.getUnit(),
@@ -379,7 +379,7 @@ class ReferenceSample(BaseFolder):
         self.reindexObject()
 
     def workflow_script_dispose(self):
-        """ expire sample """
+        """ dispose sample """
         self.setDateDisposed(DateTime())
         self.reindexObject()
 

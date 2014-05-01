@@ -32,72 +32,11 @@
       handler="bika.lims.subscribers.analysis.ObjectRemovedEventHandler"
     />
 
-    <!-- Workflow action event for Analysis objects -->
-    <subscriber
-      for="bika.lims.interfaces.IAnalysis
-           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
-      handler="bika.lims.subscribers.analysis.AfterTransitionEventHandler"
-    />
-
-    <!-- Workflow action event for Reference Analysis objects -->
-    <subscriber
-      for="bika.lims.interfaces.IReferenceAnalysis
-           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
-      handler="bika.lims.subscribers.referenceanalysis.AfterTransitionEventHandler"
-    />
-
-    <!-- Workflow action event for Duplicate Analysis objects -->
-    <subscriber
-      for="bika.lims.interfaces.IDuplicateAnalysis
-           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
-      handler="bika.lims.subscribers.duplicateanalysis.AfterTransitionEventHandler"
-    />
-
-    <!-- Workflow action event for AnalysisRequest objects -->
-    <subscriber
-      for="bika.lims.interfaces.IAnalysisRequest
-           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
-      handler="bika.lims.subscribers.analysisrequest.AfterTransitionEventHandler"
-    />
     <!-- Newly created AnalysisRequest -->
     <subscriber
       for="bika.lims.interfaces.IAnalysisRequest
            Products.Archetypes.interfaces.IObjectInitializedEvent"
       handler="bika.lims.subscribers.analysisrequest.ObjectInitializedEventHandler"
-    />
-
-    <!-- Workflow action event for Worksheet objects -->
-    <subscriber
-      for="bika.lims.interfaces.IWorksheet
-           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
-      handler="bika.lims.subscribers.worksheet.AfterTransitionEventHandler"
-    />
-
-    <!-- Workflow action event for Sample objects -->
-    <subscriber
-      for="bika.lims.interfaces.ISample
-           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
-      handler="bika.lims.subscribers.sample.AfterTransitionEventHandler"
-    />
-
-    <!-- Workflow action event for Sample Partitions -->
-    <subscriber
-      for="bika.lims.interfaces.ISamplePartition
-           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
-      handler="bika.lims.subscribers.samplepartition.AfterTransitionEventHandler"
-    />
-
-    <!-- Workflow action to prevent deactivation of AnalysisCategory objects -->
-    <subscriber
-      for="bika.lims.interfaces.IAnalysisCategory
-           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
-      handler="bika.lims.subscribers.analysiscategory.AfterTransitionEventHandler"
-    />
-    <!-- Workflow action to prevent deactivation of AnalysisService objects -->
-    <subscriber
-      for="bika.lims.interfaces.IAnalysisService
-           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
-      handler="bika.lims.subscribers.analysisservice.AfterTransitionEventHandler"
     />
 
     <subscriber

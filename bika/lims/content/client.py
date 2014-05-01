@@ -125,7 +125,7 @@ class Client(Organisation):
     def getContactUIDForUser(self):
         """ get the UID of the user associated with the authenticated user
         """
-        membership_tool = getToolByName(instance, 'portal_membership')
+        membership_tool = getToolByName(self, 'portal_membership')
         member = membership_tool.getAuthenticatedMember()
         username = member.getUserName()
         r = self.portal_catalog(

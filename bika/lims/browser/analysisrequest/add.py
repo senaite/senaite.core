@@ -15,6 +15,7 @@ from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes import PloneMessageFactory as PMF
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.CMFPlone.utils import _createObjectByType
 from zope.component import getAdapter
 from zope.interface import implements
 import plone
@@ -60,67 +61,6 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                 or service.getSeparate():
                 ps.append(service.UID())
         return json.dumps(ps)
-
-    def get_at_field_values(self):
-        """Return a list of dictionaries, one for each ar in the copy_from request parameter.  Each dict contains
-        all values from all schema fields.  References are returned as Titles.  reference fields have *_uid keys,
-        added, containing the actual referenced object UID.
-
-        Does not support multi-valued references.  XXX We will have to return a list for these,
-        but currently the ar_add form doesn't know what do do with such - ie: CCContacts.
-
-        Works on any object:
-
-        >>> from bika.lims.browser.analysisrequest.add import AnalysisRequestAddView
-        >>> portal = layer['portal']
-        >>> frontpage = portal['front-page']
-        >>> client = layer['portal']['clients']['client-1']
-        >>> request = layer['request']
-        >>> request['copy_from'] = ",".join([frontpage.UID(), client.UID()])
-        >>> vals = AnalysisRequestAddView(client, request).get_at_field_values()
-        >>> len(vals)
-        2
-        >>> 'AnalysisProfile' in vals[1]['locallyAllowedTypes']
-        True
-        >>> 'DefaultARSpecs' in vals[1]
-        True
-
-        Also works with schemaextender fields.
-
-        Even though all schema values are returned, the JS only uses those that are
-        present on the ar add form.  Still, we leave them all here, to allow additions
-        later without having to come and edit here.
-
-        """
-        skip_fieldnames = ["Sample", "CCContact", ]
-        ret = []
-        uc = getToolByName(self.context, "uid_catalog")
-        uids = self.request.get("copy_from").split(",")
-        for column, uid in enumerate(uids):
-            ret.append({})
-            copy_from_uid_proxies = uc(UID=uid)
-            assert len(copy_from_uid_proxies) == 1
-            obj = copy_from_uid_proxies[0].getObject()
-            schema_fields = obj.Schema().fields()
-            for field in schema_fields:
-                field_name = field.getName()
-                if field.getType() == "Products.Archetypes.Field.ComputedField" \
-                    or field_name in skip_fieldnames:
-                    continue
-                val = field.get(self.context)
-                if field.getType().endswith('ReferenceField'):
-                    if type(val) in (list, tuple) and len(val) == 0:
-                        val = None
-                    elif type(val) in (list, tuple) and len(val) == 1:
-                        val = val[0]
-                        ret[column][field_name] = val.Title() if callable(getattr(val, 'Title', False)) else val.id
-                        ret[column]["%s_uid"%field_name] = val.UID() if val is not None else ""
-                    elif type(val) in (list, tuple):
-                        raise NotImplementedError("Can't include multivalued reference fields in ar copy.")
-                else:
-                    ret[column][field_name] = val
-        return ret
-
 
 class SecondaryARSampleInfo(BrowserView):
     """Return fieldnames and pre-digested values for Sample fields which
@@ -168,17 +108,14 @@ class ajaxExpandCategory(BikaListingView):
         return self.template()
 
     def bulk_discount_applies(self):
+        client = None
         if self.context.portal_type == 'AnalysisRequest':
             client = self.context.aq_parent
         elif self.context.portal_type == 'Batch':
-            bc = getToolByName(self.context, 'bika_catalog')
-            proxies = bc(portal_type="AnalysisRequest", getBatchUID=self.context.UID())
-            client = proxies[0].getObject()
+            client = self.context.getClient()
         elif self.context.portal_type == 'Client':
             client = self.context
-        else:
-            return False
-        return client.getBulkDiscount()
+        return client.getBulkDiscount() if client is not None else False
 
     def Services(self, poc, CategoryUID):
         """ return a list of services brains """
@@ -307,8 +244,7 @@ class ajaxAnalysisRequestSubmit():
                 sample = uc(UID=values['Sample_uid'])[0].getObject()
             else:
                 # Primary AR
-                _id = client.invokeFactory('Sample', id=tmpID())
-                sample = client[_id]
+                sample = _createObjectByType("Sample", client, tmpID())
                 saved_form = self.request.form
                 self.request.form = resolved_values
                 sample.setSampleType(resolved_values['SampleType'])
@@ -359,8 +295,7 @@ class ajaxAnalysisRequestSubmit():
 
             saved_form = self.request.form
             self.request.form = resolved_values
-            clientid = client.invokeFactory('AnalysisRequest', id=tmpID())
-            ar = client[clientid]
+            ar = _createObjectByType("AnalysisRequest", client, tmpID())
             ar.setSample(sample)
             ar.processForm()
             self.request.form = saved_form
@@ -376,8 +311,7 @@ class ajaxAnalysisRequestSubmit():
                     parts[_i]['object'] = sample['%s%s' % (part_prefix, _i + 1)]
                     parts_and_services['%s%s' % (part_prefix, _i + 1)] = p['services']
                 else:
-                    _id = sample.invokeFactory('SamplePartition', id=tmpID())
-                    part = sample[_id]
+                    part = _createObjectByType("SamplePartition", sample, tmpID())
                     parts[_i]['object'] = part
                     # Sort available containers by capacity and select the
                     # smallest one possible.

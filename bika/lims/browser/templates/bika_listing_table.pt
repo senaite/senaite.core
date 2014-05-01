@@ -638,7 +638,7 @@ Table cells for each column from in review_state's column list.
     tal:attributes="colspan nr_cols"
     tal:condition="python:(view.batch.multiple_pages and not view.show_all) or (view.bika_listing.show_workflow_action_buttons)">
 <table style="margin:0" width="100%">
-    <tr class="noborder">
+    <tr class="noborder" tal:condition="python:len(view.batch) > 0">
 <tal:comment replace="nothing">***************
 Workflow Actions
 ********************************</tal:comment>

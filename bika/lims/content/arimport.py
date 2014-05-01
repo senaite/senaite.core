@@ -12,6 +12,7 @@ from bika.lims.permissions import *
 from bika.lims.jsonapi import resolve_request_lookup
 from bika.lims.workflow import doActionFor
 from bika.lims.utils import tmpID
+from bika.lims import logger
 from collective.progressbar.events import InitialiseProgressBar
 from collective.progressbar.events import ProgressBar
 from collective.progressbar.events import UpdateProgressEvent
@@ -24,7 +25,7 @@ from Products.Archetypes.references import HoldingReference
 from Products.ATContentTypes.content import schemata
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
+from Products.CMFPlone.utils import safe_unicode, _createObjectByType
 from zope import event
 from zope.interface import implements
 
@@ -361,8 +362,7 @@ class ARImport(BaseFolder):
                 sample_date = None
 
             sample_id = '%s-%s' % (prefix, tmpID())
-            client.invokeFactory(id = sample_id, type_name = 'Sample')
-            sample = client[sample_id]
+            sample = _createObjectByType("Sample", client, sample_id)
             sample.unmarkCreationFlag()
             sample.edit(
                 SampleID = sample_id,
@@ -390,13 +390,12 @@ class ARImport(BaseFolder):
                 sortable_title = aritem.Priority.lower(),
                 )
             if len(priorities) < 1:
-                logging.error(
+                logger.warning(
                     'Invalid Priority: validation should have prevented this')
 
             #Create AR
             ar_id = tmpID()
-            client.invokeFactory(id = ar_id, type_name = 'AnalysisRequest')
-            ar = client[ar_id]
+            ar = _createObjectByType("AnalysisRequest", client, ar_id)
             if aritem.getReportDryMatter().lower() == 'y':
                 report_dry_matter = True
             else:
@@ -565,8 +564,7 @@ class ARImport(BaseFolder):
                 sample_date = None
 
             sample_id = '%s-%s' % (prefix, tmpID())
-            client.invokeFactory(id = sample_id, type_name = 'Sample')
-            sample = client[sample_id]
+            sample = _createObjectByType("Sample", client, sample_id)
             sample.unmarkCreationFlag()
             sample.edit(
                 SampleID = sample_id,
@@ -592,15 +590,14 @@ class ARImport(BaseFolder):
                 sortable_title = aritem.Priority.lower(),
                 )
             if len(priorities) < 1:
-                logging.error(
+                logger.warning(
                     'Invalid Priority: validation should have prevented this')
                 priority = ''
             else:
                 priority = priorities[0].getObject()
 
             ar_id = tmpID()
-            client.invokeFactory(id = ar_id, type_name = 'AnalysisRequest')
-            ar = client[ar_id]
+            ar = _createObjectByType("AnalysisRequest", client, ar_id)
             report_dry_matter = False
 
             ar.unmarkCreationFlag()
@@ -660,8 +657,7 @@ class ARImport(BaseFolder):
                 parts_and_services['%s%s' % (part_prefix, _i + 1)] = \
                         p['services']
             else:
-                _id = sample.invokeFactory('SamplePartition', id='tmp')
-                part = sample[_id]
+                part = _createObjectByType("SamplePartition", sample, tmpID())
                 parts[_i]['object'] = part
                 container = None
                 preservation = p['preservation']

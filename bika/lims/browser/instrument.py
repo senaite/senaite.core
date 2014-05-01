@@ -425,19 +425,19 @@ class InstrumentReferenceAnalysesView(AnalysesView):
             pdf = obj.getRetractedAnalysesPdfReport()
             title = ''
             anchor = ''
-            if pdf:
-                filesize = 0
-                title = _('Retractions')
-                anchor = "<a class='pdf' target='_blank' href='%s/at_download/RetractedAnalysesPdfReport'>%s</a>" % \
-                         (obj.absolute_url(), _("Retractions"))
-                try:
+            try:
+                if pdf:
+                    filesize = 0
+                    title = _('Retractions')
+                    anchor = "<a class='pdf' target='_blank' href='%s/at_download/RetractedAnalysesPdfReport'>%s</a>" % \
+                             (obj.absolute_url(), _("Retractions"))
                     filesize = pdf.get_size()
                     filesize = filesize / 1024 if filesize > 0 else 0
-                except:
-                    # POSKeyError: 'No blob file'
-                    # Show the record, but not the link
-                    title = _('Unavailable')
-                    anchor = title
+            except:
+                # POSKeyError: 'No blob file'
+                # Show the record, but not the link
+                title = _('Retraction report unavailable')
+                anchor = title
             items[i]['Retractions'] = title
             items[i]['replace']['Retractions'] = anchor
 

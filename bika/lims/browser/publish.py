@@ -11,7 +11,7 @@ from os.path import join
 from pkg_resources import resource_filename
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFPlone.utils import safe_unicode
+from Products.CMFPlone.utils import safe_unicode, _createObjectByType
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from smtplib import SMTPRecipientsRefused
 from smtplib import SMTPServerDisconnected
@@ -263,8 +263,7 @@ class doPublish(BrowserView):
 
             if pdf_report:
                 reportid = self.context.generateUniqueId('ARReport')
-                ar.invokeFactory(id=reportid, type_name="ARReport")
-                report = ar._getOb(reportid)
+                report = _createObjectByType("ARReport", ar, reportid)
                 report.edit(
                     AnalysisRequest=ar.UID(),
                     Pdf=pdf_report,

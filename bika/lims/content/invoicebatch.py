@@ -1,6 +1,7 @@
 """InvoiceBatch is a container for Invoice instances.
 """
 from AccessControl import ClassSecurityInfo
+from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import bikaMessageFactory as _
 from bika.lims.config import ManageInvoices, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -10,6 +11,7 @@ from bika.lims.utils import get_invoice_item_description
 from DateTime import DateTime
 from Products.Archetypes.public import *
 from Products.CMFCore import permissions
+from bika.lims.workflow import isBasicTransitionAllowed
 from zope.container.contained import ContainerModifiedEvent
 from zope.interface import implements
 
@@ -151,8 +153,7 @@ class InvoiceBatch(BaseFolder):
         """ Creates and invoice for a client and a set of items
         """
         invoice_id = self.generateUniqueId('Invoice')
-        self.invokeFactory(id=invoice_id, type_name='Invoice')
-        invoice = self._getOb(invoice_id)
+        invoice = _createObjectByType("Invoice", self, invoice_id)
         invoice.edit(
             Client=client_uid,
             InvoiceDate=DateTime(),
@@ -194,9 +195,13 @@ class InvoiceBatch(BaseFolder):
         return DateTime()
 
     def guard_cancel_transition(self):
+        if not isBasicTransitionAllowed(self):
+            return False
         return True
 
     def guard_reinstate_transition(self):
+        if not isBasicTransitionAllowed(self):
+            return False
         return True
 
 registerType(InvoiceBatch, PROJECTNAME)
