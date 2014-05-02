@@ -20,6 +20,7 @@ def Import(context, request):
     instrument = request.form.get('panalytical_axios_xrf_instrument', None)
     errors = []
     logs = []
+    warns = []
 
     # Load the most suitable parser according to file extension/options/etc...
     parser = None
@@ -77,15 +78,3 @@ def Import(context, request):
     results = {'errors': errors, 'log': logs, 'warns': warns}
 
     return json.dumps(results)
-
-
-#class ThermoGallery9861xTSVParser(ThermoGalleryTSVParser):
-
- #   def getAttachmentFileType(self):
-  #      return "PANalytical - Axios_XRF XRF CSV"
-
-
-#class ThermoGallery9861xImporter(ThermoGalleryImporter):
-
- #   def getKeywordsToBeExcluded(self):
-   #     return []
