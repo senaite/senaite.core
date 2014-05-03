@@ -56,6 +56,7 @@ class doActionFor(object):
             try:
                 obj = uc(UID=obj_dict['UID'])[0].getObject()
                 workflow.doActionFor(obj, action)
+                obj.reindexObject()
             except Exception as e:
                 savepoint.rollback()
                 msg = "Cannot execute '{0}' on {1} ({2})".format(
@@ -97,6 +98,7 @@ class doActionFor(object):
                 obj_path = obj_path[len(site_path):]
             try:
                 workflow.doActionFor(obj, action)
+                obj.reindexObject()
             except Exception as e:
                 savepoint.rollback()
                 msg = "Cannot execute '{0}' on {1} ({2})".format(
