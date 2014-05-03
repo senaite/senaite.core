@@ -14,7 +14,7 @@
   <body
     tal:define="portal context/@@plone_portal_state/portal;
                 checkPermission python:context.portal_membership.checkPermission;
-                dummy python:view.sublists('edit');
+                dummy python:view.sublists();
                 prominent python:dummy[0];
                 sublists python:dummy[1];
                 errors view/errors"
