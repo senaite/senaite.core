@@ -40,7 +40,6 @@ setup(name='bika.lims',
           'collective.wtf',
           'WeasyPrint==0.19.2',
           'collective.progressbar',
-          'lingua',
       ],
       extras_require={
           'test': [
@@ -50,14 +49,6 @@ setup(name='bika.lims',
               'plone.app.robotframework',
               'robotframework-debuglibrary',
           ]
-      },
-      message_extractors={
-          'src': [
-              ("**.py", "lingua_python", None),
-              ("**.pt", "lingua_xml", None),
-              ('**.zcml', "lingua_xml", None),
-              ('**.xml', "lingua_xml", None),
-          ],
       },
       entry_points="""
       [z3c.autoinclude.plugin]
