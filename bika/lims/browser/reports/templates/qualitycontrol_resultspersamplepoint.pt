@@ -37,7 +37,6 @@
     class="qualitycontrol_resultspersamplepoint">
     <h3
       class='bika-report-table-header'
-      style="padding-bottom:1px;margin-bottom:1px;-pdf-keep-with-next: true"
       tal:content="table/title">Table Header</h3>
 
     <span class="plot-container">
