@@ -108,7 +108,7 @@
 
     <adapter
       name="ar-pr-ws"
-      for="bika.lims.interfaces.IWorksheet"
+      for="bika.lims.interfaces.IAnalysis"
       factory="bika.lims.browser.worksheet.PriorityIcons"
     />
 

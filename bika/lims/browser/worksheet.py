@@ -881,7 +881,7 @@ class AddAnalysesView(BikaListingView):
             items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
                  (url, items[x]['getRequestID'])
             priority = obj.aq_inner.aq_parent.getPriority()
-            items[x]['getPriority'] = priority and priority.Title() or ''
+            items[x]['getPriority'] = ''
 
 
             items[x]['Client'] = client.Title()
@@ -1456,8 +1456,7 @@ class PriorityIcons(object):
             'field': 'getPriority',
             'icon': '',
         }
-        import pdb; pdb.set_trace()
-        priority = False #self.context.getPriority()
+        priority = self.context.aq_parent.getPriority()
         if priority:
             result['msg'] = priority.Title()
             icon = priority.getSmallIcon()
