@@ -14,6 +14,7 @@ from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.header_table import HeaderTableView
 from bika.lims.config import POINTS_OF_CAPTURE
+from bika.lims.interfaces import IFieldIcons
 from bika.lims.permissions import *
 from bika.lims.utils import changeWorkflowState, tmpID
 from bika.lims.utils import changeWorkflowState, to_unicode
@@ -275,9 +276,13 @@ class SampleAnalysesView(AnalysesView):
             self.contentFilter[k] = v
         self.columns['Request'] = {'title': _("Request"),
                                    'sortable':False}
-        # Add Request column
+        self.columns['Priority'] = {'title': _("Priority"),
+                                   'sortable':False}
+        # Add Request and Priority columns
         pos = self.review_states[0]['columns'].index('Service') + 1
         self.review_states[0]['columns'].insert(pos, 'Request')
+        pos += 1
+        self.review_states[0]['columns'].insert(pos, 'Priority')
 
     def folderitems(self):
         self.contentsMethod = self.context.getAnalyses
@@ -289,6 +294,7 @@ class SampleAnalysesView(AnalysesView):
             ar = obj.aq_parent
             items[x]['replace']['Request'] = \
                 "<a href='%s'>%s</a>"%(ar.absolute_url(), ar.Title())
+            items[x]['replace']['Priority'] = ' ' #TODO this space is required for it to work
         return items
 
 class SampleEdit(BrowserView):
@@ -899,3 +905,30 @@ class WidgetVisibility(_WV):
             ]
 
         return ret
+
+class PriorityIcons(object):
+
+    """An icon provider for indicating AR priorities
+    """
+
+    implements(IFieldIcons)
+    #TODO? adapts(ISample)
+
+    def __init__(self, context):
+        self.context = context
+
+    def __call__(self, **kwargs):
+        result = {
+            'msg': '',
+            'field': 'Priority',
+            'icon': '',
+        }
+        priority = self.context.aq_parent.getPriority()
+        if priority:
+            result['msg'] = priority.Title()
+            icon = priority.getSmallIcon()
+            if icon:
+                result['icon'] = '/'.join(icon.getPhysicalPath())
+            return {self.context.UID(): [result]}
+        return {}
+
