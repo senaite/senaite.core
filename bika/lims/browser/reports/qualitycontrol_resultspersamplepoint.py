@@ -20,8 +20,8 @@ import tempfile
 
 def ResultOutOfRange(analysis):
     spec = {}
-    if hasattr(self.context, "specification") and self.context.specification:
-        spec = self.context.specification
+    if hasattr(analysis, "specification") and analysis.specification:
+        spec = analysis.specification
     return isOutOfRange(analysis.getResult(),
                         spec.get("min", ""),
                         spec.get("max", ""),
@@ -52,8 +52,7 @@ class Report(BrowserView):
         subheader = _("Analysis results for per sample point and analysis service")
 
         self.contentFilter = {'portal_type': 'Analysis',
-                              'review_state': ['verified', 'published'],
-                              'sort_on': "getDateSampled"}
+                              'review_state': ['verified', 'published']}
 
         parms = []
         titles = []
@@ -213,8 +212,8 @@ class Report(BrowserView):
 
             for a in analyses[service_title]:
 
-                a['Sampled'] = a['Sampled'].strftime(self.date_format_long)
-                a['Captured'] = a['Captured'].strftime(self.date_format_long)
+                a['Sampled'] = a['Sampled'].strftime(self.date_format_long) if a['Sampled'] else ''
+                a['Captured'] = a['Captured'].strftime(self.date_format_long) if a['Captured'] else ''
 
                 R = a['Result']
                 U = a['Uncertainty']

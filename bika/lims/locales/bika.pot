@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-05-03 09:39+0000\n"
+"POT-Creation-Date: 2014-05-04 12:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -124,7 +124,7 @@ msgstr ""
 
 #: bika.lims/bika/lims/browser/analyses.py:88
 #: bika.lims/bika/lims/browser/referencesample.py:71
-#: bika.lims/bika/lims/browser/worksheet.py:360
+#: bika.lims/bika/lims/browser/worksheet.py:361
 msgid "+-"
 msgstr ""
 
@@ -287,19 +287,19 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/worksheet.py:756
+#: bika.lims/bika/lims/browser/worksheet.py:757
 msgid "Add Analyses"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/worksheet.py:925
+#: bika.lims/bika/lims/browser/worksheet.py:926
 msgid "Add Blank Reference"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/worksheet.py:969
+#: bika.lims/bika/lims/browser/worksheet.py:970
 msgid "Add Control Reference"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/worksheet.py:1012
+#: bika.lims/bika/lims/browser/worksheet.py:1013
 msgid "Add Duplicate"
 msgstr ""
 
@@ -351,7 +351,7 @@ msgstr ""
 msgid "All Accredited analysis services are listed here."
 msgstr ""
 
-#: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:583
+#: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:579
 msgid "All analyses assigned"
 msgstr ""
 
@@ -409,13 +409,13 @@ msgstr ""
 msgid "Analyses"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/reports/qualitycontrol_resultspersamplepoint.py:298
+#: bika.lims/bika/lims/browser/reports/qualitycontrol_resultspersamplepoint.py:297
 msgid "Analyses in error shoulder range"
 msgstr ""
 
 #: bika.lims/bika/lims/browser/reports/qualitycontrol_analysesoutofrange.py:24
 #: bika.lims/bika/lims/browser/reports/qualitycontrol_referenceanalysisqc.py:209
-#: bika.lims/bika/lims/browser/reports/qualitycontrol_resultspersamplepoint.py:294
+#: bika.lims/bika/lims/browser/reports/qualitycontrol_resultspersamplepoint.py:293
 msgid "Analyses out of range"
 msgstr ""
 
@@ -620,7 +620,7 @@ msgstr ""
 msgid "Analysis requests will be selected if any of their analyses' services are in this category."
 msgstr ""
 
-#: bika.lims/bika/lims/browser/reports/qualitycontrol_analysesoutofrange.py:222
+#: bika.lims/bika/lims/browser/reports/qualitycontrol_analysesoutofrange.py:225
 msgid "Analysis result within error range"
 msgstr ""
 
@@ -996,7 +996,7 @@ msgid "Cannot deactivate calculation, because it is in use by the following serv
 msgstr ""
 
 #: bika.lims/bika/lims/browser/analyses.py:741
-#: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:692
+#: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:680
 msgid "Cannot verify: Submitted by current user"
 msgstr ""
 
@@ -1450,7 +1450,7 @@ msgstr ""
 
 #: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:98
 #: bika.lims/bika/lims/browser/referencesample.py:223
-#: bika.lims/bika/lims/browser/reports/qualitycontrol_resultspersamplepoint.py:251
+#: bika.lims/bika/lims/browser/reports/qualitycontrol_resultspersamplepoint.py:250
 msgid "Date Sampled"
 msgstr ""
 
@@ -1700,7 +1700,7 @@ msgid "Download"
 msgstr ""
 
 #: bika.lims/bika/lims/browser/analyses.py:85
-#: bika.lims/bika/lims/browser/worksheet.py:361
+#: bika.lims/bika/lims/browser/worksheet.py:362
 msgid "Dry"
 msgstr ""
 
@@ -1724,7 +1724,7 @@ msgstr ""
 msgid "Dup Var"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/worksheet.py:518
+#: bika.lims/bika/lims/browser/worksheet.py:519
 #: bika.lims/bika/lims/config.py:53
 #: bika.lims/bika/lims/controlpanel/bika_analysisservices.py:207
 msgid "Duplicate"
@@ -1874,7 +1874,7 @@ msgstr ""
 msgid "Erroneus result publication from %s"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:596
+#: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:591
 msgid "Exclude from invoice"
 msgstr ""
 
@@ -1973,7 +1973,7 @@ msgstr ""
 msgid "Full Name"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:593
+#: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:588
 #: bika.lims/bika/lims/browser/sample.py:686
 msgid "Future dated sample"
 msgstr ""
@@ -2001,7 +2001,7 @@ msgstr ""
 msgid "Grouping period"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:599
+#: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:594
 #: bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequest_analyses_not_requested.pt:133
 #: bika.lims/bika/lims/browser/sample.py:681
 msgid "Hazardous"
@@ -2177,15 +2177,15 @@ msgstr ""
 msgid "Instrument entry of results not allowed for %s"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/worksheet.py:1306
+#: bika.lims/bika/lims/browser/worksheet.py:1307
 msgid "Instrument exporter not found"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/worksheet.py:257
+#: bika.lims/bika/lims/browser/worksheet.py:258
 msgid "Instrument failed reference test"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/worksheet.py:1294
+#: bika.lims/bika/lims/browser/worksheet.py:1295
 msgid "Instrument has no data interface selected"
 msgstr ""
 
@@ -2362,14 +2362,14 @@ msgstr ""
 msgid "Late"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:589
+#: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:585
 #: bika.lims/bika/lims/browser/late_analyses.py:26
 #: bika.lims/bika/lims/skins/bika/portlet_late_analyses.pt:31
 msgid "Late Analyses"
 msgstr ""
 
 #: bika.lims/bika/lims/browser/analyses.py:723
-#: bika.lims/bika/lims/browser/worksheet.py:870
+#: bika.lims/bika/lims/browser/worksheet.py:871
 msgid "Late Analysis"
 msgstr ""
 
@@ -2746,12 +2746,12 @@ msgstr ""
 msgid "No analyses were added"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/worksheet.py:835
+#: bika.lims/bika/lims/browser/worksheet.py:836
 msgid "No analyses were added to this worksheet."
 msgstr ""
 
 #: bika.lims/bika/lims/browser/reports/qualitycontrol_referenceanalysisqc.py:56
-#: bika.lims/bika/lims/browser/reports/qualitycontrol_resultspersamplepoint.py:86
+#: bika.lims/bika/lims/browser/reports/qualitycontrol_resultspersamplepoint.py:85
 #: bika.lims/bika/lims/controlpanel/templates/analysisservice_copy.pt:28
 msgid "No analysis services were selected."
 msgstr ""
@@ -2761,7 +2761,7 @@ msgstr ""
 msgid "No changes made."
 msgstr ""
 
-#: bika.lims/bika/lims/browser/worksheet.py:1274
+#: bika.lims/bika/lims/browser/worksheet.py:1275
 msgid "No control type specified"
 msgstr ""
 
@@ -2883,7 +2883,7 @@ msgstr ""
 msgid "Number of analyses"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/reports/qualitycontrol_analysesoutofrange.py:211
+#: bika.lims/bika/lims/browser/reports/qualitycontrol_analysesoutofrange.py:214
 msgid "Number of analyses out of range for period"
 msgstr ""
 
@@ -2935,7 +2935,7 @@ msgid "Open"
 msgstr ""
 
 #: bika.lims/bika/lims/browser/templates/sample_sticker_large.pt:84
-#: bika.lims/bika/lims/browser/worksheet.py:778
+#: bika.lims/bika/lims/browser/worksheet.py:779
 msgid "Order"
 msgstr ""
 
@@ -3099,7 +3099,7 @@ msgstr ""
 msgid "Point of Capture"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/worksheet.py:352
+#: bika.lims/bika/lims/browser/worksheet.py:353
 #: bika.lims/bika/lims/content/worksheettemplate.py:23
 msgid "Position"
 msgstr ""
@@ -3407,7 +3407,7 @@ msgstr ""
 msgid "Reference analysis quality control graphs "
 msgstr ""
 
-#: bika.lims/bika/lims/browser/worksheet.py:1260
+#: bika.lims/bika/lims/browser/worksheet.py:1261
 msgid "Reference sample"
 msgstr ""
 
@@ -3604,7 +3604,7 @@ msgstr ""
 msgid "Results attachments permitted"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:586
+#: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:582
 msgid "Results have been withdrawn"
 msgstr ""
 
@@ -3624,7 +3624,7 @@ msgstr ""
 
 #: bika.lims/bika/lims/browser/analyses.py:92
 #: bika.lims/bika/lims/browser/referencesample.py:75
-#: bika.lims/bika/lims/browser/worksheet.py:362
+#: bika.lims/bika/lims/browser/worksheet.py:363
 msgid "Retested"
 msgstr ""
 
@@ -3856,7 +3856,7 @@ msgstr ""
 msgid "Select a default preservation for this analysis service. If the preservation depends on the sample type combination, specify a preservation per sample type in the table below"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/worksheet.py:1013
+#: bika.lims/bika/lims/browser/worksheet.py:1014
 msgid "Select a destinaton position and the AR to duplicate."
 msgstr ""
 
@@ -3916,7 +3916,7 @@ msgstr ""
 msgid "Select only analysis requests where one or more analyses were analyzed by this user."
 msgstr ""
 
-#: bika.lims/bika/lims/browser/worksheet.py:926
+#: bika.lims/bika/lims/browser/worksheet.py:927
 msgid "Select services in the left column to locate reference samples. Select a reference by clicking it. "
 msgstr ""
 
@@ -3996,7 +3996,7 @@ msgid "Service keywords: no matches found"
 msgstr ""
 
 #: bika.lims/bika/lims/browser/reports/selection_macros/__init__.py:57
-#: bika.lims/bika/lims/browser/worksheet.py:1221
+#: bika.lims/bika/lims/browser/worksheet.py:1222
 #: bika.lims/bika/lims/browser/worksheetfolder.py:125
 msgid "Services"
 msgstr ""
@@ -4068,7 +4068,7 @@ msgid "Small Icon"
 msgstr ""
 
 #: bika.lims/bika/lims/browser/analysisrequest/manage_results.py:69
-#: bika.lims/bika/lims/browser/worksheet.py:744
+#: bika.lims/bika/lims/browser/worksheet.py:745
 msgid "Some analyses use out-of-date or uncalibrated instruments. Results edition not allowed"
 msgstr ""
 
@@ -4552,7 +4552,7 @@ msgid "Total Price"
 msgstr ""
 
 #: bika.lims/bika/lims/browser/reports/qualitycontrol_referenceanalysisqc.py:127
-#: bika.lims/bika/lims/browser/reports/qualitycontrol_resultspersamplepoint.py:162
+#: bika.lims/bika/lims/browser/reports/qualitycontrol_resultspersamplepoint.py:161
 msgid "Total analyses"
 msgstr ""
 
@@ -4976,7 +4976,7 @@ msgstr ""
 msgid "You must assign this request to a client"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/worksheet.py:1287
+#: bika.lims/bika/lims/browser/worksheet.py:1288
 msgid "You must select an instrument"
 msgstr ""
 

@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-05-03 09:39+0000\n"
+"POT-Creation-Date: 2014-05-04 12:27+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -612,6 +612,9 @@ msgstr "Cancel"
 #: ../profiles/default/workflows/bika_batch_workflow/definition.xml
 msgid "close_transition_title"
 msgstr "Close"
+
+msgid "copy_to_new_transition_title"
+msgstr "Copy to new"
 
 #. Default: "Deactivate"
 #: ../profiles/default/workflows/bika_inactive_workflow/definition.xml

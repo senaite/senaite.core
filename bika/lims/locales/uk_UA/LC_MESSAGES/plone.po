@@ -3,7 +3,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2014-05-03 09:39+0000\n"
+"POT-Creation-Date: 2014-05-04 12:27+0000\n"
 "PO-Revision-Date: 2014-03-28 12:52+0000\n"
 "Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
 "Language-Team: Ukrainian (Ukraine) (http://www.transifex.com/projects/p/bika-lims/language/uk_UA/)\n"
@@ -811,6 +811,9 @@ msgstr "Cancel"
 #: ../profiles/default/workflows/bika_batch_workflow/definition.xml
 msgid "close_transition_title"
 msgstr "Close"
+
+msgid "copy_to_new_transition_title"
+msgstr "Copy to new"
 
 # File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
 # line: -1
