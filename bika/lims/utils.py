@@ -376,9 +376,10 @@ def getHiddenAttributesForClass(classname):
     try:
         registry = queryUtility(IRegistry)
         hiddenattributes = registry.get('bika.lims.hiddenattributes', ())
-        for alist in hiddenattributes:
-            if alist[0] == classname:
-                return alist[1:]
+        if hiddenattributes is not None:
+            for alist in hiddenattributes:
+                if alist[0] == classname:
+                    return alist[1:]
     except:
         raise RuntimeError(
                 'Probem accessing optionally hidden attributes in registry')
@@ -389,9 +390,10 @@ def isAttributeHidden(classname, fieldname):
     try:
         registry = queryUtility(IRegistry)
         hiddenattributes = registry.get('bika.lims.hiddenattributes', ())
-        for alist in hiddenattributes:
-            if alist[0] == classname:
-                return fieldname in alist[1:]
+        if hiddenattributes is not None:
+            for alist in hiddenattributes:
+                if alist[0] == classname:
+                    return fieldname in alist[1:]
     except:
         raise RuntimeError(
                 'Probem accessing optionally hidden attributes in registry')

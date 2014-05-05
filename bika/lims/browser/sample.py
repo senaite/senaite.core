@@ -19,7 +19,7 @@ from bika.lims.utils import changeWorkflowState, tmpID
 from bika.lims.utils import changeWorkflowState, to_unicode
 from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
-from bika.lims.utils import to_utf8
+from bika.lims.utils import to_utf8, getHiddenAttributesForClass
 from operator import itemgetter
 from plone.app.layout.globals.interfaces import IViewView
 from plone.registry.interfaces import IRegistry
@@ -901,24 +901,13 @@ class WidgetVisibility(_WV):
                 'SamplingDate',
                 'SamplingDeviation',
             ]
-        optionally_disabled_fields = ()
-        try:
-            registry = queryUtility(IRegistry)
-            hiddenattributes = registry.get('bika.lims.hiddenattributes', ())
-            for alist in hiddenattributes:
-                if alist[0] == self.context.portal_type:
-                    optionally_disabled_fields = alist[1:]
-                    break
-        except:
-            raise RuntimeError(
-                    'Probem accessing optionally hidden attributes in registry')
-
-        if optionally_disabled_fields:
+        hiddenattributes = getHiddenAttributesForClass(self.context.portal_type)
+        if hiddenattributes:
             for section in ret.keys():
                 for key in ret[section]:
                     if key == 'visible':
                         for field in ret[section][key]:
-                            if field in optionally_disabled_fields:
+                            if field in hiddenattributes:
                                 ret[section][key].remove(field)
 
         return ret

@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 from bika.lims.interfaces import IWidgetVisibility
+from bika.lims.utils import getHiddenAttributesForClass
 from plone.registry.interfaces import IRegistry
 from zope.component import queryUtility
 from zope.interface import implements
@@ -20,21 +21,10 @@ class WidgetVisibility(object):
         fields = list(self.context.Schema().fields())
 
         # Get optional fields for class
-        optionally_disabled_fields = ()
-        try:
-            registry = queryUtility(IRegistry)
-            hiddenattributes = registry.get('bika.lims.hiddenattributes', ())
-            for alist in hiddenattributes:
-                if alist[0] == self.context.portal_type:
-                    optionally_disabled_fields = alist[1:]
-                    break
-        except:
-            raise RuntimeError(
-                    'Probem accessing optionally hidden attributes in registry')
-
+        hiddenattributes = getHiddenAttributesForClass(self.context.portal_type)
         for field in fields:
-            if optionally_disabled_fields and \
-               field.__name__ in optionally_disabled_fields:
+            if hiddenattributes and \
+               field.__name__ in hiddenattributes:
                 continue
             if field.widget.visible and isinstance(field.widget.visible, dict):
                 for k, v in field.widget.visible.items():
