@@ -1,4 +1,4 @@
-""" Thermo Scientific 'Gallery 9861x'
+""" PANalytical - Axios_XRF XRF
 """
 from bika.lims import bikaMessageFactory as _
 from . import AxiosXrfImporter, AxiosXrfCSVParser

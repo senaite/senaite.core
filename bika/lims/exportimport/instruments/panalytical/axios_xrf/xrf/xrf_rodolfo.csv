@@ -17,7 +17,7 @@ Results database in:,c:\panalytical\superq\userdata
 
 Analyte,Calibration,Compound,Concentration,Unit,Calculation,Status
 ,status,formula,,,method,
-Na,Calibrated,Na2O,"2,086",%,Calculate,BgC;
+Na,Calibrated,Na2O,"2,085",%,Calculate,BgC;
 Al,Calibrated,Al2O3,"12,501",%,Calculate,BgC;
 Si,Calibrated,SiO2,"76,076",%,Calculate,BgC;
 P,Calibrated,P2O5,"0,016",%,Calculate,BgC;

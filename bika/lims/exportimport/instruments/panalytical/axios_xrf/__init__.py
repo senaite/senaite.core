@@ -15,52 +15,66 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
         self._columns = []
 
     def _parseline(self, line):
-        #sline = line.replace('"', '').strip()
+        # Process the line differenly if it pertains at header or results block
         if self._end_header == False:
-            #sline = line.replace('"', '').strip()
             sline = line.strip(',')
-            #sline = sline.strip(',')
             return self.parse_headerline(sline)
         else:
             return self.parse_resultline(line)
 
     def splitLine(self, line):
-        if self._end_header == False:#Només per la bateria de headers, no pel uantification
+        # If pertains at header it split the line by ':' and then remove ','
+        # Else split by ',' and remove blank spaces
+        if self._end_header == False:
             sline = line.split(':')
             return [token.strip(',') for token in sline]
 
         return [token.strip() for token in line.split(',')]
 
     def parse_headerline(self, line):
-        """ Parses header lines
-            29/11/2013 10:15:44
-            PANalytical
-            Quantification of sample ESFERA CINZA - 1g H3BO3 -  1:0,5 - NO PPC
+        #Process incoming header line
         """
+        29/11/2013 10:15:44
+        PANalytical
+        "Quantification of sample ESFERA CINZA - 1g H3BO3 -  1:0,5 - NO PPC",
+
+        R.M.S.:,"0,035"
+        Result status:,
+        Sum before normalization:,"119,5 %"
+        Normalised to:,"100,0 %"
+        Sample type:,Pressed powder
+        Initial sample weight (g):,"2,000"
+        Weight after pressing (g):,"3,000"
+        Correction applied for medium:,No
+        Correction applied for film:,No
+        Used Compound list:,Oxides
+        Results database:,omnian 2013
+        Results database in:,c:\panalytical\superq\userdata
+        """
+
         if line.startswith('"Quantification of sample'):
-            
-                        
             if len(self._header) == 0:
-                self.err(_("No header found"), self._numline)
+                self.err(_("Unexpected header format"), self._numline)
                 return -1
-            
+            # Remove non important string and double comas to obtein
+            # the sample name free
             line = line.replace("Quantification of sample ", "")
             line = line.replace('"', "")
             splitted = line.split(' - ')
-           
+
             if len(splitted) > 3:
-                sample_name = splitted[0]
-                                
-                self._header['Sample'] = sample_name.strip(' ')
+                self._header['Sample'] = splitted[0].strip(' ')
                 self._header['Quantity'] = splitted[1]
-                self._header['????'] = splitted[2]
+                self._header['????'] = splitted[2]# At present we
+                                                  # dont' know which
+                                                  # data nae has
                 self._header['PPC'] = splitted[3]
 
             else:
                 self.warn(_('Unexpected header format'))
 
             return 1
-
+        # Save each header field and its own value in the dict
         if line.startswith('R.M.S.'):
 
             if len(self._header) == 0:
@@ -218,7 +232,6 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
             return 1
 
         if line.startswith('Analyte'):
-            # Analyte,Calibration,Compound,Concentration,Unit,Calculation,Status
             if len(self._header) == 0:
                 self.err(_("No header found"), self._numline)
                 return -1
@@ -229,41 +242,61 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
             return 1
 
         else:
-            #Agafar la data
             self._header['Date'] = line
             return 1
 
     def parse_resultline(self, line):
+        # Process incoming results line The rows name are:
         # Analyte,Calibration,Compound,Concentration,Unit,Calculation,Status
         if not line.strip():
             return 0
-        
+
         rawdict = {}
+        # Split by "," This line could be improved?
         splitted = self.splitLine(line.strip(";"))
+        # Enumerate the list to obtain: [(0,data0),(1,data1),...]
         e_splitted = list(enumerate(splitted))
         errors = ''
-                
-        for idx, result in e_splitted:
-            if result.startswith('"'): #Ajuntem els resultats
-                result = (e_splitted[idx][1].strip('"') + "," + e_splitted[idx+1][1].strip('"'))
-                a = e_splitted[idx][0]
-                e_splitted[idx] = (a,result)
-                e_splitted.remove(e_splitted[idx+1])
 
-            if len(self._columns) <= idx:
-                self.err(_("Orphan value in column %s, line %s") \
-                             % (str(idx + 1), self._numline))
-                break
-            rawdict[self._columns[idx]] = result
+        com = False
+        for idx, result in e_splitted:
+            if result.startswith('"'):
+                # It means that is the first value part
+                # Consequently we take second part and append both
+                result = (e_splitted[idx][1].strip('"') + "," + e_splitted[idx+1][1].strip('"'))
+                e_splitted[idx] = (idx,result)
+                e_splitted.remove(e_splitted[idx+1])
+                com = True
+                rawdict[self._columns[idx]] = result
+               
+            elif com:#com: # We have rm the 2nd part value, consequently we
+                    # need to decrement idx
+                if len(self._columns) <= idx-1:
+                    self.err(_("Orphan value in column %s, line %s") \
+                                 % (str(idx + 1), self._numline))
+                    break
+                # We add and sync the result with its value's name
+                rawdict[self._columns[idx-1]] = result
+
+            else:
+                if len(self._columns) <= idx:
+                    self.err(_("Orphan value in column %s, line %s") \
+                                 % (str(idx + 1), self._numline))
+                    break
+                rawdict[self._columns[idx]] = result
+
         
+
         aname = rawdict.get('Analyte', '')
         if not aname:
             self.err(_("No Analysis Name defined, line %s") % (self.num_line))
             return 0
         elif aname == "<H>":
+            # <H> maybe is data error header? We need more examples...
             errors = rawdict.get('Compound')
             notes = rawdict.get('Calibration')
-
+            rawdict['Notes'] = notes
+            import pdb; pdb.set_trace()
         rid = self._header['Sample']
         if not rid:
             self.err(_("No Sample defined, line %s") % (self.num_line))
@@ -272,12 +305,14 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
         notes = rawdict.get('Notes', '')
         notes = "Notes: %s" % notes if notes else ''
         rawdict['DefaultResult'] = 'Concentration'
+        # Replace to obtain UK values from default
         rawdict['Concentration'] = rawdict['Concentration'].replace(',','.')
         rawdict['Remarks'] = ' '.join([errors, notes])
         rawres = self.getRawResults().get(rid, [])
         raw = rawres[0] if len(rawres) > 0 else {}
         raw[aname] = rawdict
         self._addRawResult(rid, raw, True)
+        
         return 0
 
 
