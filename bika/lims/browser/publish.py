@@ -170,17 +170,26 @@ class doPublish(BrowserView):
             }
             ### Primary contact attributes
             contact = ar.getContact()
-            self.contact = {
-                'getFullname': to_utf8(contact.getFullname()),
-                'getEmailAddress': to_utf8(contact.getEmailAddress()),
-                'getPublicationPreference': contact.getPublicationPreference(),
-            }
+            if contact:
+                self.contact = {
+                    'getFullname': to_utf8(contact.getFullname()),
+                    'getEmailAddress': to_utf8(contact.getEmailAddress()),
+                    'getPublicationPreference': contact.getPublicationPreference(),
+                }
+            else:
+                self.contact = {
+                    'getFullname': "",
+                    'getEmailAddress': "",
+                    'getPublicationPreference': "",
+                }
 
             ### Client attributes
             client = ar.aq_parent
-            client_address = client.getPostalAddress() \
-                or contact.getBillingAddress() \
-                or contact.getPhysicalAddress()
+            client_address = client.getPostalAddress()
+            if contact and not client_address:
+                client_address = contact.getBillingAddress()
+                if not client_address:
+                    client_address = contact.getPhysicalAddress()
             if client_address:
                 _keys = ['address', 'city', 'state', 'zip', 'country']
                 _list = ["<div>%s</div>" % client_address.get(v) for v in _keys
@@ -261,6 +270,16 @@ class doPublish(BrowserView):
             ar_results = ar_results.replace(ar_css, pdf_css)
             pdf_report = createPdf(ar_results, pdf_outfile, css=pdf_css)
 
+            if contact:
+                recipients = [{'UID': contact.UID(),
+                              'Username': to_utf8(contact.getUsername()),
+                              'Fullname': to_utf8(contact.getFullname()),
+                              'EmailAddress': to_utf8(contact.getEmailAddress()),
+                              'PublicationModes': contact.getPublicationPreference()
+                              }]
+            else:
+                recipients = []
+
             if pdf_report:
                 reportid = self.context.generateUniqueId('ARReport')
                 report = _createObjectByType("ARReport", ar, reportid)
@@ -268,12 +287,7 @@ class doPublish(BrowserView):
                     AnalysisRequest=ar.UID(),
                     Pdf=pdf_report,
                     Html=ar_results,
-                    Recipients=[{'UID': contact.UID(),
-                                'Username': to_utf8(contact.getUsername()),
-                                'Fullname': to_utf8(contact.getFullname()),
-                                'EmailAddress': to_utf8(contact.getEmailAddress()),
-                                'PublicationModes': contact.getPublicationPreference()
-                                 }]
+                    Recipients=recipients
                 )
                 report.unmarkCreationFlag()
                 from bika.lims.idserver import renameAfterCreation
@@ -509,7 +523,8 @@ class doPublish(BrowserView):
 
         # Contact and CC's
         contact = ar.getContact()
-        recips.append({'title': to_utf8(contact.Title()),
+        if contact:
+            recips.append({'title': to_utf8(contact.Title()),
                        'email': contact.getEmailAddress(),
                        'pubpref': contact.getPublicationPreference()})
         for cc in ar.getCCContact():
