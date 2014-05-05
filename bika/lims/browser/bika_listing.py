@@ -429,6 +429,8 @@ class BikaListingView(BrowserView):
                             valroot = '%s-%s' % (valroot, vals[i])
                             self.Or.append(MatchRegexp(index, valroot+'-*'))
                 elif idx.meta_type == 'DateIndex':
+                    if type(value) in (list, tuple):
+                        value = value[0]
                     if value.find(":") > -1:
                         try:
                             lohi = [DateTime(x) for x in value.split(":")]
