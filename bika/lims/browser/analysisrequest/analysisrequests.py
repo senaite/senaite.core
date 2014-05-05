@@ -620,9 +620,13 @@ class AnalysisRequestsView(BikaListingView):
             items[x]['getDateSampled'] = datesampled
             items[x]['getSampler'] = sampler
 
-            items[x]['ClientContact'] = obj.getContact().Title()
-            items[x]['replace']['ClientContact'] = "<a href='%s'>%s</a>" % \
-                (obj.getContact().absolute_url(), obj.getContact().Title())
+            contact = obj.getContact()
+            if contact:
+                items[x]['ClientContact'] = contact.Title()
+                items[x]['replace']['ClientContact'] = "<a href='%s'>%s</a>" % \
+                    (contact.absolute_url(), contact.Title())
+            else:
+                items[x]['ClientContact'] = ""
 
             # sampling workflow - inline edits for Sampler and Date Sampled
             checkPermission = self.context.portal_membership.checkPermission

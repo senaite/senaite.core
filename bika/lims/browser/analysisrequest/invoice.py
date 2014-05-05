@@ -57,7 +57,8 @@ class InvoiceView(BrowserView):
         self.dateRecieved = dateRecieved
         # Collect general information
         self.reviewState = reviewState
-        self.contact = context.getContact().Title()
+        contact = self.getContact()
+        self.contact = context.getContact().Title() if contact else ""
         self.clientOrderNumber = context.getClientOrderNumber()
         self.clientReference = context.getClientReference()
         self.clientSampleId = sample.getClientSampleID()
