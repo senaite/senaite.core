@@ -2,7 +2,8 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import formatDateQuery, formatDateParms, to_utf8
+from bika.lims.utils \
+    import formatDateQuery, formatDateParms, to_utf8, isAttributeHidden
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 
@@ -88,18 +89,22 @@ class Report(BrowserView):
              'type': 'text'})
 
         # and now lets do the actual report lines
+        col_heads = [_('Client'),
+                     _('Request'),
+                     _('Sample type'),
+                     _('Sample point'),
+                     _('Category'),
+                     _('Analysis'),
+                     _('Result'),
+                     _('Min'),
+                     _('Max'),
+                     _('Status'),
+                     ]
+        if isAttributeHidden('Sample', 'SamplePoint'):
+            col_heads.remove(_('Sample point'))
+
         formats = {'columns': 10,
-                   'col_heads': [_('Client'),
-                                 _('Request'),
-                                 _('Sample type'),
-                                 _('Sample point'),
-                                 _('Category'),
-                                 _('Analysis'),
-                                 _('Result'),
-                                 _('Min'),
-                                 _('Max'),
-                                 _('Status'),
-                                 ],
+                   'col_heads': col_heads,
                    'class': '',
                   }
 
@@ -174,8 +179,9 @@ class Report(BrowserView):
             dataitem = {'value': analysis.aq_parent.getSampleTypeTitle()}
             dataline.append(dataitem)
 
-            dataitem = {'value': analysis.aq_parent.getSamplePointTitle()}
-            dataline.append(dataitem)
+            if isAttributeHidden('Sample', 'SamplePoint'):
+                dataitem = {'value': analysis.aq_parent.getSamplePointTitle()}
+                dataline.append(dataitem)
 
             dataitem = {'value': analysis.getCategoryTitle()}
             dataline.append(dataitem)

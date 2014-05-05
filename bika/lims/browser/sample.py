@@ -22,6 +22,8 @@ from bika.lims.utils import isActive
 from bika.lims.utils import to_utf8
 from operator import itemgetter
 from plone.app.layout.globals.interfaces import IViewView
+from plone.registry.interfaces import IRegistry
+from zope.component import queryUtility
 from zope.interface import implements
 from Products.ZCTextIndex.ParseTree import ParseError
 import json
@@ -899,5 +901,24 @@ class WidgetVisibility(_WV):
                 'SamplingDate',
                 'SamplingDeviation',
             ]
+        optionally_disabled_fields = ()
+        try:
+            registry = queryUtility(IRegistry)
+            hiddenattributes = registry.get('bika.lims.hiddenattributes', ())
+            for alist in hiddenattributes:
+                if alist[0] == self.context.portal_type:
+                    optionally_disabled_fields = alist[1:]
+                    break
+        except:
+            raise RuntimeError(
+                    'Probem accessing optionally hidden attributes in registry')
+
+        if optionally_disabled_fields:
+            for section in ret.keys():
+                for key in ret[section]:
+                    if key == 'visible':
+                        for field in ret[section][key]:
+                            if field in optionally_disabled_fields:
+                                ret[section][key].remove(field)
 
         return ret

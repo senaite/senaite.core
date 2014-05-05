@@ -1,43 +1,18 @@
-<table class="invoice-header" summary="Invoice Info">
-	<tbody>
-		<tr>
-			<th i18n:translate="">Invoice To</th>
-			<td tal:content="view/contact" colspan="7"></td>
-		</tr>
-		<tr>
-			<th i18n:translate="">Invoice ID</th>
-			<td tal:content="view/invoiceId">123</td>
-			<th i18n:translate="">Client Order ID</th>
-			<td></td>
-		</tr>
-		<tr>
-			<th i18n:translate="">Client Reference</th>
-			<td tal:content="structure view/clientReference"></td>
-			<th i18n:translate="">Client Sample ID</th>
-			<td tal:content="view/clientOrderNumber"></td>
-		</tr>
-		<tr>
-			<th i18n:translate="">Sample Type</th>
-			<td tal:content="view/sampleType"></td>
-			<th i18n:translate="">Sample Point</th>
-			<td tal:content="view/samplePoint"></td>
-		</tr>
-		<tr>
-			<th i18n:translate="">Request ID</th>
-			<td tal:content="view/requestId"></td>
-			<th i18n:translate="">Data Recieved</th>
-			<td tal:content="view/dateRecieved"></td>
-		</tr>
-		<tr tal:condition="view/verified">
-			<th i18n:translate="">Verified By</th>
-			<td tal:content="view/verifiedBy"></td>
-			<tal:published tal:condition="view/datePublished">
-				<th i18n:translate="">Date Published</th>
-				<td tal:content="view/datePublished"></td>
-			</tal:published>
-		</tr>
-	</tbody>
-</table>
+<div summary="Invoice Info">
+    <!-- Div Styled Table -->
+    <div class="div-table-first-row">
+        <label i18n:translate="">Invoice To</label>
+        <span tal:content="view/contact"></span>
+    </div>
+    <tal:table tal:repeat="field view/headers">
+        <div tal:define="oddrow repeat/field/odd;"
+             tal:attributes="class python:oddrow and 'div-table-right' or 'div-table-left'">
+            <label i18n:translate="" tal:content="field/title">title</label>
+            <span tal:content="field/value"></span>
+        </div>
+    </tal:table>
+</div>
+<br />
 
 <table class="invoice-items" summary="Analyses List">
 	<thead>

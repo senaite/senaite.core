@@ -258,8 +258,11 @@ class ajaxAnalysisRequestSubmit():
                 saved_form = self.request.form
                 self.request.form = resolved_values
                 sample.setSampleType(resolved_values['SampleType'])
-                sample.setSamplePoint(resolved_values['SamplePoint'])
-                sample.setStorageLocation(resolved_values['StorageLocation'])
+                if 'SamplePoint' in resolved_values:
+                    sample.setSamplePoint(resolved_values['SamplePoint'])
+                if 'StorageLocation' in resolved_values:
+                    sample.setStorageLocation(
+                                resolved_values['StorageLocation'])
                 sample.processForm()
                 self.request.form = saved_form
                 if SamplingWorkflowEnabled:

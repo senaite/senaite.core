@@ -14,7 +14,7 @@ from bika.lims.interfaces import IFieldIcons
 from bika.lims.interfaces import IWorksheet
 from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
-from bika.lims.utils import to_utf8
+from bika.lims.utils import to_utf8, getHiddenAttributesForClass
 from bika.lims.utils import getUsers, isActive, tmpID
 from DateTime import DateTime
 from DocumentTemplate import sequence
@@ -883,6 +883,18 @@ class AddAnalysesView(BikaListingView):
             if hideclientlink == False:
                 items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
                     (client.absolute_url(), client.Title())
+
+        hiddenattributes = getHiddenAttributesForClass('AnalysisRequest')
+        toggle_cols = self.get_toggle_cols()
+        new_states = []
+        for i, state in enumerate(self.review_states):
+            if state['id'] == self.review_state:
+                if hiddenattributes and len(state['columns']) > 0:
+                    for field in state['columns']:
+                        if field in hiddenattributes:
+                            state['columns'].remove(field)
+            new_states.append(state)
+        self.review_states = new_states
         return items
 
     def getServices(self):
