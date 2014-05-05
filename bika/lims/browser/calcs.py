@@ -375,8 +375,8 @@ class ajaxGetMethodCalculation(BrowserView):
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         calcdict = {}
-        bc = getToolByName(self, 'bika_catalog')
-        method = bc(portal_type='Method', UID=self.request.get("uid", '0'))
+        uc = getToolByName(self, 'uid_catalog')
+        method = uc(UID=self.request.get("uid", '0'))
         if method and len(method) == 1:
             calc = method[0].getObject().getCalculation()
             if calc:
