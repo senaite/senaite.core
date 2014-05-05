@@ -286,7 +286,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             # Set ReferenceAnalysesGroupID (same id for the analyses from
             # the same Reference Sample and same Worksheet)
             # https://github.com/bikalabs/Bika-LIMS/issues/931
-            if not refgid:
+            if not refgid and not analysis.portal_type == 'ReferenceAnalysis':
                 part = analysis.getSamplePartition().id
                 dups = [an.getReferenceAnalysesGroupID()
                         for an in self.getAnalyses()
