@@ -627,6 +627,8 @@ class ajaxGetInstrumentsAlerts(BrowserView):
         insts = bsc(portal_type='Instrument')
         for i in insts:
             i = i.getObject()
+            if self.portal_workflow.getInfoFor(i,'inactive_state') != 'active':
+                continue
             if i.isOutOfDate():
                 instr = {'uid': i.UID(),
                          'title': i.Title(),
