@@ -16,7 +16,11 @@ class BatchFolderContentsView(BikaListingView):
     def __init__(self, context, request):
         super(BatchFolderContentsView, self).__init__(context, request)
         self.catalog = 'bika_catalog'
-        self.contentFilter = {'portal_type': 'Batch'}
+        self.contentFilter = {
+            'portal_type': 'Batch',
+            'sort_on': 'created',
+            'sort_order': 'reverse',
+        }
         self.context_actions = {}
         self.icon = self.portal_url + "/++resource++bika.lims.images/batch_big.png"
         self.title = _("Batches")
