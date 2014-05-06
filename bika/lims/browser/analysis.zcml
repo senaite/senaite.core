@@ -9,4 +9,10 @@
       factory="bika.lims.browser.analysis.ResultOutOfRange"
     />
 
+    <adapter
+      name="analysis_priority_icons"
+      for="bika.lims.interfaces.IAnalysis"
+      factory="bika.lims.browser.analysis.PriorityIcons"
+    />
+
 </configure>

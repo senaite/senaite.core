@@ -567,7 +567,7 @@ class AnalysisRequestsView(BikaListingView):
             deviation = sample.getSamplingDeviation()
             items[x]['SamplingDeviation'] = deviation and deviation.Title() or ''
             priority = obj.getPriority()
-            items[x]['Priority'] = priority and priority.Title() or ''
+            items[x]['Priority'] = ''
 
             items[x]['getStorageLocation'] = sample.getStorageLocation() and sample.getStorageLocation().Title() or ''
             items[x]['AdHoc'] = sample.getAdHoc() and True or ''

@@ -781,6 +781,9 @@ class AddAnalysesView(BikaListingView):
             'getRequestID': {
                 'title': _('Request ID'),
                 'index': 'getRequestID'},
+            'getPriority': {
+                'title': _('Priority'),
+                'index': 'getPriority'},
             'CategoryTitle': {
                 'title': _('Category'),
                 'index':'getCategoryTitle'},
@@ -803,6 +806,7 @@ class AddAnalysesView(BikaListingView):
              'columns':['Client',
                         'getClientOrderNumber',
                         'getRequestID',
+                        'getPriority',
                         'CategoryTitle',
                         'Title',
                         'getDateReceived',
@@ -862,7 +866,6 @@ class AddAnalysesView(BikaListingView):
             client = obj.aq_parent.aq_parent
             items[x]['getClientOrderNumber'] = obj.getClientOrderNumber()
             items[x]['getDateReceived'] = self.ulocalized_time(obj.getDateReceived())
-
             DueDate = obj.getDueDate()
             items[x]['getDueDate'] = self.ulocalized_time(DueDate)
             if DueDate < DateTime():
@@ -878,6 +881,9 @@ class AddAnalysesView(BikaListingView):
             items[x]['getRequestID'] = obj.aq_parent.getRequestID()
             items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
                  (url, items[x]['getRequestID'])
+            priority = obj.aq_inner.aq_parent.getPriority()
+            items[x]['getPriority'] = ''
+
 
             items[x]['Client'] = client.Title()
             if hideclientlink == False:

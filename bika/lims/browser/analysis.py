@@ -3,7 +3,6 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IFieldIcons
-from bika.lims.permissions import *
 from bika.lims.utils import to_utf8
 from zope.component import adapts
 from zope.interface import implements
@@ -33,7 +32,7 @@ def isOutOfShoulderRange(result, Min, Max, error):
     error_min = result - error_amount
     error_max = result + error_amount
     if (spec_min and result < spec_min and error_max >= spec_min) \
-        or (spec_max and result > spec_max and error_min <= spec_max):
+            or (spec_max and result > spec_max and error_min <= spec_max):
         return True
     # Default: in range
     return False
@@ -84,7 +83,6 @@ def isOutOfRange(result, Min, Max, error):
 
 
 class ResultOutOfRange(object):
-
     """An icon provider for Analyses: Result field out-of-range alerts
     """
     implements(IFieldIcons)
@@ -113,11 +111,11 @@ class ResultOutOfRange(object):
                     rngstr
                 )
             alerts[self.context.UID()] = [{
-                'icon': path + '/warning.png' if acceptable else
-                path + '/exclamation.png',
-                'msg': message,
-                'field': 'Result',
-            }, ]
+                                              'icon': path + '/warning.png' if acceptable else
+                                              path + '/exclamation.png',
+                                              'msg': message,
+                                              'field': 'Result',
+                                          }, ]
         return alerts
 
     def __call__(self, result=None, **kwargs):
@@ -158,3 +156,28 @@ class ResultOutOfRange(object):
                                acceptable,
                                spec.get('min', ''),
                                spec.get('max', ''))
+
+
+class PriorityIcons(object):
+    """An icon provider for indicating AR priorities
+    """
+
+    implements(IFieldIcons)
+
+    def __init__(self, context):
+        self.context = context
+
+    def __call__(self, **kwargs):
+        result = {
+            'msg': '',
+            'field': 'getPriority',
+            'icon': '',
+        }
+        priority = self.context.aq_parent.getPriority()
+        if priority:
+            result['msg'] = priority.Title()
+            icon = priority.getSmallIcon()
+            if icon:
+                result['icon'] = '/'.join(icon.getPhysicalPath())
+            return {self.context.UID(): [result]}
+        return {}

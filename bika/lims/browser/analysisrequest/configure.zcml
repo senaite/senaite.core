@@ -55,18 +55,6 @@
       factory="bika.lims.browser.analysisrequest.PriorityIcons"
     />
 
-    <!--
-    Commented this out in response to issue #1165.
-    XXX TODO: Create an adapter for Range Checking, separate from the IFieldIcons adapter.
-    IFieldIcons should not interfere with out-of-range tests!
-    Still, I don't quite know why this was registered for IAnalysis: @mikejmets?
-    <adapter
-      name="a-pi"
-      for="bika.lims.interfaces.IAnalysis"
-      factory="bika.lims.browser.analysisrequest.PriorityIcons"
-    />
-    -->
-
     <!-- main site/analysisrequests view -->
     <browser:page
       for="bika.lims.interfaces.IAnalysisRequestsFolder"
