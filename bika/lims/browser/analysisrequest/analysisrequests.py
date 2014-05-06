@@ -3,7 +3,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import getUsers
 from bika.lims.permissions import *
-from bika.lims.utils import to_utf8, getUsers, getHiddenAttributesForClass
+from bika.lims.utils import to_utf8, getUsers
 from DateTime import DateTime
 from Products.Archetypes import PloneMessageFactory as PMF
 from plone.app.layout.globals.interfaces import IViewView
@@ -685,9 +685,6 @@ class AnalysisRequestsView(BikaListingView):
                 except Exception:
                     pass
 
-        hiddenattributes = getHiddenAttributesForClass('AnalysisRequest')
-        # Hide Preservation/Sampling workflow actions if the edit columns
-        # are not displayed.
         toggle_cols = self.get_toggle_cols()
         new_states = []
         for i, state in enumerate(self.review_states):
@@ -704,10 +701,6 @@ class AnalysisRequestsView(BikaListingView):
                         state['hide_transitions'].append('preserve')
                     else:
                         state['hide_transitions'] = ['preserve', ]
-            if hiddenattributes and len(state['columns']) > 0:
-                for field in state['columns']:
-                    if field in hiddenattributes:
-                        state['columns'].remove(field)
             new_states.append(state)
         self.review_states = new_states
 

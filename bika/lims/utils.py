@@ -381,8 +381,8 @@ def getHiddenAttributesForClass(classname):
                 if alist[0] == classname:
                     return alist[1:]
     except:
-        raise RuntimeError(
-                'Probem accessing optionally hidden attributes in registry')
+        logger.warning(
+            'Probem accessing optionally hidden attributes in registry')
 
     return []
 
@@ -395,8 +395,8 @@ def isAttributeHidden(classname, fieldname):
                 if alist[0] == classname:
                     return fieldname in alist[1:]
     except:
-        raise RuntimeError(
-                'Probem accessing optionally hidden attributes in registry')
+        logger.warning(
+            'Probem accessing optionally hidden attributes in registry')
 
     return False
 
