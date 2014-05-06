@@ -551,12 +551,15 @@ class AnalysesView(BikaListingView):
             #    and instrument.UID() not in method.getInstrumentUIDs():
             #    instrument = None
 
+            srv_title = to_utf8(service.Title())
+            inst_title = to_utf8(instrument.Title()) if instrument else ''
+
             if service.getInstrumentEntryOfResults() == False:
                 # Manual entry of results, Instrument not allowed
                 item['Instrument'] = _('Manual')
                 msgtitle = to_utf8(self.context.translate(_(
                     "Instrument entry of results not allowed for ${service}",
-                    mapping={"service": service.Title()},
+                    mapping={"service": srv_title},
                 )))
                 item['replace']['Instrument'] = '<a href="#" title="%s">%s</a>' % (msgtitle, _('Manual'))
 
@@ -568,16 +571,16 @@ class AnalysesView(BikaListingView):
                     item['choices']['Instrument'] = voc
                     item['allow_edit'].append('Instrument')
                 else:
-                    item['Instrument'] = instrument.Title()
+                    item['Instrument'] = inst_title
                     item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
-                        (instrument.absolute_url(), instrument.Title())
+                        (instrument.absolute_url(), inst_title)
                 show_methodinstr_columns = True
 
             elif instrument:
                 # Edition not allowed, but an instrument is set
                 item['Instrument'] = instrument.Title()
                 item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
-                        (instrument.absolute_url(), instrument.Title())
+                        (instrument.absolute_url(), inst_title)
                 show_methodinstr_columns = True
 
             else:
