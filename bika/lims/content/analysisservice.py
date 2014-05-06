@@ -821,6 +821,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
                              inactive_state = 'active') \
                         if i.getObject().isManualEntryOfResults()]
         items.sort(lambda x,y: cmp(x[1], y[1]))
+        items.insert(0, ('', _("None")))
         return DisplayList(list(items))
 
     def _getAvailableCalculationsDisplayList(self):
