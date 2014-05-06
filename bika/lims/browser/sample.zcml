@@ -87,10 +87,4 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <adapter
-      name="ar-pr-sm"
-      for="bika.lims.interfaces.IAnalysis"
-      factory="bika.lims.browser.sample.PriorityIcons"
-    />
-
 </configure>

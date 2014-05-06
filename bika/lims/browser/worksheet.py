@@ -1439,30 +1439,3 @@ class ajaxSetInstrument():
         if not instrument:
             raise Exception("Unable to lookup instrument")
         self.context.setInstrument(instrument)
-
-class PriorityIcons(object):
-
-    """An icon provider for indicating AR priorities
-    """
-
-    implements(IFieldIcons)
-    #TODO? adapts(IWorksheet)
-
-    def __init__(self, context):
-        self.context = context
-
-    def __call__(self, **kwargs):
-        result = {
-            'msg': '',
-            'field': 'getPriority',
-            'icon': '',
-        }
-        priority = self.context.aq_parent.getPriority()
-        if priority:
-            result['msg'] = priority.Title()
-            icon = priority.getSmallIcon()
-            if icon:
-                result['icon'] = '/'.join(icon.getPhysicalPath())
-            return {self.context.UID(): [result]}
-        return {}
-

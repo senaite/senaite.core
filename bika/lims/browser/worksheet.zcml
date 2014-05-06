@@ -106,11 +106,4 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <adapter
-      name="ar-pr-ws"
-      for="bika.lims.interfaces.IAnalysis"
-      factory="bika.lims.browser.worksheet.PriorityIcons"
-    />
-
-
 </configure>

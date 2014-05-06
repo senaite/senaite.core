@@ -907,30 +907,3 @@ class WidgetVisibility(_WV):
             ]
 
         return ret
-
-class PriorityIcons(object):
-
-    """An icon provider for indicating AR priorities
-    """
-
-    implements(IFieldIcons)
-    #TODO? adapts(ISample)
-
-    def __init__(self, context):
-        self.context = context
-
-    def __call__(self, **kwargs):
-        result = {
-            'msg': '',
-            'field': 'Priority',
-            'icon': '',
-        }
-        priority = self.context.aq_parent.getPriority()
-        if priority:
-            result['msg'] = priority.Title()
-            icon = priority.getSmallIcon()
-            if icon:
-                result['icon'] = '/'.join(icon.getPhysicalPath())
-            return {self.context.UID(): [result]}
-        return {}
-
