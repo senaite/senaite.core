@@ -14,8 +14,9 @@ class SupplierInstrumentsView(InstrumentsView):
         uidsup = self.context.UID()
         outitems = []
         for x in range(len(items)):
-            obj = items[x]['obj']
-            if obj.getSupplier().UID() == uidsup:
+            obj = items[x].get('obj', None)
+            if obj and hasattr(obj, 'getRawSupplier') \
+               and obj.getRawSupplier() == uidsup:
                 outitems.append(items[x])
         return outitems
 
