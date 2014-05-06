@@ -9,9 +9,16 @@ from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.permissions import *
 from bika.lims.workflow import get_workflow_actions
 from bika.lims.vocabularies import CatalogVocabulary
+from bika.lims.utils import to_utf8, getHiddenAttributesForClass
+from bika.lims.workflow import doActionFor
+from DateTime import DateTime
+from Products.Archetypes import PloneMessageFactory as PMF
+from plone.app.layout.globals.interfaces import IViewView
+from plone.registry.interfaces import IRegistry
 from Products.CMFCore.utils import getToolByName
 from zope.component import adapts
 from zope.component import getAdapters
+from zope.component import queryUtility
 from zope.interface import implements
 
 import json
@@ -264,6 +271,14 @@ class WidgetVisibility(_WV):
                 'Template',
             ]
 
+        hiddenattributes = getHiddenAttributesForClass(self.context.portal_type)
+        if hiddenattributes:
+            for section in ret.keys():
+                for key in ret[section]:
+                    if key == 'visible':
+                        for field in ret[section][key]:
+                            if field in hiddenattributes:
+                                ret[section][key].remove(field)
         return ret
 
 
@@ -401,3 +416,5 @@ def mailto_link_from_ccemails(ccemails):
                 address, address)
             ret.append(mailto)
         return ",".join(ret)
+
+

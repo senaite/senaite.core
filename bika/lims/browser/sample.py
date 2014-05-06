@@ -19,9 +19,11 @@ from bika.lims.utils import changeWorkflowState, tmpID
 from bika.lims.utils import changeWorkflowState, to_unicode
 from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
-from bika.lims.utils import to_utf8
+from bika.lims.utils import to_utf8, getHiddenAttributesForClass
 from operator import itemgetter
 from plone.app.layout.globals.interfaces import IViewView
+from plone.registry.interfaces import IRegistry
+from zope.component import queryUtility
 from zope.interface import implements
 from Products.ZCTextIndex.ParseTree import ParseError
 import json
@@ -899,5 +901,13 @@ class WidgetVisibility(_WV):
                 'SamplingDate',
                 'SamplingDeviation',
             ]
+        hiddenattributes = getHiddenAttributesForClass(self.context.portal_type)
+        if hiddenattributes:
+            for section in ret.keys():
+                for key in ret[section]:
+                    if key == 'visible':
+                        for field in ret[section][key]:
+                            if field in hiddenattributes:
+                                ret[section][key].remove(field)
 
         return ret

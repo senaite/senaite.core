@@ -6,6 +6,7 @@ from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IHeaderTableFieldRenderer
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.CMFPlone import PloneMessageFactory as _p
+from bika.lims.utils import getHiddenAttributesForClass
 from zope.component import getAdapter
 from AccessControl import getSecurityManager
 from AccessControl.Permissions import view
@@ -95,13 +96,17 @@ class HeaderTableView(BrowserView):
         adapter = getAdapter(self.context, name='getWidgetVisibility')
         wv = adapter()
         new_wv = {}
-        # respect schemaextender's re-ordering of fields
+        # respect schemaextender's re-ordering of fields, and
+        # remove hidden attributes.
+        hiddenattributes = getHiddenAttributesForClass('AnalysisRequest')
         schema_fields = [f.getName() for f in self.context.Schema().fields()]
         for mode, state_field_lists in wv.items():
             new_wv[mode] = {}
             for statename, state_fields in state_field_lists.items():
                 new_wv[mode][statename] = \
-                    [field for field in schema_fields if field in state_fields]
+                    [field for field in schema_fields
+                     if field in state_fields
+                     and field not in hiddenattributes]
         edit_fields = new_wv.get("edit", {}).get('visible', [])
         view_fields = new_wv.get("view", {}).get('visible', [])
         # Prominent fields get appended

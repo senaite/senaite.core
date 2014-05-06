@@ -883,6 +883,7 @@ class AddAnalysesView(BikaListingView):
             if hideclientlink == False:
                 items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
                     (client.absolute_url(), client.Title())
+
         return items
 
     def getServices(self):

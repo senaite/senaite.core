@@ -685,8 +685,6 @@ class AnalysisRequestsView(BikaListingView):
                 except Exception:
                     pass
 
-        # Hide Preservation/Sampling workflow actions if the edit columns
-        # are not displayed.
         toggle_cols = self.get_toggle_cols()
         new_states = []
         for i, state in enumerate(self.review_states):

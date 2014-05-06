@@ -17,7 +17,7 @@ from bika.lims import logger
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
-from bika.lims.utils import isActive
+from bika.lims.utils import isActive, getHiddenAttributesForClass
 from bika.lims.utils import to_utf8
 from operator import itemgetter
 from plone.app.content.browser import tableview
@@ -783,6 +783,7 @@ class BikaListingTable(tableview.Table):
         self.pagesize = bika_listing.pagesize
         folderitems = bika_listing.folderitems()
         bika_listing.items = folderitems
+        self.hide_hidden_attributes()
 
         if hasattr(self.bika_listing, 'manual_sort_on') \
            and self.bika_listing.manual_sort_on:
@@ -812,6 +813,26 @@ class BikaListingTable(tableview.Table):
         self.request = bika_listing.request
         self.form_id = bika_listing.form_id
         self.items = folderitems
+
+    def hide_hidden_attributes(self):
+        """Use the bika_listing's contentFilter's portal_type
+        values, if any, to remove fields from review_states if they
+        are marked as hidden in the registry.
+        """
+        if 'portal_type' not in self.bika_listing.contentFilter:
+            return
+        ptlist = self.bika_listing.contentFilter['portal_type']
+        if isinstance(ptlist, basestring):
+            ptlist = [ptlist, ]
+        new_states = []
+        for portal_type in ptlist:
+            hiddenattributes = getHiddenAttributesForClass(portal_type)
+            for i, state in enumerate(self.bika_listing.review_states):
+                for field in state['columns']:
+                    if field in hiddenattributes:
+                        state['columns'].remove(field)
+                new_states.append(state)
+        self.bika_listing.review_states = new_states
 
     def tabindex(self):
         i = 0

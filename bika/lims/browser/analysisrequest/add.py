@@ -8,7 +8,7 @@ from bika.lims.interfaces import IAnalysisRequestAddView
 from bika.lims.browser.analysisrequest import AnalysisRequestViewView
 from bika.lims.jsonapi import load_brain_metadata
 from bika.lims.jsonapi import load_field_values
-from bika.lims.utils import to_utf8
+from bika.lims.utils import to_utf8, getHiddenAttributesForClass
 from bika.lims.utils import tmpID
 from bika.lims.workflow import doActionFor
 from plone.app.layout.globals.interfaces import IViewView
@@ -52,15 +52,18 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         adapter = getAdapter(self.context, name='getWidgetVisibility')
         ret = adapter()
         ordered_ret = {}
-        # respect schemaextender's re-ordering of fields
+        # respect schemaextender's re-ordering of fields, and
+        # remove hidden attributes.
+        hiddenattributes = getHiddenAttributesForClass('AnalysisRequest')
         schema_fields = [f.getName() for f in self.context.Schema().fields()]
         for mode, state_field_lists in ret.items():
             ordered_ret[mode] = {}
             for statename, state_fields in state_field_lists.items():
                 ordered_ret[mode][statename] = \
-                    [field for field in schema_fields if field in state_fields]
+                    [field for field in schema_fields
+                     if field in state_fields
+                     and field not in hiddenattributes]
         return ordered_ret
-
 
     def partitioned_services(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
@@ -90,8 +93,11 @@ class SecondaryARSampleInfo(BrowserView):
         wv = adapter()
         fieldnames = wv.get('secondary', {}).get('invisible', [])
         ret = []
+        hiddenattributes = getHiddenAttributesForClass('AnalysisRequest')
         for fieldname in fieldnames:
             if fieldname in sample_schema:
+                if fieldname in hiddenattributes:
+                    continue
                 fieldvalue = sample_schema[fieldname].getAccessor(sample)()
                 if fieldvalue is None:
                     fieldvalue = ''
@@ -258,8 +264,11 @@ class ajaxAnalysisRequestSubmit():
                 saved_form = self.request.form
                 self.request.form = resolved_values
                 sample.setSampleType(resolved_values['SampleType'])
-                sample.setSamplePoint(resolved_values['SamplePoint'])
-                sample.setStorageLocation(resolved_values['StorageLocation'])
+                if 'SamplePoint' in resolved_values:
+                    sample.setSamplePoint(resolved_values['SamplePoint'])
+                if 'StorageLocation' in resolved_values:
+                    sample.setStorageLocation(
+                                resolved_values['StorageLocation'])
                 sample.processForm()
                 self.request.form = saved_form
                 if SamplingWorkflowEnabled:
