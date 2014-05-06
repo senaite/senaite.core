@@ -27,17 +27,18 @@ function AnalysisServiceEditView() {
             loadDefaultInstrument();
             loadMethods();
             loadDefaultMethod();
-            loadCalculations();
         });
 
         $('#Instrument').live('change', function() {
             loadMethods();
             loadDefaultMethod();
-            loadCalculations();
         });
 
         $('#Methods').live('change', function() {
             loadDefaultMethod();
+        });
+
+        $('#_Method').live('change', function() {
             loadCalculations();
         });
 
@@ -55,7 +56,6 @@ function AnalysisServiceEditView() {
         loadDefaultInstrument();
         loadMethods();
         loadDefaultMethod();
-        loadCalculations();
         applyStyles();
     }
 
@@ -189,6 +189,7 @@ function AnalysisServiceEditView() {
         if ($('#InstrumentEntryOfResults').is(':checked')) {
             // Readonly and set default Instrument's method via ajax
             $('#_Method').prop('disabled', true);
+            var succeed = false;
             var instruid = $('#Instrument').val();
             if (instruid) {
                 $.ajax({
@@ -196,7 +197,8 @@ function AnalysisServiceEditView() {
                     type: 'POST',
                     data: {'_authenticator': $('input[name="_authenticator"]').val(),
                            'uid': instruid },
-                    dataType: 'json'
+                    dataType: 'json',
+                    async: false
                 }).done(function(data) {
                     $('#_Method option').remove();
                     if (data != null && data['uid']) {
@@ -225,6 +227,7 @@ function AnalysisServiceEditView() {
                 loadEmptyMethod();
             }
         }
+        loadCalculations();
     }
 
     /**
@@ -234,13 +237,14 @@ function AnalysisServiceEditView() {
      * needed.
      */
     function loadCalculations() {
+        $("#archetypes-fieldname-InterimFields").hide();
         if ($('#UseDefaultCalculation').is(':checked')) {
             // Use the calculation set by default from the selected method
             $('#archetypes-fieldname-DeferredCalculation').hide();
             $('#archetypes-fieldname-_Calculation').fadeIn('slow');
             $('#_Calculation').prop('disabled', true);
             $('#_Calculation option').remove();
-            var methoduid = $('#_Method').val();
+            var methoduid = $('#_Method option[selected]').val();
             if (methoduid != null && methoduid != '') {
                 $.ajax({
                     url: window.portal_url + "/get_method_calculation",
@@ -250,8 +254,10 @@ function AnalysisServiceEditView() {
                     dataType: 'json'
                 }).done(function(data) {
                     if (data != null && data['uid']) {
-                        $('#_Calculation').append('<option selected val="'+data['uid']+'">'+data['title']+'</option>');
+                        $('#_Calculation').append('<option selected value="'+data['uid']+'">'+data['title']+'</option>');
                     }
+                    loadCalculationInterims();
+                    return true;
                 });
             }
         } else {
@@ -298,8 +304,18 @@ function AnalysisServiceEditView() {
             var rows, i;
             $("#InterimFields_more").click(); // blank last row
             rows = $("tr.records_row_InterimFields");
+            var originals = [];
             if($(rows).length > 1){
                 for (i = $(rows).length - 2; i >= 0; i--) {
+                    // Save the original values
+                    var keyword = $($($(rows)[i]).find('td input')[0]).val();
+                    if (keyword != '') {
+                        var value = $($($(rows)[i]).find('td input')[2]).val();
+                        var unit = $($($(rows)[i]).find('td input')[3]).val();
+                        var hidd = $($($(rows)[i]).find('td input')[4]).is(':checked');
+                        var wide = $($($(rows)[i]).find('td input')[5]).is(':checked');
+                        originals.push([keyword, value, unit, hidd, wide]);
+                    }
                     $($(rows)[i]).remove();
                 }
             }
@@ -311,10 +327,21 @@ function AnalysisServiceEditView() {
 
                 for (i = 0; i < data.objects[0].InterimFields.length; i++) {
                     var row = data.objects[0].InterimFields[i];
+                    var original = null;
+                    for (j = 0; j < originals.length; j++) {
+                        if (originals[j][0] == row.keyword) {
+                            original = originals[j]; break;
+                        }
+                    }
                     $("#InterimFields-keyword-"+i).val(row.keyword);
                     $("#InterimFields-title-"+i).val(row.title);
-                    $("#InterimFields-value-"+i).val(row.value);
-                    $("#InterimFields-unit-"+i).val(row.unit);
+                    if (original == null) {
+                        $("#InterimFields-value-"+i).val(row.value);
+                        $("#InterimFields-unit-"+i).val(row.unit);
+                    } else {
+                        $("#InterimFields-value-"+i).val(original[1]);
+                        $("#InterimFields-unit-"+i).val(original[2]);
+                    }
                     $("#InterimFields_more").click();
                 }
             } else {

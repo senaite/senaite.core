@@ -40,7 +40,7 @@ class ResultOutOfRange(object):
         try:
             result = float(str(result))
             orig = float(str(orig))
-            variation = float(self.context.getService().getDuplicateVariation())
+            variation = float(str(self.context.getService().getDuplicateVariation()))
         except ValueError:
             return {}
 
