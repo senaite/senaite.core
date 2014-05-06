@@ -17,12 +17,13 @@ body {
     font-family: &dtml-fontFamily;;
     background-color: &dtml-backgroundColor;;
     color: &dtml-fontColor;;
+    font-size:65%;
 }
 
 /* Header styles
 */
 h1 {
-    font-size: 100%;
+    font-size: 140%;
     margin-bottom: 10px;
 }
 h2 {
@@ -34,7 +35,7 @@ h3 {
 */
 .header_table {
     width:100%;
-    font-size: 80%;
+    font-size: 100%;
 }
 
 .category_heading {
@@ -42,6 +43,7 @@ h3 {
     font-weight:bold;
     border: &dtml-borderWidth; &dtml-borderStyle; &dtml-borderColor;;
     background-color:#efefef;
+    margin-bottom:10px;
 }
 
 .number {
@@ -55,14 +57,20 @@ h3 {
 }
 
 .bika-report-parms {
-    /*font-size: 110%;*/
+    font-size: 100%;
 	border-collapse:collapse;
     margin-bottom: 15px;
 }
 
 .bika-report-parms td,
-.bika-report-parms th {
+    font-size: 100%;
     padding:1px 10px;
+}
+
+.bika-report-parms th {
+    font-size: 100%;
+    padding:1px 10px;
+    white-space:nowrap;
 }
 
 .bika-report-table {
@@ -73,6 +81,11 @@ h3 {
 table.bika-report-table {
 	border-collapse:collapse;
 	padding:0;
+}
+
+.bika-report-table-header {
+    padding-bottom:5px;
+    -pdf-keep-with-next: true
 }
 
 .bika-report-table a {

@@ -263,3 +263,5 @@ msgstr "Remove"
 msgid "verify_transition_title"
 msgstr "Verify"
 
+msgid "copy_to_new_transition_title"
+msgstr "Copy to new"

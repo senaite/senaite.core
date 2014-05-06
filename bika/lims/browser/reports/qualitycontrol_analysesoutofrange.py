@@ -139,8 +139,11 @@ class Report(BrowserView):
                     else:
                         continue
 
-            spec_min = float(spec_dict['min'])
-            spec_max = float(spec_dict['max'])
+            try:
+                spec_min = float(spec_dict['min'])
+                spec_max = float(spec_dict['max'])
+            except ValueError:
+                continue
             if spec_min <= result <= spec_max:
                 continue
 

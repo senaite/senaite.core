@@ -149,7 +149,7 @@
             <tal:x content="structure python:view.selection_macros.select_samplepoint(
                                              allow_blank=True)"/>
             <tal:x content="structure python:view.selection_macros.select_sampletype(
-                                             allow_blank=False)"/>
+                                             allow_blank=True)"/>
             <tal:x content="structure python:view.selection_macros.select_analysisservice(
                                              multiselect=True,
                                              allow_blank=False)"/>

@@ -554,7 +554,10 @@ class AnalysesView(BikaListingView):
             if service.getInstrumentEntryOfResults() == False:
                 # Manual entry of results, Instrument not allowed
                 item['Instrument'] = _('Manual')
-                msgtitle = _("Instrument entry of results not allowed for %s") % service.Title()
+                msgtitle = to_utf8(self.context.translate(_(
+                    "Instrument entry of results not allowed for ${service}",
+                    mapping={"service": service.Title()},
+                )))
                 item['replace']['Instrument'] = '<a href="#" title="%s">%s</a>' % (msgtitle, _('Manual'))
 
             elif can_set_instrument:

@@ -813,7 +813,9 @@ class ajaxGetSampleTypeInfo(BrowserView):
 
 
 class WidgetVisibility(_WV):
-
+    """The values returned here do not decide the field order, only their
+    visibility.  The field order is set in the schema.
+    """
     def __call__(self):
         ret = super(WidgetVisibility, self).__call__()
 

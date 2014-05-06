@@ -1267,33 +1267,37 @@ function fill_column(data) {
 		}
 		var services = {};
 		var specs = {};
-		var cat_uid, service_uid;
-		var i;
+		var poc_name, cat_uid, service_uid, service_uids;
+		var i, key;
 		for (i = obj.Analyses.length - 1; i >= 0; i--) {
 			var analysis = obj.Analyses[i];
 			cat_uid = analysis.CategoryUID;
 			service_uid = analysis.ServiceUID;
-			if(!(analysis.CategoryUID in services)){
-				services[analysis.CategoryUID] = [];
+            key = analysis.PointOfCapture + "__" + analysis.CategoryUID;
+			if(!(key in services)){
+				services[key] = [];
 			}
-			services[analysis.CategoryUID].push(service_uid);
+			services[key].push(service_uid);
 			specs[service_uid] = analysis.specification;
 		}
-		for(cat_uid in services){
-			if(!services.hasOwnProperty(cat_uid)){ continue; }
-			var service_uids = services[cat_uid];
-			window.toggleCat("lab", cat_uid, col, service_uids, true);
-			for (i = 0; i < service_uids.length; i++) {
-				service_uid = service_uids[i];
-				// $("[column="+col+"]").filter("#"+service_uid).click(); // toggleCat does this.
-				var spec = specs[service_uid];
-				if(spec){
-					$("[name^='ar."+col+".min']").filter("[uid='"+service_uid+"']").val(spec.min);
-					$("[name^='ar."+col+".max']").filter("[uid='"+service_uid+"']").val(spec.max);
-					$("[name^='ar."+col+".error']").filter("[uid='"+service_uid+"']").val(spec.error);
-				}
-			}
-		}
+        for(key in services) {
+            if (!services.hasOwnProperty(key)) {
+                continue;
+            }
+            poc_name = key.split("__")[0];
+            cat_uid = key.split("__")[1];
+            service_uids = services[key];
+            window.toggleCat(poc_name, cat_uid, col, service_uids, true);
+            for (i = 0; i < service_uids.length; i++) {
+                service_uid = service_uids[i];
+                var spec = specs[service_uid];
+                if (spec) {
+                    $("[name^='ar." + col + ".min']").filter("[uid='" + service_uid + "']").val(spec.min);
+                    $("[name^='ar." + col + ".max']").filter("[uid='" + service_uid + "']").val(spec.max);
+                    $("[name^='ar." + col + ".error']").filter("[uid='" + service_uid + "']").val(spec.error);
+                }
+            }
+        }
 	}
 }
 

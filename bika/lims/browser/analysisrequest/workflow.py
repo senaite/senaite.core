@@ -38,6 +38,10 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         form = self.request.form
         plone.protect.CheckAuthenticator(form)
         action, came_from = WorkflowAction._get_form_workflow_action(self)
+        if type(action) in (list, tuple):
+            action = action[0]
+        if type(came_from) in (list, tuple):
+            came_from = came_from[0]
         # Call out to the workflow action method
         # Use default bika_listing.py/WorkflowAction for other transitions
         method_name = 'workflow_action_' + action

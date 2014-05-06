@@ -24,6 +24,7 @@ class SamplesView(_SV):
         samples = {}
         for sample in (p.getObject() for p in tool_samples):
             for ar in sample.getAnalysisRequests():
-                if ar.getBatch().UID() == self.context.UID():
-                    samples[sample.getId()] = sample
+                batch = ar.getBatch()
+                if batch and ar.getBatch().UID() == self.context.UID():
+                        samples[sample.getId()] = sample
         return samples.values()

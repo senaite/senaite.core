@@ -124,6 +124,7 @@ class WorksheetWorkflowAction(WorkflowAction):
         instruments = form.get('Instrument', [{}])[0]
         analysts = self.request.form.get('Analyst', [{}])[0]
         selected = WorkflowAction._get_selected_items(self)
+        workflow = getToolByName(self.context, 'portal_workflow')
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         sm = getSecurityManager()
 

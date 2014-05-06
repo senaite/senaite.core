@@ -4,6 +4,9 @@ from zope.interface import implements
 
 
 class WidgetVisibility(object):
+    """The values returned here do not decide the field order, only their
+    visibility.  The field order is set in the schema.
+    """
     implements(IWidgetVisibility)
 
     def __init__(self, context):

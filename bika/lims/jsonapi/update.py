@@ -3,7 +3,7 @@ from plone.jsonapi.core import router
 from plone.jsonapi.core.interfaces import IRouteProvider
 from zExceptions import BadRequest
 from zope import interface
-
+import json
 import transaction
 
 
