@@ -718,6 +718,9 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         from bika.lims.idserver import renameAfterCreation
         return renameAfterCreation(self)
 
+    def Title(self):
+        return _c(self.title)
+
     security.declarePublic('getDiscountedPrice')
     def getDiscountedPrice(self):
         """ compute discounted price excl. vat """
