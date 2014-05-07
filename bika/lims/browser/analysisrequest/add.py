@@ -254,6 +254,7 @@ class ajaxAnalysisRequestSubmit():
                 else:
                     resolved_values[k] = values[k]
 
+            # create the sample
             client = uc(UID=values['Client_uid'])[0].getObject()
             if values.get('Sample_uid', ''):
                 # Secondary AR
@@ -301,23 +302,12 @@ class ajaxAnalysisRequestSubmit():
                         parts[i]['container'] = d_clist
 
             # create the AR
-            Analyses = values["Analyses"]
 
-            specs = {}
-            if len(values.get("min", [])):
-                for i, service_uid in enumerate(Analyses):
-                    specs[service_uid] = {
-                        "min": values["min"][i],
-                        "max": values["max"][i],
-                        "error": values["error"][i]
-                    }
-
-            saved_form = self.request.form
-            self.request.form = resolved_values
             ar = _createObjectByType("AnalysisRequest", client, tmpID())
             ar.setSample(sample)
-            ar.processForm()
-            self.request.form = saved_form
+
+            ar.processForm(REQUEST=self.request, values=resolved_values)
+
             # Object has been renamed
             ar.edit(RequestID=ar.getId())
 
@@ -384,6 +374,18 @@ class ajaxAnalysisRequestSubmit():
                 wftool.doActionFor(ar, 'no_sampling_workflow')
 
             ARs.append(ar.getId())
+
+            # set analysis request analyses
+            Analyses = values["Analyses"]
+
+            specs = {}
+            if len(values.get("min", [])):
+                for i, service_uid in enumerate(Analyses):
+                    specs[service_uid] = {
+                        "min": values["min"][i],
+                        "max": values["max"][i],
+                        "error": values["error"][i]
+                    }
 
             new_analyses = ar.setAnalyses(Analyses, prices=prices, specs=specs)
             ar_analyses = ar.objectValues('Analysis')
