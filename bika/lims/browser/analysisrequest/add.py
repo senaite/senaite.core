@@ -20,6 +20,10 @@ from zope.component import getAdapter
 from zope.interface import implements
 import plone
 
+from bika.lims.utils.sample import create_sample
+from bika.lims.utils.analysisrequest import create_analysisrequest
+
+
 
 class AnalysisRequestAddView(AnalysisRequestViewView):
     """ The main AR Add form
@@ -254,30 +258,16 @@ class ajaxAnalysisRequestSubmit():
                 else:
                     resolved_values[k] = values[k]
 
+            # Retrieve the catalogue reference to the client
+            client = uc(UID=resolved_values['Client'])[0].getObject()
+
             # create the sample
-            client = uc(UID=values['Client_uid'])[0].getObject()
-            if values.get('Sample_uid', ''):
-                # Secondary AR
-                sample = uc(UID=values['Sample_uid'])[0].getObject()
-            else:
-                # Primary AR
-                sample = _createObjectByType("Sample", client, tmpID())
-                saved_form = self.request.form
-                self.request.form = resolved_values
-                sample.setSampleType(resolved_values['SampleType'])
-                if 'SamplePoint' in resolved_values:
-                    sample.setSamplePoint(resolved_values['SamplePoint'])
-                if 'StorageLocation' in resolved_values:
-                    sample.setStorageLocation(
-                                resolved_values['StorageLocation'])
-                sample.processForm()
-                self.request.form = saved_form
-                if SamplingWorkflowEnabled:
-                    wftool.doActionFor(sample, 'sampling_workflow')
-                else:
-                    wftool.doActionFor(sample, 'no_sampling_workflow')
-                    # Object has been renamed
-                sample.edit(SampleID=sample.getId())
+            sample = create_sample(
+                self.context,
+                self.request,
+                client,
+                resolved_values
+            )
 
             resolved_values['Sample'] = sample
             resolved_values['Sample_uid'] = sample.UID()
