@@ -6,11 +6,10 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.interfaces import IAnalysisRequestAddView
 from bika.lims.browser.analysisrequest import AnalysisRequestViewView
-from bika.lims.jsonapi import load_brain_metadata
-from bika.lims.jsonapi import load_field_values
 from bika.lims.utils import to_utf8, getHiddenAttributesForClass
 from bika.lims.utils import tmpID
 from bika.lims.workflow import doActionFor
+from magnitude import mg
 from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes import PloneMessageFactory as PMF
 from Products.CMFCore.utils import getToolByName
@@ -81,6 +80,7 @@ class SecondaryARSampleInfo(BrowserView):
     """
 
     def __init__(self, context, request):
+        super(SecondaryARSampleInfo, self).__init__(context, request)
         self.context = context
         self.request = request
 
