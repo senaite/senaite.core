@@ -236,9 +236,9 @@ class ajaxAnalysisRequestSubmit():
         # The actual submission
         for column in columns:
             if form_parts:
-                parts = form_parts[str(column)]
+                partitions = form_parts[str(column)]
             else:
-                parts = []
+                partitions = []
             formkey = "ar.%s" % column
             values = form[formkey].copy()
 
@@ -275,22 +275,22 @@ class ajaxAnalysisRequestSubmit():
             # Selecting a template sets the hidden 'parts' field to template values.
             # Selecting a profile will allow ar_add.js to fill in the parts field.
             # The result is the same once we are here.
-            if not parts:
-                parts = [{'services': [],
-                          'container': [],
-                          'preservation': '',
-                          'separate': False}]
+            if not partitions:
+                partitions = [{
+                    'services': [],
+                    'container': [],
+                    'preservation': '',
+                    'separate': False
+                }]
 
             # Apply DefaultContainerType to partitions without a container
             default_container_type = resolved_values.get(
                 'DefaultContainerType', None
             )
             if default_container_type:
-                d_clist = [c.UID for c in bsc(portal_type='Container')
-                           if c.getObject().getContainerType().UID() == D_UID]
                 container_type = bsc(UID=default_container_type)[0].getObject()
                 containers = container_type.getcontainers()
-                for partition in parts:
+                for partition in partitions:
                     if not partition.get(container, None):
                         partition['container'] = containers
 
@@ -306,15 +306,15 @@ class ajaxAnalysisRequestSubmit():
 
             # Create sample partitions
             parts_and_services = {}
-            for _i in range(len(parts)):
-                p = parts[_i]
+            for _i in range(len(partitions)):
+                p = partitions[_i]
                 part_prefix = sample.getId() + "-P"
                 if '%s%s' % (part_prefix, _i + 1) in sample.objectIds():
-                    parts[_i]['object'] = sample['%s%s' % (part_prefix, _i + 1)]
+                    partitions[_i]['object'] = sample['%s%s' % (part_prefix, _i + 1)]
                     parts_and_services['%s%s' % (part_prefix, _i + 1)] = p['services']
                 else:
                     part = _createObjectByType("SamplePartition", sample, tmpID())
-                    parts[_i]['object'] = part
+                    partitions[_i]['object'] = part
                     # Sort available containers by capacity and select the
                     # smallest one possible.
                     if p.get('container', ''):
@@ -345,10 +345,10 @@ class ajaxAnalysisRequestSubmit():
                         and container.getPrePreserved() \
                         and container.getPreservation():
                         preservation = container.getPreservation().UID()
-                        parts[_i]['prepreserved'] = True
+                        partitions[_i]['prepreserved'] = True
                     else:
                         preservation = p.get('preservation', '')
-                        parts[_i]['prepreserved'] = False
+                        partitions[_i]['prepreserved'] = False
 
                     part.edit(
                         Container=container,
@@ -432,7 +432,7 @@ class ajaxAnalysisRequestSubmit():
                         doActionFor(analysis, 'receive')
 
             # Transition pre-preserved partitions.
-            for p in parts:
+            for p in partitions:
                 if 'prepreserved' in p and p['prepreserved']:
                     part = p['object']
                     state = wftool.getInfoFor(part, 'review_state')
