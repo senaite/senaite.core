@@ -1,4 +1,5 @@
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.utils import to_utf8
 from plone.app.contentmenu.menu import WorkflowSubMenuItem as _WorkflowSubMenuItem
 from Products.CMFCore.utils import getToolByName
@@ -21,11 +22,11 @@ when viewing cancelled/inactive objects """
         stateTitle = self._currentStateTitle()
 
         if workflow.getInfoFor(self.context, 'cancellation_state', '') == 'cancelled':
-            title2 = to_utf8(self.context.translate(_('Cancelled')))
+            title2 = t(_('Cancelled'))
             # cater for bika_one_state_workflow (always Active)
             if not stateTitle or \
                workflow.getInfoFor(self.context, 'review_state', '') == 'active':
-                stateTitle = to_utf8(self.context.translate(_('Cancelled')))
+                stateTitle = t(_('Cancelled'))
             else:
                 stateTitle = "%s (%s)" % (stateTitle, _(title2))
             return {'id': 'plone-contentmenu-workflow',
@@ -33,12 +34,12 @@ when viewing cancelled/inactive objects """
                     'state': state,
                     'stateTitle': stateTitle, }
         elif workflow.getInfoFor(self.context, 'inactive_state', '') == 'inactive':
-            title2 = to_utf8(self.context.translate(_('Dormant')))
+            title2 = t(_('Dormant'))
             # cater for bika_one_state_workflow (always Active)
             if not stateTitle or \
                (workflow.getInfoFor(self.context, 'review_state', '') in
                                                     ('active', 'current')):
-                stateTitle = to_utf8(self.context.translate(_('Dormant')))
+                stateTitle = t(_('Dormant'))
             else:
                 stateTitle = "%s (%s)" % (stateTitle, _(title2))
             return {'id': 'plone-contentmenu-workflow',
@@ -103,5 +104,5 @@ when viewing cancelled/inactive objects """
 # state = wtool.getInfoFor(self.context, w.state_var, None)
 # if state in w.states:
 # title = w.states[state].title or state
-# titles.append(to_utf8(self.context.translate(title, domain="plone", context=self.request)))
+# titles.append(t(title, domain="plone", context=self.request))
 # return u", ".join(titles)

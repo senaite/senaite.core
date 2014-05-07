@@ -6,6 +6,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims.permissions import ManageAnalysisRequests
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from operator import itemgetter
 from bika.lims.interfaces import IClientFolder
 from plone.app.content.browser.interfaces import IFolderContentsView

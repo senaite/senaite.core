@@ -1,5 +1,6 @@
 from AccessControl import getSecurityManager
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema

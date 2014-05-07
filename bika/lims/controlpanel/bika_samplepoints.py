@@ -10,6 +10,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from plone.app.layout.globals.interfaces import IViewView
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from Products.Archetypes import PloneMessageFactory as _p
 from bika.lims.interfaces import ISamplePoints
 from bika.lims.content.bikaschema import BikaFolderSchema

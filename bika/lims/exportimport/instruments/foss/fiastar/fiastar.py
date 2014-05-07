@@ -7,6 +7,7 @@ from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.Archetypes.event import ObjectInitializedEvent
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import to_utf8
 from bika.lims import logger
@@ -130,7 +131,7 @@ def Import(context,request):
         if not service:
             msg = _('Service keyword ${keyword} not found',
                     mapping = {'keyword': options[param], })
-            res['errors'].append(to_utf8(context.translate(msg)))
+            res['errors'].append(t(msg))
             continue
         service = service[0].getObject()
         kw_map[param] = service
@@ -174,7 +175,7 @@ def Import(context,request):
 
     log = []
     if len(rows) == 0:
-        res['log'].append(to_utf8(context.translate(_("No valid file or format"))))
+        res['log'].append(t(_("No valid file or format")))
 
     for row in rows:
         param = row['Parameter']
@@ -188,7 +189,7 @@ def Import(context,request):
         if len(parent) == 0:
             msg = _('Analysis parent UID ${parent_uid} not found',
                     mapping = {'parent_uid': row['Sample name'], })
-            res['errors'].append(to_utf8(context.translate(msg)))
+            res['errors'].append(t(msg))
             continue
         parent = parent[0].getObject()
 
@@ -197,7 +198,7 @@ def Import(context,request):
         if len(container) == 0:
             msg = _('Analysis container UID ${parent_uid} not found',
                     mapping = {'container_uid': row['Sample type'], })
-            res['errors'].append(to_utf8(context.translate(msg)))
+            res['errors'].append(t(msg))
             continue
         container = container[0].getObject()
 
@@ -217,7 +218,7 @@ def Import(context,request):
             if not analysis:
                 msg = _('Duplicate analysis for slot ${slot} not found',
                         mapping = {'slot': row['Cup'], })
-                res['errors'].append(to_utf8(context.translate(msg)))
+                res['errors'].append(t(msg))
                 continue
             row['analysis'] = analysis
         else:
@@ -247,13 +248,13 @@ def Import(context,request):
                     mapping = {'service': service.Title(),
                                'slot': row['Cup'],
                                'state': as_state,})
-            res['errors'].append(to_utf8(context.translate(msg)))
+            res['errors'].append(t(msg))
             continue
         if analysis.getResult():
             msg = _('Analysis ${service} at slot ${slot} has a result - not updated',
                     mapping = {'service': service.Title(),
                                'slot': row['Cup'], })
-            res['errors'].append(to_utf8(context.translate(msg)))
+            res['errors'].append(t(msg))
             continue
 
         analysis.setInterimFields(
@@ -300,6 +301,6 @@ def Import(context,request):
         msg = _('Analysis ${service} at slot ${slot}: OK',
                 mapping = {'service': service.Title(),
                            'slot': row['Cup'], })
-        res['log'].append(to_utf8(context.translate(msg)))
+        res['log'].append(t(msg))
 
     return json.dumps(res)

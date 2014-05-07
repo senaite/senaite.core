@@ -4,6 +4,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.browser.client import ClientSamplesView
 from bika.lims.utils import formatDateQuery, formatDateParms, to_utf8
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -128,5 +129,5 @@ class Report(BrowserView):
                 'footings': footlines}
 
 
-        return {'report_title': to_utf8(self.context.translate(headings['header'])),
+        return {'report_title': t(headings['header']),
                 'report_data': self.template()}

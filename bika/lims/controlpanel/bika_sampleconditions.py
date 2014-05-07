@@ -6,6 +6,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ISampleConditions
 from plone.app.layout.globals.interfaces import IViewView
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.permissions import ManageBika
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema

@@ -1,7 +1,7 @@
 from bika.lims import enum
 from bika.lims import PMF
 from bika.lims.interfaces import IJSONReadExtender
-from bika.lims.utils import to_utf8
+from bika.lims.utils import t
 from Products.CMFCore.interfaces import IContentish
 from zope.interface import Interface
 from Products.CMFCore.utils import getToolByName
@@ -69,13 +69,12 @@ def get_workflow_actions(obj):
     """
 
     def translate(id):
-        translate = obj.translate
-        return to_utf8(translate(PMF(id + "_transition_title")))
+        return t(PMF(id + "_transition_title"))
 
     workflow = getToolByName(obj, 'portal_workflow')
-    actions = [{"id": t["id"],
-                "title": translate(t["id"])}
-               for t in workflow.getTransitionsFor(obj)]
+    actions = [{"id": it["id"],
+                "title": translate(it["id"])}
+               for it in workflow.getTransitionsFor(obj)]
 
     return actions
 

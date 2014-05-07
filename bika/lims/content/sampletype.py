@@ -7,6 +7,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.config import PROJECTNAME
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.fields import DurationField

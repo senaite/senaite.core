@@ -1,6 +1,7 @@
 """ Thermo Scientific 'Gallery'
 """
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentCSVResultsFileParser
 

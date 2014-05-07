@@ -1,5 +1,6 @@
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from Products.CMFPlone.utils import getToolByName
 from bika.lims.permissions import AddInvoice
 from bika.lims.permissions import ManageInvoices

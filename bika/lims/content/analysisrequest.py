@@ -25,6 +25,7 @@ from bika.lims.workflow import doActionFor
 from decimal import Decimal
 from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 
 import sys
 

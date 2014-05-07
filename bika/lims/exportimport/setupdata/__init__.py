@@ -5,6 +5,7 @@ from Products.CMFPlone.utils import safe_unicode, _createObjectByType
 from bika.lims.utils import tmpID, to_unicode
 from bika.lims.utils import to_utf8
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from zope.interface import implements
@@ -1753,13 +1754,13 @@ class Invoice_Batches(WorksheetImporter):
             obj = _createObjectByType("InvoiceBatch", folder, tmpID())
             if not row['title']:
                 message = _("InvoiceBatch has no Title")
-                raise Exception(to_utf8(self.context.translate(message)))
+                raise Exception(t(message))
             if not row['start']:
                 message = _("InvoiceBatch has no Start Date")
-                raise Exception(to_utf8(self.context.translate(message)))
+                raise Exception(t(message))
             if not row['end']:
                 message = _("InvoiceBatch has no End Date")
-                raise Exception(to_utf8(self.context.translate(message)))
+                raise Exception(t(message))
             obj.edit(
                 title=row['title'],
                 BatchStartDate=row['start'],

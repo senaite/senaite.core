@@ -1,5 +1,6 @@
 from bika.lims import PMF
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 
 
 def overview_controlpanel_categories(self):

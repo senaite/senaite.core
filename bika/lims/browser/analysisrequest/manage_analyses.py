@@ -1,5 +1,6 @@
 from AccessControl import getSecurityManager
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.sample import SamplePartitionsView
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
@@ -194,30 +195,28 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 src='%s/++resource++bika.lims.images/accredited.png'\
                 title='%s'>" % (
                     self.portal_url,
-                    to_utf8(self.context.translate(_("Accredited")))
+                    t(_("Accredited"))
                 )
             if obj.getReportDryMatter():
                 after_icons += "<img\
                 src='%s/++resource++bika.lims.images/dry.png'\
                 title='%s'>" % (
                     self.portal_url,
-                    to_utf8(self.context.translate(
-                        _("Can be reported as dry matter")))
+                    t(_("Can be reported as dry matter"))
                 )
             if obj.getAttachmentOption() == 'r':
                 after_icons += "<img\
                 src='%s/++resource++bika.lims.images/attach_reqd.png'\
                 title='%s'>" % (
                     self.portal_url,
-                    to_utf8(self.context.translate(_("Attachment required")))
+                    t(_("Attachment required"))
                 )
             if obj.getAttachmentOption() == 'n':
                 after_icons += "<img\
                 src='%s/++resource++bika.lims.images/attach_no.png'\
                 title='%s'>" % (
                     self.portal_url,
-                    to_utf8(self.context.translate(
-                        _('Attachment not permitted')))
+                    t(_('Attachment not permitted'))
                 )
             if after_icons:
                 items[x]['after']['Title'] = after_icons

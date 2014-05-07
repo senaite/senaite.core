@@ -4,6 +4,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.browser.client import ClientSamplesView
 from bika.lims.utils import formatDateQuery, formatDateParms
 from bika.lims.utils import to_utf8
@@ -160,7 +161,7 @@ class Report(BrowserView):
                 'datalines': datalines,
                 'footings': footlines}
 
-        title = to_utf8(self.context.translate(headings['header']))
+        title = t(headings['header'])
 
         return {'report_title': title,
                 'report_data': self.template()}

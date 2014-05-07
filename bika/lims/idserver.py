@@ -5,6 +5,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.TranslationServiceTool import TranslationServiceTool
 from bika.lims.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims import interfaces
 from bika.lims import logger
 from email.Utils import formataddr

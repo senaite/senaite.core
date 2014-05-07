@@ -1,5 +1,6 @@
 from bika.lims.controlpanel.bika_instruments import InstrumentsView
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 
 class InstrumentTypeInstrumentsView(InstrumentsView):
 

@@ -1,5 +1,6 @@
 from bika.lims.controlpanel.bika_analysisservices import AnalysisServicesView
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.utils import to_utf8 as _c, to_utf8
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
@@ -31,17 +32,17 @@ class AccreditationView(AnalysisServicesView):
                         'ref': lab.getAccreditationReference()
         }
         if accredited:
-            msg = to_utf8(context.translate(_(
+            msg = t(_(
                 "${labname} has been accredited as ${accr} " + \
                 "conformant by ${abbr}, (${body}). ${abbr} is " + \
                 "recognised by government as a national " + \
                 "accreditation body in ${labcountry}. ",
                 mapping=self.mapping
-            )))
+            ))
         else:
-            msg = _("The lab is not accredited, or accreditation has not "
-                    "been configured. ")
-        self.description = _c(context.translate(_(msg)))
+            msg = t(_("The lab is not accredited, or accreditation has not "
+                    "been configured. "))
+        self.description = msg
         msg = _("All Accredited analysis services are listed here.")
         self.description = "%s<p><br/>%s</p>" % (self.description,
                                                  _c(context.translate(_(msg))))

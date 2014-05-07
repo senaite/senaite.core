@@ -2,6 +2,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client, to_utf8
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
@@ -121,7 +122,7 @@ class Report(BrowserView):
                 'datalines': datalines,
                 'footings': footlines}
 
-        title = to_utf8(self.context.translate(headings['header']))
+        title = t(headings['header'])
 
         if self.request.get('output_format', '') == 'CSV':
             import csv

@@ -9,6 +9,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from plone.app.layout.globals.interfaces import IViewView
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema

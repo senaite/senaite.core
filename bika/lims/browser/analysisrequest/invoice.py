@@ -1,5 +1,6 @@
 from AccessControl import getSecurityManager
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.browser import BrowserView
 from bika.lims.config import VERIFIED_STATES
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema

@@ -1,6 +1,7 @@
 # coding=utf-8
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.interfaces import IResultOutOfRange
 from bika.lims.utils import to_utf8
 from zope.component import getAdapters
@@ -26,9 +27,9 @@ class ResultOutOfRangeIcons(object):
             spec = ret["spec_values"]
             if out_of_range:
                 message = "{0} ({1} {2}, {3} {4})".format(
-                    to_utf8(translate(_('Result out of range'))),
-                    to_utf8(translate(_("min"))), str(spec['min']),
-                    to_utf8(translate(_("max"))), str(spec['max']))
+                    t(_('Result out of range')),
+                    t(_("min")), str(spec['min']),
+                    t(_("max")), str(spec['max']))
                 alerts[self.context.UID()] = [
                     {
                         'msg': message,

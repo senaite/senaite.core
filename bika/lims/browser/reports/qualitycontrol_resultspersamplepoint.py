@@ -3,6 +3,7 @@ from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.browser import BrowserView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from bika.lims.browser.analysis import isOutOfRange
@@ -248,7 +249,7 @@ class Report(BrowserView):
             if MinimumResults <= len(dict([(d, d) for d in result_dates])):
                 _plotscript = str(plotscript)%{
                     'title': "",
-                    'xlabel': to_utf8(self.context.translate(_("Date Sampled"))),
+                    'xlabel': t(_("Date Sampled")),
                     'ylabel': unit and unit or '',
                     'x_start': "%s" % min(result_dates).strftime(self.date_format_long),
                     'x_end': "%s" % max(result_dates).strftime(self.date_format_long),
@@ -273,7 +274,7 @@ class Report(BrowserView):
 
             table = {
                 'title': "%s: %s" % (
-                    to_utf8(self.context.translate(_("Analysis Service"))),
+                    t(_("Analysis Service")),
                     service_title),
                 'parms': parms,
                 'columns': ['Request ID',
@@ -293,11 +294,11 @@ class Report(BrowserView):
         if out_of_range_count:
             msgid = _("Analyses out of range")
             self.report_data['footnotes'].append(
-                "%s %s" % (error_icon, to_utf8(translate(msgid))))
+                "%s %s" % (error_icon, t(msgid)))
         if in_shoulder_range_count:
             msgid = _("Analyses in error shoulder range")
             self.report_data['footnotes'].append(
-                "%s %s" % (warning_icon, to_utf8(translate(msgid))))
+                "%s %s" % (warning_icon, t(msgid)))
 
         self.report_data['parms'].append(
             {"title": _("Analyses out of range"),
@@ -306,7 +307,7 @@ class Report(BrowserView):
             {"title": _("Analyses in error shoulder range"),
              "value": in_shoulder_range_count})
 
-        title = to_utf8(translate(header))
+        title = t(header)
         if titles:
             title += " (%s)" % " ".join(titles)
         return {

@@ -12,6 +12,7 @@ from bika.lims.interfaces import IBatchFolder, IHaveNoBreadCrumbs
 from plone.app.folder import folder
 from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 import json
 
 schema = folder.ATFolderSchema.copy()

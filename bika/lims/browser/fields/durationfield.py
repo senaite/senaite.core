@@ -3,6 +3,7 @@ from Products.ATExtensions.ateapi import RecordField
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.public import *
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 
 
 class DurationField(RecordField):

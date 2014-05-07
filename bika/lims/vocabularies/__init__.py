@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 from Acquisition import aq_get
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.interfaces import IDisplayListVocabulary
 from bika.lims.utils import to_utf8
 from Products.Archetypes.public import DisplayList
@@ -46,9 +47,7 @@ class CatalogVocabulary(object):
             key = callable(key) and key() or key
             value = obj[self.value]
             value = callable(value) and value() or value
-            items.append(
-                (key, to_utf8(translate(safe_unicode(value), context=request)))
-            )
+            items.append((key, t(value)))
 
         return DisplayList(items)
 
@@ -81,10 +80,7 @@ class BikaContentVocabulary(object):
                     continue
                 objects.sort(lambda x, y: cmp(x.Title().lower(),
                                               y.Title().lower()))
-                xitems = [(to_utf8(translate(safe_unicode(item.Title()),
-                                     context=request)),
-                           item.Title())
-                          for item in objects]
+                xitems = [(t(item.Title()), item.Title()) for item in objects]
                 xitems = [SimpleTerm(i[1], i[1], i[0]) for i in xitems]
                 items += xitems
         return SimpleVocabulary(items)
@@ -302,9 +298,7 @@ class ClientContactVocabulary(object):
             objects = list(client.objectValues('Contact'))
             objects.sort(lambda x, y: cmp(x.getFullname().lower(),
                                           y.getFullname().lower()))
-            xitems = [(to_utf8(translate(safe_unicode(item.getFullname()),
-                                 context=request)),
-                       item.getFullname())
+            xitems = [(t(item.getFullname()), item.getFullname())
                       for item in objects]
             xitems = [SimpleTerm(i[1], i[1], i[0]) for i in xitems]
             items += xitems
@@ -358,8 +352,7 @@ class AnalysisRequestWorkflowStateVocabulary(object):
 
         wf = wftool.getWorkflowById('bika_ar_workflow')
         items = wftool.listWFStatesByTitle(filter_similar=True)
-        items_dict = dict([(i[1], to_utf8(translate(i[0], context=request)))
-                           for i in items])
+        items_dict = dict([(i[1], t(i[0])) for i in items])
         items_list = [(k, v) for k, v in items_dict.items()]
         items_list.sort(lambda x, y: cmp(x[1], y[1]))
         terms = [SimpleTerm(k, title=u'%s' % v) for k, v in items_list]

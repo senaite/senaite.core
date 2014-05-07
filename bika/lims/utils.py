@@ -9,12 +9,13 @@ from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from zope.component import queryUtility
+from zope.i18n import translate
 from zope.i18n.locales import locales
+import App
 import Globals
+import os
 import re
 import urllib2
-import os
-import App
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
 allow_module('csv')
@@ -31,6 +32,12 @@ def to_unicode(text):
         text = ''
     return safe_unicode(text)
 
+
+def t(i18n_msg):
+    """Safely translate and convert to UTF8, any zope i18n msgid returned from
+    a bikaMessageFactory _
+    """
+    return to_utf8(translate(i18n_msg))
 
 # Wrapper for PortalTransport's sendmail - don't know why there sendmail
 # method is marked private

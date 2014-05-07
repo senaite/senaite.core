@@ -8,6 +8,7 @@ from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from zope.interface import implements
 
 schema = Person.schema.copy()

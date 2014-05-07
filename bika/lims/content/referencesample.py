@@ -12,6 +12,7 @@ from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.browser.fields import ReferenceResultsField
 from bika.lims.browser.widgets import DateTimeWidget as bika_DateTimeWidget
 from bika.lims.browser.widgets import ReferenceResultsWidget
@@ -180,9 +181,9 @@ class ReferenceSample(BaseFolder):
                 return ''
             title = _u(o.Title())
             if o.getBlank():
-                title += " %s" % to_utf8(self.translate(_('(Blank)')))
+                title += " %s" % t(_('(Blank)'))
             if o.getHazardous():
-                title += " %s" % to_utf8(self.translate(_('(Hazardous)')))
+                title += " %s" % t(_('(Hazardous)'))
 
             return title
 
@@ -192,9 +193,9 @@ class ReferenceSample(BaseFolder):
                     inactive_state = 'active')]
         items = [('','')] + [(o.UID(), make_title(o)) for o in defs]
         o = self.getReferenceDefinition()
-        t = make_title(o)
-        if o and (o.UID(), t) not in items:
-            items.append((o.UID(), t))
+        it = make_title(o)
+        if o and (o.UID(), it) not in items:
+            items.append((o.UID(), it))
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 

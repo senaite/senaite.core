@@ -1,5 +1,6 @@
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ISubGroups
 from bika.lims import bikaMessageFactory as _b

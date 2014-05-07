@@ -1,5 +1,6 @@
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.config import ManageInvoices, PROJECTNAME
 from bika.lims.interfaces import IInvoiceFolder, IHaveNoBreadCrumbs
 from Products.Archetypes import atapi

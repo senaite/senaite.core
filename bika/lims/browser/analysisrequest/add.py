@@ -1,6 +1,7 @@
 import json
 
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
@@ -166,8 +167,7 @@ class ajaxAnalysisRequestSubmit():
 
         def error(field=None, column=None, message=None):
             if not message:
-                message = to_utf8(self.context.translate(
-                    PMF('Input is required but no input given.')))
+                message = t(PMF('Input is required but no input given.'))
             if (column or field):
                 error_key = " %s.%s" % (int(column) + 1, field or '')
             else:
@@ -187,7 +187,7 @@ class ajaxAnalysisRequestSubmit():
             columns.append(column)
 
         if len(columns) == 0:
-            error(message=to_utf8(self.context.translate(_("No analyses have been selected"))))
+            error(message=t(_("No analyses have been selected")))
             return json.dumps({'errors': errors})
 
         # Now some basic validation

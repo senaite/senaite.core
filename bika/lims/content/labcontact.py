@@ -10,6 +10,7 @@ from Products.Archetypes.references import HoldingReference
 from bika.lims.content.person import Person
 from bika.lims.config import PUBLICATION_PREFS, PROJECTNAME
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from zope.interface import implements
 from bika.lims.interfaces import ILabContact
 import sys
