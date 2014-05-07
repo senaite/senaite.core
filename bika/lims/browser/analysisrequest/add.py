@@ -282,14 +282,17 @@ class ajaxAnalysisRequestSubmit():
                           'separate': False}]
 
             # Apply DefaultContainerType to partitions without a container
-            d_clist = []
-            D_UID = values.get("DefaultContainerType_uid", None)
-            if D_UID:
+            default_container_type = resolved_values.get(
+                'DefaultContainerType', None
+            )
+            if default_container_type:
                 d_clist = [c.UID for c in bsc(portal_type='Container')
                            if c.getObject().getContainerType().UID() == D_UID]
-                for i in range(len(parts)):
-                    if not parts[i].get('container', []):
-                        parts[i]['container'] = d_clist
+                container_type = bsc(UID=default_container_type)[0].getObject()
+                containers = container_type.getcontainers()
+                for partition in parts:
+                    if not partition.get(container, None):
+                        partition['container'] = containers
 
             # create the AR
 
