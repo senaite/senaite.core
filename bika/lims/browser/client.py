@@ -296,7 +296,7 @@ class ClientAnalysisRequestsView(AnalysisRequestsView):
         if isActive(self.context):
             if self.context.portal_type == "Client" and not active_contacts:
                 msg = _("Client contact required before request may be submitted")
-                addPortalMessage(t(msg))
+                addPortalMessage(msg)
             else:
                 if mtool.checkPermission(AddAnalysisRequest, self.context):
                     self.context_actions[t(_('Add'))] = {
