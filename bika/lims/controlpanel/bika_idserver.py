@@ -4,6 +4,7 @@ from OFS.SimpleItem import SimpleItem
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.interfaces import IIdServer
 from zope.interface.declarations import implements
 from hashlib import sha1

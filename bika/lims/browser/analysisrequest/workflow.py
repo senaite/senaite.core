@@ -1,4 +1,5 @@
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims import PMF
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.publish import doPublish
@@ -421,8 +422,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                                action,
                                [self.context, ])()
         if len(transitioned) == 1:
-            message = to_utf8(self.context.translate('${items} published.',
-                                mapping={'items': ', '.join(transitioned)}))
+            message = t('${items} published.',
+                        mapping={'items': ', '.join(transitioned)})
         else:
             message = self.context.translate(_("No items were published"))
         self.context.plone_utils.addPortalMessage(message, 'info')

@@ -5,6 +5,7 @@ from Products.Archetypes.Widget import TypesWidget
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
 from zope.i18n.locales import locales
 from operator import itemgetter

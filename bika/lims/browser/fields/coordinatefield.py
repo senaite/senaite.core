@@ -8,6 +8,7 @@ from Products.validation import validation
 from Products.validation.validators.RegexValidator import RegexValidator
 import sys
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 
 class CoordinateField(RecordField):
     """ Stores angle in deg, min, sec, bearing """

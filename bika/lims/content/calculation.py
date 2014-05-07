@@ -1,5 +1,6 @@
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
@@ -188,7 +189,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
             msg = _("Cannot activate calculation, because the following "
                     "service dependencies are inactive: ${inactive_services}",
                     mapping={'inactive_services': ", ".join(inactive_services)})
-            message = to_utf8(self.translate(msg))
+            message = t(msg)
             pu.addPortalMessage(message, 'error')
             transaction.get().abort()
             raise WorkflowException
@@ -210,7 +211,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
             msg = _('Cannot deactivate calculation, because it is in use by the '
                     'following services: ${calc_services}',
                     mapping={'calc_services': ", ".join(calc_services)})
-            message = to_utf8(self.translate(msg))
+            message = t(msg)
             pu.addPortalMessage(message, 'error')
             transaction.get().abort()
             raise WorkflowException

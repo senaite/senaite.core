@@ -8,6 +8,7 @@ from Products.Archetypes.references import HoldingReference
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('Product',

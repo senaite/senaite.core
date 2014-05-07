@@ -1,6 +1,7 @@
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims import interfaces
 from bika.lims import logger
 from bika.lims.permissions import EditResults, EditWorksheet

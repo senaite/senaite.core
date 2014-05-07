@@ -1,5 +1,6 @@
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.content.instrumentmaintenancetask import InstrumentMaintenanceTaskStatuses as mstatus
 from bika.lims.subscribers import doActionFor, skip
@@ -592,7 +593,7 @@ class InstrumentCertificationsView(BikaListingView):
             elif uid == latest:
                 # Latest valid certificate
                 img = "<img title='%s' src='%s/++resource++bika.lims.images/exclamation.png'/>&nbsp;" \
-                % (to_utf8(self.context.translate(_('Out of date'))), self.portal_url)
+                % (t(_('Out of date')), self.portal_url)
                 items[x]['replace']['getValidTo'] = '%s %s' % (items[x]['getValidTo'], img)
                 items[x]['state_class'] = '%s %s' % (items[x]['state_class'], 'inactive outofdate')
             else:

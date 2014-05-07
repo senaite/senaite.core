@@ -10,6 +10,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import ISampleMatrices
 from plone.app.layout.globals.interfaces import IViewView
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.permissions import AddSampleMatrix, ManageBika
 from plone.app.content.browser.interfaces import IFolderContentsView

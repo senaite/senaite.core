@@ -1,5 +1,6 @@
 from Products.Archetypes.public import DisplayList
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.permissions import *
 from zope.i18n.locales import locales
 

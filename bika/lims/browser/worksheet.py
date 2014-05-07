@@ -2,6 +2,7 @@
 from AccessControl import getSecurityManager
 from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims import EditResults, EditWorksheet, ManageWorksheets
 from bika.lims import PMF, logger
 from bika.lims.browser import BrowserView
@@ -832,12 +833,12 @@ class AddAnalysesView(BikaListingView):
                 self.context.applyWorksheetTemplate(wst)
                 if len(self.context.getLayout()) != len(layout):
                     self.context.plone_utils.addPortalMessage(
-                        to_utf8(translate(PMF("Changes saved."))))
+                        t(PMF("Changes saved.")))
                     self.request.RESPONSE.redirect(self.context.absolute_url() +
                                                    "/manage_results")
                 else:
                     self.context.plone_utils.addPortalMessage(
-                        to_utf8(translate(_("No analyses were added to this worksheet."))))
+                        t(_("No analyses were added to this worksheet.")))
                     self.request.RESPONSE.redirect(self.context.absolute_url() +
                                                    "/add_analyses")
 
@@ -871,7 +872,7 @@ class AddAnalysesView(BikaListingView):
             if DueDate < DateTime():
                 items[x]['after']['DueDate'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                     (self.context.absolute_url(),
-                     to_utf8(self.context.translate(_("Late Analysis"))))
+                     t(_("Late Analysis")))
             items[x]['CategoryTitle'] = service.getCategory() and service.getCategory().Title() or ''
 
             if getSecurityManager().checkPermission(EditResults, obj.aq_parent):
@@ -1265,7 +1266,7 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
 
                 after_icons = "<a href='%s' target='_blank'><img src='++resource++bika.lims.images/referencesample.png' title='%s: %s'></a>" % \
                     (obj.absolute_url(), \
-                     to_utf8(translate(_("Reference sample"))), obj.Title())
+                     t(_("Reference sample")), obj.Title())
                 items[x]['before']['ID'] = after_icons
 
                 new_items.append(items[x])
@@ -1279,7 +1280,7 @@ class ajaxGetWorksheetReferences(ReferenceSamplesView):
         self.service_uids = self.request.get('service_uids', '').split(",")
         self.control_type = self.request.get('control_type', '')
         if not self.control_type:
-            return to_utf8(self.context.translate(_("No control type specified")))
+            return t(_("No control type specified"))
         return super(ajaxGetWorksheetReferences, self).contents_table()
 
 class ExportView(BrowserView):
@@ -1292,14 +1293,14 @@ class ExportView(BrowserView):
         instrument = self.context.getInstrument()
         if not instrument:
             self.context.plone_utils.addPortalMessage(
-                to_utf8(translate(_("You must select an instrument"))), 'info')
+                t(_("You must select an instrument")), 'info')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 
         exim = instrument.getDataInterface()
         if not exim:
             self.context.plone_utils.addPortalMessage(
-                to_utf8(translate(_("Instrument has no data interface selected"))), 'info')
+                t(_("Instrument has no data interface selected")), 'info')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 
@@ -1311,7 +1312,7 @@ class ExportView(BrowserView):
         # search instruments module for 'exim' module
         if not hasattr(instruments, exim):
             self.context.plone_utils.addPortalMessage(
-                to_utf8(translate(_("Instrument exporter not found"))), 'error')
+                t(_("Instrument exporter not found")), 'error')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 

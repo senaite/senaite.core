@@ -2,6 +2,7 @@
 """
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.browser.widgets import QueryWidget
 from bika.lims.browser.fields import QueryField
 from bika.lims.config import PROJECTNAME

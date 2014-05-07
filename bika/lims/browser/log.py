@@ -1,6 +1,7 @@
 from AccessControl.SecurityManagement import newSecurityManager
 from Acquisition import aq_inner, aq_parent
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import to_utf8
 from DateTime import DateTime
@@ -37,7 +38,7 @@ class LogView(BikaListingView):
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/%s_big.png" % \
             context.portal_type.lower()
-        self.title = to_utf8(self.context.Title()) + " " + to_utf8(self.context.translate(_("Log")))
+        self.title = to_utf8(self.context.Title()) + " " + t(_("Log"))
         self.description = ""
 
         self.columns = {

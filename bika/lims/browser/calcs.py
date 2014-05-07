@@ -2,6 +2,7 @@ from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IFieldIcons
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims import logger
 from bika.lims.utils import to_utf8
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -47,7 +48,7 @@ class CalculationResultAlerts(object):
         if indet:
             alert = {'field': 'Result',
                      'icon': path + '/exclamation.png',
-                     'msg': to_utf8(translate(_("Indeterminate result")))}
+                     'msg': t(_("Indeterminate result"))}
             if uid in alerts:
                 alerts[uid].append(alert)
             else:
@@ -184,7 +185,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 alert = {'field': 'Result',
                          'icon': path + '/exclamation.png',
                          'msg': "{0}: {1} ({2}) ".format(
-                             to_utf8(translate(_("Type Error"))),
+                             t(_("Type Error")),
                              html_quote(str(e.args[0])),
                              formula)}
                 if uid in self.alerts:
@@ -199,7 +200,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 alert = {'field': 'Result',
                          'icon': path + '/exclamation.png',
                          'msg': "{0}: {1} ({2}) ".format(
-                             to_utf8(translate(_("Division by zero"))),
+                             t(_("Division by zero")),
                              html_quote(str(e.args[0])),
                              formula)}
                 if uid in self.alerts:
@@ -211,7 +212,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 alert = {'field': 'Result',
                          'icon': path + '/exclamation.png',
                          'msg': "{0}: {1} ({2}) ".format(
-                             to_utf8(translate(_("Key Error"))),
+                             t(_("Key Error")),
                              html_quote(str(e.args[0])),
                              formula)}
                 if uid in self.alerts:

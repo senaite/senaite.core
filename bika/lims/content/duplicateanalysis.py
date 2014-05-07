@@ -3,6 +3,7 @@ is some confusion.
 """
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.analysis import schema, Analysis

@@ -7,6 +7,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF, logger, bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.browser import BrowserView
 from bika.lims.browser.batchfolder import BatchFolderContentsView
 from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction, \
@@ -124,28 +125,25 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
 
             message = None
             for state in transitioned:
-                t = transitioned[state]
-                if len(t) > 1:
+                tlist = transitioned[state]
+                if len(tlist) > 1:
                     if state == 'to_be_preserved':
-                        message = _('${items} are waiting for preservation.',
-                                    mapping = {'items': ', '.join(t)})
+                        message = t(_('${items} are waiting for preservation.',
+                                    mapping = {'items': ', '.join(tlist)}))
                     else:
-                        message = _('${items} are waiting to be received.',
-                                    mapping = {'items': ', '.join(t)})
-                    message = to_utf8(translate(message))
+                        message = t(_('${items} are waiting to be received.',
+                                    mapping = {'items': ', '.join(tlist)}))
                     self.context.plone_utils.addPortalMessage(message, 'info')
-                elif len(t) == 1:
+                elif len(tlist) == 1:
                     if state == 'to_be_preserved':
-                        message = _('${item} is waiting for preservation.',
-                                    mapping = {'item': ', '.join(t)})
+                        message = t(_('${item} is waiting for preservation.',
+                                    mapping = {'item': ', '.join(tlist)}))
                     else:
-                        message = _('${item} is waiting to be received.',
-                                    mapping = {'item': ', '.join(t)})
-                    message = to_utf8(translate(message))
+                        message = t(_('${item} is waiting to be received.',
+                                    mapping = {'item': ', '.join(tlist)}))
                     self.context.plone_utils.addPortalMessage(message, 'info')
             if not message:
-                message = _('No changes made.')
-                message = to_utf8(translate(message))
+                message = t(_('No changes made.'))
                 self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
@@ -194,13 +192,13 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                             not_transitioned.append(sp)
 
             if len(transitioned.keys()) > 1:
-                message = _('${items}: partitions are waiting to be received.',
-                        mapping = {'items': ', '.join(transitioned.keys())})
+                message = t(_('${items}: partitions are waiting to be received.',
+                        mapping = {'items': ', '.join(transitioned.keys())}))
             else:
-                message = _('${item}: ${part} is waiting to be received.',
-                            mapping = {'item': ', '.join(transitioned.keys()),
-                                       'part': ', '.join(transitioned.values()),})
-            message = to_utf8(translate(message))
+                message = t(_('${item}: ${part} is waiting to be received.',
+                        mapping = {'item': ', '.join(transitioned.keys()),
+                                   'part': ', '.join(transitioned.values()),}))
+            message = t(message)
             self.context.plone_utils.addPortalMessage(message, 'info')
 
             # And then the sample itself
@@ -208,7 +206,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                 doActionFor(sample, action)
                 #message = _('${item} is waiting to be received.',
                 #            mapping = {'item': sample.Title()})
-                #message = to_utf8(translate(message))
+                #message = t(message)
                 #self.context.plone_utils.addPortalMessage(message, 'info')
 
             self.destination_url = self.request.get_header(
@@ -298,10 +296,10 @@ class ClientAnalysisRequestsView(AnalysisRequestsView):
         if isActive(self.context):
             if self.context.portal_type == "Client" and not active_contacts:
                 msg = _("Client contact required before request may be submitted")
-                addPortalMessage(to_utf8(translate(msg)))
+                addPortalMessage(t(msg))
             else:
                 if mtool.checkPermission(AddAnalysisRequest, self.context):
-                    self.context_actions[to_utf8(translate(_('Add')))] = {
+                    self.context_actions[t(_('Add'))] = {
                         'url': self.context.absolute_url() + "/portal_factory/"
                         "AnalysisRequest/Request new analyses/ar_add",
                         'icon': '++resource++bika.lims.images/add.png'}
@@ -626,7 +624,7 @@ class SetSpecsToLabDefaults(BrowserView):
                 ResultsRange = labspec.getResultsRange(),
             )
         translate = self.context.translate
-        message = to_utf8(translate(_("Analysis specifications reset to lab defaults.")))
+        message = t(_("Analysis specifications reset to lab defaults."))
         self.context.plone_utils.addPortalMessage(message, 'info')
         self.request.RESPONSE.redirect(self.context.absolute_url() +
                                        "/analysisspecs")

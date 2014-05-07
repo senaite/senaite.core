@@ -3,6 +3,7 @@ from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.browser import BrowserView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from gpw import plot
@@ -187,7 +188,7 @@ class Report(BrowserView):
 
         table = {
             'title': "%s: %s (%s)" % (
-                to_utf8(self.context.translate(_("Analysis Service"))),
+                t(_("Analysis Service")),
                 service.Title(),
                 service.getKeyword()
             ),
@@ -208,13 +209,13 @@ class Report(BrowserView):
         if out_of_range_count:
             msgid = _("Analyses out of range")
             self.report_data['footnotes'].append(
-                "%s %s" % (error_icon, to_utf8(translate(msgid))))
+                "%s %s" % (error_icon, t(msgid)))
 
         self.report_data['parms'].append(
             {"title": _("Analyses out of range"),
              "value": out_of_range_count})
 
-        title = to_utf8(translate(header))
+        title = t(header)
         if titles:
             title += " (%s)" % " ".join(titles)
         return {

@@ -9,12 +9,13 @@ from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from zope.component import queryUtility
+from zope.i18n import translate
 from zope.i18n.locales import locales
+import App
 import Globals
+import os
 import re
 import urllib2
-import os
-import App
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
 allow_module('csv')
@@ -31,6 +32,12 @@ def to_unicode(text):
         text = ''
     return safe_unicode(text)
 
+
+def t(i18n_msg):
+    """Safely translate and convert to UTF8, any zope i18n msgid returned from
+    a bikaMessageFactory _
+    """
+    return to_utf8(translate(i18n_msg))
 
 # Wrapper for PortalTransport's sendmail - don't know why there sendmail
 # method is marked private
@@ -350,17 +357,19 @@ def attachPdf(mimemultipart, pdfreport, filename=None):
 
 
 def get_invoice_item_description(obj):
-    sample = obj.getSample()
-    sampleID = sample.Title()
-    clientref = sample.getClientReference()
-    clientsid = sample.getClientSampleID()
-    samplepoint = sample.getSamplePoint()
-    samplepoint = samplepoint and samplepoint.Title() or ''
-    sampletype = sample.getSampleType()
-    sampletype = sampletype and sampletype.Title() or ''
-    orderno = obj.getClientOrderNumber() or ''
-    item_description = orderno + ' ' + clientref + ' ' + clientsid + ' ' + sampleID + ' ' + sampletype + ' ' + samplepoint
-    return item_description
+    if obj.portal_type == 'AnalysisRequest':
+        sample = obj.getSample()
+        samplepoint = sample.getSamplePoint()
+        samplepoint = samplepoint and samplepoint.Title() or ''
+        sampletype = sample.getSampleType()
+        sampletype = sampletype and sampletype.Title() or ''
+        description = sampletype + ' ' + samplepoint
+    elif obj.portal_type == 'SupplyOrder':
+        products = obj.folderlistingFolderContents()
+        products = [o.getProduct().Title() for o in products]
+        description = ', '.join(products)
+    return description
+
 
 
 def currency_format(context, locale):

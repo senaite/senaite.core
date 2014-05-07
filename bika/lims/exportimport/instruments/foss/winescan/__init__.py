@@ -1,6 +1,7 @@
 """ FOSS 'Winescan'
 """
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.exportimport.instruments.resultsimport import \
     InstrumentCSVResultsFileParser, AnalysisResultsImporter
 

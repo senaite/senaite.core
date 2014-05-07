@@ -12,6 +12,7 @@ from Products.CMFEditions.Permissions import SaveNewVersion
 from Products.CMFEditions.Permissions import AccessPreviousVersions
 from Products.Archetypes.config import REFERENCE_CATALOG
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims import logger
 from bika.lims.utils import to_utf8
 

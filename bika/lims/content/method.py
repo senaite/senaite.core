@@ -10,6 +10,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
 import sys
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.utils import to_utf8
 from zope.interface import implements
 
@@ -135,7 +136,7 @@ class Method(BaseFolder):
                 for c in bsc(portal_type='Calculation',
                              inactive_state = 'active')]
         items.sort(lambda x,y: cmp(x[1], y[1]))
-        items.insert(0, ('', to_utf8(self.translate(_('None')))))
+        items.insert(0, ('', t(_('None'))))
         return DisplayList(list(items))
 
     def getInstruments(self):

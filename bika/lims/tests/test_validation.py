@@ -117,7 +117,7 @@ class Tests(BikaFunctionalTestCase):
              'title': 'Titration Volume',
              'unit': '',
              'default': ''},
-            {'keyword': 'TV', 'title': 'Titration Volume', 'unit': '', 'default': ''}]
+            {'keyword': 'TV', 'title': 'Titration Volume 1', 'unit': '', 'default': ''}]
         self.portal.REQUEST.form['InterimFields'] = interim_fields
         self.portal.REQUEST['validated'] = None
         self.assertEqual(

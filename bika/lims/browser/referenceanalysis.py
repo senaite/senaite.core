@@ -6,6 +6,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.interfaces import IResultOutOfRange
 from bika.lims.utils import to_utf8
 from bika.lims.browser import BrowserView
@@ -39,19 +40,19 @@ class ResultOutOfRangeIcons(object):
             spec = ret["spec_values"]
             if spec:
                 rngstr = " ({0} {1}, {2}, {3})".format(
-                    to_utf8(translate(_("min"))), str(spec['min']),
-                    to_utf8(translate(_("max"))), str(spec['max']))
+                    t(_("min")), str(spec['min']),
+                    t(_("max")), str(spec['max']))
             else:
                 rngstr = ""
             if ret["out_of_range"]:
                 if ret["acceptable"]:
                     message = "{0}{1}".format(
-                        to_utf8(translate(_('Result in shoulder range'))),
+                        t(_('Result in shoulder range')),
                         rngstr)
                     icon = path + '/warning.png'
                 else:
                     message = "{0}{1}".format(
-                        to_utf8(translate(_('Result out of range'))),
+                        t(_('Result out of range')),
                         rngstr)
                     icon = path + '/exclamation.png'
                 alerts[self.context.UID()] = [

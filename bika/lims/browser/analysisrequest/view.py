@@ -1,5 +1,6 @@
 from AccessControl import getSecurityManager
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.analyses import QCAnalysesView
@@ -168,7 +169,7 @@ class AnalysisRequestViewView(BrowserView):
         profiles = []
         for profile in self.context.bika_setup.bika_analysisprofiles.objectValues("AnalysisProfile"):
             if isActive(profile):
-                lab = to_utf8(self.context.translate(_('Lab')))
+                lab = t(_('Lab'))
                 title = to_utf8(profile.Title())
                 profiles.append(("%s: %s" % (lab, title), profile))
         profiles.sort(lambda x, y: cmp(x[0], y[0]))
@@ -190,7 +191,7 @@ class AnalysisRequestViewView(BrowserView):
         templates = []
         for template in self.context.bika_setup.bika_artemplates.objectValues("ARTemplate"):
             if isActive(template):
-                lab = to_utf8(self.context.translate(_('Lab')))
+                lab = t(_('Lab'))
                 title = to_utf8(template.Title())
                 templates.append(("%s: %s" % (lab, title), template))
         templates.sort(lambda x, y: cmp(x[0], y[0]))
@@ -380,7 +381,7 @@ class AnalysisRequestViewView(BrowserView):
             anchor = childar and ("<a href='%s'>%s</a>" % (childar.absolute_url(), childar.getRequestID())) or None
             if anchor:
                 custom['ChildAR'] = {
-                    'title': to_utf8(self.context.translate(_("AR for retested results"))),
+                    'title': t(_("AR for retested results")),
                     'value': anchor
                 }
         # If is an AR automatically generated due to a Retraction, show it's
@@ -390,7 +391,7 @@ class AnalysisRequestViewView(BrowserView):
             par = ar.getParentAnalysisRequest()
             anchor = "<a href='%s'>%s</a>" % (par.absolute_url(), par.getRequestID())
             custom['ParentAR'] = {
-                'title': to_utf8(self.context.translate(_("Invalid AR retested"))),
+                'title': t(_("Invalid AR retested")),
                 'value': anchor
             }
         return custom

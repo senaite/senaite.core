@@ -1,6 +1,7 @@
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.browser.log import LogView
 from bika.lims.content.analysisservice import getContainers

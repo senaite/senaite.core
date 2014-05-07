@@ -1,5 +1,6 @@
 from AccessControl import getSecurityManager
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import getUsers
 from bika.lims.permissions import *
@@ -423,7 +424,7 @@ class AnalysisRequestsView(BikaListingView):
             {'id': 'assigned',
              'title': "<img title='%s'\
                        src='%s/++resource++bika.lims.images/assigned.png'/>" % (
-                       to_utf8(self.context.translate(_("Assigned"))), self.portal_url),
+                       t(_("Assigned")), self.portal_url),
              'contentFilter': {'worksheetanalysis_review_state': 'assigned',
                                'review_state': ('sample_received', 'to_be_verified',
                                                 'attachment_due', 'verified',
@@ -468,7 +469,7 @@ class AnalysisRequestsView(BikaListingView):
             {'id': 'unassigned',
              'title': "<img title='%s'\
                        src='%s/++resource++bika.lims.images/unassigned.png'/>" % (
-                       to_utf8(self.context.translate(_("Unassigned"))), self.portal_url),
+                       t(_("Unassigned")), self.portal_url),
              'contentFilter': {'worksheetanalysis_review_state': 'unassigned',
                                'review_state': ('sample_received', 'to_be_verified',
                                                 'attachment_due', 'verified',
@@ -576,22 +577,22 @@ class AnalysisRequestsView(BikaListingView):
             state = workflow.getInfoFor(obj, 'worksheetanalysis_review_state')
             if state == 'assigned':
                 after_icons += "<img src='%s/++resource++bika.lims.images/worksheet.png' title='%s'/>" % \
-                    (self.portal_url, to_utf8(self.context.translate(_("All analyses assigned"))))
+                    (self.portal_url, t(_("All analyses assigned")))
             if workflow.getInfoFor(obj, 'review_state') == 'invalid':
                 after_icons += "<img src='%s/++resource++bika.lims.images/delete.png' title='%s'/>" % \
-                    (self.portal_url, to_utf8(self.context.translate(_("Results have been withdrawn"))))
+                    (self.portal_url, t(_("Results have been withdrawn")))
             if obj.getLate():
                 after_icons += "<img src='%s/++resource++bika.lims.images/late.png' title='%s'>" % \
-                    (self.portal_url, to_utf8(self.context.translate(_("Late Analyses"))))
+                    (self.portal_url, t(_("Late Analyses")))
             if samplingdate > DateTime():
                 after_icons += "<img src='%s/++resource++bika.lims.images/calendar.png' title='%s'>" % \
-                    (self.portal_url, to_utf8(self.context.translate(_("Future dated sample"))))
+                    (self.portal_url, t(_("Future dated sample")))
             if obj.getInvoiceExclude():
                 after_icons += "<img src='%s/++resource++bika.lims.images/invoice_exclude.png' title='%s'>" % \
-                    (self.portal_url, to_utf8(self.context.translate(_("Exclude from invoice"))))
+                    (self.portal_url, t(_("Exclude from invoice")))
             if sample.getSampleType().getHazardous():
                 after_icons += "<img src='%s/++resource++bika.lims.images/hazardous.png' title='%s'>" % \
-                    (self.portal_url, to_utf8(self.context.translate(_("Hazardous"))))
+                    (self.portal_url, t(_("Hazardous")))
             if after_icons:
                 items[x]['after']['getRequestID'] = after_icons
 
@@ -681,7 +682,7 @@ class AnalysisRequestsView(BikaListingView):
                     if self_submitted:
                         items[x]['after']['state_title'] = \
                              "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" % \
-                             (to_utf8(self.context.translate(_("Cannot verify: Submitted by current user"))))
+                             t(_("Cannot verify: Submitted by current user"))
                 except Exception:
                     pass
 

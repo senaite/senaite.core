@@ -10,6 +10,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import EditSample
 from bika.lims import PMF
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.header_table import HeaderTableView
@@ -685,12 +686,12 @@ class SamplesView(BikaListingView):
             if obj.getSampleType().getHazardous():
                 after_icons += "<img title='%s' " \
                     "src='%s/++resource++bika.lims.images/hazardous.png'>" % \
-                    (to_utf8(translate(_("Hazardous"))),
+                    (t(_("Hazardous")),
                      self.portal_url)
             if obj.getSamplingDate() > DateTime():
                 after_icons += "<img title='%s' " \
                     "src='%s/++resource++bika.lims.images/calendar.png' >" % \
-                    (to_utf8(translate(_("Future dated sample"))),
+                    (t(_("Future dated sample")),
                      self.portal_url)
             if after_icons:
                 items[x]['after']['getSampleID'] = after_icons

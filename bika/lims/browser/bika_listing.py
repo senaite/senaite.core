@@ -13,6 +13,7 @@ from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
 from bika.lims import logger
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.subscribers import doActionFor
@@ -113,13 +114,13 @@ class WorkflowAction:
             if items:
                 trans, dest = self.submitTransition(action, came_from, items)
                 if trans:
-                    message = to_utf8(self.context.translate(PMF('Changes saved.')))
+                    message = t(PMF('Changes saved.'))
                     self.context.plone_utils.addPortalMessage(message, 'info')
                 if dest:
                     self.request.response.redirect(dest)
                     return
             else:
-                message = to_utf8(self.context.translate(_('No items selected')))
+                message = t(_('No items selected'))
                 self.context.plone_utils.addPortalMessage(message, 'warn')
 
         # Do nothing
@@ -144,14 +145,14 @@ class WorkflowAction:
             if not isActive(item) and action not in ('reinstate', 'activate'):
                 continue
             if not skip(item, action, peek=True):
-                allowed_transitions = [t['id'] for t in \
+                allowed_transitions = [it['id'] for it in \
                                        workflow.getTransitionsFor(item)]
                 if action in allowed_transitions:
                     success, message = doActionFor(item, action)
                     if success:
                         transitioned.append(item.id)
                     else:
-                        message = to_utf8(self.context.translate(message))
+                        message = t(message)
                         self.context.plone_utils.addPortalMessage(message, 'error')
         # automatic label printing
         if transitioned and action == 'receive' \
@@ -590,9 +591,9 @@ class BikaListingView(BrowserView):
                 type_title_msgid = obj.portal_type
 
             url_href_title = '%s at %s: %s' % (
-                to_utf8(self.context.translate(type_title_msgid, context=self.request)),
+                t(type_title_msgid),
                 path,
-                to_utf8(description))
+                t(description))
 
             modified = self.ulocalized_time(obj.modified()),
 
@@ -645,9 +646,9 @@ class BikaListingView(BrowserView):
             )
             try:
                 review_state = workflow.getInfoFor(obj, 'review_state')
-                state_title = to_utf8(self.context.translate(
-                    PMF(workflow.getTitleForStateOnType(review_state,
-                                                    obj.portal_type))))
+                state_title = workflow.getTitleForStateOnType(
+                    review_state, obj.portal_type)
+                state_title = t(PMF(state_title))
             except:
                 review_state = 'active'
                 state_title = None
@@ -723,8 +724,8 @@ class BikaListingView(BrowserView):
         actions = []
         for obj in [i.get('obj', '') for i in self.items]:
             obj = hasattr(obj, 'getObject') and obj.getObject() or obj
-            for t in workflow.getTransitionsFor(obj):
-                transitions[t['id']] = t
+            for it in workflow.getTransitionsFor(obj):
+                transitions[it['id']] = it
 
         # the list is restricted to and ordered by these transitions.
         if 'transitions' in review_state:
@@ -753,7 +754,7 @@ class BikaListingView(BrowserView):
 
         for a,action in enumerate(actions):
             actions[a]['title'] = \
-                to_utf8(self.translate(PMF(actions[a]['id'] + "_transition_title")))
+                t(PMF(actions[a]['id'] + "_transition_title"))
         return actions
 
 class BikaListingTable(tableview.Table):
