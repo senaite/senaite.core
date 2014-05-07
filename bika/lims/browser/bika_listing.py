@@ -593,7 +593,7 @@ class BikaListingView(BrowserView):
             url_href_title = '%s at %s: %s' % (
                 t(type_title_msgid),
                 path,
-                t(description))
+                to_utf8(description))
 
             modified = self.ulocalized_time(obj.modified()),
 
