@@ -435,6 +435,27 @@ class IFieldIcons(Interface):
         w/ 'min', 'max', and 'error' keys.
         """
 
+class IResultOutOfRange(Interface):
+
+    """Any code which wants to check some condition and flag an Analysis as
+    out of range, uses this interface
+    """
+    def __call(result = None):
+        """The adapter must return a dictionary to indicate range out of bounds:
+        {
+         out_of_range: boolean - the result is out of bounds,
+         acceptable: boolean - the result is in acceptable error margin,
+         spec_values: dict - the min/max/error values for the failed specification
+        }
+
+        If the adapter returns a value that resolves to boolean False, the
+        analysis is assumed not to have triggered the out of range conditions
+
+        If a result is present in the request, it is passed here to be checked.
+        if result is None, the value from the database is checked.
+
+        """
+
 
 class IWidgetVisibility(Interface):
 

@@ -4,7 +4,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import QCANALYSIS_TYPES
-from bika.lims.interfaces import IFieldIcons
+from bika.lims.interfaces import IResultOutOfRange
 from bika.lims.permissions import *
 from bika.lims.utils import isActive
 from bika.lims.utils import getUsers
@@ -170,17 +170,15 @@ class AnalysesView(BikaListingView):
 
     def ResultOutOfRange(self, analysis):
         """ Template wants to know, is this analysis out of range?
-        We scan IFieldIcons adapters, and return True if any IAnalysis
+        We scan IResultOutOfRange adapters, and return True if any IAnalysis
         adapters trigger a result.
         """
-        adapters = getAdapters((analysis, ), IFieldIcons)
-        bsc = getToolByName(self.context, "bika_setup_catalog")
+        adapters = getAdapters((analysis, ), IResultOutOfRange)
         spec = self.get_active_spec_dict(analysis)
         for name, adapter in adapters:
             if not spec:
                 return False
-            alerts = adapter(specification=spec)
-            if alerts and analysis.UID() in alerts:
+            if adapter(specification=spec):
                 return True
 
     def getAnalysisSpecsStr(self, spec):

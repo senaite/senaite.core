@@ -14,7 +14,6 @@ from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.header_table import HeaderTableView
 from bika.lims.config import POINTS_OF_CAPTURE
-from bika.lims.interfaces import IFieldIcons
 from bika.lims.permissions import *
 from bika.lims.utils import changeWorkflowState, tmpID
 from bika.lims.utils import changeWorkflowState, to_unicode

@@ -660,22 +660,6 @@ class BikaListingView(BrowserView):
                 results_dict[state_var] = state
             results_dict['state_title'] = state_title
 
-# XXX add some kind of out-of-date indicator to bika listing
-##            if App.config.getConfiguration().debug_mode:
-##                from Products.CMFEditions.utilities import dereference
-##                pr = getToolByName(self.context, 'portal_repository')
-##                o = hasattr(obj, 'getObject') and obj.getObject() or obj
-##                if pr.isVersionable(o):
-##                    pa = getToolByName(self.context, 'portal_archivist')
-##                    history_id = str(dereference(o)[1])
-##                    version_id = hasattr(o, 'version_id') \
-##                               and str(o.version_id) or None
-##                    if not 'version_id' in self.columns.keys():
-##                        self.columns['version_id'] = {'title':'version'}
-##                        for x in range(len(self.review_states)):
-##                            self.review_states[x]['columns'].append('version_id')
-##                    results_dict['version_id'] = '%s/%s' % (version_id, history_id)
-
             # extra classes for individual fields on this item { field_id : "css classes" }
             results_dict['class'] = {}
             for name, adapter in getAdapters((obj, ), IFieldIcons):

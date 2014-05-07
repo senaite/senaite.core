@@ -1,7 +1,7 @@
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
-from bika.lims.interfaces import IFieldIcons
+from bika.lims.interfaces import IResultOutOfRange
 from bika.lims.utils import encode_header, createPdf, attachPdf
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -82,18 +82,16 @@ class doPublish(BrowserView):
 
     def ResultOutOfRange(self, analysis):
         """ Template wants to know, is this analysis out of range?
-        We scan IFieldIcons adapters, and return True if any IAnalysis
+        We scan IResultOutOfRange adapters, and return True if any IAnalysis
         adapters trigger a result.
         """
-        adapters = getAdapters((analysis, ), IFieldIcons)
+        adapters = getAdapters((analysis, ), IResultOutOfRange)
         bsc = getToolByName(self.context, "bika_setup_catalog")
         spec = self.get_active_spec_dict(analysis)
         for name, adapter in adapters:
-            # obj = self.get_active_spec_object()
             if not spec:
                 return False
-            alerts = adapter(specification=spec)
-            if alerts and analysis.UID() in alerts:
+            if adapter(specification=spec):
                 return True
 
     def getAnalysisSpecsStr(self, spec):

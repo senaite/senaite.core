@@ -22,10 +22,11 @@ def ResultOutOfRange(analysis):
     spec = {}
     if hasattr(analysis, "specification") and analysis.specification:
         spec = analysis.specification
-    return isOutOfRange(analysis.getResult(),
-                        spec.get("min", ""),
-                        spec.get("max", ""),
-                        spec.get("error", ""))
+    r = ResultOutOfRange(analysis)
+    return r.isOutOfRange(analysis.getResult(),
+                          spec.get("min", ""),
+                          spec.get("max", ""),
+                          spec.get("error", ""))
 
 class Report(BrowserView):
     implements(IViewView)

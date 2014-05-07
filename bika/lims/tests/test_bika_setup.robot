@@ -551,11 +551,12 @@ Repetitive Bika Setup stuff
     Wait Until Page Contains Element    Instrument
 
     # when instrument is selected method is disabled - instrument sets it.
-    select checkbox                     InstrumentEntryOfResults
-    select from list                    Instruments    AA 1   AA 2   Blott Titrator
-    select from list                    Instrument     AA 1
-    Run keyword and expect error        ValueError: Option 'Fiastar' not in list 'Instrument'.    select from list   Instrument   Fiastar
-    element should be disabled          _Method
+# This is no longer true
+#    select checkbox                     InstrumentEntryOfResults
+#    select from list                    Instruments    AA 1   AA 2   Blott Titrator
+#    select from list                    Instrument     AA 1
+#    Run keyword and expect error        ValueError: Option 'Fiastar' not in list 'Instrument'.    select from list   Instrument   Fiastar
+#    element should be disabled          _Method
 
     # Now remove instrument and set method fields manually
     unselect checkbox                   InstrumentEntryOfResults

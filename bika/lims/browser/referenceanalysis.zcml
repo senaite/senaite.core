@@ -6,6 +6,13 @@
 
     <adapter
       for="bika.lims.interfaces.IReferenceAnalysis"
+      provides="bika.lims.interfaces.IFieldIcons"
+      factory="bika.lims.browser.referenceanalysis.ResultOutOfRangeIcons"
+    />
+
+    <adapter
+      for="bika.lims.interfaces.IReferenceAnalysis"
+      provides="bika.lims.interfaces.IResultOutOfRange"
       factory="bika.lims.browser.referenceanalysis.ResultOutOfRange"
     />
 

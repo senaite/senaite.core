@@ -6,7 +6,15 @@
 
     <adapter
       for="bika.lims.interfaces.IDuplicateAnalysis"
+      provides="bika.lims.interfaces.IFieldIcons"
+      factory="bika.lims.browser.duplicateanalysis.ResultOutOfRangeIcons"
+    />
+
+    <adapter
+      for="bika.lims.interfaces.IDuplicateAnalysis"
+      provides="bika.lims.interfaces.IResultOutOfRange"
       factory="bika.lims.browser.duplicateanalysis.ResultOutOfRange"
     />
+
 
 </configure>
