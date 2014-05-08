@@ -336,4 +336,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Add HiddenAttributes to content registry"
+        description=""
+        source="3032"
+        destination="3033"
+        handler="bika.lims.upgrade.to3033.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
