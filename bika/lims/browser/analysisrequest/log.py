@@ -1,4 +1,5 @@
 from AccessControl import getSecurityManager
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser.log import LogView
@@ -25,7 +26,7 @@ class AnalysisRequestLog(LogView):
             message = t(_('This Analysis Request has been withdrawn and is shown '
                           'for trace-ability purposes only. Retest: '
                           '${retest_child_id}.',
-                          mapping={'retest_child_id': childid or ''}))
+                          mapping={'retest_child_id': safe_unicode(childid) or ''}))
             self.context.plone_utils.addPortalMessage(message, 'warning')
         # If is an AR automatically generated due to a Retraction, show it's
         # parent AR information
@@ -36,7 +37,7 @@ class AnalysisRequestLog(LogView):
                         'generated automatically due to '
                         'the retraction of the Analysis '
                         'Request ${retracted_request_id}.',
-                        mapping={'retracted_request_id': par.getRequestID()})
+                        mapping={'retracted_request_id': safe_unicode(par.getRequestID())})
             self.context.plone_utils.addPortalMessage(
                 t(message), 'info')
         template = LogView.__call__(self)

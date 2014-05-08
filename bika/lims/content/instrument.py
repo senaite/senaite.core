@@ -5,6 +5,7 @@ from Products.Archetypes.atapi import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser.fields import HistoryAwareReferenceField
@@ -195,6 +196,9 @@ class Instrument(ATFolder):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
+
+    def Title(self):
+        return to_utf8(safe_unicode(self.title))
 
     def getDataInterfacesList(self):
         return getDataInterfaces(self)

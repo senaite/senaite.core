@@ -187,12 +187,12 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         message = None
         if len(transitioned) > 1:
             message = _('${items} are waiting to be received.',
-                        mapping={'items': ', '.join(transitioned)})
+                        mapping={'items': safe_unicode(', '.join(transitioned))})
             message = self.context.translate(message)
             self.context.plone_utils.addPortalMessage(message, 'info')
         elif len(transitioned) == 1:
             message = _('${item} is waiting to be received.',
-                        mapping={'item': ', '.join(transitioned)})
+                        mapping={'item': safe_unicode(', '.join(transitioned))})
             message = self.context.translate(message)
             self.context.plone_utils.addPortalMessage(message, 'info')
         if not message:
@@ -423,7 +423,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                                [self.context, ])()
         if len(transitioned) == 1:
             message = t('${items} published.',
-                        mapping={'items': ', '.join(transitioned)})
+                        mapping={'items': safe_unicode(', '.join(transitioned))})
         else:
             message = self.context.translate(_("No items were published"))
         self.context.plone_utils.addPortalMessage(message, 'info')
@@ -520,7 +520,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             message = self.context.translate(
                     _('Unable to send an email to alert lab '
                       'client contacts that the Analysis Request has been '
-                      'retracted: ${error}', mapping={'error': msg}))
+                      'retracted: ${error}', mapping={'error': safe_unicode(msg)}))
             self.context.plone_utils.addPortalMessage(message, 'warning')
 
         message = self.context.translate('${items} invalidated.',
