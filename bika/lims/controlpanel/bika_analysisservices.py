@@ -73,8 +73,6 @@ class AnalysisServiceCopy(BrowserView):
         src_service = uc(UID=src_uid)[0].getObject()
         dst_service = self.create_service(src_uid, dst_title, dst_keyword)
 
-        import pdb; pdb.set_trace()
-
         if self.validate_service(dst_service):
             # copy field values
             for field in src_service.Schema().fields():
