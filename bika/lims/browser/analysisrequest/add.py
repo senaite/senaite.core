@@ -12,7 +12,6 @@ from bika.lims.utils import tmpID
 from bika.lims.workflow import doActionFor
 from magnitude import mg
 from plone.app.layout.globals.interfaces import IViewView
-from Products.Archetypes import PloneMessageFactory as PMF
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.CMFPlone.utils import _createObjectByType
@@ -21,7 +20,9 @@ from zope.interface import implements
 import plone
 
 from bika.lims.utils.sample import create_sample
-from bika.lims.utils.analysisrequest import create_analysisrequest
+from bika.lims.utils.form import ajax_form_error
+
+
 
 
 
@@ -169,15 +170,6 @@ class ajaxAnalysisRequestSubmit():
 
         errors = {}
 
-        def error(field=None, column=None, message=None):
-            if not message:
-                message = t(PMF('Input is required but no input given.'))
-            if (column or field):
-                error_key = " %s.%s" % (int(column) + 1, field or '')
-            else:
-                error_key = "Form Error"
-            errors[error_key] = message
-
         form_parts = json.loads(self.request.form['parts'])
 
         # First make a list of non-empty columns
@@ -189,8 +181,8 @@ class ajaxAnalysisRequestSubmit():
                 columns.append(column)
 
         if len(columns) == 0:
-            error(message=t(_("No analyses have been selected")))
-            return json.dumps({'errors': errors})
+            ajax_form_error(errors, message=t(_("No analyses have been selected")))
+            return json.dumps({'errors':errors})
 
         # Now some basic validation
         required_fields = [field.getName() for field
@@ -219,7 +211,7 @@ class ajaxAnalysisRequestSubmit():
                 ]:
                     continue
                 if (field in ar and not ar.get(field, '')):
-                    error(field, column)
+                    ajax_form_error(errors, field, column)
 
         if errors:
             return json.dumps({'errors': errors})
