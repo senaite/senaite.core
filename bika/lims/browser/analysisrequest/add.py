@@ -7,14 +7,14 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.interfaces import IAnalysisRequestAddView
 from bika.lims.browser.analysisrequest import AnalysisRequestViewView
-from bika.lims.utils import to_utf8, getHiddenAttributesForClass
+from bika.lims.utils import getHiddenAttributesForClass
 from bika.lims.utils import tmpID
 from bika.lims.workflow import doActionFor
 from magnitude import mg
 from plone.app.layout.globals.interfaces import IViewView
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import _createObjectByType, safe_unicode
 from zope.component import getAdapter
 from zope.interface import implements
 import plone
@@ -76,9 +76,10 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         for service in bsc(portal_type='AnalysisService'):
             service = service.getObject()
             if service.getPartitionSetup() \
-                or service.getSeparate():
+                    or service.getSeparate():
                 ps.append(service.UID())
         return json.dumps(ps)
+
 
 class SecondaryARSampleInfo(BrowserView):
     """Return fieldnames and pre-digested values for Sample fields which
@@ -120,7 +121,8 @@ class SecondaryARSampleInfo(BrowserView):
 class ajaxExpandCategory(BikaListingView):
     """ ajax requests pull this view for insertion when category header
     rows are clicked/expanded. """
-    template = ViewPageTemplateFile("templates/analysisrequest_analysisservices.pt")
+    template = ViewPageTemplateFile(
+        "templates/analysisrequest_analysisservices.pt")
 
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request.form)
@@ -195,7 +197,7 @@ class ajaxAnalysisRequestSubmit():
 
             # Secondary ARs don't have sample fields present in the form data
             # if 'Sample_uid' in ar and ar['Sample_uid']:
-            #     adapter = getAdapter(self.context, name='getWidgetVisibility')
+            # adapter = getAdapter(self.context, name='getWidgetVisibility')
             #     wv = adapter().get('secondary', {}).get('invisible', [])
             #     required_fields = [x for x in required_fields if x not in wv]
 
@@ -310,17 +312,22 @@ class ajaxAnalysisRequestSubmit():
                     # Sort available containers by capacity and select the
                     # smallest one possible.
                     if p.get('container', ''):
-                        containers = [_p.getObject() for _p in bsc(UID=p['container'])]
+                        containers = [_p.getObject() for _p in
+                                      bsc(UID=p['container'])]
                         if containers:
                             try:
                                 containers.sort(lambda a, b: cmp(
                                     a.getCapacity()
-                                    and mg(float(a.getCapacity().lower().split(" ", 1)[0]),
-                                           a.getCapacity().lower().split(" ", 1)[1])
+                                    and mg(float(
+                                        a.getCapacity().lower().split(" ", 1)[0]),
+                                           a.getCapacity().lower().split(" ", 1)[
+                                               1])
                                     or mg(0, 'ml'),
                                     b.getCapacity()
-                                    and mg(float(b.getCapacity().lower().split(" ", 1)[0]),
-                                           b.getCapacity().lower().split(" ", 1)[1])
+                                    and mg(float(
+                                        b.getCapacity().lower().split(" ", 1)[0]),
+                                           b.getCapacity().lower().split(" ", 1)[
+                                               1])
                                     or mg(0, 'ml')
                                 ))
                             except:
@@ -334,8 +341,8 @@ class ajaxAnalysisRequestSubmit():
                     # If container is pre-preserved, set the part's preservation,
                     # and flag the partition to be transitioned below.
                     if container \
-                        and container.getPrePreserved() \
-                        and container.getPreservation():
+                            and container.getPrePreserved() \
+                            and container.getPreservation():
                         preservation = container.getPreservation().UID()
                         partitions[_i]['prepreserved'] = True
                     else:
@@ -433,10 +440,10 @@ class ajaxAnalysisRequestSubmit():
 
         if len(ARs) > 1:
             message = _("Analysis requests ${ARs} were successfully created.",
-                        mapping={'ARs': ', '.join(ARs)})
+                        mapping={'ARs': safe_unicode(', '.join(ARs))})
         else:
             message = _("Analysis request ${AR} was successfully created.",
-                        mapping={'AR': ARs[0]})
+                        mapping={'AR': safe_unicode(ARs[0])})
 
         self.context.plone_utils.addPortalMessage(message, 'info')
 

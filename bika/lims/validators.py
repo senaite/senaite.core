@@ -1,4 +1,5 @@
 from Acquisition import aq_parent
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import to_utf8
 from Products.CMFCore.utils import getToolByName
@@ -32,7 +33,7 @@ class UniqueFieldValidator:
             if hasattr(item, 'UID') and item.UID() != instance.UID() and \
                item.schema.get(fieldname).getAccessor(item)() == value:
                 msg = _("Validation failed: '${value}' is not unique",
-                        mapping={'value': value})
+                        mapping={'value': safe_unicode(value)})
                 return to_utf8(translate(msg))
         return True
 
@@ -70,7 +71,8 @@ class ServiceKeywordValidator:
             if service.UID != instance.UID():
                 msg = _("Validation failed: '${title}': This keyword "
                         "is already in use by service '${used_by}'",
-                        mapping={'title': value, 'used_by': service.Title})
+                        mapping={'title': safe_unicode(value),
+                                 'used_by': safe_unicode(service.Title)})
                 return to_utf8(translate(msg))
 
         calc = hasattr(instance, 'getCalculation') and \
@@ -88,7 +90,8 @@ class ServiceKeywordValidator:
                 if field['keyword'] == value and our_calc_uid != calc.UID():
                     msg = _("Validation failed: '${title}': This keyword "
                             "is already in use by calculation '${used_by}'",
-                            mapping={'title': value, 'used_by': calc.Title()})
+                            mapping={'title': safe_unicode(value),
+                                     'used_by': safe_unicode(calc.Title())})
                     return to_utf8(translate(msg))
         return True
 
@@ -151,11 +154,11 @@ class InterimFieldsValidator:
                     titles[field['title']] = 1
         for k in [k for k in keywords.keys() if keywords[k] > 1]:
             msg = _("Validation failed: '${keyword}': duplicate keyword",
-                    mapping={'keyword': k})
+                    mapping={'keyword': safe_unicode(k)})
             return to_utf8(translate(msg))
         for t in [t for t in titles.keys() if titles[t] > 1]:
             msg = _("Validation failed: '${title}': duplicate title",
-                    mapping={'title': t})
+                    mapping={'title': safe_unicode(t)})
             return to_utf8(translate(msg))
 
         # check all keywords against all AnalysisService keywords for dups
@@ -163,7 +166,8 @@ class InterimFieldsValidator:
         if services:
             msg = _("Validation failed: '${title}': "
                     "This keyword is already in use by service '${used_by}'",
-                    mapping={'title': value, 'used_by': services[0].Title})
+                    mapping={'title': safe_unicode(value),
+                             'used_by': safe_unicode(services[0].Title)})
             return to_utf8(translate(msg))
 
         # any duplicated interimfield titles must share the same keyword
@@ -186,16 +190,16 @@ class InterimFieldsValidator:
                title_keywords[field['title']] != field['keyword']:
                 msg = _("Validation failed: column title '${title}' "
                         "must have keyword '${keyword}'",
-                        mapping={'title': field['title'],
-                                 'keyword': title_keywords[field['title']]})
+                        mapping={'title': safe_unicode(field['title']),
+                                 'keyword': safe_unicode(title_keywords[field['title']])})
                 return to_utf8(translate(msg))
             if 'keyword' in field and \
                field['keyword'] in keyword_titles.keys() and \
                keyword_titles[field['keyword']] != field['title']:
                 msg = _("Validation failed: keyword '${keyword}' "
                         "must have column title '${title}'",
-                        mapping={'keyword': field['keyword'],
-                                 'title': keyword_titles[field['keyword']]})
+                        mapping={'keyword': safe_unicode(field['keyword']),
+                                 'title': safe_unicode(keyword_titles[field['keyword']])})
                 return to_utf8(translate(msg))
 
         return True
@@ -232,7 +236,7 @@ class FormulaValidator:
             if not dep_service and \
                not keyword in interim_keywords:
                 msg = _("Validation failed: Keyword '${keyword}' is invalid",
-                        mapping={'keyword': keyword})
+                        mapping={'keyword': safe_unicode(keyword)})
                 return to_utf8(translate(msg))
         return True
 
@@ -399,7 +403,7 @@ class RestrictedCategoriesValidator:
         if failures:
             msg = _("Validation failed: The selection requires the following "
                     "categories to be selected: ${categories}",
-                    mapping={'categories': ','.join(failures)})
+                    mapping={'categories': safe_unicode(','.join(failures))})
             return to_utf8(translate(msg))
 
         return True

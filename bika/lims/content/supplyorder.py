@@ -156,7 +156,7 @@ class SupplyOrder(BaseFolder):
             [float(obj.getTotal())
              for obj in self.objectValues('SupplyOrderItem')])
 
-    security.declareProtected(View, 'getVAT')
+    security.declareProtected(View, 'getVATTotal')
 
     def getVATTotal(self):
         """ Compute VAT """

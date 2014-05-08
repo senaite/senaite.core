@@ -42,7 +42,7 @@ schema = BikaSchema.copy() + Schema((
             description = _("The selected instruments have support for "
                             "this method. "
                             "Use the Instrument edit view to assign "
-                            "the method to an specific instrument"),
+                            "the method to a specific instrument"),
         ),
     ),
 

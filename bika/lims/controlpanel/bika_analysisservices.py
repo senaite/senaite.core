@@ -1,4 +1,4 @@
-from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import _createObjectByType, safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
@@ -123,10 +123,10 @@ class AnalysisServiceCopy(BrowserView):
                     self.created.append(title)
             if len(self.created) > 1:
                 message = t(_('${items} were successfully created.',
-                              mapping={'items': ', '.join(self.created)}))
+                              mapping={'items': safe_unicode(', '.join(self.created))}))
             elif len(self.created) == 1:
                 message = t(_('${item} was successfully created.',
-                             mapping={'item': self.created[0]}))
+                             mapping={'item': safe_unicode(self.created[0])}))
             else:
                 message = t(_('No new items were created.'))
             self.context.plone_utils.addPortalMessage(message, 'info')

@@ -90,7 +90,7 @@ def getContainers(instance,
     containertypes = dict([(ct.UID(), ct.Title())
                            for ct in containertypes if ct])
     for ctype_uid, ctype_title in containertypes.items():
-        ctype_title = _u(ctype_title)
+        ctype_title = _c(ctype_title)
         if show_container_types:
             items.append((ctype_uid, "%s: %s"%(cat_str, ctype_title)))
         if show_containers:
@@ -717,6 +717,9 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         return renameAfterCreation(self)
+
+    def Title(self):
+        return _c(self.title)
 
     security.declarePublic('getDiscountedPrice')
     def getDiscountedPrice(self):

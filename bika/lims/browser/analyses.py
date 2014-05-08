@@ -1,5 +1,6 @@
 # coding=utf-8
 from AccessControl import getSecurityManager
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser import BrowserView
@@ -550,15 +551,15 @@ class AnalysesView(BikaListingView):
             #    and instrument.UID() not in method.getInstrumentUIDs():
             #    instrument = None
 
-            srv_title = to_utf8(service.Title())
-            inst_title = to_utf8(instrument.Title()) if instrument else ''
+            srv_title = service.Title()
+            inst_title = instrument.Title() if instrument else ''
 
-            if service.getInstrumentEntryOfResults() == False:
+            if not service.getInstrumentEntryOfResults():
                 # Manual entry of results, Instrument not allowed
                 item['Instrument'] = _('Manual')
                 msgtitle = t(_(
                     "Instrument entry of results not allowed for ${service}",
-                    mapping={"service": srv_title},
+                    mapping={"service": safe_unicode(srv_title)},
                 ))
                 item['replace']['Instrument'] = \
                     '<a href="#" title="%s">%s</a>' % (msgtitle, t(_('Manual')))
@@ -761,7 +762,7 @@ class AnalysesView(BikaListingView):
                              "<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='%s'/></a>" % \
                              (ws.absolute_url(),
                               t(_("Assigned to: ${worksheet_id}",
-                                  mapping={'worksheet_id': ws.id})))
+                                  mapping={'worksheet_id': safe_unicode(ws.id)})))
 
         # the TAL requires values for all interim fields on all
         # items, so we set blank values in unused cells

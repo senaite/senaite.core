@@ -1024,4 +1024,14 @@ a.pdf {
     background: url(&dtml-portal_url;/++resource++bika.lims.images/pdf.png) no-repeat left center transparent;
 }
 
+a.add-remark {
+    padding-right: 5px;
+}
+a.add-remark:hover {
+    opacity: 0.5;
+   transition: opacity .25s ease-in-out;
+   -moz-transition: opacity .25s ease-in-out;
+   -webkit-transition: opacity .25s ease-in-out;
+}
+
 </dtml-with>
