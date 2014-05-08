@@ -183,12 +183,10 @@ class ajaxAnalysisRequestSubmit():
         # First make a list of non-empty columns
         columns = []
         for column in range(int(form['col_count'])):
-            if "ar.%s" % column not in form:
-                continue
-            ar = form["ar.%s" % column]
-            if 'Analyses' not in ar.keys():
-                continue
-            columns.append(column)
+            name = 'ar.%s' % column
+            ar = form.get(name, None)
+            if ar and 'Analyses' in ar.keys():
+                columns.append(column)
 
         if len(columns) == 0:
             error(message=t(_("No analyses have been selected")))
@@ -235,10 +233,12 @@ class ajaxAnalysisRequestSubmit():
 
         # The actual submission
         for column in columns:
+
             if form_parts:
                 partitions = form_parts[str(column)]
             else:
                 partitions = []
+
             formkey = "ar.%s" % column
             values = form[formkey].copy()
 
