@@ -20,6 +20,7 @@ from zope.interface import implements
 import plone
 
 from bika.lims.utils.sample import create_sample
+from bika.lims.utils.samplepartition import create_samplepartition
 from bika.lims.utils.form import ajax_form_error
 
 
@@ -272,7 +273,7 @@ class ajaxAnalysisRequestSubmit():
             if not partitions:
                 partitions = [{
                     'services': [],
-                    'container': [],
+                    'container': None,
                     'preservation': '',
                     'separate': False
                 }]
@@ -300,65 +301,27 @@ class ajaxAnalysisRequestSubmit():
 
             # Create sample partitions
             parts_and_services = {}
+
             for _i in range(len(partitions)):
+
                 p = partitions[_i]
-                part_prefix = sample.getId() + "-P"
-                if '%s%s' % (part_prefix, _i + 1) in sample.objectIds():
-                    partitions[_i]['object'] = sample['%s%s' % (part_prefix, _i + 1)]
-                    parts_and_services['%s%s' % (part_prefix, _i + 1)] = p['services']
+
+                partition_prefix = sample.getId() + "-P"
+                partition_name = '%s%s' % (partition_prefix, _i + 1)
+
+                if partition_name in sample.objectIds():
+                    partitions[_i]['object'] = sample[partition_name]
+                    parts_and_services[partition_name] = p['services']
                 else:
-                    part = _createObjectByType("SamplePartition", sample, tmpID())
-                    partitions[_i]['object'] = part
-                    # Sort available containers by capacity and select the
-                    # smallest one possible.
-                    if p.get('container', ''):
-                        containers = [_p.getObject() for _p in
-                                      bsc(UID=p['container'])]
-                        if containers:
-                            try:
-                                containers.sort(lambda a, b: cmp(
-                                    a.getCapacity()
-                                    and mg(float(
-                                        a.getCapacity().lower().split(" ", 1)[0]),
-                                           a.getCapacity().lower().split(" ", 1)[
-                                               1])
-                                    or mg(0, 'ml'),
-                                    b.getCapacity()
-                                    and mg(float(
-                                        b.getCapacity().lower().split(" ", 1)[0]),
-                                           b.getCapacity().lower().split(" ", 1)[
-                                               1])
-                                    or mg(0, 'ml')
-                                ))
-                            except:
-                                pass
-                            container = containers[0]
-                        else:
-                            container = None
-                    else:
-                        container = None
-
-                    # If container is pre-preserved, set the part's preservation,
-                    # and flag the partition to be transitioned below.
-                    if container \
-                            and container.getPrePreserved() \
-                            and container.getPreservation():
-                        preservation = container.getPreservation().UID()
-                        partitions[_i]['prepreserved'] = True
-                    else:
-                        preservation = p.get('preservation', '')
-                        partitions[_i]['prepreserved'] = False
-
-                    part.edit(
-                        Container=container,
-                        Preservation=preservation,
+                    partition = create_samplepartition(
+                        self.context,
+                        sample,
+                        partitions,
+                        p,
+                        _i
                     )
-                    part.processForm()
-                    if SamplingWorkflowEnabled:
-                        wftool.doActionFor(part, 'sampling_workflow')
-                    else:
-                        wftool.doActionFor(part, 'no_sampling_workflow')
-                    parts_and_services[part.id] = p['services']
+                    partitions[_i]['object'] = partition
+                    parts_and_services[partition.id] = p['services']
 
             if SamplingWorkflowEnabled:
                 wftool.doActionFor(ar, 'sampling_workflow')
