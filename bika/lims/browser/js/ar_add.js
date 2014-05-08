@@ -618,17 +618,28 @@ function copyButton(){
 		var first_val = $("input[name^='ar\\.0\\."+fieldName+"']").filter("[type=text]").val();
 		// Reference fields have a hidden *_uid field
 		var first_uid = $("input[name^='ar\\.0\\."+fieldName+"_uid']").val();
+        // multi-valued fields: selection is in {fieldname}-listing
+        var first_multi_html = $("div[name^='ar\\.0\\."+fieldName+"-listing']").html();
 		// col starts at 1 here; we don't copy into the the first row
 		for (var col=1; col<col_count; col++) {
 			var other_uid_elem = $("#ar_" + col + "_" + fieldName + "_uid");
 			if (first_uid !== undefined && first_uid !== null){
 				other_uid_elem.val(first_uid);
 			}
+            var other_multi_div = $("div[name^='ar\\."+col+"\\."+fieldName+"-listing']");
+            if (first_multi_html !== undefined && first_multi_html !== null){
+         	    other_multi_div.html(first_multi_html.replace(".0.", "."+col+"."));
+            }
+            // Actual field value
 			var other_elem = $("#ar_" + col + "_" + fieldName);
 			if (!(other_elem.prop("disabled"))) {
 				$(other_elem).attr("skip_referencewidget_lookup", true);
 				other_elem.val(first_val);
 				other_elem.trigger("change");
+
+                if(fieldName == "Contact") {
+                    set_cc_contacts(col);
+                }
 
 				if(fieldName == "Profile"){
 					unsetTemplate(col);
