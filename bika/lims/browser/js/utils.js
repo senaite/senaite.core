@@ -9,6 +9,7 @@ window.bika = window.bika || {
 };
 
 window.bika.lims.portalMessage = function (message) {
+    window.jarn.i18n.loadCatalog("bika");
     var _ = window.jarn.i18n.MessageFactory("bika");
     var str = "<dl class='portalMessage error'>"+
         "<dt>"+_("Error")+"</dt>"+
@@ -51,6 +52,7 @@ window.bika.lims.jsonapi_read = function(request_data, handler) {
 
 $(document).ready(function(){
 
+    window.jarn.i18n.loadCatalog("bika");
     var _ = window.jarn.i18n.MessageFactory("bika");
 
     var curDate = new Date();
