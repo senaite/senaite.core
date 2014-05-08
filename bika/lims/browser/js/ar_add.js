@@ -835,6 +835,7 @@ function add_No(dlg, element){
 function calcdependencies(elements, auto_yes) {
 	/*jshint validthis:true */
 	auto_yes = auto_yes || false;
+    jarn.i18n.loadCatalog('bika');
 	var _ = window.jarn.i18n.MessageFactory("bika");
 
 	var dep;
@@ -1306,7 +1307,9 @@ $(document).ready(function() {
 	// Only if the view is the Analysis Request Add View
 	if ($(".template-ar_add #analysisrequest_edit_form").length > 0) {
 
+    // jarn.i18n.loadCatalog('bika');
 	// var _ = window.jarn.i18n.MessageFactory("bika");
+    // jarn.i18n.loadCatalog('bika');
 	// var PMF = window.jarn.i18n.MessageFactory("plone");
 
 	// var curDate = new Date();

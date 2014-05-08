@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2014-05-04 12:27+0000\n"
+"POT-Creation-Date: 2014-05-08 13:07+0000\n"
 "PO-Revision-Date: 2014-03-28 12:52+0000\n"
 "Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/bika-lims/language/fr/)\n"
@@ -931,6 +931,9 @@ msgstr "Result Options"
 
 msgid "label_schema_Results Reports"
 msgstr "Results Reports"
+
+msgid "label_schema_SR Templates"
+msgstr "SR Templates"
 
 msgid "label_schema_Sample Partitions"
 msgstr "Sample Partitions"

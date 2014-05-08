@@ -3,6 +3,7 @@
 "use strict";
 
 function workflow_transition_sample(event){
+    jarn.i18n.loadCatalog('plone');
 	var PMF = window.jarn.i18n.MessageFactory("plone");
 	event.preventDefault();
 	if ($("#DateSampled").val() !== "" && $("#Sampler").val() !== "") {
@@ -32,6 +33,7 @@ function workflow_transition_sample(event){
 
 function workflow_transition_preserve(event){
 	event.preventDefault();
+    jarn.i18n.loadCatalog('bika');
 	var _ = window.jarn.i18n.MessageFactory("bika");
 	var message = _("You must preserve individual Sample Partitions");
 	window.bika.lims.portalMessage(message);
@@ -65,7 +67,9 @@ function workflow_transition_republish(event){
 
 $(document).ready(function(){
 
+    // jarn.i18n.loadCatalog('bika');
 	// var _ = window.jarn.i18n.MessageFactory("bika");
+    // jarn.i18n.loadCatalog('plone');
 	// var PMF = window.jarn.i18n.MessageFactory("plone");
 
 	// Plone "Sample" transition is only available when Sampler and DateSampled
