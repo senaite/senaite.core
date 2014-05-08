@@ -98,7 +98,7 @@ class HeaderTableView(BrowserView):
         new_wv = {}
         # respect schemaextender's re-ordering of fields, and
         # remove hidden attributes.
-        hiddenattributes = getHiddenAttributesForClass('AnalysisRequest')
+        hiddenattributes = getHiddenAttributesForClass(self.context.portal_type)
         schema_fields = [f.getName() for f in self.context.Schema().fields()]
         for mode, state_field_lists in wv.items():
             new_wv[mode] = {}

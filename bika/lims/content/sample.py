@@ -90,7 +90,7 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             label=_("Sample Type"),
             render_own_label=True,
-            visible={'edit': 'invisible',
+            visible={'edit': 'visible',
                      'view': 'visible',
                      'add': 'visible'},
             catalog_name='bika_setup_catalog',
@@ -116,7 +116,7 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             label=_("Sample Point"),
             render_own_label=True,
-            visible={'edit': 'invisible',
+            visible={'edit': 'visible',
                      'view': 'visible',
                      'add': 'visible'},
             catalog_name='bika_setup_catalog',
@@ -226,7 +226,7 @@ schema = BikaSchema.copy() + Schema((
         write_permission=permissions.ModifyPortalContent,
         widget = DateTimeWidget(
             label=_("Date Received"),
-            visible={'edit': 'invisible',
+            visible={'edit': 'visible',
                      'view': 'visible'},
             render_own_label=True,
         ),
