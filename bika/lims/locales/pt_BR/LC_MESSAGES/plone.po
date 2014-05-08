@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2014-05-04 12:27+0000\n"
+"POT-Creation-Date: 2014-05-08 13:07+0000\n"
 "PO-Revision-Date: 2014-04-23 18:18+0000\n"
 "Last-Translator: PabloBF <pablobusattof@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/bika-lims/language/pt_BR/)\n"
@@ -928,6 +928,9 @@ msgstr "Result Options"
 
 msgid "label_schema_Results Reports"
 msgstr "Results Reports"
+
+msgid "label_schema_SR Templates"
+msgstr "SR Templates"
 
 msgid "label_schema_Sample Partitions"
 msgstr "Sample Partitions"
