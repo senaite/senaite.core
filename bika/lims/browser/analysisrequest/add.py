@@ -299,40 +299,10 @@ class ajaxAnalysisRequestSubmit():
             # Object has been renamed
             ar.edit(RequestID=ar.getId())
 
-            # Create sample partitions
-            parts_and_services = {}
-
-            for _i in range(len(partitions)):
-
-                p = partitions[_i]
-
-                partition_prefix = sample.getId() + "-P"
-                partition_name = '%s%s' % (partition_prefix, _i + 1)
-
-                if partition_name in sample.objectIds():
-                    partitions[_i]['object'] = sample[partition_name]
-                    parts_and_services[partition_name] = p['services']
-                else:
-                    partition = create_samplepartition(
-                        self.context,
-                        sample,
-                        partitions,
-                        p,
-                        _i
-                    )
-                    partitions[_i]['object'] = partition
-                    parts_and_services[partition.id] = p['services']
-
-            if SamplingWorkflowEnabled:
-                wftool.doActionFor(ar, 'sampling_workflow')
-            else:
-                wftool.doActionFor(ar, 'no_sampling_workflow')
-
-            ARs.append(ar.getId())
-
             # set analysis request analyses
             Analyses = values["Analyses"]
 
+            # Specs
             specs = {}
             if len(values.get("min", [])):
                 for i, service_uid in enumerate(Analyses):
@@ -345,17 +315,28 @@ class ajaxAnalysisRequestSubmit():
             new_analyses = ar.setAnalyses(Analyses, prices=prices, specs=specs)
             ar_analyses = ar.objectValues('Analysis')
 
-            # Add analyses to sample partitions
-            for part in sample.objectValues("SamplePartition"):
-                part_services = parts_and_services[part.id]
-                analyses = [a for a in new_analyses
-                            if a.getServiceUID() in part_services]
-                if analyses:
-                    part.edit(
-                        Analyses=analyses,
+            # Create sample partitions
+            for n, partition in enumerate(partitions):
+                # Calculate partition id
+                partition_prefix = sample.getId() + "-P"
+                partition_id = '%s%s' % (partition_prefix, n + 1)
+                # Point to or create sample partition
+                if partition_id in sample.objectIds():
+                    partition['object'] = sample[partition_id]
+                else:
+                    partition['object'] = create_samplepartition(
+                        self.context,
+                        sample,
+                        partition,
+                        new_analyses
                     )
-                    for analysis in analyses:
-                        analysis.setSamplePartition(part)
+
+            if SamplingWorkflowEnabled:
+                wftool.doActionFor(ar, 'sampling_workflow')
+            else:
+                wftool.doActionFor(ar, 'no_sampling_workflow')
+
+            ARs.append(ar.getId())
 
             # If Preservation is required for some partitions,
             # and the SamplingWorkflow is disabled, we need
