@@ -907,13 +907,5 @@ class WidgetVisibility(_WV):
                 'SamplingDate',
                 'SamplingDeviation',
             ]
-        hiddenattributes = getHiddenAttributesForClass(self.context.portal_type)
-        if hiddenattributes:
-            for section in ret.keys():
-                for key in ret[section]:
-                    if key == 'visible':
-                        for field in ret[section][key]:
-                            if field in hiddenattributes:
-                                ret[section][key].remove(field)
 
         return ret

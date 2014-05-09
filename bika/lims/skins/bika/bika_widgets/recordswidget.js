@@ -1,6 +1,8 @@
 jQuery(function($){
     $(document).ready(function(){
+        window.jarn.i18n.loadCatalog("plone");
         _p = jarn.i18n.MessageFactory('plone');
+        window.jarn.i18n.loadCatalog("bika");
         _ = jarn.i18n.MessageFactory('bika');
 
         recordswidget_lookups();

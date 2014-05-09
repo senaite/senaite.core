@@ -287,7 +287,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         hasInterims = {}
         # check that the form values match the database
         # save them if not.
-        for uid, result in self.request.form['Result'][0].items():
+        for uid, result in self.request.form.get('Result', [{}])[0].items():
             # if the AR has ReportDryMatter set, get dry_result from form.
             dry_result = ''
             if hasattr(self.context, 'getReportDryMatter') \

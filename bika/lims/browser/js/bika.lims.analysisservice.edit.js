@@ -4,7 +4,6 @@
 function AnalysisServiceEditView() {
 
     window.jarn.i18n.loadCatalog("bika");
-    window.jarn.i18n.loadCatalog("plone");
     var _ = window.jarn.i18n.MessageFactory("bika");
 
     var that = this;
@@ -425,7 +424,6 @@ function AnalysisServiceEditView() {
         $('#invalid-instruments-alert').remove();
         if ($('#InstrumentEntryOfResults').is(':checked')) {
             window.jarn.i18n.loadCatalog("bika");
-            window.jarn.i18n.loadCatalog("plone");
             var _ = window.jarn.i18n.MessageFactory("bika");
             var insts = $('#Instruments').val() ? $('#Instruments').val() : [];
             $.each(insts, function(index, value) {

@@ -1,7 +1,9 @@
 (function( $ ) {
 $(document).ready(function(){
 
+    window.jarn.i18n.loadCatalog("bika");
     _ = jarn.i18n.MessageFactory('bika');
+    window.jarn.i18n.loadCatalog("plone");
     PMF = jarn.i18n.MessageFactory('plone');
 
     // selecting a template might pre-select the instrument
@@ -162,6 +164,7 @@ $(document).ready(function(){
     });
 
     function portalMessage(message) {
+        window.jarn.i18n.loadCatalog("bika");
         _ = jarn.i18n.MessageFactory('bika');
         str = "<dl class='portalMessage info'>"+
             "<dt>"+_('Info')+"</dt>"+

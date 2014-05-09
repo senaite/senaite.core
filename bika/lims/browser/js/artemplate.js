@@ -2,7 +2,9 @@
 
 	$(document).ready(function(){
 
+        jarn.i18n.loadCatalog('bika');
 		_ = jarn.i18n.MessageFactory('bika');
+        jarn.i18n.loadCatalog('plone');
 		PMF = jarn.i18n.MessageFactory('plone');
 
 		function clickSaveButton(event){

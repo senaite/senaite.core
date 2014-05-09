@@ -102,7 +102,7 @@ class AnalysisServiceCopy(BrowserView):
             self.savepoint = savepoint()
             sources = self.request.form.get('uids', [])
             titles = self.request.form.get('dst_title', [])
-            keywords = self.request.form.get('dst_title', [])
+            keywords = self.request.form.get('dst_keyword', [])
             self.created = []
             for i, s in enumerate(sources):
                 if not titles[i]:

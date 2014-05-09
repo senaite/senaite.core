@@ -78,6 +78,7 @@ function add_No(dlg, element){
 function calcdependencies(elements, auto_yes) {
 	/*jshint validthis:true */
 	auto_yes = auto_yes || false;
+    window.jarn.i18n.loadCatalog("bika");
 	var _ = window.jarn.i18n.MessageFactory("bika");
 
 	var dep;

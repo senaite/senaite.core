@@ -60,6 +60,7 @@
     <element value="InstrumentScheduledTask"/>
     <element value="InstrumentType"/>
     <element value="InstrumentValidation"/>
+    <element value="Invoice"/>
     <element value="InvoiceBatch"/>
     <element value="LabContact"/>
     <element value="LabProduct"/>

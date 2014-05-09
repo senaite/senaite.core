@@ -47,7 +47,9 @@ function workflow_transition_preserve(event){
 
 $(document).ready(function(){
 
+    window.jarn.i18n.loadCatalog("bika");
 	_ = jarn.i18n.MessageFactory('bika');
+    window.jarn.i18n.loadCatalog("plone");
 	PMF = jarn.i18n.MessageFactory('plone');
 
 	// Plone "Sample" transition is only available when Sampler and DateSampled
