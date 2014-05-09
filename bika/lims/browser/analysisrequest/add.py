@@ -220,6 +220,7 @@ class ajaxAnalysisRequestSubmit():
             return json.dumps({'errors': errors})
 
         prices = form.get('Prices', None)
+
         ARs = []
 
         # if a new profile is created automatically,
@@ -304,16 +305,16 @@ class ajaxAnalysisRequestSubmit():
 
             # Specs
             specs = {}
+
             if len(values.get("min", [])):
-                for i, service_uid in enumerate(Analyses):
+                for n, service_uid in enumerate(Analyses):
                     specs[service_uid] = {
-                        "min": values["min"][i],
-                        "max": values["max"][i],
-                        "error": values["error"][i]
+                        "min": values["min"][n],
+                        "max": values["max"][n],
+                        "error": values["error"][n]
                     }
 
-            new_analyses = ar.setAnalyses(Analyses, prices=prices, specs=specs)
-            ar_analyses = ar.objectValues('Analysis')
+            analyses = ar.setAnalyses(Analyses, prices=prices, specs=specs)
 
             # Create sample partitions
             for n, partition in enumerate(partitions):
@@ -328,7 +329,7 @@ class ajaxAnalysisRequestSubmit():
                         self.context,
                         sample,
                         partition,
-                        new_analyses
+                        analyses
                     )
 
             if SamplingWorkflowEnabled:

@@ -1,18 +1,15 @@
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.Registry import registerField
-from Products.Archetypes.event import ObjectInitializedEvent
-from Products.Archetypes.public import *
-from Products.Archetypes.utils import shasattr
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims import logger
 from bika.lims.permissions import ViewRetractedAnalyses
+from bika.lims.utils import t
+from bika.lims.utils.analysis import create_analysis
 from decimal import Decimal
+from Products.Archetypes.public import *
+from Products.Archetypes.Registry import registerField
+from Products.Archetypes.utils import shasattr
+from Products.CMFCore.utils import getToolByName
 from types import ListType, TupleType, DictType
-import zope.event
 
 
 class ARAnalysesField(ObjectField):
@@ -131,24 +128,12 @@ class ARAnalysesField(ObjectField):
             if hasattr(instance, keyword):
                 analysis = instance._getOb(keyword)
             else:
-                analysis = _createObjectByType("Analysis", instance, keyword)
-                analysis.setService(service)
-                analysis.setInterimFields(interim_fields)
-                analysis.setMaxTimeAllowed(service.getMaxTimeAllowed())
-
-                analysis.unmarkCreationFlag()
-                analysis.reindexObject()
-                zope.event.notify(ObjectInitializedEvent(analysis))
-                SamplingWorkflowEnabled = instance.bika_setup.getSamplingWorkflowEnabled()
-                try:
-                    if SamplingWorkflowEnabled:
-                        workflow.doActionFor(analysis, 'sampling_workflow')
-                    else:
-                        workflow.doActionFor(analysis, 'no_sampling_workflow')
-                except WorkflowException:
-                    # The analysis may have been transitioned already!
-                    # I am leaving this code here though, to prevent regression.
-                    pass
+                analysis = create_analysis(
+                    instance,
+                    service,
+                    keyword,
+                    interim_fields
+                )
                 new_analyses.append(analysis)
             # Note: subscriber might retract and/or unassign the AR
 
