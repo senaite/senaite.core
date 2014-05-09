@@ -370,9 +370,23 @@ class Instrument(ATFolder):
         """ Returns the current instrument's data expiration certificate
         """
         cert = self.getLatestValidCertification()
+        if cert == None:
+            return ''
         date = cert.getValidTo()
         return date
 
+    def getWeeksToExpire(self):
+        """ Returns the amount of weeks untils it's certification expire
+        """
+        cert = self.getLatestValidCertification()
+        if cert == None:
+            return ''
+        date = cert.getValidTo().asdatetime().date();
+        return date - date.today()
+
+    def getMethods(self):
+        return self._getAvailableMethods()#Jordi Help
+####################
 
     def getLatestValidCertification(self):
         """ Returns the latest valid certification. If no latest valid
