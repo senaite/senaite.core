@@ -365,6 +365,15 @@ class Instrument(ATFolder):
                 return False
         return True
 
+###################
+    def getCertificateExpireDate(self):
+        """ Returns the current instrument's data expiration certificate
+        """
+        cert = self.getLatestValidCertification()
+        date = cert.getValidTo()
+        return date
+
+
     def getLatestValidCertification(self):
         """ Returns the latest valid certification. If no latest valid
             certification found, returns None

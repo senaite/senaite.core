@@ -46,6 +46,9 @@ class InstrumentsView(BikaListingView):
             'Model': {'title': _('Model'),
                       'index': 'getModel',
                       'toggle': True},
+            'ExpiryDate': {'title': _('ExpiryDate'),
+                           'index': 'getCertificateExpireDate',#PERQUE BRAND NO TE INDX?!
+                           'toggle': True},#SEMPRE ES TRUE?
         }
         self.review_states = [
             {'id':'default',
@@ -55,7 +58,8 @@ class InstrumentsView(BikaListingView):
              'columns': ['Title',
                          'Type',
                          'Brand',
-                         'Model']},
+                         'Model',
+                         'ExpiryDate']},
             {'id':'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
@@ -63,14 +67,16 @@ class InstrumentsView(BikaListingView):
              'columns': ['Title',
                          'Type',
                          'Brand',
-                         'Model']},
+                         'Model',
+                         'ExpiryDate']},
             {'id':'all',
              'title': _('All'),
              'contentFilter':{},
              'columns': ['Title',
                          'Type',
                          'Brand',
-                         'Model']},
+                         'Model',
+                         'ExpiriDate']},
         ]
 
     def folderitems(self):
