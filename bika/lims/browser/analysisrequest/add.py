@@ -9,7 +9,6 @@ from bika.lims.interfaces import IAnalysisRequestAddView
 from bika.lims.browser.analysisrequest import AnalysisRequestViewView
 from bika.lims.utils import getHiddenAttributesForClass
 from bika.lims.utils import tmpID
-from bika.lims.workflow import doActionFor
 from magnitude import mg
 from plone.app.layout.globals.interfaces import IViewView
 from Products.CMFCore.utils import getToolByName
@@ -19,12 +18,8 @@ from zope.component import getAdapter
 from zope.interface import implements
 import plone
 
-from bika.lims.utils.sample import create_sample
-from bika.lims.utils.samplepartition import create_samplepartition
 from bika.lims.utils.form import ajax_form_error
-
-
-
+from bika.lims.utils.analysisrequest import create_analysisrequest
 
 
 class AnalysisRequestAddView(AnalysisRequestViewView):
@@ -195,13 +190,11 @@ class ajaxAnalysisRequestSubmit():
         for column in columns:
             formkey = "ar.%s" % column
             ar = form[formkey]
-
             # Secondary ARs don't have sample fields present in the form data
             # if 'Sample_uid' in ar and ar['Sample_uid']:
             # adapter = getAdapter(self.context, name='getWidgetVisibility')
             #     wv = adapter().get('secondary', {}).get('invisible', [])
             #     required_fields = [x for x in required_fields if x not in wv]
-
             # check that required fields have values
             for field in required_fields:
                 # This one is still special.
@@ -215,18 +208,16 @@ class ajaxAnalysisRequestSubmit():
                     continue
                 if (field in ar and not ar.get(field, '')):
                     ajax_form_error(errors, field, column)
-
+        # Return errors if there are any
         if errors:
             return json.dumps({'errors': errors})
-
+        # Get the prices from the form data
         prices = form.get('Prices', None)
-
+        # Initialize the Anlysis Request collection
         ARs = []
-
         # if a new profile is created automatically,
         # this flag triggers the status message
         new_profile = None
-
         # The actual submission
         for column in columns:
             # Get partitions from the form data
@@ -252,27 +243,16 @@ class ajaxAnalysisRequestSubmit():
                 else:
                     resolved_values[k] = values[k]
             # Get the analyses from the form data
-            Analyses = values["Analyses"]
+            analyses = values["Analyses"]
             # Gather the specifications from the form data
             specifications = {}
             if len(values.get("min", [])):
-                for n, service_uid in enumerate(Analyses):
+                for n, service_uid in enumerate(analyses):
                     specifications[service_uid] = {
                         "min": values["min"][n],
                         "max": values["max"][n],
                         "error": values["error"][n]
                     }
-            # Retrieve the catalogue reference to the client
-            client = uc(UID=resolved_values['Client'])[0].getObject()
-            # create the sample
-            sample = create_sample(
-                self.context,
-                self.request,
-                client,
-                resolved_values
-            )
-            resolved_values['Sample'] = sample
-            resolved_values['Sample_uid'] = sample.UID()
             # Selecting a template sets the hidden 'parts' field to template values.
             # Selecting a profile will allow ar_add.js to fill in the parts field.
             # The result is the same once we are here.
@@ -293,74 +273,18 @@ class ajaxAnalysisRequestSubmit():
                 for partition in partitions:
                     if not partition.get(container, None):
                         partition['container'] = containers
-            # Create the analyses request
-            ar = _createObjectByType("AnalysisRequest", client, tmpID())
-            ar.setSample(sample)
-            ar.processForm(REQUEST=self.request, values=resolved_values)
-            # Object has been renamed
-            ar.edit(RequestID=ar.getId())
-            # Set analysis request analyses
-            analyses = ar.setAnalyses(
-                Analyses, prices=prices, specs=specifications
+            # Retrieve the catalogue reference to the client
+            client = uc(UID=resolved_values['Client'])[0].getObject()
+            # Create the Analysis Request
+            ar = create_analysisrequest(
+                client,
+                self.request,
+                resolved_values,
+                analyses,
+                partitions,
+                specifications,
+                prices
             )
-            # Create sample partitions
-            for n, partition in enumerate(partitions):
-                # Calculate partition id
-                partition_prefix = sample.getId() + "-P"
-                partition_id = '%s%s' % (partition_prefix, n + 1)
-                # Point to or create sample partition
-                if partition_id in sample.objectIds():
-                    partition['object'] = sample[partition_id]
-                else:
-                    partition['object'] = create_samplepartition(
-                        sample,
-                        partition,
-                        analyses
-                    )
-            if SamplingWorkflowEnabled:
-                wftool.doActionFor(ar, 'sampling_workflow')
-            else:
-                wftool.doActionFor(ar, 'no_sampling_workflow')
-            # If Preservation is required for some partitions,
-            # and the SamplingWorkflow is disabled, we need
-            # to transition to to_be_preserved manually.
-            if not SamplingWorkflowEnabled:
-                to_be_preserved = []
-                sample_due = []
-                lowest_state = 'sample_due'
-                for p in sample.objectValues('SamplePartition'):
-                    if p.getPreservation():
-                        lowest_state = 'to_be_preserved'
-                        to_be_preserved.append(p)
-                    else:
-                        sample_due.append(p)
-                for p in to_be_preserved:
-                    doActionFor(p, 'to_be_preserved')
-                for p in sample_due:
-                    doActionFor(p, 'sample_due')
-                doActionFor(sample, lowest_state)
-                doActionFor(ar, lowest_state)
-            # receive secondary AR
-            if values.get('Sample_uid', ''):
-                doActionFor(ar, 'sampled')
-                doActionFor(ar, 'sample_due')
-                not_receive = ['to_be_sampled', 'sample_due', 'sampled',
-                               'to_be_preserved']
-                sample_state = wftool.getInfoFor(sample, 'review_state')
-                if sample_state not in not_receive:
-                    doActionFor(ar, 'receive')
-                for analysis in ar.getAnalyses(full_objects=1):
-                    doActionFor(analysis, 'sampled')
-                    doActionFor(analysis, 'sample_due')
-                    if sample_state not in not_receive:
-                        doActionFor(analysis, 'receive')
-            # Transition pre-preserved partitions.
-            for p in partitions:
-                if 'prepreserved' in p and p['prepreserved']:
-                    part = p['object']
-                    state = wftool.getInfoFor(part, 'review_state')
-                    if state == 'to_be_preserved':
-                        wftool.doActionFor(part, 'preserve')
             # Add the created analysis request to the list
             ARs.append(ar.getId())
         # Display the appropriate message after creation
@@ -377,8 +301,10 @@ class ajaxAnalysisRequestSubmit():
         if came_from == 'add':
             new_ars = [ar for ar in ARs if ar[-2:] == '01']
         if 'register' in self.context.bika_setup.getAutoPrintLabels() and new_ars:
-            return json.dumps({'success': message,
-                               'labels': new_ars,
-                               'labelsize': self.context.bika_setup.getAutoLabelSize()})
+            return json.dumps({
+                'success': message,
+                'labels': new_ars,
+                'labelsize': self.context.bika_setup.getAutoLabelSize()
+            })
         else:
             return json.dumps({'success': message})

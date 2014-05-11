@@ -45,9 +45,7 @@ def create_samplepartition(context, data, analyses=None):
     partition_services = data['services']
     analyses = [a for a in analyses if a.getServiceUID() in partition_services]
     if analyses:
-        partition.edit(
-            Analyses=analyses,
-        )
+        partition.edit(Analyses=analyses)
     # Set some generated values
     partition.edit(
         Container=container,
