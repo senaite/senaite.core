@@ -229,15 +229,14 @@ class ajaxAnalysisRequestSubmit():
 
         # The actual submission
         for column in columns:
-
+            # Get partitions from the form data
             if form_parts:
                 partitions = form_parts[str(column)]
             else:
                 partitions = []
-
+            # Get the form data using the appropriate form key
             formkey = "ar.%s" % column
             values = form[formkey].copy()
-
             # resolved values is formatted as acceptable by archetypes
             # widget machines
             resolved_values = {}
@@ -245,7 +244,6 @@ class ajaxAnalysisRequestSubmit():
                 # Analyses, we handle that specially.
                 if k == 'Analyses':
                     continue
-
                 if "%s_uid" % k in values:
                     v = values["%s_uid" % k]
                     if v and "," in v:
@@ -253,10 +251,19 @@ class ajaxAnalysisRequestSubmit():
                     resolved_values[k] = values["%s_uid" % k]
                 else:
                     resolved_values[k] = values[k]
-
+            # Get the analyses from the form data
+            Analyses = values["Analyses"]
+            # Gather the specifications from the form data
+            specifications = {}
+            if len(values.get("min", [])):
+                for n, service_uid in enumerate(Analyses):
+                    specifications[service_uid] = {
+                        "min": values["min"][n],
+                        "max": values["max"][n],
+                        "error": values["error"][n]
+                    }
             # Retrieve the catalogue reference to the client
             client = uc(UID=resolved_values['Client'])[0].getObject()
-
             # create the sample
             sample = create_sample(
                 self.context,
@@ -264,10 +271,8 @@ class ajaxAnalysisRequestSubmit():
                 client,
                 resolved_values
             )
-
             resolved_values['Sample'] = sample
             resolved_values['Sample_uid'] = sample.UID()
-
             # Selecting a template sets the hidden 'parts' field to template values.
             # Selecting a profile will allow ar_add.js to fill in the parts field.
             # The result is the same once we are here.
@@ -278,7 +283,6 @@ class ajaxAnalysisRequestSubmit():
                     'preservation': '',
                     'separate': False
                 }]
-
             # Apply DefaultContainerType to partitions without a container
             default_container_type = resolved_values.get(
                 'DefaultContainerType', None
@@ -289,33 +293,16 @@ class ajaxAnalysisRequestSubmit():
                 for partition in partitions:
                     if not partition.get(container, None):
                         partition['container'] = containers
-
-            # create the AR
-
+            # Create the analyses request
             ar = _createObjectByType("AnalysisRequest", client, tmpID())
             ar.setSample(sample)
-
             ar.processForm(REQUEST=self.request, values=resolved_values)
-
             # Object has been renamed
             ar.edit(RequestID=ar.getId())
-
-            # set analysis request analyses
-            Analyses = values["Analyses"]
-
-            # Specs
-            specs = {}
-
-            if len(values.get("min", [])):
-                for n, service_uid in enumerate(Analyses):
-                    specs[service_uid] = {
-                        "min": values["min"][n],
-                        "max": values["max"][n],
-                        "error": values["error"][n]
-                    }
-
-            analyses = ar.setAnalyses(Analyses, prices=prices, specs=specs)
-
+            # Set analysis request analyses
+            analyses = ar.setAnalyses(
+                Analyses, prices=prices, specs=specifications
+            )
             # Create sample partitions
             for n, partition in enumerate(partitions):
                 # Calculate partition id
@@ -326,19 +313,14 @@ class ajaxAnalysisRequestSubmit():
                     partition['object'] = sample[partition_id]
                 else:
                     partition['object'] = create_samplepartition(
-                        self.context,
                         sample,
                         partition,
                         analyses
                     )
-
             if SamplingWorkflowEnabled:
                 wftool.doActionFor(ar, 'sampling_workflow')
             else:
                 wftool.doActionFor(ar, 'no_sampling_workflow')
-
-            ARs.append(ar.getId())
-
             # If Preservation is required for some partitions,
             # and the SamplingWorkflow is disabled, we need
             # to transition to to_be_preserved manually.
@@ -358,10 +340,8 @@ class ajaxAnalysisRequestSubmit():
                     doActionFor(p, 'sample_due')
                 doActionFor(sample, lowest_state)
                 doActionFor(ar, lowest_state)
-
             # receive secondary AR
             if values.get('Sample_uid', ''):
-
                 doActionFor(ar, 'sampled')
                 doActionFor(ar, 'sample_due')
                 not_receive = ['to_be_sampled', 'sample_due', 'sampled',
@@ -374,7 +354,6 @@ class ajaxAnalysisRequestSubmit():
                     doActionFor(analysis, 'sample_due')
                     if sample_state not in not_receive:
                         doActionFor(analysis, 'receive')
-
             # Transition pre-preserved partitions.
             for p in partitions:
                 if 'prepreserved' in p and p['prepreserved']:
@@ -382,18 +361,18 @@ class ajaxAnalysisRequestSubmit():
                     state = wftool.getInfoFor(part, 'review_state')
                     if state == 'to_be_preserved':
                         wftool.doActionFor(part, 'preserve')
-
+            # Add the created analysis request to the list
+            ARs.append(ar.getId())
+        # Display the appropriate message after creation
         if len(ARs) > 1:
             message = _("Analysis requests ${ARs} were successfully created.",
                         mapping={'ARs': safe_unicode(', '.join(ARs))})
         else:
             message = _("Analysis request ${AR} was successfully created.",
                         mapping={'AR': safe_unicode(ARs[0])})
-
         self.context.plone_utils.addPortalMessage(message, 'info')
-
-        # automatic label printing
-        # won't print labels for Register on Secondary ARs
+        # Automatic label printing
+        # Won't print labels for Register on Secondary ARs
         new_ars = None
         if came_from == 'add':
             new_ars = [ar for ar in ARs if ar[-2:] == '01']

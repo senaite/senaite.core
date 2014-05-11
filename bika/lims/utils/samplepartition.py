@@ -26,8 +26,8 @@ def set_container_preservation(container, data):
     return data.get('preservation', '')
 
 
-def create_samplepartition(context, sample, data, analyses=None):
-    partition = _createObjectByType('SamplePartition', sample, tmpID())
+def create_samplepartition(context, data, analyses=None):
+    partition = _createObjectByType('SamplePartition', context, tmpID())
     # Determine if the sampling workflow is enabled
     workflow_enabled = context.bika_setup.getSamplingWorkflowEnabled()
     # Sort containers and select smallest
