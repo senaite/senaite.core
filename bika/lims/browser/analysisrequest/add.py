@@ -1,25 +1,24 @@
 import json
+import plone
 
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.browser import BrowserView
+from bika.lims.browser.analysisrequest import AnalysisRequestViewView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.interfaces import IAnalysisRequestAddView
-from bika.lims.browser.analysisrequest import AnalysisRequestViewView
 from bika.lims.utils import getHiddenAttributesForClass
+from bika.lims.utils import t
 from bika.lims.utils import tmpID
+from bika.lims.utils.analysisrequest import create_analysisrequest
+from bika.lims.utils.form import ajax_form_error
 from magnitude import mg
 from plone.app.layout.globals.interfaces import IViewView
 from Products.CMFCore.utils import getToolByName
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.CMFPlone.utils import _createObjectByType, safe_unicode
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import getAdapter
 from zope.interface import implements
-import plone
-
-from bika.lims.utils.form import ajax_form_error
-from bika.lims.utils.analysisrequest import create_analysisrequest
 
 
 class AnalysisRequestAddView(AnalysisRequestViewView):

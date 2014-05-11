@@ -1,13 +1,18 @@
-
 from bika.lims.utils import tmpID
-from Products.CMFPlone.utils import _createObjectByType
 from bika.lims.utils.sample import create_sample
 from bika.lims.utils.samplepartition import create_samplepartition
 from bika.lims.workflow import doActionFor
+from Products.CMFPlone.utils import _createObjectByType
 
 
 def create_analysisrequest(
-    context, request, values, analyses, partitions, specifications, prices
+    context,
+    request,
+    values,
+    analyses=[],
+    partitions=None,
+    specifications=None,
+    prices=None
 ):
     # Gather neccesary tools
     portal_workflow = context.portal_workflow
@@ -61,12 +66,13 @@ def create_analysisrequest(
             doActionFor(p, 'sample_due')
         doActionFor(sample, lowest_state)
         doActionFor(ar, lowest_state)
-    # receive secondary AR
+    # Receive secondary AR
     if values.get('Sample_uid', ''):
         doActionFor(ar, 'sampled')
         doActionFor(ar, 'sample_due')
-        not_receive = ['to_be_sampled', 'sample_due', 'sampled',
-                       'to_be_preserved']
+        not_receive = [
+            'to_be_sampled', 'sample_due', 'sampled', 'to_be_preserved'
+        ]
         sample_state = portal_workflow.getInfoFor(sample, 'review_state')
         if sample_state not in not_receive:
             doActionFor(ar, 'receive')
@@ -75,7 +81,7 @@ def create_analysisrequest(
             doActionFor(analysis, 'sample_due')
             if sample_state not in not_receive:
                 doActionFor(analysis, 'receive')
-    # Transition pre-preserved partitions.
+    # Transition pre-preserved partitions
     for p in partitions:
         if 'prepreserved' in p and p['prepreserved']:
             part = p['object']
