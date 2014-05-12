@@ -67,6 +67,10 @@ div.bika-listing-table-container {
   margin-bottom:10px;
 }
 
+.template-batchbook div.bika-listing-table-container {
+    overflow: auto;
+}
+
 table.bika-listing-table {
   font-size: &dtml-fontSmallSize;;
   border-bottom: medium none;
