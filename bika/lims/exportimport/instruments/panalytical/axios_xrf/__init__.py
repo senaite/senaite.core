@@ -66,7 +66,7 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
             line = line.replace('"', "")
             splitted = line.split(' - ')
 
-            if len(splitted) > 3:# Maybe we don't need this, i could be all the analysis name...
+            if len(splitted) > 3:# Maybe we don't need this, i could be all the sample's identifier...
                 self._header['Sample'] = splitted[0].strip(' ')
                 self._header['Quantity'] = splitted[1]
                 self._header['????'] = splitted[2]# At present we
@@ -224,7 +224,7 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
             return 0
 
        
-        if line.startswith('Analyte') or ( self.columns_name == True):# Without Analyte?
+        if self.columns_name:
             if len(self._header) == 0:
                 self.err(_("No header found"), self._numline)
                 return -1
@@ -258,7 +258,7 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
             return 0
 
         rawdict = {}
-        # Split by "," This line could be improved?
+        # Split by ","
         splitted = self.splitLine(line.strip(";"))
         # Look to know if the firts value is an enumerate field
         try:
