@@ -97,8 +97,8 @@ class InstrumentsView(BikaListingView):
             items[x]['Type'] = obj.getInstrumentType().Title()
             items[x]['Brand'] = obj.getManufacturer().Title()
             items[x]['Model'] = obj.Model
-            data = obj.getCertificateExpireDate()
 
+            data = obj.getCertificateExpireDate()
             if data == '':
                 items[x]['ExpiryDate'] = "No date avaliable"
             else:
@@ -111,7 +111,12 @@ class InstrumentsView(BikaListingView):
                 weeks,days = divmod(date,7)
                 items[x]['WeeksToExpire'] = str(weeks)+" weeks"+" "+str(days)+" days"
                 
-            items[x]['Method'] = obj.getMethod().Title() if obj.getMethod() else ''
+            if obj.getMethod():
+                items[x]['Method'] = obj.getMethod().Title() 
+                items[x]['replace']['Method'] = "<a href='%s'>%s</a>" % \
+                    (obj.getMethod().absolute_url(), items[x]['Method'])
+            else:
+                items[x]['Method'] = ''
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                 (items[x]['url'], items[x]['Title'])
 
