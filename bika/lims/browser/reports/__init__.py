@@ -1,6 +1,8 @@
+import json
+
 from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.utils import isAttributeHidden
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
@@ -17,13 +19,11 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import getAdapters
 from zope.interface import implements
-import json
 import os
 import plone
 
 
 class ProductivityView(BrowserView):
-
     """ Productivity View form
     """
     implements(IViewView)
@@ -32,7 +32,8 @@ class ProductivityView(BrowserView):
     def __call__(self):
         self.selection_macros = SelectionMacrosView(self.context, self.request)
         self.icon = self.portal_url + "/++resource++bika.lims.images/report_big.png"
-        self.getAnalysts = getUsers(self.context, ['Manager', 'LabManager', 'Analyst'])
+        self.getAnalysts = getUsers(self.context,
+                                    ['Manager', 'LabManager', 'Analyst'])
 
         self.additional_reports = []
         adapters = getAdapters((self.context, ), IProductivityReport)
@@ -45,7 +46,6 @@ class ProductivityView(BrowserView):
 
 
 class QualityControlView(BrowserView):
-
     """ QC View form
     """
     implements(IViewView)
@@ -64,8 +64,11 @@ class QualityControlView(BrowserView):
 
         return self.template()
 
-class AdministrationView(BrowserView):
+    def isSamplePointHidden(self):
+        return isAttributeHidden('AnalysisRequest', 'SamplePoint')
 
+
+class AdministrationView(BrowserView):
     """ Administration View form
     """
     implements(IViewView)
@@ -86,7 +89,6 @@ class AdministrationView(BrowserView):
 
 
 class ReportHistoryView(BikaListingView):
-
     """ Report history form
     """
     implements(IViewView)
@@ -181,19 +183,19 @@ class ReportHistoryView(BikaListingView):
             client = obj.getClient()
             if client:
                 items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
-                    (client.absolute_url(), client.Title())
+                                                (client.absolute_url(),
+                                                 client.Title())
             items[x]['FileSize'] = '%sKb' % (file.get_size() / 1024)
             items[x]['Created'] = self.ulocalized_time(obj.created())
             items[x]['By'] = self.user_fullname(obj.Creator())
 
             items[x]['replace']['Title'] = \
-                 "<a href='%s/at_download/ReportFile'>%s</a>" % \
-                 (obj_url, items[x]['Title'])
+                "<a href='%s/at_download/ReportFile'>%s</a>" % \
+                (obj_url, items[x]['Title'])
         return items
 
 
 class SubmitForm(BrowserView):
-
     """ Redirect to specific report
     """
     implements(IViewView)
@@ -263,7 +265,7 @@ class SubmitForm(BrowserView):
         else:
             module = "bika.lims.browser.reports.%s" % report_id
         try:
-            exec("from %s import Report" % module)
+            exec ("from %s import Report" % module)
             # required during error redirect: the report must have a copy of
             # additional_reports, because it is used as a surrogate view.
             Report.additional_reports = self.additional_reports
@@ -315,14 +317,14 @@ class SubmitForm(BrowserView):
 
             setheader = self.request.RESPONSE.setHeader
             setheader('Content-Type', 'application/pdf')
-            setheader("Content-Disposition", "attachment;filename=\"%s\"" % _c(fn))
+            setheader("Content-Disposition",
+                      "attachment;filename=\"%s\"" % _c(fn))
             self.request.RESPONSE.write(result)
 
         return
 
 
 class ReferenceAnalysisQC_Samples(BrowserView):
-
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         # get Supplier from request
@@ -331,7 +333,8 @@ class ReferenceAnalysisQC_Samples(BrowserView):
         if supplier:
             # get ReferenceSamples for this supplier
             samples = self.bika_catalog(portal_type='ReferenceSample',
-                                        path={"query": "/".join(supplier.getPhysicalPath()),
+                                        path={"query": "/".join(
+                                            supplier.getPhysicalPath()),
                                               "level": 0})
             ret = []
             for sample in samples:
@@ -346,7 +349,6 @@ class ReferenceAnalysisQC_Samples(BrowserView):
 
 
 class ReferenceAnalysisQC_Services(BrowserView):
-
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         # get Sample from request
@@ -355,7 +357,8 @@ class ReferenceAnalysisQC_Services(BrowserView):
         if sample:
             # get ReferenceSamples for this supplier
             analyses = self.bika_analysis_catalog(portal_type='ReferenceAnalysis',
-                                                  path={"query": "/".join(sample.getPhysicalPath()),
+                                                  path={"query": "/".join(
+                                                      sample.getPhysicalPath()),
                                                         "level": 0})
             ret = {}
             for analysis in analyses:

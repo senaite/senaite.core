@@ -1,7 +1,5 @@
-from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.browser import BrowserView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from plone.app.layout.globals.interfaces import IViewView
@@ -59,21 +57,21 @@ class Report(BrowserView):
             anlcount = len(ar.getAnalyses())
 
             dataline = {
-                        "AnalysisRequestID": ar.getRequestID(),
-                        "DateCreated": self.ulocalized_time(datecreated),
-                        "DateReceived": self.ulocalized_time(datereceived),
-                        "DatePublished": self.ulocalized_time(datepublished),
-                        "ReceptionLag": receptionlag,
-                        "PublicationLag": publicationlag,
-                        "TotalLag": receptionlag + publicationlag,
-                        "BatchID": ar.getBatch(),
-                        "SampleID": ar.getSample().Title(),
-                        "SampleType": ar.getSampleTypeTitle(),
-                        "NumAnalyses": anlcount,
-                        "ClientID": ar.aq_parent.id,
-                        "Creator": ar.Creator(),
-                        "Remarks": ar.getRemarks()
-                        }
+                "AnalysisRequestID": ar.getRequestID(),
+                "DateCreated": self.ulocalized_time(datecreated),
+                "DateReceived": self.ulocalized_time(datereceived),
+                "DatePublished": self.ulocalized_time(datepublished),
+                "ReceptionLag": receptionlag,
+                "PublicationLag": publicationlag,
+                "TotalLag": receptionlag + publicationlag,
+                "BatchID": ar.getBatch().getId() if ar.getBatch() else '',
+                "SampleID": ar.getSample().Title(),
+                "SampleType": ar.getSampleTypeTitle(),
+                "NumAnalyses": anlcount,
+                "ClientID": ar.aq_parent.id,
+                "Creator": ar.Creator(),
+                "Remarks": ar.getRemarks()
+            }
 
             datalines[ar.getRequestID()] = dataline
 
@@ -84,24 +82,33 @@ class Report(BrowserView):
             totalpublicationlag += publicationlag
 
         # Footer total data
-        totalreceivedcreated_ratio = float(totalreceivedcount) / float(totalcreatedcount)
-        totalpublishedcreated_ratio = float(totalpublishedcount) / float(totalcreatedcount)
-        totalpublishedreceived_ratio = totalreceivedcount and float(totalpublishedcount) / float(totalreceivedcount) or 0
+        totalreceivedcreated_ratio = float(totalreceivedcount) / float(
+            totalcreatedcount)
+        totalpublishedcreated_ratio = float(totalpublishedcount) / float(
+            totalcreatedcount)
+        totalpublishedreceived_ratio = totalreceivedcount and float(
+            totalpublishedcount) / float(totalreceivedcount) or 0
 
         footline = {'Created': totalcreatedcount,
                     'Received': totalreceivedcount,
                     'Published': totalpublishedcount,
                     'ReceivedCreatedRatio': totalreceivedcreated_ratio,
-                    'ReceivedCreatedRatioPercentage': ('{0:.0f}'.format(totalreceivedcreated_ratio * 100)) + "%",
+                    'ReceivedCreatedRatioPercentage': ('{0:.0f}'.format(
+                        totalreceivedcreated_ratio * 100)) + "%",
                     'PublishedCreatedRatio': totalpublishedcreated_ratio,
-                    'PublishedCreatedRatioPercentage': ('{0:.0f}'.format(totalpublishedcreated_ratio * 100)) + "%",
+                    'PublishedCreatedRatioPercentage': ('{0:.0f}'.format(
+                        totalpublishedcreated_ratio * 100)) + "%",
                     'PublishedReceivedRatio': totalpublishedreceived_ratio,
-                    'PublishedReceivedRatioPercentage': ('{0:.0f}'.format(totalpublishedreceived_ratio * 100)) + "%",
-                    'AvgReceptionLag': ('{0:.1f}'.format(totalreceptionlag / totalcreatedcount)),
-                    'AvgPublicationLag': ('{0:.1f}'.format(totalpublicationlag / totalcreatedcount)),
-                    'AvgTotalLag': ('{0:.1f}'.format((totalreceptionlag + totalpublicationlag) / totalcreatedcount)),
+                    'PublishedReceivedRatioPercentage': ('{0:.0f}'.format(
+                        totalpublishedreceived_ratio * 100)) + "%",
+                    'AvgReceptionLag': (
+                    '{0:.1f}'.format(totalreceptionlag / totalcreatedcount)),
+                    'AvgPublicationLag': (
+                    '{0:.1f}'.format(totalpublicationlag / totalcreatedcount)),
+                    'AvgTotalLag': ('{0:.1f}'.format((
+                                                     totalreceptionlag + totalpublicationlag) / totalcreatedcount)),
                     'NumAnalyses': totalanlcount
-                    }
+        }
 
         footlines['Total'] = footline
 
@@ -113,6 +120,7 @@ class Report(BrowserView):
             import csv
             import StringIO
             import datetime
+
             fieldnames = [
                 "AnalysisRequestID",
                 "DateCreated",
@@ -128,9 +136,10 @@ class Report(BrowserView):
                 "ClientID",
                 "Creator",
                 "Remarks",
-             ]
+            ]
             output = StringIO.StringIO()
-            dw = csv.DictWriter(output, extrasaction='ignore', fieldnames=fieldnames)
+            dw = csv.DictWriter(output, extrasaction='ignore',
+                                fieldnames=fieldnames)
             dw.writerow(dict((fn, fn) for fn in fieldnames))
             for ar_id, row in datalines.items():
                 dw.writerow({
@@ -148,15 +157,15 @@ class Report(BrowserView):
                     "ClientID": row["ClientID"],
                     "Creator": row["Creator"],
                     "Remarks": row["Remarks"],
-                    })
+                })
             report_data = output.getvalue()
             output.close()
             date = datetime.datetime.now().strftime("%Y%m%d%H%M")
             setheader = self.request.RESPONSE.setHeader
             setheader('Content-Type', 'text/csv')
             setheader("Content-Disposition",
-                "attachment;filename=\"dataentrydaybook_%s.csv\"" % date)
+                      "attachment;filename=\"dataentrydaybook_%s.csv\"" % date)
             self.request.RESPONSE.write(report_data)
         else:
             return {'report_title': _('Data entry day book'),
-                'report_data': self.template()}
+                    'report_data': self.template()}

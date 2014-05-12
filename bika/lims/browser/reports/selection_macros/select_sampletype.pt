@@ -12,11 +12,11 @@
         <tal:sampletypes tal:repeat="sampletype view/sampletypes">
 
             <option value=""
-                tal:define="sampletype_uid python:sampletype.UID"
-                tal:attributes="
-                    value sampletype_uid;
-                    selected python:request.get('SampleTypeUID', '') == sampletype_uid and 'selected' or ''"
-                tal:content="sampletype/Title">
+                    tal:define="sampletype_uid python:sampletype.UID"
+                    tal:attributes="
+                            value sampletype_uid;
+                            selected python:request.get('SampleTypeUID', '') == sampletype_uid and 'selected' or ''"
+                    tal:content="sampletype/Title">
             </option>
 
         </tal:sampletypes>

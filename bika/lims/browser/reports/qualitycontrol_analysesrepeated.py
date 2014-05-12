@@ -1,18 +1,12 @@
-from AccessControl import getSecurityManager
-from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
-from bika.lims.browser.client import ClientSamplesView
 from bika.lims.utils import formatDateQuery, formatDateParms
-from bika.lims.utils import to_utf8
-from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
-import json
-import plone
+
 
 class Report(BrowserView):
     implements(IViewView)
@@ -44,7 +38,7 @@ class Report(BrowserView):
         else:
             received = 'Undefined'
         parms.append(
-            { 'title': _('Received'),
+            {'title': _('Received'),
              'value': received,
              'type': 'text'})
 
@@ -52,51 +46,52 @@ class Report(BrowserView):
         if self.request.form.has_key('bika_analysis_workflow'):
             query['review_state'] = self.request.form['bika_analysis_workflow']
             review_state = wf_tool.getTitleForStateOnType(
-                        self.request.form['bika_analysis_workflow'], 'Analysis')
+                self.request.form['bika_analysis_workflow'], 'Analysis')
         else:
             review_state = 'Undefined'
         parms.append(
-            { 'title': _('Status'),
+            {'title': _('Status'),
              'value': review_state,
              'type': 'text'})
 
         if self.request.form.has_key('bika_cancellation_workflow'):
-            query['cancellation_state'] = self.request.form['bika_cancellation_workflow']
+            query['cancellation_state'] = self.request.form[
+                'bika_cancellation_workflow']
             cancellation_state = wf_tool.getTitleForStateOnType(
-                        self.request.form['bika_cancellation_workflow'], 'Analysis')
+                self.request.form['bika_cancellation_workflow'], 'Analysis')
         else:
             cancellation_state = 'Undefined'
         parms.append(
-            { 'title': _('Active'),
+            {'title': _('Active'),
              'value': cancellation_state,
              'type': 'text'})
 
-
         if self.request.form.has_key('bika_worksheetanalysis_workflow'):
-            query['worksheetanalysis_review_state'] = self.request.form['bika_worksheetanalysis_workflow']
+            query['worksheetanalysis_review_state'] = self.request.form[
+                'bika_worksheetanalysis_workflow']
             ws_review_state = wf_tool.getTitleForStateOnType(
-                        self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
+                self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
         else:
             ws_review_state = 'Undefined'
         parms.append(
-            { 'title': _('Assigned to worksheet'),
+            {'title': _('Assigned to worksheet'),
              'value': ws_review_state,
              'type': 'text'})
 
 
         # and now lets do the actual report lines
         formats = {'columns': 8,
-                   'col_heads': [ _('Client'),
-                                  _('Request'),
-                                  _('Sample type'),
-                                  _('Sample point'),
-                                  _('Category'),
-                                  _('Analysis'),
-                                  _('Received'),
-                                  _('Status'),
-                                  ],
+                   'col_heads': [_('Client'),
+                                 _('Request'),
+                                 _('Sample type'),
+                                 _('Sample point'),
+                                 _('Category'),
+                                 _('Analysis'),
+                                 _('Received'),
+                                 _('Status'),
+                   ],
                    'class': '',
-                  }
+        }
 
         datalines = []
         clients = {}
@@ -133,10 +128,9 @@ class Report(BrowserView):
 
             state = wf_tool.getInfoFor(analysis, 'review_state', '')
             review_state = wf_tool.getTitleForStateOnType(
-                        state, 'Analysis')
+                state, 'Analysis')
             dataitem = {'value': review_state}
             dataline.append(dataitem)
-
 
             datalines.append(dataline)
 
@@ -153,13 +147,12 @@ class Report(BrowserView):
         footline.append(footitem)
         footlines.append(footline)
 
-
         self.report_content = {
-                'headings': headings,
-                'parms': parms,
-                'formats': formats,
-                'datalines': datalines,
-                'footings': footlines}
+            'headings': headings,
+            'parms': parms,
+            'formats': formats,
+            'datalines': datalines,
+            'footings': footlines}
 
         title = t(headings['header'])
 

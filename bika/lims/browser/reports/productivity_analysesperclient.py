@@ -1,18 +1,11 @@
-from AccessControl import getSecurityManager
-from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
-from bika.lims.browser.client import ClientSamplesView
-from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client, to_utf8
-from bika.lims.interfaces import IReportFolder
-from plone.app.content.browser.interfaces import IFolderContentsView
+from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
-import json
-import plone
 
 
 class Report(BrowserView):
@@ -54,7 +47,8 @@ class Report(BrowserView):
             headings['subheader'] = _("Number of Analysis requests and analyses")
         else:
             headings['header'] = _("Analysis requests and analyses per client")
-            headings['subheader'] = _("Number of Analysis requests and analyses per client")
+            headings['subheader'] = _(
+                "Number of Analysis requests and analyses per client")
 
         date_query = formatDateQuery(self.context, 'Requested')
         if date_query:
@@ -68,32 +62,42 @@ class Report(BrowserView):
         workflow = getToolByName(self.context, 'portal_workflow')
         if 'bika_analysis_workflow' in self.request.form:
             query['review_state'] = self.request.form['bika_analysis_workflow']
-            review_state = workflow.getTitleForStateOnType(self.request.form['bika_analysis_workflow'], 'Analysis')
-            parms.append({'title': _('Status'), 'value': review_state, 'type': 'text'})
+            review_state = workflow.getTitleForStateOnType(
+                self.request.form['bika_analysis_workflow'], 'Analysis')
+            parms.append(
+                {'title': _('Status'), 'value': review_state, 'type': 'text'})
 
         if 'bika_cancellation_workflow' in self.request.form:
-            query['cancellation_state'] = self.request.form['bika_cancellation_workflow']
+            query['cancellation_state'] = self.request.form[
+                'bika_cancellation_workflow']
             cancellation_state = workflow.getTitleForStateOnType(
-                        self.request.form['bika_cancellation_workflow'], 'Analysis')
-            parms.append({'title': _('Active'), 'value': cancellation_state, 'type': 'text'})
+                self.request.form['bika_cancellation_workflow'], 'Analysis')
+            parms.append({'title': _('Active'), 'value': cancellation_state,
+                          'type': 'text'})
 
         if 'bika_worksheetanalysis_workflow' in self.request.form:
-            query['worksheetanalysis_review_state'] = self.request.form['bika_worksheetanalysis_workflow']
+            query['worksheetanalysis_review_state'] = self.request.form[
+                'bika_worksheetanalysis_workflow']
             ws_review_state = workflow.getTitleForStateOnType(
-                        self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
-            parms.append({'title': _('Assigned to worksheet'), 'value': ws_review_state, 'type': 'text'})
+                self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
+            parms.append(
+                {'title': _('Assigned to worksheet'), 'value': ws_review_state,
+                 'type': 'text'})
 
         if 'bika_worksheetanalysis_workflow' in self.request.form:
-            query['worksheetanalysis_review_state'] = self.request.form['bika_worksheetanalysis_workflow']
+            query['worksheetanalysis_review_state'] = self.request.form[
+                'bika_worksheetanalysis_workflow']
             ws_review_state = workflow.getTitleForStateOnType(
-                        self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
-            parms.append({'title': _('Assigned to worksheet'), 'value': ws_review_state, 'type': 'text'})
+                self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
+            parms.append(
+                {'title': _('Assigned to worksheet'), 'value': ws_review_state,
+                 'type': 'text'})
 
         # and now lets do the actual report lines
         formats = {'columns': 3,
                    'col_heads': [_('Client'),
-                                  _('Number of requests'),
-                                  _('Number of analyses')],
+                                 _('Number of requests'),
+                                 _('Number of analyses')],
                    'class': ''}
 
         datalines = []
@@ -139,23 +143,25 @@ class Report(BrowserView):
             footlines.append(footline)
 
         self.report_content = {
-                'headings': headings,
-                'parms': parms,
-                'formats': formats,
-                'datalines': datalines,
-                'footings': footlines}
+            'headings': headings,
+            'parms': parms,
+            'formats': formats,
+            'datalines': datalines,
+            'footings': footlines}
 
         if self.request.get('output_format', '') == 'CSV':
             import csv
             import StringIO
             import datetime
+
             fieldnames = [
                 'Client',
                 'Analysis Requests',
                 'Analyses',
             ]
             output = StringIO.StringIO()
-            dw = csv.DictWriter(output, extrasaction='ignore', fieldnames=fieldnames)
+            dw = csv.DictWriter(output, extrasaction='ignore',
+                                fieldnames=fieldnames)
             dw.writerow(dict((fn, fn) for fn in fieldnames))
             for row in datalines:
                 dw.writerow({
@@ -169,8 +175,8 @@ class Report(BrowserView):
             setheader = self.request.RESPONSE.setHeader
             setheader('Content-Type', 'text/csv')
             setheader("Content-Disposition",
-                "attachment;filename=\"analysesperclient_%s.csv\"" % date)
+                      "attachment;filename=\"analysesperclient_%s.csv\"" % date)
             self.request.RESPONSE.write(report_data)
         else:
             return {'report_title': t(headings['header']),
-                'report_data': self.template()}
+                    'report_data': self.template()}

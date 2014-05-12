@@ -1,6 +1,5 @@
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.browser import BrowserView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from plone.app.layout.globals.interfaces import IViewView
@@ -10,7 +9,8 @@ from zope.interface import implements
 class Report(BrowserView):
     implements(IViewView)
     default_template = ViewPageTemplateFile("templates/productivity.pt")
-    template = ViewPageTemplateFile("templates/productivity_dailysamplesreceived.pt")
+    template = ViewPageTemplateFile(
+        "templates/productivity_dailysamplesreceived.pt")
 
     def __init__(self, context, request, report=None):
         super(Report, self).__init__(context, request)
@@ -23,7 +23,8 @@ class Report(BrowserView):
         titles = []
 
         self.contentFilter = {'portal_type': 'Sample',
-                              'review_state': ['sample_received', 'expired', 'disposed'],
+                              'review_state': ['sample_received', 'expired',
+                                               'disposed'],
                               'sort_on': 'getDateReceived'}
 
         val = self.selection_macros.parse_daterange(self.request,
@@ -52,11 +53,13 @@ class Report(BrowserView):
             for analysis in analyses:
                 analysis = analysis.getObject()
                 dataline = {'AnalysisKeyword': analysis.getKeyword(),
-                             'AnalysisTitle': analysis.getServiceTitle(),
-                             'SampleID': sample.getSampleID(),
-                             'SampleType': sample.getSampleType().Title(),
-                             'SampleDateReceived': self.ulocalized_time(sample.getDateReceived(), long_format=1),
-                             'SampleSamplingDate': self.ulocalized_time(sample.getSamplingDate(), long_format=1)}
+                            'AnalysisTitle': analysis.getServiceTitle(),
+                            'SampleID': sample.getSampleID(),
+                            'SampleType': sample.getSampleType().Title(),
+                            'SampleDateReceived': self.ulocalized_time(
+                                sample.getDateReceived(), long_format=1),
+                            'SampleSamplingDate': self.ulocalized_time(
+                                sample.getSamplingDate(), long_format=1)}
                 datalines.append(dataline)
                 analyses_count += 1
 
@@ -74,6 +77,7 @@ class Report(BrowserView):
             import csv
             import StringIO
             import datetime
+
             fieldnames = [
                 'SampleID',
                 'SampleType',
@@ -93,7 +97,7 @@ class Report(BrowserView):
             setheader = self.request.RESPONSE.setHeader
             setheader('Content-Type', 'text/csv')
             setheader("Content-Disposition",
-                "attachment;filename=\"dailysamplesreceived_%s.csv\"" % date)
+                      "attachment;filename=\"dailysamplesreceived_%s.csv\"" % date)
             self.request.RESPONSE.write(report_data)
         else:
             return {'report_title': _('Daily samples received'),

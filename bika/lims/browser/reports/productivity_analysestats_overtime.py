@@ -4,7 +4,6 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.utils import formatDateQuery, formatDateParms, formatDuration
-from bika.lims.utils import to_utf8
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 
@@ -27,7 +26,7 @@ class Report(BrowserView):
         headings = {}
         headings['header'] = _("Analysis turnaround times over time")
         headings['subheader'] = \
-               _("The turnaround time of analyses plotted over time")
+            _("The turnaround time of analyses plotted over time")
 
         query = {'portal_type': 'Analysis'}
 
@@ -101,7 +100,7 @@ class Report(BrowserView):
             if datekey not in periods:
                 periods[datekey] = {'count': 0,
                                     'duration': 0,
-                                   }
+                }
             count = periods[datekey]['count']
             duration = periods[datekey]['duration']
             count += 1
@@ -122,17 +121,17 @@ class Report(BrowserView):
         # and now lets do the actual report lines
         formats = {'columns': 2,
                    'col_heads': [_('Date'),
-                                  _('Turnaround time (h)'),
-                                  ],
+                                 _('Turnaround time (h)'),
+                   ],
                    'class': '',
-                  }
+        }
 
         datalines = []
 
         period_keys = periods.keys()
         for period in period_keys:
             dataline = [{'value': period,
-                        'class': ''}, ]
+                         'class': ''}, ]
             dataline.append({'value': periods[period]['duration'],
                              'class': 'number'})
             datalines.append(dataline)
@@ -161,22 +160,24 @@ class Report(BrowserView):
         footlines.append(footline)
 
         self.report_content = {
-                'headings': headings,
-                'parms': parms,
-                'formats': formats,
-                'datalines': datalines,
-                'footings': footlines}
+            'headings': headings,
+            'parms': parms,
+            'formats': formats,
+            'datalines': datalines,
+            'footings': footlines}
 
         if self.request.get('output_format', '') == 'CSV':
             import csv
             import StringIO
             import datetime
+
             fieldnames = [
                 'Date',
                 'Turnaround time (h)',
             ]
             output = StringIO.StringIO()
-            dw = csv.DictWriter(output, extrasaction='ignore', fieldnames=fieldnames)
+            dw = csv.DictWriter(output, extrasaction='ignore',
+                                fieldnames=fieldnames)
             dw.writerow(dict((fn, fn) for fn in fieldnames))
             for row in datalines:
                 dw.writerow({
@@ -189,7 +190,7 @@ class Report(BrowserView):
             setheader = self.request.RESPONSE.setHeader
             setheader('Content-Type', 'text/csv')
             setheader("Content-Disposition",
-                "attachment;filename=\"analysesperservice_%s.csv\"" % date)
+                      "attachment;filename=\"analysesperservice_%s.csv\"" % date)
             self.request.RESPONSE.write(report_data)
         else:
             return {'report_title': t(headings['header']),

@@ -9,15 +9,15 @@
             tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
 
         <option
-            tal:attributes="
-                selected python:request.get('output_format', '') == 'PDF' and 'selected' or ''"
-            tal:content="string:PDF">
+                tal:attributes="
+                        selected python:request.get('output_format', '') == 'PDF' and 'selected' or ''"
+                tal:content="string:PDF">
         </option>
 
         <option
-            tal:attributes="
-                selected python:request.get('output_format', '') == 'CSV' and 'selected' or ''"
-            tal:content="string:CSV">
+                tal:attributes="
+                        selected python:request.get('output_format', '') == 'CSV' and 'selected' or ''"
+                tal:content="string:CSV">
         </option>
 
     </select>

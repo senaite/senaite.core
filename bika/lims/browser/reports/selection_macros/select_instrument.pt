@@ -11,14 +11,14 @@
         <option value=""/>
 
         <tal:instruments
-            tal:repeat="instrument view/instruments">
+                tal:repeat="instrument view/instruments">
 
             <option
-                tal:define="instrument_uid instrument/UID"
-                tal:attributes="
-                    value instrument_uid;
-                    selected python:request.get('getInstrumentUID', '') == instrument_uid and 'selected' or ''"
-                tal:content="instrument/Title"></option>
+                    tal:define="instrument_uid instrument/UID"
+                    tal:attributes="
+                            value instrument_uid;
+                            selected python:request.get('getInstrumentUID', '') == instrument_uid and 'selected' or ''"
+                    tal:content="instrument/Title"></option>
 
         </tal:instruments>
 

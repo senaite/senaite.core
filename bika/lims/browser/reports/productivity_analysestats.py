@@ -3,8 +3,8 @@ from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
-from bika.lims.utils import formatDateQuery, formatDateParms, formatDuration, logged_in_client
-from bika.lims.utils import to_utf8
+from bika.lims.utils import formatDateQuery, formatDateParms, formatDuration, \
+    logged_in_client
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 
@@ -60,10 +60,13 @@ class Report(BrowserView):
 
         workflow = getToolByName(self.context, 'portal_workflow')
         if 'bika_worksheetanalysis_workflow' in self.request.form:
-            query['worksheetanalysis_review_state'] = self.request.form['bika_worksheetanalysis_workflow']
+            query['worksheetanalysis_review_state'] = self.request.form[
+                'bika_worksheetanalysis_workflow']
             ws_review_state = workflow.getTitleForStateOnType(
-                        self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
-            parms.append({'title': _('Assigned to worksheet'), 'value': ws_review_state, 'type': 'text'})
+                self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
+            parms.append(
+                {'title': _('Assigned to worksheet'), 'value': ws_review_state,
+                 'type': 'text'})
 
         # query all the analyses and increment the counts
         count_early = 0
@@ -83,7 +86,7 @@ class Report(BrowserView):
                                          'mins_early': 0,
                                          'mins_late': 0,
                                          'count_undefined': 0,
-                                        }
+                }
             earliness = analysis.getEarliness()
             if earliness < 0:
                 count_late = services[service_uid]['count_late']
@@ -112,27 +115,29 @@ class Report(BrowserView):
                 services[service_uid]['ave_early'] = ''
             else:
                 avemins = (mins_early) / count_early
-                services[service_uid]['ave_early'] = formatDuration(self.context, avemins)
+                services[service_uid]['ave_early'] = formatDuration(self.context,
+                                                                    avemins)
             count_late = services[service_uid]['count_late']
             mins_late = services[service_uid]['mins_late']
             if count_late == 0:
                 services[service_uid]['ave_late'] = ''
             else:
                 avemins = mins_late / count_late
-                services[service_uid]['ave_late'] = formatDuration(self.context, avemins)
+                services[service_uid]['ave_late'] = formatDuration(self.context,
+                                                                   avemins)
 
         # and now lets do the actual report lines
         formats = {'columns': 7,
                    'col_heads': [_('Analysis'),
-                                  _('Count'),
-                                  _('Undefined'),
-                                  _('Late'),
-                                  _('Average late'),
-                                  _('Early'),
-                                  _('Average early'),
-                                  ],
+                                 _('Count'),
+                                 _('Undefined'),
+                                 _('Late'),
+                                 _('Average late'),
+                                 _('Early'),
+                                 _('Average early'),
+                   ],
                    'class': '',
-                  }
+        }
 
         total_count_early = 0
         total_count_late = 0
@@ -142,7 +147,7 @@ class Report(BrowserView):
         datalines = []
 
         for cat in sc(portal_type='AnalysisCategory',
-                        sort_on='sortable_title'):
+                      sort_on='sortable_title'):
             catline = [{'value': cat.Title,
                         'class': 'category_heading',
                         'colspan': 7}, ]
@@ -153,8 +158,8 @@ class Report(BrowserView):
             cat_mins_early = 0
             cat_mins_late = 0
             for service in sc(portal_type="AnalysisService",
-                            getCategoryUID=cat.UID,
-                            sort_on='sortable_title'):
+                              getCategoryUID=cat.UID,
+                              sort_on='sortable_title'):
 
                 dataline = [{'value': service.Title,
                              'class': 'testgreen'}, ]
@@ -178,8 +183,9 @@ class Report(BrowserView):
 
                 dataline.append({'value': count,
                                  'class': 'number'})
-                dataline.append({'value': services[service.UID]['count_undefined'],
-                                 'class': 'number'})
+                dataline.append(
+                    {'value': services[service.UID]['count_undefined'],
+                     'class': 'number'})
                 dataline.append({'value': services[service.UID]['count_late'],
                                  'class': 'number'})
                 dataline.append({'value': services[service.UID]['ave_late'],
@@ -193,11 +199,11 @@ class Report(BrowserView):
 
             # category totals
             dataline = [{'value': '%s - total' % (cat.Title),
-                        'class': 'subtotal_label'}, ]
+                         'class': 'subtotal_label'}, ]
 
             dataline.append({'value': cat_count_early +
-                                       cat_count_late +
-                                       cat_count_undefined,
+                                      cat_count_late +
+                                      cat_count_undefined,
                              'class': 'subtotal_number'})
 
             dataline.append({'value': cat_count_undefined,
@@ -220,7 +226,7 @@ class Report(BrowserView):
 
             if cat_count_early:
                 dataitem = {'value': cat_mins_early / cat_count_early,
-                             'class': 'subtotal_number'}
+                            'class': 'subtotal_number'}
             else:
                 dataitem = {'value': 0,
                             'class': 'subtotal_number'}
@@ -240,8 +246,8 @@ class Report(BrowserView):
                      'class': 'total'}, ]
 
         footline.append({'value': total_count_early +
-                                   total_count_late +
-                                   total_count_undefined,
+                                  total_count_late +
+                                  total_count_undefined,
                          'class': 'total number'})
 
         footline.append({'value': total_count_undefined,
@@ -271,16 +277,17 @@ class Report(BrowserView):
         footlines.append(footline)
 
         self.report_content = {
-                'headings': headings,
-                'parms': parms,
-                'formats': formats,
-                'datalines': datalines,
-                'footings': footlines}
+            'headings': headings,
+            'parms': parms,
+            'formats': formats,
+            'datalines': datalines,
+            'footings': footlines}
 
         if self.request.get('output_format', '') == 'CSV':
             import csv
             import StringIO
             import datetime
+
             fieldnames = [
                 'Analysis',
                 'Count',
@@ -291,7 +298,8 @@ class Report(BrowserView):
                 'Average early',
             ]
             output = StringIO.StringIO()
-            dw = csv.DictWriter(output, extrasaction='ignore', fieldnames=fieldnames)
+            dw = csv.DictWriter(output, extrasaction='ignore',
+                                fieldnames=fieldnames)
             dw.writerow(dict((fn, fn) for fn in fieldnames))
             for row in datalines:
                 if len(row) == 1:
@@ -312,7 +320,7 @@ class Report(BrowserView):
             setheader = self.request.RESPONSE.setHeader
             setheader('Content-Type', 'text/csv')
             setheader("Content-Disposition",
-                "attachment;filename=\"analysestats_%s.csv\"" % date)
+                      "attachment;filename=\"analysestats_%s.csv\"" % date)
             self.request.RESPONSE.write(report_data)
         else:
             return {'report_title': t(headings['header']),

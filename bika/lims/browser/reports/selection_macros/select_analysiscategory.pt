@@ -8,13 +8,13 @@
         <option value=""/>
 
         <tal:categories tal:repeat="category view/analysiscategories">
-          <option
-            value=""
-            tal:define="category_uid python:category.UID"
-            tal:attributes="
-                value category_uid;
-                selected python:request.get('CategoryUID', '') == category_uid and 'selected' or ''"
-            tal:content="category/Title"></option>
+            <option
+                    value=""
+                    tal:define="category_uid python:category.UID"
+                    tal:attributes="
+                            value category_uid;
+                            selected python:request.get('CategoryUID', '') == category_uid and 'selected' or ''"
+                    tal:content="category/Title"></option>
         </tal:categories>
 
     </select>

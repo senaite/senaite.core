@@ -3,14 +3,15 @@ from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
-from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client, to_utf8
+from bika.lims.utils import formatDateQuery, formatDateParms, logged_in_client
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 
 
 class Report(BrowserView):
     implements(IViewView)
-    template = ViewPageTemplateFile("templates/productivity_analysesperservice.pt")
+    template = ViewPageTemplateFile(
+        "templates/productivity_analysesperservice.pt")
 
     def __init__(self, context, request, report=None):
         self.report = report
@@ -26,7 +27,8 @@ class Report(BrowserView):
         parms = []
         headings = {}
         headings['header'] = _("Analyses per analysis service")
-        headings['subheader'] = _("Number of analyses requested per analysis service")
+        headings['subheader'] = _(
+            "Number of analyses requested per analysis service")
 
         query = {'portal_type': 'Analysis'}
         client_title = None
@@ -41,55 +43,65 @@ class Report(BrowserView):
                 client_title = client.Title()
                 query['getClientUID'] = client.UID()
         if client_title:
-            parms.append({'title': _('Client'), 'value': client_title, 'type': 'text'})
+            parms.append(
+                {'title': _('Client'), 'value': client_title, 'type': 'text'})
 
         date_query = formatDateQuery(self.context, 'Requested')
         if date_query:
             query['created'] = date_query
             requested = formatDateParms(self.context, 'Requested')
-            parms.append({'title': _('Requested'), 'value': requested, 'type': 'text'})
+            parms.append(
+                {'title': _('Requested'), 'value': requested, 'type': 'text'})
 
         date_query = formatDateQuery(self.context, 'Published')
         if date_query:
             query['getDatePublished'] = date_query
             published = formatDateParms(self.context, 'Published')
-            parms.append({'title': _('Published'), 'value': published, 'type': 'text'})
+            parms.append(
+                {'title': _('Published'), 'value': published, 'type': 'text'})
 
         workflow = getToolByName(self.context, 'portal_workflow')
         if 'bika_analysis_workflow' in self.request.form:
             query['review_state'] = self.request.form['bika_analysis_workflow']
-            review_state = workflow.getTitleForStateOnType(self.request.form['bika_analysis_workflow'], 'Analysis')
-            parms.append({'title': _('Status'), 'value': review_state, 'type': 'text'})
+            review_state = workflow.getTitleForStateOnType(
+                self.request.form['bika_analysis_workflow'], 'Analysis')
+            parms.append(
+                {'title': _('Status'), 'value': review_state, 'type': 'text'})
 
         if 'bika_cancellation_workflow' in self.request.form:
-            query['cancellation_state'] = self.request.form['bika_cancellation_workflow']
+            query['cancellation_state'] = self.request.form[
+                'bika_cancellation_workflow']
             cancellation_state = workflow.getTitleForStateOnType(
-                        self.request.form['bika_cancellation_workflow'], 'Analysis')
-            parms.append({'title': _('Active'), 'value': cancellation_state, 'type': 'text'})
+                self.request.form['bika_cancellation_workflow'], 'Analysis')
+            parms.append({'title': _('Active'), 'value': cancellation_state,
+                          'type': 'text'})
 
         if 'bika_worksheetanalysis_workflow' in self.request.form:
-            query['worksheetanalysis_review_state'] = self.request.form['bika_worksheetanalysis_workflow']
+            query['worksheetanalysis_review_state'] = self.request.form[
+                'bika_worksheetanalysis_workflow']
             ws_review_state = workflow.getTitleForStateOnType(
-                        self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
-            parms.append({'title': _('Assigned to worksheet'), 'value': ws_review_state, 'type': 'text'})
+                self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
+            parms.append(
+                {'title': _('Assigned to worksheet'), 'value': ws_review_state,
+                 'type': 'text'})
 
         # and now lets do the actual report lines
         formats = {'columns': 2,
                    'col_heads': [_('Analysis service'), _('Number of analyses')],
                    'class': '',
-                  }
+        }
 
         datalines = []
         count_all = 0
         for cat in sc(portal_type="AnalysisCategory",
-                        sort_on='sortable_title'):
+                      sort_on='sortable_title'):
             dataline = [{'value': cat.Title,
-                        'class': 'category_heading',
-                        'colspan': 2}, ]
+                         'class': 'category_heading',
+                         'colspan': 2}, ]
             datalines.append(dataline)
             for service in sc(portal_type="AnalysisService",
-                            getCategoryUID=cat.UID,
-                            sort_on='sortable_title'):
+                              getCategoryUID=cat.UID,
+                              sort_on='sortable_title'):
                 query['getServiceUID'] = service.UID
                 analyses = bc(query)
                 count_analyses = len(analyses)
@@ -116,11 +128,11 @@ class Report(BrowserView):
         footlines.append(footline)
 
         self.report_content = {
-                'headings': headings,
-                'parms': parms,
-                'formats': formats,
-                'datalines': datalines,
-                'footings': footlines}
+            'headings': headings,
+            'parms': parms,
+            'formats': formats,
+            'datalines': datalines,
+            'footings': footlines}
 
         title = t(headings['header'])
 
@@ -128,12 +140,14 @@ class Report(BrowserView):
             import csv
             import StringIO
             import datetime
+
             fieldnames = [
                 'Analysis Service',
                 'Analyses',
             ]
             output = StringIO.StringIO()
-            dw = csv.DictWriter(output, extrasaction='ignore', fieldnames=fieldnames)
+            dw = csv.DictWriter(output, extrasaction='ignore',
+                                fieldnames=fieldnames)
             dw.writerow(dict((fn, fn) for fn in fieldnames))
             for row in datalines:
                 if len(row) == 1:
@@ -149,7 +163,7 @@ class Report(BrowserView):
             setheader = self.request.RESPONSE.setHeader
             setheader('Content-Type', 'text/csv')
             setheader("Content-Disposition",
-                "attachment;filename=\"analysesperservice_%s.csv\"" % date)
+                      "attachment;filename=\"analysesperservice_%s.csv\"" % date)
             self.request.RESPONSE.write(report_data)
         else:
             return {'report_title': title,
