@@ -87,7 +87,7 @@ def getUsers(context, roles, allow_empty=True):
     for user in users:
         uid = user.getId()
         fullname = user.getProperty('fullname')
-        if fullname is None:
+        if not fullname:
             fullname = uid
         pairs.append((uid, fullname))
     pairs.sort(lambda x, y: cmp(x[1], y[1]))
