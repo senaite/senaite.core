@@ -3,7 +3,7 @@ from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.utils import t, isAttributeHidden
 from bika.lims.browser import BrowserView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from gpw import plot
@@ -222,3 +222,6 @@ class Report(BrowserView):
             'report_title': title,
             'report_data': self.template(),
         }
+
+    def isSamplePointHidden(self):
+        return isAttributeHidden('AnalysisRequest', 'SamplePoint')

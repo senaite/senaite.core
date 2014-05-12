@@ -6,7 +6,6 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from bika.lims.utils import createPdf
 from bika.lims.utils import getUsers, logged_in_client
-from bika.lims.utils import isAttributeHidden
 from bika.lims.utils import to_unicode as _u
 from bika.lims.utils import to_utf8 as _c
 from bika.lims.interfaces import IProductivityReport
@@ -64,9 +63,6 @@ class QualityControlView(BrowserView):
             self.additional_reports.append(report_dict)
 
         return self.template()
-
-    def isSamplePointHidden(self):
-        return isAttributeHidden('AnalysisRequest', 'SamplePoint')
 
 class AdministrationView(BrowserView):
 
