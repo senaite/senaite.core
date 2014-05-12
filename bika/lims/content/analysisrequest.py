@@ -1011,9 +1011,9 @@ class AnalysisRequest(BaseFolder):
         return sum(
             [Decimal(obj.getPrice()) for obj in self.getBillableItems()])
 
-    security.declareProtected(View, 'getVATTotal')
+    security.declareProtected(View, 'getVATAmount')
 
-    def getVATTotal(self):
+    def getVATAmount(self):
         """ Compute VAT """
         billable = self.getBillableItems()
         if len(billable) > 0:

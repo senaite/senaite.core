@@ -185,6 +185,6 @@ def ObjectModifiedEventHandler(instance, event):
             li['CategoryTitle'] = cat
             li['Accredited'] = itemAccredited
             li['Subtotal'] = "%0.2f" % price
-            li['VATTotal'] = "%0.2f" % vat
+            li['VATAmount'] = "%0.2f" % vat
             li['Total'] = "%0.2f" % totalprice
             instance.pricelist_lineitems.append(li)

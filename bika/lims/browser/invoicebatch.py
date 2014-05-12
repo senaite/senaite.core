@@ -26,7 +26,7 @@ class InvoiceBatchInvoicesView(BikaListingView):
             'client': {'title': _('Client')},
             'invoicedate': {'title': _('Invoice Date')},
             'subtotal': {'title': _('Subtotal')},
-            'vattotal': {'title': _('VAT')},
+            'vatamount': {'title': _('VAT')},
             'total': {'title': _('Total')},
         }
         self.review_states = [
@@ -40,7 +40,7 @@ class InvoiceBatchInvoicesView(BikaListingView):
                     'client',
                     'invoicedate',
                     'subtotal',
-                    'vattotal',
+                    'vatamount',
                     'total',
                 ],
             },
@@ -74,6 +74,6 @@ class InvoiceBatchInvoicesView(BikaListingView):
             item['client'] = obj.getClient().Title()
             item['invoicedate'] = self.ulocalized_time(obj.getInvoiceDate())
             item['subtotal'] = currency(obj.getSubtotal())
-            item['vattotal'] = currency(obj.getVATTotal())
+            item['vatamount'] = currency(obj.getVATAmount())
             item['total'] = currency(obj.getTotal())
         return items

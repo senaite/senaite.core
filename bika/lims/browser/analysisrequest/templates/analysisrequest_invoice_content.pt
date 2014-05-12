@@ -58,7 +58,7 @@
 			</td>
 			<td class="currency">
 				<span i18n:translate="label_currency_abbreviation">R</span>
-				<span tal:content="view/vatTotal"></span>
+				<span tal:content="view/VATAmount"></span>
 			</td>
 			<td class="currency">
 				<span i18n:translate="label_currency_abbreviation">R</span>

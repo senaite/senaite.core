@@ -46,8 +46,8 @@ schema = BikaSchema.copy() + Schema((
             visible=False,
         ),
     ),
-    ComputedField('VATTotal',
-        expression='context.getVATTotal()',
+    ComputedField('VATAmount',
+        expression='context.getVATAmount()',
         widget=ComputedWidget(
             label=_("VAT Total"),
             visible=False,
@@ -106,9 +106,9 @@ class Invoice(BaseFolder):
         """ Compute Subtotal """
         return sum([float(obj['Subtotal']) for obj in self.invoice_lineitems])
 
-    security.declareProtected(View, 'getVATTotal')
+    security.declareProtected(View, 'getVATAmount')
 
-    def getVATTotal(self):
+    def getVATAmount(self):
         """ Compute VAT """
         return Decimal(self.getTotal()) - Decimal(self.getSubtotal())
 

@@ -21,7 +21,7 @@ def upgrade(tool):
                 ItemDescription=invl.ItemDescription,
                 ClientOrderNumber=invl.ClientOrderNumber,
                 Subtotal=invl.Subtotal,
-                VATTotal=invl.VATTotal,
+                VATAmount=invl.VATAmount,
                 Total=invl.Total,
             )
             inv.invoice_lineitems.append(item)
