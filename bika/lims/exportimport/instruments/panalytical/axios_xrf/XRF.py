@@ -5,7 +5,7 @@ from . import AxiosXrfImporter, AxiosXrfCSVParser
 import json
 import traceback
 
-title = "PANalytical - Axios_XRF XRF"
+title = "PANalytical - Axios XRF"
 
 
 def Import(context, request):

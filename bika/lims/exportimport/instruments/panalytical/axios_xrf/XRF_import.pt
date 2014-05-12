@@ -5,7 +5,7 @@
     &nbsp;&nbsp;
     <label for='panalytical_axios_xrf_format'>Format</label>&nbsp;
     <select name="panalytical_axios_xrf_format" id="panalytical_axios_xrf_format">
-        <option value='csv'>CSV</option>
+        <option value='csv'>CSV (SuperQ)</option>
     </select>
     <p></p>
     <h3>Advanced options</h3>

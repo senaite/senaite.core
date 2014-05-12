@@ -3,6 +3,7 @@
 
 """ Axios 'XRF'
 """
+from bika.lims.utils import to_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentCSVResultsFileParser
@@ -13,6 +14,8 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
         InstrumentCSVResultsFileParser.__init__(self, csv)
         self._end_header = False
         self._columns = []
+        self.columns_name = False #To know if the next line contain
+                                  #analytic's columns name
 
     def _parseline(self, line):
         # Process the line differenly if it pertains at header or results block
@@ -52,7 +55,8 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
         Results database in:,c:\panalytical\superq\userdata
         """
 
-        if line.startswith('"Quantification of sample'):
+        if line.startswith('"Quantification of sample') or line.startswith('Quantification of sample'):
+            line = to_unicode(line)
             if len(self._header) == 0:
                 self.err(_("Unexpected header format"), self._numline)
                 return -1
@@ -66,13 +70,15 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
                 self._header['Sample'] = splitted[0].strip(' ')
                 self._header['Quantity'] = splitted[1]
                 self._header['????'] = splitted[2]# At present we
-                                                  # dont' know which
-                                                  # data nae has
+                                                  # don't know what
+                                                  # are thatw
                 self._header['PPC'] = splitted[3]
+            
+            elif len(splitted) == 1:
+                self._header['Sample'] = splitted[0].replace('Quantification of sample','').strip(' ')
 
             else:
                 self.warn(_('Unexpected header format'))
-
             return 1
         # Save each header field and its own value in the dict
         if line.startswith('R.M.S.'):
@@ -86,7 +92,6 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
                 self._header['R.M.S.'] = splitted[1].replace('"', '').strip()
             else:
                 self.warn(_('Unexpected header format'), self._numline)
-
             return 0
 
         if line.startswith('Result status'):
@@ -218,20 +223,8 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
 
             return 0
 
-        if line.startswith('Results database in'):
-            if len(self._header) == 0:
-                self.err(_("No header found"), self._numline)
-                return -1
-
-            splitted = self.splitLine(line)
-            if len(splitted) > 1:
-                self._header['Database path'] = splitted[1]+splitted[2]
-            else:
-                self.warn(_('Unexpected header format'), self._numline)
-
-            return 1
-
-        if line.startswith('Analyte'):
+       
+        if line.startswith('Analyte') or ( self.columns_name == True):# Without Analyte?
             if len(self._header) == 0:
                 self.err(_("No header found"), self._numline)
                 return -1
@@ -241,6 +234,20 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
             self._columns = self.splitLine(line)
             return 1
 
+        if line.startswith('Results database in'):
+            if len(self._header) == 0:
+                self.err(_("No header found"), self._numline)
+                return -1
+            
+            splitted = self.splitLine(line)
+            if len(splitted) > 1:
+                self._header['Database path'] = splitted[1]+splitted[2]
+                self.columns_name = True
+            else:
+                self.warn(_('Unexpected header format'), self._numline)
+                
+            return 1
+            
         else:
             self._header['Date'] = line
             return 1
@@ -254,6 +261,14 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
         rawdict = {}
         # Split by "," This line could be improved?
         splitted = self.splitLine(line.strip(";"))
+        # Look to know if the firts value is an enumerate field
+        try:
+            int(splitted[0])
+            rawdict["num"] = splitted[0]
+            splitted = splitted[1:]
+        except ValueError:
+            pass
+
         # Enumerate the list to obtain: [(0,data0),(1,data1),...]
         e_splitted = list(enumerate(splitted))
         errors = ''
@@ -268,8 +283,11 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
                 e_splitted.remove(e_splitted[idx+1])
                 com = True
                 rawdict[self._columns[idx]] = result
+                conc = self._columns[idx]
+                rawdict['DefaultResult'] = conc # we save the idx with the concentration
+                
                
-            elif com:#com: # We have rm the 2nd part value, consequently we
+            elif com:# We have rm the 2nd part value, consequently we
                     # need to decrement idx
                 if len(self._columns) <= idx-1:
                     self.err(_("Orphan value in column %s, line %s") \
@@ -285,9 +303,8 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
                     break
                 rawdict[self._columns[idx]] = result
 
-        
-
-        aname = rawdict.get('Analyte', '')
+        aname = rawdict[self._columns[0]]
+        #aname = rawdict.get('Analyte', '')
         if not aname:
             self.err(_("No Analysis Name defined, line %s") % (self.num_line))
             return 0
@@ -296,7 +313,7 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
             errors = rawdict.get('Compound')
             notes = rawdict.get('Calibration')
             rawdict['Notes'] = notes
-            import pdb; pdb.set_trace()
+
         rid = self._header['Sample']
         if not rid:
             self.err(_("No Sample defined, line %s") % (self.num_line))
@@ -304,15 +321,16 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
 
         notes = rawdict.get('Notes', '')
         notes = "Notes: %s" % notes if notes else ''
-        rawdict['DefaultResult'] = 'Concentration'
+        #rawdict['DefaultResult'] = 'Concentration'
         # Replace to obtain UK values from default
-        rawdict['Concentration'] = rawdict['Concentration'].replace(',','.')
+        #rawdict['Concentration'] = rawdict['Concentration'].replace(',','.')
+        rawdict[conc] = rawdict[conc].replace(',','.')
         rawdict['Remarks'] = ' '.join([errors, notes])
         rawres = self.getRawResults().get(rid, [])
         raw = rawres[0] if len(rawres) > 0 else {}
         raw[aname] = rawdict
         self._addRawResult(rid, raw, True)
-        
+        #import pdb; pdb.set_trace()##############
         return 0
 
 
