@@ -34,7 +34,7 @@ class InstrumentsView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 25
-
+        
         self.columns = {
             'Title': {'title': _('Instrument'),
                       'index': 'sortable_title'},
@@ -46,7 +46,14 @@ class InstrumentsView(BikaListingView):
             'Model': {'title': _('Model'),
                       'index': 'getModel',
                       'toggle': True},
-        }
+            'ExpiryDate': {'title': _('Expiry Date'),
+                           'toggle': True},
+            'WeeksToExpire': {'title': _('Weeks To Expire'),
+                           'toggle': False},
+            'Method': {'title': _('Method'),
+                           'toggle': True},
+            }
+
         self.review_states = [
             {'id':'default',
              'title': _('Active'),
@@ -55,7 +62,10 @@ class InstrumentsView(BikaListingView):
              'columns': ['Title',
                          'Type',
                          'Brand',
-                         'Model']},
+                         'Model',
+                         'ExpiryDate',
+                         'WeeksToExpire',
+                         'Method']},
             {'id':'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
@@ -63,15 +73,21 @@ class InstrumentsView(BikaListingView):
              'columns': ['Title',
                          'Type',
                          'Brand',
-                         'Model']},
+                         'Model',
+                         'ExpiryDate',
+                         'WeeksToExpire',
+                         'Method']},
             {'id':'all',
              'title': _('All'),
              'contentFilter':{},
              'columns': ['Title',
                          'Type',
                          'Brand',
-                         'Model']},
-        ]
+                         'Model',
+                         'ExpiryDate',
+                         'WeeksToExpire',
+                         'Method']},
+            ]
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
@@ -81,10 +97,28 @@ class InstrumentsView(BikaListingView):
             items[x]['Type'] = obj.getInstrumentType().Title()
             items[x]['Brand'] = obj.getManufacturer().Title()
             items[x]['Model'] = obj.Model
-#            items[x]['ExpiryDate'] = obj.CalibrationExpiryDate and \
-#                obj.CalibrationExpiryDate.asdatetime().strftime(self.date_format_short) or ''
+
+            data = obj.getCertificateExpireDate()
+            if data == '':
+                items[x]['ExpiryDate'] = "No date avaliable"
+            else:
+                items[x]['ExpiryDate'] = data.asdatetime().strftime(self.date_format_short)
+                
+            if obj.isOutOfDate():
+                items[x]['WeeksToExpire'] = "Out of date"
+            else:
+                date = int(str(obj.getWeeksToExpire()).split(',')[0].split(' ')[0])
+                weeks,days = divmod(date,7)
+                items[x]['WeeksToExpire'] = str(weeks)+" weeks"+" "+str(days)+" days"
+                
+            if obj.getMethod():
+                items[x]['Method'] = obj.getMethod().Title() 
+                items[x]['replace']['Method'] = "<a href='%s'>%s</a>" % \
+                    (obj.getMethod().absolute_url(), items[x]['Method'])
+            else:
+                items[x]['Method'] = ''
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['Title'])
+                (items[x]['url'], items[x]['Title'])
 
         return items
 
