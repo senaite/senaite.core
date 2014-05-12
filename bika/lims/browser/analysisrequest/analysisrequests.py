@@ -90,7 +90,7 @@ class AnalysisRequestsView(BikaListingView):
                                   'toggle': False},
             'Priority': {'title': _('Priority'),
                             'toggle': True,
-                            'sortable': False},
+                            'sortable': True},
             'AdHoc': {'title': _('Ad-Hoc'),
                       'toggle': False},
             'SamplingDate': {'title': _('Sampling Date'),
