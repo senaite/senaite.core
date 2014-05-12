@@ -109,10 +109,9 @@ class InstrumentsView(BikaListingView):
                 weeks,days = divmod(date,7)
                 items[x]['WeeksToExpire'] = str(weeks)+" weeks"+" "+str(days)+" days"
                 
-            items[x]['Method'] = ""#obj.getMethods()
-            
-            #items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-             #    (items[x]['url'], items[x]['Title'])
+            items[x]['Method'] = obj.getMethod().Title() if obj.getMethod() else ''
+            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                (items[x]['url'], items[x]['Title'])
 
         return items
 

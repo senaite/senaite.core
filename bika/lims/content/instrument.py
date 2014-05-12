@@ -384,8 +384,6 @@ class Instrument(ATFolder):
         date = cert.getValidTo().asdatetime().date();
         return date - date.today()
 
-    def getMethods(self):
-        return self._getAvailableMethods()#Jordi Help
 ####################
 
     def getLatestValidCertification(self):
