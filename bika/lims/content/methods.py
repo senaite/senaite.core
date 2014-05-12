@@ -42,7 +42,7 @@ class MethodsView(BikaListingView):
                             'toggle': True},
             'Calculation': {'title': _('Calculation'),
                              'toggle': True},
-            'ManualEntry': {'title': _('Manual entry of results'),
+            'ManualEntry': {'title': _('Manual entry'),
                              'toggle': True},
         }
 
@@ -105,6 +105,8 @@ class MethodsView(BikaListingView):
 
             if obj.getCalculation():
                 items[x]['Calculation'] = obj.getCalculation().Title()
+                items[x]['replace']['Calculation'] = "<a href='%s'>%s</a>" % \
+                    (obj.getCalculation().absolute_url(), items[x]['Calculation'])
             else:
                 items[x]['Calculation'] = ''
             
