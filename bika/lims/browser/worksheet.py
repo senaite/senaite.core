@@ -331,7 +331,7 @@ def getAnalystName(context):
     if analyst_member != None:
         return analyst_member.getProperty('fullname')
     else:
-        return ''
+        return analyst
 
 class WorksheetAnalysesView(AnalysesView):
     """ This renders the table for ManageResultsView.
