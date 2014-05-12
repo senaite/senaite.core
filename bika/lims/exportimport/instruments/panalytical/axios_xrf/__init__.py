@@ -66,12 +66,12 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
             line = line.replace('"', "")
             splitted = line.split(' - ')
 
-            if len(splitted) > 3:
+            if len(splitted) > 3:# Maybe we don't need this, i could be all the analysis name...
                 self._header['Sample'] = splitted[0].strip(' ')
                 self._header['Quantity'] = splitted[1]
                 self._header['????'] = splitted[2]# At present we
                                                   # don't know what
-                                                  # are thatw
+                                                  # is that
                 self._header['PPC'] = splitted[3]
             
             elif len(splitted) == 1:
@@ -80,7 +80,7 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
             else:
                 self.warn(_('Unexpected header format'))
             return 1
-        # Save each header field and its own value in the dict
+        # Save each header field (that we know) and its own value in the dict
         if line.startswith('R.M.S.'):
 
             if len(self._header) == 0:
@@ -253,8 +253,7 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
             return 1
 
     def parse_resultline(self, line):
-        # Process incoming results line The rows name are:
-        # Analyte,Calibration,Compound,Concentration,Unit,Calculation,Status
+        # Process incoming results line
         if not line.strip():
             return 0
 
@@ -283,9 +282,8 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
                 e_splitted.remove(e_splitted[idx+1])
                 com = True
                 rawdict[self._columns[idx]] = result
-                conc = self._columns[idx]
-                rawdict['DefaultResult'] = conc # we save the idx with the concentration
-                
+                conc = self._columns[idx] # Main value's name
+                                
                
             elif com:# We have rm the 2nd part value, consequently we
                     # need to decrement idx
@@ -303,8 +301,7 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
                     break
                 rawdict[self._columns[idx]] = result
 
-        aname = rawdict[self._columns[0]]
-        #aname = rawdict.get('Analyte', '')
+        aname = rawdict[self._columns[0]]# The fisrt column is analytic name  
         if not aname:
             self.err(_("No Analysis Name defined, line %s") % (self.num_line))
             return 0
@@ -321,16 +318,14 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
 
         notes = rawdict.get('Notes', '')
         notes = "Notes: %s" % notes if notes else ''
-        #rawdict['DefaultResult'] = 'Concentration'
+        rawdict['DefaultResult'] = conc
         # Replace to obtain UK values from default
-        #rawdict['Concentration'] = rawdict['Concentration'].replace(',','.')
         rawdict[conc] = rawdict[conc].replace(',','.')
         rawdict['Remarks'] = ' '.join([errors, notes])
         rawres = self.getRawResults().get(rid, [])
         raw = rawres[0] if len(rawres) > 0 else {}
         raw[aname] = rawdict
         self._addRawResult(rid, raw, True)
-        #import pdb; pdb.set_trace()##############
         return 0
 
 
