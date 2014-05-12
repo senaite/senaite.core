@@ -17,5 +17,6 @@ def upgrade(tool):
     # Create new index
     bc = getToolByName(portal, 'bika_catalog')
     addIndex(bc, 'Priority', 'FieldIndex')
+    addIndex(bc, 'BatchUID', 'FieldIndex')
     bc.clearFindAndRebuild()
     return True

@@ -647,6 +647,7 @@ class BikaGenerator:
         addIndex(bc, 'getServiceTitle', 'FieldIndex')
         addIndex(bc, 'getWorksheetTemplateTitle', 'FieldIndex')
         addIndex(bc, 'Priority', 'FieldIndex')
+        addIndex(bc, 'BatchUID', 'FieldIndex')
         addColumn(bc, 'path')
         addColumn(bc, 'UID')
         addColumn(bc, 'id')

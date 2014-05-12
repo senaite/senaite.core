@@ -1573,3 +1573,7 @@ atapi.registerType(AnalysisRequest, PROJECTNAME)
 @indexer(IAnalysisRequest)
 def Priority(instance):
     return instance.getPriority().getSortKey()
+
+@indexer(IAnalysisRequest)
+def BatchUID(instance):
+    return instance.getBatch().UID()
