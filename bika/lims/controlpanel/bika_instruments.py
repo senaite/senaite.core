@@ -53,6 +53,7 @@ class InstrumentsView(BikaListingView):
             'Method': {'title': _('Method'),
                            'toggle': True},
             }
+
         self.review_states = [
             {'id':'default',
              'title': _('Active'),
@@ -97,6 +98,7 @@ class InstrumentsView(BikaListingView):
             items[x]['Brand'] = obj.getManufacturer().Title()
             items[x]['Model'] = obj.Model
             data = obj.getCertificateExpireDate()
+
             if data == '':
                 items[x]['ExpiryDate'] = "No date avaliable"
             else:
@@ -105,7 +107,7 @@ class InstrumentsView(BikaListingView):
             if obj.isOutOfDate():
                 items[x]['WeeksToExpire'] = "Out of date"
             else:
-                date = int(str(obj.getWeeksToExpire()).split(',')[0].split(' ')[0])##will improve!!
+                date = int(str(obj.getWeeksToExpire()).split(',')[0].split(' ')[0])
                 weeks,days = divmod(date,7)
                 items[x]['WeeksToExpire'] = str(weeks)+" weeks"+" "+str(days)+" days"
                 
