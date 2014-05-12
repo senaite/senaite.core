@@ -345,4 +345,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Make ARs listing sortable on AR Priority sort key"
+        description=""
+        source="3033"
+        destination="3034"
+        handler="bika.lims.upgrade.to3034.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>

@@ -3,6 +3,7 @@
 import logging
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
+from plone.indexer import indexer
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
@@ -1568,3 +1569,7 @@ class AnalysisRequest(BaseFolder):
 
 
 atapi.registerType(AnalysisRequest, PROJECTNAME)
+
+@indexer(IAnalysisRequest)
+def Priority(instance):
+    return instance.getPriority().getSortKey()
