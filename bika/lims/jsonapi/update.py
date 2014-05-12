@@ -79,6 +79,9 @@ class Update(object):
         self.context = context
         self.request = request
         self.unused = [x for x in self.request.form.keys()]
+        self.used("form.submitted")
+        self.used("__ac_name")
+        self.used("__ac_password")
         ret = {
             "url": router.url_for("update", force_external=True),
             "success": False,
@@ -147,6 +150,9 @@ class Update(object):
         self.context = context
         self.request = request
         self.unused = [x for x in self.request.form.keys()]
+        self.used("form.submitted")
+        self.used("__ac_name")
+        self.used("__ac_password")
         ret = {
             "url": router.url_for("update_many", force_external=True),
             "success": False,
