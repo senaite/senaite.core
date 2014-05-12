@@ -209,6 +209,13 @@ msgid "retract_transition_title"
 msgstr "Retract"
 
 #. Default: "Retract"
+#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
+#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+msgid "retract_transition_title"
+msgstr "Retract AR"
+
+#. Default: "Retract"
 # This is for the "revert" transition, which is meant to look like a
 # "retract".
 msgid "revert_transition_title"
