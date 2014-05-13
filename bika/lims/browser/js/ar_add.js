@@ -1,60 +1,78 @@
 (function( $ ) {
-"use strict";
-
+    "use strict";
+    
 function destroy(arr, val) {
-	for (var i = 0; i < arr.length; i++) if (arr[i] === val) arr.splice(i, 1);
-	return arr;
+    for (var i = 0; i < arr.length; i++) if (arr[i] === val) arr.splice(i, 1);
+    return arr;
 }
-
+    
 function toggle_spec_fields(element) {
-	// when a service checkbox is clicked, this is used to display
-	// or remove the specification inputs.
-	if(!$("#bika_setup").attr("EnableARSpecs")) { return; }
-	var column = $(element).attr("column");
-	var root_name = $(element).attr("name").replace(":ignore_empty", "");
-	var min_name   = root_name.replace("Analyses", "min");
-	var max_name   = root_name.replace("Analyses", "max");
-	var error_name = root_name.replace("Analyses", "error");
-	var service_uid = $(element).attr("id");
-	var spec_uid = $("#ar_"+column+"_Specification_uid").val();
-	if ($(element).prop("checked") && $(element).siblings().filter("[name='"+min_name+"']").length === 0) {
-		if (spec_uid !== ""){
-			var request_data = {
-				catalog_name: "uid_catalog",
-				UID: spec_uid
-			};
-			window.bika.lims.jsonapi_read(request_data, function(data) {
-				var min_val = "";
-				var max_val = "";
-				var error_val = "";
-				if (data.objects && data.objects.length > 0) {
-					var rr = data.objects[0].ResultsRange;
-					for (var i in rr) {
-						if (!(rr.hasOwnProperty(i))){ continue; }
-						if (rr[i].keyword == $(element).attr("keyword")) {
-							min_val = rr[i].min;
-							max_val = rr[i].max;
-							error_val = rr[i].error;
-							break;
-						}
-					}
-				}
-				var min =   $("<input class='spec_bit min'   type='text' size='3' uid='"+service_uid+"' value='"+min_val+  "' name='"+min_name+  "' keyword='"+$(element).attr("keyword")+"' autocomplete='off' placeholder='&gt;'/>");
-				var max =   $("<input class='spec_bit max'   type='text' size='3' uid='"+service_uid+"' value='"+max_val+  "' name='"+max_name+  "' keyword='"+$(element).attr("keyword")+"' autocomplete='off' placeholder='&lt;'/>");
-				var error = $("<input class='spec_bit error' type='text' size='3' uid='"+service_uid+"' value='"+error_val+"' name='"+error_name+"' keyword='"+$(element).attr("keyword")+"' autocomplete='off' placeholder='%'/>");
-				$(element).after(error).after(max).after(min);
-			});
-		} else {
-			var min =   $("<input class='spec_bit min'   type='text' size='3' uid='"+service_uid+"' value='' name='"+min_name+  "' keyword='"+$(element).attr("keyword")+"' autocomplete='off' placeholder='&gt;'/>");
-			var max =   $("<input class='spec_bit max'   type='text' size='3' uid='"+service_uid+"' value='' name='"+max_name+  "' keyword='"+$(element).attr("keyword")+"' autocomplete='off' placeholder='&lt;'/>");
-			var error = $("<input class='spec_bit error' type='text' size='3' uid='"+service_uid+"' value='' name='"+error_name+"' keyword='"+$(element).attr("keyword")+"' autocomplete='off' placeholder='%'/>");
+    // When a service checkbox is clicked, this is used to display
+    // or remove the specification inputs.
+    if(!$("#bika_setup").attr("EnableARSpecs")) { return; }
+    var column = $(element).attr("column");
+    var root_name = $(element).attr("name").replace(":ignore_empty", "");
+    var min_name   = root_name.replace("Analyses", "min");
+    var max_name   = root_name.replace("Analyses", "max");
+    var error_name = root_name.replace("Analyses", "error");
+    var service_uid = $(element).attr("id");
+    
+    var spec_uid = $("#ar_"+column+"_Specification_uid").val();
+
+    if ($(element).prop("checked") && $(element).siblings().filter("[name='"+min_name+"']").length === 0) {
+	//var to know if analysis need specification
+	var allowspec = true;
+	
+	//Search if current analysis's service allows specification
+	var request_allowspec = {
+	    catalog_name: "uid_catalog",
+	    UID: service_uid
+	};
+	
+	window.bika.lims.jsonapi_read(request_allowspec, function(result) {
+	    if (result.objects && result.objects.length > 0){
+		var allowspec = result.objects[0].ResultOptions == null || result.objects[0].ResultOptions.length == 0;
+		
+		// To force the next if statments part to be syncron
+		if ((spec_uid !== "") && allowspec){
+		    var request_data = {
+			catalog_name: "uid_catalog",
+			UID: spec_uid
+		    };
+		    window.bika.lims.jsonapi_read(request_data, function(data) {
+			var min_val = "";
+			var max_val = "";
+			var error_val = "";
+			if (data.objects && data.objects.length > 0) {
+			    var rr = data.objects[0].ResultsRange;
+			    for (var i in rr) {
+				if (!(rr.hasOwnProperty(i))){ continue; }
+				if (rr[i].keyword == $(element).attr("keyword")) {
+				    min_val = rr[i].min;
+				    max_val = rr[i].max;
+				    error_val = rr[i].error;
+				    break;
+				    }
+			    }
+			}
+			var min =   $("<input class='spec_bit min'   type='text' size='3' uid='"+service_uid+"' value='"+min_val+  "' name='"+min_name+  "' keyword='"+$(element).attr("keyword")+"' autocomplete='off' placeholder='&gt;'/>");
+			var max =   $("<input class='spec_bit max'   type='text' size='3' uid='"+service_uid+"' value='"+max_val+  "' name='"+max_name+  "' keyword='"+$(element).attr("keyword")+"' autocomplete='off' placeholder='&lt;'/>");
+			var error = $("<input class='spec_bit error' type='text' size='3' uid='"+service_uid+"' value='"+error_val+"' name='"+error_name+"' keyword='"+$(element).attr("keyword")+"' autocomplete='off' placeholder='%'/>");
 			$(element).after(error).after(max).after(min);
+		    });
+		} else if (allowspec) {
+		    var min =   $("<input class='spec_bit min'   type='text' size='3' uid='"+service_uid+"' value='' name='"+min_name+  "' keyword='"+$(element).attr("keyword")+"' autocomplete='off' placeholder='&gt;'/>");
+		    var max =   $("<input class='spec_bit max'   type='text' size='3' uid='"+service_uid+"' value='' name='"+max_name+  "' keyword='"+$(element).attr("keyword")+"' autocomplete='off' placeholder='&lt;'/>");
+		    var error = $("<input class='spec_bit error' type='text' size='3' uid='"+service_uid+"' value='' name='"+error_name+"' keyword='"+$(element).attr("keyword")+"' autocomplete='off' placeholder='%'/>");
+		    $(element).after(error).after(max).after(min);
 		}
-	} else {
-		$("input[name='"+min_name+  "']").filter("[uid='"+service_uid+"']").remove();
-		$("input[name='"+max_name+  "']").filter("[uid='"+service_uid+"']").remove();
-		$("input[name='"+error_name+"']").filter("[uid='"+service_uid+"']").remove();
-	}
+	    }});
+	
+    } else {
+	$("input[name='"+min_name+  "']").filter("[uid='"+service_uid+"']").remove();
+	$("input[name='"+max_name+  "']").filter("[uid='"+service_uid+"']").remove();
+	$("input[name='"+error_name+"']").filter("[uid='"+service_uid+"']").remove();
+    }	
 }
 
 function reset_spec_field_values(column) {
