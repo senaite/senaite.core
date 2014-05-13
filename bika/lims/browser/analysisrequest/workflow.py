@@ -411,7 +411,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
     def workflow_action_publish(self):
         action, came_from = WorkflowAction._get_form_workflow_action(self)
         if not isActive(self.context):
-            message = self.context.translate(_('Item is inactive.'))
+            message = _('Item is inactive.')
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.response.redirect(self.context.absolute_url())
             return
@@ -422,10 +422,11 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                                action,
                                [self.context, ])()
         if len(transitioned) == 1:
-            message = t('${items} published.',
-                        mapping={'items': safe_unicode(', '.join(transitioned))})
+            message = _(
+                '${items} published.',
+                mapping={'items': safe_unicode(', '.join(transitioned))})
         else:
-            message = self.context.translate(_("No items were published"))
+            message = _("No items were published")
         self.context.plone_utils.addPortalMessage(message, 'info')
         self.destination_url = self.request.get_header("referer",
                                self.context.absolute_url())
