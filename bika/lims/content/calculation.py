@@ -122,7 +122,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
             self.getField('DependentServices').set(self, DependentServices)
             self.getField('Formula').set(self, Formula)
 
-    def getCalculationDependencies(self, flat=False):
+    def getCalculationDependencies(self, flat=False, deps=None):
         """ Recursively calculates all dependencies of this calculation.
             The return value is dictionary of dictionaries (of dictionaries....)
 
@@ -136,43 +136,28 @@ class Calculation(BaseFolder, HistoryAwareMixin):
 
             set flat=True to get a simple list of AnalysisService objects
         """
-        if 'recursion_check' not in self.REQUEST:
-            self.REQUEST['recursion_check'] = []
-        if flat:
-            deps = []
-        else:
-            deps = {}
+        if deps == None:
+            deps = [] if flat == True else {}
+
         for service in self.getDependentServices():
-            if service in self.REQUEST['recursion_check']:
-                continue
-            self.REQUEST['recursion_check'].append(service)
             calc = service.getCalculation()
-            if calc in self.REQUEST['recursion_check']:
-                continue
-            self.REQUEST['recursion_check'].append(calc)
             if calc:
-                if flat:
-                    deps.append(service)
-                    deps.extend(calc.getCalculationDependencies(flat=True))
-                else:
-                    deps[service.UID()] = calc.getCalculationDependencies()
+                calc.getCalculationDependencies(flat, deps)
+            if flat:
+                deps.append(service)
+            else:
+                deps[service.UID()] = {}
         return deps
 
-    def getCalculationDependants(self):
+    def getCalculationDependants(self, deps=None):
         """Return a flat list of services who's calculations depend on this."""
-        backrefs = []
-        skip = []
-
-        def walk(services):
-            for service in services:
-                if service not in skip:
-                    skip.append(service)
-                    backrefs.append(service)
-                    for calc in service.getBackReferences('CalculationAnalysisService'):
-                        walk(calc.getBackReferences('AnalysisServiceCalculation'))
-        walk(self.getBackReferences('AnalysisServiceCalculation'))
-
-        return backrefs
+        deps = []
+        for service in self.getBackReferences('AnalysisServiceCalculation'):
+            calc = service.getCalculation()
+            if calc and calc.UID() != self.UID():
+                calc.getCalculationDependants(flat, deps)
+            deps.append(service)
+        return deps
 
     def workflow_script_activate(self):
 
