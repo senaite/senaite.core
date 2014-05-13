@@ -26,6 +26,7 @@ function AnalysisServiceEditView() {
     var acalc_fd   = $('#archetypes-fieldname-DeferredCalculation');
     var acalc_sel  = $('#archetypes-fieldname-DeferredCalculation #DeferredCalculation');
     var interim_fd = $("#archetypes-fieldname-InterimFields");
+    var interim_rw = $("#archetypes-fieldname-InterimFields tr.records_row_InterimFields");
 
     /**
      * Entry-point method for AnalysisServiceEditView
@@ -341,6 +342,47 @@ function AnalysisServiceEditView() {
             $(calc_fd).hide();
             $(acalc_fd).show();
         }
+
+        // Save the manually entered interims to keep them if another
+        // calculation is set. We need to know which interim fields
+        // are from the current selected calculation and which of them
+        // have been set manually.
+        rows = $("tr.records_row_InterimFields");
+        var originals = [];
+        if($(rows).length > 1){
+            for (i = $(rows).length - 2; i >= 0; i--) {
+                // Get the original values
+                var keyword = $($($(rows)[i]).find('td input')[0]).val();
+                if (keyword != '') {
+                    var title = $($($(rows)[i]).find('td input')[1]).val();
+                    var value = $($($(rows)[i]).find('td input')[2]).val();
+                    var unit = $($($(rows)[i]).find('td input')[3]).val();
+                    var hidd = $($($(rows)[i]).find('td input')[4]).is(':checked');
+                    var wide = $($($(rows)[i]).find('td input')[5]).is(':checked');
+                    originals.push([keyword, title, value, unit, hidd, wide]);
+                }
+            }
+        }
+        var toremove = []
+        var calcuid = $(calc_sel).attr('data-default');
+        if (calcuid != null && calcuid != '') {
+            var request_data = {
+                catalog_name: "bika_setup_catalog",
+                UID: calcuid
+            };
+            window.bika.lims.jsonapi_read(request_data, function(data) {
+                if (data.objects.length > 0) {
+                    for (i = 0; i < data.objects[0].InterimFields.length; i++) {
+                        toremove.push(row.keyword);
+                    }
+                }
+            });
+        }
+        var manualinterims = originals.filter(function(el) {
+            return toremove.indexOf(el[0]) < 0;
+        });
+        // Save the manualinterims in some hidden place
+        $('body').append("<input type='hidden' id='temp_manual_interims' value='"+$.toJSON(manualinterims)+"'>");
     }
 
     /**
@@ -384,6 +426,7 @@ function AnalysisServiceEditView() {
                     $($(rows)[i]).remove();
                 }
             }
+
             if (data.objects.length > 0) {
                 $(interim_fd).fadeIn('slow');
                 $("[id^='InterimFields-keyword-']").attr("id", "InterimFields-keyword-0");
@@ -409,6 +452,21 @@ function AnalysisServiceEditView() {
                         $("#InterimFields-unit-"+i).val(original[2]);
                     }
                     $("#InterimFields_more").click();
+                }
+            }
+
+            // Manually entered results?
+            var manualinterims = $.parseJSON($('#temp_manual_interims').val());
+            if (manualinterims.length > 0) {
+                $(interim_fd).fadeIn('slow');
+                var i = $("tr.records_row_InterimFields").length-1;
+                for (k = 0; k < manualinterims.length; k++) {
+                    $("#InterimFields-keyword-"+i).val(manualinterims[k][0]);
+                    $("#InterimFields-title-"+i).val(manualinterims[k][1]);
+                    $("#InterimFields-value-"+i).val(manualinterims[k][2]);
+                    $("#InterimFields-unit-"+i).val(manualinterims[k][3]);
+                    $("#InterimFields_more").click();
+                    i++;
                 }
             }
         });
