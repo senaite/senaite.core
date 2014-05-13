@@ -5,9 +5,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2014-05-12 16:58+0000\n"
-"PO-Revision-Date: 2014-05-03 09:45+0000\n"
-"Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
+"POT-Creation-Date: 2014-05-13 09:31+0000\n"
+"PO-Revision-Date: 2014-05-12 21:20+0000\n"
+"Last-Translator: Emil Cyraniak <cyrano30@epf.pl>\n"
 "Language-Team: Polish (http://www.transifex.com/projects/p/bika-lims/language/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -158,7 +158,7 @@ msgstr "Serie próbek"
 
 #: bika.lims/bika/lims/profiles/default/types/BikaSetup.xml
 msgid "Bika Setup"
-msgstr "Bika Setup"
+msgstr "Ustawienia BIKA"
 
 #: bika.lims/bika/lims/profiles/default/types/Calculation.xml
 msgid "Calculation"
@@ -661,7 +661,7 @@ msgid "label_schema_Accounting"
 msgstr "Accounting"
 
 msgid "label_schema_Address"
-msgstr "Address"
+msgstr "Adres"
 
 msgid "label_schema_Analyses"
 msgstr "Analyses"
@@ -670,46 +670,46 @@ msgid "label_schema_Bank details"
 msgstr "Bank details"
 
 msgid "label_schema_Calculation"
-msgstr "Calculation"
+msgstr "Obliczanie"
 
 msgid "label_schema_Container and Preservation"
 msgstr "Container and Preservation"
 
 msgid "label_schema_Dates"
-msgstr "Dates"
+msgstr "Daty"
 
 msgid "label_schema_Description"
-msgstr "Description"
+msgstr "Opis"
 
 msgid "label_schema_Email Telephone Fax"
-msgstr "Email Telephone Fax"
+msgstr "E-mail Telefon Faks"
 
 msgid "label_schema_ID Server"
 msgstr "ID Server"
 
 msgid "label_schema_Labels"
-msgstr "Labels"
+msgstr "Etykiety"
 
 msgid "label_schema_Layout"
-msgstr "Layout"
+msgstr "Układ"
 
 msgid "label_schema_Location"
-msgstr "Location"
+msgstr "Lokalizacja"
 
 msgid "label_schema_Method"
-msgstr "Method"
+msgstr "Metoda"
 
 msgid "label_schema_Preferences"
-msgstr "Preferences"
+msgstr "Preferencje"
 
 msgid "label_schema_Publication preference"
-msgstr "Publication preference"
+msgstr "Preferencje publikowania"
 
 msgid "label_schema_Reference Values"
 msgstr "Reference Values"
 
 msgid "label_schema_Result Options"
-msgstr "Result Options"
+msgstr "Opcje wyników"
 
 msgid "label_schema_Results Reports"
 msgstr "Results Reports"
@@ -721,10 +721,10 @@ msgid "label_schema_Sample Partitions"
 msgstr "Sample Partitions"
 
 msgid "label_schema_Security"
-msgstr "Security"
+msgstr "Bezpieczeństwo"
 
 msgid "label_schema_Uncertainties"
-msgstr "Uncertainties"
+msgstr "Niepewności"
 
 #. Default: "Open"
 #: ../profiles/default/workflows/bika_batch_workflow/definition.xml

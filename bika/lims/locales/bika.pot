@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2014-05-12 16:58+0000\n"
+"POT-Creation-Date: 2014-05-13 09:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1567,7 +1567,7 @@ msgstr ""
 #: bika.lims/bika/lims/content/bikasetup.py:223
 #: bika.lims/bika/lims/content/client.py:90
 msgid "DefaultARSpecs_description"
-msgstr ""
+msgstr "Choose the default specifications used for all AR views to display alerts and notifications.  These will also be applied when an AR is published in permanent media, e.g. PDF. "
 
 #: bika.lims/bika/lims/content/calculation.py:30
 msgid "Define interim fields such as vessel mass, dilution factors, should your calculation require them. The field title specified here will be used as column headers and field descriptors where the interim fields are displayed. If 'Apply wide' is enabled the field ill be shown in a selection box on the top of the worksheet, allowing to apply a specific value to all the corresponding fields on the sheet."

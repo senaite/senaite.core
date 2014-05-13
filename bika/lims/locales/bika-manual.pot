@@ -77,3 +77,8 @@ msgstr ""
 
 msgid "Parent"
 msgstr ""
+
+msgid "DefaultARSpecs_description"
+msgstr "Choose the default specifications used for all AR views "
+"to display alerts and notifications.  These will also be applied when an AR "
+"is published in permanent media, e.g. PDF. "
