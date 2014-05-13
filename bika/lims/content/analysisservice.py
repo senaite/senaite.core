@@ -873,9 +873,6 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
             method = self.get_Method();
         return method
 
-    def isChoicesResultsEntry(self):
-	pass
-
     def getDepartments(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('','')] + [(o.UID, o.Title) for o in
