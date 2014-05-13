@@ -37,6 +37,18 @@ except:
     from zope.app.component.hooks import getSite
 
 
+@indexer(IAnalysisRequest)
+def Priority(instance):
+    priority = instance.getPriority()
+    if priority:
+        return priority.getSortKey()
+
+@indexer(IAnalysisRequest)
+def BatchUID(instance):
+    batch = instance.getBatch()
+    if batch:
+        return batch.UID()
+
 schema = BikaSchema.copy() + Schema((
     StringField(
         'RequestID',
@@ -1570,10 +1582,3 @@ class AnalysisRequest(BaseFolder):
 
 atapi.registerType(AnalysisRequest, PROJECTNAME)
 
-@indexer(IAnalysisRequest)
-def Priority(instance):
-    return instance.getPriority().getSortKey()
-
-@indexer(IAnalysisRequest)
-def BatchUID(instance):
-    return instance.getBatch().UID()

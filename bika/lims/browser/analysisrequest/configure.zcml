@@ -50,9 +50,9 @@
     />
 
     <adapter
-      name="ar-pi"
+      name="ar_priority_icons"
       for="bika.lims.interfaces.IAnalysisRequest"
-      factory="bika.lims.browser.analysisrequest.PriorityIcons"
+      factory="bika.lims.adapters.priorityicons.PriorityIcons"
     />
 
     <!-- main site/analysisrequests view -->

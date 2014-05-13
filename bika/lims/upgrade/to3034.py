@@ -14,9 +14,13 @@ def upgrade(tool):
             pass
 
     portal = aq_parent(aq_inner(tool))
-    # Create new index
+    # Create new indexes
     bc = getToolByName(portal, 'bika_catalog')
     addIndex(bc, 'Priority', 'FieldIndex')
     addIndex(bc, 'BatchUID', 'FieldIndex')
     bc.clearFindAndRebuild()
+
+    bac = getToolByName(portal, 'bika_analysis_catalog')
+    addIndex(bac, 'Priority', 'FieldIndex')
+    bac.clearFindAndRebuild()
     return True

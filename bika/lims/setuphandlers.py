@@ -567,6 +567,7 @@ class BikaGenerator:
         addColumn(bac, 'getRequestID')
         addColumn(bac, 'getReferenceAnalysesGroupID')
         addColumn(bac, 'getResultCaptureDate')
+        addColumn(bac, 'Priority')
 
         # bika_catalog
 

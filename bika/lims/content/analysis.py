@@ -3,6 +3,7 @@
 from AccessControl import getSecurityManager
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
+from plone.indexer import indexer
 from Products.ATContentTypes.content import schemata
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget, RecordsField
 from Products.Archetypes import atapi
@@ -33,6 +34,12 @@ from decimal import Decimal
 from zope.interface import implements
 import datetime
 import math
+
+@indexer(IAnalysis)
+def Priority(instance):
+    priority = instance.getPriority()
+    if priority:
+        return priority.getSortKey()
 
 schema = BikaSchema.copy() + Schema((
     HistoryAwareReferenceField('Service',
@@ -1161,3 +1168,4 @@ class Analysis(BaseContent):
 
 
 atapi.registerType(Analysis, PROJECTNAME)
+
