@@ -341,7 +341,7 @@
                     <td><span class="result" tal:content="python:dqc_analysis.getResult()">23</span> <span class="units" tal:content="dqc_service/Unit|nothing"/></td>
                     <!-- <td class="result" tal:content="python:dqc_analysis.getResult()">0.8</td> -->
                     <!-- <td class="units" tal:content="dqc_service/Unit">ng/ml</td> -->
-                    <td class="specs" tal:content="dqc_range">0</td>
+                    <td class="specs" tal:content="python:dqc_range.getSpecifications()">0</td>
                     <td class="worksheet">
                         <a tal:attributes="href dqc_wshref"
                            tal:content="dqc_wsid">WS13-0001</a>
