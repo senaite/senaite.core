@@ -1,6 +1,6 @@
 from AccessControl import getSecurityManager
+from Products.CMFPlone import PloneMessageFactory
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.permissions import EditResults
 from Products.CMFCore.utils import getToolByName
@@ -15,7 +15,7 @@ class BatchBookView(BikaListingView):
         self.icon = self.portal_url + \
             "/++resource++bika.lims.images/batchbook_big.png"
         self.context_actions = {}
-        self.contentFilter = {}
+        self.contentFilter = {"sort_on":"created"}
         self.title = context.Title()
         self.Description = context.Description()
         self.show_select_all_checkbox = True
@@ -47,6 +47,11 @@ class BatchBookView(BikaListingView):
                 'title': _('Sub-group'),
                 'sortable': True,
             },
+            'created': {
+                'title': PloneMessageFactory('Date Created'),
+                'index': 'created',
+                'toggle': False,
+            },
             'state_title': {
                 'title': _('State'),
                 'index': 'review_state'
@@ -60,6 +65,7 @@ class BatchBookView(BikaListingView):
              'columns': ['AnalysisRequest',
                          'Batch',
                          'Sub-group',
+                         'created',
                          'state_title'],
              },
         ]
