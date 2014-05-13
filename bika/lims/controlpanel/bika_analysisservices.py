@@ -38,31 +38,25 @@ class AnalysisServiceCopy(BrowserView):
         folder = self.context.bika_setup.bika_analysisservices
 
         dst_service = _createObjectByType("AnalysisService", folder, tmpID())
+        dst_service.setKeyword(dst_keyword)
+        dst_service.setTitle(dst_title)
+        dst_service.unmarkCreationFlag()
         _id = renameAfterCreation(dst_service)
         dst_service = folder[_id]
-        dst_service.setKeyword(to_utf8(dst_keyword))
-        dst_service.setTitle(to_utf8(dst_title))
-        dst_service.unmarkCreationFlag()
         return dst_service
 
     def validate_service(self, dst_service):
         # validate entries
         validator = ServiceKeywordValidator()
 
-        res = validator(dst_service.Title(), instance=dst_service)
-        if res is not True:
-            self.savepoint.rollback()
-            self.created = []
-            self.context.plone_utils.addPortalMessage(res, 'info')
-            # Redirect(self.request.get_header("referer"))
-            return False
+        # Validating against keyword validator is too strict for Title field.
+        # baseschema uses uniquefieldvalidator on title, this is sufficient.
 
         res = validator(dst_service.getKeyword(), instance=dst_service)
         if res is not True:
             self.savepoint.rollback()
             self.created = []
             self.context.plone_utils.addPortalMessage(res, 'info')
-            # Redirect(self.request.get_header("referer"))
             return False
 
         return True
