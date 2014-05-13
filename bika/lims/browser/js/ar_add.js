@@ -16,6 +16,10 @@ function toggle_spec_fields(element) {
 	var max_name   = root_name.replace("Analyses", "max");
 	var error_name = root_name.replace("Analyses", "error");
 	var service_uid = $(element).attr("id");
+	
+	// Comprovar aquí si el servei d'anàlisi (ex: Bacterial Identification) per a l'identificador <service_uid>
+	// cal carregar especificacions.
+
 	var spec_uid = $("#ar_"+column+"_Specification_uid").val();
 	if ($(element).prop("checked") && $(element).siblings().filter("[name='"+min_name+"']").length === 0) {
 		if (spec_uid !== ""){
