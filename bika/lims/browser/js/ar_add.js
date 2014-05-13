@@ -18,7 +18,7 @@ function toggle_spec_fields(element) {
     var service_uid = $(element).attr("id");
     
     var spec_uid = $("#ar_"+column+"_Specification_uid").val();
-    
+
     if ($(element).prop("checked") && $(element).siblings().filter("[name='"+min_name+"']").length === 0) {
 	//var to know if analysis need specification
 	var allowspec = true;
