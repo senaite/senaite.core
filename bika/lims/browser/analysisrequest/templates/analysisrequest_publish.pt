@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<metal:block use-macro="context/global_defines/macros/defines" />
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:attributes="lang default_language|default;
+                      xml:lang default_language|default;"
+      i18n:domain="bika"
+      tal:define="portal_state context/@@plone_portal_state;
+                  portal_url portal_state/portal_url;
+                  plone_view context/@@plone;">
+<head>
+    <div tal:replace="structure provider:plone.resourceregistries.scripts" />
+</head>
+<body>
+    <div id='ar_publish_container'>
+        <div id='options_handler'>
+            <label for="sel_format" i18n:translate="">Available formats</label>
+            <select id="sel_format" name="sel_format">
+                <tal:formats tal:repeat="format python:view.getAvailableFormats()">
+                    <option tal:attributes="value python:format['id']"
+                            tal:content="python:format['title']"></option>
+                </tal:formats>
+            </select>
+        </div>
+        <div id='ar_publish_body' tal:content='structure python:view.getReportTemplate()'
+                                  tal:define='datasource python:view.getDataSource()'></div>
+        <div id='ar_publish_actions'>
+
+        </div>
+    </div>
+</body>
+</html>

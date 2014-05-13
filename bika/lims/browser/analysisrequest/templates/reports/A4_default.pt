@@ -1,0 +1,79 @@
+<!--
+    Default Analysis Request results template for Bika LIMS
+
+    All data is available using the datasource dictionary.
+    Example for accessing and displaying data:
+
+    <p tal:content="python:datasource['laboratory']['title']"></p>
+
+    or
+
+    <p tal:content="datasource/laboratory/title"></p>
+
+    Take a look to the documentation for more information about
+    available data and fields.
+    http://github.com/bikalabs/Bika-LIMS/wiki/blablablabal
+
+-->
+<tal:report define="datasource python:view.getDataSource();
+                    portal     python:datasource['portal'];
+                    lab        python:datasource['laboratory'];
+                    client     python:datasource['client'];
+                    contact    python:datasource['contact']">
+
+<!-- Report header -->
+<div id="section-header">
+    <div id='lab-logo'>
+        <a tal:attributes="href lab/url">
+            <img tal:attributes="src lab/logo"/>
+        </a>
+    </div>
+</div>
+
+<!-- Address and Lab info -->
+<div id="section-info">
+    <table>
+        <tr>
+            <td id="client-info">
+                <table>
+                    <tr><td id="client-contact" tal:content="contact/fullname"></td></tr>
+                    <tr><td id="client-name" tal:content="python:client['name']"></td></tr>
+                    <tr><td id="client-address" tal:content="structure client/address"></td></tr>
+                    <tr>
+                        <td id="client-email">
+                            <a tal:content="contact/email"
+                               tal:attributes="url python:'mailto:%s' % contact['email'];"></a>
+                        </td>
+                    </tr>
+                    <tr tal:condition="client/phone">
+                        <td id="client-phone">
+                            <span i18n:translate="">Phone</span>:
+                            <span tal:content="client/phone"></span>
+                        </td>
+                    </tr>
+                    <tr tal:condition="client/fax">
+                        <td id="client-fax">
+                            <span i18n:translate="">Fax</span>:
+                            <span tal:content="client/fax"></span>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td id="lab-info">
+                <table>
+                    <tr><td id="lab-title" tal:content='lab/title'></td></tr>
+                    <tr><td id="lab-address" tal:content='structure lab/address'></td></tr>
+
+                    <tr tal:condition="lab/url">
+                        <td id="lab-URL">
+                            <a tal:attributes="href lab/url"
+                               tal:content="lab/url"></a>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+
+</tal:report>
