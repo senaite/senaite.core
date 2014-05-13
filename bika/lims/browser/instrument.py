@@ -574,10 +574,10 @@ class InstrumentCertificationsView(BikaListingView):
             items[x]['replace']['getDocument'] = ""
             try:
                 doc = obj.getDocument()
-                if doc:
+                if doc and doc.get_size() > 0:
                     anchor = "<a href='%s/at_download/Document'>%s</a>" % \
-                            (obj.absolute_url(), _("Download"))
-                    items[x]['getDocument'] = _('Download')
+                            (obj.absolute_url(), doc.filename)
+                    items[x]['getDocument'] = doc.filename
                     items[x]['replace']['getDocument'] = anchor
             except:
                 # POSKeyError: 'No blob file'
