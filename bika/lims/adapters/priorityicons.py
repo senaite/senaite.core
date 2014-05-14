@@ -12,14 +12,15 @@ class PriorityIcons(object):
         self.context = context
 
     def __call__(self, **kwargs):
-        result = {
-            'msg': '',
-            'field': 'Priority',
-            'icon': '',
-        }
+        if not hasattr(self.context, 'getPriority'):
+            return {}
         priority = self.context.getPriority()
         if priority:
-            result['msg'] = priority.Title()
+            result = {
+                'msg': priority.Title(),
+                'field': 'Priority',
+                'icon': '',
+            }
             icon = priority.getSmallIcon()
             if icon:
                 result['icon'] = '/'.join(icon.getPhysicalPath())

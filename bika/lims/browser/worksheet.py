@@ -366,6 +366,7 @@ class WorksheetAnalysesView(AnalysesView):
             'Attachments': {'title': _('Attachments')},
             'Instrument': {'title': _('Instrument')},
             'state_title': {'title': _('State')},
+            'Priority': { 'title': _('Priority'), 'index': 'Priority'},
         }
         self.review_states = [
             {'id':'default',
@@ -377,6 +378,7 @@ class WorksheetAnalysesView(AnalysesView):
                              {'id':'unassign'}],
              'columns':['Pos',
                         'Service',
+                        'Priority',
                         'Method',
                         'Instrument',
                         'Result',
@@ -404,6 +406,7 @@ class WorksheetAnalysesView(AnalysesView):
             service = obj.getService()
             method = service.getMethod()
             items[x]['Service'] = service.Title()
+            items[x]['Priority'] = ''
             #items[x]['Method'] = method and method.Title() or ''
             items[x]['class']['Service'] = 'service_title'
             items[x]['Category'] = service.getCategory() and service.getCategory().Title() or ''
