@@ -153,6 +153,9 @@ function AnalysisServiceEditView() {
                     e.preventDefault();
                 });
 
+                // The user must be able to select the default method manualy
+                $(method_sel).unbind("focus");
+
                 // If manual entry is not selected, select it and
                 // fire event cascade
                 if (!$(manual_chk).is(':checked')) {
