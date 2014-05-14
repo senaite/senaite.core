@@ -1276,8 +1276,9 @@ function clickAnalysisCategory(){
 function applyComboFilter(element, filterkey, filtervalue) {
     var base_query=$.parseJSON($(element).attr("base_query"));
     if (base_query == undefined) {
-        alert('applyComboFilter: basequery undefined - ' + filterkey + ' - ' + filtervalue);
-        debugger;
+        //TODO
+        //alert('applyComboFilter: basequery undefined - ' + filterkey + ' - ' + filtervalue);
+        //debugger;
         return;
     }
     base_query[filterkey] = filtervalue;
@@ -1348,6 +1349,21 @@ function fill_column(data) {
 	}
 }
 
+function ar_add_analyses(){
+	var i, e, elements, arnum, field, src;
+	elements = $(".ar_add_analyses");
+	for (i = elements.length - 1; i >= 0; i--) {
+        e = elements[i];
+        //field = $(e).attr('name');
+        //src = window.portal_url + "/araddanalyses?fieldvalue="+field+"&allow_edit=true";
+        src = window.portal_url + "/araddanalyses"
+        $(e).attr('src', src);
+        $(e).prepOverlay({
+            subtype: 'ajax',
+            });
+    };
+}
+
 $(document).ready(function() {
 
 	// Only if the view is the Analysis Request Add View
@@ -1356,6 +1372,7 @@ $(document).ready(function() {
         ar_rename_elements();
         ar_referencewidget_lookups();
         ar_set_tabindexes();
+        ar_add_analyses();
 
         $(".copyButton").live("click",  copyButton );
 

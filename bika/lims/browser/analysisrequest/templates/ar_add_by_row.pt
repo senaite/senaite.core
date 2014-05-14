@@ -110,6 +110,9 @@
 <thead>
 <tr>
     <td></td>
+    <td i18n:translate="">
+        <label i18n:translate="">Analyses</label>
+    </td>
     <tal:loop repeat="fieldName fieldNames">
         <td tal:define="
                     field python:context.Schema()[fieldName];
@@ -138,6 +141,12 @@
 </tr>
 <tr>
     <td></td>
+    <td>
+        <img tal:condition="python:view.ar_count > 1"
+             tal:attributes="name string:analyses;
+                             class string:copyButton analysesCopyButton;
+                             src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
+    </td>
     <td tal:repeat="fieldName fieldNames">
         <img tal:condition="python:view.ar_count > 1"
              tal:attributes="name fieldName;
@@ -152,6 +161,16 @@
     <tr tal:attributes="arnum arnum;
                         ar_add_column_widget string:1">
         <td tal:content="repeat/arnum/number">
+        </td>
+        <td>
+            <input type="text"
+                    tal:attributes="
+                            class string:ar_add_analyses;
+                            name string:analyses;
+                            id string:analyses;
+                            src string:${portal/absolute_url};
+                            "
+           />
         </td>
         <tal:loop repeat="fieldName fieldNames">
             <tal:def define="
@@ -226,161 +245,7 @@
     </th>
 </tr>
 </thead>
-
-<!-- Analyses -->
-<tal:i define="
-    cats view/Categories;
-    POINTS_OF_CAPTURE python: modules['bika.lims.config'].POINTS_OF_CAPTURE;">
-    <tal:i repeat="poc python:['field', 'lab']">
-        <tal:has_poc tal:condition="python:poc in cats">
-            <thead class="pointofcapture"
-                   tal:attributes="id poc">
-            <tr>
-                <th tal:attributes="colspan python:view.ar_count + 3">
-                    <img title="analyses"
-                         tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/analysisservice.png"/>
-                    <span tal:content="python:POINTS_OF_CAPTURE.getValue(poc)"/>
-                </th>
-            </tr>
-            </thead>
-
-            <tal:i tal:define="sortedcats python:cats[poc];
-        dummy python:sortedcats.sort(lambda x, y: cmp(x[1], y[1]))"
-                   repeat="cat sortedcats">
-                <thead>
-                <tr class="analysiscategory">
-                    <th tal:content="python:cat[1]"
-                        tal:define="add_prefill python:cat[0] in view.DefaultCategories();"
-                        tal:attributes="
-                    id python:'cat_%s_%s'%(poc, cat[1]);
-                    colspan python:view.ar_count + 3;
-                    poc poc;
-                    cat python:cat[0];
-                    class python: 'analysiscategory collapsed %s' % (add_prefill and ' prefill' or '')"/>
-
-                </tr>
-                </thead>
-                <tbody class="analysisservices" tal:attributes="
-    id python:poc + '_' + cat[0]">
-                <tr></tr>
-                </tbody>
-            </tal:i>
-        </tal:has_poc>
-    </tal:i>
-</tal:i>
-
-
-<tfoot tal:condition="ShowPrices">
-
-<!-- Pretty blank row -->
-<thead class="pointofcapture">
-<tr>
-    <th tal:attributes="colspan python:view.ar_count + 3">&nbsp;</th>
-</tr>
-</thead>
-
-<tr tal:condition="python:view.getMemberDiscountApplies() and ShowPrices">
-    <th class="topborder" colspan="2">
-        <b i18n:translate="">Discount</b>
-        <span class="discreet">(<tal:i content="here/bika_setup/getMemberDiscount"/>%)</span>
-    </th>
-    <th class="topborder noleftborder" style="text-align:center">
-        <span tal:replace="python:currencies[currency].symbol"/>
-    </th>
-    <tal:block repeat="arnum python:range(view.ar_count)">
-        <td class="topborder" tal:define="input_id string:ar_${arnum}_discount;">
-            <input class="price noborder" size="10" disabled="disabled" value="0.00"
-                   tal:attributes="id input_id;"/>
-        </td>
-    </tal:block>
-</tr>
-
-<tr>
-    <th class="topborder" colspan="2"><b i18n:translate="">Subtotal</b></th>
-    <th class="topborder noleftborder" style="text-align:center">
-        <span tal:replace="python:currencies[currency].symbol"/>
-    </th>
-    <tal:block repeat="arnum python:range(view.ar_count)">
-        <td class="topborder" tal:define="input_id string:ar_${arnum}_subtotal;
-                input_name string:ar.${arnum}.subtotal">
-            <input class="price noborder" size="10" disabled="disabled" value="0.00"
-                   tal:attributes="id string:${input_id}_display;"/>
-            <input type="hidden"
-                   tal:attributes="
-                    id input_id;
-                    name string:${input_name}:record:ignore_empty;"/>
-        </td>
-    </tal:block>
-</tr>
-
-<tr>
-    <th colspan="2" class="topborder"><b i18n:translate="">VAT</b></th>
-    <th class="topborder noleftborder" style="text-align:center">
-        <span tal:replace="python:currencies[currency].symbol"/>
-    </th>
-    <tal:block repeat="arnum python:range(view.ar_count)">
-        <td class="topborder" tal:define="input_id string:ar_${arnum}_vat;
-                input_name string:ar.${arnum}.vat">
-            <input class="price noborder" size="10" disabled="disabled" value="0.00"
-                   tal:attributes="id string:${input_id}_display;"/>
-            <input type="hidden"
-                   tal:attributes="
-                    id input_id;
-                    name string:${input_name}:record:ignore_empty;"/>
-        </td>
-    </tal:block>
-</tr>
-
-<tr>
-    <th class="topborder" colspan="2"><b i18n:translate="">Total</b></th>
-    <th class="topborder noleftborder" style="text-align:center">
-        <span tal:replace="python:currencies[currency].symbol"/>
-    </th>
-    <tal:block repeat="arnum python:range(view.ar_count)">
-        <td class="topborder" tal:define="
-                input_id string:ar_${arnum}_total;
-                input_name string:ar.${arnum}.total">
-            <input class="price noborder" size="10" disabled="disabled" value="0.00"
-                   tal:attributes="id string:${input_id}_display;"/>
-            <input type="hidden"
-                   tal:attributes="
-                    id input_id;
-                    name string:${input_name}:record:ignore_empty;"/>
-        </td>
-    </tal:block>
-</tr>
-</tfoot>
 </table>
-
-<input class="context button allowMultiSubmit"
-       type="submit"
-       name="save_button"
-       i18n:attributes="value"
-       value="Save"/>
-
-<br/>&nbsp;
-
-<div class="discreeter">
-
-    <p>  <!-- AVS this should be conditional if any dryables present -->
-        <img src="" tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/dry.png">
-        <span i18n:translate="">
-            Can be reported as dry matter</span>
-    </p>
-
-    <!-- XXX this also -->
-    <p tal:condition="python:context.bika_setup.laboratory.getLaboratoryAccredited()">
-        <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/accredited.png">
-        <span i18n:translate="">
-            Methods included in the
-                <tal:block
-                        replace="here/bika_setup/laboratory/AccreditationBody"
-                        i18n:name="accreditation_body"/>
-            schedule of Accreditation for this Laboratory.
-            Analysis remarks are not accredited
-        </span>
-    </p>
-</div>
 
 </form>
 </div>
