@@ -17,6 +17,11 @@
       for="bika.lims.interfaces.IWorksheet"
       factory="bika.lims.browser.worksheet.ResultOutOfRange"
     />
+    <adapter
+      name="worksheet_priority_icons"
+      for="bika.lims.interfaces.IWorksheet"
+      factory="bika.lims.adapters.priorityicons.PriorityIcons"
+    />
 
     <browser:page
       for="bika.lims.interfaces.IWorksheet"

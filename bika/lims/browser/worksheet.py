@@ -885,7 +885,6 @@ class AddAnalysesView(BikaListingView):
             items[x]['getRequestID'] = obj.aq_parent.getRequestID()
             items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
                  (url, items[x]['getRequestID'])
-            #priority = obj.aq_inner.aq_parent.getPriority()
             items[x]['Priority'] = ''
 
 

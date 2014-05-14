@@ -10,6 +10,7 @@ from bika.lims.workflow import doActionFor
 from bika.lims.workflow import skip
 from DateTime import DateTime
 from operator import itemgetter
+from plone.indexer import indexer
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
@@ -18,6 +19,12 @@ from Products.ATExtensions.ateapi import RecordsField
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode, _createObjectByType
 from zope.interface import implements
+
+@indexer(IWorksheet)
+def Priority(instance):
+    priority = instance.getPriority()
+    if priority:
+        return priority.getSortKey()
 
 
 schema = BikaSchema.copy() + Schema((
@@ -578,5 +585,17 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 if workflow.getInfoFor(analysis, 'review_state', '') != 'to_be_verified':
                     continue
                 doActionFor(analysis, "verify")
+
+    def getPriority(self):
+        """ get highest priority from all analyses
+        """
+        analyses = self.getAnalyses()
+        priorities = []
+        for analysis in analyses:
+            if analysis.getPriority():
+                priorities.append(analysis.getPriority())
+        priorities = sorted(priorities, key = itemgetter('sortKey'))
+        if priorities:
+            return priorities[-1]
 
 registerType(Worksheet, PROJECTNAME)
