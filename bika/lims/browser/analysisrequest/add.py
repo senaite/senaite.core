@@ -184,15 +184,15 @@ class ajaxAnalysisRequestSubmit():
                 headers[field] = form[field]
 
 
-        # First make a list of non-empty columns
-        columns = []
-        for column in range(int(form['ar_count'])):
-            name = 'ar.%s' % column
+        # First make a list of non-empty fieldNames
+        fieldNames = []
+        for arnum in range(int(form['ar_count'])):
+            name = 'ar.%s' % arnum
             ar = form.get(name, None)
             if ar and 'Analyses' in ar.keys():
-                columns.append(column)
+                fieldNames.append(arnum)
 
-        if len(columns) == 0:
+        if len(fieldNames) == 0:
             ajax_form_error(errors, message=t(_("No analyses have been selected")))
             return json.dumps({'errors':errors})
 
@@ -201,8 +201,8 @@ class ajaxAnalysisRequestSubmit():
                            in AnalysisRequestSchema.fields()
                            if field.required]
 
-        for column in columns:
-            formkey = "ar.%s" % column
+        for fieldName in fieldNames:
+            formkey = "ar.%s" % fieldName
             ar = form[formkey]
             # Secondary ARs don't have sample fields present in the form data
             # if 'Sample_uid' in ar and ar['Sample_uid']:
@@ -221,7 +221,7 @@ class ajaxAnalysisRequestSubmit():
                 ]:
                     continue
                 if (field in ar and not ar.get(field, '')):
-                    ajax_form_error(errors, field, column)
+                    ajax_form_error(errors, field, fieldName)
         # Return errors if there are any
         if errors:
             return json.dumps({'errors': errors})
@@ -233,14 +233,14 @@ class ajaxAnalysisRequestSubmit():
         # this flag triggers the status message
         new_profile = None
         # The actual submission
-        for column in columns:
+        for fieldName in fieldNames:
             # Get partitions from the form data
             if form_parts:
-                partitions = form_parts[str(column)]
+                partitions = form_parts[str(fieldName)]
             else:
                 partitions = []
             # Get the form data using the appropriate form key
-            formkey = "ar.%s" % column
+            formkey = "ar.%s" % fieldName
             values = form[formkey].copy()
             # resolved values is formatted as acceptable by archetypes
             # widget machines

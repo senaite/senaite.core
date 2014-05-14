@@ -91,33 +91,33 @@
 					src string:${view/portal_url}/++resource++bika.lims.images/copy.png"/>
 		</td>
 		<tal:i define="serviceUID service/UID;serviceTitle service/title">
-			<tal:i repeat="column python:range(int(view.request['ar_count']))">
+			<tal:i repeat="arnum python:range(int(view.request['ar_count']))">
 				<td class='service'
 					tal:define="
 						disable python:int(view.request.get('disable', '-1'));
 						input_id service/UID;
-						input_name string:ar.${column}.Analyses:list:ignore_empty:record;
-						selected python:view.request['column'] != '' and column == int(view.request['column']) and view.request['selectedservices'] or '';">
+						input_name string:ar.${arnum}.Analyses:list:ignore_empty:record;
+						selected python:view.request['arnum'] != '' and arnum == int(view.request['arnum']) and view.request['selectedservices'] or '';">
 					<input
-						tal:condition="python: disable > -1 and disable == column"
+						tal:condition="python: disable > -1 and disable == arnum"
 						disabled="disabled"
 						class="cb"
 						type="checkbox"
 						tal:attributes="
 							id input_id;
-							column column;
+							arnum arnum;
 							name input_name;
 							value serviceUID;
 							title serviceTitle;
                             keyword python:service_obj.getKeyword();
 							checked python:(selected.find(serviceUID)>-1 or request.get(input_name, [])) and 'checked' or None;"/>
 					<input
-						tal:condition="python: disable != column"
+						tal:condition="python: disable != arnum"
 						class="cb"
 						type="checkbox"
 						tal:attributes="
 							id input_id;
-							column column;
+							arnum arnum;
 							name input_name;
 							value serviceUID;
 							title serviceTitle;
@@ -126,7 +126,7 @@
 					<em class="discreet"
                         tal:attributes="
                             class python:'partnr_'+serviceUID;
-                            column column;
+                            arnum arnum;
                             style python:'' if context.bika_setup.getShowPartitions() else 'display:none';"/>
 				</td>
 			</tal:i>

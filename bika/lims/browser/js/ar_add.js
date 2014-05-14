@@ -10,14 +10,14 @@ function toggle_spec_fields(element) {
     // When a service checkbox is clicked, this is used to display
     // or remove the specification inputs.
     if(!$("#bika_setup").attr("EnableARSpecs")) { return; }
-    var column = $(element).attr("column");
+    var arnum = $(element).attr("arnum");
     var root_name = $(element).attr("name").replace(":ignore_empty", "");
     var min_name   = root_name.replace("Analyses", "min");
     var max_name   = root_name.replace("Analyses", "max");
     var error_name = root_name.replace("Analyses", "error");
     var service_uid = $(element).attr("id");
     
-    var spec_uid = $("#ar_"+column+"_Specification_uid").val();
+    var spec_uid = $("#ar_"+arnum+"_Specification_uid").val();
 
     if ($(element).prop("checked") && $(element).siblings().filter("[name='"+min_name+"']").length === 0) {
 	//var to know if analysis need specification
@@ -75,10 +75,10 @@ function toggle_spec_fields(element) {
     }	
 }
 
-function reset_spec_field_values(column) {
+function reset_spec_field_values(arnum) {
 	// When a spec is selected, all existing spec fields are cleared and reset
 	if(!$("#bika_setup").attr("EnableARSpecs")) { return; }
-	var spec_uid = $("#ar_"+column+"_Specification_uid").val();
+	var spec_uid = $("#ar_"+arnum+"_Specification_uid").val();
 	if(spec_uid !== ""){
 		var request_data = {
 			catalog_name: "uid_catalog",
@@ -87,9 +87,9 @@ function reset_spec_field_values(column) {
 		window.bika.lims.jsonapi_read(request_data, function(data) {
 			// 1 empty all specification inputs.
 			// 2 set specification values in all supported services.
-			var min_name = "[name^='ar."+column+".min']";
-			var max_name = "[name^='ar."+column+".max']";
-			var error_name = "[name^='ar."+column+".error']";
+			var min_name = "[name^='ar."+arnum+".min']";
+			var max_name = "[name^='ar."+arnum+".max']";
+			var error_name = "[name^='ar."+arnum+".error']";
 			$(min_name).val("");
 			$(max_name).val("");
 			$(error_name).val("");
@@ -142,11 +142,11 @@ function validate_spec_field_entry(element) {
 	}
 }
 
-function set_default_spec(column) {
+function set_default_spec(arnum) {
 	if(!$("#bika_setup").attr("EnableARSpecs")) { return; }
 	// I use only the sampletype for looking up defaults.
-	var sampletype_title = $("#ar_"+column+"_SampleType").val();
-	var client_uid = $("#ar_"+column+"_Client_uid").val();
+	var sampletype_title = $("#ar_"+arnum+"_SampleType").val();
+	var client_uid = $("#ar_"+arnum+"_Client_uid").val();
 	if(sampletype_title !== ""){
 		var bika_analysisspecs_uid = $("#bika_setup").attr("bika_analysisspecs_uid");
 		var request_data = {
@@ -164,9 +164,9 @@ function set_default_spec(column) {
 					obj = data.objects[ob];
 					if ((!obj.hasOwnProperty("getClientUID"))) { continue; }
 					if(client_uid == obj.getClientUID){
-						$("#ar_"+column+"_Specification").val(obj.title);
-						$("#ar_"+column+"_Specification_uid").val(obj.UID);
-						reset_spec_field_values(column);
+						$("#ar_"+arnum+"_Specification").val(obj.title);
+						$("#ar_"+arnum+"_Specification_uid").val(obj.UID);
+						reset_spec_field_values(arnum);
 						return;
 					}
 				}
@@ -175,9 +175,9 @@ function set_default_spec(column) {
 					obj = data.objects[ob];
 					if ((!obj.hasOwnProperty("getClientUID"))) { continue; }
 					if (obj.getClientUID != client_uid) {
-						$("#ar_"+column+"_Specification").val(obj.title);
-						$("#ar_"+column+"_Specification_uid").val(obj.UID);
-						reset_spec_field_values(column);
+						$("#ar_"+arnum+"_Specification").val(obj.title);
+						$("#ar_"+arnum+"_Specification_uid").val(obj.UID);
+						reset_spec_field_values(arnum);
 						return;
 					}
 				}
@@ -187,14 +187,14 @@ function set_default_spec(column) {
 	}
 }
 
-function set_cc_contacts(column) {
-	var contact_uid = $("#ar_"+column+"_Contact_uid").val();
-	var fieldName = "ar."+column+".CCContact";
+function set_cc_contacts(arnum) {
+	var contact_uid = $("#ar_"+arnum+"_Contact_uid").val();
+	var fieldName = "ar."+arnum+".CCContact";
 	// clear the CC widget
 	$("input[name='"+fieldName+":record']").val("");
 	$("input[name='"+fieldName+":record']").attr("uid", "");
 	$("input[name='"+fieldName+"_uid']").val("");
-	$("#ar_"+column+"_CCContact-listing").empty();
+	$("#ar_"+arnum+"_CCContact-listing").empty();
 	if(contact_uid !== ""){
 		var request_data = {
 			portal_type: "Contact",
@@ -217,17 +217,17 @@ function set_cc_contacts(column) {
 				var del_btn_src = window.portal_url+"/++resource++bika.lims.images/delete.png";
 				var del_btn = "<img class='ar_deletebtn' src='"+del_btn_src+"' fieldName='"+fieldName+"' uid='"+uid+"'/>";
 				var new_item = "<div class='reference_multi_item' uid='"+uid+"'>"+del_btn+title+"</div>";
-				$("#ar_"+column+"_CCContact-listing").append($(new_item));
+				$("#ar_"+arnum+"_CCContact-listing").append($(new_item));
 			}
 		});
 	}
 }
-function modify_Specification_field_filter(column) {
+function modify_Specification_field_filter(arnum) {
 	// when a SampleType is selected I will allow only specs to be selected
 	// which 1- (have the same Sample Types)
 	// 2- (have no sample type at all)
-	var sampletype_title = $("#ar_"+column+"_SampleType").val();
-	var e = $("#ar_"+column+"_Specification");
+	var sampletype_title = $("#ar_"+arnum+"_SampleType").val();
+	var e = $("#ar_"+arnum+"_Specification");
 	var query_str = $(e).attr("search_query");
 	var query_obj = $.parseJSON(query_str);
 	if (	query_obj.hasOwnProperty("getSampleTypeTitle") ){
@@ -246,7 +246,7 @@ function ar_set_tabindexes() {
 	var index = 10;
 	var count = $("input[id='ar_count']").val();
 	for (var i=0; i<count; i++) {
- 		var elements = $("tr[column="+i+"]").find("input[type!=hidden]").not("[disabled]");
+ 		var elements = $("tr[arnum="+i+"]").find("input[type!=hidden]").not("[disabled]");
 		for (var j=0; j<elements.length; j++) {
 			$(elements[j]).attr("tabindex",index);
 			index++;
@@ -297,15 +297,14 @@ function ar_referencewidget_select_handler(event, ui){
 	// Set form values in activated element (must exist in colModel!)
     var fieldName = $(this).attr("name");
     var parts = fieldName.split(".");
-    debugger;
-    var column = "";
+    var arnum = "";
     var uid_element = $("#"+fieldName+"_uid");
     var listing_div = $("#"+fieldName+"-listing");
     if (parts.length == 3) {
         fieldName = parts[2].split(":")[0];
-        column = $(this).attr("id").split("_")[1];
-        uid_element = $("#ar_"+column+"_"+fieldName+"_uid");
-        listing_div = $("#ar_"+column+"_"+fieldName+"-listing");
+        arnum = $(this).attr("id").split("_")[1];
+        uid_element = $("#ar_"+arnum+"_"+fieldName+"_uid");
+        listing_div = $("#ar_"+arnum+"_"+fieldName+"-listing");
     }
 	var skip;
 
@@ -323,7 +322,7 @@ function ar_referencewidget_select_handler(event, ui){
             $(uid_element).val(existing_uids.join(","));
   					// insert item to listing
   					var del_btn_src = portal_url+"/++resource++bika.lims.images/delete.png";
-  					var del_btn = "<img class='deletebtn' src='"+del_btn_src+"' fieldName='ar."+column+"."+fieldName+"' uid='"+selected_uid+"'/>";
+  					var del_btn = "<img class='deletebtn' src='"+del_btn_src+"' fieldName='ar."+arnum+"."+fieldName+"' uid='"+selected_uid+"'/>";
   					var new_item = "<div class='reference_multi_item' uid='"+selected_uid+"'>"+del_btn+selected_value+"</div>";
   					$(listing_div).append($(new_item));
         }
@@ -347,11 +346,11 @@ function ar_referencewidget_select_handler(event, ui){
     }
 
     if(fieldName == "Contact"){
-    	set_cc_contacts(column);
+    	set_cc_contacts(arnum);
     }
 	if(fieldName == "SampleType"){
 		// selecting a Sampletype - jiggle the SamplePoint element.
-		var sp_element = $("#ar_"+column+"_SamplePoint");
+		var sp_element = $("#ar_"+arnum+"_SamplePoint");
 		sp_element
 			.removeClass( "cg-autocomplete-input" )
 			.removeAttr( "autocomplete" )
@@ -362,7 +361,7 @@ function ar_referencewidget_select_handler(event, ui){
 		var sp_parent_node = $(sp_element).parent();
 		$(sp_element).remove();
 		$(sp_parent_node).append(new_sp_element);
-		sp_element = $("#ar_"+column+"_SamplePoint");
+		sp_element = $("#ar_"+arnum+"_SamplePoint");
 		// cut kwargs into the base_query
 		var sp_base_query = $(sp_element).attr("base_query");
 		sp_base_query = $.parseJSON(sp_base_query);
@@ -374,7 +373,7 @@ function ar_referencewidget_select_handler(event, ui){
 	}
 	if(fieldName == "SamplePoint"){
 		// selecting a Samplepoint - jiggle the SampleType element.
-		var st_element = $("#ar_"+column+"_SampleType");
+		var st_element = $("#ar_"+arnum+"_SampleType");
 		st_element
 			.removeClass( "cg-autocomplete-input" )
 			.removeAttr( "autocomplete" )
@@ -385,7 +384,7 @@ function ar_referencewidget_select_handler(event, ui){
 		var st_parent_node = $(st_element).parent();
 		$(st_element).remove();
 		$(st_parent_node).append(new_st_element);
-		st_element = $("#ar_"+column+"_SampleType");
+		st_element = $("#ar_"+arnum+"_SampleType");
 		// cut kwargs into the base_query
 		var st_base_query = $(st_element).attr("base_query");
 		st_base_query = $.parseJSON(st_base_query);
@@ -398,26 +397,26 @@ function ar_referencewidget_select_handler(event, ui){
 
 	// Selected a Profile
 	if(fieldName == "Profile"){
-		unsetTemplate(column);
-		setAnalysisProfile(column, $(this).val());
-		calculate_parts(column);
+		unsetTemplate(arnum);
+		setAnalysisProfile(arnum, $(this).val());
+		calculate_parts(arnum);
 	}
 
 	// Selected a Template
 	if(fieldName == "Template"){
-		setTemplate(column, $(this).val());
+		setTemplate(arnum, $(this).val());
 	}
 
 	// Selected a sample to create a secondary AR.
 	if(fieldName == "Sample"){
-		// var e = $("input[name^='ar\\."+column+"\\."+fieldName+"']");
-		// var Sample = $("input[name^='ar\\."+column+"\\."+fieldName+"']").val();
-		// var Sample_uid = $("input[name^='ar\\."+column+"\\."+fieldName+"_uid']").val();
+		// var e = $("input[name^='ar\\."+arnum+"\\."+fieldName+"']");
+		// var Sample = $("input[name^='ar\\."+arnum+"\\."+fieldName+"']").val();
+		// var Sample_uid = $("input[name^='ar\\."+arnum+"\\."+fieldName+"_uid']").val();
 		// Install the handler which will undo the changes I am about to make
 		$(this).blur(function(){
 			if($(this).val() === ""){
 				// clear and un-disable everything
-				var disabled_elements = $("[ar_add_column_widget] [id*='ar_"+column+"']:disabled");
+				var disabled_elements = $("[ar_add_column_widget] [id*='ar_"+arnum+"']:disabled");
 				$.each(disabled_elements, function(x,disabled_element){
 					$(disabled_element).prop("disabled", false);
 					if($(disabled_element).attr("type") == "checkbox"){
@@ -437,9 +436,9 @@ function ar_referencewidget_select_handler(event, ui){
 				for (var x = data.length - 1; x >= 0; x--) {
 					var fieldname = data[x][0];
 					var fieldvalue = data[x][1];
-					var uid_element = $("#ar_"+column+"_"+fieldname+"_uid");
+					var uid_element = $("#ar_"+arnum+"_"+fieldname+"_uid");
 					$(uid_element).val("");
-					var sample_element = $("#ar_"+column+"_"+fieldname);
+					var sample_element = $("#ar_"+arnum+"_"+fieldname);
 					$(sample_element).val("").prop("disabled", true);
 					if($(sample_element).attr("type") == "checkbox" && fieldvalue){
 						$(sample_element).prop("checked", true);
@@ -453,15 +452,15 @@ function ar_referencewidget_select_handler(event, ui){
 
 	// Selected a SampleType
 	if(fieldName == "SampleType"){
-		unsetTemplate(column);
-		set_default_spec(column);
-		modify_Specification_field_filter(column);
-		calculate_parts(column);
+		unsetTemplate(arnum);
+		set_default_spec(arnum);
+		modify_Specification_field_filter(arnum);
+		calculate_parts(arnum);
 	}
 
 	// Selected a Specification
 	if(fieldName == "Specification"){
-		reset_spec_field_values(column);
+		reset_spec_field_values(arnum);
 	}
 
 	// Triggers 'selected' event (as reference widget)
@@ -474,6 +473,7 @@ function add_path_filter_to_spec_lookups(){
 		var bq = $.parseJSON($(element).attr("base_query"));
         if (bq == undefined) {
             alert('bq undefined:' + arnum);
+            debugger;
             continue;
         }
 		bq.path = [$("#PhysicalPath").attr("lab_specs"), $("#PhysicalPath").attr("here")];
@@ -516,15 +516,15 @@ function ar_referencewidget_lookups(elements){
 	}
 }
 
-function recalc_prices(column){
-	if(column){
-		// recalculate just this column
+function recalc_prices(arnum){
+	if(arnum){
+		// recalculate just this arnum
 		var subtotal = 0.00;
 		var discount_amount = 0.00;
 		var vat = 0.00;
 		var total = 0.00;
 		var discount = parseFloat($("#member_discount").val());
-		$.each($("input[name='ar."+column+".Analyses:list:ignore_empty:record']"), function(){
+		$.each($("input[name='ar."+arnum+".Analyses:list:ignore_empty:record']"), function(){
 			var disabled = $(this).prop("disabled");
 			// For some browsers, `attr` is undefined; for others, its false.  Check for both.
 			if (typeof disabled !== "undefined" && disabled !== false) {
@@ -548,13 +548,13 @@ function recalc_prices(column){
 				total += price + ((price / 100) * vat_amount);
 			}
 		});
-		$("#ar_"+column+"_subtotal").val(subtotal.toFixed(2));
-		$("#ar_"+column+"_subtotal_display").val(subtotal.toFixed(2));
-		$("#ar_"+column+"_discount").val(discount_amount.toFixed(2));
-		$("#ar_"+column+"_vat").val(vat.toFixed(2));
-		$("#ar_"+column+"_vat_display").val(vat.toFixed(2));
-		$("#ar_"+column+"_total").val(total.toFixed(2));
-		$("#ar_"+column+"_total_display").val(total.toFixed(2));
+		$("#ar_"+arnum+"_subtotal").val(subtotal.toFixed(2));
+		$("#ar_"+arnum+"_subtotal_display").val(subtotal.toFixed(2));
+		$("#ar_"+arnum+"_discount").val(discount_amount.toFixed(2));
+		$("#ar_"+arnum+"_vat").val(vat.toFixed(2));
+		$("#ar_"+arnum+"_vat_display").val(vat.toFixed(2));
+		$("#ar_"+arnum+"_total").val(total.toFixed(2));
+		$("#ar_"+arnum+"_total_display").val(total.toFixed(2));
 	} else {
 		// recalculate the entire form
 		for (var arnum=0; arnum<parseInt($("#ar_count").val(), 10); arnum++) {
@@ -569,44 +569,44 @@ function changeReportDryMatter(){
 	var uid = $(dm).val();
 	var cat = $(dm).attr("cat");
 	var poc = $(dm).attr("poc");
-	var column = $(this).parents("tr").attr("column");
+	var arnum = $(this).parents("tr").attr("arnum");
 	if ($(this).prop("checked")){
 		// only play with service checkboxes when enabling dry matter
-		unsetAnalysisProfile(column);
+		unsetAnalysisProfile(arnum);
 		$.ajaxSetup({async:false});
-		toggleCat(poc, cat, column, [uid], true);
+		toggleCat(poc, cat, arnum, [uid], true);
 		$.ajaxSetup({async:true});
-		var dryservice_cb = $("input[column='"+column+"']:checkbox").filter("#"+uid);
+		var dryservice_cb = $("input[arnum='"+arnum+"']:checkbox").filter("#"+uid);
 		$(dryservice_cb).prop("checked",true);
 		calcdependencies([$(dryservice_cb)], true);
-		calculate_parts(column);
+		calculate_parts(arnum);
 	}
 	recalc_prices();
 }
 
 function copy_service(copybutton){
-	var e = $("input[column='0']").filter("#"+copybutton.id);
+	var e = $("input[arnum='0']").filter("#"+copybutton.id);
 	var kw = $(e).attr("keyword");
 	var first_val = $(e).prop("checked");
 	var first_min = $("input[name^='ar.0.min']").filter("[keyword='"+kw+"']").prop("value");
-	var first_max = $(".spec_bit.max[column='0']").filter("[keyword='"+kw+"']").prop("value");
-	var first_error = $(".spec_bit.error[column='0']").filter("[keyword='"+kw+"']").prop("value");
+	var first_max = $(".spec_bit.max[arnum='0']").filter("[keyword='"+kw+"']").prop("value");
+	var first_error = $(".spec_bit.error[arnum='0']").filter("[keyword='"+kw+"']").prop("value");
   var ar_count = parseInt($("#ar_count").val(), 10);
 	var affected_elements = [];
-	// 0 is the first column; we only want to change cols 1 onward.
+	// 0 is the first arnum; we only want to change cols 1 onward.
 	for (var arnum=1; arnum<ar_count; arnum++) {
 		unsetTemplate(arnum);
 		unsetAnalysisProfile(arnum);
-		var other_elem = $("input[column='"+arnum+"']").filter("#"+copybutton.id);
+		var other_elem = $("input[arnum='"+arnum+"']").filter("#"+copybutton.id);
 		if ( (!other_elem.prop("disabled")) && (other_elem.prop("checked") != first_val)) {
 			other_elem.prop("checked", first_val?true:false);
 			toggle_spec_fields(other_elem);
 			affected_elements.push(other_elem);
 		}
 		if(first_val){
-			$(".spec_bit.min[column='"+arnum+"']").filter("[keyword='"+kw+"']").prop("value", first_min);
-			$(".spec_bit.max[column='"+arnum+"']").filter("[keyword='"+kw+"']").prop("value", first_max);
-			$(".spec_bit.error[column='"+arnum+"']").filter("[keyword='"+kw+"']").prop("value", first_error);
+			$(".spec_bit.min[arnum='"+arnum+"']").filter("[keyword='"+kw+"']").prop("value", first_min);
+			$(".spec_bit.max[arnum='"+arnum+"']").filter("[keyword='"+kw+"']").prop("value", first_max);
+			$(".spec_bit.error[arnum='"+arnum+"']").filter("[keyword='"+kw+"']").prop("value", first_error);
 		}
 		calculate_parts(arnum);
 	}
@@ -696,13 +696,13 @@ function copyButton(){
 	}
 }
 
-function toggleCat(poc, category_uid, column, selectedservices, force_expand, disable) {
-	// selectedservices and column are optional.
+function toggleCat(poc, category_uid, arnum, selectedservices, force_expand, disable) {
+	// selectedservices and arnum are optional.
 	// disable is used for field analyses - secondary ARs should not be able
 	// to select these
 	force_expand = force_expand || false;
 	disable = disable || -1;
-	if(!column && column !== 0) { column = ""; }
+	if(!arnum && arnum !== 0) { arnum = ""; }
 
 	var th = $("th[poc='"+poc+"']").filter("[cat='"+category_uid+"']");
 	var tbody = $("#"+poc+"_"+category_uid);
@@ -716,12 +716,12 @@ function toggleCat(poc, category_uid, column, selectedservices, force_expand, di
 				var service = rows[i];
 				var service_uid = $(service).attr("id");
 				if(selectedservices.indexOf(service_uid) > -1){
-					var cb = $("input[value="+service_uid+"]").filter("[column='"+column+"']");
+					var cb = $("input[value="+service_uid+"]").filter("[arnum='"+arnum+"']");
 					$(cb).prop("checked",true);
 					toggle_spec_fields(cb);
 				}
 			}
-			recalc_prices(column);
+			recalc_prices(arnum);
 		} else {
 			if (force_expand){ $(tbody).toggle(true); }
 			else { $(tbody).toggle(); }
@@ -733,8 +733,8 @@ function toggleCat(poc, category_uid, column, selectedservices, force_expand, di
 		var options = {
 			"selectedservices": selectedservices.join(","),
 			"categoryUID": category_uid,
-			"column": column,
-			"disable": disable > -1 ? column : -1,
+			"arnum": arnum,
+			"disable": disable > -1 ? arnum : -1,
 			"ar_count": $("#ar_count").attr("value"),
 			"poc": poc
 		};
@@ -745,10 +745,10 @@ function toggleCat(poc, category_uid, column, selectedservices, force_expand, di
 			$("input[name*='Analyses']").unbind();
 			$("input[name*='Analyses']").bind("change", service_checkbox_change);
 			if(selectedservices!=[]){
-				recalc_prices(column);
+				recalc_prices(arnum);
 				for(i=0;i<selectedservices.length;i++){
 					var service_uid = selectedservices[i];
-                    var e = $("input[value=" + service_uid + "]").filter("[column='" + column + "']");
+                    var e = $("input[value=" + service_uid + "]").filter("[arnum='" + arnum + "']");
 					toggle_spec_fields(e);
 				}
 			}
@@ -756,28 +756,28 @@ function toggleCat(poc, category_uid, column, selectedservices, force_expand, di
 	}
 }
 
-function calc_parts_handler(column, data){
+function calc_parts_handler(arnum, data){
 	// Set new part numbers in hidden form field
 	var formparts = $.parseJSON($("#parts").val());
 	var parts = data.parts;
-	formparts[column] = parts;
+	formparts[arnum] = parts;
 	$("#parts").val($.toJSON(formparts));
 	// write new part numbers next to checkboxes
 	for(var p in parts) { if(!parts.hasOwnProperty(p)){ continue; }
 		for (var s in parts[p].services) {
 			if (!parts[p].services.hasOwnProperty(s)) { continue; }
-			$(".partnr_"+parts[p].services[s]).filter("[column='"+column+"']").empty().append(p+1);
+			$(".partnr_"+parts[p].services[s]).filter("[arnum='"+arnum+"']").empty().append(p+1);
 		}
 	}
 }
 
-function calculate_parts(column) {
+function calculate_parts(arnum) {
 	// Template columns are not calculated
-	if ($("#ar_"+column+"_Template").val() !== ""){
+	if ($("#ar_"+arnum+"_Template").val() !== ""){
 		return;
 	}
-	var st_uid = $("#ar_"+column+"_SampleType_uid").val();
-	var checked = $("[name^='ar\\."+column+"\\.Analyses']").filter(":checked");
+	var st_uid = $("#ar_"+arnum+"_SampleType_uid").val();
+	var checked = $("[name^='ar\\."+arnum+"\\.Analyses']").filter(":checked");
 	var service_uids = [];
 	for(var i=0;i<checked.length;i++){
 		var uid = $(checked[i]).attr("value");
@@ -785,7 +785,7 @@ function calculate_parts(column) {
 	}
 	// if no sampletype or no selected analyses:  remove partition markers
 	if (st_uid === "" || service_uids.length === 0) {
-		$("[class*='partnr_']").filter("[column='"+column+"']").empty();
+		$("[class*='partnr_']").filter("[arnum='"+arnum+"']").empty();
 		return;
 	}
 	var request_data = {
@@ -803,24 +803,24 @@ function calculate_parts(column) {
 			data: request_data,
 			success: function(data) {
 				window.jsonapi_cache[cacheKey] = data;
-				calc_parts_handler(column, data);
+				calc_parts_handler(arnum, data);
 			}
 		});
 	} else {
 		var data = window.jsonapi_cache[cacheKey];
-		calc_parts_handler(column, data);
+		calc_parts_handler(arnum, data);
 	}
 }
 
 function add_Yes(dlg, element, dep_services){
 	/*jshint validthis:true */
-	var column = $(element).attr("column");
+	var arnum = $(element).attr("arnum");
 	var key, json_key, dep, i;
 	var keyed_deps = {};
 	for(i = 0; i<dep_services.length; i++){
 		dep = dep_services[i];
 		key = {
-			col: column,
+			col: arnum,
 			poc: dep.PointOfCapture,
 			cat_uid: dep.Category_uid
 		};
@@ -845,7 +845,7 @@ function add_Yes(dlg, element, dep_services){
 			$(tbody).toggle(true);
 			for(i=0; i<service_uids.length; i++){
 				var service_uid = service_uids[i];
-				var e = $("input[column='"+key.col+"']").filter("#"+service_uid);
+				var e = $("input[arnum='"+key.col+"']").filter("#"+service_uid);
 				$(e).prop("checked",true);
 				toggle_spec_fields(e);
 			}
@@ -888,7 +888,7 @@ function calcdependencies(elements, auto_yes) {
 		var dep_services = [];  // actionable services
 		var dep_titles = [];
 		var element = elements[elements_i];
-		var column = $(element).attr("column");
+		var arnum = $(element).attr("arnum");
 		var service_uid = $(element).attr("id");
 		var modified_cols = [];
 		// selecting a service; discover dependencies
@@ -896,7 +896,7 @@ function calcdependencies(elements, auto_yes) {
 			var Dependencies = lims.AnalysisService.Dependencies(service_uid);
 			for(dep_i = 0; dep_i<Dependencies.length; dep_i++) {
 				dep = Dependencies[dep_i];
-				if ($("input[column='"+column+"']").filter("#"+dep.Service_uid).prop("checked")){
+				if ($("input[arnum='"+arnum+"']").filter("#"+dep.Service_uid).prop("checked")){
 					continue; // skip if checked already
 				}
 				dep_services.push(dep);
@@ -904,8 +904,8 @@ function calcdependencies(elements, auto_yes) {
 			}
 
 			if (dep_services.length > 0) {
-				if(!modified_cols[column]){
-					modified_cols.push(column);
+				if(!modified_cols[arnum]){
+					modified_cols.push(arnum);
 				}
 				if (auto_yes) {
 					add_Yes(this, element, dep_services);
@@ -941,7 +941,7 @@ function calcdependencies(elements, auto_yes) {
 			if (Dependants.length > 0){
 				for (i=0; i<Dependants.length; i++){
 					dep = Dependants[i];
-					cb = $("input[column='"+column+"']").filter("#"+dep.Service_uid);
+					cb = $("input[arnum='"+arnum+"']").filter("#"+dep.Service_uid);
 					if (cb.prop("checked")){
 						dep_titles.push(dep.Service);
 						dep_services.push(dep);
@@ -952,12 +952,12 @@ function calcdependencies(elements, auto_yes) {
 						for(dep_i=0; dep_i<dep_services.length; dep_i+=1) {
 							dep = dep_services[dep_i];
 							service_uid = dep.Service_uid;
-							cb = $("input[column='"+column+"']").filter("#"+service_uid);
+							cb = $("input[arnum='"+arnum+"']").filter("#"+service_uid);
 							$(cb).prop("checked", false);
 							toggle_spec_fields($(cb));
-							$(".partnr_"+service_uid).filter("[column='"+column+"']").empty();
+							$(".partnr_"+service_uid).filter("[arnum='"+arnum+"']").empty();
 							if ($(cb).val() == $("#getDryMatterService").val()) {
-								$("#ar_"+column+"_ReportDryMatter").prop("checked",false);
+								$("#ar_"+arnum+"_ReportDryMatter").prop("checked",false);
 							}
 						}
 					} else {
@@ -975,12 +975,12 @@ function calcdependencies(elements, auto_yes) {
 									for(dep_i=0; dep_i<dep_services.length; dep_i+=1) {
 										dep = dep_services[dep_i];
 										service_uid = dep.Service_uid;
-										cb = $("input[column='"+column+"']").filter("#"+service_uid);
+										cb = $("input[arnum='"+arnum+"']").filter("#"+service_uid);
 										$(cb).prop("checked", false);
 										toggle_spec_fields($(cb));
-										$(".partnr_"+service_uid).filter("[column='"+column+"']").empty();
+										$(".partnr_"+service_uid).filter("[arnum='"+arnum+"']").empty();
 										if ($(cb).val() == $("#getDryMatterService").val()) {
-											$("#ar_"+column+"_ReportDryMatter").prop("checked",false);
+											$("#ar_"+arnum+"_ReportDryMatter").prop("checked",false);
 										}
 									}
 									$(this).dialog("close");
@@ -1005,18 +1005,18 @@ function calcdependencies(elements, auto_yes) {
 	}
 }
 
-function unsetAnalyses(column){
-	$.each($("input[name^='ar."+column+".Analyses']"), function(){
+function unsetAnalyses(arnum){
+	$.each($("input[name^='ar."+arnum+".Analyses']"), function(){
 		if($(this).prop("checked")) {
 			$(this).prop("checked",false);
 			toggle_spec_fields($(this));
 		}
-		$(".partnr_"+this.id).filter("[column='"+column+"']").empty();
+		$(".partnr_"+this.id).filter("[arnum='"+arnum+"']").empty();
 	});
 }
-// function uncheck_partnrs(column){
+// function uncheck_partnrs(arnum){
 // 	// all unchecked services have their part numbers removed
-// 	var ep = $("[class^='partnr_']").filter("[column='"+column+"']").not(":empty");
+// 	var ep = $("[class^='partnr_']").filter("[arnum='"+arnum+"']").not(":empty");
 // 	for(var i=0;i<ep.length;i++){
 // 		var em = ep[i];
 // 		var uid = $(ep[0]).attr("class").split("_")[1];
@@ -1027,22 +1027,22 @@ function unsetAnalyses(column){
 // 	}
 // }
 
-function unsetAnalysisProfile(column){
-	if($("#ar_"+column+"_Profile").val() !== ""){
-		$("#ar_"+column+"_Profile").val("");
+function unsetAnalysisProfile(arnum){
+	if($("#ar_"+arnum+"_Profile").val() !== ""){
+		$("#ar_"+arnum+"_Profile").val("");
 	}
 }
 
 
-function unsetTemplate(column){
-	if($("#ar_"+column+"_Template").val() !== ""){
-		$("#ar_"+column+"_Template").val("");
+function unsetTemplate(arnum){
+	if($("#ar_"+arnum+"_Template").val() !== ""){
+		$("#ar_"+arnum+"_Template").val("");
 	}
 }
 
 
-function setTemplate(column, template_title){
-	unsetAnalyses(column);
+function setTemplate(arnum, template_title){
+	unsetAnalyses(arnum);
 	var request_data = {
 		portal_type: "ARTemplate",
 		title: template_title,
@@ -1060,12 +1060,12 @@ function setTemplate(column, template_title){
 		var template = data.objects[0];
 		var request_data, x, i;
 		// set our template fields
-		$("#ar_"+column+"_SampleType").val(template.SampleType);
-		$("#ar_"+column+"_SampleType_uid").val(template.SampleTypeUID);
-		$("#ar_"+column+"_SamplePoint").val(template.SamplePoint);
-		$("#ar_"+column+"_SamplePoint_uid").val(template.SamplePointUID);
-		$("#ar_"+column+"_reportdrymatter").prop("checked", template.reportdrymatter);
-		set_default_spec(column);
+		$("#ar_"+arnum+"_SampleType").val(template.SampleType);
+		$("#ar_"+arnum+"_SampleType_uid").val(template.SampleTypeUID);
+		$("#ar_"+arnum+"_SamplePoint").val(template.SamplePoint);
+		$("#ar_"+arnum+"_SamplePoint_uid").val(template.SamplePointUID);
+		$("#ar_"+arnum+"_reportdrymatter").prop("checked", template.reportdrymatter);
+		set_default_spec(arnum);
 		// lookup AnalysisProfile
 		if(template.AnalysisProfile) {
 			request_data = {
@@ -1074,12 +1074,12 @@ function setTemplate(column, template_title){
 				include_fields: ["UID"]
 			};
 			window.bika.lims.jsonapi_read(request_data, function(data){
-				$("#ar_"+column+"_Profile").val(template.AnalysisProfile);
-				$("#ar_"+column+"_Profile_uid").val(data.objects[0].UID);
+				$("#ar_"+arnum+"_Profile").val(template.AnalysisProfile);
+				$("#ar_"+arnum+"_Profile_uid").val(data.objects[0].UID);
 			});
 		} else {
-				$("#ar_"+column+"_Profile").val("");
-				$("#ar_"+column+"_Profile_uid").val("");
+				$("#ar_"+arnum+"_Profile").val("");
+				$("#ar_"+arnum+"_Profile_uid").val("");
 		}
 
 		// scurrel the parts into hashes for easier lookup
@@ -1105,7 +1105,7 @@ function setTemplate(column, template_title){
 			parts.push(parts_by_part_id[x]);
 		}
 		var formparts = $.parseJSON($("#parts").val());
-		formparts[column] = parts;
+		formparts[arnum] = parts;
 		$("#parts").val($.toJSON(formparts));
 
 		// lookup the services specified in the template
@@ -1159,7 +1159,7 @@ function setTemplate(column, template_title){
 					// select checkboxes
 					for(i=0;i<service_uids.length;i++){
 						service_uid = service_uids[i];
-						e = $("input[column='"+column+"']").filter("#"+service_uid);
+						e = $("input[arnum='"+arnum+"']").filter("#"+service_uid);
 						$(e).prop("checked", true);
 						toggle_spec_fields(e);
 					}
@@ -1167,7 +1167,7 @@ function setTemplate(column, template_title){
 					for(i=0;i<service_uids.length;i++){
 						service_uid = service_uids[i];
 						var partnr = parts_by_service_uid[service_uid].part_nr;
-						e = $(".partnr_"+service_uid).filter("[column='"+column+"']");
+						e = $(".partnr_"+service_uid).filter("[arnum='"+arnum+"']");
 						$(e).empty().append(partnr);
 					}
 				}
@@ -1175,11 +1175,11 @@ function setTemplate(column, template_title){
 		});
 	});
 
-	recalc_prices(column);
+	recalc_prices(arnum);
 
 }
 
-function setAnalysisProfile(column, profile_title){
+function setAnalysisProfile(arnum, profile_title){
 	var request_data = {
 		portal_type: "AnalysisProfile",
 		title: profile_title
@@ -1193,8 +1193,8 @@ function setAnalysisProfile(column, profile_title){
 		};
 		window.bika.lims.jsonapi_read(request_data, function(data){
 			var i;
-			unsetAnalyses(column);
-			$("#ar_"+column+"_ReportDryMatter").prop("checked",false);
+			unsetAnalyses(arnum);
+			$("#ar_"+arnum+"_ReportDryMatter").prop("checked",false);
 
 			var service_objects = data.objects;
 			if (service_objects.length === 0) return;
@@ -1213,11 +1213,11 @@ function setAnalysisProfile(column, profile_title){
 				if($(th).hasClass("expanded")){
 					for (i in services){
 						var service_uid = services[i].UID;
-						var e = $("input[column='"+column+"']").filter("#"+service_uid);
+						var e = $("input[arnum='"+arnum+"']").filter("#"+service_uid);
 						$(e).prop("checked", true);
 						toggle_spec_fields($(e));
 					}
-					recalc_prices(column);
+					recalc_prices(arnum);
 				} else {
 					var poc = poc_cat.split("_")[0];
 					var cat_uid = services[0].Category_uid;
@@ -1226,43 +1226,43 @@ function setAnalysisProfile(column, profile_title){
 						service_uids.push(services[x].UID);
 					}
 					$.ajaxSetup({async:false});
-					toggleCat(poc, cat_uid, column, service_uids);
+					toggleCat(poc, cat_uid, arnum, service_uids);
 					$.ajaxSetup({async:true});
 				}
 				$(th).removeClass("collapsed").addClass("expanded");
 			}
-			calculate_parts(column);
+			calculate_parts(arnum);
 		});
 	});
 }
 
 function service_checkbox_change(){
 	/*jshint validthis:true */
-	var column = $(this).attr("column");
+	var arnum = $(this).attr("arnum");
 	var element = $(this);
-	unsetAnalysisProfile(column);
-	unsetTemplate(column);
+	unsetAnalysisProfile(arnum);
+	unsetTemplate(arnum);
 
 	// Unselecting Dry Matter Service unsets 'Report Dry Matter'
 	if ($(this).val() == $("#getDryMatterService").val() && !$(this).prop("checked")) {
-		$("#ar_"+column+"_ReportDryMatter").prop("checked",false);
+		$("#ar_"+arnum+"_ReportDryMatter").prop("checked",false);
 	}
 
 	// unselecting service: remove part number.
 	if (!$(this).prop("checked")){
-		$(".partnr_"+this.id).filter("[column='"+column+"']").empty();
+		$(".partnr_"+this.id).filter("[arnum='"+arnum+"']").empty();
 	}
 
 	calcdependencies([element]);
 	recalc_prices();
-	calculate_parts(column);
+	calculate_parts(arnum);
 	toggle_spec_fields(element);
 
 }
 
 function clickAnalysisCategory(){
 	/*jshint validthis:true */
-	// cat is a category uid, and no column is required here.
+	// cat is a category uid, and no arnum is required here.
 	toggleCat($(this).attr("poc"), $(this).attr("cat"));
 	if($(this).hasClass("expanded")){
 		$(this).addClass("collapsed");
@@ -1276,7 +1276,8 @@ function clickAnalysisCategory(){
 function applyComboFilter(element, filterkey, filtervalue) {
     var base_query=$.parseJSON($(element).attr("base_query"));
     if (base_query == undefined) {
-        //alert('applyComboFilter: basequery undefined - ' + filterkey + ' - ' + filtervalue);
+        alert('applyComboFilter: basequery undefined - ' + filterkey + ' - ' + filtervalue);
+        debugger;
         return;
     }
     base_query[filterkey] = filtervalue;
@@ -1447,12 +1448,12 @@ $(document).ready(function() {
         if(copy_from.length > 1){
             copy_from = copy_from[1].split("&")[0];
             copy_from = copy_from.split(",");
-            for (var column = 0; column < copy_from.length; column++) {
-                window.bika.ar_copy_from_col = column;
+            for (var arnum = 0; arnum < copy_from.length; arnum++) {
+                window.bika.ar_copy_from_col = arnum;
                 $.ajaxSetup({async:false});
                 window.bika.lims.jsonapi_read({
                     catalog_name: "uid_catalog",
-                    UID: copy_from[column]
+                    UID: copy_from[arnum]
                 }, fill_column);
                 $.ajaxSetup({async:true});
             }
