@@ -72,11 +72,15 @@ function AnalysisServiceEditView() {
                 // The method selection must be done by enabling the
                 // 'Allow instrument entry of results'
 
-                // Hide the methods multiselector
+                // Hide and clear the methods multiselector
                 $(methods_fd).hide();
+                $(methods_ms).find('option[selected]').prop('selected', false);
+                $(methods_ms).val('');
 
-                // If instrument entry is not selected, select it and
-                // fire event cascade
+                // Delegate remaining actions to Methods change event
+                $(methods_ms).change();
+
+                // Select instrument entry and fire event
                 $(instr_chk).prop('checked', true);
             }
             $(instr_chk).change();
@@ -169,13 +173,15 @@ function AnalysisServiceEditView() {
         // The methods multiselect changes
         $(methods_ms).change(function(e) {
             var prevmethod = $(method_sel).val();
+            var prevmethodtxt = $(method_sel).find('option[value="'+prevmethod+'"]').html();
             /*if ($(this).val() == null) {
                 // At least one method must be selected
                 $(this).val($(this).find('option').first().val());
             }*/
 
-            // Populate with the methods from the multi-select
             $(method_sel).find('option').remove();
+
+            // Populate with the methods from the multi-select
             var methods = $(methods_ms).val();
             if (methods != null) {
                 $.each(methods, function(index, value) {
@@ -194,7 +200,14 @@ function AnalysisServiceEditView() {
                     defoption = $(method_sel).find('option').first();
                 }
             }
-            $(method_sel).val(defoption.val());
+            if (!$(instr_chk).is(':checked')) {
+                $(method_sel).val(defoption.val());
+            } else {
+                if ($(method_sel).find('option[value="'+prevmethod+'"]').length == 0) {
+                    $(method_sel).append('<option value="'+prevmethod+'">'+prevmethodtxt+'</option>');
+                }
+                $(method_sel).val(prevmethod);
+            }
 
             // Delegate remaining actions to Method change event
             $(method_sel).change();
