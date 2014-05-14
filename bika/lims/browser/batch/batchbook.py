@@ -1,3 +1,4 @@
+from operator import itemgetter
 from AccessControl import getSecurityManager
 from Products.CMFPlone import PloneMessageFactory
 from bika.lims import bikaMessageFactory as _
@@ -104,23 +105,19 @@ class BatchBookView(BikaListingView):
             self.review_states[0]['custom_actions'].append({'id': 'copy_to_new'})
 
         self.categories = []
-        keywords = []
         analyses = {}
         items = []
-
+        services = []
+        keywords = []
         for ar in ars:
-
             analyses[ar.id] = []
             for analysis in ar.getAnalyses(full_objects=True):
                 analyses[ar.id].append(analysis)
                 service = analysis.getService()
-                title = service.Title()
-                unit = service.getUnit()
-                kw = {'keyword': analysis.getKeyword(),
-                      'title': title,
-                      'unit': unit if unit else ''}
-                if kw not in keywords:
-                    keywords.append(kw)
+                if service.getKeyword() not in keywords:
+                    # we use a keyword check, because versioned services are !=.
+                    keywords.append(service.getKeyword())
+                    services.append(service)
 
             batchlink = ""
             batch = ar.getBatch()
@@ -176,44 +173,47 @@ class BatchBookView(BikaListingView):
         checkPermission = getSecurityManager().checkPermission
 
         # Insert columns for analyses
-        for kw in keywords:
-            self.columns[kw['keyword']] = {
-                'title': kw['keyword'], # kw['title'],
+        for service in services:
+            keyword = service.getKeyword()
+            self.columns[keyword] = {
+                'title': service.ShortTitle if service.ShortTitle else service.title,
                 'sortable': True
             }
             self.review_states[0]['columns'].insert(
-                len(self.review_states[0]['columns']) - 1, kw['keyword'])
+                len(self.review_states[0]['columns']) - 1, keyword)
 
             # Insert values for analyses
             for i, item in enumerate(items):
                 for analysis in analyses[item['id']]:
-                    if kw['keyword'] not in items[i]:
-                        items[i][kw['keyword']] = ''
-                    if analysis.getKeyword() != kw['keyword']:
+                    if keyword not in items[i]:
+                        items[i][keyword] = ''
+                    if analysis.getKeyword() != keyword:
                         continue
 
                     edit = checkPermission(EditResults, analysis)
                     calculation = analysis.getService().getCalculation()
                     if self.allow_edit and edit and not calculation:
-                        items[i]['allow_edit'].append(kw['keyword'])
+                        items[i]['allow_edit'].append(keyword)
                         if not self.insert_submit_button:
                             self.insert_submit_button = True
 
                     value = analysis.getResult()
-                    items[i][kw['keyword']] = value
-                    items[i]['class'][kw['keyword']] = ''
+                    items[i][keyword] = value
+                    items[i]['class'][keyword] = ''
 
                     if value or (edit and not calculation):
 
-                        unit = unitstr % kw['unit']
-                        items[i]['after'][kw['keyword']] = unit
+                        unit = unitstr % service.getUnit()
+                        items[i]['after'][keyword] = unit
 
-                if kw['keyword'] not in items[i]['class']:
-                    items[i]['class'][kw['keyword']] = 'empty'
+                if keyword not in items[i]['class']:
+                    items[i]['class'][keyword] = 'empty'
         if self.insert_submit_button:
             self.review_states[0]['custom_actions'].append({'id': 'submit'})
 
         self.categories.sort()
         self.categories = [x[1] for x in self.categories]
+
+        items = sorted(items, key=itemgetter("created"))
 
         return items
