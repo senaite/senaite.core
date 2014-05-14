@@ -311,10 +311,12 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
-    # Methods associated to the AS
+    # Manual methods associated to the AS
     # List of methods capable to perform the Analysis Service. The
     # Methods selected here are displayed in the Analysis Request
     # Add view, closer to this Analysis Service if selected.
+    # Use getAvailableMethods() to retrieve the list with methods both
+    # from selected instruments and manually entered.
     # Behavior controlled by js depending on ManualEntry/Instrument:
     # - If InstrumentEntry checked, hide and unselect
     # - If InsrtumentEntry not checked, show
@@ -871,6 +873,28 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         else:
             method = self.get_Method();
         return method
+
+    def getAvailableMethods(self):
+        """ Returns the methods available for this analysis.
+            If the service has the getInstrumentEntryOfResults(), returns
+            the methods available from the instruments capable to perform
+            the service, as well as the methods set manually for the
+            analysis on its edit view. If getInstrumentEntryOfResults()
+            is unset, only the methods assigned manually to that service
+            are returned.
+        """
+        methods = self.getMethods()
+        muids = [m.UID() for m in methods]
+        if self.getInstrumentEntryOfResults() == True:
+            # Add the methods from the instruments capable to perform
+            # this analysis service
+            for ins in self.getInstruments():
+                method = ins.getMethod()
+                if method and method.UID() not in muids:
+                    methods.append(method)
+                    muids.append(method.UID())
+
+        return methods
 
     def getDepartments(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
