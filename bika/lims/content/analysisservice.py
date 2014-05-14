@@ -896,6 +896,17 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
 
         return methods
 
+    def getAvailableInstruments(self):
+        """ Returns the instruments available for this analysis.
+            If the service has the getInstrumentEntryOfResults(), returns
+            the instruments capable to perform this service. Otherwhise,
+            returns an empty list.
+        """
+        instruments = self.getInstruments() \
+            if self.getInstrumentEntryOfResults() == True \
+            else None
+        return instruments if instruments else []
+
     def getDepartments(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('','')] + [(o.UID, o.Title) for o in

@@ -541,7 +541,6 @@ class AnalysesView(BikaListingView):
 
             item['Instrument'] = ''
             item['replace']['Instrument'] = ''
-            show_instrument_column = can_set_instrument
             if service.getInstrumentEntryOfResults():
                 instrument = None
 
