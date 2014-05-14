@@ -13,7 +13,8 @@
 <metal:content-title fill-slot="content-title"
 	tal:define="
 		form_id view/form_id;
-		table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
+ 		table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;
+ 		col_count python:hasattr(view, 'col_count') and view.col_count or view.request.get('col_count','4');"
 	tal:condition="python:not table_only">
     <h1>
 		<img tal:condition="view/icon | nothing"
@@ -27,20 +28,18 @@
 				<span tal:replace="python:add_item"/>
 			</a>
 		</tal:add_actions>
-		<select name="col_count"
-			class='col_count' style="vertical-align:top !important"
-			tal:condition="python:len(view.context_actions) > 0">
-			<option value='1' i18n:translate="">1</option>
-			<option value='2' i18n:translate="">2</option>
-			<option value='3' i18n:translate="">3</option>
-			<option value='4' i18n:translate="">4</option>
-			<option value='5' i18n:translate="">5</option>
-			<option value='6' i18n:translate="">6</option>
-			<option value='7' i18n:translate="">7</option>
-			<option value='8' i18n:translate="">8</option>
-			<option value='9' i18n:translate="">9</option>
-			<option value='10' i18n:translate="">10</option>
-		</select>
+        <label style="font-size:60%;position:relative;top:-0.4em;" >Layout</label>
+        <select name="layout"
+            style="font-size:60%;position:relative;top:-0.3em;"
+            >
+            <option>Columns Based</option>
+            <option>Rows Based</option>
+ 		</select>
+        <label style="font-size:60%;position:relative;top:-0.3em;" >Number of ARs</label>
+        <input class="col_count" type="text" name="col_count" size="4" 
+            tal:attributes="value col_count" 
+            style="font-size:60%;position:relative;top:-0.45em;"
+        />
     </h1>
 	<script type="text/javascript">
 	(function( $ ) {

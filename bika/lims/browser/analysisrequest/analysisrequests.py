@@ -9,10 +9,14 @@ from DateTime import DateTime
 from Products.Archetypes import PloneMessageFactory as PMF
 from plone.app.layout.globals.interfaces import IViewView
 from Products.CMFCore.utils import getToolByName
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
 
 
 class AnalysisRequestsView(BikaListingView):
+    template = ViewPageTemplateFile(
+        "../analysisrequest/templates/analysisrequests.pt")
+    ar_add = ViewPageTemplateFile("../analysisrequest/templates/ar_add.pt")
     implements(IViewView)
 
     def __init__(self, context, request):

@@ -25,7 +25,8 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
     """ The main AR Add form
     """
     implements(IViewView, IAnalysisRequestAddView)
-    template = ViewPageTemplateFile("templates/ar_add.pt")
+    #template = ViewPageTemplateFile("templates/ar_add.pt")
+    template = ViewPageTemplateFile('templates/ar_add_by_row.pt')
 
     def __init__(self, context, request):
         AnalysisRequestViewView.__init__(self, context, request)
@@ -39,6 +40,10 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
             self.col_count = int(self.col_count)
         except:
             self.col_count = 4
+
+    def getHeaderFieldNames(self):
+        #TODO Soft Code
+        return ('Contact', 'CCContact', 'CCEmails', 'Client', 'Batch')
 
     def __call__(self):
         self.request.set('disable_border', 1)
@@ -169,6 +174,16 @@ class ajaxAnalysisRequestSubmit():
 
         form_parts = json.loads(self.request.form['parts'])
 
+        #Get header values out, get values, exclude from any loops below
+        headerFieldNames = ['Client', 'Client_uid', 'Contact', 'Contact_uid',
+                            'CCContact', 'CCContact_uid', 'CCEmails', 
+                            'Batch', 'Batch_uid']
+        headers = {}
+        for field in form.keys():
+            if field in headerFieldNames:
+                headers[field] = form[field]
+
+
         # First make a list of non-empty columns
         columns = []
         for column in range(int(form['col_count'])):
@@ -273,7 +288,8 @@ class ajaxAnalysisRequestSubmit():
                     if not partition.get(container, None):
                         partition['container'] = containers
             # Retrieve the catalogue reference to the client
-            client = uc(UID=resolved_values['Client'])[0].getObject()
+            #client = uc(UID=resolved_values['Client'])[0].getObject()
+            client = uc(UID=headers['Client_uid'])[0].getObject()
             # Create the Analysis Request
             ar = create_analysisrequest(
                 client,
@@ -284,6 +300,18 @@ class ajaxAnalysisRequestSubmit():
                 specifications,
                 prices
             )
+            #Add Headers
+            for fieldName in headers.keys():
+                if headers[fieldName] != '' and not fieldName.endswith('_uid'):
+                    if headers.get(fieldName+'_uid'):
+                        field = ar.Schema()[fieldName];
+                        mutator = field.getMutator(ar)
+                        uid = headers[fieldName+'_uid']
+                        obj = uc(UID=uid)[0].getObject()
+                        mutator(obj)
+                    else:
+                        ar.edit(fieldName=headers[fieldName])
+
             # Add the created analysis request to the list
             ARs.append(ar.getId())
         # Display the appropriate message after creation
