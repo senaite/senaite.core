@@ -60,9 +60,9 @@
        tal:attributes="value here/bika_setup/getMemberDiscount"
        tal:condition="view/getMemberDiscountApplies"/>
 
-<!-- col_count goes here for the jquery expanding services rows to know how to print themselves -->
-<input type="hidden" id="col_count" name="col_count"
-       tal:attributes="value view/col_count"/>
+<!-- ar_count goes here for the jquery expanding services rows to know how to print themselves -->
+<input type="hidden" id="ar_count" name="ar_count"
+       tal:attributes="value view/ar_count"/>
 
 <!-- These services have partition setup records -->
 <input type="hidden" id="partitioned_services" name="partitioned_services"
@@ -139,7 +139,7 @@
 <tr>
     <td></td>
     <td tal:repeat="fieldName fieldNames">
-        <img tal:condition="python:view.col_count > 1"
+        <img tal:condition="python:view.ar_count > 1"
              tal:attributes="name fieldName;
                              class string:copyButton ${fieldName}CopyButton;
                              src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
@@ -148,10 +148,10 @@
 </thead>
 
 <!-- All edit fields with fields with add=visible -->
-<tal:columns tal:repeat="column python:range(view.col_count)">
-    <tr tal:attributes="column column;
+<tal:columns tal:repeat="arnum python:range(view.ar_count)">
+    <tr tal:attributes="arnum arnum;
                         ar_add_column_widget string:1">
-        <td tal:content="repeat/column/number">
+        <td tal:content="repeat/arnum/number">
         </td>
         <tal:loop repeat="fieldName fieldNames">
             <tal:def define="
@@ -189,15 +189,15 @@
 
     <!--
         <tal:hidden repeat="hiddenfieldName python:widget_visibility.get('add', {}).get('hidden', [])">
-            <tal:columns tal:repeat="column python:range(view.col_count)">
+            <tal:columns tal:repeat="arnum python:range(view.ar_count)">
                 <input
                     type="hidden"
                     tal:define="
                         field python:context.Schema()[hiddenfieldName];
                         val python:field.getAccessor(context)();"
                     tal:attributes="
-                        name string:ar.${column}.${hiddenfieldName};
-                        id string:ar_${column}_${hiddenfieldName};
+                        name string:ar.${arnum}.${hiddenfieldName};
+                        id string:ar_${arnum}_${hiddenfieldName};
                         value val/Title|nothing;"/>
                  <input
                     type="hidden"
@@ -205,8 +205,8 @@
                         field python:context.Schema()[hiddenfieldName];
                         val python:field.getAccessor(context)();"
                     tal:attributes="
-                        name string:ar.${column}.${hiddenfieldName}_uid;
-                        id string:ar_${column}_${hiddenfieldName}_uid;
+                        name string:ar.${arnum}.${hiddenfieldName}_uid;
+                        id string:ar_${arnum}_${hiddenfieldName}_uid;
                         value val/UID|nothing;"/>
             </tal:columns>
         </tal:hidden>
@@ -217,7 +217,7 @@
 <thead class="pointofcapture">
 <tr>
     <th style='padding-left:0;'
-        tal:attributes="colspan python:view.col_count + 3">
+        tal:attributes="colspan python:view.ar_count + 3">
         <input class="context button allowMultiSubmit"
                type="submit"
                name="save_button"
@@ -236,7 +236,7 @@
             <thead class="pointofcapture"
                    tal:attributes="id poc">
             <tr>
-                <th tal:attributes="colspan python:view.col_count + 3">
+                <th tal:attributes="colspan python:view.ar_count + 3">
                     <img title="analyses"
                          tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/analysisservice.png"/>
                     <span tal:content="python:POINTS_OF_CAPTURE.getValue(poc)"/>
@@ -253,7 +253,7 @@
                         tal:define="add_prefill python:cat[0] in view.DefaultCategories();"
                         tal:attributes="
                     id python:'cat_%s_%s'%(poc, cat[1]);
-                    colspan python:view.col_count + 3;
+                    colspan python:view.ar_count + 3;
                     poc poc;
                     cat python:cat[0];
                     class python: 'analysiscategory collapsed %s' % (add_prefill and ' prefill' or '')"/>
@@ -275,7 +275,7 @@
 <!-- Pretty blank row -->
 <thead class="pointofcapture">
 <tr>
-    <th tal:attributes="colspan python:view.col_count + 3">&nbsp;</th>
+    <th tal:attributes="colspan python:view.ar_count + 3">&nbsp;</th>
 </tr>
 </thead>
 
@@ -287,8 +287,8 @@
     <th class="topborder noleftborder" style="text-align:center">
         <span tal:replace="python:currencies[currency].symbol"/>
     </th>
-    <tal:block repeat="column python:range(view.col_count)">
-        <td class="topborder" tal:define="input_id string:ar_${column}_discount;">
+    <tal:block repeat="arnum python:range(view.ar_count)">
+        <td class="topborder" tal:define="input_id string:ar_${arnum}_discount;">
             <input class="price noborder" size="10" disabled="disabled" value="0.00"
                    tal:attributes="id input_id;"/>
         </td>
@@ -300,9 +300,9 @@
     <th class="topborder noleftborder" style="text-align:center">
         <span tal:replace="python:currencies[currency].symbol"/>
     </th>
-    <tal:block repeat="column python:range(view.col_count)">
-        <td class="topborder" tal:define="input_id string:ar_${column}_subtotal;
-                input_name string:ar.${column}.subtotal">
+    <tal:block repeat="arnum python:range(view.ar_count)">
+        <td class="topborder" tal:define="input_id string:ar_${arnum}_subtotal;
+                input_name string:ar.${arnum}.subtotal">
             <input class="price noborder" size="10" disabled="disabled" value="0.00"
                    tal:attributes="id string:${input_id}_display;"/>
             <input type="hidden"
@@ -318,9 +318,9 @@
     <th class="topborder noleftborder" style="text-align:center">
         <span tal:replace="python:currencies[currency].symbol"/>
     </th>
-    <tal:block repeat="column python:range(view.col_count)">
-        <td class="topborder" tal:define="input_id string:ar_${column}_vat;
-                input_name string:ar.${column}.vat">
+    <tal:block repeat="arnum python:range(view.ar_count)">
+        <td class="topborder" tal:define="input_id string:ar_${arnum}_vat;
+                input_name string:ar.${arnum}.vat">
             <input class="price noborder" size="10" disabled="disabled" value="0.00"
                    tal:attributes="id string:${input_id}_display;"/>
             <input type="hidden"
@@ -336,10 +336,10 @@
     <th class="topborder noleftborder" style="text-align:center">
         <span tal:replace="python:currencies[currency].symbol"/>
     </th>
-    <tal:block repeat="column python:range(view.col_count)">
+    <tal:block repeat="arnum python:range(view.ar_count)">
         <td class="topborder" tal:define="
-                input_id string:ar_${column}_total;
-                input_name string:ar.${column}.total">
+                input_id string:ar_${arnum}_total;
+                input_name string:ar.${arnum}.total">
             <input class="price noborder" size="10" disabled="disabled" value="0.00"
                    tal:attributes="id string:${input_id}_display;"/>
             <input type="hidden"

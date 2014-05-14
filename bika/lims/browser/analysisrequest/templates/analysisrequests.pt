@@ -14,7 +14,7 @@
 	tal:define="
 		form_id view/form_id;
  		table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;
- 		col_count python:hasattr(view, 'col_count') and view.col_count or view.request.get('col_count','4');"
+ 		ar_count python:hasattr(view, 'ar_count') and view.ar_count or view.request.get('ar_count','4');"
 	tal:condition="python:not table_only">
     <h1>
 		<img tal:condition="view/icon | nothing"
@@ -36,17 +36,17 @@
             <option>Rows Based</option>
  		</select>
         <label style="font-size:60%;position:relative;top:-0.3em;" >Number of ARs</label>
-        <input class="col_count" type="text" name="col_count" size="4" 
-            tal:attributes="value col_count" 
+        <input class="ar_count" type="text" name="ar_count" size="4" 
+            tal:attributes="value ar_count" 
             style="font-size:60%;position:relative;top:-0.45em;"
         />
     </h1>
 	<script type="text/javascript">
 	(function( $ ) {
 	$(document).ready(function(){
-		$('.col_count').change(function(){
+		$('.ar_count').change(function(){
 			url = $(".context_action_link").attr('href').split("?")[0];
-			$(".context_action_link").attr('href', url + "?col_count="+$(this).val());
+			$(".context_action_link").attr('href', url + "?ar_count="+$(this).val());
 		});
 	});
 	}(jQuery));

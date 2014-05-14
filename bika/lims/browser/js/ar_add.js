@@ -244,7 +244,7 @@ function ar_set_tabindexes() {
 	// to right.
 	// Keyboard tab flow top to bottom instead of left to right
 	var index = 10;
-	var count = $("input[id='col_count']").val();
+	var count = $("input[id='ar_count']").val();
 	for (var i=0; i<count; i++) {
  		var elements = $("tr[column="+i+"]").find("input[type!=hidden]").not("[disabled]");
 		for (var j=0; j<elements.length; j++) {
@@ -255,36 +255,36 @@ function ar_set_tabindexes() {
 }
 
 // Configure the widgets that archetypes built:
-// set id and name to ar-col-fieldName fornats
+// set id and name to ar-arnum-fieldName fornats
 // un-set the readonly attribute on the fields (so that we can search).
 function ar_rename_elements(){
-	var i, e, elements, column;
+	var i, e, elements, arnum;
 	elements = $("tr[ar_add_column_widget]").find("input[type!='hidden']").not("[disabled]");
 	for (i = elements.length - 1; i >= 0; i--) {
 		e = elements[i];
-		column = $($(e).parents("tr")).attr("column");
+		arnum = $($(e).parents("tr")).attr("arnum");
 		// not :ignore_empty, widgets each get submitted to their own form handlers
-		$(e).attr("name", "ar."+column+"."+$(e).attr("name")+":record");
-		$(e).attr("id", "ar_"+column+"_"+e.id);
+		$(e).attr("name", "ar."+arnum+"."+$(e).attr("name")+":record");
+		$(e).attr("id", "ar_"+arnum+"_"+e.id);
 		$(e).removeAttr("required");
 	}
 	elements = $("tr[ar_add_column_widget]").find("input[type='hidden']");
 	for (i = elements.length - 1; i >= 0; i--) {
 		e = elements[i];
-		column = $($(e).parents("tr")).attr("column");
-		$(e).attr("id", "ar_"+column+"_"+e.id);
+		arnum = $($(e).parents("tr")).attr("arnum");
+		$(e).attr("id", "ar_"+arnum+"_"+e.id);
 		// not :ignore_empty, widgets each get submitted to their own form handlers
-		$(e).attr("name", "ar."+column+"."+$(e).attr("name")+":record");
+		$(e).attr("name", "ar."+arnum+"."+$(e).attr("name")+":record");
 	}
 	elements = $(".multiValued-listing");
 	for (i = elements.length - 1; i >= 0; i--) {
 		e = elements[i];
 		var eid = e.id.split("-listing")[0];
-		column = $($(e).parents("tr")).attr("column");
-		$(e).attr("id", "ar_"+column+"_"+eid+"-listing");
+		arnum = $($(e).parents("tr")).attr("arnum");
+		$(e).attr("id", "ar_"+arnum+"_"+eid+"-listing");
 		// not :ignore_empty, widgets each get submitted to their own form handlers
-		$(e).attr("name", "ar."+column+"."+eid+"-listing");
-		$(e).attr("fieldName", "ar."+column+"."+eid);
+		$(e).attr("name", "ar."+arnum+"."+eid+"-listing");
+		$(e).attr("fieldName", "ar."+arnum+"."+eid);
 	}
 }
 
@@ -297,6 +297,7 @@ function ar_referencewidget_select_handler(event, ui){
 	// Set form values in activated element (must exist in colModel!)
     var fieldName = $(this).attr("name");
     var parts = fieldName.split(".");
+    debugger;
     var column = "";
     var uid_element = $("#"+fieldName+"_uid");
     var listing_div = $("#"+fieldName+"-listing");
@@ -468,9 +469,13 @@ function ar_referencewidget_select_handler(event, ui){
 }
 
 function add_path_filter_to_spec_lookups(){
-	for (var col=0; col<parseInt($("#col_count").val(), 10); col++) {
-		var element = $("#ar_"+col+"_Specification");
+	for (var arnum=0; arnum<parseInt($("#ar_count").val(), 10); arnum++) {
+		var element = $("#ar_"+arnum+"_Specification");
 		var bq = $.parseJSON($(element).attr("base_query"));
+        if (bq == undefined) {
+            alert('bq undefined:' + arnum);
+            continue;
+        }
 		bq.path = [$("#PhysicalPath").attr("lab_specs"), $("#PhysicalPath").attr("here")];
 		$(element).attr("base_query", $.toJSON(bq));
 	}
@@ -552,8 +557,8 @@ function recalc_prices(column){
 		$("#ar_"+column+"_total_display").val(total.toFixed(2));
 	} else {
 		// recalculate the entire form
-		for (var col=0; col<parseInt($("#col_count").val(), 10); col++) {
-			recalc_prices(String(col));
+		for (var arnum=0; arnum<parseInt($("#ar_count").val(), 10); arnum++) {
+			recalc_prices(String(arnum));
 		}
 	}
 }
@@ -586,24 +591,24 @@ function copy_service(copybutton){
 	var first_min = $("input[name^='ar.0.min']").filter("[keyword='"+kw+"']").prop("value");
 	var first_max = $(".spec_bit.max[column='0']").filter("[keyword='"+kw+"']").prop("value");
 	var first_error = $(".spec_bit.error[column='0']").filter("[keyword='"+kw+"']").prop("value");
-  var col_count = parseInt($("#col_count").val(), 10);
+  var ar_count = parseInt($("#ar_count").val(), 10);
 	var affected_elements = [];
 	// 0 is the first column; we only want to change cols 1 onward.
-	for (var col=1; col<col_count; col++) {
-		unsetTemplate(col);
-		unsetAnalysisProfile(col);
-		var other_elem = $("input[column='"+col+"']").filter("#"+copybutton.id);
+	for (var arnum=1; arnum<ar_count; arnum++) {
+		unsetTemplate(arnum);
+		unsetAnalysisProfile(arnum);
+		var other_elem = $("input[column='"+arnum+"']").filter("#"+copybutton.id);
 		if ( (!other_elem.prop("disabled")) && (other_elem.prop("checked") != first_val)) {
 			other_elem.prop("checked", first_val?true:false);
 			toggle_spec_fields(other_elem);
 			affected_elements.push(other_elem);
 		}
 		if(first_val){
-			$(".spec_bit.min[column='"+col+"']").filter("[keyword='"+kw+"']").prop("value", first_min);
-			$(".spec_bit.max[column='"+col+"']").filter("[keyword='"+kw+"']").prop("value", first_max);
-			$(".spec_bit.error[column='"+col+"']").filter("[keyword='"+kw+"']").prop("value", first_error);
+			$(".spec_bit.min[column='"+arnum+"']").filter("[keyword='"+kw+"']").prop("value", first_min);
+			$(".spec_bit.max[column='"+arnum+"']").filter("[keyword='"+kw+"']").prop("value", first_max);
+			$(".spec_bit.error[column='"+arnum+"']").filter("[keyword='"+kw+"']").prop("value", first_error);
 		}
-		calculate_parts(col);
+		calculate_parts(arnum);
 	}
 	calcdependencies(affected_elements, true);
 	recalc_prices();
@@ -612,10 +617,10 @@ function copy_service(copybutton){
 function copy_checkbox(copybutton){
 	var fieldName = $(copybutton).attr("name");
 	var first_val = $("input[name^='ar\\.0\\."+fieldName+"']").prop("checked");
-  var col_count = parseInt($("#col_count").val(), 10);
-	// col starts at 1 here; we don't copy into the the first row
-	for (var col=1; col<col_count; col++) {
-		var other_elem = $("#ar_" + col + "_" + fieldName);
+  var ar_count = parseInt($("#ar_count").val(), 10);
+	// arnum starts at 1 here; we don't copy into the the first row
+	for (var arnum=1; arnum<ar_count; arnum++) {
+		var other_elem = $("#ar_" + arnum + "_" + fieldName);
 		if ((other_elem.prop("checked")!=first_val)) {
 			other_elem.prop("checked",first_val?true:false);
 			other_elem.trigger("change");
@@ -627,7 +632,7 @@ function copy_checkbox(copybutton){
 function copyButton(){
 	/*jshint validthis:true */
 	var fieldName = $(this).attr("name");
-  var col_count = parseInt($("#col_count").val(), 10);
+  var ar_count = parseInt($("#ar_count").val(), 10);
 
 	if ($(this).parent().attr("class") == "service"){
 		copy_service(this);
@@ -645,44 +650,44 @@ function copyButton(){
 		var first_uid = $("input[name^='ar\\.0\\."+fieldName+"_uid']").val();
         // multi-valued fields: selection is in {fieldname}-listing
         var first_multi_html = $("div[name^='ar\\.0\\."+fieldName+"-listing']").html();
-		// col starts at 1 here; we don't copy into the the first row
-		for (var col=1; col<col_count; col++) {
-			var other_uid_elem = $("#ar_" + col + "_" + fieldName + "_uid");
+		// arnum starts at 1 here; we don't copy into the the first row
+		for (var arnum=1; arnum<ar_count; arnum++) {
+			var other_uid_elem = $("#ar_" + arnum + "_" + fieldName + "_uid");
 			if (first_uid !== undefined && first_uid !== null){
 				other_uid_elem.val(first_uid);
 			}
-            var other_multi_div = $("div[name^='ar\\."+col+"\\."+fieldName+"-listing']");
+            var other_multi_div = $("div[name^='ar\\."+arnum+"\\."+fieldName+"-listing']");
             if (first_multi_html !== undefined && first_multi_html !== null){
-         	    other_multi_div.html(first_multi_html.replace(".0.", "."+col+"."));
+         	    other_multi_div.html(first_multi_html.replace(".0.", "."+arnum+"."));
             }
             // Actual field value
-			var other_elem = $("#ar_" + col + "_" + fieldName);
+			var other_elem = $("#ar_" + arnum + "_" + fieldName);
 			if (!(other_elem.prop("disabled"))) {
 				$(other_elem).attr("skip_referencewidget_lookup", true);
 				other_elem.val(first_val);
 				other_elem.trigger("change");
 
                 if(fieldName == "Contact") {
-                    set_cc_contacts(col);
+                    set_cc_contacts(arnum);
                 }
 
 				if(fieldName == "Profile"){
-					unsetTemplate(col);
-					setAnalysisProfile(col, first_val);
-					calculate_parts(col);
+					unsetTemplate(arnum);
+					setAnalysisProfile(arnum, first_val);
+					calculate_parts(arnum);
 				}
 
 				if(fieldName == "Template"){
-					setTemplate(col, first_val);
+					setTemplate(arnum, first_val);
 				}
 
 				if(fieldName == "SampleType"){
-					unsetTemplate(col);
-					calculate_parts(col);
+					unsetTemplate(arnum);
+					calculate_parts(arnum);
 				}
 
 				if(fieldName == "Specification"){
-					reset_spec_field_values(col);
+					reset_spec_field_values(arnum);
 				}
 
 			}
@@ -730,7 +735,7 @@ function toggleCat(poc, category_uid, column, selectedservices, force_expand, di
 			"categoryUID": category_uid,
 			"column": column,
 			"disable": disable > -1 ? column : -1,
-			"col_count": $("#col_count").attr("value"),
+			"ar_count": $("#ar_count").attr("value"),
 			"poc": poc
 		};
 		// possibly remove the fake ar context
@@ -1296,12 +1301,12 @@ function fill_column(data) {
     var skip_fields = ['Sample', 'Sample_uid'];
 	if(data.objects.length > 0) {
 		var obj = data.objects[0];
-		var col = window.bika.ar_copy_from_col;
+		var arnum = window.bika.ar_copy_from_col;
         for (var fieldname in obj) {
             if (!obj.hasOwnProperty(fieldname)) { continue; }
             if (skip_fields.indexOf(fieldname) > -1) { continue; }
             var fieldvalue = obj[fieldname];
-		    var el = $("#ar_"+col+"_"+fieldname);
+		    var el = $("#ar_"+arnum+"_"+fieldname);
 		    if (el.length > 0){
 		        $(el).val(fieldvalue);
 		    }
@@ -1328,14 +1333,14 @@ function fill_column(data) {
             poc_name = key.split("__")[0];
             cat_uid = key.split("__")[1];
             service_uids = services[key];
-            window.toggleCat(poc_name, cat_uid, col, service_uids, true);
+            window.toggleCat(poc_name, cat_uid, arnum, service_uids, true);
             for (i = 0; i < service_uids.length; i++) {
                 service_uid = service_uids[i];
                 var spec = specs[service_uid];
                 if (spec) {
-                    $("[name^='ar." + col + ".min']").filter("[uid='" + service_uid + "']").val(spec.min);
-                    $("[name^='ar." + col + ".max']").filter("[uid='" + service_uid + "']").val(spec.max);
-                    $("[name^='ar." + col + ".error']").filter("[uid='" + service_uid + "']").val(spec.error);
+                    $("[name^='ar." + arnum + ".min']").filter("[uid='" + service_uid + "']").val(spec.min);
+                    $("[name^='ar." + arnum + ".max']").filter("[uid='" + service_uid + "']").val(spec.max);
+                    $("[name^='ar." + arnum + ".error']").filter("[uid='" + service_uid + "']").val(spec.error);
                 }
             }
         }
@@ -1422,19 +1427,19 @@ $(document).ready(function() {
 
         // Show only the contacts and CC from the selected Client
         $("[id$='_Client']").bind("change", function() {
-            var col = this.id.split("_")[1];
-            var element = $("#ar_" + col + "_Contact");
+            var arnum = this.id.split("_")[1];
+            var element = $("#ar_" + arnum + "_Contact");
             var clientuid = $(this).attr("uid");
             applyComboFilter(element, "getParentUID", clientuid);
-            element = $("#ar_" + col + "_CCContact");
+            element = $("#ar_" + arnum + "_CCContact");
             applyComboFilter(element, "getParentUID", clientuid);
         });
         // Initial value of contact list, set by the page's hidden ClientUID.
-        for (var col = 0; col < parseInt($("#col_count").val(), 10); col++) {
-            var element = $("#ar_" + col + "_Contact");
-            var clientuid = $("#ar_" + col + "_Client_uid").val();
+        for (var arnum = 0; arnum < parseInt($("#ar_count").val(), 10); arnum++) {
+            var element = $("#ar_" + arnum + "_Contact");
+            var clientuid = $("#ar_" + arnum + "_Client_uid").val();
             applyComboFilter(element, "getParentUID", clientuid);
-            element = $("#ar_" + col + "_CCContact");
+            element = $("#ar_" + arnum + "_CCContact");
             applyComboFilter(element, "getParentUID", clientuid);
         }
 
