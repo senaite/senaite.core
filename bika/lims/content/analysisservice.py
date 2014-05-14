@@ -335,7 +335,9 @@ schema = BikaSchema.copy() + Schema((
                             "selected here are displayed in the "
                             "Analysis Request creation view for its "
                             "selection when this Analaysis Service "
-                            "is selected"),
+                            "is selected. Only methods with 'Allow "
+                            "manual entry of results' enabled are "
+                            "displayed."),
         )
     ),
     # Default method to be used. This field is used in Analysis Service
@@ -360,13 +362,10 @@ schema = BikaSchema.copy() + Schema((
         widget = SelectionWidget(
             format='select',
             label=_('Default Method'),
-            description=_("If 'Allow instrument entry "
-                          "of results' is selected, the Default method to "
-                          "be used will be the method set in the "
-                          "Default Instrument. Otherwise, the Method "
-                          "to be used can be set manually, but only the "
-                          "Methods with 'Manual entry of results' set "
-                          "will be displayed.")
+            description=_("If 'Allow instrument entry of results' "
+                          "is selected, the method from the default instrument "
+                          "will be used. Otherwise, only the methods "
+                          "selected above will be displayed.")
         ),
     ),
     # Allow/Disallow to set the calculation manually

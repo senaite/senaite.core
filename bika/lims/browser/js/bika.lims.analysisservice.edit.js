@@ -49,6 +49,39 @@ function AnalysisServiceEditView() {
             $('#analysisservice-base-edit').before(html);
         }
 
+        // The 'Manual entry of results' value changes
+        $(manual_chk).change(function() {
+            if ($(this).is(':checked')) {
+
+                // The user can select the Analysis Service methods
+                // manually. The default method will be retrieved from
+                // the methods selected in the multiselect box
+
+                // Show the methods multiselector
+                $(methods_fd).fadeIn('slow');
+
+                // Show the default method selector
+                $(method_fd).show();
+                $(method_sel).unbind("focus");
+
+                // Delegate remaining actions to Methods change event
+                $(methods_ms).change();
+
+            } else {
+
+                // The method selection must be done by enabling the
+                // 'Allow instrument entry of results'
+
+                // Hide the methods multiselector
+                $(methods_fd).hide();
+
+                // If instrument entry is not selected, select it and
+                // fire event cascade
+                $(instr_chk).prop('checked', true);
+            }
+            $(instr_chk).change();
+        });
+
         // The 'Allow instrument entry of results' value changes
         $(instr_chk).change(function() {
             if ($(this).is(':checked')) {
@@ -59,14 +92,6 @@ function AnalysisServiceEditView() {
 
                 // The user must be able to allow manual entry
                 $(manual_chk).unbind("click");
-
-                // Hide the methods multiselector
-                $(methods_fd).hide();
-
-                // Disable the default method selector
-                $(method_sel).focus(function(e) {
-                    $(this).blur();
-                });
 
                 // Show the instruments multiselector
                 $(instrs_fd).fadeIn('slow');
@@ -79,6 +104,11 @@ function AnalysisServiceEditView() {
 
                 // Show the default instrument selector
                 $(instr_fd).fadeIn('slow');
+
+                // Disable the default method selector
+                $(method_sel).focus(function(e) {
+                    $(this).blur();
+                });
 
                 // Disable the default calculation selector
                 $(calc_sel).focus(function(e) {
@@ -100,12 +130,6 @@ function AnalysisServiceEditView() {
                 // Remove the invalid instrument alert (if exists)
                 $('#invalid-instruments-alert').remove();
 
-                // The user mustn't be allowed to unset manual entry
-                $(manual_chk).prop('checked', true);
-                $(manual_chk).click(function(e) {
-                    e.preventDefault();
-                });
-
                 // Hide the instruments multiselector and unselect all
                 $(instrs_fd).hide();
                 if ($(instrs_ms).find('option[value=""]').length == 0) {
@@ -124,24 +148,30 @@ function AnalysisServiceEditView() {
                 $(instr_sel).val('');
                 $(instr_sel).find('option[value=""]').prop("selected", true);
 
-                // Show the methods multiselector
-                $(methods_fd).fadeIn('slow');
+                // The user mustn't be allowed to unset manual entry
+                $(manual_chk).click(function(e) {
+                    e.preventDefault();
+                });
 
-                // Show the default method selector
-                $(method_fd).show();
-                $(method_sel).unbind("focus");
-
-                // Delegate remaining actions to Methods change event
-                $(methods_ms).change();
+                // If manual entry is not selected, select it and
+                // fire event cascade
+                if (!$(manual_chk).is(':checked')) {
+                    $(manual_chk).prop('checked', true);
+                    $(manual_chk).change();
+                }
             }
         });
 
         // The methods multiselect changes
         $(methods_ms).change(function(e) {
             var prevmethod = $(method_sel).val();
-            $(method_sel).find('option').remove();
+            /*if ($(this).val() == null) {
+                // At least one method must be selected
+                $(this).val($(this).find('option').first().val());
+            }*/
 
             // Populate with the methods from the multi-select
+            $(method_sel).find('option').remove();
             var methods = $(methods_ms).val();
             if (methods != null) {
                 $.each(methods, function(index, value) {
@@ -327,14 +357,7 @@ function AnalysisServiceEditView() {
         applyStyles();
 
         // Grab original values
-        //$.ajaxSetup({async:false});
-        catchOriginalValues(function() {
-            // Apply the behavior
-            $(instr_chk).change();
-        });
-        //$.ajaxSetup({async:true});
-
-
+        catchOriginalValues();
     }
 
     function catchOriginalValues() {
@@ -369,6 +392,7 @@ function AnalysisServiceEditView() {
         // calculation is set. We need to know which interim fields
         // are from the current selected calculation and which of them
         // have been set manually.
+        $('body').append("<input type='hidden' id='temp_manual_interims' value='[]'>");
         rows = $("tr.records_row_InterimFields");
         var originals = [];
         if($(rows).length > 1){
@@ -408,8 +432,14 @@ function AnalysisServiceEditView() {
                     return toremove.indexOf(el[0]) < 0;
                 });
                 // Save the manualinterims in some hidden place
-                $('body').append("<input type='hidden' id='temp_manual_interims' value='"+$.toJSON(manualinterims)+"'>");
+                $('#temp_manual_interims').val($.toJSON(manualinterims));
+
+                // Fire events cascade
+                $(manual_chk).change();
             });
+        } else {
+            // Fire events cascade
+            $(manual_chk).change();
         }
     }
 
@@ -541,6 +571,15 @@ function AnalysisServiceEditView() {
 
 
     function applyStyles() {
+
+        $($(manual_fd)).after($(methods_fd));
+
+        $(methods_fd)
+            .css('border', '1px solid #cfcfcf')
+            .css('background-color', '#efefef')
+            .css('padding', '10px')
+            .css('margin-bottom', '20px');
+
         $(instrs_fd)
             .css('border', '1px solid #cfcfcf')
             .css('border-bottom', 'none')
@@ -551,7 +590,8 @@ function AnalysisServiceEditView() {
             .css('border', '1px solid #cfcfcf')
             .css('border-top', 'none')
             .css('background-color', '#efefef')
-            .css('padding', '10px');
+            .css('padding', '10px')
+            .css('margin-bottom', '20px');
 
         $(acalc_fd).find('label').hide();
         $(calc_fd).find('label').hide();
