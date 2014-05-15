@@ -451,7 +451,7 @@ $(document).ready(function(){
         var sel = $(this).val();
         if ($(this).find('option[value=""]').length > 0) {
             $(this).find('option[value=""]').remove();
-            $(this).prepend('<option value="">'+_('None')+'</option>');
+            $(this).prepend('<option value="">'+_('Not defined')+'</option>');
         }
         $(this).val(sel);
     });
