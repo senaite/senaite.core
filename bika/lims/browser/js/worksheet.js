@@ -260,13 +260,16 @@ $(document).ready(function(){
         var m_manualentry = true;
         var s_instrentry  = false;
         $(instrselector).find('option').remove();
+        $(instrselector).prop('disabled', false);
+        $(this).closest('tr').find('img.alert-instruments-invalid').remove();
+        $(this).closest('tr').find('td.interim input').prop('disabled', false);
+        $(this).closest('tr').find('td.Result input').prop('disabled', false);
 
         if (muid != '') {
             // Update the instruments selector, but only if the service has AllowInstrumentEntryOfResults enabled.
             // Also, only update with those instruments available for the Analysis Service. If any of the method
             // instruments are available for that Analysis Service, check if the method allows the manual entry
             // of results.
-            $(this).closest('tr').find('img.alert-instruments-invalid').remove();
 
             // Is manual entry allowed for this method?
             var request_data = {
@@ -275,7 +278,7 @@ $(document).ready(function(){
             };
             window.bika.lims.jsonapi_read(request_data, function(data) {
                 method = (data.objects && data.objects.length > 0) ? data.objects[0] : null;
-                m_manualentry = (method != null) ? method.ManualEntryOfResults : true;
+                m_manualentry = (method != null) ? method.ManualEntryOfResultsViewField : true;
                 $(instrselector).closest('tr').find('td.interim input').prop('disabled', !m_manualentry);
                 $(instrselector).closest('tr').find('td.Result input').prop('disabled', !m_manualentry);
                 if (!m_manualentry) {
