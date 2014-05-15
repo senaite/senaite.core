@@ -351,7 +351,7 @@ class AnalysesView(BikaListingView):
             interim_fields = hasattr(obj, 'getInterimFields') \
                 and obj.getInterimFields() or []
             self.interim_fields[obj.UID()] = interim_fields
-
+            items[i]['service_uid'] = service.UID()
             items[i]['Service'] = service.Title()
             items[i]['Keyword'] = keyword
             items[i]['Unit'] = unit and unit or ''

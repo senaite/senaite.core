@@ -56,7 +56,7 @@ class ajaxGetMethodServiceInstruments(BrowserView):
             return json.dumps(instruments)
 
         uc = getToolByName(self, 'uid_catalog')
-        service = uc(portal_type='AnalysisService', UID=self.request.get("uid", '0'))
+        service = uc(portal_type='AnalysisService', UID=self.request.get("suid", '0'))
         if not service or len(service) != 1:
             return json.dumps(instruments)
 
@@ -65,7 +65,7 @@ class ajaxGetMethodServiceInstruments(BrowserView):
         if not sinstr:
             return json.dumps(instruments)
 
-        method = uc(portal_type='Method', UID=self.request.get("uid", '0'))
+        method = uc(portal_type='Method', UID=self.request.get("muid", '0'))
         if not method or len(method) != 1:
             for i in sinstr:
                 if not i.getMethod():
