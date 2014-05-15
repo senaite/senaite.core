@@ -71,6 +71,12 @@ function AnalysisServiceEditView() {
                 // Show the instruments multiselector
                 $(instrs_fd).fadeIn('slow');
 
+                // Remove the 'none' option from instruments multiselector
+                $(instrs_ms).find('option[value=""]').remove();
+
+                // Remove the 'none' option from def instrument selector
+                $(instr_sel).find('option[value=""]').remove();
+
                 // Show the default instrument selector
                 $(instr_fd).fadeIn('slow');
 
@@ -100,11 +106,23 @@ function AnalysisServiceEditView() {
                     e.preventDefault();
                 });
 
-                // Hide the instruments multiselector
+                // Hide the instruments multiselector and unselect all
                 $(instrs_fd).hide();
+                if ($(instrs_ms).find('option[value=""]').length == 0) {
+                    $(instrs_ms).prepend('<option value="">None</option>');
+                }
+                $(instrs_ms).val('');
+                $(instrs_ms).find('option[value=""]').prop("selected", true);
 
                 // Hide the default instrument selector
                 $(instr_fd).hide();
+
+                // Unselect the default instrument
+                if ($(instr_sel).find('option[value=""]').length == 0) {
+                    $(instr_sel).prepend('<option value="">None</option>');
+                }
+                $(instr_sel).val('');
+                $(instr_sel).find('option[value=""]').prop("selected", true);
 
                 // Show the methods multiselector
                 $(methods_fd).fadeIn('slow');
@@ -309,10 +327,14 @@ function AnalysisServiceEditView() {
         applyStyles();
 
         // Grab original values
-        catchOriginalValues();
+        //$.ajaxSetup({async:false});
+        catchOriginalValues(function() {
+            // Apply the behavior
+            $(instr_chk).change();
+        });
+        //$.ajaxSetup({async:true});
 
-        // Apply the behavior
-        $(instr_chk).change();
+
     }
 
     function catchOriginalValues() {
@@ -364,7 +386,12 @@ function AnalysisServiceEditView() {
             }
         }
         var toremove = []
-        var calcuid = $(calc_sel).attr('data-default');
+        var calcuid = "";
+        if ($(defcalc_chk).is(':checked')) {
+            calcuid = $(calc_sel).attr('data-default');
+        } else {
+            calcuid = $(acalc_sel).attr('data-default');
+        }
         if (calcuid != null && calcuid != '') {
             var request_data = {
                 catalog_name: "bika_setup_catalog",
@@ -373,16 +400,17 @@ function AnalysisServiceEditView() {
             window.bika.lims.jsonapi_read(request_data, function(data) {
                 if (data.objects.length > 0) {
                     for (i = 0; i < data.objects[0].InterimFields.length; i++) {
+                        var row = data.objects[0].InterimFields[i];
                         toremove.push(row.keyword);
                     }
                 }
+                var manualinterims = originals.filter(function(el) {
+                    return toremove.indexOf(el[0]) < 0;
+                });
+                // Save the manualinterims in some hidden place
+                $('body').append("<input type='hidden' id='temp_manual_interims' value='"+$.toJSON(manualinterims)+"'>");
             });
         }
-        var manualinterims = originals.filter(function(el) {
-            return toremove.indexOf(el[0]) < 0;
-        });
-        // Save the manualinterims in some hidden place
-        $('body').append("<input type='hidden' id='temp_manual_interims' value='"+$.toJSON(manualinterims)+"'>");
     }
 
     /**
