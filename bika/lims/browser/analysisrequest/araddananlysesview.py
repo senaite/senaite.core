@@ -14,6 +14,7 @@ from zope.interface import implements
 class ARAddAnalysesView(BikaListingView):
     """ bika listing to display Analyses table for AR Add.
     """
+    #TODO Has no effect template = ViewPageTemplateFile("./templates/araddanalyses.pt")
     implements(IViewView)
 
 
@@ -55,10 +56,8 @@ class ARAddAnalysesView(BikaListingView):
                          'Price',
                          'Partition',
                          ],
+             'transitions': [],
              'custom_actions': [
-                 {'id': 'cancel',
-                  'title': _('Cancel'),
-                  'url': 'workflow_action?action=copy_to_new'}, 
                  {'id': 'save_analyses_button',
                   'title': _('Save'),
                   'url': 'workflow_action?action=copy_to_new'}, 

@@ -5,6 +5,16 @@ function destroy(arr, val) {
     for (var i = 0; i < arr.length; i++) if (arr[i] === val) arr.splice(i, 1);
     return arr;
 }
+
+function getRelTag() {
+    //Return the tag that identifies the position of the 
+	var layout = $("input[id='layout']").val();
+    var rel_tag = 'tr';
+    if (layout == 'columns') {
+        rel_tag = 'td'; 
+    };
+    return rel_tag;
+}
     
 function toggle_spec_fields(element) {
     // When a service checkbox is clicked, this is used to display
@@ -259,19 +269,20 @@ function ar_set_tabindexes() {
 // un-set the readonly attribute on the fields (so that we can search).
 function ar_rename_elements(){
 	var i, e, elements, arnum;
-	elements = $("tr[ar_add_column_widget]").find("input[type!='hidden']").not("[disabled]");
+	var rel_tag = getRelTag();
+    elements = $(rel_tag+"[ar_add_arnum_widget]").find("input[type!='hidden']").not("[disabled]");
 	for (i = elements.length - 1; i >= 0; i--) {
 		e = elements[i];
-		arnum = $($(e).parents("tr")).attr("arnum");
+		arnum = $($(e).parents(rel_tag)).attr("arnum");
 		// not :ignore_empty, widgets each get submitted to their own form handlers
 		$(e).attr("name", "ar."+arnum+"."+$(e).attr("name")+":record");
 		$(e).attr("id", "ar_"+arnum+"_"+e.id);
 		$(e).removeAttr("required");
 	}
-	elements = $("tr[ar_add_column_widget]").find("input[type='hidden']");
+	elements = $(rel_tag+"[ar_add_arnum_widget]").find("input[type='hidden']");
 	for (i = elements.length - 1; i >= 0; i--) {
 		e = elements[i];
-		arnum = $($(e).parents("tr")).attr("arnum");
+		arnum = $($(e).parents(rel_tag)).attr("arnum");
 		$(e).attr("id", "ar_"+arnum+"_"+e.id);
 		// not :ignore_empty, widgets each get submitted to their own form handlers
 		$(e).attr("name", "ar."+arnum+"."+$(e).attr("name")+":record");
@@ -280,7 +291,7 @@ function ar_rename_elements(){
 	for (i = elements.length - 1; i >= 0; i--) {
 		e = elements[i];
 		var eid = e.id.split("-listing")[0];
-		arnum = $($(e).parents("tr")).attr("arnum");
+		arnum = $($(e).parents(rel_tag)).attr("arnum");
 		$(e).attr("id", "ar_"+arnum+"_"+eid+"-listing");
 		// not :ignore_empty, widgets each get submitted to their own form handlers
 		$(e).attr("name", "ar."+arnum+"."+eid+"-listing");
@@ -416,7 +427,7 @@ function ar_referencewidget_select_handler(event, ui){
 		$(this).blur(function(){
 			if($(this).val() === ""){
 				// clear and un-disable everything
-				var disabled_elements = $("[ar_add_column_widget] [id*='ar_"+arnum+"']:disabled");
+				var disabled_elements = $("[ar_add_arnum_widget] [id*='ar_"+arnum+"']:disabled");
 				$.each(disabled_elements, function(x,disabled_element){
 					$(disabled_element).prop("disabled", false);
 					if($(disabled_element).attr("type") == "checkbox"){
@@ -473,7 +484,6 @@ function add_path_filter_to_spec_lookups(){
 		var bq = $.parseJSON($(element).attr("base_query"));
         if (bq == undefined) {
             alert('bq undefined:' + arnum);
-            debugger;
             continue;
         }
 		bq.path = [$("#PhysicalPath").attr("lab_specs"), $("#PhysicalPath").attr("here")];
@@ -569,7 +579,8 @@ function changeReportDryMatter(){
 	var uid = $(dm).val();
 	var cat = $(dm).attr("cat");
 	var poc = $(dm).attr("poc");
-	var arnum = $(this).parents("tr").attr("arnum");
+	var rel_tag = getRelTag();
+	var arnum = $(this).parents(rel_tag).attr("arnum");
 	if ($(this).prop("checked")){
 		// only play with service checkboxes when enabling dry matter
 		unsetAnalysisProfile(arnum);
@@ -591,7 +602,7 @@ function copy_service(copybutton){
 	var first_min = $("input[name^='ar.0.min']").filter("[keyword='"+kw+"']").prop("value");
 	var first_max = $(".spec_bit.max[arnum='0']").filter("[keyword='"+kw+"']").prop("value");
 	var first_error = $(".spec_bit.error[arnum='0']").filter("[keyword='"+kw+"']").prop("value");
-  var ar_count = parseInt($("#ar_count").val(), 10);
+    var ar_count = parseInt($("#ar_count").val(), 10);
 	var affected_elements = [];
 	// 0 is the first arnum; we only want to change cols 1 onward.
 	for (var arnum=1; arnum<ar_count; arnum++) {
@@ -617,7 +628,7 @@ function copy_service(copybutton){
 function copy_checkbox(copybutton){
 	var fieldName = $(copybutton).attr("name");
 	var first_val = $("input[name^='ar\\.0\\."+fieldName+"']").prop("checked");
-  var ar_count = parseInt($("#ar_count").val(), 10);
+    var ar_count = parseInt($("#ar_count").val(), 10);
 	// arnum starts at 1 here; we don't copy into the the first row
 	for (var arnum=1; arnum<ar_count; arnum++) {
 		var other_elem = $("#ar_" + arnum + "_" + fieldName);
@@ -632,7 +643,7 @@ function copy_checkbox(copybutton){
 function copyButton(){
 	/*jshint validthis:true */
 	var fieldName = $(this).attr("name");
-  var ar_count = parseInt($("#ar_count").val(), 10);
+    var ar_count = parseInt($("#ar_count").val(), 10);
 
 	if ($(this).parent().attr("class") == "service"){
 		copy_service(this);
@@ -1278,7 +1289,6 @@ function applyComboFilter(element, filterkey, filtervalue) {
     if (base_query == undefined) {
         //TODO
         //alert('applyComboFilter: basequery undefined - ' + filterkey + ' - ' + filtervalue);
-        //debugger;
         return;
     }
     base_query[filterkey] = filtervalue;

@@ -25,8 +25,9 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
     """ The main AR Add form
     """
     implements(IViewView, IAnalysisRequestAddView)
-    #template = ViewPageTemplateFile("templates/ar_add.pt")
-    template = ViewPageTemplateFile('templates/ar_add_by_row.pt')
+    template = ViewPageTemplateFile("templates/ar_add.pt")
+    ar_add_by_row_template = ViewPageTemplateFile('templates/ar_add_by_row.pt')
+    ar_add_by_col_template = ViewPageTemplateFile('templates/ar_add_by_col.pt')
 
     def __init__(self, context, request):
         AnalysisRequestViewView.__init__(self, context, request)
@@ -35,6 +36,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         self.can_edit_ar = True
         self.DryMatterService = self.context.bika_setup.getDryMatterService()
         request.set('disable_plone.rightcolumn', 1)
+        self.layout = self.request.get('layout', 'columns')
         self.ar_count = self.request.get('ar_count', 4)
         try:
             self.ar_count = int(self.ar_count)

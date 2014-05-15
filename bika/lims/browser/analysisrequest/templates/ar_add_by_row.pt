@@ -1,165 +1,57 @@
-<html xmlns:tal="http://xml.zope.org/namespaces/tal"
-      xmlns:metal="http://xml.zope.org/namespaces/metal"
-      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-      xmlns="http://www.w3.org/1999/xhtml"
-      metal:use-macro="here/main_template/macros/master"
-      i18n:domain="bika">
-
-<head>
-    <metal:block fill-slot="javascript_head_slot"
-                 tal:define="portal context/@@plone_portal_state/portal;">
-        <script type="text/javascript"
-                tal:attributes="src python:portal.absolute_url() + '/bika_widgets/datetimewidget.js'"></script>
-        <script type="text/javascript"
-                tal:attributes="src python:portal.absolute_url() + '/bika_widgets/referencewidget.js'"></script>
-        <link rel="stylesheet" type="text/css" media="all" href=""
-              tal:attributes="href string:${portal/absolute_url}/bika_widgets/referencewidget.css"/>
-    </metal:block>
-</head>
-
-<body>
-
-<metal:title fill-slot="content-title">
-    <h1>
-        <img tal:condition="view/icon | nothing" tal:attributes="src view/icon"/>
-        <tal:new i18n:translate="">Request new analyses</tal:new>
-    </h1>
-</metal:title>
-
-<div metal:fill-slot="content-core"
-     tal:define="
-        portal context/@@plone_portal_state/portal;
-        plone_view context/@@plone;
-        portal_state context/@@plone_portal_state;
-        currencies python:modules['zope.i18n.locales'].locales.getLocale('en').numbers.currencies;
-        currency python:context.bika_setup.getCurrency();
-        checkPermission nocall: context/portal_membership/checkPermission;
-        tabindex view/tabindex;
-        widget_visibility view/getWidgetVisibility;
-        partitionable view/partitioned_services;
-        ShowPrices python:context.bika_setup.getShowPrices();
-        headerFieldNames view/getHeaderFieldNames">
-
-
-<form id="analysisrequest_edit_form"
-      name="analysisrequest_edit_form"
-      method="POST">
-
-<input type="hidden" name="submitted" value="1"/>
-<span tal:replace="structure context/@@authenticator/authenticator"/>
-<input type="hidden" name="came_from" tal:attributes="value view/came_from"/>
-
-<span id="bika_setup" style="display:none;"
-      tal:define="bs python: context.bika_setup;"
-      tal:attributes="EnableARSpecs python: 'true' if bs.getEnableARSpecs() else '';
-                    bika_analysisspecs_uid python: bs.bika_analysisspecs.UID();">
-</span>
-
-<!-- member discount percentage if applicable -->
-<input type="hidden" id="member_discount" name="member_discount"
-       tal:attributes="value here/bika_setup/getMemberDiscount"
-       tal:condition="view/getMemberDiscountApplies"/>
-
-<!-- ar_count goes here for the jquery expanding services rows to know how to print themselves -->
-<input type="hidden" id="ar_count" name="ar_count"
-       tal:attributes="value view/ar_count"/>
-
-<!-- These services have partition setup records -->
-<input type="hidden" id="partitioned_services" name="partitioned_services"
-       tal:attributes="value partitionable"/>
-
-<!-- And the current form partition configuration is stored here -->
-<input type="hidden" id="parts" name="parts" value="{}"/>
-
-<!-- The system configured 'Dry Matter Service' -->
-<tal:i define="dms python:context.bika_setup.getDryMatterService()">
-    <input type="hidden" id="getDryMatterService" name="getDryMatterService"
-           tal:condition="nocall:dms"
-           tal:attributes="
-            poc python: dms.getPointOfCapture();
-            cat python: dms.getCategoryUID();
-            value python: dms.UID();"/>
-</tal:i>
-
-<input type="hidden"
-       id="PhysicalPath"
-       tal:attributes="here python:'/'.join(context.getPhysicalPath()[:-3]);
-                    lab_specs python:'/'.join(context.bika_setup.bika_analysisspecs.getPhysicalPath())"/>
-
-<tal:headers repeat="fieldName headerFieldNames">
-    <div tal:define="
+<div metal:define-macro="ar_add_by_row">
+    <thead>
+    <tr>
+        <td></td>
+        <td i18n:translate="">
+            <label i18n:translate="">Analyses</label>
+        </td>
+        <tal:loop repeat="fieldName fieldNames">
+            <td tal:define="
                         field python:context.Schema()[fieldName];
                         field_macro here/widgets/field/macros/edit;
                         accessor python:field.getAccessor(context);
                         widget python:field.widget;
                         errors python:{};
                         mode string:edit;">
-        <span tal:replace="python:widget.Label(here)"></span>
-        <span class="fieldRequired"
-              tal:condition="field/required"
-              title="Required"
-              i18n:attributes="title title_required;">&nbsp;</span>
-        <metal:field use-macro="python:context.widget(fieldName, mode=mode)"/>
-    </div>
-</tal:headers>
-<table summary="Add analysis requests"
-       class="listing analysisrequest add nosort"
-       cellpadding="0" cellspacing="0"
-       tal:define="fieldNames python:widget_visibility.get('add', {}).get('visible', []);
-                fieldNames python: [f for f in fieldNames if f not in headerFieldNames]">
-<thead>
-<tr>
-    <td></td>
-    <td i18n:translate="">
-        <label i18n:translate="">Analyses</label>
-    </td>
-    <tal:loop repeat="fieldName fieldNames">
-        <td tal:define="
-                    field python:context.Schema()[fieldName];
-                    field_macro here/widgets/field/macros/edit;
-                    accessor python:field.getAccessor(context);
-                    widget python:field.widget;
-                    errors python:{};
-                    mode string:edit;">
-            <label class="formQuestion">
-                <span tal:replace="python:widget.Label(here)"
-                      i18n:translate=""/>
-                <span class="fieldRequired"
-                      tal:condition="field/required"
-                      title="Required"
-                      i18n:attributes="title title_required;">&nbsp;</span>
-                <em tal:condition="nothing"
-                    style="display:block"
-                    class="discreet"
-                    tal:define="description python:widget.Description(here)"
-                    tal:content="structure description"
-                    tal:attributes="id string:${fieldName}_help"
-                    i18n:translate="">Help </em>
-            </label>
+                <label class="formQuestion">
+                    <span tal:replace="python:widget.Label(here)"
+                          i18n:translate=""/>
+                    <span class="fieldRequired"
+                          tal:condition="field/required"
+                          title="Required"
+                          i18n:attributes="title title_required;">&nbsp;</span>
+                    <em tal:condition="nothing"
+                        style="display:block"
+                        class="discreet"
+                        tal:define="description python:widget.Description(here)"
+                        tal:content="structure description"
+                        tal:attributes="id string:${fieldName}_help"
+                        i18n:translate="">Help </em>
+                </label>
+            </td>
+        </tal:loop>
+    </tr>
+    <tr>
+        <td></td>
+        <td>
+            <img tal:condition="python:view.ar_count > 1"
+                 tal:attributes="name string:analyses;
+                                 class string:copyButton analysesCopyButton;
+                                 src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
         </td>
-    </tal:loop>
-</tr>
-<tr>
-    <td></td>
-    <td>
-        <img tal:condition="python:view.ar_count > 1"
-             tal:attributes="name string:analyses;
-                             class string:copyButton analysesCopyButton;
-                             src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
-    </td>
-    <td tal:repeat="fieldName fieldNames">
-        <img tal:condition="python:view.ar_count > 1"
-             tal:attributes="name fieldName;
-                             class string:copyButton ${fieldName}CopyButton;
-                             src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
-    </td>
-</tr>
-</thead>
-
+        <td tal:repeat="fieldName fieldNames">
+            <img tal:condition="python:view.ar_count > 1"
+                 tal:attributes="name fieldName;
+                                 class string:copyButton ${fieldName}CopyButton;
+                                 src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
+        </td>
+    </tr>
+    </thead>
 <!-- All edit fields with fields with add=visible -->
-<tal:columns tal:repeat="arnum python:range(view.ar_count)">
+<tal:rows 
+    tal:repeat="arnum python:range(view.ar_count)">
     <tr tal:attributes="arnum arnum;
-                        ar_add_column_widget string:1">
+                        ar_add_arnum_widget string:1">
         <td tal:content="repeat/arnum/number">
         </td>
         <td>
@@ -230,24 +122,5 @@
             </tal:columns>
         </tal:hidden>
         -->
-</tal:columns>
-
-
-<thead class="pointofcapture">
-<tr>
-    <th style='padding-left:0;'
-        tal:attributes="colspan python:view.ar_count + 3">
-        <input class="context button allowMultiSubmit"
-               type="submit"
-               name="save_button"
-               i18n:attributes="value"
-               value="Save"/>
-    </th>
-</tr>
-</thead>
-</table>
-
-</form>
+</tal:rows>
 </div>
-</body>
-</html>
