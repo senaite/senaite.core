@@ -105,7 +105,7 @@ Client contact should be able to access client views
     Go to           ${PLONEURL}/clients
     Page should contain   Happy Hills
     Click link            Happy Hills
-    Page should contain   Sample Points
+    Page should contain   Analysis Specifications
 
 Client contact should not be able to see or access other clients
     Log in          ritamo   ritamo
