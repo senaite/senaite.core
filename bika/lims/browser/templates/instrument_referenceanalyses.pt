@@ -79,6 +79,11 @@
                     }
                 });
 
+                $('#printgraph').click(function(e) {
+                    e.preventDefault();
+                    printGraph();
+                });
+
                 $('div.bika-listing-table-container').fadeIn();
             });
         });
@@ -149,6 +154,15 @@
             chart.setLowerLimit(lower);
             chart.draw('#chart');
         }
+
+        function printGraph() {
+            var WinPrint = window.open('', '', 'letf=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
+            WinPrint.document.write($('#content-core').html());
+            WinPrint.document.close();
+            WinPrint.focus();
+            WinPrint.print();
+            WinPrint.close();
+        }
     </script>
 </metal:slot>
 
@@ -183,6 +197,7 @@
                 <option value='cardinal'>Cardinal</option>
                 <option value='linear'>Linear</option>
             </select>
+            <a id='printgraph' href='#'>Print</a>
         </div>
         <div id='chart'></div>
     </div>
