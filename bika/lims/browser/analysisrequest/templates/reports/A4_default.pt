@@ -1,31 +1,33 @@
 <!--
     Default Analysis Request results template for Bika LIMS
 
-    All data is available using the datasource dictionary.
+    All data is available using the analysisrequest dictionary.
     Example for accessing and displaying data:
 
-    <p tal:content="python:datasource['laboratory']['title']"></p>
+    <p tal:content="python:analysisrequest['laboratory']['title']"></p>
 
     or
 
-    <p tal:content="datasource/laboratory/title"></p>
+    <p tal:content="analysisrequest/laboratory/title"></p>
 
     Take a look to the documentation for more information about
     available data and fields.
     http://github.com/bikalabs/Bika-LIMS/wiki/blablablabal
 
 -->
-<tal:report define="datasource python:view.getDataSource();
-                    portal     python:datasource['portal'];
-                    lab        python:datasource['laboratory'];
-                    client     python:datasource['client'];
-                    contact    python:datasource['contact']">
+<tal:report tal:define="analysisrequest python:view.getAnalysisRequest();
+                        client          analysisrequest/client;
+                        contact         analysisrequest/contact;
+                        laboratory      analysisrequest/laboratory;
+                        portal          analysisrequest/portal;
+                        sample          analysisrequest/sample;
+                        batch           analysisrequest/batch;">
 
 <!-- Report header -->
 <div id="section-header">
     <div id='lab-logo'>
-        <a tal:attributes="href lab/url">
-            <img tal:attributes="src lab/logo"/>
+        <a tal:attributes="href laboratory/url">
+            <img tal:attributes="src laboratory/logo"/>
         </a>
     </div>
 </div>
@@ -37,7 +39,7 @@
             <td id="client-info">
                 <table>
                     <tr><td id="client-contact" tal:content="contact/fullname"></td></tr>
-                    <tr><td id="client-name" tal:content="python:client['name']"></td></tr>
+                    <tr><td id="client-name" tal:content="client/name"></td></tr>
                     <tr><td id="client-address" tal:content="structure client/address"></td></tr>
                     <tr>
                         <td id="client-email">
@@ -61,18 +63,113 @@
             </td>
             <td id="lab-info">
                 <table>
-                    <tr><td id="lab-title" tal:content='lab/title'></td></tr>
-                    <tr><td id="lab-address" tal:content='structure lab/address'></td></tr>
+                    <tr><td id="lab-title" tal:content='laboratory/title'></td></tr>
+                    <tr><td id="lab-address" tal:content='structure laboratory/address'></td></tr>
 
-                    <tr tal:condition="lab/url">
+                    <tr tal:condition="laboratory/url">
                         <td id="lab-URL">
-                            <a tal:attributes="href lab/url"
-                               tal:content="lab/url"></a>
+                            <a tal:attributes="href laboratory/url"
+                               tal:content="laboratory/url"></a>
                         </td>
                     </tr>
                 </table>
             </td>
         </tr>
+    </table>
+</div>
+
+<!-- Alert section (invalidated ar, etc.) -->
+<div id="section-alert" tal:condition="analysisrequest/invalid">
+    <span class='emphasize' i18n:translate="">This Analysis Request has been invalidated due to erroneously published results</span><br/>
+    <tal:invalidreport tal:condition="anrequest/child_analysisrequest">
+       <a tal:attributes="href analysisrequest/url;"
+          tal:content="analysisrequest/id"></a>&nbsp;
+       <span i18n:translate="">has been replaced by</span>&nbsp;
+       <a tal:attributes="href analysisrequest/child_analysisrequest/id"
+          tal:content="analysisrequest/child_analysisrequest/id"></a>
+    </tal:invalidreport>
+</div>
+
+<!-- Summary section -->
+<div id="section-summary">
+    <h1 i18n:translate="">Summary</h1>
+    <table>
+        <tr>
+            <td class="label" i18n:translate="">Request ID</td>
+            <td>
+                <a tal:content="analysisrequest/id"
+                   tal:attributes="href analysisrequest/url;"></a>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="label" i18n:translate="">Sample ID</td>
+            <td>
+                <a
+                   tal:content="sample/id"
+                   tal:attributes="href sample/url"></a>
+            </td>
+        </tr>
+
+        <tr tal:condition="python: batch">
+            <td class="label" i18n:translate="">Batch ID</td>
+            <td>
+                <a tal:content="batch/id"
+                   tal:attributes="href batch/url"></a>
+            </td>
+        </tr>
+
+        <tr tal:condition="python: batch">
+            <td class="label" i18n:translate="">Client Batch ID</td>
+            <td tal:content="batch/client_batchid"></td>
+        </tr>
+
+        <tr>
+            <td class="label" i18n:translate="">Client</td>
+            <td>
+            <a tal:attributes="href client/url"
+               tal:content="client/name"></a>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="label" i18n:translate="">Client SID</td>
+            <td tal:content="analysisrequest/client_sampleid"></td>
+        </tr>
+
+        <tr>
+            <td class="label" i18n:translate="">Sample Type</td>
+            <td tal:content="sample/sample_type/title"></td>
+        </tr>
+
+        <!--tr>
+            <td class="label" i18n:translate="">Specification</td>
+            <td tal:content="view/get_active_spec_title"></td>
+        </tr>
+
+        <tr>
+            <td class="label" i18n:translate="">Date Received</td>
+            <td tal:content="python: view.ulocalized_time(view.ar['obj'].getDateReceived(), long_format=1)">2013-05-31 02:02 PM</td>
+        </tr>
+        <tr>
+            <td class="label" i18n:translate="">Date Published</td>
+            <td tal:content="python: view.ulocalized_time(view.ar['obj'].getDatePublished(), long_format=1)">2013-06-03 12:02 PM</td>
+        </tr>
+        <tr tal:condition="view/reporter">
+            <td class="label" i18n:translate="">Published by</td>
+            <td>
+                <tal:email tal:condition="view/reporter_email">
+                    (<a tal:define="email view/reporter_email"
+                       tal:content="email"
+                       tal:attributes="href string:mailto:${email}"></a>)
+                </tal:email>
+            </td>
+        </tr>
+        <tr tal:condition="python: view.batch['obj'] is not None and view.batch['obj'].getBatchLabels">
+            <td class="label" i18n:translate="">Batch Labels</td>
+            <td tal:define="value python:view.batch['obj'].get('getBatchLabels', []);"
+                tal:content="structure python:', '.join(view.get_titles_for_uids(*value))"></td>
+        </tr-->
     </table>
 </div>
 

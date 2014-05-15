@@ -25,11 +25,15 @@
                 </tal:formats>
             </select>
         </div>
-        <div id='ar_publish_body' tal:content='structure python:view.getReportTemplate()'
-                                  tal:define='datasource python:view.getDataSource()'></div>
-        <div id='ar_publish_actions'>
-
+        <div id='ar_publish_summary'>
+            <span i18n:translate="">Number of analysis requests:</span>&nbsp;
+            <span tal:content="python:view.getAnalysisRequestsCount()"></span>
         </div>
+
+        <tal:ar tal:repeat="i python:range(view.getAnalysisRequestsCount())">
+        <div class='ar_publish_body' tal:content='structure python:view.getReportTemplate()'></div>
+        </tal:ar>
+
     </div>
 </body>
 </html>
