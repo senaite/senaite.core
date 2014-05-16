@@ -1,4 +1,4 @@
-3.01a (unreleased)
+3.1 (unreleased)
 ------------------
 
 Product and Analysis specifications per AR
