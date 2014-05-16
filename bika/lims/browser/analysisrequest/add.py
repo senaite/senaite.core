@@ -205,7 +205,7 @@ class ajaxAnalysisRequestSubmit():
                     'SampleType'
                 ]:
                     continue
-                if (field in ar and not ar.get(field, '')):
+                if not ar.get(field, ''):
                     ajax_form_error(errors, field, column)
         # Return errors if there are any
         if errors:
