@@ -274,7 +274,7 @@ class ajaxAnalysisRequestSubmit():
             )
             if default_container_type:
                 container_type = bsc(UID=default_container_type)[0].getObject()
-                containers = container_type.getcontainers()
+                containers = container_type.getContainers()
                 for partition in partitions:
                     if not partition.get(container, None):
                         partition['container'] = containers
