@@ -14,11 +14,10 @@ from zope.interface import implements
 class ARAddAnalysesView(BikaListingView):
     """ bika listing to display Analyses table for AR Add.
     """
-    #TODO Has no effect template = ViewPageTemplateFile("./templates/araddanalyses.pt")
+    template = ViewPageTemplateFile("templates/add_analyses.pt")
     implements(IViewView)
 
-
-    def __init__(self, context, request): 
+    def __init__(self, context, request):
         super(ARAddAnalysesView, self).__init__(context, request)
         self.catalog = "bika_setup_catalog"
         self.contentFilter = {'portal_type': 'AnalysisService',
@@ -59,8 +58,8 @@ class ARAddAnalysesView(BikaListingView):
              'transitions': [],
              'custom_actions': [
                  {'id': 'save_analyses_button',
-                  'title': _('Save'),
-                  'url': 'workflow_action?action=copy_to_new'}, 
+                  'title': _('Save analyses'),
+                  'url': ''},
               ],
              },
         ]
@@ -71,7 +70,7 @@ class ARAddAnalysesView(BikaListingView):
     def __call__(self):
         """ return analyses table
         """
-        return self.contents_table(table_only = True)
+        return self.contents_table(table_only = False)
 
     def folderitems(self):
         self.categories = []
