@@ -1,7 +1,6 @@
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.browser import BrowserView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from plone.app.layout.globals.interfaces import IViewView
@@ -11,7 +10,8 @@ from zope.interface import implements
 class Report(BrowserView):
     implements(IViewView)
     default_template = ViewPageTemplateFile("templates/productivity.pt")
-    template = ViewPageTemplateFile("templates/productivity_analysesperdepartment.pt")
+    template = ViewPageTemplateFile(
+        "templates/productivity_analysesperdepartment.pt")
 
     def __init__(self, context, request, report=None):
         super(Report, self).__init__(context, request)
@@ -69,16 +69,20 @@ class Report(BrowserView):
             if groupby == 'Day':
                 group = self.ulocalized_time(daterequested)
             elif groupby == 'Week':
-                group = daterequested.strftime("%Y") + ", " + daterequested.strftime("%U")
+                group = daterequested.strftime(
+                    "%Y") + ", " + daterequested.strftime("%U")
             elif groupby == 'Month':
-                group = daterequested.strftime("%B") + " " + daterequested.strftime("%Y")
+                group = daterequested.strftime(
+                    "%B") + " " + daterequested.strftime("%Y")
             elif groupby == 'Year':
                 group = daterequested.strftime("%Y")
             else:
                 group = ''
 
-            dataline = {'Group': group, 'Requested': 0, 'Performed': 0, 'Published': 0, 'Departments': {}}
-            deptline = {'Department': department, 'Requested': 0, 'Performed': 0, 'Published': 0}
+            dataline = {'Group': group, 'Requested': 0, 'Performed': 0,
+                        'Published': 0, 'Departments': {}}
+            deptline = {'Department': department, 'Requested': 0, 'Performed': 0,
+                        'Published': 0}
             if (group in datalines):
                 dataline = datalines[group]
                 if (department in dataline['Departments']):
@@ -104,42 +108,54 @@ class Report(BrowserView):
                 groupperformedcount += 1
                 totalperformedcount += 1
 
-            group_performedrequested_ratio = float(groupperformedcount) / float(grouptotalcount)
-            group_publishedperformed_ratio = groupperformedcount > 0 and float(grouppublishedcount) / float(groupperformedcount) or 0
+            group_performedrequested_ratio = float(groupperformedcount) / float(
+                grouptotalcount)
+            group_publishedperformed_ratio = groupperformedcount > 0 and float(
+                grouppublishedcount) / float(groupperformedcount) or 0
 
-            anl_performedrequested_ratio = float(deptperformedcount) / float(depttotalcount)
-            anl_publishedperformed_ratio = deptperformedcount > 0 and float(deptpubishedcount) / float(deptperformedcount) or 0
+            anl_performedrequested_ratio = float(deptperformedcount) / float(
+                depttotalcount)
+            anl_publishedperformed_ratio = deptperformedcount > 0 and float(
+                deptpubishedcount) / float(deptperformedcount) or 0
 
             dataline['Requested'] = grouptotalcount
             dataline['Performed'] = groupperformedcount
             dataline['Published'] = grouppublishedcount
             dataline['PerformedRequestedRatio'] = group_performedrequested_ratio
-            dataline['PerformedRequestedRatioPercentage'] = ('{0:.0f}'.format(group_performedrequested_ratio * 100)) + "%"
+            dataline['PerformedRequestedRatioPercentage'] = ('{0:.0f}'.format(
+                group_performedrequested_ratio * 100)) + "%"
             dataline['PublishedPerformedRatio'] = group_publishedperformed_ratio
-            dataline['PublishedPerformedRatioPercentage'] = ('{0:.0f}'.format(group_publishedperformed_ratio * 100)) + "%"
+            dataline['PublishedPerformedRatioPercentage'] = ('{0:.0f}'.format(
+                group_publishedperformed_ratio * 100)) + "%"
 
             deptline['Requested'] = depttotalcount
             deptline['Performed'] = deptperformedcount
             deptline['Published'] = deptpubishedcount
             deptline['PerformedRequestedRatio'] = anl_performedrequested_ratio
-            deptline['PerformedRequestedRatioPercentage'] = ('{0:.0f}'.format(anl_performedrequested_ratio * 100)) + "%"
+            deptline['PerformedRequestedRatioPercentage'] = ('{0:.0f}'.format(
+                anl_performedrequested_ratio * 100)) + "%"
             deptline['PublishedPerformedRatio'] = anl_publishedperformed_ratio
-            deptline['PublishedPerformedRatioPercentage'] = ('{0:.0f}'.format(anl_publishedperformed_ratio * 100)) + "%"
+            deptline['PublishedPerformedRatioPercentage'] = ('{0:.0f}'.format(
+                anl_publishedperformed_ratio * 100)) + "%"
 
             dataline['Departments'][department] = deptline
             datalines[group] = dataline
 
         # Footer total data
-        total_performedrequested_ratio = float(totalperformedcount) / float(totalcount)
-        total_publishedperformed_ratio = totalperformedcount > 0 and float(totalpublishedcount) / float(totalperformedcount) or 0
+        total_performedrequested_ratio = float(totalperformedcount) / float(
+            totalcount)
+        total_publishedperformed_ratio = totalperformedcount > 0 and float(
+            totalpublishedcount) / float(totalperformedcount) or 0
 
         footline = {'Requested': totalcount,
                     'Performed': totalperformedcount,
                     'Published': totalpublishedcount,
                     'PerformedRequestedRatio': total_performedrequested_ratio,
-                    'PerformedRequestedRatioPercentage': ('{0:.0f}'.format(total_performedrequested_ratio * 100)) + "%",
+                    'PerformedRequestedRatioPercentage': ('{0:.0f}'.format(
+                        total_performedrequested_ratio * 100)) + "%",
                     'PublishedPerformedRatio': total_publishedperformed_ratio,
-                    'PublishedPerformedRatioPercentage': ('{0:.0f}'.format(total_publishedperformed_ratio * 100)) + "%"}
+                    'PublishedPerformedRatioPercentage': ('{0:.0f}'.format(
+                        total_publishedperformed_ratio * 100)) + "%"}
 
         footlines['Total'] = footline
 
@@ -151,6 +167,7 @@ class Report(BrowserView):
             import csv
             import StringIO
             import datetime
+
             fieldnames = [
                 'Group',
                 'Department',
@@ -159,7 +176,8 @@ class Report(BrowserView):
                 'Published',
             ]
             output = StringIO.StringIO()
-            dw = csv.DictWriter(output, extrasaction='ignore', fieldnames=fieldnames)
+            dw = csv.DictWriter(output, extrasaction='ignore',
+                                fieldnames=fieldnames)
             dw.writerow(dict((fn, fn) for fn in fieldnames))
             for group_name, group in datalines.items():
                 for dept_name, dept in group['Departments'].items():
@@ -176,8 +194,8 @@ class Report(BrowserView):
             setheader = self.request.RESPONSE.setHeader
             setheader('Content-Type', 'text/csv')
             setheader("Content-Disposition",
-                "attachment;filename=\"analysesperdepartment_%s.csv\"" % date)
+                      "attachment;filename=\"analysesperdepartment_%s.csv\"" % date)
             self.request.RESPONSE.write(report_data)
         else:
             return {'report_title': _('Analyses summary per department'),
-                'report_data': self.template()}
+                    'report_data': self.template()}

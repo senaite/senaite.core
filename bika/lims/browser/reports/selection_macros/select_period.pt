@@ -1,6 +1,6 @@
 <div class="field" tal:attributes="style view/style|nothing" tal:define="
-    periods python:['Day', 'Week', 'Month' ]"
-    i18n:domain="bika">
+        periods python:['Day', 'Week', 'Month' ]"
+        i18n:domain="bika">
 
     <label i18n:translate="">Period</label>
     <br/>
@@ -11,13 +11,13 @@
             tal:attributes="style string:font-family:${here/base_properties/fontFamily};;font-size:100%;">
 
         <tal:periods
-            tal:repeat="period periods">
+                tal:repeat="period periods">
 
             <option
-                tal:attributes="
-                    value python:period;
-                    selected python:request.get('period', '') == period and 'selected' or ''"
-                tal:content="period">
+                    tal:attributes="
+                            value python:period;
+                            selected python:request.get('period', '') == period and 'selected' or ''"
+                    tal:content="period">
             </option>
 
         </tal:periods>

@@ -174,7 +174,7 @@ class InvoiceBatch(BaseFolder):
                 description = get_invoice_item_description(item)
                 lineitem['ItemDescription'] = description
             lineitem['Subtotal'] = item.getSubtotal()
-            lineitem['VATTotal'] = item.getVATTotal()
+            lineitem['VATAmount'] = item.getVATAmount()
             lineitem['Total'] = item.getTotal()
             invoice.invoice_lineitems.append(lineitem)
         invoice.reindexObject()

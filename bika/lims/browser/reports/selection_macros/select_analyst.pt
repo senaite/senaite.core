@@ -1,5 +1,5 @@
 <div class="field" i18n:domain="bika" tal:attributes="style view/style|nothing"
-    tal:define="analysts view/analysts">
+        tal:define="analysts view/analysts">
 
     <label i18n:translate="">Analyst</label>
     <br/>
@@ -10,11 +10,11 @@
 
         <tal:analysts tal:repeat="analyst analysts">
             <option
-                value=""
-                tal:attributes="
-                    value python:analyst;
-                    selected python:request.get('Analyst', '') == analyst and 'selected' or ''"
-                tal:content="python:analysts.getValue(analyst)">
+                    value=""
+                    tal:attributes="
+                            value python:analyst;
+                            selected python:request.get('Analyst', '') == analyst and 'selected' or ''"
+                    tal:content="python:analysts.getValue(analyst)">
             </option>
         </tal:analysts>
 

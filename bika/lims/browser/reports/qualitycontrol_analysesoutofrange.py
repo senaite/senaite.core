@@ -4,7 +4,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.utils \
-    import formatDateQuery, formatDateParms, to_utf8, isAttributeHidden
+    import formatDateQuery, formatDateParms, isAttributeHidden
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 
@@ -59,7 +59,7 @@ class Report(BrowserView):
         if self.request.form.has_key('bika_analysis_workflow'):
             query['review_state'] = self.request.form['bika_analysis_workflow']
             review_state = wf_tool.getTitleForStateOnType(
-                        self.request.form['bika_analysis_workflow'], 'Analysis')
+                self.request.form['bika_analysis_workflow'], 'Analysis')
         else:
             review_state = 'Undefined'
         parms.append(
@@ -68,9 +68,10 @@ class Report(BrowserView):
              'type': 'text'})
 
         if self.request.form.has_key('bika_cancellation_workflow'):
-            query['cancellation_state'] = self.request.form['bika_cancellation_workflow']
+            query['cancellation_state'] = self.request.form[
+                'bika_cancellation_workflow']
             cancellation_state = wf_tool.getTitleForStateOnType(
-                        self.request.form['bika_cancellation_workflow'], 'Analysis')
+                self.request.form['bika_cancellation_workflow'], 'Analysis')
         else:
             cancellation_state = 'Undefined'
         parms.append(
@@ -79,9 +80,10 @@ class Report(BrowserView):
              'type': 'text'})
 
         if self.request.form.has_key('bika_worksheetanalysis_workflow'):
-            query['worksheetanalysis_review_state'] = self.request.form['bika_worksheetanalysis_workflow']
+            query['worksheetanalysis_review_state'] = self.request.form[
+                'bika_worksheetanalysis_workflow']
             ws_review_state = wf_tool.getTitleForStateOnType(
-                        self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
+                self.request.form['bika_worksheetanalysis_workflow'], 'Analysis')
         else:
             ws_review_state = 'Undefined'
         parms.append(
@@ -100,14 +102,14 @@ class Report(BrowserView):
                      _('Min'),
                      _('Max'),
                      _('Status'),
-                     ]
+        ]
         if isAttributeHidden('Sample', 'SamplePoint'):
             col_heads.remove(_('Sample point'))
 
         formats = {'columns': 10,
                    'col_heads': col_heads,
                    'class': '',
-                  }
+        }
 
         datalines = []
 
@@ -140,7 +142,7 @@ class Report(BrowserView):
                         spec_dict = rr[keyword]
                 else:
                     if hasattr(analysis, "specification") \
-                    and analysis.specification:
+                            and analysis.specification:
                         spec_dict = analysis.specification
                     else:
                         continue
@@ -154,7 +156,7 @@ class Report(BrowserView):
                 continue
 
             # check if in shoulder: out of range, but in acceptable
-            #     error percentage
+            # error percentage
             shoulder = False
             error = 0
             try:
@@ -166,7 +168,7 @@ class Report(BrowserView):
             error_min = result - error_amount
             error_max = result + error_amount
             if ((result < spec_min) and (error_max >= spec_min)) or \
-               ((result > spec_max) and (error_min <= spec_max)):
+                    ((result > spec_max) and (error_min <= spec_max)):
                 shoulder = True
 
             dataline = []
@@ -206,10 +208,9 @@ class Report(BrowserView):
 
             state = wf_tool.getInfoFor(analysis, 'review_state', '')
             review_state = wf_tool.getTitleForStateOnType(
-                        state, 'Analysis')
+                state, 'Analysis')
             dataitem = {'value': review_state}
             dataline.append(dataitem)
-
 
             datalines.append(dataline)
 
@@ -231,19 +232,17 @@ class Report(BrowserView):
         footline = []
         footitem = {'value': _('Analysis result within error range'),
                     'img_before': '++resource++bika.lims.images/exclamation.png'
-                   }
+        }
         footline.append(footitem)
         footnotes.append(footline)
 
-
-
         self.report_content = {
-                'headings': headings,
-                'parms': parms,
-                'formats': formats,
-                'datalines': datalines,
-                'footings': footlines,
-                'footnotes': footnotes}
+            'headings': headings,
+            'parms': parms,
+            'formats': formats,
+            'datalines': datalines,
+            'footings': footlines,
+            'footnotes': footnotes}
 
         title = t(headings['header'])
 

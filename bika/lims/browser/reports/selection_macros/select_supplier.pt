@@ -12,11 +12,11 @@
         <tal:samplepoints tal:repeat="supplier view/suppliers">
 
             <option value=""
-                tal:define="supplier_uid python:supplier.UID"
-                tal:attributes="
-                    value supplier_uid;
-                    selected python:request.get('SupplierUID', '') == supplier_uid and 'selected' or ''"
-                tal:content="supplier/Title">
+                    tal:define="supplier_uid python:supplier.UID"
+                    tal:attributes="
+                            value supplier_uid;
+                            selected python:request.get('SupplierUID', '') == supplier_uid and 'selected' or ''"
+                    tal:content="supplier/Title">
             </option>
 
         </tal:samplepoints>

@@ -204,6 +204,7 @@ Table data rows start here
         tal:repeat="item view/batch">
         <tr tal:condition="python:item.has_key('id') and item.get('category', 'None') == cat"
             tal:define="keyword python:item.has_key('Keyword') and item['Keyword'] or '';
+                        suid python:item.get('service_uid','');
                         tmpstyle python:(not cat in selected_cats) and 'display:none;;' or '';
                         tmpstyle python:view.context.bika_setup.getEnableAnalysisRemarks() and tmpstyle + 'border-bottom:0 !important;;' or tmpstyle;"
             tal:attributes="
@@ -212,7 +213,8 @@ Table data rows start here
                 class item/table_row_class;
                 id string:folder-contents-item-${item/uid};
                 uid item/uid;
-                keyword keyword;">
+                keyword keyword;
+                as_uid suid;">
 
         <tal:comment replace="nothing">***************
         Individual items' row_data is stored on each row.
@@ -658,8 +660,8 @@ Workflow Actions
                         tal:attributes="
                             id python:action['id']+'_transition';
                             transition action/id;
-							value action/title;
-							url python:action.get('url', '');"/>
+                            value action/title;
+                            url python:action.get('url', '');"/>
                 </span>
             </span>
         </td>

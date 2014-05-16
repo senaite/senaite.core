@@ -1,5 +1,5 @@
 <div class="field" tal:attributes="style view/style|nothing"
-    tal:condition="not:here/member_is_client" i18n:domain="bika">
+        tal:condition="not:here/member_is_client" i18n:domain="bika">
 
     <label i18n:translate="">Client</label>
     <br/>
@@ -12,12 +12,12 @@
 
         <tal:clients tal:repeat="client view/clients">
 
-                <option
+            <option
                     tal:attributes="
-                        value client/UID;
-                        selected python:request.get('ClientUID', '') == client.UID and 'selected' or ''"
+                            value client/UID;
+                            selected python:request.get('ClientUID', '') == client.UID and 'selected' or ''"
                     tal:content="client/Title">
-                </option>
+            </option>
 
         </tal:clients>
 

@@ -1,26 +1,21 @@
-from Acquisition import aq_inner
-from Acquisition import aq_parent
-from Products.CMFCore.utils import getToolByName
-from Products.Archetypes.config import REFERENCE_CATALOG
+from Acquisition import aq_parent, aq_inner
+
 
 def upgrade(tool):
-    """ Refactor ARs listing to allow sorting by priority
-    """
-
-    def addIndex(cat, *args):
-        try:
-            cat.addIndex(*args)
-        except:
-            pass
-
     portal = aq_parent(aq_inner(tool))
-    # Create new indexes
-    bc = getToolByName(portal, 'bika_catalog')
-    addIndex(bc, 'Priority', 'FieldIndex')
-    addIndex(bc, 'BatchUID', 'FieldIndex')
-    bc.clearFindAndRebuild()
 
-    bac = getToolByName(portal, 'bika_analysis_catalog')
-    addIndex(bac, 'Priority', 'FieldIndex')
-    bac.clearFindAndRebuild()
+    # Fix Analysis Services IMM incoherences
+    for service in portal.bika_setup.bika_analysisservices.objectValues('AnalysisService'):
+        if (service.getInstrumentEntryOfResults() == False):
+            # Remove any assigned instrument
+            service.setInstruments([])
+            service.setInstrument(None)
+
+        if (service.getManualEntryOfResults() == False):
+            # Remove any assigned manual method
+            service.setMethods([])
+            service.set_Method(None)
+
+        service.reindexObject()
+
     return True

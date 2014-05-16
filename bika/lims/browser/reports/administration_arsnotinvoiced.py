@@ -1,18 +1,12 @@
-from AccessControl import getSecurityManager
-from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
-from bika.lims.browser.client import ClientSamplesView
-from bika.lims.utils import formatDateQuery, formatDateParms, to_utf8
-from plone.app.content.browser.interfaces import IFolderContentsView
+from bika.lims.utils import formatDateQuery, formatDateParms
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
-from decimal import Decimal
-import json
-import plone
+
 
 class Report(BrowserView):
     implements(IViewView)
@@ -29,7 +23,8 @@ class Report(BrowserView):
         parms = []
         headings = {}
         headings['header'] = _("Analysis requests not invoiced")
-        headings['subheader'] = _("Published Analysis Requests which have not been invoiced")
+        headings['subheader'] = _(
+            "Published Analysis Requests which have not been invoiced")
 
         count_all = 0
 
@@ -45,18 +40,18 @@ class Report(BrowserView):
         else:
             pubished = 'Undefined'
         parms.append(
-            { 'title': _('Published'),
+            {'title': _('Published'),
              'value': pubished,
              'type': 'text'})
 
         if self.request.form.has_key('cancellation_state'):
             query['cancellation_state'] = self.request.form['cancellation_state']
             cancellation_state = wf_tool.getTitleForStateOnType(
-                        self.request.form['cancellation_state'], 'AnalysisRequest')
+                self.request.form['cancellation_state'], 'AnalysisRequest')
         else:
             cancellation_state = 'Undefined'
         parms.append(
-            { 'title': _('Active'),
+            {'title': _('Active'),
              'value': cancellation_state,
              'type': 'text'})
 
@@ -64,15 +59,15 @@ class Report(BrowserView):
 
         # and now lets do the actual report lines
         formats = {'columns': 6,
-                   'col_heads': [ _('Client'), \
-                                  _('Request'), \
-                                  _('Sample type'), \
-                                  _('Sample point'), \
-                                  _('Published'), \
-                                  _('Amount'), \
-                                  ],
+                   'col_heads': [_('Client'), \
+                                 _('Request'), \
+                                 _('Sample type'), \
+                                 _('Sample point'), \
+                                 _('Published'), \
+                                 _('Amount'), \
+                       ],
                    'class': '',
-                  }
+        }
 
         datalines = []
         clients = {}
@@ -104,7 +99,6 @@ class Report(BrowserView):
             dataitem = {'value': ar.getTotalPrice()}
             dataline.append(dataitem)
 
-
             datalines.append(dataline)
 
             count_all += 1
@@ -120,14 +114,12 @@ class Report(BrowserView):
         footline.append(footitem)
         footlines.append(footline)
 
-
         self.report_content = {
-                'headings': headings,
-                'parms': parms,
-                'formats': formats,
-                'datalines': datalines,
-                'footings': footlines}
-
+            'headings': headings,
+            'parms': parms,
+            'formats': formats,
+            'datalines': datalines,
+            'footings': footlines}
 
         return {'report_title': t(headings['header']),
                 'report_data': self.template()}

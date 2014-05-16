@@ -21,7 +21,7 @@ def upgrade(tool):
                 ItemDescription=pli.ItemDescription,
                 Accredited=pli.Accredited,
                 Subtotal="%d.%d" % (pli.Subtotal[0], pli.Subtotal[1]),
-                VATTotal="%d.%d" % (pli.VATTotal[0], pli.VATTotal[1]),
+                VATAmount="%d.%d" % (pli.VATAmount[0], pli.VATAmount[1]),
                 Total="%d.%d" % (pli.Total[0], pli.Total[1]),
                 CategoryTitle=pli.CategoryTitle,
             )

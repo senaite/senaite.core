@@ -10,7 +10,11 @@ window.bika.lims.AnalysisService = window.bika.lims.AnalysisService || {
         var deps = {};
         $.ajaxSetup({async:false});
         window.bika.lims.jsonapi_read(request_data, function(data){
-            deps = data.objects[0].ServiceDependants;
+            if (data.objects != null && data.objects.length > 0) {
+                deps = data.objects[0].ServiceDependants;
+            } else {
+                deps = [];
+            }
         });
         $.ajaxSetup({async:true});
         return deps;
@@ -23,7 +27,11 @@ window.bika.lims.AnalysisService = window.bika.lims.AnalysisService || {
         var deps = {};
         $.ajaxSetup({async:false});
         window.bika.lims.jsonapi_read(request_data, function(data){
-            deps = data.objects[0].ServiceDependencies;
+            if (data.objects != null && data.objects.length > 0) {
+                deps = data.objects[0].ServiceDependencies;
+            } else {
+                deps = [];
+            }
         });
         $.ajaxSetup({async:true});
         return deps;

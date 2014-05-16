@@ -1,13 +1,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:tal="http://xml.zope.org/namespaces/tal"
-  xmlns:metal="http://xml.zope.org/namespaces/metal"
-  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-  metal:use-macro="here/main_template/macros/master"
-  i18n:domain="bika">
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+        metal:use-macro="here/main_template/macros/master"
+        i18n:domain="bika">
 <body>
 
 <metal:content-title fill-slot="content-title">
-  <h1 i18n:translate="">Quality Control Reports</h1>
+    <h1 i18n:translate="">Quality Control Reports</h1>
 </metal:content-title>
 
 <metal:content-description fill-slot="content-description">
@@ -15,199 +14,217 @@
 
 <metal:content-core fill-slot="content-core">
 
-<input tal:replace="structure context/@@authenticator/authenticator"/>
+    <input tal:replace="structure context/@@authenticator/authenticator"/>
 
-<table>
-  <tr>
-    <td VALIGN="top">
-      <fieldset>
-        <legend i18n:translate="">Report</legend>
+    <table>
+        <tr>
+            <td VALIGN="top">
+                <fieldset>
+                    <legend i18n:translate="">Report</legend>
 
-        <p>
-          <a href="#"
-             id="analysesoutofrange_selector"
-             i18n:translate="">Analyses out of range</a>
-          <br/>
+                    <p>
+                        <a href="#"
+                           id="analysesoutofrange_selector"
+                                i18n:translate="">Analyses out of range</a>
+                        <br/>
           <span i18n:translate="">
             Analysis results out of lab or client specified range
             Note that this may take several minutes
           </span>
-        </p>
+                    </p>
 
-        <p>
-          <a href="#"
-             id="analysesrepeated_selector"
-             i18n:translate="">Analyses repeated</a>
-          <br/>
+                    <p>
+                        <a href="#"
+                           id="analysesrepeated_selector"
+                                i18n:translate="">Analyses repeated</a>
+                        <br/>
           <span i18n:translate="">
             Repeated analyses
           </span>
-        </p>
+                    </p>
 
-        <p tal:condition="not: view/isSamplePointHidden">
-          <a href="#"
-             id="resultspersamplepoint_selector"
-             i18n:translate="">Results per sample point</a>
-          <br/>
+                    <p tal:condition="not: view/isSamplePointHidden">
+                        <a href="#"
+                           id="resultspersamplepoint_selector"
+                                i18n:translate="">Results per sample point</a>
+                        <br/>
           <span i18n:translate="">
             Results per samplepoint and analysis service
           </span>
-        </p>
+                    </p>
 
-        <p>
-          <a href="#"
-             id="referenceanalysisqc_selector"
-             i18n:translate="">Reference analysis QC</a>
-          <br/>
+                    <p>
+                        <a href="#"
+                           id="referenceanalysisqc_selector"
+                                i18n:translate="">Reference analysis QC</a>
+                        <br/>
           <span i18n:translate="">
             Reference analysis quality control graphs
           </span>
-        </p>
+                    </p>
 
-        <p>
-          <a href="#"
-             id="duplicateanalysisqc_selector"
-             i18n:translate="">Duplicate analysis QC</a>
-          <br/>
+                    <p>
+                        <a href="#"
+                           id="duplicateanalysisqc_selector"
+                                i18n:translate="">Duplicate analysis QC</a>
+                        <br/>
           <span i18n:translate="">
             Duplicate analysis quality control graphs
           </span>
-        </p>
-      </fieldset>
-    </td>
-    <td VALIGN="top">
+                    </p>
+                </fieldset>
+            </td>
+            <td VALIGN="top">
 
-      <div id="analysesoutofrange" style="display:none" class="criteria">
-        <form action="createreport" method="post" name="qualitycontrol_analysesoutofrange">
-          <input type="hidden" name="report_id" value="qualitycontrol_analysesoutofrange" />
-          <fieldset>
-            <legend i18n:translate="">Analyses out of range</legend>
-            <tal:x content="structure context/@@selection_macros/select_analysisspecification"/>
-            <tal:x content="structure python:view.selection_macros.select_daterange(
+                <div id="analysesoutofrange" style="display:none"
+                     class="criteria">
+                    <form action="createreport" method="post"
+                          name="qualitycontrol_analysesoutofrange">
+                        <input type="hidden" name="report_id"
+                               value="qualitycontrol_analysesoutofrange"/>
+                        <fieldset>
+                            <legend i18n:translate="">Analyses out of range
+                            </legend>
+                            <tal:x content="structure context/@@selection_macros/select_analysisspecification"/>
+                            <tal:x content="structure python:view.selection_macros.select_daterange(
                                                    field_id='Received',
                                                    field_title='Date Received')"/>
-            <tal:x content="structure python:view.selection_macros.select_state(
+                            <tal:x content="structure python:view.selection_macros.select_state(
                                                    workflow_id='bika_analysis_workflow',
                                                    field_id='bika_analysis_workflow',
                                                    field_title='Analysis state')"/>
-            <tal:x content="structure python:view.selection_macros.select_state(
+                            <tal:x content="structure python:view.selection_macros.select_state(
                                                    workflow_id='bika_cancellation_workflow',
                                                    field_id='bika_cancellation_workflow',
                                                    field_title='Cancellation state')"/>
-            <tal:x content="structure python:view.selection_macros.select_state(
+                            <tal:x content="structure python:view.selection_macros.select_state(
                                                    workflow_id='bika_worksheetanalysis_workflow',
                                                    field_id='bika_worksheetanalysis_workflow',
                                                    field_title='Worksheet state')"/>
-            <tal:x content="structure context/@@selection_macros/select_output_format"/>
-          </fieldset>
-          <input tabindex=""
-            class="searchButton"
-            type="submit"
-            name="submit"
-            value="Generate report"
-            i18n:attributes="value"/>
-        </form>
-      </div>
+                            <tal:x content="structure context/@@selection_macros/select_output_format"/>
+                        </fieldset>
+                        <input tabindex=""
+                               class="searchButton"
+                               type="submit"
+                               name="submit"
+                               value="Generate report"
+                                i18n:attributes="value"/>
+                    </form>
+                </div>
 
-      <div id="analysesrepeated" style="display:none" class="criteria">
-        <form action="createreport" method="post" name="qualitycontrol_analysesrepeated">
-          <input type="hidden" name="report_id" value="qualitycontrol_analysesrepeated" />
-          <fieldset>
-            <legend i18n:translate="">Analyses repeated</legend>
-              <tal:x content="structure python:view.selection_macros.select_daterange(
+                <div id="analysesrepeated" style="display:none" class="criteria">
+                    <form action="createreport" method="post"
+                          name="qualitycontrol_analysesrepeated">
+                        <input type="hidden" name="report_id"
+                               value="qualitycontrol_analysesrepeated"/>
+                        <fieldset>
+                            <legend i18n:translate="">Analyses repeated</legend>
+                            <tal:x content="structure python:view.selection_macros.select_daterange(
                                                      field_id='Received',
                                                      field_title='Date Received')"/>
-              <tal:x content="structure python:view.selection_macros.select_state(
+                            <tal:x content="structure python:view.selection_macros.select_state(
                                                      workflow_id='bika_analysis_workflow',
                                                      field_id='bika_analysis_workflow',
                                                      field_title='Analysis state')"/>
-              <tal:x content="structure python:view.selection_macros.select_state(
+                            <tal:x content="structure python:view.selection_macros.select_state(
                                                      workflow_id='bika_cancellation_workflow',
                                                      field_id='bika_cancellation_workflow',
                                                      field_title='Cancellation state')"/>
-              <tal:x content="structure python:view.selection_macros.select_state(
+                            <tal:x content="structure python:view.selection_macros.select_state(
                                                      workflow_id='bika_worksheetanalysis_workflow',
                                                      field_id='bika_worksheetanalysis_workflow',
                                                      field_title='Worksheet state')"/>
-            <tal:x content="structure context/@@selection_macros/select_output_format"/>
-          </fieldset>
-            <input tabindex=""
-              class="searchButton"
-              type="submit"
-              name="submit"
-              value="Generate report"
-              i18n:attributes="value"/>
-        </form>
-      </div>
+                            <tal:x content="structure context/@@selection_macros/select_output_format"/>
+                        </fieldset>
+                        <input tabindex=""
+                               class="searchButton"
+                               type="submit"
+                               name="submit"
+                               value="Generate report"
+                                i18n:attributes="value"/>
+                    </form>
+                </div>
 
-      <div id="resultspersamplepoint" style="display:none" class="criteria">
-        <form action="createreport" method="post" name="qualitycontrol_resultspersamplepoint">
-          <input type="hidden" name="report_id" value="qualitycontrol_resultspersamplepoint" />
-          <fieldset>
-            <legend i18n:translate="">Results per sample point</legend>
-            <tal:x content="structure context/@@selection_macros/select_client"/>
-            <tal:x content="structure python:view.selection_macros.select_samplepoint(
+                <div id="resultspersamplepoint" style="display:none"
+                     class="criteria">
+                    <form action="createreport" method="post"
+                          name="qualitycontrol_resultspersamplepoint">
+                        <input type="hidden" name="report_id"
+                               value="qualitycontrol_resultspersamplepoint"/>
+                        <fieldset>
+                            <legend i18n:translate="">Results per sample point
+                            </legend>
+                            <tal:x content="structure context/@@selection_macros/select_client"/>
+                            <tal:x content="structure python:view.selection_macros.select_samplepoint(
                                              allow_blank=True)"/>
-            <tal:x content="structure python:view.selection_macros.select_sampletype(
+                            <tal:x content="structure python:view.selection_macros.select_sampletype(
                                              allow_blank=True)"/>
-            <tal:x content="structure python:view.selection_macros.select_analysisservice(
+                            <tal:x content="structure python:view.selection_macros.select_analysisservice(
                                              multiselect=True,
                                              allow_blank=False)"/>
-            <tal:x content="structure python:view.selection_macros.select_daterange(
+                            <tal:x content="structure python:view.selection_macros.select_daterange(
                                              field_id='getDateSampled',
                                              field_title='Date Sampled')"/>
-            <tal:x content="structure python:view.selection_macros.select_state(
+                            <tal:x content="structure python:view.selection_macros.select_state(
                                              workflow_id='bika_worksheetanalysis_workflow',
                                              field_id='worksheetanalysis_review_state',
                                              field_title='Worksheet state')"/>
-            <tal:x content="structure context/@@selection_macros/select_output_format"/>
-          </fieldset>
-          <input tabindex=""
-              class="searchButton"
-              type="submit"
-              name="submit"
-              value="Generate report"
-              i18n:attributes="value"/>
-        </form>
-      </div>
+                            <tal:x content="structure context/@@selection_macros/select_output_format"/>
+                        </fieldset>
+                        <input tabindex=""
+                               class="searchButton"
+                               type="submit"
+                               name="submit"
+                               value="Generate report"
+                                i18n:attributes="value"/>
+                    </form>
+                </div>
 
-      <div id="referenceanalysisqc" style="display:none" class="criteria">
-        <form action="createreport" method="post" name="qualitycontrol_referenceanalysisqc">
-          <input type="hidden" name="report_id" value="qualitycontrol_referenceanalysisqc" />
-          <fieldset>
-            <legend i18n:translate="">Reference analysis QC</legend>
-            <tal:x content="structure context/@@selection_macros/select_supplier"/>
-            <tal:x content="structure context/@@selection_macros/select_reference_sample"/>
-            <tal:x content="structure context/@@selection_macros/select_reference_service"/>
-            <tal:x content="structure python:view.selection_macros.select_daterange(
+                <div id="referenceanalysisqc" style="display:none"
+                     class="criteria">
+                    <form action="createreport" method="post"
+                          name="qualitycontrol_referenceanalysisqc">
+                        <input type="hidden" name="report_id"
+                               value="qualitycontrol_referenceanalysisqc"/>
+                        <fieldset>
+                            <legend i18n:translate="">Reference analysis QC
+                            </legend>
+                            <tal:x content="structure context/@@selection_macros/select_supplier"/>
+                            <tal:x content="structure context/@@selection_macros/select_reference_sample"/>
+                            <tal:x content="structure context/@@selection_macros/select_reference_service"/>
+                            <tal:x content="structure python:view.selection_macros.select_daterange(
                                              field_id='getDateVerified',
                                              field_title='Date Verified')"/>
-            <tal:x content="structure context/@@selection_macros/select_output_format"/>
-          </fieldset>
-          <input tabindex=""
-              class="searchButton"
-              type="submit"
-              name="submit"
-              value="Generate report"
-              i18n:attributes="value"/>
-        </form>
-      </div>
+                            <tal:x content="structure context/@@selection_macros/select_output_format"/>
+                        </fieldset>
+                        <input tabindex=""
+                               class="searchButton"
+                               type="submit"
+                               name="submit"
+                               value="Generate report"
+                                i18n:attributes="value"/>
+                    </form>
+                </div>
 
-      <div id="duplicateanalysisqc" style="display:none" class="criteria">
-        <form action="createreport" method="post" name="qualitycontrol_duplicateanalysisqc">
-          <input type="hidden" name="report_id" value="qualitycontrol_duplicateanalysisqc" />
-          <fieldset>
-          <legend i18n:translate="">Duplicate analysis QC</legend>
-            <br/>
-            <br/>
-            <br/>
-            <b> Under construction </b>
-          </fieldset>
-        </form>
-      </div>
-    </td>
-  </tr>
-</table>
+                <div id="duplicateanalysisqc" style="display:none"
+                     class="criteria">
+                    <form action="createreport" method="post"
+                          name="qualitycontrol_duplicateanalysisqc">
+                        <input type="hidden" name="report_id"
+                               value="qualitycontrol_duplicateanalysisqc"/>
+                        <fieldset>
+                            <legend i18n:translate="">Duplicate analysis QC
+                            </legend>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <b> Under construction </b>
+                        </fieldset>
+                    </form>
+                </div>
+            </td>
+        </tr>
+    </table>
 
 </metal:content-core>
 

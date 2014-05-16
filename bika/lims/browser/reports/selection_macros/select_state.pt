@@ -5,18 +5,18 @@
 
     <select
             tal:attributes="
-                id view/field_id;
-                name string:${view/field_id}:ignore_empty">
+            id view/field_id;
+            name string:${view/field_id}:ignore_empty">
 
         <option value=""/>
 
         <tal:states
-            tal:repeat="state view/states">
+                tal:repeat="state view/states">
 
             <option value=""
-                tal:attributes="value state/id;
-                    selected python:request.get(view.field_id, '') == state['id'] and 'selected' or ''"
-                tal:content="state/title">
+                    tal:attributes="value state/id;
+                            selected python:request.get(view.field_id, '') == state['id'] and 'selected' or ''"
+                    tal:content="state/title">
             </option>
 
         </tal:states>

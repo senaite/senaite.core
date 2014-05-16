@@ -3,7 +3,7 @@ from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.utils import getUsers
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+
 
 class SelectionMacrosView(BrowserView):
     """ Display snippets for the query form, and
@@ -23,6 +23,7 @@ class SelectionMacrosView(BrowserView):
                                  }
 
     """
+
     def __init__(self, context, request):
         super(SelectionMacrosView, self).__init__(context, request)
         self.bc = self.bika_catalog
@@ -31,25 +32,31 @@ class SelectionMacrosView(BrowserView):
         self.pc = self.portal_catalog
         self.rc = self.reference_catalog
 
-    select_analysiscategory_pt = ViewPageTemplateFile("select_analysiscategory.pt")
+    select_analysiscategory_pt = ViewPageTemplateFile(
+        "select_analysiscategory.pt")
+
     def select_analysiscategory(self, style=None):
         self.style = style
-        self.analysiscategories = self.bsc(portal_type='AnalysisCategory', sort_on='sortable_title')
+        self.analysiscategories = self.bsc(portal_type='AnalysisCategory',
+                                           sort_on='sortable_title')
         return self.select_analysiscategory_pt()
 
     select_analysisservice_pt = ViewPageTemplateFile("select_analysisservice.pt")
-    def select_analysisservice(self, allow_blank=True, multiselect=False, style=None):
+
+    def select_analysisservice(self, allow_blank=True, multiselect=False,
+                               style=None):
         self.style = style
         self.allow_blank = allow_blank
         self.multiselect = multiselect
-        self.analysisservices = self.bsc(portal_type='AnalysisService', sort_on='sortable_title')
+        self.analysisservices = self.bsc(portal_type='AnalysisService',
+                                         sort_on='sortable_title')
         return self.select_analysisservice_pt()
 
     def parse_analysisservice(self, request):
         val = request.form.get("ServiceUID", "")
         if val:
             if not type(val) in (list, tuple):
-                val = (val,) # Single service
+                val = (val,)  # Single service
             val = [self.rc.lookupObject(s) for s in val]
             uids = [o.UID() for o in val]
             titles = [o.Title() for o in val]
@@ -59,7 +66,9 @@ class SelectionMacrosView(BrowserView):
             res['titles'] = ','.join(titles)
             return res
 
-    select_analysisspecification_pt = ViewPageTemplateFile("select_analysisspecification.pt")
+    select_analysisspecification_pt = ViewPageTemplateFile(
+        "select_analysisspecification.pt")
+
     def select_analysisspecification(self, style=None):
         self.style = style
         specfolder_uid = self.context.bika_setup.bika_analysisspecs.UID()
@@ -72,17 +81,22 @@ class SelectionMacrosView(BrowserView):
             for s in c.objectValues():
                 if s.portal_type != 'AnalysisSpec':
                     continue
-                res.append({'uid': s.UID(), 'title': s.Title() + " (" + c.Title() + ")"})
+                res.append(
+                    {'uid': s.UID(), 'title': s.Title() + " (" + c.Title() + ")"})
         self.specs = res
         return self.select_analysisspecification_pt()
 
     select_analyst_pt = ViewPageTemplateFile("select_analyst.pt")
+
     def select_analyst(self, allow_blank=False, style=None):
         self.style = style
-        self.analysts = getUsers(self.context, ['Manager', 'Analyst', 'LabManager'], allow_blank)
+        self.analysts = getUsers(self.context,
+                                 ['Manager', 'Analyst', 'LabManager'],
+                                 allow_blank)
         return self.select_analyst_pt()
 
     select_user_pt = ViewPageTemplateFile("select_user.pt")
+
     def select_user(self, allow_blank=True, style=None):
         self.style = style
         self.allow_blank = allow_blank
@@ -90,9 +104,11 @@ class SelectionMacrosView(BrowserView):
         return self.select_user_pt()
 
     select_client_pt = ViewPageTemplateFile("select_client.pt")
+
     def select_client(self, style=None):
         self.style = style
-        self.clients = self.pc(portal_type='Client', inactive_state='active', sort_on='sortable_title')
+        self.clients = self.pc(portal_type='Client', inactive_state='active',
+                               sort_on='sortable_title')
         return self.select_client_pt()
 
     def parse_client(self, request):
@@ -107,12 +123,15 @@ class SelectionMacrosView(BrowserView):
             return res
 
     select_contact_pt = ViewPageTemplateFile("select_contact.pt")
+
     def select_contact(self, style=None):
         self.style = style
-        self.contacts = self.pc(portal_type='Contact', inactive_state='active', sort_on='sortable_title')
+        self.contacts = self.pc(portal_type='Contact', inactive_state='active',
+                                sort_on='sortable_title')
         return self.select_contact_pt()
 
     select_daterange_pt = ViewPageTemplateFile("select_daterange.pt")
+
     def select_daterange(self, field_id, field_title, style=None):
         self.style = style
         self.field_id = field_id
@@ -127,7 +146,8 @@ class SelectionMacrosView(BrowserView):
         if from_date and to_date:
             query = {'query': [from_date, to_date], 'range': 'min:max'}
         elif from_date or to_date:
-            query = {'query': from_date or to_date, 'range': from_date and 'min' or 'max'}
+            query = {'query': from_date or to_date,
+                     'range': from_date and 'min' or 'max'}
         else:
             return None
 
@@ -145,39 +165,53 @@ class SelectionMacrosView(BrowserView):
         return res
 
     select_instrument_pt = ViewPageTemplateFile("select_instrument.pt")
+
     def select_instrument(self, style=None):
         self.style = style
-        self.instruments = self.bsc(portal_type='Instrument', inactive_state='active', sort_on='sortable_title')
+        self.instruments = self.bsc(portal_type='Instrument',
+                                    inactive_state='active',
+                                    sort_on='sortable_title')
         return self.select_instrument_pt()
 
     select_period_pt = ViewPageTemplateFile("select_period.pt")
+
     def select_period(self, style=None):
         self.style = style
         return self.select_period_pt()
 
     select_profile_pt = ViewPageTemplateFile("select_profile.pt")
+
     def select_profile(self, style=None):
         self.style = style
-        self.analysisprofiles = self.bsc(portal_type='AnalysisProfile', inactive_state='active', sort_on='sortable_title')
+        self.analysisprofiles = self.bsc(portal_type='AnalysisProfile',
+                                         inactive_state='active',
+                                         sort_on='sortable_title')
         return self.select_profile_pt()
 
     select_supplier_pt = ViewPageTemplateFile("select_supplier.pt")
+
     def select_supplier(self, style=None):
         self.style = style
-        self.suppliers = self.bsc(portal_type='Supplier', inactive_state='active', sort_on='sortable_title')
+        self.suppliers = self.bsc(portal_type='Supplier', inactive_state='active',
+                                  sort_on='sortable_title')
         return self.select_supplier_pt()
 
-    select_reference_sample_pt = ViewPageTemplateFile("select_reference_sample.pt")
+    select_reference_sample_pt = ViewPageTemplateFile(
+        "select_reference_sample.pt")
+
     def select_reference_sample(self, style=None):
         self.style = style
         return self.select_reference_sample_pt()
 
-    select_reference_service_pt = ViewPageTemplateFile("select_reference_service.pt")
+    select_reference_service_pt = ViewPageTemplateFile(
+        "select_reference_service.pt")
+
     def select_reference_service(self, style=None):
         self.style = style
         return self.select_reference_service_pt()
 
     select_state_pt = ViewPageTemplateFile("select_state.pt")
+
     def select_state(self, workflow_id, field_id, field_title, style=None):
         self.style = style
         self.field_id = field_id
@@ -186,7 +220,7 @@ class SelectionMacrosView(BrowserView):
         self.states = []
         for state_id in states:
             state = states[state_id]
-            self.states.append({ 'id': state.getId(), 'title': state.title })
+            self.states.append({'id': state.getId(), 'title': state.title})
         return self.select_state_pt()
 
     def parse_state(self, request, workflow_id, field_id, field_title):
@@ -201,11 +235,14 @@ class SelectionMacrosView(BrowserView):
             return res
 
     select_samplepoint_pt = ViewPageTemplateFile("select_samplepoint.pt")
+
     def select_samplepoint(self, allow_blank=True, multiselect=False, style=None):
         self.style = style
         self.allow_blank = allow_blank
         self.multiselect = multiselect
-        self.samplepoints = self.bsc(portal_type='SamplePoint', inactive_state='active', sort_on='sortable_title')
+        self.samplepoints = self.bsc(portal_type='SamplePoint',
+                                     inactive_state='active',
+                                     sort_on='sortable_title')
         return self.select_samplepoint_pt()
 
     def parse_samplepoint(self, request):
@@ -220,11 +257,14 @@ class SelectionMacrosView(BrowserView):
             return res
 
     select_sampletype_pt = ViewPageTemplateFile("select_sampletype.pt")
+
     def select_sampletype(self, allow_blank=True, multiselect=False, style=None):
         self.style = style
         self.allow_blank = allow_blank
         self.multiselect = multiselect
-        self.sampletypes = self.bsc(portal_type='SampleType', inactive_state='active', sort_on='sortable_title')
+        self.sampletypes = self.bsc(portal_type='SampleType',
+                                    inactive_state='active',
+                                    sort_on='sortable_title')
         return self.select_sampletype_pt()
 
     def parse_sampletype(self, request):
@@ -239,12 +279,15 @@ class SelectionMacrosView(BrowserView):
             return res
 
     select_groupingperiod_pt = ViewPageTemplateFile("select_groupingperiod.pt")
-    def select_groupingperiod(self, allow_blank=True, multiselect=False, style=None):
+
+    def select_groupingperiod(self, allow_blank=True, multiselect=False,
+                              style=None):
         self.style = style
         self.allow_blank = allow_blank
         return self.select_groupingperiod_pt()
 
     select_output_format_pt = ViewPageTemplateFile("select_output_format.pt")
+
     def select_output_format(self, style=None):
         self.style = style
         return self.select_output_format_pt()

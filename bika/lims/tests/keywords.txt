@@ -36,6 +36,7 @@ Select from dropdown
     Input text         ${locator}  ${search_text}
     sleep    1
     Click Element      xpath=//div[contains(@class,'cg-colItem')][${item_number}]
+    sleep    1
 
 
 SelectDate

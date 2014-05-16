@@ -13,6 +13,7 @@ from plone.app.layout.globals.interfaces import IViewView
 from zope.component import getMultiAdapter
 from zope.interface import implements
 import json, plone
+from operator import itemgetter
 
 class ViewView(BrowserView):
     """ Reference Sample View
@@ -38,6 +39,47 @@ class ViewView(BrowserView):
         self.categories.sort()
         return self.template()
 
+
+class ReferenceAnalysesViewView(BrowserView):
+    """ View of Reference Analyses linked to the Reference Sample.
+    """
+
+    implements(IViewView)
+    template = ViewPageTemplateFile("templates/referencesample_analyses.pt")
+
+    def __init__(self, context, request):
+        super(ReferenceAnalysesViewView, self).__init__(context, request)
+        self.icon = self.portal_url + "/++resource++bika.lims.images/referencesample_big.png"
+        self.title = _("Reference Analyses")
+        self.description = ""
+        self._analysesview = None
+
+    def __call__(self):
+        return self.template()
+
+    def get_analyses_table(self):
+        """ Returns the table of Reference Analyses
+        """
+        return self.get_analyses_view().contents_table()
+
+    def get_analyses_view(self):
+        if not self._analysesview:
+            # Creates the Analyses View if not exists yet
+            self._analysesview = ReferenceAnalysesView(self.context,
+                                    self.request)
+            self._analysesview.allow_edit = False
+            self._analysesview.show_select_column = False
+            self._analysesview.show_workflow_action_buttons = False
+            self._analysesview.form_id = "%s_qcanalyses" % self.context.UID()
+            self._analysesview.review_states[0]['transitions'] = [{}]
+        return self._analysesview
+
+    def getReferenceSampleId(self):
+        return self.context.id;
+
+    def get_analyses_json(self):
+        return self.get_analyses_view().get_analyses_json()
+
 class ReferenceAnalysesView(AnalysesView):
     """ Reference Analyses on this sample
     """
@@ -55,7 +97,8 @@ class ReferenceAnalysesView(AnalysesView):
         self.allow_edit = False
 
         self.columns = {
-            'id': {'title': _('ID')},
+            'id': {'title': _('ID'), 'toggle':False},
+            'getReferenceAnalysesGroupID': {'title': _('QC Sample ID'), 'toggle': True},
             'Category': {'title': _('Category'), 'toggle':True},
             'Service': {'title': _('Service'), 'toggle':True},
             'Worksheet': {'title': _('Worksheet'), 'toggle':True},
@@ -82,6 +125,7 @@ class ReferenceAnalysesView(AnalysesView):
              'contentFilter':{},
              'transitions': [],
              'columns':['id',
+                        'getReferenceAnalysesGroupID',
                         'Category',
                         'Service',
                         'Worksheet',
@@ -94,11 +138,14 @@ class ReferenceAnalysesView(AnalysesView):
                         'state_title'],
              },
         ]
+        self.anjson = {}
 
     def folderitems(self):
         items = super(ReferenceAnalysesView, self).folderitems()
+        items.sort(key=itemgetter('CaptureDate'), reverse=True)
+        outitems = []
         for x in range(len(items)):
-            if not items[x].has_key('obj'):
+            if not items[x].has_key('obj') or items[x]['Result'] == '':
                 continue
             obj = items[x]['obj']
             service = obj.getService()
@@ -108,7 +155,50 @@ class ReferenceAnalysesView(AnalysesView):
             items[x]['Captured'] = self.ulocalized_time(obj.getResultCaptureDate())
             brefs = obj.getBackReferences("WorksheetAnalysis")
             items[x]['Worksheet'] = brefs and brefs[0].Title() or ''
-        return items
+
+            # Create json
+            qcid = obj.aq_parent.id;
+            serviceref = "%s (%s)" % (items[x]['Service'], items[x]['Keyword'])
+            trows = self.anjson.get(serviceref, {});
+            anrows = trows.get(qcid, []);
+            anid = '%s.%s' % (items[x]['getReferenceAnalysesGroupID'],
+                              items[x]['id'])
+            rr = obj.aq_parent.getResultsRangeDict()
+            uid = service.UID()
+            if uid in rr:
+                specs = rr[uid];
+                try:
+                    smin  = float(specs.get('min', 0))
+                    smax = float(specs.get('max', 0))
+                    error  = float(specs.get('error', 0))
+                    target = float(specs.get('result', 0))
+                    result = float(items[x]['Result'])
+                    error_amount = ((target / 100) * error) if target > 0 else 0
+                    upper  = smax + error_amount
+                    lower   = smin - error_amount
+
+                    anrow = { 'date': items[x]['CaptureDate'],
+                              'min': smin,
+                              'max': smax,
+                              'target': target,
+                              'error': error,
+                              'erroramount': error_amount,
+                              'upper': upper,
+                              'lower': lower,
+                              'result': result,
+                              'unit': items[x]['Unit'],
+                              'id': items[x]['uid'] }
+                    anrows.append(anrow);
+                    trows[qcid] = anrows;
+                    self.anjson[serviceref] = trows
+                except:
+                    pass
+            outitems.append(items[x])
+        return outitems
+
+    def get_analyses_json(self):
+        return json.dumps(self.anjson)
+
 
 class ReferenceResultsView(BikaListingView):
     """

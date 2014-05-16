@@ -26,6 +26,7 @@ function AnalysisServiceEditView() {
     var acalc_fd   = $('#archetypes-fieldname-DeferredCalculation');
     var acalc_sel  = $('#archetypes-fieldname-DeferredCalculation #DeferredCalculation');
     var interim_fd = $("#archetypes-fieldname-InterimFields");
+    var interim_rw = $("#archetypes-fieldname-InterimFields tr.records_row_InterimFields");
 
     /**
      * Entry-point method for AnalysisServiceEditView
@@ -48,6 +49,43 @@ function AnalysisServiceEditView() {
             $('#analysisservice-base-edit').before(html);
         }
 
+        // The 'Manual entry of results' value changes
+        $(manual_chk).change(function() {
+            if ($(this).is(':checked')) {
+
+                // The user can select the Analysis Service methods
+                // manually. The default method will be retrieved from
+                // the methods selected in the multiselect box
+
+                // Show the methods multiselector
+                $(methods_fd).fadeIn('slow');
+
+                // Show the default method selector
+                $(method_fd).show();
+                $(method_sel).unbind("focus");
+
+                // Delegate remaining actions to Methods change event
+                $(methods_ms).change();
+
+            } else {
+
+                // The method selection must be done by enabling the
+                // 'Allow instrument entry of results'
+
+                // Hide and clear the methods multiselector
+                $(methods_fd).hide();
+                $(methods_ms).find('option[selected]').prop('selected', false);
+                $(methods_ms).val('');
+
+                // Delegate remaining actions to Methods change event
+                $(methods_ms).change();
+
+                // Select instrument entry and fire event
+                $(instr_chk).prop('checked', true);
+            }
+            $(instr_chk).change();
+        });
+
         // The 'Allow instrument entry of results' value changes
         $(instr_chk).change(function() {
             if ($(this).is(':checked')) {
@@ -59,19 +97,22 @@ function AnalysisServiceEditView() {
                 // The user must be able to allow manual entry
                 $(manual_chk).unbind("click");
 
-                // Hide the methods multiselector
-                $(methods_fd).hide();
+                // Show the instruments multiselector
+                $(instrs_fd).fadeIn('slow');
+
+                // Remove the 'none' option from instruments multiselector
+                $(instrs_ms).find('option[value=""]').remove();
+
+                // Remove the 'none' option from def instrument selector
+                $(instr_sel).find('option[value=""]').remove();
+
+                // Show the default instrument selector
+                $(instr_fd).fadeIn('slow');
 
                 // Disable the default method selector
                 $(method_sel).focus(function(e) {
                     $(this).blur();
                 });
-
-                // Show the instruments multiselector
-                $(instrs_fd).fadeIn('slow');
-
-                // Show the default instrument selector
-                $(instr_fd).fadeIn('slow');
 
                 // Disable the default calculation selector
                 $(calc_sel).focus(function(e) {
@@ -93,33 +134,51 @@ function AnalysisServiceEditView() {
                 // Remove the invalid instrument alert (if exists)
                 $('#invalid-instruments-alert').remove();
 
-                // The user mustn't be allowed to unset manual entry
-                $(manual_chk).prop('checked', true);
-                $(manual_chk).click(function(e) {
-                    e.preventDefault();
-                });
-
-                // Hide the instruments multiselector
+                // Hide the instruments multiselector and unselect all
                 $(instrs_fd).hide();
+                if ($(instrs_ms).find('option[value=""]').length == 0) {
+                    $(instrs_ms).prepend('<option value="">None</option>');
+                }
+                $(instrs_ms).val('');
+                $(instrs_ms).find('option[value=""]').prop("selected", true);
 
                 // Hide the default instrument selector
                 $(instr_fd).hide();
 
-                // Show the methods multiselector
-                $(methods_fd).fadeIn('slow');
+                // Unselect the default instrument
+                if ($(instr_sel).find('option[value=""]').length == 0) {
+                    $(instr_sel).prepend('<option value="">None</option>');
+                }
+                $(instr_sel).val('');
+                $(instr_sel).find('option[value=""]').prop("selected", true);
 
-                // Show the default method selector
-                $(method_fd).show();
+                // The user mustn't be allowed to unset manual entry
+                $(manual_chk).click(function(e) {
+                    e.preventDefault();
+                });
+
+                // The user must be able to select the default method manualy
+                $(methods_ms).change();
                 $(method_sel).unbind("focus");
 
-                // Delegate remaining actions to Methods change event
-                $(methods_ms).change();
+                // If manual entry is not selected, select it and
+                // fire event cascade
+                if (!$(manual_chk).is(':checked')) {
+                    $(manual_chk).prop('checked', true);
+                    $(manual_chk).change();
+                }
             }
         });
 
         // The methods multiselect changes
         $(methods_ms).change(function(e) {
             var prevmethod = $(method_sel).val();
+            var prevmethodtxt = $(method_sel).find('option[value="'+prevmethod+'"]').html();
+            /*if ($(this).val() == null) {
+                // At least one method must be selected
+                $(this).val($(this).find('option').first().val());
+            }*/
+
             $(method_sel).find('option').remove();
 
             // Populate with the methods from the multi-select
@@ -141,7 +200,14 @@ function AnalysisServiceEditView() {
                     defoption = $(method_sel).find('option').first();
                 }
             }
-            $(method_sel).val(defoption.val());
+            if (!$(instr_chk).is(':checked')) {
+                $(method_sel).val(defoption.val());
+            } else {
+                if ($(method_sel).find('option[value="'+prevmethod+'"]').length == 0) {
+                    $(method_sel).append('<option value="'+prevmethod+'">'+prevmethodtxt+'</option>');
+                }
+                $(method_sel).val(prevmethod);
+            }
 
             // Delegate remaining actions to Method change event
             $(method_sel).change();
@@ -309,9 +375,6 @@ function AnalysisServiceEditView() {
 
         // Grab original values
         catchOriginalValues();
-
-        // Apply the behavior
-        $(instr_chk).change();
     }
 
     function catchOriginalValues() {
@@ -340,6 +403,60 @@ function AnalysisServiceEditView() {
         } else {
             $(calc_fd).hide();
             $(acalc_fd).show();
+        }
+
+        // Save the manually entered interims to keep them if another
+        // calculation is set. We need to know which interim fields
+        // are from the current selected calculation and which of them
+        // have been set manually.
+        $('body').append("<input type='hidden' id='temp_manual_interims' value='[]'>");
+        rows = $("tr.records_row_InterimFields");
+        var originals = [];
+        if($(rows).length > 1){
+            for (i = $(rows).length - 2; i >= 0; i--) {
+                // Get the original values
+                var keyword = $($($(rows)[i]).find('td input')[0]).val();
+                if (keyword != '') {
+                    var title = $($($(rows)[i]).find('td input')[1]).val();
+                    var value = $($($(rows)[i]).find('td input')[2]).val();
+                    var unit = $($($(rows)[i]).find('td input')[3]).val();
+                    var hidd = $($($(rows)[i]).find('td input')[4]).is(':checked');
+                    var wide = $($($(rows)[i]).find('td input')[5]).is(':checked');
+                    originals.push([keyword, title, value, unit, hidd, wide]);
+                }
+            }
+        }
+        var toremove = []
+        var calcuid = "";
+        if ($(defcalc_chk).is(':checked')) {
+            calcuid = $(calc_sel).attr('data-default');
+        } else {
+            calcuid = $(acalc_sel).attr('data-default');
+        }
+        if (calcuid != null && calcuid != '') {
+            var request_data = {
+                catalog_name: "bika_setup_catalog",
+                UID: calcuid
+            };
+            window.bika.lims.jsonapi_read(request_data, function(data) {
+                if (data.objects.length > 0) {
+                    for (i = 0; i < data.objects[0].InterimFields.length; i++) {
+                        var row = data.objects[0].InterimFields[i];
+                        toremove.push(row.keyword);
+                    }
+                }
+                var manualinterims = originals.filter(function(el) {
+                    return toremove.indexOf(el[0]) < 0;
+                });
+                // Save the manualinterims in some hidden place
+                $('#temp_manual_interims').val($.toJSON(manualinterims));
+
+                // Fire events cascade
+                $(manual_chk).change();
+            });
+        } else {
+            // Fire events cascade
+            $(manual_chk).change();
         }
     }
 
@@ -384,6 +501,7 @@ function AnalysisServiceEditView() {
                     $($(rows)[i]).remove();
                 }
             }
+
             if (data.objects.length > 0) {
                 $(interim_fd).fadeIn('slow');
                 $("[id^='InterimFields-keyword-']").attr("id", "InterimFields-keyword-0");
@@ -409,6 +527,21 @@ function AnalysisServiceEditView() {
                         $("#InterimFields-unit-"+i).val(original[2]);
                     }
                     $("#InterimFields_more").click();
+                }
+            }
+
+            // Manually entered results?
+            var manualinterims = $.parseJSON($('#temp_manual_interims').val());
+            if (manualinterims.length > 0) {
+                $(interim_fd).fadeIn('slow');
+                var i = $("tr.records_row_InterimFields").length-1;
+                for (k = 0; k < manualinterims.length; k++) {
+                    $("#InterimFields-keyword-"+i).val(manualinterims[k][0]);
+                    $("#InterimFields-title-"+i).val(manualinterims[k][1]);
+                    $("#InterimFields-value-"+i).val(manualinterims[k][2]);
+                    $("#InterimFields-unit-"+i).val(manualinterims[k][3]);
+                    $("#InterimFields_more").click();
+                    i++;
                 }
             }
         });
@@ -455,6 +588,15 @@ function AnalysisServiceEditView() {
 
 
     function applyStyles() {
+
+        $($(manual_fd)).after($(methods_fd));
+
+        $(methods_fd)
+            .css('border', '1px solid #cfcfcf')
+            .css('background-color', '#efefef')
+            .css('padding', '10px')
+            .css('margin-bottom', '20px');
+
         $(instrs_fd)
             .css('border', '1px solid #cfcfcf')
             .css('border-bottom', 'none')
@@ -465,7 +607,8 @@ function AnalysisServiceEditView() {
             .css('border', '1px solid #cfcfcf')
             .css('border-top', 'none')
             .css('background-color', '#efefef')
-            .css('padding', '10px');
+            .css('padding', '10px')
+            .css('margin-bottom', '20px');
 
         $(acalc_fd).find('label').hide();
         $(calc_fd).find('label').hide();

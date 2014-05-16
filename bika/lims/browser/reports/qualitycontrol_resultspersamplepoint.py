@@ -1,22 +1,14 @@
-from AccessControl import getSecurityManager
-from DateTime import DateTime
-from Products.CMFCore.utils import getToolByName
+import tempfile
+
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser import BrowserView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
-from bika.lims.browser.analysis import isOutOfRange
-from bika.lims.utils import formatDateQuery, formatDateParms
-from bika.lims.utils import to_utf8
 from gpw import plot
-from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
-import json
 import os
-import plone
-import tempfile
 
 
 def ResultOutOfRange(analysis):
@@ -29,9 +21,11 @@ def ResultOutOfRange(analysis):
                           spec.get("max", ""),
                           spec.get("error", ""))
 
+
 class Report(BrowserView):
     implements(IViewView)
-    template = ViewPageTemplateFile("templates/qualitycontrol_resultspersamplepoint.pt")
+    template = ViewPageTemplateFile(
+        "templates/qualitycontrol_resultspersamplepoint.pt")
     # if unsuccessful we return here:
     default_template = ViewPageTemplateFile("templates/qualitycontrol.pt")
 
@@ -43,15 +37,16 @@ class Report(BrowserView):
     def __call__(self):
 
         MinimumResults = self.context.bika_setup.getMinimumResults()
-        warning_icon = "<img " +\
-            "src='"+self.portal_url+"/++resource++bika.lims.images/warning.png' " +\
-            "height='9' width='9'/>"
-        error_icon = "<img " +\
-            "src='"+self.portal_url+"/++resource++bika.lims.images/exclamation.png' " +\
-            "height='9' width='9'/>"
+        warning_icon = "<img " + \
+                       "src='" + self.portal_url + "/++resource++bika.lims.images/warning.png' " + \
+                       "height='9' width='9'/>"
+        error_icon = "<img " + \
+                     "src='" + self.portal_url + "/++resource++bika.lims.images/exclamation.png' " + \
+                     "height='9' width='9'/>"
 
         header = _("Results per sample point")
-        subheader = _("Analysis results for per sample point and analysis service")
+        subheader = _(
+            "Analysis results for per sample point and analysis service")
 
         self.contentFilter = {'portal_type': 'Analysis',
                               'review_state': ['verified', 'published']}
@@ -117,7 +112,7 @@ class Report(BrowserView):
             self.context.plone_utils.addPortalMessage(message, 'error')
             return self.default_template()
 
-        ## Compile a list of dictionaries, with all relevant analysis data
+        # # Compile a list of dictionaries, with all relevant analysis data
         for analysis in proxies:
             analysis = analysis.getObject()
             result = analysis.getResult()
@@ -214,8 +209,10 @@ class Report(BrowserView):
 
             for a in analyses[service_title]:
 
-                a['Sampled'] = a['Sampled'].strftime(self.date_format_long) if a['Sampled'] else ''
-                a['Captured'] = a['Captured'].strftime(self.date_format_long) if a['Captured'] else ''
+                a['Sampled'] = a['Sampled'].strftime(self.date_format_long) if a[
+                    'Sampled'] else ''
+                a['Captured'] = a['Captured'].strftime(self.date_format_long) if \
+                a['Captured'] else ''
 
                 R = a['Result']
                 U = a['Uncertainty']
@@ -236,7 +233,7 @@ class Report(BrowserView):
                 if hasattr(a["obj"], 'specification') and a["obj"].specification:
                     spec = a["obj"].specification
 
-                plotdata += "%s\t%s\t%s\t%s\t%s\n"%(
+                plotdata += "%s\t%s\t%s\t%s\t%s\n" % (
                     a['Sampled'],
                     R,
                     spec.get("min", ""),
@@ -247,12 +244,14 @@ class Report(BrowserView):
 
             unit = analyses[service_title][0]['Unit']
             if MinimumResults <= len(dict([(d, d) for d in result_dates])):
-                _plotscript = str(plotscript)%{
+                _plotscript = str(plotscript) % {
                     'title': "",
                     'xlabel': t(_("Date Sampled")),
                     'ylabel': unit and unit or '',
-                    'x_start': "%s" % min(result_dates).strftime(self.date_format_long),
-                    'x_end': "%s" % max(result_dates).strftime(self.date_format_long),
+                    'x_start': "%s" % min(result_dates).strftime(
+                        self.date_format_long),
+                    'x_end': "%s" % max(result_dates).strftime(
+                        self.date_format_long),
                     'date_format_long': self.date_format_long,
                     'date_format_short': self.date_format_short,
                     'time_format': self.time_format,
@@ -263,7 +262,7 @@ class Report(BrowserView):
                                 usefifo=False)
 
                 # Temporary PNG data file
-                fh,data_fn = tempfile.mkstemp(suffix='.png')
+                fh, data_fn = tempfile.mkstemp(suffix='.png')
                 os.write(fh, plot_png)
                 plot_url = data_fn
                 self.request['to_remove'].append(data_fn)

@@ -66,7 +66,7 @@ class Report(BrowserView):
                                               'SupplierContact',
                                               'Worksheet',
                                               'WorksheetTemplate'
-                                              )}
+        )}
 
         val = self.selection_macros.parse_daterange(self.request,
                                                     'getModificationDate',
@@ -78,12 +78,14 @@ class Report(BrowserView):
 
         user = ''
         userfullname = ''
-        if (self.request.form.get('User', '')!=''):
+        titles.append(user)
+        if self.request.form.get('User', '') != '':
             user = self.request.form['User']
             userobj = mt.getMemberById(user)
-            userfullname = userobj and userobj.getProperty('fullname') or ''
-            parms.append({'title': _('User'), 'value': ("%s (%s)"%(userfullname,user))})
-            titles.append(userfullname)
+            userfullname = userobj.getProperty('fullname') \
+                           if userobj else ''
+            parms.append(
+                {'title': _('User'), 'value': ("%s (%s)" % (userfullname, user))})
 
         # Query the catalog and store results in a dictionary
         entities = self.bika_setup_catalog(self.contentFilter)
@@ -105,28 +107,31 @@ class Report(BrowserView):
             for workflowid, workflow in entity.workflow_history.iteritems():
                 for action in workflow:
                     actiontitle = _('Created')
-                    if not action['action'] or (action['action'] and action ['action']=='create'):
-                        if workflowid=='bika_inactive_workflow':
+                    if not action['action'] or (
+                        action['action'] and action['action'] == 'create'):
+                        if workflowid == 'bika_inactive_workflow':
                             continue
-                        actiontitle=_('Created')
+                        actiontitle = _('Created')
                     else:
-                        actiontitle=_(action['action'])
+                        actiontitle = _(action['action'])
 
-                    if (user=='' or action['actor']==user):
-                        actorfullname = userfullname == '' and mt.getMemberById(user) or userfullname
-                        dataline = {'EntityNameOrId':entity.title_or_id(),
-                                    'EntityAbsoluteUrl':entity.absolute_url(),
-                                    'EntityCreationDate':self.ulocalized_time(entity.CreationDate(),1),
-                                    'EntityModificationDate':self.ulocalized_time(entity.ModificationDate(),1),
-                                    'EntityType':entitytype,
-                                    'Workflow':_(workflowid),
+                    if (user == '' or action['actor'] == user):
+                        actorfullname = userfullname == '' and mt.getMemberById(
+                            user) or userfullname
+                        dataline = {'EntityNameOrId': entity.title_or_id(),
+                                    'EntityAbsoluteUrl': entity.absolute_url(),
+                                    'EntityCreationDate': entity.CreationDate(),
+                                    'EntityModificationDate': entity.ModificationDate(),
+                                    'EntityType': entitytype,
+                                    'Workflow': _(workflowid),
                                     'Action': actiontitle,
-                                    'ActionDate':action['time'],
-                                    'ActionDateStr':self.ulocalized_time(action['time'],1),
-                                    'ActionActor':action['actor'],
-                                    'ActionActorFullName':actorfullname,
-                                    'ActionComments':action['comments']
-                                    }
+                                    'ActionDate': action['time'],
+                                    'ActionDateStr': self.ulocalized_time(
+                                        action['time'], 1),
+                                    'ActionActor': action['actor'],
+                                    'ActionActorFullName': actorfullname,
+                                    'ActionComments': action['comments']
+                        }
                         tmpdatalines[action['time']] = dataline
 
             # History versioning retrieval
@@ -134,25 +139,26 @@ class Report(BrowserView):
             if history:
                 hislen = history.getLength(countPurged=False)
                 for index in range(hislen):
-                    meta=history.retrieve(index)['metadata']['sys_metadata']
+                    meta = history.retrieve(index)['metadata']['sys_metadata']
                     metatitle = _(meta['comment'])
-                    if (user=='' or meta['principal']==user):
-                        actorfullname = userfullname == '' and mt.getMemberById(user) or userfullname
-                        dataline = {'EntityNameOrId':entity.title_or_id(),
-                                    'EntityAbsoluteUrl':entity.absolute_url(),
-                                    'EntityCreationDate':self.ulocalized_time(entity.CreationDate(),1),
-                                    'EntityModificationDate':self.ulocalized_time(entity.ModificationDate(),1),
-                                    'EntityType':entitytype,
+                    if (user == '' or meta['principal'] == user):
+                        actorfullname = userfullname == '' and \
+                            mt.getMemberById(user) or userfullname
+                        dataline = {'EntityNameOrId': entity.title_or_id(),
+                                    'EntityAbsoluteUrl': entity.absolute_url(),
+                                    'EntityCreationDate': entity.CreationDate(),
+                                    'EntityModificationDate': entity.ModificationDate(),
+                                    'EntityType': entitytype,
                                     'Workflow': '',
                                     'Action': metatitle,
-                                    'ActionDate':meta['timestamp'],
-                                    'ActionDateStr':self.ulocalized_time(meta['timestamp'],1),
-                                    'ActionActor':meta['principal'],
-                                    'ActionActorFullName':actorfullname,
-                                    'ActionComments':''
-                                }
+                                    'ActionDate': meta['timestamp'],
+                                    'ActionDateStr': meta['timestamp'],
+                                    'ActionActor': meta['principal'],
+                                    'ActionActorFullName': actorfullname,
+                                    'ActionComments': ''
+                        }
                         tmpdatalines[meta['timestamp']] = dataline
-        if len(tmpdatalines)==0:
+        if len(tmpdatalines) == 0:
             message = _("No actions found for user %s" % userfullname)
             self.context.plone_utils.addPortalMessage(message, "error")
             return self.default_template()
@@ -165,7 +171,7 @@ class Report(BrowserView):
 
             self.report_data = {'parameters': parms,
                                 'datalines': datalines,
-                                'footlines': footlines }
+                                'footlines': footlines}
 
             return {'report_title': _('Users history'),
                     'report_data': self.template()}
