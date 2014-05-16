@@ -114,13 +114,13 @@ class WorkflowAction:
             if items:
                 trans, dest = self.submitTransition(action, came_from, items)
                 if trans:
-                    message = t(PMF('Changes saved.'))
+                    message = PMF('Changes saved.')
                     self.context.plone_utils.addPortalMessage(message, 'info')
                 if dest:
                     self.request.response.redirect(dest)
                     return
             else:
-                message = t(_('No items selected'))
+                message = _('No items selected')
                 self.context.plone_utils.addPortalMessage(message, 'warn')
 
         # Do nothing
@@ -152,7 +152,6 @@ class WorkflowAction:
                     if success:
                         transitioned.append(item.id)
                     else:
-                        message = t(message)
                         self.context.plone_utils.addPortalMessage(message, 'error')
         # automatic label printing
         if transitioned and action == 'receive' \

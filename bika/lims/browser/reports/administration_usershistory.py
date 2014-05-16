@@ -159,7 +159,9 @@ class Report(BrowserView):
                         }
                         tmpdatalines[meta['timestamp']] = dataline
         if len(tmpdatalines) == 0:
-            message = _("No actions found for user %s" % userfullname)
+            message = _(
+                "No actions found for user ${user}",
+                mapping={"user": userfullname})
             self.context.plone_utils.addPortalMessage(message, "error")
             return self.default_template()
         else:
