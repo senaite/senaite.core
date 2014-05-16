@@ -3,7 +3,8 @@
     <tr>
         <td></td>
         <td i18n:translate="">
-            <label i18n:translate="">Analyses</label>
+            <label i18n:translate="" 
+                   title='Select the analyses to be performed on this Sample'>Analyses</label>
         </td>
         <tal:loop repeat="fieldName fieldNames">
             <td tal:define="
@@ -13,7 +14,9 @@
                         widget python:field.widget;
                         errors python:{};
                         mode string:edit;">
-                <label class="formQuestion">
+                <label class="formQuestion"
+                          tal:define="description python:widget.Description(here)"
+                          tal:attributes="title description">
                     <span tal:replace="python:widget.Label(here)"
                           i18n:translate=""/>
                     <span class="fieldRequired"
