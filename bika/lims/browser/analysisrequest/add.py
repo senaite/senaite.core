@@ -186,15 +186,15 @@ class ajaxAnalysisRequestSubmit():
                 headers[field] = form[field]
 
 
-        # First make a list of non-empty fieldNames
-        fieldNames = []
+        # First make a list of non-empty fieldnames
+        fieldnames = []
         for arnum in range(int(form['ar_count'])):
             name = 'ar.%s' % arnum
             ar = form.get(name, None)
             if ar and 'Analyses' in ar.keys():
-                fieldNames.append(arnum)
+                fieldnames.append(arnum)
 
-        if len(fieldNames) == 0:
+        if len(fieldnames) == 0:
             ajax_form_error(errors, message=t(_("No analyses have been selected")))
             return json.dumps({'errors':errors})
 
@@ -203,8 +203,8 @@ class ajaxAnalysisRequestSubmit():
                            in AnalysisRequestSchema.fields()
                            if field.required]
 
-        for fieldName in fieldNames:
-            formkey = "ar.%s" % fieldName
+        for fieldname in fieldnames:
+            formkey = "ar.%s" % fieldname
             ar = form[formkey]
             # Secondary ARs don't have sample fields present in the form data
             # if 'Sample_uid' in ar and ar['Sample_uid']:
@@ -223,7 +223,7 @@ class ajaxAnalysisRequestSubmit():
                 ]:
                     continue
                 if (field in ar and not ar.get(field, '')):
-                    ajax_form_error(errors, field, fieldName)
+                    ajax_form_error(errors, field, fieldname)
         # Return errors if there are any
         if errors:
             return json.dumps({'errors': errors})
@@ -235,14 +235,14 @@ class ajaxAnalysisRequestSubmit():
         # this flag triggers the status message
         new_profile = None
         # The actual submission
-        for fieldName in fieldNames:
+        for fieldname in fieldnames:
             # Get partitions from the form data
             if form_parts:
-                partitions = form_parts[str(fieldName)]
+                partitions = form_parts[str(fieldname)]
             else:
                 partitions = []
             # Get the form data using the appropriate form key
-            formkey = "ar.%s" % fieldName
+            formkey = "ar.%s" % fieldname
             values = form[formkey].copy()
             # resolved values is formatted as acceptable by archetypes
             # widget machines
@@ -261,14 +261,20 @@ class ajaxAnalysisRequestSubmit():
             # Get the analyses from the form data
             analyses = values["Analyses"]
             # Gather the specifications from the form data
+            # no defaults are applied here - the defaults should already be
+            # present in the form data
             specifications = {}
-            if len(values.get("min", [])):
-                for n, service_uid in enumerate(analyses):
-                    specifications[service_uid] = {
-                        "min": values["min"][n],
-                        "max": values["max"][n],
-                        "error": values["error"][n]
-                    }
+            for analysis in analyses:
+                for service_uid in analyses:
+                    min_element_name = "ar.%s.min.%s"%(fieldname, service_uid)
+                    max_element_name = "ar.%s.max.%s"%(fieldname, service_uid)
+                    error_element_name = "ar.%s.error.%s"%(fieldname, service_uid)
+                    if min_element_name in form:
+                        specifications[service_uid] = {
+                            "min": form[min_element_name],
+                            "max": form[max_element_name],
+                            "error": form[error_element_name]
+                        }
             # Selecting a template sets the hidden 'parts' field to template values.
             # Selecting a profile will allow ar_add.js to fill in the parts field.
             # The result is the same once we are here.
@@ -303,16 +309,16 @@ class ajaxAnalysisRequestSubmit():
                 prices
             )
             #Add Headers
-            for fieldName in headers.keys():
-                if headers[fieldName] != '' and not fieldName.endswith('_uid'):
-                    if headers.get(fieldName+'_uid'):
-                        field = ar.Schema()[fieldName];
+            for fieldname in headers.keys():
+                if headers[fieldname] != '' and not fieldname.endswith('_uid'):
+                    if headers.get(fieldname+'_uid'):
+                        field = ar.Schema()[fieldname];
                         mutator = field.getMutator(ar)
-                        uid = headers[fieldName+'_uid']
+                        uid = headers[fieldname+'_uid']
                         obj = uc(UID=uid)[0].getObject()
                         mutator(obj)
                     else:
-                        ar.edit(fieldName=headers[fieldName])
+                        ar.edit(fieldname=headers[fieldname])
 
             # Add the created analysis request to the list
             ARs.append(ar.getId())

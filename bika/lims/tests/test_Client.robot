@@ -9,7 +9,7 @@ Resource         plone/app/robotframework/saucelabs.robot
 Variables        plone/app/testing/interfaces.py
 Variables        bika/lims/tests/variables.py
 Suite Setup      Start browser
-Suite Teardown   Close All Browsers
+#Suite Teardown   Close All Browsers
 
 *** Variables ***
 
@@ -100,6 +100,17 @@ Create Client Contact
     Click Button  Save
     Page should contain  Changes saved.
 
+Client contact should be able to access client views
+    Log in          ritamo   ritamo
+    Go to           ${PLONEURL}/clients
+    Page should contain   Happy Hills
+    Click link            Happy Hills
+    Page should contain   Analysis Specifications
+
+Client contact should not be able to see or access other clients
+    Log in          ritamo   ritamo
+    Go to           ${PLONEURL}/clients/client-2
+    Page should contain   Insufficient Privileges
 
 
 *** Keywords ***

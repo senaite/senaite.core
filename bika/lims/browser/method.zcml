@@ -12,4 +12,12 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="*"
+      name="get_method_service_instruments"
+      class="bika.lims.browser.method.ajaxGetMethodServiceInstruments"
+      permission="cmf.ModifyPortalContent"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
 </configure>

@@ -1,11 +1,10 @@
 (function( $ ) {
     "use strict";
-    
+
 function destroy(arr, val) {
     for (var i = 0; i < arr.length; i++) if (arr[i] === val) arr.splice(i, 1);
     return arr;
 }
-
 function getRelTag() {
     //Return the tag that identifies the position of the 
 	var layout = $("input[id='layout']").val();
@@ -16,100 +15,102 @@ function getRelTag() {
     return rel_tag;
 }
     
-function toggle_spec_fields(element) {
-    // When a service checkbox is clicked, this is used to display
-    // or remove the specification inputs.
-    if(!$("#bika_setup").attr("EnableARSpecs")) { return; }
-    var arnum = $(element).attr("arnum");
-    var root_name = $(element).attr("name").replace(":ignore_empty", "");
-    var min_name   = root_name.replace("Analyses", "min");
-    var max_name   = root_name.replace("Analyses", "max");
-    var error_name = root_name.replace("Analyses", "error");
-    var service_uid = $(element).attr("id");
-    
-    var spec_uid = $("#ar_"+arnum+"_Specification_uid").val();
 
-    if ($(element).prop("checked") && $(element).siblings().filter("[name='"+min_name+"']").length === 0) {
-	//var to know if analysis need specification
-	var allowspec = true;
-	
-	//Search if current analysis's service allows specification
-	var request_allowspec = {
-	    catalog_name: "uid_catalog",
-	    UID: service_uid
-	};
-	
-	window.bika.lims.jsonapi_read(request_allowspec, function(result) {
-	    if (result.objects && result.objects.length > 0){
-		var allowspec = result.objects[0].ResultOptions == null || result.objects[0].ResultOptions.length == 0;
-		
-		// To force the next if statments part to be syncron
-		if ((spec_uid !== "") && allowspec){
-		    var request_data = {
+function toggle_spec_fields(element) {
+	// When a service checkbox is clicked, this is used to display
+	// or remove the specification inputs.
+	if (!$("#bika_setup").attr("EnableARSpecs")) {
+		return;
+	}
+	var arnum = $(element).attr("arnum");
+	var spec_uid = $("#ar_" + arnum + "_Specification_uid").val();
+	var service_uid = $(element).attr("value");
+	var min_name = "ar." + arnum + ".min." + service_uid;
+	var max_name = "ar." + arnum + ".max." + service_uid;
+	var error_name = "ar." + arnum + ".error." + service_uid;
+	if ($(element).prop("checked") && $(element).siblings().filter("[name='" + min_name + "']").length === 0) {
+		//var to know if analysis need specification
+		var allowspec = true;
+		//Search if current analysis's service allows specification
+		var request_allowspec = {
 			catalog_name: "uid_catalog",
-			UID: spec_uid
-		    };
-		    window.bika.lims.jsonapi_read(request_data, function(data) {
-			var min_val = "";
-			var max_val = "";
-			var error_val = "";
-			if (data.objects && data.objects.length > 0) {
-			    var rr = data.objects[0].ResultsRange;
-			    for (var i in rr) {
-				if (!(rr.hasOwnProperty(i))){ continue; }
-				if (rr[i].keyword == $(element).attr("keyword")) {
-				    min_val = rr[i].min;
-				    max_val = rr[i].max;
-				    error_val = rr[i].error;
-				    break;
-				    }
-			    }
+			UID: service_uid
+		};
+		window.bika.lims.jsonapi_read(request_allowspec, function (result) {
+			if (result.objects && result.objects.length > 0) {
+				var allowspec = result.objects[0].ResultOptions == null || result.objects[0].ResultOptions.length == 0;
+				// To force the next if statments part to be syncron
+				if ((spec_uid !== "") && allowspec) {
+					var request_data = {
+						catalog_name: "uid_catalog",
+						UID: spec_uid
+					};
+					window.bika.lims.jsonapi_read(request_data, function (data) {
+						var min_val = "";
+						var max_val = "";
+						var error_val = "";
+						if (data.objects && data.objects.length > 0) {
+							var rr = data.objects[0].ResultsRange;
+							for (var i in rr) {
+								if (!(rr.hasOwnProperty(i))) {
+									continue;
+								}
+								if (rr[i].keyword == $(element).attr("keyword")) {
+									min_val = rr[i].min;
+									max_val = rr[i].max;
+									error_val = rr[i].error;
+									break;
+								}
+							}
+						}
+						var min = $("<input class='spec_bit min' type='text' size='3' uid='" + service_uid + "' value='" + min_val + "' name='" + min_name + "' keyword='" + $(element).attr("keyword") + "' autocomplete='off' placeholder='&gt;'/>");
+						var max = $("<input class='spec_bit max' type='text' size='3' uid='" + service_uid + "' value='" + max_val + "' name='" + max_name + "' keyword='" + $(element).attr("keyword") + "' autocomplete='off' placeholder='&lt;'/>");
+						var error = $("<input class='spec_bit error' type='text' size='3' uid='" + service_uid + "' value='" + error_val + "' name='" + error_name + "' keyword='" + $(element).attr("keyword") + "' autocomplete='off' placeholder='%'/>");
+						$(element).after(error).after(max).after(min);
+					});
+				}
+				else if (allowspec) {
+					var min = $("<input class='spec_bit min' type='text' size='3' uid='" + service_uid + "' value='' name='" + min_name + "' keyword='" + $(element).attr("keyword") + "' autocomplete='off' placeholder='&gt;'/>");
+					var max = $("<input class='spec_bit max' type='text' size='3' uid='" + service_uid + "' value='' name='" + max_name + "' keyword='" + $(element).attr("keyword") + "' autocomplete='off' placeholder='&lt;'/>");
+					var error = $("<input class='spec_bit error' type='text' size='3' uid='" + service_uid + "' value='' name='" + error_name + "' keyword='" + $(element).attr("keyword") + "' autocomplete='off' placeholder='%'/>");
+					$(element).after(error).after(max).after(min);
+				}
 			}
-			var min =   $("<input class='spec_bit min'   type='text' size='3' uid='"+service_uid+"' value='"+min_val+  "' name='"+min_name+  "' keyword='"+$(element).attr("keyword")+"' autocomplete='off' placeholder='&gt;'/>");
-			var max =   $("<input class='spec_bit max'   type='text' size='3' uid='"+service_uid+"' value='"+max_val+  "' name='"+max_name+  "' keyword='"+$(element).attr("keyword")+"' autocomplete='off' placeholder='&lt;'/>");
-			var error = $("<input class='spec_bit error' type='text' size='3' uid='"+service_uid+"' value='"+error_val+"' name='"+error_name+"' keyword='"+$(element).attr("keyword")+"' autocomplete='off' placeholder='%'/>");
-			$(element).after(error).after(max).after(min);
-		    });
-		} else if (allowspec) {
-		    var min =   $("<input class='spec_bit min'   type='text' size='3' uid='"+service_uid+"' value='' name='"+min_name+  "' keyword='"+$(element).attr("keyword")+"' autocomplete='off' placeholder='&gt;'/>");
-		    var max =   $("<input class='spec_bit max'   type='text' size='3' uid='"+service_uid+"' value='' name='"+max_name+  "' keyword='"+$(element).attr("keyword")+"' autocomplete='off' placeholder='&lt;'/>");
-		    var error = $("<input class='spec_bit error' type='text' size='3' uid='"+service_uid+"' value='' name='"+error_name+"' keyword='"+$(element).attr("keyword")+"' autocomplete='off' placeholder='%'/>");
-		    $(element).after(error).after(max).after(min);
-		}
-	    }});
-	
-    } else {
-	$("input[name='"+min_name+  "']").filter("[uid='"+service_uid+"']").remove();
-	$("input[name='"+max_name+  "']").filter("[uid='"+service_uid+"']").remove();
-	$("input[name='"+error_name+"']").filter("[uid='"+service_uid+"']").remove();
-    }	
+		});
+	}
+	else {
+		$("input[name='" + min_name + "']").remove();
+		$("input[name='" + max_name + "']").remove();
+		$("input[name='" + error_name + "']").remove();
+	}
 }
 
 function reset_spec_field_values(arnum) {
 	// When a spec is selected, all existing spec fields are cleared and reset
-	if(!$("#bika_setup").attr("EnableARSpecs")) { return; }
-	var spec_uid = $("#ar_"+arnum+"_Specification_uid").val();
-	if(spec_uid !== ""){
+	if (!$("#bika_setup").attr("EnableARSpecs")) {
+		return;
+	}
+	var spec_uid = $("#ar_" + arnum + "_Specification_uid").val();
+	if (spec_uid !== "") {
 		var request_data = {
 			catalog_name: "uid_catalog",
 			UID: spec_uid
 		};
-		window.bika.lims.jsonapi_read(request_data, function(data) {
-			// 1 empty all specification inputs.
-			// 2 set specification values in all supported services.
-			var min_name = "[name^='ar."+arnum+".min']";
-			var max_name = "[name^='ar."+arnum+".max']";
-			var error_name = "[name^='ar."+arnum+".error']";
+		window.bika.lims.jsonapi_read(request_data, function (data) {
+			// empty all specification inputs.
+			var min_name = "[name^='ar." + arnum + ".min']";
+			var max_name = "[name^='ar." + arnum + ".max']";
+			var error_name = "[name^='ar." + arnum + ".error']";
 			$(min_name).val("");
 			$(max_name).val("");
 			$(error_name).val("");
+			// set specification values in all supported services.
 			if (data.objects && data.objects.length > 0) {
 				var rr = data.objects[0].ResultsRange;
 				for (var i in rr) {
-					var kw = "[keyword='"+rr[i].keyword+"']";
-					var this_min   = $(min_name).filter(kw);
-					var this_max   = $(max_name).filter(kw);
-					var this_error = $(error_name).filter(kw);
+					var this_min = "[name='ar." + arnum + ".min\\." + rr[i].uid + "']";
+					var this_max = "[name='ar." + arnum + ".max\\." + rr[i].uid + "']";
+					var this_error = "[name='ar." + arnum + ".error\\." + rr[i].uid + "']";
 					if ($(this_min)) {
 						$(this_min).val(rr[i].min);
 						$(this_max).val(rr[i].max);
@@ -122,17 +123,16 @@ function reset_spec_field_values(arnum) {
 }
 
 function validate_spec_field_entry(element) {
-	var sb_col = $(element).attr("name").split(".")[1];
+	var arnum = $(element).attr("name").split(".")[1];
 	var uid = $(element).attr("uid");
-	$("[name^='ar\\."+sb_col+"\\.Specification']").val("");
-	$("[name^='ar\\."+sb_col+"\\.Specification_uid']").val("");
-	var min_element = $("[name='ar\\."+sb_col+"\\.min:list:ignore_empty:record']").filter("[uid='"+uid+"']");
-	var max_element = $("[name='ar\\."+sb_col+"\\.max:list:ignore_empty:record']").filter("[uid='"+uid+"']");
-	var error_element = $("[name='ar\\."+sb_col+"\\.error:list:ignore_empty:record']").filter("[uid='"+uid+"']");
+	$("[name^='ar\\."+arnum+"\\.Specification']").val("");
+	$("[name^='ar\\."+arnum+"\\.Specification_uid']").val("");
+	var min_element = $("[name='ar."+arnum+".min."+uid+"']");
+	var max_element = $("[name='ar."+arnum+".max."+uid+"']");
+	var error_element = $("[name='ar."+arnum+".error."+uid+"']");
 	var min = parseFloat($(min_element).val(), 10);
 	var max = parseFloat($(max_element).val(), 10);
 	var error = parseFloat($(error_element).val(), 10);
-
 	if($(element).hasClass("min")){
 		if(isNaN(min)) {
 			$(min_element).val("");
@@ -596,28 +596,34 @@ function changeReportDryMatter(){
 }
 
 function copy_service(copybutton){
-	var e = $("input[arnum='0']").filter("#"+copybutton.id);
+	var e = $("input[arnum='0']").filter("#" + copybutton.id);
 	var kw = $(e).attr("keyword");
+	var service_uid = $(e).prop("value");
+	// get arnum 0 values
 	var first_val = $(e).prop("checked");
-	var first_min = $("input[name^='ar.0.min']").filter("[keyword='"+kw+"']").prop("value");
-	var first_max = $(".spec_bit.max[arnum='0']").filter("[keyword='"+kw+"']").prop("value");
-	var first_error = $(".spec_bit.error[arnum='0']").filter("[keyword='"+kw+"']").prop("value");
-    var ar_count = parseInt($("#ar_count").val(), 10);
+	var first_min = $("[name='ar.0.min." + service_uid + "']").prop("value");
+	var first_max = $("[name='ar.0.max." + service_uid + "']").prop("value");
+	var first_error = $("[name='ar.0.error." + service_uid + "']").prop("value");
+
+	var ar_count = parseInt($("#ar_count").val(), 10);
 	var affected_elements = [];
 	// 0 is the first arnum; we only want to change cols 1 onward.
-	for (var arnum=1; arnum<ar_count; arnum++) {
+	for (var arnum = 1; arnum < ar_count; arnum++) {
 		unsetTemplate(arnum);
 		unsetAnalysisProfile(arnum);
-		var other_elem = $("input[arnum='"+arnum+"']").filter("#"+copybutton.id);
-		if ( (!other_elem.prop("disabled")) && (other_elem.prop("checked") != first_val)) {
-			other_elem.prop("checked", first_val?true:false);
+		var other_elem = $("input[arnum='" + arnum + "']").filter("#" + copybutton.id);
+		if ((!other_elem.prop("disabled")) && (other_elem.prop("checked") != first_val)) {
+			other_elem.prop("checked", first_val ? true : false);
 			toggle_spec_fields(other_elem);
 			affected_elements.push(other_elem);
 		}
-		if(first_val){
-			$(".spec_bit.min[arnum='"+arnum+"']").filter("[keyword='"+kw+"']").prop("value", first_min);
-			$(".spec_bit.max[arnum='"+arnum+"']").filter("[keyword='"+kw+"']").prop("value", first_max);
-			$(".spec_bit.error[arnum='"+arnum+"']").filter("[keyword='"+kw+"']").prop("value", first_error);
+		if (first_val) {
+			$(".spec_bit.min[arnum='" + arnum + "']").filter("[keyword='" + kw + "']")
+				.prop("value", first_min);
+			$(".spec_bit.max[arnum='" + arnum + "']").filter("[keyword='" + kw + "']")
+				.prop("value", first_max);
+			$(".spec_bit.error[arnum='" + arnum + "']").filter("[keyword='" + kw + "']")
+				.prop("value", first_error);
 		}
 		calculate_parts(arnum);
 	}
@@ -1309,19 +1315,23 @@ function applyComboFilter(element, filterkey, filtervalue) {
 }
 
 function fill_column(data) {
-    // fields which should not be completed from the source AR.
-    var skip_fields = ['Sample', 'Sample_uid'];
-	if(data.objects.length > 0) {
+	// fields which should not be completed from the source AR.
+	var skip_fields = ['Sample', 'Sample_uid'];
+	if (data.objects.length > 0) {
 		var obj = data.objects[0];
-		var arnum = window.bika.ar_copy_from_col;
-        for (var fieldname in obj) {
-            if (!obj.hasOwnProperty(fieldname)) { continue; }
-            if (skip_fields.indexOf(fieldname) > -1) { continue; }
-            var fieldvalue = obj[fieldname];
-		    var el = $("#ar_"+arnum+"_"+fieldname);
-		    if (el.length > 0){
-		        $(el).val(fieldvalue);
-		    }
+		var col = window.bika.ar_copy_from_col;
+		for (var fieldname in obj) {
+			if (!obj.hasOwnProperty(fieldname)) {
+				continue;
+			}
+			if (skip_fields.indexOf(fieldname) > -1) {
+				continue;
+			}
+			var fieldvalue = obj[fieldname];
+			var el = $("#ar_" + col + "_" + fieldname);
+			if (el.length > 0) {
+				$(el).val(fieldvalue);
+			}
 		}
 		var services = {};
 		var specs = {};
@@ -1331,35 +1341,39 @@ function fill_column(data) {
 			var analysis = obj.Analyses[i];
 			cat_uid = analysis.CategoryUID;
 			service_uid = analysis.ServiceUID;
-            key = analysis.PointOfCapture + "__" + analysis.CategoryUID;
-			if(!(key in services)){
+			key = analysis.PointOfCapture + "__" + analysis.CategoryUID;
+			if (!(key in services)) {
 				services[key] = [];
 			}
 			services[key].push(service_uid);
 			specs[service_uid] = analysis.specification;
 		}
-        for(key in services) {
-            if (!services.hasOwnProperty(key)) {
-                continue;
-            }
-            poc_name = key.split("__")[0];
-            cat_uid = key.split("__")[1];
-            service_uids = services[key];
-            window.toggleCat(poc_name, cat_uid, arnum, service_uids, true);
-            for (i = 0; i < service_uids.length; i++) {
-                service_uid = service_uids[i];
-                var spec = specs[service_uid];
-                if (spec) {
-                    $("[name^='ar." + arnum + ".min']").filter("[uid='" + service_uid + "']").val(spec.min);
-                    $("[name^='ar." + arnum + ".max']").filter("[uid='" + service_uid + "']").val(spec.max);
-                    $("[name^='ar." + arnum + ".error']").filter("[uid='" + service_uid + "']").val(spec.error);
-                }
-            }
-        }
-	}
+		for (key in services) {
+			if (!services.hasOwnProperty(key)) {
+				continue;
+			}
+			poc_name = key.split("__")[0];
+			cat_uid = key.split("__")[1];
+			service_uids = services[key];
+			window.toggleCat(poc_name, cat_uid, col, service_uids, true);
+			for (i = 0; i < service_uids.length; i++) {
+				service_uid = service_uids[i];
+				var spec = specs[service_uid];
+				if (spec) {
+					$("[name^='ar." + col + ".min." + service_uid + "']").val(spec.min);
+					$("[name^='ar." + col + ".max." + service_uid + "']").val(spec.max);
+					$("[name^='ar." + col + ".error." + service_uid + "']").val(spec.error);
+				}
+			}
+		}
+    }
 }
 
-function ar_add_analyses(){
+function ar_add_analyses_overlays(){
+	var layout = $("input[id='layout']").val();
+    if (layout == 'columns') {
+        return;
+    }
 	var i, e, elements, arnum, field, src;
 	elements = $(".ar_add_analyses");
 	for (i = elements.length - 1; i >= 0; i--) {
@@ -1382,7 +1396,7 @@ $(document).ready(function() {
         ar_rename_elements();
         ar_referencewidget_lookups();
         ar_set_tabindexes();
-        ar_add_analyses();
+        ar_add_analyses_overlays();
 
         $(".copyButton").live("click",  copyButton );
 

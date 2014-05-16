@@ -13,6 +13,7 @@ from plone.app.layout.globals.interfaces import IViewView
 from zope.component import getMultiAdapter
 from zope.interface import implements
 import json, plone
+from operator import itemgetter
 
 class ViewView(BrowserView):
     """ Reference Sample View
@@ -141,6 +142,7 @@ class ReferenceAnalysesView(AnalysesView):
 
     def folderitems(self):
         items = super(ReferenceAnalysesView, self).folderitems()
+        items.sort(key=itemgetter('CaptureDate'), reverse=True)
         outitems = []
         for x in range(len(items)):
             if not items[x].has_key('obj') or items[x]['Result'] == '':
