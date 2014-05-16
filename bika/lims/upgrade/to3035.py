@@ -15,6 +15,6 @@ def upgrade(tool):
                 li['VATAmount'] = li['VATTotal']
                 del(li['VATTotal'])
         new.append(li)
-    pl.pricelist_lineitems = new
+        pl.pricelist_lineitems = new
 
     return True
