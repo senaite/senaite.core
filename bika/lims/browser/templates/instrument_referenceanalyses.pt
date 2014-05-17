@@ -81,7 +81,25 @@
 
                 $('#printgraph').click(function(e) {
                     e.preventDefault();
-                    printGraph();
+                    var WinPrint = window.open('', '', 'letf=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
+                    WinPrint.document.write($('#content-core').html());
+                    WinPrint.document.close();
+                  /*  WinPrint.focus();
+                    WinPrint.print();
+                    WinPrint.close();*/
+                });
+
+                $('#scale').click(function(e) {
+                    e.preventDefault();
+                    var w = 670;
+                    var h = $('#chart').attr('height');
+                    drawControlChart(w, h);
+                    /*var w = $('svg').attr('width');
+                    var h = $('svg').attr('height');
+                    $('svg').attr('viewBox', '0 0 '+w+' '+h);
+                    $('svg').attr('width', '19cm');
+                    $('svg').attr('height', '26.5cm');
+                   // $('svg g').first().attr("transform", "scale(600 400)");*/
                 });
 
                 $('div.bika-listing-table-container').fadeIn();
@@ -106,14 +124,16 @@
             $('.bika-listing-table').closest('div').before('<div class="results-info">'+count+' results found</div>');
         }
 
-        function drawControlChart() {
+        function drawControlChart(width=null, height=null) {
             var analysiskey = $('#selanalyses').val();
             var reftype = $('#selqcsample').val();
             var interpolation = $('#interpolation').val()
-            if ($("#chart svg").length > 0) {
-                $("#chart").css('height', $("#chart").innerHeight());
-                $("#chart").css('width', $("#chart").innerWidth());
-            }
+            //if ($("#chart svg").length > 0) {
+                var w = width == null ? $("#chart").innerWidth() : width;
+                var h = height == null ? $("#chart").innerHeight() : height;
+                $("#chart").css('width', width);
+                $("#chart").css('height', height);
+           // }
             $("#chart").html("");
             $("#chart").show();
             var data = $.parseJSON($('#graphdata').val());
@@ -154,15 +174,6 @@
             chart.setLowerLimit(lower);
             chart.draw('#chart');
         }
-
-        function printGraph() {
-            var WinPrint = window.open('', '', 'letf=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
-            WinPrint.document.write($('#content-core').html());
-            WinPrint.document.close();
-            WinPrint.focus();
-            WinPrint.print();
-            WinPrint.close();
-        }
     </script>
 </metal:slot>
 
@@ -185,19 +196,20 @@
     <!-- Chart container -->
     <div class='chart-container'>
         <div class='chart-options'>
-            <label for='selanalyses'>Analysis</label>
+            <label for='selanalyses' i18n:translate="">Analysis</label>
             <select id='selanalyses' name='selanalyses'>
             </select>&nbsp;&nbsp;
-            <label for='selqcsample'>Reference Sample</label>
+            <label for='selqcsample' i18n:translate="">Reference Sample</label>
             <select id='selqcsample' name='selqcsample'>
             </select>&nbsp;&nbsp;
-            <label for='interpolation'>Interpolation</label>
+            <label for='interpolation' i18n:translate="">Interpolation</label>
             <select id='interpolation' name='interpolation'>
-                <option value='basis' selected>Basis</option>
-                <option value='cardinal'>Cardinal</option>
-                <option value='linear'>Linear</option>
-            </select>
-            <a id='printgraph' href='#'>Print</a>
+                <option value='basis' selected i18n:translate="">Basis</option>
+                <option value='cardinal' i18n:translate="">Cardinal</option>
+                <option value='linear' i18n:translate="">Linear</option>
+            </select>&nbsp;&nbsp;
+            <a id='printgraph' class='print-16' href='#' i18n:translate="">Print</a>
+            <a id='scale' href='#'>Escala</a>
         </div>
         <div id='chart'></div>
     </div>
