@@ -38,7 +38,7 @@
         widget_visibility view/getWidgetVisibility;
         partitionable view/partitioned_services;
         ShowPrices python:context.bika_setup.getShowPrices();
-        headerFieldNames view/getHeaderFieldNames">
+        headerfieldnames view/getHeaderFieldNames">
 
 
 <form id="analysisrequest_edit_form"
@@ -89,28 +89,9 @@
            tal:attributes="here python:'/'.join(context.getPhysicalPath()[:-3]);
                         lab_specs python:'/'.join(context.bika_setup.bika_analysisspecs.getPhysicalPath())"/>
 
-    <tal:headers repeat="fieldName headerFieldNames">
-        <div tal:define="
-                            field python:context.Schema()[fieldName];
-                            field_macro here/widgets/field/macros/edit;
-                            accessor python:field.getAccessor(context);
-                            widget python:field.widget;
-                            errors python:{};
-                            mode string:edit;">
-            <span tal:replace="python:widget.Label(here)"></span>
-            <span class="fieldRequired"
-                  tal:condition="field/required"
-                  title="Required"
-                  i18n:attributes="title title_required;">&nbsp;</span>
-            <metal:field use-macro="python:context.widget(fieldName, mode=mode)"/>
-        </div>
-    </tal:headers>
-
     <table summary="Add analysis requests"
            class="listing analysisrequest add nosort"
-           cellpadding="0" cellspacing="0"
-           tal:define="fieldNames python:widget_visibility.get('add', {}).get('visible', []);
-                    fieldNames python: [f for f in fieldNames if f not in headerFieldNames]">
+           cellpadding="0" cellspacing="0">
 
     <!-- All edit fields with fields with add=visible -->
     <tal:rows tal:condition="python: view.layout=='rows'">

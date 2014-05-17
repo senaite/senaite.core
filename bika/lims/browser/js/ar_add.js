@@ -278,7 +278,7 @@ function ar_rename_elements(){
 		$(e).attr("name", "ar."+arnum+"."+$(e).attr("name")+":record");
 		$(e).attr("id", "ar_"+arnum+"_"+e.id);
 		$(e).removeAttr("required");
-	}
+	};
 	elements = $(rel_tag+"[ar_add_arnum_widget]").find("input[type='hidden']");
 	for (i = elements.length - 1; i >= 0; i--) {
 		e = elements[i];
@@ -286,7 +286,7 @@ function ar_rename_elements(){
 		$(e).attr("id", "ar_"+arnum+"_"+e.id);
 		// not :ignore_empty, widgets each get submitted to their own form handlers
 		$(e).attr("name", "ar."+arnum+"."+$(e).attr("name")+":record");
-	}
+	};
 	elements = $(".multiValued-listing");
 	for (i = elements.length - 1; i >= 0; i--) {
 		e = elements[i];
@@ -296,7 +296,7 @@ function ar_rename_elements(){
 		// not :ignore_empty, widgets each get submitted to their own form handlers
 		$(e).attr("name", "ar."+arnum+"."+eid+"-listing");
 		$(e).attr("fieldName", "ar."+arnum+"."+eid);
-	}
+	};
 }
 
 // The columnar referencewidgets that we reconfigure use this as their
@@ -1388,6 +1388,25 @@ function ar_add_analyses_overlays(){
     };
 }
 
+function analysesOverlaySubmitted(event){
+    event.preventDefault();
+	var i, elem, elements;
+    var uids = [];
+	elements = $("input.noborder");
+    for (i=0; i<elements.length; i++) {
+        elem = elements[i];
+        if (elem.id.slice(0,11) == 'analyses_cb') {
+            if (elem.checked == true) {
+                uids.push(elem.value);
+            };
+        }
+    };
+    console.log(uids);
+    debugger;
+    $('div.close').click();
+    return uids;
+}
+
 $(document).ready(function() {
 
 	// Only if the view is the Analysis Request Add View
@@ -1399,6 +1418,7 @@ $(document).ready(function() {
         ar_add_analyses_overlays();
 
         $(".copyButton").live("click",  copyButton );
+        $("#analyses").live("submit", analysesOverlaySubmitted);
 
         $("th[class^='analysiscategory']").click(clickAnalysisCategory);
 

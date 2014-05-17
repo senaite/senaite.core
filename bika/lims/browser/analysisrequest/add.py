@@ -168,6 +168,7 @@ class ajaxAnalysisRequestSubmit():
         wftool = getToolByName(self.context, 'portal_workflow')
         uc = getToolByName(self.context, 'uid_catalog')
         bsc = getToolByName(self.context, 'bika_setup_catalog')
+        layout = form['layout']
 
         SamplingWorkflowEnabled = \
             self.context.bika_setup.getSamplingWorkflowEnabled()
@@ -177,12 +178,12 @@ class ajaxAnalysisRequestSubmit():
         form_parts = json.loads(self.request.form['parts'])
 
         #Get header values out, get values, exclude from any loops below
-        headerFieldNames = ['Client', 'Client_uid', 'Contact', 'Contact_uid',
+        headerfieldnames = ['Client', 'Client_uid', 'Contact', 'Contact_uid',
                             'CCContact', 'CCContact_uid', 'CCEmails', 
                             'Batch', 'Batch_uid']
         headers = {}
         for field in form.keys():
-            if field in headerFieldNames:
+            if field in headerfieldnames:
                 headers[field] = form[field]
 
 
@@ -296,8 +297,10 @@ class ajaxAnalysisRequestSubmit():
                     if not partition.get(container, None):
                         partition['container'] = containers
             # Retrieve the catalogue reference to the client
-            #client = uc(UID=resolved_values['Client'])[0].getObject()
-            client = uc(UID=headers['Client_uid'])[0].getObject()
+            if layout and layout == 'columns':
+                client = uc(UID=resolved_values['Client'])[0].getObject()
+            else:
+                client = uc(UID=headers['Client_uid'])[0].getObject()
             # Create the Analysis Request
             ar = create_analysisrequest(
                 client,
