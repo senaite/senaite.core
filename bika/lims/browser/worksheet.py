@@ -34,6 +34,7 @@ from zope.interface import implements
 from bika.lims.browser.referenceanalysis import AnalysesRetractedListReport
 from DateTime import DateTime
 from Products.CMFPlone.i18nl10n import ulocalized_time
+from bika.lims.utils import to_utf8 as _c
 
 import plone
 import plone.protect
@@ -333,6 +334,41 @@ def getAnalystName(context):
     else:
         return analyst
 
+def checkUserAccess(context, request):
+    """ Checks if the current user has granted access to the worksheet.
+        If the user is an analyst without LabManager, LabClerk and
+        RegulatoryInspector roles and the option 'Allow analysts
+        only to access to the Worksheets on which they are assigned' is
+        ticked and the above condition is true, it will redirect to
+        the main Worksheets view.
+        Returns False if the user has no access, otherwise returns True
+    """
+    # Deny access to foreign analysts
+    pm = getToolByName(context, "portal_membership")
+    member = pm.getAuthenticatedMember()
+
+    analyst = context.getAnalyst().strip()
+    if analyst != _c(member.getId()):
+        roles = member.getRoles()
+        restrict = 'Manager' not in roles \
+                and 'LabManager' not in roles \
+                and 'LabClerk' not in roles \
+                and 'RegulatoryInspector' not in roles \
+                and context.bika_setup.getRestrictWorksheetUsersAccess()
+        if restrict:
+            msg =  _('You do not have sufficient privileges to view '
+                     'the worksheet %s.') % context.Title()
+            context.plone_utils.addPortalMessage(msg, 'warning')
+            # Redirect to WS list
+            portal = getToolByName(context, 'portal_url').getPortalObject()
+            destination_url = portal.absolute_url() + "/worksheets"
+            request.response.redirect(destination_url)
+            return False
+
+    # Access allowed
+    return True
+
+
 class WorksheetAnalysesView(AnalysesView):
     """ This renders the table for ManageResultsView.
     """
@@ -388,6 +424,10 @@ class WorksheetAnalysesView(AnalysesView):
         ]
 
     def folderitems(self):
+        # Deny access to foreign analysts
+        if checkUserAccess(self.context, self.request) == False:
+            return []
+
         self.analyst = self.context.getAnalyst().strip()
         self.instrument = self.context.getInstrument()
         self.contentsMethod = self.context.getFolderContents
@@ -820,6 +860,10 @@ class AddAnalysesView(BikaListingView):
             self.request.response.redirect(self.context.absolute_url())
             return
 
+        # Deny access to foreign analysts
+        if checkUserAccess(self.context, self.request) == False:
+            return []
+
         translate = self.context.translate
 
         form_id = self.form_id
@@ -940,6 +984,10 @@ class AddBlankView(BrowserView):
             self.request.response.redirect(self.context.absolute_url())
             return
 
+        # Deny access to foreign analysts
+        if checkUserAccess(self.context, self.request) == False:
+            return []
+
         form = self.request.form
         if 'submitted' in form:
             rc = getToolByName(self.context, REFERENCE_CATALOG)
@@ -983,6 +1031,10 @@ class AddControlView(BrowserView):
             self.request.response.redirect(self.context.absolute_url())
             return
 
+        # Deny access to foreign analysts
+        if checkUserAccess(self.context, self.request) == False:
+            return []
+
         form = self.request.form
         if 'submitted' in form:
             rc = getToolByName(self.context, REFERENCE_CATALOG)
@@ -1025,6 +1077,10 @@ class AddDuplicateView(BrowserView):
         if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
             self.request.response.redirect(self.context.absolute_url())
             return
+
+        # Deny access to foreign analysts
+        if checkUserAccess(self.context, self.request) == False:
+            return []
 
         form = self.request.form
         if 'submitted' in form:
