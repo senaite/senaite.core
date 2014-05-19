@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-""" Axios 'XRF'
+""" Omnia Axios XRF
 """
 from datetime import datetime
 from bika.lims.utils import to_unicode
@@ -155,7 +155,7 @@ class AxiosXrfCSVMultiParser(InstrumentCSVResultsFileParser):
 
 
     def getAttachmentFileType(self):
-        return "PANalytical - Axios_XRF XRF CSV"
+        return "PANalytical - Omnia Axios XRF"
 
 class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
 
@@ -491,7 +491,7 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
 
 
     def getAttachmentFileType(self):
-        return "PANalytical - Axios_XRF XRF CSV"
+        return "PANalytical - Omnia Axios XRF"
 
 
 class AxiosXrfImporter(AnalysisResultsImporter):
