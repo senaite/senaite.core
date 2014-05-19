@@ -3,6 +3,7 @@
 
 """ Axios 'XRF'
 """
+from datetime import datetime
 from bika.lims.utils import to_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.exportimport.instruments.resultsimport import \
@@ -34,6 +35,11 @@ class AxiosXrfCSVMultiParser(InstrumentCSVResultsFileParser):
             return [token.strip(',') for token in sline]
 
         return [token.strip() for token in line.split(',')]
+
+    def csvDate2BikaDate(self,DateTime):
+    #11/03/2014 14:46:46 --> %d/%m/%Y %H:%M %p
+        dtobj = datetime.strptime(DateTime,"%d/%m/%Y %H:%M:%S")
+        return dtobj.strftime("%Y%m%d %H:%M:%S")
 
     def parse_headerline(self, line):
         #Process incoming header line
@@ -134,13 +140,18 @@ class AxiosXrfCSVMultiParser(InstrumentCSVResultsFileParser):
                                                # Replace to obtain UK values from default
                                                'Concentration':result.replace(',','.'),
                                                'Sum':result_sum}
+        try:
+            rawdict['DateTime'] = {'DateTime':self.csvDate2BikaDate(self._header['Date']),
+                                   'DefaultValue':'DateTime'}
+            #import pdb;pdb.set_trace()
+        except:
+            pass
 
         if not rid:
             self.err(_("No Sample defined, line %s") % (self.num_line))
             return 0
 
         self._addRawResult(rid, rawdict, True)
-        import pdb;pdb.set_trace()
         return 0
 
 

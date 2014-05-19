@@ -691,6 +691,7 @@ class AnalysisResultsImporter(Logger):
         capturedate = None
         # Look for timestamp
         if "DateTime" in values.keys():
+            import pdb; pdb.set_trace()
             try:
                 dt = values.get('DateTime')
                 capturedate = DateTime(datetime.strptime(dt, '%Y%m%d %H:%M:%S'))

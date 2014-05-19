@@ -1,4 +1,4 @@
-""" PANalytical - Axios_XRF XRF
+""" PANalytical - Omnia Axios XRF
 """
 from bika.lims import bikaMessageFactory as _
 from . import AxiosXrfImporter, AxiosXrfCSVParser, AxiosXrfCSVMultiParser
