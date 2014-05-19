@@ -77,6 +77,15 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     BooleanField(
+        'RestrictWorksheetUsersAccess',
+        schemata="Security",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Allow access to worksheets only to assigned analysts"),
+            description=_("If unticked, analysts will have access to all worksheets.")
+        )
+    ),
+    BooleanField(
         'ShowPrices',
         schemata="Accounting",
         default=True,
