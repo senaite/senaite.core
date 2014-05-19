@@ -143,7 +143,6 @@ class AxiosXrfCSVMultiParser(InstrumentCSVResultsFileParser):
         try:
             rawdict['DateTime'] = {'DateTime':self.csvDate2BikaDate(self._header['Date']),
                                    'DefaultValue':'DateTime'}
-            #import pdb;pdb.set_trace()
         except:
             pass
 
@@ -174,6 +173,11 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
             return self.parse_headerline(sline)
         else:
             return self.parse_resultline(line)
+
+    def csvDate2BikaDate(self,DateTime):
+    #11/03/2014 14:46:46 --> %d/%m/%Y %H:%M %p
+        dtobj = datetime.strptime(DateTime,"%d/%m/%Y %H:%M:%S")
+        return dtobj.strftime("%Y%m%d %H:%M:%S")
 
     def splitLine(self, line):
         # If pertains at header it split the line by ':' and then remove ','
@@ -475,6 +479,13 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
         rawres = self.getRawResults().get(rid, [])
         raw = rawres[0] if len(rawres) > 0 else {}
         raw[aname] = rawdict
+        if not 'DateTime' in raw:
+            try:
+                raw['DateTime'] = {'DateTime':self.csvDate2BikaDate(self._header['Date']),
+                                   'DefaultValue':'DateTime'}
+            except:
+                pass
+            
         self._addRawResult(rid, raw, True)
         return 0
 
