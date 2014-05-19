@@ -242,6 +242,8 @@ class WorksheetFolderListingView(BikaListingView):
         rc = getToolByName(self, REFERENCE_CATALOG)
         pm = getToolByName(self.context, "portal_membership")
 
+        pm = getToolByName(self.context, "portal_membership")
+
         member = pm.getAuthenticatedMember()
 
         selected_state = self.request.get("%s_review_state"%self.form_id,
@@ -255,6 +257,12 @@ class WorksheetFolderListingView(BikaListingView):
                                     'ResultText': self.analysts.getValue(a)})
         can_reassign = False
         self.allow_edit = self.isEditionAllowed()
+        roles = member.getRoles()
+        restrict = 'Manager' not in roles \
+                and 'LabManager' not in roles \
+                and 'LabClerk' not in roles \
+                and 'RegulatoryInspector' not in roles \
+                and self.context.bika_setup.getRestrictWorksheetUsersAccess()
 
         for x in range(len(items)):
             if not items[x].has_key('obj'):
@@ -269,7 +277,7 @@ class WorksheetFolderListingView(BikaListingView):
             # Only show "my" worksheets
             # this cannot be setup in contentFilter,
             # because AuthenticatedMember is not available in __init__
-            if selected_state == 'mine':
+            if selected_state == 'mine' or restrict == True:
                 this_analyst = _c(member.getId())
                 if analyst != this_analyst:
                     continue
