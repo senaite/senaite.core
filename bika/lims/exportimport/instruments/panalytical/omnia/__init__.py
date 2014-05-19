@@ -14,7 +14,6 @@ class AxiosXrfCSVMultiParser(InstrumentCSVResultsFileParser):
         InstrumentCSVResultsFileParser.__init__(self, csv)
         self._end_header = False
         self._columns = []
-        self._info_results = []
         self.columns_name = False #To know if the next line contains
                                   #analytic's columns name
 
@@ -87,21 +86,21 @@ class AxiosXrfCSVMultiParser(InstrumentCSVResultsFileParser):
                 self.err(_("No header found"), self._numline)
                 return -1
             #Grab column names
-            self._columns = self.line.split(',')
+            self._columns = line.split(',')
+            self._end_header = True
             return 1
 
         else:
-            s_line = line.split(',')
-            if len(s_line) == 1:
-                self._header['Date'] = line
-                return 1
-            self._info_results = s_line
-            self._end_header = True
+            self._header['Date'] = line
             return 1
+
+
 
     def parse_resultline(self, line):
         # Process incoming results line
         if not line.strip():
+            return 0
+        if line.startswith(',,'):
             return 0
 
         rawdict = {}
@@ -122,40 +121,26 @@ class AxiosXrfCSVMultiParser(InstrumentCSVResultsFileParser):
         result_type = ''
         result_sum = ''
         for idx, result in enumerate(splitted):
-            if self._info_results[idx] == '':
-                if self._columns[idx] == 'Result type':
-                    result_type = result
-                elif self._columns[idx].startswith('Sample name'):
+            if self._columns[idx] == 'Result type':
+                result_type = result
+            elif self._columns[idx].startswith('Sample name'):
                     rid = result
+            elif self._columns[idx].startswith('Seq.'):
+                pass
             elif self._columns[idx] == 'Sum':
                     result_sum = result
             else:
                 rawdict[self._columns[idx]] = {'DefaultResult':result_type,
-                                               'Concentration':result,
+                                               # Replace to obtain UK values from default
+                                               'Concentration':result.replace(',','.'),
                                                'Sum':result_sum}
-                    
-                
-        import pdb; pdb.set_trace()
-       
-
-        if not aname:
-            self.err(_("No Analysis Name defined, line %s") % (self.num_line))
-            return 0
 
         if not rid:
             self.err(_("No Sample defined, line %s") % (self.num_line))
             return 0
 
-        notes = rawdict.get('Notes', '')
-        notes = "Notes: %s" % notes if notes else ''
-        # Replace to obtain UK values from default
-        rawdict['Remarks'] = ' '.join([errors, notes])
-
-        rawres = self.getRawResults().get(rid, [])
-        raw = rawres[0] if len(rawres) > 0 else {}
-        raw[aname] = rawdict
-
-        self._addRawResult(rid, raw, True)
+        self._addRawResult(rid, rawdict, True)
+        import pdb;pdb.set_trace()
         return 0
 
 
