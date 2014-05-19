@@ -381,7 +381,8 @@ class WorksheetFolderListingView(BikaListingView):
             items[x]['replace']['QC'] = " ".join(blanks + controls)
 
             if items[x]['review_state'] == 'open' \
-                and self.allow_edit:
+                and self.allow_edit \
+                and restrict == False:
                 items[x]['allow_edit'] = ['Analyst', ]
                 items[x]['required'] = ['Analyst', ]
                 can_reassign = True
