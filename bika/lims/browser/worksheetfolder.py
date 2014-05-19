@@ -83,6 +83,7 @@ class WorksheetFolderListingView(BikaListingView):
         self.show_select_all_checkbox = True
         self.show_select_column = True
         self.pagesize = 25
+        self.restrict_results = False
 
         request.set('disable_border', 1)
 
@@ -237,6 +238,17 @@ class WorksheetFolderListingView(BikaListingView):
         checkPermission = self.context.portal_membership.checkPermission
         return checkPermission(EditWorksheet, self.context)
 
+    def isItemAllowed(self, obj):
+        # Only show "my" worksheets
+        # this cannot be setup in contentFilter,
+        # because AuthenticatedMember is not available in __init__
+        if self.selected_state == 'mine' or self.restrict_results == True:
+            analyst = obj.getAnalyst().strip()
+            if analyst != _c(self.member.getId()):
+                return False
+
+        return BikaListingView.isItemAllowed(self, obj)
+
     def folderitems(self):
         wf = getToolByName(self, 'portal_workflow')
         rc = getToolByName(self, REFERENCE_CATALOG)
@@ -244,10 +256,16 @@ class WorksheetFolderListingView(BikaListingView):
 
         pm = getToolByName(self.context, "portal_membership")
 
-        member = pm.getAuthenticatedMember()
+        self.member = pm.getAuthenticatedMember()
+        roles = self.member.getRoles()
+        self.restrict_results = 'Manager' not in roles \
+                and 'LabManager' not in roles \
+                and 'LabClerk' not in roles \
+                and 'RegulatoryInspector' not in roles \
+                and self.context.bika_setup.getRestrictWorksheetUsersAccess()
 
-        selected_state = self.request.get("%s_review_state"%self.form_id,
-                                          'default')
+        self.selected_state = self.request.get("%s_review_state"%self.form_id,
+                                                'default')
 
         items = BikaListingView.folderitems(self)
         new_items = []
@@ -257,12 +275,6 @@ class WorksheetFolderListingView(BikaListingView):
                                     'ResultText': self.analysts.getValue(a)})
         can_reassign = False
         self.allow_edit = self.isEditionAllowed()
-        roles = member.getRoles()
-        restrict = 'Manager' not in roles \
-                and 'LabManager' not in roles \
-                and 'LabClerk' not in roles \
-                and 'RegulatoryInspector' not in roles \
-                and self.context.bika_setup.getRestrictWorksheetUsersAccess()
 
         for x in range(len(items)):
             if not items[x].has_key('obj'):
@@ -273,15 +285,6 @@ class WorksheetFolderListingView(BikaListingView):
 
             analyst = obj.getAnalyst().strip()
             creator = obj.Creator().strip()
-
-            # Only show "my" worksheets
-            # this cannot be setup in contentFilter,
-            # because AuthenticatedMember is not available in __init__
-            if selected_state == 'mine' or restrict == True:
-                this_analyst = _c(member.getId())
-                if analyst != this_analyst:
-                    continue
-
             items[x]['Analyst'] = analyst
 
             instrument = obj.getInstrument()
@@ -298,13 +301,6 @@ class WorksheetFolderListingView(BikaListingView):
 
             nr_analyses = len(obj.getAnalyses())
             if nr_analyses == '0':
-                # manager and labmanager see *all* worksheets
-                # otherwise we must be Analyst or Creator to see empties.
-                roles = member.getRoles()
-                if not 'Manager' in roles \
-                   and not 'LabManager' in roles \
-                   and not member.getId() in (analyst, creator):
-                    continue
                 # give empties pretty classes.
                 items[x]['table_row_class'] = 'state-empty-worksheet'
 
@@ -382,7 +378,7 @@ class WorksheetFolderListingView(BikaListingView):
 
             if items[x]['review_state'] == 'open' \
                 and self.allow_edit \
-                and restrict == False:
+                and self.restrict_results == False:
                 items[x]['allow_edit'] = ['Analyst', ]
                 items[x]['required'] = ['Analyst', ]
                 can_reassign = True

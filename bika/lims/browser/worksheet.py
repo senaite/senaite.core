@@ -424,10 +424,6 @@ class WorksheetAnalysesView(AnalysesView):
         ]
 
     def folderitems(self):
-        # Deny access to foreign analysts
-        if checkUserAccess(self.context, self.request) == False:
-            return []
-
         self.analyst = self.context.getAnalyst().strip()
         self.instrument = self.context.getInstrument()
         self.contentsMethod = self.context.getFolderContents
@@ -628,6 +624,10 @@ class ManageResultsView(BrowserView):
         self.getAnalysts = getUsers(context, ['Manager', 'LabManager', 'Analyst'])
 
     def __call__(self):
+        # Deny access to foreign analysts
+        if checkUserAccess(self.context, self.request) == False:
+            return []
+
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
 
         # Worksheet Attachmemts
