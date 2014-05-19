@@ -14,6 +14,7 @@ class AxiosXrfCSVMultiParser(InstrumentCSVResultsFileParser):
         InstrumentCSVResultsFileParser.__init__(self, csv)
         self._end_header = False
         self._columns = []
+        self._info_results = []
         self.columns_name = False #To know if the next line contains
                                   #analytic's columns name
 
@@ -86,22 +87,22 @@ class AxiosXrfCSVMultiParser(InstrumentCSVResultsFileParser):
                 self.err(_("No header found"), self._numline)
                 return -1
             #Grab column names
-            self._end_header = True
-            self._columns = self.splitLine(line)
-            return 0
+            self._columns = self.line.split(',')
+            return 1
 
         else:
-            self._header['Date'] = line
+            s_line = line.split(',')
+            if len(s_line) == 1:
+                self._header['Date'] = line
+                return 1
+            self._info_results = s_line
+            self._end_header = True
             return 1
 
     def parse_resultline(self, line):
         # Process incoming results line
         if not line.strip():
             return 0
-
-        if line.startswith(',,'):#Non important part
-            return 0
-        
 
         rawdict = {}
         # Split by ","
@@ -110,33 +111,50 @@ class AxiosXrfCSVMultiParser(InstrumentCSVResultsFileParser):
         errors = ''
 
         # Adjunt separated values from split by ','
-        for result in splitted:
+        for idx, result in enumerate(splitted):
             if result.startswith('"'):
                 # It means that is the value's firts part
                 # Consequently we take second part and append both
-                result = (splitted[idx][1].strip('"') + "," + splitted[idx+1][1].strip('"'))
-                splitted[idx] = (idx,result)
-                splitted.remove(e_splitted[idx+1])
+                result = (splitted[idx].strip('"') + "," + splitted[idx+1].strip('"'))
+                splitted[idx] = result
+                splitted.remove(splitted[idx+1])
+                
+        result_type = ''
+        result_sum = ''
+        for idx, result in enumerate(splitted):
+            if self._info_results[idx] == '':
+                if self._columns[idx] == 'Result type':
+                    result_type = result
+                elif self._columns[idx].startswith('Sample name'):
+                    rid = result
+            elif self._columns[idx] == 'Sum':
+                    result_sum = result
+            else:
+                rawdict[self._columns[idx]] = {'DefaultResult':result_type,
+                                               'Concentration':result,
+                                               'Sum':result_sum}
+                    
+                
         import pdb; pdb.set_trace()
-        aname = rawdict[self._columns[1]]# The fisrt column is the sample name  
+       
+
         if not aname:
             self.err(_("No Analysis Name defined, line %s") % (self.num_line))
             return 0
 
-        rid = self._column[0]
         if not rid:
             self.err(_("No Sample defined, line %s") % (self.num_line))
             return 0
 
         notes = rawdict.get('Notes', '')
         notes = "Notes: %s" % notes if notes else ''
-        rawdict['DefaultResult'] = conc
         # Replace to obtain UK values from default
-        rawdict[conc] = rawdict[conc].replace(',','.')
         rawdict['Remarks'] = ' '.join([errors, notes])
+
         rawres = self.getRawResults().get(rid, [])
         raw = rawres[0] if len(rawres) > 0 else {}
         raw[aname] = rawdict
+
         self._addRawResult(rid, raw, True)
         return 0
 
