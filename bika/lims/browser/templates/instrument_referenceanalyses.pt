@@ -81,25 +81,26 @@
 
                 $('#printgraph').click(function(e) {
                     e.preventDefault();
-                    var WinPrint = window.open('', '', 'letf=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
-                    WinPrint.document.write($('#content-core').html());
-                    WinPrint.document.close();
-                  /*  WinPrint.focus();
-                    WinPrint.print();
-                    WinPrint.close();*/
-                });
 
-                $('#scale').click(function(e) {
-                    e.preventDefault();
+                    // Scaling for print
                     var w = 670;
                     var h = $('#chart').attr('height');
                     drawControlChart(w, h);
-                    /*var w = $('svg').attr('width');
-                    var h = $('svg').attr('height');
-                    $('svg').attr('viewBox', '0 0 '+w+' '+h);
-                    $('svg').attr('width', '19cm');
-                    $('svg').attr('height', '26.5cm');
-                   // $('svg g').first().attr("transform", "scale(600 400)");*/
+
+                    var WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
+                    var css = '<link href="' + window.portal_url + '/++resource++bika.lims.css/print-graph.css" type="text/css" rel="stylesheet">';
+
+                    WinPrint.document.write("<html><head>"+css+"</head><body>"+$('#content-core').html()+"</body></html>");
+                    WinPrint.document.close();
+                    WinPrint.focus();
+                    WinPrint.print();
+
+                    // Re-scale
+                    $("#chart").css('width', '100%');
+                    $("#chart").removeAttr('height');
+                    drawControlChart();
+
+                    WinPrint.close();
                 });
 
                 $('div.bika-listing-table-container').fadeIn();
@@ -209,7 +210,6 @@
                 <option value='linear' i18n:translate="">Linear</option>
             </select>&nbsp;&nbsp;
             <a id='printgraph' class='print-16' href='#' i18n:translate="">Print</a>
-            <a id='scale' href='#'>Escala</a>
         </div>
         <div id='chart'></div>
     </div>
