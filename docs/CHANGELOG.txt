@@ -1,4 +1,16 @@
-3.01a (unreleased)
+3.1.3036 (2014-05-30)
+------------------
+
+Added two checboxes in BikaSetup > Security:
+- Allow access to worksheets only to assigned analysts (Y/N)
+- Only lab managers can create new worksheets (Y/N)
+
+The upgrade set the above options to true by default, so after being
+upgraded, only the labmanagers will be able to manage WS and the
+analysts will only have access to the worksheets to which they are
+assigned. These defaults can be changed from BikaSetup > Security
+
+3.1 (2014-05-16)
 ------------------
 
 Product and Analysis specifications per AR
