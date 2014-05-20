@@ -94,7 +94,7 @@
                     $(content).prepend(h1);
                     $(content).find('#selanalyses').after("<span class='bold'>"+$('#selanalyses').val()+"</span>");
                     $(content).find('#interpolation').after("<span class='bold'>"+$('#interpolation').val()+"</span>");
-                    $(content).find('#selqcsample').after("<span class='bold'>"+$('#seqlqcsample').val()+"</span>");
+                    $(content).find('#selqcsample').after("<span class='bold'>"+$('#selqcsample').val()+"</span>");
                     $(content).find('#selanalyses').hide();
                     $(content).find('#interpolation').hide();
                     $(content).find('#selqcsample').hide();
