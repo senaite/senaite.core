@@ -1033,5 +1033,13 @@ a.add-remark:hover {
    -moz-transition: opacity .25s ease-in-out;
    -webkit-transition: opacity .25s ease-in-out;
 }
+a.print-16 {
+    background: url(&dtml-portal_url;/++resource++bika.lims.images/print_16.png) no-repeat left center transparent;
+    color: #333333 !important;
+    padding: 5px 10px 2px 20px;
+}
+a.print-16:hover {
+    color: #3c3c3c !important;
+}
 
 </dtml-with>
