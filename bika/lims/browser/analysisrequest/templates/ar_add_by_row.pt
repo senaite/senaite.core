@@ -15,6 +15,7 @@
             <metal:field use-macro="python:context.widget(fieldname, mode=mode)"/>
         </div>
     </tal:headers>
+    <br />
 
     <thead 
         tal:define="
@@ -69,6 +70,7 @@
                                  src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
         </td>
     </tr>
+
 <!-- All edit fields with fields with add=visible -->
     <tal:rows 
     tal:repeat="arnum python:range(view.ar_count)">
@@ -98,7 +100,7 @@
                     <metal:field use-macro="python:context.widget(fieldname, mode='edit')"/>
                     <tal:hidden_def
                             tal:define="hiddenfieldnames python:widget_visibility.get('add', {}).get('hidden', []);
-                                        hiddenfieldnames python: [f for f in fieldnames if f not in headerfieldnames];"
+                                        "
                             tal:repeat="hiddenfieldname hiddenfieldnames">
                         <input
                                 type="hidden"
@@ -121,7 +123,6 @@
         </tal:loop>
     </tr>
 
-    <!--
         <tal:hidden repeat="hiddenfieldname python:widget_visibility.get('add', {}).get('hidden', [])">
             <tal:columns tal:repeat="arnum python:range(view.ar_count)">
                 <input
@@ -144,7 +145,6 @@
                         value val/UID|nothing;"/>
             </tal:columns>
         </tal:hidden>
-        -->
     </tal:rows>
 </thead>
 </div>

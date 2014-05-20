@@ -4,42 +4,74 @@
 	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
 	metal:use-macro="here/main_template/macros/master"
 	i18n:domain="bika">
-<body
-	tal:define="
-		form_id view/form_id;
-		table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
-	tal:omit-tag="python:table_only">
+<body>
 
-<metal:content-title fill-slot="content-title"
-	tal:define="
-		form_id view/form_id;
-		table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
-	tal:condition="python:not table_only">
-	<h1>
-        <img tal:condition="view/icon|nothing" tal:attributes="src view/icon"/>
-        <span class="documentFirstHeading" tal:content="view/title"/>
-    </h1>
-</metal:content-title>
-
-<metal:content-description fill-slot="content-description"
-	tal:define="
-		form_id view/form_id;
-		table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
-	tal:condition="python:not table_only">
-	<div class="documentDescription"
-		tal:content="view/description"
-		tal:condition="view/description"/>
-</metal:content-description>
-
-<metal:content-core fill-slot="content-core"
-	tal:define="
-		form_id view/form_id;
-		table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;">
-
-    <div id="folderlisting-main-table"
-        tal:content="structure view/contents_table"/>
-
+<metal:content-core fill-slot="content-title">
+    Select Analyses for AR
 </metal:content-core>
 
+<metal:content-core fill-slot="content-core">
+<table>
+<form id="add_analyses_form"
+      name="add_analyses_form"
+      method="POST">
+
+<tal:i define="
+    cats view/Categories;
+    portal_url view/portal_url;
+    POINTS_OF_CAPTURE view/getPointsOfCapture;"
+    >
+    <tal:i repeat="poc python:['field', 'lab']">
+        <tal:has_poc tal:condition="python:poc in cats">
+            <thead class="pointofcapture"
+                tal:attributes="id poc">
+                <tr>
+                    <th> 
+                        <img title="analyses"
+                            tal:attributes="src string:${portal_url}/++resource++bika.lims.images/analysisservice.png"/>
+                        <span tal:content="python:POINTS_OF_CAPTURE.getValue(poc)"/>
+                    </th>
+                </tr>
+            </thead>
+
+            <tal:i tal:define="sortedcats python:cats[poc];
+                dummy python:sortedcats.sort(lambda x, y: cmp(x[1], y[1]))"
+                repeat="cat sortedcats">
+                <thead>
+                    <tr class="analysiscategory">
+                        <th tal:content="python:cat[1]"
+                            tal:define="add_prefill python:cat[0] in view.DefaultCategories();"
+                            tal:attributes="
+                                id python:'cat_%s_%s'%(poc, cat[1]);
+                                poc poc;
+                                cat python:cat[0];
+                                class python: 'analysiscategory collapsed %s' % (add_prefill and ' prefill' or '')"/>
+
+                    </tr>
+                </thead>
+                <tbody class="analysisservices" tal:attributes="
+                    id python:poc + '_' + cat[0]">
+                    <tr></tr>
+                </tbody>
+            </tal:i>
+        </tal:has_poc>
+    </tal:i>
+</tal:i>
+
+<thead class="pointofcapture">
+    <tr>
+        <th style='padding-left:0;'>
+            <input 
+                type="submit"
+                id="submit_analyses_button"
+                name="submit_analyses_button"
+                i18n:attributes="value"
+                value="Submit"/>
+        </th>
+    </tr>
+</thead>
+</form>
+</table>
+</metal:content-core>
 </body>
 </html>

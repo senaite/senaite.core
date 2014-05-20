@@ -719,7 +719,7 @@ function toggleCat(poc, category_uid, arnum, selectedservices, force_expand, dis
 	// to select these
 	force_expand = force_expand || false;
 	disable = disable || -1;
-	if(!arnum && arnum !== 0) { arnum = ""; }
+	if(!arnum && arnum !== 0) { arnum = ""; };
 
 	var th = $("th[poc='"+poc+"']").filter("[cat='"+category_uid+"']");
 	var tbody = $("#"+poc+"_"+category_uid);
@@ -747,12 +747,16 @@ function toggleCat(poc, category_uid, arnum, selectedservices, force_expand, dis
 		if(!selectedservices) selectedservices = [];
 		$(tbody).removeClass("collapsed").addClass("expanded");
 		$(th).removeClass("collapsed").addClass("expanded");
+	    var ar_count = $("#ar_count").attr("value");
+        if ($("input[id='layout']").val() == 'rows') {
+            ar_count = 1;
+        };
 		var options = {
 			"selectedservices": selectedservices.join(","),
 			"categoryUID": category_uid,
 			"arnum": arnum,
 			"disable": disable > -1 ? arnum : -1,
-			"ar_count": $("#ar_count").attr("value"),
+			"ar_count": ar_count,
 			"poc": poc
 		};
 		// possibly remove the fake ar context
@@ -1374,37 +1378,46 @@ function ar_add_analyses_overlays(){
     if (layout == 'columns') {
         return;
     }
-	var i, e, elements, arnum, field, src;
+	var i, elem, elements, arnum, field, src;
 	elements = $(".ar_add_analyses");
 	for (i = elements.length - 1; i >= 0; i--) {
-        e = elements[i];
-        //field = $(e).attr('name');
+        elem = elements[i];
+        //field = $(elem).attr('name');
         //src = window.portal_url + "/araddanalyses?fieldvalue="+field+"&allow_edit=true";
         src = window.portal_url + "/araddanalyses"
-        $(e).attr('src', src);
-        $(e).prepOverlay({
+        $(elem).attr('src', src);
+        $(elem).prepOverlay({
             subtype: 'ajax',
-            });
+            config: {
+                'srcElement': elem,
+                //onBeforeLoad : function (evt) {
+                //    debugger;
+                //    console.log('onBeforeLoad', this.getOverlay());
+                //    return true;
+                //    },
+                onClose : function (evt) {
+                    var i, elem, elements;
+                    var src = this.getConf().srcElement;
+                    var titles = [];
+                    elements = $("input.cb");
+                    for (i=0; i<elements.length; i++) {
+                        elem = elements[i];
+                        if (elem.checked == true) {
+                            titles.push(elem.title);
+                        };
+                    };
+                    $(src).attr('value', titles.join(', '));
+                    return true;
+                    },
+                },
+        });
     };
 }
 
 function analysesOverlaySubmitted(event){
     event.preventDefault();
-	var i, elem, elements;
-    var uids = [];
-	elements = $("input.noborder");
-    for (i=0; i<elements.length; i++) {
-        elem = elements[i];
-        if (elem.id.slice(0,11) == 'analyses_cb') {
-            if (elem.checked == true) {
-                uids.push(elem.value);
-            };
-        }
-    };
-    console.log(uids);
-    debugger;
     $('div.close').click();
-    return uids;
+    return true;
 }
 
 $(document).ready(function() {
@@ -1418,9 +1431,9 @@ $(document).ready(function() {
         ar_add_analyses_overlays();
 
         $(".copyButton").live("click",  copyButton );
-        $("#analyses").live("submit", analysesOverlaySubmitted);
+        $("#submit_analyses_button").live("click", analysesOverlaySubmitted);
 
-        $("th[class^='analysiscategory']").click(clickAnalysisCategory);
+        $("th[class^='analysiscategory']").live("click", clickAnalysisCategory);
 
         $("input[name^='Price']").live("change", recalc_prices );
 
