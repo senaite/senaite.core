@@ -836,12 +836,12 @@ class AddAnalysesView(BikaListingView):
                 self.context.applyWorksheetTemplate(wst)
                 if len(self.context.getLayout()) != len(layout):
                     self.context.plone_utils.addPortalMessage(
-                        t(PMF("Changes saved.")))
+                        PMF("Changes saved."))
                     self.request.RESPONSE.redirect(self.context.absolute_url() +
                                                    "/manage_results")
                 else:
                     self.context.plone_utils.addPortalMessage(
-                        t(_("No analyses were added to this worksheet.")))
+                        _("No analyses were added to this worksheet."))
                     self.request.RESPONSE.redirect(self.context.absolute_url() +
                                                    "/add_analyses")
 
@@ -1295,14 +1295,14 @@ class ExportView(BrowserView):
         instrument = self.context.getInstrument()
         if not instrument:
             self.context.plone_utils.addPortalMessage(
-                t(_("You must select an instrument")), 'info')
+                _("You must select an instrument"), 'info')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 
         exim = instrument.getDataInterface()
         if not exim:
             self.context.plone_utils.addPortalMessage(
-                t(_("Instrument has no data interface selected")), 'info')
+                _("Instrument has no data interface selected"), 'info')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 
@@ -1314,7 +1314,7 @@ class ExportView(BrowserView):
         # search instruments module for 'exim' module
         if not hasattr(instruments, exim):
             self.context.plone_utils.addPortalMessage(
-                t(_("Instrument exporter not found")), 'error')
+                _("Instrument exporter not found"), 'error')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 

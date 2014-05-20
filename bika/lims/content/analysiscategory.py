@@ -61,8 +61,9 @@ class AnalysisCategory(BaseContent):
 
     def workflow_script_deactivat(self):
         # A instance cannot be deactivated if it contains services
-        bsc = getToolByName(instance, 'bika_setup_catalog')
-        ars = bsc(portal_type='AnalysisService', getCategoryUID=instance.UID())
+        pu = getToolByName(self, 'plone_utils')
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        ars = bsc(portal_type='AnalysisService', getCategoryUID=self.UID())
         if ars:
             message = _("Category cannot be deactivated because "
                         "it contains Analysis Services")

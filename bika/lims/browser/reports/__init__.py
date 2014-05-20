@@ -218,7 +218,7 @@ class SubmitForm(BrowserView):
 
         report_id = self.request.get('report_id', '')
         if not report_id:
-            message = "No report specified in request"
+            message = _("No report specified in request")
             self.logger.error(message)
             self.context.plone_utils.addPortalMessage(message, 'error')
             return self.template()

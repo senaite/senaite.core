@@ -1,27 +1,20 @@
-from Acquisition import aq_inner
-from Acquisition import aq_parent
+from Acquisition import aq_parent, aq_inner
 from Products.CMFCore.utils import getToolByName
-from Products.Archetypes.config import REFERENCE_CATALOG
 
 def upgrade(tool):
-    """ Refactor ARs listing to allow sorting by priority
-    """
-
-    def addIndex(cat, *args):
-        try:
-            cat.addIndex(*args)
-        except:
-            pass
-
     portal = aq_parent(aq_inner(tool))
-    # Create new indexes
-    bc = getToolByName(portal, 'bika_catalog')
-    addIndex(bc, 'Priority', 'FieldIndex')
-    addIndex(bc, 'BatchUID', 'FieldIndex')
-    bc.clearFindAndRebuild()
 
-    bac = getToolByName(portal, 'bika_analysis_catalog')
-    addIndex(bac, 'Priority', 'FieldIndex')
-    bac.clearFindAndRebuild()
+    # Fix Pricelists - VATTotal was renamed to VATAmount
+    pc = getToolByName(portal, "portal_catalog")
+    items = pc(portal_type="Pricelist")
+    for proxy in items:
+        pl = proxy.getObject()
+        new = []
+        for li in pl.pricelist_lineitems:
+            if 'VATTotal' in li:
+                li['VATAmount'] = li['VATTotal']
+                del(li['VATTotal'])
+        new.append(li)
+        pl.pricelist_lineitems = new
 
     return True

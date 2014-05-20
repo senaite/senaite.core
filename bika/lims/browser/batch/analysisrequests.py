@@ -1,3 +1,4 @@
+from operator import itemgetter
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser.analysisrequest import AnalysisRequestAddView as _ARAV

@@ -7,7 +7,7 @@ from foss.fiastar import fiastar
 from foss.winescan import auto
 from foss.winescan import ft120
 from thermoscientific.gallery import Ts9861x
-from panalytical.axios_xrf import XRF
+from panalytical.omnia import axios_xrf
 
 __all__ = ['generic.xml',
            'agilent.masshunter.quantitative',
@@ -15,7 +15,7 @@ __all__ = ['generic.xml',
            'foss.winescan.auto',
            'foss.winescan.ft120',
            'thermoscientific.gallery.Ts9861x',
-           'panalytical.axios_xrf.XRF']
+           'panalytical.omnia.axios_xrf']
 
 
 def getExim(exim_id):

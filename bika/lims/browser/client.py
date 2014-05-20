@@ -128,22 +128,22 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                 tlist = transitioned[state]
                 if len(tlist) > 1:
                     if state == 'to_be_preserved':
-                        message = t(_('${items} are waiting for preservation.',
-                                    mapping = {'items': ', '.join(tlist)}))
+                        message = _('${items} are waiting for preservation.',
+                                    mapping = {'items': ', '.join(tlist)})
                     else:
-                        message = t(_('${items} are waiting to be received.',
-                                    mapping = {'items': ', '.join(tlist)}))
+                        message = _('${items} are waiting to be received.',
+                                    mapping = {'items': ', '.join(tlist)})
                     self.context.plone_utils.addPortalMessage(message, 'info')
                 elif len(tlist) == 1:
                     if state == 'to_be_preserved':
-                        message = t(_('${item} is waiting for preservation.',
-                                    mapping = {'item': ', '.join(tlist)}))
+                        message = _('${item} is waiting for preservation.',
+                                    mapping = {'item': ', '.join(tlist)})
                     else:
-                        message = t(_('${item} is waiting to be received.',
-                                    mapping = {'item': ', '.join(tlist)}))
+                        message = _('${item} is waiting to be received.',
+                                    mapping = {'item': ', '.join(tlist)})
                     self.context.plone_utils.addPortalMessage(message, 'info')
             if not message:
-                message = t(_('No changes made.'))
+                message = _('No changes made.')
                 self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
@@ -192,13 +192,12 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                             not_transitioned.append(sp)
 
             if len(transitioned.keys()) > 1:
-                message = t(_('${items}: partitions are waiting to be received.',
-                        mapping = {'items': ', '.join(transitioned.keys())}))
+                message = _('${items}: partitions are waiting to be received.',
+                        mapping = {'items': ', '.join(transitioned.keys())})
             else:
-                message = t(_('${item}: ${part} is waiting to be received.',
+                message = _('${item}: ${part} is waiting to be received.',
                         mapping = {'item': ', '.join(transitioned.keys()),
-                                   'part': ', '.join(transitioned.values()),}))
-            message = t(message)
+                                   'part': ', '.join(transitioned.values()),})
             self.context.plone_utils.addPortalMessage(message, 'info')
 
             # And then the sample itself
@@ -237,7 +236,6 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                             mapping = {'item': ', '.join(transitioned)})
             else:
                 message = _('No items were published')
-            message = translate(message)
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
@@ -624,7 +622,7 @@ class SetSpecsToLabDefaults(BrowserView):
                 ResultsRange = labspec.getResultsRange(),
             )
         translate = self.context.translate
-        message = t(_("Analysis specifications reset to lab defaults."))
+        message = _("Analysis specifications reset to lab defaults.")
         self.context.plone_utils.addPortalMessage(message, 'info')
         self.request.RESPONSE.redirect(self.context.absolute_url() +
                                        "/analysisspecs")
