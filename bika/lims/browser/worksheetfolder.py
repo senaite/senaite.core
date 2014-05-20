@@ -11,6 +11,8 @@ from bika.lims.utils import t
 from bika.lims import PMF, logger
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
+from bika.lims.permissions import EditWorksheet
+from bika.lims.permissions import ManageWorksheets
 from bika.lims.utils import getUsers, tmpID
 from bika.lims.utils import to_utf8 as _c
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -19,7 +21,6 @@ from zope.interface import implements
 import plone
 import json
 import zope
-from bika.lims.permissions import EditWorksheet
 
 class WorksheetFolderWorkflowAction(WorkflowAction):
     """ Workflow actions taken in the WorksheetFolder
@@ -34,6 +35,18 @@ class WorksheetFolderWorkflowAction(WorkflowAction):
         action, came_from = WorkflowAction._get_form_workflow_action(self)
 
         if action == 'reassign':
+            mtool = getToolByName(self.context, 'portal_membership')
+            if not mtool.checkPermission(ManageWorksheets, self.context):
+
+                # Redirect to WS list
+                msg = _('You do not have sufficient privileges to '
+                        'manage worksheets.')
+                self.context.plone_utils.addPortalMessage(msg, 'warning')
+                portal = getToolByName(self.context, 'portal_url').getPortalObject()
+                self.destination_url = portal.absolute_url() + "/worksheets"
+                self.request.response.redirect(self.destination_url)
+                return
+
             selected_worksheets = WorkflowAction._get_selected_items(self)
             selected_worksheet_uids = selected_worksheets.keys()
 
@@ -233,6 +246,18 @@ class WorksheetFolderListingView(BikaListingView):
                         'state_title']},
         ]
 
+    def __call__(self):
+        if not self.isManagementAllowed():
+            # The current has no prvileges to manage WS.
+            # Remove the add button
+            self.context_actions = {}
+
+        return super(WorksheetFolderListingView, self).__call__()
+
+    def isManagementAllowed(self):
+        mtool = getToolByName(self.context, 'portal_membership')
+        return mtool.checkPermission(ManageWorksheets, self.context)
+
     def isEditionAllowed(self):
         pm = getToolByName(self.context, "portal_membership")
         checkPermission = self.context.portal_membership.checkPermission
@@ -254,8 +279,6 @@ class WorksheetFolderListingView(BikaListingView):
         rc = getToolByName(self, REFERENCE_CATALOG)
         pm = getToolByName(self.context, "portal_membership")
 
-        pm = getToolByName(self.context, "portal_membership")
-
         self.member = pm.getAuthenticatedMember()
         roles = self.member.getRoles()
         self.restrict_results = 'Manager' not in roles \
@@ -263,6 +286,13 @@ class WorksheetFolderListingView(BikaListingView):
                 and 'LabClerk' not in roles \
                 and 'RegulatoryInspector' not in roles \
                 and self.context.bika_setup.getRestrictWorksheetUsersAccess()
+
+        if self.restrict_results == True:
+            # Remove 'Mine' button and hide 'Analyst' column
+            del self.review_states[1] # Mine
+            self.columns['Analyst']['toggle'] = False
+
+        can_manage = pm.checkPermission(ManageWorksheets, self.context)
 
         self.selected_state = self.request.get("%s_review_state"%self.form_id,
                                                 'default')
@@ -378,7 +408,8 @@ class WorksheetFolderListingView(BikaListingView):
 
             if items[x]['review_state'] == 'open' \
                 and self.allow_edit \
-                and self.restrict_results == False:
+                and self.restrict_results == False \
+                and can_manage == True:
                 items[x]['allow_edit'] = ['Analyst', ]
                 items[x]['required'] = ['Analyst', ]
                 can_reassign = True
