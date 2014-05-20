@@ -90,9 +90,9 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Security",
         default=True,
         widget=BooleanWidget(
-            label=_("Only lab managers can create new worksheets"),
+            label=_("Only lab managers can create and manage worksheets"),
             description=_("If unticked, analysts and lab clerks will "
-                          "be able to create Worksheets, too. If the "
+                          "be able to manage Worksheets, too. If the "
                           "users have restricted access only to those "
                           "worksheets for which they are assigned, "
                           "this option will be ticked and readonly.")

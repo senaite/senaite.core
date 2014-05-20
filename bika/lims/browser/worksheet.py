@@ -63,7 +63,7 @@ class WorksheetWorkflowAction(WorkflowAction):
 
         ## assign
         elif action == 'assign':
-            if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
+            if not self.checkUserManage():
                 self.request.response.redirect(self.context.absolute_url())
                 return
 
@@ -83,7 +83,7 @@ class WorksheetWorkflowAction(WorkflowAction):
             self.request.response.redirect(self.destination_url)
         ## unassign
         elif action == 'unassign':
-            if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
+            if not self.checkUserManage():
                 self.request.response.redirect(self.context.absolute_url())
                 return
 
@@ -334,7 +334,7 @@ def getAnalystName(context):
     else:
         return analyst
 
-def checkUserAccess(context, request):
+def checkUserAccess(context, request, redirect=True):
     """ Checks if the current user has granted access to the worksheet.
         If the user is an analyst without LabManager, LabClerk and
         RegulatoryInspector roles and the option 'Allow analysts
@@ -344,29 +344,24 @@ def checkUserAccess(context, request):
         Returns False if the user has no access, otherwise returns True
     """
     # Deny access to foreign analysts
-    pm = getToolByName(context, "portal_membership")
-    member = pm.getAuthenticatedMember()
+    allowed = context.checkUserAccess()
+    if allowed == False and redirect == True:
+        msg =  _('You do not have sufficient privileges to view '
+                 'the worksheet %s.') % context.Title()
+        context.plone_utils.addPortalMessage(msg, 'warning')
+        # Redirect to WS list
+        portal = getToolByName(context, 'portal_url').getPortalObject()
+        destination_url = portal.absolute_url() + "/worksheets"
+        request.response.redirect(destination_url)
 
-    analyst = context.getAnalyst().strip()
-    if analyst != _c(member.getId()):
-        roles = member.getRoles()
-        restrict = 'Manager' not in roles \
-                and 'LabManager' not in roles \
-                and 'LabClerk' not in roles \
-                and 'RegulatoryInspector' not in roles \
-                and context.bika_setup.getRestrictWorksheetUsersAccess()
-        if restrict:
-            msg =  _('You do not have sufficient privileges to view '
-                     'the worksheet %s.') % context.Title()
-            context.plone_utils.addPortalMessage(msg, 'warning')
-            # Redirect to WS list
-            portal = getToolByName(context, 'portal_url').getPortalObject()
-            destination_url = portal.absolute_url() + "/worksheets"
-            request.response.redirect(destination_url)
-            return False
+    return allowed
 
-    # Access allowed
-    return True
+def checkUserManage(context, request, redirect=True):
+    allowed = context.checkUserManage()
+    if allowed == False and redirect == True:
+        # Redirect to /manage_results view
+        destination_url = context.absolute_url() + "/manage_results"
+        request.response.redirect(destination_url)
 
 
 class WorksheetAnalysesView(AnalysesView):
@@ -710,12 +705,11 @@ class ManageResultsView(BrowserView):
         return DisplayList(list(items))
 
     def isAssignmentAllowed(self):
-        checkPermission = self.context.portal_membership.checkPermission
         workflow = getToolByName(self.context, 'portal_workflow')
         review_state = workflow.getInfoFor(self.context, 'review_state', '')
         edit_states = ['open', 'attachment_due', 'to_be_verified']
         return review_state in edit_states \
-            and checkPermission(EditWorksheet, self.context)
+            and self.context.checkUserManage()
 
     def getWideInterims(self):
         """ Returns a dictionary with the analyses services from the current
@@ -861,7 +855,7 @@ class AddAnalysesView(BikaListingView):
             return
 
         # Deny access to foreign analysts
-        if checkUserAccess(self.context, self.request) == False:
+        if checkUserManage(self.context, self.request) == False:
             return []
 
         translate = self.context.translate
@@ -968,6 +962,7 @@ class AddAnalysesView(BikaListingView):
                    inactive_state = 'active',
                    sort_on = 'sortable_title')]
 
+
 class AddBlankView(BrowserView):
     implements(IViewView)
     template = ViewPageTemplateFile("templates/worksheet_add_control.pt")
@@ -985,7 +980,7 @@ class AddBlankView(BrowserView):
             return
 
         # Deny access to foreign analysts
-        if checkUserAccess(self.context, self.request) == False:
+        if checkUserManage(self.context, self.request) == False:
             return []
 
         form = self.request.form
@@ -1032,7 +1027,7 @@ class AddControlView(BrowserView):
             return
 
         # Deny access to foreign analysts
-        if checkUserAccess(self.context, self.request) == False:
+        if checkUserManage(self.context, self.request) == False:
             return []
 
         form = self.request.form
@@ -1079,7 +1074,7 @@ class AddDuplicateView(BrowserView):
             return
 
         # Deny access to foreign analysts
-        if checkUserAccess(self.context, self.request) == False:
+        if checkUserManage(self.context, self.request) == False:
             return []
 
         form = self.request.form

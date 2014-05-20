@@ -8,6 +8,7 @@ def upgrade(tool):
 
     # re-import js registry
     setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
 
     # Update permissions according to Bika Setup
     # By default, restrict user access and management to WS
