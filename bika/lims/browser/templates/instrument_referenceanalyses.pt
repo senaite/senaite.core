@@ -89,8 +89,17 @@
 
                     var WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
                     var css = '<link href="' + window.portal_url + '/++resource++bika.lims.css/print-graph.css" type="text/css" rel="stylesheet">';
+                    var h1 = $("span.documentFirstHeading").closest('h1').clone();
+                    var content = $('#content-core').clone();
+                    $(content).prepend(h1);
+                    $(content).find('#selanalyses').after("<span class='bold'>"+$('#selanalyses').val()+"</span>");
+                    $(content).find('#interpolation').after("<span class='bold'>"+$('#interpolation').val()+"</span>");
+                    $(content).find('#selqcsample').after("<span class='bold'>"+$('#seqlqcsample').val()+"</span>");
+                    $(content).find('#selanalyses').hide();
+                    $(content).find('#interpolation').hide();
+                    $(content).find('#selqcsample').hide();
 
-                    WinPrint.document.write("<html><head>"+css+"</head><body>"+$('#content-core').html()+"</body></html>");
+                    WinPrint.document.write("<html><head>"+css+"</head><body>"+$(content).html()+"</body></html>");
                     WinPrint.document.close();
                     WinPrint.focus();
                     WinPrint.print();
