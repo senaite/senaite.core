@@ -72,7 +72,7 @@
            tal:attributes="value partitionable"/>
 
     <!-- And the current form partition configuration is stored here -->
-    <input type="hidden" id="parts" name="parts" value="{}"/>
+    <input type="text" id="parts" name="parts" value="{}"/>
 
     <!-- The system configured 'Dry Matter Service' -->
     <tal:i define="dms python:context.bika_setup.getDryMatterService()">

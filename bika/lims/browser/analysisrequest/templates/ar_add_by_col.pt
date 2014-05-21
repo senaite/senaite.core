@@ -43,14 +43,14 @@
                         tal:repeat="hiddenfieldname python:widget_visibility.get('add', {}).get('hidden', [])"
                         tal:define="index repeat/fieldname/index">
                             <input
-                                type="hidden"
+                                type="text"
                                 tal:define="val python:context.Schema()[hiddenfieldname].getAccessor(context)();"
                                 tal:attributes="
                                     name string:${hiddenfieldname};
                                     id string:${hiddenfieldname};
                                     value val/Title|nothing;"/>
                              <input
-                                type="hidden"
+                                type="text"
                                 tal:define="val python:context.Schema()[hiddenfieldname].getAccessor(context)();"
                                 tal:attributes="
                                     name string:${hiddenfieldname}_uid;
@@ -66,7 +66,7 @@
     <tal:hidden repeat="hiddenfieldname python:widget_visibility.get('add', {}).get('hidden', [])">
         <tal:columns tal:repeat="arnum python:range(view.ar_count)">
             <input
-                type="hidden"
+                type="text"
                 tal:define="
                     field python:context.Schema()[hiddenfieldname];
                     val python:field.getAccessor(context)();"
@@ -75,7 +75,7 @@
                     id string:ar_${arnum}_${hiddenfieldname};
                     value val/Title|nothing;"/>
              <input
-                type="hidden"
+                type="text"
                 tal:define="
                     field python:context.Schema()[hiddenfieldname];
                     val python:field.getAccessor(context)();"
@@ -175,7 +175,7 @@
                 input_name string:ar.${arnum}.subtotal">
             <input class="price noborder" size="10" disabled="disabled" value="0.00"
                 tal:attributes="id string:${input_id}_display;"/>
-            <input type="hidden"
+            <input type="text"
                 tal:attributes="
                     id input_id;
                     name string:${input_name}:record:ignore_empty;"/>
@@ -193,7 +193,7 @@
                 input_name string:ar.${arnum}.vat">
             <input class="price noborder" size="10" disabled="disabled" value="0.00"
                 tal:attributes="id string:${input_id}_display;"/>
-            <input type="hidden"
+            <input type="text"
                 tal:attributes="
                     id input_id;
                     name string:${input_name}:record:ignore_empty;"/>
@@ -212,7 +212,7 @@
                 input_name string:ar.${arnum}.total">
             <input class="price noborder" size="10" disabled="disabled" value="0.00"
                 tal:attributes="id string:${input_id}_display;"/>
-            <input type="hidden"
+            <input type="text"
                 tal:attributes="
                     id input_id;
                     name string:${input_name}:record:ignore_empty;"/>

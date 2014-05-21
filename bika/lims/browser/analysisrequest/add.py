@@ -156,11 +156,12 @@ class ajaxExpandCategory(BikaListingView):
 
 class ajaxAnalysisRequestSubmit():
     def __init__(self, context, request):
+        import pdb; pdb.set_trace()
         self.context = context
         self.request = request
 
     def __call__(self):
-
+        import pdb; pdb.set_trace()
         form = self.request.form
         plone.protect.CheckAuthenticator(self.request.form)
         plone.protect.PostOnly(self.request.form)
@@ -261,6 +262,7 @@ class ajaxAnalysisRequestSubmit():
                     resolved_values[k] = values[k]
             # Get the analyses from the form data
             analyses = values["Analyses"]
+
             # Gather the specifications from the form data
             # no defaults are applied here - the defaults should already be
             # present in the form data
@@ -302,6 +304,7 @@ class ajaxAnalysisRequestSubmit():
             else:
                 client = uc(UID=headers['Client_uid'])[0].getObject()
             # Create the Analysis Request
+            import pdb; pdb.set_trace()
             ar = create_analysisrequest(
                 client,
                 self.request,

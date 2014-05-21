@@ -1390,23 +1390,44 @@ function ar_add_analyses_overlays(){
             subtype: 'ajax',
             config: {
                 'srcElement': elem,
-                //onBeforeLoad : function (evt) {
-                //    debugger;
-                //    console.log('onBeforeLoad', this.getOverlay());
-                //    return true;
-                //    },
+                onBeforeLoad : function (evt) {
+                    window.bika.lims.overlay_submitted = false;
+                    return true;
+                    },
                 onClose : function (evt) {
-                    var i, elem, elements;
+                    if (window.bika.lims.overlay_submitted == false ) {
+                        return true
+                    };
+                    window.bika.lims.overlay_submitted = false;
+                    //Clear
+                    var i, elem, elements, new_item, arnum, aname, val;
                     var src = this.getConf().srcElement;
+                    arnum = src.id.split('_')[1];
                     var titles = [];
                     elements = $("input.cb");
+                    var analysis_parent = $(src).parent();
                     for (i=0; i<elements.length; i++) {
                         elem = elements[i];
                         if (elem.checked == true) {
                             titles.push(elem.title);
+					        new_item = '<input type="hidden" id="'+elem.id+'" value="'+elem.id+'" name="ar.'+arnum+'.Analyses:list:ignore_empty:record" class="cb" arnum="'+arnum+'">';
+                            analysis_parent.append(new_item);
+                            aname = 'ar.'+arnum+'.min.'+elem.id;
+                            val = $('input[name^="'+aname+'"]').val();
+					        new_item = '<input type="hidden" uid="'+elem.id+'" name="ar.'+arnum+'.min.'+elem.id+'" value="'+val+'" class="spec_bit min">';
+                            analysis_parent.append(new_item);
+                            aname = 'ar.'+arnum+'.max.'+elem.id;
+                            val = $('input[name^="'+aname+'"]').val();
+					        new_item = '<input type="hidden" uid="'+elem.id+'" name="ar.'+arnum+'.max.'+elem.id+'" value="'+val+'" class="spec_bit max">';
+                            analysis_parent.append(new_item);
+                            aname = 'ar.'+arnum+'.error.'+elem.id;
+                            val = $('input[name^="'+aname+'"]').val();
+					        new_item = '<input type="hidden" uid="'+elem.id+'" name="ar.'+arnum+'.error.'+elem.id+'" value="'+val+'" class="spec_bit error">';
+                            analysis_parent.append(new_item);
                         };
                     };
                     $(src).attr('value', titles.join(', '));
+
                     return true;
                     },
                 },
@@ -1416,6 +1437,7 @@ function ar_add_analyses_overlays(){
 
 function analysesOverlaySubmitted(event){
     event.preventDefault();
+    window.bika.lims.overlay_submitted = true;
     $('div.close').click();
     return true;
 }
@@ -1451,6 +1473,7 @@ $(document).ready(function() {
                 dataType: "json",
                 data: {"_authenticator": $("input[name='_authenticator']").val()},
                 beforeSubmit: function() {
+                    debugger;
                     $("input[class~='context']").prop("disabled",true);
                 },
                 success: function(responseText) {
