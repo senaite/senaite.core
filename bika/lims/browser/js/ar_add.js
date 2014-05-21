@@ -1030,7 +1030,7 @@ function unsetAnalysisProfile(column){
 
 function unsetTemplate(column){
 	if($("#ar_"+column+"_Template").val() !== ""){
-		$("#ar_"+column+"_Template").val("");
+		$("#ar_"+column+"_Template_uid").val("");
 	}
 }
 
