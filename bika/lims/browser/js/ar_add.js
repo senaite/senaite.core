@@ -763,8 +763,10 @@ function toggleCat(poc, category_uid, arnum, selectedservices, force_expand, dis
 		var url = window.location.href.split("/ar_add")[0] + "/analysisrequest_analysisservices";
 		$(tbody).load(url, options, function(){
 			// analysis service checkboxes
-			$("input[name*='Analyses']").unbind();
-			$("input[name*='Analyses']").bind("change", service_checkbox_change);
+	        if ($("input[id='layout']").val() == 'columns') {
+                $("input[name*='Analyses']").unbind();
+                $("input[name*='Analyses']").bind("change", service_checkbox_change);
+            };
 			if(selectedservices!=[]){
 				recalc_prices(arnum);
 				for(i=0;i<selectedservices.length;i++){
@@ -1406,9 +1408,11 @@ function ar_add_analyses_overlays(){
                     var titles = [];
                     elements = $("input.cb");
                     var analysis_parent = $(src).parent();
+                    var something_checked = false;
                     for (i=0; i<elements.length; i++) {
                         elem = elements[i];
                         if (elem.checked == true) {
+                            something_checked = true;
                             titles.push(elem.title);
 					        new_item = '<input type="hidden" id="'+elem.id+'" value="'+elem.id+'" name="ar.'+arnum+'.Analyses:list:ignore_empty:record" class="cb" arnum="'+arnum+'">';
                             analysis_parent.append(new_item);
@@ -1426,8 +1430,10 @@ function ar_add_analyses_overlays(){
                             analysis_parent.append(new_item);
                         };
                     };
-                    $(src).attr('value', titles.join(', '));
-
+                    if (something_checked == true) {
+                        $(src).attr('value', titles.join(', '));
+                        $(src).attr('name', $(src).attr('name').split(':')[0]);
+                    };
                     return true;
                     },
                 },
@@ -1473,7 +1479,6 @@ $(document).ready(function() {
                 dataType: "json",
                 data: {"_authenticator": $("input[name='_authenticator']").val()},
                 beforeSubmit: function() {
-                    debugger;
                     $("input[class~='context']").prop("disabled",true);
                 },
                 success: function(responseText) {

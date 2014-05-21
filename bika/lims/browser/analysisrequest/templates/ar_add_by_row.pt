@@ -99,19 +99,18 @@
                 <td>
                     <metal:field use-macro="python:context.widget(fieldname, mode='edit')"/>
                     <tal:hidden_def
-                            tal:condition="nothing"
                             tal:define="hiddenfieldnames python:widget_visibility.get('add', {}).get('hidden', []);
                                         "
                             tal:repeat="hiddenfieldname hiddenfieldnames">
                         <input
-                                type="text"
+                                type="hidden"
                                 tal:define="val python:context.Schema()[hiddenfieldname].getAccessor(context)();"
                                 tal:attributes="
                                         name string:${hiddenfieldname};
                                         id string:${hiddenfieldname};
                                         value val/Title|nothing;"/>
                         <input
-                                type="text"
+                                type="hidden"
                                 tal:define="val python:context.Schema()[hiddenfieldname].getAccessor(context)();"
                                 tal:attributes="
                                         name string:${hiddenfieldname}_uid;
@@ -127,7 +126,7 @@
         <tal:hidden repeat="hiddenfieldname python:widget_visibility.get('add', {}).get('hidden', [])">
             <tal:columns tal:repeat="arnum python:range(view.ar_count)">
                 <input
-                    type="text"
+                    type="hidden"
                     tal:define="
                         field python:context.Schema()[hiddenfieldname];
                         val python:field.getAccessor(context)();"
@@ -136,7 +135,7 @@
                         id string:ar_${arnum}_${hiddenfieldname};
                         value val/Title|nothing;"/>
                  <input
-                    type="text"
+                    type="hidden"
                     tal:define="
                         field python:context.Schema()[hiddenfieldname];
                         val python:field.getAccessor(context)();"
