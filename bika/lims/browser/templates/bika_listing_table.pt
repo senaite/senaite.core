@@ -604,7 +604,7 @@ Table cells for each column from in review_state's column list.
             <td tal:attributes="class string:${item/state_class} result"></td>
 
             <td tal:attributes="colspan python:int(nr_cols)-1;
-                                class string:${item/state_class} result"
+                                class string:${item/state_class} result remarks"
                 style="padding-right:10px;padding-bottom:5px;">
                 <span i18n:translate="" style='color:#3f3f3f;font-size:0.95em;'>Remarks:</span>&nbsp;
                 <textarea

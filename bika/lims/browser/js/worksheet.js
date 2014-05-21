@@ -468,15 +468,17 @@ $(document).ready(function(){
 
    // Add a baloon icon before Analyses' name when you'd add a remark. If you click on, it'll display remarks textarea.
     var txt1 = '<a href="#" class="add-remark"><img src="'+window.portal_url+'/++resource++bika.lims.images/comment_ico.png" title="'+_('Add Remark')+'")"></a>';
-
-    $(".listing_remarks:contains('')").closest('tr').hide();
     var pointer = $(".listing_remarks:contains('')").closest('tr').prev().find('td.service_title span.before');
     $(pointer).append(txt1);
 
     $("a.add-remark").click(function(e){
         e.preventDefault();
-        $(this).closest('tr').next('tr').toggle(300);
+        var rmks = $(this).closest('tr').next('tr').find('td.remarks');
+        if (rmks.length > 0) {
+            rmks.children().toggle();
+        }
     });
+    $("a.add-remark").click();
 
 
 });
