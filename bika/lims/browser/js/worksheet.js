@@ -259,6 +259,7 @@ $(document).ready(function(){
         var selectedinstr = $(instrselector).val();
         var m_manualentry = true;
         var s_instrentry  = false;
+        var qc_analysis = $(this).closest('tr').hasClass('qc-analysis');
         $(instrselector).find('option').remove();
         $(instrselector).prop('disabled', false);
         $(this).closest('tr').find('img.alert-instruments-invalid').remove();
@@ -319,7 +320,7 @@ $(document).ready(function(){
 
                         // Populate the instrument selector with the instruments retrieved
                         $.each(idata, function(index, value) {
-                            if (value['isvalid'] == true) {
+                            if (value['isvalid'] == true || qc_analysis == true) {
                                 $(instrselector).append('<option value="'+value['uid']+'">'+value['title']+'</option>');
                                 if (selectedinstr == value['uid']) {
                                     $(instrselector).val(value['uid'])
@@ -346,12 +347,12 @@ $(document).ready(function(){
 
                             if (valid) {
                                 // At least one instrument valid found too
-                                var title = _("Invalid instruments are not shown: ")+invalid.join(", ");
+                                var title = _("Invalid instruments are not shown: ") + invalid.join(", ");
                                 $(instrselector).parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+title+'")">');
 
                             } else if (m_manualentry) {
                                 // All instruments found are invalid, but manual entry is allowed
-                                var title = _("No valid instruments found: ").replace('%s', methodname) + invalid.join(", ");
+                                var title = _("No valid instruments found: ") + invalid.join(", ");
                                 $(instrselector).parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
 
                             } else {
