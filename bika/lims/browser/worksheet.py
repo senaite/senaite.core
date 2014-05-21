@@ -63,7 +63,7 @@ class WorksheetWorkflowAction(WorkflowAction):
 
         ## assign
         elif action == 'assign':
-            if not self.checkUserManage():
+            if not self.context.checkUserManage():
                 self.request.response.redirect(self.context.absolute_url())
                 return
 
@@ -83,7 +83,7 @@ class WorksheetWorkflowAction(WorkflowAction):
             self.request.response.redirect(self.destination_url)
         ## unassign
         elif action == 'unassign':
-            if not self.checkUserManage():
+            if not self.context.checkUserManage():
                 self.request.response.redirect(self.context.absolute_url())
                 return
 
