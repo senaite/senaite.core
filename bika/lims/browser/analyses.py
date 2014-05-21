@@ -834,6 +834,8 @@ class AnalysesView(BikaListingView):
                 new_states.append(state)
             self.review_states = new_states
 
+        self.categories.sort()
+
         # self.json_specs = json.dumps(self.specs)
         self.json_interim_fields = json.dumps(self.interim_fields)
         self.items = items
