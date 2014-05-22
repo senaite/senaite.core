@@ -18,6 +18,37 @@ ${ar_factory_url}  portal_factory/AnalysisRequest/Request%20new%20analyses/ar_ad
 
 *** Test Cases ***
 
+Check the AR Add javascript
+   # check that the Contact CC auto-fills correctly when a contact is selected
+    Log out
+    Log in                    test_labmanager1    test_labmanager1
+    Wait until page contains  You are now logged in
+    Go to                     ${PLONEURL}/clients/client-1
+    Wait until page contains  Happy
+    Click Link                Add
+    SelectDate                          ar_0_SamplingDate       1
+    Select From Dropdown                ar_0_SampleType         Water
+    Select from dropdown                ar_0_Contact            Rita
+    Xpath Should Match X Times          //div[@class='reference_multi_item']   1
+    Select from dropdown                ar_0_Contact            Neil
+    Select from dropdown                ar_0_Priority           High
+    Xpath Should Match X Times          //div[@class='reference_multi_item']   2
+
+    # check that we can expand and collaps the analysis categories
+    click element                       xpath=.//th[@id="cat_lab_Microbiology"]
+    wait until page contains            Clostridia
+    click element                       xpath=.//th[@id="cat_lab_Microbiology"]
+    element should not be visible             Clostridia
+    click element                       xpath=.//th[@id="cat_lab_Microbiology"]
+    page should contain                 Clostridia
+
+# XXX Automatic expanded categories
+# XXX Restricted categories
+# XXX samplingworkflow
+# XXX preservation workflow
+# XXX field analyses
+# XXX copy across in all fields
+
 Analysis Request with no samping or preservation workflow
 
     Go to                     ${PLONEURL}/clients/client-1
@@ -43,30 +74,7 @@ Analysis Request with no samping or preservation workflow
     # Go to                     ${PLONEURL}/clients/client-1/${ar_id}/base_view
     # Execute transition retract on items in form_id lab_analyses
 
-Check that the Contact CC auto-fills correctly when a contact is selected
-    Log out
-    Log in                    test_labmanager1    test_labmanager1
-    Wait until page contains  You are now logged in
-    Go to                     ${PLONEURL}/clients/client-1
-    Wait until page contains  Happy
-    Click Link                Add
-    SelectDate                          ar_0_SamplingDate       1
-    Select From Dropdown                ar_0_SampleType         Water
-    Select from dropdown                ar_0_Contact            Rita
-    Xpath Should Match X Times          //div[@class='reference_multi_item']   1
-    Select from dropdown                ar_0_Contact            Neil
-    Select from dropdown                ar_0_Priority           High
-    Xpath Should Match X Times          //div[@class='reference_multi_item']   2
 
-
-# XXX Automatic expanded categories
-# XXX Restricted categories
-
-# XXX samplingworkflow
-# XXX preservation workflow
-
-# XXX field analyses
-# XXX copy across in all fields
 
 Create two different ARs from the same sample.
     Create Primary AR
