@@ -18,6 +18,9 @@ ${ar_factory_url}  portal_factory/AnalysisRequest/Request%20new%20analyses/ar_ad
 
 *** Test Cases ***
 
+Temporary first test for testing new Add by Row
+    Create Primary AR By Row
+
 Analysis Request with no samping or preservation workflow
 
     Go to                     ${PLONEURL}/clients/client-1
@@ -95,6 +98,39 @@ Create Primary AR
     Click Button                Save
     Set Selenium Timeout        10
     Wait until page contains    created
+    ${ar_id} =                  Get text      //dl[contains(@class, 'portalMessage')][2]/dd
+    ${ar_id} =                  Set Variable  ${ar_id.split()[2]}
+    Go to                       http://localhost:55001/plone/clients/client-1/analysisrequests
+    Wait until page contains    ${ar_id}
+    Select checkbox             xpath=//input[@item_title="${ar_id}"]
+    Click button                xpath=//input[@value="Receive sample"]
+    Wait until page contains    saved
+    [return]                    ${ar_id}
+
+Create Primary AR By Row
+    Log in                      test_labmanager  test_labmanager
+    @{time} =                   Get Time        year month day hour min sec
+    Go to                       ${PLONEURL}/clients/client-1
+    Wait until page contains element    css=body.portaltype-client
+    Input text                  ar_count    1
+    Select from list            layout      rows
+    Click Link                  Add
+    Wait until page contains    Request new analyses
+    Select from dropdown        Contact                     Rita
+    Select Date                 ar_0_SamplingDate           @{time}[2]
+    Select from dropdown        ar_0_SampleType             Water
+    Click element               ar_0_Analyses
+    Wait until page contains    Select Analyses for AR
+    Click element               xpath=//th[@id="cat_lab_Metals"]
+    Select checkbox             xpath=//input[@title="Calcium"]
+    Click Button                Submit
+    Set Selenium Timeout        5
+    ${Analyses} =               Get value    xpath=//input[@id="ar_0_Analyses"]
+    Log                         ${Analyses}
+    ${Calcium} =               Encode string to bytes      ${Analyses}   ASCII
+    Should Be Equal             ${Analyses}    ${Calcium}
+    Click Button                Save
+    Wait until page contains    was successfully created.
     ${ar_id} =                  Get text      //dl[contains(@class, 'portalMessage')][2]/dd
     ${ar_id} =                  Set Variable  ${ar_id.split()[2]}
     Go to                       http://localhost:55001/plone/clients/client-1/analysisrequests
