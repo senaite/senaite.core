@@ -431,7 +431,7 @@ class Analysis(BaseContent):
                     spec = kw_list[0]
                     break
         if not spec:
-            return {"min": 0, "max": 0, "error": 0}
+            return {"min": "", "max": "", "error": ""}
         return spec
 
     def getPriority(self):
