@@ -766,6 +766,9 @@ function toggleCat(poc, category_uid, arnum, selectedservices, force_expand, dis
 	        if ($("input[id='layout']").val() == 'columns') {
                 $("input[name*='Analyses']").unbind();
                 $("input[name*='Analyses']").bind("change", service_checkbox_change);
+            } else {
+
+                $("input[class='cb']").bind("change", service_checkbox_change);
             };
 			if(selectedservices!=[]){
 				recalc_prices(arnum);
