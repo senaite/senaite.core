@@ -15,6 +15,21 @@ import re
 import transaction
 
 
+def lookup(context, portal_type, **kwargs):
+    at = getToolByName(context, 'archetype_tool')
+    catalog = at.catalog_map.get(portal_type, [None])[0] or 'portal_catalog'
+    catalog = getToolByName(context, catalog)
+    kwargs['portal_type'] = portal_type
+    return catalog(**kwargs)[0].getObject()
+
+
+def check_for_required_columns(name, data, required):
+    for column in required:
+        if not data[column]:
+            message = _("{0} has no '{1}' column." % (name, column))
+            raise Exception(t(message))
+
+
 def Float(thing):
     try:
         f = float(thing)
@@ -339,6 +354,32 @@ class Lab_Departments(WorksheetImporter):
                     obj.setManager(manager.UID())
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+
+
+class Lab_Products(WorksheetImporter):
+
+    def Import(self):
+        context = self.context
+        # Refer to the default folder
+        folder = self.context.bika_setup.bika_labproducts
+        # Iterate through the rows
+        for row in self.get_rows(3):
+            # Check for required columns
+            check_for_required_columns('SRTemplate', row, [
+                'title', 'volume', 'unit', 'price'
+            ])
+            # Create the SRTemplate object
+            obj = _createObjectByType('LabProduct', folder, tmpID())
+            # Apply the row values
+            obj.edit(
+                title=row['title'],
+                description=row['description'],
+                Volume=row['volume'],
+                Unit=str(row['unit']),
+                Price=str(row['price']),
+            )
+            # Rename the new object
+            renameAfterCreation(obj)
 
 
 class Clients(WorksheetImporter):
@@ -1768,34 +1809,6 @@ class Invoice_Batches(WorksheetImporter):
             )
             renameAfterCreation(obj)
 
-
-class Lab_Products(WorksheetImporter):
-
-    def Import(self):
-        folder = self.context.bika_setup.bika_labproducts
-        for row in self.get_rows(3):
-            # Create a new object
-            obj = _createObjectByType("LabProduct", folder, tmpID())
-            # Ensure that all fields are present
-            fields = [
-                'title', 'description', 'volume',
-                'unit', 'vat', 'price'
-            ]
-            for field in fields:
-                if field not in row:
-                    msg = "LabProduct requires a value for %s" % (field)
-                    raise Exception(msg)
-            # Set the values according to the row
-            obj.edit(
-                title=row['title'],
-                description=row['description'],
-                Volume=row['volume'],
-                Unit=row['unit'],
-                VAT=str(row['vat']),
-                Price=str(row['price']),
-            )
-            # Rename the object
-            renameAfterCreation(obj)
 
 class AR_Priorities(WorksheetImporter):
 
