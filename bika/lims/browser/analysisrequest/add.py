@@ -223,8 +223,8 @@ class ajaxAnalysisRequestSubmit():
                     'SampleType'
                 ]:
                     continue
-                if (field in ar and not ar.get(field, '')):
-                    ajax_form_error(errors, field, fieldname)
+                if not ar.get(field, ''):
+                    ajax_form_error(errors, field, column)
         # Return errors if there are any
         if errors:
             return json.dumps({'errors': errors})
@@ -293,7 +293,7 @@ class ajaxAnalysisRequestSubmit():
             )
             if default_container_type:
                 container_type = bsc(UID=default_container_type)[0].getObject()
-                containers = container_type.getcontainers()
+                containers = container_type.getContainers()
                 for partition in partitions:
                     if not partition.get(container, None):
                         partition['container'] = containers

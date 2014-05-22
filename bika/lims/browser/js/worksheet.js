@@ -259,6 +259,7 @@ $(document).ready(function(){
         var selectedinstr = $(instrselector).val();
         var m_manualentry = true;
         var s_instrentry  = false;
+        var qc_analysis = $(this).closest('tr').hasClass('qc-analysis');
         $(instrselector).find('option').remove();
         $(instrselector).prop('disabled', false);
         $(this).closest('tr').find('img.alert-instruments-invalid').remove();
@@ -319,7 +320,7 @@ $(document).ready(function(){
 
                         // Populate the instrument selector with the instruments retrieved
                         $.each(idata, function(index, value) {
-                            if (value['isvalid'] == true) {
+                            if (value['isvalid'] == true || qc_analysis == true) {
                                 $(instrselector).append('<option value="'+value['uid']+'">'+value['title']+'</option>');
                                 if (selectedinstr == value['uid']) {
                                     $(instrselector).val(value['uid'])
@@ -346,12 +347,12 @@ $(document).ready(function(){
 
                             if (valid) {
                                 // At least one instrument valid found too
-                                var title = _("Invalid instruments are not shown: ")+invalid.join(", ");
+                                var title = _("Invalid instruments are not shown: ") + invalid.join(", ");
                                 $(instrselector).parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+title+'")">');
 
                             } else if (m_manualentry) {
                                 // All instruments found are invalid, but manual entry is allowed
-                                var title = _("No valid instruments found: ").replace('%s', methodname) + invalid.join(", ");
+                                var title = _("No valid instruments found: ") + invalid.join(", ");
                                 $(instrselector).parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
 
                             } else {
@@ -468,15 +469,17 @@ $(document).ready(function(){
 
    // Add a baloon icon before Analyses' name when you'd add a remark. If you click on, it'll display remarks textarea.
     var txt1 = '<a href="#" class="add-remark"><img src="'+window.portal_url+'/++resource++bika.lims.images/comment_ico.png" title="'+_('Add Remark')+'")"></a>';
-
-    $(".listing_remarks:contains('')").closest('tr').hide();
     var pointer = $(".listing_remarks:contains('')").closest('tr').prev().find('td.service_title span.before');
     $(pointer).append(txt1);
 
     $("a.add-remark").click(function(e){
         e.preventDefault();
-        $(this).closest('tr').next('tr').toggle(300);
+        var rmks = $(this).closest('tr').next('tr').find('td.remarks');
+        if (rmks.length > 0) {
+            rmks.children().toggle();
+        }
     });
+    $("a.add-remark").click();
 
 
 });

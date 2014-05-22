@@ -129,6 +129,7 @@ class Report(BrowserView):
             # 1) if a spec is given in the query form, use it.
             # 2) if a spec is entered directly on the analysis, use it.
             # otherwise just continue to the next object.
+            spec_dict = False
             if spec_obj:
                 rr = spec_obj.getResultsRangeDict()
                 if keyword in rr:
@@ -146,7 +147,8 @@ class Report(BrowserView):
                         spec_dict = analysis.specification
                     else:
                         continue
-
+            if not spec_dict:
+                continue
             try:
                 spec_min = float(spec_dict['min'])
                 spec_max = float(spec_dict['max'])

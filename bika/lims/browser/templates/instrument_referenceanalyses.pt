@@ -79,6 +79,39 @@
                     }
                 });
 
+                $('#printgraph').click(function(e) {
+                    e.preventDefault();
+
+                    // Scaling for print
+                    var w = 670;
+                    var h = $('#chart').attr('height');
+                    drawControlChart(w, h);
+
+                    var WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
+                    var css = '<link href="' + window.portal_url + '/++resource++bika.lims.css/print-graph.css" type="text/css" rel="stylesheet">';
+                    var h1 = $("span.documentFirstHeading").closest('h1').clone();
+                    var content = $('#content-core').clone();
+                    $(content).prepend(h1);
+                    $(content).find('#selanalyses').after("<span class='bold'>"+$('#selanalyses').val()+"</span>");
+                    $(content).find('#interpolation').after("<span class='bold'>"+$('#interpolation').val()+"</span>");
+                    $(content).find('#selqcsample').after("<span class='bold'>"+$('#selqcsample').val()+"</span>");
+                    $(content).find('#selanalyses').hide();
+                    $(content).find('#interpolation').hide();
+                    $(content).find('#selqcsample').hide();
+
+                    WinPrint.document.write("<html><head>"+css+"</head><body>"+$(content).html()+"</body></html>");
+                    WinPrint.document.close();
+                    WinPrint.focus();
+                    WinPrint.print();
+
+                    // Re-scale
+                    $("#chart").css('width', '100%');
+                    $("#chart").removeAttr('height');
+                    drawControlChart();
+
+                    WinPrint.close();
+                });
+
                 $('div.bika-listing-table-container').fadeIn();
             });
         });
@@ -101,14 +134,16 @@
             $('.bika-listing-table').closest('div').before('<div class="results-info">'+count+' results found</div>');
         }
 
-        function drawControlChart() {
+        function drawControlChart(width=null, height=null) {
             var analysiskey = $('#selanalyses').val();
             var reftype = $('#selqcsample').val();
             var interpolation = $('#interpolation').val()
-            if ($("#chart svg").length > 0) {
-                $("#chart").css('height', $("#chart").innerHeight());
-                $("#chart").css('width', $("#chart").innerWidth());
-            }
+            //if ($("#chart svg").length > 0) {
+                var w = width == null ? $("#chart").innerWidth() : width;
+                var h = height == null ? $("#chart").innerHeight() : height;
+                $("#chart").css('width', width);
+                $("#chart").css('height', height);
+           // }
             $("#chart").html("");
             $("#chart").show();
             var data = $.parseJSON($('#graphdata').val());
@@ -171,18 +206,19 @@
     <!-- Chart container -->
     <div class='chart-container'>
         <div class='chart-options'>
-            <label for='selanalyses'>Analysis</label>
+            <label for='selanalyses' i18n:translate="">Analysis</label>
             <select id='selanalyses' name='selanalyses'>
             </select>&nbsp;&nbsp;
-            <label for='selqcsample'>Reference Sample</label>
+            <label for='selqcsample' i18n:translate="">Reference Sample</label>
             <select id='selqcsample' name='selqcsample'>
             </select>&nbsp;&nbsp;
-            <label for='interpolation'>Interpolation</label>
+            <label for='interpolation' i18n:translate="">Interpolation</label>
             <select id='interpolation' name='interpolation'>
-                <option value='basis' selected>Basis</option>
-                <option value='cardinal'>Cardinal</option>
-                <option value='linear'>Linear</option>
-            </select>
+                <option value='basis' selected i18n:translate="">Basis</option>
+                <option value='cardinal' i18n:translate="">Cardinal</option>
+                <option value='linear' i18n:translate="">Linear</option>
+            </select>&nbsp;&nbsp;
+            <a id='printgraph' class='print-16' href='#' i18n:translate="">Print</a>
         </div>
         <div id='chart'></div>
     </div>

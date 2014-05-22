@@ -142,7 +142,9 @@ class DuplicateAnalysis(Analysis):
         renameAfterCreation(self)
 
     def getSample(self):
-        return self.getAnalysis().aq_parent.getSample()
+        parent = self.getAnalysis().aq_parent
+        if hasattr(parent, 'getSample'):
+            return parent.getSample()
 
     def workflow_script_submit(self):
         workflow = getToolByName(self, 'portal_workflow')

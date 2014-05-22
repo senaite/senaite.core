@@ -31,8 +31,7 @@ class AnalysisRequestResultsNotRequestedView(AnalysisRequestManageResultsView):
             message = _('This Analysis Request has been withdrawn and is shown '
                         'for trace-ability purposes only. Retest: %s.') \
                         % (childid or '')
-            self.context.plone_utils.addPortalMessage(
-                self.context.translate(message), 'warning')
+            self.context.plone_utils.addPortalMessage(message, 'warning')
 
         # If is an AR automatically generated due to a Retraction, show it's
         # parent AR information
@@ -43,8 +42,7 @@ class AnalysisRequestResultsNotRequestedView(AnalysisRequestManageResultsView):
                         'generated automatically due to '
                         'the retraction of the Analysis '
                         'Request %s.') % par.getRequestID()
-            self.context.plone_utils.addPortalMessage(
-                self.context.translate(message), 'info')
+            self.context.plone_utils.addPortalMessage(message, 'info')
 
         can_do = getSecurityManager().checkPermission(ResultsNotRequested, ar)
         if workflow.getInfoFor(ar, 'cancellation_state') == "cancelled":

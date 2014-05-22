@@ -83,7 +83,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             part.reindexObject()
         objects = WorkflowAction._get_selected_items(self)
         if not objects:
-            message = self.context.translate(_("No items have been selected"))
+            message = _("No items have been selected")
             self.context.plone_utils.addPortalMessage(message, 'info')
             if self.context.portal_type == 'Sample':
                 # in samples his table is on 'Partitions' tab
@@ -104,7 +104,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         sample = ar.getSample()
         objects = WorkflowAction._get_selected_items(self)
         if not objects:
-            message = self.context.translate(_("No analyses have been selected"))
+            message = _("No analyses have been selected")
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.context.absolute_url() + "/analyses"
             self.request.response.redirect(self.destination_url)
@@ -148,7 +148,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 analysis.updateDueDate()
                 changeWorkflowState(analysis, 'bika_analysis_workflow', ar_state)
 
-        message = self.context.translate(PMF("Changes saved."))
+        message = PMF("Changes saved.")
         self.context.plone_utils.addPortalMessage(message, 'info')
         self.destination_url = self.context.absolute_url()
         self.request.response.redirect(self.destination_url)
@@ -188,16 +188,13 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         if len(transitioned) > 1:
             message = _('${items} are waiting to be received.',
                         mapping={'items': safe_unicode(', '.join(transitioned))})
-            message = self.context.translate(message)
             self.context.plone_utils.addPortalMessage(message, 'info')
         elif len(transitioned) == 1:
             message = _('${item} is waiting to be received.',
                         mapping={'item': safe_unicode(', '.join(transitioned))})
-            message = self.context.translate(message)
             self.context.plone_utils.addPortalMessage(message, 'info')
         if not message:
             message = _('No changes made.')
-            message = self.context.translate(message)
             self.context.plone_utils.addPortalMessage(message, 'info')
         self.destination_url = self.request.get_header("referer",
                                self.context.absolute_url())
@@ -228,7 +225,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         if workflow.getInfoFor(sample, 'inactive_state', '') == 'inactive' \
            or not checkPermission(SampleSample, sample):
             message = _('No changes made.')
-            message = self.context.translate(message)
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
@@ -247,7 +243,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             workflow.doActionFor(sample, action)
             sample.reindexObject()
             message = "Changes saved."
-            message = self.context.translate(message)
             self.context.plone_utils.addPortalMessage(message, 'info')
         self.destination_url = self.request.get_header("referer",
                                self.context.absolute_url())
@@ -268,7 +263,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         action, came_from = WorkflowAction._get_form_workflow_action(self)
         checkPermission = self.context.portal_membership.checkPermission
         if not isActive(self.context):
-            message = self.context.translate(_('Item is inactive.'))
+            message = _('Item is inactive.')
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.response.redirect(self.context.absolute_url())
             return
@@ -394,7 +389,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         # and then submit them.
         for analysis in submissable:
             doActionFor(analysis, 'submit')
-        message = self.context.translate(PMF("Changes saved."))
+        message = PMF("Changes saved.")
         self.context.plone_utils.addPortalMessage(message, 'info')
         if checkPermission(EditResults, self.context):
             self.destination_url = self.context.absolute_url() + "/manage_results"
@@ -442,7 +437,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         # AR should be retracted
         # Can't transition inactive ARs
         if not isActive(self.context):
-            message = self.context.translate(_('Item is inactive.'))
+            message = _('Item is inactive.')
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.response.redirect(self.context.absolute_url())
             return
@@ -484,11 +479,12 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         managers = self.context.portal_groups.getGroupMembers('LabManagers')
         for bcc in managers:
             user = self.portal.acl_users.getUser(bcc)
-            uemail = user.getProperty('email')
-            ufull = user.getProperty('fullname')
-            formatted = formataddr((encode_header(ufull), uemail))
-            if formatted not in to:
-                to.append(formatted)
+            if user:
+                uemail = user.getProperty('email')
+                ufull = user.getProperty('fullname')
+                formatted = formataddr((encode_header(ufull), uemail))
+                if formatted not in to:
+                    to.append(formatted)
         mime_msg['To'] = ','.join(to)
         aranchor = "<a href='%s'>%s</a>" % (ar.absolute_url(),
                                             ar.getRequestID())
@@ -518,14 +514,14 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             host = getToolByName(self.context, 'MailHost')
             host.send(mime_msg.as_string(), immediate=True)
         except Exception as msg:
-            message = self.context.translate(
-                    _('Unable to send an email to alert lab '
-                      'client contacts that the Analysis Request has been '
-                      'retracted: ${error}', mapping={'error': safe_unicode(msg)}))
+            message = _('Unable to send an email to alert lab '
+                        'client contacts that the Analysis Request has been '
+                        'retracted: ${error}',
+                        mapping={'error': safe_unicode(msg)})
             self.context.plone_utils.addPortalMessage(message, 'warning')
 
-        message = self.context.translate('${items} invalidated.',
-                            mapping={'items': ar.getRequestID()})
+        message = _('${items} invalidated.',
+                    mapping={'items': ar.getRequestID()})
         self.context.plone_utils.addPortalMessage(message, 'warning')
         self.request.response.redirect(newar.absolute_url())
 
@@ -533,8 +529,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         # Pass the selected AR UIDs in the request, to ar_add.
         objects = WorkflowAction._get_selected_items(self)
         if not objects:
-            message = self.context.translate(
-                _("No analyses have been selected"))
+            message = _("No analyses have been selected")
             self.context.plone_utils.addPortalMessage(message, 'info')
             referer = self.request.get_header("referer")
             self.request.response.redirect(referer)

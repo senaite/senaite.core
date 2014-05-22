@@ -93,7 +93,7 @@ class doPublish(BrowserView):
             if not spec:
                 return False
             ret = adapter(specification=spec)
-            if ret['out_of_range']:
+            if ret and ret['out_of_range']:
                 return True
 
     def getAnalysisSpecsStr(self, spec):

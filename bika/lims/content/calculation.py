@@ -160,10 +160,8 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         return deps
 
     def workflow_script_activate(self):
-
         wf = getToolByName(self, 'portal_workflow')
         pu = getToolByName(self, 'plone_utils')
-
         # A calculation cannot be re-activated if services it depends on
         # are deactivated.
         services = self.getDependentServices()
@@ -175,16 +173,13 @@ class Calculation(BaseFolder, HistoryAwareMixin):
             msg = _("Cannot activate calculation, because the following "
                     "service dependencies are inactive: ${inactive_services}",
                     mapping={'inactive_services': safe_unicode(", ".join(inactive_services))})
-            message = t(msg)
-            pu.addPortalMessage(message, 'error')
+            pu.addPortalMessage(msg, 'error')
             transaction.get().abort()
             raise WorkflowException
 
     def workflow_script_deactivate(self):
-
         bsc = getToolByName(self, 'bika_setup_catalog')
         pu = getToolByName(self, 'plone_utils')
-
         # A calculation cannot be deactivated if active services are using it.
         services = bsc(portal_type="AnalysisService", inactive_state="active")
         calc_services = []
@@ -197,8 +192,7 @@ class Calculation(BaseFolder, HistoryAwareMixin):
             msg = _('Cannot deactivate calculation, because it is in use by the '
                     'following services: ${calc_services}',
                     mapping={'calc_services': safe_unicode(", ".join(calc_services))})
-            message = t(msg)
-            pu.addPortalMessage(message, 'error')
+            pu.addPortalMessage(msg, 'error')
             transaction.get().abort()
             raise WorkflowException
 

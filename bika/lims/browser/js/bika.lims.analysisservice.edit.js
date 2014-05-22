@@ -285,6 +285,9 @@ function AnalysisServiceEditView() {
         $(instr_sel).change(function() {
             // Clear and disable the method list and populate with the
             // method assigned to the selected instrument
+            $(method_sel).find('option').remove();
+            $(method_sel).append("<option value=''>"+_("None")+"</option>");
+            $(method_sel).val('');
             $.ajax({
                 url: window.portal_url + "/get_instrument_method",
                 type: 'POST',
@@ -293,18 +296,15 @@ function AnalysisServiceEditView() {
                 dataType: 'json',
                 async: false
             }).done(function(data) {
+                $(method_sel).find('option').remove();
                 if (data != null && data['uid']) {
                     // Set the instrument's method
-                    if ($(method_sel).find('option[value="'+data['uid']+'"]').length == 0) {
-                        var option = '<option value="'+data['uid']+'">'+data['title']+'</option>';
-                        $(method_sel).append(option);
-                    }
+                    var option = '<option value="'+data['uid']+'">'+data['title']+'</option>';
+                    $(method_sel).append(option);
                     $(method_sel).val(data['uid']);
                 } else {
                     // Oooopps. The instrument has no method assigned
-                    if ($(method_sel).find('option[value=""]').length == 0) {
-                        $(method_sel).append("<option value=''>"+_("None")+"</option>");
-                    }
+                    $(method_sel).append("<option value=''>"+_("None")+"</option>");
                     $(method_sel).val('');
                 }
                 // Delegate the action to Default Calc change event
@@ -315,8 +315,6 @@ function AnalysisServiceEditView() {
 
         // The 'Default Calculation' checkbox changes
         $(defcalc_chk).change(function() {
-            $(calc_sel).find('option').remove();
-            $(calc_sel).append('<option value="">'+_('None')+'</option>');
 
             // Hide Calculation Interims widget
             //$(interim_fd).hide();
@@ -339,8 +337,11 @@ function AnalysisServiceEditView() {
                                'uid': muid },
                         dataType: 'json'
                     }).done(function(data) {
+                        $(calc_sel).find('option').remove();
                         if (data != null && data['uid']) {
                             $(calc_sel).prepend('<option value="'+data['uid']+'">'+data['title']+'</option>');
+                        } else {
+                            $(calc_sel).append('<option value="">'+_('None')+'</option>');
                         }
                         $(calc_sel).val($(calc_sel).find('option').first().val());
 
@@ -348,9 +349,15 @@ function AnalysisServiceEditView() {
                         $(calc_sel).change();
                     });
                 } else {
+                    $(calc_sel).find('option').remove();
+                    $(calc_sel).append('<option value="">'+_('None')+'</option>');
                     $(calc_sel).change();
                 }
             } else {
+                $(calc_sel).find('option').remove();
+                $(calc_sel).append('<option value="">'+_('None')+'</option>');
+                $(calc_sel).val('');
+
                 // Toggle default/alternative calculation
                 $(calc_fd).hide();
                 $(acalc_fd).show();
@@ -428,6 +435,7 @@ function AnalysisServiceEditView() {
         }
         var toremove = []
         var calcuid = "";
+        $(calc_sel).find('option').remove();
         if ($(defcalc_chk).is(':checked')) {
             calcuid = $(calc_sel).attr('data-default');
         } else {
@@ -440,10 +448,15 @@ function AnalysisServiceEditView() {
             };
             window.bika.lims.jsonapi_read(request_data, function(data) {
                 if (data.objects.length > 0) {
+                    $(calc_sel).append('<option value="'+data.objects[0].UID+'">'+data.objects[0].Title+'</option>');
+                    $(calc_sel).val(data.objects[0].UID);
                     for (i = 0; i < data.objects[0].InterimFields.length; i++) {
                         var row = data.objects[0].InterimFields[i];
                         toremove.push(row.keyword);
                     }
+                } else {
+                    $(calc_sel).append('<option value="'+data+'">'+_('None')+'</option>');
+                    $(calc_sel).val('');
                 }
                 var manualinterims = originals.filter(function(el) {
                     return toremove.indexOf(el[0]) < 0;

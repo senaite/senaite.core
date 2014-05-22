@@ -91,14 +91,13 @@ class AnalysisServiceCopy(BrowserView):
             self.created = []
             for i, s in enumerate(sources):
                 if not titles[i]:
-                    message = t(_('Validation failed: title is required'))
+                    message = _('Validation failed: title is required')
                     self.context.plone_utils.addPortalMessage(message, 'info')
                     self.savepoint.rollback()
                     self.created = []
                     break
                 if not keywords[i]:
-                    message = t(self.context.translate(_(
-                        'Validation failed: keyword is required')))
+                    message = _('Validation failed: keyword is required')
                     self.context.plone_utils.addPortalMessage(message, 'info')
                     self.savepoint.rollback()
                     self.created = []
@@ -115,7 +114,7 @@ class AnalysisServiceCopy(BrowserView):
                     '${item} was successfully created.',
                     mapping={'item': safe_unicode(self.created[0])}))
             else:
-                message = t(_('No new items were created.'))
+                message = _('No new items were created.')
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.response.redirect(self.context.absolute_url())
 

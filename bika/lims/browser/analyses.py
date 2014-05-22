@@ -380,11 +380,14 @@ class AnalysesView(BikaListingView):
             item['allow_edit'] = []
             client_or_lab = ""
 
+            tblrowclass = items[i].get('table_row_class');
             if obj.portal_type == 'ReferenceAnalysis':
                 items[i]['st_uid'] = obj.aq_parent.UID()
+                items[i]['table_row_class'] = ' '.join([tblrowclass, 'qc-analysis']);
             elif obj.portal_type == 'DuplicateAnalysis' and \
                 obj.getAnalysis().portal_type == 'ReferenceAnalysis':
                 items[i]['st_uid'] = obj.aq_parent.UID()
+                items[i]['table_row_class'] = ' '.join([tblrowclass, 'qc-analysis']);
             else:
                 if self.context.portal_type == 'AnalysisRequest':
                     sample = self.context.getSample()
@@ -830,6 +833,8 @@ class AnalysesView(BikaListingView):
                 state['columns'].insert(pos, 'ResultDM')
                 new_states.append(state)
             self.review_states = new_states
+
+        self.categories.sort()
 
         # self.json_specs = json.dumps(self.specs)
         self.json_interim_fields = json.dumps(self.interim_fields)

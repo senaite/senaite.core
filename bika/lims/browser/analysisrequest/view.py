@@ -129,7 +129,7 @@ class AnalysisRequestViewView(BrowserView):
     def renderMessages(self):
         for message in self.messages:
             self.context.plone_utils.addPortalMessage(
-                self.context.translate(message['message']), message['msgtype'])
+                message['message'], message['msgtype'])
 
     def createAnalysesView(self, context, request, **kwargs):
         return AnalysesView(context, request, **kwargs)
