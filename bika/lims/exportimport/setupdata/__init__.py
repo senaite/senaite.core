@@ -30,6 +30,23 @@ def check_for_required_columns(name, data, required):
             raise Exception(t(message))
 
 
+def create_supply_order_item(context, product_title, quantity):
+    # Lookup the product
+    product = lookup(
+        context.bika_setup.bika_labproducts,
+        'LabProduct',
+        Title=product_title,
+    )
+    # Create an item in the supply order
+    obj = _createObjectByType('SupplyOrderItem', context, tmpID())
+    obj.edit(
+        Product=product,
+        Quantity=quantity,
+    )
+    # Rename the new item
+    renameAfterCreation(obj)
+
+
 def Float(thing):
     try:
         f = float(thing)
@@ -1835,3 +1852,35 @@ class AR_Priorities(WorksheetImporter):
                         obj.setBigIcon(big_icon)
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+
+
+class Supply_Orders(WorksheetImporter):
+
+    def Import(self):
+        context = self.context
+        # Iterate through the rows
+        for row in self.get_rows(3):
+            # Check for required columns
+            check_for_required_columns('SupplyOrder', row, [
+                'order_date',
+                'client_title',
+                'product_title',
+                'product_quantity',
+            ])
+            # Get the folder that should contain the template
+            client_title = row['client_title']
+            folder = lookup(context, 'Client', getName=client_title)
+            # Create the SRTemplate object
+            obj = _createObjectByType('SupplyOrder', folder, tmpID())
+            # Apply the row values
+            obj.edit(
+                OrderDate=row['order_date'],
+            )
+            # Rename the new object
+            renameAfterCreation(obj)
+            # Add an item
+            create_supply_order_item(
+                obj, row['product_title'], row['product_quantity']
+            )
+
+
