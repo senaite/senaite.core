@@ -295,7 +295,7 @@ class ajaxAnalysisRequestSubmit():
                 container_type = bsc(UID=default_container_type)[0].getObject()
                 containers = container_type.getContainers()
                 for partition in partitions:
-                    if not partition.get(container, None):
+                    if not partition.get("container", None):
                         partition['container'] = containers
             # Retrieve the catalogue reference to the client
             if layout and layout == 'columns':

@@ -18,6 +18,8 @@ def set_container_preservation(container, data):
     # If container is pre-preserved, set the partition's preservation,
     # and flag the partition to be transitioned below.
     if container:
+        if type(container) in (list, tuple):
+            container = container[0]
         prepreserved = container.getPrePreserved()
         preservation = container.getPreservation()
         data['prepreserved'] = prepreserved

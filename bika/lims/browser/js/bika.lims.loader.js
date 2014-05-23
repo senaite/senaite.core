@@ -13,7 +13,7 @@ $(document).ready(function(){
             ['AnalysisServiceEditView'],
         ".template-base_edit.portaltype-instrumentcertification":
             ['InstrumentCertificationEditView'],
-        ".template-base_edit..portaltype-bikasetup":
+        ".template-base_edit.portaltype-bikasetup":
             ['BikaSetupEditView']
     };
 

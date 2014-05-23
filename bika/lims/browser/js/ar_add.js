@@ -725,8 +725,7 @@ function toggleCat(poc, category_uid, arnum, selectedservices, force_expand, dis
 	var tbody = $("#"+poc+"_"+category_uid);
 
 	if($(tbody).hasClass("expanded")){
-		// displaying an already expanded category
-		$(tbody).toggle(true);
+		// displaying an already expanded category:
 		if(selectedservices){
 			var rows = tbody.children();
 			for(var i = 0; i < rows.length; i++){
@@ -746,7 +745,7 @@ function toggleCat(poc, category_uid, arnum, selectedservices, force_expand, dis
 	} else {
 		if(!selectedservices) selectedservices = [];
 		$(tbody).removeClass("collapsed").addClass("expanded");
-		$(th).removeClass("collapsed").addClass("expanded");
+		//$(th).removeClass("collapsed").addClass("expanded");
 	    var ar_count = $("#ar_count").attr("value");
         if ($("input[id='layout']").val() == 'rows') {
             ar_count = 1;
