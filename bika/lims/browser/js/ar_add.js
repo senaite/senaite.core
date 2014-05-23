@@ -1031,13 +1031,17 @@ function calcdependencies(elements, auto_yes) {
 }
 
 function unsetAnalyses(arnum){
-	$.each($("input[name^='ar."+arnum+".Analyses']"), function(){
-		if($(this).prop("checked")) {
-			$(this).prop("checked",false);
-			toggle_spec_fields($(this));
-		}
-		$(".partnr_"+this.id).filter("[arnum='"+arnum+"']").empty();
-	});
+	var layout = $("input[id='layout']").val();
+    if (layout == 'columns') {
+        $.each($("input[name^='ar."+arnum+".Analyses']"), function(){
+            if($(this).prop("checked")) {
+                $(this).prop("checked",false);
+                toggle_spec_fields($(this));
+            }
+            $(".partnr_"+this.id).filter("[arnum='"+arnum+"']").empty();
+        });
+    } else {
+    };
 }
 // function uncheck_partnrs(arnum){
 // 	// all unchecked services have their part numbers removed
@@ -1158,17 +1162,12 @@ function setTemplate(arnum, template_title){
 					poc_cat_services[poc_title][service.CategoryUID] = [];
 				}
 				poc_cat_services[poc_title][service.CategoryUID].push(service.UID);
-	    // if (analyses[i]['service_uid'] == null) {
-	    //     // Exclude empty objects from being processed.
-	    //     // Sometimes, template_data['Analyses'] returns an array with an
-	    //     // undefined array value.
-	    //     continue;
-	    // }
 			}
 			// expand categories, select, and enable controls for template services
 			for (var p in poc_cat_services) {
 				if (!poc_cat_services.hasOwnProperty(p)){ continue; }
 				var poc = poc_cat_services[p];
+                debugger;
 				for (var cat_uid in poc) {
 					if (!poc.hasOwnProperty(cat_uid)) {continue; }
 					var service_uids = poc[cat_uid];
@@ -1377,6 +1376,24 @@ function fill_column(data) {
     }
 }
 
+function ar_add_create_hidden_analysis(analysis_parent, elem_id, arnum) {
+    var new_item, aname, val;
+    new_item = '<input type="hidden" id="'+elem_id+'" value="'+elem_id+'" name="ar.'+arnum+'.Analyses:list:ignore_empty:record" class="cb" arnum="'+arnum+'">';
+    analysis_parent.append(new_item);
+    aname = 'ar.'+arnum+'.min.'+elem_id;
+    val = $('input[name^="'+aname+'"]').val();
+    new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.min.'+elem_id+'" value="'+val+'" class="spec_bit min">';
+    analysis_parent.append(new_item);
+    aname = 'ar.'+arnum+'.max.'+elem_id;
+    val = $('input[name^="'+aname+'"]').val();
+    new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.max.'+elem_id+'" value="'+val+'" class="spec_bit max">';
+    analysis_parent.append(new_item);
+    aname = 'ar.'+arnum+'.error.'+elem_id;
+    val = $('input[name^="'+aname+'"]').val();
+    new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.error.'+elem_id+'" value="'+val+'" class="spec_bit error">';
+    analysis_parent.append(new_item);
+}
+
 function ar_add_analyses_overlays(){
 	var layout = $("input[id='layout']").val();
     if (layout == 'columns') {
@@ -1404,7 +1421,7 @@ function ar_add_analyses_overlays(){
                     };
                     window.bika.lims.overlay_submitted = false;
                     //Clear
-                    var i, elem, elements, new_item, arnum, aname, val;
+                    var i, elem, elements, arnum;
                     var src = this.getConf().srcElement;
                     arnum = src.id.split('_')[1];
                     var titles = [];
@@ -1416,20 +1433,7 @@ function ar_add_analyses_overlays(){
                         if (elem.checked == true) {
                             something_checked = true;
                             titles.push(elem.title);
-					        new_item = '<input type="hidden" id="'+elem.id+'" value="'+elem.id+'" name="ar.'+arnum+'.Analyses:list:ignore_empty:record" class="cb" arnum="'+arnum+'">';
-                            analysis_parent.append(new_item);
-                            aname = 'ar.'+arnum+'.min.'+elem.id;
-                            val = $('input[name^="'+aname+'"]').val();
-					        new_item = '<input type="hidden" uid="'+elem.id+'" name="ar.'+arnum+'.min.'+elem.id+'" value="'+val+'" class="spec_bit min">';
-                            analysis_parent.append(new_item);
-                            aname = 'ar.'+arnum+'.max.'+elem.id;
-                            val = $('input[name^="'+aname+'"]').val();
-					        new_item = '<input type="hidden" uid="'+elem.id+'" name="ar.'+arnum+'.max.'+elem.id+'" value="'+val+'" class="spec_bit max">';
-                            analysis_parent.append(new_item);
-                            aname = 'ar.'+arnum+'.error.'+elem.id;
-                            val = $('input[name^="'+aname+'"]').val();
-					        new_item = '<input type="hidden" uid="'+elem.id+'" name="ar.'+arnum+'.error.'+elem.id+'" value="'+val+'" class="spec_bit error">';
-                            analysis_parent.append(new_item);
+                            ar_add_create_hidden_analysis(analysis_parent, elem.id, arnum);
                         };
                     };
                     if (something_checked == true) {
