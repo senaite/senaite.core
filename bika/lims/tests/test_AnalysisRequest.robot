@@ -121,7 +121,7 @@ Create Primary AR By Row
     @{time} =                   Get Time        year month day hour min sec
     Go to                       ${PLONEURL}/clients/client-1
     Wait until page contains element    css=body.portaltype-client
-    Input text                  ar_count    1
+    Input text                  ar_count    2
     Select from list            layout      rows
     Click Link                  Add
     Wait until page contains    Request new analyses

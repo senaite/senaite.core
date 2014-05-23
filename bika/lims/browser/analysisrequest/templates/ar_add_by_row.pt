@@ -123,28 +123,6 @@
         </tal:loop>
     </tr>
 
-        <tal:hidden repeat="hiddenfieldname python:widget_visibility.get('add', {}).get('hidden', [])">
-            <tal:columns tal:repeat="arnum python:range(view.ar_count)">
-                <input
-                    type="hidden"
-                    tal:define="
-                        field python:context.Schema()[hiddenfieldname];
-                        val python:field.getAccessor(context)();"
-                    tal:attributes="
-                        name string:ar.${arnum}.${hiddenfieldname};
-                        id string:ar_${arnum}_${hiddenfieldname};
-                        value val/Title|nothing;"/>
-                 <input
-                    type="hidden"
-                    tal:define="
-                        field python:context.Schema()[hiddenfieldname];
-                        val python:field.getAccessor(context)();"
-                    tal:attributes="
-                        name string:ar.${arnum}.${hiddenfieldname}_uid;
-                        id string:ar_${arnum}_${hiddenfieldname}_uid;
-                        value val/UID|nothing;"/>
-            </tal:columns>
-        </tal:hidden>
     </tal:rows>
 </thead>
 </div>

@@ -192,7 +192,7 @@ class ajaxAnalysisRequestSubmit():
         for arnum in range(int(form['ar_count'])):
             name = 'ar.%s' % arnum
             ar = form.get(name, None)
-            if ar and 'Analyses' in ar.keys():
+            if ar and 'Analyses' in ar.keys() and ar['Analyses'] != '':
                 fieldnames.append(arnum)
 
         if len(fieldnames) == 0:
