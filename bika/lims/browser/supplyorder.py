@@ -26,7 +26,7 @@ class View(BrowserView):
         self.contact = context.getContact()
         self.contact = self.contact.getFullname() if self.contact else ''
         self.subtotal = '%.2f' % context.getSubtotal()
-        self.vat = '%.2f' % context.getVAT()
+        self.vat = '%.2f' % context.getVATAmount()
         self.total = '%.2f' % context.getTotal()
         # Collect order item data
         items = context.objectValues('SupplyOrderItem')
@@ -39,7 +39,7 @@ class View(BrowserView):
                 'volume': product.getVolume(),
                 'unit': product.getUnit(),
                 'price': product.getPrice(),
-                'vat': '%s%%' % product.getVAT(),
+                'vat': '%s%%' % product.getVATAmount(),
                 'quantity': item.getQuantity(),
                 'totalprice': '%.2f' % item.getTotal(),
             })
@@ -91,7 +91,7 @@ class EditView(BrowserView):
             self.orderDate = context.Schema()['OrderDate']
             self.contact = context.Schema()['Contact']
             self.subtotal = '%.2f' % context.getSubtotal()
-            self.vat = '%.2f' % context.getVAT()
+            self.vat = '%.2f' % context.getVATAmount()
             self.total = '%.2f' % context.getTotal()
             # Prepare the products
             items = context.objectValues('SupplyOrderItem')
