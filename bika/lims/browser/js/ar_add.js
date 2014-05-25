@@ -16,6 +16,43 @@ function getRelTag() {
 }
     
 
+function getResultRange(service_uid, spec_uid, keyword) {
+		//var to know if analysis need specification
+		var allowspec = true;
+		var return_val = ["", "", ""];
+		//Search if current analysis's service allows specification
+		var request_allowspec = {
+			catalog_name: "uid_catalog",
+			UID: service_uid
+		};
+		window.bika.lims.jsonapi_read(request_allowspec, function (result) {
+			if (result.objects && result.objects.length > 0) {
+				var allowspec = result.objects[0].ResultOptions == null || result.objects[0].ResultOptions.length == 0;
+				if (allowspec) {
+					var request_data = {
+						catalog_name: "uid_catalog",
+						UID: spec_uid
+					};
+					window.bika.lims.jsonapi_read(request_data, function (data) {
+						if (data.objects && data.objects.length > 0) {
+							var rr = data.objects[0].ResultsRange;
+							for (var i in rr) {
+								if (!(rr.hasOwnProperty(i))) {
+									continue;
+								}
+								if (rr[i].keyword == keyword) {
+									return_val = [rr[i].min, rr[i].max, rr[i].error];
+									break;
+								}
+							}
+						}
+                    })
+                };
+           };
+       });
+       return return_val;
+    } 
+
 function toggle_spec_fields(element) {
 	// When a service checkbox is clicked, this is used to display
 	// or remove the specification inputs.
@@ -1041,8 +1078,17 @@ function unsetAnalyses(arnum){
             $(".partnr_"+this.id).filter("[arnum='"+arnum+"']").empty();
         });
     } else {
+        $.each($("input[name^='ar."+arnum+".Analyses']"), function(){
+            $(this).attr('value', '');
+            var an_parent = $(this).parent();
+            var elements = $(an_parent).find('[type=hidden]');
+            for (var i=0; i<elements.length; i++){
+                $(elements[i]).remove();
+            };
+        });
     };
 }
+
 // function uncheck_partnrs(arnum){
 // 	// all unchecked services have their part numbers removed
 // 	var ep = $("[class^='partnr_']").filter("[arnum='"+arnum+"']").not(":empty");
@@ -1071,6 +1117,7 @@ function unsetTemplate(arnum){
 
 
 function setTemplate(arnum, template_title){
+    var range;
 	unsetAnalyses(arnum);
 	var request_data = {
 		portal_type: "ARTemplate",
@@ -1141,7 +1188,7 @@ function setTemplate(arnum, template_title){
 		request_data = {
 			portal_type: "AnalysisService",
 			UID: [],
-			include_fields: ["PointOfCapture", "CategoryUID", "UID"]
+			include_fields: ["PointOfCapture", "CategoryUID", "UID", "Title", "Keyword"]
 		};
 		for (x in template.Analyses) {
 			if (!template.Analyses.hasOwnProperty(x)){ continue; }
@@ -1161,18 +1208,21 @@ function setTemplate(arnum, template_title){
 				if (!(service.CategoryUID in poc_cat_services[poc_title])) {
 					poc_cat_services[poc_title][service.CategoryUID] = [];
 				}
-				poc_cat_services[poc_title][service.CategoryUID].push(service.UID);
+				poc_cat_services[poc_title][service.CategoryUID].push([service.UID, service.Title, service.Keyword]);
 			}
 			// expand categories, select, and enable controls for template services
+            var analyses = $("#ar_"+arnum+"_Analyses");
+	        var spec_uid = $("#ar_" + arnum + "_Specification_uid").val();
+            var an_parent = $(analyses).parent();
+            var titles = [];
 			for (var p in poc_cat_services) {
 				if (!poc_cat_services.hasOwnProperty(p)){ continue; }
 				var poc = poc_cat_services[p];
-                debugger;
 				for (var cat_uid in poc) {
 					if (!poc.hasOwnProperty(cat_uid)) {continue; }
-					var service_uids = poc[cat_uid];
+					var services = poc[cat_uid];
 					var tbody = $("tbody[id='"+p+"_"+cat_uid+"']");
-					var service_uid;
+					var service;
 					// expand category
 					if(!($(tbody).hasClass("expanded"))) {
 						$.ajaxSetup({async:false});
@@ -1180,22 +1230,37 @@ function setTemplate(arnum, template_title){
 						$.ajaxSetup({async:true});
 					}
 					$(tbody).toggle(true);
-					// select checkboxes
-					for(i=0;i<service_uids.length;i++){
-						service_uid = service_uids[i];
-						e = $("input[arnum='"+arnum+"']").filter("#"+service_uid);
-						$(e).prop("checked", true);
-						toggle_spec_fields(e);
+					for(i=0;i<services.length;i++){
+						service = services[i];
+                        if (layout == 'columns') {
+					        // select checkboxes
+                            e = $("input[arnum='"+arnum+"']").filter("#"+service[0]);
+                            $(e).prop("checked", true);
+                            toggle_spec_fields(e);
+                        } else {
+                            titles.push(service[1]);
+						    $.ajaxSetup({async:false});
+                            range = getResultRange(
+                                        service[0], spec_uid, service[2]);
+						    $.ajaxSetup({async:true});
+                            if (range[0] !== "") {
+                                ar_add_create_hidden_analysis(
+                                    an_parent, service[0], arnum, 
+                                    range[0], range[1], range[2]);
+                            };
+                        }
 					}
 					// set part number indicators
-					for(i=0;i<service_uids.length;i++){
-						service_uid = service_uids[i];
-						var partnr = parts_by_service_uid[service_uid].part_nr;
-						e = $(".partnr_"+service_uid).filter("[arnum='"+arnum+"']");
+					for(i=0;i<services.length;i++){
+						service = services[i];
+						var partnr = parts_by_service_uid[service[0]].part_nr;
+						e = $(".partnr_"+service[0]).filter("[arnum='"+arnum+"']");
 						$(e).empty().append(partnr);
 					}
 				}
-			}
+			};
+            $(analyses).attr('value', titles.join(', '));
+            $(analyses).attr('name', $(analyses).attr('name').split(':')[0]);
 		});
 	});
 
@@ -1376,21 +1441,15 @@ function fill_column(data) {
     }
 }
 
-function ar_add_create_hidden_analysis(analysis_parent, elem_id, arnum) {
-    var new_item, aname, val;
+function ar_add_create_hidden_analysis(analysis_parent, elem_id, arnum, min, max, err) {
+    var new_item;
     new_item = '<input type="hidden" id="'+elem_id+'" value="'+elem_id+'" name="ar.'+arnum+'.Analyses:list:ignore_empty:record" class="cb" arnum="'+arnum+'">';
     analysis_parent.append(new_item);
-    aname = 'ar.'+arnum+'.min.'+elem_id;
-    val = $('input[name^="'+aname+'"]').val();
-    new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.min.'+elem_id+'" value="'+val+'" class="spec_bit min">';
+    new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.min.'+elem_id+'" value="'+min+'" class="spec_bit min">';
     analysis_parent.append(new_item);
-    aname = 'ar.'+arnum+'.max.'+elem_id;
-    val = $('input[name^="'+aname+'"]').val();
-    new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.max.'+elem_id+'" value="'+val+'" class="spec_bit max">';
+    new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.max.'+elem_id+'" value="'+max+'" class="spec_bit max">';
     analysis_parent.append(new_item);
-    aname = 'ar.'+arnum+'.error.'+elem_id;
-    val = $('input[name^="'+aname+'"]').val();
-    new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.error.'+elem_id+'" value="'+val+'" class="spec_bit error">';
+    new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.error.'+elem_id+'" value="'+err+'" class="spec_bit error">';
     analysis_parent.append(new_item);
 }
 
@@ -1421,7 +1480,7 @@ function ar_add_analyses_overlays(){
                     };
                     window.bika.lims.overlay_submitted = false;
                     //Clear
-                    var i, elem, elements, arnum;
+                    var i, elem, elements, arnum, aname, min, max, err;
                     var src = this.getConf().srcElement;
                     arnum = src.id.split('_')[1];
                     var titles = [];
@@ -1433,7 +1492,13 @@ function ar_add_analyses_overlays(){
                         if (elem.checked == true) {
                             something_checked = true;
                             titles.push(elem.title);
-                            ar_add_create_hidden_analysis(analysis_parent, elem.id, arnum);
+                            aname = 'ar.'+arnum+'.min.'+elem.id;
+                            min = $('input[name^="'+aname+'"]').val();
+                            aname = 'ar.'+arnum+'.max.'+elem.id;
+                            max = $('input[name^="'+aname+'"]').val();
+                            aname = 'ar.'+arnum+'.error.'+elem.id;
+                            err = $('input[name^="'+aname+'"]').val();
+                            ar_add_create_hidden_analysis(analysis_parent, elem.id, arnum, min, max, err);
                         };
                     };
                     if (something_checked == true) {
@@ -1509,7 +1574,9 @@ $(document).ready(function() {
                             var x = error.split(".");
                             var e;
                             if (x.length == 2){
-                                e = x[1] + ", Column " + (+x[0]) + ": ";
+                                e = x[1] + ", AR " + (+x[0]) + ": ";
+                            } else if (x.length == 1){
+                                e = x[0]  + ": ";
                             } else {
                                 e = "";
                             }

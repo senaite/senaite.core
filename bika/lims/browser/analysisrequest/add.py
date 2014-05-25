@@ -224,7 +224,7 @@ class ajaxAnalysisRequestSubmit():
                 ]:
                     continue
                 if not ar.get(field, '') and not headers.get(field,''):
-                    ajax_form_error(errors, field)
+                    ajax_form_error(errors, field, fieldname)
         # Return errors if there are any
         if errors:
             return json.dumps({'errors': errors})
