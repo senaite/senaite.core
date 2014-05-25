@@ -20,6 +20,7 @@ function getResultRange(service_uid, spec_uid, keyword) {
         //var to know if analysis need specification
         var allowspec = true;
         var return_val = ["", "", ""];
+        $.ajaxSetup({async:false});
         //Search if current analysis's service allows specification
         var request_allowspec = {
             catalog_name: "uid_catalog",
@@ -50,6 +51,7 @@ function getResultRange(service_uid, spec_uid, keyword) {
                 };
            };
        });
+        $.ajaxSetup({async:true});
        return return_val;
     } 
 
@@ -446,7 +448,9 @@ function ar_referencewidget_select_handler(event, ui){
     // Selected a Profile
     if(fieldName == "Profile"){
         unsetTemplate(arnum);
+        $.ajaxSetup({async:false});
         setAnalysisProfile(arnum, $(this).val());
+        $.ajaxSetup({async:true});
         calculate_parts(arnum);
     }
 
@@ -1239,10 +1243,8 @@ function setTemplate(arnum, template_title){
                             toggle_spec_fields(e);
                         } else {
                             titles.push(service[1]);
-                            $.ajaxSetup({async:false});
                             range = getResultRange(
                                         service[0], spec_uid, service[2]);
-                            $.ajaxSetup({async:true});
                             if (range[0] !== "") {
                                 ar_add_create_hidden_analysis(
                                     an_parent, service[0], arnum, 
@@ -1269,6 +1271,11 @@ function setTemplate(arnum, template_title){
 }
 
 function setAnalysisProfile(arnum, profile_title){
+    var layout = $("input[id='layout']").val();
+    var titles = [];
+    var analyses = $("#ar_"+arnum+"_Analyses");
+    var spec_uid = $("#ar_" + arnum + "_Specification_uid").val();
+    var an_parent = $(analyses).parent();
     var request_data = {
         portal_type: "AnalysisProfile",
         title: profile_title
@@ -1278,7 +1285,7 @@ function setAnalysisProfile(arnum, profile_title){
         var request_data = {
             portal_type: "AnalysisService",
             title: profile_objects[0].Service,
-            include_fields: ["PointOfCapture", "Category", "UID", "title"]
+            include_fields: ["PointOfCapture", "Category", "UID", "Title", "Keyword"]
         };
         window.bika.lims.jsonapi_read(request_data, function(data){
             var i;
@@ -1298,27 +1305,44 @@ function setAnalysisProfile(arnum, profile_title){
 
             for (var poc_cat in categorised_services) {
                 var services = categorised_services[poc_cat];
-                var th = $("th#cat_"+poc_cat);
-                if($(th).hasClass("expanded")){
-                    for (i in services){
-                        var service_uid = services[i].UID;
-                        var e = $("input[arnum='"+arnum+"']").filter("#"+service_uid);
-                        $(e).prop("checked", true);
-                        toggle_spec_fields($(e));
+                if (layout == 'columns') {
+                    var th = $("th#cat_"+poc_cat);
+                    if($(th).hasClass("expanded")){
+                        for (i in services){
+                            var service = services[i];
+                            var service_uid = services[i].UID;
+                            var e = $("input[arnum='"+arnum+"']").filter("#"+service_uid);
+                            $(e).prop("checked", true);
+                            toggle_spec_fields($(e));
+                        }
+                        recalc_prices(arnum);
+                    } else {
+                        var poc = poc_cat.split("_")[0];
+                        var cat_uid = services[0].Category_uid;
+                        var service_uids = [];
+                        for(var x = 0; x<services.length;x++){
+                            service_uids.push(services[x].UID);
+                        }
+                        $.ajaxSetup({async:false});
+                        toggleCat(poc, cat_uid, arnum, service_uids);
+                        $.ajaxSetup({async:true});
                     }
-                    recalc_prices(arnum);
+                    $(th).removeClass("collapsed").addClass("expanded");
                 } else {
-                    var poc = poc_cat.split("_")[0];
-                    var cat_uid = services[0].Category_uid;
-                    var service_uids = [];
-                    for(var x = 0; x<services.length;x++){
-                        service_uids.push(services[x].UID);
+                    var range;
+                    for(i = 0; i<services.length;i++){
+                        titles.push(services[i].Title);
+                        range = getResultRange(
+                                    services[i].UID, spec_uid, services[i].Keyword);
+                        if (range[0] !== "") {
+                            ar_add_create_hidden_analysis(
+                                an_parent, services[i].UID, arnum, 
+                                range[0], range[1], range[2]);
+                        };
                     }
-                    $.ajaxSetup({async:false});
-                    toggleCat(poc, cat_uid, arnum, service_uids);
-                    $.ajaxSetup({async:true});
                 }
-                $(th).removeClass("collapsed").addClass("expanded");
+                $(analyses).attr('value', titles.join(', '));
+                $(analyses).attr('name', $(analyses).attr('name').split(':')[0]);
             }
             calculate_parts(arnum);
         });
