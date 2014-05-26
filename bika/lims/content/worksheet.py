@@ -580,7 +580,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                     continue
                 doActionFor(analysis, "verify")
 
-<<<<<<< Updated upstream
     def checkUserManage(self):
         """ Checks if the current user has granted access to this worksheet
             and if has also privileges for managing it.
