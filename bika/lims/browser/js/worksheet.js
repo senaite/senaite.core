@@ -180,7 +180,7 @@ $(document).ready(function(){
         }
         $.ajax({
           type: 'POST',
-          url: window.location.href.replace("/manage_results", "") + "/setAnalyst",
+          url: window.location.href.replace("/manage_results", "") + "/set_analyst",
           data: {'value': $(this).val(),
                  '_authenticator': $('input[name="_authenticator"]').val()},
           success: function(data, textStatus, jqXHR){

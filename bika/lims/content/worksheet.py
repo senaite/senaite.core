@@ -580,6 +580,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                     continue
                 doActionFor(analysis, "verify")
 
+<<<<<<< Updated upstream
     def checkUserManage(self):
         """ Checks if the current user has granted access to this worksheet
             and if has also privileges for managing it.
@@ -624,5 +625,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         return allowed
 
+    def setAnalyst(self,analyst):
+        for analysis in self.getAnalyses():
+            analysis.setAnalyst(analyst)
+        self.Schema().getField('Analyst').set(self, analyst)
 
 registerType(Worksheet, PROJECTNAME)
