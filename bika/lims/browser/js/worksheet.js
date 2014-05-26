@@ -476,7 +476,7 @@ $(document).ready(function(){
         e.preventDefault();
         var rmks = $(this).closest('tr').next('tr').find('td.remarks');
         if (rmks.length > 0) {
-            rmks.children().toggle();
+	    rmks.toggle();
         }
     });
     $("a.add-remark").click();
