@@ -15,6 +15,14 @@ function getRelTag() {
     return rel_tag;
 }
     
+function clearHiddenPopupFields(analyses) {
+    $(analyses).find(".popup_field").remove();
+    //var elements = $(analyses).find(".popup_field");
+    //console.log('clearHiddenPopupFields: ' + elements.length);
+    //for (var i = 0; i < elements.length; i++) {
+    //    elements[i].remove();
+    //}
+}
 
 function getResultRange(service_uid, spec_uid, keyword) {
         //var to know if analysis need specification
@@ -116,8 +124,7 @@ function toggle_spec_fields(element) {
                 }
             }
         });
-    }
-    else {
+    } else {
         $("input[name='" + min_name + "']").remove();
         $("input[name='" + max_name + "']").remove();
         $("input[name='" + error_name + "']").remove();
@@ -758,6 +765,7 @@ function toggleCat(poc, category_uid, arnum, selectedservices, force_expand, dis
     // selectedservices and arnum are optional.
     // disable is used for field analyses - secondary ARs should not be able
     // to select these
+    var layout = $("input[id='layout']").val();
     force_expand = force_expand || false;
     disable = disable || -1;
     if(!arnum && arnum !== 0) { arnum = ""; };
@@ -788,7 +796,7 @@ function toggleCat(poc, category_uid, arnum, selectedservices, force_expand, dis
         $(tbody).removeClass("collapsed").addClass("expanded");
         //$(th).removeClass("collapsed").addClass("expanded");
         var ar_count = $("#ar_count").attr("value");
-        if ($("input[id='layout']").val() == 'rows') {
+        if (layout == 'rows') {
             ar_count = 1;
         };
         var options = {
@@ -803,21 +811,27 @@ function toggleCat(poc, category_uid, arnum, selectedservices, force_expand, dis
         var url = window.location.href.split("/ar_add")[0] + "/analysisrequest_analysisservices";
         $(tbody).load(url, options, function(){
             // analysis service checkboxes
-            if ($("input[id='layout']").val() == 'columns') {
+            if (layout == 'columns') {
                 $("input[name*='Analyses']").unbind();
                 $("input[name*='Analyses']").bind("change", service_checkbox_change);
             } else {
-
                 $("input[class='cb']").bind("change", service_checkbox_change);
             };
             if(selectedservices!=[]){
                 recalc_prices(arnum);
+                console.log('toggleCat sevices:'+selectedservices);
                 for(i=0;i<selectedservices.length;i++){
                     var service_uid = selectedservices[i];
-                    var e = $("input[value=" + service_uid + "]").filter("[arnum='" + arnum + "']");
-                    toggle_spec_fields(e);
+                    if (service_uid.length > 0) {
+                        var e = $("input[value=" + service_uid + "]").filter("[arnum='" + arnum + "']");
+                        console.log('toggleCat: ' + service_uid + ':' + arnum);
+                        //TODO Hacked this because togge_spec_fields doesn't do any longer!
+                        $(e).prop('checked', 'true');
+                        $(e).change();
+                        //toggle_spec_fields(e);
+                    };
                 }
-            }
+            };
         });
     }
 }
@@ -1085,10 +1099,7 @@ function unsetAnalyses(arnum){
         $.each($("input[name^='ar."+arnum+".Analyses']"), function(){
             $(this).attr('value', '');
             var an_parent = $(this).parent();
-            var elements = $(an_parent).find('[type=hidden]');
-            for (var i=0; i<elements.length; i++){
-                $(elements[i]).remove();
-            };
+            clearHiddenPopupFields(an_parent);
         });
     };
 }
@@ -1218,6 +1229,7 @@ function setTemplate(arnum, template_title){
             var analyses = $("#ar_"+arnum+"_Analyses");
             var spec_uid = $("#ar_" + arnum + "_Specification_uid").val();
             var an_parent = $(analyses).parent();
+            clearHiddenPopupFields(an_parent);
             var titles = [];
             for (var p in poc_cat_services) {
                 if (!poc_cat_services.hasOwnProperty(p)){ continue; }
@@ -1230,7 +1242,7 @@ function setTemplate(arnum, template_title){
                     // expand category
                     if(!($(tbody).hasClass("expanded"))) {
                         $.ajaxSetup({async:false});
-                        toggleCat(p, cat_uid, 0);
+                        toggleCat(p, cat_uid, arnum);
                         $.ajaxSetup({async:true});
                     }
                     $(tbody).toggle(true);
@@ -1247,7 +1259,7 @@ function setTemplate(arnum, template_title){
                                         service[0], spec_uid, service[2]);
                             if (range[0] !== "") {
                                 ar_add_create_hidden_analysis(
-                                    an_parent, service[0], arnum, 
+                                    an_parent, service[0], arnum, p, cat_uid,
                                     range[0], range[1], range[2]);
                             };
                         }
@@ -1330,6 +1342,9 @@ function setAnalysisProfile(arnum, profile_title){
                     $(th).removeClass("collapsed").addClass("expanded");
                 } else {
                     var range;
+                    var poc = poc_cat.split("_")[0];
+                    var cat_uid = services[0].Category_uid;
+                    clearHiddenPopupFields(an_parent);
                     for(i = 0; i<services.length;i++){
                         titles.push(services[i].Title);
                         range = getResultRange(
@@ -1337,7 +1352,7 @@ function setAnalysisProfile(arnum, profile_title){
                         if (range[0] !== "") {
                             ar_add_create_hidden_analysis(
                                 an_parent, services[i].UID, arnum, 
-                                range[0], range[1], range[2]);
+                                poc, cat_uid, range[0], range[1], range[2]);
                         };
                     }
                 }
@@ -1376,7 +1391,7 @@ function service_checkbox_change(){
 function clickAnalysisCategory(){
     /*jshint validthis:true */
     // cat is a category uid, and no arnum is required here.
-    toggleCat($(this).attr("poc"), $(this).attr("cat"));
+    toggleCat($(this).attr("poc"), $(this).attr("cat"), $('#arnum').val());
     if($(this).hasClass("expanded")){
         $(this).addClass("collapsed");
         $(this).removeClass("expanded");
@@ -1389,8 +1404,8 @@ function clickAnalysisCategory(){
 function applyComboFilter(element, filterkey, filtervalue) {
     var base_query=$.parseJSON($(element).attr("base_query"));
     if (base_query == undefined) {
-        //TODO
-        //alert('applyComboFilter: basequery undefined - ' + filterkey + ' - ' + filtervalue);
+        //This happens for row base template
+        //alert('applyComboFilter: '+ element+' - basequery undefined - ' + filterkey + ' - ' + filtervalue);
         return;
     }
     base_query[filterkey] = filtervalue;
@@ -1465,15 +1480,19 @@ function fill_column(data) {
     }
 }
 
-function ar_add_create_hidden_analysis(analysis_parent, elem_id, arnum, min, max, err) {
+function ar_add_create_hidden_analysis(
+        analysis_parent, elem_id, arnum, poc, cat, min, max, err) {
+    console.log('ar_add_create_hidden_analysis: ' + arnum + ':' + poc);
     var new_item;
-    new_item = '<input type="hidden" id="'+elem_id+'" value="'+elem_id+'" name="ar.'+arnum+'.Analyses:list:ignore_empty:record" class="cb" arnum="'+arnum+'">';
+    new_item = '<input type="hidden" id="'+elem_id+'" value="'+elem_id+'" name="ar.'+arnum+'.Analyses:list:ignore_empty:record" class="cb popup_field" arnum="'+arnum+'"/>';
     analysis_parent.append(new_item);
-    new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.min.'+elem_id+'" value="'+min+'" class="spec_bit min">';
+    new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.min.'+elem_id+'" value="'+min+'" class="spec_bit min popup_field"/>';
     analysis_parent.append(new_item);
-    new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.max.'+elem_id+'" value="'+max+'" class="spec_bit max">';
+    new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.max.'+elem_id+'" value="'+max+'" class="spec_bit max popup_field"/>';
     analysis_parent.append(new_item);
-    new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.error.'+elem_id+'" value="'+err+'" class="spec_bit error">';
+    new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.error.'+elem_id+'" value="'+err+'" class="spec_bit error popup_field"/>';
+    analysis_parent.append(new_item);
+    new_item = '<input type="hidden" class="analysiscategory popup_field" arnum="'+arnum+'" poc="'+poc+'" cat="'+cat+'"/>';
     analysis_parent.append(new_item);
 }
 
@@ -1494,8 +1513,24 @@ function ar_add_analyses_overlays(){
             subtype: 'ajax',
             config: {
                 'srcElement': elem,
-                onBeforeLoad : function (evt) {
+                onLoad : function (evt) {
                     window.bika.lims.overlay_submitted = false;
+                    var src = this.getConf().srcElement;
+                    var arnum = src.id.split("_")[1];
+                    $('#arnum').val(arnum);
+                    var analysis_parent = $(src).parent();
+                    var services = [];
+                    var elements = $(analysis_parent).find('input.popup_field');
+                    if (elements.length == 0) {
+                        return;
+                    };
+                    for (var i=0; i<elements.length; i++){
+                        services.push(elements[i].id);
+                    };
+                    var an_cat = $(analysis_parent).find('.analysiscategory')[0];
+                    console.log('onLoad:' + arnum + ':' + services + ':' + $(an_cat).attr("poc") + ':' + $(an_cat).attr("cat"));
+                    toggleCat($(an_cat).attr("poc"), $(an_cat).attr("cat"),
+                              arnum, services);
                     return true;
                     },
                 onClose : function (evt) {
@@ -1508,12 +1543,19 @@ function ar_add_analyses_overlays(){
                     var src = this.getConf().srcElement;
                     arnum = src.id.split('_')[1];
                     var titles = [];
-                    elements = $("input.cb");
+                    elements = $("td.service input.cb");
+                    var poc, cat, id;
                     var analysis_parent = $(src).parent();
+                    var an_cat = $(analysis_parent).find('.analysiscategory')[0];
                     var something_checked = false;
+                    clearHiddenPopupFields(analysis_parent);
                     for (i=0; i<elements.length; i++) {
                         elem = elements[i];
+                        console.log('add overlays:'+elem.title+':'+elem.checked);
                         if (elem.checked == true) {
+                            id = $(elem).parent().parent().parent()[0].id;
+                            poc = id.split('_')[0]
+                            cat = id.split('_')[1]
                             something_checked = true;
                             titles.push(elem.title);
                             aname = 'ar.'+arnum+'.min.'+elem.id;
@@ -1522,7 +1564,9 @@ function ar_add_analyses_overlays(){
                             max = $('input[name^="'+aname+'"]').val();
                             aname = 'ar.'+arnum+'.error.'+elem.id;
                             err = $('input[name^="'+aname+'"]').val();
-                            ar_add_create_hidden_analysis(analysis_parent, elem.id, arnum, min, max, err);
+                            ar_add_create_hidden_analysis(
+                                analysis_parent, elem.id, arnum, poc, cat,
+                                min, max, err);
                         };
                     };
                     if (something_checked == true) {

@@ -7,7 +7,7 @@
 <body>
 
 <metal:content-core fill-slot="content-title">
-    Select Analyses for AR
+    <h1 i18n:attributes='select_analyses_for_ar'>Select Analyses for AR</h1>
 </metal:content-core>
 
 <metal:content-core fill-slot="content-core">
@@ -21,6 +21,7 @@
     portal_url view/portal_url;
     POINTS_OF_CAPTURE view/getPointsOfCapture;"
     >
+    <input type='hidden' id='arnum' />
     <tal:i repeat="poc python:['field', 'lab']">
         <tal:has_poc tal:condition="python:poc in cats">
             <thead class="pointofcapture"
@@ -49,8 +50,8 @@
 
                     </tr>
                 </thead>
-                <tbody class="analysisservices" tal:attributes="
-                    id python:poc + '_' + cat[0]">
+                <tbody class="analysisservices" 
+                       tal:attributes="id python:poc + '_' + cat[0]">
                     <tr></tr>
                 </tbody>
             </tal:i>

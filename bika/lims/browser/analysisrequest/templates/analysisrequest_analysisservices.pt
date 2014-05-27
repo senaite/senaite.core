@@ -90,8 +90,10 @@
                     name string:${service/Title};
 					src string:${view/portal_url}/++resource++bika.lims.images/copy.png"/>
 		</td>
-		<tal:i define="serviceUID service/UID;serviceTitle service/title">
-			<tal:i repeat="arnum python:range(int(view.request['ar_count']))">
+		<tal:i define="serviceUID service/UID;serviceTitle service/title;
+                       ar_count python:int(view.request['ar_count']);
+                       range python: ar_count == 1 and view.request['arnum'] or range(ar_count)">
+			<tal:i repeat="arnum range">
 				<td class='service'
 					tal:define="
 						disable python:int(view.request.get('disable', '-1'));
