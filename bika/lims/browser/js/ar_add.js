@@ -17,16 +17,11 @@ function getRelTag() {
     
 function clearHiddenPopupFields(analyses) {
     $(analyses).find(".popup_field").remove();
-    //var elements = $(analyses).find(".popup_field");
-    //console.log('clearHiddenPopupFields: ' + elements.length);
-    //for (var i = 0; i < elements.length; i++) {
-    //    elements[i].remove();
-    //}
 }
 
 function getResultRange(service_uid, spec_uid, keyword) {
+        //console.log('getResultRange:'+service_uid+':'+spec_uid+':'+keyword);
         //var to know if analysis need specification
-        var allowspec = true;
         var return_val = ["", "", ""];
         $.ajaxSetup({async:false});
         //Search if current analysis's service allows specification
@@ -35,31 +30,37 @@ function getResultRange(service_uid, spec_uid, keyword) {
             UID: service_uid
         };
         window.bika.lims.jsonapi_read(request_allowspec, function (result) {
-            if (result.objects && result.objects.length > 0) {
-                var allowspec = result.objects[0].ResultOptions == null || result.objects[0].ResultOptions.length == 0;
-                if (allowspec) {
-                    var request_data = {
-                        catalog_name: "uid_catalog",
-                        UID: spec_uid
-                    };
-                    window.bika.lims.jsonapi_read(request_data, function (data) {
-                        if (data.objects && data.objects.length > 0) {
-                            var rr = data.objects[0].ResultsRange;
-                            for (var i in rr) {
-                                if (!(rr.hasOwnProperty(i))) {
-                                    continue;
-                                }
-                                if (rr[i].keyword == keyword) {
-                                    return_val = [rr[i].min, rr[i].max, rr[i].error];
-                                    break;
-                                }
+            debugger;
+            if (result.objects && result.objects.length > 0 &&
+                ( result.objects[0].ResultOptions == null ||
+                  result.objects[0].ResultOptions.length == 0)) {
+                //console.log('getResultRange:service:'+service_uid+':'+result.objects[0].ResultOptions.length);
+                var request_data = {
+                    catalog_name: "uid_catalog",
+                    UID: spec_uid
+                };
+                window.bika.lims.jsonapi_read(request_data, function (data) {
+                    if (data.objects && data.objects.length > 0 &&
+                        data.objects[0].ResultsRange && 
+                        data.objects[0].ResultsRange.length > 0) {
+                        //console.log('getResultRange:spec:'+spec_uid+':'+data.objects[0].ResultsRange.length);
+                        var rr = data.objects[0].ResultsRange;
+                        for (var i in rr) {
+                            if (!(rr.hasOwnProperty(i))) {
+                                continue;
+                            }
+                            //console.log(rr[i].keyword +'=='+ keyword);
+                            if (rr[i].keyword == keyword) {
+                                return_val = [rr[i].min, rr[i].max, rr[i].error];
+                                break;
                             }
                         }
-                    })
-                };
-           };
+                    }
+                })
+            };
        });
-        $.ajaxSetup({async:true});
+       $.ajaxSetup({async:true});
+       //console.log('getResultRange:'+return_val);
        return return_val;
     } 
 
@@ -819,12 +820,12 @@ function toggleCat(poc, category_uid, arnum, selectedservices, force_expand, dis
             };
             if(selectedservices!=[]){
                 recalc_prices(arnum);
-                console.log('toggleCat sevices:'+selectedservices);
+                //console.log('toggleCat sevices:'+selectedservices);
                 for(i=0;i<selectedservices.length;i++){
                     var service_uid = selectedservices[i];
                     if (service_uid.length > 0) {
                         var e = $("input[value=" + service_uid + "]").filter("[arnum='" + arnum + "']");
-                        console.log('toggleCat: ' + service_uid + ':' + arnum);
+                        //console.log('toggleCat: ' + service_uid + ':' + arnum);
                         //TODO Hacked this because togge_spec_fields doesn't do any longer!
                         $(e).prop('checked', 'true');
                         $(e).change();
@@ -1254,10 +1255,10 @@ function setTemplate(arnum, template_title){
                             $(e).prop("checked", true);
                             toggle_spec_fields(e);
                         } else {
-                            titles.push(service[1]);
                             range = getResultRange(
                                         service[0], spec_uid, service[2]);
                             if (range[0] !== "") {
+                                titles.push(service[1]);
                                 ar_add_create_hidden_analysis(
                                     an_parent, service[0], arnum, p, cat_uid,
                                     range[0], range[1], range[2]);
@@ -1346,10 +1347,10 @@ function setAnalysisProfile(arnum, profile_title){
                     var cat_uid = services[0].Category_uid;
                     clearHiddenPopupFields(an_parent);
                     for(i = 0; i<services.length;i++){
-                        titles.push(services[i].Title);
                         range = getResultRange(
                                     services[i].UID, spec_uid, services[i].Keyword);
                         if (range[0] !== "") {
+                            titles.push(services[i].Title);
                             ar_add_create_hidden_analysis(
                                 an_parent, services[i].UID, arnum, 
                                 poc, cat_uid, range[0], range[1], range[2]);
@@ -1482,7 +1483,7 @@ function fill_column(data) {
 
 function ar_add_create_hidden_analysis(
         analysis_parent, elem_id, arnum, poc, cat, min, max, err) {
-    console.log('ar_add_create_hidden_analysis: ' + arnum + ':' + poc);
+    //console.log('ar_add_create_hidden_analysis: ' + arnum + ':' + poc);
     var new_item;
     new_item = '<input type="hidden" id="'+elem_id+'" value="'+elem_id+'" name="ar.'+arnum+'.Analyses:list:ignore_empty:record" class="cb popup_field" arnum="'+arnum+'"/>';
     analysis_parent.append(new_item);
@@ -1528,7 +1529,7 @@ function ar_add_analyses_overlays(){
                         services.push(elements[i].id);
                     };
                     var an_cat = $(analysis_parent).find('.analysiscategory')[0];
-                    console.log('onLoad:' + arnum + ':' + services + ':' + $(an_cat).attr("poc") + ':' + $(an_cat).attr("cat"));
+                    //console.log('onLoad:' + arnum + ':' + services + ':' + $(an_cat).attr("poc") + ':' + $(an_cat).attr("cat"));
                     toggleCat($(an_cat).attr("poc"), $(an_cat).attr("cat"),
                               arnum, services);
                     return true;
@@ -1551,7 +1552,7 @@ function ar_add_analyses_overlays(){
                     clearHiddenPopupFields(analysis_parent);
                     for (i=0; i<elements.length; i++) {
                         elem = elements[i];
-                        console.log('add overlays:'+elem.title+':'+elem.checked);
+                        //console.log('add overlays:'+elem.title+':'+elem.checked);
                         if (elem.checked == true) {
                             id = $(elem).parent().parent().parent()[0].id;
                             poc = id.split('_')[0]
