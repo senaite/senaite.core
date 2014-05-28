@@ -1428,11 +1428,6 @@ function clickAnalysisCategory(){
 
 function applyComboFilter(element, filterkey, filtervalue) {
     var base_query=$.parseJSON($(element).attr("base_query"));
-    if (base_query == undefined) {
-        //This happens for row base template
-        //alert('applyComboFilter: '+ element+' - basequery undefined - ' + filterkey + ' - ' + filtervalue);
-        return;
-    }
     base_query[filterkey] = filtervalue;
     $(element).attr("base_query", $.toJSON(base_query));
     var options = $.parseJSON($(element).attr("combogrid_options"));
@@ -1695,21 +1690,39 @@ $(document).ready(function() {
         window.calculate_parts = calculate_parts;
         window.toggleCat = toggleCat;
 
-        // Show only the contacts and CC from the selected Client
-        $("[id$='_Client']").bind("change", function() {
-            var arnum = this.id.split("_")[1];
-            var element = $("#ar_" + arnum + "_Contact");
-            var clientuid = $(this).attr("uid");
+        var layout = $("input[id='layout']").val();
+        if (layout == 'columns') {
+            // Show only the contacts and CC from the selected Client
+            $("[id$='_Client']").bind("change", function() {
+                var arnum = this.id.split("_")[1];
+                var element = $("#ar_" + arnum + "_Contact");
+                var clientuid = $(this).attr("uid");
+                applyComboFilter(element, "getParentUID", clientuid);
+                element = $("#ar_" + arnum + "_CCContact");
+                applyComboFilter(element, "getParentUID", clientuid);
+            });
+            // Initial value of contact list, set by the page's hidden ClientUID.
+            for (var arnum = 0; arnum < parseInt($("#ar_count").val(), 10); arnum++) {
+                var element = $("#ar_" + arnum + "_Contact");
+                var clientuid = $("#ar_" + arnum + "_Client_uid").val();
+                applyComboFilter(element, "getParentUID", clientuid);
+                element = $("#ar_" + arnum + "_CCContact");
+                applyComboFilter(element, "getParentUID", clientuid);
+            }
+        } else {
+            // Show only the contacts and CC from the selected Client
+            $("[id$='_Client']").bind("change", function() {
+                var element = $("#ar_Contact");
+                var clientuid = $(this).attr("uid");
+                applyComboFilter(element, "getParentUID", clientuid);
+                element = $("#ar_CCContact");
+                applyComboFilter(element, "getParentUID", clientuid);
+            });
+            //Initial value of contact list, set by the page's hidden ClientUID
+            var element = $("#Contact");
+            var clientuid = $("#Client_uid").val();
             applyComboFilter(element, "getParentUID", clientuid);
-            element = $("#ar_" + arnum + "_CCContact");
-            applyComboFilter(element, "getParentUID", clientuid);
-        });
-        // Initial value of contact list, set by the page's hidden ClientUID.
-        for (var arnum = 0; arnum < parseInt($("#ar_count").val(), 10); arnum++) {
-            var element = $("#ar_" + arnum + "_Contact");
-            var clientuid = $("#ar_" + arnum + "_Client_uid").val();
-            applyComboFilter(element, "getParentUID", clientuid);
-            element = $("#ar_" + arnum + "_CCContact");
+            element = $("#CCContact");
             applyComboFilter(element, "getParentUID", clientuid);
         }
 
