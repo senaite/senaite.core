@@ -137,32 +137,6 @@
                             name string:total;
                             id string:total;
                             " />
-            <!--
-            <input type="hidden" readonly
-                    tal:attributes="
-                            class string:ar_add_price;
-                            name string:price;
-                            id string:price;
-                            " />
-            <input type="hidden" readonly
-                    tal:attributes="
-                            class string:ar_add_discount;
-                            name string:discount;
-                            id string:discount;
-                            " />
-            <input type="hidden" readonly
-                    tal:attributes="
-                            class string:ar_add_subtotal;
-                            name string:subtotal;
-                            id string:subtotal;
-                            " />
-            <input type="hidden" readonly
-                    tal:attributes="
-                            class string:ar_add_vat;
-                            name string:vat;
-                            id string:vat;
-                            " />
-            -->
         </td>
     </tr>
 
