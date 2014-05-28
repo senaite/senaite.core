@@ -1270,6 +1270,7 @@ function setTemplate(arnum, template_title){
                                     an_parent, service[0], arnum, p, cat_uid,
                                     range[0], range[1], range[2]);
                                 total = total + parseFloat(service[3]);
+                                //console.log('setTemplate: total:' + total + ':' + service[3]);
                             };
                         }
                     }
@@ -1285,8 +1286,11 @@ function setTemplate(arnum, template_title){
             if (layout == 'rows') {
                 $(analyses).attr('value', titles.join(', '));
                 $(analyses).attr('name', $(analyses).attr('name').split(':')[0]);
-                var discount = parseFloat($("#member_discount").val());
-                total = total * (1-discount/100);
+                var discount = $("#member_discount");
+                if (discount.length > 0) {
+                    discount = parseFloat($(discount).val());
+                    total = total * (1-discount/100);
+                };
                 $("#ar_"+arnum+"_total").val(total.toFixed(2));
             };
         });
@@ -1374,8 +1378,11 @@ function setAnalysisProfile(arnum, profile_title){
                 if (layout == 'rows') {
                     $(analyses).attr('value', titles.join(', '));
                     $(analyses).attr('name', $(analyses).attr('name').split(':')[0]);
-                    var discount = parseFloat($("#member_discount").val());
-                    total = total * (1-discount/100);
+                    var discount = $("#member_discount");
+                    if (discount.length > 0) {
+                        discount = parseFloat($(discount).val());
+                        total = total * (1-discount/100);
+                    };
                     $("#ar_"+arnum+"_total").val(total.toFixed(2));
                 };
             }
