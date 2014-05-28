@@ -1,12 +1,161 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-""" Axios 'XRF'
+""" Omnia Axios XRF
 """
+from datetime import datetime
 from bika.lims.utils import to_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentCSVResultsFileParser
+
+class AxiosXrfCSVMultiParser(InstrumentCSVResultsFileParser):
+
+    def __init__(self, csv):
+        InstrumentCSVResultsFileParser.__init__(self, csv)
+        self._end_header = False
+        self._columns = []
+        self.columns_name = False #To know if the next line contains
+                                  #analytic's columns name
+
+
+    def _parseline(self, line):
+        # Process the line differenly if it pertains at header or results block
+        if self._end_header == False:
+            sline = line.strip(',')
+            return self.parse_headerline(sline)
+        else:
+            return self.parse_resultline(line)
+
+    def splitLine(self, line):
+        # If pertains at header it split the line by ':' and then remove ','
+        # Else split by ',' and remove blank spaces
+        if self._end_header == False:
+            sline = line.split(':')
+            return [token.strip(',') for token in sline]
+
+        return [token.strip() for token in line.split(',')]
+
+    def csvDate2BikaDate(self,DateTime):
+    #11/03/2014 14:46:46 --> %d/%m/%Y %H:%M %p
+        dtobj = datetime.strptime(DateTime,"%d/%m/%Y %H:%M:%S")
+        return dtobj.strftime("%Y%m%d %H:%M:%S")
+
+    def parse_headerline(self, line):
+        #Process incoming header line
+        """11/03/2014 14:46:46
+        PANalytical
+        Results quantitative - Omnian 2013,
+
+        Selected archive:,Omnian 2013
+        Number of results selected:,4
+        """
+        
+        # Save each header field (that we know) and its own value in the dict        
+        if line.startswith('Results quantitative'):
+            line = to_unicode(line)
+            if len(self._header) == 0:
+                self.err(_("Unexpected header format"), self._numline)
+                return -1
+
+            line = line.replace(',', "")
+            splitted = line.split(' - ')
+            self._header['Quantitative'] = splitted[1]
+            return 1
+
+        if line.startswith('Selected archive'):
+            if len(self._header) == 0:
+                self.err(_("No header found"), self._numline)
+                return -1
+
+            splitted = self.splitLine(line)
+            if len(splitted) > 1:
+                self._header['Archive'] = splitted[1].replace('"', '').strip()
+            else:
+                self.warn(_('Unexpected header format'), self._numline)
+            return 0
+
+        if line.startswith('Number of'):
+            if len(self._header) == 0:
+                self.err(_("No header found"), self._numline)
+                return -1
+
+            splitted = self.splitLine(line)
+            if len(splitted) > 1:
+                self._header['NumResults'] = splitted[1].replace('"', '').strip()
+            else:
+                self.warn(_('Unexpected header format'), self._numline)
+            return 0
+
+        if line.startswith('Seq.'):
+            if len(self._header) == 0:
+                self.err(_("No header found"), self._numline)
+                return -1
+            #Grab column names
+            self._columns = line.split(',')
+            self._end_header = True
+            return 1
+
+        else:
+            self._header['Date'] = line
+            return 1
+
+
+
+    def parse_resultline(self, line):
+        # Process incoming results line
+        if not line.strip():
+            return 0
+        if line.startswith(',,'):
+            return 0
+
+        rawdict = {}
+        # Split by ","
+        splitted = self.splitLine(line.strip(";"))
+
+        errors = ''
+
+        # Adjunt separated values from split by ','
+        for idx, result in enumerate(splitted):
+            if result.startswith('"'):
+                # It means that is the value's firts part
+                # Consequently we take second part and append both
+                result = (splitted[idx].strip('"') + "," + splitted[idx+1].strip('"'))
+                splitted[idx] = result
+                splitted.remove(splitted[idx+1])
+                
+        result_type = ''
+        result_sum = ''
+        for idx, result in enumerate(splitted):
+            if self._columns[idx] == 'Result type':
+                result_type = result
+            elif self._columns[idx].startswith('Sample name'):
+                    rid = result
+            elif self._columns[idx].startswith('Seq.'):
+                pass
+            elif self._columns[idx] == 'Sum':
+                    result_sum = result
+            else:
+                rawdict[self._columns[idx]] = {'DefaultResult':result_type,
+                                               # Replace to obtain UK values from default
+                                               'Concentration':result.replace(',','.'),
+                                               'Sum':result_sum}
+        try:
+            rawdict['DateTime'] = {'DateTime':self.csvDate2BikaDate(self._header['Date']),
+                                   'DefaultValue':'DateTime'}
+        except:
+            pass
+
+        if not rid:
+            self.err(_("No Sample defined, line %s") % (self.num_line))
+            return 0
+
+        self._addRawResult(rid, rawdict, True)
+        return 0
+
+
+    def getAttachmentFileType(self):
+        return "PANalytical - Omnia Axios XRF"
 
 class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
 
@@ -14,7 +163,7 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
         InstrumentCSVResultsFileParser.__init__(self, csv)
         self._end_header = False
         self._columns = []
-        self.columns_name = False #To know if the next line contain
+        self.columns_name = False #To know if the next line contains
                                   #analytic's columns name
 
     def _parseline(self, line):
@@ -24,6 +173,11 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
             return self.parse_headerline(sline)
         else:
             return self.parse_resultline(line)
+
+    def csvDate2BikaDate(self,DateTime):
+    #11/03/2014 14:46:46 --> %d/%m/%Y %H:%M %p
+        dtobj = datetime.strptime(DateTime,"%d/%m/%Y %H:%M:%S")
+        return dtobj.strftime("%Y%m%d %H:%M:%S")
 
     def splitLine(self, line):
         # If pertains at header it split the line by ':' and then remove ','
@@ -325,12 +479,19 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
         rawres = self.getRawResults().get(rid, [])
         raw = rawres[0] if len(rawres) > 0 else {}
         raw[aname] = rawdict
+        if not 'DateTime' in raw:
+            try:
+                raw['DateTime'] = {'DateTime':self.csvDate2BikaDate(self._header['Date']),
+                                   'DefaultValue':'DateTime'}
+            except:
+                pass
+            
         self._addRawResult(rid, raw, True)
         return 0
 
 
     def getAttachmentFileType(self):
-        return "PANalytical - Axios_XRF XRF CSV"
+        return "PANalytical - Omnia Axios XRF"
 
 
 class AxiosXrfImporter(AnalysisResultsImporter):
