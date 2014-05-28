@@ -683,6 +683,31 @@ function copy_service(copybutton){
     recalc_prices();
 }
 
+function copy_analyses(copybutton){
+    var first_elem = $("#ar_0_Analyses");
+    var hidden_elements = $(first_elem).parent().find('input[type=hidden]');
+    var ar_count = parseInt($("#ar_count").val());
+    var affected_elements = [];
+    var e, other_elem, other_elem_parent, new_hidden, name;
+    // 0 is the first arnum; we only want to change rows 1 onward.
+    for (var arnum = 1; arnum < ar_count; arnum++) {
+        other_elem = $("#ar_"+arnum+"_Analyses");
+        $(other_elem).val($(first_elem).val());
+        other_elem_parent = $(other_elem).parent();
+        for (var i = 0; i <  hidden_elements.length; i++) {
+            e = hidden_elements[i];
+            new_hidden = $(e).clone();
+            $(new_hidden[0]).attr('arnum', arnum);
+            name = $(e).prop('name');
+            if (name !== undefined) {
+                name = name.replace('.0.', '.'+arnum+'.');
+                $(new_hidden[0]).prop('name', name);
+            };
+            $(other_elem_parent).append(new_hidden);
+        };
+    }
+}
+
 function copy_checkbox(copybutton){
     var fieldName = $(copybutton).attr("name");
     var first_val = $("input[name^='ar\\.0\\."+fieldName+"']").prop("checked");
@@ -703,7 +728,10 @@ function copyButton(){
     var fieldName = $(this).attr("name");
     var ar_count = parseInt($("#ar_count").val(), 10);
 
-    if ($(this).parent().attr("class") == "service"){
+    if ($(this).attr("name") == "analyses"){
+        copy_analyses(this);
+    }
+    else if ($(this).parent().attr("class") == "service"){
         copy_service(this);
     }
 
