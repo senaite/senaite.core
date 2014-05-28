@@ -42,6 +42,8 @@ def create_supply_order_item(context, product_title, quantity):
     obj.edit(
         Product=product,
         Quantity=quantity,
+        Price=product.getPrice(),
+        VAT=product.getVAT(),
     )
     # Rename the new item
     renameAfterCreation(obj)
