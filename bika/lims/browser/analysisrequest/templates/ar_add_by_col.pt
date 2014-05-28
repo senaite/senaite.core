@@ -1,6 +1,6 @@
 <div metal:define-macro="ar_add_by_col">
 <thead 
-    tal:define="fieldnames python:widget_visibility.get('add', {}).get('visible', []);">"
+    tal:define="fieldnames python:widget_visibility.get('add', {}).get('visible', []);">
     <!-- All edit fields with fields with add=visible -->
     <tr tal:repeat="fieldname fieldnames">
         <tal:def define="
@@ -175,7 +175,7 @@
                 input_name string:ar.${arnum}.subtotal">
             <input class="price noborder" size="10" disabled="disabled" value="0.00"
                 tal:attributes="id string:${input_id}_display;"/>
-            <input type="text"
+            <input type="hidden"
                 tal:attributes="
                     id input_id;
                     name string:${input_name}:record:ignore_empty;"/>
@@ -193,7 +193,7 @@
                 input_name string:ar.${arnum}.vat">
             <input class="price noborder" size="10" disabled="disabled" value="0.00"
                 tal:attributes="id string:${input_id}_display;"/>
-            <input type="text"
+            <input type="hidden"
                 tal:attributes="
                     id input_id;
                     name string:${input_name}:record:ignore_empty;"/>
@@ -212,7 +212,7 @@
                 input_name string:ar.${arnum}.total">
             <input class="price noborder" size="10" disabled="disabled" value="0.00"
                 tal:attributes="id string:${input_id}_display;"/>
-            <input type="text"
+            <input type="hidden"
                 tal:attributes="
                     id input_id;
                     name string:${input_name}:record:ignore_empty;"/>

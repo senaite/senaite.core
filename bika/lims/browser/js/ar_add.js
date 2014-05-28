@@ -30,7 +30,6 @@ function getResultRange(service_uid, spec_uid, keyword) {
             UID: service_uid
         };
         window.bika.lims.jsonapi_read(request_allowspec, function (result) {
-            debugger;
             if (result.objects && result.objects.length > 0 &&
                 ( result.objects[0].ResultOptions == null ||
                   result.objects[0].ResultOptions.length == 0)) {
@@ -576,6 +575,7 @@ function ar_referencewidget_lookups(elements){
 }
 
 function recalc_prices(arnum){
+    var layout = $("input[id='layout']").val();
     if(arnum){
         // recalculate just this arnum
         var subtotal = 0.00;
@@ -583,6 +583,7 @@ function recalc_prices(arnum){
         var vat = 0.00;
         var total = 0.00;
         var discount = parseFloat($("#member_discount").val());
+
         $.each($("input[name='ar."+arnum+".Analyses:list:ignore_empty:record']"), function(){
             var disabled = $(this).prop("disabled");
             // For some browsers, `attr` is undefined; for others, its false.  Check for both.
@@ -591,7 +592,8 @@ function recalc_prices(arnum){
             } else {
                 disabled = false;
             }
-            if(!(disabled) && $(this).prop("checked")){
+            if(!(disabled) && $(this).prop("checked") && $(this).prop('type') != 'hidden') {
+            //if(!(disabled) && $(this).prop("checked")) {
                 var serviceUID = this.id;
                 var form_price = parseFloat($("#"+serviceUID+"_price").val());
                 var vat_amount = parseFloat($("#"+serviceUID+"_price").attr("vat_amount"));
@@ -615,9 +617,10 @@ function recalc_prices(arnum){
         $("#ar_"+arnum+"_total").val(total.toFixed(2));
         $("#ar_"+arnum+"_total_display").val(total.toFixed(2));
     } else {
-        // recalculate the entire form
-        for (var arnum=0; arnum<parseInt($("#ar_count").val(), 10); arnum++) {
-            recalc_prices(String(arnum));
+        if (layout == 'columns') {
+            for (var arnum=0; arnum<parseInt($("#ar_count").val(), 10); arnum++) {
+                recalc_prices(String(arnum));
+            }
         }
     }
 }
@@ -1134,6 +1137,7 @@ function unsetTemplate(arnum){
 
 function setTemplate(arnum, template_title){
     var range;
+    var layout = $("input[id='layout']").val();
     unsetAnalyses(arnum);
     var request_data = {
         portal_type: "ARTemplate",
@@ -1146,7 +1150,9 @@ function setTemplate(arnum, template_title){
             "ReportDryMatter",
             "AnalysisProfile",
             "Partitions",
-            "Analyses"]
+            "Analyses",
+            "Prices",
+            ]
     };
     window.bika.lims.jsonapi_read(request_data, function(data){
         var template = data.objects[0];
@@ -1204,7 +1210,7 @@ function setTemplate(arnum, template_title){
         request_data = {
             portal_type: "AnalysisService",
             UID: [],
-            include_fields: ["PointOfCapture", "CategoryUID", "UID", "Title", "Keyword"]
+            include_fields: ["PointOfCapture", "CategoryUID", "UID", "Title", "Keyword", "TotalPrice"]
         };
         for (x in template.Analyses) {
             if (!template.Analyses.hasOwnProperty(x)){ continue; }
@@ -1224,10 +1230,11 @@ function setTemplate(arnum, template_title){
                 if (!(service.CategoryUID in poc_cat_services[poc_title])) {
                     poc_cat_services[poc_title][service.CategoryUID] = [];
                 }
-                poc_cat_services[poc_title][service.CategoryUID].push([service.UID, service.Title, service.Keyword]);
+                poc_cat_services[poc_title][service.CategoryUID].push([service.UID, service.Title, service.Keyword, service.TotalPrice]);
             }
             // expand categories, select, and enable controls for template services
             var analyses = $("#ar_"+arnum+"_Analyses");
+            var total = 0.00;
             var spec_uid = $("#ar_" + arnum + "_Specification_uid").val();
             var an_parent = $(analyses).parent();
             clearHiddenPopupFields(an_parent);
@@ -1262,6 +1269,7 @@ function setTemplate(arnum, template_title){
                                 ar_add_create_hidden_analysis(
                                     an_parent, service[0], arnum, p, cat_uid,
                                     range[0], range[1], range[2]);
+                                total = total + parseFloat(service[3]);
                             };
                         }
                     }
@@ -1274,13 +1282,17 @@ function setTemplate(arnum, template_title){
                     }
                 }
             };
-            $(analyses).attr('value', titles.join(', '));
-            $(analyses).attr('name', $(analyses).attr('name').split(':')[0]);
+            if (layout == 'rows') {
+                $(analyses).attr('value', titles.join(', '));
+                $(analyses).attr('name', $(analyses).attr('name').split(':')[0]);
+                var discount = parseFloat($("#member_discount").val());
+                total = total * (1-discount/100);
+                $("#ar_"+arnum+"_total").val(total.toFixed(2));
+            };
         });
     });
 
     recalc_prices(arnum);
-
 }
 
 function setAnalysisProfile(arnum, profile_title){
@@ -1298,7 +1310,7 @@ function setAnalysisProfile(arnum, profile_title){
         var request_data = {
             portal_type: "AnalysisService",
             title: profile_objects[0].Service,
-            include_fields: ["PointOfCapture", "Category", "UID", "Title", "Keyword"]
+            include_fields: ["PointOfCapture", "Category", "UID", "Title", "Keyword", "TotalPrice"]
         };
         window.bika.lims.jsonapi_read(request_data, function(data){
             var i;
@@ -1316,6 +1328,7 @@ function setAnalysisProfile(arnum, profile_title){
                 categorised_services[key].push(service_objects[i]);
             }
 
+            var total = 0.00;
             for (var poc_cat in categorised_services) {
                 var services = categorised_services[poc_cat];
                 if (layout == 'columns') {
@@ -1354,11 +1367,17 @@ function setAnalysisProfile(arnum, profile_title){
                             ar_add_create_hidden_analysis(
                                 an_parent, services[i].UID, arnum, 
                                 poc, cat_uid, range[0], range[1], range[2]);
+                            total = total + parseFloat(services[i].TotalPrice);
                         };
                     }
                 }
-                $(analyses).attr('value', titles.join(', '));
-                $(analyses).attr('name', $(analyses).attr('name').split(':')[0]);
+                if (layout == 'rows') {
+                    $(analyses).attr('value', titles.join(', '));
+                    $(analyses).attr('name', $(analyses).attr('name').split(':')[0]);
+                    var discount = parseFloat($("#member_discount").val());
+                    total = total * (1-discount/100);
+                    $("#ar_"+arnum+"_total").val(total.toFixed(2));
+                };
             }
             calculate_parts(arnum);
         });
@@ -1383,7 +1402,12 @@ function service_checkbox_change(){
     }
 
     calcdependencies([element]);
-    recalc_prices();
+    var layout = $("input[id='layout']").val();
+    if (layout == 'columns') {
+        recalc_prices();
+    } else {
+        recalc_prices(arnum);
+    }
     calculate_parts(arnum);
     toggle_spec_fields(element);
 
@@ -1519,11 +1543,12 @@ function ar_add_analyses_overlays(){
                     var src = this.getConf().srcElement;
                     var arnum = src.id.split("_")[1];
                     $('#arnum').val(arnum);
+                    $("#ar_"+arnum+"_total").val("0.00");
                     var analysis_parent = $(src).parent();
                     var services = [];
                     var elements = $(analysis_parent).find('input.popup_field');
                     if (elements.length == 0) {
-                        return;
+                        return true;
                     };
                     for (var i=0; i<elements.length; i++){
                         services.push(elements[i].id);
@@ -1545,7 +1570,7 @@ function ar_add_analyses_overlays(){
                     arnum = src.id.split('_')[1];
                     var titles = [];
                     elements = $("td.service input.cb");
-                    var poc, cat, id;
+                    var poc_cat_id, poc, cat;
                     var analysis_parent = $(src).parent();
                     var an_cat = $(analysis_parent).find('.analysiscategory')[0];
                     var something_checked = false;
@@ -1554,9 +1579,9 @@ function ar_add_analyses_overlays(){
                         elem = elements[i];
                         //console.log('add overlays:'+elem.title+':'+elem.checked);
                         if (elem.checked == true) {
-                            id = $(elem).parent().parent().parent()[0].id;
-                            poc = id.split('_')[0]
-                            cat = id.split('_')[1]
+                            poc_cat_id = $(elem).parent().parent().parent()[0].id;
+                            poc = poc_cat_id.split('_')[0]
+                            cat = poc_cat_id.split('_')[1]
                             something_checked = true;
                             titles.push(elem.title);
                             aname = 'ar.'+arnum+'.min.'+elem.id;

@@ -23,10 +23,6 @@
           fieldnames python: [f for f in fieldnames if f not in headerfieldnames]">
     <tr>
         <td></td>
-        <td i18n:translate="">
-            <label i18n:translate="" 
-                   title='Select the analyses to be performed on this Sample'>Analyses</label>
-        </td>
         <tal:loop repeat="fieldname fieldnames">
             <td tal:define="
                         field python:context.Schema()[fieldname];
@@ -54,39 +50,43 @@
                 </label>
             </td>
         </tal:loop>
+        <td i18n:translate="">
+            <label i18n:translate="" 
+                   title='Select the analyses to be performed on this Sample'>Analyses</label>
+        </td>
+        <td i18n:translate="">
+            <label i18n:translate="price-and-tax" 
+                   title='The cost of the analyses'>Price & GST</label>
+        </td>
     </tr>
     <tr>
         <td></td>
-        <td>
-            <img tal:condition="python:view.ar_count > 1"
-                 tal:attributes="name string:analyses;
-                                 class string:copyButton analysesCopyButton;
-                                 src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
-        </td>
         <td tal:repeat="fieldname fieldnames">
             <img tal:condition="python:view.ar_count > 1"
                  tal:attributes="name fieldname;
                                  class string:copyButton ${fieldname}CopyButton;
                                  src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
         </td>
+        <td>
+            <img tal:condition="python:view.ar_count > 1"
+                 tal:attributes="name string:analyses;
+                                 class string:copyButton analysesCopyButton;
+                                 src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
+        </td>
+        <td>
+            <img tal:condition="python:view.ar_count > 1"
+                 tal:attributes="name string:price;
+                                 class string:copyButton analysesCopyButton;
+                                 src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
+        </td>
     </tr>
 
 <!-- All edit fields with fields with add=visible -->
     <tal:rows 
-    tal:repeat="arnum python:range(view.ar_count)">
+        tal:repeat="arnum python:range(view.ar_count)">
     <tr tal:attributes="arnum arnum;
                         ar_add_arnum_widget string:1">
         <td tal:content="repeat/arnum/number">
-        </td>
-        <td>
-            <input type="text"
-                    tal:attributes="
-                            class string:ar_add_analyses;
-                            name string:Analyses;
-                            id string:Analyses;
-                            src string:${portal/absolute_url};
-                            "
-           />
         </td>
         <tal:loop repeat="fieldname fieldnames">
             <tal:def define="
@@ -121,6 +121,49 @@
                 </td>
             </tal:def>
         </tal:loop>
+        <td>
+            <input type="text"
+                    tal:attributes="
+                            class string:ar_add_analyses;
+                            name string:Analyses;
+                            id string:Analyses;
+                            src string:${portal/absolute_url};
+                            " />
+        </td>
+        <td>
+            <input type="text" readonly
+                    tal:attributes="
+                            class string:ar_add_total;
+                            name string:total;
+                            id string:total;
+                            " />
+            <!--
+            <input type="hidden" readonly
+                    tal:attributes="
+                            class string:ar_add_price;
+                            name string:price;
+                            id string:price;
+                            " />
+            <input type="hidden" readonly
+                    tal:attributes="
+                            class string:ar_add_discount;
+                            name string:discount;
+                            id string:discount;
+                            " />
+            <input type="hidden" readonly
+                    tal:attributes="
+                            class string:ar_add_subtotal;
+                            name string:subtotal;
+                            id string:subtotal;
+                            " />
+            <input type="hidden" readonly
+                    tal:attributes="
+                            class string:ar_add_vat;
+                            name string:vat;
+                            id string:vat;
+                            " />
+            -->
+        </td>
     </tr>
 
     </tal:rows>
