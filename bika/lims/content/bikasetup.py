@@ -159,6 +159,16 @@ schema = BikaFolderSchema.copy() + Schema((
                             "will be calculated and plotted"),
         )
     ),
+    BooleanField('IncludePreviousFromBatch',
+        schemata = "Results Reports",
+        default = False,
+        widget = BooleanWidget(
+            label = _("Include Previous Results From Batch"),
+            description = _("If there are previous results for a service in the "
+                            "same batch of Analysis Requests, they will be displayed "
+                            "in the report.")
+        )
+    ),
     IntegerField('BatchEmail',
         schemata = "Results Reports",
         required = 1,
