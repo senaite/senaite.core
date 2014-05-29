@@ -6,10 +6,11 @@ from bika.lims.permissions import *
 from AccessControl import getSecurityManager
 from Acquisition import aq_parent, aq_inner
 from bika.lims import PMF, logger, bikaMessageFactory as _
+from bika.lims.adapters.referencewidgetvocabulary import DefaultReferenceWidgetVocabulary
 from bika.lims.adapters.widgetvisibility import WidgetVisibility as _WV
 from bika.lims.browser import BrowserView
-from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction, \
-    AnalysisRequestsView
+from bika.lims.browser.analysisrequest import AnalysisRequestsView
+from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction
 from bika.lims.browser.batchfolder import BatchFolderContentsView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.publish import doPublish
@@ -819,6 +820,19 @@ class ClientContactVocabularyFactory(CatalogVocabulary):
             path={'query': "/".join(self.context.getPhysicalPath()),
                   'level': 0}
         )
+
+
+class ReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
+
+    def __call__(self):
+        base_query = json.loads(self.request['base_query'])
+        portal_type = base_query.get('portal_type', [])
+        if 'Contact' in portal_type:
+            base_query['getParentUID'] = [self.context.UID(),]
+        self.request['base_query'] = json.dumps(base_query)
+        print base_query
+        return DefaultReferenceWidgetVocabulary.__call__(self)
+
 
 class ajaxGetClientInfo(BrowserView):
     def __call__(self):
