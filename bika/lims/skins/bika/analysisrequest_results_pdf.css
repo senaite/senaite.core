@@ -3,7 +3,7 @@
     margin: 0.5cm;
     @bottom-right {
         content: "Page " counter(page) " of " counter(pages);
-        font-size:60% !important;
+        font-size:50% !important;
     }
 }
 
@@ -50,17 +50,11 @@ table#section-header td#lab-logo {
 
 }
 table#section-header td#accreditation-logo {
-    width:25mm;
+    width:35mm;
     margin-right:1cm;
+    padding-right:1cm;
 }
 
-table#section-info {
-}
-table#section-info td#client-info {
-}
-table#section-info td#lab-info {
-    width:25mm;
-}
 #section-alert {
     padding:10px 20px 10px 20px;
     border:1px solid #CDCDCD;
@@ -116,9 +110,9 @@ table#section-info td#lab-info {
 }
 
 #section-results .analysis { width:200px; color: #000000; }
-#section-results .previous{ width:300px; color:#555555; }
-#section-results .result { width:150px; color: #000000; }
-#section-results .specs { width:150px; text-align:center; color: #000000; }
+#section-results .previous{ width:250px; color:#555555; }
+#section-results .result { width:100px; color: #000000; }
+#section-results .specs { width:100px; text-align:center; color: #000000; }
 #section-results .outofrange { width:10px; color: #ff0000; }
 #section-results .remarks { font-size: 0.8em; padding: 0 650px 15px 3px; color: #555555; }
 

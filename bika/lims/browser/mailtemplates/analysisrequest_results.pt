@@ -30,10 +30,7 @@
                      tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/AccreditationBodyLogo.png"/>
            </td>
         </tr>
-    </table>
 
-<!-- Address and Lab info -->
-    <table id="section-info" style="font-size:.5em !important;">
         <tr>
             <td id="client-info">
                 <table>
