@@ -218,6 +218,9 @@ class doPublish(BrowserView):
         workflow = getToolByName(self.context, 'portal_workflow')
         keyword = analysis.getKeyword()
         analyses = []
+        batch = self.batch['obj']
+        if not batch:
+            return
         batch_ars = self.batch['obj'].getAnalysisRequests()
         result_visible_states = ['verified', 'published']
         for ar in batch_ars:
