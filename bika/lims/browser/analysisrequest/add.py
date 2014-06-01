@@ -43,10 +43,6 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         except:
             self.ar_count = 4
 
-    def getHeaderFieldNames(self):
-        #TODO Soft Code
-        return ('Contact', 'CCContact', 'CCEmails', 'Client', 'Batch')
-
     def __call__(self):
         self.request.set('disable_border', 1)
         return self.template()
@@ -70,6 +66,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                     [field for field in schema_fields
                      if field in state_fields
                      and field not in hiddenattributes]
+        #import pdb; pdb.set_trace()
         return ordered_ret
 
     def partitioned_services(self):

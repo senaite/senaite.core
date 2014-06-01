@@ -99,9 +99,23 @@ class WidgetVisibility(_WV):
         if self.context.aq_parent.portal_type == 'Batch':
             ret['add']['visible'].remove('Batch')
             ret['add']['hidden'].append('Batch')
+
+        if 'add-by-row' not in ret:
+            ret['add-by-row'] = {}
+        if 'visible' not in ret['add-by-row']:
+            ret['add-by-row']['visible'] = []
+        if 'hidden' not in ret['add-by-row']:
+            ret['add-by-row']['hidden'] = []
+        if self.context.aq_parent.portal_type == 'Client':
+            ret['add-by-row']['visible'].remove('Client')
+            ret['add-by-row']['hidden'].append('Client')
+        if self.context.aq_parent.portal_type == 'Batch':
+            ret['add-by-row']['visible'].remove('Batch')
+            ret['add-by-row']['hidden'].append('Batch')
+
         # header_table default visible fields
         ret['header_table'] = {
-            'prominent': ['Contact', 'CCContact', 'CCEmails'],
+            'prominent': ['Client', 'Contact', 'CCContact', 'CCEmails', 'Batch'],
             'visible': [
                 'Contact',
                 'CCContact',
