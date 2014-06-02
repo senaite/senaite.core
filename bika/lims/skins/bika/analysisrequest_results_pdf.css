@@ -1,36 +1,31 @@
+@page {
+    size: A4;
+    margin: 0.5cm;
+    @bottom-right {
+        content: "Page " counter(page) " of " counter(pages);
+        font-size:50% !important;
+    }
+}
+
 html {
-    background-color:#ffffff;
+    background-color:#FFFFFF;
 }
 html, body {
     margin: 0;
     padding: 0;
 }
 
-h1 {
-    font-size:1.4em;
-    margin-top:40px;
-    margin-bottom:10px;
-    padding-bottom:5px;
-}
-h2 {
-    font-size:1.2em;
-}
+h1 { font-size:1.4em; margin:10px 0 10px 0; }
+h2 { font-size:1.2em; }
 
 .label {
     font-weight:bold;
 }
-.result {
-
-}
 .units {
-    color:#777;
+    color:#777777;
     font-weight:normal;
     font-style:italic;
     font-size:10px;
-}
-.outofrange {
-    font-weight:bold;
-    color:#d40000;
 }
 
 table tr td,
@@ -39,13 +34,13 @@ table tr th {
 }
 
 table#section-header{
-    border-bottom:1px solid #000;
+    border-bottom:1px solid #000000;
 }
 
 table#section-header,
 table#section-info {
     width:100%;
-    margin-bottom:0px;
+    margin-bottom:0;
 }
 table#section-header tr td,
 table#section-info tr td {
@@ -55,26 +50,20 @@ table#section-header td#lab-logo {
 
 }
 table#section-header td#accreditation-logo {
-
-    width:25mm;
+    width:35mm;
+    margin-right:1cm;
+    padding-right:1cm;
 }
 
-table#section-info {
-}
-table#section-info td#client-info {
-}
-table#section-info td#lab-info {
-    width:25mm;
-}
 #section-alert {
-    padding:20px 20px 10px 20px;
+    padding:10px 20px 10px 20px;
     border:1px solid #CDCDCD;
-    background-color:#efefef;
-    margin:0px;
+    background-color:#EFEFEF;
+    margin:0;
 }
 #section-alert h1 {
     font-size:1em;
-    margin-top:0px;
+    margin-top:0;
     padding-bottom:0;
     border:none;
     color:#d40000;
@@ -83,12 +72,13 @@ table#section-info td#lab-info {
 #section-results table,
 #section-qcresults table {
     padding-left:10px;
+    font-size:90%;
 }
 
 #section-summary tr td {
     padding-right:150px;
-    border-left-width: 0px;
-    border-bottom:1px solid #ccc;
+    border-left-width: 0;
+    border-bottom:1px solid #CCCCCC;
 }
 
 /*------------------------------------------------------*/
@@ -96,49 +86,35 @@ table#section-info td#lab-info {
 #section-results h2,
 #section-qcresults h2 {
     padding-left:12px;
-    margin-bottom:0px;
-    padding-bottom:0px;
+    margin-bottom:0;
+    padding-bottom:0;
     margin-top:20px;
 }
 #section-results table,
 #section-qcresults table {
     width:100%;
 }
+#section-results table thead tr,
+#section-qcresults table thead tr {
+    background-color:#DDDDDD;
+}
 #section-results table thead tr th,
 #section-qcresults table thead tr th {
-    padding-right:0px;
+    padding-right:0;
 }
 #section-results table thead tr th span,
 #section-qcresults table thead tr th span {
     display:block;
-    border-bottom:1px solid #000;
+    border-bottom:1px solid #000000;
     line-height:1.6;
 }
 
-#section-results .analysis {
-    width:200px;
-}
-
-#section-results .result {
-    width:200px;
-}
-
-
-#section-results .specs {
-    width:200px;
-    text-align:center;
-
-}
-#section-results .outofrange {
-    width:200px;
-}
-
-
-#section-results .remarks {
-    font-size: 0.8em;
-    padding: 0 650px 15px 3px;
-    color: #555;
-}
+#section-results .analysis { width:200px; color: #000000; }
+#section-results .previous{ width:250px; color:#555555; }
+#section-results .result { width:100px; color: #000000; }
+#section-results .specs { width:100px; text-align:center; color: #000000; }
+#section-results .outofrange { width:10px; color: #ff0000; }
+#section-results .remarks { font-size: 0.8em; padding: 0 650px 15px 3px; color: #555555; }
 
 #section-qcresults .analysis {
     width:100px;
@@ -166,9 +142,8 @@ table#section-info td#lab-info {
 
 #section-attachments ul {
     list-style-type:none;
-    margin:0px;
-    padding:0px;
-    margin-bottom:20px;
+    padding:0;
+    margin: 0 0 20px;
 }
 
 #section-attachments table#analysis-attachments td {
@@ -176,7 +151,7 @@ table#section-info td#lab-info {
 }
 
 #section-signatures {
-    margin-top:100px;
+    margin-top:50px;
     width:100%
 }
 #section-signatures table {
@@ -190,14 +165,14 @@ table#section-info td#lab-info {
 
 #section-discreeter {
     margin-top:60px;
-    border-top:1px solid #AAA;
-    color:#444;
+    border-top:1px solid #AAAAAA;
+    color:#444444;
 }
 #section-discreeter * {
     font-size:0.9em;
 }
 #section-discreeter ol {
-    margin-left:0px;
+    margin-left:0;
     padding-left:15px;
 }
 #footer {
@@ -211,10 +186,7 @@ table#section-info td#lab-info {
     }
     a {
         text-decoration:none;
-        color:#000;
-    }
-    .outofrange a {
-        color:#d40000;
+        color:#000000;
     }
 
     #section-attachments {
@@ -222,7 +194,7 @@ table#section-info td#lab-info {
         display:none;
     }
     .units {
-        color:#555;
+        color:#555555;
         font-style:italic;
         font-size:10px;
     }

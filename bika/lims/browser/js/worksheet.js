@@ -180,7 +180,7 @@ $(document).ready(function(){
         }
         $.ajax({
           type: 'POST',
-          url: window.location.href.replace("/manage_results", "") + "/setAnalyst",
+          url: window.location.href.replace("/manage_results", "") + "/set_analyst",
           data: {'value': $(this).val(),
                  '_authenticator': $('input[name="_authenticator"]').val()},
           success: function(data, textStatus, jqXHR){
@@ -476,7 +476,7 @@ $(document).ready(function(){
         e.preventDefault();
         var rmks = $(this).closest('tr').next('tr').find('td.remarks');
         if (rmks.length > 0) {
-            rmks.children().toggle();
+	    rmks.toggle();
         }
     });
     $("a.add-remark").click();
