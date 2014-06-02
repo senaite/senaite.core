@@ -132,6 +132,9 @@ class WorksheetFolderListingView(BikaListingView):
         self.columns = {
             'Title': {'title': _('Worksheet'),
                       'index': 'sortable_title'},
+            'getPriority': {
+                'title': _('Priority'),
+                'index': 'getPriority'},
             'Analyst': {'title': _('Analyst'),
                         'index':'getAnalyst',
                         'toggle': True},
@@ -166,6 +169,7 @@ class WorksheetFolderListingView(BikaListingView):
                             {'id':'verify'},
                             {'id':'reject'}],
              'columns':['Title',
+                        'getPriority',
                         'Analyst',
                         'Template',
                         'Services',
@@ -186,6 +190,7 @@ class WorksheetFolderListingView(BikaListingView):
                             {'id':'verify'},
                             {'id':'reject'}],
              'columns':['Title',
+                        'getPriority',
                         'Analyst',
                         'Template',
                         'Services',
@@ -202,6 +207,7 @@ class WorksheetFolderListingView(BikaListingView):
                                'sort_order': 'reverse'},
              'transitions':[],
              'columns':['Title',
+                        'getPriority',
                         'Analyst',
                         'Template',
                         'Services',
@@ -220,6 +226,7 @@ class WorksheetFolderListingView(BikaListingView):
                             {'id':'verify'},
                             {'id':'reject'}],
              'columns':['Title',
+                        'getPriority',
                         'Analyst',
                         'Template',
                         'Services',
@@ -236,6 +243,7 @@ class WorksheetFolderListingView(BikaListingView):
                                'sort_order': 'reverse'},
              'transitions':[],
              'columns':['Title',
+                        'getPriority',
                         'Analyst',
                         'Template',
                         'Services',
@@ -327,6 +335,7 @@ class WorksheetFolderListingView(BikaListingView):
                 items[x]['replace']['Template'] = "<a href='%s'>%s</a>" % \
                     (wst.absolute_url(), wst.Title())
 
+            items[x]['getPriority'] = ''
             items[x]['CreationDate'] = self.ulocalized_time(obj.creation_date)
 
             nr_analyses = len(obj.getAnalyses())

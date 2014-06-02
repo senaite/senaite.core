@@ -763,11 +763,13 @@ class BikaListingView(BrowserView):
         return actions
 
     def getPriorityIcon(self):
-        priority = self.context.getPriority()
-        if priority:
-            icon = priority.getBigIcon()
-            if icon:
-                return '/'.join(icon.getPhysicalPath())
+        if hasattr(self.context, 'getPriority'):
+            priority = self.context.getPriority()
+            if priority:
+                icon = priority.getBigIcon()
+                if icon:
+                    return '/'.join(icon.getPhysicalPath())
+
 class BikaListingTable(tableview.Table):
 
     render = ViewPageTemplateFile("templates/bika_listing_table.pt")
