@@ -18,12 +18,11 @@ ${ar_factory_url}  portal_factory/AnalysisRequest/Request%20new%20analyses/ar_ad
 
 *** Test Cases ***
 
-Temporary first test
-    Check the AR Add By Row javascript
-
 Add ARs by Row
     Create Primary AR By Row With Template
     Create Primary AR By Row
+    Check the AR Add By Row javascript
+    Create Mulitple Primary ARs By Row With Template
 
 Check Javascript
     Check the AR Add javascript
@@ -180,6 +179,35 @@ Create Primary AR By Row
     Click button                xpath=//input[@value="Receive sample"]
     Wait until page contains    saved
     [return]                    ${ar_id}
+
+Create Mulitple Primary ARs By Row With Template
+    Log in                      test_labmanager  test_labmanager
+    @{time} =                   Get Time        year month day hour min sec
+    Go to                       ${PLONEURL}/clients/client-1
+    Wait until page contains element    css=body.portaltype-client
+    Input text                  ar_count    2
+    Select from list            layout      rows
+    Click Link                  Add
+    Wait until page contains    Request new analyses
+    Select from dropdown        Contact                     Rita
+    Select Date                 ar_0_SamplingDate           @{time}[2]
+    Select from dropdown        ar_0_Template               Bore
+    Set Selenium Timeout        10
+    ${Analyses} =               Get value    xpath=//input[@id="ar_0_Analyses"]
+    Log                         ${Analyses}
+    Should Be Equal             ${Analyses}    Calcium, Magnesium
+    Click Element               //img[contains(@class, 'TemplateCopyButton')]
+    Click Element               //img[contains(@class, 'SamplingDateCopyButton')]
+    Click Button                Save
+    Wait until page contains    were successfully created.
+    ${ar_id} =                  Get text      //dl[contains(@class, 'portalMessage')][2]/dd
+    ${ar_id_1} =                Set Variable  ${ar_id.split()[2]}
+    ${ar_id_1} =                Set Variable  ${ar_id_1.split(',')[0]}
+    ${ar_id_2} =                Set Variable  ${ar_id.split()[3]}
+    ${ar_id_2} =                Set Variable  ${ar_id_2.split(',')[0]}
+    Go to                       http://localhost:55001/plone/clients/client-1/analysisrequests
+    Wait until page contains    ${ar_id_1}
+    Page should contain         ${ar_id_2}
 
 Create Primary AR By Row With Template
     Log in                      test_labmanager  test_labmanager
