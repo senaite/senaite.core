@@ -74,10 +74,6 @@
                                  src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
         </td>
         <td>
-            <img tal:condition="python:view.ar_count > 1"
-                 tal:attributes="name string:price;
-                                 class string:copyButton analysesCopyButton;
-                                 src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
         </td>
     </tr>
 

@@ -16,7 +16,7 @@ function getRelTag() {
 }
     
 function clearHiddenPopupFields(analyses) {
-    $(analyses).find(".popup_field").remove();
+    $(analyses).find(".overlay_field").remove();
 }
 
 function getResultRange(service_uid, spec_uid, keyword) {
@@ -575,6 +575,7 @@ function ar_referencewidget_lookups(elements){
 }
 
 function recalc_prices(arnum){
+    var include;
     var layout = $("input[id='layout']").val();
     if(arnum){
         // recalculate just this arnum
@@ -592,8 +593,12 @@ function recalc_prices(arnum){
             } else {
                 disabled = false;
             }
-            if(!(disabled) && $(this).prop("checked") && $(this).prop('type') != 'hidden') {
-            //if(!(disabled) && $(this).prop("checked")) {
+            if (layout == 'rows') {
+                include = (!(disabled) && $(this).prop("checked") && $(this).hasClass('overlay_field'));
+            } else {
+                include = (!(disabled) && $(this).prop("checked") && $(this).prop('type') != 'hidden'); 
+            }
+            if (include) {
                 var serviceUID = this.id;
                 var form_price = parseFloat($("#"+serviceUID+"_price").val());
                 var vat_amount = parseFloat($("#"+serviceUID+"_price").attr("vat_amount"));
@@ -685,7 +690,7 @@ function copy_service(copybutton){
 
 function copy_analyses(copybutton){
     var first_elem = $("#ar_0_Analyses");
-    var hidden_elements = $(first_elem).parent().find('input[type=hidden]');
+    var hidden_elements = $(first_elem).parent().find('.overlay_field');
     var ar_count = parseInt($("#ar_count").val());
     var affected_elements = [];
     var e, other_elem, other_elem_parent, new_hidden, name;
@@ -694,6 +699,7 @@ function copy_analyses(copybutton){
         other_elem = $("#ar_"+arnum+"_Analyses");
         $(other_elem).val($(first_elem).val());
         other_elem_parent = $(other_elem).parent();
+        clearHiddenPopupFields(other_elem_parent);
         for (var i = 0; i <  hidden_elements.length; i++) {
             e = hidden_elements[i];
             new_hidden = $(e).clone();
@@ -705,6 +711,7 @@ function copy_analyses(copybutton){
             };
             $(other_elem_parent).append(new_hidden);
         };
+        recalc_prices(arnum);
     }
 }
 
@@ -1238,7 +1245,7 @@ function setTemplate(arnum, template_title){
         request_data = {
             portal_type: "AnalysisService",
             UID: [],
-            include_fields: ["PointOfCapture", "CategoryUID", "UID", "Title", "Keyword", "TotalPrice"]
+            include_fields: ["PointOfCapture", "CategoryUID", "UID", "Title", "Keyword", "Price", 'VAT']
         };
         for (x in template.Analyses) {
             if (!template.Analyses.hasOwnProperty(x)){ continue; }
@@ -1258,7 +1265,7 @@ function setTemplate(arnum, template_title){
                 if (!(service.CategoryUID in poc_cat_services[poc_title])) {
                     poc_cat_services[poc_title][service.CategoryUID] = [];
                 }
-                poc_cat_services[poc_title][service.CategoryUID].push([service.UID, service.Title, service.Keyword, service.TotalPrice]);
+                poc_cat_services[poc_title][service.CategoryUID].push([service.UID, service.Title, service.Keyword, service.Price, service.VAT]);
             }
             // expand categories, select, and enable controls for template services
             var analyses = $("#ar_"+arnum+"_Analyses");
@@ -1296,18 +1303,20 @@ function setTemplate(arnum, template_title){
                                 titles.push(service[1]);
                                 ar_add_create_hidden_analysis(
                                     an_parent, service[0], arnum, p, cat_uid,
-                                    range[0], range[1], range[2]);
-                                total = total + parseFloat(service[3]);
-                                //console.log('setTemplate: total:' + total + ':' + service[3]);
+                                    range[0], range[1], range[2], 
+                                    service[3], service[4]);
+                                total = total + parseFloat(service[3]) + (parseFloat(service[3]) * parseFloat(service[4])/100);
                             };
                         }
                     }
-                    // set part number indicators
-                    for(i=0;i<services.length;i++){
-                        service = services[i];
-                        var partnr = parts_by_service_uid[service[0]].part_nr;
-                        e = $(".partnr_"+service[0]).filter("[arnum='"+arnum+"']");
-                        $(e).empty().append(partnr);
+                    if (layout == 'columns') {
+                        // set part number indicators
+                        for(i=0;i<services.length;i++){
+                            service = services[i];
+                            var partnr = parts_by_service_uid[service[0]].part_nr;
+                            e = $(".partnr_"+service[0]).filter("[arnum='"+arnum+"']");
+                            $(e).empty().append(partnr);
+                        }
                     }
                 }
             };
@@ -1342,7 +1351,7 @@ function setAnalysisProfile(arnum, profile_title){
         var request_data = {
             portal_type: "AnalysisService",
             title: profile_objects[0].Service,
-            include_fields: ["PointOfCapture", "Category", "UID", "Title", "Keyword", "TotalPrice"]
+            include_fields: ["PointOfCapture", "Category", "UID", "Title", "Keyword", "Price", "VAT"]
         };
         window.bika.lims.jsonapi_read(request_data, function(data){
             var i;
@@ -1398,8 +1407,9 @@ function setAnalysisProfile(arnum, profile_title){
                             titles.push(services[i].Title);
                             ar_add_create_hidden_analysis(
                                 an_parent, services[i].UID, arnum, 
-                                poc, cat_uid, range[0], range[1], range[2]);
-                            total = total + parseFloat(services[i].TotalPrice);
+                                poc, cat_uid, range[0], range[1], range[2], 
+                                services[i].Price, services[i].VAT);
+                            total = total + parseFloat(services[i].Price);
                         };
                     }
                 }
@@ -1536,18 +1546,20 @@ function fill_column(data) {
 }
 
 function ar_add_create_hidden_analysis(
-        analysis_parent, elem_id, arnum, poc, cat, min, max, err) {
+        analysis_parent, elem_id, arnum, poc, cat, min, max, err, price, vat) {
     //console.log('ar_add_create_hidden_analysis: ' + arnum + ':' + poc);
     var new_item;
-    new_item = '<input type="hidden" id="'+elem_id+'" value="'+elem_id+'" name="ar.'+arnum+'.Analyses:list:ignore_empty:record" class="cb popup_field" arnum="'+arnum+'"/>';
+    new_item = '<input type="hidden" id="'+elem_id+'" value="'+elem_id+'" name="ar.'+arnum+'.Analyses:list:ignore_empty:record" class="cb overlay_field" arnum="'+arnum+'" checked="true"/>';
     analysis_parent.append(new_item);
-    new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.min.'+elem_id+'" value="'+min+'" class="spec_bit min popup_field"/>';
+    new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.min.'+elem_id+'" value="'+min+'" class="spec_bit min overlay_field"/>';
     analysis_parent.append(new_item);
-    new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.max.'+elem_id+'" value="'+max+'" class="spec_bit max popup_field"/>';
+    new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.max.'+elem_id+'" value="'+max+'" class="spec_bit max overlay_field"/>';
     analysis_parent.append(new_item);
-    new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.error.'+elem_id+'" value="'+err+'" class="spec_bit error popup_field"/>';
+    new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.error.'+elem_id+'" value="'+err+'" class="spec_bit error overlay_field"/>';
     analysis_parent.append(new_item);
-    new_item = '<input type="hidden" class="analysiscategory popup_field" arnum="'+arnum+'" poc="'+poc+'" cat="'+cat+'"/>';
+    new_item = '<input type="hidden" class="analysiscategory overlay_field" arnum="'+arnum+'" poc="'+poc+'" cat="'+cat+'"/>';
+    analysis_parent.append(new_item);
+    new_item = '<input type="hidden" id="'+elem_id+'_price" value="'+price+'" vat_amount="'+vat+'" class="overlay_field"/>';
     analysis_parent.append(new_item);
 }
 
@@ -1576,7 +1588,7 @@ function ar_add_analyses_overlays(){
                     $("#ar_"+arnum+"_total").val("0.00");
                     var analysis_parent = $(src).parent();
                     var services = [];
-                    var elements = $(analysis_parent).find('input.popup_field');
+                    var elements = $(analysis_parent).find('input.overlay_field');
                     if (elements.length == 0) {
                         return true;
                     };
@@ -1595,40 +1607,46 @@ function ar_add_analyses_overlays(){
                     };
                     window.bika.lims.overlay_submitted = false;
                     //Clear
-                    var i, elem, elements, arnum, aname, min, max, err;
-                    var src = this.getConf().srcElement;
-                    arnum = src.id.split('_')[1];
+                    var i, elem, elements, aname, min, max, err, price, vat;
+                    var poc, cat;
                     var titles = [];
-                    elements = $("td.service input.cb");
-                    var poc_cat_id, poc, cat;
+                    var src = this.getConf().srcElement;
+                    var arnum = src.id.split('_')[1];
                     var analysis_parent = $(src).parent();
-                    var an_cat = $(analysis_parent).find('.analysiscategory')[0];
-                    var something_checked = false;
                     clearHiddenPopupFields(analysis_parent);
+                    elements = $("td.service input.cb");
+                    var something_checked = false;
                     for (i=0; i<elements.length; i++) {
                         elem = elements[i];
                         //console.log('add overlays:'+elem.title+':'+elem.checked);
                         if (elem.checked == true) {
-                            poc_cat_id = $(elem).parent().parent().parent()[0].id;
-                            poc = poc_cat_id.split('_')[0]
-                            cat = poc_cat_id.split('_')[1]
-                            something_checked = true;
+                            if (elem.title == '') {
+                                //TODO: This shouldn't be required
+                                continue;
+                            }
                             titles.push(elem.title);
+                            poc = $(elem).attr('poc');
+                            cat = $(elem).attr('cat');
+                            something_checked = true;
                             aname = 'ar.'+arnum+'.min.'+elem.id;
                             min = $('input[name^="'+aname+'"]').val();
                             aname = 'ar.'+arnum+'.max.'+elem.id;
                             max = $('input[name^="'+aname+'"]').val();
                             aname = 'ar.'+arnum+'.error.'+elem.id;
                             err = $('input[name^="'+aname+'"]').val();
+                            aname = elem.id+'_price';
+                            price = $('input[id="'+aname+'"]').val();
+                            vat = $('input[id="'+aname+'"]').attr('vat_amount');
                             ar_add_create_hidden_analysis(
                                 analysis_parent, elem.id, arnum, poc, cat,
-                                min, max, err);
+                                min, max, err, price, vat);
                         };
                     };
                     if (something_checked == true) {
                         $(src).attr('value', titles.join(', '));
                         $(src).attr('name', $(src).attr('name').split(':')[0]);
                     };
+                    recalc_prices(arnum);
                     return true;
                     },
                 },

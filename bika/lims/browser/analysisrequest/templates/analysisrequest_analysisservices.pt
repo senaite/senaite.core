@@ -109,6 +109,8 @@
 							id input_id;
 							arnum arnum;
 							name input_name;
+                            poc poc;
+                            cat categoryUID;
 							value serviceUID;
 							title serviceTitle;
                             keyword python:service_obj.getKeyword();
@@ -121,6 +123,8 @@
 							id input_id;
 							arnum arnum;
 							name input_name;
+                            poc poc;
+                            cat categoryUID;
 							value serviceUID;
 							title serviceTitle;
                             keyword python:service_obj.getKeyword();
