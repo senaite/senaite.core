@@ -1,0 +1,163 @@
+#!/usr/bin/env python
+"""
+Keep the locale_folders below, up-to-date.  This is the source of all information
+about products who will have their i18n updated by this script.
+
+To use this script update your buildout.cfg to contain the following part:
+
+    parts =
+        ...
+        update_translations
+
+    [update_translations]
+    recipe = collective.recipe.template
+    output = ${buildout:directory}/bin/update_translations
+    input = ${buildout:directory}/src/bika.lims/bika/lims/locales/update_translations
+    mode = 755
+
+Now, after you run buildout, you can run bin/update_translations to rebuild the
+i18n catalogs for all domains, in all products listed.
+
+To work with this script, the product's locales folder must follow a standard
+<lang>/LC_MESSAGES/*.(po|mo) format.
+
+The domains to be compiled are derived by listing all *.pot files in the
+locales_path.
+
+For each product/domain, translations can be ruthlessly overwritten by
+creating a file
+
+    <domain>-manual.pot
+
+The 'extends' key in the locale_folders var, is where defaults will be taken from
+for this domain, if a .pot file with the same name exists there.
+
+"""
+
+from commands import getoutput
+from glob import glob
+import json
+import os
+import sys
+import subprocess as subp
+
+# First list the locales folders that will be built by this script:
+locale_folders = [
+    {
+        "repo_path": "${buildout:directory}/src/bika.lims",
+        "domains": ["bika", "plone"],
+        "locales_path": "${buildout:directory}/src/bika.lims/bika/lims/locales",
+        "profiles_path": "${buildout:directory}/src/bika.lims/bika/lims/profiles",
+        "extends": "${buildout:directory}/parts/omelette/plone/app/locales/locales",
+    },
+
+    {
+        "repo_path": "${buildout:directory}/src/bika.wine",
+        "domains": ["bika", "bika.wine", "plone"],
+        "locales_path": "${buildout:directory}/src/bika.wine/bika/wine/locales",
+        "profiles_path": "${buildout:directory}/src/bika.wine/bika/wine/profiles",
+        "extends": "${buildout:directory}/src/bika.lims/bika/lims/locales",
+    },
+    {
+        "repo_path": "${buildout:directory}/src/bika.debortoli",
+        "domains": ["bika", "bika.wine", "bika.debortoli", "plone"],
+        "locales_path": "${buildout:directory}/src/bika.debortoli/bika/debortoli/locales",
+        "profiles_path": "${buildout:directory}/src/bika.debortoli/bika/debortoli/profiles",
+        "extends": "${buildout:directory}/src/bika.wine/bika/wine/locales",
+    },
+
+    {
+        "repo_path": "${buildout:directory}/src/bika.health",
+        "domains": ["bika", "bika.health", "plone"],
+        "locales_path": "${buildout:directory}/src/bika.health/bika/health/locales",
+        "profiles_path": "${buildout:directory}/src/bika.health/bika/health/profiles",
+        "extends": "${buildout:directory}/src/bika.lims/bika/lims/locales",
+    },
+    {
+        "repo_path": "${buildout:directory}/src/bika.purity",
+        "domains": ["bika", "bika.health", "bika.purity", "plone"],
+        "locales_path": "${buildout:directory}/src/bika.purity/bika/purity/locales",
+        "profiles_path": "${buildout:directory}/src/bika.purity/bika/purity/profiles",
+        "extends": "${buildout:directory}/src/bika.health/bika/health/locales",
+    },
+]
+
+i18ndude = "${buildout:directory}/bin/i18ndude"
+
+def silent_call(cmd_list):
+    return subp.call(cmd_list, stdout=subp.PIPE, stderr=subp.PIPE)
+
+def call(cmd_str):
+    cmd = cmd_str.split()
+    proc = subp.Popen(cmd, stdout=subp.PIPE, stderr=subp.PIPE)
+    out = proc.communicate()[0]
+    rc = proc.returncode
+    lines = out.rstrip().split('\n')
+    print(">>> {0} ({1})".format(cmd_str, rc))
+    l = [line for line in lines if line]
+    if l:
+        print("\n".join(l))
+    return (rc, lines)
+
+for locale_folder in locale_folders:
+    print "="*50 + ": " + locale_folder["repo_path"]
+
+    repo_path = locale_folder["repo_path"]
+    locales_path = locale_folder["locales_path"]
+    profiles_path = locale_folder["profiles_path"]
+    extends = locale_folder.get("extends", False)
+    domains = locale_folder.get("domains")
+    os.chdir(locales_path)
+
+    ### Transifex - pull everything
+    #call("tx pull -a -f")
+
+    ### Each potfile is a domain, unless it has "-" in the filename.
+    for domain in domains:
+        print "-"*25 + ": " + domain
+
+        ### Flush the english (transifex source language) po files
+        # fn = "en/LC_MESSAGES/%s.po"%domain
+        # try: os.remove(fn)
+        # except OSError: pass
+        # open(fn, "w").close()
+
+        ### Re-scan source for new strings (into *-tmp0.pot)
+        # plone domain is special.  Only search for strings in profiles folder.
+        if domain == "plone":
+            path = profiles_path
+        else:
+            path = repo_path
+        l = locals()
+        call("{i18ndude} rebuild-pot --pot {domain}-tmp0.pot --exclude 'build' --create {domain} {path}".format(**l))
+
+        ### apply the base messages from 'extends'
+        extends_pot_fn = os.path.join(extends, domain+".pot")
+        l = locals()
+        if os.path.exists(extends_pot_fn):
+            call("{i18ndude} trmerge {domain}-tmp0.pot {extends_pot_fn} > {domain}-tmp.pot".format(**l))
+            try: os.unlink(domain + "-tmp0.pot")
+            except OSError: pass
+        else:
+            try: os.rename(domain + "-tmp0.pot", domain + "-tmp.pot")
+            except OSError: pass
+
+        ### Apply the *-manual.pot values
+        manual_fn = os.path.join(locales_path, domain + "-manual.pot")
+        l = locals()
+        if os.path.exists(manual_fn):
+            call("{i18ndude} trmerge {domain}-tmp.pot {domain}-manual.pot > {domain}.pot".format(**l))
+            try: os.unlink(domain + "-tmp.pot")
+            except OSError: pass
+        else:
+            os.rename(domain + "-tmp.pot", domain + ".pot")
+
+        ### sync
+        for lang in glob(locales_path + "/*"):
+            if os.path.exists(os.path.join(locales_path, lang, "LC_MESSAGES")):
+                l = locals()
+                call("{i18ndude} sync --pot {domain}.pot {lang}/LC_MESSAGES/{domain}.po".format(**l))
+                call("msgfmt -f -o {lang}/LC_MESSAGES/{domain}.mo {lang}/LC_MESSAGES/{domain}.po".format(**l))
+
+    ### Transifex
+    #tx push -s -t
