@@ -74,13 +74,11 @@ class ResultOutOfRange(object):
                 str(self.context.getService().getDuplicateVariation()))
         except ValueError:
             return None
-        # range_min = orig - (orig * variation / 100)
-        # range_max = orig + (orig * variation / 100)
-        duplicates_average = (orig+result)/2
-        duplicates_diff = abs(orig-result)
-        variation_here = (duplicates_diff/duplicates_average)*100
-        variation_qty = duplicates_diff/2
-        tolerance_allowed = ((duplicates_average * variation) / 100) / 2
+        duplicates_average = float((orig+result)/2)
+        duplicates_diff = float(abs(orig-result))
+        variation_here = float((duplicates_diff/duplicates_average)*100)
+        variation_qty = float(duplicates_diff/2)
+        tolerance_allowed = float(((duplicates_average * variation) / 100) / 2)
         # range_min = orig - (orig * variation / 100)
         # range_max = orig + (orig * variation / 100)
         range_min = duplicates_average - tolerance_allowed
