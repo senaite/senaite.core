@@ -79,10 +79,12 @@ class ResultOutOfRange(object):
         duplicates_average = (orig+result)/2
         duplicates_diff = abs(orig-result)
         variation_here = (duplicates_diff/duplicates_average)*100
+        variation_qty = duplicates_diff/2
+        tolerance_allowed = ((duplicates_average * variation) / 100) / 2
         # range_min = orig - (orig * variation / 100)
         # range_max = orig + (orig * variation / 100)
-        range_min = duplicates_average - variation_here
-        range_max = duplicates_average + variation_here
+        range_min = duplicates_average - tolerance_allowed
+        range_max = duplicates_average + tolerance_allowed
         spec = {"min": range_min,
                 "max": range_max,
                 "error": 0,
