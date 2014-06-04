@@ -115,10 +115,11 @@ class WidgetVisibility(_WV):
 
         # header_table default visible fields
         ret['header_table'] = {
-            'prominent': ['Client', 'Contact', 'CCContact', 'CCEmails', 'Batch'],
+            'prominent': ['Client', 'Contact', 'CCContact', 'InvoiceContact', 'CCEmails', 'Batch'],
             'visible': [
                 'Contact',
                 'CCContact',
+                'InvoiceContact',
                 'CCEmails',
                 'Sample',
                 'Batch',
@@ -155,6 +156,7 @@ class WidgetVisibility(_WV):
             ret['edit']['visible'] = [
                 'Contact',
                 'CCContact',
+                'InvoiceContact',
                 'CCEmails',
                 'AdHoc',
                 'Batch',
@@ -175,6 +177,7 @@ class WidgetVisibility(_WV):
             ret['view']['visible'] = [
                 'Contact',
                 'CCContact',
+                'InvoiceContact',
                 'CCEmails',
                 'DateSampled',
                 'MemberDiscount',
@@ -189,6 +192,7 @@ class WidgetVisibility(_WV):
             ret['edit']['visible'] = [
                 'Contact',
                 'CCContact',
+                'InvoiceContact',
                 'CCEmails',
                 'Batch',
                 'SubGroup',
@@ -204,6 +208,7 @@ class WidgetVisibility(_WV):
             ret['view']['visible'] = [
                 'Contact',
                 'CCContact',
+                'InvoiceContact',
                 'CCEmails',
                 'AdHoc',
                 'Composite',
@@ -230,6 +235,7 @@ class WidgetVisibility(_WV):
             ret['view']['visible'] = [
                 'Contact',
                 'CCContact',
+                'InvoiceContact',
                 'CCEmails',
                 'AdHoc',
                 'Batch',
@@ -260,6 +266,7 @@ class WidgetVisibility(_WV):
             ret['view']['visible'] = [
                 'Contact',
                 'CCContact',
+                'InvoiceContact',
                 'CCEmails',
                 'AdHoc',
                 'Batch',
@@ -284,6 +291,13 @@ class WidgetVisibility(_WV):
                 'Priority',
                 'Template',
             ]
+
+        #if self.context.aq_parent.portal_type == 'Client':
+        #    if 'Client' in ret['header_table']['prominent']:
+        #        ret['header_table']['prominent'].remove('Client')
+        #if self.context.aq_parent.portal_type == 'Batch':
+        #    if 'Batch' in ret['header_table']['prominent']:
+        #        ret['header_table']['prominent'].remove('Batch')
 
         hiddenattributes = getHiddenAttributesForClass(self.context.portal_type)
         if hiddenattributes:
