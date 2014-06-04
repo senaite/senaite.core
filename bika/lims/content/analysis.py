@@ -836,7 +836,10 @@ class Analysis(BaseContent):
                     "sample_received", "attachment_due",):
                     can_attach = False
         if can_attach:
-            workflow.doActionFor(self, "attach")
+            try:
+                workflow.doActionFor(self, "attach")
+            except WorkflowException:
+                pass
 
     def workflow_script_retract(self):
         # DuplicateAnalysis doesn't have analysis_workflow.
