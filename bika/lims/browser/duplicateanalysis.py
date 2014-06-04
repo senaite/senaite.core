@@ -91,10 +91,10 @@ class ResultOutOfRange(object):
                 }
         # if range_min <= result <= range_max:
         if variation_here > variation :
-            out_of_range = False
+            out_of_range = True
             acceptable = True
         else:
-            out_of_range = True
+            out_of_range = False
             acceptable = True
         return {'out_of_range':out_of_range,
                 'acceptable': acceptable,
