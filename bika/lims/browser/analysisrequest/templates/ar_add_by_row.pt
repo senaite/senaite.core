@@ -1,5 +1,5 @@
 <div metal:define-macro="ar_add_by_row">
-    <tal:headers repeat="fieldname headerfieldnames">
+    <tal:headers repeat="fieldname prominentfieldnames">
         <div tal:define="
                             field python:context.Schema()[fieldname];
                             field_macro here/widgets/field/macros/edit;
@@ -20,7 +20,7 @@
     <thead 
         tal:define="
           fieldnames python:widget_visibility.get('add-by-row', {}).get('visible', []);
-          fieldnames python: [f for f in fieldnames if f not in headerfieldnames]">
+          fieldnames python: [f for f in fieldnames if f not in prominentfieldnames]">
     <tr>
         <td></td>
         <tal:loop repeat="fieldname fieldnames">
