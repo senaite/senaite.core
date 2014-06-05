@@ -676,7 +676,7 @@ function saveProfile(){
         url: window.portal_url + "/@@API/create",
         data: request_data,
         success: function(responseText) {
-            alert('Success:'+responseText);
+            alert('Profile '+title+' has been created successfully');
         },
         error: function(XMLHttpRequest, statusText) {
             alert('Fail:'+statusText);
