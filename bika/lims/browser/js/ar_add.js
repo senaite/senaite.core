@@ -652,6 +652,39 @@ function changeReportDryMatter(){
     recalc_prices();
 }
 
+function saveProfile(){
+    /*jshint validthis:true */
+    var arnum = this.id.split("_")[1];
+    var analyses = $("#ar_"+arnum+"_Analyses").parent().find('.overlay_field').filter(".cb");
+    if (analyses.length == 0) {
+        alert('Please select analyses to be save');
+        return;
+    };
+    var title;
+    do {
+        title=prompt("Please enter the title of the profile");
+    }
+    while(title.length < 2);
+    var request_data = 'obj_path=/Plone/bika_setup/bika_analysisprofiles&obj_type=AnalysisProfile&title='+title
+    for (var i = 0; i < analyses.length; i++) {
+        request_data = request_data+'&Service:list=UID:'+$(analyses[i]).val()
+    }
+    console.log('request_data:'+request_data);
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: window.portal_url + "/@@API/create",
+        data: request_data,
+        success: function(responseText) {
+            alert('Success:'+responseText);
+        },
+        error: function(XMLHttpRequest, statusText) {
+            alert('Fail:'+statusText);
+        },
+    });
+
+}
+
 function copy_service(copybutton){
     var e = $("input[arnum='0']").filter("#" + copybutton.id);
     var kw = $(e).attr("keyword");
@@ -1679,6 +1712,8 @@ $(document).ready(function() {
         $("input[name^='Price']").live("change", recalc_prices );
 
         $("input[id*='_ReportDryMatter']").change(changeReportDryMatter);
+
+        $("input[id*='_save_profile']").click(saveProfile);
 
         $(".spec_bit").live("change", function() {
             validate_spec_field_entry(this);

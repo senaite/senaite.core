@@ -58,6 +58,10 @@
             <label i18n:translate="price-and-tax" 
                    title='The cost of the analyses'>Price & GST</label>
         </td>
+        <td i18n:translate="">
+            <label i18n:translate="save-as-profile" 
+                   title='Save selected analyses as a new profile'>Save as Profile</label>
+        </td>
     </tr>
     <tr>
         <td></td>
@@ -74,6 +78,10 @@
                                  src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
         </td>
         <td>
+            <!-- Price -->
+        </td>
+        <td>
+            <!-- Save Profile -->
         </td>
     </tr>
 
@@ -132,6 +140,14 @@
                             class string:ar_add_total;
                             name string:total;
                             id string:total;
+                            " />
+        </td>
+        <td>
+            <input type="button" value="Create"
+                    tal:attributes="
+                            class string:ar_add_save_profile;
+                            name string:save_profile;
+                            id string:save_profile;
                             " />
         </td>
     </tr>
