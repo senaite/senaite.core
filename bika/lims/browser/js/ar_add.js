@@ -1363,6 +1363,8 @@ $(document).ready(function() {
 	ar_referencewidget_lookups();
 	ar_set_tabindexes();
 
+	$("input[type=text]").prop("autocomplete", "off")
+
 	$(".copyButton").live("click",  copyButton );
 
 	$("th[class^='analysiscategory']").click(clickAnalysisCategory);
