@@ -27,11 +27,7 @@ class ResultOutOfRangeIcons(object):
             spec = ret["spec_values"]
             if out_of_range:
                 message = t(_("Relative percentage difference, ${variation_here} %, is out of valid range (${variation} %))",
-                      mapping={'variation_here': variation_here, 'variation': variation, }                  
-                      ))
-                    # t(_('Result out of range')),
-                    # t(_("min")), str(spec['min']),
-                    # t(_("max")), str(spec['max']))
+                      mapping={'variation_here': ret['variation_here'], 'variation': ret['variation'], } ))
                 alerts[self.context.UID()] = [
                     {
                         'msg': message,
@@ -98,4 +94,7 @@ class ResultOutOfRange(object):
             acceptable = True
         return {'out_of_range':out_of_range,
                 'acceptable': acceptable,
-                'spec_values': spec}
+                'spec_values': spec,
+                'variation_here': variation_here,
+                'variation': variation,
+                }
