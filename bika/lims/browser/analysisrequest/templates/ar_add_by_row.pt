@@ -15,12 +15,25 @@
             <metal:field use-macro="python:context.widget(fieldname, mode=mode)"/>
         </div>
     </tal:headers>
+    <tal:headers repeat="fieldname hiddenprominentfieldnames">
+        <div tal:define="
+                            field python:context.Schema()[fieldname];
+                            accessor python:field.getAccessor(context);
+                            widget python:field.widget;
+                            errors python:{};
+                            mode string:edit;">
+            <div style="display:none">
+                <metal:field use-macro="python:context.widget(fieldname, mode=mode)"/>
+            </div>
+        </div>
+    </tal:headers>
     <br />
 
     <thead 
         tal:define="
           fieldnames python:widget_visibility.get('add-by-row', {}).get('visible', []);
-          fieldnames python: [f for f in fieldnames if f not in prominentfieldnames]">
+          fieldnames python: [f for f in fieldnames if f not in prominentfieldnames];
+          fieldnames python: [f for f in fieldnames if f not in hiddenprominentfieldnames]">
     <tr>
         <td></td>
         <tal:loop repeat="fieldname fieldnames">

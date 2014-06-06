@@ -38,7 +38,8 @@
         widget_visibility view/getWidgetVisibility;
         partitionable view/partitioned_services;
         ShowPrices python:context.bika_setup.getShowPrices();
-        prominentfieldnames python:widget_visibility.get('header_table', {}).get('prominent', []);">
+        prominentfieldnames python:widget_visibility.get('header_table', {}).get('prominent', []);
+        hiddenprominentfieldnames python:widget_visibility.get('header_table', {}).get('hiddenprominent', []);">
 
 
 <form id="analysisrequest_edit_form"

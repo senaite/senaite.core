@@ -116,6 +116,7 @@ class WidgetVisibility(_WV):
         # header_table default visible fields
         ret['header_table'] = {
             'prominent': ['Client', 'Contact', 'CCContact', 'InvoiceContact', 'CCEmails', 'Batch'],
+            'hiddenprominent': [],
             'visible': [
                 'Contact',
                 'CCContact',
@@ -292,12 +293,14 @@ class WidgetVisibility(_WV):
                 'Template',
             ]
 
-        #if self.context.aq_parent.portal_type == 'Client':
-        #    if 'Client' in ret['header_table']['prominent']:
-        #        ret['header_table']['prominent'].remove('Client')
-        #if self.context.aq_parent.portal_type == 'Batch':
-        #    if 'Batch' in ret['header_table']['prominent']:
-        #        ret['header_table']['prominent'].remove('Batch')
+        if self.context.aq_parent.portal_type == 'Client':
+            if 'Client' in ret['header_table']['prominent']:
+                ret['header_table']['prominent'].remove('Client')
+                ret['header_table']['hiddenprominent'].append('Client')
+        if self.context.aq_parent.portal_type == 'Batch':
+            if 'Batch' in ret['header_table']['prominent']:
+                ret['header_table']['prominent'].remove('Batch')
+                ret['header_table']['hiddenprominent'].append('Batch')
 
         hiddenattributes = getHiddenAttributesForClass(self.context.portal_type)
         if hiddenattributes:

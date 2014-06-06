@@ -1811,9 +1811,8 @@ $(document).ready(function() {
             applyComboFilter(element, "getParentUID", clientuid);
             element = $("#CCContact");
             applyComboFilter(element, "getParentUID", clientuid);
-            //var invoicecontactuid = $("#invoice_contact_uid").val();
-            //element = $("#InvoiceContact");
-            //applyComboFilter(element, "getParentUID", invoicecontactuid);
+            element = $("#InvoiceContact");
+            applyComboFilter(element, "getParentUID", clientuid);
         }
 
         var copy_from = window.location.href.split("copy_from=");
