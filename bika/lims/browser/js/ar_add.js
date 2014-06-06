@@ -530,10 +530,6 @@ function add_path_filter_to_spec_lookups(){
     for (var arnum=0; arnum<parseInt($("#ar_count").val(), 10); arnum++) {
         var element = $("#ar_"+arnum+"_Specification");
         var bq = $.parseJSON($(element).attr("base_query"));
-        if (bq == undefined) {
-            alert('bq undefined:' + arnum);
-            continue;
-        }
         bq.path = [$("#PhysicalPath").attr("lab_specs"), $("#PhysicalPath").attr("here")];
         $(element).attr("base_query", $.toJSON(bq));
     }
@@ -654,32 +650,33 @@ function changeReportDryMatter(){
 
 function saveProfile(){
     /*jshint validthis:true */
+    jarn.i18n.loadCatalog('bika');
+    var _ = window.jarn.i18n.MessageFactory("bika");
     var arnum = this.id.split("_")[1];
     var analyses = $("#ar_"+arnum+"_Analyses").parent().find('.overlay_field').filter(".cb");
     if (analyses.length == 0) {
-        alert('Please select analyses to be save');
+        alert(_('Please select analyses to be save'));
         return;
     };
     var title;
     do {
-        title=prompt("Please enter the title of the profile");
+        title=prompt(_("Please enter the title of the profile"));
     }
     while(title.length < 2);
     var request_data = 'obj_path=/Plone/bika_setup/bika_analysisprofiles&obj_type=AnalysisProfile&title='+title
     for (var i = 0; i < analyses.length; i++) {
         request_data = request_data+'&Service:list=UID:'+$(analyses[i]).val()
     }
-    console.log('request_data:'+request_data);
     $.ajax({
         type: "POST",
         dataType: "json",
         url: window.portal_url + "/@@API/create",
         data: request_data,
         success: function(responseText) {
-            alert('Profile '+title+' has been created successfully');
+            alert(_('Profile '+title+' has been created successfully'));
         },
         error: function(XMLHttpRequest, statusText) {
-            alert('Fail:'+statusText);
+            alert(_('Fail:'+statusText));
         },
     });
 
