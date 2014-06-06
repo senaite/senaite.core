@@ -650,10 +650,15 @@ function changeReportDryMatter(){
 
 function saveProfile(){
     /*jshint validthis:true */
+    var layout = $("input[id='layout']").val();
     jarn.i18n.loadCatalog('bika');
     var _ = window.jarn.i18n.MessageFactory("bika");
     var arnum = this.id.split("_")[1];
-    var analyses = $("#ar_"+arnum+"_Analyses").parent().find('.overlay_field').filter(".cb");
+    if (layout == 'rows') {
+        var analyses = $("#ar_"+arnum+"_Analyses").parent().find('.overlay_field').filter(".cb");
+    } else {
+        var analyses = $(".cb").filter('[arnum="'+arnum+'"]').filter(':checked');
+    }
     if (analyses.length == 0) {
         alert(_('Please select analyses to be save'));
         return;
