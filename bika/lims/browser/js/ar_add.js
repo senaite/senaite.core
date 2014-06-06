@@ -1802,6 +1802,8 @@ $(document).ready(function() {
                 applyComboFilter(element, "getParentUID", clientuid);
                 element = $("#ar_CCContact");
                 applyComboFilter(element, "getParentUID", clientuid);
+                element = $("#ar_InvoiceContact");
+                applyComboFilter(element, "getParentUID", clientuid);
             });
             //Initial value of contact list, set by the page's hidden ClientUID
             var element = $("#Contact");
@@ -1809,6 +1811,9 @@ $(document).ready(function() {
             applyComboFilter(element, "getParentUID", clientuid);
             element = $("#CCContact");
             applyComboFilter(element, "getParentUID", clientuid);
+            //var invoicecontactuid = $("#invoice_contact_uid").val();
+            //element = $("#InvoiceContact");
+            //applyComboFilter(element, "getParentUID", invoicecontactuid);
         }
 
         var copy_from = window.location.href.split("copy_from=");
