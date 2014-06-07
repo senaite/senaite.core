@@ -106,4 +106,10 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <adapter
+      name="analysis_priority_icons"
+      for="bika.lims.interfaces.IWorksheet"
+      factory="bika.lims.browser.analysis.PriorityIcons"
+    />
+
 </configure>

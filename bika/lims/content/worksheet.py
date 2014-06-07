@@ -629,4 +629,16 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             analysis.setAnalyst(analyst)
         self.Schema().getField('Analyst').set(self, analyst)
 
+    security.declarePublic('getPriority')
+    def getPriority(self):
+        """ from analysis on this worksheet return highest priority
+        """
+        top_priority = None
+        for analysis in self.getAnalyses():
+            priority = analysis.getPriority()
+            if top_priority and top_priority.sortKey >= priority.sortKey:
+                continue
+            top_priority = priority
+        return top_priority
+
 registerType(Worksheet, PROJECTNAME)

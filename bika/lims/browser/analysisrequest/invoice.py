@@ -121,6 +121,12 @@ class InvoiceView(BrowserView):
         # Render the template
         return self.template()
 
+    def getPriorityIcon(self):
+        priority = self.context.getPriority()
+        if priority:
+            icon = priority.getBigIcon()
+            if icon:
+                return '/'.join(icon.getPhysicalPath())
 
 class InvoicePrintView(InvoiceView):
 
