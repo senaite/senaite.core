@@ -398,6 +398,7 @@ class WorksheetAnalysesView(AnalysesView):
             'Attachments': {'title': _('Attachments')},
             'Instrument': {'title': _('Instrument')},
             'state_title': {'title': _('State')},
+            'Priority': { 'title': _('Priority'), 'index': 'Priority'},
         }
         self.review_states = [
             {'id':'default',
@@ -409,7 +410,7 @@ class WorksheetAnalysesView(AnalysesView):
                              {'id':'unassign'}],
              'columns':['Pos',
                         'Service',
-                        'getPriority',
+                        'Priority',
                         'Method',
                         'Instrument',
                         'Result',
@@ -437,6 +438,7 @@ class WorksheetAnalysesView(AnalysesView):
             service = obj.getService()
             method = service.getMethod()
             items[x]['Service'] = service.Title()
+            items[x]['Priority'] = ''
             #items[x]['Method'] = method and method.Title() or ''
             items[x]['class']['Service'] = 'service_title'
             items[x]['Category'] = service.getCategory() and service.getCategory().Title() or ''
@@ -825,9 +827,9 @@ class AddAnalysesView(BikaListingView):
             'getRequestID': {
                 'title': _('Request ID'),
                 'index': 'getRequestID'},
-            'getPriority': {
+            'Priority': {
                 'title': _('Priority'),
-                'index': 'getPriority'},
+                'index': 'Priority'},
             'CategoryTitle': {
                 'title': _('Category'),
                 'index':'getCategoryTitle'},
@@ -850,7 +852,7 @@ class AddAnalysesView(BikaListingView):
              'columns':['Client',
                         'getClientOrderNumber',
                         'getRequestID',
-                        'getPriority',
+                        'Priority',
                         'CategoryTitle',
                         'Title',
                         'getDateReceived',
@@ -929,7 +931,7 @@ class AddAnalysesView(BikaListingView):
             items[x]['getRequestID'] = obj.aq_parent.getRequestID()
             items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
                  (url, items[x]['getRequestID'])
-            items[x]['getPriority'] = ''
+            items[x]['Priority'] = ''
 
 
             items[x]['Client'] = client.Title()

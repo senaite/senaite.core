@@ -17,6 +17,11 @@
       for="bika.lims.interfaces.IWorksheet"
       factory="bika.lims.browser.worksheet.ResultOutOfRange"
     />
+    <adapter
+      name="worksheet_priority_icons"
+      for="bika.lims.interfaces.IWorksheet"
+      factory="bika.lims.adapters.priorityicons.PriorityIcons"
+    />
 
     <browser:page
       for="bika.lims.interfaces.IWorksheet"
@@ -104,12 +109,6 @@
       class="bika.lims.browser.worksheet.ajaxSetInstrument"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <adapter
-      name="analysis_priority_icons"
-      for="bika.lims.interfaces.IWorksheet"
-      factory="bika.lims.browser.analysis.PriorityIcons"
     />
 
 </configure>

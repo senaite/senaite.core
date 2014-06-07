@@ -132,9 +132,9 @@ class WorksheetFolderListingView(BikaListingView):
         self.columns = {
             'Title': {'title': _('Worksheet'),
                       'index': 'sortable_title'},
-            'getPriority': {
-                'title': _('Priority'),
-                'index': 'getPriority'},
+            'Priority': {'title': _('Priority'),
+                        'index':'Priority',
+                        'toggle': True},
             'Analyst': {'title': _('Analyst'),
                         'index':'getAnalyst',
                         'toggle': True},
@@ -169,7 +169,7 @@ class WorksheetFolderListingView(BikaListingView):
                             {'id':'verify'},
                             {'id':'reject'}],
              'columns':['Title',
-                        'getPriority',
+                        'Priority',
                         'Analyst',
                         'Template',
                         'Services',
@@ -190,7 +190,7 @@ class WorksheetFolderListingView(BikaListingView):
                             {'id':'verify'},
                             {'id':'reject'}],
              'columns':['Title',
-                        'getPriority',
+                        'Priority',
                         'Analyst',
                         'Template',
                         'Services',
@@ -207,7 +207,7 @@ class WorksheetFolderListingView(BikaListingView):
                                'sort_order': 'reverse'},
              'transitions':[],
              'columns':['Title',
-                        'getPriority',
+                        'Priority',
                         'Analyst',
                         'Template',
                         'Services',
@@ -226,7 +226,7 @@ class WorksheetFolderListingView(BikaListingView):
                             {'id':'verify'},
                             {'id':'reject'}],
              'columns':['Title',
-                        'getPriority',
+                        'Priority',
                         'Analyst',
                         'Template',
                         'Services',
@@ -243,7 +243,7 @@ class WorksheetFolderListingView(BikaListingView):
                                'sort_order': 'reverse'},
              'transitions':[],
              'columns':['Title',
-                        'getPriority',
+                        'Priority',
                         'Analyst',
                         'Template',
                         'Services',
@@ -325,6 +325,9 @@ class WorksheetFolderListingView(BikaListingView):
             creator = obj.Creator().strip()
             items[x]['Analyst'] = analyst
 
+            priority = obj.getPriority()
+            items[x]['Priority'] = ''
+            
             instrument = obj.getInstrument()
             items[x]['Instrument'] = instrument and instrument.Title() or ''
 

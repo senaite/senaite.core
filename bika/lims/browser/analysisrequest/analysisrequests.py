@@ -90,7 +90,8 @@ class AnalysisRequestsView(BikaListingView):
                                   'toggle': False},
             'Priority': {'title': _('Priority'),
                             'toggle': True,
-                            'sortable': False},
+                            'index': 'Priority',
+                            'sortable': True},
             'AdHoc': {'title': _('Ad-Hoc'),
                       'toggle': False},
             'SamplingDate': {'title': _('Sampling Date'),
@@ -568,7 +569,7 @@ class AnalysisRequestsView(BikaListingView):
             deviation = sample.getSamplingDeviation()
             items[x]['SamplingDeviation'] = deviation and deviation.Title() or ''
             priority = obj.getPriority()
-            items[x]['Priority'] = ''
+            items[x]['Priority'] = '' # priority.Title()
 
             items[x]['getStorageLocation'] = sample.getStorageLocation() and sample.getStorageLocation().Title() or ''
             items[x]['AdHoc'] = sample.getAdHoc() and True or ''

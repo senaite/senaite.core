@@ -20,10 +20,10 @@ class AnalysisRequestsView(_ARV, _ARAV):
         super(AnalysisRequestsView, self).__init__(context, request)
 
     def contentsMethod(self, contentFilter):
-        items = self.context.getBackReferences("AnalysisRequestBatch")
-        items = sorted(items, key=itemgetter('creation_date'))
-        items.reverse()
-        return items
+        bc = getToolByName(self.context, 'bika_catalog')
+        if 'BatchUID' not in contentFilter.keys():
+            contentFilter['BatchUID'] = self.context.UID()
+        return bc(contentFilter)
 
     def __call__(self):
         self.context_actions = {}

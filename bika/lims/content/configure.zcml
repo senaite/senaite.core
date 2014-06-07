@@ -7,6 +7,10 @@
     i18n_domain="bika">
 
     <adapter name="BatchDate" factory=".batch.BatchDate" />
+    <adapter name="Priority" factory=".analysisrequest.Priority" />
+    <adapter name="BatchUID" factory=".analysisrequest.BatchUID" />
+    <adapter name="Priority" factory=".analysis.Priority" />
+    <adapter name="Priority" factory=".worksheet.Priority" />
 
     <subscriber
       for="bika.lims.interfaces.IPricelist
