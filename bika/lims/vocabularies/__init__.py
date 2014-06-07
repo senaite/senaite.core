@@ -298,7 +298,7 @@ class ClientContactVocabulary(object):
             objects = list(client.objectValues('Contact'))
             objects.sort(lambda x, y: cmp(x.getFullname().lower(),
                                           y.getFullname().lower()))
-            xitems = [(t(item.getFullname()), item.getFullname())
+            xitems = [(to_utf8(item.getFullname()), item.getFullname())
                       for item in objects]
             xitems = [SimpleTerm(i[1], i[1], i[0]) for i in xitems]
             items += xitems

@@ -45,7 +45,8 @@ def create_analysisrequest(
                 analyses
             )
     # Perform the appropriate workflow action
-    workflow_action =  '' if workflow_enabled else 'no_' + 'sampling_workflow'
+    workflow_action =  'sampling_workflow' if workflow_enabled \
+        else 'no_sampling_workflow'
     portal_workflow.doActionFor(ar, workflow_action)
     # If Preservation is required for some partitions,
     # and the SamplingWorkflow is disabled, we need

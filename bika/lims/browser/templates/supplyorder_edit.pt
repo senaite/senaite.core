@@ -10,6 +10,8 @@
 	        tal:define="portal context/@@plone_portal_state/portal;">
 		    <script type="text/javascript"
 		        tal:attributes="src python:portal.absolute_url() + '/bika_widgets/datetimewidget.js'"></script>
+	       <script type="text/javascript"
+		        tal:attributes="src python:portal.absolute_url() + '/bika_widgets/referencewidget.js'"></script>
 	    </metal:block>
 	</head>
 
@@ -17,7 +19,7 @@
 
 		<metal:title fill-slot="content-title">
 		</metal:title>
-		
+
 		<metal:core fill-slot="content-core">
 			<form id="supplyorder_edit" name="edit" method="post" action="" tal:define="errors python:{}">
 				<table class="invoice-header">

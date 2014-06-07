@@ -20,7 +20,8 @@ def create_analysis(context, service, keyword, interim_fields):
     zope.event.notify(ObjectInitializedEvent(analysis))
     # Perform the appropriate workflow action
     try:
-        workflow_action =  '' if workflow_enabled else 'no_' + 'sampling_workflow'
+        workflow_action =  'sampling_workflow' if workflow_enabled \
+            else 'no_sampling_workflow'
         context.portal_workflow.doActionFor(analysis, workflow_action)
     except WorkflowException:
         # The analysis may have been transitioned already!

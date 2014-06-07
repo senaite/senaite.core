@@ -1,27 +1,24 @@
-from Acquisition import aq_inner
-from Acquisition import aq_parent
+from Acquisition import aq_parent, aq_inner
 from Products.CMFCore.utils import getToolByName
-from Products.Archetypes.config import REFERENCE_CATALOG
+from bika.lims.permissions import ManageWorksheets
 
 def upgrade(tool):
-    """ Refactor ARs listing to allow sorting by priority
-    """
-
-    def addIndex(cat, *args):
-        try:
-            cat.addIndex(*args)
-        except:
-            pass
-
     portal = aq_parent(aq_inner(tool))
-    # Create new indexes
-    bc = getToolByName(portal, 'bika_catalog')
-    addIndex(bc, 'Priority', 'FieldIndex')
-    addIndex(bc, 'BatchUID', 'FieldIndex')
-    bc.clearFindAndRebuild()
+    setup = portal.portal_setup
 
-    bac = getToolByName(portal, 'bika_analysis_catalog')
-    addIndex(bac, 'Priority', 'FieldIndex')
-    bac.clearFindAndRebuild()
+    # re-import js registry
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
+
+    # Update permissions according to Bika Setup
+    # By default, restrict user access and management to WS
+    bs = portal.bika_setup
+    bs.setRestrictWorksheetUsersAccess(True)
+    bs.setRestrictWorksheetManagement(True)
+    bs.reindexObject()
+
+    # Only LabManagers are able to create worksheets.
+    mp = portal.manage_permission
+    mp(ManageWorksheets, ['Manager', 'LabManager'],1)
 
     return True

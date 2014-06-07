@@ -34,6 +34,7 @@ from zope.interface import implements
 from bika.lims.browser.referenceanalysis import AnalysesRetractedListReport
 from DateTime import DateTime
 from Products.CMFPlone.i18nl10n import ulocalized_time
+from bika.lims.utils import to_utf8 as _c
 
 import plone
 import plone.protect
@@ -62,7 +63,7 @@ class WorksheetWorkflowAction(WorkflowAction):
 
         ## assign
         elif action == 'assign':
-            if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
+            if not self.context.checkUserManage():
                 self.request.response.redirect(self.context.absolute_url())
                 return
 
@@ -82,7 +83,7 @@ class WorksheetWorkflowAction(WorkflowAction):
             self.request.response.redirect(self.destination_url)
         ## unassign
         elif action == 'unassign':
-            if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
+            if not self.context.checkUserManage():
                 self.request.response.redirect(self.context.absolute_url())
                 return
 
@@ -333,6 +334,36 @@ def getAnalystName(context):
     else:
         return analyst
 
+def checkUserAccess(context, request, redirect=True):
+    """ Checks if the current user has granted access to the worksheet.
+        If the user is an analyst without LabManager, LabClerk and
+        RegulatoryInspector roles and the option 'Allow analysts
+        only to access to the Worksheets on which they are assigned' is
+        ticked and the above condition is true, it will redirect to
+        the main Worksheets view.
+        Returns False if the user has no access, otherwise returns True
+    """
+    # Deny access to foreign analysts
+    allowed = context.checkUserAccess()
+    if allowed == False and redirect == True:
+        msg =  _('You do not have sufficient privileges to view '
+                 'the worksheet %s.') % context.Title()
+        context.plone_utils.addPortalMessage(msg, 'warning')
+        # Redirect to WS list
+        portal = getToolByName(context, 'portal_url').getPortalObject()
+        destination_url = portal.absolute_url() + "/worksheets"
+        request.response.redirect(destination_url)
+
+    return allowed
+
+def checkUserManage(context, request, redirect=True):
+    allowed = context.checkUserManage()
+    if allowed == False and redirect == True:
+        # Redirect to /manage_results view
+        destination_url = context.absolute_url() + "/manage_results"
+        request.response.redirect(destination_url)
+
+
 class WorksheetAnalysesView(AnalysesView):
     """ This renders the table for ManageResultsView.
     """
@@ -354,6 +385,7 @@ class WorksheetAnalysesView(AnalysesView):
             'Pos': {'title': _('Position')},
             'DueDate': {'title': _('Due Date')},
             'Service': {'title': _('Analysis')},
+            'getPriority': {'title': _('Priority')},
             'Method': {'title': _('Method')},
             'Result': {'title': _('Result'),
                        'input_width': '6',
@@ -577,6 +609,7 @@ class WorksheetAnalysesView(AnalysesView):
             pos_text += "</table>"
 
             items[x]['replace']['Pos'] = pos_text
+            items[x]['getPriority'] = '' #Icon get added by adapter
 
         for k,v in self.columns.items():
             self.columns[k]['sortable'] = False
@@ -591,6 +624,10 @@ class ManageResultsView(BrowserView):
         self.getAnalysts = getUsers(context, ['Manager', 'LabManager', 'Analyst'])
 
     def __call__(self):
+        # Deny access to foreign analysts
+        if checkUserAccess(self.context, self.request) == False:
+            return []
+
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
 
         # Worksheet Attachmemts
@@ -673,12 +710,11 @@ class ManageResultsView(BrowserView):
         return DisplayList(list(items))
 
     def isAssignmentAllowed(self):
-        checkPermission = self.context.portal_membership.checkPermission
         workflow = getToolByName(self.context, 'portal_workflow')
         review_state = workflow.getInfoFor(self.context, 'review_state', '')
         edit_states = ['open', 'attachment_due', 'to_be_verified']
         return review_state in edit_states \
-            and checkPermission(EditWorksheet, self.context)
+            and self.context.checkUserManage()
 
     def getWideInterims(self):
         """ Returns a dictionary with the analyses services from the current
@@ -750,6 +786,12 @@ class ManageResultsView(BrowserView):
             message = "%s: %s" % (message, (', '.join(invalid)))
             self.context.plone_utils.addPortalMessage(message, 'warn')
 
+    def getPriorityIcon(self):
+        priority = self.context.getPriority()
+        if priority:
+            icon = priority.getBigIcon()
+            if icon:
+                return '/'.join(icon.getPhysicalPath())
 
 class AddAnalysesView(BikaListingView):
     implements(IViewView)
@@ -822,6 +864,10 @@ class AddAnalysesView(BikaListingView):
         if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
             self.request.response.redirect(self.context.absolute_url())
             return
+
+        # Deny access to foreign analysts
+        if checkUserManage(self.context, self.request) == False:
+            return []
 
         translate = self.context.translate
 
@@ -926,6 +972,7 @@ class AddAnalysesView(BikaListingView):
                    inactive_state = 'active',
                    sort_on = 'sortable_title')]
 
+
 class AddBlankView(BrowserView):
     implements(IViewView)
     template = ViewPageTemplateFile("templates/worksheet_add_control.pt")
@@ -941,6 +988,10 @@ class AddBlankView(BrowserView):
         if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
             self.request.response.redirect(self.context.absolute_url())
             return
+
+        # Deny access to foreign analysts
+        if checkUserManage(self.context, self.request) == False:
+            return []
 
         form = self.request.form
         if 'submitted' in form:
@@ -970,6 +1021,13 @@ class AddBlankView(BrowserView):
             available_positions = []
         return available_positions
 
+    def getPriorityIcon(self):
+        priority = self.context.getPriority()
+        if priority:
+            icon = priority.getBigIcon()
+            if icon:
+                return '/'.join(icon.getPhysicalPath())
+
 class AddControlView(BrowserView):
     implements(IViewView)
     template = ViewPageTemplateFile("templates/worksheet_add_control.pt")
@@ -984,6 +1042,10 @@ class AddControlView(BrowserView):
         if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
             self.request.response.redirect(self.context.absolute_url())
             return
+
+        # Deny access to foreign analysts
+        if checkUserManage(self.context, self.request) == False:
+            return []
 
         form = self.request.form
         if 'submitted' in form:
@@ -1013,6 +1075,13 @@ class AddControlView(BrowserView):
             available_positions = []
         return available_positions
 
+    def getPriorityIcon(self):
+        priority = self.context.getPriority()
+        if priority:
+            icon = priority.getBigIcon()
+            if icon:
+                return '/'.join(icon.getPhysicalPath())
+
 class AddDuplicateView(BrowserView):
     implements(IViewView)
     template = ViewPageTemplateFile("templates/worksheet_add_duplicate.pt")
@@ -1027,6 +1096,10 @@ class AddDuplicateView(BrowserView):
         if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
             self.request.response.redirect(self.context.absolute_url())
             return
+
+        # Deny access to foreign analysts
+        if checkUserManage(self.context, self.request) == False:
+            return []
 
         form = self.request.form
         if 'submitted' in form:
@@ -1052,6 +1125,13 @@ class AddDuplicateView(BrowserView):
         else:
             available_positions = []
         return available_positions
+
+    def getPriorityIcon(self):
+        priority = self.context.getPriority()
+        if priority:
+            icon = priority.getBigIcon()
+            if icon:
+                return '/'.join(icon.getPhysicalPath())
 
 
 class WorksheetARsView(BikaListingView):

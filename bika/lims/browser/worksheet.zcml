@@ -97,7 +97,7 @@
 
     <browser:page
       for="bika.lims.interfaces.IWorksheet"
-      name="setAnalyst"
+      name="set_analyst"
       class="bika.lims.browser.worksheet.ajaxSetAnalyst"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"

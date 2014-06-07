@@ -1,4 +1,5 @@
-from bika.lims import logger
+from Products.CMFPlone.utils import safe_unicode
+from bika.lims import logger, to_utf8
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
 from plone.jsonapi.core import router
@@ -37,9 +38,11 @@ def read(context, request):
         if index in request:
             if index == 'review_state' and "{" in request[index]:
                 continue
-            contentFilter[index] = request[index]
-        if "{0}[]".format(index) in request:
-            contentFilter[index] = request["{0}[]".format(index)]
+            contentFilter[index] = safe_unicode(request[index])
+        if "%s[]"%index in request:
+            value = request["%s[]"%index]
+            contentFilter[index] = [safe_unicode(v) for v in value]
+
     if 'limit' in request:
         try:
             contentFilter['sort_limit'] = int(request["limit"])

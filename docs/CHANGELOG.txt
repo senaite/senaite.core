@@ -1,29 +1,48 @@
-3.01a (unreleased)
+3.1.3036 (2014-05-30)
 ------------------
 
-Product and Analysis specifications per AR
-Incorrect published results invalidation workflow
-Improved re-testing workflow
-Adjustment factors on worksheets
-Using '< n' and '> n' results values
-Sample Storage locations
-Sample Categories
-Analysis Prioritisation
-Bulk AR creation from file
-Results reports inclusion of relevant QC results
+Added two checboxes in BikaSetup > Security:
+- Allow access to worksheets only to assigned analysts (Y/N)
+- Only lab managers can create and amange new worksheets (Y/N)
 
-Instrument management module
+** IMPORTANT NOTES **
+The 3036 upgrade sets the above options to true by default, so after
+being upgraded, only the labmanagers will be able to manage WS and the
+analysts will only have access to the worksheets to which they are
+assigned. These defaults can be changed in BikaSetup > Security.
+
+release/3.1 (2014-05-16)
+------------------
+
+- Product and Analysis specifications per AR
+- Incorrect published results invalidation workflow
+- Improved re-testing workflow
+- Adjustment factors on worksheets
+- Using '< n' and '> n' results values
+- Sample Storage locations
+- Sample Categories
+- Analysis Prioritisation
+- Bulk AR creation from file
+- Results reports inclusion of relevant QC results
+- Supply Inventory and Orders
+- JSON interface
+- Management Reports export to CSV
+- Enhancements to AR Batching
+- Enhancements to Results Reports
+
+- Instrument management module
+
     Calibration certificates, maintenance, Instrument QC
     Method, Instrument and Analysis integrity
 
-Instrument interfaces
+- Instrument interfaces
+
      Agilent MS 'Masshunter Quant'
      Thermo Gallery
      Foss Winescan FT 120, Auto
 
-Supply Inventory and Orders
+- Invoices
 
-Invoices
    Per AR, Analysis per Invoice line.
    Per Supply Order, inventory item per Invoice line
    Invoices by email
@@ -31,12 +50,23 @@ Invoices
    Invoice batch export to accounts systems
    Price lists. Analysis Services and Supplies
 
-JSON interface
+3.0 (2014-03-15)
+----------------
 
-Further enhancements
-    AR Batching features
-    Management Report features - exports to CSV
-    Results Report features
+- Fix some out-dated dependencies that prevented the app from loading.
+
+- Development of the current bika 3.0 code has slowed, and our efforts have been focused on
+the 3.01a branch for some time.
+
+3.0rc3.5.1 (2013-10-25)
+-----------------------
+
+Fix CSS AR Publication error
+
+3.0rc3.5.1 (2013-10-25)
+-----------------------
+
+Fix error displaying client sample views
 
 3.0rc3.5 (2013-10-24)
 ---------------------

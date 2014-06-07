@@ -230,7 +230,7 @@ class BikaGenerator:
         mp(ManageReference, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(ManageSuppliers, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(ManageSamples, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'RegulatoryInspector'], 1)
-        mp(ManageWorksheets, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'RegulatoryInspector'], 1)
+        mp(ManageWorksheets, ['Manager', 'LabManager'], 1)
         mp(PostInvoiceBatch, ['Manager', 'LabManager', 'Owner'], 1)
 
         mp(CancelAndReinstate, ['Manager', 'LabManager'], 0)

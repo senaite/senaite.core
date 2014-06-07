@@ -10,6 +10,8 @@
 		<h1>
 			<img tal:condition="view/icon | nothing"
 				 src="" tal:attributes="src view/icon"/>
+        <img tal:condition="view/getPriorityIcon | nothing"
+             src="" tal:attributes="src view/getPriorityIcon"/>
 			<span class="documentFirstHeading" tal:content="view/title"/>
 		</h1>
 	</metal:content-title>

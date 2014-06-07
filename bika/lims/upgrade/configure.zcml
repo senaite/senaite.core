@@ -364,7 +364,7 @@
         profile="bika.lims:default"/>
 
 <genericsetup:upgradeStep
-        title="Make ARs listing sortable on AR Priority sort key"
+        title="Added user access and management permissions for WS"
         description=""
         source="3035"
         destination="3036"
@@ -372,4 +372,12 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Make ARs listing sortable on AR Priority sort key"
+        description=""
+        source="3036"
+        destination="3037"
+        handler="bika.lims.upgrade.to3037.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
 </configure>

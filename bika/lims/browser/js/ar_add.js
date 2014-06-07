@@ -690,6 +690,8 @@ function copyButton(){
 	}
 }
 
+
+
 function toggleCat(poc, category_uid, column, selectedservices, force_expand, disable) {
 	// selectedservices and column are optional.
 	// disable is used for field analyses - secondary ARs should not be able
@@ -702,8 +704,7 @@ function toggleCat(poc, category_uid, column, selectedservices, force_expand, di
 	var tbody = $("#"+poc+"_"+category_uid);
 
 	if($(tbody).hasClass("expanded")){
-		// displaying an already expanded category
-		$(tbody).toggle(true);
+		// displaying an already expanded category:
 		if(selectedservices){
 			var rows = tbody.children();
 			for(var i = 0; i < rows.length; i++){
@@ -723,7 +724,6 @@ function toggleCat(poc, category_uid, column, selectedservices, force_expand, di
 	} else {
 		if(!selectedservices) selectedservices = [];
 		$(tbody).removeClass("collapsed").addClass("expanded");
-		$(th).removeClass("collapsed").addClass("expanded");
 		var options = {
 			"selectedservices": selectedservices.join(","),
 			"categoryUID": category_uid,
@@ -1030,7 +1030,7 @@ function unsetAnalysisProfile(column){
 
 function unsetTemplate(column){
 	if($("#ar_"+column+"_Template").val() !== ""){
-		$("#ar_"+column+"_Template").val("");
+		$("#ar_"+column+"_Template_uid").val("");
 	}
 }
 
@@ -1362,6 +1362,8 @@ $(document).ready(function() {
 	ar_rename_elements();
 	ar_referencewidget_lookups();
 	ar_set_tabindexes();
+
+	$("input[type=text]").prop("autocomplete", "off")
 
 	$(".copyButton").live("click",  copyButton );
 
