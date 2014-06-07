@@ -139,5 +139,5 @@ class JSONReadExtender(object):
 
     def __call__(self, request, data):
         include_fields = get_include_fields(request)
-        if include_fields and "transitions" in include_fields:
+        if not include_fields or "transitions" in include_fields:
             data['transitions'] = get_workflow_actions(self.context)

@@ -162,9 +162,6 @@ class ajaxAnalysisRequestSubmit():
         uc = getToolByName(self.context, 'uid_catalog')
         bsc = getToolByName(self.context, 'bika_setup_catalog')
 
-        SamplingWorkflowEnabled = \
-            self.context.bika_setup.getSamplingWorkflowEnabled()
-
         errors = {}
 
         form_parts = json.loads(self.request.form['parts'])
@@ -276,7 +273,7 @@ class ajaxAnalysisRequestSubmit():
                 container_type = bsc(UID=default_container_type)[0].getObject()
                 containers = container_type.getContainers()
                 for partition in partitions:
-                    if not partition.get(container, None):
+                    if not partition.get("container", None):
                         partition['container'] = containers
             # Retrieve the catalogue reference to the client
             client = uc(UID=resolved_values['Client'])[0].getObject()
