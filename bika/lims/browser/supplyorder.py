@@ -28,6 +28,8 @@ class View(BrowserView):
         self.subtotal = '%.2f' % context.getSubtotal()
         self.vat = '%.2f' % context.getVATAmount()
         self.total = '%.2f' % context.getTotal()
+        # Set the title
+        self.title = context.Title()
         # Collect order item data
         items = context.objectValues('SupplyOrderItem')
         self.items = []
