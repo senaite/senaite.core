@@ -830,7 +830,6 @@ class ReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
         if 'Contact' in portal_type:
             base_query['getParentUID'] = [self.context.UID(),]
         self.request['base_query'] = json.dumps(base_query)
-        print base_query
         return DefaultReferenceWidgetVocabulary.__call__(self)
 
 
