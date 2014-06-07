@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2014-05-16 09:27+0000\n"
+"POT-Creation-Date: 2014-06-03 13:45+0000\n"
 "PO-Revision-Date: 2014-05-13 09:31+0000\n"
 "Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
 "Language-Team: Chinese (http://www.transifex.com/projects/p/bika-lims/language/zh/)\n"
@@ -34,15 +34,19 @@ msgstr "${items} 等待保留."
 msgid "${items} are waiting to be received."
 msgstr "${items} 等待接收."
 
-#: bika.lims/bika/lims/browser/analysisrequest/workflow.py:425
+#: bika.lims/bika/lims/browser/analysisrequest/workflow.py:523
+msgid "${items} invalidated."
+msgstr ""
+
+#: bika.lims/bika/lims/browser/analysisrequest/workflow.py:420
 msgid "${items} published."
 msgstr ""
 
-#: bika.lims/bika/lims/browser/client.py:233
+#: bika.lims/bika/lims/browser/client.py:232
 msgid "${items} were published."
 msgstr "${items} 已发布."
 
-#: bika.lims/bika/lims/controlpanel/bika_analysisservices.py:110
+#: bika.lims/bika/lims/controlpanel/bika_analysisservices.py:109
 msgid "${items} were successfully created."
 msgstr ""
 
@@ -54,16 +58,16 @@ msgstr "${items}: 部分等待接收."
 msgid "${item} is waiting for preservation."
 msgstr "${item} 等待保留."
 
-#: bika.lims/bika/lims/browser/analysisrequest/workflow.py:194
+#: bika.lims/bika/lims/browser/analysisrequest/workflow.py:193
 #: bika.lims/bika/lims/browser/client.py:142
 msgid "${item} is waiting to be received."
 msgstr "${item} 等待接收."
 
-#: bika.lims/bika/lims/browser/client.py:236
+#: bika.lims/bika/lims/browser/client.py:235
 msgid "${item} published."
 msgstr "${item} 已发布."
 
-#: bika.lims/bika/lims/controlpanel/bika_analysisservices.py:114
+#: bika.lims/bika/lims/controlpanel/bika_analysisservices.py:113
 msgid "${item} was successfully created."
 msgstr ""
 
@@ -105,7 +109,7 @@ msgstr ""
 msgid "%s result for '%s:%s': '%s'"
 msgstr ""
 
-#: bika.lims/bika/lims/content/bikasetup.py:253
+#: bika.lims/bika/lims/content/bikasetup.py:285
 msgid "'Classic' indicates importing analysis requests per sample and analysis service selection. With 'Profiles', analysis profile keywords are used to select multiple analysis services together"
 msgstr "'典型的'表示按样品和分析服务板块导入的分析请求. 在多选分析服务时, 在''配置'中分析配置关键词"
 
@@ -132,7 +136,7 @@ msgstr "(要求的)"
 
 #: bika.lims/bika/lims/browser/analyses.py:90
 #: bika.lims/bika/lims/browser/referencesample.py:115
-#: bika.lims/bika/lims/browser/worksheet.py:362
+#: bika.lims/bika/lims/browser/worksheet.py:393
 msgid "+-"
 msgstr "±"
 
@@ -194,11 +198,11 @@ msgstr ""
 msgid "> Max"
 msgstr ""
 
-#: bika.lims/bika/lims/content/bikasetup.py:263
+#: bika.lims/bika/lims/content/bikasetup.py:295
 msgid "AR Attachment Option"
 msgstr "分析请求附件选项"
 
-#: bika.lims/bika/lims/content/bikasetup.py:362
+#: bika.lims/bika/lims/content/bikasetup.py:394
 msgid "AR ID Padding"
 msgstr "分析请求编号长度"
 
@@ -206,11 +210,11 @@ msgstr "分析请求编号长度"
 msgid "AR Import"
 msgstr "导入分析请求"
 
-#: bika.lims/bika/lims/content/bikasetup.py:252
+#: bika.lims/bika/lims/content/bikasetup.py:284
 msgid "AR Import options"
 msgstr "分析请求导入选项"
 
-#: bika.lims/bika/lims/browser/client.py:412
+#: bika.lims/bika/lims/browser/client.py:410
 #: bika.lims/bika/lims/content/srtemplate.py:36
 #: bika.lims/bika/lims/controlpanel/bika_artemplates.py:34
 msgid "AR Templates"
@@ -220,7 +224,7 @@ msgstr "分析请求模板"
 msgid "AR for retested results"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/publish.py:487
+#: bika.lims/bika/lims/browser/publish.py:548
 msgid "ARs: %s"
 msgstr ""
 
@@ -278,7 +282,7 @@ msgid "Actions performed by users (or specific user) between a period of time"
 msgstr ""
 
 #: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:130
-#: bika.lims/bika/lims/browser/client.py:358
+#: bika.lims/bika/lims/browser/client.py:356
 #: bika.lims/bika/lims/browser/clientfolder.py:47
 msgid "Active"
 msgstr "活跃的"
@@ -290,24 +294,24 @@ msgid "Ad-Hoc"
 msgstr ""
 
 #: bika.lims/bika/lims/browser/batchfolder.py:94
-#: bika.lims/bika/lims/browser/client.py:302
+#: bika.lims/bika/lims/browser/client.py:300
 #: bika.lims/bika/lims/browser/clientfolder.py:78
 msgid "Add"
 msgstr "添加"
 
-#: bika.lims/bika/lims/browser/worksheet.py:758
+#: bika.lims/bika/lims/browser/worksheet.py:792
 msgid "Add Analyses"
 msgstr "添加分析"
 
-#: bika.lims/bika/lims/browser/worksheet.py:934
+#: bika.lims/bika/lims/browser/worksheet.py:973
 msgid "Add Blank Reference"
 msgstr "添加空白参考"
 
-#: bika.lims/bika/lims/browser/worksheet.py:978
+#: bika.lims/bika/lims/browser/worksheet.py:1021
 msgid "Add Control Reference"
 msgstr "添加对照参考"
 
-#: bika.lims/bika/lims/browser/worksheet.py:1021
+#: bika.lims/bika/lims/browser/worksheet.py:1068
 msgid "Add Duplicate"
 msgstr "添加重复样"
 
@@ -320,15 +324,15 @@ msgstr "添加配置"
 msgid "Add Template"
 msgstr "添加模板"
 
-#: bika.lims/bika/lims/content/bikasetup.py:231
+#: bika.lims/bika/lims/content/bikasetup.py:263
 msgid "Add a remarks field to all analyses"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/batch/analysisrequests.py:31
+#: bika.lims/bika/lims/browser/batch/analysisrequests.py:35
 msgid "Add new"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/analysisrequest/workflow.py:500
+#: bika.lims/bika/lims/browser/analysisrequest/workflow.py:496
 msgid "Additional remarks:"
 msgstr ""
 
@@ -336,7 +340,7 @@ msgstr ""
 msgid "Address"
 msgstr "地址"
 
-#: bika.lims/bika/lims/content/bikasetup.py:345
+#: bika.lims/bika/lims/content/bikasetup.py:377
 msgid "Adds a two-digit year after the ID prefix"
 msgstr "在ID前缀后面添加2位年"
 
@@ -373,6 +377,10 @@ msgstr "在此屏蔽系统中所有参考样品."
 
 #: bika.lims/bika/lims/content/bikasetup.py:76
 msgid "Allow Lab Clerks to create and edit clients"
+msgstr ""
+
+#: bika.lims/bika/lims/content/bikasetup.py:84
+msgid "Allow access to worksheets only to assigned analysts"
 msgstr ""
 
 #: bika.lims/bika/lims/content/analysisservice.py:275
@@ -494,7 +502,7 @@ msgstr ""
 msgid "Analysis ${service} at slot ${slot}: OK"
 msgstr ""
 
-#: bika.lims/bika/lims/content/bikasetup.py:275
+#: bika.lims/bika/lims/content/bikasetup.py:307
 msgid "Analysis Attachment Option"
 msgstr "分析附件选项"
 
@@ -517,7 +525,7 @@ msgstr "分析关键词"
 msgid "Analysis Profile"
 msgstr "分析属性"
 
-#: bika.lims/bika/lims/browser/client.py:345
+#: bika.lims/bika/lims/browser/client.py:343
 #: bika.lims/bika/lims/controlpanel/bika_analysisprofiles.py:35
 msgid "Analysis Profiles"
 msgstr ""
@@ -556,7 +564,7 @@ msgid "Analysis Service"
 msgstr "单个分析服务"
 
 #: bika.lims/bika/lims/config.py:46
-#: bika.lims/bika/lims/controlpanel/bika_analysisservices.py:139
+#: bika.lims/bika/lims/controlpanel/bika_analysisservices.py:138
 msgid "Analysis Services"
 msgstr "多个分析服务"
 
@@ -564,7 +572,7 @@ msgstr "多个分析服务"
 msgid "Analysis Specification"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/client.py:548
+#: bika.lims/bika/lims/browser/client.py:546
 #: bika.lims/bika/lims/controlpanel/bika_analysisspecs.py:30
 msgid "Analysis Specifications"
 msgstr "分析祥述"
@@ -593,15 +601,15 @@ msgstr ""
 msgid "Analysis parent UID ${parent_uid} not found"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/analysisrequest/add.py:300
+#: bika.lims/bika/lims/browser/analysisrequest/add.py:297
 msgid "Analysis request ${AR} was successfully created."
 msgstr "分析请求 ${AR} 已成功创建."
 
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:377
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:373
 msgid "Analysis request attachments"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/analysisrequest/add.py:297
+#: bika.lims/bika/lims/browser/analysisrequest/add.py:294
 msgid "Analysis requests ${ARs} were successfully created."
 msgstr "分析请求 ${ARs} 已成功创建."
 
@@ -628,15 +636,15 @@ msgstr ""
 msgid "Analysis requests will be selected if any of their analyses' services are in this category."
 msgstr ""
 
-#: bika.lims/bika/lims/browser/reports/qualitycontrol_analysesoutofrange.py:233
+#: bika.lims/bika/lims/browser/reports/qualitycontrol_analysesoutofrange.py:235
 msgid "Analysis result within error range"
 msgstr "误差范围内的分析结果"
 
-#: bika.lims/bika/lims/browser/publish.py:512
+#: bika.lims/bika/lims/browser/publish.py:573
 msgid "Analysis results"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/publish.py:508
+#: bika.lims/bika/lims/browser/publish.py:569
 msgid "Analysis results for %s"
 msgstr ""
 
@@ -648,7 +656,7 @@ msgstr ""
 msgid "Analysis results out of lab or client specified range Note that this may take several minutes"
 msgstr "分析结果超出实验室或客户指定范围 - 注意这可能需要花费几分钟"
 
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:459
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:455
 msgid "Analysis results relate only to the samples tested."
 msgstr ""
 
@@ -657,11 +665,11 @@ msgstr ""
 msgid "Analysis service"
 msgstr "分析服务"
 
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:393
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:389
 msgid "Analysis services attachments"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/client.py:627
+#: bika.lims/bika/lims/browser/client.py:625
 msgid "Analysis specifications reset to lab defaults."
 msgstr "重置分析规格至实验室默认值"
 
@@ -699,6 +707,10 @@ msgstr ""
 msgid "Analyst Name not found or empty"
 msgstr ""
 
+#: bika.lims/bika/lims/browser/worksheetfolder.py:469
+msgid "Analyst must be specified."
+msgstr ""
+
 #: bika.lims/bika/lims/browser/templates/worksheet_add_analyses.pt:70
 #: bika.lims/bika/lims/content/analysisservice.py:62
 msgid "Any"
@@ -730,7 +742,7 @@ msgstr "已分派"
 msgid "Assigned to worksheet"
 msgstr "已分派到工作表"
 
-#: bika.lims/bika/lims/browser/analyses.py:765
+#: bika.lims/bika/lims/browser/analyses.py:768
 msgid "Assigned to: ${worksheet_id}"
 msgstr "分派到: ${worksheet_id}"
 
@@ -751,7 +763,7 @@ msgstr "附件关键词"
 msgid "Attachment Option"
 msgstr "附件选项"
 
-#: bika.lims/bika/lims/browser/client.py:654
+#: bika.lims/bika/lims/browser/client.py:652
 #: bika.lims/bika/lims/content/attachment.py:34
 #: bika.lims/bika/lims/controlpanel/bika_attachmenttypes.py:36
 msgid "Attachment Type"
@@ -778,8 +790,8 @@ msgid "Attachment type"
 msgstr "附件类型"
 
 #: bika.lims/bika/lims/browser/analyses.py:98
-#: bika.lims/bika/lims/browser/client.py:648
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:376
+#: bika.lims/bika/lims/browser/client.py:646
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:372
 msgid "Attachments"
 msgstr "多个附件"
 
@@ -791,7 +803,7 @@ msgstr ""
 msgid "Autoimport"
 msgstr ""
 
-#: bika.lims/bika/lims/content/bikasetup.py:298
+#: bika.lims/bika/lims/content/bikasetup.py:330
 msgid "Automatic label printing"
 msgstr "自动打印标签"
 
@@ -824,6 +836,10 @@ msgstr "银行支行"
 msgid "Bank name"
 msgstr "银行名"
 
+#: bika.lims/bika/lims/browser/templates/instrument_referenceanalyses.pt:217
+msgid "Basis"
+msgstr ""
+
 #: bika.lims/bika/lims/browser/batch/batchbook.py:44
 #: bika.lims/bika/lims/browser/reports/templates/productivity_dataentrydaybook.pt:92
 #: bika.lims/bika/lims/content/analysisrequest.py:174
@@ -836,11 +852,11 @@ msgstr ""
 
 #: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:69
 #: bika.lims/bika/lims/browser/batchfolder.py:37
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:133
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:110
 msgid "Batch ID"
 msgstr "批ID"
 
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:187
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:164
 #: bika.lims/bika/lims/controlpanel/bika_batchlabels.py:24
 msgid "Batch Labels"
 msgstr ""
@@ -888,7 +904,7 @@ msgstr "空白"
 msgid "Blank QC analyses"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:277
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:274
 msgid "Blank analyses"
 msgstr ""
 
@@ -905,7 +921,7 @@ msgstr "已使用大宗折扣"
 msgid "Bulk price (excluding VAT)"
 msgstr "批发价(不含增值税)"
 
-#: bika.lims/bika/lims/browser/client.py:802
+#: bika.lims/bika/lims/browser/client.py:800
 #: bika.lims/bika/lims/browser/supplier.py:182
 msgid "Business Phone"
 msgstr "办公电话"
@@ -995,15 +1011,15 @@ msgstr "可以报告为干燥的物质"
 msgid "Cancelled"
 msgstr "已取消"
 
-#: bika.lims/bika/lims/content/calculation.py:175
+#: bika.lims/bika/lims/content/calculation.py:173
 msgid "Cannot activate calculation, because the following service dependencies are inactive: ${inactive_services}"
 msgstr ""
 
-#: bika.lims/bika/lims/content/calculation.py:197
+#: bika.lims/bika/lims/content/calculation.py:192
 msgid "Cannot deactivate calculation, because it is in use by the following services: ${calc_services}"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/analyses.py:749
+#: bika.lims/bika/lims/browser/analyses.py:752
 #: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:685
 msgid "Cannot verify: Submitted by current user"
 msgstr ""
@@ -1019,12 +1035,16 @@ msgstr "容量"
 msgid "Captured"
 msgstr "已捕获"
 
+#: bika.lims/bika/lims/browser/templates/instrument_referenceanalyses.pt:218
+msgid "Cardinal"
+msgstr ""
+
 #: bika.lims/bika/lims/browser/templates/referencesample_view.pt:65
 #: bika.lims/bika/lims/content/referencesample.py:70
 msgid "Catalogue Number"
 msgstr "类别号码"
 
-#: bika.lims/bika/lims/content/bikasetup.py:204
+#: bika.lims/bika/lims/content/bikasetup.py:236
 msgid "Categorise analysis services"
 msgstr ""
 
@@ -1034,7 +1054,7 @@ msgstr ""
 msgid "Category"
 msgstr "类别"
 
-#: bika.lims/bika/lims/content/analysiscategory.py:67
+#: bika.lims/bika/lims/content/analysiscategory.py:68
 msgid "Category cannot be deactivated because it contains Analysis Services"
 msgstr "类别"
 
@@ -1074,7 +1094,7 @@ msgstr "如果实验室已认证则选中这个勾选框"
 msgid "Check this box to ensure a separate sample container is used for this analysis service"
 msgstr "勾选本框以确认本次分析服务已使用单独的样品容器"
 
-#: bika.lims/bika/lims/content/bikasetup.py:371
+#: bika.lims/bika/lims/content/bikasetup.py:403
 msgid "Check this if you want to use a separate ID server. Prefixes are configurable separately in each Bika site"
 msgstr "如果你想使用单独的ID服务器则选中此处. 在每个Bika站点中样品前缀可以单独配置"
 
@@ -1113,7 +1133,7 @@ msgstr "客户"
 msgid "Client Address"
 msgstr "客户地址"
 
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:141
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:118
 #: bika.lims/bika/lims/content/batch.py:94
 msgid "Client Batch ID"
 msgstr ""
@@ -1172,7 +1192,7 @@ msgid "Client Remarks"
 msgstr "客户注释"
 
 #: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:76
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:154
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:131
 #: bika.lims/bika/lims/browser/sample.py:442
 msgid "Client SID"
 msgstr "客户样品编号"
@@ -1183,7 +1203,7 @@ msgstr "客户样品编号"
 msgid "Client Sample ID"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/client.py:298
+#: bika.lims/bika/lims/browser/client.py:296
 msgid "Client contact required before request may be submitted"
 msgstr "提交请求前需要客户联系"
 
@@ -1251,7 +1271,7 @@ msgstr "联系编号"
 msgid "Contact Name"
 msgstr "联系人名"
 
-#: bika.lims/bika/lims/browser/client.py:794
+#: bika.lims/bika/lims/browser/client.py:792
 #: bika.lims/bika/lims/browser/supplier.py:177
 #: bika.lims/bika/lims/browser/templates/pricelist_email_form.pt:27
 msgid "Contacts"
@@ -1282,7 +1302,7 @@ msgstr "多个容器类型"
 msgid "Containers"
 msgstr "多个容器"
 
-#: bika.lims/bika/lims/browser/client.py:655
+#: bika.lims/bika/lims/browser/client.py:653
 msgid "Content Type"
 msgstr "内容类型"
 
@@ -1298,7 +1318,7 @@ msgstr "对照"
 msgid "Control QC analyses"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:278
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:275
 msgid "Control analyses"
 msgstr ""
 
@@ -1322,7 +1342,7 @@ msgstr ""
 msgid "Count"
 msgstr "计数"
 
-#: bika.lims/bika/lims/content/bikasetup.py:105
+#: bika.lims/bika/lims/content/bikasetup.py:127
 #: bika.lims/bika/lims/skins/bika/bika_widgets/addresswidget.pt:29
 msgid "Country"
 msgstr "国家"
@@ -1356,7 +1376,7 @@ msgstr ""
 msgid "Criteria"
 msgstr ""
 
-#: bika.lims/bika/lims/content/bikasetup.py:93
+#: bika.lims/bika/lims/content/bikasetup.py:115
 msgid "Currency"
 msgstr "现金"
 
@@ -1401,7 +1421,7 @@ msgstr ""
 msgid "Date Created"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/client.py:732
+#: bika.lims/bika/lims/browser/client.py:730
 #: bika.lims/bika/lims/browser/supplyorderfolder.py:33
 #: bika.lims/bika/lims/content/supplyorder.py:65
 msgid "Date Dispatched"
@@ -1422,7 +1442,7 @@ msgstr "过期日期"
 msgid "Date Imported"
 msgstr "导入日期"
 
-#: bika.lims/bika/lims/browser/client.py:657
+#: bika.lims/bika/lims/browser/client.py:655
 #: bika.lims/bika/lims/content/attachment.py:47
 msgid "Date Loaded"
 msgstr "载入日期"
@@ -1439,14 +1459,14 @@ msgid "Date Preserved"
 msgstr "保留时间"
 
 #: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:116
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:173
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:150
 #: bika.lims/bika/lims/content/analysis.py:84
 msgid "Date Published"
 msgstr "发布日期"
 
 #: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:113
 #: bika.lims/bika/lims/browser/late_analyses.py:45
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:169
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:146
 msgid "Date Received"
 msgstr "收到日期"
 
@@ -1510,7 +1530,7 @@ msgstr "天数"
 msgid "Default"
 msgstr "默认"
 
-#: bika.lims/bika/lims/content/bikasetup.py:222
+#: bika.lims/bika/lims/content/bikasetup.py:254
 #: bika.lims/bika/lims/content/client.py:89
 msgid "Default AR Specifications"
 msgstr ""
@@ -1564,7 +1584,7 @@ msgstr "默认的多个容器: ${container_list}"
 msgid "Default preservations: ${preservation_list}"
 msgstr "默认保留: ${preservation_list}"
 
-#: bika.lims/bika/lims/content/bikasetup.py:287
+#: bika.lims/bika/lims/content/bikasetup.py:319
 msgid "Default sample retention period"
 msgstr "默认样品保留周期"
 
@@ -1572,7 +1592,7 @@ msgstr "默认样品保留周期"
 msgid "Default value"
 msgstr "默认价值"
 
-#: bika.lims/bika/lims/content/bikasetup.py:223
+#: bika.lims/bika/lims/content/bikasetup.py:255
 #: bika.lims/bika/lims/content/client.py:90
 msgid "DefaultARSpecs_description"
 msgstr ""
@@ -1585,7 +1605,7 @@ msgstr ""
 msgid "Define the number of decimals to be used for this result"
 msgstr "定义本结果需要使用的十进制数"
 
-#: bika.lims/bika/lims/content/bikasetup.py:330
+#: bika.lims/bika/lims/content/bikasetup.py:362
 msgid "Define the prefixes for the unique sequential IDs the system issues for objects. In the 'Padding' field, indicate with how many leading zeros the numbers must be padded. E.g. a prefix of WS for worksheets with padding of 4, will see them numbered from WS-0001 to WS-9999. NB: Note that samples and analysis requests are prefixed with sample type abbreviations and are not configured in this table - their padding can be set in the specified fields below"
 msgstr ""
 
@@ -1617,7 +1637,7 @@ msgid "Describes the method in layman terms. This information is made available 
 msgstr "为外行能看懂的语言描述方法. 该信息为客户可见."
 
 #: bika.lims/bika/lims/browser/batchfolder.py:38
-#: bika.lims/bika/lims/browser/client.py:351
+#: bika.lims/bika/lims/browser/client.py:349
 #: bika.lims/bika/lims/browser/log.py:49
 msgid "Description"
 msgstr "描述"
@@ -1658,7 +1678,7 @@ msgstr "折扣"
 msgid "Discount %"
 msgstr "折扣%"
 
-#: bika.lims/bika/lims/browser/client.py:750
+#: bika.lims/bika/lims/browser/client.py:748
 #: bika.lims/bika/lims/browser/supplyorderfolder.py:51
 msgid "Dispatched"
 msgstr "已发送"
@@ -1667,7 +1687,7 @@ msgstr "已发送"
 msgid "Display Value"
 msgstr "显示值"
 
-#: bika.lims/bika/lims/content/bikasetup.py:196
+#: bika.lims/bika/lims/content/bikasetup.py:228
 msgid "Display individual sample partitions "
 msgstr ""
 
@@ -1693,7 +1713,7 @@ msgstr ""
 msgid "Document"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/client.py:363
+#: bika.lims/bika/lims/browser/client.py:361
 #: bika.lims/bika/lims/browser/clientfolder.py:55
 #: bika.lims/bika/lims/browser/instrument.py:287
 msgid "Dormant"
@@ -1712,11 +1732,12 @@ msgid "Download"
 msgstr ""
 
 #: bika.lims/bika/lims/browser/analyses.py:87
-#: bika.lims/bika/lims/browser/worksheet.py:363
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:187
+#: bika.lims/bika/lims/browser/worksheet.py:394
 msgid "Dry"
 msgstr "干燥"
 
-#: bika.lims/bika/lims/content/bikasetup.py:243
+#: bika.lims/bika/lims/content/bikasetup.py:275
 msgid "Dry matter analysis"
 msgstr "干燥物质分析"
 
@@ -1732,13 +1753,13 @@ msgid "Due Date"
 msgstr "截止期"
 
 #: bika.lims/bika/lims/browser/accreditation.py:62
-#: bika.lims/bika/lims/controlpanel/bika_analysisservices.py:168
+#: bika.lims/bika/lims/controlpanel/bika_analysisservices.py:167
 msgid "Dup Var"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/worksheet.py:520
+#: bika.lims/bika/lims/browser/worksheet.py:551
 #: bika.lims/bika/lims/config.py:54
-#: bika.lims/bika/lims/controlpanel/bika_analysisservices.py:191
+#: bika.lims/bika/lims/controlpanel/bika_analysisservices.py:190
 msgid "Duplicate"
 msgstr "重复"
 
@@ -1754,7 +1775,7 @@ msgstr ""
 msgid "Duplicate Variation %"
 msgstr "重复变化%"
 
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:279
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:276
 msgid "Duplicate analyses"
 msgstr ""
 
@@ -1800,7 +1821,7 @@ msgstr "评估"
 msgid "Email"
 msgstr "Email"
 
-#: bika.lims/bika/lims/browser/client.py:801
+#: bika.lims/bika/lims/browser/client.py:799
 #: bika.lims/bika/lims/browser/clientfolder.py:38
 #: bika.lims/bika/lims/browser/supplier.py:181
 msgid "Email Address"
@@ -1814,15 +1835,15 @@ msgstr "Email标题行"
 msgid "Empty result for %s, column %s, line %s"
 msgstr ""
 
-#: bika.lims/bika/lims/content/bikasetup.py:213
+#: bika.lims/bika/lims/content/bikasetup.py:245
 msgid "Enable AR Specifications"
 msgstr ""
 
-#: bika.lims/bika/lims/content/bikasetup.py:187
+#: bika.lims/bika/lims/content/bikasetup.py:219
 msgid "Enable the Sampling workflow"
 msgstr "使取样流程生效"
 
-#: bika.lims/bika/lims/content/bikasetup.py:214
+#: bika.lims/bika/lims/content/bikasetup.py:246
 msgid "EnableARSpecs_description"
 msgstr ""
 
@@ -1858,7 +1879,7 @@ msgstr "输入折扣百分数值, 如7折就输30"
 msgid "Enter percentage value eg. 14.0"
 msgstr "输入百分数值, 如14.0"
 
-#: bika.lims/bika/lims/content/bikasetup.py:125
+#: bika.lims/bika/lims/content/bikasetup.py:147
 msgid "Enter percentage value eg. 14.0. This percentage is applied system wide but can be overwrittem on individual items"
 msgstr "输入百分数值, 如14.0. 这个百分数值将作为系统值使用,但对于单个项目可以重新定义."
 
@@ -1882,7 +1903,7 @@ msgstr ""
 msgid "Entity"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/analysisrequest/workflow.py:468
+#: bika.lims/bika/lims/browser/analysisrequest/workflow.py:463
 msgid "Erroneus result publication from %s"
 msgstr ""
 
@@ -1912,7 +1933,7 @@ msgid "Expiry Date"
 msgstr "过期日期"
 
 #: bika.lims/bika/lims/browser/clientfolder.py:40
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:76
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:54
 #: bika.lims/bika/lims/browser/supplier.py:184
 msgid "Fax"
 msgstr "传真"
@@ -1944,7 +1965,7 @@ msgid "Field Title"
 msgstr "场地名"
 
 #: bika.lims/bika/lims/browser/analysisrequest/published_results.py:44
-#: bika.lims/bika/lims/browser/client.py:653
+#: bika.lims/bika/lims/browser/client.py:651
 #: bika.lims/bika/lims/browser/reports/productivity_analysesattachments.py:62
 msgid "File"
 msgstr "文件"
@@ -1979,7 +2000,7 @@ msgstr "公式"
 msgid "From"
 msgstr "自"
 
-#: bika.lims/bika/lims/browser/client.py:798
+#: bika.lims/bika/lims/browser/client.py:796
 #: bika.lims/bika/lims/browser/supplier.py:180
 #: bika.lims/bika/lims/content/person.py:50
 msgid "Full Name"
@@ -2000,7 +2021,7 @@ msgstr ""
 msgid "Greeting title eg. Mr, Mrs, Dr"
 msgstr "称谓, 如先生,女士, 博士"
 
-#: bika.lims/bika/lims/content/bikasetup.py:205
+#: bika.lims/bika/lims/content/bikasetup.py:237
 msgid "Group analysis services by category in the LIMS tables, helpful when the list is long"
 msgstr ""
 
@@ -2035,13 +2056,13 @@ msgstr ""
 msgid "Hours"
 msgstr "小时"
 
-#: bika.lims/bika/lims/browser/bika_listing.py:233
+#: bika.lims/bika/lims/browser/bika_listing.py:232
 #: bika.lims/bika/lims/browser/referencesample.py:100
 #: bika.lims/bika/lims/browser/reports/templates/productivity_dataentrydaybook.pt:85
 msgid "ID"
 msgstr "ID"
 
-#: bika.lims/bika/lims/content/bikasetup.py:378
+#: bika.lims/bika/lims/content/bikasetup.py:410
 msgid "ID Server URL"
 msgstr "ID服务器网址"
 
@@ -2074,9 +2095,21 @@ msgstr "如果已请求,在此选择分析的计算方法.计算方法可以在�
 msgid "If text is entered here, it is used instead of the title when the service is listed in column headings. HTML formatting is allowed."
 msgstr ""
 
+#: bika.lims/bika/lims/content/bikasetup.py:167
+msgid "If there are previous results for a service in the same batch of Analysis Requests, they will be displayed in the report."
+msgstr ""
+
 #: bika.lims/bika/lims/content/container.py:58
 msgid "If this container is pre-preserved, then the preservation method could be selected here."
 msgstr "如果该容器已经被预留, 则预留方法可以在此选择."
+
+#: bika.lims/bika/lims/content/bikasetup.py:94
+msgid "If unticked, analysts and lab clerks will be able to manage Worksheets, too. If the users have restricted access only to those worksheets for which they are assigned, this option will be ticked and readonly."
+msgstr ""
+
+#: bika.lims/bika/lims/content/bikasetup.py:85
+msgid "If unticked, analysts will have access to all worksheets."
+msgstr ""
 
 #: bika.lims/bika/lims/browser/arimports.py:94
 #: bika.lims/bika/lims/browser/templates/arimport_add_form.pt:62
@@ -2109,11 +2142,15 @@ msgstr ""
 msgid "Inactive"
 msgstr ""
 
+#: bika.lims/bika/lims/content/bikasetup.py:166
+msgid "Include Previous Results From Batch"
+msgstr ""
+
 #: bika.lims/bika/lims/content/batch.py:150
 msgid "Include all analysis requests belonging to the selected objects."
 msgstr ""
 
-#: bika.lims/bika/lims/content/bikasetup.py:84
+#: bika.lims/bika/lims/content/bikasetup.py:106
 msgid "Include and display pricing information"
 msgstr ""
 
@@ -2121,15 +2158,15 @@ msgstr ""
 msgid "Include descriptions"
 msgstr "包含描述"
 
-#: bika.lims/bika/lims/content/bikasetup.py:344
+#: bika.lims/bika/lims/content/bikasetup.py:376
 msgid "Include year in ID prefix"
 msgstr "在ID前缀中包含年份"
 
-#: bika.lims/bika/lims/browser/analyses.py:660
+#: bika.lims/bika/lims/browser/analyses.py:663
 msgid "Indet"
 msgstr "未定"
 
-#: bika.lims/bika/lims/browser/analyses.py:663
+#: bika.lims/bika/lims/browser/analyses.py:666
 #: bika.lims/bika/lims/browser/calcs.py:51
 msgid "Indeterminate result"
 msgstr "不确定的结果"
@@ -2189,19 +2226,19 @@ msgstr ""
 msgid "Instrument Validations"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/analyses.py:586
+#: bika.lims/bika/lims/browser/analyses.py:589
 msgid "Instrument entry of results not allowed for ${service}"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/worksheet.py:1315
+#: bika.lims/bika/lims/browser/worksheet.py:1366
 msgid "Instrument exporter not found"
 msgstr "仪器导出者没找到"
 
-#: bika.lims/bika/lims/browser/worksheet.py:259
+#: bika.lims/bika/lims/browser/worksheet.py:260
 msgid "Instrument failed reference test"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/worksheet.py:1303
+#: bika.lims/bika/lims/browser/worksheet.py:1354
 msgid "Instrument has no data interface selected"
 msgstr "仪器没有选择数据界面"
 
@@ -2225,6 +2262,10 @@ msgstr ""
 
 #: bika.lims/bika/lims/content/instrumentcertification.py:34
 msgid "Internal Certificate"
+msgstr ""
+
+#: bika.lims/bika/lims/browser/templates/instrument_referenceanalyses.pt:215
+msgid "Interpolation"
 msgstr ""
 
 #: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:391
@@ -2283,7 +2324,7 @@ msgstr ""
 msgid "Invoices"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/analysisrequest/workflow.py:271
+#: bika.lims/bika/lims/browser/analysisrequest/workflow.py:266
 msgid "Item is inactive."
 msgstr "项目不活"
 
@@ -2352,7 +2393,7 @@ msgstr "实验室网址"
 msgid "Label"
 msgstr ""
 
-#: bika.lims/bika/lims/content/bikasetup.py:309
+#: bika.lims/bika/lims/content/bikasetup.py:341
 msgid "Label sizes"
 msgstr "标签大小"
 
@@ -2369,7 +2410,7 @@ msgstr "实验室认证"
 msgid "Last Calibration time not found or empty"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/bika_listing.py:235
+#: bika.lims/bika/lims/browser/bika_listing.py:234
 msgid "Last modified"
 msgstr "上次更改"
 
@@ -2384,8 +2425,8 @@ msgstr "延迟"
 msgid "Late Analyses"
 msgstr "分析延迟"
 
-#: bika.lims/bika/lims/browser/analyses.py:731
-#: bika.lims/bika/lims/browser/worksheet.py:875
+#: bika.lims/bika/lims/browser/analyses.py:734
+#: bika.lims/bika/lims/browser/worksheet.py:913
 msgid "Late Analysis"
 msgstr "分析延迟"
 
@@ -2395,6 +2436,10 @@ msgstr "纬度"
 
 #: bika.lims/bika/lims/content/query.py:77
 msgid "Limit Search Results"
+msgstr ""
+
+#: bika.lims/bika/lims/browser/templates/instrument_referenceanalyses.pt:219
+msgid "Linear"
 msgstr ""
 
 #: bika.lims/bika/lims/content/sample.py:78
@@ -2505,7 +2550,7 @@ msgstr "经理Email"
 msgid "Manager Phone"
 msgstr "经理电话"
 
-#: bika.lims/bika/lims/browser/analyses.py:585
+#: bika.lims/bika/lims/browser/analyses.py:588
 msgid "Manual"
 msgstr ""
 
@@ -2534,11 +2579,11 @@ msgid "Max"
 msgstr "最大"
 
 #: bika.lims/bika/lims/browser/accreditation.py:61
-#: bika.lims/bika/lims/controlpanel/bika_analysisservices.py:166
+#: bika.lims/bika/lims/controlpanel/bika_analysisservices.py:165
 msgid "Max Time"
 msgstr "最大时间"
 
-#: bika.lims/bika/lims/content/bikasetup.py:145
+#: bika.lims/bika/lims/content/bikasetup.py:177
 msgid "Maximum columns per results email"
 msgstr "最大的列 - 按结果email"
 
@@ -2557,7 +2602,7 @@ msgid "Maximum turn-around time"
 msgstr "最大周转时间"
 
 #: bika.lims/bika/lims/content/analysisrequest.py:652
-#: bika.lims/bika/lims/content/bikasetup.py:114
+#: bika.lims/bika/lims/content/bikasetup.py:136
 msgid "Member discount %"
 msgstr "会员折扣%"
 
@@ -2599,11 +2644,11 @@ msgid "Methods"
 msgstr "多个方法"
 
 #: bika.lims/bika/lims/browser/analysisrequest/templates/ar_add.pt:335
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:458
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:454
 msgid "Methods included in the ${accreditation_body} schedule of Accreditation for this Laboratory. Analysis remarks are not accredited"
 msgstr "方法包含在本实验室 ${accreditation_body} 认证计划中. 分析注释未认证."
 
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:463
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:459
 msgid "Methods of analysis available by clicking on the 'Request' link"
 msgstr "点击'请求'链接查看可用的分析方法"
 
@@ -2621,7 +2666,7 @@ msgstr ""
 msgid "Min"
 msgstr "最小"
 
-#: bika.lims/bika/lims/browser/worksheetfolder.py:166
+#: bika.lims/bika/lims/browser/worksheetfolder.py:180
 msgid "Mine"
 msgstr "我的"
 
@@ -2634,7 +2679,7 @@ msgstr "最少5个"
 msgid "Minimum Volume"
 msgstr "最小体积"
 
-#: bika.lims/bika/lims/content/bikasetup.py:134
+#: bika.lims/bika/lims/content/bikasetup.py:156
 msgid "Minimum number of results for QC stats calculations"
 msgstr "质量控制统计计算的最小结果数目"
 
@@ -2643,7 +2688,7 @@ msgstr "质量控制统计计算的最小结果数目"
 msgid "Minutes"
 msgstr "分钟"
 
-#: bika.lims/bika/lims/browser/client.py:803
+#: bika.lims/bika/lims/browser/client.py:801
 #: bika.lims/bika/lims/browser/supplier.py:183
 #: bika.lims/bika/lims/controlpanel/bika_labcontacts.py:47
 msgid "Mobile Phone"
@@ -2707,7 +2752,7 @@ msgstr "否"
 msgid "No Analysis Code defined, line %s"
 msgstr ""
 
-#: bika.lims/bika/lims/exportimport/instruments/panalytical/axios_xrf/__init__.py:306
+#: bika.lims/bika/lims/exportimport/instruments/panalytical/omnia/__init__.py:460
 msgid "No Analysis Name defined, line %s"
 msgstr ""
 
@@ -2735,7 +2780,7 @@ msgstr ""
 msgid "No Sample ID found, line %s"
 msgstr ""
 
-#: bika.lims/bika/lims/exportimport/instruments/panalytical/axios_xrf/__init__.py:316
+#: bika.lims/bika/lims/exportimport/instruments/panalytical/omnia/__init__.py:150
 msgid "No Sample defined, line %s"
 msgstr ""
 
@@ -2748,7 +2793,7 @@ msgid "No Target Compound found"
 msgstr ""
 
 #: bika.lims/bika/lims/browser/reports/administration_usershistory.py:162
-msgid "No actions found for user %s"
+msgid "No actions found for user ${user}"
 msgstr ""
 
 #: bika.lims/bika/lims/exportimport/instruments/resultsimport.py:607
@@ -2759,7 +2804,7 @@ msgstr ""
 msgid "No analyses found for %s and %s"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/analysisrequest/add.py:181
+#: bika.lims/bika/lims/browser/analysisrequest/add.py:178
 #: bika.lims/bika/lims/browser/analysisrequest/workflow.py:107
 msgid "No analyses have been selected"
 msgstr "没有选择分析"
@@ -2770,11 +2815,11 @@ msgstr "没有选择分析"
 msgid "No analyses matched your query"
 msgstr "你的请求没有符合的分析"
 
-#: bika.lims/bika/lims/browser/worksheetfolder.py:466
+#: bika.lims/bika/lims/browser/worksheetfolder.py:502
 msgid "No analyses were added"
 msgstr "没有添加分析"
 
-#: bika.lims/bika/lims/browser/worksheet.py:841
+#: bika.lims/bika/lims/browser/worksheet.py:879
 msgid "No analyses were added to this worksheet."
 msgstr "该工作表中没有添加分析."
 
@@ -2784,12 +2829,12 @@ msgstr "该工作表中没有添加分析."
 msgid "No analysis services were selected."
 msgstr ""
 
-#: bika.lims/bika/lims/browser/analysisrequest/workflow.py:199
+#: bika.lims/bika/lims/browser/analysisrequest/workflow.py:197
 #: bika.lims/bika/lims/browser/client.py:146
 msgid "No changes made."
 msgstr "没有改变"
 
-#: bika.lims/bika/lims/browser/worksheet.py:1283
+#: bika.lims/bika/lims/browser/worksheet.py:1334
 msgid "No control type specified"
 msgstr "没有指定对照类型"
 
@@ -2809,7 +2854,7 @@ msgstr ""
 
 #: bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py:167
 #: bika.lims/bika/lims/exportimport/instruments/foss/winescan/__init__.py:82
-#: bika.lims/bika/lims/exportimport/instruments/panalytical/axios_xrf/__init__.py:87
+#: bika.lims/bika/lims/exportimport/instruments/panalytical/omnia/__init__.py:68
 msgid "No header found"
 msgstr ""
 
@@ -2825,12 +2870,12 @@ msgstr "没有选择项目"
 msgid "No items selected"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/analysisrequest/workflow.py:429
-#: bika.lims/bika/lims/browser/client.py:239
+#: bika.lims/bika/lims/browser/analysisrequest/workflow.py:424
+#: bika.lims/bika/lims/browser/client.py:238
 msgid "No items were published"
 msgstr "没有发布项目"
 
-#: bika.lims/bika/lims/controlpanel/bika_analysisservices.py:118
+#: bika.lims/bika/lims/controlpanel/bika_analysisservices.py:117
 msgid "No new items were created."
 msgstr ""
 
@@ -2841,6 +2886,10 @@ msgstr "没有容器"
 #: bika.lims/bika/lims/browser/reports/qualitycontrol_referenceanalysisqc.py:50
 msgid "No reference sample was selected."
 msgstr "没有选择参考样品"
+
+#: bika.lims/bika/lims/browser/reports/__init__.py:221
+msgid "No report specified in request"
+msgstr ""
 
 #: bika.lims/bika/lims/exportimport/instruments/resultsimport.py:182
 msgid "No results found"
@@ -2894,7 +2943,7 @@ msgstr ""
 msgid "Not defined"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:457
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:453
 msgid "Not invoiced"
 msgstr "没有结算"
 
@@ -2912,7 +2961,7 @@ msgstr ""
 msgid "Number of analyses"
 msgstr "分析数目"
 
-#: bika.lims/bika/lims/browser/reports/qualitycontrol_analysesoutofrange.py:222
+#: bika.lims/bika/lims/browser/reports/qualitycontrol_analysesoutofrange.py:224
 msgid "Number of analyses out of range for period"
 msgstr "分析数目周期超出范围"
 
@@ -2953,22 +3002,26 @@ msgstr ""
 msgid "Once preserved, the sample must be disposed of within this time period.  If not specified, the sample type retention period will be used."
 msgstr "一旦保留, 样品必须在该时间周期内处置. 如果没有指明, 将使用该样品类型的时间周期."
 
+#: bika.lims/bika/lims/content/bikasetup.py:93
+msgid "Only lab managers can create and manage worksheets"
+msgstr ""
+
 #: bika.lims/bika/lims/browser/templates/worksheet_manage_results.pt:130
 msgid "Only to empty or zero fields"
 msgstr ""
 
 #: bika.lims/bika/lims/browser/batchfolder.py:47
 #: bika.lims/bika/lims/browser/instrument.py:62
-#: bika.lims/bika/lims/browser/worksheetfolder.py:184
+#: bika.lims/bika/lims/browser/worksheetfolder.py:198
 msgid "Open"
 msgstr "打开"
 
 #: bika.lims/bika/lims/browser/templates/sample_sticker_large.pt:84
-#: bika.lims/bika/lims/browser/worksheet.py:780
+#: bika.lims/bika/lims/browser/worksheet.py:814
 msgid "Order"
 msgstr "订单"
 
-#: bika.lims/bika/lims/browser/client.py:731
+#: bika.lims/bika/lims/browser/client.py:729
 #: bika.lims/bika/lims/browser/supplyorderfolder.py:32
 #: bika.lims/bika/lims/content/supplyorder.py:52
 msgid "Order Date"
@@ -2979,18 +3032,18 @@ msgstr "订单日期"
 msgid "Order ID"
 msgstr "订单ID"
 
-#: bika.lims/bika/lims/browser/client.py:730
+#: bika.lims/bika/lims/browser/client.py:728
 #: bika.lims/bika/lims/browser/supplyorderfolder.py:31
 #: bika.lims/bika/lims/content/supplyorder.py:38
 msgid "Order Number"
 msgstr "订单号码"
 
-#: bika.lims/bika/lims/browser/client.py:727
+#: bika.lims/bika/lims/browser/client.py:725
 #: bika.lims/bika/lims/browser/supplyorderfolder.py:28
 msgid "Orders"
 msgstr "多个订单"
 
-#: bika.lims/bika/lims/browser/publish.py:491
+#: bika.lims/bika/lims/browser/publish.py:552
 msgid "Orders: %s"
 msgstr ""
 
@@ -3007,7 +3060,7 @@ msgid "Orphan value in column %s (%s)"
 msgstr ""
 
 #: bika.lims/bika/lims/exportimport/instruments/foss/winescan/__init__.py:38
-#: bika.lims/bika/lims/exportimport/instruments/panalytical/axios_xrf/__init__.py:291
+#: bika.lims/bika/lims/exportimport/instruments/panalytical/omnia/__init__.py:445
 #: bika.lims/bika/lims/exportimport/instruments/thermoscientific/gallery/__init__.py:80
 msgid "Orphan value in column %s, line %s"
 msgstr ""
@@ -3055,7 +3108,7 @@ msgstr "密码"
 msgid "Password lifetime"
 msgstr "密码有效期"
 
-#: bika.lims/bika/lims/browser/client.py:745
+#: bika.lims/bika/lims/browser/client.py:743
 #: bika.lims/bika/lims/browser/supplyorderfolder.py:46
 msgid "Pending"
 msgstr "正在处理"
@@ -3086,7 +3139,7 @@ msgid "Permitted Error %"
 msgstr "许可误差%"
 
 #: bika.lims/bika/lims/browser/clientfolder.py:39
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:70
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:48
 #: bika.lims/bika/lims/browser/templates/batch_publish.pt:68
 msgid "Phone"
 msgstr "电话"
@@ -3129,7 +3182,7 @@ msgstr "请上传认证机构授权你在你的网站和结果报告上使用的
 msgid "Point of Capture"
 msgstr "捕获点"
 
-#: bika.lims/bika/lims/browser/worksheet.py:354
+#: bika.lims/bika/lims/browser/worksheet.py:385
 #: bika.lims/bika/lims/content/worksheettemplate.py:23
 msgid "Position"
 msgstr "位置"
@@ -3156,7 +3209,7 @@ msgstr "小数精度"
 msgid "Prefix"
 msgstr "前缀"
 
-#: bika.lims/bika/lims/content/bikasetup.py:329
+#: bika.lims/bika/lims/content/bikasetup.py:361
 msgid "Prefixes"
 msgstr "人名前的称谓"
 
@@ -3193,6 +3246,10 @@ msgstr ""
 msgid "Preventive maintenance procedure"
 msgstr ""
 
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:183
+msgid "Previous Results"
+msgstr ""
+
 #: bika.lims/bika/lims/browser/accreditation.py:60
 #: bika.lims/bika/lims/browser/analysisrequest/manage_analyses.py:48
 #: bika.lims/bika/lims/browser/templates/analysisservice_popup.pt:166
@@ -3219,6 +3276,11 @@ msgstr "价格列表:"
 msgid "Pricelists"
 msgstr ""
 
+#: bika.lims/bika/lims/browser/templates/instrument_referenceanalyses.pt:221
+#: bika.lims/bika/lims/browser/templates/referencesample_analyses.pt:214
+msgid "Print"
+msgstr ""
+
 #: bika.lims/bika/lims/browser/reports/templates/report_frame.pt:40
 #: bika.lims/bika/lims/browser/templates/batch_publish.pt:124
 msgid "Print date:"
@@ -3226,7 +3288,7 @@ msgstr "打印日期"
 
 #: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:91
 #: bika.lims/bika/lims/browser/sample.py:281
-#: bika.lims/bika/lims/browser/worksheet.py:786
+#: bika.lims/bika/lims/browser/worksheet.py:820
 msgid "Priority"
 msgstr ""
 
@@ -3249,7 +3311,7 @@ msgstr "概况"
 msgid "Profile Analyses"
 msgstr "概况分析"
 
-#: bika.lims/bika/lims/browser/client.py:353
+#: bika.lims/bika/lims/browser/client.py:351
 #: bika.lims/bika/lims/controlpanel/bika_analysisprofiles.py:45
 msgid "Profile Key"
 msgstr "关键概况"
@@ -3293,7 +3355,7 @@ msgstr "未包含在发票中的已发布的分析"
 msgid "Published By"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:177
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:154
 msgid "Published by"
 msgstr ""
 
@@ -3301,7 +3363,7 @@ msgstr ""
 msgid "Published results"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/worksheetfolder.py:135
+#: bika.lims/bika/lims/browser/worksheetfolder.py:149
 msgid "QC"
 msgstr "质量控制"
 
@@ -3309,11 +3371,11 @@ msgstr "质量控制"
 msgid "QC Analyses"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:271
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:268
 msgid "QC Results"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/analyses.py:859
+#: bika.lims/bika/lims/browser/analyses.py:864
 #: bika.lims/bika/lims/browser/instrument.py:382
 #: bika.lims/bika/lims/browser/referencesample.py:101
 msgid "QC Sample ID"
@@ -3364,7 +3426,7 @@ msgstr "特定范围"
 msgid "Re-enter the password. Make sure the passwords are identical."
 msgstr ""
 
-#: bika.lims/bika/lims/browser/worksheetfolder.py:387
+#: bika.lims/bika/lims/browser/worksheetfolder.py:423
 msgid "Reassign"
 msgstr "重新分派"
 
@@ -3406,7 +3468,7 @@ msgid "Reference Definitions"
 msgstr "参考多项定义"
 
 #: bika.lims/bika/lims/browser/instrument.py:384
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:290
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:287
 #: bika.lims/bika/lims/browser/reports/qualitycontrol_referenceanalysisqc.py:55
 msgid "Reference Sample"
 msgstr "参考样品"
@@ -3442,7 +3504,7 @@ msgstr "参考分析质量控制图"
 msgid "Reference analysis quality control graphs "
 msgstr "参考分析质量控制图"
 
-#: bika.lims/bika/lims/browser/worksheet.py:1269
+#: bika.lims/bika/lims/browser/worksheet.py:1320
 msgid "Reference sample"
 msgstr "参考样品"
 
@@ -3460,7 +3522,7 @@ msgstr ""
 msgid "ReferenceDefinition represents a Reference Definition or sample type used for quality control testing"
 msgstr "参考定义代表用于质量控制测试的样品类型的参考定义"
 
-#: bika.lims/bika/lims/browser/publish.py:497
+#: bika.lims/bika/lims/browser/publish.py:558
 msgid "Refs: %s"
 msgstr ""
 
@@ -3469,7 +3531,7 @@ msgid "Register"
 msgstr "注册"
 
 #: bika.lims/bika/lims/browser/batch/publish.py:112
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:368
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:364
 #: bika.lims/bika/lims/content/analysisprofile.py:46
 msgid "Remarks"
 msgstr "注释"
@@ -3547,7 +3609,7 @@ msgstr ""
 msgid "Report type"
 msgstr "报告类型"
 
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:456
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:452
 msgid "Reported as dry matter"
 msgstr "已作为干燥物质报告"
 
@@ -3571,7 +3633,7 @@ msgstr "请求"
 
 #: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:56
 #: bika.lims/bika/lims/browser/batch/publish.py:83
-#: bika.lims/bika/lims/browser/client.py:652
+#: bika.lims/bika/lims/browser/client.py:650
 msgid "Request ID"
 msgstr "请求ID"
 
@@ -3608,7 +3670,7 @@ msgstr "限制类别"
 msgid "Result"
 msgstr "结果"
 
-#: bika.lims/bika/lims/content/bikasetup.py:158
+#: bika.lims/bika/lims/content/bikasetup.py:190
 msgid "Result Footer"
 msgstr "结果页脚"
 
@@ -3631,7 +3693,7 @@ msgstr ""
 msgid "Result out of range"
 msgstr "结果超出范围"
 
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:197
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:173
 msgid "Results"
 msgstr ""
 
@@ -3659,7 +3721,7 @@ msgstr "保留周期"
 
 #: bika.lims/bika/lims/browser/analyses.py:94
 #: bika.lims/bika/lims/browser/referencesample.py:119
-#: bika.lims/bika/lims/browser/worksheet.py:364
+#: bika.lims/bika/lims/browser/worksheet.py:395
 msgid "Retested"
 msgstr "已重新测试"
 
@@ -3688,7 +3750,7 @@ msgstr ""
 msgid "Salutation"
 msgstr "称呼"
 
-#: bika.lims/bika/lims/content/bikasetup.py:276
+#: bika.lims/bika/lims/content/bikasetup.py:308
 msgid "Same as the above, but sets the default on analysis services. This setting can be set per individual analysis on its own configuration"
 msgstr "同上, 但设置为分析服务的默认值. 该设置可以在具体样品的配置上修改."
 
@@ -3715,13 +3777,13 @@ msgstr "样品日期"
 msgid "Sample Due"
 msgstr "样品截止日"
 
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:124
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:101
 #: bika.lims/bika/lims/browser/reports/templates/productivity_dailysamplesreceived.pt:54
 #: bika.lims/bika/lims/browser/sample.py:426
 msgid "Sample ID"
 msgstr "样品编号"
 
-#: bika.lims/bika/lims/content/bikasetup.py:353
+#: bika.lims/bika/lims/content/bikasetup.py:385
 msgid "Sample ID Padding"
 msgstr "样品编号位数"
 
@@ -3746,7 +3808,7 @@ msgstr "样品区块"
 msgid "Sample Point"
 msgstr "单个样品点"
 
-#: bika.lims/bika/lims/browser/client.py:478
+#: bika.lims/bika/lims/browser/client.py:476
 #: bika.lims/bika/lims/content/sampletype.py:85
 #: bika.lims/bika/lims/controlpanel/bika_samplepoints.py:35
 msgid "Sample Points"
@@ -3754,7 +3816,7 @@ msgstr "多个样品点"
 
 #: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:81
 #: bika.lims/bika/lims/browser/batch/publish.py:85
-#: bika.lims/bika/lims/browser/client.py:553
+#: bika.lims/bika/lims/browser/client.py:551
 msgid "Sample Type"
 msgstr "样品类型"
 
@@ -3771,7 +3833,7 @@ msgid "Sample Type Specifications (Lab)"
 msgstr ""
 
 #: bika.lims/bika/lims/browser/templates/analysisservice_popup.pt:255
-#: bika.lims/bika/lims/browser/worksheetfolder.py:129
+#: bika.lims/bika/lims/browser/worksheetfolder.py:143
 #: bika.lims/bika/lims/content/samplepoint.py:60
 msgid "Sample Types"
 msgstr "多个样品类型"
@@ -3825,7 +3887,7 @@ msgstr ""
 msgid "Samples received vs. samples reported"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/publish.py:503
+#: bika.lims/bika/lims/browser/publish.py:564
 msgid "Samples: %s"
 msgstr ""
 
@@ -3875,7 +3937,7 @@ msgstr ""
 msgid "Seconds"
 msgstr "秒"
 
-#: bika.lims/bika/lims/content/bikasetup.py:299
+#: bika.lims/bika/lims/content/bikasetup.py:331
 msgid "Select 'Register' if you want labels to be automatically printed when new ARs or sample records are created. Select 'Receive' to print labels when ARs or Samples are received. Select 'None' to disable automatic printing"
 msgstr ""
 
@@ -3891,7 +3953,7 @@ msgstr "选择用户界面"
 msgid "Select a default preservation for this analysis service. If the preservation depends on the sample type combination, specify a preservation per sample type in the table below"
 msgstr "为此分析服务选择一个默认保留. 如果保存取决于关于样品类型的组合, 请在下表中按样品指定保存类型"
 
-#: bika.lims/bika/lims/browser/worksheet.py:1022
+#: bika.lims/bika/lims/browser/worksheet.py:1069
 msgid "Select a destinaton position and the AR to duplicate."
 msgstr "选择一个终点位置和分析请求来重复."
 
@@ -3951,7 +4013,7 @@ msgstr "选择仪器"
 msgid "Select only analysis requests where one or more analyses were analyzed by this user."
 msgstr ""
 
-#: bika.lims/bika/lims/browser/worksheet.py:935
+#: bika.lims/bika/lims/browser/worksheet.py:974
 msgid "Select services in the left column to locate reference samples. Select a reference by clicking it. "
 msgstr "从左列中选择服务来定位参考样品. 点击选择一个参考."
 
@@ -3960,11 +4022,11 @@ msgstr "从左列中选择服务来定位参考样品. 点击选择一个参考.
 msgid "Select template"
 msgstr "选择模板"
 
-#: bika.lims/bika/lims/content/bikasetup.py:106
+#: bika.lims/bika/lims/content/bikasetup.py:128
 msgid "Select the country the site will show by default"
 msgstr ""
 
-#: bika.lims/bika/lims/content/bikasetup.py:94
+#: bika.lims/bika/lims/content/bikasetup.py:116
 msgid "Select the currency the site will use to display prices."
 msgstr "选择用于网站显示价格的货币种类."
 
@@ -3976,11 +4038,11 @@ msgstr ""
 msgid "Select the preferred instrument"
 msgstr "选择合适的仪器"
 
-#: bika.lims/bika/lims/content/bikasetup.py:310
+#: bika.lims/bika/lims/content/bikasetup.py:342
 msgid "Select the which label to print when automatic label printing is enabled"
 msgstr ""
 
-#: bika.lims/bika/lims/content/bikasetup.py:188
+#: bika.lims/bika/lims/content/bikasetup.py:220
 msgid "Select this to activate the sample collection workflow steps."
 msgstr "选此激活样品采集工作流程."
 
@@ -4031,8 +4093,8 @@ msgid "Service keywords: no matches found"
 msgstr ""
 
 #: bika.lims/bika/lims/browser/reports/selection_macros/__init__.py:65
-#: bika.lims/bika/lims/browser/worksheet.py:1230
-#: bika.lims/bika/lims/browser/worksheetfolder.py:126
+#: bika.lims/bika/lims/browser/worksheet.py:1281
+#: bika.lims/bika/lims/browser/worksheetfolder.py:140
 msgid "Services"
 msgstr "多个服务"
 
@@ -4040,7 +4102,7 @@ msgstr "多个服务"
 msgid "Set the maintenance task as closed."
 msgstr ""
 
-#: bika.lims/bika/lims/content/bikasetup.py:146
+#: bika.lims/bika/lims/content/bikasetup.py:178
 msgid "Set the maximum number of analysis requests per results email. Too many columns per email are difficult to read for some clients who prefer fewer results per email"
 msgstr "按结果email设置最大分析请求数目. 有的用户喜欢每个email包含少一些的结果, email中列数过多对他们来说阅读困难"
 
@@ -4093,7 +4155,7 @@ msgid "Site Title"
 msgstr ""
 
 #: bika.lims/bika/lims/browser/analysisrequest/published_results.py:45
-#: bika.lims/bika/lims/browser/client.py:656
+#: bika.lims/bika/lims/browser/client.py:654
 #: bika.lims/bika/lims/browser/reports/__init__.py:126
 msgid "Size"
 msgstr "尺寸"
@@ -4107,11 +4169,11 @@ msgid "Small Icon"
 msgstr ""
 
 #: bika.lims/bika/lims/browser/analysisrequest/manage_results.py:70
-#: bika.lims/bika/lims/browser/worksheet.py:746
+#: bika.lims/bika/lims/browser/worksheet.py:780
 msgid "Some analyses use out-of-date or uncalibrated instruments. Results edition not allowed"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/analysisrequest/workflow.py:506
+#: bika.lims/bika/lims/browser/analysisrequest/workflow.py:502
 msgid "Some errors have been detected in the results report published from the Analysis Request %s. The Analysis Request %s has been created automatically and the previous has been invalidated.<br/>The possible mistake has been picked up and is under investigation.<br/><br/>%s%s"
 msgstr ""
 
@@ -4130,7 +4192,7 @@ msgid "Sort the results in reversed order"
 msgstr ""
 
 #: bika.lims/bika/lims/browser/analyses.py:84
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:164
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:141
 msgid "Specification"
 msgstr ""
 
@@ -4202,7 +4264,7 @@ msgstr "提交"
 msgid "Subtotal"
 msgstr "子项总计"
 
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:113
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:90
 msgid "Summary"
 msgstr ""
 
@@ -4246,12 +4308,12 @@ msgid "Temperature"
 msgstr "温度"
 
 #: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:124
-#: bika.lims/bika/lims/browser/worksheetfolder.py:124
+#: bika.lims/bika/lims/browser/worksheetfolder.py:138
 #: bika.lims/bika/lims/content/analysisrequest.py:233
 msgid "Template"
 msgstr "模板"
 
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:462
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:458
 msgid "Test results are at a ${lab_confidence}% confidence level"
 msgstr ""
 
@@ -4287,7 +4349,7 @@ msgstr "适用的认证标准, 如 ISO 17025"
 msgid "The analyses included in this profile, grouped per category"
 msgstr "分析包含于此配置中, 按类别分组"
 
-#: bika.lims/bika/lims/content/bikasetup.py:244
+#: bika.lims/bika/lims/content/bikasetup.py:276
 msgid "The analysis to be used for determining dry matter."
 msgstr "该分析用于检测干燥物质."
 
@@ -4316,11 +4378,11 @@ msgstr "该分析服务类别属于"
 msgid "The default container type. New sample partitions are automatically assigned a container of this type, unless it has been specified in more details per analysis service"
 msgstr ""
 
-#: bika.lims/bika/lims/content/bikasetup.py:115
+#: bika.lims/bika/lims/content/bikasetup.py:137
 msgid "The discount percentage entered here, is applied to the prices for clients flagged as 'members', normally co-operative members or associates deserving of this discount"
 msgstr "输入折扣的百分数, 该折扣将用于标为'会员'的用户,通常企业或协会会员将得到该折扣"
 
-#: bika.lims/bika/lims/content/bikasetup.py:379
+#: bika.lims/bika/lims/content/bikasetup.py:411
 msgid "The full URL: http://URL/path:port"
 msgstr "具体网址, 如: http://xxx.xxx.xxx/xxx:xxx"
 
@@ -4342,11 +4404,11 @@ msgstr "该实验室未经认证, 或者尚未设置认证信息."
 msgid "The laboratory department"
 msgstr "实验室科系"
 
-#: bika.lims/bika/lims/content/bikasetup.py:354
+#: bika.lims/bika/lims/content/bikasetup.py:386
 msgid "The length of the zero-padding for Sample IDs"
 msgstr "样品ID数字位数为0的长度"
 
-#: bika.lims/bika/lims/content/bikasetup.py:363
+#: bika.lims/bika/lims/content/bikasetup.py:395
 msgid "The length of the zero-padding for the AR number in AR IDs"
 msgstr "分析请求ID的分析请求数目数字位数为0的长度"
 
@@ -4382,7 +4444,7 @@ msgstr "分析请求数量 - 按样品类别"
 msgid "The number of days before a password expires. 0 disables password expiry"
 msgstr "密码有效天数. 如果输入0则表示永远有效"
 
-#: bika.lims/bika/lims/content/bikasetup.py:288
+#: bika.lims/bika/lims/content/bikasetup.py:320
 msgid "The number of days before a sample expires and cannot be analysed any more. This setting can be overwritten per individual sample type in the sample types setup"
 msgstr "样品有效天数, 过期的样品将不能分析. 该设置可以在样品类型设置中为具体样品类型重置."
 
@@ -4438,7 +4500,7 @@ msgstr ""
 msgid "The serial number that uniquely identifies the instrument"
 msgstr "仪器唯一序列号"
 
-#: bika.lims/bika/lims/content/bikasetup.py:264
+#: bika.lims/bika/lims/content/bikasetup.py:296
 msgid "The system wide default configuration to indicate whether file attachments are required, permitted or not per analysis request"
 msgstr "系统范围内的默认配置,表明是否要求,允许或禁止为分析请求添加附件."
 
@@ -4485,12 +4547,12 @@ msgstr ""
 msgid "This Analysis Request has been generated automatically due to the retraction of the Analysis Request ${retracted_request_id}."
 msgstr ""
 
-#: bika.lims/bika/lims/browser/analysisrequest/results_not_requested.py:42
+#: bika.lims/bika/lims/browser/analysisrequest/results_not_requested.py:41
 #: bika.lims/bika/lims/browser/analysisrequest/view.py:122
 msgid "This Analysis Request has been generated automatically due to the retraction of the Analysis Request %s."
 msgstr ""
 
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:101
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:78
 msgid "This Analysis Request has been invalidated due to erroneously published results"
 msgstr ""
 
@@ -4510,11 +4572,11 @@ msgstr ""
 msgid "This Analysis Service cannot be activated because it's calculation is inactive."
 msgstr "由于计算未工作, 分析服务不能激活."
 
-#: bika.lims/bika/lims/content/analysisservice.py:1030
+#: bika.lims/bika/lims/content/analysisservice.py:1029
 msgid "This Analysis Service cannot be deactivated because one or more active calculations list it as a dependency"
 msgstr "由于从属于一个或多个计算, 该分析服务现在不能停止."
 
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:460
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:456
 msgid "This document shall not be reproduced except in full, without the written approval of ${name_lab}"
 msgstr "除非另有说明, 未经 ${name_lab} 书面批准, 本报告不得复制."
 
@@ -4526,7 +4588,7 @@ msgstr "本服务不需要单独分区"
 msgid "This service requires a separate container."
 msgstr ""
 
-#: bika.lims/bika/lims/content/bikasetup.py:159
+#: bika.lims/bika/lims/content/bikasetup.py:191
 msgid "This text will be appended to results reports."
 msgstr "该文本将添加到结果报告后."
 
@@ -4535,8 +4597,8 @@ msgid "This value is reported at the bottom of all published results"
 msgstr "本值为所有发布的结果中最低值"
 
 #: bika.lims/bika/lims/browser/batchfolder.py:36
-#: bika.lims/bika/lims/browser/bika_listing.py:234
-#: bika.lims/bika/lims/browser/client.py:349
+#: bika.lims/bika/lims/browser/bika_listing.py:233
+#: bika.lims/bika/lims/browser/client.py:347
 msgid "Title"
 msgstr "标题"
 
@@ -4567,7 +4629,7 @@ msgid "To Be Sampled"
 msgstr "需要取样"
 
 #: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:248
-#: bika.lims/bika/lims/browser/worksheetfolder.py:200
+#: bika.lims/bika/lims/browser/worksheetfolder.py:214
 #: bika.lims/bika/lims/skins/bika/portlet_to_be_verified.pt:31
 msgid "To be verified"
 msgstr "需要验证"
@@ -4612,7 +4674,7 @@ msgstr ""
 msgid "Traceability"
 msgstr ""
 
-#: bika.lims/bika/lims/content/bikasetup.py:197
+#: bika.lims/bika/lims/content/bikasetup.py:229
 msgid "Turn this on if you want to work with sample partitions"
 msgstr ""
 
@@ -4620,7 +4682,7 @@ msgstr ""
 msgid "Turnaround time (h)"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/bika_listing.py:232
+#: bika.lims/bika/lims/browser/bika_listing.py:231
 #: bika.lims/bika/lims/browser/reports/templates/administration_usershistory.pt:75
 #: bika.lims/bika/lims/controlpanel/bika_instruments.py:41
 msgid "Type"
@@ -4638,7 +4700,7 @@ msgstr ""
 msgid "Unable to create the Attachment Type %s "
 msgstr ""
 
-#: bika.lims/bika/lims/browser/analysisrequest/workflow.py:522
+#: bika.lims/bika/lims/browser/analysisrequest/workflow.py:517
 msgid "Unable to send an email to alert lab client contacts that the Analysis Request has been retracted: ${error}"
 msgstr ""
 
@@ -4658,12 +4720,12 @@ msgstr "不确定值"
 msgid "Undefined"
 msgstr ""
 
-#: bika.lims/bika/lims/exportimport/instruments/panalytical/axios_xrf/__init__.py:61
+#: bika.lims/bika/lims/exportimport/instruments/panalytical/omnia/__init__.py:58
 #: bika.lims/bika/lims/exportimport/instruments/thermoscientific/gallery/__init__.py:45
 msgid "Unexpected header format"
 msgstr ""
 
-#: bika.lims/bika/lims/exportimport/instruments/panalytical/axios_xrf/__init__.py:177
+#: bika.lims/bika/lims/exportimport/instruments/panalytical/omnia/__init__.py:331
 msgid "Unexpected header found"
 msgstr ""
 
@@ -4695,7 +4757,7 @@ msgstr "上传一个用于打印分析报告的签名扫描件. 理想尺寸为2
 msgid "Use default calculation"
 msgstr ""
 
-#: bika.lims/bika/lims/content/bikasetup.py:370
+#: bika.lims/bika/lims/content/bikasetup.py:402
 msgid "Use external ID server"
 msgstr "使用外部ID服务器"
 
@@ -4709,7 +4771,7 @@ msgstr ""
 msgid "User"
 msgstr "用户"
 
-#: bika.lims/bika/lims/browser/client.py:800
+#: bika.lims/bika/lims/browser/client.py:798
 #: bika.lims/bika/lims/browser/templates/login_details.pt:50
 msgid "User Name"
 msgstr "用户名"
@@ -4718,12 +4780,12 @@ msgstr "用户名"
 msgid "User history"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/reports/administration_usershistory.py:176
+#: bika.lims/bika/lims/browser/reports/administration_usershistory.py:178
 #: bika.lims/bika/lims/browser/reports/templates/administration_usershistory.pt:56
 msgid "Users history"
 msgstr ""
 
-#: bika.lims/bika/lims/content/bikasetup.py:135
+#: bika.lims/bika/lims/content/bikasetup.py:157
 msgid "Using too few data points does not make statistical sense. Set an acceptable minimum number of results before QC statistics will be calculated and plotted"
 msgstr "取样点太少时分析结果无意义. 请在质量控制统计处理前设置可接受的最小样品量."
 
@@ -4734,7 +4796,7 @@ msgid "VAT"
 msgstr "增值税"
 
 #: bika.lims/bika/lims/content/analysisservice.py:589
-#: bika.lims/bika/lims/content/bikasetup.py:124
+#: bika.lims/bika/lims/content/bikasetup.py:146
 #: bika.lims/bika/lims/content/labproduct.py:25
 msgid "VAT %"
 msgstr "增值税%"
@@ -4943,7 +5005,7 @@ msgstr "有效性"
 msgid "Value"
 msgstr "值"
 
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:207
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:189
 msgid "Value Range"
 msgstr ""
 
@@ -4956,7 +5018,7 @@ msgid "Values can be entered here which will override the defaults specified in 
 msgstr ""
 
 #: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py:285
-#: bika.lims/bika/lims/browser/worksheetfolder.py:218
+#: bika.lims/bika/lims/browser/worksheetfolder.py:232
 #: bika.lims/bika/lims/skins/bika/portlet_verified.pt:22
 msgid "Verified"
 msgstr "已验证"
@@ -4997,8 +5059,8 @@ msgstr ""
 msgid "Workflow"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/analyses.py:861
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:291
+#: bika.lims/bika/lims/browser/analyses.py:866
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:288
 #: bika.lims/bika/lims/browser/referencesample.py:104
 msgid "Worksheet"
 msgstr "工作表"
@@ -5011,7 +5073,7 @@ msgstr "工作表布局"
 msgid "Worksheet Templates"
 msgstr "工作表模板"
 
-#: bika.lims/bika/lims/browser/worksheetfolder.py:90
+#: bika.lims/bika/lims/browser/worksheetfolder.py:104
 #: bika.lims/bika/lims/skins/bika/portlet_to_be_verified.pt:62
 msgid "Worksheets"
 msgstr "多个工作表"
@@ -5020,11 +5082,19 @@ msgstr "多个工作表"
 msgid "Yes"
 msgstr "是"
 
+#: bika.lims/bika/lims/browser/worksheetfolder.py:42
+msgid "You do not have sufficient privileges to manage worksheets."
+msgstr ""
+
+#: bika.lims/bika/lims/browser/worksheet.py:349
+msgid "You do not have sufficient privileges to view the worksheet %s."
+msgstr ""
+
 #: bika.lims/bika/lims/content/analysisrequest.py:133
 msgid "You must assign this request to a client"
 msgstr ""
 
-#: bika.lims/bika/lims/browser/worksheet.py:1296
+#: bika.lims/bika/lims/browser/worksheet.py:1347
 msgid "You must select an instrument"
 msgstr "你必须选择一个仪器"
 
@@ -5036,7 +5106,7 @@ msgstr ""
 msgid "activate"
 msgstr "激活"
 
-#: bika.lims/bika/lims/browser/publish.py:510
+#: bika.lims/bika/lims/browser/publish.py:571
 msgid "and others"
 msgstr ""
 
@@ -5090,7 +5160,7 @@ msgstr "yy-mm-dd"
 msgid "deactivate"
 msgstr "失活"
 
-#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:105
+#: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt:82
 msgid "has been replaced by"
 msgstr ""
 

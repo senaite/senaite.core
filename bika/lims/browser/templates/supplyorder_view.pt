@@ -11,7 +11,7 @@
 
 		<metal:title fill-slot="content-title">
 			<h1>
-				<span class="documentFirstHeading" tal:content="view/title"/>
+				<span class="documentFirstHeading" tal:content="view/title" />
 			</h1>
 		</metal:title>
 

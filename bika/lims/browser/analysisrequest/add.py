@@ -162,9 +162,6 @@ class ajaxAnalysisRequestSubmit():
         uc = getToolByName(self.context, 'uid_catalog')
         bsc = getToolByName(self.context, 'bika_setup_catalog')
 
-        SamplingWorkflowEnabled = \
-            self.context.bika_setup.getSamplingWorkflowEnabled()
-
         errors = {}
 
         form_parts = json.loads(self.request.form['parts'])

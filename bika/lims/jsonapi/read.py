@@ -39,8 +39,10 @@ def read(context, request):
             if index == 'review_state' and "{" in request[index]:
                 continue
             contentFilter[index] = safe_unicode(request[index])
-        if "{0}[]".format(index) in request:
-            contentFilter[index] = safe_unicode(request["{0}[]".format(index)])
+        if "%s[]"%index in request:
+            value = request["%s[]"%index]
+            contentFilter[index] = [safe_unicode(v) for v in value]
+
     if 'limit' in request:
         try:
             contentFilter['sort_limit'] = int(request["limit"])
