@@ -58,7 +58,7 @@ class SupplyOrderItem( BaseContent):
 
     security.declareProtected(View, 'getTotal')
     def getTotal(self):
-        """ compute total excluding VAT """
+        """ Compute total excluding VAT """
         price = self.getPrice()
         if price:
             return float(self.getPrice()) * self.getQuantity()

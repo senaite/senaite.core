@@ -5,8 +5,8 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.browser import BrowserView
+from bika.lims.utils import t
 
 
 class View(BrowserView):
@@ -26,8 +26,10 @@ class View(BrowserView):
         self.contact = context.getContact()
         self.contact = self.contact.getFullname() if self.contact else ''
         self.subtotal = '%.2f' % context.getSubtotal()
-        self.vat = '%.2f' % context.getVAT()
+        self.vat = '%.2f' % context.getVATAmount()
         self.total = '%.2f' % context.getTotal()
+        # Set the title
+        self.title = context.Title()
         # Collect order item data
         items = context.objectValues('SupplyOrderItem')
         self.items = []
@@ -39,7 +41,7 @@ class View(BrowserView):
                 'volume': product.getVolume(),
                 'unit': product.getUnit(),
                 'price': product.getPrice(),
-                'vat': '%s%%' % product.getVAT(),
+                'vat': '%s%%' % product.getVATAmount(),
                 'quantity': item.getQuantity(),
                 'totalprice': '%.2f' % item.getTotal(),
             })
@@ -91,7 +93,7 @@ class EditView(BrowserView):
             self.orderDate = context.Schema()['OrderDate']
             self.contact = context.Schema()['Contact']
             self.subtotal = '%.2f' % context.getSubtotal()
-            self.vat = '%.2f' % context.getVAT()
+            self.vat = '%.2f' % context.getVATAmount()
             self.total = '%.2f' % context.getTotal()
             # Prepare the products
             items = context.objectValues('SupplyOrderItem')
