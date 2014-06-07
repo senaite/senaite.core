@@ -213,17 +213,23 @@ class WorksheetImporter:
         if hasattr(obj, 'setMobilePhone'):
             obj.setMobilePhone(row.get('MobilePhone', ''))
 
-    def get_object(self, catalog, portal_type, title):
-        if not title:
+    def get_object(self, catalog, portal_type, title=None, **kwargs):
+        """This will return an object from the catalog.
+        Logs a message and returns None if no object or multiple objects found.
+        All keyword arguments are passed verbatim to the contentFilter
+        """
+        if not title and not kwargs:
             return None
-        brains = catalog(portal_type=portal_type, title=to_unicode(title))
+        contentFilter = {"portal_type": portal_type}
+        if title:
+            contentFilter['title'] = to_unicode(title)
+        contentFilter.update(kwargs)
+        brains = catalog(contentFilter)
         if len(brains) > 1:
-            logger.info("More than one %s found for '%s'" % \
-                        (portal_type, to_unicode(title)))
+            logger.info("More than one object found for %s" % contentFilter)
             return None
         elif len(brains) == 0:
-            logger.info("%s not found for %s" % \
-                        (portal_type, to_unicode(title)))
+            logger.info("No objects found for %s" % contentFilter)
             return None
         else:
             return brains[0].getObject()
@@ -650,12 +656,9 @@ class Instruments(WorksheetImporter):
                 SerialNo=row.get('SerialNo', ''),
                 DataInterface=row.get('DataInterface', '')
             )
-            instrumenttype = self.get_object(bsc, 'InstrumentType',
-                                             row.get('Type'))
-            manufacturer = self.get_object(bsc, 'Manufacturer',
-                                           row.get('Brand'))
-            supplier = bsc(portal_type='Supplier',
-                           getName=row.get('Supplier', ''))[0].getObject()
+            instrumenttype = self.get_object(bsc, 'InstrumentType', title=row.get('Type'))
+            manufacturer = self.get_object(bsc, 'Manufacturer', title=row.get('Brand'))
+            supplier = self.get_object(bsc, 'Supplier', getName=row.get('Supplier', ''))
             obj.setInstrumentType(instrumenttype)
             obj.setManufacturer(manufacturer)
             obj.setSupplier(supplier)

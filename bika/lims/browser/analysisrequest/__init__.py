@@ -327,6 +327,7 @@ class JSONReadExtender(object):
                 "Uncertainty": service.getUncertainty(analysis.getResult()),
                 "Method": method.Title() if method else '',
                 "specification": analysis.specification if hs else {},
+                "Unit": service.getUnit(),
             }
             # Place all schema fields ino the result.
             analysis_data.update(load_brain_metadata(proxy, []))
