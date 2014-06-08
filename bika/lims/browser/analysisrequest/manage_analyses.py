@@ -47,9 +47,10 @@ class AnalysisRequestAnalysesView(BikaListingView):
                       'sortable': False, },
             'Price': {'title': _('Price'),
                       'sortable': False, },
-            #'Priority': {'title': _('Priority'),
-            #             'sortable': False,
-            #             'toggle': True },
+            'Priority': {'title': _('Priority'),
+                         'sortable': False,
+                         'index': 'Priority',
+                         'toggle': True },
             'Partition': {'title': _('Partition'),
                           'sortable': False, },
             'min': {'title': _('Min')},
@@ -61,7 +62,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         ShowPrices = self.context.bika_setup.getShowPrices()
         if ShowPrices:
             columns.append('Price')
-            # columns.append('Priority')
+            columns.append('Priority')
         ShowPartitions = self.context.bika_setup.getShowPartitions()
         if ShowPartitions:
             columns.append('Partition')
@@ -158,7 +159,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
             items[x]['before']['Price'] = symbol
             items[x]['Price'] = obj.getPrice()
             items[x]['class']['Price'] = 'nowrap'
-            # items[x]['Priority'] = None
+            items[x]['Priority'] = ''
 
             if items[x]['selected']:
                 items[x]['allow_edit'] = ['Partition', 'min', 'max', 'error']
@@ -181,13 +182,14 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 items[x]["error"] = spec["error"]
                 # Add priority premium
                 items[x]['Price'] = analysis.getPrice()
-                # priority = analysis.getPriority()
-                # items[x]['Priority'] = priority and priority.Title() or ''
+                priority = analysis.getPriority()
+                items[x]['Priority'] = priority and priority.Title() or ''
             else:
                 items[x]['Partition'] = ''
                 items[x]["min"] = ''
                 items[x]["max"] = ''
                 items[x]["error"] = ''
+                items[x]["Priority"] = ''
 
             after_icons = ''
             if obj.getAccredited():

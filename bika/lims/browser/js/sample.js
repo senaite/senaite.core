@@ -1,8 +1,12 @@
 (function ($) {
 
 function workflow_transition_sample(event){
-	event.preventDefault()
-	if ($("#DateSampled").val() != "" && $("#Sampler").val() != "") {
+	jarn.i18n.loadCatalog('plone');
+	var PMF = window.jarn.i18n.MessageFactory("plone");
+	event.preventDefault();
+	debugger;
+	if ($("#DateSampled").val() != "" && $("#Sampler").val() != ""
+		&& $("#DateSampled").val() != undefined && $("#Sampler").val() != undefined) {
 		requestdata = new Object();
 		requestdata.workflow_action = "sample";
 		$.each($("form[name='header_form']").find("input,select"), function(i,v){

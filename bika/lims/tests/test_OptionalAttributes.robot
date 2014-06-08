@@ -197,6 +197,3 @@ TestSampleState
     Should Be Equal  ${VALUE}  ${expectedState}  ${sample} Workflow States incorrect: Expected: ${expectedState} -
     # Log  Testing Sample State for ${sample}: ${expectedState} -:- ${VALUE}  WARN
 
-HangOn
-    Import library  Dialogs
-    Pause execution

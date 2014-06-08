@@ -42,3 +42,10 @@ class AnalysisRequestLog(LogView):
                 t(message), 'info')
         template = LogView.__call__(self)
         return template
+
+    def getPriorityIcon(self):
+        priority = self.context.getPriority()
+        if priority:
+            icon = priority.getBigIcon()
+            if icon:
+                return '/'.join(icon.getPhysicalPath())

@@ -1,15 +1,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
   xmlns:tal="http://xml.zope.org/namespaces/tal"
-  xmlns:metal="http://xml.zope.org/namespaces/metal"
   xmlns:i18n="http://xml.zope.org/namespaces/i18n"
   i18n:domain="bika"
   tal:define="portal_url nocall:context/portal_url;
               portal portal_url/getPortalObject;">
-
-<head>
-    <link rel="stylesheet" type="text/css" media="all" href=""
-          tal:attributes="href string:$portal_url/analysisrequest_results.css" />
-</head>
 
 <body tal:define="
       plone_view python:view.context.restrictedTraverse('@@plone');
@@ -22,37 +16,21 @@
       dry view/ar/obj/getReportDryMatter;
       remarksenabled python:view.context.bika_setup.getEnableAnalysisRemarks();">
 
-    <div id='header'>
-        <pdf:barcode
-            type="code128"
-            align="baseline"
-            barheight="30px"
-            tal:attributes="value view/ar/obj/getRequestID;
-                            humanreadable view/ar/obj/getRequestID;">
-        </pdf:barcode>
-    </div>
-
     <table id="section-header">
         <tr>
             <td id="lab-logo">
                 <a tal:attributes="href view/laboratory/getLabURL">
-                    <img tal:attributes="src string:${portal/absolute_url}/logo_print.jpg;"/></a>
+                    <img tal:attributes="src string:${portal/absolute_url}/logo_print.jpg;"/>
+                </a>
             </td>
-            <td id="accreditation-logo"
-                tal:define="logo python:context.bika_setup.laboratory.getAccreditationBodyLogo()">
+            <td id="accreditation-logo" tal:define="logo python:context.bika_setup.laboratory.getAccreditationBodyLogo()">
                 <img tal:condition="python: accredited == True and logo"
-                     tal:attributes="src string:${portal/absolute_url}/bika_setup/laboratory/AccreditationBodyLogo;
-                                     width string:146px;"/>
+                     tal:attributes="src string:${portal/absolute_url}/bika_setup/laboratory/AccreditationBodyLogo"/>
                 <img tal:condition="python: accredited == True and not logo"
-                     tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/AccreditationBodyLogo.png;
-                                     width string:146px;"/>
+                     tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/AccreditationBodyLogo.png"/>
            </td>
         </tr>
-    </table>
-    <p>&nbsp;</p>
 
-<!-- Address and Lab info -->
-    <table id="section-info">
         <tr>
             <td id="client-info">
                 <table>
@@ -94,7 +72,6 @@
             </td>
         </tr>
     </table>
-    <p>&nbsp;</p>
 
 <!-- Alert section (invalidated ar, etc.) -->
     <div id="section-alert" tal:condition="python:view.ar['obj'].isInvalid()">
@@ -190,78 +167,98 @@
             </tr>
         </table>
     </div>
-    <pdf:nextpage />
 
 <!-- AR Results section -->
     <div id="section-results">
         <h1 i18n:translate="">Results</h1>
+        <table>
         <tal:poc tal:repeat="poc python:view.services.keys()">
-        <h2 tal:content="poc"></h2>
-        <table tal:repeat="cat python:view.services[poc].keys()">
-            <thead>
-                <tr>
-                    <th class="analysis"><span tal:content="string:${cat}">Category: Vitamin D</span></th>
-                    <th class="result"><span i18n:translate="">Result</span></th>
-                    <th class="dryresult" tal:condition="dry"><span i18n:translate="">Result</span></th>
-                    <!-- <th class="units"><span i18n:translate="">Unit</span></th> -->
-                    <th class="specs"><span i18n:translate="">Value Range</span></th>
-                    <th class="outofrange"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Analysis result row -->
-                <tal:analyses tal:repeat="service python:view.services[poc][cat]">
-                <tal:analysis tal:define="analysis_service_id service/getId;
-                                analysis_keyword python:service.getKeyword();
-                                analysis_found python:analysis_keyword in view.ar['obj'];
-                                analysis python:view.ar['obj'][analysis_keyword] if analysis_found else None;
-                                analysis_result python: analysis.getFormattedResult();
-                                analysis_result_dm python: analysis.getResultDM();
-                                analysis_uncertainty analysis/getUncertainty|nothing;
-                                analysis_accredited python:accredited and service.getAccredited();
-                                analysis_retested python:analysis.getRetested();
-                                spec python:view.get_active_spec_dict(analysis);
-                                analysis_range python: view.getAnalysisSpecsStr(spec) or '';
-                                analysis_outofrange python:view.ResultOutOfRange(analysis);
-                                analysis_remarks python: analysis.getRemarks() or '';
-                                analysis_css_result python:'outofrange' if analysis_outofrange else '';
-                                analysis_css_accredited python:'accredited' if analysis_accredited else '';
-                                analysis_css_retested python:'retested' if analysis_retested else '';">
-                <tr tal:attributes="class python:'%s %s %s' % (analysis_css_result, analysis_css_accredited, analysis_css_retested);">
+        <!--?<h2 tal:content="poc"></h2>-->
+            <tal:category tal:repeat="cat python:view.services[poc].keys()">
+                <thead>
+                    <tr>
 
-                    <td class="analysis" tal:content="service/Title">Total 25-OHD</td>
-                    <td><span class="result" tal:content="string:${analysis_result}">23</span> <span class="units" tal:content="service/Unit|nothing"/></td>
+                        <th class="analysis"><span tal:content="string:${cat}">Category</span></th>
 
+                        <th tal:condition="view/any_prev" class="previous"><span i18n:translate="">Previous Results</span></th>
 
-                    <td class="dryresult"
-                        tal:condition="python: dry==True and analysis_result_dm"
-                        tal:content="string:${analysis_result_dm}  ${service/Unit|nothing}">23</td>
+                        <th class="result"><span i18n:translate="">Result</span></th>
 
+                        <th class="dryresult" tal:condition="dry"><span i18n:translate="">Dry</span></th>
 
-                    <!-- <td class="units" tal:content="service/Unit|nothing">ng/ml</td> -->
-                    <td class="specs">
-                        <span tal:condition="analysis_uncertainty"
-                              tal:replace="string:[+/- $analysis_uncertainty] "></span>
-                        <span tal:replace="python:'(RT) ' if analysis_retested else ''"></span>
-                        <span tal:replace="python:analysis_range">50 - 60</span>
-                    </td>
-                    <td class="outofrange">
-                        <span tal:condition="analysis_outofrange"
-                              tal:replace="python:'*' if analysis_outofrange else ''"></span>
-                    </td>
-                </tr>
-                <tr tal:condition="python:remarksenabled==True and analysis_remarks">
-                    <td class="remarks" colspan="5"
-                        tal:attributes="colspan python: '6' if dry==True else '5';"
-                        tal:content="structure analysis_remarks">
-                        Quisque sodales quam quis faucibus pretium. Aliquam erat volutpat. Pellentesque vel gravida nibh. Curabitur scelerisque cursus pretium. Mauris sollicitudin, risus vitae tincidunt fringilla, nisi risus consequat dolor, a laoreet dui odio eget elit. Etiam metus orci, sagittis sit amet metus in, tempus viverra ipsum. Nulla sed mi pharetra, hendrerit turpis quis, hendrerit elit. In vel eleifend arcu. Phasellus at imperdiet dui, quis mattis velit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-                    </td>
-                </tr>
-                </tal:analysis>
-                </tal:analyses>
-            </tbody>
-        </table>
+                        <th class="specs"><span i18n:translate="">Value Range</span></th>
+
+                        <th class="outofrange"></th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Analysis result row -->
+                    <tal:analyses tal:repeat="service python:view.services[poc][cat]">
+                    <tal:analysis tal:define="analysis_service_id service/getId;
+                                    analysis_keyword python:service.getKeyword();
+                                    analysis_found python:analysis_keyword in view.ar['obj'];
+                                    analysis python:view.ar['obj'][analysis_keyword] if analysis_found else None;
+                                    analysis_result python: analysis.getFormattedResult();
+                                    analysis_result_dm python: analysis.getResultDM();
+                                    analysis_uncertainty analysis/getUncertainty|nothing;
+                                    analysis_accredited python:accredited and service.getAccredited();
+                                    analysis_retested python:analysis.getRetested();
+                                    spec python:view.get_active_spec_dict(analysis);
+                                    analysis_range python: view.getAnalysisSpecsStr(spec) or '';
+                                    analysis_outofrange python:view.ResultOutOfRange(analysis);
+                                    analysis_remarks python: analysis.getRemarks() or '';
+                                    analysis_css_result python:'outofrange' if analysis_outofrange else '';
+                                    analysis_css_accredited python:'accredited' if analysis_accredited else '';
+                                    analysis_css_retested python:'retested' if analysis_retested else ''">
+
+                    <!--? Actual analysis result for this AR: -->
+                    <tr tal:attributes="class python:'actual %s %s %s' % (analysis_css_result, analysis_css_accredited, analysis_css_retested);">
+
+                        <td class="analysis">
+                            <span tal:content="service/Title">Total 25-OHD</span>
+                        </td>
+
+                        <td tal:condition="view/any_prev" class="prev">
+                            <span tal:content="python:view.prev_strings[analysis_keyword]">1,2,3</span>
+                        </td>
+
+                        <td>
+                            <span class="result" tal:content="string:${analysis_result}">23</span>
+                            <span class="units" tal:content="service/Unit|nothing"/>
+                        </td>
+
+                        <td class="dryresult" tal:condition="python: dry==True and analysis_result_dm">
+                            <span tal:content="string:${analysis_result_dm}  ${service/Unit|nothing}">23</span>
+                        </td>
+
+                        <td class="specs">
+                            <span tal:condition="analysis_uncertainty"
+                                  tal:replace="string:[+/- $analysis_uncertainty] "></span>
+                            <span tal:replace="python:'(RT) ' if analysis_retested else ''"></span>
+                            <span tal:replace="python:analysis_range">50 - 60</span>
+                        </td>
+
+                        <td class="outofrange">
+                            <span tal:condition="analysis_outofrange"
+                                  tal:replace="python:'*' if analysis_outofrange else ''"></span>
+                        </td>
+
+                    </tr>
+
+                    <tr tal:condition="python:remarksenabled==True and analysis_remarks">
+                        <td class="remarks" colspan="5"
+                            tal:attributes="colspan python: '6' if dry==True else '5';"
+                            tal:content="structure analysis_remarks">
+                            Quisque sodales quam quis faucibus pretium. Aliquam erat volutpat. Pellentesque vel gravida nibh. Curabitur scelerisque cursus pretium. Mauris sollicitudin, risus vitae tincidunt fringilla, nisi risus consequat dolor, a laoreet dui odio eget elit. Etiam metus orci, sagittis sit amet metus in, tempus viverra ipsum. Nulla sed mi pharetra, hendrerit turpis quis, hendrerit elit. In vel eleifend arcu. Phasellus at imperdiet dui, quis mattis velit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+                        </td>
+                    </tr>
+                    </tal:analysis>
+                    </tal:analyses>
+                </tbody>
+            </tal:category>
         </tal:poc>
+        </table>
     </div>
 
 <!-- QC Results section -->
@@ -361,7 +358,6 @@
         </tal:qctypes>
 
     </div>
-    <pdf:nextpage />
 
 <!--  Remarks section -->
     <div id="section-remarks" tal:condition="python: view.ar['obj'].getRemarks()">
@@ -465,5 +461,6 @@
 
     <div class="footer" tal:condition="view/Footer" tal:content="structure view/Footer">
     </div>
+
 </body>
 </html>

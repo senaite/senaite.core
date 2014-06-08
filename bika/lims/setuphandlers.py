@@ -567,6 +567,7 @@ class BikaGenerator:
         addColumn(bac, 'getRequestID')
         addColumn(bac, 'getReferenceAnalysesGroupID')
         addColumn(bac, 'getResultCaptureDate')
+        addColumn(bac, 'Priority')
 
         # bika_catalog
 
@@ -646,7 +647,8 @@ class BikaGenerator:
         addIndex(bc, 'getSamplingDate', 'DateIndex')
         addIndex(bc, 'getServiceTitle', 'FieldIndex')
         addIndex(bc, 'getWorksheetTemplateTitle', 'FieldIndex')
-
+        addIndex(bc, 'Priority', 'FieldIndex')
+        addIndex(bc, 'BatchUID', 'FieldIndex')
         addColumn(bc, 'path')
         addColumn(bc, 'UID')
         addColumn(bc, 'id')

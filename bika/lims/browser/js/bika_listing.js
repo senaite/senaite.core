@@ -36,7 +36,7 @@ $(document).ready(function(){
 		stored_form_action = $(form).attr("action");
 		$(form).attr("action", window.location.href);
 		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
-		options = {
+		var options = {
 			target: $(this).parents("table"),
 			replaceTarget: true,
 			data: form.formToArray()
@@ -134,7 +134,7 @@ $(document).ready(function(){
 		stored_form_action = $(form).attr("action");
 		$(form).attr("action", window.location.href);
 		$(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
-		options = {
+		var options = {
 			target: $(this).parents('table'),
 			replaceTarget: true,
 			data: form.formToArray()

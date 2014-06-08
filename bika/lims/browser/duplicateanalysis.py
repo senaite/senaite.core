@@ -26,10 +26,8 @@ class ResultOutOfRangeIcons(object):
             out_of_range = ret["out_of_range"]
             spec = ret["spec_values"]
             if out_of_range:
-                message = "{0} ({1} {2}, {3} {4})".format(
-                    t(_('Result out of range')),
-                    t(_("min")), str(spec['min']),
-                    t(_("max")), str(spec['max']))
+                message = t(_("Relative percentage difference, ${variation_here} %, is out of valid range (${variation} %))",
+                      mapping={'variation_here': ret['variation_here'], 'variation': ret['variation'], } ))
                 alerts[self.context.UID()] = [
                     {
                         'msg': message,
@@ -74,18 +72,29 @@ class ResultOutOfRange(object):
                 str(self.context.getService().getDuplicateVariation()))
         except ValueError:
             return None
-        range_min = orig - (orig * variation / 100)
-        range_max = orig + (orig * variation / 100)
+        duplicates_average = float((orig+result)/2)
+        duplicates_diff = float(abs(orig-result))
+        variation_here = float((duplicates_diff/duplicates_average)*100)
+        variation_qty = float(duplicates_diff/2)
+        tolerance_allowed = float(((duplicates_average * variation) / 100) / 2)
+        # range_min = orig - (orig * variation / 100)
+        # range_max = orig + (orig * variation / 100)
+        range_min = duplicates_average - tolerance_allowed
+        range_max = duplicates_average + tolerance_allowed
         spec = {"min": range_min,
                 "max": range_max,
                 "error": 0,
                 }
-        if range_min <= result <= range_max:
-            out_of_range = False
+        # if range_min <= result <= range_max:
+        if variation_here > variation :
+            out_of_range = True
             acceptable = True
         else:
-            out_of_range = True
+            out_of_range = False
             acceptable = True
         return {'out_of_range':out_of_range,
                 'acceptable': acceptable,
-                'spec_values': spec}
+                'spec_values': spec,
+                'variation_here': variation_here,
+                'variation': variation,
+                }

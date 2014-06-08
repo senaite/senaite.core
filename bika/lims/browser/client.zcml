@@ -11,6 +11,13 @@
       name="getContacts"
     />
 
+    <adapter
+      for="bika.lims.interfaces.IClient
+           zope.publisher.interfaces.browser.IBrowserRequest"
+      factory="bika.lims.browser.client.ReferenceWidgetVocabulary"
+      provides="bika.lims.interfaces.IReferenceWidgetVocabulary"
+    />
+
     <!-- Workflow action button clicked -->
     <browser:page
       for="bika.lims.interfaces.IClient"

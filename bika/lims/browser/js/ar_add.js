@@ -1607,8 +1607,6 @@ function ar_add_analyses_overlays(){
     elements = $(".ar_add_analyses");
     for (i = elements.length - 1; i >= 0; i--) {
         elem = elements[i];
-        //field = $(elem).attr('name');
-        //src = window.portal_url + "/araddanalyses?fieldvalue="+field+"&allow_edit=true";
         src = window.portal_url + "/araddanalyses"
         $(elem).attr('src', src);
         $(elem).prepOverlay({
@@ -1631,7 +1629,6 @@ function ar_add_analyses_overlays(){
                         services.push(elements[i].id);
                     };
                     var an_cat = $(analysis_parent).find('.analysiscategory')[0];
-                    //console.log('onLoad:' + arnum + ':' + services + ':' + $(an_cat).attr("poc") + ':' + $(an_cat).attr("cat"));
                     toggleCat($(an_cat).attr("poc"), $(an_cat).attr("cat"),
                               arnum, services);
                     return true;
@@ -1653,10 +1650,9 @@ function ar_add_analyses_overlays(){
                     var something_checked = false;
                     for (i=0; i<elements.length; i++) {
                         elem = elements[i];
-                        //console.log('add overlays:'+elem.title+':'+elem.checked);
                         if (elem.checked == true) {
                             if (elem.title == '') {
-                                //TODO: This shouldn't be required
+                                //TODO: This should not be required
                                 continue;
                             }
                             titles.push(elem.title);

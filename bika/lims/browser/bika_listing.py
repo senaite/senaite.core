@@ -762,6 +762,14 @@ class BikaListingView(BrowserView):
                 t(PMF(actions[a]['id'] + "_transition_title"))
         return actions
 
+    def getPriorityIcon(self):
+        if hasattr(self.context, 'getPriority'):
+            priority = self.context.getPriority()
+            if priority:
+                icon = priority.getBigIcon()
+                if icon:
+                    return '/'.join(icon.getPhysicalPath())
+
 class BikaListingTable(tableview.Table):
 
     render = ViewPageTemplateFile("templates/bika_listing_table.pt")

@@ -59,7 +59,8 @@ def create_samplepartition(context, data, analyses=None):
         for analysis in analyses:
             analysis.setSamplePartition(partition)
     # Perform the appropriate workflow action
-    workflow_action =  '' if workflow_enabled else 'no_' + 'sampling_workflow'
+    workflow_action =  'sampling_workflow' if workflow_enabled \
+        else 'no_sampling_workflow'
     context.portal_workflow.doActionFor(partition, workflow_action)
     # Return the created partition
     return partition
