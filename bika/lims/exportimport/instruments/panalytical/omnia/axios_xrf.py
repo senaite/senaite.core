@@ -1,23 +1,23 @@
-""" PANalytical - Axios_XRF XRF
+""" PANalytical - Omnia Axios XRF
 """
 from bika.lims import bikaMessageFactory as _
-from . import AxiosXrfImporter, AxiosXrfCSVParser
+from . import AxiosXrfImporter, AxiosXrfCSVParser, AxiosXrfCSVMultiParser
 import json
 import traceback
 
-title = "PANalytical - Axios XRF"
+title = "PANalytical - Omnia - Axios XRF"
 
 
 def Import(context, request):
-    """ PANalytical - Axios_XRF XRF analysis results
+    """ PANalytical - Omnia Axios_XRF analysis results
     """
-    infile = request.form['panalytical_axios_xrf_file']
-    fileformat = request.form['panalytical_axios_xrf_format']
-    artoapply = request.form['panalytical_axios_xrf_artoapply']
-    override = request.form['panalytical_axios_xrf_override']
-    sample = request.form.get('panalytical_axios_xrf_sample',
+    infile = request.form['panalytical_omnia_axios_file']
+    fileformat = request.form['panalytical_omnia_axios_format']
+    artoapply = request.form['panalytical_omnia_axios_artoapply']
+    override = request.form['panalytical_omnia_axios_override']
+    sample = request.form.get('panalytical_omnia_axios_sample',
                               'requestid')
-    instrument = request.form.get('panalytical_axios_xrf_instrument', None)
+    instrument = request.form.get('panalytical_omnia_axios_instrument', None)
     errors = []
     logs = []
     warns = []
@@ -28,6 +28,9 @@ def Import(context, request):
         errors.append(_("No file selected"))
     if fileformat == 'csv':
         parser = AxiosXrfCSVParser(infile)
+    elif fileformat == 'csv_multi':
+        parser = AxiosXrfCSVMultiParser(infile)
+
     else:
         errors.append(_("Unrecognized file format '%s'") % fileformat)
 

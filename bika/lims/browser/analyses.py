@@ -198,29 +198,22 @@ class AnalysesView(BikaListingView):
             analysis specified.
             If the service has the getInstrumentEntryOfResults(), returns
             the methods available from the instruments capable to perform
-            the service. If getInstrumentEntryOfResults() is unset, the
-            methods assigned manually to that service are returned.
+            the service, as well as the methods set manually for the
+            analysis on its edit view. If getInstrumentEntryOfResults()
+            is unset, only the methods assigned manually to that service
+            are returned. If the Analysis service method is set to None,
+            but have also at least one method available, adds the 'None'
+            option to the vocabulary.
             If the analysis is None, retrieves all the
             active methods from the catalog.
         """
         ret = []
         if analysis:
-            muids = []
-            methods = []
             service = analysis.getService()
-            if service.getInstrumentEntryOfResults() == False:
-                # Only the methods manually set from the service
-                methods = analysis.getService().getMethods()
-            else:
-                # The methods from the instruments capable to perform
-                # the analysis service
-                instruments = service.getInstruments()
-                for ins in instruments:
-                    method = ins.getMethod()
-                    if method and method.UID() not in muids:
-                       methods.append(method)
-                       muids.append(method.UID())
-
+            methods = service.getAvailableMethods()
+            if methods and not service.getMethod():
+                ret.append({'ResultValue': '',
+                            'ResultText': _('None')})
             for method in methods:
                 ret.append({'ResultValue': method.UID(),
                             'ResultText': method.Title()})
@@ -358,7 +351,7 @@ class AnalysesView(BikaListingView):
             interim_fields = hasattr(obj, 'getInterimFields') \
                 and obj.getInterimFields() or []
             self.interim_fields[obj.UID()] = interim_fields
-
+            items[i]['service_uid'] = service.UID()
             items[i]['Service'] = service.Title()
             items[i]['Keyword'] = keyword
             items[i]['Unit'] = unit and unit or ''
@@ -387,11 +380,14 @@ class AnalysesView(BikaListingView):
             item['allow_edit'] = []
             client_or_lab = ""
 
+            tblrowclass = items[i].get('table_row_class');
             if obj.portal_type == 'ReferenceAnalysis':
                 items[i]['st_uid'] = obj.aq_parent.UID()
+                items[i]['table_row_class'] = ' '.join([tblrowclass, 'qc-analysis']);
             elif obj.portal_type == 'DuplicateAnalysis' and \
                 obj.getAnalysis().portal_type == 'ReferenceAnalysis':
                 items[i]['st_uid'] = obj.aq_parent.UID()
+                items[i]['table_row_class'] = ' '.join([tblrowclass, 'qc-analysis']);
             else:
                 if self.context.portal_type == 'AnalysisRequest':
                     sample = self.context.getSample()
@@ -509,26 +505,34 @@ class AnalysesView(BikaListingView):
                         if hasattr(obj, 'getMethod') and obj.getMethod() \
                         else service.getMethod()
 
-            if can_set_method and method:
-                # Show the dropbox only if at least one method available
+            # Display the methods selector if the AS has at least one
+            # method assigned
+            item['Method'] = ''
+            item['replace']['Method'] = ''
+            if can_set_method:
                 voc = self.get_methods_vocabulary(obj)
                 if voc:
+                    # The service has at least one method available
                     item['Method'] = method.UID() if method else ''
                     item['choices']['Method'] = voc
                     item['allow_edit'].append('Method')
-                else:
+                    show_methodinstr_columns = True
+
+                elif method:
+                    # This should never happen
+                    # The analysis has set a method, but its parent
+                    # service hasn't any method available O_o
                     item['Method'] = method.Title()
                     item['replace']['Method'] = "<a href='%s'>%s</a>" % \
                         (method.absolute_url(), method.Title())
-                show_methodinstr_columns = True
+                    show_methodinstr_columns = True
+
             elif method:
+                # Edition not allowed, but method set
                 item['Method'] = method.Title()
                 item['replace']['Method'] = "<a href='%s'>%s</a>" % \
-                        (method.absolute_url(), method.Title())
+                    (method.absolute_url(), method.Title())
                 show_methodinstr_columns = True
-            else:
-                item['Method'] = ''
-                item['replace']['Method'] = ''
 
             # TODO: Instrument selector dynamic behavior in worksheet Results
             # Only the labmanager must be able to change the instrument to be used. Also,
@@ -538,56 +542,56 @@ class AnalysesView(BikaListingView):
                 and can_edit_analysis \
                 and item['review_state'] in allowed_method_states
 
-            instrument = None
-            # If the analysis has an instrument already assigned, use it
-            if service.getInstrumentEntryOfResults() \
-                and hasattr(obj, 'getInstrument'):
-                    instrument = obj.getInstrument()
-            # Otherwise, use the Service's default instrument
-            elif service.getInstrumentEntryOfResults():
-                    instrument = service.getInstrument()
+            item['Instrument'] = ''
+            item['replace']['Instrument'] = ''
+            if service.getInstrumentEntryOfResults():
+                instrument = None
 
-            #if method and instrument \
-            #    and instrument.UID() not in method.getInstrumentUIDs():
-            #    instrument = None
+                # If the analysis has an instrument already assigned, use it
+                if service.getInstrumentEntryOfResults() \
+                    and hasattr(obj, 'getInstrument') \
+                    and obj.getInstrument():
+                        instrument = obj.getInstrument()
 
-            srv_title = service.Title()
-            inst_title = instrument.Title() if instrument else ''
+                # Otherwise, use the Service's default instrument
+                elif service.getInstrumentEntryOfResults():
+                        instrument = service.getInstrument()
 
-            if not service.getInstrumentEntryOfResults():
-                # Manual entry of results, Instrument not allowed
+                if can_set_instrument:
+                    # Edition allowed
+                    voc = self.get_instruments_vocabulary(obj)
+                    if voc:
+                        # The service has at least one instrument available
+                        item['Instrument'] = instrument.UID() if instrument else ''
+                        item['choices']['Instrument'] = voc
+                        item['allow_edit'].append('Instrument')
+                        show_methodinstr_columns = True
+
+                    elif instrument:
+                        # This should never happen
+                        # The analysis has an instrument set, but the
+                        # service hasn't any available instrument
+                        item['Instrument'] = instrument.Title()
+                        item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
+                            (instrument.absolute_url(), instrument.Title())
+                        show_methodinstr_columns = True
+
+                elif instrument:
+                    # Edition not allowed, but instrument set
+                    item['Instrument'] = instrument.Title()
+                    item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
+                        (instrument.absolute_url(), instrument.Title())
+                    show_methodinstr_columns = True
+
+            else:
+                # Manual entry of results, instrument not allowed
                 item['Instrument'] = _('Manual')
                 msgtitle = t(_(
                     "Instrument entry of results not allowed for ${service}",
-                    mapping={"service": safe_unicode(srv_title)},
+                    mapping={"service": safe_unicode(service.Title())},
                 ))
                 item['replace']['Instrument'] = \
                     '<a href="#" title="%s">%s</a>' % (msgtitle, t(_('Manual')))
-
-            elif can_set_instrument:
-                # Edition allowed
-                voc = self.get_instruments_vocabulary(obj)
-                if voc:
-                    item['Instrument'] = instrument.UID() if instrument else ''
-                    item['choices']['Instrument'] = voc
-                    item['allow_edit'].append('Instrument')
-                else:
-                    item['Instrument'] = inst_title
-                    item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
-                        (instrument.absolute_url(), inst_title)
-                show_methodinstr_columns = True
-
-            elif instrument:
-                # Edition not allowed, but an instrument is set
-                item['Instrument'] = instrument.Title()
-                item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
-                        (instrument.absolute_url(), inst_title)
-                show_methodinstr_columns = True
-
-            else:
-                # Edition not allowed and instrument not set
-                item['Instrument'] = ''
-                item['replace']['Instrument'] = ''
 
             # Sets the analyst assigned to this analysis
             if can_edit_analysis:
@@ -829,6 +833,8 @@ class AnalysesView(BikaListingView):
                 state['columns'].insert(pos, 'ResultDM')
                 new_states.append(state)
             self.review_states = new_states
+
+        self.categories.sort()
 
         # self.json_specs = json.dumps(self.specs)
         self.json_interim_fields = json.dumps(self.interim_fields)

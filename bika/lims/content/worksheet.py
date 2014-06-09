@@ -1,15 +1,17 @@
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
+from bika.lims.utils import to_utf8 as _c
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IWorksheet
-from bika.lims.permissions import EditWorksheet
+from bika.lims.permissions import EditWorksheet, ManageWorksheets
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import skip
 from DateTime import DateTime
 from operator import itemgetter
+from plone.indexer import indexer
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
@@ -18,6 +20,12 @@ from Products.ATExtensions.ateapi import RecordsField
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode, _createObjectByType
 from zope.interface import implements
+
+@indexer(IWorksheet)
+def Priority(instance):
+    priority = instance.getPriority()
+    if priority:
+        return priority.getSortKey()
 
 
 schema = BikaSchema.copy() + Schema((
@@ -578,5 +586,67 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 if workflow.getInfoFor(analysis, 'review_state', '') != 'to_be_verified':
                     continue
                 doActionFor(analysis, "verify")
+
+    def checkUserManage(self):
+        """ Checks if the current user has granted access to this worksheet
+            and if has also privileges for managing it.
+        """
+        granted = False
+        can_access = self.checkUserAccess()
+
+        if can_access == True:
+            pm = getToolByName(self, 'portal_membership')
+            edit_allowed = pm.checkPermission(EditWorksheet, self)
+            if edit_allowed:
+                # Check if the current user is the WS's current analyst
+                member = pm.getAuthenticatedMember()
+                analyst = self.getAnalyst().strip()
+                if analyst != _c(member.getId()):
+                    # Has management privileges?
+                    if pm.checkPermission(ManageWorksheets, self):
+                        granted = True
+                else:
+                    granted = True
+
+        return granted
+
+    def checkUserAccess(self):
+        """ Checks if the current user has granted access to this worksheet.
+            Returns False if the user has no access, otherwise returns True
+        """
+        # Deny access to foreign analysts
+        allowed = True
+        pm = getToolByName(self, "portal_membership")
+        member = pm.getAuthenticatedMember()
+
+        analyst = self.getAnalyst().strip()
+        if analyst != _c(member.getId()):
+            roles = member.getRoles()
+            restrict = 'Manager' not in roles \
+                    and 'LabManager' not in roles \
+                    and 'LabClerk' not in roles \
+                    and 'RegulatoryInspector' not in roles \
+                    and self.bika_setup.getRestrictWorksheetUsersAccess()
+            allowed = not restrict
+
+        return allowed
+
+    def setAnalyst(self,analyst):
+        for analysis in self.getAnalyses():
+            analysis.setAnalyst(analyst)
+        self.Schema().getField('Analyst').set(self, analyst)
+
+    security.declarePublic('getPriority')
+    def getPriority(self):
+        """ get highest priority from all analyses
+        """
+        analyses = self.getAnalyses()
+        priorities = []
+        for analysis in analyses:
+            if analysis.getPriority():
+                priorities.append(analysis.getPriority())
+        priorities = sorted(priorities, key = itemgetter('sortKey'))
+        if priorities:
+            return priorities[-1]
 
 registerType(Worksheet, PROJECTNAME)

@@ -345,4 +345,39 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Fix Analysis Services IMM incoherences"
+        description=""
+        source="3033"
+        destination="3034"
+        handler="bika.lims.upgrade.to3034.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Fix Pricelists - renamed internal VATTotal field"
+        description=""
+        source="3034"
+        destination="3035"
+        handler="bika.lims.upgrade.to3035.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Added user access and management permissions for WS"
+        description=""
+        source="3035"
+        destination="3036"
+        handler="bika.lims.upgrade.to3036.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Make ARs listing sortable on AR Priority sort key"
+        description=""
+        source="3036"
+        destination="3037"
+        handler="bika.lims.upgrade.to3037.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
 </configure>

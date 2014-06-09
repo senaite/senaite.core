@@ -11,6 +11,8 @@ from bika.lims.utils import t
 from bika.lims import PMF, logger
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
+from bika.lims.permissions import EditWorksheet
+from bika.lims.permissions import ManageWorksheets
 from bika.lims.utils import getUsers, tmpID
 from bika.lims.utils import to_utf8 as _c
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -19,7 +21,6 @@ from zope.interface import implements
 import plone
 import json
 import zope
-from bika.lims.permissions import EditWorksheet
 
 class WorksheetFolderWorkflowAction(WorkflowAction):
     """ Workflow actions taken in the WorksheetFolder
@@ -34,6 +35,18 @@ class WorksheetFolderWorkflowAction(WorkflowAction):
         action, came_from = WorkflowAction._get_form_workflow_action(self)
 
         if action == 'reassign':
+            mtool = getToolByName(self.context, 'portal_membership')
+            if not mtool.checkPermission(ManageWorksheets, self.context):
+
+                # Redirect to WS list
+                msg = _('You do not have sufficient privileges to '
+                        'manage worksheets.')
+                self.context.plone_utils.addPortalMessage(msg, 'warning')
+                portal = getToolByName(self.context, 'portal_url').getPortalObject()
+                self.destination_url = portal.absolute_url() + "/worksheets"
+                self.request.response.redirect(self.destination_url)
+                return
+
             selected_worksheets = WorkflowAction._get_selected_items(self)
             selected_worksheet_uids = selected_worksheets.keys()
 
@@ -48,7 +61,7 @@ class WorksheetFolderWorkflowAction(WorkflowAction):
                         changes = True
 
                 if changes:
-                    message = _c(self.context.translate(PMF('Changes saved.')))
+                    message = PMF('Changes saved.')
                     self.context.plone_utils.addPortalMessage(message, 'info')
 
             self.destination_url = self.request.get_header("referer",
@@ -83,6 +96,7 @@ class WorksheetFolderListingView(BikaListingView):
         self.show_select_all_checkbox = True
         self.show_select_column = True
         self.pagesize = 25
+        self.restrict_results = False
 
         request.set('disable_border', 1)
 
@@ -118,6 +132,9 @@ class WorksheetFolderListingView(BikaListingView):
         self.columns = {
             'Title': {'title': _('Worksheet'),
                       'index': 'sortable_title'},
+            'Priority': {'title': _('Priority'),
+                        'index':'Priority',
+                        'toggle': True},
             'Analyst': {'title': _('Analyst'),
                         'index':'getAnalyst',
                         'toggle': True},
@@ -152,6 +169,7 @@ class WorksheetFolderListingView(BikaListingView):
                             {'id':'verify'},
                             {'id':'reject'}],
              'columns':['Title',
+                        'Priority',
                         'Analyst',
                         'Template',
                         'Services',
@@ -172,6 +190,7 @@ class WorksheetFolderListingView(BikaListingView):
                             {'id':'verify'},
                             {'id':'reject'}],
              'columns':['Title',
+                        'Priority',
                         'Analyst',
                         'Template',
                         'Services',
@@ -188,6 +207,7 @@ class WorksheetFolderListingView(BikaListingView):
                                'sort_order': 'reverse'},
              'transitions':[],
              'columns':['Title',
+                        'Priority',
                         'Analyst',
                         'Template',
                         'Services',
@@ -206,6 +226,7 @@ class WorksheetFolderListingView(BikaListingView):
                             {'id':'verify'},
                             {'id':'reject'}],
              'columns':['Title',
+                        'Priority',
                         'Analyst',
                         'Template',
                         'Services',
@@ -222,6 +243,7 @@ class WorksheetFolderListingView(BikaListingView):
                                'sort_order': 'reverse'},
              'transitions':[],
              'columns':['Title',
+                        'Priority',
                         'Analyst',
                         'Template',
                         'Services',
@@ -232,20 +254,56 @@ class WorksheetFolderListingView(BikaListingView):
                         'state_title']},
         ]
 
+    def __call__(self):
+        if not self.isManagementAllowed():
+            # The current has no prvileges to manage WS.
+            # Remove the add button
+            self.context_actions = {}
+
+        return super(WorksheetFolderListingView, self).__call__()
+
+    def isManagementAllowed(self):
+        mtool = getToolByName(self.context, 'portal_membership')
+        return mtool.checkPermission(ManageWorksheets, self.context)
+
     def isEditionAllowed(self):
         pm = getToolByName(self.context, "portal_membership")
         checkPermission = self.context.portal_membership.checkPermission
         return checkPermission(EditWorksheet, self.context)
+
+    def isItemAllowed(self, obj):
+        # Only show "my" worksheets
+        # this cannot be setup in contentFilter,
+        # because AuthenticatedMember is not available in __init__
+        if self.selected_state == 'mine' or self.restrict_results == True:
+            analyst = obj.getAnalyst().strip()
+            if analyst != _c(self.member.getId()):
+                return False
+
+        return BikaListingView.isItemAllowed(self, obj)
 
     def folderitems(self):
         wf = getToolByName(self, 'portal_workflow')
         rc = getToolByName(self, REFERENCE_CATALOG)
         pm = getToolByName(self.context, "portal_membership")
 
-        member = pm.getAuthenticatedMember()
+        self.member = pm.getAuthenticatedMember()
+        roles = self.member.getRoles()
+        self.restrict_results = 'Manager' not in roles \
+                and 'LabManager' not in roles \
+                and 'LabClerk' not in roles \
+                and 'RegulatoryInspector' not in roles \
+                and self.context.bika_setup.getRestrictWorksheetUsersAccess()
 
-        selected_state = self.request.get("%s_review_state"%self.form_id,
-                                          'default')
+        if self.restrict_results == True:
+            # Remove 'Mine' button and hide 'Analyst' column
+            del self.review_states[1] # Mine
+            self.columns['Analyst']['toggle'] = False
+
+        can_manage = pm.checkPermission(ManageWorksheets, self.context)
+
+        self.selected_state = self.request.get("%s_review_state"%self.form_id,
+                                                'default')
 
         items = BikaListingView.folderitems(self)
         new_items = []
@@ -265,17 +323,11 @@ class WorksheetFolderListingView(BikaListingView):
 
             analyst = obj.getAnalyst().strip()
             creator = obj.Creator().strip()
-
-            # Only show "my" worksheets
-            # this cannot be setup in contentFilter,
-            # because AuthenticatedMember is not available in __init__
-            if selected_state == 'mine':
-                this_analyst = _c(member.getId())
-                if analyst != this_analyst:
-                    continue
-
             items[x]['Analyst'] = analyst
 
+            priority = obj.getPriority()
+            items[x]['Priority'] = ''
+            
             instrument = obj.getInstrument()
             items[x]['Instrument'] = instrument and instrument.Title() or ''
 
@@ -286,17 +338,11 @@ class WorksheetFolderListingView(BikaListingView):
                 items[x]['replace']['Template'] = "<a href='%s'>%s</a>" % \
                     (wst.absolute_url(), wst.Title())
 
+            items[x]['getPriority'] = ''
             items[x]['CreationDate'] = self.ulocalized_time(obj.creation_date)
 
             nr_analyses = len(obj.getAnalyses())
             if nr_analyses == '0':
-                # manager and labmanager see *all* worksheets
-                # otherwise we must be Analyst or Creator to see empties.
-                roles = member.getRoles()
-                if not 'Manager' in roles \
-                   and not 'LabManager' in roles \
-                   and not member.getId() in (analyst, creator):
-                    continue
                 # give empties pretty classes.
                 items[x]['table_row_class'] = 'state-empty-worksheet'
 
@@ -373,7 +419,9 @@ class WorksheetFolderListingView(BikaListingView):
             items[x]['replace']['QC'] = " ".join(blanks + controls)
 
             if items[x]['review_state'] == 'open' \
-                and self.allow_edit:
+                and self.allow_edit \
+                and self.restrict_results == False \
+                and can_manage == True:
                 items[x]['allow_edit'] = ['Analyst', ]
                 items[x]['required'] = ['Analyst', ]
                 can_reassign = True
@@ -430,7 +478,7 @@ class AddWorksheetView(BrowserView):
         instrument = self.request.get('instrument', '')
 
         if not analyst:
-            message = _c(self.context.translate("Analyst must be specified."))
+            message = _("Analyst must be specified.")
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
@@ -463,6 +511,6 @@ class AddWorksheetView(BrowserView):
         if ws.getLayout():
             self.request.RESPONSE.redirect(ws.absolute_url() + "/manage_results")
         else:
-            msg = _c(self.context.translate(_("No analyses were added")))
+            msg = _("No analyses were added")
             self.context.plone_utils.addPortalMessage(msg)
             self.request.RESPONSE.redirect(ws.absolute_url() + "/add_analyses")

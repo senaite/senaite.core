@@ -25,7 +25,8 @@ def create_sample(context, request, values):
         # Update the created sample with indicated values
         sample.processForm(REQUEST=request, values=values)
         # Perform the appropriate workflow action
-        workflow_action =  '' if workflow_enabled else 'no_' + 'sampling_workflow'
+        workflow_action =  'sampling_workflow' if workflow_enabled \
+            else 'no_sampling_workflow'
         context.portal_workflow.doActionFor(sample, workflow_action)
         # Set the SampleID
         sample.edit(SampleID=sample.getId())

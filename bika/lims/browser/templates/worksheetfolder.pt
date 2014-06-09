@@ -1,92 +1,92 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:tal="http://xml.zope.org/namespaces/tal"
-	xmlns:metal="http://xml.zope.org/namespaces/metal"
-	metal:use-macro="here/main_template/macros/master"
-	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-	i18n:domain="bika">
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    metal:use-macro="here/main_template/macros/master"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="bika">
 <body
-	tal:define="
-		form_id view/form_id;
-		table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
-	tal:omit-tag="python:table_only">
+    tal:define="
+        form_id view/form_id;
+        table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
+    tal:omit-tag="python:table_only">
 
 <metal:content-title fill-slot="content-title"
-	tal:define="
-		form_id view/form_id;
-		table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
-	tal:condition="python:not table_only">
+    tal:define="
+        form_id view/form_id;
+        table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
+    tal:condition="python:not table_only">
     <h1>
-	<img tal:condition="view/icon | nothing"
+    <img tal:condition="view/icon | nothing"
          src="" tal:attributes="src view/icon"/>
 
-	<span class="documentFirstHeading" tal:content="structure view/title"/>
-	</h1>
+    <span class="documentFirstHeading" tal:content="structure view/title"/>
+    </h1>
 
-	<div class="worksheet_add_controls" tal:condition="view/isEditionAllowed">
-		<form name="worksheet-add-form" action="worksheet_add" method="POST">
+    <div class="worksheet_add_controls" tal:condition="python:view.isManagementAllowed()">
+        <form name="worksheet-add-form" action="worksheet_add" method="POST">
 
-		<span class="context_action_dropdown">
-			<select name="analyst"
-				class='analyst'
-				tal:define="alist view/getAnalysts">
-				<option value='' i18n:translate="">Select analyst</option>
-				<tal:options repeat="option alist">
-					<option
-						tal:condition="python:option"
-						tal:attributes="value python:option"
-						tal:content="python:alist.getValue(option)"/>
-				</tal:options>
-			</select>
-			<span class="fieldRequired" style=""></span>
-		</span>
+        <span class="context_action_dropdown">
+            <select name="analyst"
+                class='analyst'
+                tal:define="alist view/getAnalysts">
+                <option value='' i18n:translate="">Select analyst</option>
+                <tal:options repeat="option alist">
+                    <option
+                        tal:condition="python:option"
+                        tal:attributes="value python:option"
+                        tal:content="python:alist.getValue(option)"/>
+                </tal:options>
+            </select>
+            <span class="fieldRequired" style=""></span>
+        </span>
 
-		<span class="context_action_dropdown">
-			<select name = "template"
-				class='template'
-				tal:define="wstlist view/getWorksheetTemplates">
-				<option value='' i18n:translate="">Select template</option>
-				<tal:options repeat="option wstlist">
-					<option
-						tal:attributes="value python:option"
-						tal:content="python:wstlist.getValue(option)"/>
-				</tal:options>
-			</select>
-		</span>
+        <span class="context_action_dropdown">
+            <select name = "template"
+                class='template'
+                tal:define="wstlist view/getWorksheetTemplates">
+                <option value='' i18n:translate="">Select template</option>
+                <tal:options repeat="option wstlist">
+                    <option
+                        tal:attributes="value python:option"
+                        tal:content="python:wstlist.getValue(option)"/>
+                </tal:options>
+            </select>
+        </span>
 
-		<span class="context_action_dropdown">
-			<select name = "instrument"
-				class='instrument'
-				tal:define="instrlist view/getInstruments">
-				<option value='' i18n:translate="">Select instrument</option>
-				<tal:options repeat="option instrlist">
-					<option
-						tal:attributes="value python:option"
-						tal:content="python:instrlist.getValue(option)"/>
-				</tal:options>
-			</select>
-		</span>
+        <span class="context_action_dropdown">
+            <select name = "instrument"
+                class='instrument'
+                tal:define="instrlist view/getInstruments">
+                <option value='' i18n:translate="">Select instrument</option>
+                <tal:options repeat="option instrlist">
+                    <option
+                        tal:attributes="value python:option"
+                        tal:content="python:instrlist.getValue(option)"/>
+                </tal:options>
+            </select>
+        </span>
 
-		<span tal:condition="python:context.portal_type == 'WorksheetFolder'">
-			<input type='hidden' class='templateinstruments' tal:attributes="value view/getTemplateInstruments"/>
-		</span>
+        <span tal:condition="python:context.portal_type == 'WorksheetFolder'">
+            <input type='hidden' class='templateinstruments' tal:attributes="value view/getTemplateInstruments"/>
+        </span>
 
-		<tal:add_actions repeat="add_item python:view.context_actions.keys()">
-			<input type="submit" tal:attributes="
-				name add_item;
-				value add_item;
-				style python:'background: url(%s) 2px 50%% no-repeat'%(view.context_actions[add_item]['icon']);
-				href python:view.context_actions[add_item]['url'];
-				class python:'context_action_link %s' % (view.context_actions[add_item].get('class',''))"/>
-		</tal:add_actions>
+        <tal:add_actions repeat="add_item python:view.context_actions.keys()">
+            <input type="submit" tal:attributes="
+                name add_item;
+                value add_item;
+                style python:'background: url(%s) 2px 50%% no-repeat'%(view.context_actions[add_item]['icon']);
+                href python:view.context_actions[add_item]['url'];
+                class python:'context_action_link %s' % (view.context_actions[add_item].get('class',''))"/>
+        </tal:add_actions>
 
-		</form>
-	</div>
-	<fieldset/> <!-- just for styling -->
+        </form>
+    </div>
+    <fieldset/> <!-- just for styling -->
 </metal:content-title>
 
 <metal:content-core fill-slot="content-core">
-	<div id="folderlisting-main-table"
-		tal:content="structure view/contents_table"/>
+    <div id="folderlisting-main-table"
+        tal:content="structure view/contents_table"/>
 </metal:content-core>
 
 </body>

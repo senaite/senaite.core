@@ -18,6 +18,8 @@
     <h1>
 		<img tal:condition="view/icon | nothing"
 			 src="" tal:attributes="src view/icon"/>
+        <img tal:condition="view/getPriorityIcon | nothing"
+             src="" tal:attributes="src view/getPriorityIcon"/>
 		<span style="position:relative;top:-0.2em;" class="documentFirstHeading" tal:content="view/title"/>
 		<tal:add_actions repeat="add_item python:view.context_actions.keys()">
 			<a tal:attributes="

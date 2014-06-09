@@ -327,6 +327,7 @@ class JSONReadExtender(object):
                 "Uncertainty": service.getUncertainty(analysis.getResult()),
                 "Method": method.Title() if method else '',
                 "specification": analysis.specification if hs else {},
+                "Unit": service.getUnit(),
             }
             # Place all schema fields ino the result.
             analysis_data.update(load_brain_metadata(proxy, []))
@@ -336,7 +337,7 @@ class JSONReadExtender(object):
             # adapters = getAdapters((analysis, ), IJSONReadExtender)
             # for name, adapter in adapters:
             #     adapter(request, analysis_data)
-            if self.include_fields and "transitions" in self.include_fields:
+            if not self.include_fields or "transitions" in self.include_fields:
                 analysis_data['transitions'] = get_workflow_actions(analysis)
             if analysis.getRetested():
                 retracted = self.context.getAnalyses(review_state='retracted',
@@ -357,34 +358,6 @@ class JSONReadExtender(object):
         if not self.include_fields or "Analyses" in self.include_fields:
             data['Analyses'] = self.ar_analysis_values()
         return data
-
-
-class PriorityIcons(object):
-
-    """An icon provider for indicating AR priorities
-    """
-
-    implements(IFieldIcons)
-    # adapts(IAnalysisRequest)
-
-    def __init__(self, context):
-        self.context = context
-
-    def __call__(self, **kwargs):
-        result = {
-            'msg': '',
-            'field': 'Priority',
-            'icon': '',
-        }
-        priority = self.context.getPriority()
-        if priority:
-            result['msg'] = priority.Title()
-            icon = priority.getSmallIcon()
-            if icon:
-                result['icon'] = '/'.join(icon.getPhysicalPath())
-            return {self.context.UID(): [result]}
-        return {}
-
 
 class mailto_link_from_contacts:
 

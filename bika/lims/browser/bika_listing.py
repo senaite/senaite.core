@@ -114,13 +114,13 @@ class WorkflowAction:
             if items:
                 trans, dest = self.submitTransition(action, came_from, items)
                 if trans:
-                    message = t(PMF('Changes saved.'))
+                    message = PMF('Changes saved.')
                     self.context.plone_utils.addPortalMessage(message, 'info')
                 if dest:
                     self.request.response.redirect(dest)
                     return
             else:
-                message = t(_('No items selected'))
+                message = _('No items selected')
                 self.context.plone_utils.addPortalMessage(message, 'warn')
 
         # Do nothing
@@ -152,7 +152,6 @@ class WorkflowAction:
                     if success:
                         transitioned.append(item.id)
                     else:
-                        message = t(message)
                         self.context.plone_utils.addPortalMessage(message, 'error')
         # automatic label printing
         if transitioned and action == 'receive' \
@@ -512,6 +511,11 @@ class BikaListingView(BrowserView):
                     cats.append(cat)
         return cats
 
+    def isItemAllowed(self, obj):
+        """ return if the item can be added to the items list.
+        """
+        return True
+
     def folderitems(self, full_objects = False):
         """
         """
@@ -556,26 +560,27 @@ class BikaListingView(BrowserView):
         else:
             brains = self.contentsMethod(self.contentFilter)
         results = []
-        self.page_start_index = ""
+        self.page_start_index = 0
+        current_index = 0
         for i, obj in enumerate(brains):
             # we don't know yet if it's a brain or an object
             path = hasattr(obj, 'getPath') and obj.getPath() or \
                  "/".join(obj.getPhysicalPath())
 
-            # avoid creating unnecessary info for items outside the current
-            # batch;  only the path is needed for the "select all" case...
-            if not show_all and not start <= i < end:
-                if hasattr(obj, 'getObject'):
-                    uid = obj.UID
-                else:
-                    uid = obj.UID()
-                results.append(dict(path = path, uid = uid))
-                continue
-            if self.page_start_index == "":
-                self.page_start_index = i
-
             if hasattr(obj, 'getObject'):
                 obj = obj.getObject()
+
+            # check if the item must be rendered or not (prevents from
+            # doing it later in folderitems) and dealing with paging
+            if not self.isItemAllowed(obj):
+                continue
+
+            # avoid creating unnecessary info for items outside the current
+            # batch;  only the path is needed for the "select all" case...
+            if not show_all and not start <= current_index < end:
+                results.append(dict(path = path, uid = obj.UID()))
+                continue
+            current_index += 1
 
             uid = obj.UID()
             title = obj.Title()
@@ -756,6 +761,14 @@ class BikaListingView(BrowserView):
             actions[a]['title'] = \
                 t(PMF(actions[a]['id'] + "_transition_title"))
         return actions
+
+    def getPriorityIcon(self):
+        if hasattr(self.context, 'getPriority'):
+            priority = self.context.getPriority()
+            if priority:
+                icon = priority.getBigIcon()
+                if icon:
+                    return '/'.join(icon.getPhysicalPath())
 
 class BikaListingTable(tableview.Table):
 

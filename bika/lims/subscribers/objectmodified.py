@@ -1,7 +1,6 @@
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore import permissions
 from bika.lims.permissions import AddSupplyOrder
-from bika.lims.permissions import AddClient, EditClient
 
 def ObjectModifiedEventHandler(obj, event):
     """ Various types need automation on edit.
@@ -32,20 +31,3 @@ def ObjectModifiedEventHandler(obj, event):
         mp = obj.manage_permission
         mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Analyst', 'Sampler', 'Preserver'], 0)
         mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
-
-    elif obj.portal_type == 'BikaSetup':
-        allow = obj.Schema().getField('AllowClerksToEditClients').get(obj)
-        portal = getToolByName(obj, 'portal_url').getPortalObject()
-        mp = portal.manage_permission
-        roles = ['Manager', 'Owner', 'LabManager']
-        if allow:
-            roles.append('LabClerk')
-        mp(AddClient, roles, 1)
-        mp(EditClient, roles, 1)
-
-        # Set permissions at object level
-        for obj in portal.clients.objectValues():
-            mp = obj.manage_permission
-            mp(AddClient, roles, 0)
-            mp(EditClient, roles, 0)
-            obj.reindexObject()

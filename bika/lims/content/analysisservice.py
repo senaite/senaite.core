@@ -1,3 +1,5 @@
+import sys
+
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
@@ -5,11 +7,11 @@ from Products.ATExtensions.Extensions.utils import makeDisplayList
 from Products.ATExtensions.ateapi import RecordField, RecordsField
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.public import DisplayList, ReferenceField, \
-                        ComputedField, ComputedWidget, BooleanField, \
-                        BooleanWidget, StringField, SelectionWidget, \
-                        FixedPointField, DecimalWidget, IntegerField, \
-                        IntegerWidget, StringWidget, BaseContent, \
-                        Schema, registerType, MultiSelectionWidget
+    ComputedField, ComputedWidget, BooleanField, \
+    BooleanWidget, StringField, SelectionWidget, \
+    FixedPointField, DecimalWidget, IntegerField, \
+    IntegerWidget, StringWidget, BaseContent, \
+    Schema, registerType, MultiSelectionWidget
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
@@ -23,21 +25,21 @@ from bika.lims.browser.widgets import *
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.browser.fields import *
-from bika.lims.config import ATTACHMENT_OPTIONS, PROJECTNAME, SERVICE_POINT_OF_CAPTURE
+from bika.lims.config import ATTACHMENT_OPTIONS, PROJECTNAME, \
+    SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisService
 from magnitude import mg, MagnitudeError
 from zope import i18n
 from zope.interface import implements
-import sys
 import transaction
+
 
 def getContainers(instance,
                   minvol=None,
                   allow_blank=True,
                   show_container_types=True,
                   show_containers=True):
-
     """ Containers vocabulary
 
     This is a separate class so that it can be called from ajax to filter
@@ -92,7 +94,7 @@ def getContainers(instance,
     for ctype_uid, ctype_title in containertypes.items():
         ctype_title = _c(ctype_title)
         if show_container_types:
-            items.append((ctype_uid, "%s: %s"%(cat_str, ctype_title)))
+            items.append((ctype_uid, "%s: %s" % (cat_str, ctype_title)))
         if show_containers:
             for container in containers:
                 ctype = container.getContainerType()
@@ -101,6 +103,7 @@ def getContainers(instance,
 
     items = tuple(items)
     return items
+
 
 class PartitionSetupField(RecordsField):
     _properties = RecordsField._properties.copy()
@@ -111,122 +114,140 @@ class PartitionSetupField(RecordsField):
             'preservation',
             'container',
             'vol',
-            #'retentionperiod',
-            ),
+            # 'retentionperiod',
+        ),
         'subfield_labels': {
-            'sampletype':_('Sample Type'),
-            'separate':_('Separate Container'),
-            'preservation':_('Preservation'),
-            'container':_('Container'),
-            'vol':_('Required Volume'),
-            #'retentionperiod': _('Retention Period'),
-            },
+            'sampletype': _('Sample Type'),
+            'separate': _('Separate Container'),
+            'preservation': _('Preservation'),
+            'container': _('Container'),
+            'vol': _('Required Volume'),
+            # 'retentionperiod': _('Retention Period'),
+        },
         'subfield_types': {
-            'separate':'boolean',
-            'vol':'string',
-            'preservation':'sampletype',
-            'container':'selection',
-            'preservation':'selection',
-            },
+            'separate': 'boolean',
+            'vol': 'string',
+            'preservation': 'sampletype',
+            'container': 'selection',
+            'preservation': 'selection',
+        },
         'subfield_vocabularies': {
-            'sampletype':'SampleTypes',
-            'preservation':'Preservations',
-            'container':'Containers',
-            },
+            'sampletype': 'SampleTypes',
+            'preservation': 'Preservations',
+            'container': 'Containers',
+        },
         'subfield_sizes': {
             'sampletype': 1,
-            'preservation':6,
-            'vol':8,
+            'preservation': 6,
+            'vol': 8,
             'container': 6,
-            #'retentionperiod':10,
+            # 'retentionperiod':10,
         }
     })
     security = ClassSecurityInfo()
 
     security.declarePublic('SampleTypes')
+
     def SampleTypes(self, instance=None):
         instance = instance or self
         bsc = getToolByName(instance, 'bika_setup_catalog')
         items = []
         for st in bsc(portal_type='SampleType',
                       inactive_state='active',
-                      sort_on = 'sortable_title'):
+                      sort_on='sortable_title'):
             st = st.getObject()
             title = st.Title()
             items.append((st.UID(), title))
-        items = [['','']] + list(items)
+        items = [['', '']] + list(items)
         return DisplayList(items)
 
     security.declarePublic('Preservations')
+
     def Preservations(self, instance=None):
         instance = instance or self
         bsc = getToolByName(instance, 'bika_setup_catalog')
-        items = [(c.UID,c.title) for c in
+        items = [(c.UID, c.title) for c in
                  bsc(portal_type='Preservation',
                      inactive_state='active',
-                     sort_on = 'sortable_title')]
-        items = [['',_('Any')]] + list(items)
+                     sort_on='sortable_title')]
+        items = [['', _('Any')]] + list(items)
         return DisplayList(items)
 
     security.declarePublic('Containers')
+
     def Containers(self, instance=None):
         instance = instance or self
         items = getContainers(instance, allow_blank=True)
         return DisplayList(items)
 
-registerField(PartitionSetupField, title = "", description = "")
 
-## XXX When you modify this schema, be sure to edit the list of fields
+registerField(PartitionSetupField, title="", description="")
+
+# # XXX When you modify this schema, be sure to edit the list of fields
 ## to duplicate, in bika_analysisservices.py.
 
 schema = BikaSchema.copy() + Schema((
+    StringField('ShortTitle',
+                schemata="Description",
+                widget=StringWidget(
+                    label=_("Short title"),
+                    description=_(
+                        "If text is entered here, it is used instead of the "
+                        "title when the service is listed in column headings. "
+                        "HTML formatting is allowed.")
+                ),
+    ),
     StringField('Unit',
-        schemata = "Description",
-        widget = StringWidget(
-            label = _("Unit"),
-            description = _("The measurement units for this analysis service' results, "
-                            "e.g. mg/l, ppm, dB, mV, etc."),
-        ),
+                schemata="Description",
+                widget=StringWidget(
+                    label=_("Unit"),
+                    description=_(
+                        "The measurement units for this analysis service' results, "
+                        "e.g. mg/l, ppm, dB, mV, etc."),
+                ),
     ),
     IntegerField('Precision',
-        schemata = "Analysis",
-        widget = IntegerWidget(
-            label = _("Precision as number of decimals"),
-            description = _("Define the number of decimals to be used for this result"),
-        ),
+                 schemata="Analysis",
+                 widget=IntegerWidget(
+                     label=_("Precision as number of decimals"),
+                     description=_(
+                         "Define the number of decimals to be used for this result"),
+                 ),
     ),
     BooleanField('ReportDryMatter',
-        schemata = "Analysis",
-        default = False,
-        widget = BooleanWidget(
-            label = _("Report as Dry Matter"),
-            description = _("These results can be reported as dry matter"),
-        ),
+                 schemata="Analysis",
+                 default=False,
+                 widget=BooleanWidget(
+                     label=_("Report as Dry Matter"),
+                     description=_("These results can be reported as dry matter"),
+                 ),
     ),
     StringField('AttachmentOption',
-        schemata = "Analysis",
-        default = 'p',
-        vocabulary = ATTACHMENT_OPTIONS,
-        widget = SelectionWidget(
-            label = _("Attachment Option"),
-            description = _("Indicates whether file attachments, e.g. microscope images, "
-                            "are required for this analysis and whether file upload function "
-                            "will be available for it on data capturing screens"),
-            format='select',
-        ),
+                schemata="Analysis",
+                default='p',
+                vocabulary=ATTACHMENT_OPTIONS,
+                widget=SelectionWidget(
+                    label=_("Attachment Option"),
+                    description=_(
+                        "Indicates whether file attachments, e.g. microscope images, "
+                        "are required for this analysis and whether file upload function "
+                        "will be available for it on data capturing screens"),
+                    format='select',
+                ),
     ),
     StringField('Keyword',
-        schemata = "Description",
-        required = 1,
-        searchable = True,
-        validators = ('servicekeywordvalidator'),
-        widget = StringWidget(
-            label = _("Analysis Keyword"),
-            description = _("The unique keyword used to identify the analysis service in "
-                            "import files of bulk AR requests and results imports from instruments. "
-                            "It is also used to identify dependent analysis services in user "
-                            "defined results calculations"),
-        ),
+                schemata="Description",
+                required=1,
+                searchable=True,
+                validators=('servicekeywordvalidator'),
+                widget=StringWidget(
+                    label=_("Analysis Keyword"),
+                    description=_(
+                        "The unique keyword used to identify the analysis service in "
+                        "import files of bulk AR requests and results imports from instruments. "
+                        "It is also used to identify dependent analysis services in user "
+                        "defined results calculations"),
+                ),
     ),
     # Allow/Disallow manual entry of results
     # Behavior controlled by javascript depending on Instruments field:
@@ -234,13 +255,13 @@ schema = BikaSchema.copy() + Schema((
     # - If InstrumentEntry checked, set as not readonly
     # See browser/js/bika.lims.analysisservice.edit.js
     BooleanField('ManualEntryOfResults',
-        schemata = "Method",
-        default=True,
-        widget=BooleanWidget(
-            label=_("Allow manual entry of results"),
-            description=_("Select if the results for this Analysis "
-                          "Service can be set manually."),
-        )
+                 schemata="Method",
+                 default=True,
+                 widget=BooleanWidget(
+                     label=_("Allow manual entry of results"),
+                     description=_("Select if the results for this Analysis "
+                                   "Service can be set manually."),
+                 )
     ),
     # Allow/Disallow instrument entry of results
     # Behavior controlled by javascript depending on Instruments field:
@@ -248,13 +269,13 @@ schema = BikaSchema.copy() + Schema((
     # - If at least one instrument selected, checked, but not readonly
     # See browser/js/bika.lims.analysisservice.edit.js
     BooleanField('InstrumentEntryOfResults',
-        schemata = "Method",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Allow instrument entry of results"),
-            description=_("Select if the results for this Analysis "
-                          "Service can be set using an Instrument."),
-        )
+                 schemata="Method",
+                 default=False,
+                 widget=BooleanWidget(
+                     label=_("Allow instrument entry of results"),
+                     description=_("Select if the results for this Analysis "
+                                   "Service can be set using an Instrument."),
+                 )
     ),
     # Instruments associated to the AS
     # List of instruments capable to perform the Analysis Service. The
@@ -263,23 +284,23 @@ schema = BikaSchema.copy() + Schema((
     # - If InstrumentEntry not checked, hide and unset
     # - If InstrumentEntry checked, set the first selected and show
     ReferenceField('Instruments',
-        schemata = "Method",
-        required = 0,
-        multiValued = 1,
-        vocabulary_display_path_bound = sys.maxint,
-        vocabulary = '_getAvailableInstrumentsDisplayList',
-        allowed_types = ('Instrument',),
-        relationship = 'AnalysisServiceInstruments',
-        referenceClass = HoldingReference,
-        widget = MultiSelectionWidget(
-            label = _("Instruments"),
-            description = _("More than one instrument can do an "
-                            "Analysis Service. The instruments "
-                            "selected here are displayed in the "
-                            "Analysis Request creation view for its "
-                            "selection when this Analysis Service is "
-                            "selected."),
-        )
+                   schemata="Method",
+                   required=0,
+                   multiValued=1,
+                   vocabulary_display_path_bound=sys.maxint,
+                   vocabulary='_getAvailableInstrumentsDisplayList',
+                   allowed_types=('Instrument',),
+                   relationship='AnalysisServiceInstruments',
+                   referenceClass=HoldingReference,
+                   widget=MultiSelectionWidget(
+                       label=_("Instruments"),
+                       description=_("More than one instrument can do an "
+                                     "Analysis Service. The instruments "
+                                     "selected here are displayed in the "
+                                     "Analysis Request creation view for its "
+                                     "selection when this Analysis Service is "
+                                     "selected."),
+                   )
     ),
     # Default instrument to be used.
     # Gets populated with the instruments selected in the multiselection
@@ -290,31 +311,33 @@ schema = BikaSchema.copy() + Schema((
     # - If InstrumentEntry not checked, hide and set None
     # See browser/js/bika.lims.analysisservice.edit.js
     HistoryAwareReferenceField('Instrument',
-        schemata = "Method",
-        searchable = True,
-        required = 0,
-        vocabulary_display_path_bound = sys.maxint,
-        vocabulary = '_getAvailableInstrumentsDisplayList',
-        allowed_types = ('Instrument',),
-        relationship = 'AnalysisServiceInstrument',
-        referenceClass = HoldingReference,
-        widget = SelectionWidget(
-            format='select',
-            label=_('Default Instrument')
-        ),
+                               schemata="Method",
+                               searchable=True,
+                               required=0,
+                               vocabulary_display_path_bound=sys.maxint,
+                               vocabulary='_getAvailableInstrumentsDisplayList',
+                               allowed_types=('Instrument',),
+                               relationship='AnalysisServiceInstrument',
+                               referenceClass=HoldingReference,
+                               widget=SelectionWidget(
+                                   format='select',
+                                   label=_('Default Instrument')
+                               ),
     ),
     # Returns the Default's instrument title. If no default instrument
     # set, returns string.empty
     ComputedField('InstrumentTitle',
-        expression = "context.getInstrument() and context.getInstrument().Title() or ''",
-        widget = ComputedWidget(
-            visible = False,
-        ),
+                  expression="context.getInstrument() and context.getInstrument().Title() or ''",
+                  widget=ComputedWidget(
+                      visible=False,
+                  ),
     ),
-    # Methods associated to the AS
+    # Manual methods associated to the AS
     # List of methods capable to perform the Analysis Service. The
     # Methods selected here are displayed in the Analysis Request
     # Add view, closer to this Analysis Service if selected.
+    # Use getAvailableMethods() to retrieve the list with methods both
+    # from selected instruments and manually entered.
     # Behavior controlled by js depending on ManualEntry/Instrument:
     # - If InstrumentEntry checked, hide and unselect
     # - If InsrtumentEntry not checked, show
@@ -335,7 +358,9 @@ schema = BikaSchema.copy() + Schema((
                             "selected here are displayed in the "
                             "Analysis Request creation view for its "
                             "selection when this Analaysis Service "
-                            "is selected"),
+                            "is selected. Only methods with 'Allow "
+                            "manual entry of results' enabled are "
+                            "displayed."),
         )
     ),
     # Default method to be used. This field is used in Analysis Service
@@ -360,13 +385,10 @@ schema = BikaSchema.copy() + Schema((
         widget = SelectionWidget(
             format='select',
             label=_('Default Method'),
-            description=_("If 'Allow instrument entry "
-                          "of results' is selected, the Default method to "
-                          "be used will be the method set in the "
-                          "Default Instrument. Otherwise, the Method "
-                          "to be used can be set manually, but only the "
-                          "Methods with 'Manual entry of results' set "
-                          "will be displayed.")
+            description=_("If 'Allow instrument entry of results' "
+                          "is selected, the method from the default instrument "
+                          "will be used. Otherwise, only the methods "
+                          "selected above will be displayed.")
         ),
     ),
     # Allow/Disallow to set the calculation manually
@@ -375,15 +397,15 @@ schema = BikaSchema.copy() + Schema((
     # - If at least one instrument selected, checked, but not readonly
     # See browser/js/bika.lims.analysisservice.edit.js
     BooleanField('UseDefaultCalculation',
-        schemata = "Method",
-        default=True,
-        widget=BooleanWidget(
-            label=_("Use default calculation"),
-            description=_("Select if the calculation to be used is the "
-                          "calculation set by default in the default "
-                          "method. If unselected, the calculation can "
-                          "be selected manually"),
-        )
+                 schemata="Method",
+                 default=True,
+                 widget=BooleanWidget(
+                     label=_("Use default calculation"),
+                     description=_("Select if the calculation to be used is the "
+                                   "calculation set by default in the default "
+                                   "method. If unselected, the calculation can "
+                                   "be selected manually"),
+                 )
     ),
     # Default calculation to be used. This field is used in Analysis Service
     # Edit view, use getCalculation() to retrieve the Calculation to be used in
@@ -394,23 +416,23 @@ schema = BikaSchema.copy() + Schema((
     # - If UseDefaultCalculation is set to True, show this field
     # See browser/js/bika.lims.analysisservice.edit.js
     ReferenceField('_Calculation',
-        schemata = "Method",
-        required = 0,
-        vocabulary_display_path_bound = sys.maxint,
-        vocabulary = '_getAvailableCalculationsDisplayList',
-        allowed_types = ('Calculation',),
-        relationship = 'AnalysisServiceCalculation',
-        referenceClass = HoldingReference,
-        widget = SelectionWidget(
-            format='select',
-            label= _('Default Calculation'),
-            description = _("Default calculation to be used from the "
-                            "default Method selected. The Calculation "
-                            "for a method can be assigned in the Method "
-                            "edit view."),
-            catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
-        ),
+                   schemata="Method",
+                   required=0,
+                   vocabulary_display_path_bound=sys.maxint,
+                   vocabulary='_getAvailableCalculationsDisplayList',
+                   allowed_types=('Calculation',),
+                   relationship='AnalysisServiceCalculation',
+                   referenceClass=HoldingReference,
+                   widget=SelectionWidget(
+                       format='select',
+                       label=_('Default Calculation'),
+                       description=_("Default calculation to be used from the "
+                                     "default Method selected. The Calculation "
+                                     "for a method can be assigned in the Method "
+                                     "edit view."),
+                       catalog_name='bika_setup_catalog',
+                       base_query={'inactive_state': 'active'},
+                   ),
     ),
     # Default calculation is not longer linked directly to the AS: it
     # currently uses the calculation linked to the default Method.
@@ -425,278 +447,291 @@ schema = BikaSchema.copy() + Schema((
     # See browser/js/bika.lims.analysisservice.edit.js
     #     bika/lims/upgrade/to3008.py
     ReferenceField('DeferredCalculation',
-        schemata = "Method",
-        required = 0,
-        vocabulary_display_path_bound = sys.maxint,
-        vocabulary = '_getAvailableCalculationsDisplayList',
-        allowed_types = ('Calculation',),
-        relationship = 'AnalysisServiceDeferredCalculation',
-        referenceClass = HoldingReference,
-        widget = SelectionWidget(
-            format='select',
-            label= _('Alternative Calculation'),
-            description = _("If required, select a calculation for the analysis here. "
-                            "Calculations can be configured under the calculations item "
-                            "in the LIMS set-up"),
-            catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
-        ),
+                   schemata="Method",
+                   required=0,
+                   vocabulary_display_path_bound=sys.maxint,
+                   vocabulary='_getAvailableCalculationsDisplayList',
+                   allowed_types=('Calculation',),
+                   relationship='AnalysisServiceDeferredCalculation',
+                   referenceClass=HoldingReference,
+                   widget=SelectionWidget(
+                       format='select',
+                       label=_('Alternative Calculation'),
+                       description=_(
+                           "If required, select a calculation for the analysis here. "
+                           "Calculations can be configured under the calculations item "
+                           "in the LIMS set-up"),
+                       catalog_name='bika_setup_catalog',
+                       base_query={'inactive_state': 'active'},
+                   ),
     ),
 
     ComputedField('CalculationTitle',
-        expression = "context.getCalculation() and context.getCalculation().Title() or ''",
-        searchable = True,
-        widget = ComputedWidget(
-            visible = False,
-        ),
+                  expression="context.getCalculation() and context.getCalculation().Title() or ''",
+                  searchable=True,
+                  widget=ComputedWidget(
+                      visible=False,
+                  ),
     ),
     ComputedField('CalculationUID',
-        expression = "context.getCalculation() and context.getCalculation().UID() or ''",
-        widget = ComputedWidget(
-            visible = False,
-        ),
+                  expression="context.getCalculation() and context.getCalculation().UID() or ''",
+                  widget=ComputedWidget(
+                      visible=False,
+                  ),
     ),
     InterimFieldsField('InterimFields',
-        schemata = 'Method',
-        widget = RecordsWidget(
-            label = _("Calculation Interim Fields"),
-            description =_("Values can be entered here which will override the defaults "
-                           "specified in the Calculation Interim Fields."),
-        ),
+                       schemata='Method',
+                       widget=RecordsWidget(
+                           label=_("Calculation Interim Fields"),
+                           description=_(
+                               "Values can be entered here which will override the defaults "
+                               "specified in the Calculation Interim Fields."),
+                       ),
     ),
     DurationField('MaxTimeAllowed',
-        schemata = "Analysis",
-        widget = DurationWidget(
-            label = _("Maximum turn-around time"),
-            description = _("Maximum time allowed for completion of the analysis. "
-                            "A late analysis alert is raised when this period elapses"),
-        ),
+                  schemata="Analysis",
+                  widget=DurationWidget(
+                      label=_("Maximum turn-around time"),
+                      description=_(
+                          "Maximum time allowed for completion of the analysis. "
+                          "A late analysis alert is raised when this period elapses"),
+                  ),
     ),
     FixedPointField('DuplicateVariation',
-        schemata = "Method",
-        widget = DecimalWidget(
-            label = _("Duplicate Variation %"),
-            description = _("When the results of duplicate analyses on worksheets, "
+                    schemata="Method",
+                    widget=DecimalWidget(
+                        label=_("Duplicate Variation %"),
+                        description=_(
+                            "When the results of duplicate analyses on worksheets, "
                             "carried out on the same sample, differ with more than "
                             "this percentage, an alert is raised"),
-        ),
+                    ),
     ),
     BooleanField('Accredited',
-        schemata = "Method",
-        default = False,
-        widget = BooleanWidget(
-            label = _("Accredited"),
-            description = _("Check this box if the analysis service is included in the "
-                            "laboratory's schedule of accredited analyses"),
-        ),
+                 schemata="Method",
+                 default=False,
+                 widget=BooleanWidget(
+                     label=_("Accredited"),
+                     description=_(
+                         "Check this box if the analysis service is included in the "
+                         "laboratory's schedule of accredited analyses"),
+                 ),
     ),
     StringField('PointOfCapture',
-        schemata = "Description",
-        required = 1,
-        default = 'lab',
-        vocabulary = SERVICE_POINT_OF_CAPTURE,
-        widget = SelectionWidget(
-            format = 'flex',
-            label = _("Point of Capture"),
-            description = _("The results of field analyses are captured during sampling "
-                            "at the sample point, e.g. the temperature of a water sample "
-                            "in the river where it is sampled. Lab analyses are done in "
-                            "the laboratory"),
-        ),
+                schemata="Description",
+                required=1,
+                default='lab',
+                vocabulary=SERVICE_POINT_OF_CAPTURE,
+                widget=SelectionWidget(
+                    format='flex',
+                    label=_("Point of Capture"),
+                    description=_(
+                        "The results of field analyses are captured during sampling "
+                        "at the sample point, e.g. the temperature of a water sample "
+                        "in the river where it is sampled. Lab analyses are done in "
+                        "the laboratory"),
+                ),
     ),
     ReferenceField('Category',
-        schemata = "Description",
-        required = 1,
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('AnalysisCategory',),
-        relationship = 'AnalysisServiceAnalysisCategory',
-        referenceClass = HoldingReference,
-        vocabulary = 'getAnalysisCategories',
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
-            label = _("Analysis Category"),
-            description = _("The category the analysis service belongs to"),
-            catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
-        ),
+                   schemata="Description",
+                   required=1,
+                   vocabulary_display_path_bound=sys.maxint,
+                   allowed_types=('AnalysisCategory',),
+                   relationship='AnalysisServiceAnalysisCategory',
+                   referenceClass=HoldingReference,
+                   vocabulary='getAnalysisCategories',
+                   widget=ReferenceWidget(
+                       checkbox_bound=0,
+                       label=_("Analysis Category"),
+                       description=_(
+                           "The category the analysis service belongs to"),
+                       catalog_name='bika_setup_catalog',
+                       base_query={'inactive_state': 'active'},
+                   ),
     ),
     FixedPointField('Price',
-        schemata = "Description",
-        default = '0.00',
-        widget = DecimalWidget(
-            label = _("Price (excluding VAT)"),
-            ),
-        ),
+                    schemata="Description",
+                    default='0.00',
+                    widget=DecimalWidget(
+                        label=_("Price (excluding VAT)"),
+                    ),
+    ),
     # read access permission
     FixedPointField('BulkPrice',
-        schemata = "Description",
-        default = '0.00',
-        widget = DecimalWidget(
-            label = _("Bulk price (excluding VAT)"),
-            description = _("The price charged per analysis for clients who qualify for bulk discounts"),
-                        ),
-        ),
+                    schemata="Description",
+                    default='0.00',
+                    widget=DecimalWidget(
+                        label=_("Bulk price (excluding VAT)"),
+                        description=_(
+                            "The price charged per analysis for clients who qualify for bulk discounts"),
+                    ),
+    ),
     ComputedField('VATAmount',
-        schemata = "Description",
-        expression = 'context.getVATAmount()',
-        widget = ComputedWidget(
-            label = _("VAT"),
-            visible = {'edit':'hidden', }
-        ),
+                  schemata="Description",
+                  expression='context.getVATAmount()',
+                  widget=ComputedWidget(
+                      label=_("VAT"),
+                      visible={'edit': 'hidden', }
+                  ),
     ),
     ComputedField('TotalPrice',
-        schemata = "Description",
-        expression = 'context.getTotalPrice()',
-        widget = ComputedWidget(
-            label = _("Total price"),
-            visible = {'edit':'hidden', }
-        ),
+                  schemata="Description",
+                  expression='context.getTotalPrice()',
+                  widget=ComputedWidget(
+                      label=_("Total price"),
+                      visible={'edit': 'hidden', }
+                  ),
     ),
     FixedPointField('VAT',
-        schemata = "Description",
-        default_method = 'getDefaultVAT',
-        widget = DecimalWidget(
-            label = _("VAT %"),
-            description = _("Enter percentage value eg. 14.0"),
-        ),
+                    schemata="Description",
+                    default_method='getDefaultVAT',
+                    widget=DecimalWidget(
+                        label=_("VAT %"),
+                        description=_("Enter percentage value eg. 14.0"),
+                    ),
     ),
     ComputedField('CategoryTitle',
-        expression = "context.getCategory() and context.getCategory().Title() or ''",
-        widget = ComputedWidget(
-            visible = False,
-        ),
+                  expression="context.getCategory() and context.getCategory().Title() or ''",
+                  widget=ComputedWidget(
+                      visible=False,
+                  ),
     ),
     ComputedField('CategoryUID',
-        expression = "context.getCategory() and context.getCategory().UID() or ''",
-        widget = ComputedWidget(
-            visible = False,
-        ),
+                  expression="context.getCategory() and context.getCategory().UID() or ''",
+                  widget=ComputedWidget(
+                      visible=False,
+                  ),
     ),
     ReferenceField('Department',
-        schemata = "Description",
-        required = 0,
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('Department',),
-        vocabulary = 'getDepartments',
-        relationship = 'AnalysisServiceDepartment',
-        referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
-            label = _("Department"),
-            description = _("The laboratory department"),
-            catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
-        ),
+                   schemata="Description",
+                   required=0,
+                   vocabulary_display_path_bound=sys.maxint,
+                   allowed_types=('Department',),
+                   vocabulary='getDepartments',
+                   relationship='AnalysisServiceDepartment',
+                   referenceClass=HoldingReference,
+                   widget=ReferenceWidget(
+                       checkbox_bound=0,
+                       label=_("Department"),
+                       description=_("The laboratory department"),
+                       catalog_name='bika_setup_catalog',
+                       base_query={'inactive_state': 'active'},
+                   ),
     ),
     ComputedField('DepartmentTitle',
-        expression = "context.getDepartment() and context.getDepartment().Title() or ''",
-        searchable = True,
-        widget = ComputedWidget(
-            visible = False,
-        ),
+                  expression="context.getDepartment() and context.getDepartment().Title() or ''",
+                  searchable=True,
+                  widget=ComputedWidget(
+                      visible=False,
+                  ),
     ),
     RecordsField('Uncertainties',
-        schemata = "Uncertainties",
-        type = 'uncertainties',
-        subfields = ('intercept_min', 'intercept_max', 'errorvalue'),
-        required_subfields = ('intercept_min', 'intercept_max', 'errorvalue'),
-        subfield_sizes = {'intercept_min': 10,
-                           'intercept_max': 10,
-                           'errorvalue': 10,
-                           },
-        subfield_labels = {'intercept_min': _('Range min'),
-                           'intercept_max': _('Range max'),
-                           'errorvalue': _('Uncertainty value'),
-                           },
-        subfield_validators = {'intercept_min': 'uncertainties_validator',
-                               'intercept_max': 'uncertainties_validator',
-                               'errorvalue': 'uncertainties_validator',
-                               },
-        widget = RecordsWidget(
-            label = _("Uncertainty"),
-            description = _("Specify the uncertainty value for a given range, e.g. for results "
-                            "in a range with minimum of 0 and maximum of 10, the uncertainty "
-                            "value is 0.5 - a result of 6.67 will be reported as 6.67 +- 0.5. "
-                            "Please ensure successive ranges are continuous, e.g. 0.00 - 10.00 "
-                            "is followed by 10.01 - 20.00, 20.01 - 30 .00 etc."),
-        ),
+                 schemata="Uncertainties",
+                 type='uncertainties',
+                 subfields=('intercept_min', 'intercept_max', 'errorvalue'),
+                 required_subfields=(
+                 'intercept_min', 'intercept_max', 'errorvalue'),
+                 subfield_sizes={'intercept_min': 10,
+                                 'intercept_max': 10,
+                                 'errorvalue': 10,
+                 },
+                 subfield_labels={'intercept_min': _('Range min'),
+                                  'intercept_max': _('Range max'),
+                                  'errorvalue': _('Uncertainty value'),
+                 },
+                 subfield_validators={'intercept_min': 'uncertainties_validator',
+                                      'intercept_max': 'uncertainties_validator',
+                                      'errorvalue': 'uncertainties_validator',
+                 },
+                 widget=RecordsWidget(
+                     label=_("Uncertainty"),
+                     description=_(
+                         "Specify the uncertainty value for a given range, e.g. for results "
+                         "in a range with minimum of 0 and maximum of 10, the uncertainty "
+                         "value is 0.5 - a result of 6.67 will be reported as 6.67 +- 0.5. "
+                         "Please ensure successive ranges are continuous, e.g. 0.00 - 10.00 "
+                         "is followed by 10.01 - 20.00, 20.01 - 30 .00 etc."),
+                 ),
     ),
     RecordsField('ResultOptions',
-        schemata = "Result Options",
-        type = 'resultsoptions',
-        subfields = ('ResultValue','ResultText'),
-        required_subfields = ('ResultValue','ResultText'),
-        subfield_labels = {'ResultValue': _('Result Value'),
-                           'ResultText': _('Display Value'),},
-        subfield_validators = {'ResultValue': 'resultoptionsvalidator',
-                               'ResultText': 'resultoptionsvalidator'},
-        subfield_sizes = {'ResultValue': 5,
-                           'ResultText': 25,
-                           },
-        widget = RecordsWidget(
-            label = _("Result Options"),
-            description = _("Please list all options for the analysis result if you want to restrict "
-                            "it to specific options only, e.g. 'Positive', 'Negative' and "
-                            "'Indeterminable'.  The option's result value must be a number"),
-        ),
+                 schemata="Result Options",
+                 type='resultsoptions',
+                 subfields=('ResultValue', 'ResultText'),
+                 required_subfields=('ResultValue', 'ResultText'),
+                 subfield_labels={'ResultValue': _('Result Value'),
+                                  'ResultText': _('Display Value'), },
+                 subfield_validators={'ResultValue': 'resultoptionsvalidator',
+                                      'ResultText': 'resultoptionsvalidator'},
+                 subfield_sizes={'ResultValue': 5,
+                                 'ResultText': 25,
+                 },
+                 widget=RecordsWidget(
+                     label=_("Result Options"),
+                     description=_(
+                         "Please list all options for the analysis result if you want to restrict "
+                         "it to specific options only, e.g. 'Positive', 'Negative' and "
+                         "'Indeterminable'.  The option's result value must be a number"),
+                 ),
     ),
     BooleanField('Separate',
-        schemata = 'Container and Preservation',
-        default = False,
-        required = 0,
-        widget = BooleanWidget(
-            label = _('Separate Container'),
-            description = _("Check this box to ensure a separate sample "
-                            "container is used for this analysis service"),
-        ),
+                 schemata='Container and Preservation',
+                 default=False,
+                 required=0,
+                 widget=BooleanWidget(
+                     label=_('Separate Container'),
+                     description=_("Check this box to ensure a separate sample "
+                                   "container is used for this analysis service"),
+                 ),
     ),
     ReferenceField('Preservation',
-        schemata = 'Container and Preservation',
-        allowed_types=('Preservation',),
-        relationship='AnalysisServicePreservation',
-        referenceClass=HoldingReference,
-        vocabulary = 'getPreservations',
-        required=0,
-        multiValued=0,
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
-            label = _('Default Preservation'),
-            description = _("Select a default preservation for this "
-                            "analysis service. If the preservation depends on "
-                            "the sample type combination, specify a preservation "
-                            "per sample type in the table below"),
-            catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
-        ),
+                   schemata='Container and Preservation',
+                   allowed_types=('Preservation',),
+                   relationship='AnalysisServicePreservation',
+                   referenceClass=HoldingReference,
+                   vocabulary='getPreservations',
+                   required=0,
+                   multiValued=0,
+                   widget=ReferenceWidget(
+                       checkbox_bound=0,
+                       label=_('Default Preservation'),
+                       description=_("Select a default preservation for this "
+                                     "analysis service. If the preservation depends on "
+                                     "the sample type combination, specify a preservation "
+                                     "per sample type in the table below"),
+                       catalog_name='bika_setup_catalog',
+                       base_query={'inactive_state': 'active'},
+                   ),
     ),
     ReferenceField('Container',
-        schemata = 'Container and Preservation',
-        allowed_types=('Container','ContainerType'),
-        relationship='AnalysisServiceContainer',
-        referenceClass=HoldingReference,
-        vocabulary = 'getContainers',
-        required=0,
-        multiValued=0,
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
-            label = _('Default Container'),
-            description = _("Select the default container to be used for this "
-                            "analysis service. If the container to be used "
-                            "depends on the sample type and preservation "
-                            "combination, specify the container in the sample "
-                            "type table below"),
-            catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
-        ),
+                   schemata='Container and Preservation',
+                   allowed_types=('Container', 'ContainerType'),
+                   relationship='AnalysisServiceContainer',
+                   referenceClass=HoldingReference,
+                   vocabulary='getContainers',
+                   required=0,
+                   multiValued=0,
+                   widget=ReferenceWidget(
+                       checkbox_bound=0,
+                       label=_('Default Container'),
+                       description=_(
+                           "Select the default container to be used for this "
+                           "analysis service. If the container to be used "
+                           "depends on the sample type and preservation "
+                           "combination, specify the container in the sample "
+                           "type table below"),
+                       catalog_name='bika_setup_catalog',
+                       base_query={'inactive_state': 'active'},
+                   ),
     ),
     PartitionSetupField('PartitionSetup',
-        schemata = 'Container and Preservation',
-        widget = PartitionSetupWidget(
-            label = PMF("Preservation per sample type"),
-            description = _("Please specify preservations that differ from the "
-                            "analysis service's default preservation per sample "
-                            "type here."),
-        ),
+                        schemata='Container and Preservation',
+                        widget=PartitionSetupWidget(
+                            label=PMF("Preservation per sample type"),
+                            description=_(
+                                "Please specify preservations that differ from the "
+                                "analysis service's default preservation per sample "
+                                "type here."),
+                        ),
     ),
 ))
 
@@ -706,6 +741,8 @@ schema['description'].widget.visible = True
 schema['title'].required = True
 schema['title'].widget.visible = True
 schema['title'].schemata = 'Description'
+schema.moveField('ShortTitle', after='title')
+
 
 class AnalysisService(BaseContent, HistoryAwareMixin):
     security = ClassSecurityInfo()
@@ -714,14 +751,17 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
     implements(IAnalysisService)
 
     _at_rename_after_creation = True
+
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
+
         return renameAfterCreation(self)
 
     def Title(self):
         return _c(self.title)
 
     security.declarePublic('getDiscountedPrice')
+
     def getDiscountedPrice(self):
         """ compute discounted price excl. vat """
         price = self.getPrice()
@@ -731,6 +771,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         return float(price) - (float(price) * float(discount)) / 100
 
     security.declarePublic('getDiscountedBulkPrice')
+
     def getDiscountedBulkPrice(self):
         """ compute discounted bulk discount excl. vat """
         price = self.getBulkPrice()
@@ -756,6 +797,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         return float(price) + (float(price) * float(vat)) / 100
 
     security.declarePublic('getTotalDiscountedPrice')
+
     def getTotalDiscountedPrice(self):
         """ compute total discounted price """
         price = self.getDiscountedPrice()
@@ -765,6 +807,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         return float(price) + (float(price) * float(vat)) / 100
 
     security.declarePublic('getTotalDiscountedCorporatePrice')
+
     def getTotalDiscountedBulkPrice(self):
         """ compute total discounted corporate price """
         price = self.getDiscountedCorporatePrice()
@@ -782,6 +825,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
             return "0.00"
 
     security.declarePublic('getVATAmount')
+
     def getVATAmount(self):
         """ Compute VATAmount
         """
@@ -792,11 +836,11 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(o.UID, o.Title) for o in
                  bsc(portal_type='AnalysisCategory',
-                     inactive_state = 'active')]
+                     inactive_state='active')]
         o = self.getCategory()
         if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))
-        items.sort(lambda x,y: cmp(x[1], y[1]))
+        items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
     def _getAvailableInstrumentsDisplayList(self):
@@ -806,9 +850,9 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(i.UID, i.Title) \
-                for i in bsc(portal_type='Instrument',
-                             inactive_state = 'active')]
-        items.sort(lambda x,y: cmp(x[1], y[1]))
+                 for i in bsc(portal_type='Instrument',
+                              inactive_state='active')]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
     def _getAvailableMethodsDisplayList(self):
@@ -820,10 +864,10 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(i.UID, i.Title) \
-                for i in bsc(portal_type='Method',
-                             inactive_state = 'active') \
-                        if i.getObject().isManualEntryOfResults()]
-        items.sort(lambda x,y: cmp(x[1], y[1]))
+                 for i in bsc(portal_type='Method',
+                              inactive_state='active') \
+                 if i.getObject().isManualEntryOfResults()]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
         items.insert(0, ('', _("None")))
         return DisplayList(list(items))
 
@@ -835,9 +879,9 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(i.UID, i.Title) \
-                for i in bsc(portal_type='Calculation',
-                             inactive_state = 'active')]
-        items.sort(lambda x,y: cmp(x[1], y[1]))
+                 for i in bsc(portal_type='Calculation',
+                              inactive_state='active')]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
         items.insert(0, ('', _("None")))
         return DisplayList(list(items))
 
@@ -850,9 +894,9 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         """
         if self.getUseDefaultCalculation():
             return self.getMethod().getCalculation() \
-                    if (self.getMethod() \
-                       and self.getMethod().getCalculation()) \
-                    else None
+                if (self.getMethod() \
+                    and self.getMethod().getCalculation()) \
+                else None
         else:
             return self.getDeferredCalculation()
 
@@ -866,22 +910,55 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         method = None
         if (self.getInstrumentEntryOfResults() == True):
             method = self.getInstrument().getMethod() \
-                     if (self.getInstrument() \
-                        and self.getInstrument().getMethod()) \
-                     else None
+                if (self.getInstrument() \
+                    and self.getInstrument().getMethod()) \
+                else None
         else:
             method = self.get_Method();
         return method
 
+    def getAvailableMethods(self):
+        """ Returns the methods available for this analysis.
+            If the service has the getInstrumentEntryOfResults(), returns
+            the methods available from the instruments capable to perform
+            the service, as well as the methods set manually for the
+            analysis on its edit view. If getInstrumentEntryOfResults()
+            is unset, only the methods assigned manually to that service
+            are returned.
+        """
+        methods = self.getMethods()
+        muids = [m.UID() for m in methods]
+        if self.getInstrumentEntryOfResults() == True:
+            # Add the methods from the instruments capable to perform
+            # this analysis service
+            for ins in self.getInstruments():
+                method = ins.getMethod()
+                if method and method.UID() not in muids:
+                    methods.append(method)
+                    muids.append(method.UID())
+
+        return methods
+
+    def getAvailableInstruments(self):
+        """ Returns the instruments available for this analysis.
+            If the service has the getInstrumentEntryOfResults(), returns
+            the instruments capable to perform this service. Otherwhise,
+            returns an empty list.
+        """
+        instruments = self.getInstruments() \
+            if self.getInstrumentEntryOfResults() == True \
+            else None
+        return instruments if instruments else []
+
     def getDepartments(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('','')] + [(o.UID, o.Title) for o in
-                               bsc(portal_type='Department',
-                                   inactive_state = 'active')]
+        items = [('', '')] + [(o.UID, o.Title) for o in
+                              bsc(portal_type='Department',
+                                  inactive_state='active')]
         o = self.getDepartment()
         if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))
-        items.sort(lambda x,y: cmp(x[1], y[1]))
+        items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
     def getUncertainty(self, result=None):
@@ -900,13 +977,15 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
                 return None
 
             for d in uncertainties:
-                if float(d['intercept_min']) <= result <= float(d['intercept_max']):
+                if float(d['intercept_min']) <= result <= float(
+                        d['intercept_max']):
                     return d['errorvalue']
             return None
         else:
             return None
 
     security.declarePublic('getContainers')
+
     def getContainers(self, instance=None):
         # On first render, the containers must be filtered
         instance = instance or self
@@ -921,38 +1000,38 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(o.UID, o.Title) for o in
                  bsc(portal_type='Preservation', inactive_state='active')]
-        items.sort(lambda x,y: cmp(x[1], y[1]))
+        items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
     def workflow_script_activate(self):
         workflow = getToolByName(self, 'portal_workflow')
-        pu = getToolByName(instance, 'plone_utils')
+        pu = getToolByName(self, 'plone_utils')
         # A service cannot be activated if it's calculation is inactive
         calc = self.getCalculation()
         if calc and \
-           workflow.getInfoFor(calc, "inactive_state") == "inactive":
+                        workflow.getInfoFor(calc, "inactive_state") == "inactive":
             message = _("This Analysis Service cannot be activated "
                         "because it's calculation is inactive.")
             pu.addPortalMessage(message, 'error')
             transaction.get().abort()
             raise WorkflowException
 
-    def workflow_scipt_activate(self):
-        bsc = getToolByName(instance, 'bika_setup_catalog')
-        pu = getToolByName(instance, 'plone_utils')
-        if event.transition.id == "deactivate":
-            # A service cannot be deactivated if "active" calculations list it
-            # as a dependency.
-            active_calcs = bsc(portal_type='Calculation', inactive_state="active")
-            calculations = (c.getObject() for c in active_calcs)
-            for calc in calculations:
-                deps = [dep.UID() for dep in calc.getDependentServices()]
-                if instance.UID() in deps:
-                    message = _("This Analysis Service cannot be deactivated "
-                                "because one or more active calculations list "
-                                "it as a dependency")
-                    pu.addPortalMessage(message, 'error')
-                    transaction.get().abort()
-                    raise WorkflowException
+    def workflow_scipt_deactivate(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        pu = getToolByName(self, 'plone_utils')
+        # A service cannot be deactivated if "active" calculations list it
+        # as a dependency.
+        active_calcs = bsc(portal_type='Calculation', inactive_state="active")
+        calculations = (c.getObject() for c in active_calcs)
+        for calc in calculations:
+            deps = [dep.UID() for dep in calc.getDependentServices()]
+            if self.UID() in deps:
+                message = _("This Analysis Service cannot be deactivated "
+                            "because one or more active calculations list "
+                            "it as a dependency")
+                pu.addPortalMessage(message, 'error')
+                transaction.get().abort()
+                raise WorkflowException
+
 
 registerType(AnalysisService, PROJECTNAME)

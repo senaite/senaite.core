@@ -297,7 +297,7 @@ Repetitive Bika Setup stuff
     Wait Until Page Contains Element  title
     Input Text  title          New Object
     Input Text  description    Temporary test object
-    Select from list  Manager:list   Lab Manager 1
+    Select from list  Manager:list   Lab Manager 2
     Click Button  Save
     Wait Until Page Contains  Changes saved.
 

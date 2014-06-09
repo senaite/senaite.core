@@ -133,7 +133,7 @@ class AnalysisRequestViewView(BrowserView):
     def renderMessages(self):
         for message in self.messages:
             self.context.plone_utils.addPortalMessage(
-                self.context.translate(message['message']), message['msgtype'])
+                message['message'], message['msgtype'])
 
     def createAnalysesView(self, context, request, **kwargs):
         return AnalysesView(context, request, **kwargs)
@@ -395,3 +395,10 @@ class AnalysisRequestViewView(BrowserView):
                 'value': anchor
             }
         return custom
+
+    def getPriorityIcon(self):
+        priority = self.context.getPriority()
+        if priority:
+            icon = priority.getBigIcon()
+            if icon:
+                return '/'.join(icon.getPhysicalPath())

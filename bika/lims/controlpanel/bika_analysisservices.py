@@ -6,7 +6,6 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisServices
 from bika.lims.utils import tmpID
-from bika.lims.utils import to_utf8
 from bika.lims.validators import ServiceKeywordValidator
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
@@ -21,64 +20,50 @@ from zope.interface.declarations import implements
 
 
 class AnalysisServiceCopy(BrowserView):
-
     template = ViewPageTemplateFile('templates/analysisservice_copy.pt')
-
-    skip_fieldnames = [  # should not be copied
+    # should never be copied between services
+    skip_fieldnames = [
+        'UID',
         'id',
         'title',
+        'ShortTitle',
         'Keyword',
-        'UID',
-        'Created'
     ]
-
     created = []
 
     def create_service(self, src_uid, dst_title, dst_keyword):
         folder = self.context.bika_setup.bika_analysisservices
-
         dst_service = _createObjectByType("AnalysisService", folder, tmpID())
+        # manually set keyword and title
+        dst_service.setKeyword(dst_keyword)
+        dst_service.setTitle(dst_title)
+        dst_service.unmarkCreationFlag()
         _id = renameAfterCreation(dst_service)
         dst_service = folder[_id]
-        dst_service.setKeyword(to_utf8(dst_keyword))
-        dst_service.setTitle(to_utf8(dst_title))
-        dst_service.unmarkCreationFlag()
         return dst_service
 
     def validate_service(self, dst_service):
         # validate entries
         validator = ServiceKeywordValidator()
-
-        res = validator(dst_service.Title(), instance=dst_service)
-        if res is not True:
-            self.savepoint.rollback()
-            self.created = []
-            self.context.plone_utils.addPortalMessage(res, 'info')
-            # Redirect(self.request.get_header("referer"))
-            return False
-
+        # baseschema uses uniquefieldvalidator on title, this is sufficient.
         res = validator(dst_service.getKeyword(), instance=dst_service)
         if res is not True:
             self.savepoint.rollback()
             self.created = []
             self.context.plone_utils.addPortalMessage(res, 'info')
-            # Redirect(self.request.get_header("referer"))
             return False
-
         return True
 
     def copy_service(self, src_uid, dst_title, dst_keyword):
         uc = getToolByName(self.context, 'uid_catalog')
-
         src_service = uc(UID=src_uid)[0].getObject()
         dst_service = self.create_service(src_uid, dst_title, dst_keyword)
-
         if self.validate_service(dst_service):
             # copy field values
             for field in src_service.Schema().fields():
                 fieldname = field.getName()
                 if field.getType() == "Products.Archetypes.Field.ComputedField" \
-                or fieldname in self.skip_fieldnames:
+                        or fieldname in self.skip_fieldnames:
                     continue
                 getter = field.getAccessor(src_service)
                 setter = dst_service.Schema()[fieldname].getMutator(dst_service)
@@ -106,14 +91,13 @@ class AnalysisServiceCopy(BrowserView):
             self.created = []
             for i, s in enumerate(sources):
                 if not titles[i]:
-                    message = t(_('Validation failed: title is required'))
+                    message = _('Validation failed: title is required')
                     self.context.plone_utils.addPortalMessage(message, 'info')
                     self.savepoint.rollback()
                     self.created = []
                     break
                 if not keywords[i]:
-                    message = t(self.context.translate(_(
-                        'Validation failed: keyword is required')))
+                    message = _('Validation failed: keyword is required')
                     self.context.plone_utils.addPortalMessage(message, 'info')
                     self.savepoint.rollback()
                     self.created = []
@@ -122,19 +106,20 @@ class AnalysisServiceCopy(BrowserView):
                 if title:
                     self.created.append(title)
             if len(self.created) > 1:
-                message = t(_('${items} were successfully created.',
-                              mapping={'items': safe_unicode(', '.join(self.created))}))
+                message = t(_(
+                    '${items} were successfully created.',
+                    mapping={'items': safe_unicode(', '.join(self.created))}))
             elif len(self.created) == 1:
-                message = t(_('${item} was successfully created.',
-                             mapping={'item': safe_unicode(self.created[0])}))
+                message = t(_(
+                    '${item} was successfully created.',
+                    mapping={'item': safe_unicode(self.created[0])}))
             else:
-                message = t(_('No new items were created.'))
+                message = _('No new items were created.')
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.response.redirect(self.context.absolute_url())
 
 
 class AnalysisServicesView(BikaListingView):
-
     implements(IFolderContentsView, IViewView)
 
     def __init__(self, context, request):
@@ -145,9 +130,10 @@ class AnalysisServicesView(BikaListingView):
         self.catalog = 'bika_setup_catalog'
         self.contentFilter = {'portal_type': 'AnalysisService',
                               'sort_on': 'sortable_title'}
-        self.context_actions = {_('Add'):
-                                {'url': 'createObject?type_name=AnalysisService',
-                                 'icon': '++resource++bika.lims.images/add.png'}}
+        self.context_actions = {
+            _('Add'):
+                {'url': 'createObject?type_name=AnalysisService',
+                 'icon': '++resource++bika.lims.images/add.png'}}
         self.icon = self.portal_url + "/++resource++bika.lims.images/analysisservice_big.png"
         self.title = _("Analysis Services")
         self.show_sort_column = False
@@ -199,11 +185,11 @@ class AnalysisServicesView(BikaListingView):
                          'MaxTimeAllowed',
                          'DuplicateVariation',
                          'Calculation',
-                         ],
-             'custom_actions':[{'id': 'duplicate',
-                                'title': _('Duplicate'),
-                                'url': 'copy'}, ]
-             },
+             ],
+             'custom_actions': [{'id': 'duplicate',
+                                 'title': _('Duplicate'),
+                                 'url': 'copy'}, ]
+            },
             {'id': 'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
@@ -219,11 +205,11 @@ class AnalysisServicesView(BikaListingView):
                          'MaxTimeAllowed',
                          'DuplicateVariation',
                          'Calculation',
-                         ],
-             'custom_actions':[{'id': 'duplicate',
-                                'title': _('Duplicate'),
-                                'url': 'copy'}, ]
-             },
+             ],
+             'custom_actions': [{'id': 'duplicate',
+                                 'title': _('Duplicate'),
+                                 'url': 'copy'}, ]
+            },
             {'id': 'all',
              'title': _('All'),
              'contentFilter': {},
@@ -238,11 +224,11 @@ class AnalysisServicesView(BikaListingView):
                          'MaxTimeAllowed',
                          'DuplicateVariation',
                          'Calculation',
-                         ],
-             'custom_actions':[{'id': 'duplicate',
-                                'title': _('Duplicate'),
-                                'url': 'copy'}, ]
-             },
+             ],
+             'custom_actions': [{'id': 'duplicate',
+                                 'title': _('Duplicate'),
+                                 'url': 'copy'}, ]
+            },
         ]
 
     def folderitems(self):
@@ -257,24 +243,32 @@ class AnalysisServicesView(BikaListingView):
             cat = obj.getCategoryTitle()
             items[x]['Category'] = cat  # Category is for display column value
             if self.do_cats:
-                items[x]['category'] = cat  # category is for bika_listing to groups entries
+                items[x][
+                    'category'] = cat  # category is for bika_listing to groups entries
                 if cat not in self.categories:
                     self.categories.append(cat)
 
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['Title'])
+                                           (items[x]['url'], items[x]['Title'])
 
             instrument = obj.getInstrument()
             items[x]['Instrument'] = instrument and instrument.Title() or ''
-            items[x]['replace']['Instrument'] = instrument and "<a href='%s'>%s</a>" % \
-                 (instrument.absolute_url() + "/edit", instrument.Title()) or ''
+            items[x]['replace'][
+                'Instrument'] = instrument and "<a href='%s'>%s</a>" % \
+                                               (
+                                                   instrument.absolute_url() + "/edit",
+                                                   instrument.Title()) or ''
 
-            items[x]['Department'] = obj.getDepartment() and obj.getDepartment().Title() or ''
+            items[x][
+                'Department'] = obj.getDepartment() and obj.getDepartment().Title() or ''
 
             calculation = obj.getCalculation()
             items[x]['Calculation'] = calculation and calculation.Title()
-            items[x]['replace']['Calculation'] = calculation and "<a href='%s'>%s</a>" % \
-                 (calculation.absolute_url() + "/edit", calculation.Title()) or ''
+            items[x]['replace'][
+                'Calculation'] = calculation and "<a href='%s'>%s</a>" % \
+                                                 (
+                                                     calculation.absolute_url() + "/edit",
+                                                     calculation.Title()) or ''
 
             items[x]['Unit'] = obj.getUnit() and obj.getUnit() or ''
             items[x]['Price'] = "%s.%02d" % (obj.Price)
@@ -282,7 +276,8 @@ class AnalysisServicesView(BikaListingView):
             method = obj.getMethod()
             items[x]['Method'] = method and method.Title() or ''
             items[x]['replace']['Method'] = method and "<a href='%s'>%s</a>" % \
-                 (method.absolute_url(), method.Title()) or ''
+                                                       (method.absolute_url(),
+                                                        method.Title()) or ''
 
             maxtime = obj.MaxTimeAllowed
             maxtime_string = ""
@@ -297,24 +292,30 @@ class AnalysisServicesView(BikaListingView):
             items[x]['MaxTimeAllowed'] = maxtime_string
 
             if obj.DuplicateVariation is not None:
-                items[x]['DuplicateVariation'] = "%s.%02d" % (obj.DuplicateVariation)
+                items[x]['DuplicateVariation'] = "%s.%02d" % (
+                    obj.DuplicateVariation)
             else:
                 items[x]['DuplicateVariation'] = ""
 
             after_icons = ''
             if obj.getAccredited():
-                after_icons += "<img src='++resource++bika.lims.images/accredited.png' title='%s'>" % (_("Accredited"))
+                after_icons += "<img src='++resource++bika.lims.images/accredited.png' title='%s'>" % (
+                    _("Accredited"))
             if obj.getReportDryMatter():
-                after_icons += "<img src='++resource++bika.lims.images/dry.png' title='%s'>" % (_("Can be reported as dry matter"))
+                after_icons += "<img src='++resource++bika.lims.images/dry.png' title='%s'>" % (
+                    _("Can be reported as dry matter"))
             if obj.getAttachmentOption() == 'r':
-                after_icons += "<img src='++resource++bika.lims.images/attach_reqd.png' title='%s'>" % (_("Attachment required"))
+                after_icons += "<img src='++resource++bika.lims.images/attach_reqd.png' title='%s'>" % (
+                    _("Attachment required"))
             if obj.getAttachmentOption() == 'n':
-                after_icons += "<img src='++resource++bika.lims.images/attach_no.png' title='%s'>" % (_('Attachment not permitted'))
+                after_icons += "<img src='++resource++bika.lims.images/attach_no.png' title='%s'>" % (
+                    _('Attachment not permitted'))
             if after_icons:
                 items[x]['after']['Title'] = after_icons
 
         self.categories.sort()
         return items
+
 
 schema = ATFolderSchema.copy()
 
@@ -323,6 +324,7 @@ class AnalysisServices(ATFolder):
     implements(IAnalysisServices)
     displayContentsTab = False
     schema = schema
+
 
 schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
 atapi.registerType(AnalysisServices, PROJECTNAME)

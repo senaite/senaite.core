@@ -23,10 +23,10 @@ class AnalysisRequestLog(LogView):
             childar = hasattr(ar, 'getChildAnalysisRequest') \
                         and ar.getChildAnalysisRequest() or None
             childid = childar and childar.getRequestID() or None
-            message = t(_('This Analysis Request has been withdrawn and is shown '
+            message = _('This Analysis Request has been withdrawn and is shown '
                           'for trace-ability purposes only. Retest: '
                           '${retest_child_id}.',
-                          mapping={'retest_child_id': safe_unicode(childid) or ''}))
+                          mapping={'retest_child_id': safe_unicode(childid) or ''})
             self.context.plone_utils.addPortalMessage(message, 'warning')
         # If is an AR automatically generated due to a Retraction, show it's
         # parent AR information
@@ -42,3 +42,10 @@ class AnalysisRequestLog(LogView):
                 t(message), 'info')
         template = LogView.__call__(self)
         return template
+
+    def getPriorityIcon(self):
+        priority = self.context.getPriority()
+        if priority:
+            icon = priority.getBigIcon()
+            if icon:
+                return '/'.join(icon.getPhysicalPath())

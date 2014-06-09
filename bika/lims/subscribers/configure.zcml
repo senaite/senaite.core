@@ -50,5 +50,11 @@
       handler="bika.lims.subscribers.arimport.ARImportItemModifiedEventHandler"
     />
 
+    <subscriber
+        for="bika.lims.interfaces.IBikaSetup
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler="bika.lims.subscribers.bikasetup.BikaSetupModifiedEventHandler"
+    />
+
 
  </configure>

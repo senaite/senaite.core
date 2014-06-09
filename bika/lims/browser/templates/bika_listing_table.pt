@@ -204,6 +204,7 @@ Table data rows start here
         tal:repeat="item view/batch">
         <tr tal:condition="python:item.has_key('id') and item.get('category', 'None') == cat"
             tal:define="keyword python:item.has_key('Keyword') and item['Keyword'] or '';
+                        suid python:item.get('service_uid','');
                         tmpstyle python:(not cat in selected_cats) and 'display:none;;' or '';
                         tmpstyle python:view.context.bika_setup.getEnableAnalysisRemarks() and tmpstyle + 'border-bottom:0 !important;;' or tmpstyle;"
             tal:attributes="
@@ -212,7 +213,8 @@ Table data rows start here
                 class item/table_row_class;
                 id string:folder-contents-item-${item/uid};
                 uid item/uid;
-                keyword keyword;">
+                keyword keyword;
+                as_uid suid;">
 
         <tal:comment replace="nothing">***************
         Individual items' row_data is stored on each row.
@@ -228,12 +230,14 @@ Draggable column for manually ordering items
     <td tal:condition="view/bika_listing/show_sort_column" class="draggable">
     <tal:block tal:define="quoted_id item/uid;">
     <a href=""
+            i18n:domain="plone"
         title="Move item up"
         i18n:attributes="title title_move_item_up;"
         tal:attributes="href string:${view/base_url}/folder_position?position=up&amp;id=${quoted_id}">
         &#9650;
     </a>
     <a href=""
+        i18n:domain="plone"
         title="Move item down"
         i18n:attributes="title title_move_item_down;"
         tal:attributes="href string:${view/base_url}/folder_position?position=down&amp;id=${quoted_id}">
@@ -585,7 +589,7 @@ Table cells for each column from in review_state's column list.
     <!-- Row Remarks field (for Analyses) -->
     <tal:remarks_condition
         tal:define="remarksenabled python:view.context.bika_setup.getEnableAnalysisRemarks();
-                    isanalysis python:item['obj'].portal_type == 'Analysis';
+                    isanalysis python:'obj' in item and item['obj'].portal_type == 'Analysis';
                     hasremarks python:True if item.get('Remarks','') else False;
                     remarksedit python: remarksenabled and 'Remarks' in item.get('allow_edit',[]);
                     showremarks python:isanalysis and (hasremarks or remarksedit)
@@ -602,7 +606,7 @@ Table cells for each column from in review_state's column list.
             <td tal:attributes="class string:${item/state_class} result"></td>
 
             <td tal:attributes="colspan python:int(nr_cols)-1;
-                                class string:${item/state_class} result"
+                                class string:${item/state_class} result remarks"
                 style="padding-right:10px;padding-bottom:5px;">
                 <span i18n:translate="" style='color:#3f3f3f;font-size:0.95em;'>Remarks:</span>&nbsp;
                 <textarea
@@ -658,8 +662,8 @@ Workflow Actions
                         tal:attributes="
                             id python:action['id']+'_transition';
                             transition action/id;
-							value action/title;
-							url python:action.get('url', '');"/>
+                            value action/title;
+                            url python:action.get('url', '');"/>
                 </span>
             </span>
         </td>

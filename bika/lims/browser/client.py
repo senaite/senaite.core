@@ -1,39 +1,43 @@
-from Acquisition import aq_parent, aq_inner
+import plone, json
+import zope.event
+
+from bika.lims.permissions import *
+
 from AccessControl import getSecurityManager
+from Acquisition import aq_parent, aq_inner
+from bika.lims import PMF, logger, bikaMessageFactory as _
+from bika.lims.adapters.referencewidgetvocabulary import DefaultReferenceWidgetVocabulary
+from bika.lims.adapters.widgetvisibility import WidgetVisibility as _WV
+from bika.lims.browser import BrowserView
+from bika.lims.browser.analysisrequest import AnalysisRequestsView
+from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction
+from bika.lims.browser.batchfolder import BatchFolderContentsView
+from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.publish import doPublish
+from bika.lims.browser.sample import SamplesView
+from bika.lims.browser.supplyorderfolder import SupplyOrderFolderView
+from bika.lims.idserver import renameAfterCreation
+from bika.lims.interfaces import IClient
+from bika.lims.interfaces import IContacts
+from bika.lims.interfaces import IDisplayListVocabulary
+from bika.lims.subscribers import doActionFor, skip
+from bika.lims.utils import changeWorkflowState
+from bika.lims.utils import isActive
+from bika.lims.utils import t
+from bika.lims.utils import tmpID
+from bika.lims.utils import to_utf8
+from bika.lims.vocabularies import CatalogVocabulary
 from DateTime import DateTime
+from plone.app.content.browser.interfaces import IFolderContentsView
+from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import PMF, logger, bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.browser import BrowserView
-from bika.lims.browser.batchfolder import BatchFolderContentsView
-from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction, \
-    AnalysisRequestsView
-from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.browser.publish import doPublish
-from bika.lims.adapters.widgetvisibility import WidgetVisibility as _WV
-from bika.lims.browser.sample import SamplesView
-from bika.lims.idserver import renameAfterCreation
-from bika.lims.interfaces import IClient
-from bika.lims.interfaces import IContacts
-from bika.lims.interfaces import IDisplayListVocabulary
-from bika.lims.permissions import *
-from bika.lims.subscribers import doActionFor, skip
-from bika.lims.utils import changeWorkflowState
-from bika.lims.utils import isActive
-from bika.lims.utils import tmpID
-from bika.lims.utils import to_utf8
-from bika.lims.vocabularies import CatalogVocabulary
-from operator import itemgetter
-from plone.app.content.browser.interfaces import IFolderContentsView
-from plone.app.layout.globals.interfaces import IViewView
 from zope.component import adapts
 from zope.interface import implements
-import plone, json
-import zope.event
+
 
 class ClientWorkflowAction(AnalysisRequestWorkflowAction):
     """ This function is called to do the worflow actions
@@ -128,22 +132,22 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                 tlist = transitioned[state]
                 if len(tlist) > 1:
                     if state == 'to_be_preserved':
-                        message = t(_('${items} are waiting for preservation.',
-                                    mapping = {'items': ', '.join(tlist)}))
+                        message = _('${items} are waiting for preservation.',
+                                    mapping = {'items': ', '.join(tlist)})
                     else:
-                        message = t(_('${items} are waiting to be received.',
-                                    mapping = {'items': ', '.join(tlist)}))
+                        message = _('${items} are waiting to be received.',
+                                    mapping = {'items': ', '.join(tlist)})
                     self.context.plone_utils.addPortalMessage(message, 'info')
                 elif len(tlist) == 1:
                     if state == 'to_be_preserved':
-                        message = t(_('${item} is waiting for preservation.',
-                                    mapping = {'item': ', '.join(tlist)}))
+                        message = _('${item} is waiting for preservation.',
+                                    mapping = {'item': ', '.join(tlist)})
                     else:
-                        message = t(_('${item} is waiting to be received.',
-                                    mapping = {'item': ', '.join(tlist)}))
+                        message = _('${item} is waiting to be received.',
+                                    mapping = {'item': ', '.join(tlist)})
                     self.context.plone_utils.addPortalMessage(message, 'info')
             if not message:
-                message = t(_('No changes made.'))
+                message = _('No changes made.')
                 self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
@@ -192,13 +196,12 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                             not_transitioned.append(sp)
 
             if len(transitioned.keys()) > 1:
-                message = t(_('${items}: partitions are waiting to be received.',
-                        mapping = {'items': ', '.join(transitioned.keys())}))
+                message = _('${items}: partitions are waiting to be received.',
+                        mapping = {'items': ', '.join(transitioned.keys())})
             else:
-                message = t(_('${item}: ${part} is waiting to be received.',
+                message = _('${item}: ${part} is waiting to be received.',
                         mapping = {'item': ', '.join(transitioned.keys()),
-                                   'part': ', '.join(transitioned.values()),}))
-            message = t(message)
+                                   'part': ', '.join(transitioned.values()),})
             self.context.plone_utils.addPortalMessage(message, 'info')
 
             # And then the sample itself
@@ -237,7 +240,6 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                             mapping = {'item': ', '.join(transitioned)})
             else:
                 message = _('No items were published')
-            message = translate(message)
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
@@ -624,7 +626,7 @@ class SetSpecsToLabDefaults(BrowserView):
                 ResultsRange = labspec.getResultsRange(),
             )
         translate = self.context.translate
-        message = t(_("Analysis specifications reset to lab defaults."))
+        message = _("Analysis specifications reset to lab defaults.")
         self.context.plone_utils.addPortalMessage(message, 'info')
         self.request.RESPONSE.redirect(self.context.absolute_url() +
                                        "/analysisspecs")
@@ -701,71 +703,27 @@ class ClientAttachmentsView(BikaListingView):
         return items
 
 
-class ClientOrdersView(BikaListingView):
+class ClientOrdersView(SupplyOrderFolderView):
     implements(IViewView)
 
     def __init__(self, context, request):
         super(ClientOrdersView, self).__init__(context, request)
-        self.contentFilter = {'portal_type': 'SupplyOrder',
-                              'sort_on': 'sortable_title',
-                              'sort_order': 'reverse',
-                              'path': {
-                                "query": "/".join(context.getPhysicalPath()),
-                                "level": 0}
-                             }
-        self.context_actions = {_('Add'):
-                                {'url': 'createObject?type_name=SupplyOrder',
-                                 'icon': '++resource++bika.lims.images/add.png'}}
-        self.show_table_only = False
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_column = True
-        self.pagesize = 25
-        self.form_id = "orders"
-
-        self.icon = self.portal_url + "/++resource++bika.lims.images/supplyorder_big.png"
-        self.title = _("Orders")
-
-        self.columns = {
-            'OrderNumber': {'title': _('Order Number')},
-            'OrderDate': {'title': _('Order Date')},
-            'DateDispatched': {'title': _('Date Dispatched')},
-            'state_title': {'title': _('State')},
+        self.contentFilter = {
+            'portal_type': 'SupplyOrder',
+            'sort_on': 'sortable_title',
+            'sort_order': 'reverse',
+            'path': {
+                'query': '/'.join(context.getPhysicalPath()),
+                'level': 0
+            }
         }
-        self.review_states = [
-            {'id': 'default',
-             'title': _('All'),
-             'contentFilter': {},
-             'columns': ['OrderNumber',
-                         'OrderDate',
-                         'DateDispatched',
-                         'state_title']},
-            {'id': 'pending',
-             'contentFilter': {'review_state': 'pending'},
-             'title': _('Pending'),
-             'columns': ['OrderNumber',
-                         'OrderDate']},
-            {'id': 'dispatched',
-             'contentFilter': {'review_state': 'dispatched'},
-             'title': _('Dispatched'),
-             'columns': ['OrderNumber',
-                         'OrderDate',
-                         'DateDispatched']},
-        ]
+        self.context_actions = {
+            _('Add'): {
+                'url': 'createObject?type_name=SupplyOrder',
+                'icon': '++resource++bika.lims.images/add.png'
+            }
+        }
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
-            obj = items[x]['obj']
-            items[x]['OrderNumber'] = obj.getOrderNumber()
-            items[x]['OrderDate'] = self.ulocalized_time(obj.getOrderDate())
-            items[x]['DateDispatched'] = self.ulocalized_time(obj.getDateDispatched())
-
-            items[x]['replace']['OrderNumber'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['OrderNumber'])
-
-        return items
 
 class ClientContactsView(BikaListingView):
     implements(IViewView, IContacts)
@@ -862,6 +820,18 @@ class ClientContactVocabularyFactory(CatalogVocabulary):
             path={'query': "/".join(self.context.getPhysicalPath()),
                   'level': 0}
         )
+
+
+class ReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
+
+    def __call__(self):
+        base_query = json.loads(self.request['base_query'])
+        portal_type = base_query.get('portal_type', [])
+        if 'Contact' in portal_type:
+            base_query['getParentUID'] = [self.context.UID(),]
+        self.request['base_query'] = json.dumps(base_query)
+        return DefaultReferenceWidgetVocabulary.__call__(self)
+
 
 class ajaxGetClientInfo(BrowserView):
     def __call__(self):

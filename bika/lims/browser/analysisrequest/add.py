@@ -162,9 +162,6 @@ class ajaxAnalysisRequestSubmit():
         uc = getToolByName(self.context, 'uid_catalog')
         bsc = getToolByName(self.context, 'bika_setup_catalog')
 
-        SamplingWorkflowEnabled = \
-            self.context.bika_setup.getSamplingWorkflowEnabled()
-
         errors = {}
 
         form_parts = json.loads(self.request.form['parts'])
@@ -205,7 +202,7 @@ class ajaxAnalysisRequestSubmit():
                     'SampleType'
                 ]:
                     continue
-                if (field in ar and not ar.get(field, '')):
+                if not ar.get(field, ''):
                     ajax_form_error(errors, field, column)
         # Return errors if there are any
         if errors:
@@ -244,14 +241,20 @@ class ajaxAnalysisRequestSubmit():
             # Get the analyses from the form data
             analyses = values["Analyses"]
             # Gather the specifications from the form data
+            # no defaults are applied here - the defaults should already be
+            # present in the form data
             specifications = {}
-            if len(values.get("min", [])):
-                for n, service_uid in enumerate(analyses):
-                    specifications[service_uid] = {
-                        "min": values["min"][n],
-                        "max": values["max"][n],
-                        "error": values["error"][n]
-                    }
+            for analysis in analyses:
+                for service_uid in analyses:
+                    min_element_name = "ar.%s.min.%s"%(column, service_uid)
+                    max_element_name = "ar.%s.max.%s"%(column, service_uid)
+                    error_element_name = "ar.%s.error.%s"%(column, service_uid)
+                    if min_element_name in form:
+                        specifications[service_uid] = {
+                            "min": form[min_element_name],
+                            "max": form[max_element_name],
+                            "error": form[error_element_name]
+                        }
             # Selecting a template sets the hidden 'parts' field to template values.
             # Selecting a profile will allow ar_add.js to fill in the parts field.
             # The result is the same once we are here.
@@ -268,9 +271,9 @@ class ajaxAnalysisRequestSubmit():
             )
             if default_container_type:
                 container_type = bsc(UID=default_container_type)[0].getObject()
-                containers = container_type.getcontainers()
+                containers = container_type.getContainers()
                 for partition in partitions:
-                    if not partition.get(container, None):
+                    if not partition.get("container", None):
                         partition['container'] = containers
             # Retrieve the catalogue reference to the client
             client = uc(UID=resolved_values['Client'])[0].getObject()
