@@ -121,6 +121,7 @@ git clone -b release/3.1 http://github.com/bikalabs/Bika-LIMS.git src/bika.lims
 #         bika.lims
 
 python -c 'open("buildout.1","w").write("".join([line.replace("    Pillow", "    Pillow\n    bika.lims") for line in open("buildout.cfg").readlines()]))'
+python -c 'open("buildout.1","w").write("".join([line.replace("    Pillow", "    Pillow\n    WeasyPrint") for line in open("buildout.cfg").readlines()]))'
 mv buildout.1 buildout.cfg
 
 ### (Option) - Use the latest source code instead of the PYPI egg
