@@ -86,7 +86,7 @@ mkdir -p $BIKA_HOME
 wget -nc  --no-check-certificate  "https://launchpad.net/plone/4.3/4.3.3/+download/Plone-4.3.3-UnifiedInstaller.tgz"
 tar xzf Plone-4.3.3-UnifiedInstaller.tgz
 cd Plone-4.3.3-UnifiedInstaller/
-./install.sh --target=${BIKA_HOME} standalone
+./install.sh --build-python --static-lxml=yes  --target=${BIKA_HOME} standalone
 
 # Visit http://plone.org/documentation/topic/Installation for more
 # information about setting up Plone if the above fails.
