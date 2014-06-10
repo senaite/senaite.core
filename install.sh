@@ -3,7 +3,7 @@
 # Original script by Inus Scheepers (inus@bikalabs.com),
 # Proxy handling and Fedora suppot added
 # by Pieter vd Merwe pieter_vdm@debortoli.com.au
-#
+# Updated to Plone 4.3.3 on 10 Jun 2014 by Inus Scheepers
 # Bika LIMS Installation
 # ----------------------
 #
@@ -37,7 +37,7 @@ fi
 # ## Download and install Plone
 #
 # The latest Unified Installer can be found at http://plone.org/products/plone/releases
-# Plone 4 or newer is required. Bika has been tested with Plone 4.2.1.
+# Plone 4 or newer is required. Bika has been tested with Plone 4.3.
 #
 # All steps are required except where marked as optionally. If your installation fails,
 # ensure that each step has completed successfully.
@@ -81,9 +81,10 @@ fi
 # to use the master branch instead.
 
 mkdir -p $BIKA_HOME
-wget -nc https://launchpad.net/plone/4.2/4.2.1/+download/Plone-4.2.1-UnifiedInstaller.tgz
-tar xzf Plone-4.2.1-UnifiedInstaller.tgz
-cd Plone-4.2.1-UnifiedInstaller/
+#wget -nc https://launchpad.net/plone/4.2/4.2.1/+download/Plone-4.2.1-UnifiedInstaller.tgz
+wget -nc  --no-check-certificate  "https://launchpad.net/plone/4.3/4.3.3/+download/Plone-4.3.3-UnifiedInstaller.tgz"
+tar xzf Plone-4.3.3-UnifiedInstaller.tgz
+cd Plone-4.3.3-UnifiedInstaller/
 ./install.sh --target=${BIKA_HOME} standalone
 
 # Visit http://plone.org/documentation/topic/Installation for more
