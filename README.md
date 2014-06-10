@@ -7,6 +7,11 @@ Installation
 2. Read https://plone.org/documentation/kb/installing-add-ons-quick-how-to
 3. Install Plone and the "bika.lims" package
 
+For unix-like systems, download and run the script that should install the prerequisites: https://raw.githubusercontent.com/bikalabs/Bika-LIMS/develop/install.sh
+
+Windows installations require Visual Studio 2008 correctly configured, and a normal python .MSI installation before 
+buildout will compile cffi and cairo binaries. 
+
 If you have questions, please post to one of our mailing lists:
 
 * Users: http://lists.sourceforge.net/lists/listinfo/bika-users
