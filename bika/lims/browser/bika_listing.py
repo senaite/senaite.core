@@ -518,7 +518,21 @@ class BikaListingView(BrowserView):
 
     def folderitems(self, full_objects = False):
         """
+        >>> portal = layer['portal']
+        >>> portal_url = portal.absolute_url()
+        >>> from plone.app.testing import SITE_OWNER_NAME
+        >>> from plone.app.testing import SITE_OWNER_PASSWORD
+
+        Test page batching https://github.com/bikalabs/Bika-LIMS/issues/1276
+        When visiting the second page, the Water sampletype should be displayed:
+
+        >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
+        >>> browser.open(portal_url+"/bika_setup/bika_sampletypes/folder_view?",
+        ... "list_pagesize=10&list_review_state=default&list_pagenumber=2")
+        >>> browser.contents
+        '...Water...'
         """
+
         #self.contentsMethod = self.context.getFolderContents
         if not hasattr(self, 'contentsMethod'):
             self.contentsMethod = getToolByName(self.context, self.catalog)
@@ -563,6 +577,7 @@ class BikaListingView(BrowserView):
         self.page_start_index = 0
         current_index = 0
         for i, obj in enumerate(brains):
+            current_index += 1
             # we don't know yet if it's a brain or an object
             path = hasattr(obj, 'getPath') and obj.getPath() or \
                  "/".join(obj.getPhysicalPath())
@@ -580,7 +595,6 @@ class BikaListingView(BrowserView):
             if not show_all and not start <= current_index < end:
                 results.append(dict(path = path, uid = obj.UID()))
                 continue
-            current_index += 1
 
             uid = obj.UID()
             title = obj.Title()
