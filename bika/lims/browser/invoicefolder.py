@@ -69,6 +69,8 @@ class InvoiceFolderContentsView(BikaListingView):
         self.contentsMethod = self.getInvoiceBatches
         items = BikaListingView.folderitems(self)
         for x, item in enumerate(items):
+            if 'obj' not in item:
+                continue
             obj = item['obj']
             title_link = "<a href='%s'>%s</a>" % (item['url'], item['title'])
             items[x]['replace']['title'] = title_link
