@@ -18,6 +18,8 @@
 # The target installation directory
 BIKA_HOME=/home/bika
 
+PLONE_VERSION=4.3.3
+
 # If a proxy is used, set this value.
 # PROXY=http://user:password@proxy1:80
 
@@ -82,10 +84,9 @@ fi
 # to use the master branch instead.
 
 mkdir -p $BIKA_HOME
-#wget -nc https://launchpad.net/plone/4.2/4.2.1/+download/Plone-4.2.1-UnifiedInstaller.tgz
-wget -nc  --no-check-certificate  "https://launchpad.net/plone/4.3/4.3.3/+download/Plone-4.3.3-UnifiedInstaller.tgz"
-tar xzf Plone-4.3.3-UnifiedInstaller.tgz
-cd Plone-4.3.3-UnifiedInstaller/
+wget -nc  --no-check-certificate  "https://launchpad.net/plone/4.3/$PLONE_VERSION/+download/Plone-$PLONE_VERSION-UnifiedInstaller.tgz"
+tar xzf Plone-$PLONE_VERSION-UnifiedInstaller.tgz
+cd Plone-$PLONE_VERSION-UnifiedInstaller/
 ./install.sh --build-python --static-lxml=yes  --target=${BIKA_HOME} standalone
 
 # Visit http://plone.org/documentation/topic/Installation for more
@@ -119,9 +120,16 @@ git clone -b release/3.1 http://github.com/bikalabs/Bika-LIMS.git src/bika.lims
 #     eggs =
 #         ...
 #         bika.lims
+#         WeasyPrint
 
 python -c 'open("buildout.1","w").write("".join([line.replace("    Pillow", "    Pillow\n    bika.lims") for line in open("buildout.cfg").readlines()]))'
+mv buildout.1 buildout.cfg
 python -c 'open("buildout.1","w").write("".join([line.replace("    Pillow", "    Pillow\n    WeasyPrint") for line in open("buildout.cfg").readlines()]))'
+mv buildout.1 buildout.cfg
+
+#and 'WeasyPrint = 0.19.2'
+# in [versions] section
+python -c 'open("buildout.1","w").write("".join([line.replace("[versions]", "[versions]\nWeasyPrint = 0.19.2") for line in open("buildout.cfg").readlines()]))'
 mv buildout.1 buildout.cfg
 
 ### (Option) - Use the latest source code instead of the PYPI egg
@@ -260,6 +268,12 @@ bin/plonectl fg
 #
 # Thank for you reading the entire document, you may run this
 # installation on a new Ubuntu installation via bash as follows
+#
+# bash ./installation.txt
+#
+# The end.
+#
+# (Reuploaded on 26 Feb 2013 after it got clobbered)tion on a new Ubuntu installation via bash as follows
 #
 # bash ./installation.txt
 #
