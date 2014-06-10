@@ -444,6 +444,10 @@ class Analysis(BaseContent):
     def getPriority(self):
         """ get priority from AR
         """
+        # this analysis may be a Duplicate or Reference Analysis - CAREFUL
+        # these types still subclass Analysis.
+        if self.portal_type != 'Analysis':
+            return None
         # this analysis could be in a worksheet or instrument, careful
         return self.aq_parent.getPriority() \
             if hasattr(self.aq_parent, 'getPriority') else None
