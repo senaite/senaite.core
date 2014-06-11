@@ -67,8 +67,18 @@ class HeaderTableView(BrowserView):
                    'mode': 'structure',
                    'html': adapter(field)}
         else:
+            if (fieldname == 'SampingDeviation'):
+                import pdb; pdb.set_trace();
             if field.getType().find("Reference") > -1:
-                targets = field.get(self.context)
+                # Prioritize method retrieval over schema's field
+                targets = None
+                if hasattr(self.context, 'get%s' % fieldname):
+                    fieldaccessor = getattr(self.context, 'get%s' % fieldname)
+                    if callable(fieldaccessor):
+                        targets = fieldaccessor()
+                if not targets:
+                    targets = field.get(self.context)
+
                 if targets:
                     if not type(targets) == list:
                         targets = [targets,]
