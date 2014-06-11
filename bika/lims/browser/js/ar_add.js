@@ -1164,6 +1164,7 @@ function setTemplate(column, template_title){
 						e = $(".partnr_"+service_uid).filter("[column='"+column+"']");
 						$(e).empty().append(partnr);
 					}
+					recalc_prices(column);
 				}
 			}
 		});
