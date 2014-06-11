@@ -224,16 +224,6 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
-    ComputedField(
-        'BatchUID',
-        expression='context.getBatch() and context.getBatch().UID() or None',
-        mode="r",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
     ReferenceField(
         'Template',
         allowed_types=('ARTemplate',),
