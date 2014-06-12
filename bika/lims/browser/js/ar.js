@@ -35,5 +35,20 @@ $(document).ready(function(){
 	$("#workflow-transition-publish").click(workflow_transition_publish);
 	$("#workflow-transition-republish").click(workflow_transition_publish);
 
+    // Set the analyst automatically when selected in the picklist
+    $('.bika-listing-table td.Analyst select').change(function() {
+        var analyst = $(this).val();
+        var key = $(this).closest('tr').attr('keyword');
+        var obj_path = window.location.href.replace(window.portal_url, '');
+        var obj_path_split = obj_path.split('/');
+        obj_path_split[obj_path_split.length-1] = key;
+        obj_path = obj_path_split.join('/')
+        $.ajax({
+            type: "POST",
+            url: window.portal_url+"/@@API/update",
+            data: {"obj_path": obj_path,
+                   "Analyst":  analyst}
+        });
+    });
 });
 }(jQuery));
