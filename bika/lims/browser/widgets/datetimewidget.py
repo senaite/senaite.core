@@ -2,7 +2,7 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Widget import TypesWidget
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Registry import registerPropertyType
-from Products.CMFPlone.i18nl10n import ulocalized_time
+from bika.lims.browser import ulocalized_time
 
 
 class DateTimeWidget(TypesWidget):

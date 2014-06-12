@@ -46,18 +46,18 @@
             tal:condition="python:checkPermission('BIKA: Manage Bika', context)">
             <legend id="fieldsetlegend-setupdata" i18n:translate="">Load Setup Data</legend>
             <p></p>
-            Submit a valid Open XML (.XLSX) file containing Bika setup records to continue.
+            <span i18n:translate="">Submit a valid Open XML (.XLSX) file containing Bika setup records to continue.</span>s
             <div style="margin-bottom:30px;">
                 <div style="float:left;width:47%;">
                     <h2 style="margin-bottom:10px;border-bottom:1px solid #888;font-size:1.6em;">
-                        Load from file
+                        <span i18n:translate="">Load from file</span>
                     </h2>
                     <input type="file" name="file"/>
                     <input name="setupfile" type="submit" value="Submit" i18n:attributes="value"/>
                 </div>
                 <div style="float:right;width:47%;">
                     <h2 style="margin-bottom:10px;border-bottom:1px solid #888;font-size:1.6em;">
-                        Select existing file
+                        <span i18n:translate="">Select existing file</span>
                     </h2>
                     <select
                         name="existing"

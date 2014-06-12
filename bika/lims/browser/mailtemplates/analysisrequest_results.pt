@@ -448,7 +448,7 @@
 
 <!-- Discreeter section -->
     <div id="section-discreeter">
-        <div id="discreeter-outofrange">* Result out of client specified range.</div>
+        <div id="discreeter-outofrange" i18n:translate="">* Result out of client specified range.</div>
         <div tal:condition="view/any_drymatter" i18n:translate="">Reported as dry matter</div>
         <div tal:condition="invoice_exclude" i18n:translate="">Not invoiced</div>
         <div tal:condition="lab_accredited" i18n:translate="">Methods included in the <tal:block replace="view/laboratory/getAccreditationBody" i18n:name="accreditation_body"/> schedule of Accreditation for this Laboratory. Analysis remarks are not accredited</div>

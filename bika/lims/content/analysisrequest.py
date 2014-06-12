@@ -21,6 +21,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.workflow import skip, isBasicTransitionAllowed
 from bika.lims.workflow import doActionFor
 from decimal import Decimal
