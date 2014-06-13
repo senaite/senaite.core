@@ -115,6 +115,9 @@ class PricelistView(BrowserView):
         self.pricelist_content = self.lineitems_pt()
         return self.template()
 
+    def getPreferredCurrencyAbreviattion(self):
+        return self.context.bika_setup.getCurrency()
+
 
 class PricelistPrintView(BrowserView):
     template = ViewPageTemplateFile("templates/pricelist_print.pt")

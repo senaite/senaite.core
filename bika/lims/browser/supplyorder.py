@@ -48,6 +48,9 @@ class View(BrowserView):
         # Render the template
         return self.template()
 
+    def getPreferredCurrencyAbreviattion(self):
+        return self.context.bika_setup.getCurrency()
+
 
 class EditView(BrowserView):
 
@@ -116,6 +119,8 @@ class EditView(BrowserView):
             # Render the template
             return self.template()
 
+    def getPreferredCurrencyAbreviattion(self):
+        return self.context.bika_setup.getCurrency()
 
 class PrintView(View):
 
