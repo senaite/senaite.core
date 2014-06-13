@@ -122,6 +122,7 @@ class EditView(BrowserView):
     def getPreferredCurrencyAbreviattion(self):
         return self.context.bika_setup.getCurrency()
 
+
 class PrintView(View):
 
     template = ViewPageTemplateFile('templates/supplyorder_print.pt')
