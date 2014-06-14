@@ -224,16 +224,6 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
-    ComputedField(
-        'BatchUID',
-        expression='context.getBatch() and context.getBatch().UID() or None',
-        mode="r",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
     ReferenceField(
         'Template',
         allowed_types=('ARTemplate',),
@@ -1291,7 +1281,8 @@ class AnalysisRequest(BaseFolder):
     def setSamplingDate(self, value):
         sample = self.getSample()
         if sample and value:
-            return sample.setSamplingDate(value)
+            sample.setSamplingDate(value)
+        self.Schema()['SamplingDate'].set(self, value)
 
     security.declarePublic('getSamplingDate')
 
@@ -1299,13 +1290,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSamplingDate()
+        return self.Schema().getField('SamplingDate').get(self)
 
     security.declarePublic('setSamplePoint')
 
     def setSamplePoint(self, value):
         sample = self.getSample()
         if sample and value:
-            return sample.setSamplePoint(value)
+            sample.setSamplePoint(value)
+        self.Schema()['SamplePoint'].set(self, value)
 
     security.declarePublic('getSamplepoint')
 
@@ -1313,13 +1306,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSamplePoint()
+        return self.Schema().getField('SamplePoint').get(self)
 
     security.declarePublic('setSampleType')
 
     def setSampleType(self, value):
         sample = self.getSample()
         if sample and value:
-            return sample.setSampleType(value)
+            sample.setSampleType(value)
+        self.Schema()['SampleType'].set(self, value)
 
     security.declarePublic('getSampleType')
 
@@ -1327,13 +1322,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSampleType()
+        return self.Schema().getField('SampleType').get(self)
 
     security.declarePublic('setClientReference')
 
     def setClientReference(self, value):
         sample = self.getSample()
         if sample and value:
-            return sample.setClientReference(value)
+            sample.setClientReference(value)
+        self.Schema()['ClientReference'].set(self, value)
 
     security.declarePublic('getClientReference')
 
@@ -1341,13 +1338,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getClientReference()
+        return self.Schema().getField('ClientReference').get(self)
 
     security.declarePublic('setClientSampleID')
 
     def setClientSampleID(self, value):
         sample = self.getSample()
         if sample and value:
-            return sample.setClientSampleID(value)
+            sample.setClientSampleID(value)
+        self.Schema()['ClientSampleID'].set(self, value)
 
     security.declarePublic('getClientSampleID')
 
@@ -1355,13 +1354,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getClientSampleID()
+        return self.Schema().getField('ClientSampleID').get(self)
 
     security.declarePublic('setSamplingDeviation')
 
     def setSamplingDeviation(self, value):
         sample = self.getSample()
         if sample and value:
-            return sample.setSamplingDeviation(value)
+            sample.setSamplingDeviation(value)
+        self.Schema()['SamplingDeviation'].set(self, value)
 
     security.declarePublic('getSamplingDeviation')
 
@@ -1369,13 +1370,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSamplingDeviation()
+        return self.Schema().getField('SamplingDeviation').get(self)
 
     security.declarePublic('setSampleCondition')
 
     def setSampleCondition(self, value):
         sample = self.getSample()
         if sample and value:
-            return sample.setSampleCondition(value)
+            sample.setSampleCondition(value)
+        self.Schema()['SampleCondition'].set(self, value)
 
     security.declarePublic('getSampleCondition')
 
@@ -1383,13 +1386,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSampleCondition()
+        return self.Schema().getField('SampleCondition').get(self)
 
     security.declarePublic('setComposite')
 
     def setComposite(self, value):
         sample = self.getSample()
         if sample and value:
-            return sample.setComposite(value)
+            sample.setComposite(value)
+        self.Schema()['Composite'].set(self, value)
 
     security.declarePublic('getComposite')
 
@@ -1397,13 +1402,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getComposite()
+        return self.Schema().getField('Composite').get(self)
 
     security.declarePublic('setStorageLocation')
 
     def setStorageLocation(self, value):
         sample = self.getSample()
         if sample and value:
-            return sample.setStorageLocation(value)
+            sample.setStorageLocation(value)
+        self.Schema()['StorageLocation'].set(self, value)
 
     security.declarePublic('getStorageLocation')
 
@@ -1411,13 +1418,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getStorageLocation()
+        return self.Schema().getField('StorageLocation').get(self)
 
     security.declarePublic('setAdHoc')
 
     def setAdHoc(self, value):
         sample = self.getSample()
         if sample and value:
-            return sample.setAdHoc(value)
+            sample.setAdHoc(value)
+        self.Schema()['AdHoc'].set(self, value)
 
     security.declarePublic('getAdHoc')
 
@@ -1425,6 +1434,7 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getAdHoc()
+        return self.Schema().getField('AdHoc').get(self)
 
     def guard_unassign_transition(self):
         """Allow or disallow transition depending on our children's states
