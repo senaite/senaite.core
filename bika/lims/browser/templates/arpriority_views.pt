@@ -51,7 +51,7 @@
                 <td class="left" tal:attributes="colspan python:left_col"
                     tal:content="context/getCCContactID">JonesJJ</td>
             </tal:cccontact_not_found>
-            <th i18n:translate="label_blank"></th>
+            <th></th>
             <td class="left"  tal:attributes="colspan python:right_col"></td>
         </tr>
 
@@ -68,7 +68,7 @@
             <th i18n:translate="label_CCEmailsInvoice">CC Emails - Invoice</th>
             <td class="left"  tal:attributes="colspan python:left_col"
                 tal:content="context/getCCEmailsInvoice">123</td>
-            <th i18n:translate="label_blank"></th>
+            <th></th>
             <td class="left"  tal:attributes="colspan python:right_col"></td>
         </tr>
 
@@ -114,7 +114,7 @@
             <th i18n:translate="label_samplepoint">Sample Point</th>
             <td class="left"  tal:attributes="colspan python:left_col"
                 tal:content="context/getSamplePoint">This sample point</td>
-            <th i18n:translate="label_blank"></th>
+            <th></th>
             <td class="left"  tal:attributes="colspan python:left_col"></td>
         </tr>
       </thead>
