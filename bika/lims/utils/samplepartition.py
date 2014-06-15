@@ -35,8 +35,17 @@ def create_samplepartition(context, data, analyses=None):
     # Sort containers and select smallest
     container = data.get('container', None)
     if container:
-        containers = context.bika_setup_catalog(UID=container)
-        containers = [_p.getObject() for _p in containers]
+        containers = []
+        if type(container[0]) is str:
+            # UIDs
+            containers = context.bika_setup_catalog(UID=container)
+            containers = [_p.getObject() for _p in containers]
+        elif hasattr(container[0], 'getObject'):
+            # Brains
+            containers = [_p.getObject() for _p in container]
+        elif hasattr(container[0], 'portal_type'):
+            containers = [c for c in container]
+
         if containers:
             try: containers.sort(lambda a, b: compare_containers(a, b))
             except: pass
