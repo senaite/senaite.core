@@ -550,7 +550,7 @@ class BikaListingView(BrowserView):
         pagenumber = int(self.request.get('pagenumber', 1) or 1)
         pagesize = self.pagesize
         start = (pagenumber - 1) * pagesize
-        end = start + pagesize
+        end = start + pagesize - 1
 
         if (hasattr(self, 'And') and self.And) \
            or (hasattr(self, 'Or') and self.Or):
@@ -575,9 +575,8 @@ class BikaListingView(BrowserView):
             brains = self.contentsMethod(self.contentFilter)
         results = []
         self.page_start_index = 0
-        current_index = 0
+        current_index = -1
         for i, obj in enumerate(brains):
-            current_index += 1
             # we don't know yet if it's a brain or an object
             path = hasattr(obj, 'getPath') and obj.getPath() or \
                  "/".join(obj.getPhysicalPath())
@@ -592,7 +591,9 @@ class BikaListingView(BrowserView):
 
             # avoid creating unnecessary info for items outside the current
             # batch;  only the path is needed for the "select all" case...
-            if not show_all and not start <= current_index < end:
+            # we only take allowed items into account
+            current_index += 1
+            if not show_all and not (start <= current_index <= end):
                 results.append(dict(path = path, uid = obj.UID()))
                 continue
 
