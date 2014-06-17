@@ -325,18 +325,18 @@ class BikaListingView(BrowserView):
             self.contentFilter[k] = v
 
         # sort on
-        sort_on = self.request.get(form_id + '_sort_on', '')
+        self.sort_on = self.request.get(form_id + '_sort_on', '')
         # manual_sort_on: only sort the current batch of items
         # this is a compromise for sorting without column indexes
         self.manual_sort_on = None
-        if sort_on \
-           and sort_on in self.columns.keys() \
-           and self.columns[sort_on].get('index', None):
-            idx = self.columns[sort_on].get('index', sort_on)
+        if self.sort_on \
+           and self.sort_on in self.columns.keys() \
+           and self.columns[self.sort_on].get('index', None):
+            idx = self.columns[self.sort_on].get('index', self.sort_on)
             self.contentFilter['sort_on'] = idx
         else:
-            if sort_on:
-                self.manual_sort_on = sort_on
+            if self.sort_on:
+                self.manual_sort_on = self.sort_on
                 if 'sort_on' in self.contentFilter:
                     del self.contentFilter['sort_on']
 
@@ -479,7 +479,7 @@ class BikaListingView(BrowserView):
     def GET_url(self, **kwargs):
         url = self.request['URL'].split("?")[0]
         query = {}
-        for x in "pagenumber", "pagesize", "review_state":
+        for x in "pagenumber", "pagesize", "review_state", "sort_order", "sort_on":
             if str(getattr(self, x)) != 'None':
                 query['%s_%s'%(self.form_id, x)] = getattr(self, x)
         for x in kwargs.keys():
