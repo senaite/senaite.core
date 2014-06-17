@@ -165,12 +165,13 @@ class BaseARImportsView(BikaListingView):
     def getAR(self):
         pass
 
+
 class GlobalARImportsView(BaseARImportsView):
 
     def __init__(self, context, request):
         super(GlobalARImportsView, self).__init__(context, request)
-
         request.set('disable_border', 1)
+
 
 class ClientARImportsView(BaseARImportsView):
 
