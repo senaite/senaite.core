@@ -476,12 +476,19 @@ class BikaListingView(BrowserView):
                                         or self.columns[col]['toggle'] == True)])
         return toggle_cols
 
-    def GET_url(self, **kwargs):
+    def GET_url(self, include_current=True, **kwargs):
         url = self.request['URL'].split("?")[0]
+        # take values from form (both html form and GET request slurped here)
         query = {}
+        if include_current:
+            for k, v in self.request.form.items():
+                if k.startswith(self.form_id + "_") and not "uids" in k:
+                    query[k] = v
+        # override from self attributes
         for x in "pagenumber", "pagesize", "review_state", "sort_order", "sort_on":
             if str(getattr(self, x)) != 'None':
                 query['%s_%s'%(self.form_id, x)] = getattr(self, x)
+        # then override with passed kwargs
         for x in kwargs.keys():
             query['%s_%s'%(self.form_id, x)] = kwargs.get(x)
         if query:

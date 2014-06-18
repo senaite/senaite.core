@@ -74,7 +74,7 @@
 					<option
 						tal:attributes="
 							value python:category;
-							selected python: view.request.get(form_id+'_getCategoryTitle', '') == category and 'selected' or ''"
+							selected python: view.request.form.get(form_id+'_getCategoryTitle', '') == category and 'selected' or ''"
 						tal:content="python:category"/>
 				</tal:options>
 			</select>
@@ -89,7 +89,7 @@
 					<option
 						tal:attributes="
 							value python:service;
-							selected python: view.request.get(form_id+'_Title', '') == service and 'selected' or ''"
+							selected python: view.request.form.get(form_id+'_Title', '') == service and 'selected' or ''"
 						tal:content="python:service"/>
 				</tal:options>
 			</select>
@@ -104,7 +104,7 @@
 					<option
 						tal:attributes="
 							value python:client;
-							selected python: view.request.get(form_id+'_getClientTitle', '') == client and 'selected' or ''"
+							selected python: view.request.form.get(form_id+'_getClientTitle', '') == client and 'selected' or ''"
 						tal:content="python:client"/>
 				</tal:options>
 			</select>&nbsp;
