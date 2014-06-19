@@ -18,11 +18,13 @@ function workflow_transition_sample(event) {
 	}
 	else {
 		var message = "";
-		if ($("#DateSampled").val() == "") {
+		var date = $("#DateSampled").val();
+		if (date == "" || date == undefined || date == null) {
 			message = message + PMF('${name} is required, please correct.',
 									{'name': _("Date Sampled")})
 		}
-		if ($("#Sampler").val() == "") {
+		var sampler = $("#Sampler").val();
+		if (sampler == "" || sampler == undefined || sampler == null) {
 			if (message != "") {
 				message = message + "<br/>";
 			}
