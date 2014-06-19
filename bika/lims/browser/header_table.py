@@ -120,10 +120,10 @@ class HeaderTableView(BrowserView):
         # Prominent fields get appended
         prominent_fieldnames = new_wv.get('header_table', {}).get('prominent', [])
         for fieldname in prominent_fieldnames:
-            if fieldname in view_fields:
-                prominent.append(self.render_field_view(fieldname))
-            elif fieldname in edit_fields:
+            if fieldname in edit_fields:
                 prominent.append({'fieldName': fieldname, 'mode': "edit"})
+            elif fieldname in view_fields:
+                prominent.append(self.render_field_view(fieldname))
         # Other visible fields get appended
         visible_fieldnames = new_wv.get('header_table', {}).get('visible', [])
         for fieldname in visible_fieldnames:
