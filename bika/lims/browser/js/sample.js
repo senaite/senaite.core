@@ -24,7 +24,7 @@ function workflow_transition_sample(event) {
 		}
 		if ($("#Sampler").val() == "") {
 			if (message != "") {
-				message = message + "br/>";
+				message = message + "<br/>";
 			}
 			message = message + PMF('${name} is required, please correct.',
 									{'name': _("Sampler")})
