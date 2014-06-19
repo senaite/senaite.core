@@ -13,7 +13,7 @@ window.bika.lims.portalMessage = function (message) {
     var _ = window.jarn.i18n.MessageFactory("bika");
     var str = "<dl class='portalMessage error'>"+
         "<dt>"+_("Error")+"</dt>"+
-        "<dd><ul>" + _(message) +
+        "<dd><ul>" + message +
         "</ul></dd></dl>";
     $(".portalMessage").remove();
     $(str).appendTo("#viewlet-above-content");
