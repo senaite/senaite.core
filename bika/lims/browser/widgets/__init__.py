@@ -6,6 +6,7 @@ from recordswidget import RecordsWidget
 from referenceresultswidget import ReferenceResultsWidget
 from referencewidget import ReferenceWidget
 from serviceswidget import ServicesWidget
+from selectionwidget import SelectionWidget
 from analysisspecificationwidget import AnalysisSpecificationWidget
 from worksheettemplatelayoutwidget import WorksheetTemplateLayoutWidget
 from coordinatewidget import CoordinateWidget
