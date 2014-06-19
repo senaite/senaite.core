@@ -370,8 +370,9 @@ class mailto_link_from_contacts:
             contacts = [contacts, ]
         ret = []
         for contact in contacts:
-            mailto = "<a href='mailto:%s'>%s</a>" % (
-                contact.getEmailAddress(), contact.getFullname())
+            if contact:
+                mailto = "<a href='mailto:%s'>%s</a>" % (
+                    contact.getEmailAddress(), contact.getFullname())
             ret.append(mailto)
         return ",".join(ret)
 
