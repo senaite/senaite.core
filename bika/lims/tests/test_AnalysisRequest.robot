@@ -73,22 +73,6 @@ Analysis Request with no sampling or preservation workflow
     # Go to                     ${PLONEURL}/clients/client-1/${ar_id}/base_view
     # Execute transition retract on items in form_id lab_analyses
 
-Analysis Request with Sampling Workflow on and no preservation selected
-    Enable Sampling Workflow
-    Go to                     ${PLONEURL}/clients/client-1
-    Click Link                Add
-    ${ar_id}=                 Complete ar_add form with template Bore
-    Go to                     ${PLONEURL}/clients/client-1/analysisrequests
-    page should contain       To Be Sampled
-    Go to                     ${PLONEURL}/clients/client-1/${ar_id}
-    Click element             css=.state-to_be_sampled
-    sleep    .5
-    Click element             css=#workflow-transition-sample
-    debug
-    Page should contain       saved.
-    # no preservation workflow, straight to received.
-    Page should contain       Received
-
 Create two different ARs from the same sample.
     Create Primary AR
     Create Secondary AR
@@ -101,19 +85,6 @@ Start browser
     Log in                              test_labmanager         test_labmanager
     Wait until page contains            You are now logged in
     Set selenium speed                  ${SELENIUM_SPEED}
-
-Disable Sampling Workflow
-    go to                               ${PLONEURL}/bika_setup/edit
-    click link                          Analyses
-    unselect checkbox                     SamplingWorkflowEnabled
-    click button                        Save
-
-Enable Sampling Workflow
-    go to                               ${PLONEURL}/bika_setup/edit
-    click link                          Analyses
-    select checkbox                     SamplingWorkflowEnabled
-    click button                        Save
-
 
 Create Primary AR
     Log in                      test_labmanager  test_labmanager

@@ -2,7 +2,7 @@
 """
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.utils import t, getUsers
 from bika.lims.browser.widgets.datetimewidget import DateTimeWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -13,6 +13,7 @@ from DateTime import DateTime
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
+from Products.Archetypes.public import DisplayList
 from Products.Archetypes.references import HoldingReference
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATContentTypes.utils import DT2dt, dt2DT
@@ -166,10 +167,15 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('Sampler',
-        searchable=True,
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
+        vocabulary='getSamplers',
+        widget=SelectionWidget(
+            label=_("Sampler"),
+            format='select',
+            render_own_label=True,
+        ),
     ),
     DateTimeField('SamplingDate',
         mode="rw",
@@ -494,6 +500,9 @@ class Sample(BaseFolder, HistoryAwareMixin):
         for ar in self.getAnalysisRequests():
             analyses += ar.getAnalyses(**contentFilter)
         return analyses
+
+    def getSamplers(self):
+        return getUsers(self, ['LabManager', 'Sampler'])
 
     def disposal_date(self):
         """ Calculate the disposal date by returning the latest

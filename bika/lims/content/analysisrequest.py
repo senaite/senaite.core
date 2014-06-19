@@ -20,14 +20,16 @@ from bika.lims.permissions import *
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.browser.fields import HistoryAwareReferenceField
-from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import DateTimeWidget
+from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims.browser.widgets import SelectionWidget
 from bika.lims.workflow import skip, isBasicTransitionAllowed
 from bika.lims.workflow import doActionFor
 from decimal import Decimal
 from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.utils import t, getUsers
+
 
 import sys
 
@@ -265,6 +267,33 @@ schema = BikaSchema.copy() + Schema((
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
             showOn=True,
+        ),
+    ),
+    # Sample field
+    DateTimeField('DateSampled',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        widget = DateTimeWidget(
+            label=_("Date Sampled"),
+            size=20,
+            visible={'edit': 'visible',
+                     'view': 'visible'},
+            render_own_label=True,
+        ),
+    ),
+    # Sample field
+    StringField('Sampler',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        vocabulary='getSamplers',
+        widget=SelectionWidget(
+            format='select',
+            label=_("Sampler"),
+            visible={'edit': 'visible',
+                     'view': 'visible'},
+            render_own_label=True,
         ),
     ),
     DateTimeField(
@@ -657,18 +686,6 @@ schema = BikaSchema.copy() + Schema((
             description=_('Enter percentage value eg. 33.0'),
             render_own_label=True,
             visible={'edit': 'invisible',
-                     'view': 'visible',
-                     'add': 'invisible'},
-        ),
-    ),
-    ComputedField(
-        'DateSampled',
-        expression="here.getSample() and here.getSample().getDateSampled() or ''",
-        mode="r",
-        read_permission=permissions.View,
-        widget=StringWidget(
-            label=_('Date Sampled'),
-            visible={'edit': 'visible',
                      'view': 'visible',
                      'add': 'invisible'},
         ),
@@ -1293,6 +1310,38 @@ class AnalysisRequest(BaseFolder):
             return sample.getSamplingDate()
         return self.Schema().getField('SamplingDate').get(self)
 
+    security.declarePublic('setSampler')
+
+    def setSampler(self, value):
+        sample = self.getSample()
+        if sample and value:
+            sample.setSampler(value)
+        self.Schema()['Sampler'].set(self, value)
+
+    security.declarePublic('getSampler')
+
+    def getSampler(self):
+        sample = self.getSample()
+        if sample:
+            return sample.getSampler()
+        return self.Schema().getField('Sampler').get(self)
+
+    security.declarePublic('setDateSampled')
+
+    def setDateSampled(self, value):
+        sample = self.getSample()
+        if sample and value:
+            sample.setDateSampled(value)
+        self.Schema()['DateSampled'].set(self, value)
+
+    security.declarePublic('getDateSampled')
+
+    def getDateSampled(self):
+        sample = self.getSample()
+        if sample:
+            return sample.getDateSampled()
+        return self.Schema().getField('DateSampled').get(self)
+
     security.declarePublic('setSamplePoint')
 
     def setSamplePoint(self, value):
@@ -1436,6 +1485,9 @@ class AnalysisRequest(BaseFolder):
         if sample:
             return sample.getAdHoc()
         return self.Schema().getField('AdHoc').get(self)
+
+    def getSamplers(self):
+        return getUsers(self, ['LabManager', 'Sampler'])
 
     def guard_unassign_transition(self):
         """Allow or disallow transition depending on our children's states
