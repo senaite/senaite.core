@@ -1,6 +1,6 @@
 *** Settings ***
 
-Library          Selenium2Library  timeout=5  implicit_wait=0.2
+Library          Selenium2Library  timeout=5  implicit_wait=0.5
 Library          String
 Library          DebugLibrary
 Resource         keywords.txt
@@ -14,66 +14,74 @@ Suite Teardown   Close All Browsers
 
 *** Variables ***
 
-${ar_factory_url}  portal_factory/AnalysisRequest/Request%20new%20analyses/ar_add
-
 *** Test Cases ***
 
-# XXX field analyses
-
-Analysis Request with Sampling Workflow on
+AR with Sampling workflow and field analyses
     Enable Sampling Workflow
-    ${ar_id}=                 Add an AR
-    Go to                     ${PLONEURL}/clients/client-1/analysisrequests
-    page should contain       To Be Sampled
-    Go to                     ${PLONEURL}/clients/client-1/H2O-0001-R01
+    ${ar_id}=                         Add an AR
+    Go to                             ${PLONEURL}/clients/client-1/analysisrequests
+    page should contain               To Be Sampled
+    Go to                             ${PLONEURL}/clients/client-1/H2O-0001-R01
+    click element                     css=.label-state-to_be_sampled > a
+    Click element                     css=a#workflow-transition-sample
+    sleep                             1
+    Page should contain               Sampler is required
+    Page should contain               Date Sampled is required
+    @{time} =                         Get Time          year month day hour min sec
+    SelectDate                        DateSampled       @{time}[2]
+    Select from list                  Sampler           Lab Sampler 1
+    click element                     css=.label-state-to_be_sampled > a
+    Click element                     css=a#workflow-transition-sample
+    sleep                             1
+    page should contain               There are field analyses without submitted results
+    page should contain element       css=.label-state-sample_due
+    Page should not contain           To Be Sampled
+    Page should not contain           to_be_sampled
 
-    debug
-
-    Go to                     ${PLONEURL}/clients/client-1/${ar_id}
-    Click element             css=.state-to_be_sampled
-    sleep    .5
-    Click element             css=#workflow-transition-sample
-    Page should contain       saved.
-    Page should contain       Received
+    input text                        css=input.listing_string_entry        5
+    select checkbox                   css=#field_analyses_select_all
+    click element                     css=input[transition="submit"]
+    Wait until page contains          To be verified
 
 *** Keywords ***
 
 Start browser
-    Open browser                        ${PLONEURL}/login_form
-    Log in                              test_labmanager         test_labmanager
-    Wait until page contains            You are now logged in
-    Set selenium speed                  ${SELENIUM_SPEED}
+    Open browser                      ${PLONEURL}/login_form
+    Log in                            test_labmanager         test_labmanager
+    Wait until page contains          You are now logged in
+    Set selenium speed                ${SELENIUM_SPEED}
 
 Disable Sampling Workflow
-    go to                               ${PLONEURL}/bika_setup/edit
-    click link                          Analyses
-    unselect checkbox                   SamplingWorkflowEnabled
-    click button                        Save
+    go to                             ${PLONEURL}/bika_setup/edit
+    click link                        Analyses
+    unselect checkbox                 SamplingWorkflowEnabled
+    click button                      Save
 
 Enable Sampling Workflow
-    go to                               ${PLONEURL}/bika_setup/edit
-    click link                          Analyses
-    select checkbox                     SamplingWorkflowEnabled
-    click button                        Save
+    go to                             ${PLONEURL}/bika_setup/edit
+    click link                        Analyses
+    select checkbox                   SamplingWorkflowEnabled
+    click button                      Save
 
 Add an AR
-    Go to                     ${PLONEURL}/clients/client-1
-    Click Link                Add
-    @{time} =                  Get Time                year month day hour min sec
-    SelectDate                 ar_0_SamplingDate       @{time}[2]
-    Select From Dropdown       ar_0_SampleType         Water
-    Select from dropdown       ar_0_Contact            Rita
-    Select from dropdown       ar_0_Priority           High
-    Click Element              xpath=//th[@id='cat_field_Water Chemistry']
-    Select Checkbox            xpath=//input[@title='Temperature' and @name='ar.0.Analyses:list:ignore_empty:record']
-    Click Element              xpath=//th[@id='cat_lab_Water Chemistry']
-    Select Checkbox            xpath=//input[@title='Moisture' and @name='ar.0.Analyses:list:ignore_empty:record']
-    Click Element              xpath=//th[@id='cat_lab_Metals']
-    Select Checkbox            xpath=//input[@title='Calcium' and @name='ar.0.Analyses:list:ignore_empty:record']
-    Select Checkbox            xpath=//input[@title='Phosphorus' and @name='ar.0.Analyses:list:ignore_empty:record']
-    Set Selenium Timeout       60
-    Click Button               Save
-    Wait until page contains   created
-    ${ar_id} =                 Get text      //dl[contains(@class, 'portalMessage')][2]/dd
-    ${ar_id} =                 Set Variable  ${ar_id.split()[2]}
-    [return]                   ${ar_id}
+    Go to                             ${PLONEURL}/clients/client-1/portal_factory/AnalysisRequest/Request%20new%20analyses/ar_add
+    Wait until page contains          Request new analyses
+    @{time} =                         Get Time                year month day hour min sec
+    SelectDate                        css=#ar_0_SamplingDate       @{time}[2]
+    Select From Dropdown              css=#ar_0_SampleType         Water
+    Select from dropdown              css=#ar_0_Contact            Rita
+    Select from dropdown              css=#ar_0_Priority           High
+    Click Element                     xpath=//th[@id='cat_field_Water Chemistry']
+    Select Checkbox                   xpath=//input[@title='Temperature' and @name='ar.0.Analyses:list:ignore_empty:record']
+    Click Element                     xpath=//th[@id='cat_lab_Water Chemistry']
+    Select Checkbox                   xpath=//input[@title='Moisture' and @name='ar.0.Analyses:list:ignore_empty:record']
+    Click Element                     xpath=//th[@id='cat_lab_Metals']
+    Select Checkbox                   xpath=//input[@title='Calcium' and @name='ar.0.Analyses:list:ignore_empty:record']
+    Select Checkbox                   xpath=//input[@title='Phosphorus' and @name='ar.0.Analyses:list:ignore_empty:record']
+    Set Selenium Timeout              30
+    Click Button                      Save
+    Wait until page contains          created
+    Set Selenium Timeout              5
+    ${ar_id} =                        Get text      //dl[contains(@class, 'portalMessage')][2]/dd
+    ${ar_id} =                        Set Variable  ${ar_id.split()[2]}
+    [return]                          ${ar_id}
