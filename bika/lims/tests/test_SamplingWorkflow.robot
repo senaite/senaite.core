@@ -16,7 +16,35 @@ Suite Teardown   Close All Browsers
 
 *** Test Cases ***
 
-AR with Sampling workflow and field analyses
+sample transition from the AR list
+    Enable Sampling Workflow
+    ${ar_id}=                         Add an AR
+    Go to                             ${PLONEURL}/clients/client-1/analysisrequests
+    page should contain               To Be Sampled
+    @{time} =                         Get Time                year month day hour min sec
+    SelectDate                        css=.listing_string_entry    @{time}[2]
+    select from list                  css=.listing_select_entry    Lab Sampler 1
+    click element                     css=input[transition="sample"]
+    wait until page contains          H2O-0001 is waiting to be received.
+    page should not contain element   css=.listing_string_entry
+    page should not contain element   css=.listing_elect_entry
+    page should not contain element   css=input[transition="sample"]
+
+sample transition from the Sample list
+    Enable Sampling Workflow
+    ${ar_id}=                         Add an AR
+    Go to                             ${PLONEURL}/clients/client-1/samples
+    page should contain               To Be Sampled
+    @{time} =                         Get Time                year month day hour min sec
+    SelectDate                        css=.listing_string_entry    @{time}[2]
+    select from list                  css=.listing_select_entry    Lab Sampler 1
+    click element                     css=input[transition="sample"]
+    wait until page contains          H2O-0001 is waiting to be received.
+    page should not contain element   css=.listing_string_entry
+    page should not contain element   css=.listing_elect_entry
+    page should not contain element   css=input[transition="sample"]
+
+AR view with field analyses
     Enable Sampling Workflow
     ${ar_id}=                         Add an AR
     Go to                             ${PLONEURL}/clients/client-1/analysisrequests
@@ -37,7 +65,32 @@ AR with Sampling workflow and field analyses
     page should contain element       css=.label-state-sample_due
     Page should not contain           To Be Sampled
     Page should not contain           to_be_sampled
+    input text                        css=input.listing_string_entry        5
+    select checkbox                   css=#field_analyses_select_all
+    click element                     css=input[transition="submit"]
+    Wait until page contains          To be verified
 
+Sample View
+    Enable Sampling Workflow
+    ${ar_id}=                         Add an AR
+    Go to                             ${PLONEURL}/clients/client-1/samples
+    page should contain               To Be Sampled
+    Go to                             ${PLONEURL}/clients/client-1/H2O-0001
+    click element                     css=.label-state-to_be_sampled > a
+    Click element                     css=a#workflow-transition-sample
+    sleep                             1
+    Page should contain               Sampler is required
+    Page should contain               Date Sampled is required
+    @{time} =                         Get Time          year month day hour min sec
+    SelectDate                        DateSampled       @{time}[2]
+    Select from list                  Sampler           Lab Sampler 1
+    click element                     css=.label-state-to_be_sampled > a
+    Click element                     css=a#workflow-transition-sample
+    sleep                             1
+    page should contain               There are field analyses without submitted results
+    page should contain element       css=.label-state-sample_due
+    Page should not contain           To Be Sampled
+    Page should not contain           to_be_sampled
     input text                        css=input.listing_string_entry        5
     select checkbox                   css=#field_analyses_select_all
     click element                     css=input[transition="submit"]

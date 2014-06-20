@@ -40,7 +40,6 @@ class AnalysisRequestViewView(BrowserView):
         ar = self.context
         workflow = getToolByName(self.context, 'portal_workflow')
         if 'transition' in self.request.form:
-            wf = getToolByName(self.context, 'portal_workflow')
             doActionFor(self.context, self.request.form['transition'])
         # Contacts get expanded for view
         contact = self.context.getContact()

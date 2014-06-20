@@ -1581,8 +1581,9 @@ class AnalysisRequest(BaseFolder):
         return
 
     def workflow_script_sample(self):
-        if skip(self, "sample"):
-            return
+        # no skip check here: the sampling workflow UI is odd
+        # if skip(self, "sample"):
+        #     return
         # transition our sample
         workflow = getToolByName(self, 'portal_workflow')
         sample = self.getSample()

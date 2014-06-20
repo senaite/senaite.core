@@ -20,7 +20,6 @@ BIKA: View Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Manage Invoices,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Results not requested,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Sample Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N
 BIKA: Add Attachment,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,Y,N,N
 View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N
@@ -42,7 +41,6 @@ BIKA: Manage Invoices,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Receive Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Results not requested,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Sample Sample,N,Y,Y,N,N,Y,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N
 BIKA: Add Attachment,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,Y,N,N
 View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N
@@ -62,7 +60,6 @@ BIKA: View Results,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,N,N,N,N
 BIKA: Manage Invoices,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Results not requested,Y,N,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Sample Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N
 BIKA: Add Attachment,N,Y,Y,Y,N,Y,N,N,N,N,N,N,N,N,N
 View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N
@@ -84,7 +81,6 @@ BIKA: Manage Invoices,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Preserve Sample,N,Y,Y,N,N,N,Y,N,N,N,N,N,N,N,N
 BIKA: Receive Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Results not requested,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Sample Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N
 BIKA: Add Attachment,N,Y,Y,Y,N,N,Y,N,N,N,N,N,N,N,N
 View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N
@@ -106,7 +102,6 @@ BIKA: Manage Invoices,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Receive Sample,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Results not requested,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Sample Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N
 BIKA: Add Attachment,N,Y,Y,Y,N,N,N,N,N,N,N,Y,Y,N,N
 View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N
@@ -126,7 +121,6 @@ BIKA: View Results,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,N,N,N,N
 BIKA: Manage Invoices,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Results not requested,N,Y,Y,N,Y,N,N,N,N,N,N,N,N,N,N
-BIKA: Sample Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N
 BIKA: Publish,N,Y,Y,N,N,N,N,N,Y,N,N,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,Y,Y,N,N,N,N,N,N,N,N,N,N
@@ -147,7 +141,6 @@ BIKA: View Results,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,N,N,N,N
 BIKA: Manage Invoices,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Results not requested,N,Y,Y,N,Y,N,N,N,N,N,N,N,N,N,N
-BIKA: Sample Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N
 BIKA: Publish,N,Y,Y,N,N,N,N,N,Y,N,N,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,N,Y,N,N,N,N,N,N,N,N,N,N
@@ -168,7 +161,6 @@ BIKA: View Results,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,N,N,N,N
 BIKA: Manage Invoices,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Results not requested,N,Y,Y,N,Y,N,N,N,N,N,N,N,N,N,N
-BIKA: Sample Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Verify,N,Y,Y,N,N,N,N,Y,N,N,N,N,N,N,N
 BIKA: Publish,N,Y,Y,N,N,N,N,N,Y,N,N,N,N,N,N
@@ -190,7 +182,6 @@ BIKA: View Results,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N
 BIKA: Manage Invoices,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Results not requested,N,Y,Y,N,Y,N,N,N,N,N,N,N,N,N,N
-BIKA: Sample Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Publish,N,Y,Y,N,N,N,N,N,Y,N,N,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N
@@ -211,7 +202,6 @@ BIKA: View Results,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,N,N
 BIKA: Manage Invoices,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Results not requested,N,Y,Y,N,Y,N,N,N,N,N,N,N,N,N
-BIKA: Sample Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,N,N
 Modify portal content,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N
@@ -230,7 +220,6 @@ BIKA: View Results,N,Y,Y,Y,Y,N,N,N,N,N,N,Y,N,N
 BIKA: Manage Invoices,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Results not requested,N,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Sample Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,N,N
 Modify portal content,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N

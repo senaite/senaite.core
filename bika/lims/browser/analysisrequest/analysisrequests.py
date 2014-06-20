@@ -599,11 +599,17 @@ class AnalysisRequestsView(BikaListingView):
 
             items[x]['Created'] = self.ulocalized_time(obj.created())
 
-            SamplingWorkflowEnabled = sample.getSamplingWorkflowEnabled()
+            contact = obj.getContact()
+            if contact:
+                items[x]['ClientContact'] = contact.Title()
+                items[x]['replace']['ClientContact'] = "<a href='%s'>%s</a>" % \
+                    (contact.absolute_url(), contact.Title())
+            else:
+                items[x]['ClientContact'] = ""
 
+            SamplingWorkflowEnabled = sample.getSamplingWorkflowEnabled()
             if SamplingWorkflowEnabled and not samplingdate > DateTime():
                 datesampled = self.ulocalized_time(sample.getDateSampled())
-
                 if not datesampled:
                     datesampled = self.ulocalized_time(
                         DateTime(),
@@ -621,18 +627,12 @@ class AnalysisRequestsView(BikaListingView):
             items[x]['getDateSampled'] = datesampled
             items[x]['getSampler'] = sampler
 
-            contact = obj.getContact()
-            if contact:
-                items[x]['ClientContact'] = contact.Title()
-                items[x]['replace']['ClientContact'] = "<a href='%s'>%s</a>" % \
-                    (contact.absolute_url(), contact.Title())
-            else:
-                items[x]['ClientContact'] = ""
-
             # sampling workflow - inline edits for Sampler and Date Sampled
             checkPermission = self.context.portal_membership.checkPermission
-            if checkPermission(SampleSample, obj) \
-                and not samplingdate > DateTime():
+            state = workflow.getInfoFor(obj, 'review_state')
+            if state == 'to_be_sampled' \
+                    and checkPermission(SampleSample, obj) \
+                    and not samplingdate > DateTime():
                 items[x]['required'] = ['getSampler', 'getDateSampled']
                 items[x]['allow_edit'] = ['getSampler', 'getDateSampled']
                 samplers = getUsers(sample, ['Sampler', 'LabManager', 'Manager'])
