@@ -1367,7 +1367,6 @@ function setTemplate(arnum, template_title){
             };
         });
     });
-
     recalc_prices(arnum);
 }
 

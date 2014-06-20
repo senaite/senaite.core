@@ -6,10 +6,19 @@ class InstrumentTypeInstrumentsView(InstrumentsView):
 
     def __init__(self, context, request):
         super(InstrumentTypeInstrumentsView, self).__init__(context, request)
-        self.contentFilter['getInstrumentTypeUID']=self.context.UID()
         url = self.portal.absolute_url()
         url += "/bika_setup/bika_instruments/"
         self.context_actions = {_('Add'):
                                 {'url': url+'createObject?type_name=Instrument',
                                  'icon': '++resource++bika.lims.images/add.png'}}
-        
+
+    def folderitems(self):
+        items = InstrumentsView.folderitems(self)
+        filtered_items = []
+        for item in items:
+            if 'obj' not in item:
+                continue
+            itype = item['obj'].getInstrumentType()
+            if itype and itype.UID() == self.context.UID():
+                filtered_items.append(item)
+        return filtered_items

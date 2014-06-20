@@ -198,20 +198,29 @@ class WorksheetImporter:
             EmailAddress, Phone, Fax, BusinessPhone, BusinessFax, HomePhone,
             MobilePhone
         """
-        if hasattr(obj, 'setEmailAddress'):
-            obj.setEmailAddress(row.get('EmailAddress', ''))
-        if hasattr(obj, 'setPhone'):
-            obj.setPhone(row.get('Phone', ''))
-        if hasattr(obj, 'setFax'):
-            obj.setFax(row.get('Fax', ''))
-        if hasattr(obj, 'setBusinessPhone'):
-            obj.setBusinessPhone(row.get('BusinessPhone', ''))
-        if hasattr(obj, 'setBusinessFax'):
-            obj.setBusinessFax(row.get('BusinessFax', ''))
-        if hasattr(obj, 'setHomePhone'):
-            obj.setHomePhone(row.get('HomePhone', ''))
-        if hasattr(obj, 'setMobilePhone'):
-            obj.setMobilePhone(row.get('MobilePhone', ''))
+        fieldnames = ['EmailAddress',
+                      'Phone',
+                      'Fax',
+                      'BusinessPhone',
+                      'BusinessFax',
+                      'HomePhone',
+                      'MobilePhone',
+                      ]
+        schema = obj.Schema()
+        fields = dict([(field.getName(), field) for field in schema.fields()])
+        for fieldname in fieldnames:
+            try:
+                field = fields[fieldname]
+            except:
+                if fieldname in row:
+                    logger.info("Address field %s not found on %s"%(fieldname,obj))
+                continue
+            try:
+                value = row[fieldname]
+            except:
+                logger.info("Column %s not found in row %s"%(fieldname,row))
+                continue
+            field.set(obj, value)
 
     def get_object(self, catalog, portal_type, title=None, **kwargs):
         """This will return an object from the catalog.
@@ -1393,6 +1402,11 @@ class Reference_Definitions(WorksheetImporter):
     def load_reference_definition_results(self):
         sheetname = 'Reference Definition Results'
         worksheet = self.workbook.get_sheet_by_name(sheetname)
+        if not worksheet:
+            sheetname = 'Reference Definition Values'
+            worksheet = self.workbook.get_sheet_by_name(sheetname)
+            if not worksheet:
+                return
         self.results = {}
         if not worksheet:
             return
@@ -1494,8 +1508,9 @@ class Setup(WorksheetImporter):
         dry_service = self.get_object(bsc, 'AnalysisService',
                                       values.get('DryMatterService'))
         dry_uid = dry_service.UID() if dry_service else None
-        if not dry_uid:
-            print("DryMatter service does not exist {0}".format(values['DryMatterService']))
+        if not dry_uid and values.get('DryMatterService'):
+            print("DryMatter service %s does not exist (%s)"
+                  % values['DryMatterService'])
         self.context.bika_setup.edit(
             PasswordLifetime=int(values['PasswordLifetime']),
             AutoLogOff=int(values['AutoLogOff']),

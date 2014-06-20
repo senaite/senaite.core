@@ -41,7 +41,6 @@ def addBatches(tool):
     portal.moveObjectToPosition('batches', portal.objectIds().index('clients'))
 
     # add Batch to all AnalysisRequest objects.
-    # When the objects are reindexed, BatchUID will also be populated
     proxies = portal_catalog(portal_type="AnalysiRequest")
     ars = (proxy.getObject() for proxy in proxies)
     for ar in ars:
