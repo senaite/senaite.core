@@ -99,11 +99,11 @@ class AnalysisRequestsView(BikaListingView):
                              'toggle': True},
             'getDateSampled': {'title': _('Date Sampled'),
                                'index': 'getDateSampled',
-                               'toggle': not SamplingWorkflowEnabled,
+                               'toggle': SamplingWorkflowEnabled,
                                'input_class': 'datepicker_nofuture',
                                'input_width': '10'},
             'getSampler': {'title': _('Sampler'),
-                           'toggle': not SamplingWorkflowEnabled},
+                           'toggle': SamplingWorkflowEnabled},
             'getDatePreserved': {'title': _('Date Preserved'),
                                  'toggle': user_is_preserver,
                                  'input_class': 'datepicker_nofuture',
@@ -599,10 +599,9 @@ class AnalysisRequestsView(BikaListingView):
 
             items[x]['Created'] = self.ulocalized_time(obj.created())
 
-            SamplingWorkflowEnabled =\
-                self.context.bika_setup.getSamplingWorkflowEnabled()
+            SamplingWorkflowEnabled = sample.getSamplingWorkflowEnabled()
 
-            if not samplingdate > DateTime() and SamplingWorkflowEnabled:
+            if SamplingWorkflowEnabled and not samplingdate > DateTime():
                 datesampled = self.ulocalized_time(sample.getDateSampled())
 
                 if not datesampled:
@@ -687,6 +686,8 @@ class AnalysisRequestsView(BikaListingView):
                 except Exception:
                     pass
 
+        # Hide Preservation/Sampling workflow actions if the edit columns
+        # are not displayed.
         toggle_cols = self.get_toggle_cols()
         new_states = []
         for i, state in enumerate(self.review_states):
