@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2014-06-03 13:46+0000\n"
+"POT-Creation-Date: 2014-06-22 07:25+0000\n"
 "PO-Revision-Date: 2014-05-15 19:37+0000\n"
 "Last-Translator: Emil Cyraniak <cyrano30@epf.pl>\n"
 "Language-Team: Polish (http://www.transifex.com/projects/p/bika-lims/language/pl/)\n"

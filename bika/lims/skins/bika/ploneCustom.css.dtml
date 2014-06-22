@@ -1042,4 +1042,8 @@ a.print-16:hover {
     color: #3c3c3c !important;
 }
 
+table#add_analyses {
+    font-size: 120%;
+    line-height: 1.5em;
+}
 </dtml-with>

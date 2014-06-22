@@ -63,15 +63,15 @@
                 </label>
             </td>
         </tal:loop>
-        <td i18n:translate="">
+        <td>
             <label i18n:translate="" 
                    title='Select the analyses to be performed on this Sample'>Analyses</label>
         </td>
-        <td i18n:translate="">
+        <td>
             <label i18n:translate="price-and-tax" 
                    title='The cost of the analyses'>Price & GST</label>
         </td>
-        <td i18n:translate="">
+        <td>
             <label i18n:translate="save-as-profile" 
                    title='Save selected analyses as a new profile'>Save as Profile</label>
         </td>

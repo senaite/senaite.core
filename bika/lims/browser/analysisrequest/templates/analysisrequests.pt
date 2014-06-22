@@ -30,17 +30,17 @@
 				<span tal:replace="python:add_item"/>
 			</a>
 		</tal:add_actions>
-        <label style="font-size:60%;position:relative;top:-0.3em;" >Number of ARs</label>
+        <label i18n:translate="" style="font-size:60%;position:relative;top:-0.3em;" >Number of ARs</label>
         <input id="ar_count" type="text" name="ar_count" size="4" 
             tal:attributes="value ar_count" 
             style="font-size:60%;position:relative;top:-0.45em;width:30px;"
         />
-        <label style="font-size:60%;position:relative;top:-0.4em;" >Layout</label>
+        <label i18n:translate="" style="font-size:60%;position:relative;top:-0.4em;" >Layout</label>
         <select id="layout" name="layout"
             style="font-size:60%;position:relative;top:-0.3em;"
             >
-            <option value="columns">Columns Based</option>
-            <option value="rows">Rows Based</option>
+            <option i18n:translate="" value="columns">Columns Based</option>
+            <option i18n:translate="" value="rows">Rows Based</option>
  		</select>
     </h1>
 </metal:content-title>

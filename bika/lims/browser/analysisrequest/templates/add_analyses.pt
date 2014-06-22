@@ -11,7 +11,7 @@
 </metal:content-core>
 
 <metal:content-core fill-slot="content-core">
-<table>
+<table id="add_analyses">
 <form id="add_analyses_form"
       name="add_analyses_form"
       method="POST">
