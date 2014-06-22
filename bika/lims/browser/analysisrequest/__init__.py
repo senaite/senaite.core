@@ -132,6 +132,9 @@ class WidgetVisibility(_WV):
                 'MemberDiscount',
                 'InvoiceExclude',
                 ]}
+        if sw:
+            ret['header_table']['visible'].extend(['Sampler', 'DateSampled'])
+            ret['header_table']['prominent'].extend(['Sampler', 'DateSampled'])
         # Edit and View widgets are displayed/hidden in different workflow
         # states.  The widget.visible is used as a default.  This is placed
         # here to manage the header_table display.

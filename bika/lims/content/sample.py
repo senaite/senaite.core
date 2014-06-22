@@ -23,6 +23,7 @@ from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
 
 from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 
 import sys
 from bika.lims.utils import to_unicode
@@ -161,7 +162,8 @@ schema = BikaSchema.copy() + Schema((
         write_permission=permissions.ModifyPortalContent,
         widget = DateTimeWidget(
             label=_("Date Sampled"),
-            visible={'edit': 'invisible',
+            size=20,
+            visible={'edit': 'visible',
                      'view': 'visible'},
             render_own_label=True,
         ),
@@ -171,9 +173,11 @@ schema = BikaSchema.copy() + Schema((
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
         vocabulary='getSamplers',
-        widget=SelectionWidget(
-            label=_("Sampler"),
+        widget=BikaSelectionWidget(
             format='select',
+            label=_("Sampler"),
+            visible={'edit': 'visible',
+                     'view': 'visible'},
             render_own_label=True,
         ),
     ),

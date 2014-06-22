@@ -30,6 +30,7 @@ from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t, getUsers
 
+from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 
 import sys
 
@@ -288,7 +289,7 @@ schema = BikaSchema.copy() + Schema((
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
         vocabulary='getSamplers',
-        widget=SelectionWidget(
+        widget=BikaSelectionWidget(
             format='select',
             label=_("Sampler"),
             visible={'edit': 'visible',

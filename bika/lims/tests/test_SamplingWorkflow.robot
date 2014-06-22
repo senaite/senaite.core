@@ -27,7 +27,7 @@ sample transition from the AR list
     click element                     css=input[transition="sample"]
     wait until page contains          H2O-0001 is waiting to be received.
     page should not contain element   css=.listing_string_entry
-    page should not contain element   css=.listing_elect_entry
+    page should not contain element   css=.listing_select_entry
     page should not contain element   css=input[transition="sample"]
 
 sample transition from the Sample list
@@ -41,7 +41,7 @@ sample transition from the Sample list
     click element                     css=input[transition="sample"]
     wait until page contains          H2O-0001 is waiting to be received.
     page should not contain element   css=.listing_string_entry
-    page should not contain element   css=.listing_elect_entry
+    page should not contain element   css=.listing_select_entry
     page should not contain element   css=input[transition="sample"]
 
 AR view with field analyses
@@ -87,14 +87,9 @@ Sample View
     click element                     css=.label-state-to_be_sampled > a
     Click element                     css=a#workflow-transition-sample
     sleep                             1
-    page should contain               There are field analyses without submitted results
     page should contain element       css=.label-state-sample_due
     Page should not contain           To Be Sampled
     Page should not contain           to_be_sampled
-    input text                        css=input.listing_string_entry        5
-    select checkbox                   css=#field_analyses_select_all
-    click element                     css=input[transition="submit"]
-    Wait until page contains          To be verified
 
 *** Keywords ***
 
