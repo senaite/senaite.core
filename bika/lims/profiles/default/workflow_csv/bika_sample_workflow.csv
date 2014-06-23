@@ -35,7 +35,7 @@ BIKA: Edit Sample,N,N,Y,Y,N,N,N,N,Y,Y,N,Y
 BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Receive Sample,N,N,N,N,N,N,N,N,N,N,N,N
 "BIKA: Sample Sample",N,N,Y,N,N,N,N,N,N,Y,N,Y
-View,N,N,Y,Y,N,N,N,Y,Y,Y,N,N
+View,N,N,Y,Y,N,N,N,Y,Y,Y,N,Y
 Modify portal content,N,N,Y,Y,N,N,N,Y,Y,Y,N,N
 ,,,,,,,,,,,,
 [State],,,,,,,,,,,,

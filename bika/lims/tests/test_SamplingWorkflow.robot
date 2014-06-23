@@ -16,6 +16,30 @@ Suite Teardown   Close All Browsers
 
 *** Test Cases ***
 
+Sampler login
+# /samples List should contain all to_be_sampled samples
+    Enable Sampling Workflow
+    ${ar_id}=                         Add an AR
+
+    Log out
+    Log in                            test_sampler1  test_sampler1
+    Go to                             ${PLONEURL}/samples
+
+    page should contain               To Be Sampled
+    @{time} =                         Get Time                year month day hour min sec
+    SelectDate                        css=.listing_string_entry    @{time}[2]
+    select from list                  css=.listing_select_entry    Lab Sampler 1
+    click element                     css=input[transition="sample"]
+    wait until page contains          H2O-0001 is waiting to be received.
+    page should not contain element   css=.listing_string_entry
+    page should not contain element   css=.listing_select_entry
+    page should not contain element   css=input[transition="sample"]
+
+# sample the sample from Samples list
+# sample the sample from Sample View
+# sample the sample from ARs list
+# sample the sample from AR View
+
 sample transition from the AR list
     Enable Sampling Workflow
     ${ar_id}=                         Add an AR

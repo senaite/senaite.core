@@ -380,4 +380,14 @@
         handler="bika.lims.upgrade.to3037.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Fix Sample Workflow permissions"
+        description=""
+        source="3037"
+        destination="3038"
+        handler="bika.lims.upgrade.to3038.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
