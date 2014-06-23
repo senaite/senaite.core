@@ -1,12 +1,14 @@
 """ARs and Samples use HeaderTable to display object fields in their custom
 view and edit screens.
 """
+from Products.CMFCore.utils import getToolByName
 
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IHeaderTableFieldRenderer
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.CMFPlone import PloneMessageFactory as _p
 from bika.lims.utils import getHiddenAttributesForClass
+from bika.lims.workflow import doActionFor
 from zope.component import getAdapter
 from AccessControl import getSecurityManager
 from AccessControl.Permissions import view
@@ -120,10 +122,10 @@ class HeaderTableView(BrowserView):
         # Prominent fields get appended
         prominent_fieldnames = new_wv.get('header_table', {}).get('prominent', [])
         for fieldname in prominent_fieldnames:
-            if fieldname in view_fields:
-                prominent.append(self.render_field_view(fieldname))
-            elif fieldname in edit_fields:
+            if fieldname in edit_fields:
                 prominent.append({'fieldName': fieldname, 'mode': "edit"})
+            elif fieldname in view_fields:
+                prominent.append(self.render_field_view(fieldname))
         # Other visible fields get appended
         visible_fieldnames = new_wv.get('header_table', {}).get('visible', [])
         for fieldname in visible_fieldnames:

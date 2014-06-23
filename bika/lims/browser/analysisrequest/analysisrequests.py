@@ -103,11 +103,11 @@ class AnalysisRequestsView(BikaListingView):
                              'toggle': True},
             'getDateSampled': {'title': _('Date Sampled'),
                                'index': 'getDateSampled',
-                               'toggle': not SamplingWorkflowEnabled,
+                               'toggle': SamplingWorkflowEnabled,
                                'input_class': 'datepicker_nofuture',
                                'input_width': '10'},
             'getSampler': {'title': _('Sampler'),
-                           'toggle': not SamplingWorkflowEnabled},
+                           'toggle': SamplingWorkflowEnabled},
             'getDatePreserved': {'title': _('Date Preserved'),
                                  'toggle': user_is_preserver,
                                  'input_class': 'datepicker_nofuture',
@@ -603,12 +603,17 @@ class AnalysisRequestsView(BikaListingView):
 
             items[x]['Created'] = self.ulocalized_time(obj.created())
 
-            SamplingWorkflowEnabled =\
-                self.context.bika_setup.getSamplingWorkflowEnabled()
+            contact = obj.getContact()
+            if contact:
+                items[x]['ClientContact'] = contact.Title()
+                items[x]['replace']['ClientContact'] = "<a href='%s'>%s</a>" % \
+                    (contact.absolute_url(), contact.Title())
+            else:
+                items[x]['ClientContact'] = ""
 
-            if not samplingdate > DateTime() and SamplingWorkflowEnabled:
+            SamplingWorkflowEnabled = sample.getSamplingWorkflowEnabled()
+            if SamplingWorkflowEnabled and not samplingdate > DateTime():
                 datesampled = self.ulocalized_time(sample.getDateSampled())
-
                 if not datesampled:
                     datesampled = self.ulocalized_time(
                         DateTime(),
@@ -626,18 +631,12 @@ class AnalysisRequestsView(BikaListingView):
             items[x]['getDateSampled'] = datesampled
             items[x]['getSampler'] = sampler
 
-            contact = obj.getContact()
-            if contact:
-                items[x]['ClientContact'] = contact.Title()
-                items[x]['replace']['ClientContact'] = "<a href='%s'>%s</a>" % \
-                    (contact.absolute_url(), contact.Title())
-            else:
-                items[x]['ClientContact'] = ""
-
             # sampling workflow - inline edits for Sampler and Date Sampled
             checkPermission = self.context.portal_membership.checkPermission
-            if checkPermission(SampleSample, obj) \
-                and not samplingdate > DateTime():
+            state = workflow.getInfoFor(obj, 'review_state')
+            if state == 'to_be_sampled' \
+                    and checkPermission(SampleSample, obj) \
+                    and not samplingdate > DateTime():
                 items[x]['required'] = ['getSampler', 'getDateSampled']
                 items[x]['allow_edit'] = ['getSampler', 'getDateSampled']
                 samplers = getUsers(sample, ['Sampler', 'LabManager', 'Manager'])
@@ -691,6 +690,8 @@ class AnalysisRequestsView(BikaListingView):
                 except Exception:
                     pass
 
+        # Hide Preservation/Sampling workflow actions if the edit columns
+        # are not displayed.
         toggle_cols = self.get_toggle_cols()
         new_states = []
         for i, state in enumerate(self.review_states):

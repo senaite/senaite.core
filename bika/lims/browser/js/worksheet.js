@@ -122,46 +122,55 @@ $(document).ready(function(){
         $(this).parents('form').submit();
     })
 
-    // add_analyses analysis search is handled by bika_listing default __call__
-    $('.ws-analyses-search-button').live('click', function(event) {
-        // in this context we already know there is only one bika-listing-form
-        form_id = "list";
-        form = $("#list");
+	// add_analyses analysis search is handled by bika_listing default __call__
+	$('.ws-analyses-search-button').live('click', function (event) {
+		// in this context we already know there is only one bika-listing-form
+		var form_id = "list";
+		var form = $("#list");
 
-        // request new table content by re-routing bika_listing_table form submit
-        stored_form_action = $(form).attr("action");
-        $(form).attr("action", window.location.href);
-        $(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
+		// request new table content by re-routing bika_listing_table form submit
+		$(form).append("<input type='hidden' name='table_only' value='" + form_id + "'>");
+		// dropdowns are printed in ../templates/worksheet_add_analyses.pt
+		// We add <formid>_<index>=<value>, which are checked in bika_listing.py
+		var filter_indexes = ['getCategoryTitle', 'Title', 'getClientTitle'];
+		var i, fi;
+		for (i = 0; i < filter_indexes.length; i++) {
+			fi = form_id + "_" + filter_indexes[i];
+			var value = $("[name='" + fi + "']").val();
+			if (value == undefined || value == null || value == 'any') {
+				$("#list > [name='" + fi + "']").remove();
+				$.query.REMOVE(fi);
+			}
+			else {
+				$(form).append("<input type='hidden' name='" + fi + "' value='" + value + "'>");
+				$.query.SET(fi, value);
+			}
+		}
 
-        // dropdowns are printed in ../templates/worksheet_add_analyses.pt
-        // We add list_<bika_analysis_catalog args>, which go
-        // into contentFilter in bika_listing.py
-        getCategoryTitle = $("[name='list_getCategoryTitle']").val();
-        Title = $("[name='list_Title']").val();
-        getClientTitle = $("[name='list_getClientTitle']").val();
-        if (getCategoryTitle != 'any')
-            $(form).append("<input type='hidden' name='list_getCategoryTitle' value='"+getCategoryTitle+"'>");
-        if (Title != 'any')
-            $(form).append("<input type='hidden' name='list_Title' value='"+Title+"'>");
-        if (getClientTitle != 'any')
-            $(form).append("<input type='hidden' name='list_getClientTitle' value='"+getClientTitle+"'>");
+		var options = {
+			target: $('.bika-listing-table'),
+			replaceTarget: true,
+			data: form.formToArray(),
+			success: function () {
+			}
+		}
+		var url = window.location.href.split("?")[0].split("/add_analyses")[0];
+		url = url + "/add_analyses" + $.query.toString();
+		window.history.replaceState({}, window.document.title, url);
 
-        options = {
-            target: $('.bika-listing-table'),
-            replaceTarget: true,
-            data: form.formToArray(),
-            success: function(){
-            }
-        }
-        form.ajaxSubmit(options);
+		var stored_form_action = $(form).attr("action");
+		$(form).attr("action", window.location.href);
+		form.ajaxSubmit(options);
 
-        $("[name='table_only']").remove();
-        $("#list > [name='list_getCategoryTitle']").remove();
-        $("#list > [name='list_Title']").remove();
-        $("#list > [name='list_getClientTitle']").remove();
-        $(form).attr("action", stored_form_action);
-        return false;
-    });
+		for (i = 0; i < filter_indexes.length; i++) {
+			fi = form_id + "_" + filter_indexes[i];
+			$("#list > [name='" + fi + "']").remove();
+		}
+		$(form).attr("action", stored_form_action);
+		$("[name='table_only']").remove();
+
+		return false;
+	});
 
     function portalMessage(message) {
         window.jarn.i18n.loadCatalog("bika");

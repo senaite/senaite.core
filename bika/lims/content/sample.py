@@ -2,17 +2,19 @@
 """
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.utils import t, getUsers
 from bika.lims.browser.widgets.datetimewidget import DateTimeWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISample
+from bika.lims.permissions import SampleSample
 from bika.lims.workflow import doActionFor, isBasicTransitionAllowed
 from bika.lims.workflow import skip
 from DateTime import DateTime
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
+from Products.Archetypes.public import DisplayList
 from Products.Archetypes.references import HoldingReference
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATContentTypes.utils import DT2dt, dt2DT
@@ -22,6 +24,7 @@ from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
 
 from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 
 import sys
 from bika.lims.utils import to_unicode
@@ -157,19 +160,27 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField('DateSampled',
         mode="rw",
         read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        write_permission=SampleSample,
         widget = DateTimeWidget(
             label=_("Date Sampled"),
-            visible={'edit': 'invisible',
+            size=20,
+            visible={'edit': 'visible',
                      'view': 'visible'},
             render_own_label=True,
         ),
     ),
     StringField('Sampler',
-        searchable=True,
         mode="rw",
         read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        write_permission=SampleSample,
+        vocabulary='getSamplers',
+        widget=BikaSelectionWidget(
+            format='select',
+            label=_("Sampler"),
+            visible={'edit': 'visible',
+                     'view': 'visible'},
+            render_own_label=True,
+        ),
     ),
     DateTimeField('SamplingDate',
         mode="rw",
@@ -494,6 +505,9 @@ class Sample(BaseFolder, HistoryAwareMixin):
         for ar in self.getAnalysisRequests():
             analyses += ar.getAnalyses(**contentFilter)
         return analyses
+
+    def getSamplers(self):
+        return getUsers(self, ['LabManager', 'Sampler'])
 
     def disposal_date(self):
         """ Calculate the disposal date by returning the latest

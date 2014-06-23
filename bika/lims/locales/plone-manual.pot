@@ -15,6 +15,9 @@ msgstr ""
 "Domain: plone\n"
 
 
+msgid "plone_manual_test"
+msgstr "Plone Manual Test"
+
 msgid "label_schema_Accounting"
 msgstr "Accounting"
 
@@ -86,9 +89,6 @@ msgstr "Analyses"
 
 msgid "label_schema_SR Templates"
 msgstr "SR Templates"
-
-msgid "copy_to_new_transition_title"
-msgstr "Copy to new"
 
 #. Default: "Activate"
 #: ../profiles/default/workflows/bika_inactive_workflow/definition.xml
@@ -271,3 +271,9 @@ msgstr "Verify"
 
 msgid "copy_to_new_transition_title"
 msgstr "Copy to new"
+
+msgid "AR Imports"
+msgstr "AR Imports"
+
+msgid "Sampling Round Templates"
+msgstr ""

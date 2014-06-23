@@ -128,6 +128,10 @@ class InvoiceView(BrowserView):
             if icon:
                 return '/'.join(icon.getPhysicalPath())
 
+    def getPreferredCurrencyAbreviattion(self):
+        return self.context.bika_setup.getCurrency()
+
+
 class InvoicePrintView(InvoiceView):
 
     template = ViewPageTemplateFile("templates/analysisrequest_invoice_print.pt")

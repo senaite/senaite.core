@@ -51,23 +51,6 @@ Analysis Request with no samping or preservation workflow
     # Go to                     ${PLONEURL}/clients/client-1/${ar_id}/base_view
     # Execute transition retract on items in form_id lab_analyses
 
-#TODO: This test was added by rockfruit and it fails 
-#Analysis Request with Sampling Workflow on and no preservation selected
-#    Enable Sampling Workflow
-#    Go to                     ${PLONEURL}/clients/client-1
-#    Click Link                Add
-#    ${ar_id}=                 Complete ar_add form with template Bore
-#    Go to                     ${PLONEURL}/clients/client-1/analysisrequests
-#    page should contain       To Be Sampled
-#    Go to                     ${PLONEURL}/clients/client-1/${ar_id}
-#    Click element             css=.state-to_be_sampled
-#    sleep    .5
-#    Click element             css=#workflow-transition-sample
-#    debug
-#    Page should contain       saved.
-#    # no preservation workflow, straight to received.
-#    Page should contain       Received
-
 Create two different ARs from the same sample.
     Create Primary AR
     Create Secondary AR
@@ -106,9 +89,7 @@ Check the AR Add By Row javascript
 
 # XXX Automatic expanded categories
 # XXX Restricted categories
-# XXX samplingworkflow
 # XXX preservation workflow
-# XXX field analyses
 # XXX copy across in all fields
 
 Check the AR Add javascript
@@ -134,25 +115,6 @@ Check the AR Add javascript
     element should not be visible             Clostridia
     click element                       xpath=.//th[@id="cat_lab_Microbiology"]
     page should contain                 Clostridia
-
-# XXX Automatic expanded categories
-# XXX Restricted categories
-# XXX samplingworkflow
-# XXX preservation workflow
-# XXX field analyses
-# XXX copy across in all fields
-
-Disable Sampling Workflow
-    go to                               ${PLONEURL}/bika_setup/edit
-    click link                          Analyses
-    unselect checkbox                     SamplingWorkflowEnabled
-    click button                        Save
-
-Enable Sampling Workflow
-    go to                               ${PLONEURL}/bika_setup/edit
-    click link                          Analyses
-    select checkbox                     SamplingWorkflowEnabled
-    click button                        Save
 
 Create Primary AR
     Log in                      test_labmanager  test_labmanager

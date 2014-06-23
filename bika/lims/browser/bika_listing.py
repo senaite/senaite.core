@@ -325,18 +325,18 @@ class BikaListingView(BrowserView):
             self.contentFilter[k] = v
 
         # sort on
-        sort_on = self.request.get(form_id + '_sort_on', '')
+        self.sort_on = self.request.get(form_id + '_sort_on', None)
         # manual_sort_on: only sort the current batch of items
         # this is a compromise for sorting without column indexes
         self.manual_sort_on = None
-        if sort_on \
-           and sort_on in self.columns.keys() \
-           and self.columns[sort_on].get('index', None):
-            idx = self.columns[sort_on].get('index', sort_on)
+        if self.sort_on \
+           and self.sort_on in self.columns.keys() \
+           and self.columns[self.sort_on].get('index', None):
+            idx = self.columns[self.sort_on].get('index', self.sort_on)
             self.contentFilter['sort_on'] = idx
         else:
-            if sort_on:
-                self.manual_sort_on = sort_on
+            if self.sort_on:
+                self.manual_sort_on = self.sort_on
                 if 'sort_on' in self.contentFilter:
                     del self.contentFilter['sort_on']
 
@@ -476,12 +476,19 @@ class BikaListingView(BrowserView):
                                         or self.columns[col]['toggle'] == True)])
         return toggle_cols
 
-    def GET_url(self, **kwargs):
+    def GET_url(self, include_current=True, **kwargs):
         url = self.request['URL'].split("?")[0]
+        # take values from form (both html form and GET request slurped here)
         query = {}
-        for x in "pagenumber", "pagesize", "review_state":
+        if include_current:
+            for k, v in self.request.form.items():
+                if k.startswith(self.form_id + "_") and not "uids" in k:
+                    query[k] = v
+        # override from self attributes
+        for x in "pagenumber", "pagesize", "review_state", "sort_order", "sort_on":
             if str(getattr(self, x)) != 'None':
                 query['%s_%s'%(self.form_id, x)] = getattr(self, x)
+        # then override with passed kwargs
         for x in kwargs.keys():
             query['%s_%s'%(self.form_id, x)] = kwargs.get(x)
         if query:
@@ -550,7 +557,7 @@ class BikaListingView(BrowserView):
         pagenumber = int(self.request.get('pagenumber', 1) or 1)
         pagesize = self.pagesize
         start = (pagenumber - 1) * pagesize
-        end = start + pagesize
+        end = start + pagesize - 1
 
         if (hasattr(self, 'And') and self.And) \
            or (hasattr(self, 'Or') and self.Or):
@@ -575,9 +582,8 @@ class BikaListingView(BrowserView):
             brains = self.contentsMethod(self.contentFilter)
         results = []
         self.page_start_index = 0
-        current_index = 0
+        current_index = -1
         for i, obj in enumerate(brains):
-            current_index += 1
             # we don't know yet if it's a brain or an object
             path = hasattr(obj, 'getPath') and obj.getPath() or \
                  "/".join(obj.getPhysicalPath())
@@ -592,7 +598,9 @@ class BikaListingView(BrowserView):
 
             # avoid creating unnecessary info for items outside the current
             # batch;  only the path is needed for the "select all" case...
-            if not show_all and not start <= current_index < end:
+            # we only take allowed items into account
+            current_index += 1
+            if not show_all and not (start <= current_index <= end):
                 results.append(dict(path = path, uid = obj.UID()))
                 continue
 
