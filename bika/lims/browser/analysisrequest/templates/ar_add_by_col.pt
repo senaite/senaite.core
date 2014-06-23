@@ -145,7 +145,7 @@
 
 
 
-    <tr>
+    <tr tal:condition="nothing">
         <th colspan="3" style="background-color: #FFF">
         </th>
         <tal:block repeat="arnum python:range(view.ar_count)">
