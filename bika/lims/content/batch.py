@@ -101,6 +101,24 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_('Date'),
         ),
     ),
+    FloatField(
+        'ContainerTemperature',
+        default_content_type='text/x-web-intelligent',
+        default_output_type="text/plain",
+        widget=DecimalWidget(
+            label=_('Container Temperature'),
+            description = _("The temperature of the sample container on arrival"),
+        )
+    ),
+    StringField(
+        'ContainerCondition',
+        default_content_type='text/x-web-intelligent',
+        default_output_type="text/plain",
+        widget=StringWidget(
+            label=_('Container Condition'),
+            description = _("The physical condition of the sample container on arrival"),
+        )
+    ),
     LinesField(
         'BatchLabels',
         vocabulary="BatchLabelVocabulary",

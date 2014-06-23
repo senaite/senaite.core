@@ -179,4 +179,12 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="*"
+      name="araddanalyses"
+      class=".araddananlysesview.ARAddAnalysesView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
 </configure>

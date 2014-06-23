@@ -99,12 +99,28 @@ class WidgetVisibility(_WV):
         if self.context.aq_parent.portal_type == 'Batch':
             ret['add']['visible'].remove('Batch')
             ret['add']['hidden'].append('Batch')
+
+        if 'add-by-row' not in ret:
+            ret['add-by-row'] = {}
+        if 'visible' not in ret['add-by-row']:
+            ret['add-by-row']['visible'] = []
+        if 'hidden' not in ret['add-by-row']:
+            ret['add-by-row']['hidden'] = []
+        if self.context.aq_parent.portal_type == 'Client':
+            ret['add-by-row']['visible'].remove('Client')
+            ret['add-by-row']['hidden'].append('Client')
+        if self.context.aq_parent.portal_type == 'Batch':
+            ret['add-by-row']['visible'].remove('Batch')
+            ret['add-by-row']['hidden'].append('Batch')
+
         # header_table default visible fields
         ret['header_table'] = {
-            'prominent': ['Contact', 'CCContact', 'CCEmails'],
+            'prominent': ['Client', 'Contact', 'CCContact', 'InvoiceContact', 'CCEmails', 'Batch'],
+            'hiddenprominent': [],
             'visible': [
                 'Contact',
                 'CCContact',
+                'InvoiceContact',
                 'CCEmails',
                 'Sample',
                 'Batch',
@@ -141,6 +157,7 @@ class WidgetVisibility(_WV):
             ret['edit']['visible'] = [
                 'Contact',
                 'CCContact',
+                'InvoiceContact',
                 'CCEmails',
                 'AdHoc',
                 'Batch',
@@ -161,6 +178,7 @@ class WidgetVisibility(_WV):
             ret['view']['visible'] = [
                 'Contact',
                 'CCContact',
+                'InvoiceContact',
                 'CCEmails',
                 'DateSampled',
                 'MemberDiscount',
@@ -175,6 +193,7 @@ class WidgetVisibility(_WV):
             ret['edit']['visible'] = [
                 'Contact',
                 'CCContact',
+                'InvoiceContact',
                 'CCEmails',
                 'Batch',
                 'SubGroup',
@@ -190,6 +209,7 @@ class WidgetVisibility(_WV):
             ret['view']['visible'] = [
                 'Contact',
                 'CCContact',
+                'InvoiceContact',
                 'CCEmails',
                 'AdHoc',
                 'Composite',
@@ -216,6 +236,7 @@ class WidgetVisibility(_WV):
             ret['view']['visible'] = [
                 'Contact',
                 'CCContact',
+                'InvoiceContact',
                 'CCEmails',
                 'AdHoc',
                 'Batch',
@@ -246,6 +267,7 @@ class WidgetVisibility(_WV):
             ret['view']['visible'] = [
                 'Contact',
                 'CCContact',
+                'InvoiceContact',
                 'CCEmails',
                 'AdHoc',
                 'Batch',
@@ -270,6 +292,15 @@ class WidgetVisibility(_WV):
                 'Priority',
                 'Template',
             ]
+
+        if self.context.aq_parent.portal_type == 'Client':
+            if 'Client' in ret['header_table']['prominent']:
+                ret['header_table']['prominent'].remove('Client')
+                ret['header_table']['hiddenprominent'].append('Client')
+        if self.context.aq_parent.portal_type == 'Batch':
+            if 'Batch' in ret['header_table']['prominent']:
+                ret['header_table']['prominent'].remove('Batch')
+                ret['header_table']['hiddenprominent'].append('Batch')
 
         hiddenattributes = getHiddenAttributesForClass(self.context.portal_type)
         if hiddenattributes:

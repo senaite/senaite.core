@@ -13,7 +13,8 @@
 <metal:content-title fill-slot="content-title"
 	tal:define="
 		form_id view/form_id;
-		table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
+ 		table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;
+ 		ar_count python:hasattr(view, 'ar_count') and view.ar_count or view.request.get('ar_count','4');"
 	tal:condition="python:not table_only">
     <h1>
 		<img tal:condition="view/icon | nothing"
@@ -29,31 +30,19 @@
 				<span tal:replace="python:add_item"/>
 			</a>
 		</tal:add_actions>
-		<select name="col_count"
-			class='col_count' style="vertical-align:top !important"
-			tal:condition="python:len(view.context_actions) > 0">
-			<option value='1' i18n:translate="">1</option>
-			<option value='2' i18n:translate="">2</option>
-			<option value='3' i18n:translate="">3</option>
-			<option value='4' i18n:translate="">4</option>
-			<option value='5' i18n:translate="">5</option>
-			<option value='6' i18n:translate="">6</option>
-			<option value='7' i18n:translate="">7</option>
-			<option value='8' i18n:translate="">8</option>
-			<option value='9' i18n:translate="">9</option>
-			<option value='10' i18n:translate="">10</option>
-		</select>
+        <label i18n:translate="" style="font-size:60%;position:relative;top:-0.3em;" >Number of ARs</label>
+        <input id="ar_count" type="text" name="ar_count" size="4" 
+            tal:attributes="value ar_count" 
+            style="font-size:60%;position:relative;top:-0.45em;width:30px;"
+        />
+        <label i18n:translate="" style="font-size:60%;position:relative;top:-0.4em;" >Layout</label>
+        <select id="layout" name="layout"
+            style="font-size:60%;position:relative;top:-0.3em;"
+            >
+            <option i18n:translate="" value="columns">Columns Based</option>
+            <option i18n:translate="" value="rows">Rows Based</option>
+ 		</select>
     </h1>
-	<script type="text/javascript">
-	(function( $ ) {
-	$(document).ready(function(){
-		$('.col_count').change(function(){
-			url = $(".context_action_link").attr('href').split("?")[0];
-			$(".context_action_link").attr('href', url + "?col_count="+$(this).val());
-		});
-	});
-	}(jQuery));
-	</script>
 </metal:content-title>
 
 <metal:content-description fill-slot="content-description"

@@ -1,0 +1,78 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:tal="http://xml.zope.org/namespaces/tal"
+	xmlns:metal="http://xml.zope.org/namespaces/metal"
+	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+	metal:use-macro="here/main_template/macros/master"
+	i18n:domain="bika">
+<body>
+
+<metal:content-core fill-slot="content-title">
+    <h1 i18n:attributes='select_analyses_for_ar'>Select Analyses for AR</h1>
+</metal:content-core>
+
+<metal:content-core fill-slot="content-core">
+<table id="add_analyses">
+<form id="add_analyses_form"
+      name="add_analyses_form"
+      method="POST">
+
+<tal:i define="
+    cats view/Categories;
+    portal_url view/portal_url;
+    POINTS_OF_CAPTURE view/getPointsOfCapture;"
+    >
+    <input type='hidden' id='arnum' />
+    <tal:i repeat="poc python:['field', 'lab']">
+        <tal:has_poc tal:condition="python:poc in cats">
+            <thead class="pointofcapture"
+                tal:attributes="id poc">
+                <tr>
+                    <th> 
+                        <img title="analyses"
+                            tal:attributes="src string:${portal_url}/++resource++bika.lims.images/analysisservice.png"/>
+                        <span tal:content="python:POINTS_OF_CAPTURE.getValue(poc)"/>
+                    </th>
+                </tr>
+            </thead>
+
+            <tal:i tal:define="sortedcats python:cats[poc];
+                dummy python:sortedcats.sort(lambda x, y: cmp(x[1], y[1]))"
+                repeat="cat sortedcats">
+                <thead>
+                    <tr class="analysiscategory">
+                        <th tal:content="python:cat[1]"
+                            tal:define="add_prefill python:cat[0] in view.DefaultCategories();"
+                            tal:attributes="
+                                id python:'cat_%s_%s'%(poc, cat[1]);
+                                poc poc;
+                                cat python:cat[0];
+                                class python: 'analysiscategory collapsed %s' % (add_prefill and ' prefill' or '')"/>
+
+                    </tr>
+                </thead>
+                <tbody class="analysisservices" 
+                       tal:attributes="id python:poc + '_' + cat[0]">
+                    <tr></tr>
+                </tbody>
+            </tal:i>
+        </tal:has_poc>
+    </tal:i>
+</tal:i>
+
+<thead class="pointofcapture">
+    <tr>
+        <th style='padding-left:0;'>
+            <input 
+                type="submit"
+                id="submit_analyses_button"
+                name="submit_analyses_button"
+                i18n:attributes="value"
+                value="Submit"/>
+        </th>
+    </tr>
+</thead>
+</form>
+</table>
+</metal:content-core>
+</body>
+</html>
