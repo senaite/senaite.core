@@ -7,6 +7,7 @@ from bika.lims.browser.widgets.datetimewidget import DateTimeWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISample
+from bika.lims.permissions import SampleSample
 from bika.lims.workflow import doActionFor, isBasicTransitionAllowed
 from bika.lims.workflow import skip
 from DateTime import DateTime
@@ -159,7 +160,7 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField('DateSampled',
         mode="rw",
         read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        write_permission=SampleSample,
         widget = DateTimeWidget(
             label=_("Date Sampled"),
             size=20,
@@ -171,7 +172,7 @@ schema = BikaSchema.copy() + Schema((
     StringField('Sampler',
         mode="rw",
         read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        write_permission=SampleSample,
         vocabulary='getSamplers',
         widget=BikaSelectionWidget(
             format='select',

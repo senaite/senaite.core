@@ -274,7 +274,7 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField('DateSampled',
         mode="rw",
         read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        write_permission=SampleSample,
         widget = DateTimeWidget(
             label=_("Date Sampled"),
             size=20,
@@ -287,7 +287,7 @@ schema = BikaSchema.copy() + Schema((
     StringField('Sampler',
         mode="rw",
         read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
+        write_permission=SampleSample,
         vocabulary='getSamplers',
         widget=BikaSelectionWidget(
             format='select',
