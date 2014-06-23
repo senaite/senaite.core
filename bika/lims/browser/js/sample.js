@@ -1,32 +1,32 @@
 (function ($) {
 
-function workflow_transition_sample(event){
-	jarn.i18n.loadCatalog('plone');
-	var PMF = window.jarn.i18n.MessageFactory("plone");
+function workflow_transition_sample(event) {
 	event.preventDefault();
-	debugger;
-	if ($("#DateSampled").val() != "" && $("#Sampler").val() != ""
-		&& $("#DateSampled").val() != undefined && $("#Sampler").val() != undefined) {
-		requestdata = new Object();
-		requestdata.workflow_action = "sample";
-		$.each($("form[name='header_form']").find("input,select"), function(i,v){
-			name = $(v).attr('name');
-			value =  $(v).attr('type') == 'checkbox' ? $(v).prop('checked') : $(v).val();
-			requestdata[name] = value;
-		});
-		requeststring = $.param(requestdata);
-		href = window.location.href.split("?")[0] + "?" + requeststring;
-		window.location.href = href;
-	} else {
-		message = "";
-		if ($("#DateSampled").val() == ""){
-			message = message + PMF('${name} is required, please correct.', {'name':'Date Sampled'})
+	var date = $("#DateSampled").val();
+	var sampler = $("#Sampler").val();
+	if (date != "" && date != undefined && date != null
+			&& sampler != "" && sampler != undefined && sampler != null) {
+		var form = $("form[name='header_form']");
+		// this 'transition' key is scanned for in header_table.py/__call__
+		form.append("<input type='hidden' name='transition' value='sample'/>")
+		form.submit();
+	}
+	else {
+		var message = "";
+		if (date == "" || date == undefined || date == null) {
+			message = message + PMF('${name} is required, please correct.',
+									{'name': _("Date Sampled")})
 		}
-		if ($("#Sampler").val() == ""){
-			if(message != "") { message = message + "br/>"; }
-			message = message + PMF('${name} is required, please correct.', {'name':'Sampler'})
+		if (sampler == "" || sampler == undefined || sampler == null) {
+			if (message != "") {
+				message = message + "<br/>";
+			}
+			message = message + PMF('${name} is required, please correct.',
+									{'name': _("Sampler")})
 		}
-		window.bika.lims.portalMessage(message);
+		if ( message != "") {
+			window.bika.lims.portalMessage(message);
+		}
 	}
 }
 
@@ -51,10 +51,10 @@ function workflow_transition_preserve(event){
 
 $(document).ready(function(){
 
-    window.jarn.i18n.loadCatalog("bika");
-	_ = jarn.i18n.MessageFactory('bika');
-    window.jarn.i18n.loadCatalog("plone");
-	PMF = jarn.i18n.MessageFactory('plone');
+	jarn.i18n.loadCatalog('plone');
+	var PMF = window.jarn.i18n.MessageFactory("plone");
+	window.jarn.i18n.loadCatalog("bika");
+	var _ = window.jarn.i18n.MessageFactory("bika");
 
 	// Plone "Sample" transition is only available when Sampler and DateSampled
 	// are completed

@@ -15,15 +15,4 @@ workflow = context.portal_workflow
 if workflow.getInfoFor(context, 'cancellation_state', "active") == "cancelled":
     return False
 
-if context.portal_type == 'AnalysisRequest':
-
-    pass
-
-elif context.portal_type == 'Sample':
-
-    pass
-
-
-# Always available for Analysis
-
 return True
