@@ -40,6 +40,8 @@ class MethodsView(BikaListingView):
             'Description': {'title': _('Description'),
                             'index': 'description',
                             'toggle': True},
+            'Instrument': {'title': _('Instrument'),
+                             'toggle': True},
             'Calculation': {'title': _('Calculation'),
                              'toggle': True},
             'ManualEntry': {'title': _('Manual entry'),
@@ -53,6 +55,7 @@ class MethodsView(BikaListingView):
              'transitions': [{'id':'deactivate'}, ],
              'columns': ['Title', 
                          'Description', 
+                         'Instrument',
                          'Calculation',
                          'ManualEntry']},
             {'id':'inactive',
@@ -61,6 +64,7 @@ class MethodsView(BikaListingView):
              'transitions': [{'id':'activate'}, ],
              'columns': ['Title', 
                          'Description', 
+                         'Instrument',
                          'Calculation',
                          'ManualEntry']},
             {'id':'all',
@@ -68,6 +72,7 @@ class MethodsView(BikaListingView):
              'contentFilter':{},
              'columns': ['Title', 
                          'Description', 
+                         'Instrument',
                          'Calculation',
                          'ManualEntry']},
         ]
@@ -89,6 +94,7 @@ class MethodsView(BikaListingView):
                  'contentFilter':{},
                  'columns': ['Title', 
                              'Description',
+                             'Instrument',
                              'Calculation',
                              'ManualEntry']}
             ]
@@ -102,6 +108,22 @@ class MethodsView(BikaListingView):
             obj = items[x]['obj']
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
+            
+            if obj.getInstruments():
+                if len(obj.getInstruments()) > 1:
+                    InstrumentLine = str()
+                    urlStr = str()
+                    for token in obj.getInstruments():
+                        InstrumentLine += token.Title() + ", "
+                        urlStr += "<a href='%s'>%s</a>" % (token.absolute_url(),token.Title())
+                    items[x]['replace']['Instrument'] = urlStr
+
+                else:
+                    items[x]['Instrument'] = obj.getInstruments()[0].Title()
+                    items[x]['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
+                        (obj.getInstruments()[0].absolute_url(), items[x]['Instrument'])
+            else:
+                items[x]['Instrument'] = ''
 
             if obj.getCalculation():
                 items[x]['Calculation'] = obj.getCalculation().Title()
