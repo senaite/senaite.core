@@ -1627,9 +1627,11 @@ function ar_add_analyses_overlays(){
                     for (var i=0; i<elements.length; i++){
                         services.push(elements[i].id);
                     };
-                    var an_cat = $(analysis_parent).find('.analysiscategory')[0];
-                    toggleCat($(an_cat).attr("poc"), $(an_cat).attr("cat"),
+                    var an_cats = $(analysis_parent).find('.analysiscategory');
+                    for (var i=0; i<an_cats.length; i++){
+                        toggleCat($(an_cats[i]).attr("poc"), $(an_cats[i]).attr("cat"),
                               arnum, services);
+                    };
                     return true;
                     },
                 onClose : function (evt) {
