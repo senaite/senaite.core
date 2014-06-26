@@ -57,8 +57,8 @@ class SampleTypesView(BikaListingView):
                              'toggle': True},
             'ContainerType': {'title': _('Default Container'),
                              'toggle': True},
-#            'SamplePoints': {'title': _('Sample Points'),
-#                             'toggle': True},
+            'getSamplePoints': {'title': _('Sample Points'),
+                             'toggle': True},
         }
 
         self.review_states = [
@@ -72,7 +72,7 @@ class SampleTypesView(BikaListingView):
                          'RetentionPeriod', 
                          'SampleMatrix', 
                          'ContainerType', 
- #                        'SamplePoints', 
+                         'getSamplePoints', 
                          'getPrefix', 
                          'getMinimumVolume']},
             {'id':'inactive',
@@ -85,7 +85,7 @@ class SampleTypesView(BikaListingView):
                          'RetentionPeriod', 
                          'SampleMatrix', 
                          'ContainerType', 
- #                        'SamplePoints', 
+                         'getSamplePoints', 
                          'getPrefix', 
                          'getMinimumVolume']},
             {'id':'all',
@@ -97,7 +97,7 @@ class SampleTypesView(BikaListingView):
                          'RetentionPeriod', 
                          'SampleMatrix', 
                          'ContainerType', 
- #                        'SamplePoints', 
+                         'getSamplePoints', 
                          'getPrefix', 
                          'getMinimumVolume']},
         ]
@@ -131,19 +131,23 @@ class SampleTypesView(BikaListingView):
             else:
                 items[x]['ContainerType'] = ''
 
-#            if obj.getSamplePoints():
-#                if len(obj.getSamplePoints()) > 1:
-#                    SPLine = str()
-#                    urlStr = str()
-#                    for token in obj.getSamplePoints():
-#                        SPLine += token.Title() + ", "
-#                        urlStr += "<a href='%s'>%s</a>" % (token.absolute_url(),token.Title())
-#                    items[x]['replace']['SamplePoints'] = urlStr
-#
-#                else:
-#                    items[x]['SamplePoints'] = obj.getSamplePoints()[0].Title()
-#                    items[x]['replace']['SamplePoints'] = "<a href='%s'>%s</a>" % \
-#                        (obj.getSamplePoints()[0].absolute_url(), items[x]['SamplePoints'])
+            if obj.getSamplePoints():
+                if len(obj.getSamplePoints()) > 1:
+                    SPLine = str()
+                    urlStr = str()
+                    for token in obj.getSamplePoints():
+                        SPLine += token.Title() + ", "
+                        urlStr += "<a href='%s'>%s</a>" % (token.absolute_url(),token.Title())
+                    items[x]['replace']['getSamplePoints'] = urlStr
+                    
+                else:
+                    items[x]['getSamplePoints'] = obj.getSamplePoints()[0].Title()
+                    items[x]['replace']['getSamplePoints'] = "<a href='%s'>%s</a>" % \
+                        (obj.getSamplePoints()[0].absolute_url(), items[x]['getSamplePoints'])
+
+            else:
+                items[x]['getSamplePoints'] = ''
+
         return items
 
 schema = ATFolderSchema.copy()
