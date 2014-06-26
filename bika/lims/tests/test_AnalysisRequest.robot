@@ -19,9 +19,9 @@ ${ar_factory_url}  portal_factory/AnalysisRequest/Request%20new%20analyses/ar_ad
 *** Test Cases ***
 
 Add ARs by Row
+    Check the AR Add By Row javascript
     Create Primary AR By Row With Template
     Create Primary AR By Row
-    Check the AR Add By Row javascript
     Create Mulitple Primary ARs By Row With Template
 
 Check Javascript
@@ -86,6 +86,21 @@ Check the AR Add By Row javascript
     element should not be visible             Clostridia
     click element                       xpath=.//th[@id="cat_lab_Microbiology"]
     page should contain                 Clostridia
+
+    # check analysis values appear
+    click element                       xpath=.//th[@id="cat_field_Water Chemistry"]
+    wait until page contains            pH (field)
+    Select checkbox                     xpath=//input[@title="pH (field)"]
+    wait until page contains            14
+
+    Click element                       xpath=//th[@id="cat_lab_Metals"]
+    Select checkbox                     xpath=//input[@title="Calcium"]
+    Click Button                        Submit
+    Set Selenium Timeout                10
+    Click element                       ar_0_Analyses
+    Wait until page contains            Select Analyses for AR
+    wait until page contains            Temperature
+    wait until page contains            Calcium
 
 # XXX Automatic expanded categories
 # XXX Restricted categories

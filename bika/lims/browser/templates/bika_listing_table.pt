@@ -521,10 +521,9 @@ Table cells for each column from in review_state's column list.
         style="white-space:nowrap;"
         tal:content="python:item['Unit']"/>
 
-    </span> <tal:comment replace="nothing"><!-- </span tal:condition="not:replace"> --></tal:comment>
+    </span> 
 
-    <tal:comment replace="nothing"><!-- after structure --></tal:comment>
-    <span class="after"tal:content="structure after"/>
+    <span class="after" tal:content="structure after"/>
     <tal:has_field_icons condition="python:hasattr(view.bika_listing, 'field_icons')">
         <tal:field_icons define="uid python:item['uid'];
                                 val python:view.bika_listing.field_icons.get(uid, []);
