@@ -836,7 +836,11 @@ div.alert {
     margin: 10px 0;
     padding: 10px;
 }
+
 /* ARImport */
+.icons-on .section-arimports .contenttype-folder{
+    background: no-repeat transparent url(&dtml-portal_url;/++resource++bika.lims.images/arimport.png);
+}
 table.arimport {
   border-top: 1px solid #dddddd;
 }
