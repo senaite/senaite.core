@@ -133,13 +133,15 @@ def set_fields_from_request(obj, request):
         if fieldname not in schema:
             continue
         if schema[fieldname].type in ('reference'):
-            brains = resolve_request_lookup(obj, request, fieldname)
-            if not brains:
-                raise BadRequest("Can't resolve reference: %s" % fieldname)
+            brains = []
+            if value:
+                brains = resolve_request_lookup(obj, request, fieldname)
+                if not brains:
+                    raise BadRequest("Can't resolve reference: %s" % fieldname)
             if schema[fieldname].multiValued:
-                value = [b.UID for b in brains]
+                value = [b.UID for b in brains] if brains else []
             else:
-                value = brains[0].UID
+                value = brains[0].UID if brains else None
         fields[fieldname] = value
     # Write fields.
     for fieldname, value in fields.items():
