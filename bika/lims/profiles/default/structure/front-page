@@ -12,10 +12,10 @@ modification_date: 2014/06/25
 creators: admin
 contributors:
 rights:
-allowDiscussion: True
-excludeFromNav: True
-presentation: False
-tableContents: False
+allowDiscussion: 1
+excludeFromNav: 1
+presentation: 0
+tableContents: 0
 Content-Type: text/html
 
 <div style="margin-bottom:30px;" class="center">
