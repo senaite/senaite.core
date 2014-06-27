@@ -486,7 +486,7 @@ class BikaListingView(BrowserView):
                     query[k] = v
         # override from self attributes
         for x in "pagenumber", "pagesize", "review_state", "sort_order", "sort_on":
-            if str(getattr(self, x)) != 'None':
+            if str(getattr(self, x, None)) != 'None':
                 query['%s_%s'%(self.form_id, x)] = getattr(self, x)
         # then override with passed kwargs
         for x in kwargs.keys():
