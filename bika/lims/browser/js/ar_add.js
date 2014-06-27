@@ -1342,6 +1342,10 @@ function fill_column(data) {
 	}
 }
 
+function expand_default_categories(){
+    $("th.prefill").click();
+}
+
 $(document).ready(function() {
 
 	// Only if the view is the Analysis Request Add View
@@ -1429,6 +1433,8 @@ $(document).ready(function() {
 		};
 		$("#analysisrequest_edit_form").ajaxForm(options);
 	}
+
+	expand_default_categories();
 
 	// these go here so that popup windows can access them in our context
 	window.recalc_prices = recalc_prices;

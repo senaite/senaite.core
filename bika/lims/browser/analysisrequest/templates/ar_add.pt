@@ -219,7 +219,7 @@
                     colspan python:view.col_count + 3;
                     poc poc;
                     cat python:cat[0];
-                    class python: 'analysiscategory collapsed %s' % (add_prefill and ' prefill' or '')"/>
+                    class python: 'analysiscategory collapsed%s' % (' prefill' if add_prefill else '')"/>
 
     </tr>
 </thead>
@@ -231,7 +231,6 @@
 </tal:has_poc>
 </tal:i>
 </tal:i>
-
 
 <tfoot tal:condition="ShowPrices">
 
