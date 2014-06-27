@@ -166,7 +166,6 @@ class WidgetVisibility(_WV):
                 'ClientReference',
                 'ClientSampleID',
                 'Composite',
-                'InvoiceExclude'
                 'SampleCondition',
                 'SamplePoint',
                 'SampleType',
@@ -174,6 +173,7 @@ class WidgetVisibility(_WV):
                 'StorageLocation',
                 'SamplingDeviation',
                 'Priority',
+                'InvoiceExclude',
             ]
             ret['view']['visible'] = [
                 'Contact',
@@ -192,9 +192,7 @@ class WidgetVisibility(_WV):
             ret['header_table']['visible'].remove('DatePublished')
             ret['header_table']['prominent'] = ['Contact',
                                                 'CCContact',
-                                                'CCEmails',
-                                                'Sampler',
-                                                'DateSampled']
+                                                'CCEmails']
             if sw:
                 ret['edit']['visible'].extend(['Sampler', 'DateSampled'])
                 ret['header_table']['prominent'].extend(['Sampler', 'DateSampled'])
@@ -225,6 +223,7 @@ class WidgetVisibility(_WV):
                 'CCContact',
                 'InvoiceContact',
                 'CCEmails',
+                'Sampler',
                 'DateSampled',
                 'MemberDiscount',
                 'Profile',
@@ -269,6 +268,7 @@ class WidgetVisibility(_WV):
                 'SamplingDate',
                 'SamplingDeviation',
                 'Template',
+                'InvoiceExclude',
             ]
             ret['header_table']['visible'].remove('DatePublished')
         # include this in to_be_verified - there may be verified analyses to

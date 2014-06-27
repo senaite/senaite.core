@@ -32,6 +32,11 @@ window.bika.lims.log = function(e) {
 window.bika.lims.jsonapi_cache = {};
 window.bika.lims.jsonapi_read = function(request_data, handler) {
     window.bika.lims.jsonapi_cache = window.bika.lims.jsonapi_cache || {};
+	// if no page_size is specified, we need to explicitly add one here: 0=all.
+	var page_size = request_data.page_size;
+	if (page_size == undefined) {
+		request_data.page_size = 0
+	}
     var jsonapi_cacheKey = $.param(request_data);
     var jsonapi_read_handler = handler;
     if (window.bika.lims.jsonapi_cache[jsonapi_cacheKey] === undefined){

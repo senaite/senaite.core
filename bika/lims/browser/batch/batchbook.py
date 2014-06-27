@@ -24,7 +24,7 @@ class BatchBookView(BikaListingView):
         self.show_column_toggles = True
         self.show_select_row = False
         self.show_select_column = True
-        self.pagesize = 1000
+        self.pagesize = 0
         self.form_id = "list"
         self.page_start_index = 0
         self.show_categories = True

@@ -74,6 +74,17 @@ class Update(object):
         >>> browser.contents
         '{...The following request fields were not used: ...Thing...}'
 
+        Setting the value of a RefereceField to "" or None (null) should not cause
+        an error; setting an empty value should clear the field
+
+        >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
+        >>> browser.open(portal_url+"/@@API/update?", "&".join([
+        ... "obj_path=/clients/client-1",
+        ... "DefaultCategories=\"\"",
+        ... ]))
+        >>> browser.contents
+        '{..."success": true...}'
+
         """
         savepoint = transaction.savepoint()
         self.context = context

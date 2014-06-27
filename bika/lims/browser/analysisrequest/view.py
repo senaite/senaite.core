@@ -243,8 +243,10 @@ class AnalysisRequestViewView(BrowserView):
         return res
 
     def getRestrictedCategories(self):
-        if self.context.portal_type == 'Client':
-            return self.context.getRestrictedCategories()
+        # we are in portal_factory AR context right now
+        parent = self.context.aq_parent
+        if hasattr(parent, "getRestrictedCategories"):
+            return parent.getRestrictedCategories()
         return []
 
     def Categories(self):
@@ -267,8 +269,10 @@ class AnalysisRequestViewView(BrowserView):
         return cats
 
     def getDefaultCategories(self):
-        if self.context.portal_type == 'Client':
-            return self.context.getDefaultCategories()
+        # we are in portal_factory AR context right now
+        parent = self.context.aq_parent
+        if hasattr(parent, "getDefaultCategories"):
+            return parent.getDefaultCategories()
         return []
 
     def DefaultCategories(self):
