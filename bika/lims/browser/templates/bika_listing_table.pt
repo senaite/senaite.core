@@ -733,7 +733,7 @@ Batching
         <td class="batching" colspan="2" style="text-align:right">
             <tal:batching
                 tal:define="batch view/batch"
-                condition="python:batch.multiple_pages and not view.show_all and view.bika_listing.pagesize != 1000">
+                condition="python:batch.multiple_pages and not view.show_all and view.bika_listing.pagesize != 0">
                 <span class="pagesize_selector noborder"
                     style="vertical-align:top !important"
                     style="text-align:right">
