@@ -51,6 +51,14 @@ class SampleTypesView(BikaListingView):
                           'toggle': True},
             'getMinimumVolume': {'title': _('Minimum Volume'),
                                  'toggle': True},
+            'RetentionPeriod': {'title': _('Retention Perdiod'),
+                             'toggle': True},
+            'SampleMatrix': {'title': _('SampleMatrix'),
+                             'toggle': True},
+            'ContainerType': {'title': _('Default Container'),
+                             'toggle': True},
+            'getSamplePoints': {'title': _('Sample Points'),
+                             'toggle': True},
         }
 
         self.review_states = [
@@ -58,16 +66,40 @@ class SampleTypesView(BikaListingView):
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
-             'columns': ['Title', 'Description', 'getHazardous', 'getPrefix', 'getMinimumVolume']},
+             'columns': ['Title', 
+                         'Description', 
+                         'getHazardous',
+                         'RetentionPeriod', 
+                         'SampleMatrix', 
+                         'ContainerType', 
+                         'getSamplePoints', 
+                         'getPrefix', 
+                         'getMinimumVolume']},
             {'id':'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': [{'id':'activate'}, ],
-             'columns': ['Title', 'Description', 'getHazardous', 'getPrefix', 'getMinimumVolume']},
+             'columns': ['Title', 
+                         'Description', 
+                         'getHazardous', 
+                         'RetentionPeriod', 
+                         'SampleMatrix', 
+                         'ContainerType', 
+                         'getSamplePoints', 
+                         'getPrefix', 
+                         'getMinimumVolume']},
             {'id':'all',
              'title': _('All'),
              'contentFilter':{},
-             'columns': ['Title', 'Description', 'getHazardous', 'getPrefix', 'getMinimumVolume']},
+             'columns': ['Title', 
+                         'Description', 
+                         'getHazardous', 
+                         'RetentionPeriod', 
+                         'SampleMatrix', 
+                         'ContainerType', 
+                         'getSamplePoints', 
+                         'getPrefix', 
+                         'getMinimumVolume']},
         ]
 
     def folderitems(self):
@@ -78,6 +110,44 @@ class SampleTypesView(BikaListingView):
             items[x]['Description'] = obj.Description()
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
+
+            if obj.getRetentionPeriod():
+                items[x]['RetentionPeriod'] = "hours: " + str(obj.getRetentionPeriod()['hours']) + " minutes: " + str(obj.getRetentionPeriod()['minutes']) + " days: " + str(obj.getRetentionPeriod()['days'])
+                
+            else:
+                items[x]['RetentionPeriod'] = ''
+
+            if obj.getSampleMatrix():
+                items[x]['SampleMatrix'] = obj.getSampleMatrix().Title()
+                items[x]['replace']['SampleMatrix'] = "<a href='%s'>%s</a>" % \
+                    (obj.getSampleMatrix().absolute_url(), items[x]['SampleMatrix'])
+            else:
+                items[x]['SampleMatrix'] = ''
+
+            if obj.getContainerType():
+                items[x]['ContainerType'] = obj.getContainerType().Title()
+                items[x]['replace']['ContainerType'] = "<a href='%s'>%s</a>" %(obj.getContainerType().absolute_url(), items[x]['ContainerType'])
+
+            else:
+                items[x]['ContainerType'] = ''
+
+            if obj.getSamplePoints():
+                if len(obj.getSamplePoints()) > 1:
+                    SPLine = str()
+                    urlStr = str()
+                    for token in obj.getSamplePoints():
+                        SPLine += token.Title() + ", "
+                        urlStr += "<a href='%s'>%s</a>" % (token.absolute_url(),token.Title())
+                    items[x]['replace']['getSamplePoints'] = urlStr
+                    
+                else:
+                    items[x]['getSamplePoints'] = obj.getSamplePoints()[0].Title()
+                    items[x]['replace']['getSamplePoints'] = "<a href='%s'>%s</a>" % \
+                        (obj.getSamplePoints()[0].absolute_url(), items[x]['getSamplePoints'])
+
+            else:
+                items[x]['getSamplePoints'] = ''
+
         return items
 
 schema = ATFolderSchema.copy()
