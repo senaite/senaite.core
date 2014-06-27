@@ -155,6 +155,9 @@ class WorksheetFolderListingView(BikaListingView):
             'QCNum': {'title': _('QC Number'),
                    'sortable':False,
                    'toggle': False},
+            'RoutineNum': {'title': _('Routine Number'),
+                   'sortable':False,
+                   'toggle': False},
             'CreationDate': {'title': PMF('Date Created'),
                              'toggle': True,
                              'index': 'created'},
@@ -180,6 +183,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Instrument',
                         'QC',
                         'QCNum',
+                        'RoutineNum',
                         'CreationDate',
                         'state_title']},
             # getAuthenticatedMember does not work in __init__
@@ -202,6 +206,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Instrument',
                         'QC',
                         'QCNum',
+                        'RoutineNum',
                         'CreationDate',
                         'state_title']},
             {'id':'open',
@@ -220,6 +225,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Instrument',
                         'QC',
                         'QCNum',
+                        'RoutineNum',
                         'CreationDate',
                         'state_title']},
             {'id':'to_be_verified',
@@ -240,6 +246,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Instrument',
                         'QC',
                         'QCNum',
+                        'RoutineNum',
                         'CreationDate',
                         'state_title']},
             {'id':'verified',
@@ -258,6 +265,7 @@ class WorksheetFolderListingView(BikaListingView):
                         'Instrument',
                         'QC',
                         'QCNum',
+                        'RoutineNum',
                         'CreationDate',
                         'state_title']},
         ]
@@ -427,10 +435,11 @@ class WorksheetFolderListingView(BikaListingView):
             items[x]['replace']['QC'] = " ".join(blanks + controls)
             
             items[x]['QCNum'] = ''
-            items[x]['QCNum'] = ''
             items[x]['QCNum'] = len([a for a in obj.getAnalyses() 
                                      if a.portal_type == 'ReferenceAnalysis' 
                                      or a.portal_type == 'DuplicateAnalysis'])
+
+            items[x]['RoutineNum'] = len(obj.getAnalyses()) - items[x]['QCNum']
 
             if items[x]['review_state'] == 'open' \
                 and self.allow_edit \
