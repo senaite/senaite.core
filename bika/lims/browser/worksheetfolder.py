@@ -425,10 +425,12 @@ class WorksheetFolderListingView(BikaListingView):
             items[x]['replace']['SampleTypes'] = " ".join(sampletypes)
             items[x]['QC'] = ""
             items[x]['replace']['QC'] = " ".join(blanks + controls)
-
-            if items[x]['QC']:
-                import pdb;pdb.set_trace()
-                items[x]['QCNum'] = ''
+            
+            items[x]['QCNum'] = ''
+            items[x]['QCNum'] = ''
+            items[x]['QCNum'] = len([a for a in obj.getAnalyses() 
+                                     if a.portal_type == 'ReferenceAnalysis' 
+                                     or a.portal_type == 'DuplicateAnalysis'])
 
             if items[x]['review_state'] == 'open' \
                 and self.allow_edit \
