@@ -521,10 +521,9 @@ Table cells for each column from in review_state's column list.
         style="white-space:nowrap;"
         tal:content="python:item['Unit']"/>
 
-    </span> <tal:comment replace="nothing"><!-- </span tal:condition="not:replace"> --></tal:comment>
+    </span> 
 
-    <tal:comment replace="nothing"><!-- after structure --></tal:comment>
-    <span class="after"tal:content="structure after"/>
+    <span class="after" tal:content="structure after"/>
     <tal:has_field_icons condition="python:hasattr(view.bika_listing, 'field_icons')">
         <tal:field_icons define="uid python:item['uid'];
                                 val python:view.bika_listing.field_icons.get(uid, []);
@@ -734,7 +733,7 @@ Batching
         <td class="batching" colspan="2" style="text-align:right">
             <tal:batching
                 tal:define="batch view/batch"
-                condition="python:batch.multiple_pages and not view.show_all and view.bika_listing.pagesize != 1000">
+                condition="python:batch.multiple_pages and not view.show_all and view.bika_listing.pagesize != 0">
                 <span class="pagesize_selector noborder"
                     style="vertical-align:top !important"
                     style="text-align:right">

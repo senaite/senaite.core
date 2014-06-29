@@ -1430,6 +1430,7 @@ $(document).ready(function() {
 		$("#analysisrequest_edit_form").ajaxForm(options);
 	}
 
+
 	// these go here so that popup windows can access them in our context
 	window.recalc_prices = recalc_prices;
 	window.calculate_parts = calculate_parts;

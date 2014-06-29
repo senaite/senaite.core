@@ -67,7 +67,13 @@ def read(context, request):
 
     # batching items
     page_nr = int(request.get("page_nr", 0))
-    page_size = int(request.get("page_size", 10))
+    try:
+        page_size = int(request.get("page_size", 10))
+    except ValueError:
+        page_size = 10
+    # page_size == 0: show all
+    if page_size == 0:
+        page_size = len(proxies)
     first_item_nr = page_size * page_nr
     if first_item_nr > len(proxies):
         first_item_nr = 0

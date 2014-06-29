@@ -425,20 +425,20 @@
                                      signature python:managers[manager]['signature'];">
 
                         <img tal:condition="signature"
-                             tal:attributes="src string:${signature}" style="height:75px">
-                            <span class="manager-fullname" tal:content="python:managers[manager]['name']">Joe Blogs</span>
-                            <br tal:condition="email"/>
-                            <span class="manager-email" tal:condition="email">
-                                <a tal:attributes="href string:mailto:${email}"
-                                   tal:content="email">a@b.com</a>
-                            </span>
-                            <br tal:condition="phone"/>
-                            <span class="manager-phone"
-                                tal:content="phone"
-                                tal:condition="phone">011 555 1112</span>
-                            <br/>
-                            <span class="manager-department" tal:content="department">Chemistry</span>
-
+                             tal:attributes="src string:${signature}" style="height:75px"/>
+                        <br/>
+                        <span class="manager-fullname" tal:content="python:managers[manager]['name']">Joe Blogs</span>
+                        <br tal:condition="email"/>
+                        <span class="manager-email" tal:condition="email">
+                            <a tal:attributes="href string:mailto:${email}"
+                               tal:content="email">a@b.com</a>
+                        </span>
+                        <br tal:condition="phone"/>
+                        <span class="manager-phone"
+                            tal:content="phone"
+                            tal:condition="phone">011 555 1112</span>
+                        <br/>
+                        <span class="manager-department" tal:content="department">Chemistry</span>
                         <span tal:condition="python: rownum % 3 == 0"
                               tal:replace="structure python:'</tr>'"></span>
                     </tal:manager>
