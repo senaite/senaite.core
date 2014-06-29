@@ -1,103 +1,102 @@
 # 
 # Translators:
-# Tao Li <wintersun_li@yahoo.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2012-10-20 09:21+0000\n"
-"PO-Revision-Date: 2014-06-19 07:27+0000\n"
-"Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
-"Language-Team: Chinese (China) (http://www.transifex.com/projects/p/bika-lims/language/zh_CN/)\n"
+"PO-Revision-Date: 2014-06-24 12:52+0000\n"
+"Last-Translator: lemoene Smit <admin@bikalabs.com>\n"
+"Language-Team: Esperanto (http://www.transifex.com/projects/p/bika-lims/language/eo/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Domain: plone\n"
-"Language: zh_CN\n"
+"Language: eo\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Preferred-Encodings: utf-8 latin1\n"
 
 msgid "plone_manual_test"
-msgstr "Plone Manual Test"
+msgstr ""
 
 msgid "label_schema_Accounting"
-msgstr "Accounting"
+msgstr ""
 
 msgid "label_schema_Address"
-msgstr "Address"
+msgstr ""
 
 msgid "label_schema_AR Templates"
-msgstr "AR Templates"
+msgstr ""
 
 msgid "label_schema_Bank details"
-msgstr "Bank details"
+msgstr ""
 
 msgid "label_schema_Calculation"
-msgstr "Calculation"
+msgstr ""
 
 msgid "label_schema_Dates"
-msgstr "Dates"
+msgstr ""
 
 msgid "label_schema_Description"
-msgstr "Description"
+msgstr ""
 
 msgid "label_schema_Email Telephone Fax"
-msgstr "Email Telephone Fax"
+msgstr ""
 
 msgid "label_schema_ID Server"
-msgstr "ID Server"
+msgstr ""
 
 msgid "label_schema_Labels"
-msgstr "Labels"
+msgstr ""
 
 msgid "label_schema_Layout"
-msgstr "Layout"
+msgstr ""
 
 msgid "label_schema_Location"
-msgstr "Location"
+msgstr ""
 
 msgid "label_schema_Method"
-msgstr "Method"
+msgstr ""
 
 msgid "label_schema_Container and Preservation"
-msgstr "Container and Preservation"
+msgstr ""
 
 msgid "label_schema_Preferences"
-msgstr "Preferences"
+msgstr ""
 
 msgid "label_schema_Publication preference"
-msgstr "Publication preference"
+msgstr ""
 
 msgid "label_schema_Reference Values"
-msgstr "Reference Values"
+msgstr ""
 
 msgid "label_schema_Result Options"
-msgstr "Result Options"
+msgstr ""
 
 msgid "label_schema_Results Reports"
-msgstr "Results Reports"
+msgstr ""
 
 msgid "label_schema_Security"
-msgstr "Security"
+msgstr ""
 
 msgid "label_schema_Uncertainties"
-msgstr "Uncertainties"
+msgstr ""
 
 msgid "label_schema_Sample Partitions"
-msgstr "Sample Partitions"
+msgstr ""
 
 msgid "label_schema_Analyses"
-msgstr "Analyses"
+msgstr ""
 
 msgid "label_schema_SR Templates"
-msgstr "SR Templates"
+msgstr ""
 
 #. Default: "Activate"
 # File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
 # line: -1
 msgid "activate_transition_title"
-msgstr "Activate"
+msgstr ""
 
 #. Default: "Assign"
 # File:
@@ -110,7 +109,7 @@ msgstr "Activate"
 # ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml,
 # line: -1
 msgid "assign_transition_title"
-msgstr "Assign"
+msgstr ""
 
 #. Default: "Add attachment"
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
@@ -121,32 +120,32 @@ msgstr "Assign"
 # ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
 # line: -1
 msgid "attach_transition_title"
-msgstr "Add attachment"
+msgstr ""
 
 #. Default: "Cancel"
 # File:
 # ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
 # line: -1
 msgid "cancel_transition_title"
-msgstr "Cancel"
+msgstr ""
 
 #. Default: "Close"
 # File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
 # line: -1
 msgid "close_transition_title"
-msgstr "Close"
+msgstr ""
 
 #. Default: "Deactivate"
 # File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
 # line: -1
 msgid "deactivate_transition_title"
-msgstr "Deactivate"
+msgstr ""
 
 #. Default: "Dispatch order"
 # File: ../profiles/default/workflows/bika_order_workflow/definition.xml,
 # line: -1
 msgid "dispatch_transition_title"
-msgstr "Dispatch order"
+msgstr ""
 
 #. Default: "Dispose"
 # File:
@@ -155,11 +154,11 @@ msgstr "Dispatch order"
 # File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
 # line: -1
 msgid "dispose_transition_title"
-msgstr "Dispose"
+msgstr ""
 
 #. Default: "Duplicate"
 msgid "duplicate_transition_title"
-msgstr "Duplicate"
+msgstr ""
 
 #. Default: "Expire"
 # File:
@@ -168,25 +167,25 @@ msgstr "Duplicate"
 # File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
 # line: -1
 msgid "expire_transition_title"
-msgstr "Expire"
+msgstr ""
 
 #. Default: "Import"
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
 # line: -1
 msgid "import_transition_title"
-msgstr "Import"
+msgstr ""
 
 #. Default: "Open"
 # File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
 # line: -1
 msgid "open_transition_title"
-msgstr "Open"
+msgstr ""
 
 #. Default: "Prepublish"
 # File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
 # -1
 msgid "prepublish_transition_title"
-msgstr "Prepublish"
+msgstr ""
 
 #. Default: "Preserve"
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
@@ -196,7 +195,7 @@ msgstr "Prepublish"
 # File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
 # line: -1
 msgid "preserve_transition_title"
-msgstr "Preserve"
+msgstr ""
 
 #. Default: "Publish"
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
@@ -204,11 +203,11 @@ msgstr "Preserve"
 # File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
 # -1
 msgid "publish_transition_title"
-msgstr "Publish"
+msgstr ""
 
 #. Default: "Reassign"
 msgid "reassign_transition_title"
-msgstr "Reassign"
+msgstr ""
 
 #. Default: "Receive sample"
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
@@ -218,14 +217,14 @@ msgstr "Reassign"
 # File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
 # line: -1
 msgid "receive_transition_title"
-msgstr "Receive sample"
+msgstr ""
 
 #. Default: "Reinstate"
 # File:
 # ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
 # line: -1
 msgid "reinstate_transition_title"
-msgstr "Reinstate"
+msgstr ""
 
 #. Default: "Reject"
 # File:
@@ -237,13 +236,13 @@ msgstr "Reinstate"
 # File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml,
 # line: -1
 msgid "reject_transition_title"
-msgstr "Reject"
+msgstr ""
 
 #. Default: "Republish"
 # File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
 # -1
 msgid "republish_transition_title"
-msgstr "Republish"
+msgstr ""
 
 #. Default: "Retract"
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
@@ -254,24 +253,24 @@ msgstr "Republish"
 # ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
 # line: -1
 msgid "retract_transition_title"
-msgstr "Retract"
+msgstr ""
 
 #. Default: "Retract"
 # This is for the "revert" transition, which is meant to look like a
 # "retract".
 msgid "revert_transition_title"
-msgstr "Retract"
+msgstr ""
 
 #. Default: "Invalidate"
 # This is for the "retract_ar" transition, to invalidate a published AR.
 msgid "invalidate_transition_title"
-msgstr "Invalidate"
+msgstr ""
 
 #. Default: "Retract worksheet"
 # File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml,
 # line: -1
 msgid "retract_worksheet_transition_title"
-msgstr "Retract worksheet"
+msgstr ""
 
 #. Default: "Sample"
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
@@ -281,25 +280,25 @@ msgstr "Retract worksheet"
 # File: ../profiles/default/workflows/bika_sample_worflow/definition.xml,
 # line: -1
 msgid "sample_transition_title"
-msgstr "Sample"
+msgstr ""
 
 #. Default: "Save analyses"
 msgid "save_analyses_button_transition_title"
-msgstr "Save analyses"
+msgstr ""
 
 #. Default: "Save partitions"
 msgid "save_partitions_button_transition_title"
-msgstr "Save partitions"
+msgstr ""
 
 #. Default: "Save selection"
 msgid "save_selection_button_transition_title"
-msgstr "Save selection"
+msgstr ""
 
 #. Default: "Submit ARImport"
 # File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
 # line: -1
 msgid "submit_arimport_transition_title"
-msgstr "Submit ARImport"
+msgstr ""
 
 #. Default: "Submit for verification"
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
@@ -310,7 +309,7 @@ msgstr "Submit ARImport"
 # ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
 # line: -1
 msgid "submit_transition_title"
-msgstr "Submit for verification"
+msgstr ""
 
 #. Default: "Remove"
 # File:
@@ -323,7 +322,7 @@ msgstr "Submit for verification"
 # ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml,
 # line: -1
 msgid "unassign_transition_title"
-msgstr "Remove"
+msgstr ""
 
 #. Default: "Verify"
 # File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
@@ -334,13 +333,13 @@ msgstr "Remove"
 # ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
 # line: -1
 msgid "verify_transition_title"
-msgstr "Verify"
+msgstr ""
 
 msgid "copy_to_new_transition_title"
-msgstr "Copy to new"
+msgstr ""
 
 msgid "AR Imports"
-msgstr "AR Imports"
+msgstr ""
 
 msgid "Sampling Round Templates"
 msgstr ""
@@ -365,19 +364,19 @@ msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
 msgid "Add Analyses"
-msgstr "加分析单"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
 msgid "Add Blank Reference"
-msgstr "加空描写提"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
 msgid "Add Control Reference"
-msgstr "加控制"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
 msgid "Add Duplicate"
-msgstr "加复制"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml, line: -1
 msgid "Administration"
@@ -387,27 +386,27 @@ msgstr ""
 # -1
 # File: bika.lims/bika/lims/profiles/default/types/Sample.xml, line: -1
 msgid "Analyses"
-msgstr "分析"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Analysis.xml, line: -1
 msgid "Analysis"
-msgstr "分析"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisCategories.xml,
 # line: -1
 msgid "Analysis Categories"
-msgstr "分析类别"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisCategory.xml, line:
 # -1
 msgid "Analysis Category"
-msgstr "分析类别"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisProfile.xml, line:
 # -1
 msgid "Analysis Profile"
-msgstr "分析概况"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisProfiles.xml, line:
@@ -426,18 +425,18 @@ msgstr ""
 # line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Batch.xml, line: -1
 msgid "Analysis Requests"
-msgstr "分析请求"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisService.xml, line:
 # -1
 msgid "Analysis Service"
-msgstr "分析服务"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisServices.xml, line:
 # -1
 msgid "Analysis Services"
-msgstr "分析服务"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisSpec.xml, line: -1
 msgid "Analysis Specification"
@@ -447,26 +446,26 @@ msgstr ""
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisSpecs.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 msgid "Analysis Specifications"
-msgstr "分析规范"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Attachment.xml, line: -1
 msgid "Attachment"
-msgstr "附件"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/AttachmentType.xml, line:
 # -1
 msgid "Attachment Type"
-msgstr "附件种类"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/AttachmentTypes.xml, line:
 # -1
 msgid "Attachment Types"
-msgstr "附件种类"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 msgid "Attachments"
-msgstr "附件"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Batch.xml, line: -1
 msgid "Batch"
@@ -495,16 +494,16 @@ msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/BikaSetup.xml, line: -1
 msgid "Bika Setup"
-msgstr "Bika安装"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Calculation.xml, line: -1
 msgid "Calculation"
-msgstr "计算"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Calculations.xml, line: -1
 msgid "Calculations"
-msgstr "计算"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 msgid "Calibrations"
@@ -516,44 +515,44 @@ msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 msgid "Client"
-msgstr "客户"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/ClientFolder.xml, line: -1
 msgid "Clients"
-msgstr "用户"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Supplier.xml, line: -1
 msgid "Contacts"
-msgstr "联系方式"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Container.xml, line: -1
 msgid "Container"
-msgstr "容器"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/ContainerType.xml, line: -1
 msgid "Container Type"
-msgstr "容器种类"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/ContainerTypes.xml, line:
 # -1
 msgid "Container Types"
-msgstr "容器种类"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Containers.xml, line: -1
 msgid "Containers"
-msgstr "容器"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Department.xml, line: -1
 msgid "Department"
-msgstr "部门"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Departments.xml, line: -1
 msgid "Departments"
-msgstr "部门"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/DuplicateAnalysis.xml,
 # line: -1
@@ -578,7 +577,7 @@ msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 msgid "Instrument"
-msgstr "仪器"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/InstrumentType.xml, line:
 # -1
@@ -596,7 +595,7 @@ msgstr ""
 # -1
 # File: bika.lims/bika/lims/profiles/default/types/Instruments.xml, line: -1
 msgid "Instruments"
-msgstr "仪器"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 msgid "Internal Calibration Tests"
@@ -606,11 +605,11 @@ msgstr ""
 # -1
 # File: bika.lims/bika/lims/profiles/default/types/Invoice.xml, line: -1
 msgid "Invoice"
-msgstr "发票"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/InvoiceFolder.xml, line: -1
 msgid "Invoices"
-msgstr "发票"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/LabContact.xml, line: -1
 msgid "Lab Contact"
