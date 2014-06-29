@@ -1,3 +1,16 @@
+3.1.1 (2014-06-29)
+------------------
+
+Some bugs which only appear while running Windows, have been fixed.
+
+LIMS-1281: Fix Restricted and Default categories in ar_add
+LIMS-1275: Fix lax Aalyst permissions
+LIMS-1301: jsonapi can set ReferenceField=""
+LIMS-1221: Icon for ARImports folder in Navigation
+LIMS-1252: AR Published Results Signature Block formatting
+LIMS-1297: Update frontpage
+
+
 3.1 (2014-06-23)
 ----------------
 
