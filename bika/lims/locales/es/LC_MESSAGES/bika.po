@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2012-01-01 23:11+0000\n"
-"PO-Revision-Date: 2014-06-14 15:16+0000\n"
+"PO-Revision-Date: 2014-06-23 16:25+0000\n"
 "Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/bika-lims/language/es/)\n"
 "MIME-Version: 1.0\n"
@@ -332,19 +332,19 @@ msgstr "> Máx"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 301
 msgid "AR Attachment Option"
-msgstr "Opciones de ficheros adjuntos en solicitudes de análisis"
+msgstr "Ficheros adjuntos en solicitudes de análisis"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 400
 msgid "AR ID Padding"
 msgstr "Tamaño del ID de las solicitudes de análisis"
 
-# File: bika.lims/bika/lims/browser/arimports.py, line: 78
+# File: bika.lims/bika/lims/browser/arimports.py, line: 77
 msgid "AR Import"
 msgstr "Importación de solicitudes de análisis"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 290
 msgid "AR Import options"
-msgstr "Opciones de importación de solicitudes de análisis"
+msgstr "Opciones de importación"
 
 # File: bika.lims/bika/lims/browser/client.py, line: 414
 # File: bika.lims/bika/lims/content/srtemplate.py, line: 36
@@ -395,7 +395,7 @@ msgstr "Logotipo de la acreditación"
 
 # File: bika.lims/bika/lims/content/laboratory.py, line: 77
 msgid "Accreditation Reference"
-msgstr "Referencia de la Acreditación"
+msgstr "Referencia de la acreditación"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/manage_analyses.py, line:
 # 200
@@ -438,7 +438,7 @@ msgstr "Ad hoc"
 # File: bika.lims/bika/lims/browser/client.py, line: 304
 # File: bika.lims/bika/lims/browser/clientfolder.py, line: 78
 msgid "Add"
-msgstr "Añadir"
+msgstr "Nuevo..."
 
 # File: bika.lims/bika/lims/browser/worksheet.py, line: 803
 msgid "Add Analyses"
@@ -446,11 +446,11 @@ msgstr "Añadir análisis"
 
 # File: bika.lims/bika/lims/browser/worksheet.py, line: 983
 msgid "Add Blank Reference"
-msgstr "Añadir blanco de referencia"
+msgstr "Añadir muestra blanco"
 
 # File: bika.lims/bika/lims/browser/worksheet.py, line: 1038
 msgid "Add Control Reference"
-msgstr "Añadir control de referencia"
+msgstr "Añadir muestra control"
 
 # File: bika.lims/bika/lims/browser/worksheet.py, line: 1092
 msgid "Add Duplicate"
@@ -501,7 +501,7 @@ msgstr "Agencia"
 # File: bika.lims/bika/lims/browser/analysisrequest/manage_analyses.py, line:
 # 77
 msgid "All"
-msgstr "Mostrar todo"
+msgstr "Todos"
 
 # File: bika.lims/bika/lims/browser/accreditation.py, line: 46
 msgid "All Accredited analysis services are listed here."
@@ -696,7 +696,7 @@ msgstr "Servicio de análisis ${service} en la posición ${slot}: Correcto"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 313
 msgid "Analysis Attachment Option"
-msgstr "Opción de ficheros adjuntos para el análisis"
+msgstr "Ficheros adjuntos en los anállisis"
 
 # File: bika.lims/bika/lims/controlpanel/bika_analysiscategories.py, line: 28
 msgid "Analysis Categories"
@@ -709,7 +709,7 @@ msgstr "Categoría del análisis"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 244
 msgid "Analysis Keyword"
-msgstr "Código del análisis"
+msgstr "Código de análisis"
 
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 258
 # File: bika.lims/bika/lims/content/arimportitem.py, line: 74
@@ -733,7 +733,7 @@ msgstr "Solicitud de análisis"
 msgid "Analysis Request ID"
 msgstr "Identificador de la solicitud de análisis"
 
-# File: bika.lims/bika/lims/browser/arimports.py, line: 89
+# File: bika.lims/bika/lims/browser/arimports.py, line: 88
 msgid "Analysis Request Imports"
 msgstr "Importaciones de solicitudes de análisis"
 
@@ -798,7 +798,7 @@ msgstr "Categoría de análisis"
 # File: bika.lims/bika/lims/exportimport/instruments/foss/fiastar/fiastar.py,
 # line: 199
 msgid "Analysis container UID ${parent_uid} not found"
-msgstr "No se ha encontrado el contenedor de análisis con UID {$parent_uid}"
+msgstr "No se ha encontrado el recipiente del análisis con UID {$parent_uid}"
 
 # File: bika.lims/bika/lims/exportimport/instruments/foss/fiastar/fiastar.py,
 # line: 190
@@ -959,9 +959,9 @@ msgstr "Debe indicar un analista."
 # 72
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 62
 msgid "Any"
-msgstr "Cualquier"
+msgstr "Sin definir"
 
-# File: bika.lims/bika/lims/browser/arimports.py, line: 119
+# File: bika.lims/bika/lims/browser/arimports.py, line: 118
 msgid "Applied"
 msgstr "Tramitadas"
 
@@ -982,7 +982,7 @@ msgstr "Aplicar cambios en todo"
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 428
 msgid "Assigned"
-msgstr "Asignado"
+msgstr "Con análisis asignados"
 
 # File: bika.lims/bika/lims/browser/reports/productivity_analysesperclient.py,
 # line: 84
@@ -1295,7 +1295,7 @@ msgstr "Calibrador"
 # File: bika.lims/bika/lims/browser/templates/analysisservice_popup.pt, line:
 # 68
 msgid "Can be reported as dry matter"
-msgstr "Se puede tratar como materia seca"
+msgstr "Puede interpretarse como materia seca"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 353
@@ -1393,7 +1393,7 @@ msgid ""
 "Check this box if this container is already preserved.Setting this will "
 "short-circuit the preservation workflow for sample partitions stored in this"
 " container."
-msgstr "Marque la casilla de verificación si el contenedor ya está bajo conservación, pues ello hará que el sistema omita el circuito de preservación para las muestras del contenedor. "
+msgstr "Marque la casilla de verificación si el recipiente ya incluye un método que garantize la conservación de la muestra. En ese caso, el sistema omitirá el circuito de conservación para todas aquellas muestras en las que se utilice este recipiente."
 
 # File: bika.lims/bika/lims/content/arpriority.py, line: 40
 msgid "Check this box if this is the default priority"
@@ -1407,7 +1407,7 @@ msgstr "Marque la casilla si el laboratorio está acreditado"
 msgid ""
 "Check this box to ensure a separate sample container is used for this "
 "analysis service"
-msgstr "Marcar esta casilla para utilizar un contenidor de muestra separado para este servicio de análisis"
+msgstr "El servicio de análisis requiere de un recipiente distinto para la muestra"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 409
 msgid ""
@@ -1465,7 +1465,7 @@ msgstr "Clic para descargar"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 71
-# File: bika.lims/bika/lims/browser/arimports.py, line: 95
+# File: bika.lims/bika/lims/browser/arimports.py, line: 94
 # File: bika.lims/bika/lims/browser/invoicebatch.py, line: 26
 msgid "Client"
 msgstr "Cliente"
@@ -1641,23 +1641,23 @@ msgstr "Contactos a CC"
 # 96
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 123
 msgid "Container"
-msgstr "Contenedor"
+msgstr "Recipiente"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 90
 # File: bika.lims/bika/lims/content/arimportitem.py, line: 59
 # File: bika.lims/bika/lims/content/container.py, line: 27
 msgid "Container Type"
-msgstr "Tipo de contenedor"
+msgstr "Tipo de recipiente"
 
 # File: bika.lims/bika/lims/controlpanel/bika_containertypes.py, line: 29
 msgid "Container Types"
-msgstr "Tipos de contenedores"
+msgstr "Tipos de recipiente"
 
 # File: bika.lims/bika/lims/browser/templates/analysisservice_popup.pt, line:
 # 265
 # File: bika.lims/bika/lims/controlpanel/bika_containers.py, line: 29
 msgid "Containers"
-msgstr "Contenedores de muestras"
+msgstr "Recipientes de muestras"
 
 # File: bika.lims/bika/lims/browser/client.py, line: 657
 msgid "Content Type"
@@ -1815,7 +1815,7 @@ msgstr "Fecha de exclusión"
 msgid "Date Expired"
 msgstr "Fecha de caducidad"
 
-# File: bika.lims/bika/lims/browser/arimports.py, line: 96
+# File: bika.lims/bika/lims/browser/arimports.py, line: 95
 # File: bika.lims/bika/lims/content/arimport.py, line: 186
 msgid "Date Imported"
 msgstr "Fecha de importación"
@@ -1874,7 +1874,7 @@ msgstr "Fecha de petición"
 msgid "Date Sampled"
 msgstr "Fecha de muestreo"
 
-# File: bika.lims/bika/lims/browser/arimports.py, line: 98
+# File: bika.lims/bika/lims/browser/arimports.py, line: 97
 msgid "Date Submitted"
 msgstr "Fecha de registro"
 
@@ -1930,11 +1930,11 @@ msgstr "Cálculo por defecto"
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 506
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 715
 msgid "Default Container"
-msgstr "Contenidor por defecto"
+msgstr "Recipiente por defecto"
 
 # File: bika.lims/bika/lims/content/sampletype.py, line: 70
 msgid "Default Container Type"
-msgstr "Tipo de contenedor por defecto"
+msgstr "Tipo de recipiente por defecto"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 324
 msgid "Default Instrument"
@@ -1964,12 +1964,12 @@ msgstr "Categorías por defecto"
 
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 507
 msgid "Default container for new sample partitions"
-msgstr "Contenedor por defecto a utilizar en nuevas particiones de la muestra"
+msgstr "Recipiente por defecto para nuevas particiones de muestra"
 
 # File: bika.lims/bika/lims/browser/templates/analysisservice_popup.pt, line:
 # 232
 msgid "Default containers: ${container_list}"
-msgstr "Contenedores por defecto: ${container_list}"
+msgstr "Recipientes por defecto: ${container_list}"
 
 # File: bika.lims/bika/lims/browser/templates/analysisservice_popup.pt, line:
 # 244
@@ -2159,7 +2159,7 @@ msgstr "Análisis de materia seca"
 # 175
 # File: bika.lims/bika/lims/browser/sample.py, line: 503
 msgid "Due"
-msgstr "Vencimiento"
+msgstr "Vencidos"
 
 # File: bika.lims/bika/lims/browser/analyses.py, line: 105
 # File: bika.lims/bika/lims/browser/late_analyses.py, line: 47
@@ -2198,7 +2198,7 @@ msgstr "Análisis de duplicados"
 # File: bika.lims/bika/lims/browser/reports/templates/qualitycontrol.pt, line:
 # 67
 msgid "Duplicate analysis QC"
-msgstr "QC de duplicado de análisis"
+msgstr "QC de análisis de duplicados"
 
 # File: bika.lims/bika/lims/exportimport/instruments/foss/fiastar/fiastar.py,
 # line: 219
@@ -2226,7 +2226,7 @@ msgstr "P.ej., ENAC, Applus, etc."
 
 # File: bika.lims/bika/lims/content/analysis.py, line: 106
 msgid "Earliness"
-msgstr "Earliness"
+msgstr "Anticipado"
 
 # File: bika.lims/bika/lims/browser/reports/productivity_analysestats.py,
 # line: 136
@@ -2241,7 +2241,7 @@ msgstr "Elevación"
 # File: bika.lims/bika/lims/config.py, line: 21
 # File: bika.lims/bika/lims/controlpanel/bika_suppliers.py, line: 40
 msgid "Email"
-msgstr "Email"
+msgstr "Correo electrónico"
 
 # File: bika.lims/bika/lims/browser/client.py, line: 759
 # File: bika.lims/bika/lims/browser/clientfolder.py, line: 38
@@ -2400,7 +2400,7 @@ msgstr "Análisis de campo"
 
 # File: bika.lims/bika/lims/config.py, line: 41
 msgid "Field Preservation"
-msgstr "Campo de conservación"
+msgstr "Conservación fuera del laboratorio"
 
 # File: bika.lims/bika/lims/browser/fields/interimfieldsfield.py, line: 21
 msgid "Field Title"
@@ -2536,12 +2536,12 @@ msgstr "ID"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 416
 msgid "ID Server URL"
-msgstr "ID Server URL"
+msgstr "URL del servidor de IDs"
 
 # File: bika.lims/bika/lims/controlpanel/bika_idserver.py, line: 58
 # File: bika.lims/bika/lims/idserver.py, line: 45
 msgid "ID Server unavailable"
-msgstr "ID Server no disponible"
+msgstr "Servidor de IDs no disponible"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 388
 msgid ""
@@ -2589,7 +2589,7 @@ msgstr "Los resultados que hayan sido introducidos previamente para algun servic
 msgid ""
 "If this container is pre-preserved, then the preservation method could be "
 "selected here."
-msgstr "Método de conservación del contenedor."
+msgstr "Método de conservación del recipiente."
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 94
 msgid ""
@@ -2602,7 +2602,7 @@ msgstr "Si la casilla no está marcada, los analistas y administrativos podrán 
 msgid "If unticked, analysts will have access to all worksheets."
 msgstr "Si la casilla no está marcada, los analistas podran acceder a todas las hojas de trabajo."
 
-# File: bika.lims/bika/lims/browser/arimports.py, line: 94
+# File: bika.lims/bika/lims/browser/arimports.py, line: 93
 # File: bika.lims/bika/lims/browser/templates/arimport_add_form.pt, line: 62
 # File: bika.lims/bika/lims/exportimport/dataimport.py, line: 49
 msgid "Import"
@@ -2623,7 +2623,7 @@ msgid ""
 "Import finished successfully: %s ARs, %s Instruments and %s results updated"
 msgstr "La importación ha finalizado correctamente: se han actualizado %s solicitudes de análisis, %s instrumentos y %s resultados"
 
-# File: bika.lims/bika/lims/browser/arimports.py, line: 112
+# File: bika.lims/bika/lims/browser/arimports.py, line: 111
 msgid "Imported"
 msgstr "Importados"
 
@@ -2976,6 +2976,10 @@ msgstr "Carga de datos iniciales"
 msgid "Load documents describing the method here"
 msgstr "Aquí puede cargar los documentos que describen el método"
 
+# File: bika.lims/bika/lims/exportimport/import.pt, line: 53
+msgid "Load from file"
+msgstr "Cargar desde archivo"
+
 # File: bika.lims/bika/lims/content/instrumentcertification.py, line: 76
 msgid "Load the certificate document here"
 msgstr "Documento de la certificación"
@@ -3185,7 +3189,7 @@ msgstr "Métodos"
 msgid ""
 "Methods included in the ${accreditation_body} schedule of Accreditation for "
 "this Laboratory. Analysis remarks are not accredited"
-msgstr "Métodos que está previsto que sean acreditados próximamente por ${accreditation_body}. Los comentarios y observaciones no estan acreditados."
+msgstr "Métodos incluidos en el alcance de acreditación ante ${accreditation_body}. Los comentarios y observaciones no están acreditados."
 
 # File: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt,
 # line: 459
@@ -3209,7 +3213,7 @@ msgstr "Min"
 
 # File: bika.lims/bika/lims/browser/worksheetfolder.py, line: 184
 msgid "Mine"
-msgstr "Mine"
+msgstr "Mis elementos"
 
 # File: bika.lims/bika/lims/browser/templates/login_details.pt, line: 73
 msgid "Minimum 5 characters."
@@ -3427,7 +3431,7 @@ msgstr "No se ha indicado el tipo de control"
 # File: bika.lims/bika/lims/browser/templates/analysisservice_popup.pt, line:
 # 236
 msgid "No default containers specified for this service"
-msgstr "No se han indicado contenedores por defecto para este servicio"
+msgstr "No se han indicado recipientes por defecto para este servicio"
 
 # File: bika.lims/bika/lims/browser/templates/analysisservice_popup.pt, line:
 # 248
@@ -3480,7 +3484,7 @@ msgstr "No se han creado ítems nuevos."
 
 # File: bika.lims/bika/lims/content/arimportitem.py, line: 49
 msgid "No of containers"
-msgstr "Núm. de contenedores"
+msgstr "Núm. de recipientes"
 
 # File:
 # bika.lims/bika/lims/browser/reports/qualitycontrol_referenceanalysisqc.py,
@@ -3876,7 +3880,7 @@ msgstr "Código postal"
 # File: bika.lims/bika/lims/content/container.py, line: 42
 # File: bika.lims/bika/lims/controlpanel/bika_containers.py, line: 47
 msgid "Pre-preserved"
-msgstr "En pre-conservación"
+msgstr "Pre-conservación"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 212
 msgid "Precision as number of decimals"
@@ -3903,7 +3907,7 @@ msgstr "Conservación"
 
 # File: bika.lims/bika/lims/content/preservation.py, line: 24
 msgid "Preservation Category"
-msgstr "Categoría de conservación"
+msgstr "Categoría de método de conservación"
 
 # File: bika.lims/bika/lims/browser/templates/analysisservice_popup.pt, line:
 # 264
@@ -4327,7 +4331,7 @@ msgstr "Tipo de informe"
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 221
 # File: bika.lims/bika/lims/content/arimportitem.py, line: 64
 msgid "Report as Dry Matter"
-msgstr "Informar como materia seca"
+msgstr "Interpretar como materia seca"
 
 # File: bika.lims/bika/lims/browser/reports/templates/administration.pt, line:
 # 96
@@ -4368,7 +4372,7 @@ msgstr "Tipo de informe"
 # File: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt,
 # line: 452
 msgid "Reported as dry matter"
-msgstr "Informar como materia seca"
+msgstr "Interpretado como materia seca"
 
 # File:
 # bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
@@ -4813,6 +4817,10 @@ msgstr "Seleccionar los análisis a ser incluidos en la plantilla"
 msgid "Select analyst"
 msgstr "Seleccionar el analista"
 
+# File: bika.lims/bika/lims/exportimport/import.pt, line: 60
+msgid "Select existing file"
+msgstr "Seleccione un archivo existente"
+
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 575
 msgid "Select if analyses to be excluded from invoice"
 msgstr "Indique si los análisis no deben facturarse"
@@ -4876,7 +4884,7 @@ msgid ""
 "Select the default container to be used for this analysis service. If the "
 "container to be used depends on the sample type and preservation "
 "combination, specify the container in the sample type table below"
-msgstr "Seleccionar el contenedor por defecto que debe utilizarse para este servicio de análisis. Si el contenedor depende de la combinación del tipo de muestra y del método de conservación, especificar el contenidor específico para el tipo de de muestra."
+msgstr "Seleccionar el recipiente por defecto que debe ser utilizado para este servicio de análisis. Si el recipiente depende de la combinación del tipo de muestra y del método de conservación, deberá especificar el recipiente específico para cada tipo de de muestra."
 
 # File: bika.lims/bika/lims/content/worksheettemplate.py, line: 60
 msgid "Select the preferred instrument"
@@ -4913,7 +4921,7 @@ msgstr "Separar"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 121
 msgid "Separate Container"
-msgstr "Contenedor separado"
+msgstr "Recipiente por separado"
 
 # File: bika.lims/bika/lims/content/instrument.py, line: 68
 msgid "Serial No"
@@ -5097,7 +5105,7 @@ msgstr "Fecha de inicio"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 120
-# File: bika.lims/bika/lims/browser/arimports.py, line: 99
+# File: bika.lims/bika/lims/browser/arimports.py, line: 98
 # File: bika.lims/bika/lims/browser/batch/batchbook.py, line: 57
 msgid "State"
 msgstr "Estado"
@@ -5140,6 +5148,12 @@ msgstr "Se utilizará el valor de este campo para ordenar los subgrupos en las l
 # File: bika.lims/bika/lims/exportimport/import.pt, line: 56
 msgid "Submit"
 msgstr "Tramitar"
+
+# File: bika.lims/bika/lims/exportimport/import.pt, line: 49
+msgid ""
+"Submit a valid Open XML (.XLSX) file containing Bika setup records to "
+"continue."
+msgstr "Proporcione un archivo Open XML (.XLSX) válido que contenga los datos de configuración del Bika para continuar."
 
 # File: bika.lims/bika/lims/browser/analysisrequest/templates/ar_add.pt, line:
 # 258
@@ -5277,14 +5291,14 @@ msgid ""
 "The default container type. New sample partitions are automatically assigned"
 " a container of this type, unless it has been specified in more details per "
 "analysis service"
-msgstr "El tipo de contenedor por defecto. Para las nuevas particiones de muestras se les asignará por defecto este contenedor, a menos que se haya indicado un contenedor específico para el servicio de análisis"
+msgstr "El tipo de recipiente por defecto. Este tipo de recipiente se asignará automáticamente a nuevas particiones de muestra a menos que ya se haya indicado un tipo de recipiente específico para el servicio de análisis relacionado"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 137
 msgid ""
 "The discount percentage entered here, is applied to the prices for clients "
 "flagged as 'members', normally co-operative members or associates deserving "
 "of this discount"
-msgstr "El porcentaje de descuento solo se aplicará a clientes que estén etiquetados como 'clientes habituales'."
+msgstr "El porcentaje de descuento solo se aplicará a clientes que estén etiquetados como 'clientes habituales'. Normalmente, se trata de miembros que forman parte de una cooperativa, asociados o clientes con contrato de mantenimiento."
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 417
 msgid "The full URL: http://URL/path:port"
@@ -5563,7 +5577,7 @@ msgstr "El servicio no requiere de una partición por separado"
 # File: bika.lims/bika/lims/browser/templates/analysisservice_popup.pt, line:
 # 221
 msgid "This service requires a separate container."
-msgstr "Para este servicio es necesario utilizar un contenedor por separado"
+msgstr "Para este servicio es necesario utilizar un recipiente por separado"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 191
 msgid "This text will be appended to results reports."
@@ -5778,7 +5792,7 @@ msgstr "Utilizar cálculo predeterminado"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 408
 msgid "Use external ID server"
-msgstr "Utilizar un ID server externo"
+msgstr "Utilizar un servidor de IDs externo"
 
 # File: bika.lims/bika/lims/content/instrument.py, line: 126
 msgid ""
@@ -5885,7 +5899,7 @@ msgstr "Ha fallado la validación: la orientación debe ser E/W (Este/Oeste)"
 
 # File: bika.lims/bika/lims/validators.py, line: 306
 msgid "Validation failed: Bearing must be N/S"
-msgstr "Ha fallado la validación: la orientación debe ser N/S"
+msgstr "Error de validación: la orientación debe ser N/S"
 
 # File: bika.lims/bika/lims/validators.py, line: 539
 msgid "Validation failed: Error percentage must be between 0 and 100"
@@ -5935,7 +5949,7 @@ msgstr "Error de validación: los porcentajes de error tienen que ser de tipo nu
 msgid ""
 "Validation failed: PrePreserved containers must have a preservation "
 "selected."
-msgstr "Error de validación: los contenedores para la pre-conservación tienen que tener asignado un método de conservación."
+msgstr "Error de validación: Debe indicar el método de conservación."
 
 # File: bika.lims/bika/lims/validators.py, line: 362
 msgid "Validation failed: Result Text cannot be blank"
@@ -5943,7 +5957,7 @@ msgstr "Ha fallado la validación: el texto del resultado no puede estar vacío"
 
 # File: bika.lims/bika/lims/validators.py, line: 359
 msgid "Validation failed: Result Values must be numbers"
-msgstr "Ha fallado la validación: los resultados tienen que ser de tipo numérico"
+msgstr "Error de validación: los resultados tienen que ser de tipo numérico"
 
 # File: bika.lims/bika/lims/validators.py, line: 404
 msgid ""
@@ -5982,11 +5996,11 @@ msgstr "Error de validación: los grados deben variar entre 0 - 180"
 
 # File: bika.lims/bika/lims/validators.py, line: 297
 msgid "Validation failed: degrees must be 0 - 90"
-msgstr "Ha fallado la validación: los grados tienen que estar entre 0 y 90"
+msgstr "Error de validación: los grados tienen que estar entre 0 y 90"
 
 # File: bika.lims/bika/lims/validators.py, line: 275
 msgid "Validation failed: degrees must be numeric"
-msgstr "Ha fallado la validación: los grados tienen que ser de tipo numérico"
+msgstr "Error de validación: los grados tienen que ser de tipo numérico"
 
 # File: bika.lims/bika/lims/validators.py, line: 199
 msgid ""
@@ -5995,7 +6009,7 @@ msgstr "Error de validación: la palabra clave '${keyword}' tiene que tener '${t
 
 # File: bika.lims/bika/lims/validators.py, line: 63
 msgid "Validation failed: keyword contains invalid characters"
-msgstr "Ha fallado la validación: el identificador contiene caracteres no válidos"
+msgstr "Error de validación: el identificador contiene caracteres no válidos"
 
 # File: bika.lims/bika/lims/controlpanel/bika_analysisservices.py, line: 100
 # File: bika.lims/bika/lims/validators.py, line: 136
@@ -6004,11 +6018,11 @@ msgstr "Error de validación: palabra clave requerida"
 
 # File: bika.lims/bika/lims/validators.py, line: 288
 msgid "Validation failed: minutes must be 0 - 59"
-msgstr "Ha fallado la validación: los minutos tienen que estar entre 0 y 59"
+msgstr "Error de validación: los minutos tienen que estar entre 0 y 59"
 
 # File: bika.lims/bika/lims/validators.py, line: 280
 msgid "Validation failed: minutes must be numeric"
-msgstr "Ha fallado la validación: los minutos tienen que ser de tipo numérico"
+msgstr "Error de validación: los minutos tienen que ser de tipo numérico"
 
 # File: bika.lims/bika/lims/validators.py, line: 730
 msgid "Validation failed: percent values must be between 0 and 100"
@@ -6020,11 +6034,11 @@ msgstr "Error de validación: el valor del porcentaje debe ser un número"
 
 # File: bika.lims/bika/lims/validators.py, line: 291
 msgid "Validation failed: seconds must be 0 - 59"
-msgstr "Ha fallado la validación: los segundos tienen que estar entre 0 y 59"
+msgstr "Error de validación: los segundos tienen que estar entre 0 y 59"
 
 # File: bika.lims/bika/lims/validators.py, line: 285
 msgid "Validation failed: seconds must be numeric"
-msgstr "Ha fallado la validación: los segundos tienen que ser de tipo numérico"
+msgstr "Error de validación: los segundos tienen que ser de tipo numérico"
 
 # File: bika.lims/bika/lims/controlpanel/bika_analysisservices.py, line: 94
 # File: bika.lims/bika/lims/validators.py, line: 134
@@ -6036,7 +6050,7 @@ msgstr "Error de validación: título requerido"
 msgid "Validator"
 msgstr "Validador"
 
-# File: bika.lims/bika/lims/browser/arimports.py, line: 97
+# File: bika.lims/bika/lims/browser/arimports.py, line: 96
 msgid "Validity"
 msgstr "Validez"
 
@@ -6068,7 +6082,7 @@ msgstr "Los valores ingresados aquí anularan los establecidos en los campos de 
 # File: bika.lims/bika/lims/browser/worksheetfolder.py, line: 239
 # File: bika.lims/bika/lims/skins/bika/portlet_verified.pt, line: 22
 msgid "Verified"
-msgstr "Verificado"
+msgstr "Verificadas"
 
 # File: bika.lims/bika/lims/browser/log.py, line: 45
 msgid "Version"
@@ -6207,31 +6221,31 @@ msgid "heading_import_ar"
 msgstr "Nueva importación de solicitud de análisis"
 
 #. Default: "CC Emails - Invoice"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 77
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 76
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 68
 msgid "label_CCEmailsInvoice"
 msgstr "Correo de facturas con copia a"
 
 #. Default: "CC Names - Report"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 70
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 69
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 62
 msgid "label_CCNamesReport"
 msgstr "Correo de informes con copia a"
 
 #. Default: "Client Reference"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 91
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 89
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 79
 msgid "label_ClientReference"
 msgstr "Referencia de Cliente"
 
 #. Default: "Detail"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 232
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 229
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 192
 msgid "label_Detail"
 msgstr "Detalle"
 
 #. Default: "Order"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 87
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 85
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 76
 msgid "label_OrderID"
 msgstr "Pedido"
@@ -6242,15 +6256,10 @@ msgid "label_add_to_groups"
 msgstr "Añadir a los grupos siguientes:"
 
 #. Default: "Analyses"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 163
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 160
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 138
 msgid "label_analyses"
 msgstr "Análisis"
-
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 60
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 54
-msgid "label_blank"
-msgstr ""
 
 #. Default: "CC"
 # File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 49
@@ -6265,7 +6274,7 @@ msgid "label_cccontactid"
 msgstr "ID del contacto con copia de correo"
 
 #. Default: "CC Emails - Report"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 66
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 65
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 59
 msgid "label_ccemails"
 msgstr "Correo de informes con copia a"
@@ -6283,13 +6292,13 @@ msgid "label_clientname"
 msgstr "Cliente"
 
 #. Default: "Client Ref"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 155
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 152
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 129
 msgid "label_clientref"
 msgstr "Ref. Cliente"
 
 #. Default: "Client Sid"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 156
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 153
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 130
 msgid "label_clientsid"
 msgstr "SID de Cliente"
@@ -6307,25 +6316,25 @@ msgid "label_contactid"
 msgstr "ID Contacto"
 
 #. Default: "Container Type"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 160
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 157
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 134
 msgid "label_containertype"
 msgstr "Tipo de recipiente"
 
 #. Default: "Date applied"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 121
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 119
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 104
 msgid "label_dateapplied"
 msgstr "Fecha de registro"
 
 #. Default: "Date imported"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 116
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 114
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 100
 msgid "label_dateimported"
 msgstr "Fecha de importación"
 
 #. Default: "File name"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 99
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 97
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 85
 msgid "label_filename"
 msgstr "etiqueta_nombre de archivo"
@@ -6346,61 +6355,61 @@ msgid "label_orderid"
 msgstr "ID Pedido"
 
 #. Default: "Picking slip"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 159
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 156
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 133
 msgid "label_pickingslip"
 msgstr "Albarán"
 
 #. Default: "Priority"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 162
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 159
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 136
 msgid "label_priority"
 msgstr "etiqueta_prioridad"
 
 #. Default: "Profile"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 165
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 162
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 140
 msgid "label_profile"
 msgstr "etiqueta_perfil"
 
 #. Default: "Remarks"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 265
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 262
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 223
 msgid "label_remarks"
 msgstr "Comentarios"
 
 #. Default: "Report as DM"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 161
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 158
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 135
 msgid "label_report_dry_matter"
 msgstr "Materia seca"
 
 #. Default: "Request ID"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 153
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 150
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 127
 msgid "label_requestid"
 msgstr "ID Solicitud"
 
 #. Default: "Sample Date"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 157
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 154
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 131
 msgid "label_sampledate"
 msgstr "Fecha muestreo"
 
 #. Default: "Sample"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 150
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 147
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 124
 msgid "label_samplename"
 msgstr "Muestra"
 
 #. Default: "Sample Point"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 133
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 131
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 114
 msgid "label_samplepoint"
 msgstr "Punto de muestreo"
 
 #. Default: "Sample type"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 158
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 155
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 132
 msgid "label_sampletype"
 msgstr "Tipo de muestra"
@@ -6413,13 +6422,13 @@ msgid "label_specification"
 msgstr "Especificación"
 
 #. Default: "Status"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 105
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 103
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 90
 msgid "label_status"
 msgstr "Estado"
 
 #. Default: "Valid"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 167
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 164
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 142
 msgid "label_valid"
 msgstr "Válida?"

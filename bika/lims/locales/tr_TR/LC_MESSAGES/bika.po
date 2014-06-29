@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2012-01-01 23:11+0000\n"
-"PO-Revision-Date: 2014-06-14 12:38+0000\n"
-"Last-Translator: Burak ÇAM <burakcam@akdeniz.edu.tr>\n"
+"PO-Revision-Date: 2014-06-19 07:22+0000\n"
+"Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
 "Language-Team: Turkish (Turkey) (http://www.transifex.com/projects/p/bika-lims/language/tr_TR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -233,7 +233,7 @@ msgstr "(Gerekli)"
 # File: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt,
 # line: 451
 msgid "* Result out of client specified range."
-msgstr ""
+msgstr "* İstenilen aralık dışında kalan sonuçlar"
 
 # File: bika.lims/bika/lims/browser/analyses.py, line: 90
 # File: bika.lims/bika/lims/browser/referencesample.py, line: 115
@@ -329,7 +329,7 @@ msgstr "Analiz Talebi Eklenti Seçeneği"
 msgid "AR ID Padding"
 msgstr "Analiz Talebi ID Kodlama"
 
-# File: bika.lims/bika/lims/browser/arimports.py, line: 78
+# File: bika.lims/bika/lims/browser/arimports.py, line: 77
 msgid "AR Import"
 msgstr "Analiz Taleplerini İçe Aktarma"
 
@@ -724,7 +724,7 @@ msgstr "Analiz Talebi"
 msgid "Analysis Request ID"
 msgstr "Analiz Talep ID No"
 
-# File: bika.lims/bika/lims/browser/arimports.py, line: 89
+# File: bika.lims/bika/lims/browser/arimports.py, line: 88
 msgid "Analysis Request Imports"
 msgstr "Analiz Talebi Girişi"
 
@@ -798,7 +798,7 @@ msgstr ""
 
 # File: bika.lims/bika/lims/browser/analysisrequest/add.py, line: 297
 msgid "Analysis request ${AR} was successfully created."
-msgstr ""
+msgstr "Analiz Talebi ${AR} oluşturuldu."
 
 # File: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt,
 # line: 373
@@ -807,7 +807,7 @@ msgstr ""
 
 # File: bika.lims/bika/lims/browser/analysisrequest/add.py, line: 294
 msgid "Analysis requests ${ARs} were successfully created."
-msgstr ""
+msgstr "Analiz talepleri ${ARs} oluşturuldu."
 
 # File: bika.lims/bika/lims/browser/reports/productivity_analysesperclient.py,
 # line: 46
@@ -872,7 +872,7 @@ msgstr "Sonuçları müşteri veya laboratuvar tarafından belirtilen aralığı
 # File: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt,
 # line: 455
 msgid "Analysis results relate only to the samples tested."
-msgstr ""
+msgstr "Yalnızca analiz edilen numunelerle ilgili sonuçlardır."
 
 # File:
 # bika.lims/bika/lims/browser/reports/productivity_analysesperservice.py,
@@ -952,7 +952,7 @@ msgstr ""
 msgid "Any"
 msgstr "Herhangi"
 
-# File: bika.lims/bika/lims/browser/arimports.py, line: 119
+# File: bika.lims/bika/lims/browser/arimports.py, line: 118
 msgid "Applied"
 msgstr "Uygulandı"
 
@@ -1324,7 +1324,7 @@ msgstr "Kapasite"
 # bika.lims/bika/lims/browser/reports/qualitycontrol_referenceanalysisqc.py,
 # line: 129
 msgid "Captured"
-msgstr ""
+msgstr "Alındı"
 
 # File: bika.lims/bika/lims/browser/templates/instrument_referenceanalyses.pt,
 # line: 218
@@ -1456,7 +1456,7 @@ msgstr "İndirmek için tıklayın"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 71
-# File: bika.lims/bika/lims/browser/arimports.py, line: 95
+# File: bika.lims/bika/lims/browser/arimports.py, line: 94
 # File: bika.lims/bika/lims/browser/invoicebatch.py, line: 26
 msgid "Client"
 msgstr "Müşteri"
@@ -1806,7 +1806,7 @@ msgstr "İstek Yapılan Tarih"
 msgid "Date Expired"
 msgstr "Geçerliliğini Yitirme Tarihi"
 
-# File: bika.lims/bika/lims/browser/arimports.py, line: 96
+# File: bika.lims/bika/lims/browser/arimports.py, line: 95
 # File: bika.lims/bika/lims/content/arimport.py, line: 186
 msgid "Date Imported"
 msgstr "Giriş Tarihi"
@@ -1865,7 +1865,7 @@ msgstr "Talep Edilme Tarihi"
 msgid "Date Sampled"
 msgstr "Numune Alınma Tarihi"
 
-# File: bika.lims/bika/lims/browser/arimports.py, line: 98
+# File: bika.lims/bika/lims/browser/arimports.py, line: 97
 msgid "Date Submitted"
 msgstr "Sonuç Giriş Tarihi"
 
@@ -2593,7 +2593,7 @@ msgstr ""
 msgid "If unticked, analysts will have access to all worksheets."
 msgstr ""
 
-# File: bika.lims/bika/lims/browser/arimports.py, line: 94
+# File: bika.lims/bika/lims/browser/arimports.py, line: 93
 # File: bika.lims/bika/lims/browser/templates/arimport_add_form.pt, line: 62
 # File: bika.lims/bika/lims/exportimport/dataimport.py, line: 49
 msgid "Import"
@@ -2614,7 +2614,7 @@ msgid ""
 "Import finished successfully: %s ARs, %s Instruments and %s results updated"
 msgstr ""
 
-# File: bika.lims/bika/lims/browser/arimports.py, line: 112
+# File: bika.lims/bika/lims/browser/arimports.py, line: 111
 msgid "Imported"
 msgstr "İçe aktarıldı"
 
@@ -2761,7 +2761,7 @@ msgstr ""
 # File: bika.lims/bika/lims/browser/templates/instrument_referenceanalyses.pt,
 # line: 215
 msgid "Interpolation"
-msgstr ""
+msgstr "Interpolasyon"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 392
@@ -2836,7 +2836,7 @@ msgstr "Sayfa başına madde"
 
 # File: bika.lims/bika/lims/content/client.py, line: 51
 msgid "Items to be included in email subject lines"
-msgstr ""
+msgstr "E-posta konu satırında gösterilecek olan nesneler"
 
 # File: bika.lims/bika/lims/content/person.py, line: 92
 msgid "Job title"
@@ -2948,7 +2948,7 @@ msgstr "Arama Sonuçlarını Kısıtla"
 # File: bika.lims/bika/lims/browser/templates/instrument_referenceanalyses.pt,
 # line: 219
 msgid "Linear"
-msgstr ""
+msgstr "Doğrusal"
 
 # File: bika.lims/bika/lims/content/sample.py, line: 78
 msgid "Linked Sample"
@@ -2966,6 +2966,10 @@ msgstr "Kurulum Verilerini Yükle"
 # File: bika.lims/bika/lims/content/method.py, line: 31
 msgid "Load documents describing the method here"
 msgstr "Metodu açıklayan dökümanı yükleyiniz."
+
+# File: bika.lims/bika/lims/exportimport/import.pt, line: 53
+msgid "Load from file"
+msgstr ""
 
 # File: bika.lims/bika/lims/content/instrumentcertification.py, line: 76
 msgid "Load the certificate document here"
@@ -3157,12 +3161,12 @@ msgstr "Metot Talimatları"
 # File: bika.lims/bika/lims/browser/templates/analysisservice_popup.pt, line:
 # 81
 msgid "Method: ${method_name}"
-msgstr ""
+msgstr "Metot: ${method_name}"
 
 # File: bika.lims/bika/lims/browser/templates/analysisservice_popup.pt, line:
 # 128
 msgid "Method: None"
-msgstr ""
+msgstr "Metot: Hiçbiri"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 355
 # File: bika.lims/bika/lims/content/methods.py, line: 29
@@ -3240,7 +3244,7 @@ msgstr ""
 # File: bika.lims/bika/lims/skins/bika/portlet_pending_orders.pt, line: 54
 # File: bika.lims/bika/lims/skins/bika/portlet_sample_due.pt, line: 55
 msgid "More"
-msgstr ""
+msgstr "Devamı"
 
 # File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
 # 634
@@ -3358,7 +3362,7 @@ msgstr ""
 # File: bika.lims/bika/lims/browser/reports/administration_usershistory.py,
 # line: 162
 msgid "No actions found for user ${user}"
-msgstr ""
+msgstr "${user} kullanıcısı için işlem bulunamadı"
 
 # File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
 # 607
@@ -3481,7 +3485,7 @@ msgstr ""
 
 # File: bika.lims/bika/lims/browser/reports/__init__.py, line: 221
 msgid "No report specified in request"
-msgstr ""
+msgstr "Talepte rapor belirtilmemiş"
 
 # File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
 # 182
@@ -3636,7 +3640,7 @@ msgstr ""
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 93
 msgid "Only lab managers can create and manage worksheets"
-msgstr ""
+msgstr "Yalnızca laboratuvar müdürleri çalışma planı oluşturup değiştirebilirler."
 
 # File: bika.lims/bika/lims/browser/templates/worksheet_manage_results.pt,
 # line: 132
@@ -3843,7 +3847,7 @@ msgstr ""
 msgid ""
 "Please upload the logo you are authorised to use on your website and results"
 " reports by your accreditation body. Maximum size is 175 x 175 pixels."
-msgstr ""
+msgstr "Akreditasyon kurumunuz tarafından kullanmanıza izin verilen akreditasyon logosunu yükeyiniz. Maksimum boyut 175 x 175 piksel"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 527
 msgid "Point of Capture"
@@ -3862,7 +3866,7 @@ msgstr "Posta adresi"
 # File: bika.lims/bika/lims/skins/bika/bika_widgets/addresswidget.pt, line:
 # 111
 msgid "Postal code"
-msgstr ""
+msgstr "Posta kodu"
 
 # File: bika.lims/bika/lims/content/container.py, line: 42
 # File: bika.lims/bika/lims/controlpanel/bika_containers.py, line: 47
@@ -3920,7 +3924,7 @@ msgstr ""
 # File: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt,
 # line: 183
 msgid "Previous Results"
-msgstr ""
+msgstr "Geçmiş Sonuçlar"
 
 # File: bika.lims/bika/lims/browser/accreditation.py, line: 60
 # File: bika.lims/bika/lims/browser/analysisrequest/manage_analyses.py, line:
@@ -3955,7 +3959,7 @@ msgstr "Fiyat listeleri"
 # File: bika.lims/bika/lims/browser/templates/referencesample_analyses.pt,
 # line: 214
 msgid "Print"
-msgstr ""
+msgstr "Yazdır"
 
 # File: bika.lims/bika/lims/browser/reports/templates/report_frame.pt, line:
 # 40
@@ -4260,7 +4264,7 @@ msgstr "Kayıt"
 msgid ""
 "Relative percentage difference, ${variation_here} %, is out of valid range "
 "(${variation} %))"
-msgstr ""
+msgstr "Yüzde fark, ${variation_here} %, geçerli aralığın dışında  (${variation} %))"
 
 # File: bika.lims/bika/lims/browser/batch/publish.py, line: 112
 # File: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt,
@@ -4426,7 +4430,7 @@ msgstr "Gerekli Hacim"
 
 # File: bika.lims/bika/lims/content/client.py, line: 80
 msgid "Restrict categories"
-msgstr ""
+msgstr "Kısıtlanan kategoriler"
 
 # File: bika.lims/bika/lims/browser/analyses.py, line: 79
 # File:
@@ -4488,7 +4492,7 @@ msgstr ""
 # File: bika.lims/bika/lims/content/preservation.py, line: 29
 # File: bika.lims/bika/lims/content/sampletype.py, line: 27
 msgid "Retention Period"
-msgstr ""
+msgstr "Saklama Süresi"
 
 # File: bika.lims/bika/lims/browser/analyses.py, line: 94
 # File: bika.lims/bika/lims/browser/referencesample.py, line: 119
@@ -4730,7 +4734,7 @@ msgstr "Kaydet"
 
 # File: bika.lims/bika/lims/skins/bika/bika_widgets/remarks.pt, line: 69
 msgid "Save remarks"
-msgstr ""
+msgstr "Açıklamaları kaydet"
 
 # File: bika.lims/bika/lims/browser/instrument.py, line: 268
 msgid "Scheduled task"
@@ -4804,6 +4808,10 @@ msgstr ""
 msgid "Select analyst"
 msgstr "Analiz Seç"
 
+# File: bika.lims/bika/lims/exportimport/import.pt, line: 60
+msgid "Select existing file"
+msgstr ""
+
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 575
 msgid "Select if analyses to be excluded from invoice"
 msgstr "Analizler faturaya işlenmeyecekse işaretleyin."
@@ -4860,7 +4868,7 @@ msgstr ""
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 116
 msgid "Select the currency the site will use to display prices."
-msgstr ""
+msgstr "Görüntülenecek döviz cinsini seçin."
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 716
 msgid ""
@@ -4880,7 +4888,7 @@ msgstr ""
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 220
 msgid "Select this to activate the sample collection workflow steps."
-msgstr ""
+msgstr "Numune toplama detaylı iş akışını etkinleştirmek için bu kutucuğu işaretleyin."
 
 # File: bika.lims/bika/lims/content/worksheettemplate.py, line: 46
 msgid "Select which Analyses should be included on the Worksheet"
@@ -4985,7 +4993,7 @@ msgstr ""
 
 # File: bika.lims/bika/lims/content/client.py, line: 81
 msgid "Show only selected categories in client views"
-msgstr ""
+msgstr "Müşteri ekranında yalnızca seçili kategorileri göster"
 
 # File: bika.lims/bika/lims/content/labcontact.py, line: 29
 msgid "Signature"
@@ -5088,7 +5096,7 @@ msgstr ""
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 120
-# File: bika.lims/bika/lims/browser/arimports.py, line: 99
+# File: bika.lims/bika/lims/browser/arimports.py, line: 98
 # File: bika.lims/bika/lims/browser/batch/batchbook.py, line: 57
 msgid "State"
 msgstr "Durum"
@@ -5132,6 +5140,12 @@ msgstr ""
 msgid "Submit"
 msgstr "Gönder"
 
+# File: bika.lims/bika/lims/exportimport/import.pt, line: 49
+msgid ""
+"Submit a valid Open XML (.XLSX) file containing Bika setup records to "
+"continue."
+msgstr ""
+
 # File: bika.lims/bika/lims/browser/analysisrequest/templates/ar_add.pt, line:
 # 258
 # File: bika.lims/bika/lims/browser/invoicebatch.py, line: 28
@@ -5144,7 +5158,7 @@ msgstr "Aratoplam"
 # File: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt,
 # line: 90
 msgid "Summary"
-msgstr ""
+msgstr "Numune Bilgileri"
 
 # File: bika.lims/bika/lims/browser/referencesample.py, line: 308
 # File: bika.lims/bika/lims/content/instrument.py, line: 55
@@ -5291,7 +5305,7 @@ msgstr "Cihazın model numarası"
 
 # File: bika.lims/bika/lims/browser/accreditation.py, line: 43
 msgid "The lab is not accredited, or accreditation has not been configured. "
-msgstr ""
+msgstr "Laboratuvar akredite değil veya akreditasyon bilgileri girilmemiş."
 
 # File: bika.lims/bika/lims/content/analysiscategory.py, line: 28
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 616
@@ -5333,7 +5347,7 @@ msgstr ""
 msgid ""
 "The name of the accreditation body corresponding to the abbreviation above, "
 "e.g. South African National Accreditation Service for SANAS"
-msgstr ""
+msgstr "Akreditasyon kurumunun kısa adı, örneğin TÜRKAK"
 
 # File: bika.lims/bika/lims/browser/reports/templates/productivity.pt, line:
 # 164
@@ -5848,27 +5862,27 @@ msgstr "Validasyon"
 
 # File: bika.lims/bika/lims/validators.py, line: 156
 msgid "Validation failed: '${keyword}': duplicate keyword"
-msgstr ""
+msgstr "Validasyon yapılamadı: '${keyword}': anahtar kelime tekrarı"
 
 # File: bika.lims/bika/lims/validators.py, line: 91
 msgid ""
 "Validation failed: '${title}': This keyword is already in use by calculation"
 " '${used_by}'"
-msgstr ""
+msgstr "Validasyon yapılamadı: '${title}': Bu anahtar kelime '${used_by}' hesaplamasında zaten kullanımda"
 
 # File: bika.lims/bika/lims/validators.py, line: 72
 msgid ""
 "Validation failed: '${title}': This keyword is already in use by service "
 "'${used_by}'"
-msgstr ""
+msgstr "Validasyon yapılamadı: '${title}': Bu anahtar kelime '${used_by}' hizmetinde zaten kullanımda"
 
 # File: bika.lims/bika/lims/validators.py, line: 160
 msgid "Validation failed: '${title}': duplicate title"
-msgstr ""
+msgstr "Validasyon yapılamadı: '${title}': başlık tekrarı"
 
 # File: bika.lims/bika/lims/validators.py, line: 35
 msgid "Validation failed: '${value}' is not unique"
-msgstr ""
+msgstr "Validasyon yapılamadı: girilen değer '${value}' özgün değil."
 
 # File: bika.lims/bika/lims/validators.py, line: 319
 msgid "Validation failed: Bearing must be E/W"
@@ -5900,7 +5914,7 @@ msgstr ""
 
 # File: bika.lims/bika/lims/validators.py, line: 238
 msgid "Validation failed: Keyword '${keyword}' is invalid"
-msgstr ""
+msgstr "Validasyon yapılamadı: Anahtar kelime '${keyword}' geçersiz"
 
 # File: bika.lims/bika/lims/validators.py, line: 534
 msgid "Validation failed: Max values must be greater than Min values"
@@ -6027,7 +6041,7 @@ msgstr ""
 msgid "Validator"
 msgstr "Onaylayan"
 
-# File: bika.lims/bika/lims/browser/arimports.py, line: 97
+# File: bika.lims/bika/lims/browser/arimports.py, line: 96
 msgid "Validity"
 msgstr "Geçerlilik"
 
@@ -6128,11 +6142,11 @@ msgstr "Evet"
 
 # File: bika.lims/bika/lims/browser/worksheetfolder.py, line: 42
 msgid "You do not have sufficient privileges to manage worksheets."
-msgstr ""
+msgstr "Çalışma sayfası yüzdesini % düzenlemek için gerekli kullanıcı izniniz yok."
 
 # File: bika.lims/bika/lims/browser/worksheet.py, line: 349
 msgid "You do not have sufficient privileges to view the worksheet %s."
-msgstr ""
+msgstr "Çalışma sayfası yüzdesini % görüntülemek için gerekli kullanıcı izniniz yok."
 
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 147
 msgid "You must assign this request to a client"
@@ -6198,31 +6212,31 @@ msgid "heading_import_ar"
 msgstr ""
 
 #. Default: "CC Emails - Invoice"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 77
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 76
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 68
 msgid "label_CCEmailsInvoice"
 msgstr ""
 
 #. Default: "CC Names - Report"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 70
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 69
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 62
 msgid "label_CCNamesReport"
 msgstr ""
 
 #. Default: "Client Reference"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 91
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 89
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 79
 msgid "label_ClientReference"
 msgstr ""
 
 #. Default: "Detail"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 232
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 229
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 192
 msgid "label_Detail"
 msgstr ""
 
 #. Default: "Order"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 87
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 85
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 76
 msgid "label_OrderID"
 msgstr ""
@@ -6233,14 +6247,9 @@ msgid "label_add_to_groups"
 msgstr ""
 
 #. Default: "Analyses"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 163
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 160
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 138
 msgid "label_analyses"
-msgstr ""
-
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 60
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 54
-msgid "label_blank"
 msgstr ""
 
 #. Default: "CC"
@@ -6256,7 +6265,7 @@ msgid "label_cccontactid"
 msgstr ""
 
 #. Default: "CC Emails - Report"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 66
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 65
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 59
 msgid "label_ccemails"
 msgstr ""
@@ -6274,13 +6283,13 @@ msgid "label_clientname"
 msgstr ""
 
 #. Default: "Client Ref"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 155
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 152
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 129
 msgid "label_clientref"
 msgstr ""
 
 #. Default: "Client Sid"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 156
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 153
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 130
 msgid "label_clientsid"
 msgstr ""
@@ -6298,25 +6307,25 @@ msgid "label_contactid"
 msgstr ""
 
 #. Default: "Container Type"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 160
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 157
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 134
 msgid "label_containertype"
 msgstr ""
 
 #. Default: "Date applied"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 121
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 119
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 104
 msgid "label_dateapplied"
 msgstr ""
 
 #. Default: "Date imported"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 116
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 114
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 100
 msgid "label_dateimported"
 msgstr ""
 
 #. Default: "File name"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 99
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 97
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 85
 msgid "label_filename"
 msgstr ""
@@ -6337,61 +6346,61 @@ msgid "label_orderid"
 msgstr ""
 
 #. Default: "Picking slip"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 159
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 156
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 133
 msgid "label_pickingslip"
 msgstr ""
 
 #. Default: "Priority"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 162
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 159
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 136
 msgid "label_priority"
 msgstr ""
 
 #. Default: "Profile"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 165
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 162
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 140
 msgid "label_profile"
 msgstr ""
 
 #. Default: "Remarks"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 265
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 262
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 223
 msgid "label_remarks"
 msgstr ""
 
 #. Default: "Report as DM"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 161
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 158
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 135
 msgid "label_report_dry_matter"
 msgstr ""
 
 #. Default: "Request ID"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 153
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 150
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 127
 msgid "label_requestid"
 msgstr ""
 
 #. Default: "Sample Date"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 157
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 154
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 131
 msgid "label_sampledate"
 msgstr ""
 
 #. Default: "Sample"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 150
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 147
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 124
 msgid "label_samplename"
 msgstr ""
 
 #. Default: "Sample Point"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 133
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 131
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 114
 msgid "label_samplepoint"
 msgstr ""
 
 #. Default: "Sample type"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 158
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 155
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 132
 msgid "label_sampletype"
 msgstr ""
@@ -6404,13 +6413,13 @@ msgid "label_specification"
 msgstr ""
 
 #. Default: "Status"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 105
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 103
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 90
 msgid "label_status"
 msgstr ""
 
 #. Default: "Valid"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 167
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 164
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 142
 msgid "label_valid"
 msgstr ""
@@ -6459,4 +6468,4 @@ msgstr "bitiş tarihi"
 
 # File: bika.lims/bika/lims/exportimport/setupdata/__init__.py, line: 29
 msgid "{0} has no '{1}' column."
-msgstr ""
+msgstr "{0} da '{1}' sütunu bulunmuyor."
