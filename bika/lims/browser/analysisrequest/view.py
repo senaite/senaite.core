@@ -408,6 +408,3 @@ class AnalysisRequestViewView(BrowserView):
             icon = priority.getBigIcon()
             if icon:
                 return '/'.join(icon.getPhysicalPath())
-
-    def getClientUID(self):
-        return self.aq_parent.UID()
