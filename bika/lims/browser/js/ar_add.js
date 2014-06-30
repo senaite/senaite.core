@@ -1444,6 +1444,8 @@ $(document).ready(function() {
         applyComboFilter(element, "getParentUID", clientuid);
         element = $("#ar_" + col + "_CCContact");
         applyComboFilter(element, "getParentUID", clientuid);
+	element = $("#ar_" + col + "_SamplePoint");
+        applyComboFilter(element, "getParentUID", clientuid);
     });
     // Initial value of contact list, set by the page's hidden ClientUID.
     for (var col = 0; col < parseInt($("#col_count").val(), 10); col++) {
@@ -1451,6 +1453,8 @@ $(document).ready(function() {
         var clientuid = $("#ar_" + col + "_Client_uid").val();
         applyComboFilter(element, "getParentUID", clientuid);
         element = $("#ar_" + col + "_CCContact");
+        applyComboFilter(element, "getParentUID", clientuid);
+        element = $("#ar_" + col + "_SamplePoint");
         applyComboFilter(element, "getParentUID", clientuid);
     }
 
