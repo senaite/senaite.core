@@ -1050,4 +1050,9 @@ div.cg-comboItem.cg-menu-item > div.cg-colItem.ui-corner-all > div.cg-DivItem {
     line-height: 70px;
 }
 
+div.LSResult {
+    position: relative;
+    top:75%;
+}
+
 </dtml-with>
