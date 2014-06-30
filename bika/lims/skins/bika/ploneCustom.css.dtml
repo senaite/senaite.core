@@ -1046,4 +1046,8 @@ a.print-16:hover {
     color: #3c3c3c !important;
 }
 
+div.cg-comboItem.cg-menu-item > div.cg-colItem.ui-corner-all > div.cg-DivItem {
+    line-height: 70px;
+}
+
 </dtml-with>
