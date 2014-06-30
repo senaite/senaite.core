@@ -22,6 +22,7 @@ from bika.lims.utils import getUsers
 from bika.lims.utils import isActive
 from bika.lims.utils import to_utf8, getHiddenAttributesForClass
 from operator import itemgetter
+from bika.lims.workflow import doActionFor
 from plone.app.layout.globals.interfaces import IViewView
 from plone.registry.interfaces import IRegistry
 from zope.component import queryUtility
@@ -44,7 +45,7 @@ class SamplePartitionsView(BikaListingView):
         self.show_column_toggles = False
         self.show_select_row = False
         self.show_select_column = True
-        self.pagesize = 1000
+        self.pagesize = 0
         self.form_id = "partitions"
 
         self.columns = {
@@ -328,14 +329,9 @@ class SampleEdit(BrowserView):
         return default_spec
 
     def __call__(self):
-        form = self.request.form
-        bc = getToolByName(self.context, 'bika_catalog')
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        checkPermission = self.context.portal_membership.checkPermission
-        getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
-        workflow = getToolByName(self.context, 'portal_workflow')
-        ars = self.context.getAnalysisRequests()
-        sample = self.context
+
+        if 'transition' in self.request.form:
+            doActionFor(self.context, self.request.form['transition'])
 
         ## render header table
         self.header_table = HeaderTableView(self.context, self.request)
@@ -458,11 +454,11 @@ class SamplesView(BikaListingView):
                                 'toggle': True},
             'getDateSampled': {'title': _('Date Sampled'),
                                'index':'getDateSampled',
-                               'toggle': not SamplingWorkflowEnabled,
+                               'toggle': SamplingWorkflowEnabled,
                                'input_class': 'datepicker_nofuture',
                                'input_width': '10'},
             'getSampler': {'title': _('Sampler'),
-                           'toggle': not SamplingWorkflowEnabled},
+                           'toggle': SamplingWorkflowEnabled},
             'getDatePreserved': {'title': _('Date Preserved'),
                                  'toggle': user_is_preserver,
                                  'input_class': 'datepicker_nofuture',
@@ -655,28 +651,6 @@ class SamplesView(BikaListingView):
             items[x]['getStorageLocation'] = obj.getStorageLocation() and obj.getStorageLocation().Title() or ''
             items[x]['AdHoc'] = obj.getAdHoc() and True or ''
 
-            samplingdate = obj.getSamplingDate()
-
-            SamplingWorkflowEnabled =\
-                self.context.bika_setup.getSamplingWorkflowEnabled()
-
-            if not samplingdate > DateTime() and SamplingWorkflowEnabled:
-                datesampled = self.ulocalized_time(obj.getDateSampled())
-                if not datesampled:
-                    datesampled = self.ulocalized_time(DateTime())
-                    items[x]['class']['getDateSampled'] = 'provisional'
-                sampler = obj.getSampler().strip()
-                if sampler:
-                    items[x]['replace']['getSampler'] = self.user_fullname(sampler)
-                if 'Sampler' in member.getRoles() and not sampler:
-                    sampler = member.id
-                    items[x]['class']['getSampler'] = 'provisional'
-            else:
-                datesampled = ''
-                sampler = ''
-            items[x]['getDateSampled'] = datesampled
-            items[x]['getSampler'] = sampler
-
             items[x]['Created'] = self.ulocalized_time(obj.created())
 
             samplingdate = obj.getSamplingDate()
@@ -696,10 +670,33 @@ class SamplesView(BikaListingView):
             if after_icons:
                 items[x]['after']['getSampleID'] = after_icons
 
+            SamplingWorkflowEnabled =\
+                self.context.bika_setup.getSamplingWorkflowEnabled()
+
+            if not samplingdate > DateTime() \
+                    and SamplingWorkflowEnabled:
+                datesampled = self.ulocalized_time(obj.getDateSampled())
+                if not datesampled:
+                    datesampled = self.ulocalized_time(DateTime())
+                    items[x]['class']['getDateSampled'] = 'provisional'
+                sampler = obj.getSampler().strip()
+                if sampler:
+                    items[x]['replace']['getSampler'] = self.user_fullname(sampler)
+                if 'Sampler' in member.getRoles() and not sampler:
+                    sampler = member.id
+                    items[x]['class']['getSampler'] = 'provisional'
+            else:
+                datesampled = ''
+                sampler = ''
+            items[x]['getDateSampled'] = datesampled
+            items[x]['getSampler'] = sampler
+
             # sampling workflow - inline edits for Sampler and Date Sampled
             checkPermission = self.context.portal_membership.checkPermission
-            if checkPermission(SampleSample, obj) \
-                and not samplingdate > DateTime():
+            state = workflow.getInfoFor(obj, 'review_state')
+            if state == 'to_be_sampled' \
+                    and checkPermission(SampleSample, obj) \
+                    and not samplingdate > DateTime():
                 items[x]['required'] = ['getSampler', 'getDateSampled']
                 items[x]['allow_edit'] = ['getSampler', 'getDateSampled']
                 samplers = getUsers(obj, ['Sampler', 'LabManager', 'Manager'])
@@ -820,8 +817,8 @@ class WidgetVisibility(_WV):
     """
     def __call__(self):
         ret = super(WidgetVisibility, self).__call__()
-
         workflow = getToolByName(self.context, 'portal_workflow')
+        sw = self.context.getSamplingWorkflowEnabled()
         state = workflow.getInfoFor(self.context, 'review_state')
 
         # header_table default visible fields
@@ -840,12 +837,19 @@ class WidgetVisibility(_WV):
                 'DateReceived',
                 'AdHoc',
                 'Composite']}
-
+        if sw:
+            ret['header_table']['visible'].extend(['Sampler', 'DateSampled'])
+            ret['header_table']['prominent'].extend(['Sampler', 'DateSampled'])
+            ret['view']['visible'].extend(['Sampler', 'DateSampled'])
         # Edit and View widgets are displayed/hidden in different workflow
         # states.  The widget.visible is used as a default.  This is placed
         # here to manage the header_table display.
-        if state in ('to_be_sampled', 'to_be_preserved', 'sample_due', ):
+        if state in ('to_be_sampled', ):
             ret['header_table']['visible'].remove('DateReceived')
+            ret['header_table']['prominent'] = [
+                'Sampler',
+                'DateSampled',
+            ]
             ret['edit']['visible'] = [
                 'AdHoc',
                 'ClientReference',
@@ -856,6 +860,26 @@ class WidgetVisibility(_WV):
                 'StorageLocation',
                 'SampleType',
                 'SamplingDate',
+                'Sampler',
+                'DateSampled',
+                'SamplingDeviation',
+            ]
+            ret['view']['visible'] = [
+                'SamplingDate',
+                'Sampler',
+                'DateSampled',
+            ]
+        elif state in ('to_be_preserved', 'sample_due', ):
+            ret['header_table']['visible'].remove('DateReceived')
+            ret['edit']['visible'] = [
+                'AdHoc',
+                'ClientReference',
+                'ClientSampleID',
+                'Composite',
+                'SampleCondition',
+                'SamplePoint',
+                'StorageLocation',
+                'SampleType',
                 'SamplingDeviation',
             ]
             ret['view']['visible'] = [

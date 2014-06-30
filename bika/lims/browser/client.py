@@ -91,8 +91,6 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                 # can't transition inactive items
                 if workflow.getInfoFor(sample, 'inactive_state', '') == 'inactive':
                     continue
-                if not checkPermission(SampleSample, sample):
-                    continue
 
                 # grab this object's Sampler and DateSampled from the form
                 # (if the columns are available and edit controls exist)

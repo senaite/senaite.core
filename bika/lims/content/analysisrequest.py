@@ -20,13 +20,17 @@ from bika.lims.permissions import *
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.browser.fields import HistoryAwareReferenceField
+from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import ReferenceWidget
+from bika.lims.browser.widgets import SelectionWidget
 from bika.lims.workflow import skip, isBasicTransitionAllowed
 from bika.lims.workflow import doActionFor
 from decimal import Decimal
 from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.utils import t, getUsers
+
+from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 
 import sys
 
@@ -224,16 +228,6 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
-    ComputedField(
-        'BatchUID',
-        expression='context.getBatch() and context.getBatch().UID() or None',
-        mode="r",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
     ReferenceField(
         'Template',
         allowed_types=('ARTemplate',),
@@ -274,6 +268,33 @@ schema = BikaSchema.copy() + Schema((
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
             showOn=True,
+        ),
+    ),
+    # Sample field
+    DateTimeField('DateSampled',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=SampleSample,
+        widget = DateTimeWidget(
+            label=_("Date Sampled"),
+            size=20,
+            visible={'edit': 'visible',
+                     'view': 'visible'},
+            render_own_label=True,
+        ),
+    ),
+    # Sample field
+    StringField('Sampler',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=SampleSample,
+        vocabulary='getSamplers',
+        widget=BikaSelectionWidget(
+            format='select',
+            label=_("Sampler"),
+            visible={'edit': 'visible',
+                     'view': 'visible'},
+            render_own_label=True,
         ),
     ),
     DateTimeField(
@@ -666,18 +687,6 @@ schema = BikaSchema.copy() + Schema((
             description=_('Enter percentage value eg. 33.0'),
             render_own_label=True,
             visible={'edit': 'invisible',
-                     'view': 'visible',
-                     'add': 'invisible'},
-        ),
-    ),
-    ComputedField(
-        'DateSampled',
-        expression="here.getSample() and here.getSample().getDateSampled() or ''",
-        mode="r",
-        read_permission=permissions.View,
-        widget=StringWidget(
-            label=_('Date Sampled'),
-            visible={'edit': 'visible',
                      'view': 'visible',
                      'add': 'invisible'},
         ),
@@ -1291,7 +1300,8 @@ class AnalysisRequest(BaseFolder):
     def setSamplingDate(self, value):
         sample = self.getSample()
         if sample and value:
-            return sample.setSamplingDate(value)
+            sample.setSamplingDate(value)
+        self.Schema()['SamplingDate'].set(self, value)
 
     security.declarePublic('getSamplingDate')
 
@@ -1299,13 +1309,47 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSamplingDate()
+        return self.Schema().getField('SamplingDate').get(self)
+
+    security.declarePublic('setSampler')
+
+    def setSampler(self, value):
+        sample = self.getSample()
+        if sample and value:
+            sample.setSampler(value)
+        self.Schema()['Sampler'].set(self, value)
+
+    security.declarePublic('getSampler')
+
+    def getSampler(self):
+        sample = self.getSample()
+        if sample:
+            return sample.getSampler()
+        return self.Schema().getField('Sampler').get(self)
+
+    security.declarePublic('setDateSampled')
+
+    def setDateSampled(self, value):
+        sample = self.getSample()
+        if sample and value:
+            sample.setDateSampled(value)
+        self.Schema()['DateSampled'].set(self, value)
+
+    security.declarePublic('getDateSampled')
+
+    def getDateSampled(self):
+        sample = self.getSample()
+        if sample:
+            return sample.getDateSampled()
+        return self.Schema().getField('DateSampled').get(self)
 
     security.declarePublic('setSamplePoint')
 
     def setSamplePoint(self, value):
         sample = self.getSample()
         if sample and value:
-            return sample.setSamplePoint(value)
+            sample.setSamplePoint(value)
+        self.Schema()['SamplePoint'].set(self, value)
 
     security.declarePublic('getSamplepoint')
 
@@ -1313,13 +1357,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSamplePoint()
+        return self.Schema().getField('SamplePoint').get(self)
 
     security.declarePublic('setSampleType')
 
     def setSampleType(self, value):
         sample = self.getSample()
         if sample and value:
-            return sample.setSampleType(value)
+            sample.setSampleType(value)
+        self.Schema()['SampleType'].set(self, value)
 
     security.declarePublic('getSampleType')
 
@@ -1327,13 +1373,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSampleType()
+        return self.Schema().getField('SampleType').get(self)
 
     security.declarePublic('setClientReference')
 
     def setClientReference(self, value):
         sample = self.getSample()
         if sample and value:
-            return sample.setClientReference(value)
+            sample.setClientReference(value)
+        self.Schema()['ClientReference'].set(self, value)
 
     security.declarePublic('getClientReference')
 
@@ -1341,13 +1389,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getClientReference()
+        return self.Schema().getField('ClientReference').get(self)
 
     security.declarePublic('setClientSampleID')
 
     def setClientSampleID(self, value):
         sample = self.getSample()
         if sample and value:
-            return sample.setClientSampleID(value)
+            sample.setClientSampleID(value)
+        self.Schema()['ClientSampleID'].set(self, value)
 
     security.declarePublic('getClientSampleID')
 
@@ -1355,13 +1405,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getClientSampleID()
+        return self.Schema().getField('ClientSampleID').get(self)
 
     security.declarePublic('setSamplingDeviation')
 
     def setSamplingDeviation(self, value):
         sample = self.getSample()
         if sample and value:
-            return sample.setSamplingDeviation(value)
+            sample.setSamplingDeviation(value)
+        self.Schema()['SamplingDeviation'].set(self, value)
 
     security.declarePublic('getSamplingDeviation')
 
@@ -1369,13 +1421,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSamplingDeviation()
+        return self.Schema().getField('SamplingDeviation').get(self)
 
     security.declarePublic('setSampleCondition')
 
     def setSampleCondition(self, value):
         sample = self.getSample()
         if sample and value:
-            return sample.setSampleCondition(value)
+            sample.setSampleCondition(value)
+        self.Schema()['SampleCondition'].set(self, value)
 
     security.declarePublic('getSampleCondition')
 
@@ -1383,13 +1437,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSampleCondition()
+        return self.Schema().getField('SampleCondition').get(self)
 
     security.declarePublic('setComposite')
 
     def setComposite(self, value):
         sample = self.getSample()
         if sample and value:
-            return sample.setComposite(value)
+            sample.setComposite(value)
+        self.Schema()['Composite'].set(self, value)
 
     security.declarePublic('getComposite')
 
@@ -1397,13 +1453,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getComposite()
+        return self.Schema().getField('Composite').get(self)
 
     security.declarePublic('setStorageLocation')
 
     def setStorageLocation(self, value):
         sample = self.getSample()
         if sample and value:
-            return sample.setStorageLocation(value)
+            sample.setStorageLocation(value)
+        self.Schema()['StorageLocation'].set(self, value)
 
     security.declarePublic('getStorageLocation')
 
@@ -1411,13 +1469,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getStorageLocation()
+        return self.Schema().getField('StorageLocation').get(self)
 
     security.declarePublic('setAdHoc')
 
     def setAdHoc(self, value):
         sample = self.getSample()
         if sample and value:
-            return sample.setAdHoc(value)
+            sample.setAdHoc(value)
+        self.Schema()['AdHoc'].set(self, value)
 
     security.declarePublic('getAdHoc')
 
@@ -1425,6 +1485,10 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getAdHoc()
+        return self.Schema().getField('AdHoc').get(self)
+
+    def getSamplers(self):
+        return getUsers(self, ['LabManager', 'Sampler'])
 
     def guard_unassign_transition(self):
         """Allow or disallow transition depending on our children's states
@@ -1518,8 +1582,9 @@ class AnalysisRequest(BaseFolder):
         return
 
     def workflow_script_sample(self):
-        if skip(self, "sample"):
-            return
+        # no skip check here: the sampling workflow UI is odd
+        # if skip(self, "sample"):
+        #     return
         # transition our sample
         workflow = getToolByName(self, 'portal_workflow')
         sample = self.getSample()

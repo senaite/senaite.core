@@ -71,8 +71,8 @@ class WinescanCSVParser(InstrumentCSVResultsFileParser):
                                    keyword: result}
 
             # Remove duplicated results
-            outvals = {key: value for key, value in values.items() \
-                       if key not in duplicated}
+            outvals = dict([(key, value) for key, value in values.items() \
+                       if key not in duplicated])
 
             # add result
             self._addRawResult(resid, outvals, True)

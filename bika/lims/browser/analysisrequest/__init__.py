@@ -86,6 +86,7 @@ class WidgetVisibility(_WV):
     def __call__(self):
         ret = super(WidgetVisibility, self).__call__()
         workflow = getToolByName(self.context, 'portal_workflow')
+        sw = self.context.bika_setup.getSamplingWorkflowEnabled()
         state = workflow.getInfoFor(self.context, 'review_state')
         if 'add' not in ret:
             ret['add'] = {}
@@ -123,7 +124,6 @@ class WidgetVisibility(_WV):
                 'SamplingDeviation',
                 'Priority',
                 'SampleCondition',
-                'DateSampled',
                 'DateReceived',
                 'DatePublished',
                 'ReportDryMatter',
@@ -132,12 +132,55 @@ class WidgetVisibility(_WV):
                 'MemberDiscount',
                 'InvoiceExclude',
                 ]}
+        if sw:
+            ret['header_table']['visible'].extend(['Sampler', 'DateSampled'])
+            ret['header_table']['prominent'].extend(['Sampler', 'DateSampled'])
         # Edit and View widgets are displayed/hidden in different workflow
         # states.  The widget.visible is used as a default.  This is placed
         # here to manage the header_table display.
-        if state in ('to_be_sampled', 'to_be_preserved', 'sample_due', ):
+        if state in ('to_be_sampled', ):
+            ret['edit']['visible'] = [
+                'Contact',
+                'CCContact',
+                'CCEmails',
+                'AdHoc',
+                'Batch',
+                'SubGroup',
+                'ClientOrderNumber',
+                'ClientReference',
+                'ClientSampleID',
+                'Composite',
+                'SampleCondition',
+                'SamplePoint',
+                'SampleType',
+                'SamplingDate',
+                'StorageLocation',
+                'SamplingDeviation',
+                'Priority',
+                'InvoiceExclude',
+            ]
+            ret['view']['visible'] = [
+                'Contact',
+                'CCContact',
+                'CCEmails',
+                'Sampler',
+                'DateSampled',
+                'MemberDiscount',
+                'Profile',
+                'ReportDryMatter',
+                'Specification',
+                'Sample',
+                'Template',
+            ]
             ret['header_table']['visible'].remove('DateReceived')
             ret['header_table']['visible'].remove('DatePublished')
+            ret['header_table']['prominent'] = ['Contact',
+                                                'CCContact',
+                                                'CCEmails']
+            if sw:
+                ret['edit']['visible'].extend(['Sampler', 'DateSampled'])
+                ret['header_table']['prominent'].extend(['Sampler', 'DateSampled'])
+        if state in ('to_be_preserved', 'sample_due', ):
             ret['edit']['visible'] = [
                 'Contact',
                 'CCContact',
@@ -162,6 +205,7 @@ class WidgetVisibility(_WV):
                 'Contact',
                 'CCContact',
                 'CCEmails',
+                'Sampler',
                 'DateSampled',
                 'MemberDiscount',
                 'Profile',
@@ -170,8 +214,9 @@ class WidgetVisibility(_WV):
                 'Sample',
                 'Template',
             ]
-        elif state in ('sample_received', ):
+            ret['header_table']['visible'].remove('DateReceived')
             ret['header_table']['visible'].remove('DatePublished')
+        elif state in ('sample_received', ):
             ret['edit']['visible'] = [
                 'Contact',
                 'CCContact',
@@ -203,11 +248,12 @@ class WidgetVisibility(_WV):
                 'SamplingDate',
                 'SamplingDeviation',
                 'Template',
+                'InvoiceExclude',
             ]
+            ret['header_table']['visible'].remove('DatePublished')
         # include this in to_be_verified - there may be verified analyses to
         # pre-publish
         elif state in ('to_be_verified', 'verified', ):
-            ret['header_table']['visible'].remove('DatePublished')
             ret['edit']['visible'] = [
                 'PublicationSpecification',
                 'StorageLocation',
@@ -238,6 +284,7 @@ class WidgetVisibility(_WV):
                 'SamplingDeviation',
                 'Template',
             ]
+            ret['header_table']['visible'].remove('DatePublished')
         elif state in ('published', ):
             ret['edit']['visible'] = [
                 'StorageLocation',
@@ -370,8 +417,9 @@ class mailto_link_from_contacts:
             contacts = [contacts, ]
         ret = []
         for contact in contacts:
-            mailto = "<a href='mailto:%s'>%s</a>" % (
-                contact.getEmailAddress(), contact.getFullname())
+            if contact:
+                mailto = "<a href='mailto:%s'>%s</a>" % (
+                    contact.getEmailAddress(), contact.getFullname())
             ret.append(mailto)
         return ",".join(ret)
 

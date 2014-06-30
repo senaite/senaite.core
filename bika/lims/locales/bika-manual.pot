@@ -78,7 +78,34 @@ msgstr ""
 msgid "Parent"
 msgstr ""
 
-msgid "DefaultARSpecs_description"
-msgstr "Choose the default specifications used for all AR views "
-"to display alerts and notifications.  These will also be applied when an AR "
-"is published in permanent media, e.g. PDF. "
+msgid "bika_manual_test"
+msgstr "Bika Manual Test"
+
+# worksheet.js
+
+msgid "Add Remark"
+msgstr ""
+
+msgid "Info"
+msgstr ""
+
+msgid "Invalid instruments are not shown: ${invalid_list}"
+msgstr ""
+
+msgid "Manual entry of results for method ${methodname} is not allowed"
+msgstr ""
+
+msgid "Manual entry of results for method {methodname} is not allowed and no valid instruments found: ${invalid_list}"
+msgstr ""
+
+msgid "No valid instruments found: ${invalid_list}"
+msgstr ""
+
+msgid "Only the analyses for which the selected instrument is allowed will be added automatically."
+msgstr ""
+
+msgid "Unable to apply the selected instrument"
+msgstr ""
+
+msgid "Unable to load instruments: ${invalid_list}"
+msgstr ""

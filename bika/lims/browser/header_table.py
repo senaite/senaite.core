@@ -1,12 +1,16 @@
 """ARs and Samples use HeaderTable to display object fields in their custom
 view and edit screens.
 """
+from Products.CMFCore.utils import getToolByName
 
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IHeaderTableFieldRenderer
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.CMFPlone import PloneMessageFactory as _p
 from bika.lims.utils import getHiddenAttributesForClass
+from bika.lims.workflow import doActionFor
+from bika.lims.utils import t
+from bika.lims import bikaMessageFactory as _
 from zope.component import getAdapter
 from AccessControl import getSecurityManager
 from AccessControl.Permissions import view
@@ -67,13 +71,27 @@ class HeaderTableView(BrowserView):
                    'mode': 'structure',
                    'html': adapter(field)}
         else:
-            if field.getType().find("Reference") > -1:
-                targets = field.get(self.context)
+            if field.getType().find("ool") > -1:
+                value = field.get(self.context)
+                ret = {'fieldName': fieldname,
+                       'mode': 'structure',
+                       'html': t(_('Yes')) if value else t(_('No'))
+                }
+            elif field.getType().find("Reference") > -1:
+                # Prioritize method retrieval over schema's field
+                targets = None
+                if hasattr(self.context, 'get%s' % fieldname):
+                    fieldaccessor = getattr(self.context, 'get%s' % fieldname)
+                    if callable(fieldaccessor):
+                        targets = fieldaccessor()
+                if not targets:
+                    targets = field.get(self.context)
+
                 if targets:
                     if not type(targets) == list:
                         targets = [targets,]
                     sm = getSecurityManager()
-                    if all([sm.checkPermission(view, t) for t in targets]):
+                    if all([sm.checkPermission(view, ta) for ta in targets]):
                         a = ["<a href='%s'>%s</a>" % (target.absolute_url(),
                                                       target.Title())
                              for target in targets]
@@ -83,7 +101,7 @@ class HeaderTableView(BrowserView):
                     else:
                         ret = {'fieldName': fieldname,
                                'mode': 'structure',
-                               'html': ", ".join([t.Title() for t in targets])}
+                               'html': ", ".join([ta.Title() for ta in targets])}
                 else:
                     ret = {'fieldName': fieldname,
                            'mode': 'structure',
@@ -112,10 +130,10 @@ class HeaderTableView(BrowserView):
         # Prominent fields get appended
         prominent_fieldnames = new_wv.get('header_table', {}).get('prominent', [])
         for fieldname in prominent_fieldnames:
-            if fieldname in view_fields:
-                prominent.append(self.render_field_view(fieldname))
-            elif fieldname in edit_fields:
+            if fieldname in edit_fields:
                 prominent.append({'fieldName': fieldname, 'mode': "edit"})
+            elif fieldname in view_fields:
+                prominent.append(self.render_field_view(fieldname))
         # Other visible fields get appended
         visible_fieldnames = new_wv.get('header_table', {}).get('visible', [])
         for fieldname in visible_fieldnames:

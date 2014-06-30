@@ -643,6 +643,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         analyses = self.getAnalyses()
         priorities = []
         for analysis in analyses:
+            if not hasattr(analysis, 'getPriority'):
+                continue
             if analysis.getPriority():
                 priorities.append(analysis.getPriority())
         priorities = sorted(priorities, key = itemgetter('sortKey'))

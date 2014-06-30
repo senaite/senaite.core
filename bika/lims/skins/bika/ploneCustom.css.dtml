@@ -836,7 +836,11 @@ div.alert {
     margin: 10px 0;
     padding: 10px;
 }
+
 /* ARImport */
+.icons-on .section-arimports .contenttype-folder{
+    background: no-repeat transparent url(&dtml-portal_url;/++resource++bika.lims.images/arimport.png);
+}
 table.arimport {
   border-top: 1px solid #dddddd;
 }
@@ -1040,6 +1044,15 @@ a.print-16 {
 }
 a.print-16:hover {
     color: #3c3c3c !important;
+}
+
+div.cg-comboItem.cg-menu-item > div.cg-colItem.ui-corner-all > div.cg-DivItem {
+    height: 70px;
+}
+
+div.LSResult {
+    position: relative;
+    top:75%;
 }
 
 </dtml-with>

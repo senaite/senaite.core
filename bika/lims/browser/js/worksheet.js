@@ -122,53 +122,62 @@ $(document).ready(function(){
         $(this).parents('form').submit();
     })
 
-    // add_analyses analysis search is handled by bika_listing default __call__
-    $('.ws-analyses-search-button').live('click', function(event) {
-        // in this context we already know there is only one bika-listing-form
-        form_id = "list";
-        form = $("#list");
+	// add_analyses analysis search is handled by bika_listing default __call__
+	$('.ws-analyses-search-button').live('click', function (event) {
+		// in this context we already know there is only one bika-listing-form
+		var form_id = "list";
+		var form = $("#list");
 
-        // request new table content by re-routing bika_listing_table form submit
-        stored_form_action = $(form).attr("action");
-        $(form).attr("action", window.location.href);
-        $(form).append("<input type='hidden' name='table_only' value='"+form_id+"'>");
+		// request new table content by re-routing bika_listing_table form submit
+		$(form).append("<input type='hidden' name='table_only' value='" + form_id + "'>");
+		// dropdowns are printed in ../templates/worksheet_add_analyses.pt
+		// We add <formid>_<index>=<value>, which are checked in bika_listing.py
+		var filter_indexes = ['getCategoryTitle', 'Title', 'getClientTitle'];
+		var i, fi;
+		for (i = 0; i < filter_indexes.length; i++) {
+			fi = form_id + "_" + filter_indexes[i];
+			var value = $("[name='" + fi + "']").val();
+			if (value == undefined || value == null || value == 'any') {
+				$("#list > [name='" + fi + "']").remove();
+				$.query.REMOVE(fi);
+			}
+			else {
+				$(form).append("<input type='hidden' name='" + fi + "' value='" + value + "'>");
+				$.query.SET(fi, value);
+			}
+		}
 
-        // dropdowns are printed in ../templates/worksheet_add_analyses.pt
-        // We add list_<bika_analysis_catalog args>, which go
-        // into contentFilter in bika_listing.py
-        getCategoryTitle = $("[name='list_getCategoryTitle']").val();
-        Title = $("[name='list_Title']").val();
-        getClientTitle = $("[name='list_getClientTitle']").val();
-        if (getCategoryTitle != 'any')
-            $(form).append("<input type='hidden' name='list_getCategoryTitle' value='"+getCategoryTitle+"'>");
-        if (Title != 'any')
-            $(form).append("<input type='hidden' name='list_Title' value='"+Title+"'>");
-        if (getClientTitle != 'any')
-            $(form).append("<input type='hidden' name='list_getClientTitle' value='"+getClientTitle+"'>");
+		var options = {
+			target: $('.bika-listing-table'),
+			replaceTarget: true,
+			data: form.formToArray(),
+			success: function () {
+			}
+		}
+		var url = window.location.href.split("?")[0].split("/add_analyses")[0];
+		url = url + "/add_analyses" + $.query.toString();
+		window.history.replaceState({}, window.document.title, url);
 
-        options = {
-            target: $('.bika-listing-table'),
-            replaceTarget: true,
-            data: form.formToArray(),
-            success: function(){
-            }
-        }
-        form.ajaxSubmit(options);
+		var stored_form_action = $(form).attr("action");
+		$(form).attr("action", window.location.href);
+		form.ajaxSubmit(options);
 
-        $("[name='table_only']").remove();
-        $("#list > [name='list_getCategoryTitle']").remove();
-        $("#list > [name='list_Title']").remove();
-        $("#list > [name='list_getClientTitle']").remove();
-        $(form).attr("action", stored_form_action);
-        return false;
-    });
+		for (i = 0; i < filter_indexes.length; i++) {
+			fi = form_id + "_" + filter_indexes[i];
+			$("#list > [name='" + fi + "']").remove();
+		}
+		$(form).attr("action", stored_form_action);
+		$("[name='table_only']").remove();
+
+		return false;
+	});
 
     function portalMessage(message) {
         window.jarn.i18n.loadCatalog("bika");
         _ = jarn.i18n.MessageFactory('bika');
         str = "<dl class='portalMessage info'>"+
             "<dt>"+_('Info')+"</dt>"+
-            "<dd><ul>" + _(message) +
+            "<dd><ul>" + message +
             "</ul></dd></dl>";
         $('.portalMessage').remove();
         $(str).appendTo('#viewlet-above-content');
@@ -184,7 +193,9 @@ $(document).ready(function(){
           data: {'value': $(this).val(),
                  '_authenticator': $('input[name="_authenticator"]').val()},
           success: function(data, textStatus, jqXHR){
-               portalMessage("Changes saved.");
+               window.jarn.i18n.loadCatalog("plone");
+               _p = jarn.i18n.MessageFactory('plone');
+               portalMessage(_p("Changes saved."));
           }
         });
     });
@@ -201,7 +212,9 @@ $(document).ready(function(){
           data: {'value': instruid,
                   '_authenticator': $('input[name="_authenticator"]').val()},
           success: function(data, textStatus, jqXHR){
-               portalMessage("Changes saved.");
+			   window.jarn.i18n.loadCatalog("plone");
+			   _p = jarn.i18n.MessageFactory('plone');
+               portalMessage(_p("Changes saved."));
                // Set the selected instrument to all the analyses which
                // that can be done using that instrument. The rest of
                // of the instrument picklist will not be changed
@@ -284,7 +297,7 @@ $(document).ready(function(){
                 $(instrselector).closest('tr').find('td.Result input').prop('disabled', !m_manualentry);
                 if (!m_manualentry) {
                     // This method doesn't allow the manual entry of Results
-                    var title = _("Manual entry of results for method %s is not allowed").replace('%s', method.Title);
+                    var title = _("Manual entry of results for method ${methodname} is not allowed", {methodname: method.Title});
                     $(instrselector).closest('tr').find('td.Result input').parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+title+'")">');
                 }
 
@@ -347,17 +360,18 @@ $(document).ready(function(){
 
                             if (valid) {
                                 // At least one instrument valid found too
-                                var title = _("Invalid instruments are not shown: ") + invalid.join(", ");
+                                var title = _("Invalid instruments are not shown: ${invalid_list}", {invalid_list: invalid.join(", ")});
                                 $(instrselector).parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+title+'")">');
 
                             } else if (m_manualentry) {
                                 // All instruments found are invalid, but manual entry is allowed
-                                var title = _("No valid instruments found: ") + invalid.join(", ");
+                                var title = _("No valid instruments found: ${invalid_list}", {invalid_list: invalid.join(", ")});
                                 $(instrselector).parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
 
                             } else {
                                 // All instruments found are invalid and manual entry not allowed
-                                var title = _("Manual entry of results for method %s is not allowed and no valid instruments found: ").replace('%s', methodname) + invalid.join(", ");
+                                var title = _("Manual entry of results for method {methodname} is not allowed and no valid instruments found: ${invalid_list}",
+											  {methodname:  method.Title, invalid_list:invalid.join(", ")});
                                 $(instrselector).parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
                                 $(instrselector).closest('tr').find('td.interim input').prop('disabled', true);
                                 $(instrselector).closest('tr').find('td.Result input').prop('disabled', true);
@@ -368,7 +382,7 @@ $(document).ready(function(){
                         $(instrselector).append('<option value="">'+_('None')+'</option>');
                         $(instrselector).val("");
                         if (!m_manualentry) {
-                            var title = _("Unable to load instruments: ")+invalid.join(", ");
+                            var title = _("Unable to load instruments: ${invalid_list}", {invalid_list: invalid.join(", ")});
                             $(instrselector).parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
                             $(instrselector).prop('disabled', true);
                         } else {
@@ -418,18 +432,18 @@ $(document).ready(function(){
                     // At least one instrument is invalid (out-of-date or qc-fail)
                     if (valid) {
                         // At least one instrument valid found too
-                        var title = _("Invalid instruments are not shown: ")+invalid.join(", ");
+                        var title = _("Invalid instruments are not shown: ${invalid_list}", {invalid_list: invalid.join(", ")});
                         $(instrselector).parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+title+'")">');
                     } else {
                         // All instruments found are invalid
-                        var title = _("No valid instruments found: ").replace('%s', methodname) + invalid.join(", ");
+                        var title = _("No valid instruments found: ${invalid_list}", {invalid_list: invalid.join(", ")});
                         $(instrselector).parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
                     }
                 }
             }).fail(function() {
                 $(instrselector).append('<option value="">'+_('None')+'</option>');
                 $(instrselector).val('');
-                var title = _("Unable to load instruments: ")+invalid.join(", ");
+                var title = _("Unable to load instruments: ${invalid_list}", {invalid_list: invalid.join(", ")});
                 $(instrselector).parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
                 $(instrselector).prop('disabled', true);
             });

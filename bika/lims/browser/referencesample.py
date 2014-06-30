@@ -222,7 +222,7 @@ class ReferenceResultsView(BikaListingView):
         self.show_select_row = False
         self.show_workflow_action_buttons = False
         self.show_select_column = False
-        self.pagesize = 1000
+        self.pagesize = 0
 
         self.columns = {
             'Service': {'title': _('Service')},

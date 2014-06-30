@@ -59,13 +59,12 @@ class ARImportView(BrowserView):
                 self.context.aq_parent, 'review_state') == 'submitted'
 
 
-class GlobalARImportsView(BikaListingView):
+class BaseARImportsView(BikaListingView):
     implements(IViewView)
 
     def __init__(self, context, request):
-        super(GlobalARImportsView, self).__init__(context, request)
+        super(BaseARImportsView, self).__init__(context, request)
         request.set('disable_plone.rightcolumn', 1)
-        request.set('disable_border', 1)
 
         self.catalog = "portal_catalog"
         self.contentFilter = {
@@ -167,7 +166,14 @@ class GlobalARImportsView(BikaListingView):
         pass
 
 
-class ClientARImportsView(GlobalARImportsView):
+class GlobalARImportsView(BaseARImportsView):
+
+    def __init__(self, context, request):
+        super(GlobalARImportsView, self).__init__(context, request)
+        request.set('disable_border', 1)
+
+
+class ClientARImportsView(BaseARImportsView):
 
     def __init__(self, context, request):
         super(ClientARImportsView, self).__init__(context, request)

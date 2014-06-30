@@ -1164,6 +1164,7 @@ function setTemplate(column, template_title){
 						e = $(".partnr_"+service_uid).filter("[column='"+column+"']");
 						$(e).empty().append(partnr);
 					}
+					recalc_prices(column);
 				}
 			}
 		});
@@ -1428,6 +1429,7 @@ $(document).ready(function() {
 		};
 		$("#analysisrequest_edit_form").ajaxForm(options);
 	}
+
 
 	// these go here so that popup windows can access them in our context
 	window.recalc_prices = recalc_prices;

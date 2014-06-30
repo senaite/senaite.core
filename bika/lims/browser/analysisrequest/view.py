@@ -39,6 +39,8 @@ class AnalysisRequestViewView(BrowserView):
     def __call__(self):
         ar = self.context
         workflow = getToolByName(self.context, 'portal_workflow')
+        if 'transition' in self.request.form:
+            doActionFor(self.context, self.request.form['transition'])
         # Contacts get expanded for view
         contact = self.context.getContact()
         contacts = []
@@ -60,7 +62,7 @@ class AnalysisRequestViewView(BrowserView):
             cc_emails.append(cc)
             cc_hrefs.append("<a href='mailto:%s'>%s</a>" % (cc, cc))
         # render header table
-        self.header_table = HeaderTableView(self.context, self.request)
+        self.header_table = HeaderTableView(self.context, self.request)()
         # Create Partitions View for this ARs sample
         p = SamplePartitionsView(self.context.getSample(), self.request)
         p.show_column_toggles = False
@@ -245,8 +247,10 @@ class AnalysisRequestViewView(BrowserView):
         return res
 
     def getRestrictedCategories(self):
-        if self.context.portal_type == 'Client':
-            return self.context.getRestrictedCategories()
+        # we are in portal_factory AR context right now
+        parent = self.context.aq_parent
+        if hasattr(parent, "getRestrictedCategories"):
+            return parent.getRestrictedCategories()
         return []
 
     def Categories(self):
@@ -269,8 +273,10 @@ class AnalysisRequestViewView(BrowserView):
         return cats
 
     def getDefaultCategories(self):
-        if self.context.portal_type == 'Client':
-            return self.context.getDefaultCategories()
+        # we are in portal_factory AR context right now
+        parent = self.context.aq_parent
+        if hasattr(parent, "getDefaultCategories"):
+            return parent.getDefaultCategories()
         return []
 
     def DefaultCategories(self):
