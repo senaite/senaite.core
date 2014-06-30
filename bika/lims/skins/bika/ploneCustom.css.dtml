@@ -1047,7 +1047,7 @@ a.print-16:hover {
 }
 
 div.cg-comboItem.cg-menu-item > div.cg-colItem.ui-corner-all > div.cg-DivItem {
-    line-height: 70px;
+    height: 70px;
 }
 
 div.LSResult {
