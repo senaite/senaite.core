@@ -7,7 +7,7 @@ from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.interfaces import IResultOutOfRange
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import getAdapters
-import sys, traceback
+import os, sys, traceback
 
 class AnalysisRequestPublishView(BrowserView):
     template = ViewPageTemplateFile("templates/analysisrequest_publish.pt")
@@ -19,6 +19,10 @@ class AnalysisRequestPublishView(BrowserView):
                   'title': 'A4 Default' },
                  {'id': 'A4_custom_01.pt',
                   'title': 'A4 Custom' } ]
+
+    def getAvailableStyles(self):
+        return [ {'id': 'default.css',
+                  'title': 'Default' } ]
 
     def __call__(self):
         self._ars = [self.context, self.context]
@@ -44,6 +48,15 @@ class AnalysisRequestPublishView(BrowserView):
             return "<div class='error'>%s '%s':<pre>%s</pre></div>" % (_("Unable to load the template"), embedt, tbex)
         self._nextAnalysisRequest()
 
+    def getReportStyle(self):
+        this_dir = os.path.dirname(os.path.abspath(__file__))
+        templates_dir = os.path.join(this_dir, 'templates/reports')
+        css = self.request.get('sel_style', 'default.css')
+        path = '%s/%s' % (templates_dir, css)
+        content = ''
+        with open(path, 'r') as content_file:
+            content = content_file.read()
+        return content;
 
     def _ar_data(self, ar):
         data = {'obj': ar,

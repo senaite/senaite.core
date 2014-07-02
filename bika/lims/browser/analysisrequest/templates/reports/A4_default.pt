@@ -340,5 +340,5 @@
 </div>
 
 <div class="footer" tal:content="structure analysisrequest/footer"></div>
-
+<div class="page-break"></div>
 </tal:report>
