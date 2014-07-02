@@ -84,9 +84,15 @@ class AnalysisRequestPublishView(BrowserView):
         data['batch'] = self._batch_data(ar)
         data['specifications'] = self._specs_data(ar)
         data['analyses'] = self._analyses_data(ar, ['verified', 'published'])
+        data['qcanalyses'] = self._qcanalyses_data(ar, ['verified', 'published'])
         data['points_of_capture'] = sorted(set([an['point_of_capture'] for an in data['analyses']]))
         data['categories'] = sorted(set([an['category'] for an in data['analyses']]))
-        # Categorized analyses
+        data['haspreviousresults'] = len([an['previous_results'] for an in data['analyses'] if an['previous_results']]) > 0
+        data['hasblanks'] = len([an['reftype'] for an in data['qcanalyses'] if an['reftype'] == 'b']) > 0
+        data['hascontrols'] = len([an['reftype'] for an in data['qcanalyses'] if an['reftype'] == 'c']) > 0
+        data['hasduplicates'] = len([an['reftype'] for an in data['qcanalyses'] if an['reftype'] == 'd']) > 0
+
+        # Categorize analyses
         data['categorized_analyses'] = {}
         for an in data['analyses']:
             poc = an['point_of_capture']
@@ -94,9 +100,22 @@ class AnalysisRequestPublishView(BrowserView):
             pocdict = data['categorized_analyses'].get(poc, {})
             catlist = pocdict.get(cat, [])
             catlist.append(an)
-            pocdict[poc] = catlist
+            pocdict[cat] = catlist
             data['categorized_analyses'][poc] = pocdict
-        data['haspreviousresults'] = len([an['previous_results'] for an in data['analyses'] if an['previous_results']]) > 0
+
+        # Categorize qcanalyses
+        data['categorized_qcanalyses'] = {}
+        for an in data['qcanalyses']:
+            qct = an['reftype']
+            poc = an['point_of_capture']
+            cat = an['category']
+            qcdict = data['categorized_qcanalyses'].get(qct, {})
+            pocdict = qcdict.get(poc, {})
+            catlist = pocdict.get(cat, [])
+            catlist.append(an)
+            pocdict[cat] = catlist
+            qcdict[poc] = pocdict
+            data['categorized_qcanalyses'][qct] = qcdict
         data['reporter'] = self._reporter_data(ar)
 
         portal = self.context.portal_url.getPortalObject()
@@ -297,18 +316,42 @@ class AnalysisRequestPublishView(BrowserView):
                   'remarks': to_utf8(analysis.getRemarks()),
                   'resultdm': to_utf8(analysis.getResultDM()),
                   'outofrange': False,
+                  'type': analysis.portal_type,
+                  'reftype': analysis.getReferenceType() \
+                            if hasattr(analysis, 'getReferenceType')
+                            else None,
+                  'worksheet': None,
                   'specs': {},
                   'formatted_specs': ''}
 
+        if analysis.portal_type == 'DuplicateAnalysis':
+            andict['reftype'] = 'd'
+
+        ws = analysis.getBackReferences('WorksheetAnalysis')
+        andict['worksheet'] = ws[0].id if ws and len(ws) > 0 else None
+        andict['worksheet_url'] = ws[0].absolute_url if ws and len(ws) > 0 else None
+        andict['refsample'] = analysis.getSample().id \
+                            if analysis.portal_type == 'Analysis' \
+                            else '%s - %s' % (analysis.aq_parent.id, analysis.aq_parent.Title())
+
         # Which analysis specs must be used?
         # Try first with those defined at AR Publish Specs level
-        ar = analysis.aq_parent
-        specs = ar.getPublicationSpecification()
-        if not specs or keyword not in specs.getResultsRangeDict():
-            specs = analysis.getAnalysisSpecs()
+        if analysis.portal_type == 'ReferenceAnalysis':
+            # The analysis is a Control or Blank. We might use the
+            # reference results instead other specs
+            uid = analysis.getServiceUID()
+            specs = analysis.aq_parent.getResultsRangeDict().get(uid, {})
 
-        specs = specs.getResultsRangeDict().get(keyword, {}) \
-                if specs else {}
+        elif analysis.portal_type == 'DuplicateAnalysis':
+            specs = analysis.getAnalysisSpecs();
+
+        else:
+            ar = analysis.aq_parent
+            specs = ar.getPublicationSpecification()
+            if not specs or keyword not in specs.getResultsRangeDict():
+                specs = analysis.getAnalysisSpecs()
+            specs = specs.getResultsRangeDict().get(keyword, {}) \
+                    if specs else {}
 
         andict['specs'] = specs
         andict['formatted_result'] = analysis.getFormattedResult(specs)
@@ -330,6 +373,23 @@ class AnalysisRequestPublishView(BrowserView):
                     andict['outofrange'] = True
                     break
         return andict
+
+    def _qcanalyses_data(self, ar, analysis_states=['verified', 'published']):
+        analyses = []
+        batch = ar.getBatch()
+        workflow = getToolByName(self.context, 'portal_workflow')
+        for an in ar.getQCAnalyses(review_state=analysis_states):
+
+            # Build the analysis-specific dict
+            andict = self._analysis_data(an)
+
+            # Are there previous results for the same AS and batch?
+            andict['previous'] = []
+            andict['previous_results'] = ""
+
+            analyses.append(andict)
+        analyses.sort(lambda x, y: cmp(x.get('title').lower(), y.get('title').lower()))
+        return analyses
 
     def _reporter_data(self, ar):
         data = {}

@@ -23,13 +23,16 @@
                         sample          analysisrequest/sample;
                         batch           analysisrequest/batch;
                         analyses        analysisrequest/analyses;
+                        qcanalyses      analysisrequest/qcanalyses;
                         specifications  analysisrequest/specifications;
                         reporter        analysisrequest/reporter;
                         pointsofcapture analysisrequest/points_of_capture;
                         categories      analysisrequest/categories;
                         categanalyses   analysisrequest/categorized_analyses;
-                        hasprevresults  analysisrequest/haspreviousresults;
+                        categqcanalyses analysisrequest/categorized_qcanalyses;
+                        hasqcanalyses   python:len(qcanalyses) &gt; 0;
                         reportdrymatter analysisrequest/report_drymatter;
+                        hasprevresults  analysisrequest/haspreviousresults;
                         remarksenabled  python:view.context.bika_setup.getEnableAnalysisRemarks();">
 
 <!-- Report header -->
@@ -224,7 +227,7 @@
                     <span tal:replace="analysis/formatted_specs">50 - 60</span>
                 </td>
                 <td class="outofrange">
-                    <span tal:replace="python:'*' if analysis['outofrange'] else ''"></span>
+                    <span tal:replace="python:'*' if analysis['outofrange']==True else ''"></span>
                 </td>
             </tr>
             <tr tal:condition="python:remarksenabled==True and analysis['remarks']">
@@ -243,8 +246,68 @@
 </div>
 
 <!-- QC Results section -->
-<div id="section-qcresults">
-     <!-- TODO -->
+<div id="section-qcresults" tal:condition="hasqcanalyses">
+    <h1 i18n:translate="">QC Results</h1>
+    <table>
+        <tal:qctypes repeat="qctype python:categqcanalyses.keys()">
+        <tal:qctype define="blank python:qctype=='b';
+                            control python:qctype=='c';
+                            duplicate python:qctype=='d';
+                            qctype_tblid python: 'blank-analyses' if blank else ('control-analyses' if control else 'duplicate-analysis');">
+        <h2 tal:condition="python:qctype=='b'" i18n:translate="">Blank analyses</h2>
+        <h2 tal:condition="python:qctype=='c'" i18n:translate="">Control analyses</h2>
+        <h2 tal:condition="python:qctype=='d'" i18n:translate="">Duplicate analyses</h2>
+        <tal:poc tal:repeat="poc python:categqcanalyses.get(qctype,{}).keys()">
+        <tal:cat tal:repeat="cat python:categqcanalyses.get(qctype,{}).get(poc, {}).keys()">
+        <table tal:attributes="id python:qctype_tblid">
+            <thead>
+                <tr>
+                    <th class="analysis"><span tal:content='python: cat'>Category: Vitamin D</span></th>
+                    <th class="result"><span i18n:translate="">Result</span></th>
+                    <th class="dryresult" tal:condition="analysisrequest/report_drymatter"><span i18n:translate="">Dry</span></th>
+                    <th class="specs"><span i18n:translate="">Value Range</span></th>
+                    <th class="refsample" tal:condition='python: duplicate==False'><span i18n:translate="">Reference Sample</span></th>
+                    <th class="worksheet"><span i18n:translate="">Worksheet</span></th>
+                    <th class="outofrange"></th>
+                </tr>
+            </thead>
+            <tbody>
+            <tal:analyses tal:repeat="analysis python:categqcanalyses[qctype][poc][cat]">
+            <tal:analysis tal:define="analysis_css_result python:'outofrange' if analysis['outofrange'] else '';
+                                      analysis_css_accredited python:'accredited' if analysis['accredited'] else '';
+                                      analysis_css_retested python:'retested' if analysis['retested'] else '';">
+            <tr tal:attributes="class python:'%s %s %s' % (analysis_css_result, analysis_css_accredited, analysis_css_retested);">
+                <td class="analysis">
+                    <span tal:content="analysis/title">Total 25-OHD</span>
+                </td>
+                <td>
+                    <span class="result" tal:content="analysis/formatted_result">23</span>
+                    <span class="units" tal:content="analysis/unit|nothing"></span>
+                </td>
+                <td class="dryresult" tal:condition="python: reportdrymatter and analysis/resultdm">
+                    <span tal:content="string:${analysis/resultdm}  ${analysis/unit|nothing}">23</span>
+                </td>
+                <td class="specs">
+                    <span tal:condition="analysis/uncertainty"
+                          tal:replace="string:[+/- ${analysis/uncertainty}] "></span>
+                    <span tal:replace="python:'(RT) ' if analysis['retested'] else ''"></span>
+                    <span tal:replace="analysis/formatted_specs">50 - 60</span>
+                </td>
+                <td class="refsample" tal:content="analysis/refsample">QC13-0001 - Vit D Blank</td>
+                <td class="worksheet"><a tal:attributes="href analysis/worksheet_url" tal:content="analysis/worksheet">WS13-0001</a></td>
+                <td class="outofrange">
+                    <span tal:replace="python:'*' if analysis['outofrange']==True else ''"></span>
+                </td>
+            </tr>
+            </tal:analysis>
+            </tal:analyses>
+            </tbody>
+        </table>
+        </tal:cat>
+        </tal:poc>
+        </tal:qctype>
+        </tal:qctypes>
+    </table>
 </div>
 
 <!--  Remarks section -->
