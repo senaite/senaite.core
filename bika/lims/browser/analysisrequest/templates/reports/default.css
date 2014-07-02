@@ -3,18 +3,8 @@
     font-size:12px;
 }
 
-html {
-    background-color:#efefef;
-}
-html, body {
-    margin: 0;
-    padding: 0;
-}
 body {
     width: 210mm;
-    padding: 10px 10px 0px 20px;
-    margin: 10px auto;
-    background-color:#fff;
 }
 
 h1 {
