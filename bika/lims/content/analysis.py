@@ -933,7 +933,10 @@ class Analysis(BaseContent):
                 else:
                     if not "retract all analyses" in self.REQUEST['workflow_skiplist']:
                         self.REQUEST["workflow_skiplist"].append("retract all analyses")
-                    workflow.doActionFor(ws, "retract")
+                    try:
+                        workflow.doActionFor(ws, "retract")
+                    except WorkflowException:
+                        pass
             # Add to worksheet Analyses
             analyses = list(ws.getAnalyses())
             analyses += [analysis, ]

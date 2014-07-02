@@ -628,6 +628,8 @@ class ManageResultsView(BrowserView):
         if checkUserAccess(self.context, self.request) == False:
             return []
 
+        rejected_alerts(self.context)
+
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
 
         # Worksheet Attachmemts
@@ -869,6 +871,8 @@ class AddAnalysesView(BikaListingView):
         if checkUserManage(self.context, self.request) == False:
             return []
 
+        rejected_alerts(self.context)
+
         translate = self.context.translate
 
         form_id = self.form_id
@@ -899,6 +903,7 @@ class AddAnalysesView(BikaListingView):
             return self.template()
 
     def folderitems(self):
+
         items = BikaListingView.folderitems(self)
         mtool = getToolByName(self.context, 'portal_membership')
         member = mtool.getAuthenticatedMember()
@@ -972,6 +977,23 @@ class AddAnalysesView(BikaListingView):
                    inactive_state = 'active',
                    sort_on = 'sortable_title')]
 
+def rejected_alerts(ws):
+    if hasattr(ws, 'replaced_by'):
+        uc = getToolByName(ws, 'uid_catalog')
+        uid = getattr(ws, 'replaced_by')
+        _ws = uc(UID=uid)[0].getObject()
+        msg = _("This worksheet has been rejected.  The replacement worksheet is ${ws_id}",
+                mapping={'ws_id':_ws.getId()})
+        ws.plone_utils.addPortalMessage(msg)
+    if hasattr(ws, 'replaces_rejected_worksheet'):
+        uc = getToolByName(ws, 'uid_catalog')
+        uid = getattr(ws, 'replaces_rejected_worksheet')
+        _ws = uc(UID=uid)[0].getObject()
+        msg = _("This worksheet has been created to replace the rejected "
+                "worksheet at ${ws_id}",
+                mapping={'ws_id':_ws.getId()})
+        ws.plone_utils.addPortalMessage(msg)
+
 
 class AddBlankView(BrowserView):
     implements(IViewView)
@@ -992,6 +1014,8 @@ class AddBlankView(BrowserView):
         # Deny access to foreign analysts
         if checkUserManage(self.context, self.request) == False:
             return []
+
+        rejected_alerts(self.context)
 
         form = self.request.form
         if 'submitted' in form:
@@ -1047,6 +1071,8 @@ class AddControlView(BrowserView):
         if checkUserManage(self.context, self.request) == False:
             return []
 
+        rejected_alerts(self.context)
+
         form = self.request.form
         if 'submitted' in form:
             rc = getToolByName(self.context, REFERENCE_CATALOG)
@@ -1100,6 +1126,8 @@ class AddDuplicateView(BrowserView):
         # Deny access to foreign analysts
         if checkUserManage(self.context, self.request) == False:
             return []
+
+        rejected_alerts(self.context)
 
         form = self.request.form
         if 'submitted' in form:

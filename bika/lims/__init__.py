@@ -89,6 +89,7 @@ def initialize(context):
     from content.referencedefinition import ReferenceDefinition
     from content.referencesample import ReferenceSample
     from content.referencesamplesfolder import ReferenceSamplesFolder
+    from content.rejectanalysis import RejectAnalysis
     from content.report import Report
     from content.reportfolder import ReportFolder
     from content.sample import Sample
