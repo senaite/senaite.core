@@ -1444,9 +1444,13 @@ $(document).ready(function() {
         applyComboFilter(element, "getParentUID", clientuid);
         element = $("#ar_" + col + "_CCContact");
         applyComboFilter(element, "getParentUID", clientuid);
-        // Apply filters sample points by client
+        // Filter sample points by client
         element = $("#ar_" + col + "_SamplePoint");
         applyComboFilter(element, "getClientUID", clientuid);
+	// Filter template by client
+        element = $("#ar_" + col + "_SamplePoint");
+        applyComboFilter(element, "getClientUID", clientuid);
+
     });
     // Iterate all the columns to filtrate by client
     for (var col = 0; col < parseInt($("#col_count").val(), 10); col++) {
@@ -1456,14 +1460,17 @@ $(document).ready(function() {
         applyComboFilter(element, "getParentUID", clientuid);
         element = $("#ar_" + col + "_CCContact");
         applyComboFilter(element, "getParentUID", clientuid);
-        // Apply filters sample points by client
+        // Filter sample points by client
         element = $("#ar_" + col + "_SamplePoint");
+        applyComboFilter(element, "getClientUID", clientuid);
+	// Filter template by client
+        element = $("#ar_" + col + "_Template");
         applyComboFilter(element, "getClientUID", clientuid);
     }
 
     var copy_from = window.location.href.split("copy_from=");
     if(copy_from.length > 1){
-        copy_from = copy_from[1].split("&")[1];
+        copy_from = copy_from[1].split("&")[0];
         copy_from = copy_from.split(",");
         for (var column = 0; column < copy_from.length; column++) {
             window.bika.ar_copy_from_col = column;
