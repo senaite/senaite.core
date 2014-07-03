@@ -408,4 +408,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Results report preview"
+        description="JS support for results report preview"
+        source="3040"
+        destination="3041"
+        handler="bika.lims.upgrade.to3041.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
