@@ -29,8 +29,14 @@ class AnalysisRequestPublishView(BrowserView):
             out.append({'id': template, 'title': template[:-3]})
         return out
 
+    def getAnalysisRequests(self):
+        return self._ars;
+
     def getAnalysisRequestsCount(self):
         return len(self._ars);
+
+    def getAnalysisRequestObj(self):
+        return self._ars[self._current_ar_index]
 
     def getAnalysisRequest(self):
         return self._ar_data(self._ars[self._current_ar_index])
@@ -58,6 +64,9 @@ class AnalysisRequestPublishView(BrowserView):
         with open(path, 'r') as content_file:
             content = content_file.read()
         return content;
+
+    def isQCAnalysesVisible(self):
+        return (self.request.get('qcvisible', '0')).lower() in ['true', '1']
 
     def _ar_data(self, ar):
         data = {'obj': ar,

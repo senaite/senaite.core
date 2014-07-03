@@ -33,6 +33,7 @@
                         hasqcanalyses   python:len(qcanalyses) &gt; 0;
                         reportdrymatter analysisrequest/report_drymatter;
                         hasprevresults  analysisrequest/haspreviousresults;
+                        showqcanalyses  python:view.isQCAnalysesVisible();
                         remarksenabled  python:view.context.bika_setup.getEnableAnalysisRemarks();">
 
 <!-- Report header -->
@@ -246,7 +247,7 @@
 </div>
 
 <!-- QC Results section -->
-<div id="section-qcresults" tal:condition="hasqcanalyses">
+<div id="section-qcresults" tal:condition="python:hasqcanalyses and showqcanalyses">
     <h1 i18n:translate="">QC Results</h1>
     <table>
         <tal:qctypes repeat="qctype python:categqcanalyses.keys()">

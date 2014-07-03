@@ -25,10 +25,14 @@
                                 tal:content="python:format['title']"></option>
                     </tal:formats>
                 </select>
+                <input type="checkbox" name="qcvisible" id='qcvisible' value="0"><span i18n:translate="">Show QC Analyses</span>
             </div>
             <div id='ar_publish_summary'>
-                <span i18n:translate="">Number of analysis requests:</span>&nbsp;
-                <span tal:content="python:view.getAnalysisRequestsCount()"></span>
+                <span tal:content="python:view.getAnalysisRequestsCount()"></span>&nbsp;
+                <span i18n:translate=""> analysis requests selected</span>:&nbsp;
+                <tal:ars repeat="ar python:view.getAnalysisRequests()">
+                    <a tal:attributes="href python:'#'+ar.id" tal:content="python: ar.id"></a>&nbsp;
+                </tal:ars>
             </div>
         </div>
         <style>
@@ -81,7 +85,7 @@
         <style tal:content='structure python:view.getReportStyle()'></style>
         <div id='report'>
         <tal:ar tal:repeat="i python:range(view.getAnalysisRequestsCount())">
-        <div class='ar_publish_body' tal:content='structure python:view.getReportTemplate()'></div>
+        <div class='ar_publish_body' tal:attributes="id python:view.getAnalysisRequestObj().id" tal:content='structure python:view.getReportTemplate()'></div>
         </tal:ar>
         </div>
     </div>
