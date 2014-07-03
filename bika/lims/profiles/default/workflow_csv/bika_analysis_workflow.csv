@@ -16,6 +16,7 @@ BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,N,N,N,Y
+BIKA: Retract,N,N,Y,N,N,N,N,Y,N,Y,N,N,N,N
 ,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,
 Id:,not_requested,,,,,,,,,,,,,
@@ -120,7 +121,9 @@ BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,N,Y,Y,Y
+BIKA: Retract
 Review portal content,N,N,Y,N,N,N,N,Y,Y,Y,N,Y,Y,Y
+BIKA: Retract,N,N,Y,N,N,N,N,Y,N,Y,N,N,N,N
 ,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,
 Id:,verified,,,,,,,,,,,,,
