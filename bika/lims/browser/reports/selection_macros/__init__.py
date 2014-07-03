@@ -1,9 +1,10 @@
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.i18nl10n import utranslate
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.utils import getUsers
 from bika.lims import bikaMessageFactory as _
-
+from bika.lims import PMF
 
 class SelectionMacrosView(BrowserView):
     """ Display snippets for the query form, and
@@ -152,11 +153,14 @@ class SelectionMacrosView(BrowserView):
             return None
 
         if from_date and to_date:
-            parms = 'from %s to %s' % (from_date, to_date)
+            parms = utranslate(_("From ${start_date} to ${end_date}",
+                               mapping={"start":from_date, "end":to_date}))
         elif from_date:
-            parms = _("From") + " %s" % from_date
+            parms = utranslate(_("Before ${start_date}",
+                               mapping={"start":from_date}))
         elif to_date:
-            parms = _("to") + " %s" % to_date
+            parms = utranslate(_("After ${end_date}",
+                               mapping={"end_date":to_date}))
 
         res = {}
         res['contentFilter'] = (field_id, query)

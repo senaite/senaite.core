@@ -347,7 +347,8 @@ def checkUserAccess(context, request, redirect=True):
     allowed = context.checkUserAccess()
     if allowed == False and redirect == True:
         msg =  _('You do not have sufficient privileges to view '
-                 'the worksheet %s.') % context.Title()
+                 'the worksheet ${worksheet_title}.',
+                 mapping={"worksheet_title": context.Title()})
         context.plone_utils.addPortalMessage(msg, 'warning')
         # Redirect to WS list
         portal = getToolByName(context, 'portal_url').getPortalObject()

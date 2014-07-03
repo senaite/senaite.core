@@ -1,6 +1,6 @@
 """ PANalytical - Omnia Axios XRF
 """
-from bika.lims import bikaMessageFactory as _
+from bika.lims import bikaMessageFactory as _, t
 from . import AxiosXrfImporter, AxiosXrfCSVParser, AxiosXrfCSVMultiParser
 import json
 import traceback
@@ -32,7 +32,8 @@ def Import(context, request):
         parser = AxiosXrfCSVMultiParser(infile)
 
     else:
-        errors.append(_("Unrecognized file format '%s'") % fileformat)
+        errors.append(t(_("Unrecognized file format ${file_format}",
+                          mapping={"file_format": fileformat})))
 
     if parser:
         # Load the importer

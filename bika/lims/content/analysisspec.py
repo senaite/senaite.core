@@ -22,8 +22,8 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisSpec
 from types import ListType, TupleType
-from zope.i18n import translate
 from zope.interface import implements
+from zope.i18n import translate
 import sys
 import time
 

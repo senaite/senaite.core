@@ -67,7 +67,7 @@ class AnalysisRequestPublishedResults(BikaListingView):
                         and ar.getChildAnalysisRequest() or None
             childid = childar and childar.getRequestID() or None
             message = _('This Analysis Request has been withdrawn and is '
-                        'shown for trace-ability purposes only. Retest:'
+                        'shown for trace-ability purposes only. Retest: '
                         '${retest_child_id}.',
                         mapping={'retest_child_id': safe_unicode(childid) or ''})
             self.context.plone_utils.addPortalMessage(
