@@ -8,6 +8,7 @@ import unittest
 OPTIONFLAGS = (doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
 
 DOCTESTS = [
+    'bika.lims.browser.accreditation',
     'bika.lims.browser.analysisrequest.add',
     'bika.lims.browser.bika_listing',
     'bika.lims.jsonapi.create',
