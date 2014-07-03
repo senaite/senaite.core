@@ -152,7 +152,7 @@ function set_default_spec(column) {
         var request_data = {
             catalog_name: "bika_setup_catalog",
             portal_type: "AnalysisSpec",
-            getSampleTypeTitle: sampletype_title,
+            getSampleTypeTitle: encodeURIComponent(sampletype_title),
             getClientUID: [client_uid, bika_analysisspecs_uid]
         };
 
@@ -233,7 +233,7 @@ function modify_Specification_field_filter(column) {
     if (    query_obj.hasOwnProperty("getSampleTypeTitle") ){
         delete query_obj.getSampleTypeTitle;
     }
-    query_obj.getSampleTypeTitle = [sampletype_title, ""];
+    query_obj.getSampleTypeTitle = [encodeURIComponent(sampletype_title), ""];
     query_str = $.toJSON(query_obj);
     $(e).attr("search_query", query_str);
 }
@@ -359,7 +359,7 @@ function ar_referencewidget_select_handler(event, ui){
         var sp_base_query = $(sp_element).attr("base_query");
         sp_base_query = $.parseJSON(sp_base_query);
         sp_base_query = $.toJSON(sp_base_query);
-        var sp_search_query = {"getSampleTypeTitle": ui.item[$(this).attr("ui_item")]};
+        var sp_search_query = {"getSampleTypeTitle": encodeURIComponent(ui.item[$(this).attr("ui_item")])};
         sp_search_query = $.toJSON(sp_search_query);
         sp_element.attr("search_query", sp_search_query);
         ar_referencewidget_lookups(sp_element);
@@ -1444,7 +1444,7 @@ $(document).ready(function() {
         applyComboFilter(element, "getParentUID", clientuid);
         element = $("#ar_" + col + "_CCContact");
         applyComboFilter(element, "getParentUID", clientuid);
-        // Apply filters sample pints by client
+        // Apply filters sample points by client
         element = $("#ar_" + col + "_SamplePoint");
         applyComboFilter(element, "getClientUID", clientuid);
     });
@@ -1456,14 +1456,14 @@ $(document).ready(function() {
         applyComboFilter(element, "getParentUID", clientuid);
         element = $("#ar_" + col + "_CCContact");
         applyComboFilter(element, "getParentUID", clientuid);
-        // Apply filters sample pints by client
+        // Apply filters sample points by client
         element = $("#ar_" + col + "_SamplePoint");
         applyComboFilter(element, "getClientUID", clientuid);
     }
 
     var copy_from = window.location.href.split("copy_from=");
     if(copy_from.length > 1){
-        copy_from = copy_from[1].split("&")[0];
+        copy_from = copy_from[1].split("&")[1];
         copy_from = copy_from.split(",");
         for (var column = 0; column < copy_from.length; column++) {
             window.bika.ar_copy_from_col = column;

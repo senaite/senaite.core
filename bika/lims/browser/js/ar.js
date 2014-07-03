@@ -56,8 +56,10 @@ $(document).ready(function(){
     });
 
     if (document.location.href.search('/clients/') >= 0
-        && $(".template-base_view.portaltype-analysisrequest")
-        && $("#archetypes-fieldname-SamplePoint #SamplePoint")) {
+        && $(".template-base_view.portaltype-analysisrequest").length > 0
+        && $("#archetypes-fieldname-SamplePoint #SamplePoint").length > 0
+        && $(".template-ar_add").length < 1) {
+
         var cid = document.location.href.split("clients")[1].split("/")[1];
         $.ajax({
             url: window.portal_url + "/clients/" + cid + "/getClientInfo",
@@ -67,9 +69,22 @@ $(document).ready(function(){
             success: function(data, textStatus, $XHR){
                 if (data['ClientUID'] != '') {
                     var spelement = $("#archetypes-fieldname-SamplePoint #SamplePoint");
-                    var base_query=$.parseJSON($(spelement).attr("base_query"));
+		    var base_query=$.parseJSON($(spelement).attr("base_query"));
                     base_query["getClientUID"] = data['ClientUID'];
                     $(spelement).attr("base_query", $.toJSON(base_query));
+		    var options = $.parseJSON($(spelement).attr("combogrid_options"));
+		    options.url = window.location.href.split("/ar")[0] + "/" + options.url;
+		    options.url = options.url + "?_authenticator=" + $("input[name='_authenticator']").val();
+		    options.url = options.url + "&catalog_name=" + $(spelement).attr("catalog_name");
+		    options.url = options.url + "&base_query=" + $.toJSON(base_query);
+		    options.url = options.url + "&search_query=" + $(spelement).attr("search_query");
+		    options.url = options.url + "&colModel=" + $.toJSON( $.parseJSON($(spelement).attr("combogrid_options")).colModel);
+		    options.url = options.url + "&search_fields=" + $.toJSON($.parseJSON($(spelement).attr("combogrid_options")).search_fields);
+		    options.url = options.url + "&discard_empty=" + $.toJSON($.parseJSON($(spelement).attr("combogrid_options")).discard_empty);
+		    options.force_all="false";
+		    $(spelement).combogrid(options);
+		    $(spelement).addClass("has_combogrid_widget");
+		    $(spelement).attr("search_query", "{}");
                 }
             }
         });
