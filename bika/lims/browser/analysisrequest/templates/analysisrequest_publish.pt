@@ -18,18 +18,11 @@
     <div id='ar_publish_container'>
         <div id="ar_publish_header">
             <div id='options_handler'>
-                <label for="sel_format" i18n:translate="">Available formats</label>
+                <label for="sel_format" i18n:translate="">Available templates</label>
                 <select id="sel_format" name="sel_format">
                     <tal:formats tal:repeat="format python:view.getAvailableFormats()">
                         <option tal:attributes="value python:format['id']"
                                 tal:content="python:format['title']"></option>
-                    </tal:formats>
-                </select>
-                <label for="sel_style" i18n:translate="">Available styles</label>
-                <select id="sel_style" name="sel_style">
-                    <tal:formats tal:repeat="style python:view.getAvailableStyles()">
-                        <option tal:attributes="value python:style['id']"
-                                tal:content="python:style['title']"></option>
                     </tal:formats>
                 </select>
             </div>
@@ -86,10 +79,11 @@
             }
         </style>
         <style tal:content='structure python:view.getReportStyle()'></style>
+        <div id='report'>
         <tal:ar tal:repeat="i python:range(view.getAnalysisRequestsCount())">
         <div class='ar_publish_body' tal:content='structure python:view.getReportTemplate()'></div>
         </tal:ar>
-
+        </div>
     </div>
 </body>
 </html>

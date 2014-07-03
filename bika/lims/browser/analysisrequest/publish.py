@@ -7,26 +7,27 @@ from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.interfaces import IResultOutOfRange
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import getAdapters
-import os, sys, traceback
+import glob, os, sys, traceback
 
 class AnalysisRequestPublishView(BrowserView):
     template = ViewPageTemplateFile("templates/analysisrequest_publish.pt")
     _ars = []
     _current_ar_index = 0
-
-    def getAvailableFormats(self):
-        return [ {'id': 'A4_default.pt',
-                  'title': 'A4 Default' },
-                 {'id': 'A4_custom_01.pt',
-                  'title': 'A4 Custom' } ]
-
-    def getAvailableStyles(self):
-        return [ {'id': 'default.css',
-                  'title': 'Default' } ]
+    _DEFAULT_TEMPLATE = 'default.pt'
 
     def __call__(self):
         self._ars = [self.context, self.context]
         return self.template()
+
+    def getAvailableFormats(self):
+        this_dir = os.path.dirname(os.path.abspath(__file__))
+        templates_dir = os.path.join(this_dir, 'templates/reports')
+        tempath = '%s/%s' % (templates_dir, '*.pt')
+        templates = [t.split('/')[-1] for t in glob.glob(tempath)]
+        out = []
+        for template in templates:
+            out.append({'id': template, 'title': template[:-3]})
+        return out
 
     def getAnalysisRequestsCount(self):
         return len(self._ars);
@@ -39,7 +40,7 @@ class AnalysisRequestPublishView(BrowserView):
             self._current_ar_index += 1
 
     def getReportTemplate(self):
-        embedt = self.request.get('template', 'A4_default.pt')
+        embedt = self.request.get('template', self._DEFAULT_TEMPLATE)
         embed = ViewPageTemplateFile("templates/reports/%s" % embedt);
         try:
             return embed(self)
@@ -49,10 +50,10 @@ class AnalysisRequestPublishView(BrowserView):
         self._nextAnalysisRequest()
 
     def getReportStyle(self):
+        template = self.request.get('template', self._DEFAULT_TEMPLATE)
         this_dir = os.path.dirname(os.path.abspath(__file__))
-        templates_dir = os.path.join(this_dir, 'templates/reports')
-        css = self.request.get('sel_style', 'default.css')
-        path = '%s/%s' % (templates_dir, css)
+        templates_dir = os.path.join(this_dir, 'templates/reports/')
+        path = '%s/%s.css' % (templates_dir, template[:-3])
         content = ''
         with open(path, 'r') as content_file:
             content = content_file.read()
