@@ -627,8 +627,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 fieldname = field.getName()
                 if fieldname in ignore_fields:
                     continue
-                getter = src.Schema().getField(fieldname).getAccessor(src)
-                setter = dst.Schema().getField(fieldname).getMutator(dst)
+                getter = getattr(src, 'get'+fieldname,
+                                 src.Schema().getField(fieldname).getAccessor(src))
+                setter = getattr(dst, 'set'+fieldname,
+                                 dst.Schema().getField(fieldname).getMutator(dst))
                 if getter is None or setter is None:
                     # ComputedField
                     continue
