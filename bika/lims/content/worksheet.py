@@ -668,7 +668,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         for analysis in analyses:
             # Skip published or verified analyses
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
-            if review_state in ['published', 'verified']:
+            if review_state in ['published', 'verified', 'retracted']:
                 old_ws_analyses.append(analysis.UID())
                 old_layout.append({'position': position,
                                    'type':'a',
