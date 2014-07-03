@@ -15,10 +15,11 @@ class AccreditationView(AnalysisServicesView):
     >>> from plone.app.testing import SITE_OWNER_NAME
     >>> from plone.app.testing import SITE_OWNER_PASSWORD
 
-    >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
+    >>> browser = layer['getBrowser'](portal)
     >>> browser.open(portal_url+"/accreditation")
-    >>> browser.contents
-    "\\n...Lab has been accredited as ISO 17025 conformant by SAI...\\n"
+    >>> 'SAI is the' in browser.contents
+    True
+
     """
     implements(IFolderContentsView)
 

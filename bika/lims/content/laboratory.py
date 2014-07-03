@@ -81,7 +81,7 @@ schema = Organisation.schema.copy() + Schema((
         schemata = 'Accreditation',
         default = "${lab_name} has been accredited as ${accreditation_standard} conformant by ${accreditation_body_abbr}, ${accreditation_body_name}<br/><br/>" + \
                   "${accreditation_body_abbr} is the single national accreditation body assessing testing and calibration laboratories for compliance to the ISO/IEC 17025 standard.<br/></br/>\n" + \
-                  "The following analysis services have been included in the SANAS schedule of Accreditation for this Laboratory:",
+                  "The following analysis services have been included in the ${accreditation_body_abbr} schedule of Accreditation for this Laboratory:",
         widget = TextAreaWidget(
             label = "Accreditation page header",
             description = \
