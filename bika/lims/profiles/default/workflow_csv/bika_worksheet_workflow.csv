@@ -62,6 +62,20 @@ BIKA: Add Attachment,N,N,Y,N,N,N,N,Y,Y,Y
 BIKA: Retract,N,N,N,N,N,N,N,N,N,N
 Modify portal content,N,N,Y,N,N,N,N,Y,Y,Y
 ,,,,,,,,,,
+[State],,,,,,,,,,
+Id:,rejected,,,,,,,,,
+Title:,Rejected,,,,,,,,,
+Description:,,,,,,,,,,
+Transitions,,,,,,,,,,
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager
+BIKA: Edit Worksheet,N,N,N,N,N,N,N,N,N,N
+BIKA: Assign analyses,N,N,N,N,N,N,N,N,N,N
+BIKA: Unassign analyses,N,N,N,N,N,N,N,N,N,N
+BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y
+BIKA: Add Attachment,N,N,Y,N,N,N,N,N,N,N
+BIKA: Retract,N,N,N,N,N,N,N,N,N,N
+Modify portal content,N,N,Y,N,N,N,N,N,N,N
+,,,,,,,,,,
 [Transition],,,,,,,,,,
 Id:,submit,,,,,,,,,
 Title:,Submit for verification,,,,,,,,,
@@ -76,7 +90,7 @@ Id:,attach,,,,,,,,,
 Title:,Add attachment,,,,,,,,,
 Description:,Add attachment,,,,,,,,,
 Target state:,to_be_verified,,,,,,,,,
-URL:,workflow_action?workflow_action=attach,,,,,,,,,
+URL:,,,,,,,,,,
 Trigger:,User,,,,,,,,,
 Guard expression:,python:here.guard_attach_transition(),,,,,,,,,
 ,,,,,,,,,,
@@ -84,8 +98,8 @@ Guard expression:,python:here.guard_attach_transition(),,,,,,,,,
 Id:,reject,,,,,,,,,
 Title:,Reject,,,,,,,,,
 Description:,Reject,,,,,,,,,
-Target state:,,,,,,,,,,
-URL:,workflow_action?workflow_action=reject,,,,,,,,,
+Target state:,rejected,,,,,,,,,
+URL:,,,,,,,,,,
 Trigger:,User,,,,,,,,,
 Guard permission:,BIKA: Reject Worksheet,,,,,,,,,
 ,,,,,,,,,,
@@ -94,7 +108,7 @@ Id:,retract,,,,,,,,,
 Title:,Retract worksheet,,,,,,,,,
 Description:,Retract worksheet,,,,,,,,,
 Target state:,open,,,,,,,,,
-URL:,workflow_action?workflow_action=retract,,,,,,,,,
+URL:,,,,,,,,,,
 Trigger:,User,,,,,,,,,
 Guard expression:,python:here.guard_retract_transition(),,,,,,,,,
 ,,,,,,,,,,
@@ -103,6 +117,6 @@ Id:,verify,,,,,,,,,
 Title:,Verify,,,,,,,,,
 Description:,Verify,,,,,,,,,
 Target state:,verified,,,,,,,,,
-URL:,workflow_action?workflow_action=verify,,,,,,,,,
+URL:,,,,,,,,,,
 Trigger:,User,,,,,,,,,
 Guard expression:,python:here.guard_verify_transition(),,,,,,,,,

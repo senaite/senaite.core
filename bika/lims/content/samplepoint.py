@@ -134,6 +134,9 @@ class SamplePoint(BaseContent, HistoryAwareMixin):
     def getSampleTypes(self, **kw):
         return self.Schema()['SampleTypes'].get(self)
 
+    def getClientUID(self):
+        return self.aq_parent.UID()
+
 registerType(SamplePoint, PROJECTNAME)
 
 def SamplePoints(self, instance=None, allow_blank=True, lab_only=True):

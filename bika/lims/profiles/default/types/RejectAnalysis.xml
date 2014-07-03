@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<object name="RejectAnalysis"
+        meta_type="Factory-based Type Information with dynamic views"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        i18n:domain="plone">
+ <property name="title" i18n:translate="">Reject Analysis</property>
+ <property name="description"></property>
+ <property name="content_icon">++resource++bika.lims.images/worksheet.png</property>
+ <property name="content_meta_type">RejectAnalysis</property>
+ <property name="product">bika.lims</property>
+ <property name="factory">addRejectAnalysis</property>
+ <property name="add_view_expr"></property>
+ <property name="link_target"></property>
+ <property name="global_allow">False</property>
+ <property name="filter_content_types">True</property>
+ <property name="allowed_content_types"/>
+ <property name="allow_discussion">False</property>
+ <property name="default_view_fallback">False</property>
+</object>

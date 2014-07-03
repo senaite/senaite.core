@@ -399,4 +399,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="LIMS-1059"
+        description="Worksheet rejection workflow"
+        source="3039"
+        destination="3040"
+        handler="bika.lims.upgrade.to3040.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>

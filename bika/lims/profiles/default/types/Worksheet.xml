@@ -16,6 +16,7 @@
  <property name="filter_content_types">False</property>
  <property name="allowed_content_types">
   <element value="DuplicateAnalysis"/>
+  <element value="RejectAnalysis"/>
   <element value="Attachment"/>
  </property>
  <property name="allow_discussion">False</property>
@@ -24,17 +25,29 @@
  <property name="default_view">manage_results</property>
  <alias from="(Default)" to="manage_results"/>
 
- <action title="Manage Results"
-         action_id="manage_results"
-         category="object"
-         condition_expr=""
-         icon_expr=""
-         link_target=""
-         url_expr="string:${object_url}/manage_results"
-         i18n:attributes="title"
-         visible="True">
-  <permission value="BIKA: View Results"/>
- </action>
+    <action title="View"
+            action_id="view"
+            category="object"
+            condition_expr=""
+            icon_expr=""
+            link_target=""
+            url_expr="string:${object_url}/manage_results"
+            i18n:attributes="title"
+            visible="False">
+     <permission value="BIKA: View Results"/>
+    </action>
+
+    <action title="Manage Results"
+            action_id="manage_results"
+            category="object"
+            condition_expr=""
+            icon_expr=""
+            link_target=""
+            url_expr="string:${object_url}/manage_results"
+            i18n:attributes="title"
+            visible="True">
+     <permission value="BIKA: View Results"/>
+    </action>
 
  <action title="Add Analyses"
          action_id="add_analyses"

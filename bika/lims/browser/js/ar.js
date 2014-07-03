@@ -5,35 +5,35 @@
 "use strict";
 
 function workflow_transition_publish(event){
-	event.preventDefault();
-	var requestdata = {};
-	var spec_uid = $("#PublicationSpecification_uid").val();
-	requestdata.PublicationSpecification = spec_uid;
-	requestdata.workflow_action = "publish";
-	var requeststring = $.param(requestdata);
-	var href = window.location.href.split("?")[0]
-		.replace("/base_view", "")
-		.replace("/view", "") + "/workflow_action?" + requeststring;
-	window.location.href = href;
+    event.preventDefault();
+    var requestdata = {};
+    var spec_uid = $("#PublicationSpecification_uid").val();
+    requestdata.PublicationSpecification = spec_uid;
+    requestdata.workflow_action = "publish";
+    var requeststring = $.param(requestdata);
+    var href = window.location.href.split("?")[0]
+        .replace("/base_view", "")
+        .replace("/view", "") + "/workflow_action?" + requeststring;
+    window.location.href = href;
 }
 
 function workflow_transition_republish(event){
-	event.preventDefault();
-	var requestdata = {};
-	var spec_uid = $("#PublicationSpecification_uid").val();
-	requestdata.PublicationSpecification = spec_uid;
-	requestdata.workflow_action = "republish";
-	var requeststring = $.param(requestdata);
-	var href = window.location.href.split("?")[0]
-		.replace("/base_view", "")
-		.replace("/view", "") + "/workflow_action?" + requeststring;
-	window.location.href = href;
+    event.preventDefault();
+    var requestdata = {};
+    var spec_uid = $("#PublicationSpecification_uid").val();
+    requestdata.PublicationSpecification = spec_uid;
+    requestdata.workflow_action = "republish";
+    var requeststring = $.param(requestdata);
+    var href = window.location.href.split("?")[0]
+        .replace("/base_view", "")
+        .replace("/view", "") + "/workflow_action?" + requeststring;
+    window.location.href = href;
 }
 
 $(document).ready(function(){
 
-	$("#workflow-transition-publish").click(workflow_transition_publish);
-	$("#workflow-transition-republish").click(workflow_transition_publish);
+    $("#workflow-transition-publish").click(workflow_transition_publish);
+    $("#workflow-transition-republish").click(workflow_transition_publish);
 
     // Set the analyst automatically when selected in the picklist
     $('.portaltype-analysisrequest .bika-listing-table td.Analyst select').change(function() {
@@ -54,5 +54,40 @@ $(document).ready(function(){
                    "Analyst":  analyst}
         });
     });
+
+    if (document.location.href.search('/clients/') >= 0
+        && $(".template-base_view.portaltype-analysisrequest").length > 0
+        && $("#archetypes-fieldname-SamplePoint #SamplePoint").length > 0
+        && $(".template-ar_add").length < 1) {
+
+        var cid = document.location.href.split("clients")[1].split("/")[1];
+        $.ajax({
+            url: window.portal_url + "/clients/" + cid + "/getClientInfo",
+            type: 'POST',
+            data: {'_authenticator': $('input[name="_authenticator"]').val()},
+            dataType: "json",
+            success: function(data, textStatus, $XHR){
+                if (data['ClientUID'] != '') {
+                    var spelement = $("#archetypes-fieldname-SamplePoint #SamplePoint");
+		    var base_query=$.parseJSON($(spelement).attr("base_query"));
+                    base_query["getClientUID"] = data['ClientUID'];
+                    $(spelement).attr("base_query", $.toJSON(base_query));
+		    var options = $.parseJSON($(spelement).attr("combogrid_options"));
+		    options.url = window.location.href.split("/ar")[0] + "/" + options.url;
+		    options.url = options.url + "?_authenticator=" + $("input[name='_authenticator']").val();
+		    options.url = options.url + "&catalog_name=" + $(spelement).attr("catalog_name");
+		    options.url = options.url + "&base_query=" + $.toJSON(base_query);
+		    options.url = options.url + "&search_query=" + $(spelement).attr("search_query");
+		    options.url = options.url + "&colModel=" + $.toJSON( $.parseJSON($(spelement).attr("combogrid_options")).colModel);
+		    options.url = options.url + "&search_fields=" + $.toJSON($.parseJSON($(spelement).attr("combogrid_options")).search_fields);
+		    options.url = options.url + "&discard_empty=" + $.toJSON($.parseJSON($(spelement).attr("combogrid_options")).discard_empty);
+		    options.force_all="false";
+		    $(spelement).combogrid(options);
+		    $(spelement).addClass("has_combogrid_widget");
+		    $(spelement).attr("search_query", "{}");
+                }
+            }
+        });
+    }
 });
 }(jQuery));
