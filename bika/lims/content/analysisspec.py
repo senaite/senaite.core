@@ -225,4 +225,7 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
                 specstr = '< %s' % specs['max']
         return specstr
 
+    def getClientUID(self):
+        return self.aq_parent.UID();
+
 atapi.registerType(AnalysisSpec, PROJECTNAME)

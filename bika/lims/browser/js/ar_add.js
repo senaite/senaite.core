@@ -1447,10 +1447,15 @@ $(document).ready(function() {
         // Filter sample points by client
         element = $("#ar_" + col + "_SamplePoint");
         applyComboFilter(element, "getClientUID", clientuid);
-	// Filter template by client
-        element = $("#ar_" + col + "_SamplePoint");
+        // Filter template by client
+        element = $("#ar_" + col + "_Template");
         applyComboFilter(element, "getClientUID", clientuid);
-
+        // Filter Analysis Profile by client
+        element = $("#ar_" + col + "_Profile");
+        applyComboFilter(element, "getClientUID", clientuid);
+        // Filter Analysis Spec by client
+        element = $("#ar_" + col + "_Specification");
+        applyComboFilter(element, "getClientUID", clientuid);
     });
     // Iterate all the columns to filtrate by client
     for (var col = 0; col < parseInt($("#col_count").val(), 10); col++) {
@@ -1463,8 +1468,14 @@ $(document).ready(function() {
         // Filter sample points by client
         element = $("#ar_" + col + "_SamplePoint");
         applyComboFilter(element, "getClientUID", clientuid);
-	// Filter template by client
+        // Filter template by client
         element = $("#ar_" + col + "_Template");
+        applyComboFilter(element, "getClientUID", clientuid);
+        // Filter Analysis Profile by client
+        element = $("#ar_" + col + "_Profile");
+        applyComboFilter(element, "getClientUID", clientuid);
+        // Filter Analysis Spec by client
+        element = $("#ar_" + col + "_Specification");
         applyComboFilter(element, "getClientUID", clientuid);
     }
 
