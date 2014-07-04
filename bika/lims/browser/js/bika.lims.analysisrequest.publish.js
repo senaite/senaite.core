@@ -20,7 +20,7 @@ function AnalysisRequestPublishView() {
         $('#ar_publish_container #ar_publish_summary a[href^="#"]').click(function(e) {
             e.preventDefault();
             var anchor = $(this).attr('href');
-            var offset = $(anchor).first().offset().top;
+            var offset = $(anchor).first().offset().top - 20;
             $('html,body').animate({scrollTop: offset},'slow');
         });
     }

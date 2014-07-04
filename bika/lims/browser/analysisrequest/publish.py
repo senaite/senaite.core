@@ -16,7 +16,17 @@ class AnalysisRequestPublishView(BrowserView):
     _DEFAULT_TEMPLATE = 'default.pt'
 
     def __call__(self):
-        self._ars = [self.context, self.context]
+        if self.context.portal_type == 'AnalysisRequest':
+            self._ars = [self.context]
+        elif self.context.portal_type == 'AnalysisRequestsFolder' \
+            and self.request.get('items',''):
+            uids = self.request.get('items').split(',')
+            uc = getToolByName(self.context, 'uid_catalog')
+            self._ars = [obj.getObject() for obj in uc(UID=uids)]
+        else:
+            #Do nothing
+            self.destination_url = self.request.get_header("referer",
+                                   self.context.absolute_url())
         return self.template()
 
     def getAvailableFormats(self):

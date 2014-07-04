@@ -218,6 +218,17 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
             # We pass a list of AR objects to Publish.
             # it returns a list of AR IDs which were actually published.
             objects = AnalysisRequestWorkflowAction._get_selected_items(self)
+            its = []
+            for uid, obj in objects.items():
+                if isActive(obj):
+                    its.append(uid);
+            its = ",".join(its)
+            q = "/preview?items=" + its
+            import pdb;pdb.set_trace()
+            dest = self.context.absolute_url() + q
+            self.request.response.redirect(dest)
+
+            '''
             ARs_to_publish = []
             transitioned = []
             for obj_uid, obj in objects.items():
@@ -242,6 +253,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
             self.request.response.redirect(self.destination_url)
+            '''
 
         else:
             AnalysisRequestWorkflowAction.__call__(self)
