@@ -1162,7 +1162,7 @@ function setTemplate(column, template_title){
                         service_uid = service_uids[i];
                         var partnr = parts_by_service_uid[service_uid].part_nr;
                         e = $(".partnr_"+service_uid).filter("[column='"+column+"']");
-                        $(e).empty().append(partnr);
+                        $(e).empty().append(partnr+1);
                     }
                     recalc_prices(column);
                 }
