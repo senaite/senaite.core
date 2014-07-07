@@ -14,7 +14,9 @@ $(document).ready(function(){
         ".template-base_edit.portaltype-instrumentcertification":
             ['InstrumentCertificationEditView'],
         ".template-base_edit.portaltype-bikasetup":
-            ['BikaSetupEditView']
+            ['BikaSetupEditView'],
+        ".template-base_edit.portaltype-artemplate":
+            ['ARTemplateEditView'],
     };
 
     // Instantiate the js objects needed for the current view
