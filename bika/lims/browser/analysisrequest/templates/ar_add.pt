@@ -49,9 +49,13 @@
 <input type="hidden" name="came_from" tal:attributes="value view/came_from" />
 
 <span id="bika_setup" style="display:none;"
-    tal:define="bs python: context.bika_setup;"
-    tal:attributes="EnableARSpecs python: 'true' if bs.getEnableARSpecs() else '';
-                    bika_analysisspecs_uid python: bs.bika_analysisspecs.UID();">
+    tal:define="bika_setup python: context.bika_setup;"
+    tal:attributes="EnableARSpecs python: 'true' if bika_setup.getEnableARSpecs() else '';
+			bika_samplepoints_uid python: bika_setup.bika_samplepoints.UID();
+			bika_artemplates_uid python: bika_setup.bika_artemplates.UID();
+			bika_analysisprofiles_uid python: bika_setup.bika_analysisspecs.UID();
+			bika_analysisspecs_uid python: bika_setup.bika_analysisspecs.UID();
+			bika_analysisspecs_path python:'/'.join(bika_setup.bika_analysisspecs.getPhysicalPath())">
 </span>
 
 <!-- member discount percentage if applicable -->
@@ -77,13 +81,12 @@
         tal:attributes="
             poc python: dms.getPointOfCapture();
             cat python: dms.getCategoryUID();
-            value python: dms.UID();"/>
+            value python: dms.UID()"/>
 </tal:i>
 
 <input type="hidden"
     id="PhysicalPath"
-    tal:attributes="here python:'/'.join(context.getPhysicalPath()[:-3]);
-                    lab_specs python:'/'.join(context.bika_setup.bika_analysisspecs.getPhysicalPath())"/>
+    tal:attributes="here python:'/'.join(context.getPhysicalPath()[:-3])"/>
 
 <table summary="Add analysis requests"
     class="listing analysisrequest add nosort"

@@ -464,7 +464,8 @@ function add_path_filter_to_spec_lookups(){
     for (var col=0; col<parseInt($("#col_count").val(), 10); col++) {
         var element = $("#ar_"+col+"_Specification");
         var bq = $.parseJSON($(element).attr("base_query"));
-        bq.path = [$("#PhysicalPath").attr("lab_specs"), $("#PhysicalPath").attr("here")];
+        bq.path = [$("#bika_setup").attr("bika_analysisspecs_path"),
+				   $("#PhysicalPath").attr("here")];
         $(element).attr("base_query", $.toJSON(bq));
     }
 }
@@ -1446,16 +1447,20 @@ $(document).ready(function() {
         applyComboFilter(element, "getParentUID", clientuid);
         // Filter sample points by client
         element = $("#ar_" + col + "_SamplePoint");
-        applyComboFilter(element, "getClientUID", clientuid);
+		applyComboFilter(element, "getClientUID",
+						 [clientuid, $("#bika_setup").attr("bika_samplepoints_uid")]);
         // Filter template by client
         element = $("#ar_" + col + "_Template");
-        applyComboFilter(element, "getClientUID", clientuid);
+        applyComboFilter(element, "getClientUID",
+						 [clientuid, $("#bika_setup").attr("bika_artemplates_uid")]);
         // Filter Analysis Profile by client
         element = $("#ar_" + col + "_Profile");
-        applyComboFilter(element, "getClientUID", clientuid);
+        applyComboFilter(element, "getClientUID",
+						 [clientuid, $("#bika_setup").attr("bika_analysisprofiles_uid")]);
         // Filter Analysis Spec by client
         element = $("#ar_" + col + "_Specification");
-        applyComboFilter(element, "getClientUID", clientuid);
+        applyComboFilter(element, "getClientUID",
+						 [clientuid, $("#bika_setup").attr("bika_analysisspecs_uid")]);
     });
     // Iterate all the columns to filtrate by client
     for (var col = 0; col < parseInt($("#col_count").val(), 10); col++) {
@@ -1467,16 +1472,20 @@ $(document).ready(function() {
         applyComboFilter(element, "getParentUID", clientuid);
         // Filter sample points by client
         element = $("#ar_" + col + "_SamplePoint");
-        applyComboFilter(element, "getClientUID", clientuid);
+        applyComboFilter(element, "getClientUID",
+						 [clientuid, $("#bika_setup").attr("bika_samplepoints_uid")]);
         // Filter template by client
         element = $("#ar_" + col + "_Template");
-        applyComboFilter(element, "getClientUID", clientuid);
+        applyComboFilter(element, "getClientUID",
+						 [clientuid, $("#bika_setup").attr("bika_artemplates_uid")]);
         // Filter Analysis Profile by client
         element = $("#ar_" + col + "_Profile");
-        applyComboFilter(element, "getClientUID", clientuid);
+        applyComboFilter(element, "getClientUID",
+						 [clientuid, $("#bika_setup").attr("bika_analysisprofiles_uid")]);
         // Filter Analysis Spec by client
         element = $("#ar_" + col + "_Specification");
-        applyComboFilter(element, "getClientUID", clientuid);
+        applyComboFilter(element, "getClientUID",
+						 [clientuid, $("#bika_setup").attr("bika_analysisspecs_uid")]);
     }
 
     var copy_from = window.location.href.split("copy_from=");
