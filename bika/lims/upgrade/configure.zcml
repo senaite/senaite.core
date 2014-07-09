@@ -417,4 +417,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Add checkbox actions in ClientEditView"
+        description="JS actions to avoid client's decimal mark selection by a checkbox"
+        source="3041"
+        destination="3042"
+        handler="bika.lims.upgrade.to3042.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>

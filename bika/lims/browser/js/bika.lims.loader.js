@@ -16,7 +16,9 @@ $(document).ready(function(){
         ".template-base_edit.portaltype-bikasetup":
             ['BikaSetupEditView'],
         "#ar_publish_container":
-            ['AnalysisRequestPublishView']
+            ['AnalysisRequestPublishView'],
+	".template-base_edit.portaltype-client":
+	    ['ClientEditView']
     };
 
     // Instantiate the js objects needed for the current view
