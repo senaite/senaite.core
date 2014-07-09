@@ -153,7 +153,7 @@ schema = BikaFolderSchema.copy() + Schema((
         default = "dot",
         vocabulary = ["comma","dot"],
         widget = SelectionWidget(
-            label = _("Select Decimal Mark"),
+            label = _("Select Decimal Mark Type"),
             description = _("Select your prefered decimal mark from the dropdown list."),
             format = 'select',
         )
