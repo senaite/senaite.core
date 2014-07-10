@@ -23,5 +23,28 @@ function AnalysisRequestPublishView() {
             var offset = $(anchor).first().offset().top - 20;
             $('html,body').animate({scrollTop: offset},'slow');
         });
+
+        $('#qcvisible').click(function(e) {
+            var url = window.location.href;
+            if ($('#qcvisible').is(':checked')) {
+                url += url.indexOf('&') >= 0 ? "&qcvisible=1" : "?qcvisible=1";
+            }
+            $('#report').animate({opacity:0.4}, 'slow');
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function(data, textStatus, $XHR){
+                    var htmldata = data;
+                    htmldata = $(htmldata).find('#report').html();
+                    $('#report').html(htmldata);
+                    $('#report').animate({opacity:1}, 'slow');
+                }
+            });
+        });
+    }
+
+    function get(name){
+       if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
+          return decodeURIComponent(name[1]);
     }
 }
