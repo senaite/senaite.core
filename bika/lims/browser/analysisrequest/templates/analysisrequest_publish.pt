@@ -16,7 +16,7 @@
 </head>
 <body>
     <div id='ar_publish_container'>
-        <div id="ar_publish_header">
+        <div id="ar_publish_header" tal:condition="python:view.showOptions()">
             <div id='options_handler'>
                 <label for="sel_format" i18n:translate="">Available templates</label>
                 <select id="sel_format" name="sel_format">
@@ -70,6 +70,9 @@
                 padding-top: 20px;
             }
             @media print {
+                html {
+                    background-color:#fff;
+                }
                 .page-break  {
                     display: block;
                     page-break-before: always;

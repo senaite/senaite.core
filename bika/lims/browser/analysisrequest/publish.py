@@ -1,19 +1,30 @@
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import to_utf8
-from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.interfaces import IResultOutOfRange
+from bika.lims.utils import to_utf8, encode_header, createPdf, attachPdf
+from os.path import join
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import getAdapters
 import glob, os, sys, traceback
+import App
+import Globals
 
 class AnalysisRequestPublishView(BrowserView):
     template = ViewPageTemplateFile("templates/analysisrequest_publish.pt")
     _ars = []
     _current_ar_index = 0
     _DEFAULT_TEMPLATE = 'default.pt'
+    _publish = False
+
+    def __init__(self, context, request, publish=False):
+        super(AnalysisRequestPublishView, self).__init__(context, request)
+        self._publish = publish
+        self._ars = [self.context]
 
     def __call__(self):
         if self.context.portal_type == 'AnalysisRequest':
@@ -27,7 +38,40 @@ class AnalysisRequestPublishView(BrowserView):
             #Do nothing
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
-        return self.template()
+
+        # Do publish?
+        if self.request.get('pub', '0') == '1' or self._publish:
+            self.publish()
+        else:
+            return self.template()
+
+    def showOptions(self):
+        return self.request.get('pub', '1') == '1';
+
+    def publish(self):
+        if len(self._ars) > 1:
+            for ar in self._ars:
+                arpub = AnalysisRequestPublishView(ar, self.request, publish=True)
+                arpub.publish()
+            return
+
+        # Only one AR, create the report
+        ar = self._ars[0]
+        # SMTP errors are silently ignored if server is in debug mode
+        debug_mode = App.config.getConfiguration().debug_mode
+        # PDF and HTML files are written to disk if server is in debug mode
+        out_path = join(Globals.INSTANCE_HOME, 'var') if debug_mode \
+            else None
+        out_fn = to_utf8(ar.Title())
+
+        results_html = safe_unicode(self.template()).encode('utf-8')
+        if out_path:
+            open(join(out_path, out_fn + ".html"), "w").write(results_html)
+
+        # Create the pdf report (will always be attached to the AR)
+        pdf_outfile = join(out_path, out_fn + ".pdf") if out_path else None
+        pdf_report = createPdf(results_html, pdf_outfile)
+
 
     def getAvailableFormats(self):
         this_dir = os.path.dirname(os.path.abspath(__file__))
@@ -76,7 +120,7 @@ class AnalysisRequestPublishView(BrowserView):
         return content;
 
     def isQCAnalysesVisible(self):
-        return (self.request.get('qcvisible', '0')).lower() in ['true', '1']
+        return self.request.get('qcvisible', '0').lower() in ['true', '1']
 
     def _ar_data(self, ar):
         data = {'obj': ar,
