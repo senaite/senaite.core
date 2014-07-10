@@ -9,6 +9,7 @@ from bika.lims.utils import to_utf8, encode_header, createPdf, attachPdf
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.Utils import formataddr
+from operator import itemgetter
 from os.path import join
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
@@ -101,12 +102,15 @@ class AnalysisRequestPublishView(BrowserView):
         """
         embedt = self.request.get('template', self._DEFAULT_TEMPLATE)
         embed = ViewPageTemplateFile("templates/reports/%s" % embedt);
+        reptemplate = ""
         try:
-            return embed(self)
+            reptemplate = embed(self)
         except:
             tbex = traceback.format_exc()
-            return "<div class='error'>%s '%s':<pre>%s</pre></div>" % (_("Unable to load the template"), embedt, tbex)
+            arid = self._ars[self._current_ar_index].id
+            reptemplate = "<div class='error-report'>%s - %s '%s':<pre>%s</pre></div>" % (arid, _("Unable to load the template"), embedt, tbex)
         self._nextAnalysisRequest()
+        return reptemplate
 
     def getReportStyle(self):
         """ Returns the css style to be used for the current template.
@@ -222,6 +226,7 @@ class AnalysisRequestPublishView(BrowserView):
         if batch:
             data = {'obj': batch,
                     'id': batch.id,
+                    'url': batch.absolute_url(),
                     'title': to_utf8(batch.Title()),
                     'date': batch.getBatchDate(),
                     'client_batchid': to_utf8(batch.getClientBatchID()),

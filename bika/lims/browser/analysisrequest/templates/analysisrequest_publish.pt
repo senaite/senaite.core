@@ -101,6 +101,21 @@
                 padding-bottom: 20px;
                 padding-top: 20px;
             }
+            .error-report {
+                margin:0 -20px;
+                padding:20px;
+                font-weight:bold;
+                color:#d40000;
+                border-bottom: 60px solid #CDCDCD;
+            }
+            .error-report pre {
+                font-family: monospace;
+                width:205mm;
+                overflow:auto;
+                background-color:#fff;
+                color:#000;
+                font-weight:normal;
+            }
             @media print {
                 html {
                     background-color:#fff;

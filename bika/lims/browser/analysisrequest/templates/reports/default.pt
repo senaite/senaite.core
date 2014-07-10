@@ -155,17 +155,16 @@
         </tr>
         <tr>
             <td class="label" i18n:translate="">Sample Type</td>
-            <td tal:content="sample/sample_type/title"></td>
+            <td tal:content="sample/sample_type/title|nothing"></td>
         </tr>
         <tr>
             <td class="label" i18n:translate="">Specification</td>
-            <td tal:content="specifications/title"></td>
+            <td tal:content="specifications/title|nothing"></td>
         </tr>
         <tr>
             <td class="label" i18n:translate="">Date Received</td>
             <td tal:content="analysisrequest/date_received">2013-05-31 02:02 PM</td>
         </tr>
-
         <tr>
             <td class="label" i18n:translate="">Date Published</td>
             <td tal:content="analysisrequest/date_published">2013-06-03 12:02 PM</td>
