@@ -34,6 +34,10 @@
                     <a tal:attributes="href python:'#'+ar.id" tal:content="python: ar.id"></a>&nbsp;
                 </tal:ars>
             </div>
+            <div id='ar_publish_buttons'>
+                <input type="button" id='cancel_button' i18n:translate="value" value="Cancel"/>&nbsp;&nbsp;
+                <input type="button" id='publish_button' i18n:translate="value" value="Publish"/>
+            </div>
         </div>
         <style>
             html {
@@ -62,6 +66,34 @@
             #ar_publish_header #ar_publish_summary {
                 padding-left:10px;
                 padding-top:10px;
+            }
+            #ar_publish_header #ar_publish_buttons {
+                text-align:right;
+                padding-left:10px;
+                padding-top:10px;
+            }
+            #ar_publish_header #ar_publish_buttons input {
+                padding:4px 15px;
+                border:none;
+                color:#fff;
+                font-size:1.2em;
+                cursor:pointer;
+            }
+            #ar_publish_header #ar_publish_buttons input:hover {
+                opacity:0.8;
+                moz-opacity:0.8;
+                filter:alpha(opacity=80);
+                -webkit-transition: opacity 250ms ease-in-out;
+                -moz-transition: opacity 250ms ease-in-out;
+                -o-transition: opacity 250ms ease-in-out;
+                -ms-transition: opacity 250ms ease-in-out;
+                transition: opacity 250ms ease-in-out;
+            }
+            #ar_publish_header #ar_publish_buttons #cancel_button {
+                background-color:#666;
+            }
+            #ar_publish_header #ar_publish_buttons #publish_button {
+                background-color:#0B486B;
             }
             .page-break {
                 background-color: #CDCDCD;

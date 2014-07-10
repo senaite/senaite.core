@@ -41,6 +41,27 @@ function AnalysisRequestPublishView() {
                 }
             });
         });
+
+        $('#publish_button').click(function(e) {
+            var url = window.location.href;
+            url += url.indexOf('&') >= 0 ? "&pub=1" : "?pub=1";
+            url += "&template="+$('#sel_format').val();
+            if ($('#qcvisible').is(':checked')) {
+                url += "&qcvisible=1";
+            }
+            $('#ar_publish_container').animate({opacity:0.4}, 'slow');
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function(data, textStatus, $XHR){
+                    $('#ar_publish_container').fadeOut();
+                }
+            });
+        });
+
+        $('#cancel_button').click(function(e) {
+            $('#ar_publish_container').fadeOut();
+        });
     }
 
     function get(name){
