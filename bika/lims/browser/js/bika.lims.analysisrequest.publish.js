@@ -27,7 +27,7 @@ function AnalysisRequestPublishView() {
         $('#qcvisible').click(function(e) {
             var url = window.location.href;
             if ($('#qcvisible').is(':checked')) {
-                url += url.indexOf('&') >= 0 ? "&qcvisible=1" : "?qcvisible=1";
+                url += url.indexOf('?') >= 0 ? "&qcvisible=1" : "?qcvisible=1";
             }
             $('#report').animate({opacity:0.4}, 'slow');
             $.ajax({
@@ -44,7 +44,7 @@ function AnalysisRequestPublishView() {
 
         $('#publish_button').click(function(e) {
             var url = window.location.href;
-            url += url.indexOf('&') >= 0 ? "&pub=1" : "?pub=1";
+            url += url.indexOf('?') >= 0 ? "&pub=1" : "?pub=1";
             url += "&template="+$('#sel_format').val();
             if ($('#qcvisible').is(':checked')) {
                 url += "&qcvisible=1";
