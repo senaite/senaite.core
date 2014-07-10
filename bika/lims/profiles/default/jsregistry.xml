@@ -344,6 +344,17 @@
               />
 
  <javascript authenticated="False"
+              id="++resource++bika.lims.js/bika.lims.artemplate.edit.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              />
+
+ <javascript authenticated="False"
               id="++resource++bika.lims.js/bika.lims.analysisrequest.publish.js"
               cacheable="True"
               compression="safe"
@@ -354,7 +365,7 @@
               inline="False"
               />
 
-<javascript authenticated="False"
+ <javascript authenticated="False"
               id="++resource++bika.lims.js/bika.lims.client.edit.js"
               cacheable="True"
               compression="safe"

@@ -347,7 +347,8 @@ def checkUserAccess(context, request, redirect=True):
     allowed = context.checkUserAccess()
     if allowed == False and redirect == True:
         msg =  _('You do not have sufficient privileges to view '
-                 'the worksheet %s.') % context.Title()
+                 'the worksheet ${worksheet_title}.',
+                 mapping={"worksheet_title": context.Title()})
         context.plone_utils.addPortalMessage(msg, 'warning')
         # Redirect to WS list
         portal = getToolByName(context, 'portal_url').getPortalObject()
@@ -1252,6 +1253,8 @@ class WorksheetServicesView(BikaListingView):
         self.show_select_column = True
         self.pagesize = 0
         self.show_workflow_action_buttons = False
+        self.show_categories=context.bika_setup.getCategoriseAnalysisServices()
+        self.expand_all_categories=True
 
         self.columns = {
             'Service': {'title': _('Service'),
@@ -1275,7 +1278,8 @@ class WorksheetServicesView(BikaListingView):
         self.categories = []
         catalog = getToolByName(self, self.catalog)
         services = catalog(portal_type = "AnalysisService",
-                           inactive_state = "active")
+                           inactive_state = "active",
+                           sort_on = 'sortable_title')
         items = []
         for service in services:
             # if the service has dependencies, it can't have reference analyses
@@ -1310,7 +1314,6 @@ class WorksheetServicesView(BikaListingView):
             }
             items.append(item)
 
-        items = sorted(items, key = itemgetter('Service'))
         self.categories.sort(lambda x, y: cmp(x.lower(), y.lower()))
 
         return items

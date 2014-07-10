@@ -17,6 +17,8 @@ $(document).ready(function(){
             ['BikaSetupEditView'],
         "#ar_publish_container":
             ['AnalysisRequestPublishView'],
+        ".template-base_edit.portaltype-artemplate":
+            ['ARTemplateEditView'],
 	".template-base_edit.portaltype-client":
 	    ['ClientEditView']
     };

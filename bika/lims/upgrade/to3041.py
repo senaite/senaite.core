@@ -4,7 +4,7 @@ from bika.lims.permissions import *
 
 
 def upgrade(tool):
-    """Added bika.lims.analysisrequest.publish.js
+    """Added bika.lims.loader.js and bika.lims.artemplate.edit.js
     """
 
     portal = aq_parent(aq_inner(tool))

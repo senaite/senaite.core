@@ -23,7 +23,7 @@ class WinescanCSVParser(InstrumentCSVResultsFileParser):
             splitted = [token.strip() for token in line.split(',')]
             resid = splitted[0]
             if not resid:
-                self.err(_("No Sample ID found, line %s") % self._numline)
+                self.err("No Sample ID found", numline=self.num_line)
                 self.currentHeader = None
                 return 0
 
@@ -35,8 +35,9 @@ class WinescanCSVParser(InstrumentCSVResultsFileParser):
                     continue
 
                 if len(self.currentheader) <= idx:
-                    self.err(_("Orphan value in column %s, line %s") \
-                             % (str(idx + 1), self._numline))
+                    self.err("Orphan value in column ${index}, line ${line_nr}",
+                             mapping={"index": str(idx + 1),
+                                      "line_nr": self._numline})
                     continue
 
                 keyword = self.currentheader[idx]
@@ -45,8 +46,9 @@ class WinescanCSVParser(InstrumentCSVResultsFileParser):
                     continue
 
                 if result and not keyword:
-                    self.err(_("Orphan value in column %s, line %s") \
-                             % (str(idx + 1), self._numline))
+                    self.err("Orphan value in column ${index}, line ${line_nr}",
+                             mapping={"index": str(idx + 1),
+                                      "line_nr": self._numline})
                     continue
 
                 # Allow Bika to manage the Remark as an analysis Remark instead
@@ -57,12 +59,15 @@ class WinescanCSVParser(InstrumentCSVResultsFileParser):
                     continue
 
                 if not result:
-                    self.warn(_("Empty result for %s, column %s, line %s") % \
-                              (keyword, str(idx + 1), self._numline))
+                    self.warn("Empty result for ${analysis_keyword}, column ${index}",
+                              mapping={"analysis_keyword": keyword,
+                                       "index": str(idx + 1)},
+                              numline=self._numline)
 
                 if keyword in values.keys():
-                    self.err(_("Duplicated result for '%s', line %s") \
-                             % (keyword, self._numline))
+                    self.err("Duplicated result for ${analysis_keyword}",
+                              mapping={"analysis_keyword": keyword},
+                    numline=self._numline)
                     duplicated.append(keyword)
                     continue
 
@@ -79,7 +84,7 @@ class WinescanCSVParser(InstrumentCSVResultsFileParser):
             self.currentHeader = None
             return 0
 
-        self.err(_("No header found"))
+        self.err("No header found")
         return 0
 
 

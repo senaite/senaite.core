@@ -129,7 +129,7 @@ def Import(context,request):
     for param in ['F SO2', 'T SO2']:
         service = bsc(getKeyword = options[param])
         if not service:
-            msg = _('Service keyword ${keyword} not found',
+            msg = _('Service keyword ${service_keyword} not found',
                     mapping = {'keyword': options[param], })
             res['errors'].append(t(msg))
             continue

@@ -22,8 +22,8 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisSpec
 from types import ListType, TupleType
-from zope.i18n import translate
 from zope.interface import implements
+from zope.i18n import translate
 import sys
 import time
 
@@ -224,5 +224,8 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
             elif smax:
                 specstr = '< %s' % specs['max']
         return specstr
+
+    def getClientUID(self):
+        return self.aq_parent.UID();
 
 atapi.registerType(AnalysisSpec, PROJECTNAME)
