@@ -109,7 +109,9 @@
           tal:content="analysisrequest/child_analysisrequest/id"></a>
     </tal:invalidreport>
 </div>
-
+<div id="section-alert" tal:condition="analysisrequest/prepublish">
+    <h1 i18n:translate="">Provisional report</h1>
+</div>
 <!-- Summary section -->
 <div id="section-summary">
     <h1 i18n:translate="">Summary</h1>

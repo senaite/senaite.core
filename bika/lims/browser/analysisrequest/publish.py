@@ -3,11 +3,16 @@ from bika.lims.utils import to_utf8
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
+from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IResultOutOfRange
 from bika.lims.utils import to_utf8, encode_header, createPdf, attachPdf
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.Utils import formataddr
 from os.path import join
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
+from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFPlone.utils import safe_unicode, _createObjectByType
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import getAdapters
 import glob, os, sys, traceback
@@ -46,34 +51,14 @@ class AnalysisRequestPublishView(BrowserView):
             return self.template()
 
     def showOptions(self):
+        """ Returns true if the options top panel will be displayed
+            in the template
+        """
         return self.request.get('pub', '1') == '1';
 
-    def publish(self):
-        if len(self._ars) > 1:
-            for ar in self._ars:
-                arpub = AnalysisRequestPublishView(ar, self.request, publish=True)
-                arpub.publish()
-            return
-
-        # Only one AR, create the report
-        ar = self._ars[0]
-        # SMTP errors are silently ignored if server is in debug mode
-        debug_mode = App.config.getConfiguration().debug_mode
-        # PDF and HTML files are written to disk if server is in debug mode
-        out_path = join(Globals.INSTANCE_HOME, 'var') if debug_mode \
-            else None
-        out_fn = to_utf8(ar.Title())
-
-        results_html = safe_unicode(self.template()).encode('utf-8')
-        if out_path:
-            open(join(out_path, out_fn + ".html"), "w").write(results_html)
-
-        # Create the pdf report (will always be attached to the AR)
-        pdf_outfile = join(out_path, out_fn + ".pdf") if out_path else None
-        pdf_report = createPdf(results_html, pdf_outfile)
-
-
     def getAvailableFormats(self):
+        """ Returns the available formats found in templates/reports
+        """
         this_dir = os.path.dirname(os.path.abspath(__file__))
         templates_dir = os.path.join(this_dir, 'templates/reports')
         tempath = '%s/%s' % (templates_dir, '*.pt')
@@ -84,22 +69,36 @@ class AnalysisRequestPublishView(BrowserView):
         return out
 
     def getAnalysisRequests(self):
+        """ Returns a dict with the analysis requests to manage
+        """
         return self._ars;
 
     def getAnalysisRequestsCount(self):
+        """ Returns the number of analysis requests to manage
+        """
         return len(self._ars);
 
     def getAnalysisRequestObj(self):
+        """ Returns the analysis request objects to be managed
+        """
         return self._ars[self._current_ar_index]
 
     def getAnalysisRequest(self):
+        """ Returns the dict for the currently managed analysis request
+        """
         return self._ar_data(self._ars[self._current_ar_index])
 
     def _nextAnalysisRequest(self):
+        """ Move to the next analysis request
+        """
         if self._current_ar_index < len(self._ars):
             self._current_ar_index += 1
 
     def getReportTemplate(self):
+        """ Returns the html template for the current ar and moves to
+            the next ar to be processed. Uses the selected template
+            specified in the request ('template' parameter)
+        """
         embedt = self.request.get('template', self._DEFAULT_TEMPLATE)
         embed = ViewPageTemplateFile("templates/reports/%s" % embedt);
         try:
@@ -110,6 +109,11 @@ class AnalysisRequestPublishView(BrowserView):
         self._nextAnalysisRequest()
 
     def getReportStyle(self):
+        """ Returns the css style to be used for the current template.
+            If the selected template is 'default.pt', this method will
+            return the content from 'default.css'. If no css file found
+            for the current template, returns empty string
+        """
         template = self.request.get('template', self._DEFAULT_TEMPLATE)
         this_dir = os.path.dirname(os.path.abspath(__file__))
         templates_dir = os.path.join(this_dir, 'templates/reports/')
@@ -120,9 +124,14 @@ class AnalysisRequestPublishView(BrowserView):
         return content;
 
     def isQCAnalysesVisible(self):
+        """ Returns if the QC Analyses must be displayed
+        """
         return self.request.get('qcvisible', '0').lower() in ['true', '1']
 
     def _ar_data(self, ar):
+        """ Creates an ar dict, accessible from the view and from each
+            specific template
+        """
         data = {'obj': ar,
                 'id': ar.getRequestID(),
                 'client_order_num': ar.getClientOrderNumber(),
@@ -146,6 +155,7 @@ class AnalysisRequestPublishView(BrowserView):
                 'url': ar.absolute_url(),
                 'remarks': to_utf8(ar.getRemarks()),
                 'footer': to_utf8(self.context.bika_setup.getResultFooter()),
+                'prepublish': False,
                 'child_analysisrequest': None,
                 'parent_analysisrequest': None}
 
@@ -154,6 +164,10 @@ class AnalysisRequestPublishView(BrowserView):
             data['parent_analysisrequest'] = self._artodict(ar.getParentAnalysisRequest())
         if ar.getChildAnalysisRequest():
             data['child_analysisrequest'] = self._artodict(ar.getChildAnalysisRequest())
+
+        wf = getToolByName(ar, 'portal_workflow')
+        allowed_states = ['verified', 'published']
+        data['prepublish'] = wf.getInfoFor(ar, 'review_state') not in allowed_states
 
         data['contact'] = self._contact_data(ar)
         data['client'] = self._client_data(ar)
@@ -485,3 +499,248 @@ class AnalysisRequestPublishView(BrowserView):
                     data['signature'] = sf.absolute_url() + "/Signature"
 
         return data
+
+    def publish(self):
+        """ Publish the AR report/s. Generates a results pdf file
+            associated to each AR, sends an email with the report to
+            the lab manager and sends a notification (usually an email
+            with the PDF attached) to the AR's contact and CCs.
+            Transitions each published AR to statuses 'published',
+            'prepublished' or 'republished'.
+            Returns a list with the AR identifiers that have been
+            published/prepublished/republished (only those 'verified',
+            'published' or at least have one 'verified' result).
+        """
+        if len(self._ars) > 1:
+            published_ars = []
+            for ar in self._ars:
+                arpub = AnalysisRequestPublishView(ar, self.request, publish=True)
+                ar = arpub.publish()
+                published_ars.extend(ar)
+            published_ars = [par.id for par in published_ars]
+            return published_ars
+
+        # The AR can be published only and only if allowed
+        ar = self._ars[0]
+        wf = getToolByName(ar, 'portal_workflow')
+        allowed_states = ['verified', 'published']
+        # Publish/Republish allowed?
+        if wf.getInfoFor(ar, 'review_state') not in allowed_states:
+            # Pre-publish allowed?
+            if not ar.getAnalyses(review_state=allowed_states):
+                return []
+
+        # SMTP errors are silently ignored if server is in debug mode
+        debug_mode = App.config.getConfiguration().debug_mode
+        # PDF and HTML files are written to disk if server is in debug mode
+        out_path = join(Globals.INSTANCE_HOME, 'var') if debug_mode \
+            else None
+        out_fn = to_utf8(ar.Title())
+
+        results_html = safe_unicode(self.template()).encode('utf-8')
+        if out_path:
+            open(join(out_path, out_fn + ".html"), "w").write(results_html)
+
+        # Create the pdf report (will always be attached to the AR)
+        pdf_outfile = join(out_path, out_fn + ".pdf") if out_path else None
+        pdf_report = createPdf(results_html, pdf_outfile)
+
+        recipients = []
+        contact = ar.getContact()
+        lab = ar.bika_setup.laboratory
+        if pdf_report:
+            if contact:
+                recipients = [{
+                    'UID': contact.UID(),
+                    'Username': to_utf8(contact.getUsername()),
+                    'Fullname': to_utf8(contact.getFullname()),
+                    'EmailAddress': to_utf8(contact.getEmailAddress()),
+                    'PublicationModes': contact.getPublicationPreference()
+                }]
+            reportid = ar.generateUniqueId('ARReport')
+            report = _createObjectByType("ARReport", ar, reportid)
+            report.edit(
+                AnalysisRequest=ar.UID(),
+                Pdf=pdf_report,
+                Html=results_html,
+                Recipients=recipients
+            )
+            report.unmarkCreationFlag()
+            renameAfterCreation(report)
+
+            # Set status to prepublished/published/republished
+            status = wf.getInfoFor(ar, 'review_state')
+            transitions = {'verified': 'publish',
+                           'published' : 'republish'}
+            transition = transitions.get(status, 'prepublish')
+            try:
+                wf.doActionFor(ar, transition)
+            except WorkflowException:
+                pass
+
+            # compose and send email.
+            # The managers of the departments for which the current AR has
+            # at least one AS must receive always the pdf report by email.
+            # https://github.com/bikalabs/Bika-LIMS/issues/1028
+            mime_msg = MIMEMultipart('related')
+            mime_msg['Subject'] = self.get_mail_subject(ar)[0]
+            mime_msg['From'] = formataddr(
+                (encode_header(lab.getName()), lab.getEmailAddress()))
+            mime_msg.preamble = 'This is a multi-part MIME message.'
+            msg_txt = MIMEText(results_html, _subtype='html')
+            mime_msg.attach(msg_txt)
+
+            to = []
+            mngrs = ar.getResponsible()
+            for mngrid in mngrs['ids']:
+                name = mngrs['dict'][mngrid].get('name', '')
+                email = mngrs['dict'][mngrid].get('email', '')
+                if (email != ''):
+                    to.append(formataddr((encode_header(name), email)))
+
+            if len(to) > 0:
+                # Send the email to the managers
+                mime_msg['To'] = ','.join(to)
+                attachPdf(mime_msg, pdf_report, out_fn)
+
+                try:
+                    host = getToolByName(ar, 'MailHost')
+                    host.send(mime_msg.as_string(), immediate=True)
+                except SMTPServerDisconnected as msg:
+                    pass
+                    if not debug_mode:
+                        raise SMTPServerDisconnected(msg)
+                except SMTPRecipientsRefused as msg:
+                    raise WorkflowException(str(msg))
+
+        # Send report to recipients
+        recips = self.get_recipients(ar)
+        for recip in recips:
+            if 'email' not in recip.get('pubpref', []) \
+                    or not recip.get('email', ''):
+                continue
+
+            title = encode_header(recip.get('title', ''))
+            email = recip.get('email')
+            formatted = formataddr((title, email))
+
+            # Create the new mime_msg object, cause the previous one
+            # has the pdf already attached
+            mime_msg = MIMEMultipart('related')
+            mime_msg['Subject'] = self.get_mail_subject(ar)[0]
+            mime_msg['From'] = formataddr(
+            (encode_header(lab.getName()), lab.getEmailAddress()))
+            mime_msg.preamble = 'This is a multi-part MIME message.'
+            msg_txt = MIMEText(results_html, _subtype='html')
+            mime_msg.attach(msg_txt)
+            mime_msg['To'] = formatted
+
+            # Attach the pdf to the email if requested
+            if pdf_report and 'pdf' in recip.get('pubpref'):
+                attachPdf(mime_msg, pdf_report, out_fn)
+
+            # For now, I will simply ignore mail send under test.
+            if hasattr(self.portal, 'robotframework'):
+                continue
+
+            try:
+                host = getToolByName(ar, 'MailHost')
+                host.send(mime_msg.as_string(), immediate=True)
+            except SMTPServerDisconnected as msg:
+                if not debug_mode:
+                    raise SMTPServerDisconnected(msg)
+            except SMTPRecipientsRefused as msg:
+                raise WorkflowException(str(msg))
+
+        return [ar]
+
+    def get_recipients(self, ar):
+        """ Returns a list with the recipients and all its publication prefs
+        """
+        recips = []
+
+        # Contact and CC's
+        contact = ar.getContact()
+        if contact:
+            recips.append({'title': to_utf8(contact.Title()),
+                           'email': contact.getEmailAddress(),
+                           'pubpref': contact.getPublicationPreference()})
+        for cc in ar.getCCContact():
+            recips.append({'title': to_utf8(cc.Title()),
+                           'email': cc.getEmailAddress(),
+                           'pubpref': contact.getPublicationPreference()})
+
+        return recips
+
+    def get_mail_subject(self, ar):
+        """ Returns the email subject in accordance with the client
+            preferences
+        """
+        client = ar.aq_parent
+        subject_items = client.getEmailSubject()
+        ai = co = cr = cs = False
+        if 'ar' in subject_items:
+            ai = True
+        if 'co' in subject_items:
+            co = True
+        if 'cr' in subject_items:
+            cr = True
+        if 'cs' in subject_items:
+            cs = True
+        ais = []
+        cos = []
+        crs = []
+        css = []
+        blanks_found = False
+        if ai:
+            ais.append(ar.getRequestID())
+        if co:
+            if ar.getClientOrderNumber():
+                if not ar.getClientOrderNumber() in cos:
+                    cos.append(ar.getClientOrderNumber())
+            else:
+                blanks_found = True
+        if cr or cs:
+            sample = ar.getSample()
+        if cr:
+            if sample.getClientReference():
+                if not sample.getClientReference() in crs:
+                    crs.append(sample.getClientReference())
+            else:
+                blanks_found = True
+        if cs:
+            if sample.getClientSampleID():
+                if not sample.getClientSampleID() in css:
+                    css.append(sample.getClientSampleID())
+            else:
+                blanks_found = True
+        tot_line = ''
+        if ais:
+            ais.sort()
+            ar_line = _('ARs: %s') % ', '.join(ais)
+            tot_line = ar_line
+        if cos:
+            cos.sort()
+            cos_line = _('Orders: %s') % ', '.join(cos)
+            if tot_line:
+                tot_line += ' '
+            tot_line += cos_line
+        if crs:
+            crs.sort()
+            crs_line = _('Refs: %s') % ', '.join(crs)
+            if tot_line:
+                tot_line += ' '
+            tot_line += crs_line
+        if css:
+            css.sort()
+            css_line = _('Samples: %s') % ', '.join(css)
+            if tot_line:
+                tot_line += ' '
+            tot_line += css_line
+        if tot_line:
+            subject = _('Analysis results for %s') % tot_line
+            if blanks_found:
+                subject += (' ' + _('and others'))
+        else:
+            subject = _('Analysis results')
+        return subject, tot_line
