@@ -8,7 +8,6 @@ from bika.lims.utils import to_utf8
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.PythonScripts.standard import html_quote
-from zope.i18n import translate
 from zope.component import adapts
 from zope.component import getAdapters
 from zope.interface import implements

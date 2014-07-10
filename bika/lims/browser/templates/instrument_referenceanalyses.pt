@@ -47,21 +47,21 @@
                 // Draw the chart and filter rows
                 if ($('#selanalyses').val()) {
                     filterRows();
-                    drawControlChart();
+                    drawControlChart(null, null);
                 }
 
                 $('#selanalyses').change(function(e) {
-                    drawControlChart();
+                    drawControlChart(null, null);
                     filterRows();
                 });
 
                 $('#selqcsample').change(function(e) {
-                    drawControlChart();
+                    drawControlChart(null, null);
                     filterRows();
                 });
 
                 $('#interpolation').change(function(e) {
-                    drawControlChart();
+                    drawControlChart(null, null);
                 });
 
                 $('.item-listing-tbody tr').mouseover(function(e) {
@@ -107,7 +107,7 @@
                     // Re-scale
                     $("#chart").css('width', '100%');
                     $("#chart").removeAttr('height');
-                    drawControlChart();
+                    drawControlChart(null, null);
 
                     WinPrint.close();
                 });
@@ -134,7 +134,7 @@
             $('.bika-listing-table').closest('div').before('<div class="results-info">'+count+' results found</div>');
         }
 
-        function drawControlChart(width=null, height=null) {
+        function drawControlChart(width, height) {
             var analysiskey = $('#selanalyses').val();
             var reftype = $('#selqcsample').val();
             var interpolation = $('#interpolation').val()

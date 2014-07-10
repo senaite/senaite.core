@@ -679,6 +679,10 @@ msgstr ""
 msgid "Reference Values"
 msgstr ""
 #
+# File: bika.lims/bika/lims/profiles/default/types/RejectAnalysis.xml, line: -1
+msgid "Reject Analysis"
+msgstr ""
+#
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Report.xml, line: -1
 msgid "Report"

@@ -1022,12 +1022,10 @@ h2 a.add-button {
     margin-bottom: 8px;
     margin-top: 15px;
 }
-
 a.pdf {
     padding-left:20px;
     background: url(&dtml-portal_url;/++resource++bika.lims.images/pdf.png) no-repeat left center transparent;
 }
-
 a.add-remark {
     padding-right: 5px;
 }
@@ -1044,6 +1042,15 @@ a.print-16 {
 }
 a.print-16:hover {
     color: #3c3c3c !important;
+}
+/*To read combogrd items better*/
+div.cg-comboItem.cg-menu-item > div.cg-colItem.ui-corner-all > div.cg-DivItem {
+    height: 70px;
+}
+/*To down the live-search-bar*/
+div.LSResult {
+    position: relative;
+    top:75%;
 }
 
 table#add_analyses {

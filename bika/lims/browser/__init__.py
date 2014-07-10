@@ -5,8 +5,8 @@ from AccessControl import ClassSecurityInfo
 from Products.CMFPlone.i18nl10n import ulocalized_time
 from Products.Five.browser import BrowserView
 from bika.lims import logger
-from zope.i18n import translate
 from zope.cachedescriptors.property import Lazy as lazy_property
+from zope.i18n import translate
 
 class BrowserView(BrowserView):
 
@@ -99,7 +99,7 @@ class BrowserView(BrowserView):
         if time_only:
             msgid = 'time_format'
         # get the formatstring
-        formatstring = translate(msgid, 'bika', {}, self.request)
+        formatstring = translate(msgid, domain='bika', mapping={}, context=self.request)
         if formatstring is None or formatstring.startswith('date_') or formatstring.startswith('time_'):
             self.logger.error("bika/%s/%s could not be translated" %
                               (self.request.get('LANGUAGE'), msgid))

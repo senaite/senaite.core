@@ -15,6 +15,7 @@
  <object name="bika_publication_workflow" meta_type="Workflow"/>
  <object name="bika_referenceanalysis_workflow" meta_type="Workflow"/>
  <object name="bika_referencesample_workflow" meta_type="Workflow"/>
+ <object name="bika_reject_analysis_workflow" meta_type="Workflow"/>
  <object name="bika_sample_workflow" meta_type="Workflow"/>
  <object name="bika_worksheet_workflow" meta_type="Workflow"/>
  <object name="bika_worksheetanalysis_workflow" meta_type="Workflow"/>
@@ -276,6 +277,10 @@
   </type>
 
   <type type_id="ReferenceSamplesFolder"/>
+
+  <type type_id="RejectAnalysis">
+   <bound-workflow workflow_id="bika_reject_analysis_workflow"/>
+  </type>
 
   <type type_id="Sample">
    <bound-workflow workflow_id="bika_sample_workflow"/>

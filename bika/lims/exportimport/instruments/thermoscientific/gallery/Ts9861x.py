@@ -29,7 +29,8 @@ def Import(context, request):
     if fileformat == 'tsv_40':
         parser = ThermoGallery9861xTSVParser(infile)
     else:
-        errors.append(_("Unrecognized file format '%s'") % fileformat)
+        errors.append(t(_("Unrecognized file format ${fileformat}",
+                          mapping={"fileformat": fileformat})))
 
     if parser:
         # Load the importer

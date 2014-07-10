@@ -100,6 +100,19 @@ class AnalysisRequestViewView(BrowserView):
                                                   {'id': 'retract'},
                                                   {'id': 'verify'}]
         self.qctable = qcview.contents_table()
+        # If a general retracted is done, rise a waring
+        if workflow.getInfoFor(ar, 'review_state') == 'sample_received':
+            allstatus = list()
+            for analysis in ar.getAnalyses():
+                status = workflow.getInfoFor(analysis.getObject(), 'review_state')
+                if status not in ['retracted','to_be_verified','verified']:
+                    allstatus = []
+                    break
+                else:
+                    allstatus.append(status)
+            if len(allstatus) > 0:
+                self.addMessage("General Retract Done", 'warning')
+
         # If is a retracted AR, show the link to child AR and show a warn msg
         if workflow.getInfoFor(ar, 'review_state') == 'invalid':
             childar = hasattr(ar, 'getChildAnalysisRequest') \

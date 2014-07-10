@@ -42,9 +42,9 @@ class ThermoGalleryTSVParser(InstrumentCSVResultsFileParser):
                     self._header['User'] = splitted[3] \
                         if len(splitted) > 3 else ''
                 else:
-                    self.warn(_('Unexpected header format'))
+                    self.warn("Unexpected header format", numline=self._numline)
             else:
-                self.warn(_('Unexpected header format'))
+                self.warn("Unexpected header format", numline=self._numline)
 
             return 0
 
@@ -53,14 +53,14 @@ class ThermoGalleryTSVParser(InstrumentCSVResultsFileParser):
             if len(splitted) > 1:
                 self._header['Time'] = splitted[1]
             else:
-                self.warn(_('Unexpected header format'), self._numline)
+                self.warn("Unexpected header format", numline=self._numline)
 
             return 0
 
         if line.startswith('Sample/ctrl'):
             # Sample/ctrl ID    Pat/Ctr/cAl    Test name    Test type
             if len(self._header) == 0:
-                self.err(_("No header found"), self._numline)
+                self.warn("No header found", numline=self._numline)
                 return -1
 
             #Grab column names
@@ -77,19 +77,22 @@ class ThermoGalleryTSVParser(InstrumentCSVResultsFileParser):
         splitted = self.splitLine(line)
         for idx, result in enumerate(splitted):
             if len(self._columns) <= idx:
-                self.err(_("Orphan value in column %s, line %s") \
-                         % (str(idx + 1), self._numline))
+                self.err("Orphan value in column ${index}",
+                         mapping={"index":str(idx + 1)},
+                         numline=self._numline)
                 break
             rawdict[self._columns[idx]] = result
 
         acode = rawdict.get('Test name', '')
         if not acode:
-            self.err(_("No Analysis Code defined, line %s") % (self.num_line))
+            self.err("No Analysis Code defined",
+                     numline=self._numline)
             return 0
 
         rid = rawdict.get('Sample/ctrl ID')
         if not rid:
-            self.err(_("No Sample ID defined, line %s") % (self.num_line))
+            self.err("No Sample ID defined",
+                     numline=self._numline)
             return 0
 
         errors = rawdict.get('Errors', '')
@@ -104,7 +107,6 @@ class ThermoGalleryTSVParser(InstrumentCSVResultsFileParser):
         raw[acode] = rawdict
         self._addRawResult(rid, raw, True)
         return 0
-
 
 class ThermoGalleryImporter(AnalysisResultsImporter):
 

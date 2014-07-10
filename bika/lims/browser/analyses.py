@@ -399,6 +399,8 @@ class AnalysesView(BikaListingView):
                 elif self.context.portal_type == "Worksheet":
                     if obj.portal_type == "DuplicateAnalysis":
                         sample = obj.getAnalysis().getSample()
+                    elif obj.portal_type == "RejectAnalysis":
+                        sample = obj.getAnalysis().getSample()
                     else:
                         sample = obj.aq_parent.getSample()
                     st_uid = sample.getSampleType().UID()

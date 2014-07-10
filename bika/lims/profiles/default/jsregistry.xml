@@ -343,6 +343,17 @@
               inline="False"
               />
 
+ <javascript authenticated="False"
+              id="++resource++bika.lims.js/bika.lims.artemplate.edit.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              />
+
   <!-- Add javascripts ALWAYS BEFORE this one -->
   <javascript authenticated="False"
               id="++resource++bika.lims.js/bika.lims.loader.js"

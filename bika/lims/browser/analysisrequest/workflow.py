@@ -412,8 +412,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         laboratory = self.context.bika_setup.laboratory
         lab_address = "<br/>".join(laboratory.getPrintAddress())
         mime_msg = MIMEMultipart('related')
-        mime_msg['Subject'] = _("Erroneus result publication from %s") % \
-                                ar.getRequestID()
+        mime_msg['Subject'] = t(_("Erroneus result publication from ${request_id}",
+                                mapping={"request_id": ar.getRequestID()}))
         mime_msg['From'] = formataddr(
             (encode_header(laboratory.getName()),
              laboratory.getEmailAddress()))
@@ -452,12 +452,15 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     or ''
 
         body = _("Some errors have been detected in the results report "
-                 "published from the Analysis Request %s. The Analysis "
-                 "Request %s has been created automatically and the "
+                 "published from the Analysis Request ${request_link}. The Analysis "
+                 "Request ${new_request_link} has been created automatically and the "
                  "previous has been invalidated.<br/>The possible mistake "
                  "has been picked up and is under investigation.<br/><br/>"
-                 "%s%s"
-                 ) % (aranchor, naranchor, addremarks, lab_address)
+                 "${remarks}${lab_address}",
+                 mapping={"request_link":aranchor,
+                          "new_request_link":naranchor,
+                          "remarks": addremarks,
+                          "lab_address": lab_address})
         msg_txt = MIMEText(safe_unicode(body).encode('utf-8'),
                            _subtype='html')
         mime_msg.preamble = 'This is a multi-part MIME message.'
