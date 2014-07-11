@@ -1,3 +1,14 @@
+3.1.2 ()
+------------------
+
+LIMS-1292: Retracted ARs in status 'Sample received' state with all its Analyses 'To be Verified' . Valid
+LIMS.1287:
+LIMS-1230: Livesearch's box (right top) hide the searching txt when it displays possible results
+LIMS-1257: Long titles in Analysis Profiles, Sample Points, etc. are not correctly displayed in selection widgets
+LIMS-1214: More columns
+LIMS-1199: From the 'How did we overlook this' dept. Worksheet totals in WS lists
+
+
 3.1.1 (2014-06-29)
 ------------------
 
