@@ -83,7 +83,7 @@ class WorksheetFolderListingView(BikaListingView):
         self.catalog = 'bika_catalog'
         self.contentFilter = {
             'portal_type': 'Worksheet',
-            'review_state':['open', 'to_be_verified', 'verified'],
+            'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
             'sort_on':'id',
             'sort_order': 'reverse'}
         self.context_actions = {_('Add'):
@@ -152,6 +152,12 @@ class WorksheetFolderListingView(BikaListingView):
             'QC': {'title': _('QC'),
                    'sortable':False,
                    'toggle': False},
+            'QCNum': {'title': _('QC Number'),
+                   'sortable':False,
+                   'toggle': False},
+            'RoutineNum': {'title': _('Routine Number'),
+                   'sortable':False,
+                   'toggle': False},
             'CreationDate': {'title': PMF('Date Created'),
                              'toggle': True,
                              'index': 'created'},
@@ -162,7 +168,7 @@ class WorksheetFolderListingView(BikaListingView):
             {'id':'default',
              'title': _('All'),
              'contentFilter': {'portal_type': 'Worksheet',
-                               'review_state':['open', 'to_be_verified', 'verified'],
+                               'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
                                'sort_on':'id',
                                'sort_order': 'reverse'},
              'transitions':[{'id':'retract'},
@@ -176,6 +182,8 @@ class WorksheetFolderListingView(BikaListingView):
                         'SampleTypes',
                         'Instrument',
                         'QC',
+                        'QCNum',
+                        'RoutineNum',
                         'CreationDate',
                         'state_title']},
             # getAuthenticatedMember does not work in __init__
@@ -183,7 +191,7 @@ class WorksheetFolderListingView(BikaListingView):
             {'id':'mine',
              'title': _('Mine'),
              'contentFilter': {'portal_type': 'Worksheet',
-                               'review_state':['open', 'to_be_verified', 'verified'],
+                               'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
                                'sort_on':'id',
                                'sort_order': 'reverse'},
              'transitions':[{'id':'retract'},
@@ -197,6 +205,8 @@ class WorksheetFolderListingView(BikaListingView):
                         'SampleTypes',
                         'Instrument',
                         'QC',
+                        'QCNum',
+                        'RoutineNum',
                         'CreationDate',
                         'state_title']},
             {'id':'open',
@@ -214,6 +224,8 @@ class WorksheetFolderListingView(BikaListingView):
                         'SampleTypes',
                         'Instrument',
                         'QC',
+                        'QCNum',
+                        'RoutineNum',
                         'CreationDate',
                         'state_title']},
             {'id':'to_be_verified',
@@ -233,6 +245,8 @@ class WorksheetFolderListingView(BikaListingView):
                         'SampleTypes',
                         'Instrument',
                         'QC',
+                        'QCNum',
+                        'RoutineNum',
                         'CreationDate',
                         'state_title']},
             {'id':'verified',
@@ -250,6 +264,8 @@ class WorksheetFolderListingView(BikaListingView):
                         'SampleTypes',
                         'Instrument',
                         'QC',
+                        'QCNum',
+                        'RoutineNum',
                         'CreationDate',
                         'state_title']},
         ]
@@ -417,6 +433,13 @@ class WorksheetFolderListingView(BikaListingView):
             items[x]['replace']['SampleTypes'] = " ".join(sampletypes)
             items[x]['QC'] = ""
             items[x]['replace']['QC'] = " ".join(blanks + controls)
+            
+            items[x]['QCNum'] = ''
+            items[x]['QCNum'] = len([a for a in obj.getAnalyses() 
+                                     if a.portal_type == 'ReferenceAnalysis' 
+                                     or a.portal_type == 'DuplicateAnalysis'])
+
+            items[x]['RoutineNum'] = len(obj.getAnalyses()) - items[x]['QCNum']
 
             if items[x]['review_state'] == 'open' \
                 and self.allow_edit \

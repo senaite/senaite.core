@@ -63,4 +63,7 @@ class AnalysisProfile(BaseContent):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
+    def getClientUID(self):
+        return self.aq_parent.UID();
+
 registerType(AnalysisProfile, PROJECTNAME)

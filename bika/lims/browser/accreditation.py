@@ -1,12 +1,26 @@
+# encoding=utf-8
+
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims.controlpanel.bika_analysisservices import AnalysisServicesView
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
-from bika.lims.utils import to_utf8 as _c, to_utf8
 from plone.app.content.browser.interfaces import IFolderContentsView
 from zope.interface import implements
 
 
 class AccreditationView(AnalysisServicesView):
+    """
+    >>> portal = layer['portal']
+    >>> portal_url = portal.absolute_url()
+    >>> from plone.app.testing import SITE_OWNER_NAME
+    >>> from plone.app.testing import SITE_OWNER_PASSWORD
+
+    >>> browser = layer['getBrowser'](portal)
+    >>> browser.open(portal_url+"/accreditation")
+    >>> 'SAI is the' in browser.contents
+    True
+
+    """
     implements(IFolderContentsView)
 
     def __init__(self, context, request):
@@ -21,31 +35,24 @@ class AccreditationView(AnalysisServicesView):
 
         lab = context.bika_setup.laboratory
         accredited = lab.getLaboratoryAccredited()
-        self.mapping = {'accredited': accredited,
-                        'labname': lab.getName(),
-                        'labcountry': lab.getPhysicalAddress().get('country', ''),
-                        'confidence': lab.getConfidence(),
-                        'abbr': lab.getAccreditationBody(),
-                        'body': lab.getAccreditationBodyLong(),
-                        'url': lab.getAccreditationBodyURL(),
-                        'accr': lab.getAccreditation(),
-                        'ref': lab.getAccreditationReference()
+        self.mapping = {'lab_is_accredited': accredited,
+                        'lab_name': safe_unicode(lab.getName()),
+                        'lab_country': safe_unicode(lab.getPhysicalAddress().get('country', '')),
+                        'confidence': safe_unicode(lab.getConfidence()),
+                        'accreditation_body_abbr': safe_unicode(lab.getAccreditationBody()),
+                        'accreditation_body_name': safe_unicode(lab.getAccreditationBodyURL()),
+                        'accreditation_standard': safe_unicode(lab.getAccreditation()),
+                        'accreditation_reference': safe_unicode(lab.getAccreditationReference())
         }
         if accredited:
-            msg = t(_(
-                "${labname} has been accredited as ${accr} " + \
-                "conformant by ${abbr}, (${body}). ${abbr} is " + \
-                "recognised by government as a national " + \
-                "accreditation body in ${labcountry}. ",
-                mapping=self.mapping
+            self.description = t(_(safe_unicode(lab.getAccreditationPageHeader()),
+                                   mapping=self.mapping
             ))
         else:
-            msg = t(_("The lab is not accredited, or accreditation has not "
-                    "been configured. "))
-        self.description = msg
-        msg = _("All Accredited analysis services are listed here.")
-        self.description = "%s<p><br/>%s</p>" % (self.description,
-                                                 _c(context.translate(_(msg))))
+            self.description = t(_("The lab is not accredited, or accreditation has "
+                    "not been configured. "))
+        msg = t(_("All Accredited analysis services are listed here."))
+        self.description = "%s<p><br/>%s</p>" % (self.description, msg)
 
         self.show_select_column = False
         request.set('disable_border', 1)

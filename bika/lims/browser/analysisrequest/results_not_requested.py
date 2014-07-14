@@ -29,8 +29,8 @@ class AnalysisRequestResultsNotRequestedView(AnalysisRequestManageResultsView):
                         and ar.getChildAnalysisRequest() or None
             childid = childar and childar.getRequestID() or None
             message = _('This Analysis Request has been withdrawn and is shown '
-                        'for trace-ability purposes only. Retest: %s.') \
-                        % (childid or '')
+                        'for trace-ability purposes only. Retest: ${retest_child_id}.',
+                        mapping={"retest_child_id":childid if childid else ''})
             self.context.plone_utils.addPortalMessage(message, 'warning')
 
         # If is an AR automatically generated due to a Retraction, show it's
@@ -38,10 +38,10 @@ class AnalysisRequestResultsNotRequestedView(AnalysisRequestManageResultsView):
         if hasattr(ar, 'getParentAnalysisRequest') \
             and ar.getParentAnalysisRequest():
             par = ar.getParentAnalysisRequest()
-            message = _('This Analysis Request has been '
-                        'generated automatically due to '
-                        'the retraction of the Analysis '
-                        'Request %s.') % par.getRequestID()
+            message = _(
+                'This Analysis Request has been generated automatically due to '
+                'the retraction of the Analysis Request ${retracted_request_id}.',
+                mapping={"retracted_request_id": par.getRequestID()})
             self.context.plone_utils.addPortalMessage(message, 'info')
 
         can_do = getSecurityManager().checkPermission(ResultsNotRequested, ar)

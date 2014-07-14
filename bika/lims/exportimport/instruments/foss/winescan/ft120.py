@@ -29,7 +29,8 @@ def Import(context, request):
     if fileformat == 'csv':
         parser = WinescanFT120CSVParser(infile)
     else:
-        errors.append(_("Unrecognized file format '%s'") % fileformat)
+        errors.append(t(_("Unrecognized file format ${fileformat}",
+                          mapping={"fileformat": fileformat})))
 
     if parser:
         # Load the importer

@@ -46,6 +46,20 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
                     t.show_select_column = True
                     poc_value = POINTS_OF_CAPTURE.getValue(poc)
                     self.tables[poc_value] = t.contents_table()
+            # If a general retracted is done, rise a waring
+            if workflow.getInfoFor(ar, 'review_state') == 'sample_received':
+                allstatus = list()
+                for analysis in ar.getAnalyses():
+                    status = workflow.getInfoFor(analysis.getObject(), 'review_state')
+                    if status not in ['retracted','to_be_verified','verified']:
+                        allstatus = []
+                        break
+                    else:
+                        allstatus.append(status)
+                if len(allstatus) > 0:
+                    message = "General Retract Done"
+                    self.context.plone_utils.addPortalMessage(message, 'warning')
+
             self.checkInstrumentsValidity()
             return self.template()
 

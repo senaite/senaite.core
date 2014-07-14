@@ -3,11 +3,12 @@
 # Rui Tang <bio.nanoparticle@gmail.com>, 2012
 # Rui Tang <bio.nanoparticle@gmail.com>, 2012
 # Rui Tang <bio.nanoparticle@gmail.com>, 2012
+# Rui Tang <bio.nanoparticle@gmail.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2012-01-01 23:11+0000\n"
-"PO-Revision-Date: 2014-06-13 13:11+0000\n"
+"PO-Revision-Date: 2014-07-04 17:24+0000\n"
 "Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
 "Language-Team: Chinese (http://www.transifex.com/projects/p/bika-lims/language/zh/)\n"
 "MIME-Version: 1.0\n"
@@ -74,10 +75,6 @@ msgstr ""
 msgid "${item}: ${part} is waiting to be received."
 msgstr "${item}: ${part} 等待接收."
 
-# File: bika.lims/bika/lims/browser/accreditation.py, line: 35
-msgid "${labname} has been accredited as ${accr} conformant by ${abbr}, (${body}). ${abbr} is recognised by government as a national accreditation body in ${labcountry}. "
-msgstr ""
-
 # File:
 # bika.lims/bika/lims/browser/reports/templates/productivity_samplereceivedvsreported.pt,
 # line: 36
@@ -104,21 +101,6 @@ msgstr ""
 # bika.lims/bika/lims/browser/reports/templates/productivity_analysesperformedpertotal.pt,
 # line: 101
 msgid "% Published"
-msgstr ""
-
-# File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
-# 504
-msgid "%s calculated result for '%s': '%s'"
-msgstr ""
-
-# File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
-# 749
-msgid "%s result for '%s': Empty"
-msgstr ""
-
-# File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
-# 709
-msgid "%s result for '%s:%s': '%s'"
 msgstr ""
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 291
@@ -269,8 +251,9 @@ msgstr "分析请求模板"
 msgid "AR for retested results"
 msgstr ""
 
+#
 # File: bika.lims/bika/lims/browser/publish.py, line: 548
-msgid "ARs: %s"
+msgid "ARs: ${ars}"
 msgstr ""
 
 # File: bika.lims/bika/lims/content/organisation.py, line: 73
@@ -289,10 +272,6 @@ msgstr "帐户类型"
 # File: bika.lims/bika/lims/content/laboratory.py, line: 69
 msgid "Accreditation"
 msgstr "认证"
-
-# File: bika.lims/bika/lims/content/laboratory.py, line: 44
-msgid "Accreditation Body"
-msgstr "认证方"
 
 # File: bika.lims/bika/lims/content/laboratory.py, line: 53
 msgid "Accreditation Body Abbreviation"
@@ -373,6 +352,11 @@ msgstr "添加重复样"
 msgid "Add Profile"
 msgstr "添加配置"
 
+#
+# worksheet.js
+msgid "Add Remark"
+msgstr ""
+
 # File: bika.lims/bika/lims/controlpanel/bika_artemplates.py, line: 36
 # File: bika.lims/bika/lims/controlpanel/bika_srtemplates.py, line: 37
 msgid "Add Template"
@@ -403,6 +387,11 @@ msgstr "在ID前缀后面添加2位年"
 # 79
 msgid "Administrative Reports"
 msgstr "管理员报告"
+
+#
+# File: bika.lims/bika/lims/browser/reports/selection_macros/__init__.py, line: 162
+msgid "After ${end_date}"
+msgstr ""
 
 # File: bika.lims/bika/lims/browser/instrument.py, line: 530
 # File: bika.lims/bika/lims/content/instrumentcertification.py, line: 41
@@ -447,16 +436,6 @@ msgstr ""
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 261
 msgid "Allow manual entry of results"
-msgstr ""
-
-# File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
-# 321
-msgid "Allowed Analysis Request states: %s"
-msgstr ""
-
-# File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
-# 322
-msgid "Allowed analysis states: %s"
 msgstr ""
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 459
@@ -692,12 +671,6 @@ msgstr "分析祥述"
 msgid "Analysis State"
 msgstr ""
 
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 206
-msgid "Analysis Time not found or empty"
-msgstr ""
-
 # File: bika.lims/bika/lims/content/worksheettemplate.py, line: 24
 msgid "Analysis Type"
 msgstr "分析类型"
@@ -770,8 +743,9 @@ msgstr "误差范围内的分析结果"
 msgid "Analysis results"
 msgstr ""
 
-# File: bika.lims/bika/lims/browser/publish.py, line: 569
-msgid "Analysis results for %s"
+#
+# File: bika.lims/bika/lims/browser/publish.py, line: 564
+msgid "Analysis results for ${subject_parts}"
 msgstr ""
 
 # File:
@@ -844,18 +818,6 @@ msgstr ""
 # line: 48
 msgid "Analyst"
 msgstr "分析员"
-
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 214
-msgid "Analyst Name not found"
-msgstr ""
-
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 212
-msgid "Analyst Name not found or empty"
-msgstr ""
 
 # File: bika.lims/bika/lims/browser/worksheetfolder.py, line: 481
 msgid "Analyst must be specified."
@@ -1026,12 +988,6 @@ msgstr ""
 msgid "Batch"
 msgstr "批"
 
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 195
-msgid "Batch Data Path not found or empty"
-msgstr ""
-
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 69
 # File: bika.lims/bika/lims/browser/batchfolder.py, line: 37
@@ -1050,24 +1006,17 @@ msgstr ""
 msgid "Batch labels"
 msgstr ""
 
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 252
-msgid "Batch state not found"
-msgstr ""
-
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 250
-msgid "Batch state not found or empty"
-msgstr ""
-
 # File: bika.lims/bika/lims/browser/batchfolder.py, line: 27
 msgid "Batches"
 msgstr "多批"
 
 # File: bika.lims/bika/lims/browser/fields/coordinatefield.py, line: 24
 msgid "Bearing"
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/browser/reports/selection_macros/__init__.py, line: 159
+msgid "Before ${start_date}"
 msgstr ""
 
 # File: bika.lims/bika/lims/content/arpriority.py, line: 33
@@ -2063,12 +2012,6 @@ msgstr ""
 msgid "Duplicate analysis quality control graphs"
 msgstr "重复分析质量控制图"
 
-# File:
-# bika.lims/bika/lims/exportimport/instruments/foss/winescan/__init__.py,
-# line: 64
-msgid "Duplicated result for '%s', line %s"
-msgstr ""
-
 # File: bika.lims/bika/lims/content/analysis.py, line: 101
 msgid "Duration"
 msgstr "持续时间"
@@ -2106,12 +2049,6 @@ msgstr "Email地址"
 msgid "Email subject line"
 msgstr "Email标题行"
 
-# File:
-# bika.lims/bika/lims/exportimport/instruments/foss/winescan/__init__.py,
-# line: 60
-msgid "Empty result for %s, column %s, line %s"
-msgstr ""
-
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 245
 msgid "Enable AR Specifications"
 msgstr ""
@@ -2124,11 +2061,6 @@ msgstr "使取样流程生效"
 # File: bika.lims/bika/lims/browser/pricelist.py, line: 41
 # File: bika.lims/bika/lims/content/invoicebatch.py, line: 31
 msgid "End Date"
-msgstr ""
-
-# File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
-# 213
-msgid "End of file reached successfully: %s objects, %s analyses, %s results"
 msgstr ""
 
 # File: bika.lims/bika/lims/content/instrumentmaintenancetask.py, line: 144
@@ -2180,8 +2112,9 @@ msgstr ""
 msgid "Entity"
 msgstr ""
 
-# File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 463
-msgid "Erroneus result publication from %s"
+#
+# File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 415
+msgid "Erroneus result publication from ${request_id}"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
@@ -2267,11 +2200,6 @@ msgstr "文件"
 msgid "File attachments to results, e.g. microscope photos, will be included in emails to recipients if this option is enabled"
 msgstr ""
 
-# File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
-# 200
-msgid "File processing finished due to critical errors"
-msgstr ""
-
 # File: bika.lims/bika/lims/content/arimport.py, line: 44
 msgid "Filename"
 msgstr "文件名"
@@ -2296,6 +2224,11 @@ msgstr "公式"
 # File: bika.lims/bika/lims/content/instrumentcalibration.py, line: 32
 msgid "From"
 msgstr "自"
+
+#
+# File: bika.lims/bika/lims/browser/reports/selection_macros/__init__.py, line: 156
+msgid "From ${start_date} to ${end_date}"
+msgstr ""
 
 # File: bika.lims/bika/lims/browser/client.py, line: 756
 # File: bika.lims/bika/lims/browser/supplier.py, line: 180
@@ -2349,18 +2282,6 @@ msgstr ""
 # File: bika.lims/bika/lims/browser/sample.py, line: 689
 msgid "Hazardous"
 msgstr "危险废弃物"
-
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 188
-msgid "Header Batch Data Path already found. Discarding"
-msgstr ""
-
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 176
-msgid "Header Batch Info already found. Discarding"
-msgstr ""
 
 # File: bika.lims/bika/lims/browser/fields/interimfieldsfield.py, line: 24
 msgid "Hidden Field"
@@ -2437,16 +2358,6 @@ msgstr "导入"
 msgid "Import Option"
 msgstr "导入选项"
 
-# File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
-# 532
-msgid "Import finished successfully: %s ARs and %s results updated"
-msgstr ""
-
-# File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
-# 529
-msgid "Import finished successfully: %s ARs, %s Instruments and %s results updated"
-msgstr ""
-
 # File: bika.lims/bika/lims/browser/arimports.py, line: 112
 msgid "Imported"
 msgstr "已导入"
@@ -2492,6 +2403,10 @@ msgstr "不确定的结果"
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 231
 msgid "Indicates whether file attachments, e.g. microscope images, are required for this analysis and whether file upload function will be available for it on data capturing screens"
 msgstr "指明对此分析是否要求文件附件,如显微镜照片等, 以及数据采集计算机的上传功能是否有效"
+
+#
+msgid "Info"
+msgstr ""
 
 # File: bika.lims/bika/lims/content/batch.py, line: 149
 msgid "Inherit From"
@@ -2562,11 +2477,6 @@ msgstr ""
 msgid "Instrument has no data interface selected"
 msgstr "仪器没有选择数据界面"
 
-# File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
-# 361
-msgid "Instrument not found"
-msgstr ""
-
 # File: bika.lims/bika/lims/content/instrument.py, line: 33
 msgid "Instrument type"
 msgstr "仪器类型"
@@ -2599,22 +2509,8 @@ msgstr ""
 msgid "Invalid AR retested"
 msgstr ""
 
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 204
-msgid "Invalid Analysis Time format"
-msgstr ""
-
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 242
-msgid "Invalid Last Calibration time format"
-msgstr ""
-
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 223
-msgid "Invalid Report Time format"
+#
+msgid "Invalid instruments are not shown: ${invalid_list}"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/analysisrequest/invoice.py, line: 25
@@ -2736,12 +2632,6 @@ msgstr "实验室"
 msgid "Laboratory Accredited"
 msgstr "实验室认证"
 
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 244
-msgid "Last Calibration time not found or empty"
-msgstr ""
-
 # File: bika.lims/bika/lims/browser/bika_listing.py, line: 234
 msgid "Last modified"
 msgstr "上次更改"
@@ -2794,7 +2684,6 @@ msgstr "载入设置数据"
 msgid "Load documents describing the method here"
 msgstr "在此载入描述该方法的文档"
 
-#
 # File: bika.lims/bika/lims/exportimport/import.pt, line: 53
 msgid "Load from file"
 msgstr ""
@@ -2906,6 +2795,14 @@ msgstr ""
 
 # File: bika.lims/bika/lims/content/method.py, line: 65
 msgid "Manual entry of results"
+msgstr ""
+
+#
+msgid "Manual entry of results for method ${methodname} is not allowed"
+msgstr ""
+
+#
+msgid "Manual entry of results for method {methodname} is not allowed and no valid instruments found: ${invalid_list}"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/supplier.py, line: 49
@@ -3066,34 +2963,8 @@ msgstr ""
 msgid "More"
 msgstr ""
 
-# File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
-# 634
-msgid "More than one Analysis Request found for %s"
-msgstr ""
-
-# File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
-# 675
-msgid "More than one Reference Analysis found for %s"
-msgstr ""
-
-# File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
-# 415
-msgid "More than one analysis found for %s and %s"
-msgstr ""
-
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 297
 msgid "More than one instrument can do an Analysis Service. The instruments selected here are displayed in the Analysis Request creation view for its selection when this Analysis Service is selected."
-msgstr ""
-
-# File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
-# 378
-msgid "More than one reference sample found for '%s'"
-msgstr ""
-
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 430
-msgid "More than one sequence found for quantitative result %s"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/clientfolder.py, line: 37
@@ -3113,82 +2984,14 @@ msgstr "新文件"
 msgid "No"
 msgstr "否"
 
-# File:
-# bika.lims/bika/lims/exportimport/instruments/thermoscientific/gallery/__init__.py,
-# line: 87
-msgid "No Analysis Code defined, line %s"
-msgstr ""
-
-# File:
-# bika.lims/bika/lims/exportimport/instruments/panalytical/omnia/__init__.py,
-# line: 460
-msgid "No Analysis Name defined, line %s"
-msgstr ""
-
-# File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
-# 358
-msgid "No Analysis Request with '%s' states neither QC analyses found for %s"
-msgstr ""
-
 # File: bika.lims/bika/lims/browser/reports/productivity_dataentrydaybook.py,
 # line: 37
 msgid "No Analysis Requests matched your query"
 msgstr ""
 
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 423
-msgid "No Data File found for quantitation result"
-msgstr ""
-
-# File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
-# 383
-msgid "No Reference Sample found for '%s'"
-msgstr ""
-
-# File:
-# bika.lims/bika/lims/exportimport/instruments/thermoscientific/gallery/__init__.py,
-# line: 92
-msgid "No Sample ID defined, line %s"
-msgstr ""
-
-# File:
-# bika.lims/bika/lims/exportimport/instruments/foss/winescan/__init__.py,
-# line: 26
-msgid "No Sample ID found, line %s"
-msgstr ""
-
-# File:
-# bika.lims/bika/lims/exportimport/instruments/panalytical/omnia/__init__.py,
-# line: 150
-msgid "No Sample defined, line %s"
-msgstr ""
-
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 304
-msgid "No Sequence Table found"
-msgstr ""
-
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 391
-msgid "No Target Compound found"
-msgstr ""
-
 # File: bika.lims/bika/lims/browser/reports/administration_usershistory.py,
 # line: 162
 msgid "No actions found for user ${user}"
-msgstr ""
-
-# File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
-# 607
-msgid "No analyses '%s' states found for %s"
-msgstr ""
-
-# File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
-# 420
-msgid "No analyses found for %s and %s"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/analysisrequest/add.py, line: 178
@@ -3256,18 +3059,6 @@ msgstr "本服务没有指定默认保留"
 msgid "No file selected"
 msgstr ""
 
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 167
-# File:
-# bika.lims/bika/lims/exportimport/instruments/foss/winescan/__init__.py,
-# line: 82
-# File:
-# bika.lims/bika/lims/exportimport/instruments/panalytical/omnia/__init__.py,
-# line: 68
-msgid "No header found"
-msgstr ""
-
 # File: bika.lims/bika/lims/browser/reports/administration_usershistory.py,
 # line: 94
 msgid "No historical actions matched your query"
@@ -3304,17 +3095,6 @@ msgstr "没有选择参考样品"
 msgid "No report specified in request"
 msgstr ""
 
-# File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
-# 182
-msgid "No results found"
-msgstr ""
-
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 428
-msgid "No sample found for quntitative result %s"
-msgstr ""
-
 # File:
 # bika.lims/bika/lims/browser/reports/productivity_dailysamplesreceived.py,
 # line: 41
@@ -3333,16 +3113,8 @@ msgstr "${contact_fullname}用户不存在且他/她不能登入. 请填写下�
 msgid "No valid file or format"
 msgstr ""
 
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 326
-msgid "No valid number %s in column %s (%s)"
-msgstr ""
-
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 441
-msgid "No valid sequence for %s "
+#
+msgid "No valid instruments found: ${invalid_list}"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/analyses.py, line: 216
@@ -3452,6 +3224,10 @@ msgstr "一旦保留, 样品必须在该时间周期内处置. 如果没有指�
 msgid "Only lab managers can create and manage worksheets"
 msgstr ""
 
+#
+msgid "Only the analyses for which the selected instrument is allowed will be added automatically."
+msgstr ""
+
 # File: bika.lims/bika/lims/browser/templates/worksheet_manage_results.pt,
 # line: 132
 msgid "Only to empty or zero fields"
@@ -3488,8 +3264,9 @@ msgstr "订单号码"
 msgid "Orders"
 msgstr "多个订单"
 
+#
 # File: bika.lims/bika/lims/browser/publish.py, line: 552
-msgid "Orders: %s"
+msgid "Orders: ${orders}"
 msgstr ""
 
 # File: bika.lims/bika/lims/content/instrumentcertification.py, line: 42
@@ -3498,24 +3275,6 @@ msgstr ""
 
 # File: bika.lims/bika/lims/content/arimport.py, line: 50
 msgid "Original File"
-msgstr ""
-
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 332
-msgid "Orphan value in column %s (%s)"
-msgstr ""
-
-# File:
-# bika.lims/bika/lims/exportimport/instruments/foss/winescan/__init__.py,
-# line: 38
-# File:
-# bika.lims/bika/lims/exportimport/instruments/panalytical/omnia/__init__.py,
-# line: 445
-# File:
-# bika.lims/bika/lims/exportimport/instruments/thermoscientific/gallery/__init__.py,
-# line: 80
-msgid "Orphan value in column %s, line %s"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/reports/templates/productivity.pt, line:
@@ -3538,11 +3297,6 @@ msgid "PDF"
 msgstr ""
 
 msgid "Parent"
-msgstr ""
-
-# File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
-# 194
-msgid "Parsing file "
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/analyses.py, line: 61
@@ -4056,8 +3810,9 @@ msgstr ""
 msgid "ReferenceDefinition represents a Reference Definition or sample type used for quality control testing"
 msgstr "参考定义代表用于质量控制测试的样品类型的参考定义"
 
-# File: bika.lims/bika/lims/browser/publish.py, line: 558
-msgid "Refs: %s"
+#
+# File: bika.lims/bika/lims/browser/publish.py, line: 556
+msgid "Refs: ${references}"
 msgstr ""
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 42
@@ -4146,12 +3901,6 @@ msgstr ""
 msgid "Report tables of Analysis Requests and totals submitted between a period of time"
 msgstr ""
 
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 225
-msgid "Report time not found or empty"
-msgstr ""
-
 # File: bika.lims/bika/lims/content/report.py, line: 25
 msgid "Report type"
 msgstr "报告类型"
@@ -4160,18 +3909,6 @@ msgstr "报告类型"
 # line: 452
 msgid "Reported as dry matter"
 msgstr "已作为干燥物质报告"
-
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 233
-msgid "Reporter Name not found"
-msgstr ""
-
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 231
-msgid "Reporter Name not found or empty"
-msgstr ""
 
 # File: bika.lims/bika/lims/browser/reports/__init__.py, line: 110
 msgid "Reports"
@@ -4491,8 +4228,9 @@ msgstr ""
 msgid "Samples received vs. samples reported"
 msgstr ""
 
-# File: bika.lims/bika/lims/browser/publish.py, line: 564
-msgid "Samples: %s"
+#
+# File: bika.lims/bika/lims/browser/publish.py, line: 560
+msgid "Samples: ${samples}"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
@@ -4593,7 +4331,6 @@ msgstr ""
 msgid "Select analyst"
 msgstr "选择分析员"
 
-#
 # File: bika.lims/bika/lims/exportimport/import.pt, line: 60
 msgid "Select existing file"
 msgstr ""
@@ -4706,19 +4443,9 @@ msgstr ""
 msgid "Service is included in the ${accreditation_body_abbrev}"
 msgstr "服务已包含在 ${accreditation_body_abbrev} 中"
 
-# File: bika.lims/bika/lims/exportimport/instruments/foss/fiastar/fiastar.py,
-# line: 132
-msgid "Service keyword ${keyword} not found"
-msgstr ""
-
-# File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
-# 338
-msgid "Service keyword %s not found"
-msgstr ""
-
-# File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
-# 342
-msgid "Service keywords: no matches found"
+#
+# File: bika.lims/bika/lims/exportimport/instruments/foss/fiastar/fiastar.py, line: 132
+msgid "Service keyword ${service_keyword} not found"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/reports/selection_macros/__init__.py,
@@ -4809,8 +4536,9 @@ msgstr ""
 msgid "Some analyses use out-of-date or uncalibrated instruments. Results edition not allowed"
 msgstr ""
 
-# File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 502
-msgid "Some errors have been detected in the results report published from the Analysis Request %s. The Analysis Request %s has been created automatically and the previous has been invalidated.<br/>The possible mistake has been picked up and is under investigation.<br/><br/>%s%s"
+#
+# File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 454
+msgid "Some errors have been detected in the results report published from the Analysis Request ${request_link}. The Analysis Request ${new_request_link} has been created automatically and the previous has been invalidated.<br/>The possible mistake has been picked up and is under investigation.<br/><br/>${remarks}${lab_address}"
 msgstr ""
 
 # File: bika.lims/bika/lims/content/arpriority.py, line: 15
@@ -4901,7 +4629,6 @@ msgstr ""
 msgid "Submit"
 msgstr "提交"
 
-#
 # File: bika.lims/bika/lims/exportimport/import.pt, line: 49
 msgid "Submit a valid Open XML (.XLSX) file containing Bika setup records to continue."
 msgstr ""
@@ -4990,11 +4717,6 @@ msgstr "实验室为用户样品分配了此ID"
 # File: bika.lims/bika/lims/content/laboratory.py, line: 20
 msgid "The Laboratory's web address"
 msgstr "实验室网址"
-
-# File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
-# 669
-msgid "The Reference Analysis %s has neither instrument nor worksheet assigned"
-msgstr ""
 
 # File: bika.lims/bika/lims/content/laboratory.py, line: 70
 msgid "The accreditation standard that applies, e.g. ISO 17025"
@@ -5085,10 +4807,6 @@ msgstr "该分析结果的单位, 如毫克/升, ppm, dB, mV等"
 # File: bika.lims/bika/lims/content/sampletype.py, line: 60
 msgid "The minimum sample volume required for analysis eg. '10 ml' or '1 kg'."
 msgstr ""
-
-# File: bika.lims/bika/lims/content/laboratory.py, line: 45
-msgid "The name of the accreditation body corresponding to the abbreviation above, e.g. South African National Accreditation Service for SANAS"
-msgstr "上述认证机构缩写的全名, 如South African National Accreditation Service（南非全国认证服务中心）为SANAS"
 
 # File: bika.lims/bika/lims/browser/reports/templates/productivity.pt, line:
 # 164
@@ -5232,16 +4950,6 @@ msgstr ""
 msgid "This Analysis Request has been withdrawn and is shown for trace-ability purposes only. Retest: ${retest_child_id}."
 msgstr ""
 
-# File: bika.lims/bika/lims/browser/analysisrequest/results_not_requested.py,
-# line: 31
-msgid "This Analysis Request has been withdrawn and is shown for trace-ability purposes only. Retest: %s."
-msgstr ""
-
-# File: bika.lims/bika/lims/browser/analysisrequest/published_results.py,
-# line: 69
-msgid "This Analysis Request has been withdrawn and is shown for trace-ability purposes only. Retest:${retest_child_id}."
-msgstr ""
-
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 1013
 msgid "This Analysis Service cannot be activated because it's calculation is inactive."
 msgstr "由于计算未工作, 分析服务不能激活."
@@ -5275,6 +4983,16 @@ msgstr "本值为所有发布的结果中最低值"
 
 # ../browser/js/client.js
 msgid "This will remove all existing client analysis specifications and create copies of all lab specifications. Are you sure you want to do this?"
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/browser/worksheet.py, line: 993
+msgid "This worksheet has been created to replace the rejected worksheet at ${ws_id}"
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/browser/worksheet.py, line: 986
+msgid "This worksheet has been rejected.  The replacement worksheet is ${ws_id}"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/batchfolder.py, line: 36
@@ -5396,9 +5114,12 @@ msgstr ""
 msgid "Type of location"
 msgstr ""
 
-# File: bika.lims/bika/lims/exportimport/instruments/resultsimport.py, line:
-# 464
-msgid "Unable to create the Attachment Type %s "
+#
+msgid "Unable to apply the selected instrument"
+msgstr ""
+
+#
+msgid "Unable to load instruments: ${invalid_list}"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 517
@@ -5423,21 +5144,6 @@ msgstr "不确定值"
 msgid "Undefined"
 msgstr ""
 
-# File:
-# bika.lims/bika/lims/exportimport/instruments/panalytical/omnia/__init__.py,
-# line: 58
-# File:
-# bika.lims/bika/lims/exportimport/instruments/thermoscientific/gallery/__init__.py,
-# line: 45
-msgid "Unexpected header format"
-msgstr ""
-
-# File:
-# bika.lims/bika/lims/exportimport/instruments/panalytical/omnia/__init__.py,
-# line: 331
-msgid "Unexpected header found"
-msgstr ""
-
 # File: bika.lims/bika/lims/browser/accreditation.py, line: 59
 # File:
 # bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequest_analyses_not_requested.pt,
@@ -5456,14 +5162,16 @@ msgstr "单价"
 msgid "Unpublished"
 msgstr ""
 
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 50
-# File: bika.lims/bika/lims/exportimport/instruments/foss/winescan/auto.py,
-# line: 31
-# File: bika.lims/bika/lims/exportimport/instruments/foss/winescan/ft120.py,
-# line: 32
-msgid "Unrecognized file format '%s'"
+#
+# File: bika.lims/bika/lims/exportimport/instruments/panalytical/omnia/axios_xrf.py, line: 35
+msgid "Unrecognized file format ${file_format}"
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py, line: 50
+# File: bika.lims/bika/lims/exportimport/instruments/foss/winescan/auto.py, line: 31
+# File: bika.lims/bika/lims/exportimport/instruments/foss/winescan/ft120.py, line: 32
+msgid "Unrecognized file format ${fileformat}"
 msgstr ""
 
 # File: bika.lims/bika/lims/content/labcontact.py, line: 30
@@ -5735,12 +5443,6 @@ msgstr "值"
 msgid "Value Range"
 msgstr ""
 
-# File:
-# bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
-# line: 443
-msgid "Value for column '%s' not found"
-msgstr ""
-
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 486
 msgid "Values can be entered here which will override the defaults specified in the Calculation Interim Fields."
 msgstr ""
@@ -5819,8 +5521,9 @@ msgstr "是"
 msgid "You do not have sufficient privileges to manage worksheets."
 msgstr ""
 
+#
 # File: bika.lims/bika/lims/browser/worksheet.py, line: 349
-msgid "You do not have sufficient privileges to view the worksheet %s."
+msgid "You do not have sufficient privileges to view the worksheet ${worksheet_title}."
 msgstr ""
 
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 147
@@ -5954,11 +5657,6 @@ msgstr ""
 # File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 138
 #. Default: "Analyses"
 msgid "label_analyses"
-msgstr ""
-
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 60
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 54
-msgid "label_blank"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 49

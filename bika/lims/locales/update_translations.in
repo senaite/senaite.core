@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 """
 
-Buildout template for regenerating translations catalogs and keeping locale
-folders up-to-date.
-
-### Edit buildout.cfg:
+This will compile and synchronize the bika and plone domains in the bika.lims package
 
     parts =
         ...
@@ -16,39 +13,17 @@ folders up-to-date.
     output = ${buildout:directory}/bin/update_translations
     input = ${buildout:directory}/src/bika.lims/bika/lims/locales/update_translations.in
     mode = 755
-    domain_entries = \
-        [
-            # One dictionary added to this list for every POT file that must be updated and synced:
-            #    "locales_path": The path of the source repository's locales folder, contains domain.pot
-            #    "domain": The domain name to be updated
-            #    "txresource": The transifex resource name for this project/domain
-            #    "scan_path": The path of the top-level folder that i18ndude will search for this domain
-            #    "extends_pot": Messages present inside this POT file, are filtered from the scanned results
-            #    "overrides_pot": Translations in this POT file override all others and are always included
-            { "locales_path": "${buildout:directory}/src/bika.lims/bika/lims/locales",
-              "domain": "bika",
-              "txresource": "bika-lims.bika",
-              "scan_path": "${buildout:directory}/src/bika.lims",
-              "extends_pot": "",
-              "overrides_pot": "bika-manual.pot"},
-            { "locales_path": "${buildout:directory}/src/bika.lims/bika/lims/locales",
-              "domain": "plone",
-              "txresource": "bika-lims.plone",
-              "scan_path": "${buildout:directory}/src/bika.lims/bika/lims/profiles",
-              "extends_pot": "${buildout:directory}/parts/omelette/plone/app/locales/locales/plone.pot",
-              "overrides_pot": "plone-manual.pot"},
-        ]
 
     [i18ndude]
     unzip = true
     recipe = zc.recipe.egg
     eggs = i18ndude
 
-run bin/buildout after updating buildout.cfg
+Regenerate translations
 
-### Regenerate translations
+Always complete the "tx pull -a -f" command before regenerating translations.
 
-    bin/update_translations
+    bin/update_translations  [list of po files]
 
 """
 
@@ -60,10 +35,10 @@ import os
 import sys
 import subprocess as subp
 
-# Grab settings from buildout.cfg
-domain_entries = ${domain_entries}
-
 i18ndude = "${buildout:directory}/bin/i18ndude"
+locales_path = "${buildout:directory}/src/bika.lims/bika/lims/locales"
+
+os.chdir(locales_path)
 
 def call(cmd_str, prn_cmd=True, prn_out=True, pause=False, success_codes=[0,], trap_stdout=True):
     if prn_cmd:
@@ -97,70 +72,113 @@ def which(executable):
         if os.path.isfile(trypath) and os.access(trypath, os.X_OK):
             return trypath
 
-msgfmt = which('msgfmt')
-if not msgfmt:
-    raise Exception('msgfmt executable not found on your $PATH.  Install gettext.')
-msgcat = which('msgcat')
-if not msgcat:
-    raise Exception('msgcat executable not found on your $PATH.  Install gettext.')
+def build_messages_from_po(po_file):
 
-for domain_entry in domain_entries:
+    def compress(strings):
+        put = ""
+        for s in strings:
+            if s.startswith("msgid"): s = s[6:]
+            if s.startswith("msgstr"): s = s[7:]
+            s = s.strip().strip('"')
+            put += s
+        return put
 
-    locales_path = domain_entry["locales_path"]
-    domain = domain_entry.get("domain")
-    scan_path = domain_entry["scan_path"]
-    extends_pot = domain_entry.get("extends_pot")
-    overrides_pot = domain_entry.get("overrides_pot")
-    txresource = domain_entry.get("txresource")
-    txresource = " -r %s"%txresource if txresource else ""
-    pot = domain + ".pot"
-    i18ndude_pot = domain + "-i18ndude.pot"
-    tmp_pot = domain + "-tmp.pot"
+    _getting = ""
+    catalog = {}
+    lines = [l.strip() for l in open(po_file).read().splitlines()]
+    line_nr = 0
+    for line in lines:
+        line_nr += 1
+        if line.startswith("#"):
+            continue
+        if line.startswith("msgid"):
+            msgid = [line.replace("msgid", ""),]
+            _getting = "msgid"
+            continue
+        elif line.startswith("msgstr"):
+            msgstr = [line.replace("msgstr", ""),]
+            _getting = "msgstr"
+            continue
+        elif line.startswith('"'):
+            if _getting == "msgid":
+                msgid.append(line)
+            elif _getting == "msgstr":
+                msgstr.append(line)
+            else:
+                raise Exception("line type not known, line %s" % line_nr)
+        elif line == "":
+            msgid = compress(msgid)
+            msgstr = compress(msgstr)
+            catalog[msgid] = msgstr
+        else:
+            raise Exception("line %s is weird." % line_nr)
+    return catalog
 
-    print "---------- %s (%s)" % (locales_path, domain)
-    os.chdir(locales_path)
+def build_po_from_messages(messages):
+    puts = []
+    for msgid, msgstr in messages.items():
+        bit = "msgid \"%s\"\n" % msgid
+        bit += "msgstr \"%s\"\n" % msgstr
+        puts.append(bit)
+    return "\n".join(puts)
 
-    ### Transifex - pull
-    # We assume the translations from transifex will always be
-    # recent than translations done in local .po files.
-    # At least, all the community is asked to translate the project
-    # by using transifex, not .po files locally and by using git
-    # we also assert that, without being able to do the tx pull, we can not proceed,
-    # as this may remove translated entries from the transifex po files.
-    call("tx pull -a -f%s" % txresource, trap_stdout=False)
+msgfmt = which("msgfmt")
+msgcat = which("msgcat")
 
-    ### 1. Re-scan source for new strings (into *-i18ndude.pot)
-    call("{i18ndude} rebuild-pot --pot {i18ndude_pot}  --exclude 'build' --create {domain} {scan_path}".format(**locals()))
+### Transifex - pull ALL
+tx = which('tx')
+if not tx:
+    raise Exception("tx command not found in path")
+call("tx pull -a -f", trap_stdout=False)
 
-    ### 2. Remove redundant (already translated) entries
-    if extends_pot:
-        lines = call("{i18ndude} filter {i18ndude_pot} {extends_pot}".format(**locals()), prn_out=False)[1]
-        open(tmp_pot, "w").write(lines)
-        os.remove(i18ndude_pot)
-    else:
-        print "No base POT file specified: rename %s -> %s" % (i18ndude_pot, tmp_pot)
-        os.rename(i18ndude_pot, tmp_pot)
+########## bika domain
 
-    ### 3. Forced overrides for this domain
-    if overrides_pot:
-        lines = call("{msgcat} --strict --use-first {overrides_pot} {tmp_pot}".format(**locals()), prn_out=False)[1]
-        open(pot, "w").write(lines)
-        os.remove(tmp_pot)
-    else:
-        print "No overrides POT file specified: rename %s -> %s" % (tmp_pot, pot)
-        os.rename(tmp_pot, pot)
+# Re-scan source for new strings (into *-i18ndude.pot)
+print "scan for messages"
+scan_path = "${buildout:directory}/src/bika.lims"
+call(i18ndude + " rebuild-pot --pot i18ndude.pot --exclude 'build' --create bika " + scan_path)
 
-    ### 4. sync
-    print ">>> running 'i18ndude sync' and 'msgfmt' for all languages"
-    for lang in glob(j(locales_path, "*")):
-        if exists(j(locales_path, lang, "LC_MESSAGES")):
-            mo = j(lang, "LC_MESSAGES", domain + ".mo")
-            po = j(lang, "LC_MESSAGES", domain + ".po")
-            call("{i18ndude} sync --pot {pot} {po}".format(**locals()), prn_cmd=False)
-            call("{msgfmt} -f -o {mo} {po}".format(**locals()), prn_cmd=False)
+# Forced overrides for this domain
+print "apply manual overrides"
+lines = call(msgcat +  " --strict --use-first bika-manual.pot i18ndude.pot", prn_out=False)[1]
+open("bika.pot", "w").write(lines)
+os.remove("i18ndude.pot")
 
-    ### Transifex - pull everything
-    if exists(".tx"):
-        print "Press Y<Enter> to push to Transifex.  Just press <Enter> to skip."
-        if raw_input().strip().lower() == 'y':
-            call("tx push -s -t%s"%txresource , trap_stdout=False)
+# sync
+print "sync pot->po"
+for lang in glob(j(locales_path, "*")):
+    if exists(j(locales_path, lang, "LC_MESSAGES")):
+        mo = j(lang, "LC_MESSAGES", "bika.mo")
+        po = j(lang, "LC_MESSAGES", "bika.po")
+        call(i18ndude + " sync --pot bika.pot " + po, prn_cmd=False)
+        call(msgfmt + " -f -o " + mo + " " + po, prn_cmd=False)
+
+########## plone domain
+
+# Re-scan source for new strings (into *-i18ndude.pot)
+print "plone: scan for messages"
+scan_path = "${buildout:directory}/src/bika.lims/bika/lims/profiles"
+call(i18ndude + " rebuild-pot --pot i18ndude.pot --exclude 'build' --create plone " + scan_path)
+
+# Remove redundant (already translated) entries
+print "plone: filter out existing from plone.app.locales"
+plone_pot = "${buildout:directory}/parts/omelette/plone/app/locales/locales/plone.pot"
+lines = call(i18ndude + " filter i18ndude.pot "+plone_pot, prn_out=False)[1]
+open("tmp.pot", "w").write(lines)
+os.remove("i18ndude.pot")
+
+# Forced overrides for this domain
+print "plone: apply manual overrides"
+lines = call(msgcat +  " --strict --use-first plone-manual.pot tmp.pot", prn_out=False)[1]
+open("plone.pot", "w").write(lines)
+os.remove("tmp.pot")
+
+# sync
+print "plone: sync pot->po"
+for lang in glob(j(locales_path, "*")):
+    if exists(j(locales_path, lang, "LC_MESSAGES")):
+        mo = j(lang, "LC_MESSAGES", "plone.mo")
+        po = j(lang, "LC_MESSAGES", "plone.po")
+        call(i18ndude + " sync --pot plone.pot " + po, prn_cmd=False)
+        call(msgfmt + " -f -o " + mo + " " + po, prn_cmd=False)
+

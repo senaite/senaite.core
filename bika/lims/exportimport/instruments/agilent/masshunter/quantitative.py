@@ -47,7 +47,8 @@ def Import(context, request):
     elif fileformat == 'csv':
         parser = MasshunterQuantCSVParser(infile)
     else:
-        errors.append(_("Unrecognized file format '%s'") % fileformat)
+        errors.append(t(_("Unrecognized file format ${fileformat}",
+                          mapping={"fileformat": fileformat})))
 
     if parser:
         # Load the importer
@@ -164,7 +165,7 @@ class MasshunterQuantCSVParser(InstrumentCSVResultsFileParser):
         if line.startswith(self.SEQUENCETABLE_KEY):
             self._end_header = True
             if len(self._header) == 0:
-                self.err(_("No header found"), self._numline)
+                self.err("No header found", numline=self._numline)
                 return -1
             return 0
 
@@ -173,8 +174,8 @@ class MasshunterQuantCSVParser(InstrumentCSVResultsFileParser):
         # Batch Info,2013-03-20T07:11:09.9053262-07:00,2013-03-20T07:12:55.5280967-07:00,2013-03-20T07:11:07.1047817-07:00,,,,,,,,,,,,,,
         if splitted[0] == self.HEADERKEY_BATCHINFO:
             if self.HEADERKEY_BATCHINFO in self._header:
-                self.warn(_("Header Batch Info already found. Discarding"),
-                         self._numline, line)
+                self.warn("Header Batch Info already found. Discarding",
+                          numline=self._numline, line=line)
                 return 0
 
             self._header[self.HEADERKEY_BATCHINFO] = []
@@ -185,14 +186,15 @@ class MasshunterQuantCSVParser(InstrumentCSVResultsFileParser):
         # Batch Data Path,D:\MassHunter\Data\130129\QuantResults\130129LS.batch.bin,,,,,,,,,,,,,,,,
         elif splitted[0] == self.HEADERKEY_BATCHDATAPATH:
             if self.HEADERKEY_BATCHDATAPATH in self._header:
-                self.warn(_("Header Batch Data Path already found. Discarding"),
-                         self._numline, line)
+                self.warn("Header Batch Data Path already found. Discarding",
+                          numline=self._numline, line=line)
                 return 0;
 
             if splitted[1]:
                 self._header[self.HEADERKEY_BATCHDATAPATH] = splitted[1]
             else:
-                self.warn(_("Batch Data Path not found or empty"), self._numline, line)
+                self.warn("Batch Data Path not found or empty",
+                          numline=self._numline, line=line)
 
         # Analysis Time,3/20/2013 7:11 AM,Analyst Name,Administrator,,,,,,,,,,,,,,
         elif splitted[0] == self.HEADERKEY_ANALYSISTIME:
@@ -201,17 +203,21 @@ class MasshunterQuantCSVParser(InstrumentCSVResultsFileParser):
                     d = datetime.strptime(splitted[1], "%m/%d/%Y %I:%M %p")
                     self._header[self.HEADERKEY_ANALYSISTIME] = d
                 except ValueError:
-                    self.err(_("Invalid Analysis Time format"), self._numline, line)
+                    self.err("Invalid Analysis Time format",
+                             numline=self._numline, line=line)
             else:
-                self.warn(_("Analysis Time not found or empty"), self._numline, line)
+                self.warn("Analysis Time not found or empty",
+                          numline=self._numline, line=line)
 
             if splitted[2] and splitted[2] == self.HEADERKEY_ANALYSTNAME:
                 if splitted[3]:
                     self._header[self.HEADERKEY_ANALYSTNAME] = splitted[3]
                 else:
-                    self.warn(_("Analyst Name not found or empty"), self._numline, line)
+                    self.warn("Analyst Name not found or empty",
+                              numline=self._numline, line=line)
             else:
-                self.err(_("Analyst Name not found"), self._numline, line)
+                self.err("Analyst Name not found",
+                         numline=self._numline, line=line)
 
         # Report Time,3/20/2013 7:12 AM,Reporter Name,Administrator,,,,,,,,,,,,,,
         elif splitted[0] == self.HEADERKEY_REPORTTIME:
@@ -220,17 +226,24 @@ class MasshunterQuantCSVParser(InstrumentCSVResultsFileParser):
                     d = datetime.strptime(splitted[1], "%m/%d/%Y %I:%M %p")
                     self._header[self.HEADERKEY_REPORTTIME] = d
                 except ValueError:
-                    self.err(_("Invalid Report Time format"), self._numline, line)
+                    self.err("Invalid Report Time format",
+                         numline=self._numline, line=line)
             else:
-                self.warn(_("Report time not found or empty"), self._numline, line)
+                self.warn("Report time not found or empty",
+                          numline=self._numline, line=line)
+
 
             if splitted[2] and splitted[2] == self.HEADERKEY_REPORTERNAME:
                 if splitted[3]:
                     self._header[self.HEADERKEY_REPORTERNAME] = splitted[3]
                 else:
-                    self.warn(_("Reporter Name not found or empty"), self._numline, line)
+                    self.warn("Reporter Name not found or empty",
+                              numline=self._numline, line=line)
+
             else:
-                self.err(_("Reporter Name not found"), self._numline, line)
+                self.err("Reporter Name not found",
+                         numline=self._numline, line=line)
+
 
         # Last Calib Update,3/20/2013 7:11 AM,Batch State,Processed,,,,,,,,,,,,,,
         elif splitted[0] == self.HEADERKEY_LASTCALIBRATION:
@@ -239,17 +252,25 @@ class MasshunterQuantCSVParser(InstrumentCSVResultsFileParser):
                     d = datetime.strptime(splitted[1], "%m/%d/%Y %I:%M %p")
                     self._header[self.HEADERKEY_LASTCALIBRATION] = d
                 except ValueError:
-                    self.err(_("Invalid Last Calibration time format"), self._numline, line)
+                    self.err("Invalid Last Calibration time format",
+                             numline=self._numline, line=line)
+
             else:
-                self.warn(_("Last Calibration time not found or empty"), self._numline, line)
+                self.warn("Last Calibration time not found or empty",
+                          numline=self._numline, line=line)
+
 
             if splitted[2] and splitted[2] == self.HEADERKEY_BATCHSTATE:
                 if splitted[3]:
                     self._header[self.HEADERKEY_BATCHSTATE] = splitted[3]
                 else:
-                    self.warn(_("Batch state not found or empty"), self._numline, line)
+                    self.warn("Batch state not found or empty",
+                              numline=self._numline, line=line)
+
             else:
-                self.err(_("Batch state not found"), self._numline, line)
+                self.err("Batch state not found",
+                         numline=self._numline, line=line)
+
 
         return 0
 
@@ -301,7 +322,7 @@ class MasshunterQuantCSVParser(InstrumentCSVResultsFileParser):
             or line.startswith(self.COMMAS):
             self._end_sequencetable = True
             if len(self._sequences) == 0:
-                self.err(_("No Sequence Table found"), self._numline)
+                self.err("No Sequence Table found", linenum=self._numline)
                 return -1
 
             # Jumps 2 lines:
@@ -323,14 +344,20 @@ class MasshunterQuantCSVParser(InstrumentCSVResultsFileParser):
                     try:
                         sequence[colname] = float(token)
                     except ValueError:
-                        self.warn(_("No valid number %s in column %s (%s)") %
-                                    (token, str(i+1), colname), self._numline, line)
+                        self.warn(
+                            "No valid number ${token} in column ${index} (${column_name})",
+                            mapping={"token": token,
+                                     "index": str(i + 1),
+                                     "column_name": colname},
+                            numline=self._numline, line=line)
                         sequence[colname] = token
                 else:
                     sequence[colname] = token
             elif token:
-                self.err(_("Orphan value in column %s (%s)") % (str(i+1), token),
-                           self._numline, line)
+                self.err("Orphan value in column ${index} (${token})",
+                         mapping={"index": str(i+1),
+                                  "token": token},
+                         numline=self._numline, line=line)
         self._sequences.append(sequence)
 
     def parse_quantitationesultsline(self, line):
@@ -388,7 +415,8 @@ class MasshunterQuantCSVParser(InstrumentCSVResultsFileParser):
             # New set of Quantitation Results
             splitted = [token.strip() for token in line.split(',')]
             if not splitted[1]:
-                self.warn(_("No Target Compound found"), self._numline, line)
+                self.warn("No Target Compound found",
+                          numline=self._numline, line=line)
             return 0
 
         # DSS_Nist_L1.d,25-OH D2+PTAD+MA,25-OH D3d3+PTAD+MA,1252,139562,0.0090,0.7909,,,,,,,,,,,
@@ -405,14 +433,20 @@ class MasshunterQuantCSVParser(InstrumentCSVResultsFileParser):
                     try:
                         quantitation[colname] = float(token)
                     except ValueError:
-                        self.warn(_("No valid number %s in column %s (%s)") %
-                                    (token, str(i+1), colname), self._numline, line)
+                        self.warn(
+                            "No valid number ${token} in column ${index} (${column_name})",
+                            mapping={"token": token,
+                                     "index": str(i + 1),
+                                     "column_name": colname},
+                            numline=self._numline, line=line)
                         quantitation[colname] = token
                 else:
                     quantitation[colname] = token
             elif token:
-                self.err(_("Orphan value in column %s (%s)") % (str(i+1), token),
-                           self._numline, line)
+                self.err("Orphan value in column ${index} (${token})",
+                         mapping={"index": str(i+1),
+                                  "token": token},
+                         numline=self._numline, line=line)
 
         if self.QUANTITATIONRESULTS_COMPOUNDCOLUMN in quantitation:
             compound = quantitation[self.QUANTITATIONRESULTS_COMPOUNDCOLUMN]
@@ -420,14 +454,20 @@ class MasshunterQuantCSVParser(InstrumentCSVResultsFileParser):
             # Look for sequence matches and populate rawdata
             datafile = quantitation.get(self.QUANTITATIONRESULTS_HEADER_DATAFILE, '')
             if not datafile:
-                self.err(_("No Data File found for quantitation result"), self._numline, line)
+                self.err("No Data File found for quantitation result",
+                         numline=self._numline, line=line)
+
             else:
                 seqs = [sequence for sequence in self._sequences \
                         if sequence.get('Data File', '') == datafile]
                 if len(seqs) == 0:
-                    self.err(_("No sample found for quntitative result %s") % datafile, self._numline, line)
+                    self.err("No sample found for quantitative result ${data_file}",
+                             mapping={"data_file": datafile},
+                             numline=self._numline, line=line)
                 elif len(seqs) > 1:
-                    self.err(_("More than one sequence found for quantitative result %s") % datafile, self._numline, line)
+                    self.err("More than one sequence found for quantitative result: ${data_file}",
+                             mapping={"data_file": datafile},
+                             numline=self._numline, line=line)
                 else:
                     objid = seqs[0].get(self.SEQUENCETABLE_HEADER_SAMPLENAME, '')
                     if objid:
@@ -438,11 +478,13 @@ class MasshunterQuantCSVParser(InstrumentCSVResultsFileParser):
                         raw[compound] = quantitation
                         self._addRawResult(objid, raw, True)
                     else:
-                        self.err(_("No valid sequence for %s " % datafile, self._numline, line))
+                        self.err("No valid sequence for ${data_file}",
+                                 mapping={"data_file": datafile},
+                                 numline=self._numline, line=line)
         else:
-            self.err(_("Value for column '%s' not found") \
-                     % self.QUANTITATIONRESULTS_COMPOUNDCOLUMN,
-                     self._numline, line)
+            self.err("Value for column '${column}' not found",
+                     mapping={"column": self.QUANTITATIONRESULTS_COMPOUNDCOLUMN},
+                     numline=self._numline, line=line)
 
 
 class MasshunterQuantImporter(AnalysisResultsImporter):

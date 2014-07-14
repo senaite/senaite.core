@@ -872,7 +872,10 @@ class Analysis(BaseContent):
         analyses = [x for x in parent.objectValues("Analysis")
                     if x.getId().startswith(self.id)]
         kw = self.getKeyword()
+        # LIMS-1290 - Analyst must be able to retract, which creates a new Analysis.
+        parent._verifyObjectPaste = str   # I cancel the permission check with this.
         parent.manage_renameObject(kw, "{0}-{1}".format(kw, len(analyses)))
+        delattr(parent, '_verifyObjectPaste')
         # Create new analysis and copy values from retracted
         analysis = _createObjectByType("Analysis", parent, kw)
         analysis.edit(
@@ -933,7 +936,10 @@ class Analysis(BaseContent):
                 else:
                     if not "retract all analyses" in self.REQUEST['workflow_skiplist']:
                         self.REQUEST["workflow_skiplist"].append("retract all analyses")
-                    workflow.doActionFor(ws, "retract")
+                    try:
+                        workflow.doActionFor(ws, "retract")
+                    except WorkflowException:
+                        pass
             # Add to worksheet Analyses
             analyses = list(ws.getAnalyses())
             analyses += [analysis, ]

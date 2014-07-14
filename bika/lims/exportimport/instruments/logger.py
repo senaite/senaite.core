@@ -1,6 +1,6 @@
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
-
 
 class Logger:
 
@@ -9,20 +9,21 @@ class Logger:
         self._warns = []
         self._logs = []
 
-    def err(self, msg, numline=None, line=None):
-        self.msg(self._errors, msg, numline, line)
+    def err(self, msg, numline=None, line=None, mapping={}):
+        self.msg(self._errors, msg, numline, line, mapping)
 #        self.msg(self._logs, _("[ERROR] ") + msg, numline, line)
 
-    def warn(self, msg, numline=None, line=None):
-        self.msg(self._warns, msg, numline, line)
+    def warn(self, msg, numline=None, line=None, mapping={}):
+        self.msg(self._warns, msg, numline, line, mapping)
 #        self.msg(self._logs, _("[WARN] ") + msg, numline, line)
 
-    def log(self, msg, numline=None, line=None):
-        self.msg(self._logs, msg, numline, line)
+    def log(self, msg, numline=None, line=None, mapping={}):
+        self.msg(self._logs, msg, numline, line, mapping)
 
-    def msg(self, array, msg, numline=None, line=None):
+    def msg(self, array, msg, numline=None, line=None, mapping={}):
         prefix = ''
         suffix = ''
+        msg = t(_(safe_unicode(msg), mapping=mapping))
         if numline:
             prefix = "[%s] " % numline
         if line:

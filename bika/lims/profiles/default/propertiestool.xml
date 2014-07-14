@@ -76,6 +76,7 @@
     <element value="ReferenceAnalysis"/>
     <element value="ReferenceDefinition"/>
     <element value="ReferenceSample"/>
+    <element value="RejectAnalysis"/>
     <element value="Report"/>
     <element value="ReportFolder"/>
     <element value="Sample"/>

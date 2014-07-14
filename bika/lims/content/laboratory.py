@@ -36,16 +36,6 @@ schema = Organisation.schema.copy() + Schema((
             description = _("Check this box if your laboratory is accredited"),
         ),
     ),
-    StringField('AccreditationBodyLong',
-        schemata = 'Accreditation',
-        write_permission = ManageBika,
-        widget = StringWidget(
-            size = 60,
-            label = _("Accreditation Body"),
-            description = _("The name of the accreditation body corresponding to the abbreviation above, "
-                            "e.g. South African National Accreditation Service for SANAS"),
-        ),
-    ),
     StringField('AccreditationBody',
         schemata = 'Accreditation',
         write_permission = ManageBika,
@@ -87,7 +77,24 @@ schema = Organisation.schema.copy() + Schema((
                             "Maximum size is 175 x 175 pixels.")
         ),
     ),
+    TextField('AccreditationPageHeader',
+        schemata = 'Accreditation',
+        default = "${lab_name} has been accredited as ${accreditation_standard} conformant by ${accreditation_body_abbr}, ${accreditation_body_name}<br/><br/>" + \
+                  "${accreditation_body_abbr} is the single national accreditation body assessing testing and calibration laboratories for compliance to the ISO/IEC 17025 standard.<br/></br/>\n" + \
+                  "The following analysis services have been included in the ${accreditation_body_abbr} schedule of Accreditation for this Laboratory:",
+        widget = TextAreaWidget(
+            label = "Accreditation page header",
+            description = \
+                "Enter the details of your lab's service accreditations " \
+                "here.  The following fields are available:  lab_is_accredited, " \
+                "lab_name, lab_country, confidence, accreditation_body_name, " \
+                "accreditation_standard, accreditation_reference<br/>",
+                rows = 10
+        ),
+    ),
 ))
+
+
 
 IdField = schema['id']
 IdField.widget.visible = {'edit':'hidden', 'view': 'invisible'}

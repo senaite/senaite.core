@@ -71,6 +71,7 @@
  <object name="ReferenceDefinitions" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceSample" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReferenceSamplesFolder" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="RejectAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="ReportFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Report" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Sample" meta_type="Factory-based Type Information with dynamic views"/>

@@ -55,7 +55,7 @@ class AxiosXrfCSVMultiParser(InstrumentCSVResultsFileParser):
         if line.startswith('Results quantitative'):
             line = to_unicode(line)
             if len(self._header) == 0:
-                self.err(_("Unexpected header format"), self._numline)
+                self.err("Unexpected header format", numline=self._numline)
                 return -1
 
             line = line.replace(',', "")
@@ -65,31 +65,31 @@ class AxiosXrfCSVMultiParser(InstrumentCSVResultsFileParser):
 
         if line.startswith('Selected archive'):
             if len(self._header) == 0:
-                self.err(_("No header found"), self._numline)
+                self.err("No header found", numline=self._numline)
                 return -1
 
             splitted = self.splitLine(line)
             if len(splitted) > 1:
                 self._header['Archive'] = splitted[1].replace('"', '').strip()
             else:
-                self.warn(_('Unexpected header format'), self._numline)
+                self.warn('Unexpected header format', numline=self._numline)
             return 0
 
         if line.startswith('Number of'):
             if len(self._header) == 0:
-                self.err(_("No header found"), self._numline)
+                self.err("No header found", numline=self._numline)
                 return -1
 
             splitted = self.splitLine(line)
             if len(splitted) > 1:
                 self._header['NumResults'] = splitted[1].replace('"', '').strip()
             else:
-                self.warn(_('Unexpected header format'), self._numline)
+                self.warn('Unexpected header format', numline=self._numline)
             return 0
 
         if line.startswith('Seq.'):
             if len(self._header) == 0:
-                self.err(_("No header found"), self._numline)
+                self.err("No header found", numline=self._numline)
                 return -1
             #Grab column names
             self._columns = line.split(',')
@@ -145,9 +145,8 @@ class AxiosXrfCSVMultiParser(InstrumentCSVResultsFileParser):
                                    'DefaultValue':'DateTime'}
         except:
             pass
-
         if not rid:
-            self.err(_("No Sample defined, line %s") % (self.num_line))
+            self.err("No Sample defined", numline=self._numline)
             return 0
 
         self._addRawResult(rid, rawdict, True)
@@ -212,7 +211,7 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
         if line.startswith('"Quantification of sample') or line.startswith('Quantification of sample'):
             line = to_unicode(line)
             if len(self._header) == 0:
-                self.err(_("Unexpected header format"), self._numline)
+                self.warn('Unexpected header format', numline=self._numline)
                 return -1
             # Remove non important string and double comas to obtein
             # the sample name free
@@ -232,155 +231,154 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
                 self._header['Sample'] = splitted[0].replace('Quantification of sample','').strip(' ')
 
             else:
-                self.warn(_('Unexpected header format'))
+                self.warn('Unexpected header format', numline=self._numline)
             return 1
         # Save each header field (that we know) and its own value in the dict
         if line.startswith('R.M.S.'):
 
             if len(self._header) == 0:
-                self.err(_("No header found"), self._numline)
+                self.err("No header found", numline=self._numline)
                 return -1
 
             splitted = self.splitLine(line)
             if len(splitted) > 1:
                 self._header['R.M.S.'] = splitted[1].replace('"', '').strip()
             else:
-                self.warn(_('Unexpected header format'), self._numline)
+                self.warn('Unexpected header format', numline=self._numline)
             return 0
 
         if line.startswith('Result status'):
             if len(self._header) == 0:
-                self.err(_("No header found"), self._numline)
-                return -1
+                self.err("No header found", numline=self._numline)
 
             splitted = self.splitLine(line)
             if len(splitted) > 1:
                 self._header['Result status'] = splitted[1].replace('"', '').strip()
             else:
-                self.warn(_('Unexpected header format'), self._numline)
+                self.warn('Unexpected header format', numline=self._numline)
 
             return 0
 
         if line.startswith('Sum before normalization'):
             if len(self._header) == 0:
-                self.err(_("No header found"), self._numline)
+                self.err("No header found", numline=self._numline)
                 return -1
 
             splitted = self.splitLine(line)
             if len(splitted) > 1:
                 self._header['Sum'] = splitted[1].replace('"', '').strip()
             else:
-                self.warn(_('Unexpected header format'), self._numline)
+                self.warn('Unexpected header format', numline=self._numline)
 
             return 0
 
         if line.startswith('Normalised to'):
             if len(self._header) == 0:
-                self.err(_("No header found"), self._numline)
+                self.err("No header found", numline=self._numline)
                 return -1
 
             splitted = self.splitLine(line)
             if len(splitted) > 1:
                 self._header['Normalized'] = splitted[1].replace('"', '').strip()
             else:
-                self.warn(_('Unexpected header format'), self._numline)
+                self.warn('Unexpected header format', numline=self._numline)
 
             return 0
 
         if line.startswith('Sample type'):
             if len(self._header) == 0:
-                self.err(_("No header found"), self._numline)
+                self.err("No header found", numline=self._numline)
                 return -1
 
             splitted = self.splitLine(line)
             if len(splitted) > 1:
                 self._header['Sample type'] = splitted[1].strip()
             else:
-                self.warn(_('Unexpected header format'), self._numline)
+                self.warn('Unexpected header format', numline=self._numline)
 
             return 0
 
         if line.startswith('Initial sample weight (g)'):
             if len(self._header) == 0:
-                self.err(_("No header found"), self._numline)
+                self.err("No header found", numline=self._numline)
                 return -1
 
             splitted = self.splitLine(line)
             if len(splitted) > 1:
                 self._header['Initial sample weight'] = splitted[1].replace('"', '').strip()
             else:
-                self.warn(_('Unexpected header format'), self._numline)
+                self.warn('Unexpected header format', numline=self._numline)
 
             return 0
 
         if line.startswith('Weight after pressing (g)'):
             if len(self._header) == 0:
-                self.err(_("No header found"), self._numline)
+                self.err("No header found", numline=self._numline)
                 return -1
 
             splitted = self.splitLine(line)
             if len(splitted) > 1:
                 self._header['Weight after pressing'] = splitted[1].replace('"', '').strip()
             else:
-                self.warn(_('Unexpected header format'), self._numline)
+                self.warn('Unexpected header format', numline=self._numline)
 
             return 0
 
         if line.startswith('Correction applied for medium'):
             if len(self._header) == 0:
-                self.err(_("Unexpected header found"), self._numline)
+                self.warn('Unexpected header format', numline=self._numline)
                 return -1
 
             splitted = self.splitLine(line)
             if len(splitted) > 1:
                 self._header['Correction medium'] = splitted[1].replace('"', '').strip()
             else:
-                self.warn(_('Unexpected header format'), self._numline)
+                self.warn('Unexpected header format', numline=self._numline)
 
             return 0
 
         if line.startswith('Correction applied for film'):
             if len(self._header) == 0:
-                self.err(_("No header found"), self._numline)
+                self.err("No header found", numline=self._numline)
                 return -1
 
             splitted = self.splitLine(line)
             if len(splitted) > 1:
                 self._header['Correction film'] = splitted[1].replace('"', '').strip()
             else:
-                self.warn(_('Unexpected header format'), self._numline)
+                self.warn('Unexpected header format', numline=self._numline)
 
             return 0
 
         if line.startswith('Used Compound list'):
             if len(self._header) == 0:
-                self.err(_("No header found"), self._numline)
+                self.err("No header found", numline=self._numline)
                 return -1
 
             splitted = self.splitLine(line)
             if len(splitted) > 1:
                 self._header['Used compound'] = splitted[1].replace('"', '').strip()
             else:
-                self.warn(_('Unexpected header format'), self._numline)
+                self.warn('Unexpected header format', numline=self._numline)
 
             return 0
         if line.startswith('Results database:'):
             if len(self._header) == 0:
-                self.err(_("No header found"), self._numline)
+                self.err("No header found", numline=self._numline)
                 return -1
 
             splitted = self.splitLine(line)
             if len(splitted) > 1:
                 self._header['Result database'] = splitted[1].replace('"', '').strip()
             else:
-                self.warn(_('Unexpected header format'), self._numline)
+                self.warn('Unexpected header format', numline=self._numline)
 
             return 0
 
        
         if self.columns_name:
             if len(self._header) == 0:
-                self.err(_("No header found"), self._numline)
+                self.err("No header found", numline=self._numline)
                 return -1
 
             #Grab column names
@@ -390,7 +388,7 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
 
         if line.startswith('Results database in'):
             if len(self._header) == 0:
-                self.err(_("No header found"), self._numline)
+                self.err("No header found", numline=self._numline)
                 return -1
             
             splitted = self.splitLine(line)
@@ -398,7 +396,7 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
                 self._header['Database path'] = splitted[1]+splitted[2]
                 self.columns_name = True
             else:
-                self.warn(_('Unexpected header format'), self._numline)
+                self.warn('Unexpected header format', numline=self._numline)
                 
             return 1
             
@@ -442,22 +440,24 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
             elif com:# We have rm the 2nd part value, consequently we
                     # need to decrement idx
                 if len(self._columns) <= idx-1:
-                    self.err(_("Orphan value in column %s, line %s") \
-                                 % (str(idx + 1), self._numline))
+                    self.err("Orphan value in column ${index}",
+                             mapping={"index":str(idx + 1)},
+                             numline=self._numline)
                     break
                 # We add and sync the result with its value's name
                 rawdict[self._columns[idx-1]] = result
 
             else:
                 if len(self._columns) <= idx:
-                    self.err(_("Orphan value in column %s, line %s") \
-                                 % (str(idx + 1), self._numline))
+                    self.err("Orphan value in column ${index}",
+                             mapping={"index":str(idx + 1)},
+                             numline=self._numline)
                     break
                 rawdict[self._columns[idx]] = result
 
         aname = rawdict[self._columns[0]]# The fisrt column is analytic name  
         if not aname:
-            self.err(_("No Analysis Name defined, line %s") % (self.num_line))
+            self.err("No Analysis Name defined", numline=self._numline)
             return 0
         elif aname == "<H>":
             # <H> maybe is data error header? We need more examples...
@@ -467,7 +467,7 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
 
         rid = self._header['Sample']
         if not rid:
-            self.err(_("No Sample defined, line %s") % (self.num_line))
+            self.err("No Sample defined", numline=self._numline)
             return 0
 
         notes = rawdict.get('Notes', '')

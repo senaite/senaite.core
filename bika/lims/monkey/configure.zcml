@@ -16,10 +16,10 @@
       />
 
   <monkey:patch
-      description="This chops translated strings (from plone domain) into navtree titles."
-      class="plone.app.portlets.portlets.navigation.Renderer"
-      original="createNavTree"
-      replacement="bika.lims.monkey.navtree.createNavTree"
+      description="Fix pretty_title_or_id so that messages are translated.  It accepts a domain parameter, which defaults to 'plone'"
+      module="Products.CMFPlone.utils"
+      original="pretty_title_or_id"
+      replacement="bika.lims.monkey.utils.pretty_title_or_id"
       />
 
   <monkey:patch

@@ -1,6 +1,6 @@
 id: front-page
 title: Welcome to Gaob Bika LIMS 3
-description: This is version 3.1.1
+description: This is version 3.1.2
 subject:
 relatedItems:
 location:
@@ -8,7 +8,7 @@ language:
 effectiveDate: 2011/01/01
 expirationDate: None
 creation_date: 2011/01/01
-modification_date: 2014/06/25
+modification_date: 2014/07/14
 creators: admin
 contributors:
 rights:
