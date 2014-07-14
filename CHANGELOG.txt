@@ -1,13 +1,30 @@
-3.1.2 ()
+3.1.2 (2014-07-15)
 ------------------
 
-LIMS-1292: Retracted ARs in status 'Sample received' state with all its Analyses 'To be Verified' . Valid
-LIMS.1287:
-LIMS-1230: Livesearch's box (right top) hide the searching txt when it displays possible results
-LIMS-1257: Long titles in Analysis Profiles, Sample Points, etc. are not correctly displayed in selection widgets
-LIMS-1214: More columns
-LIMS-1199: From the 'How did we overlook this' dept. Worksheet totals in WS lists
+LIMS-1292: UI fix Retracted ARs workfow: Warning msg on "full" retract.
+LIMS.1287: UI fix Report parameter formatting
+LIMS-1230: UI fix Livesearch's box
+LIMS-1257: UI fix Long titles in Analysis Profiles, Sample Points, etc.
+LIMS-1214: UI fix More columns
+LIMS-1199: UI fix Worksheet listing: better columns
+LIMS-1303: jsi18n strings must be added to bika-manual.pot.  i18ndude cannot find.
+LIMS-1310: Filter SamplePoints by client in AR Template Edit View
+LIMS-1256: Client objects included in AR-Add filters for Sample Point etc.
+LIMS-1290: Allows Analyst to retract analyses, without giving extra permissions.
+LIMS-1218: Slightly nicer monkey patch for translating content object ID's and titles.
+LIMS-1070: Accreditation text can be customised in bika_setup
+LIMS-1245: off-by-one in part indicators in ar_add
+LIMS-1240: Hide "copy to new" from Analyst users
 
+LIMS-1059: Added worksheet rejection workflow
+	RejectAnalysis (Analysis subclass (has IAnalysis!)) workflow transition.
+	Does not retract individual Analysis objects - instead, forces their state
+		back to "Received", and assigns them onto newly created WS.
+	Sets attributes on src and dst worksheets:
+		WS instance rejected worksheet attribute: .replaced_by = UID
+		WS instance replacement worksheet attribute: .replaces_rejected_worksheet:UID
+
+Fixed some i18n and encoding snags, and updated translations.
 
 3.1.1 (2014-06-29)
 ------------------
