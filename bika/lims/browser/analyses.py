@@ -597,7 +597,11 @@ class AnalysesView(BikaListingView):
 
             # Sets the analyst assigned to this analysis
             if can_edit_analysis:
-                items[i]['Analyst'] = obj.getAnalyst()
+                analyst = obj.getAnalyst()
+                # widget default: current user
+                if not analyst:
+                    analyst = mtool.getAuthenticatedMember().getUserName()
+                items[i]['Analyst'] = analyst
                 item['choices']['Analyst'] = self.getAnalysts()
             else:
                 items[i]['Analyst'] = obj.getAnalystName()
