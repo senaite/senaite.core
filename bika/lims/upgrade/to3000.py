@@ -129,7 +129,11 @@ def upgrade(tool):
                 refsampleid = wsgroup[0].aq_parent.id
             else:
                 # Duplicate
-                refsampleid = wsgroup[0].getSamplePartition().id
+                _analysis = wsgroup[0].getAnalysis()
+                if _analysis.portal_type == 'ReferenceAnalysis':
+                    refsampleid = _analysis.aq_parent.id
+                else:
+                    refsampleid = wsgroup[0].getSamplePartition().id
             codre = refsampleid
             codws = '%s_%s' % (refsampleid, ws.UID())
             codgr = '%s_%s_%s' % (refsampleid, ws.UID(), position)
