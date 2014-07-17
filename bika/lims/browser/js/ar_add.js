@@ -1580,6 +1580,10 @@ function fill_column(data) {
     }
 }
 
+function expand_default_categories() {
+	$("th.prefill").click();
+}
+
 function ar_add_create_hidden_analysis(
         analysis_parent, elem_id, arnum, poc, cat, min, max, err, price, vat) {
     //console.log('ar_add_create_hidden_analysis: ' + arnum + ':' + poc);
@@ -1627,7 +1631,8 @@ function ar_add_analyses_overlays() {
 			$(".copyButton").live("click", copyButton);
 
 			$("th[class^='analysiscategory']").click(clickAnalysisCategory);
-
+            expand_default_categories();
+            
 			$("input[name^='Price']").live("change", recalc_prices);
 
 			$("input[id*='_ReportDryMatter']").change(changeReportDryMatter);

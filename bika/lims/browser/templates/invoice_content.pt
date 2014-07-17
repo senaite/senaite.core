@@ -65,15 +65,15 @@
 					<td class="text" tal:content="item/description"></td>
 					<td tal:content="item/orderNo"></td>
 					<td>
-						<span i18n:translate="label_currency_abbreviation">R</span>
+						<span tal:content="view/currency">R</span>
 						<span tal:content="item/subtotal">0.00</span>
 					</td>
 					<td>
-						<span i18n:translate="label_currency_abbreviation">R</span>
+						<span tal:content="view/currency">R</span>
 						<span tal:content="item/VATAmount">0.00</span>
 					</td>
 					<td>
-						<span i18n:translate="label_currency_abbreviation">R</span>
+						<span tal:content="view/currency">R</span>
 						<span tal:content="item/total">0.00</span>
 					</td>
 				</tr>
@@ -82,15 +82,15 @@
 		<tr class="totals">
 			<td colspan="3" i18n:translate="">Total</td>
 			<td class="currency">
-				<span i18n:translate="label_currency_abbreviation">R</span>
+				<span tal:content="view/currency">R</span>
 				<span tal:content="view/subtotal"></span>
 			</td>
 			<td class="currency">
-				<span i18n:translate="label_currency_abbreviation">R</span>
+				<span tal:content="view/currency">R</span>
 				<span tal:content="view/VATAmount"></span>
 			</td>
 			<td class="currency">
-				<span i18n:translate="label_currency_abbreviation">R</span>
+				<span tal:content="view/currency">R</span>
 				<span tal:content="view/total"></span>
 			</td>
 		</tr>
