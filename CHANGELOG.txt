@@ -1,3 +1,13 @@
+3.1.3 (2014-07-17)
+------------------
+
+Missing fixes from 3.1.2
+
+LIMS-671: Preferred/Restricted client categories
+LIMS-1251: Supply order permission error
+LIMS-1272: Currency in Price Lists
+LIMS-1310: Broken AnalysisProfile selector in AR Add form.
+
 3.1.2 (2014-07-15)
 ------------------
 

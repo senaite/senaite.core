@@ -1343,6 +1343,10 @@ function fill_column(data) {
     }
 }
 
+function expand_default_categories() {
+	$("th.prefill").click();
+}
+
 $(document).ready(function() {
 
     // Only if the view is the Analysis Request Add View
@@ -1361,6 +1365,7 @@ $(document).ready(function() {
     //  dateFormat = 'yy-mm-dd';
     // }
 
+
     ar_rename_elements();
     ar_referencewidget_lookups();
     ar_set_tabindexes();
@@ -1370,6 +1375,7 @@ $(document).ready(function() {
     $(".copyButton").live("click",  copyButton );
 
     $("th[class^='analysiscategory']").click(clickAnalysisCategory);
+	expand_default_categories();
 
     $("input[name^='Price']").live("change", recalc_prices );
 
