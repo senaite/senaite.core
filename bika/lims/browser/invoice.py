@@ -2,6 +2,7 @@ from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IInvoiceView
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from zope.i18n.locales import locales
 from zope.interface import implements
 
 
@@ -38,6 +39,10 @@ class InvoiceView(BrowserView):
         self.clientFax = client.getFax()
         self.clientEmail = client.getEmailAddress()
         self.clientAccountNumber = client.getAccountNumber()
+        # currency info
+        locale = locales.getLocale('en')
+        self.currency = self.context.bika_setup.getCurrency()
+        self.symbol = locale.numbers.currencies[self.currency].symbol
         # Get an available client address in a preferred order
         self.clientAddress = None
         addresses = (
