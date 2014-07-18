@@ -1712,7 +1712,7 @@ $(document).ready(function() {
         $("#submit_analyses_button").live("click", analysesOverlaySubmitted);
 
         $("th[class^='analysiscategory']").live("click", clickAnalysisCategory);
-
+		expand_default_categories();
         $("input[name^='Price']").live("change", recalc_prices );
 
         $("input[id*='_ReportDryMatter']").change(changeReportDryMatter);
