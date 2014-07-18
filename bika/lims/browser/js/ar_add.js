@@ -1585,205 +1585,117 @@ function expand_default_categories() {
 }
 
 function ar_add_create_hidden_analysis(
-        analysis_parent, elem_id, arnum, poc, cat, min, max, err, price, vat) {
-    //console.log('ar_add_create_hidden_analysis: ' + arnum + ':' + poc);
-    var new_item;
-    new_item = '<input type="hidden" id="'+elem_id+'" value="'+elem_id+'" name="ar.'+arnum+'.Analyses:list:ignore_empty:record" class="cb overlay_field" arnum="'+arnum+'" checked="true"/>';
-    analysis_parent.append(new_item);
-    new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.min.'+elem_id+'" value="'+min+'" class="spec_bit min overlay_field"/>';
-    analysis_parent.append(new_item);
-    new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.max.'+elem_id+'" value="'+max+'" class="spec_bit max overlay_field"/>';
-    analysis_parent.append(new_item);
-    new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.error.'+elem_id+'" value="'+err+'" class="spec_bit error overlay_field"/>';
-    analysis_parent.append(new_item);
-    new_item = '<input type="hidden" class="analysiscategory overlay_field" arnum="'+arnum+'" poc="'+poc+'" cat="'+cat+'"/>';
-    analysis_parent.append(new_item);
-    new_item = '<input type="hidden" id="'+elem_id+'_price" value="'+price+'" vat_amount="'+vat+'" class="overlay_field"/>';
-    analysis_parent.append(new_item);
+		analysis_parent, elem_id, arnum, poc, cat, min, max, err, price, vat) {
+	//console.log('ar_add_create_hidden_analysis: ' + arnum + ':' + poc);
+	var new_item;
+	new_item = '<input type="hidden" id="'+elem_id+'" value="'+elem_id+'" name="ar.'+arnum+'.Analyses:list:ignore_empty:record" class="cb overlay_field" arnum="'+arnum+'" checked="true"/>';
+	analysis_parent.append(new_item);
+	new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.min.'+elem_id+'" value="'+min+'" class="spec_bit min overlay_field"/>';
+	analysis_parent.append(new_item);
+	new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.max.'+elem_id+'" value="'+max+'" class="spec_bit max overlay_field"/>';
+	analysis_parent.append(new_item);
+	new_item = '<input type="hidden" uid="'+elem_id+'" name="ar.'+arnum+'.error.'+elem_id+'" value="'+err+'" class="spec_bit error overlay_field"/>';
+	analysis_parent.append(new_item);
+	new_item = '<input type="hidden" class="analysiscategory overlay_field" arnum="'+arnum+'" poc="'+poc+'" cat="'+cat+'"/>';
+	analysis_parent.append(new_item);
+	new_item = '<input type="hidden" id="'+elem_id+'_price" value="'+price+'" vat_amount="'+vat+'" class="overlay_field"/>';
+	analysis_parent.append(new_item);
 }
 
-function ar_add_analyses_overlays() {
+function ar_add_analyses_overlays(){
 	var layout = $("input[id='layout']").val();
 	if (layout == 'columns') {
 		return;
-		// Only if the view is the Analysis Request Add View
-		if ($(".template-ar_add #analysisrequest_edit_form").length > 0) {
-
-			// jarn.i18n.loadCatalog('bika');
-			// var _ = window.jarn.i18n.MessageFactory("bika");
-			// jarn.i18n.loadCatalog('bika');
-			// var PMF = window.jarn.i18n.MessageFactory("plone");
-
-			// var curDate = new Date();
-			// var y = curDate.getFullYear();
-			// var limitString = "1900:" + y;
-			// var dateFormat = _("date_format_short_datepicker");
-			// if (dateFormat == 'date_format_short_datepicker'){
-			//  dateFormat = 'yy-mm-dd';
-			// }
-
-			ar_rename_elements();
-			ar_referencewidget_lookups();
-			ar_set_tabindexes();
-
-			$("input[type=text]").prop("autocomplete", "off")
-
-			$(".copyButton").live("click", copyButton);
-
-			$("th[class^='analysiscategory']").click(clickAnalysisCategory);
-            expand_default_categories();
-            
-			$("input[name^='Price']").live("change", recalc_prices);
-
-			$("input[id*='_ReportDryMatter']").change(changeReportDryMatter);
-
-			$(".spec_bit").live("change", function () {
-				validate_spec_field_entry(this);
-			});
-
-			// AR Add/Edit ajax form submits
-			var ar_edit_form = $("#analysisrequest_edit_form");
-			if (ar_edit_form.ajaxForm !== undefined) {
-				var options = {
-					url: window.location.href.split("/portal_factory")[0] + "/analysisrequest_submit",
-					dataType: "json",
-					data: {"_authenticator": $("input[name='_authenticator']").val()},
-					beforeSubmit: function () {
-						$("input[class~='context']").prop("disabled", true);
-					},
-					success: function (responseText) {
-						var destination;
-						if (responseText.success !== undefined) {
-							if (responseText.labels !== undefined) {
-								destination = window.location.href
-										.split("/portal_factory")[0];
-								var ars = responseText.labels;
-								var labelsize = responseText.labelsize;
-								var q = "/sticker?size=" + labelsize + "&items=";
-								q = q + ars.join(",");
-								window.location.replace(destination + q);
-							}
-							else {
-								destination = window.location.href
-										.split("/portal_factory")[0];
-								window.location.replace(destination);
-							}
-						}
-						else {
-							var msg = "";
-							for (var error in responseText.errors) {
-								var x = error.split(".");
-								var e;
-								if (x.length == 2) {
-									e = x[1] + ", Column " + (+x[0]) + ": ";
-								}
-								else {
-									e = "";
-								}
-								msg = msg + e + responseText.errors[error] + "<br/>";
-							}
-							window.bika.lims.portalMessage(msg);
-							window.scroll(0, 0);
-							$("input[class~='context']").prop("disabled", false);
-						}
-					},
-					error: function (XMLHttpRequest, statusText) {
-						window.bika.lims.portalMessage(statusText);
-						window.scroll(0, 0);
-						$("input[class~='context']").prop("disabled", false);
-					}
-				};
-				$("#analysisrequest_edit_form").ajaxForm(options);
-			}
-
-
-			// these go here so that popup windows can access them in our context
-			window.recalc_prices = recalc_prices;
-			window.calculate_parts = calculate_parts;
-			window.toggleCat = toggleCat;
-
-			// Show only the contacts and CC from the selected Client
-			$("[id$='_Client']").bind("change", function () {
-				var col = this.id.split("_")[1];
-				var element = $("#ar_" + col + "_Contact");
-				var clientuid = $(this).attr("uid");
-				applyComboFilter(element, "getParentUID", clientuid);
-				element = $("#ar_" + col + "_CCContact");
-				applyComboFilter(element, "getParentUID", clientuid);
-				// Filter sample points by client
-				element = $("#ar_" + col + "_SamplePoint");
-				applyComboFilter(element, "getClientUID",
-								 [clientuid,
-								  $("#bika_setup").attr("bika_samplepoints_uid")]);
-				// Filter template by client
-				element = $("#ar_" + col + "_Template");
-				applyComboFilter(element, "getClientUID",
-								 [clientuid,
-								  $("#bika_setup").attr("bika_artemplates_uid")]);
-				// Filter Analysis Profile by client
-				element = $("#ar_" + col + "_Profile");
-				applyComboFilter(element, "getClientUID",
-								 [clientuid,
-								  $("#bika_setup").attr("bika_analysisprofiles_uid")]);
-				// Filter Analysis Spec by client
-				element = $("#ar_" + col + "_Specification");
-				applyComboFilter(element, "getClientUID",
-								 [clientuid,
-								  $("#bika_setup").attr("bika_analysisspecs_uid")]);
-			});
-			// Iterate all the columns to filtrate by client
-			for (var col = 0; col < parseInt($("#col_count").val(), 10); col++) {
-				var element = $("#ar_" + col + "_Contact");
-				var clientuid = $("#ar_" + col + "_Client_uid").val();
-				// Initial value of contact list, set by the page's hidden ClientUID.
-				applyComboFilter(element, "getParentUID", clientuid);
-				element = $("#ar_" + col + "_CCContact");
-				applyComboFilter(element, "getParentUID", clientuid);
-				// Filter sample points by client
-				element = $("#ar_" + col + "_SamplePoint");
-				applyComboFilter(element, "getClientUID",
-								 [clientuid,
-								  $("#bika_setup").attr("bika_samplepoints_uid")]);
-				// Filter template by client
-				element = $("#ar_" + col + "_Template");
-				applyComboFilter(element, "getClientUID",
-								 [clientuid,
-								  $("#bika_setup").attr("bika_artemplates_uid")]);
-				// Filter Analysis Profile by client
-				element = $("#ar_" + col + "_Profile");
-				applyComboFilter(element, "getClientUID",
-								 [clientuid,
-								  $("#bika_setup").attr("bika_analysisprofiles_uid")]);
-				// Filter Analysis Spec by client
-				element = $("#ar_" + col + "_Specification");
-				applyComboFilter(element, "getClientUID",
-								 [clientuid,
-								  $("#bika_setup").attr("bika_analysisspecs_uid")]);
-			}
-
-			var copy_from = window.location.href.split("copy_from=");
-			if (copy_from.length > 1) {
-				copy_from = copy_from[1].split("&")[0];
-				copy_from = copy_from.split(",");
-				for (var column = 0; column < copy_from.length; column++) {
-					window.bika.ar_copy_from_col = column;
-					$.ajaxSetup({async: false});
-					window.bika.lims.jsonapi_read({
-													  catalog_name: "uid_catalog",
-													  UID: copy_from[column]
-												  }, fill_column);
-					$.ajaxSetup({async: true});
-				}
-			}
-		}
 	}
+	var i, elem, elements, arnum, field, src;
+	elements = $(".ar_add_analyses");
+	for (i = elements.length - 1; i >= 0; i--) {
+		elem = elements[i];
+		src = window.portal_url + "/araddanalyses"
+		$(elem).attr('src', src);
+		$(elem).prepOverlay({
+			subtype: 'ajax',
+			config: {
+				'srcElement': elem,
+				onLoad : function (evt) {
+					window.bika.lims.overlay_submitted = false;
+					var src = this.getConf().srcElement;
+					var arnum = src.id.split("_")[1];
+					$('#arnum').val(arnum);
+					$("#ar_"+arnum+"_total").val("0.00");
+					var analysis_parent = $(src).parent();
+					var services = [];
+					var elements = $(analysis_parent).find('input.overlay_field');
+					if (elements.length == 0) {
+						return true;
+					};
+					for (var i=0; i<elements.length; i++){
+						services.push(elements[i].id);
+					};
+					var an_cats = $(analysis_parent).find('.analysiscategory');
+					for (var i=0; i<an_cats.length; i++){
+						toggleCat($(an_cats[i]).attr("poc"), $(an_cats[i]).attr("cat"),
+							  arnum, services);
+					};
+					return true;
+					},
+				onClose : function (evt) {
+					if (window.bika.lims.overlay_submitted == false ) {
+						return true
+					};
+					window.bika.lims.overlay_submitted = false;
+					//Clear
+					var i, elem, elements, aname, min, max, err, price, vat;
+					var poc, cat;
+					var titles = [];
+					var src = this.getConf().srcElement;
+					var arnum = src.id.split('_')[1];
+					var analysis_parent = $(src).parent();
+					clearHiddenPopupFields(analysis_parent);
+					elements = $("td.service input.cb");
+					var something_checked = false;
+					for (i=0; i<elements.length; i++) {
+						elem = elements[i];
+						if (elem.checked == true) {
+							if (elem.title == '') {
+								//TODO: This should not be required
+								continue;
+							}
+							titles.push(elem.title);
+							poc = $(elem).attr('poc');
+							cat = $(elem).attr('cat');
+							something_checked = true;
+							aname = 'ar.'+arnum+'.min.'+elem.id;
+							min = $('input[name^="'+aname+'"]').val();
+							aname = 'ar.'+arnum+'.max.'+elem.id;
+							max = $('input[name^="'+aname+'"]').val();
+							aname = 'ar.'+arnum+'.error.'+elem.id;
+							err = $('input[name^="'+aname+'"]').val();
+							aname = elem.id+'_price';
+							price = $('input[id="'+aname+'"]').val();
+							vat = $('input[id="'+aname+'"]').attr('vat_amount');
+							ar_add_create_hidden_analysis(
+								analysis_parent, elem.id, arnum, poc, cat,
+								min, max, err, price, vat);
+						};
+					};
+					if (something_checked == true) {
+						$(src).attr('value', titles.join(', '));
+						$(src).attr('name', $(src).attr('name').split(':')[0]);
+					};
+					recalc_prices(arnum);
+					return true;
+					},
+				},
+		});
+	};
 }
 
 function analysesOverlaySubmitted(event){
-    event.preventDefault();
-    window.bika.lims.overlay_submitted = true;
-    $('div.close').click();
-    return true;
+	event.preventDefault();
+	window.bika.lims.overlay_submitted = true;
+	$('div.close').click();
+	return true;
 }
 
 $(document).ready(function() {
