@@ -43,7 +43,6 @@ class AnalysesView(BikaListingView):
         self.show_column_toggles = False
         self.pagesize = 0
         self.form_id = 'analyses_form'
-        self.categories = []
 
         self.portal = getToolByName(context, 'portal_url').getPortalObject()
         self.portal_url = self.portal.absolute_url()
@@ -303,6 +302,7 @@ class AnalysesView(BikaListingView):
         self.show_select_column = self.allow_edit
         context_active = isActive(self.context)
 
+        self.categories = []
         items = super(AnalysesView, self).folderitems(full_objects = True)
 
         # manually skim retracted analyses from the list
