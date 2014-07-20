@@ -17,7 +17,10 @@ def ObjectModifiedEventHandler(obj, event):
             service = uc(UID=service.UID())[0].getObject()
             pr.save(obj=service, comment="Calculation updated to version %s" %
                 (obj.version_id + 1,))
-            service.reference_versions[obj.UID()] = obj.version_id + 1
+            reference_versions = getattr(service, 'reference_versions', {})
+            reference_versions[obj.UID()] = obj.version_id + 1
+            service.reference_versions = reference_versions
+
 
     elif obj.portal_type == 'Client':
         mp = obj.manage_permission
