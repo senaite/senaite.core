@@ -33,7 +33,6 @@ function getResultRange(service_uid, spec_uid, keyword) {
             if (result.objects && result.objects.length > 0 &&
                 ( result.objects[0].ResultOptions == null ||
                   result.objects[0].ResultOptions.length == 0)) {
-                //console.log('getResultRange:service:'+service_uid+':'+result.objects[0].ResultOptions.length);
                 var request_data = {
                     catalog_name: "uid_catalog",
                     UID: spec_uid
@@ -56,7 +55,7 @@ function getResultRange(service_uid, spec_uid, keyword) {
                         }
                     }
                 })
-            };
+            }
        });
        $.ajaxSetup({async:true});
        //console.log('getResultRange:'+return_val);
@@ -890,6 +889,7 @@ function toggleCat(poc, category_uid, arnum, selectedservices, force_expand, dis
                 $("input[name*='Analyses']").unbind();
                 $("input[name*='Analyses']").bind("change", service_checkbox_change);
             } else {
+                $("input[name*='cb']").unbind();
                 $("input[class='cb']").bind("change", service_checkbox_change);
             };
             if(selectedservices!=[]){
@@ -1335,14 +1335,12 @@ function setTemplate(arnum, template_title){
                         } else {
                             range = getResultRange(
                                         service[0], spec_uid, service[2]);
-                            if (range[0] !== "") {
-                                titles.push(service[1]);
-                                ar_add_create_hidden_analysis(
-                                    an_parent, service[0], arnum, p, cat_uid,
-                                    range[0], range[1], range[2], 
-                                    service[3], service[4]);
-                                total = total + parseFloat(service[3]) + (parseFloat(service[3]) * parseFloat(service[4])/100);
-                            };
+                            titles.push(service[1]);
+                            ar_add_create_hidden_analysis(
+                                an_parent, service[0], arnum, p, cat_uid,
+                                range[0], range[1], range[2], 
+                                service[3], service[4]);
+                            total = total + parseFloat(service[3]) + (parseFloat(service[3]) * parseFloat(service[4])/100);
                         }
                     }
                     if (layout == 'columns') {
@@ -1431,6 +1429,7 @@ function setAnalysisProfile(arnum, profile_title){
                     }
                     $(th).removeClass("collapsed").addClass("expanded");
                 } else {
+                    //If layout == Rows
                     var range;
                     var poc = poc_cat.split("_")[0];
                     var cat_uid = services[0].Category_uid;
@@ -1438,14 +1437,12 @@ function setAnalysisProfile(arnum, profile_title){
                     for(i = 0; i<services.length;i++){
                         range = getResultRange(
                                     services[i].UID, spec_uid, services[i].Keyword);
-                        if (range[0] !== "") {
-                            titles.push(services[i].Title);
-                            ar_add_create_hidden_analysis(
-                                an_parent, services[i].UID, arnum, 
-                                poc, cat_uid, range[0], range[1], range[2], 
-                                services[i].Price, services[i].VAT);
-                            total = total + parseFloat(services[i].Price);
-                        };
+                        titles.push(services[i].Title);
+                        ar_add_create_hidden_analysis(
+                            an_parent, services[i].UID, arnum, 
+                            poc, cat_uid, range[0], range[1], range[2], 
+                            services[i].Price, services[i].VAT);
+                        total = total + parseFloat(services[i].Price) + (parseFloat(services[i].Price) * parseFloat(services[i].VAT)/100);
                     }
                 }
                 if (layout == 'rows') {
