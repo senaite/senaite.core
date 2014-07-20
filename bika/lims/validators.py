@@ -122,11 +122,6 @@ class InterimFieldsValidator:
         translate = getToolByName(instance, 'translation_service').translate
         bsc = getToolByName(instance, 'bika_setup_catalog')
 
-        if instance.REQUEST.get('validated', '') == fieldname:
-            return True
-        else:
-            instance.REQUEST['validated'] = fieldname
-
         for x in range(len(interim_fields)):
             row = interim_fields[x]
             keys = row.keys()
@@ -258,11 +253,6 @@ class CoordinateValidator:
         fieldname = kwargs['field'].getName()
         request = instance.REQUEST
 
-        if request.get('validated', '') == fieldname:
-            return True
-        else:
-            request['validated'] = fieldname
-
         form = request.form
         form_value = form.get(fieldname)
 
@@ -345,11 +335,6 @@ class ResultOptionsValidator:
 
         translate = getToolByName(instance, 'translation_service').translate
         # bsc = getToolByName(instance, 'bika_setup_catalog')
-
-        if instance.REQUEST.get(self.name, ''):
-            return True
-        else:
-            instance.REQUEST[self.name] = True
 
         # ResultValue must always be a number
         for field in form_value:
@@ -493,16 +478,11 @@ class AnalysisSpecificationsValidator:
             instance = kwargs['instance']
             request = kwargs.get('REQUEST', {})
 
-            if instance.REQUEST.get('validated', '') == self.name:
-                return True
-            else:
-                instance.REQUEST['validated'] = self.name
-
-            translate = getToolByName(instance, 'translation_service').translate
-
             mins = request.get('min', {})[0]
             maxs = request.get('max', {})[0]
             errors = request.get('error', {})[0]
+
+            translate = getToolByName(instance, 'translation_service').translate
 
             # Retrieve all AS uids
             for uid in mins.keys():
@@ -545,8 +525,7 @@ validation.register(AnalysisSpecificationsValidator())
 
 
 class UncertaintiesValidator:
-
-    """All entries must be numbers.
+    """Uncertainties may be specified as numeric values or percentages.
     Min value must be below max value.
     Uncertainty must not be < 0.
     """
@@ -561,39 +540,47 @@ class UncertaintiesValidator:
         fieldname = kwargs['field'].getName()
         translate = getToolByName(instance, 'translation_service').translate
 
-        if instance.REQUEST.get(self.name, ''):
-            return True
-        else:
-            instance.REQUEST[self.name] = True
-
         for i, value in enumerate(request[fieldname]):
 
             # Values must be numbers
             try:
                 minv = float(value['intercept_min'])
-            except:
-                return to_utf8(translate(_("Validation failed: Min values must be "
-                            "numeric")))
+            except ValueError:
+                return to_utf8(translate(_(
+                    "Validation failed: Min values must be numeric")))
             try:
                 maxv = float(value['intercept_max'])
-            except:
-                return to_utf8(translate(_("Validation failed: Max values must be "
-                            "numeric")))
+            except ValueError:
+                return to_utf8(translate(_(
+                    "Validation failed: Max values must be numeric")))
+
+            # values may be percentages; the rest of the numeric validation must
+            # still pass once the '%' is stripped off.
+            err = value['errorvalue']
+            perc = False
+            if err.endswith('%'):
+                perc = True
+                err = err[:-1]
             try:
-                err = float(value['errorvalue'])
-            except:
-                return to_utf8(translate(_("Validation failed: Error values "
-                            "must be numeric")))
+                err = float(err)
+            except ValueError:
+                return to_utf8(translate(_(
+                    "Validation failed: Error values must be numeric")))
+
+            if perc and (err < 0 or err > 100):
+                # Error percentage must be between 0 and 100
+                return to_utf8(translate(_(
+                    "Validation failed: Error percentage must be between 0 and 100")))
 
             # Min value must be < max
             if minv > maxv:
-                return to_utf8(translate(_("Validation failed: Max values must be "
-                            "greater than Min values")))
+                return to_utf8(translate(_(
+                    "Validation failed: Max values must be greater than Min values")))
 
             # Error values must be >-1
             if err < 0:
-                return to_utf8(translate(_("Validation failed: Error value must be 0 or "
-                            "greater")))
+                return to_utf8(translate(_(
+                    "Validation failed: Error value must be 0 or greater")))
 
         return True
 
@@ -614,11 +601,6 @@ class DurationValidator:
         request = kwargs.get('REQUEST', {})
         fieldname = kwargs['field'].getName()
         translate = getToolByName(instance, 'translation_service').translate
-
-        if instance.REQUEST.get(self.name, ''):
-            return True
-        else:
-            instance.REQUEST[self.name] = True
 
         value = request[fieldname]
         for v in value.values():
@@ -647,11 +629,6 @@ class ReferenceValuesValidator:
             instance = kwargs['instance']
             # fieldname = kwargs['field'].getName()
             request = kwargs.get('REQUEST', {})
-
-            if instance.REQUEST.get('validated', '') == self.name:
-                return True
-            else:
-                instance.REQUEST['validated'] = self.name
 
             translate = getToolByName(instance, 'translation_service').translate
 
