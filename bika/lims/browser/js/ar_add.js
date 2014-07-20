@@ -1442,7 +1442,7 @@ function setAnalysisProfile(arnum, profile_title){
                             an_parent, services[i].UID, arnum, 
                             poc, cat_uid, range[0], range[1], range[2], 
                             services[i].Price, services[i].VAT);
-                        total = total + parseFloat(services[i].Price);
+                        total = total + parseFloat(services[i].Price) + (parseFloat(services[i].Price) * parseFloat(services[i].VAT)/100);
                     }
                 }
                 if (layout == 'rows') {
