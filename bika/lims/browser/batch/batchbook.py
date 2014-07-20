@@ -3,7 +3,7 @@ from AccessControl import getSecurityManager
 from Products.CMFPlone import PloneMessageFactory
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.permissions import EditResults
+from bika.lims.permissions import EditResults, AddAnalysisRequest
 from Products.CMFCore.utils import getToolByName
 
 import re
@@ -76,6 +76,18 @@ class BatchBookView(BikaListingView):
         checkPermission = mtool.checkPermission
         self.allow_edit = checkPermission("Modify portal content", self.context)
 
+        mtool = getToolByName(self.context, 'portal_membership')
+        if mtool.checkPermission(AddAnalysisRequest, self.portal):
+            # This is permitted from the global permission above, AddAnalysisRequest.
+            review_states = []
+            for review_state in self.review_states:
+                review_state['custom_actions'].extend(
+                    [{'id': 'copy_to_new',
+                      'title': _('Copy to new'),
+                      'url': 'workflow_action?action=copy_to_new'}, ])
+                review_states.append(review_state)
+            self.review_states = review_states
+
         return super(BatchBookView, self).__call__()
 
     def folderitems(self):
@@ -99,10 +111,6 @@ class BatchBookView(BikaListingView):
         for ar in self.context.getAnalysisRequests():
             if ar not in ars:
                 ars.append(ar)
-
-        self.review_states[0]['custom_actions'] = []
-        if ars:
-            self.review_states[0]['custom_actions'].append({'id': 'copy_to_new'})
 
         self.categories = []
         analyses = {}

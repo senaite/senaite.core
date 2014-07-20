@@ -44,14 +44,15 @@ class AnalysisRequestsView(_ARV, _ARAV):
                 # msg = _("Client contact required before request may be submitted")
                 # addPortalMessage(self.context.translate(msg))
 
-        review_states = []
-        for review_state in self.review_states:
-            review_state['custom_actions'].extend(
-                [{'id': 'copy_to_new',
-                  'title': _('Copy to new'),
-                  'url': 'workflow_action?action=copy_to_new'}, ])
-            review_states.append(review_state)
-        self.review_states = review_states
+            # This is permitted from the global permission above, AddAnalysisRequest.
+            review_states = []
+            for review_state in self.review_states:
+                review_state['custom_actions'].extend(
+                    [{'id': 'copy_to_new',
+                      'title': _('Copy to new'),
+                      'url': 'workflow_action?action=copy_to_new'}, ])
+                review_states.append(review_state)
+            self.review_states = review_states
 
         return super(AnalysisRequestsView, self).__call__()
 
