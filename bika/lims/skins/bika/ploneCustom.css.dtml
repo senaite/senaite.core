@@ -839,7 +839,7 @@ div.alert {
 
 /* ARImport */
 .icons-on .section-arimports .contenttype-folder{
-    background: no-repeat transparent url(&dtml-portal_url;/++resource++bika.lims.images/arimport.png);
+    background: no-repeat transparent url(&dtml-portal_url;/++resource++bika.lims.images/folder.png);
 }
 table.arimport {
   border-top: 1px solid #dddddd;
