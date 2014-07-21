@@ -580,13 +580,42 @@ class Analysis(BaseContent):
         2. If the result is not floatable, return it without being formatted
         3. If the analysis specs has hidemin or hidemax enabled and the
            result is out of range, render result as '<min' or '>max'
-        4. If the result is floatable, render it to the correct precision
+        4. If the result is longer than ExponentialFormatThreshold setting,
+           render exponent notation to service/ExponentPrecision precision.
+        5. If the result is floatable, render fixed-point value at correct precision
+
+        >>> portal = layer['portal']
+        >>> portal_url = portal.absolute_url()
+        >>> from bika.lims.utils.analysisrequest import create_analysisrequest
+        >>> from plone.app.testing import SITE_OWNER_NAME
+        >>> from plone.app.testing import SITE_OWNER_PASSWORD
+
+        # we need some content and configuration
+        >>> client = portal.clients['client-1']
+        >>> service = portal.bika_setup.bika_analysisservices['analysisservice-1']
+        >>> service.edit(Precision = 1, ExponentialFormatPrecision = 9)
+        >>> browser.open(portal_url+"/@@API/create", "&".join([
+        ... "obj_type=AnalysisRequest",
+        ... "Client=portal_type:Client|id:client-1",
+        ... "SampleType=portal_type:SampleType|title:Apple Pulp",
+        ... "Contact=portal_type:Contact|getFullname:Rita Mohale",
+        ... "Services:list=portal_type:AnalysisService|title:Calcium",
+        ... "Services:list=portal_type:AnalysisService|title:Copper",
+        ... "Services:list=portal_type:AnalysisService|title:Magnesium",
+        ... "SamplingDate=2013-09-29"
+        ... ]))
+        >>> browser.contents
+        '{..."success": true...}'
+        >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
+        >>> browser.
+
+
         """
         result = self.getResult()
         service = self.getService()
         choices = service.getResultOptions()
 
-        # 1. Print ResultText of mathching ResulOptions
+        # 1. Print ResultText of matching ResulOptions
         match = [x['ResultText'] for x in choices
                  if str(x['ResultValue']) == str(result)]
         if match:
@@ -626,7 +655,14 @@ class Analysis(BaseContent):
         if abovemax:
             return '> %s' % hidemax
 
-        # 4. If the result is floatable, render it to the correct precision
+        threshold = self.context.bika_setup.getExponentialFormatThreshold()
+        res_len = len([digit for digit in self.getResult() if digit in '0123456789'])
+        if res_len >= threshold:
+            precision = service.getExponentPrecision()
+            return str("%%.%sf" % precision) % result
+
+
+        # 5. If the result is floatable, render it to the correct precision
         precision = service.getPrecision()
         if not precision:
             precision = ''
