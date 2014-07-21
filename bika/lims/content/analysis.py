@@ -655,14 +655,14 @@ class Analysis(BaseContent):
         if abovemax:
             return '> %s' % hidemax
 
-        threshold = self.context.bika_setup.getExponentialFormatThreshold()
+        # 4. Possibly render in exponential notation
+        threshold = self.bika_setup.getExponentialFormatThreshold()
         res_len = len([digit for digit in self.getResult() if digit in '0123456789'])
         if res_len >= threshold:
-            precision = service.getExponentPrecision()
-            return str("%%.%sf" % precision) % result
+            precision = service.getExponentialFormatPrecision()
+            return str("%%.%sg" % precision) % result
 
-
-        # 5. If the result is floatable, render it to the correct precision
+        # 5. If the result is floatable, render fixed point to the correct precision
         precision = service.getPrecision()
         if not precision:
             precision = ''
