@@ -122,6 +122,12 @@ class InterimFieldsValidator:
         translate = getToolByName(instance, 'translation_service').translate
         bsc = getToolByName(instance, 'bika_setup_catalog')
 
+        key = self.name + fieldname
+        if instance.REQUEST.get(key, False):
+            return True
+        else:
+            instance.REQUEST[key] = True
+
         for x in range(len(interim_fields)):
             row = interim_fields[x]
             keys = row.keys()
@@ -253,6 +259,12 @@ class CoordinateValidator:
         fieldname = kwargs['field'].getName()
         request = instance.REQUEST
 
+        key = self.name + fieldname
+        if instance.REQUEST.get(key, False):
+            return True
+        else:
+            instance.REQUEST[key] = True
+
         form = request.form
         form_value = form.get(fieldname)
 
@@ -335,6 +347,12 @@ class ResultOptionsValidator:
 
         translate = getToolByName(instance, 'translation_service').translate
         # bsc = getToolByName(instance, 'bika_setup_catalog')
+
+        key = self.name + fieldname
+        if instance.REQUEST.get(key, False):
+            return True
+        else:
+            instance.REQUEST[key] = True
 
         # ResultValue must always be a number
         for field in form_value:
@@ -477,12 +495,19 @@ class AnalysisSpecificationsValidator:
 
             instance = kwargs['instance']
             request = kwargs.get('REQUEST', {})
+            fieldname = kwargs['field'].getName()
+
+            key = self.name + fieldname
+            if instance.REQUEST.get(key, False):
+                return True
+            else:
+                instance.REQUEST[key] = True
+
+            translate = getToolByName(instance, 'translation_service').translate
 
             mins = request.get('min', {})[0]
             maxs = request.get('max', {})[0]
             errors = request.get('error', {})[0]
-
-            translate = getToolByName(instance, 'translation_service').translate
 
             # Retrieve all AS uids
             for uid in mins.keys():
@@ -539,6 +564,12 @@ class UncertaintiesValidator:
         request = kwargs.get('REQUEST', {})
         fieldname = kwargs['field'].getName()
         translate = getToolByName(instance, 'translation_service').translate
+
+        key = self.name + fieldname
+        if instance.REQUEST.get(key, False):
+            return True
+        else:
+            instance.REQUEST[key] = True
 
         for i, value in enumerate(request[fieldname]):
 
@@ -602,6 +633,12 @@ class DurationValidator:
         fieldname = kwargs['field'].getName()
         translate = getToolByName(instance, 'translation_service').translate
 
+        key = self.name + fieldname
+        if instance.REQUEST.get(key, False):
+            return True
+        else:
+            instance.REQUEST[key] = True
+
         value = request[fieldname]
         for v in value.values():
             try:
@@ -629,6 +666,13 @@ class ReferenceValuesValidator:
             instance = kwargs['instance']
             # fieldname = kwargs['field'].getName()
             request = kwargs.get('REQUEST', {})
+            fieldname = kwargs['field'].getName()
+
+            key = self.name + fieldname
+            if instance.REQUEST.get(key, False):
+                return True
+            else:
+                instance.REQUEST[key] = True
 
             translate = getToolByName(instance, 'translation_service').translate
 
