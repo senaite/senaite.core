@@ -160,13 +160,13 @@ class Calculation(BaseFolder, HistoryAwareMixin):
                 deps[service.UID()] = {}
         return deps
 
-    def getCalculationDependants(self, deps=None):
+    def getCalculationDependants(self):
         """Return a flat list of services who's calculations depend on this."""
         deps = []
         for service in self.getBackReferences('AnalysisServiceCalculation'):
             calc = service.getCalculation()
             if calc and calc.UID() != self.UID():
-                calc.getCalculationDependants(flat, deps)
+                calc.getCalculationDependants(deps)
             deps.append(service)
         return deps
 
