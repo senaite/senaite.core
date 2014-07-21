@@ -340,7 +340,6 @@ class AnalysesView(BikaListingView):
             calculation = service.getCalculation()
             unit = service.getUnit()
             keyword = service.getKeyword()
-            precision = service.getPrecision()
 
             if self.show_categories:
                 cat = obj.getService().getCategoryTitle()

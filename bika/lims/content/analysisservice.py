@@ -211,7 +211,16 @@ schema = BikaSchema.copy() + Schema((
                  widget=IntegerWidget(
                      label=_("Precision as number of decimals"),
                      description=_(
-                         "Define the number of decimals to be used for this result"),
+                         "Define the number of decimals to be used for this result."),
+                 ),
+    ),
+    IntegerField('ExponentialFormatPrecision',
+                 schemata="Analysis",
+                 default = 7,
+                 widget=IntegerWidget(
+                     label=_("Exponential format precision"),
+                     description=_(
+                         "Define the precision when converting values to exponent notation."),
                  ),
     ),
     IntegerField('ExponentialFormatPrecision',

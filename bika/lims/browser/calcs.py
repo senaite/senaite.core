@@ -8,6 +8,7 @@ from bika.lims.utils import to_utf8
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.PythonScripts.standard import html_quote
+from bika.lims.utils.analysis import format_numeric_result
 from zope.component import adapts
 from zope.component import getAdapters
 from zope.interface import implements
@@ -233,12 +234,12 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 fresult = Result['result']
                 try:
                     belowmin = hidemin and fresult < float(hidemin) or False
-                except:
+                except ValueError:
                     belowmin = False
                     pass
                 try:
                     abovemax = hidemax and fresult > float(hidemax) or False
-                except:
+                except ValueError:
                     abovemax = False
                     pass
         if belowmin is True:
@@ -247,11 +248,9 @@ class ajaxCalculateAnalysisEntry(BrowserView):
             Result['formatted_result'] = '> %s' % hidemax
         else:
             try:
-                # format calculation result to service precision
-                Result['formatted_result'] = precision and Result['result'] and \
-                    str("%%.%sf" % precision) % Result[
-                        'result'] or Result['result']
-            except:
+                Result['formatted_result'] = format_numeric_result(analysis,
+                                                                   Result['result'])
+            except ValueError:
                 # non-float
                 Result['formatted_result'] = Result['result']
 
