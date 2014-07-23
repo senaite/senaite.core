@@ -21,7 +21,7 @@ window.bika.lims.portalMessage = function (message) {
 };
 
 window.bika.lims.log = function(e) {
-    var message = "(window.location.url): " + e;
+	var message = "(" + window.location.url + "): " + e;
     $.ajax({
         type: "POST",
         url: "js_log",
