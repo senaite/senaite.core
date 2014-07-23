@@ -1283,7 +1283,7 @@ class AnalysisRequest(BaseFolder):
         """ return current date """
         return DateTime()
 
-    def getQCAnalyses(self, qctype=None):
+    def getQCAnalyses(self, qctype=None, review_state=None):
         """ return the QC analyses performed in the worksheet in which, at
             least, one sample of this AR is present.
             Depending on qctype value, returns the analyses of:
@@ -1295,6 +1295,7 @@ class AnalysisRequest(BaseFolder):
         qcanalyses = []
         suids = []
         ans = self.getAnalyses()
+        wf = getToolByName(self, 'portal_workflow')
         for an in ans:
             an = an.getObject()
             if an.getServiceUID() not in suids:
@@ -1310,13 +1311,15 @@ class AnalysisRequest(BaseFolder):
                     if wa.portal_type == 'DuplicateAnalysis' \
                         and wa.getRequestID() == self.id \
                         and wa not in qcanalyses \
-                            and (qctype is None or wa.getReferenceType() == qctype):
+                            and (qctype is None or wa.getReferenceType() == qctype) \
+                            and (review_state is None or wf.getInfoFor(wa, 'review_state') in review_state):
                         qcanalyses.append(wa)
 
                     elif wa.portal_type == 'ReferenceAnalysis' \
                         and wa.getServiceUID() in suids \
                         and wa not in qcanalyses \
-                            and (qctype is None or wa.getReferenceType() == qctype):
+                            and (qctype is None or wa.getReferenceType() == qctype) \
+                            and (review_state is None or wf.getInfoFor(wa, 'review_state') in review_state):
                         qcanalyses.append(wa)
 
         return qcanalyses

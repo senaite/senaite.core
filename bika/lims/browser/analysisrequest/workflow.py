@@ -2,7 +2,6 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims import PMF
 from bika.lims.browser.bika_listing import WorkflowAction
-from bika.lims.browser.publish import doPublish
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.permissions import *
 from bika.lims.utils import changeWorkflowState
@@ -362,22 +361,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.response.redirect(self.context.absolute_url())
             return
-        # publish entire AR.
-        self.context.setDatePublished(DateTime())
-        transitioned = self.doPublish(self.context,
-                               self.request,
-                               action,
-                               [self.context, ])()
-        if len(transitioned) == 1:
-            message = _(
-                '${items} published.',
-                mapping={'items': safe_unicode(', '.join(transitioned))})
-        else:
-            message = _("No items were published")
-        self.context.plone_utils.addPortalMessage(message, 'info')
-        self.destination_url = self.request.get_header("referer",
-                               self.context.absolute_url())
-        self.request.response.redirect(self.destination_url)
+        # AR publish preview
+        self.request.response.redirect(self.context.absolute_url() + "/publish")
 
     def workflow_action_verify(self):
         # default bika_listing.py/WorkflowAction, but then go to view screen.
@@ -495,9 +480,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             "&copy_from={0}".format(",".join(objects.keys()))
         self.request.response.redirect(url)
         return
-
-    def doPublish(self, context, request, action, analysis_requests):
-        return doPublish(context, request, action, analysis_requests)
 
     def cloneAR(self, ar):
         newar = _createObjectByType("AnalysisRequest", ar.aq_parent, tmpID())

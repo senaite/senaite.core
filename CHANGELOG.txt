@@ -1,3 +1,29 @@
+3.1.4 (2014-07-23)
+------------------
+
+LIMS-113: Allow percentage value for AS uncertainty
+LIMS-1087: Prevent listing of empty categories
+LIMS-1203: Fix Batch-AnalysisRequests query
+LIMS-1207: LIMS-113 Allow percentage value for AS uncertainty
+LIMS-1221: use folder icon for ARImports in nav
+LIMS-1240: fix permissions for "Copy To New" in AR lists
+LIMS-1330: handle duplicate of reference analysis
+LIMS-1340: soft-cache validator results
+LIMS-1343: Prevent sudden death if no version information is available
+LIMS-1352: SamplingWorkflow not saved to sample
+LIMS-334: Add Service/ExponentialFormatPrecision
+LIMS-334: Added ExponentialFormatThreshold setting
+LIMS-334: Allow exponential notation entry in numeric fields
+LIMS-334: Exponent Format used for analysis Result
+LIMS-334: Remove duplicate getFormattedResult code
+LIMS-83: Update Method->calculation reference version when Calculation changes
+
+- Formula statements can be written on multiple lines for clarity.
+
+- Replace kss-bbb ajax-spinner with a quieter one
+
+- bika.lims.utils.log logs location url correctly
+
 3.1.3 (2014-07-17)
 ------------------
 

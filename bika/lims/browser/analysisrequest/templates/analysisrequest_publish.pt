@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<metal:block use-macro="context/global_defines/macros/defines" />
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:attributes="lang default_language|default;
+                      xml:lang default_language|default;"
+      i18n:domain="bika"
+      tal:define="portal_state context/@@plone_portal_state;
+                  portal_url portal_state/portal_url;
+                  plone_view context/@@plone;">
+<head>
+    <div tal:replace="structure provider:plone.resourceregistries.scripts" />
+</head>
+<body>
+    <div id='ar_publish_container'>
+        <div id="ar_publish_header" tal:condition="python:view.showOptions()">
+            <div id='options_handler'>
+                <label for="sel_format" i18n:translate="">Available templates</label>
+                <select id="sel_format" name="sel_format">
+                    <tal:formats tal:repeat="format python:view.getAvailableFormats()">
+                        <option tal:attributes="value python:format['id']"
+                                tal:content="python:format['title']"></option>
+                    </tal:formats>
+                </select>
+                <input type="checkbox" name="qcvisible" id='qcvisible' value="0"><span i18n:translate="">Show QC Analyses</span>
+            </div>
+            <div id='ar_publish_summary'>
+                <span tal:content="python:view.getAnalysisRequestsCount()"></span>&nbsp;
+                <span i18n:translate=""> analysis requests selected</span>:&nbsp;
+                <tal:ars repeat="ar python:view.getAnalysisRequests()">
+                    <a tal:attributes="href python:'#'+ar.id" tal:content="python: ar.id"></a>&nbsp;
+                </tal:ars>
+            </div>
+            <div id='ar_publish_buttons'>
+                <input type="button" id='cancel_button' i18n:translate="value" value="Cancel"/>&nbsp;&nbsp;
+                <input type="button" id='publish_button' i18n:translate="value" value="Publish"/>
+            </div>
+        </div>
+        <style>
+            html {
+                background-color:#cdcdcd;
+            }
+            html, body {
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                width: 210mm;
+                padding: 10px 10px 0px 20px;
+                margin: 10px auto;
+                background-color:#fff;
+            }
+            #ar_publish_header {
+                margin:-10px -10px 60px -20px;
+                padding:10px 20px 20px 10px;
+                background-color: #dcdcdc;
+                border-bottom: 20px solid #CDCDCD;
+                font-size:1.1em;
+            }
+            #ar_publish_header #options_handler label {
+                padding:5px 10px 5px 10px;
+            }
+            #ar_publish_header #ar_publish_summary {
+                padding-left:10px;
+                padding-top:10px;
+            }
+            #ar_publish_header #ar_publish_buttons {
+                text-align:right;
+                padding-left:10px;
+                padding-top:10px;
+            }
+            #ar_publish_header #ar_publish_buttons input {
+                padding:4px 15px;
+                border:none;
+                color:#fff;
+                font-size:1.2em;
+                cursor:pointer;
+            }
+            #ar_publish_header #ar_publish_buttons input:hover {
+                opacity:0.8;
+                moz-opacity:0.8;
+                filter:alpha(opacity=80);
+                -webkit-transition: opacity 250ms ease-in-out;
+                -moz-transition: opacity 250ms ease-in-out;
+                -o-transition: opacity 250ms ease-in-out;
+                -ms-transition: opacity 250ms ease-in-out;
+                transition: opacity 250ms ease-in-out;
+            }
+            #ar_publish_header #ar_publish_buttons #cancel_button {
+                background-color:#666;
+            }
+            #ar_publish_header #ar_publish_buttons #publish_button {
+                background-color:#0B486B;
+            }
+            .page-break {
+                background-color: #CDCDCD;
+                margin: 60px -10px 60px -20px;
+                padding-bottom: 20px;
+                padding-top: 20px;
+            }
+            .error-report {
+                margin:0 -20px;
+                padding:20px;
+                font-weight:bold;
+                color:#d40000;
+                border-bottom: 60px solid #CDCDCD;
+            }
+            .error-report pre {
+                font-family: monospace;
+                width:205mm;
+                overflow:auto;
+                background-color:#fff;
+                color:#000;
+                font-weight:normal;
+            }
+            @media print {
+                html {
+                    background-color:#fff;
+                }
+                .page-break  {
+                    display: block;
+                    page-break-before: always;
+                    margin:none;
+                    border:none;
+                }
+                #ar_publish_header {
+                    display:none;
+                    visibility:hidden;
+                }
+            }
+        </style>
+        <style id='report-style' tal:content='structure python:view.getReportStyle()'></style>
+        <div id='report'>
+        <tal:ar tal:repeat="i python:range(view.getAnalysisRequestsCount())">
+        <div class='ar_publish_body'
+            tal:attributes="id python:view.getAnalysisRequestObj().id;
+                            uid python:view.getAnalysisRequestObj().UID()"
+            tal:content='structure python:view.getReportTemplate()'></div>
+        </tal:ar>
+        </div>
+    </div>
+</body>
+</html>
