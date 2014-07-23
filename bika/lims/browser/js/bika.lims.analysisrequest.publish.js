@@ -38,6 +38,7 @@ function AnalysisRequestPublishView() {
                     htmldata = $(htmldata).find('#report').html();
                     $('#report').html(htmldata);
                     $('#report').animate({opacity:1}, 'slow');
+                    load_barcodes();
                 }
             });
         });
@@ -73,6 +74,16 @@ function AnalysisRequestPublishView() {
             location.href=document.referrer;
         });
 
+        load_barcodes();
+
+    }
+
+    function get(name){
+       if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
+          return decodeURIComponent(name[1]);
+    }
+
+    function load_barcodes() {
         // Barcode generator
         $('.barcode').each(function() {
             var id = $(this).attr('data-id');
@@ -85,10 +96,5 @@ function AnalysisRequestPublishView() {
                              'addQuietZone': Boolean(addQuietZone),
                              'showHRI': Boolean(showHRI) });
         });
-    }
-
-    function get(name){
-       if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
-          return decodeURIComponent(name[1]);
     }
 }
