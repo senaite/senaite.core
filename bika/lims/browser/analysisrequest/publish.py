@@ -211,7 +211,9 @@ class AnalysisRequestPublishView(BrowserView):
             pocdict[cat] = catlist
             qcdict[poc] = pocdict
             data['categorized_qcanalyses'][qct] = qcdict
+
         data['reporter'] = self._reporter_data(ar)
+        data['managers'] = self._managers_data(ar)
 
         portal = self.context.portal_url.getPortalObject()
         data['portal'] = {'obj': portal,
@@ -504,6 +506,32 @@ class AnalysisRequestPublishView(BrowserView):
                     data['signature'] = sf.absolute_url() + "/Signature"
 
         return data
+
+    def _managers_data(self, ar):
+        managers = {'ids': [], 'dict': {}}
+        departments = {}
+        ar_mngrs = ar.getResponsible()
+        for id in ar_mngrs['ids']:
+            new_depts = ar_mngrs['dict'][id]['departments'].split(',')
+            if id in managers['ids']:
+                for dept in new_depts:
+                    if dept not in departments[id]:
+                        departments[id].append(dept)
+            else:
+                departments[id] = new_depts
+                managers['ids'].append(id)
+                managers['dict'][id] = ar_mngrs['dict'][id]
+
+        mngrs = departments.keys()
+        for mngr in mngrs:
+            final_depts = ''
+            for dept in departments[mngr]:
+                if final_depts:
+                    final_depts += ', '
+                final_depts += dept
+            managers['dict'][mngr]['departments'] = final_depts
+
+        return managers
 
     def publishFromPOST(self):
         html = self.request.form.get('html')

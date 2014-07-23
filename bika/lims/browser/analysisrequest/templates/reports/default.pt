@@ -333,9 +333,38 @@
 </div>
 
 <!-- Signatures section -->
-<div id="section-signatures">
-    <!-- TODO -->
-</div>
+<table id="section-signatures">
+    <td tal:define="mngr_info analysisrequest/managers;
+                     mngr_ids python:mngr_info['ids'];
+                     managers python:mngr_info['dict'];"
+         tal:repeat="manager mngr_ids"
+         class="manager-info">
+         <tal:manager tal:define="rownum repeat/manager/number;
+                         email python:managers[manager]['email'];
+                         phone python:managers[manager]['phone'];
+                         department python:managers[manager]['departments'];
+                         signature python:managers[manager]['signature'];">
+
+            <img tal:condition="signature"
+                 tal:attributes="src string:${signature}" style="height:75px"/>
+            <br/>
+            <span class="manager-fullname" tal:content="python:managers[manager]['name']">Joe Blogs</span>
+            <br tal:condition="email"/>
+            <span class="manager-email" tal:condition="email">
+                <a tal:attributes="href string:mailto:${email}"
+                   tal:content="email">a@b.com</a>
+            </span>
+            <br tal:condition="phone"/>
+            <span class="manager-phone"
+                tal:content="phone"
+                tal:condition="phone">011 555 1112</span>
+            <br/>
+            <span class="manager-department" tal:content="department">Chemistry</span>
+            <span tal:condition="python: rownum % 3 == 0"
+                  tal:replace="structure python:'</tr>'"></span>
+        </tal:manager>
+    </td>
+</table>
 
 <!-- Discreeter section -->
 <div id="section-discreeter">
