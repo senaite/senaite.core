@@ -17,6 +17,7 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims.utils.analysis import format_numeric_result
 from zope.interface import implements
 from zope.interface import Interface
 from zope.component import getAdapters
@@ -302,6 +303,7 @@ class AnalysesView(BikaListingView):
         self.show_select_column = self.allow_edit
         context_active = isActive(self.context)
 
+        self.categories = []
         items = super(AnalysesView, self).folderitems(full_objects = True)
 
         # manually skim retracted analyses from the list
@@ -339,7 +341,6 @@ class AnalysesView(BikaListingView):
             calculation = service.getCalculation()
             unit = service.getUnit()
             keyword = service.getKeyword()
-            precision = service.getPrecision()
 
             if self.show_categories:
                 cat = obj.getService().getCategoryTitle()
@@ -350,6 +351,10 @@ class AnalysesView(BikaListingView):
             # Check for InterimFields attribute on our object,
             interim_fields = hasattr(obj, 'getInterimFields') \
                 and obj.getInterimFields() or []
+            # kick some pretty display values in.
+            for x in range(len(interim_fields)):
+                interim_fields[x]['formatted_value'] = \
+                    format_numeric_result(obj, interim_fields[x]['value'])
             self.interim_fields[obj.UID()] = interim_fields
             items[i]['service_uid'] = service.UID()
             items[i]['Service'] = service.Title()
@@ -627,61 +632,7 @@ class AnalysesView(BikaListingView):
             # permission, otherwise just put an icon in Result column.
             if can_view_result:
                 items[i]['Result'] = result
-                items[i]['formatted_result'] = result
-                if result != '':
-                    if 'Result' in items[i]['choices'] and items[i]['choices']['Result']:
-                        texts = [r['ResultText'] for r
-                                 in items[i]['choices']['Result']
-                                 if str(r['ResultValue']) == str(result)]
-                        if texts:
-                            items[i]['formatted_result'] = texts[0]
-                        else:
-                            items[i]['formatted_result'] = result
-                    else:
-                        belowmin = False
-                        abovemax = False
-                        itspecs = self.specs.get(items[i].get('st_uid', {}), {})
-                        tgtspecs = client_or_lab or 'lab'
-                        itspecs = itspecs.get(tgtspecs,{}).get(items[i]['Keyword'],{})
-                        hidemin = itspecs.get('hidemin', '')
-                        hidemax = itspecs.get('hidemax', '')
-                        try:
-                            belowmin = hidemin and float(result) < float(hidemin) or False
-                        except:
-                            belowmin = False
-                            pass
-                        try:
-                            abovemax = hidemax and float(result) > float(hidemax) or False
-                        except:
-                            abovemax = False
-                            pass
-
-                        if belowmin == True:
-                            items[i]['formatted_result'] = '< %s' % hidemin
-                        elif abovemax == True:
-                            items[i]['formatted_result'] = '> %s' % hidemax
-                        else:
-                            try:
-                                items[i]['formatted_result'] = precision and \
-                                    str("%%.%sf" % precision) % float(result) or result
-                            except:
-                                items[i]['formatted_result'] = result
-                                indet = t(_('Indet'))
-                                if result == indet:
-                                    # 'Indeterminate' results flag a specific error
-                                    Indet = t(_("Indeterminate result"))
-                                    items[i]['after']['Result'] = \
-                                        '<img width="16" height="16" title="%s"' % Indet + \
-                                        'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
-                                        (self.portal_url)
-                                # result being unfloatable is no longer an error.
-                                # else:
-                                #     # result being un-floatable, is an error.
-                                #     msg = self.context.translate(_("Invalid result"))
-                                #     items[i]['after']['Result'] = \
-                                #         '<img width="16" height="16" title="%s"' % msg + \
-                                #         'src="%s/++resource++bika.lims.images/exclamation.png"/>' % \
-                                #         (self.portal_url)
+                items[i]['formatted_result'] = obj.getFormattedResult()
                 items[i]['Uncertainty'] = obj.getUncertainty(result)
 
             else:

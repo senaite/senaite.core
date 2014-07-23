@@ -122,10 +122,6 @@ class Report(BrowserView):
             keyword = service.getKeyword()
             service_title = "%s (%s)" % (service.Title(), keyword)
             result_in_range = ResultOutOfRange(analysis)
-            try:
-                precision = str(service.getPrecision())
-            except:
-                precision = "2"
 
             if service_title not in analyses.keys():
                 analyses[service_title] = []
@@ -140,7 +136,6 @@ class Report(BrowserView):
                 'Request ID': analysis.aq_parent.getId(),
                 'Analyst': analysis.getAnalyst(),
                 'Result': result,
-                'precision': precision,
                 'Sampled': analysis.getDateSampled(),
                 'Captured': analysis.getResultCaptureDate(),
                 'Uncertainty': analysis.getUncertainty(),
@@ -217,7 +212,7 @@ class Report(BrowserView):
                 R = a['Result']
                 U = a['Uncertainty']
 
-                a['Result'] = str("%." + precision + "f") % a['Result']
+                a['Result'] = a['obj'].getFormattedResult()
 
                 in_range = a['result_in_range']
                 # result out of range

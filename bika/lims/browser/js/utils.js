@@ -8,6 +8,7 @@ window.bika = window.bika || {
     lims: {}
 };
 
+
 window.bika.lims.portalMessage = function (message) {
     window.jarn.i18n.loadCatalog("bika");
     var _ = window.jarn.i18n.MessageFactory("bika");
@@ -20,7 +21,7 @@ window.bika.lims.portalMessage = function (message) {
 };
 
 window.bika.lims.log = function(e) {
-    var message = "JS: " + e.message + " url: " + window.location.url;
+    var message = "(window.location.url): " + e;
     $.ajax({
         type: "POST",
         url: "js_log",
@@ -130,13 +131,24 @@ $(document).ready(function(){
     });
 
     $(".numeric").live("keypress", function(event) {
-        // Backspace, tab, enter, end, home, left, right, ., <, >, and -
-        // We don't support the del key in Opera because del == . == 46.
-        var allowedKeys = [8, 9, 13, 35, 36, 37, 39, 46, 60, 62, 45];
-        // IE doesn't support indexOf
-        var isAllowedKey = allowedKeys.join(",").match(new RegExp(event.which));
-        // Some browsers just don't raise events for control keys. Easy.
-        // e.g. Safari backspace.
+        var allowedKeys = [
+			8,   // backspace
+			9,   // tab
+			13,  // enter
+			35,  // end
+			36,  // home
+			37,  // left arrow
+			39,  // right arrow
+			46,  // delete - We don't support the del key in Opera because del == . == 46.
+			60,  // <
+			62,  // >
+			45,  // -
+			69,  // E
+			101, // e,
+			61   // =
+		];
+        var isAllowedKey = allowedKeys.join(",").match(new RegExp(event.which)); // IE doesn't support indexOf
+        // Some browsers just don't raise events for control keys. Easy. e.g. Safari backspace.
         if (!event.which || // Control keys in most browsers. e.g. Firefox tab is 0
             (48 <= event.which && event.which <= 57) || // Always 0 through 9
             isAllowedKey) { // Opera assigns values for control keys.
@@ -210,6 +222,37 @@ $(document).ready(function(){
         }
     });
 
+
+	/* Replace kss-bbb spinner with a quieter one */
+	var timer, spinner, counter = 0;
+	$(document).unbind("ajaxStart");
+	$(document).unbind("ajaxStop");
+	$('#ajax-spinner').remove();
+	spinner = $('<div id="bika-spinner"><img src="' + portal_url + '/spinner.gif" alt=""/></div>');
+	spinner.appendTo('body').hide();
+	$(document).ajaxStart(function () {
+		counter++;
+		setTimeout(function () {
+			if (counter > 0) {
+				spinner.show('fast');
+			}
+		}, 500);
+	});
+	function stop_spinner(){
+		counter--;
+		if (counter < 0){ counter = 0; }
+		if (counter == 0) {
+			clearTimeout(timer);
+			spinner.stop();
+			spinner.hide();
+		}
+	}
+	$(document).ajaxStop(function () {
+		stop_spinner();
+	});
+	$( document ).ajaxError(function( event, jqxhr, settings, thrownError ) {
+		stop_spinner();
+		window.bika.lims.log("Error at " + settings.url + ": " + thrownError);
+	});
 });
 }(jQuery));
-

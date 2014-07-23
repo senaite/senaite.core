@@ -122,6 +122,13 @@ class Calculation(BaseFolder, HistoryAwareMixin):
             self.getField('DependentServices').set(self, DependentServices)
             self.getField('Formula').set(self, Formula)
 
+    def getMinifiedFormula(self):
+        """Return the current formula value as text.
+        The result will have newlines and additional spaces stripped out.
+        """
+        value = " ".join(self.getFormula().splitlines())
+        return value
+
     def getCalculationDependencies(self, flat=False, deps=None):
         """ Recursively calculates all dependencies of this calculation.
             The return value is dictionary of dictionaries (of dictionaries....)
@@ -149,13 +156,13 @@ class Calculation(BaseFolder, HistoryAwareMixin):
                 deps[service.UID()] = {}
         return deps
 
-    def getCalculationDependants(self, deps=None):
+    def getCalculationDependants(self):
         """Return a flat list of services who's calculations depend on this."""
         deps = []
         for service in self.getBackReferences('AnalysisServiceCalculation'):
             calc = service.getCalculation()
             if calc and calc.UID() != self.UID():
-                calc.getCalculationDependants(flat, deps)
+                calc.getCalculationDependants(deps)
             deps.append(service)
         return deps
 

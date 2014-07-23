@@ -29,3 +29,27 @@ def create_analysis(context, service, keyword, interim_fields):
         pass
     # Return the newly created analysis
     return analysis
+
+
+def format_numeric_result(analysis, result):
+    """Print the formatted number part of a results value.  This is responsible
+    for deciding the precision, and notation of numeric values.  If a non-numeric
+    result value is given, the value will be returned unchanged
+    """
+    try:
+        result = float(result)
+    except ValueError:
+        return result
+    service = analysis.getService()
+    # Possibly render in exponential notation
+    threshold = analysis.bika_setup.getExponentialFormatThreshold()
+    _sig = str(result).split(".")
+    sig_digits = _sig[0].lstrip("0") + _sig[1].rstrip("0")
+    if len(sig_digits) >= threshold:
+        exp_precision = service.getExponentialFormatPrecision()
+        return str("%%.%se" % exp_precision) % result
+    # If the result is floatable, render fixed point to the correct precision
+    precision = service.getPrecision()
+    if not precision:
+        precision = ''
+    return str("%%.%sf" % precision) % result

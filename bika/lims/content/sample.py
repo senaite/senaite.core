@@ -156,6 +156,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     BooleanField('SamplingWorkflowEnabled',
+                 default_method='getSamplingWorkflowEnabledDefault'
     ),
     DateTimeField('DateSampled',
         mode="rw",
@@ -361,6 +362,9 @@ class Sample(BaseFolder, HistoryAwareMixin):
     def Title(self):
         """ Return the Sample ID as title """
         return safe_unicode(self.getId()).encode('utf-8')
+
+    def getSamplingWorkflowEnabledDefault(self):
+        return self.bika_setup.getSamplingWorkflowEnabled()
 
     def getContactTitle(self):
         return ""

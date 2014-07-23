@@ -839,7 +839,7 @@ div.alert {
 
 /* ARImport */
 .icons-on .section-arimports .contenttype-folder{
-    background: no-repeat transparent url(&dtml-portal_url;/++resource++bika.lims.images/arimport.png);
+    background: no-repeat transparent url(&dtml-portal_url;/++resource++bika.lims.images/folder.png);
 }
 table.arimport {
   border-top: 1px solid #dddddd;
@@ -1057,4 +1057,29 @@ table#add_analyses {
     font-size: 120%;
     line-height: 1.5em;
 }
+
+#bika-spinner {
+    display:none;
+    background-color: #fff;
+    background-image: url(&dtml-portal_url;/spinner.gif) center center no-repeat;
+    position: fixed;
+    width: 45px;
+    height: 45px;
+    top: 50%;
+    left: 50%;
+    margin-left: -22px; /* -1 * image width / 2 */
+    margin-top: -22px;  /* -1 * image height / 2 */
+    border:1px solid #eee;
+    border-radius:5px;
+    display: block;
+}
+
+#bika-spinner img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+}
+
 </dtml-with>
