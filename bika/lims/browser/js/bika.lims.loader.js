@@ -19,8 +19,8 @@ $(document).ready(function(){
             ['AnalysisRequestPublishView'],
         ".template-base_edit.portaltype-artemplate":
             ['ARTemplateEditView'],
-	".template-base_edit.portaltype-client":
-	    ['ClientEditView']
+        ".template-base_edit.portaltype-client":
+            ['ClientEditView']
     };
 
     // Instantiate the js objects needed for the current view

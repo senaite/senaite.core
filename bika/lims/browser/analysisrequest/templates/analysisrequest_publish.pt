@@ -132,10 +132,13 @@
                 }
             }
         </style>
-        <style tal:content='structure python:view.getReportStyle()'></style>
+        <style id='report-style' tal:content='structure python:view.getReportStyle()'></style>
         <div id='report'>
         <tal:ar tal:repeat="i python:range(view.getAnalysisRequestsCount())">
-        <div class='ar_publish_body' tal:attributes="id python:view.getAnalysisRequestObj().id" tal:content='structure python:view.getReportTemplate()'></div>
+        <div class='ar_publish_body'
+            tal:attributes="id python:view.getAnalysisRequestObj().id;
+                            uid python:view.getAnalysisRequestObj().UID()"
+            tal:content='structure python:view.getReportTemplate()'></div>
         </tal:ar>
         </div>
     </div>

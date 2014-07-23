@@ -44,18 +44,28 @@ function AnalysisRequestPublishView() {
 
         $('#publish_button').click(function(e) {
             var url = window.location.href;
-            url += url.indexOf('?') >= 0 ? "&pub=1" : "?pub=1";
-            url += "&template="+$('#sel_format').val();
-            if ($('#qcvisible').is(':checked')) {
-                url += "&qcvisible=1";
-            }
+            var qcvisible = $('#qcvisible').is(':checked') ? 1 : 0;
+            var template = $('#self_format').val();
             $('#ar_publish_container').animate({opacity:0.4}, 'slow');
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function(data, textStatus, $XHR){
-                    $('#ar_publish_container').fadeOut();
-                }
+            var count = $('#ar_publish_container #report .ar_publish_body').length;
+            $('#ar_publish_container #report .ar_publish_body').each(function(){
+                var rephtml = $(this).clone().wrap('<div>').parent().html();
+                var repstyle = $('#report-style').clone().wrap('<div>').parent().html();
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    async: false,
+                    data: { "publish":1,
+                            "id":$(this).attr('id'),
+                            "uid":$(this).attr('uid'),
+                            "html": rephtml,
+                            "style": repstyle},
+                    success: function(data, textStatus, $XHR){
+                        if (!--count) {
+                            $('#ar_publish_container').fadeOut();
+                        }
+                    }
+                });
             });
         });
 

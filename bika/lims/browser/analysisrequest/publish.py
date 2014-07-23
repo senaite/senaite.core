@@ -46,8 +46,8 @@ class AnalysisRequestPublishView(BrowserView):
                                    self.context.absolute_url())
 
         # Do publish?
-        if self.request.get('pub', '0') == '1' or self._publish:
-            self.publish()
+        if self.request.form.get('publish', '0') == '1':
+            self.publishFromPOST()
         else:
             return self.template()
 
@@ -505,28 +505,21 @@ class AnalysisRequestPublishView(BrowserView):
 
         return data
 
-    def publish(self):
-        """ Publish the AR report/s. Generates a results pdf file
-            associated to each AR, sends an email with the report to
-            the lab manager and sends a notification (usually an email
-            with the PDF attached) to the AR's contact and CCs.
-            Transitions each published AR to statuses 'published',
-            'prepublished' or 'republished'.
-            Returns a list with the AR identifiers that have been
-            published/prepublished/republished (only those 'verified',
-            'published' or at least have one 'verified' result).
-        """
-        if len(self._ars) > 1:
-            published_ars = []
-            for ar in self._ars:
-                arpub = AnalysisRequestPublishView(ar, self.request, publish=True)
-                ar = arpub.publish()
-                published_ars.extend(ar)
-            published_ars = [par.id for par in published_ars]
-            return published_ars
+    def publishFromPOST(self):
+        html = self.request.form.get('html')
+        style = self.request.form.get('style')
+        uid = self.request.form.get('uid')
+        reporthtml = "<html><head>%s</head><body><div id='report'>%s</body></html>" % (style, html);
+        return self.publishFromHTML(uid, safe_unicode(reporthtml).encode('utf-8'));
 
+    def publishFromHTML(self, aruid, results_html):
         # The AR can be published only and only if allowed
-        ar = self._ars[0]
+        uc = getToolByName(self.context, 'uid_catalog')
+        ars = uc(UID=aruid)
+        if not ars or len(ars) != 1:
+            return []
+
+        ar = ars[0].getObject();
         wf = getToolByName(ar, 'portal_workflow')
         allowed_states = ['verified', 'published']
         # Publish/Republish allowed?
@@ -542,7 +535,6 @@ class AnalysisRequestPublishView(BrowserView):
             else None
         out_fn = to_utf8(ar.Title())
 
-        results_html = safe_unicode(self.template()).encode('utf-8')
         if out_path:
             open(join(out_path, out_fn + ".html"), "w").write(results_html)
 
@@ -658,6 +650,30 @@ class AnalysisRequestPublishView(BrowserView):
                 raise WorkflowException(str(msg))
 
         return [ar]
+
+    def publish(self):
+        """ Publish the AR report/s. Generates a results pdf file
+            associated to each AR, sends an email with the report to
+            the lab manager and sends a notification (usually an email
+            with the PDF attached) to the AR's contact and CCs.
+            Transitions each published AR to statuses 'published',
+            'prepublished' or 'republished'.
+            Returns a list with the AR identifiers that have been
+            published/prepublished/republished (only those 'verified',
+            'published' or at least have one 'verified' result).
+        """
+        if len(self._ars) > 1:
+            published_ars = []
+            for ar in self._ars:
+                arpub = AnalysisRequestPublishView(ar, self.request, publish=True)
+                ar = arpub.publish()
+                published_ars.extend(ar)
+            published_ars = [par.id for par in published_ars]
+            return published_ars
+
+        results_html = safe_unicode(self.template()).encode('utf-8')
+        return self.publishFromHTML(results_html)
+
 
     def get_recipients(self, ar):
         """ Returns a list with the recipients and all its publication prefs
