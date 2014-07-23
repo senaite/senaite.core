@@ -198,7 +198,12 @@ table#section-info td#lab-info {
     visibility:hidden;
     display:none;
 }
-
+#barcode-container {
+    width:100%;
+}
+.barcode {
+    float: right;
+}
 
 @media print {
     * {
