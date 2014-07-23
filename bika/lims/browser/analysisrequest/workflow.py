@@ -2,7 +2,6 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims import PMF
 from bika.lims.browser.bika_listing import WorkflowAction
-from bika.lims.browser.publish import doPublish
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.permissions import *
 from bika.lims.utils import changeWorkflowState
@@ -481,9 +480,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             "&copy_from={0}".format(",".join(objects.keys()))
         self.request.response.redirect(url)
         return
-
-    def doPublish(self, context, request, action, analysis_requests):
-        return doPublish(context, request, action, analysis_requests)
 
     def cloneAR(self, ar):
         newar = _createObjectByType("AnalysisRequest", ar.aq_parent, tmpID())

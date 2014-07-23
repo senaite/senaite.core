@@ -14,7 +14,6 @@ from bika.lims.browser.analysisrequest import AnalysisRequestsView
 from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction
 from bika.lims.browser.batchfolder import BatchFolderContentsView
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.browser.publish import doPublish
 from bika.lims.browser.sample import SamplesView
 from bika.lims.browser.supplyorderfolder import SupplyOrderFolderView
 from bika.lims.idserver import renameAfterCreation
@@ -230,9 +229,6 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
 
         else:
             AnalysisRequestWorkflowAction.__call__(self)
-
-    def doPublish(self, context, request, action, analysis_requests):
-        return doPublish(context, request, action, analysis_requests)
 
 
 class ClientBatchesView(BatchFolderContentsView):
