@@ -350,6 +350,10 @@ class AnalysesView(BikaListingView):
             # Check for InterimFields attribute on our object,
             interim_fields = hasattr(obj, 'getInterimFields') \
                 and obj.getInterimFields() or []
+            # kick some pretty display values in.
+            for x in range(len(interim_fields)):
+                interim_fields[x]['formatted_value'] = \
+                    format_numeric_result(obj, interim_fields[x]['value'])
             self.interim_fields[obj.UID()] = interim_fields
             items[i]['service_uid'] = service.UID()
             items[i]['Service'] = service.Title()

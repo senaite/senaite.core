@@ -76,7 +76,7 @@ class CalculationsView(BikaListingView):
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['Title'])
             items[x]['Description'] = obj.Description()
-            items[x]['Formula'] = obj.getFormula()
+            items[x]['Formula'] = obj.getMinifiedFormula()
 
         return items
 

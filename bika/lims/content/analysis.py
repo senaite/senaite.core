@@ -382,7 +382,7 @@ class Analysis(BaseContent):
                     return False
 
         # Calculate
-        formula = calculation.getFormula()
+        formula = calculation.getMinifiedFormula()
         formula = formula.replace('[', '%(').replace(']', ')f')
         try:
             formula = eval("'%s'%%mapping" % formula,

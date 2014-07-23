@@ -122,15 +122,11 @@ class Calculation(BaseFolder, HistoryAwareMixin):
             self.getField('DependentServices').set(self, DependentServices)
             self.getField('Formula').set(self, Formula)
 
-    def getFormula(self, minified=False):
-        """Return the current formula value as text.  If minified is True,
-        the result will have newlines and additional spaces stripped out.
+    def getMinifiedFormula(self):
+        """Return the current formula value as text.
+        The result will have newlines and additional spaces stripped out.
         """
-        value = self.Formula
-        if minified:
-            value = value.replace("\r", "").replace("\n", "")
-            while "  " in value:
-                value.replace("  ", " ")
+        value = " ".join(self.getFormula().splitlines())
         return value
 
     def getCalculationDependencies(self, flat=False, deps=None):

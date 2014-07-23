@@ -168,7 +168,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                         pass
 
             # convert formula to a valid python string, ready for interpolation
-            formula = calculation.getFormula()
+            formula = calculation.getMinifiedFormula()
             formula = formula.replace('[', '%(').replace(']', ')f')
             try:
                 formula = eval("'%s'%%mapping" % formula,
