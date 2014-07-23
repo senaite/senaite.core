@@ -14,7 +14,6 @@ from bika.lims.browser.analysisrequest import AnalysisRequestsView
 from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction
 from bika.lims.browser.batchfolder import BatchFolderContentsView
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.browser.publish import doPublish
 from bika.lims.browser.sample import SamplesView
 from bika.lims.browser.supplyorderfolder import SupplyOrderFolderView
 from bika.lims.idserver import renameAfterCreation
@@ -219,36 +218,17 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
             # We pass a list of AR objects to Publish.
             # it returns a list of AR IDs which were actually published.
             objects = AnalysisRequestWorkflowAction._get_selected_items(self)
-            ARs_to_publish = []
-            transitioned = []
-            for obj_uid, obj in objects.items():
+            its = []
+            for uid, obj in objects.items():
                 if isActive(obj):
-                    obj.setDatePublished(DateTime())
-                    ARs_to_publish.append(obj)
-
-            transitioned = self.doPublish(self.context,
-                                   self.request,
-                                   action,
-                                   ARs_to_publish)()
-
-            if len(transitioned) > 1:
-                message = _('${items} were published.',
-                            mapping = {'items': ', '.join(transitioned)})
-            elif len(transitioned) == 1:
-                message = _('${item} published.',
-                            mapping = {'item': ', '.join(transitioned)})
-            else:
-                message = _('No items were published')
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            self.destination_url = self.request.get_header("referer",
-                                   self.context.absolute_url())
-            self.request.response.redirect(self.destination_url)
+                    its.append(uid);
+            its = ",".join(its)
+            q = "/publish?items=" + its
+            dest = self.portal_url+"/analysisrequests" + q
+            self.request.response.redirect(dest)
 
         else:
             AnalysisRequestWorkflowAction.__call__(self)
-
-    def doPublish(self, context, request, action, analysis_requests):
-        return doPublish(context, request, action, analysis_requests)
 
 
 class ClientBatchesView(BatchFolderContentsView):

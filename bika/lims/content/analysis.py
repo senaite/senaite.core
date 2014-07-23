@@ -571,13 +571,19 @@ class Analysis(BaseContent):
             if self.getInstrument else self.getDefaultInstrument()
         return instr.getMethod() if instr else None
 
-    def getFormattedResult(self):
+    def getFormattedResult(self, specs=None):
         """Formatted result:
         1. Print ResultText of matching ResultOptions
         2. If the result is not floatable, return it without being formatted
         3. If the analysis specs has hidemin or hidemax enabled and the
            result is out of range, render result as '<min' or '>max'
         4. Otherwise, render numerical value
+        specs param is optional. A dictionary as follows:
+            {'min': <min_val>,
+             'max': <max_val>,
+             'error': <error>,
+             'hidemin': <hidemin_val>,
+             'hidemax': <hidemax_val>}
         """
         result = self.getResult()
         service = self.getService()
@@ -599,9 +605,10 @@ class Analysis(BaseContent):
         #    result is out of range, render result as '<min' or '>max'
         belowmin = False
         abovemax = False
-        specs = self.getAnalysisSpecs()
-        specs = specs.getResultsRangeDict() if specs is not None else {}
-        specs = specs.get(self.getKeyword(), {})
+        if not specs:
+            specs = self.getAnalysisSpecs()
+            specs = specs.getResultsRangeDict() if specs is not None else {}
+            specs = specs.get(self.getKeyword(), {})
         hidemin = specs.get('hidemin', '')
         hidemax = specs.get('hidemax', '')
         try:

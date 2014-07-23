@@ -179,4 +179,21 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="publish"
+      class="bika.lims.browser.analysisrequest.publish.AnalysisRequestPublishView"
+      permission="bika.lims.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <!-- Multiple analysis requests results preview -->
+    <browser:page
+      for="bika.lims.interfaces.IAnalysisRequestsFolder"
+      name="publish"
+      class="bika.lims.browser.analysisrequest.publish.AnalysisRequestPublishView"
+      permission="bika.lims.ManageAnalysisRequests"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
 </configure>
