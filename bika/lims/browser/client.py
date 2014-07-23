@@ -1,3 +1,4 @@
+from Products.CMFCore.permissions import ModifyPortalContent
 import plone, json
 import zope.event
 
@@ -297,17 +298,6 @@ class ClientAnalysisRequestsView(AnalysisRequestsView):
         self.review_states = review_states
 
     def __call__(self):
-        review_states = []
-        for review_state in self.review_states:
-            review_state['custom_actions'].extend(
-                [{'id': 'copy_to_new',
-                  'title': _('Copy to new'),
-                  'url': 'workflow_action?action=copy_to_new'}, ])
-            review_states.append(review_state)
-        self.review_states = review_states
-        return super(ClientAnalysisRequestsView, self).__call__()
-
-    def __call__(self):
         self.context_actions = {}
         wf = getToolByName(self.context, 'portal_workflow')
         mtool = getToolByName(self.context, 'portal_membership')
@@ -326,6 +316,19 @@ class ClientAnalysisRequestsView(AnalysisRequestsView):
                         'url': self.context.absolute_url() + "/portal_factory/"
                         "AnalysisRequest/Request new analyses/ar_add",
                         'icon': '++resource++bika.lims.images/add.png'}
+
+            # in client context we can use a permission check for this transition
+            # in multi-client listings, we must rather check against user roles.
+            if mtool.checkPermission(ModifyPortalContent, self.context):
+                review_states = []
+                for review_state in self.review_states:
+                    review_state['custom_actions'].extend(
+                        [{'id': 'copy_to_new',
+                          'title': _('Copy to new'),
+                          'url': 'workflow_action?action=copy_to_new'}, ])
+                    review_states.append(review_state)
+                self.review_states = review_states
+
         return super(ClientAnalysisRequestsView, self).__call__()
 
 class ClientBatchAnalysisRequestsView(ClientAnalysisRequestsView):

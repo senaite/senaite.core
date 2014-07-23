@@ -272,6 +272,18 @@ schema = BikaFolderSchema.copy() + Schema((
             format='select',
         )
     ),
+    IntegerField('ExponentialFormatThreshold',
+        schemata = "Analyses",
+        required = 1,
+        default = 7,
+        widget = IntegerWidget(
+        label = _("Exponential format threshold"),
+        description = _("Result values with at least this number of significant "
+                        "digits are displayed in scientific notation using the "
+                        "letter 'e' to indicate the exponent.  The precision can be "
+                        "configured in individual Analysis Services."),
+        )
+    ),
     BooleanField('EnableAnalysisRemarks',
         schemata = "Analyses",
         default = False,

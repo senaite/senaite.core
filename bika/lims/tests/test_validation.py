@@ -160,6 +160,48 @@ class Tests(BikaFunctionalTestCase):
                     calc1,
                     REQUEST=self.portal.REQUEST))
 
+    def test_UncertaintyValidator(self):
+        login(self.portal, TEST_USER_NAME)
+        services = self.portal.bika_setup.bika_analysisservices
+        serv1 = services['analysisservice-1']
+        v = validationService.validatorFor('uncertainties_validator')
+        field = serv1.schema['Uncertainties']
+
+        uncertainties = [{'intercept_min': '100.01', 'intercept_max': '200', 'errorvalue': '200%'}]
+        self.portal.REQUEST['Uncertainties'] = uncertainties
+        res = v(uncertainties, instance=serv1, field=field, REQUEST=self.portal.REQUEST)
+        self.failUnlessEqual(res, "Validation failed: Error percentage must be between 0 and 100")
+
+        uncertainties = [{'intercept_min': 'a', 'intercept_max': '200', 'errorvalue': '10%'}]
+        self.portal.REQUEST['Uncertainties'] = uncertainties
+        res = v(uncertainties, instance=serv1, field=field, REQUEST=self.portal.REQUEST)
+        self.failUnlessEqual(res, "Validation failed: Min values must be numeric")
+
+        uncertainties = [{'intercept_min': '100.01', 'intercept_max': 'a', 'errorvalue': '10%'}]
+        self.portal.REQUEST['Uncertainties'] = uncertainties
+        res = v(uncertainties, instance=serv1, field=field, REQUEST=self.portal.REQUEST)
+        self.failUnlessEqual(res, "Validation failed: Max values must be numeric")
+
+        uncertainties = [{'intercept_min': '100.01', 'intercept_max': '200', 'errorvalue': 'a%'}]
+        self.portal.REQUEST['Uncertainties'] = uncertainties
+        res = v(uncertainties, instance=serv1, field=field, REQUEST=self.portal.REQUEST)
+        self.failUnlessEqual(res, "Validation failed: Error values must be numeric")
+
+        uncertainties = [{'intercept_min': '200', 'intercept_max': '100', 'errorvalue': '10%'}]
+        self.portal.REQUEST['Uncertainties'] = uncertainties
+        res = v(uncertainties, instance=serv1, field=field, REQUEST=self.portal.REQUEST)
+        self.failUnlessEqual(res, "Validation failed: Max values must be greater than Min values")
+
+        uncertainties = [{'intercept_min': '100', 'intercept_max': '200', 'errorvalue': '-5%'}]
+        self.portal.REQUEST['Uncertainties'] = uncertainties
+        res = v(uncertainties, instance=serv1, field=field, REQUEST=self.portal.REQUEST)
+        self.failUnlessEqual(res, "Validation failed: Error percentage must be between 0 and 100")
+
+        uncertainties = [{'intercept_min': '100', 'intercept_max': '200', 'errorvalue': '-5'}]
+        self.portal.REQUEST['Uncertainties'] = uncertainties
+        res = v(uncertainties, instance=serv1, field=field, REQUEST=self.portal.REQUEST)
+        self.failUnlessEqual(res, "Validation failed: Error value must be 0 or greater")
+
     def test_FormulaValidator(self):
         login(self.portal, TEST_USER_NAME)
 
