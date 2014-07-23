@@ -1053,4 +1053,28 @@ div.LSResult {
     top:75%;
 }
 
+#bika-spinner {
+    display:none;
+    background-color: #fff;
+    background-image: url(&dtml-portal_url;/spinner.gif) center center no-repeat;
+    position: fixed;
+    width: 45px;
+    height: 45px;
+    top: 50%;
+    left: 50%;
+    margin-left: -22px; /* -1 * image width / 2 */
+    margin-top: -22px;  /* -1 * image height / 2 */
+    border:1px solid #eee;
+    border-radius:5px;
+    display: block;
+}
+
+#bika-spinner img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -8px;
+    margin-top: -8px;
+}
+
 </dtml-with>

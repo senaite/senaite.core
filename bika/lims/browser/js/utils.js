@@ -8,6 +8,7 @@ window.bika = window.bika || {
     lims: {}
 };
 
+
 window.bika.lims.portalMessage = function (message) {
     window.jarn.i18n.loadCatalog("bika");
     var _ = window.jarn.i18n.MessageFactory("bika");
@@ -20,7 +21,7 @@ window.bika.lims.portalMessage = function (message) {
 };
 
 window.bika.lims.log = function(e) {
-    var message = "JS: " + e.message + " url: " + window.location.url;
+    var message = "(window.location.url): " + e;
     $.ajax({
         type: "POST",
         url: "js_log",
@@ -221,6 +222,37 @@ $(document).ready(function(){
         }
     });
 
+
+	/* Replace kss-bbb spinner with a quieter one */
+	var timer, spinner, counter = 0;
+	$(document).unbind("ajaxStart");
+	$(document).unbind("ajaxStop");
+	$('#ajax-spinner').remove();
+	spinner = $('<div id="bika-spinner"><img src="' + portal_url + '/spinner.gif" alt=""/></div>');
+	spinner.appendTo('body').hide();
+	$(document).ajaxStart(function () {
+		counter++;
+		setTimeout(function () {
+			if (counter > 0) {
+				spinner.show('fast');
+			}
+		}, 500);
+	});
+	function stop_spinner(){
+		counter--;
+		if (counter < 0){ counter = 0; }
+		if (counter == 0) {
+			clearTimeout(timer);
+			spinner.stop();
+			spinner.hide();
+		}
+	}
+	$(document).ajaxStop(function () {
+		stop_spinner();
+	});
+	$( document ).ajaxError(function( event, jqxhr, settings, thrownError ) {
+		stop_spinner();
+		window.bika.lims.log("Error at " + settings.url + ": " + thrownError);
+	});
 });
 }(jQuery));
-
