@@ -59,18 +59,18 @@ function AnalysisRequestPublishView() {
                             "id":$(this).attr('id'),
                             "uid":$(this).attr('uid'),
                             "html": rephtml,
-                            "style": repstyle},
-                    success: function(data, textStatus, $XHR){
-                        if (!--count) {
-                            $('#ar_publish_container').fadeOut();
-                        }
+                            "style": repstyle}
+                })
+                .always(function(){
+                    if (!--count) {
+                        location.href=document.referrer;
                     }
                 });
             });
         });
 
         $('#cancel_button').click(function(e) {
-            $('#ar_publish_container').fadeOut();
+            location.href=document.referrer;
         });
 
         // Barcode generator

@@ -6,6 +6,7 @@ from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IResultOutOfRange
 from bika.lims.utils import to_utf8, encode_header, createPdf, attachPdf
+from DateTime import DateTime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.Utils import formataddr
@@ -676,6 +677,8 @@ class AnalysisRequestPublishView(BrowserView):
                     raise SMTPServerDisconnected(msg)
             except SMTPRecipientsRefused as msg:
                 raise WorkflowException(str(msg))
+
+        ar.setDatePublished(DateTime())
 
         return [ar]
 

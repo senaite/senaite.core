@@ -362,22 +362,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.response.redirect(self.context.absolute_url())
             return
-        # publish entire AR.
-        self.context.setDatePublished(DateTime())
-        transitioned = self.doPublish(self.context,
-                               self.request,
-                               action,
-                               [self.context, ])()
-        if len(transitioned) == 1:
-            message = _(
-                '${items} published.',
-                mapping={'items': safe_unicode(', '.join(transitioned))})
-        else:
-            message = _("No items were published")
-        self.context.plone_utils.addPortalMessage(message, 'info')
-        self.destination_url = self.request.get_header("referer",
-                               self.context.absolute_url())
-        self.request.response.redirect(self.destination_url)
+        # AR publish preview
+        self.request.response.redirect(self.context.absolute_url() + "/publish")
 
     def workflow_action_verify(self):
         # default bika_listing.py/WorkflowAction, but then go to view screen.

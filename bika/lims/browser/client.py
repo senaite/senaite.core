@@ -224,37 +224,9 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                 if isActive(obj):
                     its.append(uid);
             its = ",".join(its)
-            q = "/preview?items=" + its
-            import pdb;pdb.set_trace()
-            dest = self.context.absolute_url() + q
+            q = "/publish?items=" + its
+            dest = self.portal_url+"/analysisrequests" + q
             self.request.response.redirect(dest)
-
-            '''
-            ARs_to_publish = []
-            transitioned = []
-            for obj_uid, obj in objects.items():
-                if isActive(obj):
-                    obj.setDatePublished(DateTime())
-                    ARs_to_publish.append(obj)
-
-            transitioned = self.doPublish(self.context,
-                                   self.request,
-                                   action,
-                                   ARs_to_publish)()
-
-            if len(transitioned) > 1:
-                message = _('${items} were published.',
-                            mapping = {'items': ', '.join(transitioned)})
-            elif len(transitioned) == 1:
-                message = _('${item} published.',
-                            mapping = {'item': ', '.join(transitioned)})
-            else:
-                message = _('No items were published')
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            self.destination_url = self.request.get_header("referer",
-                                   self.context.absolute_url())
-            self.request.response.redirect(self.destination_url)
-            '''
 
         else:
             AnalysisRequestWorkflowAction.__call__(self)
