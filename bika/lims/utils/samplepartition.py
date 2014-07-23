@@ -14,26 +14,31 @@ def compare_containers(a, b):
     )
 
 
-def set_container_preservation(container, data):
+def set_container_preservation(context, container, data):
     # If container is pre-preserved, set the partition's preservation,
     # and flag the partition to be transitioned below.
     if container:
         if type(container) in (list, tuple):
             container = container[0]
-        prepreserved = container.getPrePreserved()
-        preservation = container.getPreservation()
-        data['prepreserved'] = prepreserved
-        if prepreserved and preservation:
-            return preservation.UID()
-    return data.get('preservation', '')
+        proxies = context.bika_setup_catalog(UID=container)
+        container = [_p.getObject() for _p in proxies]
+        container = container[0] if container else None
+        if container:
+            prepreserved = container.getPrePreserved()
+            preservation = container.getPreservation()
+            data['prepreserved'] = prepreserved
+            if prepreserved and preservation:
+                return preservation.UID()
+    return data.get('preservation_uid', '')
 
 
 def create_samplepartition(context, data, analyses=None):
-    partition = _createObjectByType('SamplePartition', context, tmpID())
+    partition = _createObjectByType('SamplePartition', context, data['part_id'])
+    partition.unmarkCreationFlag()
     # Determine if the sampling workflow is enabled
     workflow_enabled = context.bika_setup.getSamplingWorkflowEnabled()
     # Sort containers and select smallest
-    container = data.get('container', None)
+    container = data.get('container_uid', None)
     if container:
         containers = []
         if type(container[0]) is str:
@@ -51,7 +56,7 @@ def create_samplepartition(context, data, analyses=None):
             except: pass
             container = containers[0]
     # Set the container and preservation
-    preservation = set_container_preservation(container, data)
+    preservation = set_container_preservation(context, container, data)
     # Add analyses
     partition_services = data['services']
     analyses = [a for a in analyses if a.getServiceUID() in partition_services]
@@ -62,7 +67,6 @@ def create_samplepartition(context, data, analyses=None):
         Container=container,
         Preservation=preservation,
     )
-    partition.processForm()
     # Attach partition to analyses
     if analyses:
         for analysis in analyses:
