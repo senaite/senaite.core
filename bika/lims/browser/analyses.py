@@ -17,6 +17,7 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims.utils.analysis import format_numeric_result
 from zope.interface import implements
 from zope.interface import Interface
 from zope.component import getAdapters

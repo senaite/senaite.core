@@ -46,8 +46,8 @@ def format_numeric_result(analysis, result):
     _sig = str(result).split(".")
     sig_digits = _sig[0].lstrip("0") + _sig[1].rstrip("0")
     if len(sig_digits) >= threshold:
-        precision = service.getExponentialFormatPrecision()
-        return str("%%.%se" % precision) % result
+        exp_precision = service.getExponentialFormatPrecision()
+        return str("%%.%se" % exp_precision) % result
     # If the result is floatable, render fixed point to the correct precision
     precision = service.getPrecision()
     if not precision:

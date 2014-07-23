@@ -401,10 +401,6 @@ class Analysis(BaseContent):
             self.setResult("NA")
             return True
 
-        precision = service.getPrecision()
-        result = (precision and result) \
-            and str("%%.%sf" % precision) % result \
-            or result
         self.setResult(result)
         return True
 
@@ -627,18 +623,8 @@ class Analysis(BaseContent):
         if abovemax:
             return '> %s' % hidemax
 
-        # 4. Possibly render in exponential notation
-        threshold = self.bika_setup.getExponentialFormatThreshold()
-        res_len = len([digit for digit in self.getResult() if digit in '0123456789'])
-        if res_len >= threshold:
-            precision = service.getExponentialFormatPrecision()
-            return str("%%.%sg" % precision) % result
-
-        # 5. If the result is floatable, render fixed point to the correct precision
-        precision = service.getPrecision()
-        if not precision:
-            precision = ''
-        return str("%%.%sf" % precision) % result
+        # Render numerical value
+        return format_numeric_result(self, result)
 
     def getAnalyst(self):
         """ Returns the identifier of the assigned analyst. If there is
