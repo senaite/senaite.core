@@ -233,7 +233,7 @@
                 </td>
                 <td class="specs">
                     <span tal:condition="analysis/uncertainty"
-                          tal:replace="string:[+/- ${analysis/uncertainty}] "></span>
+                          tal:replace="string:[&plusmn; ${analysis/uncertainty}] "></span>
                     <span tal:replace="python:'(RT) ' if analysis['retested'] else ''"></span>
                     <span tal:replace="analysis/formatted_specs">50 - 60</span>
                 </td>
@@ -300,7 +300,7 @@
                 </td>
                 <td class="specs">
                     <span tal:condition="analysis/uncertainty"
-                          tal:replace="string:[+/- ${analysis/uncertainty}] "></span>
+                          tal:replace="string:[&plusmn; ${analysis/uncertainty}] "></span>
                     <span tal:replace="python:'(RT) ' if analysis['retested'] else ''"></span>
                     <span tal:replace="analysis/formatted_specs">50 - 60</span>
                 </td>
