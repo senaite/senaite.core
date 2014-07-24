@@ -135,6 +135,11 @@ class ReferenceAnalysis(BaseContent):
         s = s and s.Title() or ''
         return safe_unicode(s).encode('utf-8')
 
+    def getReviewState(self):
+        """ Return the current referencenalysis' state"""
+        workflow = getToolByName(self, "portal_workflow")
+        return workflow.getInfoFor(self, "review_state")
+
     def getUncertainty(self, result=None):
         """ Calls self.Service.getUncertainty with either the
             provided result value or self.Result
@@ -258,6 +263,62 @@ class ReferenceAnalysis(BaseContent):
             return analyst_member.getProperty('fullname')
         else:
             return ''
+
+    def getFormattedResult(self, specs=None):
+        """Formatted result:
+        1. If the result is not floatable, return it without being formatted
+        2. If the analysis specs has hidemin or hidemax enabled and the
+           result is out of range, render result as '<min' or '>max'
+        3. If the result is floatable, render it to the correct precision
+        specs param is optional. A dictionary as follows:
+            {'min': <min_val>,
+             'max': <max_val>,
+             'error': <error>,
+             'hidemin': <hidemin_val>,
+             'hidemax': <hidemax_val>}
+        """
+        result = self.getResult()
+        service = self.getService()
+
+        # 1. If the result is not floatable, return it without being formatted
+        try:
+            result = float(result)
+        except:
+            return result
+
+        # 2. If the analysis specs has enabled hidemin or hidemax and the
+        #    result is out of range, render result as '<min' or '>max'
+        belowmin = False
+        abovemax = False
+        if not specs:
+            uid = self.getServiceUID()
+            specs = self.aq_parent.getResultsRangeDict().get(uid, {})
+        hidemin = specs.get('hidemin', '')
+        hidemax = specs.get('hidemax', '')
+        try:
+            belowmin = hidemin and result < float(hidemin) or False
+        except:
+            belowmin = False
+            pass
+        try:
+            abovemax = hidemax and result > float(hidemax) or False
+        except:
+            abovemax = False
+            pass
+
+        # 2.1. If result is below min and hidemin enabled, return '<min'
+        if belowmin:
+            return '< %s' % hidemin
+
+        # 2.2. If result is above max and hidemax enabled, return '>max'
+        if abovemax:
+            return '> %s' % hidemax
+
+        # 3. If the result is floatable, render it to the correct precision
+        precision = service.getPrecision()
+        if not precision:
+            precision = ''
+        return str("%%.%sf" % precision) % result
 
     def workflow_script_submit(self):
         if skip(self, "submit"):

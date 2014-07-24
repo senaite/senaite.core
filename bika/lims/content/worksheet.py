@@ -355,7 +355,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         wst_slots = [row['pos'] for row in wstlayout if row['type'] == 'a']
         ws_slots = [row['position'] for row in layout if row['type'] == 'a']
         nr_slots = len(wst_slots) - len(ws_slots)
-        instr = self.getInstrument()
+        instr = self.getInstrument() if self.getInstrument() else wst.getInstrument()
         for analysis in sortedans:
             analysis = analysis['brain']
             if instr and analysis.getObject().isInstrumentAllowed(instr) == False:
@@ -436,6 +436,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             if src_pos in [int(slot['position']) for slot in layout]:
                 self.addDuplicateAnalyses(src_pos, dest_pos)
 
+        # Apply the wst instrument to all analyses and ws
+        if instr:
+            self.setInstrument(instr, True)
+
     def exportAnalyses(self, REQUEST=None, RESPONSE=None):
         """ Export analyses from this worksheet """
         import bika.lims.InstrumentExport as InstrumentExport
@@ -515,7 +519,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """ return current date """
         return DateTime()
 
-    def setInstrument(self, instrument):
+    def setInstrument(self, instrument, override_analyses=False):
         """ Sets the specified instrument to the Analysis from the
             Worksheet. Only sets the instrument if the Analysis
             allows it, according to its Analysis Service and Method.
@@ -526,10 +530,20 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             Returns the number of analyses affected
         """
         analyses = [an for an in self.getAnalyses()
-                    if not an.getInstrument()
+                    if (not an.getInstrument() or override_analyses)
                         and an.isInstrumentAllowed(instrument)]
         total = 0
         for an in analyses:
+            # An analysis can be done using differents Methods.
+            # Un method can be supported by more than one Instrument,
+            # but not all instruments support one method.
+            # We must force to set the instrument's method too. Otherwise,
+            # the WS manage results view will display the an's default
+            # method and its instruments displaying, only the instruments
+            # for the default method in the picklist.
+            meth = instrument.getMethod()
+            if an.isMethodAllowed(meth):
+                an.setMethod(meth)
             success = an.setInstrument(instrument)
             if success is True:
                 total += 1

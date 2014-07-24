@@ -63,7 +63,7 @@ sample_due_BackgroundColor:string=#FFFCA7
 sample_due_LinkColor:string=#303F81
 sample_due_TextColor:string=#000000
 
-sample_received_BackgroundColor:string=#fff2dd
+sample_received_BackgroundColor:string=#ffffff
 sample_received_LinkColor:string=#303F81
 sample_received_TextColor:string=#000000
 

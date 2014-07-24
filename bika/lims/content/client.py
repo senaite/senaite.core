@@ -91,6 +91,25 @@ schema = Organisation.schema.copy() + atapi.Schema((
             format='select',
         )
     ),
+    atapi.StringField('DecimalMark',
+        schemata = "Preferences",
+        default = "dot",
+        vocabulary = ["comma","dot"],
+        widget = atapi.SelectionWidget(
+            label = _("Select Decimal Mark"),
+            description = _("Select your prefered decimal mark from the dropdown list."),
+            format = 'select',
+        )
+    ),
+    atapi.BooleanField('AllowDecimalMark',
+        schemata = "Preferences",
+        default = False,
+        widget = atapi.BooleanWidget(
+            label = _("Avoid Client's Decimal Mark Selection"),
+            description = _("If it is checked, the client cannot choose their"
+                            "specific decimal mark."),
+        )
+    )
 ))
 
 schema['AccountNumber'].write_permission = ManageClients

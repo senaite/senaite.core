@@ -148,6 +148,16 @@ schema = BikaFolderSchema.copy() + Schema((
                             "but can be overwrittem on individual items"),
         )
     ),
+    StringField('DecimalMark',
+        schemata = "Results Reports",
+        default = "dot",
+        vocabulary = ["comma","dot"],
+        widget = SelectionWidget(
+            label = _("Select Decimal Mark Type"),
+            description = _("Select your prefered decimal mark from the dropdown list."),
+            format = 'select',
+        )
+    ),
     IntegerField('MinimumResults',
         schemata = "Results Reports",
         required = 1,

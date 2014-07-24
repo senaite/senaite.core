@@ -14,7 +14,7 @@ $(document).ready(function(){
         dateFormat: dateFormat,
         changeMonth:true,
         changeYear:true,
-        yearRange: "-100:+1"
+        yearRange: "-50:+20"
     });
 
     $('[datetimepicker="1"]').datetimepicker({

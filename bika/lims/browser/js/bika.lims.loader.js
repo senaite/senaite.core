@@ -15,8 +15,12 @@ $(document).ready(function(){
             ['InstrumentCertificationEditView'],
         ".template-base_edit.portaltype-bikasetup":
             ['BikaSetupEditView'],
+        "#ar_publish_container":
+            ['AnalysisRequestPublishView'],
         ".template-base_edit.portaltype-artemplate":
             ['ARTemplateEditView'],
+        ".template-base_edit.portaltype-client":
+            ['ClientEditView']
     };
 
     // Instantiate the js objects needed for the current view
