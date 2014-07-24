@@ -1,6 +1,7 @@
 next
 ----
 
+LIMS-1339: Published reports should use "±" symbol instead of "+/-"
 LIMS-1327: Instrument from worksheet
 LIMS-1328: Instrument calibration test graphs do not work on multiple samples
 LIMS-1347: Analysis/AR background colour to be different to for Receive and To be Sampled
