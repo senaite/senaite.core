@@ -403,11 +403,11 @@ class AnalysisRequestPublishView(BrowserView):
             dm = client.getDecimalMark()
         else:
             dm = ar.bika_setup.getDecimalMark()
-        return dm if dm != '.' else None
+        return dm if dm != 'dot' else None
 
     def _format_with_decimalmark(self, value, decimalmark=None):
         rawval = value
-        if not decimalmark and decimalmark == 'comma':
+        if decimalmark and decimalmark == 'comma':
             rawval = rawval.replace('.', '[comma]')
             rawval = rawval.replace(',', '.')
             rawval = rawval.replace('[comma]', ',')
@@ -429,6 +429,7 @@ class AnalysisRequestPublishView(BrowserView):
                   'request_id': analysis.aq_parent.getId(),
                   'formatted_result': '',
                   'uncertainty': analysis.getUncertainty(),
+                  'formatted_uncertainty': '',
                   'retested': analysis.getRetested(),
                   'remarks': to_utf8(analysis.getRemarks()),
                   'resultdm': to_utf8(analysis.getResultDM()),
@@ -483,6 +484,7 @@ class AnalysisRequestPublishView(BrowserView):
             andict['formatted_specs'] = '< %s' % specs['max']
         fr = andict['formatted_specs']
         andict['formatted_specs'] = self._format_with_decimalmark(fr, decimalmark)
+        andict['formatted_uncertainty'] = self._format_with_decimalmark(str(analysis.getUncertainty()), decimalmark)
 
         # Out of range?
         if specs:
