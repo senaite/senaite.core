@@ -365,13 +365,14 @@ class AnalysisRequestPublishView(BrowserView):
 
     def _analyses_data(self, ar, analysis_states=['verified', 'published']):
         analyses = []
+        dm = self._get_decimalmark(ar)
         batch = ar.getBatch()
         workflow = getToolByName(self.context, 'portal_workflow')
         for an in ar.getAnalyses(full_objects=True,
                                  review_state=analysis_states):
 
             # Build the analysis-specific dict
-            andict = self._analysis_data(an)
+            andict = self._analysis_data(an, dm)
 
             # Are there previous results for the same AS and batch?
             andict['previous'] = []
@@ -395,7 +396,24 @@ class AnalysisRequestPublishView(BrowserView):
         analyses.sort(lambda x, y: cmp(x.get('title').lower(), y.get('title').lower()))
         return analyses
 
-    def _analysis_data(self, analysis):
+    def _get_decimalmark(self, ar):
+        client = ar.aq_parent
+        dm = None
+        if client.getDefaultDecimalMark == False:
+            dm = client.getDecimalMark()
+        else:
+            dm = ar.bika_setup.getDecimalMark()
+        return dm if dm != '.' else None
+
+    def _format_with_decimalmark(self, value, decimalmark=None):
+        rawval = value
+        if not decimalmark and decimalmark == 'comma':
+            rawval = rawval.replace('.', '[comma]')
+            rawval = rawval.replace(',', '.')
+            rawval = rawval.replace('[comma]', ',')
+        return rawval
+
+    def _analysis_data(self, analysis, decimalmark=None):
         keyword = analysis.getKeyword()
         service = analysis.getService()
         andict = {'obj': analysis,
@@ -453,7 +471,9 @@ class AnalysisRequestPublishView(BrowserView):
                     if specs else {}
 
         andict['specs'] = specs
-        andict['formatted_result'] = analysis.getFormattedResult(specs)
+        fr = analysis.getFormattedResult(specs)
+        andict['formatted_result'] = self._format_with_decimalmark(fr, decimalmark)
+
 
         if specs.get('min', None) and specs.get('max', None):
             andict['formatted_specs'] = '%s - %s' % (specs['min'], specs['max'])
@@ -461,6 +481,8 @@ class AnalysisRequestPublishView(BrowserView):
             andict['formatted_specs'] = '> %s' % specs['min']
         elif specs.get('max', None):
             andict['formatted_specs'] = '< %s' % specs['max']
+        fr = andict['formatted_specs']
+        andict['formatted_specs'] = self._format_with_decimalmark(fr, decimalmark)
 
         # Out of range?
         if specs:
