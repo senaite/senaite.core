@@ -145,7 +145,7 @@ mv buildout.2 buildout.cfg
 
 ### Run buildout
 
-bin/buildout
+sudo -u plone_buildout bin/buildout
 
 # Some non-fatal error messages may scroll past
 
@@ -154,7 +154,7 @@ bin/buildout
 # Start the Plone instance in foreground (debug) mode which will
 # display the instance log on the console.
 
-bin/plonectl fg
+sudo -u plone_daemon bin/plonectl fg
 
 # Alternatively, start it as a normal server process:
 
