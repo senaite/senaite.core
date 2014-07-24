@@ -99,7 +99,7 @@ cd ${BIKA_HOME}/zinstance
 # If the proxy isn't set for git, set it.  The linux
 # environment variables should be enough, but it didn't work on fedora.
 if [ -n "$PROXY" ] && [ -z "`git config --get http.proxy`" ]; then
-  git config --global http.proxy ${PROXY}
+  sudo -u plone_buildout git config --global http.proxy ${PROXY}
 fi
 
 # At this point a plain Plone instance could be built and run.
@@ -111,7 +111,7 @@ fi
 
 #git clone -b dev https://github.com/bikalabs/Bika-LIMS.git src/bika.lims
 #git clone -b release/3.1 http://github.com/bikalabs/Bika-LIMS.git src/bika.lims
-git clone -b 3.1 http://github.com/bikalabs/Bika-LIMS.git src/bika.lims
+sudo -u plone_buildout git clone -b 3.1 http://github.com/bikalabs/Bika-LIMS.git src/bika.lims
 #    Omit the command line switch '-b dev' to use the master branch instead.
 
 # ## Edit Plone/zinstance/buildout.conf and add Bika LIMS.
