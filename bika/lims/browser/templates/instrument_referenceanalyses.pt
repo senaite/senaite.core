@@ -36,21 +36,17 @@
                 var qcrec = false;
                 $.map(data, function(value,key){
                     $('#selanalyses').append('<option value="'+key+'">'+key+'</option>');
-                    if (qcrec == false) {
-                        $.map(value, function(v, k) {
-                            $('#selqcsample').append('<option value="'+k+'">'+k+'</option>');
-                        });
-                        qcrec = true;
-                    }
                 });
 
                 // Draw the chart and filter rows
                 if ($('#selanalyses').val()) {
+                    updateQCSamples(data[$('#selanalyses').val()]);
                     filterRows();
                     drawControlChart(null, null);
                 }
 
                 $('#selanalyses').change(function(e) {
+                    updateQCSamples(data[$('#selanalyses').val()]);
                     drawControlChart(null, null);
                     filterRows();
                 });
@@ -115,6 +111,13 @@
                 $('div.bika-listing-table-container').fadeIn();
             });
         });
+
+        function updateQCSamples(qcsamples) {
+            $('#selqcsample option').remove();
+            $.map(qcsamples, function(v, k) {
+                $('#selqcsample').append('<option value="'+k+'">'+k+'</option>');
+            });
+        }
 
         function filterRows() {
             var ankeyword = $('#selanalyses').val().split("(");

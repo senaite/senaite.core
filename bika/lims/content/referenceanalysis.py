@@ -135,6 +135,11 @@ class ReferenceAnalysis(BaseContent):
         s = s and s.Title() or ''
         return safe_unicode(s).encode('utf-8')
 
+    def getReviewState(self):
+        """ Return the current referencenalysis' state"""
+        workflow = getToolByName(self, "portal_workflow")
+        return workflow.getInfoFor(self, "review_state")
+
     def getUncertainty(self, result=None):
         """ Calls self.Service.getUncertainty with either the
             provided result value or self.Result
