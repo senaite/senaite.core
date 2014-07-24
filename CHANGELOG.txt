@@ -1,3 +1,8 @@
+next
+----
+
+LIMS-1359: Add Calibration Certificate is valid for one year or 2015
+
 3.1.4 (2014-07-23)
 ------------------
 
