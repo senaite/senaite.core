@@ -1,6 +1,7 @@
 next
 ----
 
+LIMS-1347: Analysis/AR background colour to be different to for Receive and To be Sampled
 LIMS-1353: Analyses don't sort in Attachment look-up
 LIMS-1359: Add Calibration Certificate is valid for one year or 2015
 
