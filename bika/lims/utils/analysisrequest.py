@@ -35,6 +35,7 @@ def create_analysisrequest(
         # Calculate partition id
         partition_prefix = sample.getId() + "-P"
         partition_id = '%s%s' % (partition_prefix, n + 1)
+        partition['part_id'] = partition_id
         # Point to or create sample partition
         if partition_id in sample.objectIds():
             partition['object'] = sample[partition_id]
