@@ -1,6 +1,7 @@
 next
 ----
 
+LIMS-1328: Instrument calibration test graphs do not work on multiple samples
 LIMS-1347: Analysis/AR background colour to be different to for Receive and To be Sampled
 LIMS-1353: Analyses don't sort in Attachment look-up
 LIMS-1359: Add Calibration Certificate is valid for one year or 2015
@@ -60,12 +61,12 @@ LIMS-1245: off-by-one in part indicators in ar_add
 LIMS-1240: Hide "copy to new" from Analyst users
 
 LIMS-1059: Added worksheet rejection workflow
-	RejectAnalysis (Analysis subclass (has IAnalysis!)) workflow transition.
-	Does not retract individual Analysis objects - instead, forces their state
-		back to "Received", and assigns them onto newly created WS.
-	Sets attributes on src and dst worksheets:
-		WS instance rejected worksheet attribute: .replaced_by = UID
-		WS instance replacement worksheet attribute: .replaces_rejected_worksheet:UID
+    RejectAnalysis (Analysis subclass (has IAnalysis!)) workflow transition.
+    Does not retract individual Analysis objects - instead, forces their state
+        back to "Received", and assigns them onto newly created WS.
+    Sets attributes on src and dst worksheets:
+        WS instance rejected worksheet attribute: .replaced_by = UID
+        WS instance replacement worksheet attribute: .replaces_rejected_worksheet:UID
 
 Fixed some i18n and encoding snags, and updated translations.
 
