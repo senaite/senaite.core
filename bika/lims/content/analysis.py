@@ -231,6 +231,11 @@ class Analysis(BaseContent):
                 duetime = ''
             self.setDueDate(duetime)
 
+    def getReviewState(self):
+        """ Return the current analysis' state"""
+        workflow = getToolByName(self, "portal_workflow")
+        return workflow.getInfoFor(self, "review_state")
+
     def getUncertainty(self, result=None):
         """ Calls self.Service.getUncertainty with either the provided
             result value or self.Result
