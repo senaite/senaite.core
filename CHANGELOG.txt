@@ -2,10 +2,17 @@ next
 ----
 
 LIMS-1333: Batch label replace with standard Plone keyword widget
+LIMS-1082: Report Barcode. Was images for pdf/print reports etc.
+
+
+3.1.4.1 (2014-07-24)
+--------------------
+
+3.1.4 release was broken, simple ARs could not be created.
+
 LIMS-1339: Published reports should use "±" symbol instead of "+/-"
 LIMS-1327: Instrument from worksheet
 LIMS-1328: Instrument calibration test graphs do not work on multiple samples
-LIMS-1082: Report Barcode. Was images for pdf/print reports etc.
 LIMS-1347: Analysis/AR background colour to be different to for Receive and To be Sampled
 LIMS-1353: Analyses don't sort in Attachment look-up
 LIMS-1359: Add Calibration Certificate is valid for one year or 2015

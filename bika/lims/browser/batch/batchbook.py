@@ -81,7 +81,7 @@ class BatchBookView(BikaListingView):
             # This is permitted from the global permission above, AddAnalysisRequest.
             review_states = []
             for review_state in self.review_states:
-                review_state['custom_actions'].extend(
+                review_state.get('custom_actions', []).extend(
                     [{'id': 'copy_to_new',
                       'title': _('Copy to new'),
                       'url': 'workflow_action?action=copy_to_new'}, ])
@@ -218,7 +218,9 @@ class BatchBookView(BikaListingView):
                 if keyword not in items[i]['class']:
                     items[i]['class'][keyword] = 'empty'
         if self.insert_submit_button:
-            self.review_states[0]['custom_actions'].append({'id': 'submit'})
+            custom_actions = self.review_states[0].get('custom_actions', [])
+            custom_actions.extend({'id': 'submit'})
+            self.review_states[0]['custom_actions'] = custom_actions
 
         self.categories.sort()
         self.categories = [x[1] for x in self.categories]

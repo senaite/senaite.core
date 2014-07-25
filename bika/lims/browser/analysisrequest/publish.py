@@ -235,7 +235,7 @@ class AnalysisRequestPublishView(BrowserView):
                     'client_batchid': to_utf8(batch.getClientBatchID()),
                     'remarks': to_utf8(batch.getRemarks())}
 
-            uids = batch.getBatchLabels()
+            uids = batch.Schema()['BatchLabels'].getAccessor(batch)()
             uc = getToolByName(self.context, 'uid_catalog')
             data['labels'] = [to_utf8(p.getObject().Title()) for p in uc(UID=uids)]
 
