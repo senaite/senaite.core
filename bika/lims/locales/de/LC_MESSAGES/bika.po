@@ -140,73 +140,13 @@ msgstr "(Erforderlich)"
 msgid "+-"
 msgstr "±"
 
-# File:
-# bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequests.pt,
-# line: 35
-msgid "1"
-msgstr "1"
-
-# File:
-# bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequests.pt,
-# line: 44
-msgid "10"
-msgstr "10"
-
 # File: bika.lims/bika/lims/content/arpriority.py, line: 28
 msgid "16x16 pixel icon used for the this priority in listings."
 msgstr "Ein 16x16 Pixel Icon wird für die Prioriäten in Auflistungen verwendet"
 
-# File:
-# bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequests.pt,
-# line: 36
-msgid "2"
-msgstr "2"
-
-# File:
-# bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequests.pt,
-# line: 37
-msgid "3"
-msgstr "3"
-
 # File: bika.lims/bika/lims/content/arpriority.py, line: 34
 msgid "32x32 pixel icon used for the this priority in object views."
 msgstr "Ein 32x32 Pixel Icon wird für die Prioriäten in Objektansichten verwendet"
-
-# File:
-# bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequests.pt,
-# line: 38
-msgid "4"
-msgstr "4"
-
-# File:
-# bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequests.pt,
-# line: 39
-msgid "5"
-msgstr "5"
-
-# File:
-# bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequests.pt,
-# line: 40
-msgid "6"
-msgstr "6"
-
-# File:
-# bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequests.pt,
-# line: 41
-msgid "7"
-msgstr "7"
-
-# File:
-# bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequests.pt,
-# line: 42
-msgid "8"
-msgstr "8"
-
-# File:
-# bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequests.pt,
-# line: 43
-msgid "9"
-msgstr "9"
 
 # File: bika.lims/bika/lims/browser/widgets/analysisspecificationwidget.py,
 # line: 44
@@ -1378,6 +1318,11 @@ msgid "Code the the shelf"
 msgstr "Code für das Regal"
 
 #
+# File: ../../../bika/lims/browser/analysisrequest/templates/analysisrequests.pt, line: 41
+msgid "Columns Based"
+msgstr ""
+
+#
 # File: ../../../bika/lims/config.py, line: 112
 msgid "Comma (,)"
 msgstr ""
@@ -1448,6 +1393,16 @@ msgstr "Kontakte zu CC"
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 123
 msgid "Container"
 msgstr "Behälter"
+
+#
+# File: ../../../bika/lims/content/batch.py, line: 118
+msgid "Container Condition"
+msgstr ""
+
+#
+# File: ../../../bika/lims/content/batch.py, line: 109
+msgid "Container Temperature"
+msgstr ""
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 90
 # File: bika.lims/bika/lims/content/arimportitem.py, line: 59
@@ -1893,11 +1848,6 @@ msgstr "Beschreibung des Grundstücks"
 # 89
 msgid "Deviation"
 msgstr "Abweichung"
-
-# File: bika.lims/bika/lims/browser/analysisrequest/templates/ar_add.pt, line:
-# 242
-msgid "Discount"
-msgstr "Rabatt"
 
 # File: bika.lims/bika/lims/content/pricelist.py, line: 36
 msgid "Discount %"
@@ -2529,6 +2479,11 @@ msgstr ""
 msgid "Invoice"
 msgstr "Rechnung"
 
+#
+# File: ../../../bika/lims/content/analysisrequest.py, line: 143
+msgid "Invoice Contacts"
+msgstr ""
+
 # File: bika.lims/bika/lims/browser/invoicebatch.py, line: 27
 msgid "Invoice Date"
 msgstr "Rechnungsdatum"
@@ -2669,6 +2624,11 @@ msgstr "Verspätete Analyse"
 # File: bika.lims/bika/lims/content/samplepoint.py, line: 24
 msgid "Latitude"
 msgstr "Breite"
+
+#
+# File: ../../../bika/lims/browser/analysisrequest/templates/analysisrequests.pt, line: 37
+msgid "Layout"
+msgstr ""
 
 # File: bika.lims/bika/lims/content/query.py, line: 77
 msgid "Limit Search Results"
@@ -2902,13 +2862,6 @@ msgstr "Methode: None"
 msgid "Methods"
 msgstr "Methoden"
 
-# File: bika.lims/bika/lims/browser/analysisrequest/templates/ar_add.pt, line:
-# 334
-# File: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt,
-# line: 454
-msgid "Methods included in the ${accreditation_body} schedule of Accreditation for this Laboratory. Analysis remarks are not accredited"
-msgstr "Methoden, die in der ${accreditation_body} Akkreditierungslistefür dieses Labor aufgeführt sind. Hinweise zu den Analysen sind nicht akkreditiert"
-
 # File: bika.lims/bika/lims/content/person.py, line: 31
 msgid "Middle initial"
 msgstr ""
@@ -3141,6 +3094,16 @@ msgstr "Nicht verfügbar"
 # line: 77
 msgid "Not defined"
 msgstr "Nicht definiert"
+
+#
+# File: ../../../bika/lims/browser/analysisrequest/templates/analysisrequests.pt, line: 32
+msgid "Number of ARs"
+msgstr ""
+
+#
+# File: ../../../bika/lims/browser/analysisrequest/analysisrequests.py, line: 129
+msgid "Number of Analyses"
+msgstr ""
 
 # File: bika.lims/bika/lims/browser/reports/productivity_analysesperclient.py,
 # line: 47
@@ -4047,6 +4010,11 @@ msgstr "Status der Überprüfung"
 msgid "Routine Number"
 msgstr ""
 
+#
+# File: ../../../bika/lims/browser/analysisrequest/templates/analysisrequests.pt, line: 42
+msgid "Rows Based"
+msgstr ""
+
 # File: bika.lims/bika/lims/controlpanel/bika_srtemplates.py, line: 34
 msgid "SR Templates"
 msgstr "SR Vorlagen"
@@ -4853,6 +4821,11 @@ msgstr "Zeitspanne, in der unkonservierte Proben dieser Art aufbewahrt werden k�
 msgid "The person that created an item"
 msgstr "Die Person, die einen Eintrag angelegt hat"
 
+#
+# File: ../../../bika/lims/content/batch.py, line: 119
+msgid "The physical condition of the sample container on arrival"
+msgstr ""
+
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 565
 msgid "The price charged per analysis for clients who qualify for bulk discounts"
 msgstr "Der Preis, der pro Analyse für Kunden berechnet wird, die Mengenrabatt bekommen."
@@ -4884,6 +4857,11 @@ msgstr "Die Seriennummer identifiziert das Gerät eindeutig"
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 302
 msgid "The system wide default configuration to indicate whether file attachments are required, permitted or not per analysis request"
 msgstr "Die systemweite Default-Einstellung ob Dateianhänge erforderlich oder erlaubt sind oder nicht, pro Analysenauftrag"
+
+#
+# File: ../../../bika/lims/content/batch.py, line: 110
+msgid "The temperature of the sample container on arrival"
+msgstr ""
 
 # File: bika.lims/bika/lims/browser/reports/productivity_analysestats.py,
 # line: 30
