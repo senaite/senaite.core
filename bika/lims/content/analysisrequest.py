@@ -995,6 +995,19 @@ class AnalysisRequest(BaseFolder):
 
     security.declareProtected(View, 'getResponsible')
 
+    def getAnalysesNum(self):
+        """ Return the amount of analyses verified/total in the current AR """
+        verified = 0
+        total = 0
+        for analysis in self.objectValues('Analysis'):
+            workflow = getToolByName(analysis, 'portal_workflow')
+            review_state = workflow.getInfoFor(analysis, 'review_state', '')
+            if review_state in ['verified' ,'published']:
+                verified += 1
+            if review_state not in 'retracted':
+                total += 1
+        return verified,total
+
     def getResponsible(self):
         """ Return all manager info of responsible departments """
         managers = {}

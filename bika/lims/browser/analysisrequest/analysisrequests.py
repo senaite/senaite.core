@@ -126,6 +126,10 @@ class AnalysisRequestsView(BikaListingView):
             'getProfileTitle': {'title': _('Profile'),
                                 'index': 'getProfileTitle',
                                 'toggle': False},
+            'getAnalysesNum': {'title': _('Number of Analyses'),
+                               'index': 'getAnalysesNum',
+                               'sortable': True,
+                               'toggle': False},
             'getTemplateTitle': {'title': _('Template'),
                                  'index': 'getTemplateTitle',
                                  'toggle': False},
@@ -172,6 +176,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getDatePreserved',
                         'getPreserver',
                         'getDateReceived',
+                        'getAnalysesNum',
                         'state_title']},
             {'id': 'sample_due',
              'title': _('Due'),
@@ -209,6 +214,7 @@ class AnalysisRequestsView(BikaListingView):
                         'SamplingDeviation',
                         'Priority',
                         'AdHoc',
+                        'getAnalysesNum',
                         'state_title']},
            {'id': 'sample_received',
              'title': _('Received'),
@@ -242,6 +248,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getSampler',
                         'getDatePreserved',
                         'getPreserver',
+                        'getAnalysesNum',
                         'getDateReceived']},
             {'id': 'to_be_verified',
              'title': _('To be verified'),
@@ -277,6 +284,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getSampler',
                         'getDatePreserved',
                         'getPreserver',
+                        'getAnalysesNum',
                         'getDateReceived']},
             {'id': 'verified',
              'title': _('Verified'),
@@ -308,6 +316,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getSampler',
                         'getDatePreserved',
                         'getPreserver',
+                        'getAnalysesNum',
                         'getDateReceived']},
             {'id': 'published',
              'title': _('Published'),
@@ -340,6 +349,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getDatePreserved',
                         'getPreserver',
                         'getDateReceived',
+                        'getAnalysesNum',
                         'getDatePublished']},
             {'id': 'cancelled',
              'title': _('Cancelled'),
@@ -377,6 +387,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getPreserver',
                         'getDateReceived',
                         'getDatePublished',
+                        'getAnalysesNum',
                         'state_title']},
             {'id': 'invalid',
              'title': _('Invalid'),
@@ -409,6 +420,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getDatePreserved',
                         'getPreserver',
                         'getDateReceived',
+                        'getAnalysesNum',
                         'getDatePublished']},
             {'id': 'assigned',
              'title': "<img title='%s'\
@@ -452,6 +464,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getDatePreserved',
                         'getPreserver',
                         'getDateReceived',
+                        'getAnalysesNum',
                         'state_title']},
             {'id': 'unassigned',
              'title': "<img title='%s'\
@@ -497,6 +510,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getDatePreserved',
                         'getPreserver',
                         'getDateReceived',
+                        'getAnalysesNum',
                         'state_title']},
             ]
 
@@ -533,6 +547,11 @@ class AnalysisRequestsView(BikaListingView):
             items[x]['getSample'] = sample
             items[x]['replace']['getSample'] = \
                 "<a href='%s'>%s</a>" % (sample.absolute_url(), sample.Title())
+
+            if obj.getAnalysesNum():
+                items[x]['getAnalysesNum'] = str(obj.getAnalysesNum()[0]) + '/' + str(obj.getAnalysesNum()[1])
+            else:
+                items[x]['getAnalysesNum'] = ''
 
             batch = obj.getBatch()
             if batch:

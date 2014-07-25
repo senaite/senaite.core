@@ -1,10 +1,17 @@
 next
 ----
 
+LIMS-1360 Number of analyses in ARs folder view
+LIMS-1335: Reference Definitions don't sort alphabetically on WS Template lay-outs
+LIMS-1345: Analysis profiles don't sort
+LIMS-1347: Analysis/AR background colour to be different to for Receive and To be Sampled
 LIMS-1333: Batch label replace with standard Plone keyword widget
 LIMS-1082: Report Barcode. Was images for pdf/print reports etc.
 
 - Added decimal mark configuration for result reports
+- Added watermark on invalid reports
+- Added watermark on provisional reports
+- Added help info regards to new templates creation
 
 
 3.1.4.1 (2014-07-24)

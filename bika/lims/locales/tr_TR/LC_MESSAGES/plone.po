@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2012-10-20 09:21+0000\n"
-"PO-Revision-Date: 2014-06-19 07:27+0000\n"
+"PO-Revision-Date: 2014-07-06 18:41+0000\n"
 "Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
 "Language-Team: Turkish (Turkey) (http://www.transifex.com/projects/p/bika-lims/language/tr_TR/)\n"
 "MIME-Version: 1.0\n"
@@ -457,8 +457,8 @@ msgstr "Referans Numuneler"
 msgid "Reference Values"
 msgstr "Referans Değerleri"
 
-#
-# File: bika.lims/bika/lims/profiles/default/types/RejectAnalysis.xml, line: -1
+# File: bika.lims/bika/lims/profiles/default/types/RejectAnalysis.xml, line:
+# -1
 msgid "Reject Analysis"
 msgstr ""
 

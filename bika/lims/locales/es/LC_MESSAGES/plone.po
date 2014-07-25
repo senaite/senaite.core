@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2012-10-20 09:21+0000\n"
-"PO-Revision-Date: 2014-06-23 15:35+0000\n"
+"PO-Revision-Date: 2014-07-24 13:02+0000\n"
 "Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/bika-lims/language/es/)\n"
 "MIME-Version: 1.0\n"
@@ -275,7 +275,7 @@ msgstr "Tipo de instrumento"
 # File: bika.lims/bika/lims/profiles/default/types/InstrumentTypes.xml, line:
 # -1
 msgid "Instrument Types"
-msgstr "Tipos de instrumento"
+msgstr "Tipos de equipo"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/InstrumentType.xml, line:
@@ -466,10 +466,10 @@ msgstr "Muestras de referencia"
 msgid "Reference Values"
 msgstr "Valores de referencia"
 
-#
-# File: bika.lims/bika/lims/profiles/default/types/RejectAnalysis.xml, line: -1
+# File: bika.lims/bika/lims/profiles/default/types/RejectAnalysis.xml, line:
+# -1
 msgid "Reject Analysis"
-msgstr ""
+msgstr "Rechazar análisis"
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Report.xml, line: -1
@@ -628,7 +628,7 @@ msgstr "Pedido de cliente"
 # File: bika.lims/bika/lims/profiles/default/types/SupplyOrderFolder.xml,
 # line: -1
 msgid "Supply Orders"
-msgstr "Pedidos de dlientes"
+msgstr "Pedidos de clientes"
 
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 msgid "Validations"

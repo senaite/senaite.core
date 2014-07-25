@@ -26,12 +26,6 @@ msgstr "${items} are waiting to be received."
 msgid "${items} invalidated."
 msgstr "${items} invalidated."
 
-msgid "${items} published."
-msgstr "${items} published."
-
-msgid "${items} were published."
-msgstr "${items} were published."
-
 msgid "${items} were successfully created."
 msgstr "${items} were successfully created."
 
@@ -43,9 +37,6 @@ msgstr "${item} is waiting for preservation."
 
 msgid "${item} is waiting to be received."
 msgstr "${item} is waiting to be received."
-
-msgid "${item} published."
-msgstr "${item} published."
 
 msgid "${item} was successfully created."
 msgstr "${item} was successfully created."
@@ -82,11 +73,6 @@ msgstr "(Hazardous)"
 
 msgid "(Required)"
 msgstr "(Required)"
-
-#
-# File: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt, line: 451
-msgid "* Result out of client specified range."
-msgstr ""
 
 msgid "+-"
 msgstr "+-"
@@ -417,9 +403,6 @@ msgstr "Analysis parent UID ${parent_uid} not found"
 msgid "Analysis request ${AR} was successfully created."
 msgstr "Analysis request ${AR} was successfully created."
 
-msgid "Analysis request attachments"
-msgstr "Analysis request attachments"
-
 msgid "Analysis requests ${ARs} were successfully created."
 msgstr "Analysis requests ${ARs} were successfully created."
 
@@ -455,14 +438,8 @@ msgstr "Analysis results for per sample point and analysis service"
 msgid "Analysis results out of lab or client specified range Note that this may take several minutes"
 msgstr "Analysis results out of lab or client specified range Note that this may take several minutes"
 
-msgid "Analysis results relate only to the samples tested."
-msgstr "Analysis results relate only to the samples tested."
-
 msgid "Analysis service"
 msgstr "Analysis service"
-
-msgid "Analysis services attachments"
-msgstr "Analysis services attachments"
 
 msgid "Analysis specifications reset to lab defaults."
 msgstr "Analysis specifications reset to lab defaults."
@@ -559,6 +536,11 @@ msgstr "Automatic label printing"
 msgid "Automatic log-off"
 msgstr "Automatic log-off"
 
+#
+# File: ../../../bika/lims/browser/analysisrequest/templates/analysisrequest_publish.pt, line: 22
+msgid "Available templates"
+msgstr ""
+
 msgid "Average TAT"
 msgstr "Average TAT"
 
@@ -617,9 +599,6 @@ msgstr "Blank"
 
 msgid "Blank QC analyses"
 msgstr "Blank QC analyses"
-
-msgid "Blank analyses"
-msgstr "Blank analyses"
 
 msgid "Brand"
 msgstr "Brand"
@@ -839,6 +818,11 @@ msgstr "Code for the site"
 msgid "Code the the shelf"
 msgstr "Code the the shelf"
 
+#
+# File: ../../../bika/lims/config.py, line: 112
+msgid "Comma (,)"
+msgstr ""
+
 msgid "Comments"
 msgstr "Comments"
 
@@ -896,9 +880,6 @@ msgstr "Control"
 msgid "Control QC analyses"
 msgstr "Control QC analyses"
 
-msgid "Control analyses"
-msgstr "Control analyses"
-
 msgid "Copy"
 msgstr "Copy"
 
@@ -940,6 +921,11 @@ msgstr "Currency"
 
 msgid "Current"
 msgstr "Current"
+
+#
+# File: ../../../bika/lims/content/client.py, line: 107
+msgid "Custom decimal mark"
+msgstr ""
 
 msgid "Daily samples received"
 msgstr "Daily samples received"
@@ -1025,6 +1011,11 @@ msgstr "Date when the calibration certificate was granted"
 msgid "Days"
 msgstr "Days"
 
+#
+# File: ../../../bika/lims/content/client.py, line: 108
+msgid "Decimal mark to use in the reports from this Client."
+msgstr ""
+
 msgid "Default"
 msgstr "Default"
 
@@ -1064,6 +1055,12 @@ msgstr "Default container for new sample partitions"
 msgid "Default containers: ${container_list}"
 msgstr "Default containers: ${container_list}"
 
+#
+# File: ../../../bika/lims/content/bikasetup.py, line: 156
+# File: ../../../bika/lims/content/client.py, line: 98
+msgid "Default decimal mark"
+msgstr ""
+
 msgid "Default preservations: ${preservation_list}"
 msgstr "Default preservations: ${preservation_list}"
 
@@ -1079,8 +1076,20 @@ msgstr "Choose the default specifications used for all AR views to display alert
 msgid "Define interim fields such as vessel mass, dilution factors, should your calculation require them. The field title specified here will be used as column headers and field descriptors where the interim fields are displayed. If 'Apply wide' is enabled the field ill be shown in a selection box on the top of the worksheet, allowing to apply a specific value to all the corresponding fields on the sheet."
 msgstr "Define interim fields such as vessel mass, dilution factors, should your calculation require them. The field title specified here will be used as column headers and field descriptors where the interim fields are displayed. If 'Apply wide' is enabled the field ill be shown in a selection box on the top of the worksheet, allowing to apply a specific value to all the corresponding fields on the sheet."
 
-msgid "Define the number of decimals to be used for this result"
-msgstr "Define the number of decimals to be used for this result"
+#
+# File: ../../../bika/lims/content/analysisservice.py, line: 213
+msgid "Define the number of decimals to be used for this result."
+msgstr ""
+
+#
+# File: ../../../bika/lims/content/analysisservice.py, line: 222
+msgid "Define the precision when converting values to exponent notation."
+msgstr ""
+
+#
+# File: ../../../bika/lims/content/analysisservice.py, line: 231
+msgid "Define the precision when converting values to exponent notation.  The default is 7."
+msgstr ""
 
 msgid "Define the prefixes for the unique sequential IDs the system issues for objects. In the 'Padding' field, indicate with how many leading zeros the numbers must be padded. E.g. a prefix of WS for worksheets with padding of 4, will see them numbered from WS-0001 to WS-9999. NB: Note that samples and analysis requests are prefixed with sample type abbreviations and are not configured in this table - their padding can be set in the specified fields below"
 msgstr "Define the prefixes for the unique sequential IDs the system issues for objects. In the 'Padding' field, indicate with how many leading zeros the numbers must be padded. E.g. a prefix of WS for worksheets with padding of 4, will see them numbered from WS-0001 to WS-9999. NB: Note that samples and analysis requests are prefixed with sample type abbreviations and are not configured in this table - their padding can be set in the specified fields below"
@@ -1160,6 +1169,11 @@ msgstr "Document"
 msgid "Dormant"
 msgstr "Dormant"
 
+#
+# File: ../../../bika/lims/config.py, line: 111
+msgid "Dot (.)"
+msgstr ""
+
 msgid "Down from"
 msgstr "Down from"
 
@@ -1195,9 +1209,6 @@ msgstr "Duplicate QC analyses"
 
 msgid "Duplicate Variation %"
 msgstr "Duplicate Variation %"
-
-msgid "Duplicate analyses"
-msgstr "Duplicate analyses"
 
 msgid "Duplicate analysis QC"
 msgstr "Duplicate analysis QC"
@@ -1293,6 +1304,16 @@ msgstr "Expired"
 
 msgid "Expiry Date"
 msgstr "Expiry Date"
+
+#
+# File: ../../../bika/lims/content/analysisservice.py, line: 221
+msgid "Exponential format precision"
+msgstr ""
+
+#
+# File: ../../../bika/lims/content/bikasetup.py, line: 280
+msgid "Exponential format threshold"
+msgstr ""
 
 #
 # File: Profile, line: -1
@@ -1447,9 +1468,6 @@ msgstr "Include descriptions"
 
 msgid "Include year in ID prefix"
 msgstr "Include year in ID prefix"
-
-msgid "Indet"
-msgstr "Indet"
 
 msgid "Indeterminate result"
 msgstr "Indeterminate result"
@@ -1792,9 +1810,6 @@ msgstr "Methods"
 msgid "Methods included in the ${accreditation_body} schedule of Accreditation for this Laboratory. Analysis remarks are not accredited"
 msgstr "Methods included in the ${accreditation_body} schedule of Accreditation for this Laboratory. Analysis remarks are not accredited"
 
-msgid "Methods of analysis available by clicking on the 'Request' link"
-msgstr "Methods of analysis available by clicking on the 'Request' link"
-
 msgid "Middle initial"
 msgstr "Middle initial"
 
@@ -1888,9 +1903,6 @@ msgstr "No items have been selected"
 msgid "No items selected"
 msgstr "No items selected"
 
-msgid "No items were published"
-msgstr "No items were published"
-
 msgid "No new items were created."
 msgstr "No new items were created."
 
@@ -1930,9 +1942,6 @@ msgstr "Not available"
 
 msgid "Not defined"
 msgstr "Not defined"
-
-msgid "Not invoiced"
-msgstr "Not invoiced"
 
 msgid "Number of Analysis requests and analyses"
 msgstr "Number of Analysis requests and analyses"
@@ -2106,6 +2115,11 @@ msgstr "Pre-preserved"
 msgid "Precision as number of decimals"
 msgstr "Precision as number of decimals"
 
+#
+# File: ../../../bika/lims/content/bikasetup.py, line: 157
+msgid "Preferred decimal mark for reports."
+msgstr ""
+
 msgid "Prefix"
 msgstr "Prefix"
 
@@ -2132,9 +2146,6 @@ msgstr "Preventive"
 
 msgid "Preventive maintenance procedure"
 msgstr "Preventive maintenance procedure"
-
-msgid "Previous Results"
-msgstr "Previous Results"
 
 msgid "Price"
 msgstr "Price"
@@ -2205,9 +2216,6 @@ msgstr "Published Analysis Requests which have not been invoiced"
 msgid "Published By"
 msgstr "Published By"
 
-msgid "Published by"
-msgstr "Published by"
-
 msgid "Published results"
 msgstr "Published results"
 
@@ -2217,8 +2225,10 @@ msgstr "QC"
 msgid "QC Analyses"
 msgstr "QC Analyses"
 
-msgid "QC Results"
-msgstr "QC Results"
+#
+# File: ../../../bika/lims/browser/worksheetfolder.py, line: 155
+msgid "QC Number"
+msgstr ""
 
 msgid "QC Sample ID"
 msgstr "QC Sample ID"
@@ -2270,6 +2280,11 @@ msgstr "Recept. Lag"
 
 msgid "Recipients"
 msgstr "Recipients"
+
+#
+# File: ../../../bika/lims/browser/analysisrequest/templates/analysisrequest_publish.pt, line: 33
+msgid "Refer to <a target=\"_blank\" href=\"https://github.com/bikalabs/Bika-LIMS/wiki/Creating-new-report-templates\">Creating new report templates</a> documentation from Bika LIMS wiki to get more or add your own report templates."
+msgstr ""
 
 msgid "Reference"
 msgstr "Reference"
@@ -2383,9 +2398,6 @@ msgstr "Report tables of Analysis Requests and totals submitted between a period
 msgid "Report type"
 msgstr "Report type"
 
-msgid "Reported as dry matter"
-msgstr "Reported as dry matter"
-
 msgid "Reports"
 msgstr "Reports"
 
@@ -2431,8 +2443,10 @@ msgstr "Result in shoulder range"
 msgid "Result out of range"
 msgstr "Result out of range"
 
-msgid "Results"
-msgstr "Results"
+#
+# File: ../../../bika/lims/content/bikasetup.py, line: 281
+msgid "Result values with at least this number of significant digits are displayed in scientific notation using the letter 'e' to indicate the exponent.  The precision can be configured in individual Analysis Services."
+msgstr ""
 
 msgid "Results attachments permitted"
 msgstr "Results attachments permitted"
@@ -2445,6 +2459,11 @@ msgstr "Results per sample point"
 
 msgid "Results per samplepoint and analysis service"
 msgstr "Results per samplepoint and analysis service"
+
+#
+# File: ../../../bika/lims/controlpanel/bika_sampletypes.py, line: 54
+msgid "Retention Perdiod"
+msgstr ""
 
 msgid "Retention Period"
 msgstr "Retention Period"
@@ -2463,6 +2482,11 @@ msgstr "Retractions"
 
 msgid "Review state"
 msgstr "Review state"
+
+#
+# File: ../../../bika/lims/browser/worksheetfolder.py, line: 158
+msgid "Routine Number"
+msgstr ""
 
 msgid "SR Templates"
 msgstr "SR Templates"
@@ -2536,6 +2560,11 @@ msgstr "Sample related reports"
 
 msgid "Sample type"
 msgstr "Sample type"
+
+#
+# File: ../../../bika/lims/controlpanel/bika_sampletypes.py, line: 56
+msgid "SampleMatrix"
+msgstr ""
 
 msgid "SampleType"
 msgstr "SampleType"
@@ -2740,6 +2769,11 @@ msgstr "Shipping address"
 msgid "Short title"
 msgstr "Short title"
 
+#
+# File: ../../../bika/lims/browser/analysisrequest/templates/analysisrequest_publish.pt, line: 30
+msgid "Show QC Analyses"
+msgstr ""
+
 msgid "Show only selected categories in client views"
 msgstr "Show only selected categories in client views"
 
@@ -2798,8 +2832,10 @@ msgstr "Specify the maximum number of items to show."
 msgid "Specify the size of the Worksheet, e.g. corresponding to a specific instrument's tray size. Then select an Analysis 'type' per Worksheet position. Where QC samples are selected, also select which Reference Sample should be used. If a duplicate analysis is selected, indicate which sample position it should be a duplicate of"
 msgstr "Specify the size of the Worksheet, e.g. corresponding to a specific instrument's tray size. Then select an Analysis 'type' per Worksheet position. Where QC samples are selected, also select which Reference Sample should be used. If a duplicate analysis is selected, indicate which sample position it should be a duplicate of"
 
-msgid "Specify the uncertainty value for a given range, e.g. for results in a range with minimum of 0 and maximum of 10, the uncertainty value is 0.5 - a result of 6.67 will be reported as 6.67 +- 0.5. Please ensure successive ranges are continuous, e.g. 0.00 - 10.00 is followed by 10.01 - 20.00, 20.01 - 30 .00 etc."
-msgstr "Specify the uncertainty value for a given range, e.g. for results in a range with minimum of 0 and maximum of 10, the uncertainty value is 0.5 - a result of 6.67 will be reported as 6.67 +- 0.5. Please ensure successive ranges are continuous, e.g. 0.00 - 10.00 is followed by 10.01 - 20.00, 20.01 - 30 .00 etc."
+#
+# File: ../../../bika/lims/content/analysisservice.py, line: 667
+msgid "Specify the uncertainty value for a given range, e.g. for results in a range with minimum of 0 and maximum of 10, where the uncertainty value is 0.5 - a result of 6.67 will be reported as 6.67 +- 0.5. You can also specify the uncertainty value as a percentage of the result value, by adding a '%' to the value entered in the 'Uncertainty Value' column, e.g. for results in a range with minimum of 10.01 and a maximum of 100, where the uncertainty value is 2% - a result of 100 will be reported as 100 +- 2. Please ensure successive ranges are continuous, e.g. 0.00 - 10.00 is followed by 10.01 - 20.00, 20.01 - 30 .00 etc."
+msgstr ""
 
 msgid "Start Date"
 msgstr "Start Date"
@@ -2836,9 +2872,6 @@ msgstr ""
 msgid "Subtotal"
 msgstr "Subtotal"
 
-msgid "Summary"
-msgstr "Summary"
-
 msgid "Supplier"
 msgstr "Supplier"
 
@@ -2869,9 +2902,6 @@ msgstr "Temperature"
 
 msgid "Template"
 msgstr "Template"
-
-msgid "Test results are at a ${lab_confidence}% confidence level"
-msgstr "Test results are at a ${lab_confidence}% confidence level"
 
 msgid "The Analysis Profile selection for this template"
 msgstr "The Analysis Profile selection for this template"
@@ -2911,6 +2941,11 @@ msgstr "The attachments linked to analysis requests and analyses"
 
 msgid "The category the analysis service belongs to"
 msgstr "The category the analysis service belongs to"
+
+#
+# File: ../../../bika/lims/content/client.py, line: 99
+msgid "The decimal mark selected in Bika Setup will be used."
+msgstr ""
 
 msgid "The default container type. New sample partitions are automatically assigned a container of this type, unless it has been specified in more details per analysis service"
 msgstr "The default container type. New sample partitions are automatically assigned a container of this type, unless it has been specified in more details per analysis service"
@@ -3035,12 +3070,6 @@ msgstr "These results have been withdrawn and are listed here for trace-ability 
 msgid "This Analysis Request has been generated automatically due to the retraction of the Analysis Request ${retracted_request_id}."
 msgstr "This Analysis Request has been generated automatically due to the retraction of the Analysis Request ${retracted_request_id}."
 
-msgid "This Analysis Request has been generated automatically due to the retraction of the Analysis Request %s."
-msgstr "This Analysis Request has been generated automatically due to the retraction of the Analysis Request %s."
-
-msgid "This Analysis Request has been invalidated due to erroneously published results"
-msgstr "This Analysis Request has been invalidated due to erroneously published results"
-
 msgid "This Analysis Request has been withdrawn and is shown for trace-ability purposes only. Retest: ${retest_child_id}."
 msgstr "This Analysis Request has been withdrawn and is shown for trace-ability purposes only. Retest: ${retest_child_id}."
 
@@ -3049,9 +3078,6 @@ msgstr "This Analysis Service cannot be activated because it's calculation is in
 
 msgid "This Analysis Service cannot be deactivated because one or more active calculations list it as a dependency"
 msgstr "This Analysis Service cannot be deactivated because one or more active calculations list it as a dependency"
-
-msgid "This document shall not be reproduced except in full, without the written approval of ${name_lab}"
-msgstr "This document shall not be reproduced except in full, without the written approval of ${name_lab}"
 
 msgid "This service does not require a separate partition"
 msgstr "This service does not require a separate partition"
@@ -3152,6 +3178,11 @@ msgstr ""
 
 #
 msgid "Unable to load instruments: ${invalid_list}"
+msgstr ""
+
+#
+# File: ../../../bika/lims/browser/analysisrequest/publish.py, line: 112
+msgid "Unable to load the template"
 msgstr ""
 
 msgid "Unable to send an email to alert lab client contacts that the Analysis Request has been retracted: ${error}"
@@ -3373,9 +3404,6 @@ msgstr "Validity"
 msgid "Value"
 msgstr "Value"
 
-msgid "Value Range"
-msgstr "Value Range"
-
 msgid "Values can be entered here which will override the defaults specified in the Calculation Interim Fields."
 msgstr "Values can be entered here which will override the defaults specified in the Calculation Interim Fields."
 
@@ -3441,6 +3469,11 @@ msgstr "action"
 msgid "activate"
 msgstr "activate"
 
+#
+# File: ../../../bika/lims/browser/analysisrequest/templates/analysisrequest_publish.pt, line: 37
+msgid "analysis requests selected"
+msgstr ""
+
 msgid "and others"
 msgstr "and others"
 
@@ -3484,9 +3517,6 @@ msgstr "yy-mm-dd"
 
 msgid "deactivate"
 msgstr "deactivate"
-
-msgid "has been replaced by"
-msgstr "has been replaced by"
 
 #. Default: "Analysis Request Priority"
 msgid "heading_arpriority"
@@ -3674,6 +3704,11 @@ msgstr "to"
 
 msgid "until"
 msgstr "until"
+
+#
+# File: ../../../bika/lims/browser/analysisrequest/templates/analysisrequest_publish.pt, line: 43
+msgid "value"
+msgstr ""
 
 #
 # File: bika.lims/bika/lims/exportimport/setupdata/__init__.py, line: 29
