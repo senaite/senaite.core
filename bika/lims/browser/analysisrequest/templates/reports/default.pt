@@ -109,7 +109,7 @@
 
 <!-- Alert section (invalidated ar, etc.) -->
 <div id="section-alert" tal:condition="analysisrequest/invalid">
-    <span class='emphasize' i18n:translate="">This Analysis Request has been invalidated due to erroneously published results</span><br/>
+    <h1 i18n:translate="">This Analysis Request has been invalidated due to erroneously published results</h1>
     <tal:invalidreport tal:condition="analysisrequest/child_analysisrequest">
        <a tal:attributes="href analysisrequest/url;"
           tal:content="analysisrequest/id"></a>&nbsp;
@@ -118,7 +118,7 @@
           tal:content="analysisrequest/child_analysisrequest/id"></a>
     </tal:invalidreport>
 </div>
-<div id="section-alert" tal:condition="analysisrequest/prepublish">
+<div id="section-alert" tal:condition="python:analysisrequest['prepublish']==True and analysisrequest['invalid']==False">
     <h1 i18n:translate="">Provisional report</h1>
 </div>
 <!-- Summary section -->

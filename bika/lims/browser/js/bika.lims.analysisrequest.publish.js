@@ -76,6 +76,9 @@ function AnalysisRequestPublishView() {
 
         load_barcodes();
 
+        var invalidbackurl = window.portal_url + '/++resource++bika.lims.images/report_invalid_back.png';
+        $('.ar-invalid').css('background', "url('"+invalidbackurl+"') repeat scroll");
+
     }
 
     function get(name){
