@@ -1,5 +1,5 @@
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import to_utf8
+from bika.lims.utils import to_utf8, formatDecimalMark
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
@@ -133,9 +133,9 @@ class AnalysisRequestPublishView(BrowserView):
         """
         return self.request.get('qcvisible', '0').lower() in ['true', '1']
 
-    def _ar_data(self, ar):
+    def _ar_data(self, ar, excludearuids=[]):
         """ Creates an ar dict, accessible from the view and from each
-            specific template
+            specific template.
         """
         data = {'obj': ar,
                 'id': ar.getRequestID(),
@@ -165,10 +165,13 @@ class AnalysisRequestPublishView(BrowserView):
                 'parent_analysisrequest': None}
 
         # Sub-objects
-        if ar.getParentAnalysisRequest():
-            data['parent_analysisrequest'] = self._artodict(ar.getParentAnalysisRequest())
-        if ar.getChildAnalysisRequest():
-            data['child_analysisrequest'] = self._artodict(ar.getChildAnalysisRequest())
+        excludearuids.append(ar.UID())
+        puid = ar.getRawParentAnalysisRequest()
+        if puid and puid not in excludearuids:
+            data['parent_analysisrequest'] = self._ar_data(ar.getParentAnalysisRequest(), excludearuids)
+        cuid = ar.getRawChildAnalysisRequest()
+        if cuid and cuid not in excludearuids:
+            data['child_analysisrequest'] = self._ar_data(ar.getChildAnalysisRequest(), excludearuids)
 
         wf = getToolByName(ar, 'portal_workflow')
         allowed_states = ['verified', 'published']
@@ -365,13 +368,14 @@ class AnalysisRequestPublishView(BrowserView):
 
     def _analyses_data(self, ar, analysis_states=['verified', 'published']):
         analyses = []
+        dm = ar.aq_parent.getDecimalMark()
         batch = ar.getBatch()
         workflow = getToolByName(self.context, 'portal_workflow')
         for an in ar.getAnalyses(full_objects=True,
                                  review_state=analysis_states):
 
             # Build the analysis-specific dict
-            andict = self._analysis_data(an)
+            andict = self._analysis_data(an, dm)
 
             # Are there previous results for the same AS and batch?
             andict['previous'] = []
@@ -395,7 +399,7 @@ class AnalysisRequestPublishView(BrowserView):
         analyses.sort(lambda x, y: cmp(x.get('title').lower(), y.get('title').lower()))
         return analyses
 
-    def _analysis_data(self, analysis):
+    def _analysis_data(self, analysis, decimalmark=None):
         keyword = analysis.getKeyword()
         service = analysis.getService()
         andict = {'obj': analysis,
@@ -411,6 +415,7 @@ class AnalysisRequestPublishView(BrowserView):
                   'request_id': analysis.aq_parent.getId(),
                   'formatted_result': '',
                   'uncertainty': analysis.getUncertainty(),
+                  'formatted_uncertainty': '',
                   'retested': analysis.getRetested(),
                   'remarks': to_utf8(analysis.getRemarks()),
                   'resultdm': to_utf8(analysis.getResultDM()),
@@ -453,14 +458,17 @@ class AnalysisRequestPublishView(BrowserView):
                     if specs else {}
 
         andict['specs'] = specs
-        andict['formatted_result'] = analysis.getFormattedResult(specs)
+        andict['formatted_result'] = analysis.getFormattedResult(specs, decimalmark)
 
+        fs = ''
         if specs.get('min', None) and specs.get('max', None):
-            andict['formatted_specs'] = '%s - %s' % (specs['min'], specs['max'])
+            fs = '%s - %s' % (specs['min'], specs['max'])
         elif specs.get('min', None):
-            andict['formatted_specs'] = '> %s' % specs['min']
+            fs = '> %s' % specs['min']
         elif specs.get('max', None):
-            andict['formatted_specs'] = '< %s' % specs['max']
+            fs = '< %s' % specs['max']
+        andict['formatted_specs'] = formatDecimalMark(fs, decimalmark)
+        andict['formatted_uncertainty'] = formatDecimalMark(str(analysis.getUncertainty()), decimalmark)
 
         # Out of range?
         if specs:

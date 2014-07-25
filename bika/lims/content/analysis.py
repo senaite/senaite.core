@@ -28,7 +28,7 @@ from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysis
-from bika.lims.utils import changeWorkflowState
+from bika.lims.utils import changeWorkflowState, formatDecimalMark
 from bika.lims.workflow import skip
 from bika.lims.workflow import doActionFor
 from decimal import Decimal
@@ -576,7 +576,7 @@ class Analysis(BaseContent):
             if self.getInstrument else self.getDefaultInstrument()
         return instr.getMethod() if instr else None
 
-    def getFormattedResult(self, specs=None):
+    def getFormattedResult(self, specs=None, decimalmark='.'):
         """Formatted result:
         1. Print ResultText of matching ResultOptions
         2. If the result is not floatable, return it without being formatted
@@ -629,14 +629,14 @@ class Analysis(BaseContent):
 
         # 3.1. If result is below min and hidemin enabled, return '<min'
         if belowmin:
-            return '< %s' % hidemin
+            return formatDecimalMark('< %s' % hidemin, decimalmark)
 
         # 3.2. If result is above max and hidemax enabled, return '>max'
         if abovemax:
-            return '> %s' % hidemax
+            return formatDecimalMark('> %s' % hidemax, decimalmark)
 
         # Render numerical value
-        return format_numeric_result(self, result)
+        return formatDecimalMark(format_numeric_result(self, result), decimalmark)
 
     def getAnalyst(self):
         """ Returns the identifier of the assigned analyst. If there is

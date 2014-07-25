@@ -165,6 +165,20 @@ def formatDuration(context, totminutes):
 
     return '%s%s' % (hours_str, mins_str)
 
+
+def formatDecimalMark(value, decimalmark='.'):
+    """ Dummy method to replace decimal mark from an input string.
+        Assumes that 'value' uses '.' as decimal mark and ',' as
+        thousand mark.
+    """
+    rawval = value
+    if decimalmark == ',':
+        rawval = rawval.replace('.', '[comma]')
+        rawval = rawval.replace(',', '.')
+        rawval = rawval.replace('[comma]', ',')
+    return rawval
+
+
 # encode_header function copied from roundup's rfc2822 package.
 hqre = re.compile(r'^[A-z0-9!"#$%%&\'()*+,-./:;<=>?@\[\]^_`{|}~ ]+$')
 
