@@ -77,7 +77,10 @@ function AnalysisRequestPublishView() {
         load_barcodes();
 
         var invalidbackurl = window.portal_url + '/++resource++bika.lims.images/report_invalid_back.png';
-        $('.ar-invalid').css('background', "url('"+invalidbackurl+"') repeat scroll");
+        $('.ar-invalid').css('background', "url('"+invalidbackurl+"') repeat scroll #ffffff");
+
+        var provisbackurl = window.portal_url + '/++resource++bika.lims.images/report_provisional_back.png';
+        $('.ar-provisional').css('background', "url('"+provisbackurl+"') repeat scroll #ffffff");
 
     }
 
