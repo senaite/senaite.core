@@ -133,9 +133,9 @@ class AnalysisRequestPublishView(BrowserView):
         """
         return self.request.get('qcvisible', '0').lower() in ['true', '1']
 
-    def _ar_data(self, ar):
+    def _ar_data(self, ar, excludearuids=[]):
         """ Creates an ar dict, accessible from the view and from each
-            specific template
+            specific template.
         """
         data = {'obj': ar,
                 'id': ar.getRequestID(),
@@ -165,10 +165,13 @@ class AnalysisRequestPublishView(BrowserView):
                 'parent_analysisrequest': None}
 
         # Sub-objects
-        if ar.getParentAnalysisRequest():
-            data['parent_analysisrequest'] = self._artodict(ar.getParentAnalysisRequest())
-        if ar.getChildAnalysisRequest():
-            data['child_analysisrequest'] = self._artodict(ar.getChildAnalysisRequest())
+        excludearuids.append(ar.UID())
+        puid = ar.getRawParentAnalysisRequest()
+        if puid and puid not in excludearuids:
+            data['parent_analysisrequest'] = self._ar_data(ar.getParentAnalysisRequest(), excludearuids)
+        cuid = ar.getRawChildAnalysisRequest()
+        if cuid and cuid not in excludearuids:
+            data['child_analysisrequest'] = self._ar_data(ar.getChildAnalysisRequest(), excludearuids)
 
         wf = getToolByName(ar, 'portal_workflow')
         allowed_states = ['verified', 'published']
