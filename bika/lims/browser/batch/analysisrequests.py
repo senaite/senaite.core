@@ -47,10 +47,12 @@ class AnalysisRequestsView(_ARV, _ARAV):
             # This is permitted from the global permission above, AddAnalysisRequest.
             review_states = []
             for review_state in self.review_states:
-                review_state['custom_actions'].extend(
-                    [{'id': 'copy_to_new',
-                      'title': _('Copy to new'),
-                      'url': 'workflow_action?action=copy_to_new'}, ])
+                custom_actions = review_state.get('custom_actions', [])
+                custom_actions.extend([{'id': 'copy_to_new',
+                                        'title': _('Copy to new'),
+                                        'url': 'workflow_action?action=copy_to_new'},
+                                       ])
+                review_state['custom_actions'] = custom_actions
                 review_states.append(review_state)
             self.review_states = review_states
 

@@ -290,7 +290,7 @@ class ClientAnalysisRequestsView(AnalysisRequestsView):
             if mtool.checkPermission(ModifyPortalContent, self.context):
                 review_states = []
                 for review_state in self.review_states:
-                    review_state['custom_actions'].extend(
+                    review_state.get('custom_actions', []).extend(
                         [{'id': 'copy_to_new',
                           'title': _('Copy to new'),
                           'url': 'workflow_action?action=copy_to_new'}, ])
