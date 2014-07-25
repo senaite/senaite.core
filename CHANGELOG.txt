@@ -2,6 +2,7 @@ next
 ----
 
 LIMS-1345: Analysis profiles don't sort
+LIMS-1347: Analysis/AR background colour to be different to for Receive and To be Sampled
 LIMS-1333: Batch label replace with standard Plone keyword widget
 LIMS-1082: Report Barcode. Was images for pdf/print reports etc.
 
