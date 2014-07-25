@@ -22,12 +22,11 @@ class ProfilesView(BikaListingView):
         self.catalog = "bika_setup_catalog"
         self.contentFilter = {
             'portal_type': 'AnalysisProfile',
-            'sort_order': 'sortable_title',
+            'sort_on': 'sortable_title',
             'path': {
                 "query": "/".join(self.context.getPhysicalPath()),
                 "level" : 0 },
         }
-        self.catalog = "bika_setup_catalog"
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
