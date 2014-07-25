@@ -2,7 +2,7 @@
 """
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.utils import t, formatDecimalMark
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
@@ -264,7 +264,7 @@ class ReferenceAnalysis(BaseContent):
         else:
             return ''
 
-    def getFormattedResult(self, specs=None):
+    def getFormattedResult(self, specs=None, decimalmark='.'):
         """Formatted result:
         1. If the result is not floatable, return it without being formatted
         2. If the analysis specs has hidemin or hidemax enabled and the
@@ -308,17 +308,17 @@ class ReferenceAnalysis(BaseContent):
 
         # 2.1. If result is below min and hidemin enabled, return '<min'
         if belowmin:
-            return '< %s' % hidemin
+            return formatDecimalMark('< %s' % hidemin, decimalmark)
 
         # 2.2. If result is above max and hidemax enabled, return '>max'
         if abovemax:
-            return '> %s' % hidemax
+            return formatDecimalMark('> %s' % hidemax, decimalmark)
 
         # 3. If the result is floatable, render it to the correct precision
         precision = service.getPrecision()
         if not precision:
             precision = ''
-        return str("%%.%sf" % precision) % result
+        return formatDecimalMark(str("%%.%sf" % precision) % result, decimalmark)
 
     def workflow_script_submit(self):
         if skip(self, "submit"):

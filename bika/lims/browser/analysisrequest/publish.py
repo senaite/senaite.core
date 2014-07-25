@@ -1,5 +1,5 @@
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import to_utf8
+from bika.lims.utils import to_utf8, formatDecimalMark
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
@@ -365,7 +365,7 @@ class AnalysisRequestPublishView(BrowserView):
 
     def _analyses_data(self, ar, analysis_states=['verified', 'published']):
         analyses = []
-        dm = self._get_decimalmark(ar)
+        dm = ar.aq_parent.getDecimalMark()
         batch = ar.getBatch()
         workflow = getToolByName(self.context, 'portal_workflow')
         for an in ar.getAnalyses(full_objects=True,
@@ -395,23 +395,6 @@ class AnalysisRequestPublishView(BrowserView):
             analyses.append(andict)
         analyses.sort(lambda x, y: cmp(x.get('title').lower(), y.get('title').lower()))
         return analyses
-
-    def _get_decimalmark(self, ar):
-        client = ar.aq_parent
-        dm = None
-        if client.getDefaultDecimalMark == False:
-            dm = client.getDecimalMark()
-        else:
-            dm = ar.bika_setup.getDecimalMark()
-        return dm if dm != 'dot' else None
-
-    def _format_with_decimalmark(self, value, decimalmark=None):
-        rawval = value
-        if decimalmark and decimalmark == 'comma':
-            rawval = rawval.replace('.', '[comma]')
-            rawval = rawval.replace(',', '.')
-            rawval = rawval.replace('[comma]', ',')
-        return rawval
 
     def _analysis_data(self, analysis, decimalmark=None):
         keyword = analysis.getKeyword()
@@ -472,19 +455,17 @@ class AnalysisRequestPublishView(BrowserView):
                     if specs else {}
 
         andict['specs'] = specs
-        fr = analysis.getFormattedResult(specs)
-        andict['formatted_result'] = self._format_with_decimalmark(fr, decimalmark)
+        andict['formatted_result'] = analysis.getFormattedResult(specs, decimalmark)
 
-
+        fs = ''
         if specs.get('min', None) and specs.get('max', None):
-            andict['formatted_specs'] = '%s - %s' % (specs['min'], specs['max'])
+            fs = '%s - %s' % (specs['min'], specs['max'])
         elif specs.get('min', None):
-            andict['formatted_specs'] = '> %s' % specs['min']
+            fs = '> %s' % specs['min']
         elif specs.get('max', None):
-            andict['formatted_specs'] = '< %s' % specs['max']
-        fr = andict['formatted_specs']
-        andict['formatted_specs'] = self._format_with_decimalmark(fr, decimalmark)
-        andict['formatted_uncertainty'] = self._format_with_decimalmark(str(analysis.getUncertainty()), decimalmark)
+            fs = '< %s' % specs['max']
+        andict['formatted_specs'] = formatDecimalMark(fs, decimalmark)
+        andict['formatted_uncertainty'] = formatDecimalMark(str(analysis.getUncertainty()), decimalmark)
 
         # Out of range?
         if specs:

@@ -150,8 +150,8 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     StringField('DecimalMark',
         schemata = "Results Reports",
-        default = "dot",
-        vocabulary = ["comma","dot"],
+        vocabulary=DECIMAL_MARKS,
+        default = ".",
         widget = SelectionWidget(
             label = _("Default decimal mark"),
             description = _("Preferred decimal mark for reports."),
