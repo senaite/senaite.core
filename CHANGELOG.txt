@@ -1,6 +1,7 @@
 next
 ----
 
+LIMS-1345: Analysis profiles don't sort
 LIMS-1333: Batch label replace with standard Plone keyword widget
 LIMS-1082: Report Barcode. Was images for pdf/print reports etc.
 
