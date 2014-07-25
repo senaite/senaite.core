@@ -137,7 +137,8 @@ class AnalysisRequestViewView(BrowserView):
             message = _('This Analysis Request has been '
                         'generated automatically due to '
                         'the retraction of the Analysis '
-                        'Request %s.') % par.getRequestID()
+                        'Request ${retracted_request_id}.',
+                        mapping={'retracted_request_id': par.getRequestID()})
             self.addMessage(message, 'info')
         self.renderMessages()
         return self.template()

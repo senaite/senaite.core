@@ -774,33 +774,29 @@ class AnalysisRequestPublishView(BrowserView):
                     css.append(sample.getClientSampleID())
             else:
                 blanks_found = True
-        tot_line = ''
+        line_items = []
         if ais:
             ais.sort()
-            ar_line = _('ARs: %s') % ', '.join(ais)
-            tot_line = ar_line
+            li = t(_('ARs: ${ars}', mapping={'ars': ', '.join(ais)}))
+            line_items.append(li)
         if cos:
             cos.sort()
-            cos_line = _('Orders: %s') % ', '.join(cos)
-            if tot_line:
-                tot_line += ' '
-            tot_line += cos_line
+            li = t(_('Orders: ${orders}', mapping={'orders': ', '.join(cos)}))
+            line_items.append(li)
         if crs:
             crs.sort()
-            crs_line = _('Refs: %s') % ', '.join(crs)
-            if tot_line:
-                tot_line += ' '
-            tot_line += crs_line
+            li = t(_('Refs: ${references}', mapping={'references':', '.join(crs)}))
+            line_items.append(li)
         if css:
             css.sort()
-            css_line = _('Samples: %s') % ', '.join(css)
-            if tot_line:
-                tot_line += ' '
-            tot_line += css_line
+            li = t(_('Samples: ${samples}', mapping={'samples': ', '.join(css)}))
+            line_items.append(li)
+        tot_line = ' '.join(line_items)
         if tot_line:
-            subject = _('Analysis results for %s') % tot_line
+            subject = t(_('Analysis results for ${subject_parts}',
+                          mapping={'subject_parts':tot_line}))
             if blanks_found:
-                subject += (' ' + _('and others'))
+                subject += (' ' + t(_('and others')))
         else:
-            subject = _('Analysis results')
+            subject = t(_('Analysis results'))
         return subject, tot_line
