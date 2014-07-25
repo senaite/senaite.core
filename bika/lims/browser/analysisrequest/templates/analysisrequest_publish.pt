@@ -10,7 +10,8 @@
       i18n:domain="bika"
       tal:define="portal_state context/@@plone_portal_state;
                   portal_url portal_state/portal_url;
-                  plone_view context/@@plone;">
+                  plone_view context/@@plone;
+                  portal portal_state/portal;">
 <head>
     <div tal:replace="structure provider:plone.resourceregistries.scripts" />
 </head>
@@ -25,7 +26,11 @@
                                 tal:content="python:format['title']"></option>
                     </tal:formats>
                 </select>
+                <a href='#' id='sel_format_info'><img tal:attributes='src python:portal.absolute_url()+"/++resource++bika.lims.images/info.png";'/></a>
                 <input type="checkbox" name="qcvisible" id='qcvisible' value="0"><span i18n:translate="">Show QC Analyses</span>
+            </div>
+            <div id="sel_format_info_pane" style="display:none">
+                <p i18n:translate="">Refer to <a target="_blank" href="https://github.com/bikalabs/Bika-LIMS/wiki/Creating-new-report-templates">Creating new report templates</a> documentation from Bika LIMS wiki to get more or add your own report templates.</p>
             </div>
             <div id='ar_publish_summary'>
                 <span tal:content="python:view.getAnalysisRequestsCount()"></span>&nbsp;
@@ -94,6 +99,20 @@
             }
             #ar_publish_header #ar_publish_buttons #publish_button {
                 background-color:#0B486B;
+            }
+            #sel_format_info {
+                padding: 0 15px 0 5px;
+                outline:0;
+            }
+            #sel_format_info img {
+                vertical-align:middle;
+            }
+            #sel_format_info_pane {
+                background-color: #EFEFEF;
+                border-top: 1px solid #008000;
+                line-height: 1.5em;
+                margin: 10px -20px 10px -10px;
+                padding: 10px 20px;
             }
             .ar-invalid {
                 margin: -60px -10px 0 -20px;

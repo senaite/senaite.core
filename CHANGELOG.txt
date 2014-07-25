@@ -9,6 +9,8 @@ LIMS-1082: Report Barcode. Was images for pdf/print reports etc.
 
 - Added decimal mark configuration for result reports
 - Added watermark on invalid reports
+- Added watermark on provisional reports
+- Added help info regards to new templates creation
 
 
 3.1.4.1 (2014-07-24)

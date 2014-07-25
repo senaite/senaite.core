@@ -12,7 +12,7 @@
 
     Take a look to the documentation for more information about
     available data and fields.
-    http://github.com/bikalabs/Bika-LIMS/wiki/blablablabal
+    https://github.com/bikalabs/Bika-LIMS/wiki/Creating-new-report-templates
 
 -->
 <tal:report tal:define="analysisrequest python:view.getAnalysisRequest();

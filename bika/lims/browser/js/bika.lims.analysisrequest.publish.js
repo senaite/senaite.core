@@ -82,6 +82,11 @@ function AnalysisRequestPublishView() {
         var provisbackurl = window.portal_url + '/++resource++bika.lims.images/report_provisional_back.png';
         $('.ar-provisional').css('background', "url('"+provisbackurl+"') repeat scroll #ffffff");
 
+        $('#sel_format_info').click(function(e) {
+            e.preventDefault();
+            $('#sel_format_info_pane').toggle();
+        });
+
     }
 
     function get(name){
