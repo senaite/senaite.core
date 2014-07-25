@@ -106,3 +106,8 @@ CURRENCIES = DisplayList(
 )
 
 VERIFIED_STATES = ('verified', 'published')
+
+DECIMAL_MARKS = DisplayList((
+    ('.', _('Dot (.)')),
+    (',', _('Comma (,)')),
+))

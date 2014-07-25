@@ -4,19 +4,19 @@
 function ClientEditView() {
 
     var that = this;
-    var check = "#AllowDecimalMark"
+    var check = "#DefaultDecimalMark"
 
     /**
      * Entry-point method for ClientEditView
      */
     that.load = function() {
-	
-	if( $(check).is(':checked') ){
-	    $("#archetypes-fieldname-DecimalMark").hide();
-	}
-	else {
-	    $("#archetypes-fieldname-DecimalMark").fadeIn();
-	}
+
+    if( $(check).is(':checked') ){
+        $("#archetypes-fieldname-DecimalMark").hide();
+    }
+    else {
+        $("#archetypes-fieldname-DecimalMark").fadeIn();
+    }
 
         selectDecimalMarkState();
     }
@@ -26,13 +26,13 @@ function ClientEditView() {
      * the function will disable Select Decimal Mark dropdown list.
      */
     function selectDecimalMarkState() {
-	$(check).click(function(){
-	    if( $(this).is(':checked') ){
-		$("#archetypes-fieldname-DecimalMark").fadeOut();
-	    }
-	    else {
-		$("#archetypes-fieldname-DecimalMark").fadeIn();
-	    }
-	});
+    $(check).click(function(){
+        if( $(this).is(':checked') ){
+        $("#archetypes-fieldname-DecimalMark").fadeOut();
+        }
+        else {
+        $("#archetypes-fieldname-DecimalMark").fadeIn();
+        }
+    });
     }
 }
