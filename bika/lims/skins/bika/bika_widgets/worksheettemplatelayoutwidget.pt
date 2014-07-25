@@ -20,11 +20,9 @@
 					accessor python: field.getAccessor(context);
 					current_field_value accessor;
 					sort_on python:(('Title', 'nocase', 'asc'),);
-					ReferenceDefinitions python:[p.getObject() for p in context.bika_setup_catalog(portal_type='ReferenceDefinition')];
+					ReferenceDefinitions python:sequence.sort([p.getObject() for p in context.bika_setup_catalog(portal_type='ReferenceDefinition')], sort_on);
 					BlankDefinitions python: [r for r in ReferenceDefinitions if r['Blank']];
 					ControlDefinitions python: [r for r in ReferenceDefinitions if not r['Blank']];
-					BlankDefinitions python: sequence.sort(BlankDefinitions, sort_on);
-					ControlReferenceDefinitions python:sequence.sort(ControlDefinitions, sort_on);
 					types context/getAnalysisTypes;
 					num_positions request/NoOfPositions | python:0;
 					num_positions python:int(num_positions);
