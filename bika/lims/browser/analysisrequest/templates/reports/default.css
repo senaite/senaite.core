@@ -71,14 +71,15 @@ table#section-info td#lab-info {
     width:80mm;
 }
 #section-alert {
-    padding:20px 20px 10px 20px;
+    padding:20px;
     border:1px solid #CDCDCD;
-    background-color:#efefef;
+    background-color:#ffffff;
     margin:0px;
 }
 #section-alert h1 {
     font-size:1em;
     margin-top:0px;
+    margin-bottom:0;
     padding-bottom:0;
     border:none;
     color:#d40000;
