@@ -174,7 +174,8 @@ class ajaxAnalysisRequestSubmit():
         #Get header values out, get values, exclude from any loops below
         headerfieldnames = ['Client', 'Client_uid', 'Contact', 'Contact_uid',
                             'CCContact', 'CCContact_uid', 'CCEmails', 
-                            'Batch', 'Batch_uid']
+                            'Batch', 'Batch_uid', 
+                            'InvoiceContact', 'InvoiceContact_uid']
         headers = {}
         for field in form.keys():
             if field in headerfieldnames:
