@@ -1789,6 +1789,8 @@ $(document).ready(function() {
                 applyComboFilter(element, "getParentUID", clientuid);
                 element = $("#ar_" + arnum + "_CCContact");
                 applyComboFilter(element, "getParentUID", clientuid);
+                element = $("#ar_" + arnum + "_InvoiceContact");
+                applyComboFilter(element, "getParentUID", clientuid);
             });
             // Initial value of contact list, set by the page's hidden ClientUID.
             for (var arnum = 0; arnum < parseInt($("#ar_count").val(), 10); arnum++) {
@@ -1797,8 +1799,11 @@ $(document).ready(function() {
                 applyComboFilter(element, "getParentUID", clientuid);
                 element = $("#ar_" + arnum + "_CCContact");
                 applyComboFilter(element, "getParentUID", clientuid);
+                element = $("#ar_" + arnum + "_InvoiceContact");
+                applyComboFilter(element, "getParentUID", clientuid);
             }
         } else {
+            //layout == rows
             // Show only the contacts and CC from the selected Client
             $("[id$='_Client']").bind("change", function() {
                 var element = $("#ar_Contact");
@@ -1806,7 +1811,7 @@ $(document).ready(function() {
                 applyComboFilter(element, "getParentUID", clientuid);
                 element = $("#ar_CCContact");
                 applyComboFilter(element, "getParentUID", clientuid);
-                element = $("#ar_InvoiceContact");
+                element = $("#InvoiceContact");
                 applyComboFilter(element, "getParentUID", clientuid);
             });
             //Initial value of contact list, set by the page's hidden ClientUID
