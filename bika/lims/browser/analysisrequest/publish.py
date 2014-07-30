@@ -1,4 +1,4 @@
-from bika.lims import bikaMessageFactory as _
+from bika.lims import bikaMessageFactory as _, t
 from bika.lims.utils import to_utf8, formatDecimalMark
 from bika.lims import logger
 from bika.lims.browser import BrowserView
