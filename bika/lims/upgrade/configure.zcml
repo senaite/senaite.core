@@ -435,4 +435,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="JS structure and naming changes"
+        description=""
+        source="3043"
+        destination="3044"
+        handler="bika.lims.upgrade.to3044.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
