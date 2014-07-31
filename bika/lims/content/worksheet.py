@@ -1,5 +1,5 @@
 from AccessControl import ClassSecurityInfo
-from bika.lims import bikaMessageFactory as _
+from bika.lims import bikaMessageFactory as _, logger
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.utils import t, tmpID, changeWorkflowState
 from bika.lims.utils import to_utf8 as _c
@@ -409,11 +409,13 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                         complete_reference_found = True
                         break
                 if complete_reference_found:
+                    supported_uids = wst_service_uids
                     self.addReferences(int(row['pos']),
                                      reference,
-                                     wst_service_uids)
+                                     supported_uids)
                 else:
                     # find the most complete reference sample instead
+                    import pdb;pdb.set_trace()
                     reference_keys = references.keys()
                     no_of_services = 0
                     reference = None
@@ -422,9 +424,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                             no_of_services = references[key]['count']
                             reference = key
                     if reference:
+                        reference = rc.lookupObject(reference)
+                        supported_uids = [s.UID() for s in reference.getServices()]
                         self.addReferences(int(row['pos']),
-                                         rc.lookupObject(reference),
-                                         wst_service_uids)
+                                         reference,
+                                         supported_uids)
 
         # fill duplicate positions
         layout = self.getLayout()
