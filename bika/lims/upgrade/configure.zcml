@@ -426,4 +426,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Graph-related javascripts grouping"
+        description="Remove js and css from templates"
+        source="3042"
+        destination="3043"
+        handler="bika.lims.upgrade.to3043.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
