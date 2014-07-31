@@ -2,12 +2,15 @@
  * JS responsible of loading the controller classes of views and forms.
  * Must be embedded to the HTML after the rest of javascripts.
  */
-(function( $ ) {
-$(document).ready(function(){
-    initBikaLIMSControllers();
-});
-}(jQuery));
 
+/**
+ * Initializes Bika LIMS javascripts
+ */
+function initBikaLIMS() {
+
+    // Instantiate js controllers
+    initBikaLIMSControllers();
+}
 
 /**
  * Instantiates all the controllers needed for the current view
@@ -62,3 +65,10 @@ function initBikaLIMSControllers() {
         }
     }
 }
+
+
+(function( $ ) {
+$(document).ready(function(){
+    initBikaLIMS();
+});
+}(jQuery));

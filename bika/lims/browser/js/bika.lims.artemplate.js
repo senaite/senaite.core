@@ -13,6 +13,10 @@ function ARTemplateEditView() {
      * Entry-point method for AnalysisServiceEditView
      */
     that.load = function() {
+
+        $(".portaltype-artemplate input[name$='save']").addClass('allowMultiSubmit');
+        $(".portaltype-artemplate input[name$='save']").click(clickSaveButton);
+
         // Display only the sample points contained by the same parent
         filterSamplePointsCombo();
     }
@@ -49,5 +53,14 @@ function ARTemplateEditView() {
             $(samplepoint).attr("search_query", $.toJSON({"getClientUID": obj.UID}));
             referencewidget_lookups([$(samplepoint)]);
         });
+    }
+
+    function clickSaveButton(event){
+        var selected_analyses = $('[name^="uids\\:list"]').filter(':checked');
+        if(selected_analyses.length < 1){
+            window.bika.lims.portalMessage("No analyses have been selected");
+            window.scroll(0, 0);
+            return false;
+        }
     }
 }
