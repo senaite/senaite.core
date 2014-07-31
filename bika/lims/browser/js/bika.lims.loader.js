@@ -4,9 +4,19 @@
  */
 (function( $ ) {
 $(document).ready(function(){
+    initBikaLIMSControllers();
+});
+}(jQuery));
+
+
+/**
+ * Instantiates all the controllers needed for the current view
+ */
+function initBikaLIMSControllers() {
 
     // Correlations between views and js classes to be loaded
     var views = {
+
         ".template-base_edit.portaltype-method":
             ['MethodEditView'],
 
@@ -32,7 +42,10 @@ $(document).ready(function(){
             ['InstrumentReferenceAnalysesView'],
 
         ".template-analyses.portaltype-referencesample":
-            ['ReferenceSampleAnalysesView']
+            ['ReferenceSampleAnalysesView'],
+
+        // Add here your view-controller/s assignment
+
     };
 
     // Instantiate the js objects needed for the current view
@@ -48,5 +61,4 @@ $(document).ready(function(){
             });
         }
     }
-});
-}(jQuery));
+}
