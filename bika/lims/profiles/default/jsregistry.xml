@@ -322,7 +322,7 @@
               inline="False"
               />
  <javascript authenticated="False"
-              id="++resource++bika.lims.js/bika.lims.instrumentcertification.edit.js"
+              id="++resource++bika.lims.js/bika.lims.instrument.js"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
@@ -376,6 +376,17 @@
               inline="False"
               />
 
+ <javascript authenticated="False"
+              id="++resource++bika.lims.js/bika.lims.referencesample.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              />
+
   <!-- Add javascripts ALWAYS BEFORE this one -->
   <javascript authenticated="False"
               id="++resource++bika.lims.js/bika.lims.loader.js"
@@ -386,5 +397,11 @@
               enabled="on"
               expression=""
               inline="False"
+              />
+
+  <!-- Remove javascripts no longer used -->
+  <javascript authenticated="False"
+              id="++resource++bika.lims.js/bika.lims.instrumentcertification.edit.js"
+              enabled="False"
               />
  </object>
