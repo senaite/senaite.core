@@ -2,6 +2,7 @@
 
 Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
+Library          DebugLibrary
 Resource         keywords.txt
 Library          bika.lims.testing.Keywords
 Resource         plone/app/robotframework/selenium.robot
@@ -217,7 +218,7 @@ Submit and Verify and Test
     # All values are valid for Calcium, this sampletype has no specification linked to it.
     Input Text    xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca']                        9       # analysis                     0   9      # analysis
     TestResultsRange    xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'Result_SA')])[1]     17  10.1   # control
-    TestResultsRange    xpath=//tr[@keyword='Ca']//input[contains(@selector, 'Result_D')]           8   8.1    # duplicate
+    TestResultsRange    xpath=//tr[@keyword='Ca']//input[contains(@selector, 'Result_D')]           8.1   8.2    # duplicate
     TestResultsRange    xpath=//tr[@keyword='Ca']//input[contains(@selector, 'Result_D')]           10  9.9    # duplicate
     TestResultsRange    xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'Result_SA')])[2]     2   0      # blank
 
@@ -239,9 +240,11 @@ Submit and Verify and Test
     ## now fill in the remaining results
     input text    xpath=//tr[@keyword='Mg']//input[@selector='Result_Mg']                       9.5     # analysis
     TestResultsRange    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[1]   2      9.2     # control
-    TestResultsRange    xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D')]         8.54   8.55    # duplicate
-    TestResultsRange    xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D')]         10.46  10.45   # duplicate
-    TestResultsRange    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[2]   20     0       # blank
+    debug
+    TestResultsRange    xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D')]         8.59   8.6    # duplicate
+    TestResultsRange    xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D')]         10.5  10.51   # duplicate
+    TestResultsRange    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[2]   20     10       # Control
+    TestResultsRange    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[3]   20     0       # blank
 
     TestSampleState     xpath=//tr[@keyword='Mg']//input[@selector='state_title_Mg']                   Mg(Normal Magnesium)       Received
     TestSampleState     xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'state_title_SA')])[1]   SA-002(Control Magnesium)  Assigned
