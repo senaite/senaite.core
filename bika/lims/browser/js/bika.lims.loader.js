@@ -30,6 +30,12 @@ window.bika.lims.controllers =  {
     ".template-analyses.portaltype-referencesample":
         ['ReferenceSampleAnalysesView'],
 
+    ".template-manage_results.portaltype-analysisrequest":
+        ['AnalysisRequestManageResultsView'],
+
+    ".template-base_view.portaltype-analysisrequest":
+        ['AnalysisRequestViewView']
+
     // Add here your view-controller/s assignment
 
 };
