@@ -163,6 +163,28 @@
               insert-after="*"/>
 
   <javascript authenticated="True"
+              id="++resource++bika.lims.js/bika.lims.analysisrequest.analyses.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="True"
+              id="++resource++bika.lims.js/bika.lims.analysisrequest.manageresults.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="True"
               id="++resource++bika.lims.js/bika.lims.worksheet.js"
               cacheable="True"
               compression="safe"
@@ -421,4 +443,5 @@
   <javascript id="++resource++bika.lims.js/analysisservice.js" enabled="False"/>
   <javascript id="++resource++bika.lims.js/bika.lims.sandbox.client.js" enabled="False"/>
   <javascript id="++resource++bika.lims.js/bika.lims.sandbox.referencesample.js" enabled="False"/>
+  <javascript id="++resource++bika.lims.js/bika.lims.sandbox.ar_analyses.js" enabled="False"/>
  </object>
