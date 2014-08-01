@@ -415,7 +415,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                      supported_uids)
                 else:
                     # find the most complete reference sample instead
-                    import pdb;pdb.set_trace()
                     reference_keys = references.keys()
                     no_of_services = 0
                     reference = None
@@ -425,7 +424,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                             reference = key
                     if reference:
                         reference = rc.lookupObject(reference)
-                        supported_uids = [s.UID() for s in reference.getServices()]
+                        supported_uids = [s.UID() for s in reference.getServices()
+                                          if s.UID() in wst_service_uids]
                         self.addReferences(int(row['pos']),
                                          reference,
                                          supported_uids)
