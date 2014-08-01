@@ -42,7 +42,7 @@ window.bika.lims.controllers =  {
     ".template-arimport_view.portaltype-arimport":
         ['AnalysisRequestImportView']
 
-    ".template-base_edit portaltype-arimport":
+    ".template-base_edit.portaltype-arimport":
         ['AnalysisRequestImportView']
 
     // Add here your view-controller/s assignment
