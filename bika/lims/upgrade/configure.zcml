@@ -444,4 +444,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Fix workflow variable review_history permission guard"
+        description=""
+        source="3044"
+        destination="3045"
+        handler="bika.lims.upgrade.to3045.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
