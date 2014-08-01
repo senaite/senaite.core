@@ -19,14 +19,10 @@ Test Worksheets
     [Documentation]   Worksheets
     ...  Groups analyses together for data entry, instrument interfacing,
     ...  and workflow transition cascades.
-    ...  [workflow image]
-
     Log in              test_labmanager  test_labmanager
-
     Create AnalysisRequests
     Create Reference Samples
     Create Worksheet
-
     Go to                       ${PLONEURL}/worksheets/WS-001
     Select from list            css=select.analyst             Lab Analyst 2
     Select from list            css=select.instrument          Protein Analyser
@@ -36,29 +32,19 @@ Test Worksheets
     ${instrument}=              Get selected list label        css=select.instrument
     Should be equal             ${analyst}         Lab Analyst 2
     Should be equal             ${Instrument}      Protein Analyser
-
     Add Analyses                H2O-0001-R01_Ca    H2O-0001-R01_Mg
     Add Reference Analyses
-
     Unassign all
-
     Add Analyses                H2O-0001-R01_Ca    H2O-0001-R01_Mg
     Add Reference Analyses
-
     Submit and Verify and Test
     Unassign all
-
     Add Analyses                H2O-0002-R01_Ca    H2O-0002-R01_Mg
     Add Reference Analyses
-
     Submit results quickly
-
     Add Duplicate: Submit, verify, and check that alerts persist
-
     Test Retraction
-
     log   XXX missing test: AR should display icon and "Cannot verify: Results submitted by current user"     WARN
-
     Log out
     Log in   test_labmanager1   test_labmanager1
     Verify all
@@ -154,6 +140,19 @@ Create Reference Samples
     Click Button                Save
     Wait Until Page Contains    Changes saved.
 
+    #This reference used to test LIMS-1325
+    Go to  ${PLONEURL}/bika_setup/bika_suppliers/supplier-1
+    Wait Until Page Contains    Add
+    Click Link                  Add
+    Wait Until Page Contains    Add Reference Sample
+    Input Text                  title                       9METALS
+    Select From List            ReferenceDefinition:list    Trace Metals 9
+    Click Link                  Dates
+    Wait Until Page Contains    Expiry Date
+    SelectNextMonthDate         ExpiryDate                  25
+    Click Button                Save
+    Wait Until Page Contains    Changes saved.
+
 Create Worksheet
     Go to  ${PLONEURL}/worksheets
     Wait Until Page Contains    Mine
@@ -179,10 +178,16 @@ Add Analyses
 
 Add Reference Analyses
 
-    #Add worksheet control
+    #Add worksheet controls
     Go to                       ${PLONEURL}/worksheets/WS-001/add_control
     Wait Until Page Contains    Trace Metals 10
     Click Element               xpath=//span[@id='worksheet_add_references']//tbody//tr[1]
+    Wait Until Page Contains Element  submit_transition
+
+    Go to                       ${PLONEURL}/worksheets/WS-001/add_control
+    unselect checkbox           css=input[item_title="Calcium"]
+    Wait Until Page Contains    Trace Metals 9
+    Click Element               xpath=//span[@id='worksheet_add_references']//tbody//tr[2]
     Wait Until Page Contains Element  submit_transition
 
     #Add worksheet blank
@@ -196,6 +201,9 @@ Add Reference Analyses
     Wait Until Page Contains    Select a destinaton position
     Click Element               xpath=//span[@id='worksheet_add_duplicate_ars']//tbody//tr[1]
     Wait Until Page Contains Element  submit_transition
+
+    Xpath Should Match X Times     //tr[@keyword="Ca"]   4
+    Xpath Should Match X Times     //tr[@keyword="Mg"]   5
 
 Unassign all
     Select Checkbox             analyses_form_select_all
