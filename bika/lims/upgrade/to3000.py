@@ -74,7 +74,7 @@ def upgrade(tool):
     bc.addIndex('getSampleTypeTitle', 'KeywordIndex')
     bc.addIndex('getSamplePointTitle', 'KeywordIndex')
     
-    if 'getClientSampleID' in pc.indexes():
+    if 'getClientSampleID' not in pc.indexes():
         pc.addIndex('getClientSampleID', 'FieldIndex')
         pc.addColumn('getClientSampleID')
     if 'getParentUID' not in pc.indexes():
