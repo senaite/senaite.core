@@ -1,4 +1,4 @@
-<html xmlns="http://www.w3.org/1999/xhtml" 
+<html xmlns="http://www.w3.org/1999/xhtml"
       xml:lang="en"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
@@ -6,18 +6,8 @@
       metal:use-macro="here/main_template/macros/master"
       i18n:domain="bika">
 
-<head>
-    <metal:block fill-slot="javascript_head_slot">
-        <script type="text/javascript"
-            tal:attributes="src string:++resource++bika.lims.js/arimport.js">
-        </script>
-    </metal:block>
-</head>
-
 <body>
-
 <div metal:fill-slot="main">
-
     <h1>
         <span class="documentFirstHeading"
               tal:content="here/title"></span>
@@ -28,10 +18,5 @@
     </div>
 
 </div>
-
 </body>
-
 </html>
-
-
-
