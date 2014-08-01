@@ -1004,14 +1004,14 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
             for d in uncertainties:
                 if float(d['intercept_min']) <= result <= float(
                         d['intercept_max']):
-                    if d['errorvalue'].strip().endswith('%'):
+                    if str(d['errorvalue']).strip().endswith('%'):
                         try:
                             percvalue = float(d['errorvalue'].replace('%', ''))
                         except ValueError:
                             return None
                         return result / 100 * percvalue
                     else:
-                        return d['errorvalue']
+                        return float(d['errorvalue'])
             return None
         else:
             return None
