@@ -3,9 +3,6 @@
  */
 function AnalysisRequestPublishView() {
 
-    window.jarn.i18n.loadCatalog("bika");
-    var _ = window.jarn.i18n.MessageFactory("bika");
-
     var that = this;
 
     var report_format    = $('#ar_publish_container #sel_format');

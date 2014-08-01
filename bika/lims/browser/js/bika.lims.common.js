@@ -3,7 +3,9 @@
  */
 
 window.jarn.i18n.loadCatalog("bika");
+window.jarn.i18n.loadCatalog("plone");
 var _ = window.jarn.i18n.MessageFactory("bika");
+var PMF = jarn.i18n.MessageFactory('plone');
 
 
 /**
