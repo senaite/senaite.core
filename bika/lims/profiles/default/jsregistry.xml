@@ -11,7 +11,7 @@
               enabled="on"
               expression=""
               inline="False"
-              insert-before="*"/>
+              insert-after="*"/>
 
   <javascript authenticated="False"
               id="++resource++bika.lims.js/thirdparty/jquery/jquery.json.js"
@@ -58,7 +58,7 @@
               enabled="on"
               expression=""
               inline="False"
-              insert-after="++resource++bika.lims.js/thirdparty/jquery/jquery.ui.combogrid-1.6.3.js"
+              insert-after="++resource++bika.lims.js/thirdparty/jquery/jquery-timepicker.js"
               />
 
   <javascript cacheable="True"
