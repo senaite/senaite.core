@@ -2,7 +2,7 @@
 
 Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
-Library          DebugLibrary
+Library      DebugLibrary
 Resource         keywords.txt
 Library          bika.lims.testing.Keywords
 Resource         plone/app/robotframework/selenium.robot
@@ -45,7 +45,6 @@ Test Worksheets
     Submit results quickly
     Add Duplicate: Submit, verify, and check that alerts persist
     Test Retraction
-    log   XXX missing test: AR should display icon and "Cannot verify: Results submitted by current user"     WARN
     Log out
     Log in   test_labmanager1   test_labmanager1
     Verify all
@@ -216,11 +215,11 @@ Submit and Verify and Test
     ...                 checking ranges, workflow, etc during the process.
 
     # All values are valid for Calcium, this sampletype has no specification linked to it.
-    Input Text    xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca']                        9       # analysis                     0   9      # analysis
-    TestResultsRange    xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'Result_SA')])[1]     17  10.1   # control
-    TestResultsRange    xpath=//tr[@keyword='Ca']//input[contains(@selector, 'Result_D')]           8.1   8.2    # duplicate
-    TestResultsRange    xpath=//tr[@keyword='Ca']//input[contains(@selector, 'Result_D')]           10  9.9    # duplicate
-    TestResultsRange    xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'Result_SA')])[2]     2   0      # blank
+    Input Text    xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca']                        9                  # analysis
+    TestResultsRange    xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'Result_SA')])[1]     17  10.1        # control
+    TestResultsRange    xpath=//tr[@keyword='Ca']//input[contains(@selector, 'Result_D')]           8.1   8.2       # duplicate low
+    TestResultsRange    xpath=//tr[@keyword='Ca']//input[contains(@selector, 'Result_D')]           10  9.9         # duplicate high
+    TestResultsRange    xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'Result_SA')])[2]     2   0           # blank
 
     TestSampleState     xpath=//tr[@keyword='Ca']//input[@selector='state_title_Ca']                  Ca                       Received
     TestSampleState     xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'state_title_SA')])[1]  SA-001(Control Calcium)  Assigned
@@ -239,11 +238,11 @@ Submit and Verify and Test
 
     ## now fill in the remaining results
     input text    xpath=//tr[@keyword='Mg']//input[@selector='Result_Mg']                       9.5     # analysis
-    TestResultsRange    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[1]   2      9.2     # control
-    debug
-    TestResultsRange    xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D')]         8.59   8.6    # duplicate
-    TestResultsRange    xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D')]         10.5  10.51   # duplicate
-    TestResultsRange    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[2]   20     10       # Control
+    TestResultsRange    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[1]   2      9.2     # control1
+    TestResultsRange    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[2]   2      9.2     # control2
+
+    TestResultsRange    xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D')]         8.59   8.6    # duplicate high
+    TestResultsRange    xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D')]         10.51  10.5   # duplicate low
     TestResultsRange    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[3]   20     0       # blank
 
     TestSampleState     xpath=//tr[@keyword='Mg']//input[@selector='state_title_Mg']                   Mg(Normal Magnesium)       Received
@@ -265,15 +264,17 @@ Submit results quickly
     [Documentation]     The results-entry process is repeated a few times
     ...                 in order to test workflow, so we have a second
     ...                 keyword that is not so slow and needlessly thorough.
+    # All values are valid for Calcium, this sampletype has no specification linked to it.
 
     Input Text    xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca']                        9       # analysis
     Input Text    xpath=//tr[@keyword='Mg']//input[@selector='Result_Mg']                        9.5     # analysis
     Input Text    xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'Result_SA')])[1]        10.1    # control
     Input Text    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[1]        9.2     # control
+    Input Text    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[2]        9.2     # control
     Input Text    xpath=//tr[@keyword='Ca']//input[contains(@selector, 'Result_D')]              8.5     # duplicate
     Input Text    xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D')]              10.45   # duplicate
-    Input Text    xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'Result_SA')])[2]        2       # blank
-    Input Text    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[2]        20      # blank
+    Input Text    xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'Result_SA')])[2]        0       # blank
+    Input Text    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[3]        0      # blank
     Focus                       css=.analyst
     Click Element               xpath=//input[@value='Submit for verification'][1]
     Wait Until Page Contains    Changes saved.
@@ -354,7 +355,7 @@ Add Duplicate: Submit, verify, and check that alerts persist
     # Check if invalid results are flagged correctly through submit and verify
     Input Text  xpath=//tr[@keyword='Mg']//input[@type='text' and contains(@selector, 'Result_D')]  8.5
     Input Text  xpath=//tr[@keyword='Ca']//input[@type='text' and contains(@selector, 'Result_D')]  55
-    log   page should now contain exclamation for duplicate MG - verify.   warn
+    page should contain element    css=img[title="Relative percentage difference, 11.1111111111 %, is out of valid range (10.0 %))"]
     Focus                       css=.analyst
     Click Element               xpath=//input[@value='Submit for verification'][1]
     Wait Until Page Contains    Changes saved.
