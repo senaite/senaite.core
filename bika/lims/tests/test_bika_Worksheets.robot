@@ -2,6 +2,7 @@
 
 Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
+Library      DebugLibrary
 Resource         keywords.txt
 Library          bika.lims.testing.Keywords
 Resource         plone/app/robotframework/selenium.robot
@@ -19,14 +20,10 @@ Test Worksheets
     [Documentation]   Worksheets
     ...  Groups analyses together for data entry, instrument interfacing,
     ...  and workflow transition cascades.
-    ...  [workflow image]
-
     Log in              test_labmanager  test_labmanager
-
     Create AnalysisRequests
     Create Reference Samples
     Create Worksheet
-
     Go to                       ${PLONEURL}/worksheets/WS-001
     Select from list            css=select.analyst             Lab Analyst 2
     Select from list            css=select.instrument          Protein Analyser
@@ -36,29 +33,18 @@ Test Worksheets
     ${instrument}=              Get selected list label        css=select.instrument
     Should be equal             ${analyst}         Lab Analyst 2
     Should be equal             ${Instrument}      Protein Analyser
-
     Add Analyses                H2O-0001-R01_Ca    H2O-0001-R01_Mg
     Add Reference Analyses
-
     Unassign all
-
     Add Analyses                H2O-0001-R01_Ca    H2O-0001-R01_Mg
     Add Reference Analyses
-
     Submit and Verify and Test
     Unassign all
-
     Add Analyses                H2O-0002-R01_Ca    H2O-0002-R01_Mg
     Add Reference Analyses
-
     Submit results quickly
-
     Add Duplicate: Submit, verify, and check that alerts persist
-
     Test Retraction
-
-    log   XXX missing test: AR should display icon and "Cannot verify: Results submitted by current user"     WARN
-
     Log out
     Log in   test_labmanager1   test_labmanager1
     Verify all
@@ -154,6 +140,19 @@ Create Reference Samples
     Click Button                Save
     Wait Until Page Contains    Changes saved.
 
+    #This reference used to test LIMS-1325
+    Go to  ${PLONEURL}/bika_setup/bika_suppliers/supplier-1
+    Wait Until Page Contains    Add
+    Click Link                  Add
+    Wait Until Page Contains    Add Reference Sample
+    Input Text                  title                       9METALS
+    Select From List            ReferenceDefinition:list    Trace Metals 9
+    Click Link                  Dates
+    Wait Until Page Contains    Expiry Date
+    SelectNextMonthDate         ExpiryDate                  25
+    Click Button                Save
+    Wait Until Page Contains    Changes saved.
+
 Create Worksheet
     Go to  ${PLONEURL}/worksheets
     Wait Until Page Contains    Mine
@@ -179,10 +178,16 @@ Add Analyses
 
 Add Reference Analyses
 
-    #Add worksheet control
+    #Add worksheet controls
     Go to                       ${PLONEURL}/worksheets/WS-001/add_control
     Wait Until Page Contains    Trace Metals 10
     Click Element               xpath=//span[@id='worksheet_add_references']//tbody//tr[1]
+    Wait Until Page Contains Element  submit_transition
+
+    Go to                       ${PLONEURL}/worksheets/WS-001/add_control
+    unselect checkbox           css=input[item_title="Calcium"]
+    Wait Until Page Contains    Trace Metals 9
+    Click Element               xpath=//span[@id='worksheet_add_references']//tbody//tr[2]
     Wait Until Page Contains Element  submit_transition
 
     #Add worksheet blank
@@ -197,6 +202,9 @@ Add Reference Analyses
     Click Element               xpath=//span[@id='worksheet_add_duplicate_ars']//tbody//tr[1]
     Wait Until Page Contains Element  submit_transition
 
+    Xpath Should Match X Times     //tr[@keyword="Ca"]   4
+    Xpath Should Match X Times     //tr[@keyword="Mg"]   5
+
 Unassign all
     Select Checkbox             analyses_form_select_all
     Click Element               unassign_transition
@@ -207,11 +215,11 @@ Submit and Verify and Test
     ...                 checking ranges, workflow, etc during the process.
 
     # All values are valid for Calcium, this sampletype has no specification linked to it.
-    Input Text    xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca']                        9       # analysis                     0   9      # analysis
-    TestResultsRange    xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'Result_SA')])[1]     17  10.1   # control
-    TestResultsRange    xpath=//tr[@keyword='Ca']//input[contains(@selector, 'Result_D')]           8   8.1    # duplicate
-    TestResultsRange    xpath=//tr[@keyword='Ca']//input[contains(@selector, 'Result_D')]           10  9.9    # duplicate
-    TestResultsRange    xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'Result_SA')])[2]     2   0      # blank
+    Input Text    xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca']                        9                  # analysis
+    TestResultsRange    xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'Result_SA')])[1]     17  10.1        # control
+    TestResultsRange    xpath=//tr[@keyword='Ca']//input[contains(@selector, 'Result_D')]           8.1   8.2       # duplicate low
+    TestResultsRange    xpath=//tr[@keyword='Ca']//input[contains(@selector, 'Result_D')]           10  9.9         # duplicate high
+    TestResultsRange    xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'Result_SA')])[2]     2   0           # blank
 
     TestSampleState     xpath=//tr[@keyword='Ca']//input[@selector='state_title_Ca']                  Ca                       Received
     TestSampleState     xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'state_title_SA')])[1]  SA-001(Control Calcium)  Assigned
@@ -230,10 +238,12 @@ Submit and Verify and Test
 
     ## now fill in the remaining results
     input text    xpath=//tr[@keyword='Mg']//input[@selector='Result_Mg']                       9.5     # analysis
-    TestResultsRange    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[1]   2      9.2     # control
-    TestResultsRange    xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D')]         8.54   8.55    # duplicate
-    TestResultsRange    xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D')]         10.46  10.45   # duplicate
-    TestResultsRange    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[2]   20     0       # blank
+    TestResultsRange    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[1]   2      9.2     # control1
+    TestResultsRange    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[2]   2      9.2     # control2
+
+    TestResultsRange    xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D')]         8.59   8.6    # duplicate high
+    TestResultsRange    xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D')]         10.51  10.5   # duplicate low
+    TestResultsRange    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[3]   20     0       # blank
 
     TestSampleState     xpath=//tr[@keyword='Mg']//input[@selector='state_title_Mg']                   Mg(Normal Magnesium)       Received
     TestSampleState     xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'state_title_SA')])[1]   SA-002(Control Magnesium)  Assigned
@@ -254,15 +264,17 @@ Submit results quickly
     [Documentation]     The results-entry process is repeated a few times
     ...                 in order to test workflow, so we have a second
     ...                 keyword that is not so slow and needlessly thorough.
+    # All values are valid for Calcium, this sampletype has no specification linked to it.
 
     Input Text    xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca']                        9       # analysis
     Input Text    xpath=//tr[@keyword='Mg']//input[@selector='Result_Mg']                        9.5     # analysis
     Input Text    xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'Result_SA')])[1]        10.1    # control
     Input Text    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[1]        9.2     # control
+    Input Text    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[2]        9.2     # control
     Input Text    xpath=//tr[@keyword='Ca']//input[contains(@selector, 'Result_D')]              8.5     # duplicate
     Input Text    xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D')]              10.45   # duplicate
-    Input Text    xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'Result_SA')])[2]        2       # blank
-    Input Text    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[2]        20      # blank
+    Input Text    xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'Result_SA')])[2]        0       # blank
+    Input Text    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[3]        0      # blank
     Focus                       css=.analyst
     Click Element               xpath=//input[@value='Submit for verification'][1]
     Wait Until Page Contains    Changes saved.
@@ -343,7 +355,7 @@ Add Duplicate: Submit, verify, and check that alerts persist
     # Check if invalid results are flagged correctly through submit and verify
     Input Text  xpath=//tr[@keyword='Mg']//input[@type='text' and contains(@selector, 'Result_D')]  8.5
     Input Text  xpath=//tr[@keyword='Ca']//input[@type='text' and contains(@selector, 'Result_D')]  55
-    log   page should now contain exclamation for duplicate MG - verify.   warn
+    page should contain element    css=img[title="Relative percentage difference, 11.1111111111 %, is out of valid range (10.0 %))"]
     Focus                       css=.analyst
     Click Element               xpath=//input[@value='Submit for verification'][1]
     Wait Until Page Contains    Changes saved.
