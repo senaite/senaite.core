@@ -3,28 +3,6 @@
 
   <!-- Third-party libs first, always -->
   <javascript authenticated="False"
-              id="++resource++bika.lims.js/thirdparty/jquery/jquery.json.js"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression=""
-              inline="False"
-              insert-after="*"/>
-
-  <javascript authenticated="True"
-              id="++resource++bika.lims.js/thirdparty/jquery/jquery-barcode-2.0.2.js"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression=""
-              inline="False"
-              insert-after="*"/>
-
-  <javascript authenticated="False"
               id="++resource++bika.lims.js/thirdparty/jquery/jquery-query-2.1.7.js"
               cacheable="True"
               compression="safe"
@@ -36,6 +14,30 @@
               insert-after="*"/>
 
   <javascript authenticated="False"
+              id="++resource++bika.lims.js/thirdparty/jquery/jquery.json.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              insert-after="++resource++bika.lims.js/thirdparty/jquery/jquery-query-2.1.7.js"
+              />
+
+  <javascript authenticated="True"
+              id="++resource++bika.lims.js/thirdparty/jquery/jquery-barcode-2.0.2.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              insert-after="++resource++bika.lims.js/thirdparty/jquery/jquery.json.js"
+              />
+
+  <javascript authenticated="False"
               id="++resource++bika.lims.js/thirdparty/jquery/jquery-timepicker.js"
               cacheable="True"
               compression="safe"
@@ -44,7 +46,8 @@
               enabled="on"
               expression=""
               inline="False"
-              insert-after="*"/>
+              insert-after="++resource++bika.lims.js/thirdparty/jquery/jquery-barcode-2.0.2.js"
+              />
 
   <javascript authenticated="False"
               id="++resource++bika.lims.js/thirdparty/jquery/jquery.ui.combogrid-1.6.3.js"
@@ -55,7 +58,8 @@
               enabled="on"
               expression=""
               inline="False"
-              insert-after="*"/>
+              insert-after="++resource++bika.lims.js/thirdparty/jquery/jquery-timepicker.js"
+              />
 
   <javascript cacheable="True"
               id="++resource++plone.app.jquerytools.dateinput.js"
@@ -64,8 +68,9 @@
               enabled="True"
               inline="False"
               expression=""
-              insert-after="++resource++plone.app.jquerytools.js"
+              insert-after="++resource++bika.lims.js/thirdparty/jquery/jquery.ui.combogrid-1.6.3.js"
               />
+
   <javascript authenticated="False"
               id="++resource++bika.lims.js/thirdparty/d3/d3.js"
               cacheable="True"
@@ -75,21 +80,10 @@
               enabled="on"
               expression=""
               inline="False"
+              insert-after="++resource++plone.app.jquerytools.dateinput.js"
               />
-
 
   <!-- Bika LIMS javascripts -->
-  <javascript authenticated="False"
-              id="++resource++bika.lims.js/bika.lims.common.js"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression=""
-              inline="False"
-              />
-
   <javascript authenticated="False"
               id="++resource++bika.lims.js/bika.lims.utils.js"
               cacheable="True"
@@ -99,10 +93,10 @@
               enabled="on"
               expression=""
               inline="False"
-              insert-after="++resource++bika.lims.js/jquery.json.js"/>
+              insert-after="++resource++bika.lims.js/thirdparty/d3/d3.js"/>
 
   <javascript authenticated="False"
-              id="++resource++bika.lims.js/bika.lims.bikalisting.js"
+              id="++resource++bika.lims.js/bika.lims.common.js"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
@@ -110,10 +104,11 @@
               enabled="on"
               expression=""
               inline="False"
-              insert-after="*"/>
+              insert-after="++resource++bika.lims.js/bika.lims.utils.js"
+              />
 
-  <javascript authenticated="True"
-              id="++resource++bika.lims.js/bika.lims.sandbox.client.js"
+  <javascript authenticated="False"
+              id="++resource++bika.lims.js/bika.lims.bikalisting.js"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
@@ -168,6 +163,28 @@
               insert-after="*"/>
 
   <javascript authenticated="True"
+              id="++resource++bika.lims.js/bika.lims.analysisrequest.analyses.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="True"
+              id="++resource++bika.lims.js/bika.lims.analysisrequest.manageresults.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="True"
               id="++resource++bika.lims.js/bika.lims.worksheet.js"
               cacheable="True"
               compression="safe"
@@ -191,17 +208,6 @@
 
   <javascript authenticated="True"
               id="++resource++bika.lims.js/bika.lims.utils.contact.js"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression=""
-              inline="False"
-              insert-after="*"/>
-
-  <javascript authenticated="True"
-              id="++resource++bika.lims.js/bika.lims.sandbox.referencesample.js"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
@@ -275,7 +281,7 @@
               enabled="on"
               expression=""
               inline="False"
-              />
+              insert-after="*"/>
 
   <javascript authenticated="False"
               id="++resource++bika.lims.js/bika.lims.graphics.controlchart.js"
@@ -286,7 +292,7 @@
               enabled="on"
               expression=""
               inline="False"
-              />
+              insert-after="*"/>
 
   <javascript authenticated="False"
               id="++resource++bika.lims.js/bika.lims.method.js"
@@ -297,7 +303,7 @@
               enabled="on"
               expression=""
               inline="False"
-              />
+              insert-after="*"/>
 
   <javascript authenticated="False"
               id="++resource++bika.lims.js/bika.lims.analysisservice.js"
@@ -308,7 +314,7 @@
               enabled="on"
               expression=""
               inline="False"
-              />
+              insert-after="*"/>
 
   <javascript authenticated="False"
               id="++resource++bika.lims.js/bika.lims.instrument.js"
@@ -319,7 +325,7 @@
               enabled="on"
               expression=""
               inline="False"
-              />
+              insert-after="*"/>
 
   <javascript authenticated="False"
               id="++resource++bika.lims.js/bika.lims.bikasetup.js"
@@ -330,7 +336,7 @@
               enabled="on"
               expression=""
               inline="False"
-              />
+              insert-after="*"/>
 
   <javascript authenticated="False"
               id="++resource++bika.lims.js/bika.lims.artemplate.js"
@@ -341,7 +347,7 @@
               enabled="on"
               expression=""
               inline="False"
-              />
+              insert-after="*"/>
 
   <javascript authenticated="False"
               id="++resource++bika.lims.js/bika.lims.analysisrequest.publish.js"
@@ -352,7 +358,7 @@
               enabled="on"
               expression=""
               inline="False"
-              />
+              insert-after="*"/>
 
   <javascript authenticated="False"
               id="++resource++bika.lims.js/bika.lims.client.js"
@@ -363,7 +369,7 @@
               enabled="on"
               expression=""
               inline="False"
-              />
+              insert-after="*"/>
 
   <javascript authenticated="False"
               id="++resource++bika.lims.js/bika.lims.referencesample.js"
@@ -374,7 +380,18 @@
               enabled="on"
               expression=""
               inline="False"
-              />
+              insert-after="*"/>
+
+  <javascript authenticated="False"
+              id="++resource++bika.lims.js/bika.lims.site.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              insert-after="*"/>
 
 
   <!-- Add javascripts ALWAYS BEFORE this one -->
@@ -387,7 +404,7 @@
               enabled="on"
               expression=""
               inline="False"
-              />
+              insert-after="*"/>
 
 
   <!-- Remove javascripts no longer used -->
@@ -401,7 +418,7 @@
   <javascript id="++resource++bika.lims.js/ar.js" enabled="False"/>
   <javascript id="++resource++bika.lims.js/ar_add.js" enabled="False"/>
   <javascript id="++resource++bika.lims.js/worksheet.js" enabled="False"/>
-  <javascript id="++resource++bika.lims.js/bika.lims.sample.js" enabled="False"/>
+  <javascript id="++resource++bika.lims.js/sample.js" enabled="False"/>
   <javascript id="++resource++bika.lims.js/contact.js" enabled="False"/>
   <javascript id="++resource++bika.lims.js/referencesample.js" enabled="False"/>
   <javascript id="++resource++bika.lims.js/reports.js" enabled="False"/>
@@ -424,4 +441,7 @@
   <javascript id="++resource++bika.lims.js/bika.lims.client.edit.js" enabled="False"/>
   <javascript id="++resource++bika.lims.js/bika.lims.instrumentcertification.edit.js" enabled="False"/>
   <javascript id="++resource++bika.lims.js/analysisservice.js" enabled="False"/>
+  <javascript id="++resource++bika.lims.js/bika.lims.sandbox.client.js" enabled="False"/>
+  <javascript id="++resource++bika.lims.js/bika.lims.sandbox.referencesample.js" enabled="False"/>
+  <javascript id="++resource++bika.lims.js/bika.lims.sandbox.ar_analyses.js" enabled="False"/>
  </object>
