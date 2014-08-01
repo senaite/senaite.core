@@ -444,4 +444,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="JS refactorings"
+        description=""
+        source="3043"
+        destination="3045"
+        handler="bika.lims.upgrade.to3045.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
