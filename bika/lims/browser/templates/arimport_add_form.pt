@@ -4,8 +4,8 @@
       i18n:domain="bika">
 
 <head><title></title></head>
-             
-             
+
+
 <body>
 
 <div metal:fill-slot="main">

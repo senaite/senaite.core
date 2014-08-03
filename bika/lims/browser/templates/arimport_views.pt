@@ -153,6 +153,7 @@
             <th class="center" i18n:translate="label_clientsid">Client Sid</th>
             <th class="center" i18n:translate="label_sampledate">Sample Date</th>
             <th class="center" i18n:translate="label_sampletype">Sample type</th>
+            <th class="center" i18n:translate="label_samplematrix">Sample Matrix</th>
             <th class="center" i18n:translate="label_pickingslip">Picking slip</th>
             <th class="center" i18n:translate="label_containertype">Container Type</th>
             <th class="center" i18n:translate="label_report_dry_matter">Report as DM</th>
@@ -212,9 +213,11 @@
             <td tal:attributes="style bgstyle"
                 tal:content="aritem/getSampleType">SampleType</td>
             <td tal:attributes="style bgstyle"
+                tal:content="aritem/getSampleMatrix">SampleMatrix</td>
+            <td tal:attributes="style bgstyle"
                 tal:content="aritem/getPickingSlip">PickingSlip</td>
             <td tal:attributes="style bgstyle"
-                tal:content="aritem/getContainerType">PickingSlip</td>
+                tal:content="aritem/getContainerType">ContainerType</td>
             <td tal:attributes="style bgstyle"
                 tal:content="aritem/getReportDryMatter">ReportDM</td>
             <td tal:attributes="style bgstyle"

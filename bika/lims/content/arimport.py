@@ -355,6 +355,16 @@ class ARImport(BaseFolder):
                 valid_batch = False
                 return
             sampletypeuid = sampletypes[0].getObject().UID()
+
+            samplematrices = self.bika_setup_catalog(
+                portal_type = 'SampleMatrix',
+                sortable_title = aritem.getSampleMatrix().lower(),
+                )
+            if not samplematrices:
+                valid_batch = False
+                return
+            samplematrixuid = samplematrices[0].getObject().UID()
+
             if aritem.getSampleDate():
                 date_items = aritem.getSampleDate().split('/')
                 sample_date = DateTime(
@@ -415,6 +425,7 @@ class ARImport(BaseFolder):
             ar.setSample(sample_uid)
             sample = ar.getSample()
             ar.setSampleType(sampletypeuid)
+            ar.setSampleMatrix(samplematrixuid)
             ar_uid = ar.UID()
             aritem.setAnalysisRequest(ar_uid)
             ars.append(ar_id)
@@ -557,6 +568,15 @@ class ARImport(BaseFolder):
                 return
             sampletypeuid = sampletypes[0].getObject().UID()
 
+            samplematrices = self.bika_setup_catalog(
+                portal_type = 'SampleMatrix',
+                sortable_title = aritem.getSampleMatrix().lower(),
+                )
+            if not samplematrices:
+                valid_batch = False
+                return
+            samplematrixuid = samplematrices[0].getObject().UID()
+
             if aritem.getSampleDate():
                 date_items = aritem.getSampleDate().split('/')
                 sample_date = DateTime(
@@ -572,6 +592,7 @@ class ARImport(BaseFolder):
                 ClientReference = aritem.getClientRef(),
                 ClientSampleID = aritem.getClientSid(),
                 SampleType = aritem.getSampleType(),
+                SampleMatrix = aritem.getSampleMatrix(),
                 DateSampled = sample_date,
                 SamplingDate = sample_date,
                 DateReceived = DateTime(),
@@ -617,6 +638,7 @@ class ARImport(BaseFolder):
             ar.setSample(sample_uid)
             sample = ar.getSample()
             ar.setSampleType(sampletypeuid)
+            ar.setSampleMatrix(samplematrixuid)
             ar_uid = ar.UID()
             aritem.setAnalysisRequest(ar_uid)
             ars.append(ar_id)
@@ -832,6 +854,8 @@ class ARImport(BaseFolder):
 
         sampletypes = \
             [p.Title for p in pc(portal_type="SampleType")]
+        samplematrices = \
+            [p.Title for p in bsc(portal_type="SampleMatrix")]
         containertypes = \
             [p.Title for p in bsc(portal_type="ContainerType")]
         service_keys = []
@@ -857,6 +881,12 @@ class ARImport(BaseFolder):
                     aritem.getSampleName(), aritem.getSampleType()))
                 item_remarks.append(
                     '\nSample type %s invalid' %(aritem.getSampleType()))
+                valid_item = False
+            if aritem.getSampleMatrix() not in samplematrices:
+                batch_remarks.append('\n%s: Sample Matrix %s invalid' %(
+                    aritem.getSampleName(), aritem.getSampleMatrix()))
+                item_remarks.append(
+                    '\nSample Matrix %s invalid' %(aritem.getSampleMatrix()))
                 valid_item = False
             #validate container type
             if aritem.getContainerType() not in containertypes:

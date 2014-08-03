@@ -49,6 +49,11 @@ schema = BikaSchema.copy() + Schema((
             label = _("No of containers"),
         )
     ),
+    StringField('SampleMatrix',
+        widget = StringWidget(
+            label = _("Sample Matrix"),
+        )
+    ),
     StringField('PickingSlip',
         widget = StringWidget(
             label = _("Picking Slip"),
