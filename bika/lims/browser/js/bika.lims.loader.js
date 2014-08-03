@@ -39,6 +39,12 @@ window.bika.lims.controllers =  {
     ".template-analyses.portaltype-analysisrequest":
         ['AnalysisRequestAnalysesView'],
 
+    ".template-arimport_view.portaltype-arimport":
+        ['AnalysisRequestImportView']
+
+    ".template-base_edit.portaltype-arimport":
+        ['AnalysisRequestImportView']
+
     // Add here your view-controller/s assignment
 
 };
