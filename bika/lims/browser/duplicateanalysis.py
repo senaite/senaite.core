@@ -74,7 +74,10 @@ class ResultOutOfRange(object):
             return None
         duplicates_average = float((orig+result)/2)
         duplicates_diff = float(abs(orig-result))
-        variation_here = float((duplicates_diff/duplicates_average)*100)
+        try:
+            variation_here = float((duplicates_diff/duplicates_average)*100)
+        except ZeroDivisionError:
+            variation_here = float(0)
         variation_qty = float(duplicates_diff/2)
         tolerance_allowed = float(((duplicates_average * variation) / 100) / 2)
         # range_min = orig - (orig * variation / 100)
