@@ -253,7 +253,7 @@ $(document).ready(function(){
 	$.each($("[name='uids:list']"), function(x,cb){
 		var service_uid = $(cb).val();
 		var row_data = $.parseJSON($("#"+service_uid+"_row_data").val());
-		if (row_data.disabled === true){
+		if (row_data != undefined && row_data.disabled === true){
 			// disabled fields must be shadowed by hidden fields,
 			// or they don't appear in the submitted form.
 			$(cb).prop("disabled", true);

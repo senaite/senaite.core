@@ -1,15 +1,14 @@
 *** Settings ***
 
-Library	Selenium2Library  timeout=5  implicit_wait=0.5
-Library	String
-Library	DebugLibrary
+Library	    Selenium2Library  timeout=5  implicit_wait=0.5
+Library	    String
 Resource	keywords.txt
-Library	bika.lims.testing.Keywords
+Library	    bika.lims.testing.Keywords
 Resource	plone/app/robotframework/selenium.robot
 Resource	plone/app/robotframework/saucelabs.robot
 Variables	plone/app/testing/interfaces.py
 Variables	bika/lims/tests/variables.py
-Suite Setup	Start browser
+Suite Setup	    Start browser
 Suite Teardown	Close All Browsers
 
 *** Variables ***
@@ -42,6 +41,7 @@ Reject worksheet with regular, blank, control and duplicate analyses
     Input text                        xpath=//input[@selector='Result_SA-002']       21
     Input text                        xpath=//input[@selector='Result_D-001']        21
     Click button                      xpath=//input[@value="Submit for verification"]
+    Go to                             ${PLONEURL}/clients/worksheets/WS-001
     click element                     css=.state-to_be_verified
     click element                     css=#workflow-transition-reject
     wait until page contains          Item state changed
