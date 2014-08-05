@@ -207,17 +207,6 @@
               insert-after="*"/>
 
   <javascript authenticated="True"
-              id="++resource++bika.lims.js/bika.lims.utils.contact.js"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression=""
-              inline="False"
-              insert-after="*"/>
-
-  <javascript authenticated="True"
               id="++resource++bika.lims.js/bika.lims.reports.js"
               cacheable="True"
               compression="safe"
@@ -455,4 +444,5 @@
   <javascript id="++resource++bika.lims.js/bika.lims.sandbox.client.js" enabled="False"/>
   <javascript id="++resource++bika.lims.js/bika.lims.sandbox.referencesample.js" enabled="False"/>
   <javascript id="++resource++bika.lims.js/bika.lims.sandbox.ar_analyses.js" enabled="False"/>
+  <javascript id="++resource++bika.lims.js/bika.lims.utils.contact.js" enabled="False"/>
  </object>
