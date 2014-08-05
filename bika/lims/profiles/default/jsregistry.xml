@@ -383,6 +383,17 @@
               insert-after="*"/>
 
   <javascript authenticated="False"
+              id="++resource++bika.lims.js/bika.lims.instrument.import.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="False"
               id="++resource++bika.lims.js/bika.lims.site.js"
               cacheable="True"
               compression="safe"
