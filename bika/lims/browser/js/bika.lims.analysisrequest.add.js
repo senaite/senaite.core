@@ -1270,7 +1270,11 @@ function clickAnalysisCategory(){
 }
 
 function applyComboFilter(element, filterkey, filtervalue) {
-    var base_query=$.parseJSON($(element).attr("base_query"));
+	// If the element is not visible it is probably not worth creating a dropdown query.
+    if (!$(element).is(':visible')){
+		return;
+	}
+	var base_query=$.parseJSON($(element).attr("base_query"));
     base_query[filterkey] = filtervalue;
     $(element).attr("base_query", $.toJSON(base_query));
     var options = $.parseJSON($(element).attr("combogrid_options"));
