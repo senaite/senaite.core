@@ -33,6 +33,12 @@ window.bika.lims.controllers =  {
     ".template-analyses.portaltype-referencesample":
         ['ReferenceSampleAnalysesView'],
 
+    ".portaltype-analysisrequest":
+        ['SampleView'],
+
+    ".portaltype-sample":
+        ['SampleView'],
+
     ".template-manage_results.portaltype-analysisrequest":
         ['AnalysisRequestManageResultsView'],
 
