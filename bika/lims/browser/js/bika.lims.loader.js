@@ -1,8 +1,18 @@
+/**
+ * Dictionary of JS objects to be loaded at runtime.
+ * The key is the DOM element to look for in the current page. The
+ * values are the JS objects to be loaded if a match is found in the
+ * page for the specified key. The loader initializes the JS objects
+ * following the order of the dictionary.
+ */
 window.bika.lims.controllers =  {
 
+    // JS objects to be loaded always
     "body":
-        ['SiteView'],
+        ['SiteView',
+         'CalculationEvents'],
 
+    // JS objects to be loaded on specific views or pages
     "table.bika-listing-table":
         ['BikaListingTableView'],
 
@@ -64,8 +74,13 @@ window.bika.lims.controllers =  {
 
 };
 
+
+
 /**
- * Initializes only the js controllers needed for the current view
+ * Initializes only the js controllers needed for the current view.
+ * Initializes the JS objects from the controllers dictionary for which
+ * there is at least one match with the dict key. The JS objects are
+ * loaded in the same order as defined in the controllers dict.
  */
 window.bika.lims.initview = function() {
     var loaded = new Array();
