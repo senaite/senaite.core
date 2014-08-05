@@ -1,3 +1,4 @@
+from smtplib import SMTPServerDisconnected, SMTPRecipientsRefused
 from bika.lims import bikaMessageFactory as _, t
 from bika.lims.utils import to_utf8, formatDecimalMark
 from bika.lims import logger
