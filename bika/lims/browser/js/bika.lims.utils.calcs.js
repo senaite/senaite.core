@@ -1,5 +1,5 @@
 /**
- * Controller class for all site views
+ * Controller class for calculation events
  */
 function CalculationEvents() {
 
