@@ -1,59 +1,120 @@
+/**
+ * Dictionary of JS objects to be loaded at runtime.
+ * The key is the DOM element to look for in the current page. The
+ * values are the JS objects to be loaded if a match is found in the
+ * page for the specified key. The loader initializes the JS objects
+ * following the order of the dictionary.
+ */
 window.bika.lims.controllers =  {
 
+    /** JS objects to be loaded always **/
     "body":
-        ['SiteView'],
+        ['SiteView',
+         'CalculationEvents'],
 
-    ".template-base_edit.portaltype-method":
+
+    /** JS objects to be loaded on specific views or pages **/
+
+    // Bika Listing Table
+    "table.bika-listing-table":
+        ['BikaListingTableView'],
+
+
+    // Methods
+    ".portaltype-method.template-base_edit":
         ['MethodEditView'],
 
-    ".template-base_edit.portaltype-analysisservice":
+
+    // Analysis Services
+    ".portaltype-analysisservice.template-base_edit":
         ['AnalysisServiceEditView'],
 
-    ".template-base_edit.portaltype-instrumentcertification":
+
+    // Instruments
+    ".portaltype-instrument.template-referenceanalyses":
+        ['InstrumentReferenceAnalysesView'],
+
+    ".portaltype-instrumentcertification.template-base_edit":
         ['InstrumentCertificationEditView'],
 
-    ".template-base_edit.portaltype-bikasetup":
+
+    // Bika Setup
+    ".portaltype-bikasetup.template-base_edit":
         ['BikaSetupEditView'],
+
+
+    // Clients
+    ".portaltype-client.template-base_edit":
+        ['ClientEditView'],
+
+
+    // Reference Samples
+    ".portaltype-referencesample.template-analyses":
+        ['ReferenceSampleAnalysesView'],
+
+
+    // Samples
+    ".portaltype-sample":
+        ['SampleView'],
+
+
+    // Analysis Request Templates
+    ".portaltype-artemplate.template-base_edit":
+        ['ARTemplateEditView'],
+
+
+    // Analysis Requests
+    ".portaltype-analysisrequest":
+        ['SampleView'],
+
+    ".portaltype-analysisrequest.template-base_view":
+        ['AnalysisRequestViewView'],
+
+    ".portaltype-analysisrequest.template-manage_results":
+        ['AnalysisRequestManageResultsView'],
+
+    ".portaltype-analysisrequest.template-analyses":
+        ['AnalysisRequestAnalysesView'],
+
+    ".portaltype-analysisrequest.template-ar_add":
+        ['AnalysisRequestAddView'],
+
+    ".portaltype-arimport.template-arimport_view":
+        ['AnalysisRequestImportView'],
+
+    ".portaltype-arimport.template-base_edit":
+        ['AnalysisRequestImportView'],
 
     "#ar_publish_container":
         ['AnalysisRequestPublishView'],
 
-    ".template-base_edit.portaltype-artemplate":
-        ['ARTemplateEditView'],
 
-    ".template-base_edit.portaltype-client":
-        ['ClientEditView'],
-
-    ".template-referenceanalyses.portaltype-instrument":
-        ['InstrumentReferenceAnalysesView'],
-
-    ".template-analyses.portaltype-referencesample":
-        ['ReferenceSampleAnalysesView'],
-
-    ".template-manage_results.portaltype-analysisrequest":
-        ['AnalysisRequestManageResultsView'],
-
-    ".template-base_view.portaltype-analysisrequest":
-        ['AnalysisRequestViewView'],
-
-    ".template-analyses.portaltype-analysisrequest":
-        ['AnalysisRequestAnalysesView'],
-
-    ".template-arimport_view.portaltype-arimport":
-        ['AnalysisRequestImportView'],
-
-    ".template-base_edit.portaltype-arimport":
-        ['AnalysisRequestImportView'],
-
-    ".template-base_edit.portaltype-supplyorder":
+    // Supply Orders
+    ".portaltype-supplyorder.template-base_edit":
         ['SupplyOrderEditView'],
+
+
+    // Imports
+    ".portaltype-plone-site.template-import":
+        ['InstrumentImportView'],
+
+
+    // Batches
+    ".portaltype-batchfolder":
+        ['BatchFolderView'],
+
 
     // Add here your view-controller/s assignment
 
 };
 
+
+
 /**
- * Initializes only the js controllers needed for the current view
+ * Initializes only the js controllers needed for the current view.
+ * Initializes the JS objects from the controllers dictionary for which
+ * there is at least one match with the dict key. The JS objects are
+ * loaded in the same order as defined in the controllers dict.
  */
 window.bika.lims.initview = function() {
     var loaded = new Array();
