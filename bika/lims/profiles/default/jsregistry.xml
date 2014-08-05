@@ -118,28 +118,6 @@
               inline="False"
               insert-after="*"/>
 
-    <javascript authenticated="True"
-                id="++resource++bika.lims.js/bika.lims.sandbox.client.js"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression=""
-                inline="False"
-                insert-after="*"/>
-
-    <javascript authenticated="True"
-                id="++resource++bika.lims.js/bika.lims.sandbox.ar_analyses.js"
-                cacheable="True"
-                compression="safe"
-                conditionalcomment=""
-                cookable="True"
-                enabled="on"
-                expression=""
-                inline="False"
-                insert-after="*"/>
-
   <javascript authenticated="True"
               id="++resource++bika.lims.js/bika.lims.utils.calcs.js"
               cacheable="True"
@@ -185,6 +163,28 @@
               insert-after="*"/>
 
   <javascript authenticated="True"
+              id="++resource++bika.lims.js/bika.lims.analysisrequest.analyses.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="True"
+              id="++resource++bika.lims.js/bika.lims.analysisrequest.manageresults.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="True"
               id="++resource++bika.lims.js/bika.lims.worksheet.js"
               cacheable="True"
               compression="safe"
@@ -208,17 +208,6 @@
 
   <javascript authenticated="True"
               id="++resource++bika.lims.js/bika.lims.utils.contact.js"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression=""
-              inline="False"
-              insert-after="*"/>
-
-  <javascript authenticated="True"
-              id="++resource++bika.lims.js/bika.lims.sandbox.referencesample.js"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
@@ -393,6 +382,17 @@
               inline="False"
               insert-after="*"/>
 
+  <javascript authenticated="False"
+              id="++resource++bika.lims.js/bika.lims.site.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
 
   <!-- Add javascripts ALWAYS BEFORE this one -->
   <javascript authenticated="False"
@@ -441,4 +441,7 @@
   <javascript id="++resource++bika.lims.js/bika.lims.client.edit.js" enabled="False"/>
   <javascript id="++resource++bika.lims.js/bika.lims.instrumentcertification.edit.js" enabled="False"/>
   <javascript id="++resource++bika.lims.js/analysisservice.js" enabled="False"/>
+  <javascript id="++resource++bika.lims.js/bika.lims.sandbox.client.js" enabled="False"/>
+  <javascript id="++resource++bika.lims.js/bika.lims.sandbox.referencesample.js" enabled="False"/>
+  <javascript id="++resource++bika.lims.js/bika.lims.sandbox.ar_analyses.js" enabled="False"/>
  </object>
