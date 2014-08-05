@@ -48,6 +48,9 @@ window.bika.lims.controllers =  {
     ".template-base_edit.portaltype-supplyorder":
         ['SupplyOrderEditView'],
 
+    ".template-import.portaltype-plone-site":
+        ['InstrumentImportView'],
+
     // Add here your view-controller/s assignment
 
 };
