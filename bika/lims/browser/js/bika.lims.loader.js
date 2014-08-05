@@ -3,6 +3,9 @@ window.bika.lims.controllers =  {
     "body":
         ['SiteView'],
 
+    "table.bika-listing-table":
+        ['BikaListingTableView'],
+
     ".template-base_edit.portaltype-method":
         ['MethodEditView'],
 
