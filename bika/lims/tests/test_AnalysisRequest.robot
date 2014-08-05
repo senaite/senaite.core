@@ -2,7 +2,6 @@
 
 Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
-Library          DebugLibrary
 Resource         keywords.txt
 Library          bika.lims.testing.Keywords
 Resource         plone/app/robotframework/selenium.robot
@@ -61,7 +60,6 @@ Analysis Request with no sampling or preservation workflow
     Submit results with out of range tests
     Log out
     Log in                    test_labmanager1    test_labmanager1
-    Wait until page contains  You are now logged in
     Go to                     ${PLONEURL}/clients/client-1/${ar_id}/manage_results
     Add new Copper analysis to ${ar_id}
     ${ar_id} state should be sample_received
@@ -188,7 +186,7 @@ Submit results with out of range tests
     ${count} =                 Convert to integer    ${count}
     :FOR    ${index}           IN RANGE    1   ${count+1}
     \    TestResultsRange      xpath=(//input[@type='text' and @field='Result'])[${index}]       5   10
-    Sleep                      10s
+    Sleep                      5s
     Click Element              xpath=//input[@value='Submit for verification'][1]
     Wait Until Page Contains   Changes saved.
 
@@ -199,7 +197,7 @@ Submit results
     ${count} =                 Convert to integer    ${count}
     :FOR    ${index}           IN RANGE    1   ${count+1}
     \    Input text            xpath=(//input[@type='text' and @field='Result'])[${index}]   10
-    Sleep                      10s
+    Sleep                      5s
     Click Element              xpath=//input[@value='Submit for verification'][1]
     Wait Until Page Contains   Changes saved.
 

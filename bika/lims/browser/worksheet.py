@@ -553,7 +553,7 @@ class WorksheetAnalysesView(AnalysesView):
 
             pos_text += "<td class='pos_top_icons' rowspan='3'>"
             if obj.portal_type == 'DuplicateAnalysis':
-                pos_text += "<img title='%s' src='%s/++resource++bika.lims.images/duplicate.png'/>" % (_("Duplicate"), self.context.absolute_url())
+                pos_text += "<img title='%s' src='%s/++resource++bika.lims.images/duplicate.png'/>" % (_("Duplicate").encode('utf-8'), self.context.absolute_url())
                 pos_text += "<br/>"
             elif obj.portal_type == 'ReferenceAnalysis' and obj.ReferenceType == 'b':
                 pos_text += "<a href='%s'><img title='%s' src='++resource++bika.lims.images/blank.png'></a>" % (parent.absolute_url(), parent.Title())
