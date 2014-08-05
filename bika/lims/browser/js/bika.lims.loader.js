@@ -46,7 +46,7 @@ window.bika.lims.controllers =  {
         ['AnalysisRequestImportView'],
 
     ".template-base_edit.portaltype-supplyorder":
-        ['SupplyOrderEditView']
+        ['SupplyOrderEditView'],
 
     // Add here your view-controller/s assignment
 

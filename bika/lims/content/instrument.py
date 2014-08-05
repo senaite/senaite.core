@@ -81,6 +81,17 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         ),
     ),
 
+    BooleanField('DisposeUntilNextCalibrationTest',
+        default = False,
+        widget = BooleanWidget(
+            label = _("Dispose until next calibration test"),
+            description = _("If checked, the instrument will not be "
+                            "available until the next valid calibration "
+                            "test being performed. This checkbox will "
+                            "be automatically unchecked too."),
+        ),
+    ),
+
     # Procedures
     TextField('InlabCalibrationProcedure',
         schemata = 'Procedures',
@@ -281,7 +292,9 @@ class Instrument(ATFolder):
         """ Returns if the current instrument is not out-of-date regards
             to its certificates and if the latest QC succeed
         """
-        return False if self.isOutOfDate() else self.isQCValid()
+        return self.isOutOfDate() == False \
+                and self.isQCValid() == True \
+                and self.getDisposeUntilNextCalibrationTest() == False
 
     def getLatestReferenceAnalyses(self):
         """ Returns a list with the latest Reference analyses performed
@@ -509,6 +522,11 @@ class Instrument(ATFolder):
 
         # Initialize LatestReferenceAnalyses cache
         self.cleanReferenceAnalysesCache()
+
+        # Set DisposeUntilNextCalibrationTest to False
+        if (len(addedanalyses) > 0):
+            self.getField('DisposeUntilNextCalibrationTest').set(self, False)
+
         return addedanalyses
 
     def getAnalysesToRetract(self, allanalyses=True, outofdate=False):

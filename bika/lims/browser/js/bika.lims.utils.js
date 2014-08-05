@@ -21,7 +21,7 @@ window.bika.lims.portalMessage = function (message) {
 };
 
 window.bika.lims.log = function(e) {
-	var message = "(" + window.location.url + "): " + e;
+    var message = "(" + window.location.url + "): " + e;
     $.ajax({
         type: "POST",
         url: "js_log",
@@ -33,11 +33,11 @@ window.bika.lims.log = function(e) {
 window.bika.lims.jsonapi_cache = {};
 window.bika.lims.jsonapi_read = function(request_data, handler) {
     window.bika.lims.jsonapi_cache = window.bika.lims.jsonapi_cache || {};
-	// if no page_size is specified, we need to explicitly add one here: 0=all.
-	var page_size = request_data.page_size;
-	if (page_size == undefined) {
-		request_data.page_size = 0
-	}
+    // if no page_size is specified, we need to explicitly add one here: 0=all.
+    var page_size = request_data.page_size;
+    if (page_size == undefined) {
+        request_data.page_size = 0
+    }
     var jsonapi_cacheKey = $.param(request_data);
     var jsonapi_read_handler = handler;
     if (window.bika.lims.jsonapi_cache[jsonapi_cacheKey] === undefined){
@@ -132,21 +132,21 @@ $(document).ready(function(){
 
     $(".numeric").live("keypress", function(event) {
         var allowedKeys = [
-			8,   // backspace
-			9,   // tab
-			13,  // enter
-			35,  // end
-			36,  // home
-			37,  // left arrow
-			39,  // right arrow
-			46,  // delete - We don't support the del key in Opera because del == . == 46.
-			60,  // <
-			62,  // >
-			45,  // -
-			69,  // E
-			101, // e,
-			61   // =
-		];
+            8,   // backspace
+            9,   // tab
+            13,  // enter
+            35,  // end
+            36,  // home
+            37,  // left arrow
+            39,  // right arrow
+            46,  // delete - We don't support the del key in Opera because del == . == 46.
+            60,  // <
+            62,  // >
+            45,  // -
+            69,  // E
+            101, // e,
+            61   // =
+        ];
         var isAllowedKey = allowedKeys.join(",").match(new RegExp(event.which)); // IE doesn't support indexOf
         // Some browsers just don't raise events for control keys. Easy. e.g. Safari backspace.
         if (!event.which || // Control keys in most browsers. e.g. Firefox tab is 0
@@ -179,7 +179,9 @@ $(document).ready(function(){
         data: {'_authenticator': $('input[name="_authenticator"]').val() },
         dataType: 'json'
     }).done(function(data) {
-        if (data['out-of-date'].length > 0 || data['qc-fail'].length > 0) {
+        if (data['out-of-date'].length > 0
+            || data['qc-fail'].length > 0
+            || data['next-test'].length > 0) {
             $('#portal-alert').remove();
             var html = "<div id='portal-alert' style='display:none'>";
             var outofdate = data['out-of-date'];
@@ -216,6 +218,23 @@ $(document).ready(function(){
                 })
                 html += "</p>";
             }
+            var nexttest = data['next-test'];
+            if (nexttest.length > 0) {
+                // QC Fail alert
+                html += "<p class='title'>"+nexttest.length+_(" instruments disposed until new calibration tests being done")+":</p>";
+                html += "<p>";
+                $.each(nexttest, function(index, value){
+                    var hrefinstr = value['url']+"/referenceanalyses";
+                    var titleinstr = value['title'];
+                    var anchor = "<a href='"+hrefinstr+"'>"+titleinstr+"</a>";
+                    if (index == 0) {
+                        html += anchor;
+                    } else {
+                        html += ", "+anchor;
+                    }
+                })
+                html += "</p>";
+            }
             html += "</div>"
             $('#portal-header').append(html);
             $('#portal-alert').fadeIn(2000);
@@ -223,36 +242,36 @@ $(document).ready(function(){
     });
 
 
-	/* Replace kss-bbb spinner with a quieter one */
-	var timer, spinner, counter = 0;
-	$(document).unbind("ajaxStart");
-	$(document).unbind("ajaxStop");
-	$('#ajax-spinner').remove();
-	spinner = $('<div id="bika-spinner"><img src="' + portal_url + '/spinner.gif" alt=""/></div>');
-	spinner.appendTo('body').hide();
-	$(document).ajaxStart(function () {
-		counter++;
-		setTimeout(function () {
-			if (counter > 0) {
-				spinner.show('fast');
-			}
-		}, 500);
-	});
-	function stop_spinner(){
-		counter--;
-		if (counter < 0){ counter = 0; }
-		if (counter == 0) {
-			clearTimeout(timer);
-			spinner.stop();
-			spinner.hide();
-		}
-	}
-	$(document).ajaxStop(function () {
-		stop_spinner();
-	});
-	$( document ).ajaxError(function( event, jqxhr, settings, thrownError ) {
-		stop_spinner();
-		window.bika.lims.log("Error at " + settings.url + ": " + thrownError);
-	});
+    /* Replace kss-bbb spinner with a quieter one */
+    var timer, spinner, counter = 0;
+    $(document).unbind("ajaxStart");
+    $(document).unbind("ajaxStop");
+    $('#ajax-spinner').remove();
+    spinner = $('<div id="bika-spinner"><img src="' + portal_url + '/spinner.gif" alt=""/></div>');
+    spinner.appendTo('body').hide();
+    $(document).ajaxStart(function () {
+        counter++;
+        setTimeout(function () {
+            if (counter > 0) {
+                spinner.show('fast');
+            }
+        }, 500);
+    });
+    function stop_spinner(){
+        counter--;
+        if (counter < 0){ counter = 0; }
+        if (counter == 0) {
+            clearTimeout(timer);
+            spinner.stop();
+            spinner.hide();
+        }
+    }
+    $(document).ajaxStop(function () {
+        stop_spinner();
+    });
+    $( document ).ajaxError(function( event, jqxhr, settings, thrownError ) {
+        stop_spinner();
+        window.bika.lims.log("Error at " + settings.url + ": " + thrownError);
+    });
 });
 }(jQuery));
