@@ -8,7 +8,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims import interfaces
 from bika.lims import logger
-from email.Utils import formataddr
+from plone.i18n.normalizer.interfaces import IFileNameNormalizer
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from zope.component import getUtility
 from zope.interface import providedBy
@@ -53,7 +53,8 @@ def generateUniqueId(context):
           used as a prefix instead.
     """
 
-    normalize = getUtility(IIDNormalizer).normalize
+    fn_normalize = getUtility(IFileNameNormalizer).normalize
+    id_normalize = getUtility(IIDNormalizer).normalize
     prefixes = context.bika_setup.getPrefixes()
 
     year = context.bika_setup.getYearInPrefix() and \
@@ -62,14 +63,14 @@ def generateUniqueId(context):
     # Analysis Request IDs
     if context.portal_type == "AnalysisRequest":
         sample = context.getSample()
-        s_prefix = normalize(sample.getSampleType().getPrefix())
+        s_prefix = fn_normalize(sample.getSampleType().getPrefix())
         sample_padding = context.bika_setup.getSampleIDPadding()
         ar_padding = context.bika_setup.getARIDPadding()
         sample_id = sample.getId()
         sample_number = sample_id.split(s_prefix)[1]
         ar_number = sample.getLastARNumber()
         ar_number = ar_number and ar_number + 1 or 1
-        return normalize(
+        return fn_normalize(
             "%s%s-R%s" % (s_prefix,
                           str(sample_number).zfill(sample_padding),
                           str(ar_number).zfill(ar_padding))
@@ -84,7 +85,8 @@ def generateUniqueId(context):
 
         # at this time the part exists, so +1 would be 1 too many
         partnr = str(len(context.aq_parent.objectValues('SamplePartition')))
-        return normalize("%s-P%s" % (context.aq_parent.id, partnr))
+        # parent id is normalized already
+        return "%s-P%s" % (context.aq_parent.id, partnr)
 
     if context.bika_setup.getExternalIDServer():
 
@@ -95,30 +97,31 @@ def generateUniqueId(context):
             if context.portal_type == "Sample":
                 prefix = context.getSampleType().getPrefix()
                 padding = context.bika_setup.getSampleIDPadding()
-                new_id = str(idserver_generate_id(context,
-                                                  "%s%s-" % (prefix, year)))
+                new_id = str(idserver_generate_id(context, "%s%s-" % (prefix, year)))
                 if padding:
                     new_id = new_id.zfill(int(padding))
                 return '%s%s-%s' % (prefix, year, new_id)
             elif d['portal_type'] == context.portal_type:
                 prefix = d['prefix']
                 padding = d['padding']
-                new_id = str(idserver_generate_id(context,
-                                                  "%s%s-" % (prefix, year)))
+                new_id = str(idserver_generate_id(context, "%s%s-" % (prefix, year)))
                 if padding:
                     new_id = new_id.zfill(int(padding))
                 return '%s%s-%s' % (prefix, year, new_id)
         # no prefix; use portal_type
         # year is not inserted here
-        new_id = str(idserver_generate_id(context, normalize(context.portal_type) + "-"))
-        return '%s-%s' % (normalize(context.portal_type), new_id)
+        # portal_type is be normalized to lowercase
+        npt = id_normalize(context.portal_type)
+        new_id = str(idserver_generate_id(context, npt + "-"))
+        return '%s-%s' % (npt, new_id)
 
     else:
 
         # No external id-server.
 
         def next_id(prefix):
-
+            # normalize before anything
+            prefix = fn_normalize(prefix)
             plone = context.portal_url.getPortalObject()
             # grab the first catalog we are indexed in.
             at = getToolByName(plone, 'archetype_tool')
@@ -145,7 +148,7 @@ def generateUniqueId(context):
         for d in prefixes:
             if context.portal_type == "Sample":
                 # Special case for Sample IDs
-                prefix = context.getSampleType().getPrefix()
+                prefix = fn_normalize(context.getSampleType().getPrefix())
                 padding = context.bika_setup.getSampleIDPadding()
                 new_id = next_id(prefix+year)
                 if padding:
@@ -161,14 +164,15 @@ def generateUniqueId(context):
 
         # no prefix; use portal_type
         # no year inserted here
-        prefix = normalize(context.portal_type);
+        # use "IID" normalizer, because we want portal_type to be lowercased.
+        prefix = id_normalize(context.portal_type);
         new_id = next_id(prefix)
         return '%s-%s' % (prefix, new_id)
 
 def renameAfterCreation(obj):
-    normalize = getUtility(IIDNormalizer).normalize
     # Can't rename without a subtransaction commit when using portal_factory
     transaction.savepoint(optimistic=True)
-    new_id = normalize(generateUniqueId(obj))
+    # The id returned should be normalized already
+    new_id = generateUniqueId(obj)
     obj.aq_inner.aq_parent.manage_renameObject(obj.id, new_id)
     return new_id
