@@ -789,8 +789,12 @@ class BikaListingView(BrowserView):
                 actions.append(action)
 
         for a,action in enumerate(actions):
-            actions[a]['title'] = \
-                t(PMF(actions[a]['id'] + "_transition_title"))
+            if not isinstance(action, dict) \
+                    or not 'id' in action \
+                    or not 'title' in action:
+                logger.info("bad action in custom_actions: %s. (complete list: %s)."%(action,actions))
+                continue
+            actions[a]['title'] = t(PMF(actions[a]['id'] + "_transition_title"))
         return actions
 
     def getPriorityIcon(self):
