@@ -771,6 +771,15 @@ class BikaListingView(BrowserView):
         else:
             actions = transitions.values()
 
+        new_actions = []
+        # remove any invalid items with a warning
+        for a,action in enumerate(actions):
+            if isinstance(action, dict) \
+                    and 'id' in action:
+                new_actions.append(action)
+            else:
+                logger.warning("bad action in custom_actions: %s. (complete list: %s)."%(action,actions))
+
         # and these are removed
         if 'hide_transitions' in review_state:
             actions = [a for a in actions
@@ -786,14 +795,11 @@ class BikaListingView(BrowserView):
         # on the BikaListingView, add these actions to the list.
         if 'custom_actions' in review_state:
             for action in review_state['custom_actions']:
-                actions.append(action)
+                if isinstance(action, dict) \
+                        and 'id' in action:
+                    actions.append(action)
 
         for a,action in enumerate(actions):
-            if not isinstance(action, dict) \
-                    or not 'id' in action \
-                    or not 'title' in action:
-                logger.info("bad action in custom_actions: %s. (complete list: %s)."%(action,actions))
-                continue
             actions[a]['title'] = t(PMF(actions[a]['id'] + "_transition_title"))
         return actions
 
