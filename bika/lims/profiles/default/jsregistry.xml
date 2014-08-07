@@ -85,17 +85,6 @@
 
   <!-- Bika LIMS javascripts -->
   <javascript authenticated="False"
-              id="++resource++bika.lims.js/bika.lims.utils.js"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression=""
-              inline="False"
-              insert-after="++resource++bika.lims.js/thirdparty/d3/d3.js"/>
-
-  <javascript authenticated="False"
               id="++resource++bika.lims.js/bika.lims.common.js"
               cacheable="True"
               compression="safe"
@@ -104,7 +93,7 @@
               enabled="on"
               expression=""
               inline="False"
-              insert-after="++resource++bika.lims.js/bika.lims.utils.js"
+              insert-after="*"
               />
 
   <javascript authenticated="False"
@@ -445,4 +434,5 @@
   <javascript id="++resource++bika.lims.js/bika.lims.sandbox.referencesample.js" enabled="False"/>
   <javascript id="++resource++bika.lims.js/bika.lims.sandbox.ar_analyses.js" enabled="False"/>
   <javascript id="++resource++bika.lims.js/bika.lims.utils.contact.js" enabled="False"/>
+  <javascript id="++resource++bika.lims.js/bika.lims.utils.js" enabled="False"/>
  </object>
