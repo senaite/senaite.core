@@ -483,22 +483,22 @@ function AnalysisRequestAddView() {
                         var new_item = "<div class='reference_multi_item' uid='"+selected_uid+"'>"+del_btn+selected_value+"</div>";
                         $(listing_div).append($(new_item));
           }
-          skip = $(element).attr("skip_referencewidget_lookup");
+          skip = $(uid_element).attr("skip_referencewidget_lookup");
           if (skip !== true){
               $(this).trigger("selected", ui.item.UID);
           }
-          $(element).removeAttr("skip_referencewidget_lookup");
+          $(uid_element).removeAttr("skip_referencewidget_lookup");
           $(this).next("input").focus();
       } else {
           // Set value in activated element (must exist in colModel!)
           $(this).val(ui.item[$(this).attr("ui_item")]);
           $(this).attr("uid", ui.item.UID);
           $(uid_element).val(ui.item.UID);
-          skip = $(element).attr("skip_referencewidget_lookup");
+          skip = $(uid_element).attr("skip_referencewidget_lookup");
           if (skip !== true){
               $(this).trigger("selected", ui.item.UID);
           }
-          $(element).removeAttr("skip_referencewidget_lookup");
+          $(uid_element).removeAttr("skip_referencewidget_lookup");
           $(this).next("input").focus();
       }
 
