@@ -13,6 +13,7 @@ LIMS-1082: Report Barcode. Was images for pdf/print reports etc.
 - Added watermark on provisional reports
 - Added help info regards to new templates creation
 - Bika LIMS javascripts refactoring and optimization
+- Alert panel when upgrades are available
 
 
 3.1.4.1 (2014-07-24)

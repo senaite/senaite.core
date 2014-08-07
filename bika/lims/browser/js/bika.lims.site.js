@@ -258,8 +258,7 @@ function SiteView() {
             if (data['out-of-date'].length > 0
                 || data['qc-fail'].length > 0
                 || data['next-test'].length > 0) {
-                $('#portal-alert').remove();
-                var html = "<div id='portal-alert' style='display:none'>";
+                var html = "";
                 var outofdate = data['out-of-date'];
                 if (outofdate.length > 0) {
                     // Out of date alert
@@ -311,12 +310,33 @@ function SiteView() {
                     })
                     html += "</p>";
                 }
-                html += "</div>"
-                $('#portal-header').append(html);
-                $('#portal-alert').fadeIn(2000);
+                portalAlert(html);
             }
         });
 
+        // Check if new upgrades
+        $.ajax({
+            url: window.portal_url + "/prefs_install_products_form",
+            type: 'POST',
+            data: {'_authenticator': $('input[name="_authenticator"]').val() },
+        }).done(function(htmldata) {
+            if ($(htmldata).find('input[name="prefs_reinstallProducts:method"]').length > 0) {
+                // Needs an upgrade!
+                var html = '<form method="post" action="' + window.portal_url + '/portal_quickinstaller">';
+                html += "<p class='title'>"+_("Upgrades available:")+"</p>";
+                var products = $(htmldata).find('input[name="prefs_reinstallProducts:method"]');
+                $.each(products, function(index, product){
+                    // <input class="context" type="submit" name="prefs_reinstallProducts:method" value="bika.lims">
+                    html += "<p>";
+                    html += $(product).closest('ul.configletDetails').parent().find('label').first().html().trim()+"&nbsp;&nbsp;&nbsp;";
+                    html += _("Click to upgrade: ") + $(product).parent().html().trim()+"</span>";
+                    html += "</p>";
+
+                });
+                html += "</form>";
+                portalAlert(html);
+            }
+        });
 
         /* Replace kss-bbb spinner with a quieter one */
         var timer, spinner, counter = 0;
@@ -349,5 +369,14 @@ function SiteView() {
             stop_spinner();
             window.bika.lims.log("Error at " + settings.url + ": " + thrownError);
         });
+    }
+
+    function portalAlert(html) {
+        if ($('#portal-alert').length == 0) {
+            $('#portal-header').append("<div id='portal-alert' style='display:none'><div class='portal-alert-item'>" + html + "</div></div>");
+        } else {
+            $('#portal-alert').append("<div class='portal-alert-item'>" + html + "</div>");
+        }
+        $('#portal-alert').fadeIn();
     }
 }
