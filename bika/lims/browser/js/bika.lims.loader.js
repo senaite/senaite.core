@@ -8,16 +8,23 @@
 window.bika.lims.controllers =  {
 
     /** JS objects to be loaded always **/
+
     "body":
         ['SiteView'],
 
 
-    /** JS objects to be loaded on specific views or pages **/
+    /** JS Utilities **/
 
     // Calculation events
     ".ajax_calculate":
         ['CalculationEvents'],
 
+    // Atachments
+    ".attachments":
+        ['AttachmentsEvents'],
+
+
+    /** JS objects to be loaded on specific views or pages **/
 
     // Bika Listing Table
     "table.bika-listing-table":
