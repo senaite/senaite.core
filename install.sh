@@ -60,7 +60,7 @@ if [ -f /etc/lsb-release ]; then # Ubuntu
 
   # WeasyPrint dependencies:
   # http://weasyprint.org/docs/install/#debian-ubuntu
-  aptitude install lib-ffidev
+  aptitude install libffi-dev
   # Debian 7.0 Wheezy or newer, Ubuntu 11.10 Oneiric or newer:
   aptitude install libcairo2
   aptitude install libpango1.0-0

@@ -27,7 +27,8 @@ from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IAnalysis
+from bika.lims.interfaces import IAnalysis, IDuplicateAnalysis, IReferenceAnalysis
+from bika.lims.interfaces import IReferenceSample
 from bika.lims.utils import changeWorkflowState, formatDecimalMark
 from bika.lims.workflow import skip
 from bika.lims.workflow import doActionFor
@@ -281,6 +282,12 @@ class Analysis(BaseContent):
         self.getField('Result').set(self, value, **kw)
 
     def getSample(self):
+        # ReferenceSample cannot provide a 'getSample'
+        if IReferenceAnalysis.providedBy(self):
+            return None
+        if IDuplicateAnalysis.providedBy(self) \
+                or self.portal_type == 'RejectAnalysis':
+            return self.getAnalysis().aq_parent.getSample()
         return self.aq_parent.getSample()
 
     def getAnalysisSpecs(self, specification=None):
@@ -290,7 +297,13 @@ class Analysis(BaseContent):
             lab specification.
             If no specification available for this analysis, returns None
         """
-        sampletype = self.getSample().getSampleType()
+        sample = self.getSample()
+
+        # No specifications available for ReferenceSamples
+        if IReferenceSample.providedBy(sample):
+            return None
+
+        sampletype = sample.getSampleType()
         sampletype_uid = sampletype and sampletype.UID() or ''
         bsc = getToolByName(self, 'bika_setup_catalog')
 

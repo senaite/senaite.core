@@ -22,8 +22,6 @@
 
 <metal:content-core fill-slot="content-core">
 
-    <script type="text/javascript" src="++resource++bika.lims.js/import.js"></script>
-
     <form name="import" class="enableFormTabbing" method="POST" enctype="multipart/form-data">
         <input tal:replace="structure context/@@authenticator/authenticator"/>
         <input type="hidden" name="submitted" value="1"/>

@@ -453,4 +453,22 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Add missing bika.lims.sandbox.ar_analyses.js"
+        description=""
+        source="3045"
+        destination="3046"
+        handler="bika.lims.upgrade.to3046.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="JS changes"
+        description=""
+        source="3046"
+        destination="3047"
+        handler="bika.lims.upgrade.to3047.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>

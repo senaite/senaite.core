@@ -33,13 +33,14 @@ Test AR specs UI and alerts
 
     # select Barley, there is a Lab spec
     Select from dropdown                ar_0_SampleType         Barley
+    sleep          3
     Textfield Value Should Be           css=input[class*='min'][keyword='Mg']           5       #  lab default : 5
     Textfield Value Should Be           css=input[class*='max'][keyword='Mg']           11      #  lab default : 11
     Textfield Value Should Be           css=input[class*='error'][keyword='Mg']         10      #  lab default :  10
 
     # select Apple pulp, there is a Client spec
     Select from dropdown                ar_0_SampleType         Apple Pulp
-    sleep        1
+    sleep          3
     # when selecting a sampletype the spec is always set if a default is found
     Textfield Value Should Be           ar_0_Specification      Apple Pulp
     # That default spec gets automatically selected
@@ -118,6 +119,7 @@ when selecting a Spec it should be set on the AR.
     Select from dropdown                ar_0_Contact            Rita
     SelectDate                          ar_0_SamplingDate       1
     Select from dropdown                ar_0_SampleType         Barley
+    sleep        3
     Textfield Value Should Be           css=input[class*='min'][keyword='Mg']           5       #  lab default : 5
     Textfield Value Should Be           css=input[class*='max'][keyword='Mg']           11      #  lab default : 11
     Textfield Value Should Be           css=input[class*='error'][keyword='Mg']         10      #  lab default :  10

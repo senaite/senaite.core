@@ -636,7 +636,8 @@ class ajaxGetInstrumentsAlerts(BrowserView):
     """
     def __call__(self):
         out = {'out-of-date':[],
-               'qc-fail':[]}
+               'qc-fail':[],
+               'next-test':[]}
         try:
             plone.protect.CheckAuthenticator(self.request)
         except Forbidden:
@@ -658,4 +659,9 @@ class ajaxGetInstrumentsAlerts(BrowserView):
                          'title': i.Title(),
                          'url': i.absolute_url_path()}
                 out['qc-fail'].append(instr)
+            elif i.getDisposeUntilNextCalibrationTest():
+                instr = {'uid': i.UID(),
+                         'title': i.Title(),
+                         'url': i.absolute_url_path()}
+                out['next-test'].append(instr)
         return json.dumps(out)
