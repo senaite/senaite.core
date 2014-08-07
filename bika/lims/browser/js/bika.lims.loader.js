@@ -9,11 +9,15 @@ window.bika.lims.controllers =  {
 
     /** JS objects to be loaded always **/
     "body":
-        ['SiteView',
-         'CalculationEvents'],
+        ['SiteView'],
 
 
     /** JS objects to be loaded on specific views or pages **/
+
+    // Calculation events
+    ".ajax_calculate":
+        ['CalculationEvents'],
+
 
     // Bika Listing Table
     "table.bika-listing-table":
@@ -83,6 +87,8 @@ window.bika.lims.controllers =  {
     ".portaltype-analysisrequest.template-ar_add":
         ['AnalysisRequestAddView'],
 
+
+    // Analysis Request Imports
     ".portaltype-arimport.template-arimport_view":
         ['AnalysisRequestImportView'],
 
