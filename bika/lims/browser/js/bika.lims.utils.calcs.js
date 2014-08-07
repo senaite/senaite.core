@@ -1,7 +1,7 @@
 /**
  * Controller class for calculation events
  */
-function CalculationEvents() {
+function CalculationUtils() {
 
     var that = this;
 
@@ -124,86 +124,6 @@ function CalculationEvents() {
                 }
             };
             $.ajax(options);
-        });
-
-        // range specification links
-        $(".specification").click(function(event){
-            tables = $(".bika-listing-table");
-            event.preventDefault();
-            for(t=0; t<tables.length; t++){
-                table = tables[t];
-                specs = $.parseJSON($(table).siblings('input[name="specs"]').val());
-                result_elements = $(table).find('input[field="Result"]');
-                for(i=0; i<result_elements.length; i++){
-                    re = result_elements[i];
-                    result = $(re).val();
-                    uid = $(re).attr('uid');
-                    st_uid = $(re).attr('st_uid');
-                    // remove old alerts
-                    $("img[uid='"+uid+"']").filter("img[icon]").remove();
-                    if (result == ''){
-                        continue
-                    }
-                    spec = specs[st_uid];
-                    if (spec == undefined){
-                        continue;
-                    }
-                    // get spec data from TR
-                    specification = $(this).attr('value');
-                    if (!specification in spec) {
-                        continue;
-                    }
-                    if (spec.length == 0) {
-                        continue;
-                    }
-                    spec = spec[specification];
-                    if (spec == undefined){
-                        continue;
-                    }
-                    re_spec = spec[$(re).attr("objectid")];
-                    if (re_spec == undefined || re_spec == null) {
-                        continue;
-                    }
-                    result = parseFloat(result);
-                    spec_min = parseFloat(re_spec.min);
-                    spec_max = parseFloat(re_spec.max);
-                    // shoulder first
-                    error_amount =  (result/100)*parseFloat(re_spec['error'])
-                    error_min = result - error_amount
-                    error_max = result + error_amount
-                    if (((result < spec_min) && (error_max >= spec_min)) ||
-                        ((result > spec_max) && (error_min <= spec_max)) ){
-                        range_str = "min " + spec_min +
-                                    ", max " + spec_max +
-                                    ", error" + re_spec['error'] + "%";
-                        $("span[uid='"+uid+"']")
-                          .filter("span[field='Result']")
-                          .append("<img src='"+
-                            window.portal_url+"/++resource++bika.lims.images/warning.png' uid='"+
-                          uid+"' icon='warning' title='Result out of range ("+range_str+")'/>");
-                        continue;
-                    }
-                    // then check if in range
-                    if (result >= spec_min && result <= spec_max) {
-                        continue;
-                    }
-                    // fall to here; set red.
-                    range_str = "min: " + spec_min + ", max: " + spec_max;
-                    $("span[uid='"+uid+"']")
-                      .filter("span[field='Result']")
-                      .append("<img src='"+
-                        window.portal_url+"/++resource++bika.lims.images/exclamation.png' uid='"+
-                      uid+"' icon='exclamation' title='Result out of range ("+range_str+")'/>");
-                }
-            }
-            if ($(this).attr('value') == 'lab') {
-                $("a[id='client']").removeClass("selected");
-                $("a[id='lab']").addClass("selected");
-            }
-            if ($(this).attr('value') == 'client') {
-                $("a[id='client']").addClass("selected");
-                $("a[id='lab']").removeClass("selected");
-            }
         });
     }
 }

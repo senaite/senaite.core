@@ -1,3 +1,5 @@
+window.bika = window.bika || { lims: {} };
+
 /**
  * Dictionary of JS objects to be loaded at runtime.
  * The key is the DOM element to look for in the current page. The
@@ -7,10 +9,28 @@
  */
 window.bika.lims.controllers =  {
 
+    /** JS Utilities **/
+
+    "html":
+        ['CommonUtils'],
+
+    // Barcode utils
+    ".barcode":
+        ['BarcodeUtils'],
+
+    // Calculation utils
+    ".ajax_calculate":
+        ['CalculationUtils'],
+
+    // Atachments
+    ".attachments":
+        ['AttachmentsUtils'],
+
+
     /** JS objects to be loaded always **/
+
     "body":
-        ['SiteView',
-         'CalculationEvents'],
+        ['SiteView'],
 
 
     /** JS objects to be loaded on specific views or pages **/
@@ -65,13 +85,17 @@ window.bika.lims.controllers =  {
 
     // Analysis Requests
     ".portaltype-analysisrequest":
-        ['SampleView'],
+        ['SampleView',
+         'AnalysisRequestView'],
 
     ".portaltype-analysisrequest.template-base_view":
-        ['AnalysisRequestViewView'],
+        ['WorksheetManageResultsView',
+         'AnalysisRequestViewView',
+         'AnalysisRequestManageResultsView'],
 
     ".portaltype-analysisrequest.template-manage_results":
-        ['AnalysisRequestManageResultsView'],
+        ['WorksheetManageResultsView',
+         'AnalysisRequestManageResultsView'],
 
     ".portaltype-analysisrequest.template-analyses":
         ['AnalysisRequestAnalysesView'],
@@ -79,14 +103,16 @@ window.bika.lims.controllers =  {
     ".portaltype-analysisrequest.template-ar_add":
         ['AnalysisRequestAddView'],
 
+    "#ar_publish_container":
+        ['AnalysisRequestPublishView'],
+
+
+    // Analysis Request Imports
     ".portaltype-arimport.template-arimport_view":
         ['AnalysisRequestImportView'],
 
     ".portaltype-arimport.template-base_edit":
         ['AnalysisRequestImportView'],
-
-    "#ar_publish_container":
-        ['AnalysisRequestPublishView'],
 
 
     // Supply Orders
@@ -103,6 +129,29 @@ window.bika.lims.controllers =  {
     ".portaltype-batchfolder":
         ['BatchFolderView'],
 
+    // Worksheets
+    ".portaltype-worksheetfolder":
+        ['WorksheetFolderView'],
+
+    ".portaltype-worksheet.template-add_analyses":
+        ['WorksheetAddAnalysesView'],
+
+    ".portaltype-worksheet.template-add_blank":
+        ['WorksheetAddQCAnalysesView'],
+
+    ".portaltype-worksheet.template-add_control":
+        ['WorksheetAddQCAnalysesView'],
+
+    ".portaltype-worksheet.template-add_duplicate":
+        ['WorksheetAddDuplicateAnalysesView'],
+
+    ".portaltype-worksheet.template-manage_results":
+        ['WorksheetManageResultsView'],
+
+
+    // Reports folder (not AR Reports)
+    ".portaltype-reportfolder":
+        ['ReportFolderView'],
 
     // Add here your view-controller/s assignment
 
@@ -145,6 +194,12 @@ window.bika.lims.initview = function() {
 window.bika.lims.initialize = function() {
     return window.bika.lims.initview();
 };
+
+
+window.jarn.i18n.loadCatalog("bika");
+window.jarn.i18n.loadCatalog("plone");
+var _ = window.jarn.i18n.MessageFactory("bika");
+var PMF = jarn.i18n.MessageFactory('plone');
 
 
 (function( $ ) {
