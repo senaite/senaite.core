@@ -8,7 +8,9 @@ function AnalysisRequestImportView() {
     that.load = function() {
 
         //TODO.. Nothing to load????
-
+        // Also check bika.lims.loader.js to be sure this view is loaded when needed
+        console.warn("If you are used to ARImport, please review. Something should be loaded in this js: bika.lims.arimport.js#L10");
+        window.bika.lims.log("If you are used to ARImport, please review. Something should be loaded in this js: bika.lims.arimport.js#L10");
     }
 
     function showMethod(path, service)

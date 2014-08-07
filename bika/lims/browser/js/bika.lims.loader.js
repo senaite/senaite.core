@@ -87,6 +87,9 @@ window.bika.lims.controllers =  {
     ".portaltype-analysisrequest.template-ar_add":
         ['AnalysisRequestAddView'],
 
+    "#ar_publish_container":
+        ['AnalysisRequestPublishView'],
+
 
     // Analysis Request Imports
     ".portaltype-arimport.template-arimport_view":
@@ -94,9 +97,6 @@ window.bika.lims.controllers =  {
 
     ".portaltype-arimport.template-base_edit":
         ['AnalysisRequestImportView'],
-
-    "#ar_publish_container":
-        ['AnalysisRequestPublishView'],
 
 
     // Supply Orders
