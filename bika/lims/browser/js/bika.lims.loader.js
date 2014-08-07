@@ -65,13 +65,17 @@ window.bika.lims.controllers =  {
 
     // Analysis Requests
     ".portaltype-analysisrequest":
-        ['SampleView'],
+        ['SampleView',
+         'AnalysisRequestView'],
 
     ".portaltype-analysisrequest.template-base_view":
-        ['AnalysisRequestViewView'],
+        ['WorksheetManageResultsView',
+         'AnalysisRequestViewView',
+         'AnalysisRequestManageResultsView'],
 
     ".portaltype-analysisrequest.template-manage_results":
-        ['AnalysisRequestManageResultsView'],
+        ['WorksheetManageResultsView',
+         'AnalysisRequestManageResultsView'],
 
     ".portaltype-analysisrequest.template-analyses":
         ['AnalysisRequestAnalysesView'],
@@ -103,6 +107,24 @@ window.bika.lims.controllers =  {
     ".portaltype-batchfolder":
         ['BatchFolderView'],
 
+    // Worksheets
+    ".portaltype-worksheetfolder":
+        ['WorksheetFolderView'],
+
+    ".portaltype-worksheet.template-add_analyses":
+        ['WorksheetAddAnalysesView'],
+
+    ".portaltype-worksheet.template-add_blank":
+        ['WorksheetAddQCAnalysesView'],
+
+    ".portaltype-worksheet.template-add_control":
+        ['WorksheetAddQCAnalysesView'],
+
+    ".portaltype-worksheet.template-add_duplicate":
+        ['WorksheetAddDuplicateAnalysesView'],
+
+    ".portaltype-worksheet.template-manage_results":
+        ['WorksheetManageResultsView'],
 
     // Add here your view-controller/s assignment
 
