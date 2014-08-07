@@ -249,26 +249,43 @@ function SiteView() {
         });
 
         // Look for updates at pypi
-        var pypiurl = "http://pypi.python.org/pypi/bika.lims";
-        $.getJSON(pypiurl+'/json?callback=?', function(data) {
-            var ver = data.info.version;
-            var date = data.releases[ver][0].upload_time;
-            var html = "<p class='title'>"+_("New Bika LIMS release available")+"</p><p>&nbsp;<a href='"+pypiurl+"' style='font-weight:bold'>"+ver+"</a>&nbsp;&nbsp;("+date+")</p>";
-            // Newer than the currently installed?
-            $.ajax({
-                url: window.portal_url + "/get_product_version",
-                type: 'POST',
-                dataType: 'json',
-                data: {'_authenticator': $('input[name="_authenticator"]').val() },
-            }).done(function(data) {
-                var bv = data['bika.lims'];
-                if (!bv.startsWith(ver)) {
-                    // Newer version in pypi!
-                    html += _("Your current version is")+" "+bv;
-                    portalAlert(html);
-                }
-            });
-         });
+        $.ajax({
+            url: window.portal_url + "/get_product_version",
+            type: 'POST',
+            dataType: 'json',
+            data: {'_authenticator': $('input[name="_authenticator"]').val() },
+        }).done(function(data) {
+            var bv = data['bika.lims'];
+            if (bv != undefined) {
+                // Look at pypi
+                var pypiurl = "http://pypi.python.org/pypi/bika.lims";
+                $.getJSON(pypiurl+'/json?callback=?', function(data) {
+                    var ver = data.info.version;
+                    var date = data.releases[ver][0].upload_time;
+                    var html = "<p class='title'>"+_("New Bika LIMS release available")+"</p><p>&nbsp;"+ver+"&nbsp;&nbsp;("+date+")<br/>";
+                   // if (!bv.startsWith(ver)) {
+                        // Newer version in pypi!
+                        html += _("Your current version is")+" "+bv+"</p>";
+                        html += '<p>';
+                        html += '<a class="button" href="'+pypiurl+'">'+_("Release notes")+'</a>&nbsp;&nbsp;';
+                        html += '<input id="hide-release-notifications" type="button" value="'+_("Dismiss")+'"><p>';
+                        portalAlert(html);
+
+                        $('#hide-release-notifications').click(function(e) {
+                            e.preventDefault();
+                            $.ajax({
+                                url: window.portal_url + "/hide_new_releasesinfo",
+                                type: 'POST',
+                                data: {'_authenticator': $('input[name="_authenticator"]').val() },
+                            }).done(function(data) {
+                                $('#ShowNewReleasesInfo').attr('checked', false);
+                                $('#hide-release-notifications').closest('div.portal-alert-item').html("<p class='title'>"+_("Notifications about new releases have been disabled. You can enable this option again in Bika Setup > Security")+"</p>");
+                            });
+                        });
+                 //   }
+                 });
+            }
+        });
 
         // Check if new upgrade-steps
         $.ajax({

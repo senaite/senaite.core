@@ -68,6 +68,15 @@
     layer="bika.lims.interfaces.IBikaLIMS"
   />
 
+  <!-- New releases config -->
+  <browser:page
+    for="*"
+    name="hide_new_releasesinfo"
+    class="bika.lims.browser.ajaxHideNewReleasesInfo"
+    permission="zope.Public"
+    layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
     <subscriber
       for="*
            Products.DCWorkflow.interfaces.IAfterTransitionEvent"
