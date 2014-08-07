@@ -248,6 +248,52 @@ function SiteView() {
             }
         });
 
+        // Look for updates at pypi
+        var pypiurl = "http://pypi.python.org/pypi/bika.lims";
+        $.getJSON(pypiurl+'/json?callback=?', function(data) {
+            var ver = data.info.version;
+            var date = data.releases[ver][0].upload_time;
+            var html = "<p class='title'>"+_("New Bika LIMS release available")+"</p><p>&nbsp;<a href='"+pypiurl+"' style='font-weight:bold'>"+ver+"</a>&nbsp;&nbsp;("+date+")</p>";
+            // Newer than the currently installed?
+            $.ajax({
+                url: window.portal_url + "/get_product_version",
+                type: 'POST',
+                dataType: 'json',
+                data: {'_authenticator': $('input[name="_authenticator"]').val() },
+            }).done(function(data) {
+                var bv = data['bika.lims'];
+                if (!bv.startsWith(ver)) {
+                    // Newer version in pypi!
+                    html += _("Your current version is")+" "+bv;
+                    portalAlert(html);
+                }
+            });
+         });
+
+        // Check if new upgrade-steps
+        $.ajax({
+            url: window.portal_url + "/prefs_install_products_form",
+            type: 'POST',
+            data: {'_authenticator': $('input[name="_authenticator"]').val() },
+        }).done(function(htmldata) {
+            if ($(htmldata).find('input[name="prefs_reinstallProducts:method"]').length > 0) {
+                // Needs an upgrade!
+                var html = '<form method="post" action="' + window.portal_url + '/portal_quickinstaller">';
+                html += "<p class='title'>"+_("Upgrade step available:")+"</p>";
+                var products = $(htmldata).find('input[name="prefs_reinstallProducts:method"]');
+                $.each(products, function(index, product){
+                    // <input class="context" type="submit" name="prefs_reinstallProducts:method" value="bika.lims">
+                    html += "<p>";
+                    html += $(product).closest('ul.configletDetails').parent().find('label').first().html().trim()+"&nbsp;&nbsp;&nbsp;";
+                    html += _("Click to upgrade: ") + $(product).parent().html().trim()+"</span>";
+                    html += "</p>";
+
+                });
+                html += "</form>";
+                portalAlert(html);
+            }
+        });
+
         // Check instrument validity and add an alert if needed
         $.ajax({
             url: window.portal_url + "/get_instruments_alerts",
@@ -310,30 +356,6 @@ function SiteView() {
                     })
                     html += "</p>";
                 }
-                portalAlert(html);
-            }
-        });
-
-        // Check if new upgrades
-        $.ajax({
-            url: window.portal_url + "/prefs_install_products_form",
-            type: 'POST',
-            data: {'_authenticator': $('input[name="_authenticator"]').val() },
-        }).done(function(htmldata) {
-            if ($(htmldata).find('input[name="prefs_reinstallProducts:method"]').length > 0) {
-                // Needs an upgrade!
-                var html = '<form method="post" action="' + window.portal_url + '/portal_quickinstaller">';
-                html += "<p class='title'>"+_("Upgrades available:")+"</p>";
-                var products = $(htmldata).find('input[name="prefs_reinstallProducts:method"]');
-                $.each(products, function(index, product){
-                    // <input class="context" type="submit" name="prefs_reinstallProducts:method" value="bika.lims">
-                    html += "<p>";
-                    html += $(product).closest('ul.configletDetails').parent().find('label').first().html().trim()+"&nbsp;&nbsp;&nbsp;";
-                    html += _("Click to upgrade: ") + $(product).parent().html().trim()+"</span>";
-                    html += "</p>";
-
-                });
-                html += "</form>";
                 portalAlert(html);
             }
         });
