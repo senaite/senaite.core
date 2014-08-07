@@ -263,7 +263,7 @@ function SiteView() {
                     var ver = data.info.version;
                     var date = data.releases[ver][0].upload_time;
                     var html = "<p class='title'>"+_("New Bika LIMS release available")+"</p><p>&nbsp;"+ver+"&nbsp;&nbsp;("+date+")<br/>";
-                   // if (!bv.startsWith(ver)) {
+                    if (!bv.startsWith(ver)) {
                         // Newer version in pypi!
                         html += _("Your current version is")+" "+bv+"</p>";
                         html += '<p>';
@@ -282,7 +282,7 @@ function SiteView() {
                                 $('#hide-release-notifications').closest('div.portal-alert-item').html("<p class='title'>"+_("Notifications about new releases have been disabled. You can enable this option again in Bika Setup > Security")+"</p>");
                             });
                         });
-                 //   }
+                    }
                  });
             }
         });
