@@ -1,7 +1,7 @@
 /**
  * Controller class for calculation events
  */
-function CalculationEvents() {
+function CalculationUtils() {
 
     var that = this;
 

@@ -1,7 +1,7 @@
 /**
  * Controller class for calculation events
  */
-function AttachmentsEvents() {
+function AttachmentsUtils() {
 
     var that = this;
 

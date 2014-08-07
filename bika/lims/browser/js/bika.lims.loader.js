@@ -7,21 +7,25 @@
  */
 window.bika.lims.controllers =  {
 
+    /** JS Utilities **/
+
+    // Barcode utils
+    ".barcode":
+        ['BarcodeUtils'],
+
+    // Calculation utils
+    ".ajax_calculate":
+        ['CalculationUtils'],
+
+    // Atachments
+    ".attachments":
+        ['AttachmentsUtils'],
+
+
     /** JS objects to be loaded always **/
 
     "body":
         ['SiteView'],
-
-
-    /** JS Utilities **/
-
-    // Calculation events
-    ".ajax_calculate":
-        ['CalculationEvents'],
-
-    // Atachments
-    ".attachments":
-        ['AttachmentsEvents'],
 
 
     /** JS objects to be loaded on specific views or pages **/
