@@ -1,3 +1,5 @@
+window.bika = window.bika || { lims: {} };
+
 /**
  * Dictionary of JS objects to be loaded at runtime.
  * The key is the DOM element to look for in the current page. The
@@ -8,6 +10,9 @@
 window.bika.lims.controllers =  {
 
     /** JS Utilities **/
+
+    "html":
+        ['CommonUtils'],
 
     // Barcode utils
     ".barcode":
@@ -189,6 +194,12 @@ window.bika.lims.initview = function() {
 window.bika.lims.initialize = function() {
     return window.bika.lims.initview();
 };
+
+
+window.jarn.i18n.loadCatalog("bika");
+window.jarn.i18n.loadCatalog("plone");
+var _ = window.jarn.i18n.MessageFactory("bika");
+var PMF = jarn.i18n.MessageFactory('plone');
 
 
 (function( $ ) {
