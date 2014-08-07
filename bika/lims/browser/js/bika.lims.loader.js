@@ -143,6 +143,11 @@ window.bika.lims.controllers =  {
     ".portaltype-worksheet.template-manage_results":
         ['WorksheetManageResultsView'],
 
+
+    // Reports folder (not AR Reports)
+    ".portaltype-reportfolder":
+        ['ReportFolderView'],
+
     // Add here your view-controller/s assignment
 
 };
