@@ -484,6 +484,28 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceField(
+        'SampleMatrix',
+        required=False,
+        allowed_types='SampleMatrix',
+        relationship='AnalysisRequestSampleMatrix',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        widget=ReferenceWidget(
+            label=_("Sample Matrix"),
+            size=20,
+            render_own_label=True,
+            visible={'edit': 'visible',
+                     'view': 'visible',
+                     'add': 'visible',
+                     'add-by-row': 'visible',
+                     'secondary': 'invisible'},
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
+            showOn=True,
+        ),
+    ),
+    ReferenceField(
         'StorageLocation',
         allowed_types='StorageLocation',
         relationship='AnalysisRequestStorageLocation',
@@ -1481,6 +1503,22 @@ class AnalysisRequest(BaseFolder):
         if sample:
             return sample.getSampleType()
         return self.Schema().getField('SampleType').get(self)
+
+    security.declarePublic('setSampleMatrix')
+
+    def setSampleMatrix(self, value):
+        sample = self.getSample()
+        if sample and value:
+            sample.setSampleMatrix(value)
+        self.Schema()['SampleMatrix'].set(self, value)
+
+    security.declarePublic('getSampleMatrix')
+
+    def getSampleMatrix(self):
+        sample = self.getSample()
+        if sample:
+            return sample.getSampleMatrix()
+        return self.Schema().getField('SampleMatrix').get(self)
 
     security.declarePublic('setClientReference')
 
