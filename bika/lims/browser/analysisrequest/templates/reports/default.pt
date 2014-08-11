@@ -166,6 +166,10 @@
             <td tal:content="sample/sample_type/title|nothing"></td>
         </tr>
         <tr>
+            <td class="label" i18n:translate="">Sample Matrix</td>
+            <td tal:content="analysisrequest/sample_matrix/title|nothing"></td>
+        </tr>
+        <tr>
             <td class="label" i18n:translate="">Specification</td>
             <td tal:content="specifications/title|nothing"></td>
         </tr>

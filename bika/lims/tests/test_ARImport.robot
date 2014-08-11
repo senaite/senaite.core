@@ -55,6 +55,7 @@ Import Classic AR File with errors
     Page Should Contain         Client ID should be
     Page Should Contain         Contact invalid
     Page Should Contain         Sample type WrongType invalid
+    Page Should Contain         Sample Matrix WrongMatrix invalid
     Page Should Contain         Container type WrongContainer invalid
 
 Import Classic Valid AR
@@ -93,6 +94,7 @@ Import Profile AR File with errors
     Page Should Contain         Client ID should be
     Page Should Contain         Contact invalid
     Page Should Contain         Sample type WrongType invalid
+    Page Should Contain         Sample Matrix WrongMatrix invalid
     Page Should Contain         Container type WrongContainer invalid
 
 
@@ -102,6 +104,12 @@ Submit Valid AR Import
     Sleep                       10s
     Wait until page contains    View
     Page Should Contain         Submitted
+    Click Element               xpath=/html/body/div[1]/div[2]/div[1]/div[2]/div[2]/div/div/div/table[2]/tbody/tr[1]/td[2]/a[1]
+    Page Should Contain         Manage Analyses
+    Page Should Contain         Sample Due
+    ${Matrix} =                 Get value    xpath=//input[@id="SampleMatrix"]
+    Log                         ${Matrix}
+    Should Be Equal             ${Matrix}    Grain
 
 Import Classic ARImport
     [arguments]  ${file}

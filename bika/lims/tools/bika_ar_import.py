@@ -23,6 +23,7 @@ class bika_ar_import(UniqueObject, SimpleItem):
 
     security.declareProtected(ManageAnalysisRequests, 'import_file')
     def import_file(self, csvfile, filename, client_id, state):
+        import pdb; pdb.set_trace()
         slash = filename.rfind('\\')
         full_name = filename[slash + 1:]
         ext = full_name.rfind('.')

@@ -468,6 +468,8 @@ class SamplesView(BikaListingView):
             'DateReceived': {'title': _('Date Received'),
                              'index': 'getDateReceived',
                              'toggle': False},
+            'SampleMatrix': {'title': _("Sample Matrix"),
+                             'toggle': False},
             'state_title': {'title': _('State'),
                             'index':'review_state'},
         }
@@ -481,6 +483,7 @@ class SamplesView(BikaListingView):
                          'Creator',
                          'Created',
                          'Requests',
+                         'SampleMatrix',
                          'getClientReference',
                          'getClientSampleID',
                          'getSampleTypeTitle',
@@ -507,6 +510,7 @@ class SamplesView(BikaListingView):
                          'Creator',
                          'Created',
                          'Requests',
+                         'SampleMatrix',
                          'getClientReference',
                          'getClientSampleID',
                          'getSamplingDate',
@@ -530,6 +534,7 @@ class SamplesView(BikaListingView):
                          'Creator',
                          'Created',
                          'Requests',
+                         'SampleMatrix',
                          'getClientReference',
                          'getClientSampleID',
                          'getSampleTypeTitle',
@@ -553,6 +558,7 @@ class SamplesView(BikaListingView):
                          'Creator',
                          'Created',
                          'Requests',
+                         'SampleMatrix',
                          'getClientReference',
                          'getClientSampleID',
                          'getSampleTypeTitle',
@@ -576,6 +582,7 @@ class SamplesView(BikaListingView):
                          'Creator',
                          'Created',
                          'Requests',
+                         'SampleMatrix',
                          'getClientReference',
                          'getClientSampleID',
                          'getSampleTypeTitle',
@@ -600,6 +607,7 @@ class SamplesView(BikaListingView):
                          'Creator',
                          'Created',
                          'Requests',
+                         'SampleMatrix',
                          'getClientReference',
                          'getClientSampleID',
                          'getSampleTypeTitle',
@@ -655,6 +663,14 @@ class SamplesView(BikaListingView):
 
             samplingdate = obj.getSamplingDate()
             items[x]['getSamplingDate'] = self.ulocalized_time(samplingdate, long_format=1)
+
+            matrix = obj.getSampleMatrix()
+            if matrix:
+                items[x]['SampleMatrix'] = matrix.getSampleMatrix()
+                items[x]['replace']['SampleMatrix'] = "<a href='%s'>%s</a>" % \
+                     (matrix.absolute_url(), items[x]['SampleMatrix'])
+            else:
+                items[x]['SampleMatrix'] = ''
 
             after_icons = ''
             if obj.getSampleType().getHazardous():

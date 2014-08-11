@@ -351,10 +351,11 @@ class ClientARImportAddView(BrowserView):
                     ClientRef=sample[1],
                     SampleDate=sample[2],
                     SampleType = sample[3],
-                    PickingSlip = sample[4],
-                    ContainerType = sample[5],
-                    ReportDryMatter = sample[6],
-                    Priority = sample[7],
+                    SampleMatrix = sample[4],
+                    PickingSlip = sample[5],
+                    ContainerType = sample[6],
+                    ReportDryMatter = sample[7],
+                    Priority = sample[8],
                     )
 
                 aritem.setRemarks(item_remarks)

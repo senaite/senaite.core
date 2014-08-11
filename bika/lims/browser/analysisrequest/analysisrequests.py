@@ -133,6 +133,8 @@ class AnalysisRequestsView(BikaListingView):
             'getTemplateTitle': {'title': _('Template'),
                                  'index': 'getTemplateTitle',
                                  'toggle': False},
+            'SampleMatrix': {'title': _('Sample Matrix'),
+                             'toggle': False,},
         }
         self.review_states = [
             {'id': 'default',
@@ -158,6 +160,7 @@ class AnalysisRequestsView(BikaListingView):
                         'Client',
                         'Creator',
                         'Created',
+                        'SampleMatrix',
                         'getClientOrderNumber',
                         'getClientReference',
                         'ClientContact',
@@ -200,6 +203,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getTemplateTitle',
                         'Creator',
                         'Created',
+                        'SampleMatrix',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -234,6 +238,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getTemplateTitle',
                         'Creator',
                         'Created',
+                        'SampleMatrix',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -270,6 +275,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getTemplateTitle',
                         'Creator',
                         'Created',
+                        'SampleMatrix',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -302,6 +308,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getTemplateTitle',
                         'Creator',
                         'Created',
+                        'SampleMatrix',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -334,6 +341,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getTemplateTitle',
                         'Creator',
                         'Created',
+                        'SampleMatrix',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -371,6 +379,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getTemplateTitle',
                         'Creator',
                         'Created',
+                        'SampleMatrix',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -405,6 +414,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getTemplateTitle',
                         'Creator',
                         'Created',
+                        'SampleMatrix',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -449,6 +459,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getTemplateTitle',
                         'Creator',
                         'Created',
+                        'SampleMatrix',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -494,6 +505,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getTemplateTitle',
                         'Creator',
                         'Created',
+                        'SampleMatrix',
                         'getClientOrderNumber',
                         'getClientReference',
                         'getClientSampleID',
@@ -560,6 +572,14 @@ class AnalysisRequestsView(BikaListingView):
                      (batch.absolute_url(), items[x]['BatchID'])
             else:
                 items[x]['BatchID'] = ''
+
+            matrix = obj.getSampleMatrix()
+            if matrix:
+                items[x]['SampleMatrix'] = matrix.getSampleMatrix()
+                items[x]['replace']['SampleMatrix'] = "<a href='%s'>%s</a>" % \
+                     (matrix.absolute_url(), items[x]['SampleMatrix'])
+            else:
+                items[x]['SampleMatrix'] = ''
 
             val = obj.Schema().getField('SubGroup').get(obj)
             items[x]['SubGroup'] = val.Title() if val else ''

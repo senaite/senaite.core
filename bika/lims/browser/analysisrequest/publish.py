@@ -183,6 +183,7 @@ class AnalysisRequestPublishView(BrowserView):
         data['sample'] = self._sample_data(ar)
         data['batch'] = self._batch_data(ar)
         data['specifications'] = self._specs_data(ar)
+        data['sample_matrix'] = self._sample_matrix(ar)
         data['analyses'] = self._analyses_data(ar, ['verified', 'published'])
         data['qcanalyses'] = self._qcanalyses_data(ar, ['verified', 'published'])
         data['points_of_capture'] = sorted(set([an['point_of_capture'] for an in data['analyses']]))
@@ -365,6 +366,16 @@ class AnalysisRequestPublishView(BrowserView):
             data['title'] = to_utf8(specs.Title())
             data['resultsrange'] = specs.getResultsRangeDict()
 
+        return data
+
+    def _sample_matrix(self, ar=None):
+        samplematrix = ar.getSampleMatrix() if ar else None
+        data = {}
+        if samplematrix:
+            data = {'obj': samplematrix,
+                    'id': samplematrix.id,
+                    'title': samplematrix.Title(),
+                    'url': samplematrix.absolute_url()}
         return data
 
     def _analyses_data(self, ar, analysis_states=['verified', 'published']):

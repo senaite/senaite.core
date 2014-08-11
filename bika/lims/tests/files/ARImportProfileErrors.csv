@@ -1,16 +1,16 @@
-Header,Import / Export,File name,Client name,Client ID,Contact ID,CC Names - Report,CC Emails - Report,CC Emails -Invoice,Order ID,Client Reference,Sample point,No of Samples
-Header Data,Import,ARImportProfileErrors,Happy Hills Feeds,WrongID,WrongName,Sarel Seemonster;Mike Metcalfe,mike@metcalfe.co.za; joe@soap.com,jo@blogs.com; jack@jones.com,ClientRef2,Q123,Point1.1,10
-Samples,Client Sample ID,Sampling date,Sample Category,Sample Matrix,Container Type,Report DM,Priority,Total number of analyses,Price excl Tax,PTM,TH,Mbcount
-Analysis price,,,,,,,,,,,,
-Total analyses,,,,,,,,24,R 680,,,
-Total price excl Tax,,,,,,,,24,R 595,,,
-Sample 1,GS1234,3/5/2008,WrongType,98762487,Vacutainer,1,,1,R 45,1,,
-Sample 2,MFP2361,3/5/2008,Canola,98762487,WrongContainer,1,,4,R 40,,1,
-Sample 3,MFP2362,3/5/2008,Canola,98762488,Vacutainer,,,3,R 40,,,1
-Sample 4,MFP2363,3/5/2008,Canola,98762488,Vacutainer,,,1,R 45,,1,
-Sample 5,MFP2364,3/5/2008,Canola,98762489,Vacutainer,,,3,R 130,1,,
-Sample 6,MFP2365,3/5/2008,Canola,98762490,Vacutainer,,,3,R 40,,1,
-Sample 7,MFP2366,3/5/2008,Canola,98762491,Vacutainer,,,1,R 45,,,1
-Sample 8,MFP2367,3/5/2008,Canola,98762492,Vacutainer,,,3,R 40,,1,
-Sample 9,MFP2368,3/5/2008,Canola,98762493,Vacutainer,,,3,R 40,1,,
-Sample 10,MFP2369,3/5/2008,Canola,98762494,Vacutainer,,,3,R 130,,,1
+Header,Import / Export,File name,Client name,Client ID,Contact ID,CC Names - Report,CC Emails - Report,CC Emails -Invoice,Order ID,Client Reference,Sample point,No of Samples,
+Header Data,Import,ARImportProfileErrors,Happy Hills Feeds,WrongID,WrongName,Sarel Seemonster;Mike Metcalfe,mike@metcalfe.co.za; joe@soap.com,jo@blogs.com; jack@jones.com,ClientRef2,Q123,Point1.1,10,
+Samples,Client Sample ID,Sampling date,Sample Category,Sample Matrix,Picking Slip,Container Type,Report DM,Priority,Total number of analyses,Price excl Tax,PTM,TH,Mbcount
+Analysis price,,,,,,,,,,,,,
+Total analyses,,,,,,,,,24,R 680,,,
+Total price excl Tax,,,,,,,,,24,R 595,,,
+Sample 1,GS1234,3/5/2008,WrongType,WrongMatrix,98762487,Vacutainer,1,,1,R 45,1,,
+Sample 2,MFP2361,3/5/2008,Canola,Grain,98762487,WrongContainer,1,,4,R 40,,1,
+Sample 3,MFP2362,3/5/2008,Canola,Grain,98762488,Vacutainer,,,3,R 40,,,1
+Sample 4,MFP2363,3/5/2008,Canola,Grain,98762488,Vacutainer,,,1,R 45,,1,
+Sample 5,MFP2364,3/5/2008,Canola,Grain,98762489,Vacutainer,,,3,R 130,1,,
+Sample 6,MFP2365,3/5/2008,Canola,Grain,98762490,Vacutainer,,,3,R 40,,1,
+Sample 7,MFP2366,3/5/2008,Canola,Grain,98762491,Vacutainer,,,1,R 45,,,1
+Sample 8,MFP2367,3/5/2008,Canola,Grain,98762492,Vacutainer,,,3,R 40,,1,
+Sample 9,MFP2368,3/5/2008,Canola,Grain,98762493,Vacutainer,,,3,R 40,1,,
+Sample 10,MFP2369,3/5/2008,Canola,Grain,98762494,Vacutainer,,,3,R 130,,,1
