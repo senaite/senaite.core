@@ -7,6 +7,8 @@ from Products.Five.browser import BrowserView
 from bika.lims import logger
 from zope.cachedescriptors.property import Lazy as lazy_property
 from zope.i18n import translate
+import plone, json
+
 
 class BrowserView(BrowserView):
 
@@ -136,3 +138,21 @@ class BrowserView(BrowserView):
         if fmt == "time_format":
             fmt = "%I:%M %p"
         return fmt
+
+
+class ajaxGetProductVersion(BrowserView):
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        vers = {}
+        if self.context.bika_setup.getShowNewReleasesInfo() == True:
+            pl = self.context
+            qi = pl.get('portal_quickinstaller')
+            for key in qi.keys():
+                vers[key] = qi.getProductVersion(key);
+        return json.dumps(vers)
+
+
+class ajaxHideNewReleasesInfo(BrowserView):
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        return self.context.bika_setup.setShowNewReleasesInfo(False);

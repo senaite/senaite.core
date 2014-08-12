@@ -1082,4 +1082,18 @@ table#add_analyses {
     margin-top: -8px;
 }
 
+#portal-alert input,
+#portal-alert a.button {
+    background-color: #436976 !important;
+    border: 0 none !important;
+    border-radius: 3px 3px 3px 3px !important;
+    color: #FFFFFF !important;
+    margin-top: 10px;
+    padding: 3px 10px;
+}
+
+#portal-alert a.button {
+    padding: 4px 10px;
+}
+
 </dtml-with>

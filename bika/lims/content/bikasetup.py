@@ -99,6 +99,14 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     BooleanField(
+        'ShowNewReleasesInfo',
+        schemata="Security",
+        default=True,
+        widget=BooleanWidget(
+            label=_("Display an alert on new releases of Bika LIMS"),
+        )
+    ),
+    BooleanField(
         'ShowPrices',
         schemata="Accounting",
         default=True,
