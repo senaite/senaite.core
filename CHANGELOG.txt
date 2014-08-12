@@ -1,7 +1,8 @@
 next
 ----
 
-LIMS-1360 Number of analyses in ARs folder view
+LIMS-1377: Error when trying to publish after updating branch hotfix/next or develop
+LIMS-1360: Number of analyses in ARs folder view
 LIMS-1335: Reference Definitions don't sort alphabetically on WS Template lay-outs
 LIMS-1345: Analysis profiles don't sort
 LIMS-1347: Analysis/AR background colour to be different to for Receive and To be Sampled
