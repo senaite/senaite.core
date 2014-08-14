@@ -55,9 +55,9 @@
     <div id="accreditation-logo"
         tal:condition="python:laboratory['accredited']==True">
         <img tal:condition="laboratory/accreditation_logo"
-             tal:attributes="src string:${portal/absolute_url}/accreditation_logo"/>
+             tal:attributes="src string:${portal/url}/accreditation_logo"/>
         <img tal:condition="laboratory/accreditation_logo"
-             tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/AccreditationBodyLogo.png"/>
+             tal:attributes="src string:${portal/url}/++resource++bika.lims.images/AccreditationBodyLogo.png"/>
     </div>
 </div>
 
