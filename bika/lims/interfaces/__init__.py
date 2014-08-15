@@ -457,15 +457,51 @@ class IResultOutOfRange(Interface):
         """
 
 
-class IWidgetVisibility(Interface):
+class IATWidgetVisibility(Interface):
 
     """Adapter to modify the default list of fields to show on each view.
+
+    Archetypes uses a widget attribute called 'visible' to decide which
+    fields are editable or viewable in different contexts (view and edit).
+
+    This adapter lets you create/use arbitrary keys in the field.widget.visible
+    attribute, or or any other condition to decide if a particular field is
+    displayed or not.
+
+    an attribute named 'sort', if present, is an integer.  It is used
+    to allow some adapters to take preference over others.  It's default is '1000',
+    other lower values will take preference over higher values.
+
     """
 
-    def __call__():
-        """Returns a dictionary, the keys are the keys of any field's
-        "visibility" property dicts found in the schema, and the
-        values are field names.
+    def __call__(widget, instance, mode, vis_dict, default=None, field=None):
+        """Returns the visibility attribute for this particular field, in the
+        current context.
+
+        :arg field: the AT schema field object
+        :arg mode: 'edit', 'view', or some custom mode, eg 'add', 'secondary'
+        :arg vis_dict: the original schema value of field.widget.visible
+        :arg default: the value returned by the base Archetypes.Widget.isVisible
+
+        In default Archetypes the value for the attribute on the field may either
+        be a dict with a mapping for edit and view::
+
+            visible = { 'edit' :'hidden', 'view': 'invisible' }
+
+        Or a single value for all modes::
+
+            True/1:  'visible'
+            False/0: 'invisible'
+            -1:      'hidden'
+
+        visible: The field is shown in the view/edit screen
+        invisible: The field is skipped when rendering the visVisibleiew/edit screen
+        hidden: The field is added as <input type="hidden" />
+        The default state is 'visible'.
+
+        The default rules are always applied, but any IATWidgetVisibility adapters
+        found are called and permitted to modify the value.
+
         """
 
 

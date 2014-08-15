@@ -48,23 +48,6 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         adapter = getAdapter(self.context.aq_parent, name='getContacts')
         return adapter()
 
-    def getWidgetVisibility(self):
-        adapter = getAdapter(self.context, name='getWidgetVisibility')
-        ret = adapter()
-        ordered_ret = {}
-        # respect schemaextender's re-ordering of fields, and
-        # remove hidden attributes.
-        hiddenattributes = getHiddenAttributesForClass('AnalysisRequest')
-        schema_fields = [f.getName() for f in self.context.Schema().fields()]
-        for mode, state_field_lists in ret.items():
-            ordered_ret[mode] = {}
-            for statename, state_fields in state_field_lists.items():
-                ordered_ret[mode][statename] = \
-                    [field for field in schema_fields
-                     if field in state_fields
-                     and field not in hiddenattributes]
-        return ordered_ret
-
     def partitioned_services(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         ps = []
@@ -78,7 +61,11 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
 
 class SecondaryARSampleInfo(BrowserView):
     """Return fieldnames and pre-digested values for Sample fields which
-    javascript must disable/display while adding secondary ARs
+    javascript must disable/display while adding secondary ARs.
+
+    This relies on the schema field's widget.isVisible setting, and
+    will allow an extra visibility setting:   "disabled".
+
     """
 
     def __init__(self, context, request):
@@ -87,20 +74,21 @@ class SecondaryARSampleInfo(BrowserView):
         self.request = request
 
     def __call__(self):
-        uid = self.request.get('Sample_uid')
+        uid = self.request.get('Sample_uid', False)
+        if not uid:
+            return []
         uc = getToolByName(self.context, "uid_catalog")
-        sample = uc(UID=uid)[0].getObject()
+        proxies = uc(UID=uid)
+        if not proxies:
+            return []
+        sample = proxies[0].getObject()
         sample_schema = sample.Schema()
-        adapter = getAdapter(self.context, name='getWidgetVisibility')
-        wv = adapter()
-        fieldnames = wv.get('secondary', {}).get('invisible', [])
+        fields = [f for f in sample.viewableFields(sample)
+                  if f.widget.isVisible(sample, 'secondary') == 'disabled']
         ret = []
-        hiddenattributes = getHiddenAttributesForClass('AnalysisRequest')
-        for fieldname in fieldnames:
-            if fieldname in sample_schema:
-                if fieldname in hiddenattributes:
-                    continue
-                fieldvalue = sample_schema[fieldname].getAccessor(sample)()
+        for field in fields:
+            if field in sample_schema:
+                fieldvalue = field.getAccessor(sample)
                 if fieldvalue is None:
                     fieldvalue = ''
                 if hasattr(fieldvalue, 'Title'):
@@ -109,7 +97,7 @@ class SecondaryARSampleInfo(BrowserView):
                     fieldvalue = fieldvalue.strftime(self.date_format_short)
             else:
                 fieldvalue = ''
-            ret.append([fieldname, fieldvalue])
+            ret.append([field, fieldvalue])
         return json.dumps(ret)
 
 
@@ -186,11 +174,7 @@ class ajaxAnalysisRequestSubmit():
         for column in columns:
             formkey = "ar.%s" % column
             ar = form[formkey]
-            # Secondary ARs don't have sample fields present in the form data
-            # if 'Sample_uid' in ar and ar['Sample_uid']:
-            # adapter = getAdapter(self.context, name='getWidgetVisibility')
-            #     wv = adapter().get('secondary', {}).get('invisible', [])
-            #     required_fields = [x for x in required_fields if x not in wv]
+
             # check that required fields have values
             for field in required_fields:
                 # This one is still special.
@@ -207,6 +191,7 @@ class ajaxAnalysisRequestSubmit():
         # Return errors if there are any
         if errors:
             return json.dumps({'errors': errors})
+
         # Get the prices from the form data
         prices = form.get('Prices', None)
         # Initialize the Anlysis Request collection

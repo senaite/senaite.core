@@ -36,4 +36,11 @@
       replacement="bika.lims.monkey.member.getAuthenticatedMember"
       />
 
+  <monkey:patch
+      description="Modify isVisible to include more specific widget visibility rules"
+      class="Products.Archetypes.Widget.TypesWidget"
+      original="isVisible"
+      replacement=".Widget.isVisible"
+      />
+
 </configure>

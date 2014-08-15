@@ -35,7 +35,6 @@
         currency python:context.bika_setup.getCurrency();
         checkPermission nocall: context/portal_membership/checkPermission;
         tabindex view/tabindex;
-        widget_visibility view/getWidgetVisibility;
         partitionable view/partitioned_services;
         ShowPrices python:context.bika_setup.getShowPrices();">
 
@@ -93,10 +92,10 @@
     cellpadding="0" cellspacing="0">
 <thead>
 
-    <!-- All edit fields with fields with add=visible -->
-    <tr tal:repeat="fieldName python:widget_visibility.get('add', {}).get('visible', [])">
+    <!-- 'add=edit' fields -->
+    <tr tal:repeat="field python:[f for f in context.Schema().fields()  if f.widget.isVisible(context, 'add', default='invisible', field=f) == 'edit']">
         <tal:def define="
-            field python:context.Schema()[fieldName];
+            fieldName python:field.getName();
             field_macro here/widgets/field/macros/edit;
             accessor python:field.getAccessor(context);
             widget python:field.widget;
@@ -132,22 +131,23 @@
                    <metal:field use-macro="python:context.widget(fieldName, mode='edit')"/>
 
                     <tal:hidden_def
-                        tal:repeat="hiddenfieldName python:widget_visibility.get('add', {}).get('hidden', [])"
-                        tal:define="index repeat/fieldName/index">
+                        tal:repeat="hfield python:[f for f in context.Schema().fields() if f.widget.isVisible(context, 'add', default='invisible', field=f) == 'hidden']">
                             <input
                                 type="hidden"
-                                tal:define="val python:context.Schema()[hiddenfieldName].getAccessor(context)();"
+                                tal:define="val python:hfield.getAccessor(context)();
+                                            hfieldName python:hfield.getName();"
                                 tal:attributes="
-                                    name string:${hiddenfieldName};
-                                    id string:${hiddenfieldName};
-                                    value val/Title|nothing;"/>
+                                    name string:${hfieldName};
+                                    id string:${hfieldName};
+                                    value val/Title|nothing"/>
                              <input
                                 type="hidden"
-                                tal:define="val python:context.Schema()[hiddenfieldName].getAccessor(context)();"
+                                tal:define="val python:hfield.getAccessor(context)();
+                                            hfieldName python:hfield.getName();"
                                 tal:attributes="
-                                    name string:${hiddenfieldName}_uid;
-                                    id string:${hiddenfieldName}_uid;
-                                    value val/UID|nothing;"/>
+                                    name string:${hfieldName}_uid;
+                                    id string:${fieldName}_uid;
+                                    value val/UID|nothing"/>
                     </tal:hidden_def>
 
                 </td>
@@ -155,25 +155,24 @@
         </tal:def>
     </tr>
 
-    <tal:hidden repeat="hiddenfieldName python:widget_visibility.get('add', {}).get('hidden', [])">
+    <tal:hidden
+        tal:repeat="field python:[f for f in context.Schema().fields() if f.widget.isVisible(context, 'add', default='invisible', field=f) == 'hidden']">
         <tal:columns tal:repeat="column python:range(view.col_count)">
             <input
                 type="hidden"
                 tal:define="
-                    field python:context.Schema()[hiddenfieldName];
                     val python:field.getAccessor(context)();"
                 tal:attributes="
-                    name string:ar.${column}.${hiddenfieldName};
-                    id string:ar_${column}_${hiddenfieldName};
+                    name string:ar.${column}.${field};
+                    id string:ar_${column}_${field};
                     value val/Title|nothing;"/>
              <input
                 type="hidden"
                 tal:define="
-                    field python:context.Schema()[hiddenfieldName];
                     val python:field.getAccessor(context)();"
                 tal:attributes="
-                    name string:ar.${column}.${hiddenfieldName}_uid;
-                    id string:ar_${column}_${hiddenfieldName}_uid;
+                    name string:ar.${column}.${field}_uid;
+                    id string:ar_${column}_${field}_uid;
                     value val/UID|nothing;"/>
         </tal:columns>
     </tal:hidden>
