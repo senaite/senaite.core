@@ -107,6 +107,12 @@ class HeaderTableView(BrowserView):
                     ret = {'fieldName': fieldname,
                            'mode': 'structure',
                            'html': ''}
+            elif field.getType().lower().find('datetime') > -1:
+                value = field.get(self.context)
+                ret = {'fieldName': fieldname,
+                       'mode': 'structure',
+                       'html': self.ulocalized_time(value, long_format=True)
+                }
         return ret
 
     def sublists(self):
