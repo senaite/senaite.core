@@ -65,6 +65,9 @@ function CommonUtils() {
         };
 
         window.bika.lims.log = function(e) {
+			if (window.location.url == undefined || window.location.url == null) {
+				return;
+			}
             var message = "(" + window.location.url + "): " + e;
             $.ajax({
                 type: "POST",
