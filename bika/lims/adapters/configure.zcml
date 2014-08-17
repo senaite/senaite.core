@@ -12,6 +12,25 @@
     />
 
     <adapter
+      factory=".widgetvisibility.OptionalFieldsWidgetVisibility"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="OptionalFieldsWidgetVisibility"
+    />
+    <adapter
+      factory=".widgetvisibility.OptionalFieldsWidgetVisibility"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.ISample"
+      name="OptionalFieldsWidgetVisibility"
+    />
+    <adapter
+      factory=".widgetvisibility.OptionalFieldsWidgetVisibility"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.IBatch"
+      name="OptionalFieldsWidgetVisibility"
+    />
+
+    <adapter
       factory=".widgetvisibility.WorkflowAwareWidgetVisibility"
       provides="bika.lims.interfaces.IATWidgetVisibility"
       for="bika.lims.interfaces.IAnalysisRequest"

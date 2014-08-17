@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 from Products.CMFCore.WorkflowCore import WorkflowException
+from bika.lims.utils import getHiddenAttributesForClass
 from types import DictType
 from Products.CMFCore.utils import getToolByName
 from bika.lims.interfaces import IATWidgetVisibility
@@ -37,33 +38,6 @@ class WorkflowAwareWidgetVisibility(object):
 
     def __call__(self, context, mode, field, default):
         """
-        We must create an AR and test workflow widget visibility through all states
-
-        >>> portal = layer['portal']
-        >>> portal_url = portal.absolute_url()
-        >>> from plone.app.testing import SITE_OWNER_NAME
-        >>> from plone.app.testing import SITE_OWNER_PASSWORD
-        >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
-
-        Simple AR creation, no obj_path parameter is required:
-
-        >>> browser.open(portal_url+"/bika_setup/edit")
-        >>> browser.follow("Analyses")
-        >>> browser.getControl("SamplingWorkflowEnabled").value = True
-        >>> browser.getControl('Save').click()
-
-        >>> browser.open(portal_url+"/@@API/create", "&".join([
-        ... "obj_type=AnalysisRequest",
-        ... "Client=portal_type:Client|id:client-1",
-        ... "Contact=portal_type:Contact|getFullname:Rita Mohale",
-        ... "SampleType=portal_type:SampleType|title:Apple Pulp",
-        ... "Services:list=portal_type:AnalysisService|title:Calcium",
-        ... "SamplingDate=2013-09-29",
-        ... ]))
-        >>> browser.contents
-        '{..."success": true...}'
-
-        >>> browser.open(portal_url+"/clients/client-1/AP-0001-R01")
         """
         state = default if default else 'visible'
         workflow = getToolByName(self.context, 'portal_workflow')
@@ -123,4 +97,21 @@ class BatchClientFieldWidgetVisibility(object):
         fieldName = field.getName()
         if fieldName == 'Client' and context.aq_parent.portal_type == 'Batch':
             return 'edit'
+        return state
+
+class OptionalFieldsWidgetVisibility(object):
+    """Remove 'hidden attributes' (fields in registry bika.lims.hiddenattributes).
+       fieldName = field.getName()
+    """
+    implements(IATWidgetVisibility)
+
+    def __init__(self, context):
+        self.context = context
+        self.sort = 5
+
+    def __call__(self, context, mode, field, default):
+        state = default if default else 'visible'
+        hiddenattributes = getHiddenAttributesForClass(context.portal_type)
+        if field.getName() in hiddenattributes:
+            state = "hidden"
         return state

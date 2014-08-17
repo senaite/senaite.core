@@ -45,10 +45,4 @@ def isVisible(self, instance, mode='view', default=None, field=None):
             #     adapter_name = adapter[1].__repr__().split(" ")[0].split(".")[-1]
             #     print "%s: %s modified by %s.  was: %s, now: %s   (%s)"%(adapter[1].sort, field.getName() if field else field, adapter_name, oldstate, state, mode)
 
-    # Remove 'hidden attributes' (fields in registry key bika.lims.hiddenattributes).
-    # overrides everything else.
-    hiddenattributes = getHiddenAttributesForClass('AnalysisRequest')
-    if self.getName() in hiddenattributes:
-        return "hidden"
-
     return state
