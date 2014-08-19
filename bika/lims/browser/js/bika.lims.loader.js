@@ -176,6 +176,8 @@ window.bika.lims.initview = function() {
                     try {
                         obj = new window[js]();
                         obj.load();
+                        // Register the object for further access
+                        window.bika.lims[js]=obj;
                         loaded.push(js);
                     } catch (e) {
                        // statements to handle any exceptions
