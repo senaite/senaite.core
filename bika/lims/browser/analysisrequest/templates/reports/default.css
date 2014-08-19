@@ -206,6 +206,16 @@ table#section-info td#lab-info {
     float: right;
 }
 
+div#section-info td {
+    vertical-align: top;
+}
+div#section-info td a {
+    text-decoration: none;
+}
+div#section-info table {
+    width: 100%;
+}
+
 @media print {
     * {
         font: 9pt Arial, Verdana, serif;
