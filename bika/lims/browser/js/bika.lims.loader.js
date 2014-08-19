@@ -188,6 +188,7 @@ window.bika.lims.initview = function() {
     return loaded.length;
 };
 
+window.bika.lims.initialized = false;
 /**
  * Initializes all bika.lims js stuff
  */
@@ -206,7 +207,8 @@ var PMF = jarn.i18n.MessageFactory('plone');
 $(document).ready(function(){
 
     // Initializes bika.lims
-    window.bika.lims.initialize();
+    var length = window.bika.lims.initialize();
+    window.bika.lims.initialized = true;
 
 });
 }(jQuery));
