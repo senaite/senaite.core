@@ -181,7 +181,9 @@ window.bika.lims.initview = function() {
                         loaded.push(js);
                     } catch (e) {
                        // statements to handle any exceptions
-                       console.warn('[bika.lims.loader] Unable to load '+js+": "+ e.message);
+                       var msg = '[bika.lims.loader] Unable to load '+js+": "+ e.message +"\n"+e.stack;
+                       console.warn(msg);
+                       window.bika.lims.error(msg);
                     }
                 }
             });
