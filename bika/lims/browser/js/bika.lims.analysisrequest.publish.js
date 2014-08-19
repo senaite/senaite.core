@@ -47,6 +47,25 @@ function AnalysisRequestPublishView() {
             $('html,body').animate({scrollTop: offset},'slow');
         });
 
+        $('#sel_format').change(function(e) {
+            var url = window.location.href;
+            var seltpl = $(this).val();
+            $('#report').animate({opacity:0.4}, 'slow');
+            $.ajax({
+                url: url,
+                type: 'POST',
+                async: false,
+                data: { "template":seltpl}
+            })
+            .always(function(data) {
+                var htmldata = data;
+                htmldata = $(htmldata).find('#report').html();
+                $('#report').html(htmldata);
+                $('#report').animate({opacity:1}, 'slow');
+                load_barcodes();
+            });
+        });
+
         $('#qcvisible').click(function(e) {
             var url = window.location.href;
             if ($('#qcvisible').is(':checked')) {
