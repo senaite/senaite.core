@@ -65,13 +65,23 @@ function CommonUtils() {
         };
 
         window.bika.lims.log = function(e) {
-			if (window.location.url == undefined || window.location.url == null) {
-				return;
-			}
+            if (window.location.url == undefined || window.location.url == null) {
+                return;
+            }
             var message = "(" + window.location.url + "): " + e;
             $.ajax({
                 type: "POST",
                 url: "js_log",
+                data: {"message":message,
+                        "_authenticator": $("input[name='_authenticator']").val()}
+            });
+        };
+
+        window.bika.lims.error = function(e) {
+            var message = "(" + window.location.href + "): " + e;
+            $.ajax({
+                type: "POST",
+                url: "js_err",
                 data: {"message":message,
                         "_authenticator": $("input[name='_authenticator']").val()}
             });
