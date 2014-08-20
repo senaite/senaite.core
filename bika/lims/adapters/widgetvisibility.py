@@ -64,18 +64,21 @@ class WorkflowAwareWidgetVisibility(object):
 
 class SamplingWorkflowWidgetVisibility(object):
     """This will force the 'Sampler' and 'DateSampled' widget default to 'visible'.
+    We must check the attribute saved on the sample, not the bika_setup value.
     """
     implements(IATWidgetVisibility)
 
     def __init__(self, context):
         self.context = context
-        self.sort = 10
+        self.sort = 100
 
     def __call__(self, context, mode, field, default):
         sw_fields = ['Sampler', 'DateSampled']
         state = default if default else 'invisible'
         fieldName = field.getName()
-        if fieldName in sw_fields:
+        if fieldName in sw_fields \
+                and hasattr(self.context, 'getSamplingWorkflowEnabled') \
+                and self.context.getSamplingWorkflowEnabled():
             if mode == 'header_table':
                 state = 'prominent'
             elif mode == 'view':
