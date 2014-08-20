@@ -4,7 +4,6 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
-from bika.lims.adapters.widgetvisibility import WidgetVisibility as _WV
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import EditSample
@@ -196,11 +195,11 @@ class SamplePartitionsView(BikaListingView):
                 preserver and self.user_fullname(preserver) or ''
             datepreserved = part.getDatePreserved()
             item['getDatePreserved'] = \
-                datepreserved and self.ulocalized_time(datepreserved) or ''
+                datepreserved and self.ulocalized_time(datepreserved, long_format=False) or ''
 
             disposaldate = part.getDisposalDate()
             item['getDisposalDate'] = \
-                disposaldate and self.ulocalized_time(disposaldate) or ''
+                disposaldate and self.ulocalized_time(disposaldate, long_format=False) or ''
 
             # inline edits for Container and Preservation
             if self.allow_edit:
@@ -825,127 +824,3 @@ class ajaxGetSampleTypeInfo(BrowserView):
                }
 
         return json.dumps(ret)
-
-
-class WidgetVisibility(_WV):
-    """The values returned here do not decide the field order, only their
-    visibility.  The field order is set in the schema.
-    """
-    def __call__(self):
-        ret = super(WidgetVisibility, self).__call__()
-        workflow = getToolByName(self.context, 'portal_workflow')
-        sw = self.context.getSamplingWorkflowEnabled()
-        state = workflow.getInfoFor(self.context, 'review_state')
-
-        # header_table default visible fields
-        ret['header_table'] = {
-            'prominent': [],
-            'visible': [
-                'SamplingDate',
-                'SampleType',
-                'SamplePoint',
-                'StorageLocation',
-                'ClientReference',
-                'ClientSampleID',
-                'SamplingDeviation',
-                'SampleCondition',
-                'DateSampled',
-                'DateReceived',
-                'AdHoc',
-                'Composite']}
-        if sw:
-            ret['header_table']['visible'].extend(['Sampler', 'DateSampled'])
-            ret['header_table']['prominent'].extend(['Sampler', 'DateSampled'])
-            ret['view']['visible'].extend(['Sampler', 'DateSampled'])
-        # Edit and View widgets are displayed/hidden in different workflow
-        # states.  The widget.visible is used as a default.  This is placed
-        # here to manage the header_table display.
-        if state in ('to_be_sampled', ):
-            ret['header_table']['visible'].remove('DateReceived')
-            ret['header_table']['prominent'] = [
-                'Sampler',
-                'DateSampled',
-            ]
-            ret['edit']['visible'] = [
-                'AdHoc',
-                'ClientReference',
-                'ClientSampleID',
-                'Composite',
-                'SampleCondition',
-                'SamplePoint',
-                'StorageLocation',
-                'SampleType',
-                'SamplingDate',
-                'Sampler',
-                'DateSampled',
-                'SamplingDeviation',
-            ]
-            ret['view']['visible'] = [
-                'SamplingDate',
-                'Sampler',
-                'DateSampled',
-            ]
-        elif state in ('to_be_preserved', 'sample_due', ):
-            ret['header_table']['visible'].remove('DateReceived')
-            ret['edit']['visible'] = [
-                'AdHoc',
-                'ClientReference',
-                'ClientSampleID',
-                'Composite',
-                'SampleCondition',
-                'SamplePoint',
-                'StorageLocation',
-                'SampleType',
-                'SamplingDeviation',
-            ]
-            ret['view']['visible'] = [
-                'DateSampled',
-            ]
-        elif state in ('sample_received', ):
-            ret['edit']['visible'] = [
-                'AdHoc',
-                'ClientReference',
-                'ClientSampleID',
-            ]
-            ret['view']['visible'] = [
-                'Composite',
-                'DateReceived',
-                'SampleCondition',
-                'SamplePoint',
-                'StorageLocation',
-                'SampleType',
-                'SamplingDate',
-                'SamplingDeviation',
-            ]
-        elif state in ('to_be_verified', 'verified', ):
-            ret['edit']['visible'] = []
-            ret['view']['visible'] = [
-                'AdHoc',
-                'ClientReference',
-                'ClientSampleID',
-                'Composite',
-                'DateReceived',
-                'SampleCondition',
-                'SamplePoint',
-                'StorageLocation',
-                'SampleType',
-                'SamplingDate',
-                'SamplingDeviation',
-            ]
-        elif state in ('published', ):
-            ret['edit']['visible'] = []
-            ret['view']['visible'] = [
-                'AdHoc',
-                'ClientReference',
-                'ClientSampleID',
-                'Composite',
-                'DateReceived',
-                'SampleCondition',
-                'SamplePoint',
-                'StorageLocation',
-                'SampleType',
-                'SamplingDate',
-                'SamplingDeviation',
-            ]
-
-        return ret

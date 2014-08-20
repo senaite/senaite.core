@@ -1,9 +1,9 @@
-<html xmlns:tal="http://xml.zope.org/namespaces/tal"
-      xmlns:metal="http://xml.zope.org/namespaces/metal"
-      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-      xmlns="http://www.w3.org/1999/xhtml"
-      metal:use-macro="here/main_template/macros/master"
-      i18n:domain="bika">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    metal:use-macro="here/main_template/macros/master"
+    i18n:domain="bika">
 
 <head>
     <metal:block fill-slot="javascript_head_slot"
@@ -27,7 +27,7 @@
 </metal:title>
 
 <div metal:fill-slot="content-core"
-     tal:define="
+    tal:define="
         portal context/@@plone_portal_state/portal;
         plone_view context/@@plone;
         portal_state context/@@plone_portal_state;
@@ -35,16 +35,13 @@
         currency python:context.bika_setup.getCurrency();
         checkPermission nocall: context/portal_membership/checkPermission;
         tabindex view/tabindex;
-        widget_visibility view/getWidgetVisibility;
         partitionable view/partitioned_services;
-        ShowPrices python:context.bika_setup.getShowPrices();
-        prominentfieldnames python:widget_visibility.get('header_table', {}).get('prominent', []);
-        hiddenprominentfieldnames python:widget_visibility.get('header_table', {}).get('hiddenprominent', []);">
+        ShowPrices python:context.bika_setup.getShowPrices();">
 
 
 <form id="analysisrequest_edit_form"
-      name="analysisrequest_edit_form"
-      method="POST">
+    name="analysisrequest_edit_form"
+    method="POST">
 
     <input type="hidden" name="submitted" value="1"/>
     <span tal:replace="structure context/@@authenticator/authenticator"/>
@@ -53,11 +50,11 @@
     <span id="bika_setup" style="display:none;"
     tal:define="bika_setup python: context.bika_setup;"
     tal:attributes="EnableARSpecs python: 'true' if bika_setup.getEnableARSpecs() else '';
-			bika_samplepoints_uid python: bika_setup.bika_samplepoints.UID();
-			bika_artemplates_uid python: bika_setup.bika_artemplates.UID();
-			bika_analysisprofiles_uid python: bika_setup.bika_analysisprofiles.UID();
-			bika_analysisspecs_uid python: bika_setup.bika_analysisspecs.UID();
-			bika_analysisspecs_path python:'/'.join(bika_setup.bika_analysisspecs.getPhysicalPath())">
+            bika_samplepoints_uid python: bika_setup.bika_samplepoints.UID();
+            bika_artemplates_uid python: bika_setup.bika_artemplates.UID();
+            bika_analysisprofiles_uid python: bika_setup.bika_analysisprofiles.UID();
+            bika_analysisspecs_uid python: bika_setup.bika_analysisspecs.UID();
+            bika_analysisspecs_path python:'/'.join(bika_setup.bika_analysisspecs.getPhysicalPath())">
     </span>
 
     <!-- member discount percentage if applicable -->
@@ -93,9 +90,10 @@
     id="PhysicalPath"
     tal:attributes="here python:'/'.join(context.getPhysicalPath()[:-3])"/>
 
-    <table summary="Add analysis requests"
-           class="listing analysisrequest add nosort"
-           cellpadding="0" cellspacing="0">
+<table summary="Add analysis requests"
+    class="listing analysisrequest add nosort"
+    cellpadding="0" cellspacing="0">
+<thead>
 
     <!-- All edit fields with fields with add=visible -->
     <tal:rows tal:condition="python: view.layout=='rows'">
@@ -106,20 +104,38 @@
         <metal:rows use-macro='view/ar_add_by_col_template/macros/ar_add_by_col'/>
     </tal:cols>
 
-    <thead class="pointofcapture">
-        <tr>
-            <th style='padding-left:0;'
-                tal:attributes="colspan python:view.ar_count + 3">
-                <input class="context button allowMultiSubmit"
-                       type="submit"
-                       name="save_button"
-                       i18n:attributes="value"
-                       value="Save"/>
-            </th>
-        </tr>
-    </thead>
-
     </table>
+
+        <input class="context button allowMultiSubmit"
+        type="submit"
+        name="save_button"
+        i18n:attributes="value"
+        value="Save"/>
+
+    <br/>&nbsp;
+
+    <div class="discreeter">
+
+    <p>  <!-- AVS this should be conditional if any dryables present -->
+        <img src="" tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/dry.png">
+        <span i18n:translate="">
+            Can be reported as dry matter</span>
+    </p>
+
+    <!-- XXX this also -->
+    <p tal:condition="python:context.bika_setup.laboratory.getLaboratoryAccredited()">
+        <img tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/accredited.png">
+        <span i18n:translate="">
+            Methods included in the
+                <tal:block
+                    replace="here/bika_setup/laboratory/AccreditationBody"
+                    i18n:name="accreditation_body"/>
+            schedule of Accreditation for this Laboratory.
+            Analysis remarks are not accredited
+        </span>
+    </p>
+    </div>
+
 </form>
 </div>
 </body>

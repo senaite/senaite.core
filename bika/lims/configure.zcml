@@ -58,6 +58,13 @@
     permission="zope.Public"
     layer="bika.lims.interfaces.IBikaLIMS"
   />
+  <browser:page
+    for="*"
+    name="js_err"
+    class="bika.lims.utils.js_err"
+    permission="zope.Public"
+    layer="bika.lims.interfaces.IBikaLIMS"
+  />
 
   <!-- Product version retrieval -->
   <browser:page

@@ -1,30 +1,117 @@
 # -*- coding:utf-8 -*-
-from bika.lims.interfaces import IWidgetVisibility
+from Products.CMFCore.WorkflowCore import WorkflowException
+from bika.lims.utils import getHiddenAttributesForClass
+from types import DictType
+from Products.CMFCore.utils import getToolByName
+from bika.lims.interfaces import IATWidgetVisibility
 from zope.interface import implements
 
+_marker = []
 
-class WidgetVisibility(object):
-    """The values returned here do not decide the field order, only their
-    visibility.  The field order is set in the schema.
+
+class WorkflowAwareWidgetVisibility(object):
+    """This adapter allows the schema definition to have different widget visibility
+    settings for different workflow states in the primary review_state workflow.
+
+    With this it is possible to write:
+
+        StringField(
+            'fieldName',
+            widget=StringWidget(
+                label=_('field Name'),
+                visible = {
+                    'edit': 'visible',  # regular AT uses these and they override
+                    'view': 'visible',  # everything, without 'edit' you cannot edit
+                    'wf_state':    {'edit': 'invisible', 'view': 'visible'  },
+                    'other_state': {'edit': 'visible',   'view': 'invisible'},
+            }
+
+    The rules about defaults, "hidden", "visible" and "invisible" are the same
+    as those from the default Products.Archetypes.Widget.TypesWidget#isVisible
+
     """
-    implements(IWidgetVisibility)
+    implements(IATWidgetVisibility)
 
     def __init__(self, context):
         self.context = context
+        self.sort = 100
 
-    def __call__(self):
-        ret = {}
+    def __call__(self, context, mode, field, default):
+        """
+        """
+        state = default if default else 'visible'
+        workflow = getToolByName(self.context, 'portal_workflow')
+        try:
+            review_state = workflow.getInfoFor(self.context, 'review_state')
+        except WorkflowException:
+            return state
+        vis_dic = field.widget.visible
+        if type(vis_dic) is not DictType or review_state not in vis_dic:
+            return state
+        inner_vis_dic = vis_dic.get(review_state, state)
+        if inner_vis_dic is _marker:
+            state = state
+        if type(inner_vis_dic) is DictType:
+            state = inner_vis_dic.get(mode, state)
+            state = state
+        elif not inner_vis_dic:
+            state = 'invisible'
+        elif inner_vis_dic < 0:
+            state = 'hidden'
 
-        fields = list(self.context.Schema().fields())
+        return state
 
-        # expose the default setting inside each widget's 'visibility' attr.
-        for field in fields:
-            if field.widget.visible and isinstance(field.widget.visible, dict):
-                for k, v in field.widget.visible.items():
-                    if k not in ret:
-                        ret[k] = {}
-                    if v not in ret[k]:
-                        ret[k][v] = []
-                    ret[k][v].append(field.getName())
 
-        return ret
+class SamplingWorkflowWidgetVisibility(object):
+    """This will force the 'Sampler' and 'DateSampled' widget default to 'visible'.
+    """
+    implements(IATWidgetVisibility)
+
+    def __init__(self, context):
+        self.context = context
+        self.sort = 10
+
+    def __call__(self, context, mode, field, default):
+        sw_fields = ['Sampler', 'DateSampled']
+        state = default if default else 'invisible'
+        fieldName = field.getName()
+        if fieldName in sw_fields:
+            if mode == 'header_table':
+                state = 'prominent'
+            elif mode == 'view':
+                state = 'visible'
+        return state
+
+
+class BatchClientFieldWidgetVisibility(object):
+    """This will force the 'Client' field to 'visible' when in Batch context
+    """
+    implements(IATWidgetVisibility)
+
+    def __init__(self, context):
+        self.context = context
+        self.sort = 10
+
+    def __call__(self, context, mode, field, default):
+        state = default if default else 'visible'
+        fieldName = field.getName()
+        if fieldName == 'Client' and context.aq_parent.portal_type == 'Batch':
+            return 'edit'
+        return state
+
+class OptionalFieldsWidgetVisibility(object):
+    """Remove 'hidden attributes' (fields in registry bika.lims.hiddenattributes).
+       fieldName = field.getName()
+    """
+    implements(IATWidgetVisibility)
+
+    def __init__(self, context):
+        self.context = context
+        self.sort = 5
+
+    def __call__(self, context, mode, field, default):
+        state = default if default else 'visible'
+        hiddenattributes = getHiddenAttributesForClass(context.portal_type)
+        if field.getName() in hiddenattributes:
+            state = "hidden"
+        return state

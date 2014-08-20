@@ -211,10 +211,10 @@ schema['title'].widget.description = _("If no Title value is entered, the Batch 
 schema['description'].required = False
 schema['description'].widget.visible = True
 
-schema.moveField('Client', before='description')
 schema.moveField('ClientBatchID', before='description')
 schema.moveField('BatchID', before='description')
 schema.moveField('title', before='description')
+schema.moveField('Client', after='title')
 
 
 class Batch(ATFolder):

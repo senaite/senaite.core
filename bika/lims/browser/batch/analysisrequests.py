@@ -31,22 +31,15 @@ class AnalysisRequestsView(_ARV, _ARAV):
         self.context_actions = {}
         mtool = getToolByName(self.context, 'portal_membership')
         if mtool.checkPermission(AddAnalysisRequest, self.portal):
-            # Client contact required (if client is associated)
-            client = self.context.getClient()
             layout = 'columns'
             ar_count = '4'
-            if hasattr(client, 'getContacts') and client.getContacts():
-                self.context_actions[self.context.translate(_('Add new'))] = {
+            self.context_actions[self.context.translate(_('Add new'))] = {
                     'url': '%(context_url)s/portal_factory/AnalysisRequest/Request new analyses/ar_add?layout=%(layout)s&ar_count=%(ar_count)s' % {
                             'context_url': self.context.absolute_url(),
                             'layout': layout,
                             'ar_count': ar_count,
                             }, 
-                    'icon': '++resource++bika.lims.images/add.png'}
-            # else:
-                # addPortalMessage = self.context.plone_utils.addPortalMessage
-                # msg = _("Client contact required before request may be submitted")
-                # addPortalMessage(self.context.translate(msg))
+                'icon': '++resource++bika.lims.images/add.png'}
 
             # This is permitted from the global permission above, AddAnalysisRequest.
             review_states = []

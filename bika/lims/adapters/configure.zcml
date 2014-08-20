@@ -5,10 +5,56 @@
     i18n_domain="bika">
 
     <adapter
-      factory="bika.lims.adapters.widgetvisibility.WidgetVisibility"
-      provides="bika.lims.interfaces.IWidgetVisibility"
-      for="*"
-      name="getWidgetVisibility"
+      factory=".widgetvisibility.BatchClientFieldWidgetVisibility"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="BatchClientFieldWV"
+    />
+
+    <adapter
+      factory=".widgetvisibility.OptionalFieldsWidgetVisibility"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="OptionalFieldsWidgetVisibility"
+    />
+    <adapter
+      factory=".widgetvisibility.OptionalFieldsWidgetVisibility"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.ISample"
+      name="OptionalFieldsWidgetVisibility"
+    />
+    <adapter
+      factory=".widgetvisibility.OptionalFieldsWidgetVisibility"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.IBatch"
+      name="OptionalFieldsWidgetVisibility"
+    />
+
+    <adapter
+      factory=".widgetvisibility.WorkflowAwareWidgetVisibility"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="WorkflowAwareWV"
+    />
+    <adapter
+      factory=".widgetvisibility.WorkflowAwareWidgetVisibility"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.ISample"
+      name="WorkflowAwareWV"
+    />
+
+    <adapter
+      factory=".widgetvisibility.SamplingWorkflowWidgetVisibility"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.ISample"
+      name="SamplingWorkflowWV"
+    />
+
+    <adapter
+      factory=".widgetvisibility.SamplingWorkflowWidgetVisibility"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="SamplingWorkflowWV"
     />
 
     <adapter
@@ -17,6 +63,5 @@
       factory="bika.lims.adapters.referencewidgetvocabulary.DefaultReferenceWidgetVocabulary"
       provides="bika.lims.interfaces.IReferenceWidgetVocabulary"
     />
-
 
 </configure>

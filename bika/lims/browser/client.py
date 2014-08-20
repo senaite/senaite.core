@@ -8,7 +8,6 @@ from AccessControl import getSecurityManager
 from Acquisition import aq_parent, aq_inner
 from bika.lims import PMF, logger, bikaMessageFactory as _
 from bika.lims.adapters.referencewidgetvocabulary import DefaultReferenceWidgetVocabulary
-from bika.lims.adapters.widgetvisibility import WidgetVisibility as _WV
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analysisrequest import AnalysisRequestsView
 from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction
