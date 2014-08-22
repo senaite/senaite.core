@@ -961,8 +961,13 @@ function AnalysisRequestAddView() {
                 url: window.portal_url + "/@@API/calculate_partitions",
                 data: request_data,
                 success: function(data) {
-                    window.jsonapi_cache[cacheKey] = data;
-                    calc_parts_handler(column, data);
+                    // Check if calculation succeeded
+                    if (data.success == false) {
+                        alert('Error while calculating partitions: ' + data.message);
+                    } else {
+                        window.jsonapi_cache[cacheKey] = data;
+                        calc_parts_handler(column, data);
+                    }
                 }
             });
         } else {
