@@ -363,6 +363,7 @@ schema = BikaSchema.copy() + Schema((
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
+        acquire=True,
         widget=ReferenceWidget(
             label=_("Template"),
             size=20,
@@ -397,6 +398,7 @@ schema = BikaSchema.copy() + Schema((
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
+        acquire=True,
         widget=ReferenceWidget(
             label=_("Analysis Profile"),
             size=20,
@@ -484,6 +486,7 @@ schema = BikaSchema.copy() + Schema((
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
+        acquire=True,
         widget = DateTimeWidget(
             label=_("Sampling Date"),
             size=20,
@@ -515,6 +518,7 @@ schema = BikaSchema.copy() + Schema((
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
+        acquire=True,
         widget=ReferenceWidget(
             label=_("Sample Type"),
             description=_("Create a new sample of this type"),
@@ -541,7 +545,6 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
-    
     ReferenceField(
         'SampleMatrix',
         required=False,
@@ -550,6 +553,7 @@ schema = BikaSchema.copy() + Schema((
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
+        acquire=True,
         widget=ReferenceWidget(
             label=_("Sample Matrix"),
             size=20,
@@ -575,7 +579,6 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
-
     ReferenceField(
         'Specification',
         required=0,
@@ -584,6 +587,7 @@ schema = BikaSchema.copy() + Schema((
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
+        acquire=True,
         widget=ReferenceWidget(
             label=_("Analysis Specification"),
             description=_("Choose default AR specification values"),
@@ -661,6 +665,7 @@ schema = BikaSchema.copy() + Schema((
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
+        acquire=True,
         widget=ReferenceWidget(
             label=_("Sample Point"),
             description=_("Location where sample was taken"),
@@ -728,6 +733,7 @@ schema = BikaSchema.copy() + Schema((
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
+        acquire=True,
         widget=StringWidget(
             label=_('Client Order Number'),
             size=20,
@@ -757,6 +763,7 @@ schema = BikaSchema.copy() + Schema((
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
+        acquire=True,
         widget=StringWidget(
             label=_('Client Reference'),
             size=20,
@@ -886,6 +893,7 @@ schema = BikaSchema.copy() + Schema((
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
+        acquire=True,
         widget=ReferenceWidget(
             label=_('Default Container'),
             description=_('Default container for new sample partitions'),
@@ -1249,6 +1257,7 @@ schema = BikaSchema.copy() + Schema((
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
+        acquire=True,
         widget=ReferenceWidget(
             label=_("Priority"),
             size=10,

@@ -41,7 +41,6 @@ class AcquireFieldDefaults(object):
             if IPloneSiteRoot.providedBy(current):
                 break
             if fieldname in current.schema._names:
-                print field, current
                 value = current.schema[fieldname].get(current)
                 if value is not None:
                     return value

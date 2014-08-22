@@ -31,7 +31,6 @@ def setDefaults(self, instance):
                 keys.reverse()
                 adapter = adapters[keys[0]]
                 _value = adapter[0][1](instance, field)
-                print "-", field, _value, "-"
                 if _value is not None:
                     value = _value
 
@@ -39,6 +38,9 @@ def setDefaults(self, instance):
         ### Products.Archetypes.Schema.BasicSchema#setDefaults
 
         if field.getName().lower() == 'id': continue
+        # The original version skipped all reference fields.  I obviously do
+        # find some use in defining their defaults anyway, so if our adapter
+        # reflects a value for a reference field, I will allow it.
         if field.type == "reference" and not value: continue
 
         default = value if value else field.getDefault(instance)
