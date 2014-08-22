@@ -1,5 +1,4 @@
 from bika.lims.interfaces import IATWidgetVisibility
-from bika.lims.utils import getHiddenAttributesForClass
 from types import DictType
 
 from Acquisition import aq_base
