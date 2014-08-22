@@ -1,0 +1,49 @@
+/* ar_add_by_row tweaks */
+
+/* rotate copy button */
+.copyButtonByRow {
+    transform: rotate(90deg) !important;
+    -ms-transform: rotate(90deg) !important;
+    -moz-transform: rotate(90deg) !important;
+    -webkit-transform: rotate(90deg) !important;
+    -o-transform: rotate(90deg) !important;
+}
+
+/* remove margins and padding */
+.inputByRow, .analysesByRow, .saveButtonByRow {	
+	margin: 0px 0px !important;
+	padding: 0px 0px !important;
+}
+
+/* change input size */
+.inputByRow input {
+	width:100px !important;
+	height: 20px !important;
+}
+
+.analysesByRow input {
+	height: 20px;
+}
+
+/* table headers */
+.tableHeadersByRow {
+	padding-left: 0px !important;
+	padding-right: 0px !important;
+	width:100px !important;
+}
+
+.tableHeaderRowByRow {
+    background-color:#EDEDED;
+}
+
+/* resize save profile button */
+.saveButtonByRow input {
+	width:100px !important;
+	height: 25px !important;	
+}
+
+/* reposition client info from top->bottom to left-> right */
+.clientInfoByRow {
+	display:inline-block;
+	margin-right: 10px;
+}

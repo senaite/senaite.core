@@ -52,5 +52,13 @@
     rel="stylesheet"
     rendering="link"
     insert-after="*"/>
+    
+<!-- ar_add_by_row css -->
+<stylesheet
+    id="++resource++bika.lims.css/ar_add_by_row.css"
+    media="screen"
+    rel="stylesheet"
+    rendering="link"
+    insert-after="*"/>
 
 </object>
