@@ -1,6 +1,6 @@
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _, EditARContact
-from bika.lims.utils import t
+from bika.lims.utils import t, getUsers
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IBatch
@@ -19,6 +19,8 @@ from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.ateapi import RecordsField
 from bika.lims.browser.widgets import RecordsWidget as bikaRecordsWidget
 from bika.lims.browser.widgets import ReferenceWidget
+
+#from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 
 import sys
 
@@ -143,7 +145,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     ReferenceField(
         'SamplePoint',
-        required=1,
+        required=0,
         allowed_types='SamplePoint',
         relationship='BatchSamplePoint',
         mode="rw",
@@ -164,7 +166,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     ReferenceField(
         'SampleType',
-        required=1,
+        required=0,
         allowed_types='SampleType',
         relationship='BatchSampleType',
         mode="rw",
@@ -397,6 +399,31 @@ schema = BikaFolderSchema.copy() + Schema((
             showOn=True,
         ),
     ),
+    DateTimeField('DateSampled',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        widget = DateTimeWidget(
+            label=_("Date Sampled"),
+            size=20,
+            visible={'edit': 'visible',
+                     'view': 'visible',
+                     },
+        ),
+    ),
+    StringField('Sampler',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        vocabulary='getSamplers',
+        widget=SelectionWidget(
+            format='select',
+            label=_("Sampler"),
+            visible={'edit': 'visible',
+                     'view': 'visible',
+                     },
+        ),
+    ),
     InheritedObjectsUIField(
         'InheritedObjectsUI',
         required=False,
@@ -604,6 +631,8 @@ class Batch(ATFolder):
         return revstatus == BatchState.open \
             and canstatus == CancellationState.active
 
+    def getSamplers(self):
+        return getUsers(self, ['LabManager', 'Sampler'])
 
 
 registerType(Batch, PROJECTNAME)
