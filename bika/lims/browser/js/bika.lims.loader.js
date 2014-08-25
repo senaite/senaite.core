@@ -128,6 +128,8 @@ window.bika.lims.controllers =  {
     // Batches
     ".portaltype-batchfolder":
         ['BatchFolderView'],
+    ".portaltype-batch.template-base_edit":
+        ['BatchView'],
 
     // Worksheets
     ".portaltype-worksheetfolder":

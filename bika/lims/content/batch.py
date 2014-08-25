@@ -98,13 +98,12 @@ schema = BikaFolderSchema.copy() + Schema((
     ReferenceField(
         'Contact',
         required=0,
-        default_method='getContactUIDForUser',
         vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('Contact',),
-        relationship='AnalysisRequestContact',
+        relationship='BatchContact',
         mode="rw",
         read_permission=permissions.View,
-        write_permission=EditARContact,
+        write_permission=permissions.ModifyPortalContent,
         widget=ReferenceWidget(
             label=_("Contact"),
             size=20,

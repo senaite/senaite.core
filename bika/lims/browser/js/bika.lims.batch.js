@@ -57,3 +57,54 @@ function BatchFolderView() {
         });
     }
 }
+
+/**
+ * Controller class for Batch View
+ */
+function BatchView() {
+
+    var that = this;
+
+    that.load = function() {
+		function applyComboFilter(element, filterkey, filtervalue) {
+			// If the element is not visible it is probably not worth creating a dropdown query.
+			if (!$(element).is(':visible')){
+				return;
+			}
+			var base_query=$.parseJSON($(element).attr("base_query"));
+			base_query[filterkey] = filtervalue;
+			$(element).attr("base_query", $.toJSON(base_query));
+			var options = $.parseJSON($(element).attr("combogrid_options"));
+			// TODO this code should be using $.query for query string handling
+			options.url = portal_url + "/" + options.url;
+			options.url = options.url + "?_authenticator=" + $("input[name='_authenticator']").val();
+			options.url = options.url + "&catalog_name=" + $(element).attr("catalog_name");
+			options.url = options.url + "&base_query=" + $.toJSON(base_query);
+			options.url = options.url + "&search_query=" + $(element).attr("search_query");
+			options.url = options.url + "&colModel=" + $.toJSON( $.parseJSON($(element).attr("combogrid_options")).colModel);
+			options.url = options.url + "&search_fields=" + $.toJSON($.parseJSON($(element).attr("combogrid_options")).search_fields);
+			options.url = options.url + "&discard_empty=" + $.toJSON($.parseJSON($(element).attr("combogrid_options")).discard_empty);
+			options.force_all="false";
+			$(element).combogrid(options);
+			$(element).addClass("has_combogrid_widget");
+			$(element).attr("search_query", "{}");
+		}
+
+		// Clear and re-set the filter when Client is selected
+		function client_field_modified(){
+			$("#Contact").val('');
+			$("#Contact_uid").val('');
+			applyComboFilter($("#Contact"), "getParentUID", $("#Client_uid").val());
+		}
+		$("#Client").bind("selected", client_field_modified);
+		$("#Client").bind("unselected", client_field_modified);
+		// We do this once on page-load, also.
+		// We need a delay to be sure this code runs after the widget is configured.
+		if($("#Client_uid").val().length > 1){
+			setTimeout(function() {
+				applyComboFilter($("#Contact"), "getParentUID", $("#Client_uid").val());
+			}, 100)
+		}
+
+    }
+}
