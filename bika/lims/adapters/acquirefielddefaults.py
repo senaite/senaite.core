@@ -25,7 +25,7 @@ class AcquireFieldDefaults(object):
         self.context = context
         self.sort = 1000
 
-    def __call__(self, context, field):
+    def __call__(self, field):
 
         fieldname = field.getName()
 

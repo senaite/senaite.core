@@ -30,7 +30,7 @@ def setDefaults(self, instance):
                 keys = sorted(adapters.keys())
                 keys.reverse()
                 adapter = adapters[keys[0]]
-                _value = adapter[0][1](instance, field)
+                _value = adapter[0][1](field)
                 if _value is not None:
                     value = _value
 

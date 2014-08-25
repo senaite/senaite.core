@@ -34,7 +34,7 @@ class WorkflowAwareWidgetVisibility(object):
 
     def __init__(self, context):
         self.context = context
-        self.sort = 100
+        self.sort = 500
 
     def __call__(self, context, mode, field, default):
         """
@@ -70,7 +70,7 @@ class SamplingWorkflowWidgetVisibility(object):
 
     def __init__(self, context):
         self.context = context
-        self.sort = 100
+        self.sort = 500
 
     def __call__(self, context, mode, field, default):
         sw_fields = ['Sampler', 'DateSampled']
@@ -93,7 +93,7 @@ class BatchClientFieldWidgetVisibility(object):
 
     def __init__(self, context):
         self.context = context
-        self.sort = 10
+        self.sort = 200
 
     def __call__(self, context, mode, field, default):
         state = default if default else 'visible'
