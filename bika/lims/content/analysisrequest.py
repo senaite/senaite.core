@@ -68,6 +68,39 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ReferenceField(
+        'Client',
+        required=1,
+        allowed_types=('Client',),
+        relationship='AnalysisRequestClient',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        acquire=True,
+        widget=ReferenceWidget(
+            label=_("Client"),
+            description=_("You must assign this request to a client"),
+            size=20,
+            render_own_label=True,
+            visible={'edit': 'visible',
+                     'view': 'visible',
+                     'add': 'hidden',
+                     'header_table': 'normal',
+                     'sample_registered': {'view': 'invisible', 'edit': 'invisible', 'add': 'hidden'},
+                     'to_be_sampled':     {'view': 'invisible', 'edit': 'invisible'},
+                     'sampled':           {'view': 'invisible', 'edit': 'invisible'},
+                     'to_be_preserved':   {'view': 'invisible', 'edit': 'invisible'},
+                     'sample_received':   {'view': 'invisible', 'edit': 'invisible'},
+                     'attachment_due':    {'view': 'invisible', 'edit': 'invisible'},
+                     'to_be_verified':    {'view': 'invisible', 'edit': 'invisible'},
+                     'verified':          {'view': 'invisible', 'edit': 'invisible'},
+                     'published':         {'view': 'invisible', 'edit': 'invisible'},
+                     'invalid':           {'view': 'invisible', 'edit': 'invisible'},
+                     },
+            base_query={'inactive_state': 'active'},
+            showOn=True,
+        ),
+    ),
+    ReferenceField(
         'Contact',
         required=1,
         default_method='getContactUIDForUser',
@@ -78,6 +111,7 @@ schema = BikaSchema.copy() + Schema((
         mode="rw",
         read_permission=permissions.View,
         write_permission=EditARContact,
+        acquire=True,
         widget=ReferenceWidget(
             label=_("Contact"),
             render_own_label=True,
@@ -211,38 +245,6 @@ schema = BikaSchema.copy() + Schema((
                      },
             render_own_label=True,
             size=20,
-        ),
-    ),
-    ReferenceField(
-        'Client',
-        required=1,
-        allowed_types=('Client',),
-        relationship='AnalysisRequestClient',
-        mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
-        widget=ReferenceWidget(
-            label=_("Client"),
-            description=_("You must assign this request to a client"),
-            size=20,
-            render_own_label=True,
-            visible={'edit': 'visible',
-                     'view': 'visible',
-                     'add': 'hidden',
-                     'header_table': 'normal',
-                     'sample_registered': {'view': 'invisible', 'edit': 'invisible', 'add': 'hidden'},
-                     'to_be_sampled':     {'view': 'invisible', 'edit': 'invisible'},
-                     'sampled':           {'view': 'invisible', 'edit': 'invisible'},
-                     'to_be_preserved':   {'view': 'invisible', 'edit': 'invisible'},
-                     'sample_received':   {'view': 'invisible', 'edit': 'invisible'},
-                     'attachment_due':    {'view': 'invisible', 'edit': 'invisible'},
-                     'to_be_verified':    {'view': 'invisible', 'edit': 'invisible'},
-                     'verified':          {'view': 'invisible', 'edit': 'invisible'},
-                     'published':         {'view': 'invisible', 'edit': 'invisible'},
-                     'invalid':           {'view': 'invisible', 'edit': 'invisible'},
-                     },
-            base_query={'inactive_state': 'active'},
-            showOn=True,
         ),
     ),
     ReferenceField(
@@ -1339,8 +1341,7 @@ class AnalysisRequest(BaseFolder):
     def getClient(self):
         if self.aq_parent.portal_type == 'Client':
             return self.aq_parent
-        if self.aq_parent.portal_type == 'Batch':
-            return self.aq_parent.getClient()
+        return self.Schema()['Client'].get(self)
 
     def getClientPath(self):
         return "/".join(self.aq_parent.getPhysicalPath())

@@ -1,5 +1,5 @@
 from AccessControl import ClassSecurityInfo
-from bika.lims import bikaMessageFactory as _
+from bika.lims import bikaMessageFactory as _, EditARContact
 from bika.lims.utils import t
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
@@ -18,8 +18,9 @@ from plone.indexer import indexer
 from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.ateapi import RecordsField
 from bika.lims.browser.widgets import RecordsWidget as bikaRecordsWidget
-
 from bika.lims.browser.widgets import ReferenceWidget
+
+import sys
 
 
 class InheritedObjectsUIField(RecordsField):
@@ -70,6 +71,13 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Batch ID"),
         )
     ),
+    DateTimeField(
+        'BatchDate',
+        required=False,
+        widget=DateTimeWidget(
+            label=_('Date'),
+        ),
+    ),
     ReferenceField(
         'Client',
         required=0,
@@ -87,6 +95,32 @@ schema = BikaFolderSchema.copy() + Schema((
                      ],
       ),
     ),
+    ReferenceField(
+        'Contact',
+        required=0,
+        default_method='getContactUIDForUser',
+        vocabulary_display_path_bound=sys.maxsize,
+        allowed_types=('Contact',),
+        relationship='AnalysisRequestContact',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=EditARContact,
+        widget=ReferenceWidget(
+            label=_("Contact"),
+            size=20,
+            helper_js=("bika_widgets/referencewidget.js",),
+            visible={'edit': 'visible',
+                     'view': 'visible',
+                     },
+            base_query={'inactive_state': 'active'},
+            showOn=True,
+            popup_width='400px',
+            colModel=[{'columnName': 'UID', 'hidden': True},
+                      {'columnName': 'Fullname', 'width': '50', 'label': _('Name')},
+                      {'columnName': 'EmailAddress', 'width': '50', 'label': _('Email Address')},
+                     ],
+        ),
+    ),
     StringField(
         'ClientBatchID',
         searchable=True,
@@ -94,13 +128,6 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=StringWidget(
             label=_("Client Batch ID")
         )
-    ),
-    DateTimeField(
-        'BatchDate',
-        required=False,
-        widget=DateTimeWidget(
-            label=_('Date'),
-        ),
     ),
     DateTimeField(
         'SamplingDate',
@@ -431,10 +458,10 @@ schema['title'].widget.description = _("If no Title value is entered, the Batch 
 schema['description'].required = False
 schema['description'].widget.visible = True
 
-schema.moveField('ClientBatchID', before='description')
-schema.moveField('BatchID', before='description')
-schema.moveField('title', before='description')
-schema.moveField('Client', after='title')
+# schema.moveField('ClientBatchID', before='description')
+# schema.moveField('BatchID', before='description')
+# schema.moveField('title', before='description')
+# schema.moveField('Client', after='title')
 
 
 class Batch(ATFolder):
@@ -460,17 +487,6 @@ class Batch(ATFolder):
     def _getCatalogTool(self):
         from bika.lims.catalog import getCatalog
         return getCatalog(self)
-
-    def getClient(self):
-        """ Retrieves the Client for which the current Batch is attached to
-            Tries to retrieve the Client from the Schema property, but if not
-            found, searches for linked ARs and retrieve the Client from the
-            first one. If the Batch has no client, returns None.
-        """
-        client = self.Schema().getField('Client').get(self)
-        if client:
-            return client
-        return client
 
     def getClientTitle(self):
         client = self.getClient()
@@ -551,6 +567,20 @@ class Batch(ATFolder):
         labels = [label.getObject().title for label in uc(UID=uids)]
         return labels
 
+    security.declarePublic('getContactUIDForUser')
+
+    def getContactUIDForUser(self):
+        """ get the UID of the contact associated with the authenticated
+            user.  Copied from content/client.py
+        """
+        user = self.REQUEST.AUTHENTICATED_USER
+        user_id = user.getUserName()
+        pc = getToolByName(self, 'portal_catalog')
+        r = pc(portal_type='Contact',
+               getUsername=user_id)
+        if len(r) == 1:
+            return r[0].UID
+
     def workflow_guard_open(self):
         """ Permitted if current review_state is 'closed' or 'cancelled'
             The open transition is already controlled by 'Bika: Reopen Batch'
@@ -574,6 +604,7 @@ class Batch(ATFolder):
         canstatus = getCurrentState(self, StateFlow.cancellation)
         return revstatus == BatchState.open \
             and canstatus == CancellationState.active
+
 
 
 registerType(Batch, PROJECTNAME)
