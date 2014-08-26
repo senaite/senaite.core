@@ -19,6 +19,7 @@
  <object name="bika_sample_workflow" meta_type="Workflow"/>
  <object name="bika_worksheet_workflow" meta_type="Workflow"/>
  <object name="bika_worksheetanalysis_workflow" meta_type="Workflow"/>
+ <object name="sampleprep_dnaextraction_workflow" meta_type="Workflow"/>
  <object name="folder_workflow" meta_type="Workflow"/>
  <object name="intranet_folder_workflow" meta_type="Workflow"/>
  <object name="intranet_workflow" meta_type="Workflow"/>

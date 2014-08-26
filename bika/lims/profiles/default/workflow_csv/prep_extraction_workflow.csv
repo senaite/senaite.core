@@ -1,0 +1,51 @@
+[Workflow],,,,,,,,,,,,,,,
+Id:,sampleprep_dnaextraction_workflow,,,,,,,,,,,,,,
+Title:,Sample Preparation: DNA Extraction,,,,,,,,,,,,,,
+Description:,,,,,,,,,,,,,,,
+Initial state:,open,,,,,,,,,,,,,,
+Type:,Workflow,,,,,,,,,,,,,,
+State variable:,prep_review_state,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,
+[State],,,,,,,,,,,,,,,
+Id:,open,,,,,,,,,,,,,,
+Title:,Open,,,,,,,,,,,,,,
+Description:,The batch can be edited and Analysis Requests can be attached,,,,,,,,,,,,,,
+Transitions,"close",,,,,,,,,,,,,,
+Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,RegulatoryInspector,Publisher,Reader,Editor,Contributor,Anonymous
+View,N,N,Y,Y,Y,Y,N,N,Y,Y,N,N,N,N,N
+BIKA: Edit Batch,N,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N
+BIKA: Close Batch,N,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N
+BIKA: Reopen Batch,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Add Analysis Request,N,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N
+Modify portal content,N,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N
+,,,,,,,,,,,,,,,
+[State],,,,,,,,,,,,,,,
+Id:,closed,,,,,,,,,,,,,,
+Title:,Closed,,,,,,,,,,,,,,
+Description:,The batch can't be edited and Analysis Requests cannot be attached,,,,,,,,,,,,,,
+Transitions,open,,,,,,,,,,,,,,
+Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,RegulatoryInspector,Publisher,Reader,Editor,Contributor,Anonymous
+View,N,N,Y,Y,Y,N,N,N,N,Y,N,N,N,N,N
+BIKA: Edit Batch,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Close Batch,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Reopen Batch,N,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N
+BIKA: Add Analysis Request,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+Modify portal content,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+,,,,,,,,,,,,,,,
+[Transition],,,,,,,,,,,,,,,
+Id:,open,,,,,,,,,,,,,,
+Title:,Open,,,,,,,,,,,,,,
+Description:,"Used to retract a batch to 'open' state",,,,,,,,,,,,,,
+Target state:,open,,,,,,,,,,,,,,
+Trigger:,User,,,,,,,,,,,,,,
+Guard permission:,BIKA: Reopen Batch,,,,,,,,,,,,,,
+Guard expression:,"python:here.workflow_guard_open() if hasattr(here, 'workflow_guard_open') else True",,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,
+[Transition],,,,,,,,,,,,,,,
+Id:,close,,,,,,,,,,,,,,
+Title:,Close,,,,,,,,,,,,,,
+Description:,Close the batch, removing it from default views,,,,,,,,,,,,,,
+Target state:,closed,,,,,,,,,,,,,,
+Trigger:,User,,,,,,,,,,,,,,
+Guard permission:,BIKA: Close Batch,,,,,,,,,,,,,,
+Guard expression:,"python:here.workflow_guard_close() if hasattr(here, 'workflow_guard_close') else True",,,,,,,,,,,,,,
