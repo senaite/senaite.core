@@ -39,26 +39,6 @@
 
                    <metal:field use-macro="python:context.widget(fieldname, mode='edit')"/>
 
-                    <tal:hidden_def
-                        tal:repeat="hfield python:[f for f in context.Schema().fields() if f.widget.isVisible(context, 'add', default='invisible', field=f) == 'hidden']">
-                            <input
-                                type="hidden"
-                                tal:define="val python:hfield.getAccessor(context)();
-                                            hfieldName python:hfield.getName();"
-                                tal:attributes="
-                                    name string:${hfieldName};
-                                    id string:${hfieldName};
-                                    value val/Title|nothing;"/>
-                             <input
-                                type="hidden"
-                                tal:define="val python:hfield.getAccessor(context)();
-                                            hfieldName python:hfield.getName();"
-                                tal:attributes="
-                                    name string:${hfieldName}_uid;
-                                    id string:${hfieldName}_uid;
-                                    value val/UID|nothing;"/>
-                    </tal:hidden_def>
-
                 </td>
             </tal:columns>
         </tal:def>
@@ -69,18 +49,21 @@
             <input
                 type="hidden"
                 tal:define="
-                    val python:field.getAccessor(context)();"
+					val python:field.get(context);
+                    val python:val if val else field.getAccessor(context)();"
                 tal:attributes="
-                    name string:ar.${arnum}.${field};
-                    id string:ar_${arnum}_${field};
-                    value val/Title|nothing;"/>
+                    id python:'ar_%s_%s'%(arnum, field.getName());
+                    name python:'ar.%s.%s:record'%(arnum, field.getName());
+                    value python:val.Title() if 'reference' in field.getType().lower() else val;"/>
              <input
                 type="hidden"
+				tal:condition="python:val and 'reference' in field.getType().lower()"
                 tal:define="
-                    val python:field.getAccessor(context)();"
+					val python:field.get(context);
+                    val python:val if val else field.getAccessor(context)();"
                 tal:attributes="
-                    name string:ar.${arnum}.${field}_uid;
-                    id string:ar_${arnum}_${field}_uid;
+                    id python:'ar_%s_%s_uid'%(arnum, field.getName());
+                    name python:'ar.%s.%s_uid:record'%(arnum, field.getName());
                     value val/UID|nothing;"/>
         </tal:columns>
     </tal:hidden>
