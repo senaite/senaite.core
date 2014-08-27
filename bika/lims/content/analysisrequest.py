@@ -1241,6 +1241,31 @@ schema = BikaSchema.copy() + Schema((
             visible=False,
         ),
     ),
+    StringField('PreparationWorkflow',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        vocabulary='getPreparationWorkflows',
+        widget=SelectionWidget(
+            format='select',
+            label=_("Preparation Workflow"),
+            size=10,
+            visible={'edit': 'visible',
+                     'view': 'visible',
+                     'add': 'edit',
+                     'header_table': 'visible',
+                     'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                     'to_be_sampled':     {'view': 'visible', 'edit': 'invisible'},
+                     'sampled':           {'view': 'visible', 'edit': 'invisible'},
+                     'to_be_preserved':   {'view': 'visible', 'edit': 'invisible'},
+                     'sample_due':        {'view': 'visible', 'edit': 'invisible'},
+                     'sample_received':   {'view': 'visible', 'edit': 'invisible'},
+                     'expired':           {'view': 'visible', 'edit': 'invisible'},
+                     'disposed':          {'view': 'visible', 'edit': 'invisible'},
+                     },
+            render_own_label=True,
+        ),
+    ),
     HistoryAwareReferenceField(
         'Priority',
         allowed_types=('ARPriority',),
@@ -2010,6 +2035,38 @@ class AnalysisRequest(BaseFolder):
 
     def getSamplers(self):
         return getUsers(self, ['LabManager', 'Sampler'])
+
+    def getPreparationWorkflows(self):
+        wf = self.portal_workflow
+        ids = wf.getWorkflowIds()
+
+        sampleprep_ids = [wid for wid in ids if wid.startswith('sampleprep')]
+        prep_workflows = []
+        for workflow_id in sampleprep_ids:
+            workflow = wf.getWorkflowById(workflow_id)
+            prep_workflows.append([workflow_id, workflow.title])
+        return DisplayList(prep_workflows)
+
+
+    def guard_sampleprep_transition(self):
+        workflow = getToolByName(self, 'portal_workflow')
+        if not isBasicTransitionAllowed(self):
+            return False
+        if self.getPreparationWorkflow() is not None:
+            return True
+        return False
+
+    def guard_sample_due_transition(self):
+        """Prevent "sample_due" transition if sample preparation is not completed
+        """
+        workflow = getToolByName(self, 'portal_workflow')
+        if not isBasicTransitionAllowed(self):
+            return False
+        if self.getPreparationWorkflow() is not None:
+            state = workflow.getInfoFor(self, 'sampleprep_review_state')
+            if state != 'done':
+                return False
+        return True
 
     def guard_unassign_transition(self):
         """Allow or disallow transition depending on our children's states

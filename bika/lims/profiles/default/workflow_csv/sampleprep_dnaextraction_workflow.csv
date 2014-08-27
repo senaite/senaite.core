@@ -1,6 +1,6 @@
 [Workflow],,,,,,,,,,,,,,,
 Id:,sampleprep_dnaextraction_workflow,,,,,,,,,,,,,,
-Title:,Sample Preparation: DNA Extraction,,,,,,,,,,,,,,
+Title:,DNA Extraction,,,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,,,
 Initial state:,to_be_extracted,,,,,,,,,,,,,,
 Type:,Workflow,,,,,,,,,,,,,,

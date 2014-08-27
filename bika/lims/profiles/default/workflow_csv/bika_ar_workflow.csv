@@ -90,7 +90,7 @@ Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N
 Id:,sample_due,,,,,,,,,,,,,,
 Title:,Sample Due,,,,,,,,,,,,,,
 Description:,Sample yet to be taken into the lab for analysis,,,,,,,,,,,,,,
-Transitions,"receive, submit",,,,,,,,,,,,,
+Transitions,"receive, submit, sample_prep",,,,,,,,,,,,,
 Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated
 BIKA: Add Analysis,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N
 BIKA: Cancel and reinstate,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N
@@ -106,6 +106,13 @@ BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N
 BIKA: Add Attachment,N,Y,Y,Y,N,N,N,N,N,N,N,Y,Y,N,N
 View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N
 Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N
+,,,,,,,,,,,,,,,
+[State],,,,,,,,,,,,,,,
+Id:,sample_prep,,,,,,,,,,,,,,
+Title:,Sample Preparation,,,,,,,,,,,,,,
+Description:,A sample preparation workflow is in progress,,,,,,,,,,,,,,
+Transitions,"sample_due",,,,,,,,,,,,,
+Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated
 ,,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,,
 Id:,sample_received,,,,,,,,,,,,,,
@@ -341,6 +348,7 @@ Title:,,,,,,,,,,,,,,
 Description:,sample_due,,,,,,,,,,,,,
 Target state:,sample_due,,,,,,,,,,,,,
 Trigger:,User,,,,,,,,,,,,,
+Guard expression:,python:here.guard_sample_due_transition(),,,,,,,,,,,,,
 ,,,,,,,,,,,,,,
 [Transition],,,,,,,,,,,,,,
 Id:,sampling_workflow,,,,,,,,,,,,,
@@ -374,3 +382,12 @@ Target state:,verified,,,,,,,,,,,,,
 URL:,,,,,,,,,,,,,,
 Trigger:,User,,,,,,,,,,,,,
 Guard expression:,python:here.guard_verify_transition(),,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+[Transition],,,,,,,,,,,,,,
+Id:,sample_prep,,,,,,,,,,,,,
+Title:,Sample Preparation,,,,,,,,,,,,,
+Description:,Sample Preparation,,,,,,,,,,,,,
+Target state:,sample_prep,,,,,,,,,,,,,
+URL:,,,,,,,,,,,,,,
+Trigger:,Automatic,,,,,,,,,,,,,
+Guard expression:,python:here.guard_sampleprep_transition(),,,,,,,,,,,,,
