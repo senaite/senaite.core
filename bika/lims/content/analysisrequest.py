@@ -1245,23 +1245,13 @@ schema = BikaSchema.copy() + Schema((
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
-        vocabulary='getPreparationWorkflows',
-        widget=SelectionWidget(
-            format='select',
+        acquire=True,
+        widget=StringWidget(
             label=_("Preparation Workflow"),
-            size=10,
-            visible={'edit': 'visible',
+            visible={'edit': 'hidden',
                      'view': 'visible',
-                     'add': 'edit',
+                     'add': 'hidden',
                      'header_table': 'visible',
-                     'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
-                     'to_be_sampled':     {'view': 'visible', 'edit': 'invisible'},
-                     'sampled':           {'view': 'visible', 'edit': 'invisible'},
-                     'to_be_preserved':   {'view': 'visible', 'edit': 'invisible'},
-                     'sample_due':        {'view': 'visible', 'edit': 'invisible'},
-                     'sample_received':   {'view': 'visible', 'edit': 'invisible'},
-                     'expired':           {'view': 'visible', 'edit': 'invisible'},
-                     'disposed':          {'view': 'visible', 'edit': 'invisible'},
                      },
             render_own_label=True,
         ),
@@ -2035,18 +2025,6 @@ class AnalysisRequest(BaseFolder):
 
     def getSamplers(self):
         return getUsers(self, ['LabManager', 'Sampler'])
-
-    def getPreparationWorkflows(self):
-        wf = self.portal_workflow
-        ids = wf.getWorkflowIds()
-
-        sampleprep_ids = [wid for wid in ids if wid.startswith('sampleprep')]
-        prep_workflows = []
-        for workflow_id in sampleprep_ids:
-            workflow = wf.getWorkflowById(workflow_id)
-            prep_workflows.append([workflow_id, workflow.title])
-        return DisplayList(prep_workflows)
-
 
     def guard_sampleprep_transition(self):
         workflow = getToolByName(self, 'portal_workflow')

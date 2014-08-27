@@ -58,151 +58,477 @@ class InheritedObjectsUIField(RecordsField):
         return _field.set(instance, uids)
 
 
-schema = BikaFolderSchema.copy() + Schema((
-    StringField(
-        'BatchID',
-        searchable=True,
-        required=False,
-        validators=('uniquefieldvalidator',),
-        widget=StringWidget(
-            visible=False,
-            label=_("Batch ID"),
-        )
+BatchID = StringField(
+    'BatchID',
+    searchable=True,
+    required=False,
+    validators=('uniquefieldvalidator',),
+    widget=StringWidget(
+        visible=False,
+        label=_("Batch ID"),
+    )
+)
+BatchDate = DateTimeField(
+    'BatchDate',
+    required=False,
+    widget=DateTimeWidget(
+        label=_('Date'),
     ),
-    ReferenceField(
-        'Client',
-        required=0,
-        allowed_types=('Client',),
-        relationship='BatchClient',
-        widget=ReferenceWidget(
-            label=_("Client"),
-            size=30,
-            visible=True,
-            base_query={'inactive_state': 'active'},
-            showOn=True,
-            colModel=[{'columnName': 'UID', 'hidden': True},
-                      {'columnName': 'ClientID', 'width': '20', 'label': _('Client ID')},
-                      {'columnName': 'Title', 'width': '80', 'label': _('Title')}
-                     ],
-      ),
+)
+Client = ReferenceField('Client',
+    required=0,
+    allowed_types=('Client',),
+    relationship='BatchClient',
+    widget=ReferenceWidget(
+        label=_("Client"),
+        size=30,
+        visible=True,
+        base_query={'inactive_state': 'active'},
+        showOn=True,
+        colModel=[{'columnName': 'UID', 'hidden': True},
+                  {'columnName': 'ClientID', 'width': '20', 'label': _('Client ID')},
+                  {'columnName': 'Title', 'width': '80', 'label': _('Title')}
+                 ],
+  ),
+)
+Contact = ReferenceField(
+    'Contact',
+    required=0,
+    vocabulary_display_path_bound=sys.maxsize,
+    allowed_types=('Contact',),
+    relationship='BatchContact',
+    mode="rw",
+    read_permission=permissions.View,
+    write_permission=permissions.ModifyPortalContent,
+    widget=ReferenceWidget(
+        label=_("Contact"),
+        size=20,
+        helper_js=("bika_widgets/referencewidget.js",),
+        visible={'edit': 'visible',
+                 'view': 'visible',
+                 },
+        base_query={'inactive_state': 'active'},
+        showOn=True,
+        popup_width='400px',
+        colModel=[{'columnName': 'UID', 'hidden': True},
+                  {'columnName': 'Fullname', 'width': '50', 'label': _('Name')},
+                  {'columnName': 'EmailAddress', 'width': '50', 'label': _('Email Address')},
+                 ],
     ),
-    StringField(
-        'ClientBatchID',
-        searchable=True,
-        required=0,
-        widget=StringWidget(
-            label=_("Client Batch ID")
-        )
+)
+ClientBatchID = StringField(
+    'ClientBatchID',
+    searchable=True,
+    required=0,
+    widget=StringWidget(
+        label=_("Client Batch ID")
+    )
+)
+SamplePoint = ReferenceField(
+    'SamplePoint',
+    schemata = "AnalysisRequest and Sample Defaults",
+    required=0,
+    allowed_types='SamplePoint',
+    relationship='BatchSamplePoint',
+    mode="rw",
+    read_permission=permissions.View,
+    write_permission=permissions.ModifyPortalContent,
+    widget=ReferenceWidget(
+        label=_("Sample Point"),
+        description=_("Location where sample was taken"),
+        size=20,
+        visible={'edit': 'visible',
+                 'view': 'visible',
+                 'add': 'edit',
+                 },
+        catalog_name='bika_setup_catalog',
+        base_query={'inactive_state': 'active'},
+        showOn=True,
     ),
-    DateTimeField(
-        'BatchDate',
-        required=False,
-        widget=DateTimeWidget(
-            label=_('Date'),
-        ),
+)
+SampleType = ReferenceField(
+    'SampleType',
+    schemata = "AnalysisRequest and Sample Defaults",
+    required=0,
+    allowed_types='SampleType',
+    relationship='BatchSampleType',
+    mode="rw",
+    read_permission=permissions.View,
+    write_permission=permissions.ModifyPortalContent,
+    widget=ReferenceWidget(
+        label=_("Sample Type"),
+        description=_("Create a new sample of this type"),
+        size=20,
+        visible={'edit': 'visible',
+                 'view': 'visible',
+                 'add': 'edit',
+                 },
+        catalog_name='bika_setup_catalog',
+        base_query={'inactive_state': 'active'},
+        showOn=True,
     ),
-    FloatField(
-        'ContainerTemperature',
-        default_content_type='text/x-web-intelligent',
-        default_output_type="text/plain",
-        widget=DecimalWidget(
-            label=_('Container Temperature'),
-            description = _("The temperature of the sample container on arrival"),
-        )
+)
+SampleMatrix = ReferenceField(
+    'SampleMatrix',
+    schemata = "AnalysisRequest and Sample Defaults",
+    required=False,
+    allowed_types='SampleMatrix',
+    relationship='BatchSampleMatrix',
+    mode="rw",
+    read_permission=permissions.View,
+    write_permission=permissions.ModifyPortalContent,
+    widget=ReferenceWidget(
+        label=_("Sample Matrix"),
+        size=20,
+        visible={'edit': 'visible',
+                 'view': 'visible',
+                 },
+        catalog_name='bika_setup_catalog',
+        base_query={'inactive_state': 'active'},
+        showOn=True,
     ),
-    StringField(
-        'ContainerCondition',
-        default_content_type='text/x-web-intelligent',
-        default_output_type="text/plain",
-        widget=StringWidget(
-            label=_('Container Condition'),
-            description = _("The physical condition of the sample container on arrival"),
-        )
+)
+Specification = ReferenceField(
+    'Specification',
+    schemata = "AnalysisRequest and Sample Defaults",
+    allowed_types='AnalysisSpec',
+    relationship='BatchAnalysisSpec',
+    mode="rw",
+    read_permission=permissions.View,
+    write_permission=permissions.ModifyPortalContent,
+    widget=ReferenceWidget(
+        label=_("Analysis Specification"),
+        description=_("Choose default AR specification values"),
+        size=20,
+        visible={'edit': 'visible',
+                 'view': 'visible',
+                 },
+        catalog_name='bika_setup_catalog',
+        colModel=[
+            {'columnName': 'contextual_title',
+             'width': '30',
+             'label': _('Title'),
+             'align': 'left'},
+            {'columnName': 'SampleTypeTitle',
+             'width': '70',
+             'label': _('SampleType'),
+             'align': 'left'},
+            # UID is required in colModel
+            {'columnName': 'UID', 'hidden': True},
+        ],
+        showOn=True,
     ),
-    LinesField(
-        'BatchLabels',
-        vocabulary="BatchLabelVocabulary",
-        accessor="getLabelNames",
-        widget=MultiSelectionWidget(
-            label=_("Batch labels"),
-            format="checkbox",
-        )
+)
+Template = ReferenceField(
+    'Template',
+    schemata = "AnalysisRequest and Sample Defaults",
+    allowed_types=('ARTemplate',),
+    referenceClass=HoldingReference,
+    relationship='BatchARTemplate',
+    mode="rw",
+    read_permission=permissions.View,
+    write_permission=permissions.ModifyPortalContent,
+    widget=ReferenceWidget(
+        label=_("Template"),
+        size=20,
+        visible={'edit': 'visible',
+                 'view': 'visible',
+                 },
+        catalog_name='bika_setup_catalog',
+        base_query={'inactive_state': 'active'},
+        showOn=True,
     ),
-    TextField(
-        'Remarks',
-        searchable=True,
-        default_content_type='text/x-web-intelligent',
-        allowable_content_types=('text/plain', ),
-        default_output_type="text/plain",
-        widget=TextAreaWidget(
-            macro="bika_widgets/remarks",
-            label=_('Remarks'),
-            append_only=True,
-        )
+)
+Profile = ReferenceField(
+    'Profile',
+    schemata = "AnalysisRequest and Sample Defaults",
+    allowed_types=('AnalysisProfile',),
+    referenceClass=HoldingReference,
+    relationship='BatchAnalysisProfile',
+    mode="rw",
+    read_permission=permissions.View,
+    write_permission=permissions.ModifyPortalContent,
+    widget=ReferenceWidget(
+        label=_("Analysis Profile"),
+        size=20,
+        visible={'edit': 'visible',
+                 'view': 'visible',
+                 },
+        catalog_name='bika_setup_catalog',
+        base_query={'inactive_state': 'active'},
+        showOn=True,
     ),
-    ReferenceField(
-        'InheritedObjects',
-        required=0,
-        multiValued=True,
-        allowed_types=('AnalysisRequest'),  # batches are expanded on save
-        referenceClass = HoldingReference,
-        relationship = 'BatchInheritedObjects',
-        widget=ReferenceWidget(
-            visible=False,
-        ),
+)
+DefaultContainerType = ReferenceField(
+    'DefaultContainerType',
+    schemata = "AnalysisRequest and Sample Defaults",
+    allowed_types = ('ContainerType',),
+    relationship = 'AnalysisRequestContainerType',
+    referenceClass = HoldingReference,
+    mode="rw",
+    read_permission=permissions.View,
+    write_permission=permissions.ModifyPortalContent,
+    widget=ReferenceWidget(
+        label=_('Default Container'),
+        description=_('Default container for new sample partitions'),
+        size=20,
+        visible={'edit': 'visible',
+                 'view': 'visible',
+                 },
+        catalog_name='bika_setup_catalog',
+        base_query={'inactive_state': 'active'},
+        showOn=True,
     ),
-    InheritedObjectsUIField(
-        'InheritedObjectsUI',
-        required=False,
-        type='InheritedObjects',
-        subfields=('Title', 'ObjectID', 'Description'),
-        subfield_sizes = {'Title': 25,
-                          'ObjectID': 25,
-                          'Description': 50,
-                          },
-        subfield_labels = {'Title': _('Title'),
-                           'ObjectID': _('Object ID'),
-                           'Description': _('Description')
-                           },
-        widget = bikaRecordsWidget(
-            label=_("Inherit From"),
-            description=_(
-                "Include all analysis requests belonging to the selected objects."),
-            innerJoin="<br/>",
-            combogrid_options={
-                'Title': {
-                    'colModel': [
-                        {'columnName': 'Title', 'width': '25',
-                         'label': _('Title'), 'align': 'left'},
-                        {'columnName': 'ObjectID', 'width': '25',
-                         'label': _('Object ID'), 'align': 'left'},
-                        {'columnName': 'Description', 'width': '50',
-                         'label': _('Description'), 'align': 'left'},
-                        {'columnName': 'UID', 'hidden': True},
-                    ],
-                    'url': 'getAnalysisContainers',
-                    'showOn': False,
-                    'width': '600px'
-                },
-                'ObjectID': {
-                    'colModel': [
-                        {'columnName': 'Title', 'width': '25',
-                         'label': _('Title'), 'align': 'left'},
-                        {'columnName': 'ObjectID', 'width': '25',
-                         'label': _('Object ID'), 'align': 'left'},
-                        {'columnName': 'Description', 'width': '50',
-                         'label': _('Description'), 'align': 'left'},
-                        {'columnName': 'UID', 'hidden': True},
-                    ],
-                    'url': 'getAnalysisContainers',
-                    'showOn': False,
-                    'width': '600px'
-                },
+)
+ClientOrderNumber = StringField(
+    'ClientOrderNumber',
+    schemata = "AnalysisRequest and Sample Defaults",
+    searchable=True,
+    mode="rw",
+    read_permission=permissions.View,
+    write_permission=permissions.ModifyPortalContent,
+    widget=StringWidget(
+        label=_('Client Order Number'),
+        size=20,
+        visible={'edit': 'visible',
+                 'view': 'visible',
+                 },
+    ),
+)
+ClientReference = StringField(
+    'ClientReference',
+    schemata = "AnalysisRequest and Sample Defaults",
+    searchable=True,
+    mode="rw",
+    read_permission=permissions.View,
+    write_permission=permissions.ModifyPortalContent,
+    widget=StringWidget(
+        label=_('Client Reference'),
+        size=20,
+        visible={'edit': 'visible',
+                 'view': 'visible',
+                 },
+    ),
+)
+ContainerTemperature = FloatField(
+    'ContainerTemperature',
+    default_content_type='text/x-web-intelligent',
+    default_output_type="text/plain",
+    widget=DecimalWidget(
+        label=_('Container Temperature'),
+        description = _("The temperature of the sample container on arrival"),
+    )
+)
+ContainerCondition = StringField(
+    'ContainerCondition',
+    default_content_type='text/x-web-intelligent',
+    default_output_type="text/plain",
+    widget=StringWidget(
+        label=_('Container Condition'),
+        description = _("The physical condition of the sample container on arrival"),
+    )
+)
+BatchLabels = LinesField(
+    'BatchLabels',
+    vocabulary="BatchLabelVocabulary",
+    accessor="getLabelNames",
+    widget=MultiSelectionWidget(
+        label=_("Batch labels"),
+        format="checkbox",
+    )
+)
+Remarks = TextField(
+    'Remarks',
+    searchable=True,
+    default_content_type='text/x-web-intelligent',
+    allowable_content_types=('text/plain', ),
+    default_output_type="text/plain",
+    widget=TextAreaWidget(
+        macro="bika_widgets/remarks",
+        label=_('Remarks'),
+        append_only=True,
+    )
+)
+InheritedObjects = ReferenceField(
+    'InheritedObjects',
+    required=0,
+    multiValued=True,
+    allowed_types=('AnalysisRequest'),  # batches are expanded on save
+    referenceClass = HoldingReference,
+    relationship = 'BatchInheritedObjects',
+    widget=ReferenceWidget(
+        visible=False,
+    ),
+)
+Priority = ReferenceField(
+    'Priority',
+    schemata = "AnalysisRequest and Sample Defaults",
+    allowed_types=('ARPriority',),
+    referenceClass=HoldingReference,
+    relationship='BatchPriority',
+    mode="rw",
+    read_permission=permissions.View,
+    write_permission=permissions.ModifyPortalContent,
+    widget=ReferenceWidget(
+        label=_("Priority"),
+        size=20,
+        visible={'edit': 'visible',
+                 'view': 'visible',
+                 },
+        catalog_name='bika_setup_catalog',
+        base_query={'inactive_state': 'active'},
+        colModel=[
+            {'columnName': 'Title', 'width': '30',
+             'label': _('Title'), 'align': 'left'},
+            {'columnName': 'Description', 'width': '70',
+             'label': _('Description'), 'align': 'left'},
+            {'columnName': 'sortKey', 'hidden': True},
+            {'columnName': 'UID', 'hidden': True},
+        ],
+        sidx='sortKey',
+        sord='asc',
+        showOn=True,
+    ),
+)
+SamplingDate = DateTimeField(
+    'SamplingDate',
+    schemata = "AnalysisRequest and Sample Defaults",
+    mode="rw",
+    read_permission=permissions.View,
+    write_permission=permissions.ModifyPortalContent,
+    widget = DateTimeWidget(
+        label=_("Sampling Date"),
+        size=20,
+        visible={'edit': 'visible',
+                 'view': 'visible',
+                 },
+    ),
+)
+DateSampled = DateTimeField(
+    'DateSampled',
+    schemata = "AnalysisRequest and Sample Defaults",
+    mode="rw",
+    read_permission=permissions.View,
+    write_permission=permissions.ModifyPortalContent,
+    widget = DateTimeWidget(
+        label=_("Date Sampled"),
+        size=20,
+        visible={'edit': 'visible',
+                 'view': 'visible',
+                 },
+    )
+)
+Sampler = StringField(
+    'Sampler',
+    schemata = "AnalysisRequest and Sample Defaults",
+    mode="rw",
+    read_permission=permissions.View,
+    write_permission=permissions.ModifyPortalContent,
+    vocabulary='getSamplers',
+    widget=SelectionWidget(
+        format='select',
+        label=_("Sampler"),
+        visible={'edit': 'visible',
+                 'view': 'visible',
+                 },
+    ),
+)
+PreparationWorkflow = StringField(
+    'PreparationWorkflow',
+    schemata = "AnalysisRequest and Sample Defaults",
+    mode="rw",
+    read_permission=permissions.View,
+    write_permission=permissions.ModifyPortalContent,
+    vocabulary='getPreparationWorkflows',
+    widget=SelectionWidget(
+        format="select",
+        label=_("Preparation Workflow"),
+        visible={'edit': 'visible',
+                 'view': 'visible',
+                 },
+    ),
+)
+InheritedObjectsUI = InheritedObjectsUIField(
+    'InheritedObjectsUI',
+    required=False,
+    type='InheritedObjects',
+    subfields=('Title', 'ObjectID', 'Description'),
+    subfield_sizes = {'Title': 25,
+                      'ObjectID': 25,
+                      'Description': 50,
+                      },
+    subfield_labels = {'Title': _('Title'),
+                       'ObjectID': _('Object ID'),
+                       'Description': _('Description')
+                       },
+    widget = bikaRecordsWidget(
+        label=_("Inherit From"),
+        description=_(
+            "Include all analysis requests belonging to the selected objects."),
+        innerJoin="<br/>",
+        combogrid_options={
+            'Title': {
+                'colModel': [
+                    {'columnName': 'Title', 'width': '25',
+                     'label': _('Title'), 'align': 'left'},
+                    {'columnName': 'ObjectID', 'width': '25',
+                     'label': _('Object ID'), 'align': 'left'},
+                    {'columnName': 'Description', 'width': '50',
+                     'label': _('Description'), 'align': 'left'},
+                    {'columnName': 'UID', 'hidden': True},
+                ],
+                'url': 'getAnalysisContainers',
+                'showOn': False,
+                'width': '600px'
             },
-        ),
+            'ObjectID': {
+                'colModel': [
+                    {'columnName': 'Title', 'width': '25',
+                     'label': _('Title'), 'align': 'left'},
+                    {'columnName': 'ObjectID', 'width': '25',
+                     'label': _('Object ID'), 'align': 'left'},
+                    {'columnName': 'Description', 'width': '50',
+                     'label': _('Description'), 'align': 'left'},
+                    {'columnName': 'UID', 'hidden': True},
+                ],
+                'url': 'getAnalysisContainers',
+                'showOn': False,
+                'width': '600px'
+            },
+        },
     ),
 )
-)
+
+
+schema = BikaFolderSchema.copy() + Schema((
+    # Default
+    BatchID,
+    BatchDate,
+    Client,
+    Contact,
+    ClientBatchID,
+    BatchLabels,
+    ContainerTemperature,
+    ContainerCondition,
+    InheritedObjects,
+    InheritedObjectsUI,
+    Remarks,
+    # AR and Sample Defaults
+    ClientOrderNumber,
+    ClientReference,
+    Template,
+    Profile,
+    SamplePoint,
+    SampleType,
+    SampleMatrix,
+    Specification,
+    DefaultContainerType,
+    Priority,
+    SamplingDate,
+    DateSampled,
+    Sampler,
+    PreparationWorkflow
+))
 
 
 schema['title'].required = False
@@ -355,6 +681,23 @@ class Batch(ATFolder):
         return revstatus == BatchState.open \
             and canstatus == CancellationState.active
 
+    def getSamplers(self):
+        return getUsers(self, ['LabManager', 'Sampler'])
+
+    def getPreparationWorkflows(self):
+        """Return a list of sample preparation workflows.  These are identified
+        by scanning all workflow IDs for those beginning with "sampleprep".
+        """
+        wf = self.portal_workflow
+        ids = wf.getWorkflowIds()
+
+        sampleprep_ids = [wid for wid in ids if wid.startswith('sampleprep')]
+
+        prep_workflows = [['', ''],]
+        for workflow_id in sampleprep_ids:
+            workflow = wf.getWorkflowById(workflow_id)
+            prep_workflows.append([workflow_id, workflow.title])
+        return DisplayList(prep_workflows)
 
 registerType(Batch, PROJECTNAME)
 

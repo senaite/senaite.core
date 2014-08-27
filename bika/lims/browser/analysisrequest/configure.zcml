@@ -197,4 +197,11 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+	<adapter
+	  for="bika.lims.interfaces.IAnalysisRequest"
+	  factory="bika.lims.browser.analysisrequest.header_table.PreparationWorkflow"
+	  provides="bika.lims.interfaces.IHeaderTableFieldRenderer"
+	  name="PreparationWorkflow"
+	/>
+
 </configure>
