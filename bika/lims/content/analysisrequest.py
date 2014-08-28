@@ -2034,18 +2034,6 @@ class AnalysisRequest(BaseFolder):
             return True
         return False
 
-    def guard_sample_due_transition(self):
-        """Prevent "sample_due" transition if sample preparation is not completed
-        """
-        workflow = getToolByName(self, 'portal_workflow')
-        if not isBasicTransitionAllowed(self):
-            return False
-        if self.getPreparationWorkflow() is not None:
-            state = workflow.getInfoFor(self, 'sampleprep_review_state')
-            if state != 'done':
-                return False
-        return True
-
     def guard_unassign_transition(self):
         """Allow or disallow transition depending on our children's states
         """

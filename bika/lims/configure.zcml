@@ -84,10 +84,4 @@
     layer="bika.lims.interfaces.IBikaLIMS"
   />
 
-    <subscriber
-      for="*
-           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
-      handler="bika.lims.workflow.AfterTransitionEventHandler"
-    />
-
 </configure>

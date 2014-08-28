@@ -111,7 +111,7 @@ Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N
 Id:,sample_prep,,,,,,,,,,,,,,
 Title:,Sample Preparation,,,,,,,,,,,,,,
 Description:,A sample preparation workflow is in progress,,,,,,,,,,,,,,
-Transitions,"sample_due",,,,,,,,,,,,,
+Transitions,,,,,,,,,,,,,,
 Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated
 ,,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,,

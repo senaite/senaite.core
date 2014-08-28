@@ -204,4 +204,18 @@
 	  name="PreparationWorkflow"
 	/>
 
+    <adapter
+      for="bika.lims.interfaces.IAnalysisRequest
+           Products.CMFCore.interfaces.IWorkflowTool"
+      provides="Products.CMFPlone.interfaces.IWorkflowChain"
+      factory=".workflow.AnalysisRequestWorkflowChain"/>
+
+    <subscriber
+      for="bika.lims.interfaces.IAnalysisRequest
+           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
+      handler=".workflow.SamplePrepTransitionEventHandler"
+    />
+
+
+
 </configure>
