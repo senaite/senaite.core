@@ -3,7 +3,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from bika.lims.utils import getHiddenAttributesForClass
 from types import DictType
 from Products.CMFCore.utils import getToolByName
-from bika.lims.interfaces import IATWidgetVisibility
+from bika.lims.interfaces import IATWidgetVisibility, IAnalysisRequest, ISample
 from zope.interface import implements
 
 _marker = []
@@ -76,9 +76,15 @@ class SamplingWorkflowWidgetVisibility(object):
         sw_fields = ['Sampler', 'DateSampled']
         state = default if default else 'invisible'
         fieldName = field.getName()
-        if fieldName in sw_fields \
-                and hasattr(self.context, 'getSamplingWorkflowEnabled') \
-                and self.context.getSamplingWorkflowEnabled():
+        if ISample.providedBy(self.context):
+             sample = self.context
+        if IAnalysisRequest.providedBy(self.context):
+             sample = self.context.getSample()
+        if not sample:
+            # ar_create = no sample has yet been attached
+            return state
+        sw = sample.getSamplingWorkflowEnabled()
+        if fieldName in sw_fields and sw:
             if mode == 'header_table':
                 state = 'prominent'
             elif mode == 'view':
