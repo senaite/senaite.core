@@ -1,6 +1,8 @@
 next
 ----
 
+LIMS-1395: front page issue tracker url
+LIMS-1402: If no date is chosen, it will never expire." not been accomplished.
 LIMS-1377: Error when trying to publish after updating branch hotfix/next or develop
 LIMS-1360: Number of analyses in ARs folder view
 LIMS-1335: Reference Definitions don't sort alphabetically on WS Template lay-outs
