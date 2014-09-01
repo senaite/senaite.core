@@ -8,10 +8,13 @@ In the tradition of Chief Inkosi Bika LIMS 2 using a title for a release, this
 edition is code-named Gaob Bika LIMS 3. Gaob, King, is taken from Khoi San Nama,
 language of the world's first people.
 
+Installation
+------------
+
+* `Installing Bika LIMS <https://github.com/bikalabs/Bika-LIMS/blob/13c8e4e/INSTALL.rst>`_
+
 Documentation
 -------------
-
-Work in progress:
 
 * `User Manual <http://demo.bikalabs.com/knowledge-centre/manual/bika-3-user-manual>`_
 * `GitHub Wiki <github.com/bikalabs/Bika-LIMS/wiki>`_
