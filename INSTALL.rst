@@ -92,49 +92,17 @@ Linux Installation Steps
 
         bin/plonectl client1 fg
 
-    If you see ``INFO Zope Ready to handle requests`` then the server is running
+    If you see ``INFO Zope Ready to handle requests`` then the server is running.
+    Press Control+C to stop the foreground client.
 
     To start the Plone server normally, use the following command::
 
-        bin/plonectl start all
-
-    or::
-
-        bin/plonectl start all
+        bin/plonectl start
 
 5. Add a new Plone/Bika instance.
 
     Open a browser and go to http://localhost:8080/.  Select "Add Plone Site",
     and ensure that the Bika LIMS option is checked, then submit the form.
-
-Upgrading Bika LIMS
--------------------
-
-If a new release of the LIMS is made available, the following procedure will
-upgrade your existing installation to use the new packages.
-
-1. Backup
-
-    Stop Plone, and make a full backup of your instance before continuing::
-
-        bin/plonectl stop all
-        bin/fullbackup
-
-2. Buildout
-
-    Run buildout with the "-n" option, to retreive the latest version of Bika
-    LIMS and it's dependencies::
-
-        bin/buildout -n
-
-3. Restart Plone
-
-    bin/plonectl restart all
-
-4. Migrate
-
-    Go to site-setup, and click ``Add-ons``.  Find Bika LIMS in the list of
-    activated addons, and click the ``bika.lims`` upgrade button.
 
 Windows Installation Steps
 --------------------------
@@ -152,22 +120,22 @@ Windows Installation Steps
 
 2. Installing Bika LIMS
 
-    1. Open `C:\Plone43\buildout.cfg` in a text editor
+    1. Open ``C:\Plone43\buildout.cfg`` in a text editor
 
-    2.  Add **bika.lims** to the **eggs**::
+    2. Find the section beginning with ``eggs =``, and add ``bika.lims`` to the existing
+       entries::
 
         eggs =
             Plone
             Pillow
-            Products.PloneHotfix20130618
             bika.lims
 
-    3. Run _buildout_ from cmd **(** `⊞ Win` **>>** _type:_ `cmd` **>>** `↵ Enter` **)**::
+    3. Run buildout from cmd (press ``⊞ Win``, type ``cmd``, press ``↵ Enter``)::
 
-        cd C:\Plone43
-        bin\buildout.exe
+        C:> cd C:\Plone43
+        C:\Plone43> bin\buildout.exe
 
-    4. A _successful_ buildout should output::
+    4. A successful buildout should output::
 
         Updating run-instance.
         Updating service.
@@ -190,18 +158,18 @@ Windows Installation Steps
 
 3. Setting up Plone Services
 
-    1. Run cmd as Administrator **(** ``⊞ Win`` **>>** _type:_ ``cmd`` **>>** ``CTRL``+``⇧ Shift``+``↵ Enter`` **)**
+    1. Run cmd as Administrator (press ``⊞ Win``, type: ``cmd``, press ``CTRL``+``⇧ Shift``+``↵ Enter``)
 
     2. Navigate to the Plone root directory::
 
-        cd C:\Plone43
+        C:\> cd C:\Plone43
 
     3. Install, Start and bring your newly created instance to the Foreground
        This should stop the default Plone 4.3 Service::
 
-           bin\instance.exe install
-           bin\instance.exe start
-           bin\instance.exe fg
+           C:\Plone43> bin\instance.exe install
+           C:\Plone43> bin\instance.exe start
+           C:\Plone43> bin\instance.exe fg
 
        If you see ``INFO Zope Ready to handle requests`` then the server is running
 
@@ -210,23 +178,91 @@ Windows Installation Steps
     Open a browser and go to http://localhost:8080/.  Select "Add Plone Site",
     and ensure that the Bika LIMS option is checked, then submit the form.
 
+Upgrading Bika LIMS
+-------------------
 
-5. Troubleshooting
+If a new release of the LIMS is made available, the following procedure will
+upgrade your existing installation to use the new packages.
 
-    1. Dependencies ::
+1. Backup
+
+    Stop Plone, and make a full backup of your instance before continuing::
+
+        bin/plonectl stop
+        bin/fullbackup
+
+2. Buildout
+
+    Run buildout with the "-n" option, to retreive the latest version of Bika
+    LIMS and it's dependencies::
+
+        bin/buildout -n
+
+3. Restart Plone
+
+    Just as during the installation, it's useful to start a single zeo client
+    in the foreground to check for errors:
+
+        bin/plonectl client1 stop
+        bin/plonectl client1 fg
+
+    To restart Plone issue a command like this:
+
+        bin/plonectl restart
+
+4. Migrate
+
+    Go to site-setup, and click ``Add-ons``.  Find Bika LIMS in the list of
+    activated addons, and click the ``bika.lims`` upgrade button.
+
+Installing Bika-LIMS source
+---------------------------
+
+You should already have Plone and Bika LIMS installed.  The paths and commands
+below are for Linux, but following along in windows is simple.
+
+1. Download source::
+
+    cd Plone/zeocluster/src
+    git clone https://github.com/bikalabs/Bika-LIMS.git bika.lims
+
+2. Select a git branch::
+
+    We use git-flow to manage the git repository, with some quirks.  The ``next``
+    branch contains code for the next hotfix or release, and ``develop`` contains
+    unreleased code merged from ``feature/*`` branches. ::
+
+        git checkout develop
+
+3. Edit ``buildout.cfg``::
+
+    develop =
+        src/bika.lims
+
+4. Restart Plone
+
+    bin/plonectl restart all
+
+The Bika LIMS distribution in Plone/buildout-cache/eggs/bika.lims* will now be
+ignored by Plone, and the copy in src/bika.lims is used instead.
+
+Troubleshooting
+---------------
+
+    (Windows) Dependencies ::
 
         You need to install some dependencies manually
         Download and install _bika_dependencies(Plone 4.3.1).exe_ from https://github.com/zylinx/bika.dependencies
         This fixes the fact that Plone's buildout cannot compile the libraries required by weasyprint.
         It installs the pre-compiled binaries into System32 and Plone's installation folder instead.
 
-    2. Privileges ::
+    (Windows) Privileges ::
 
         Open ``Explorer`` >> Navigate to ``C:\`` >> Right-Click on the ``Plone43`` directory >> select ``roperties``
         Select the ``Security`` Tab >>  Click ``Edit``  >> Check ``Full Control`` Allow for necessary User / Group
         Click  ``Apply``
 
-    3. If you are having trouble starting ``bin\instance.exe fg`` as follows::
+    (Windows) If you are having trouble starting ``bin\instance.exe fg`` as follows::
 
         The program seems already to be running. If you believe not,
         check for dangling .pid and .lock files in var/.
@@ -243,6 +279,21 @@ Windows Installation Steps
             -Run services.msc
             -Search for Plone 4.3
             -Try Starting or Stopping it along with your instance
+
+    To empty/reset the database, run the following::
+
+        rm -rf var/filestorage
+        bin/buildout
+
+    If your admin user does not exist or you forget the password::
+
+        bin/plonectl adduser admin admin
+
+    AttributeError: type object 'IIdServer' has no attribute '__iro__' ::
+
+        * The code for "bika.lims" not installed or not included
+        * Running buildout again usually fixes this
+
 
 Log errors to sentry.bikalabs.com
 ---------------------------------
