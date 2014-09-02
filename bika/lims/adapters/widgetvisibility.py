@@ -121,7 +121,7 @@ class MainClientFieldWidgetVisibility(object):
         fieldName = field.getName()
         if fieldName == 'Client' and mode == 'add' \
                 and IAnalysisRequestsFolder.providedBy(context.aq_parent):
-            return 'hidden'
+            return 'edit'
         return state
 
 
