@@ -1467,7 +1467,7 @@ function AnalysisRequestAddView() {
         if (data.objects.length > 0) {
             var obj = data.objects[0];
             var col = window.bika.ar_copy_from_col;
-            for (var fieldname in obj) {
+			for (fieldname in obj) {
                 if (!obj.hasOwnProperty(fieldname)) {
                     continue;
                 }
@@ -1475,7 +1475,13 @@ function AnalysisRequestAddView() {
                     continue;
                 }
                 var fieldvalue = obj[fieldname];
-                var el = $("#ar_" + col + "_" + fieldname);
+                // First the primary field.  Usually visible, could be hidden.
+				var el = $("#ar_" + col + "_" + fieldname);
+                if (el.length > 0) {
+                    $(el).val(fieldvalue);
+                }
+				// Dealing with reference widget: *_uid hidden field.
+                var el = $("#ar_" + col + "_" + fieldname + "_uid");
                 if (el.length > 0) {
                     $(el).val(fieldvalue);
                 }

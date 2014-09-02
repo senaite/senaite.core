@@ -1,4 +1,5 @@
 from AccessControl import getSecurityManager
+from Products.CMFCore.permissions import ModifyPortalContent
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
@@ -13,6 +14,8 @@ from zope.interface import implements
 
 
 class AnalysisRequestsView(BikaListingView):
+    """Base for all lists of ARs
+    """
     implements(IViewView)
 
     def __init__(self, context, request):
@@ -707,3 +710,21 @@ class AnalysisRequestsView(BikaListingView):
         self.review_states = new_states
 
         return items
+
+
+class AnalysisRequestsFolderView(AnalysisRequestsView):
+    """The main AR listing gets some special tweaks here.
+    """
+
+    def __call__(self):
+        # In the main list, only certain roles may browser,
+        # so I decide to show always the copy_to_new button.
+        review_states = []
+        for review_state in self.review_states:
+            review_state.get('custom_actions', []).extend(
+                [{'id': 'copy_to_new',
+                  'title': _('Copy to new'),
+                  'url': 'workflow_action?action=copy_to_new'}, ])
+            review_states.append(review_state)
+        self.review_states = review_states
+        return super(AnalysisRequestsFolderView, self).__call__()

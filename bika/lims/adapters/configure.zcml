@@ -5,6 +5,13 @@
     i18n_domain="bika">
 
     <adapter
+      factory=".widgetvisibility.MainClientFieldWidgetVisibility"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="MainClientFieldWV"
+    />
+
+    <adapter
       factory=".widgetvisibility.BatchClientFieldWidgetVisibility"
       provides="bika.lims.interfaces.IATWidgetVisibility"
       for="bika.lims.interfaces.IAnalysisRequest"

@@ -1,9 +1,10 @@
 # -*- coding:utf-8 -*-
-from Products.CMFCore.WorkflowCore import WorkflowException
-from bika.lims.utils import getHiddenAttributesForClass
-from types import DictType
-from Products.CMFCore.utils import getToolByName
+from bika.lims.interfaces import IAnalysisRequestsFolder
 from bika.lims.interfaces import IATWidgetVisibility
+from bika.lims.utils import getHiddenAttributesForClass
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.WorkflowCore import WorkflowException
+from types import DictType
 from zope.interface import implements
 
 _marker = []
@@ -101,6 +102,28 @@ class BatchClientFieldWidgetVisibility(object):
         if fieldName == 'Client' and context.aq_parent.portal_type == 'Batch':
             return 'edit'
         return state
+
+class MainClientFieldWidgetVisibility(object):
+    """This will force the 'Client' field to 'hidden' when in /analysisrequests
+    context.
+
+    This context is possible now since hitting copy-to-new in /analysisrequests
+    will load the AR-add form.
+    """
+    implements(IATWidgetVisibility)
+
+    def __init__(self, context):
+        self.context = context
+        self.sort = 10
+
+    def __call__(self, context, mode, field, default):
+        state = default if default else 'visible'
+        fieldName = field.getName()
+        if fieldName == 'Client' and mode == 'add' \
+                and IAnalysisRequestsFolder.providedBy(context.aq_parent):
+            return 'hidden'
+        return state
+
 
 class OptionalFieldsWidgetVisibility(object):
     """Remove 'hidden attributes' (fields in registry bika.lims.hiddenattributes).
