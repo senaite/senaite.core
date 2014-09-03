@@ -25,6 +25,7 @@ function AnalysisRequestView() {
         var requeststring = $.param(requestdata);
         var href = window.location.href.split("?")[0]
             .replace("/base_view", "")
+            .replace("/manage_results", "")
             .replace("/view", "") + "/workflow_action?" + requeststring;
         window.location.href = href;
     }
@@ -38,6 +39,7 @@ function AnalysisRequestView() {
         var requeststring = $.param(requestdata);
         var href = window.location.href.split("?")[0]
             .replace("/base_view", "")
+            .replace("/manage_results", "")
             .replace("/view", "") + "/workflow_action?" + requeststring;
         window.location.href = href;
     }
@@ -51,6 +53,7 @@ function AnalysisRequestView() {
         var requeststring = $.param(requestdata);
         var href = window.location.href.split("?")[0]
             .replace("/base_view", "")
+            .replace("/manage_results", "")
             .replace("/view", "") + "/workflow_action?" + requeststring;
         window.location.href = href;
     }
