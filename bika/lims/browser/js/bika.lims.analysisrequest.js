@@ -10,9 +10,23 @@ function AnalysisRequestView() {
      */
     that.load = function() {
 
+        $("#workflow-transition-prepublish").click(workflow_transition_prepublish);
         $("#workflow-transition-publish").click(workflow_transition_publish);
-        $("#workflow-transition-republish").click(workflow_transition_publish);
+        $("#workflow-transition-republish").click(workflow_transition_republish);
 
+    }
+
+    function workflow_transition_prepublish(event){
+        event.preventDefault();
+        var requestdata = {};
+        var spec_uid = $("#PublicationSpecification_uid").val();
+        requestdata.PublicationSpecification = spec_uid;
+        requestdata.workflow_action = "prepublish";
+        var requeststring = $.param(requestdata);
+        var href = window.location.href.split("?")[0]
+            .replace("/base_view", "")
+            .replace("/view", "") + "/workflow_action?" + requeststring;
+        window.location.href = href;
     }
 
     function workflow_transition_publish(event){
