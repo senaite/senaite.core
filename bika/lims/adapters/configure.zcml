@@ -5,10 +5,10 @@
     i18n_domain="bika">
 
     <adapter
-      factory=".widgetvisibility.BatchClientFieldWidgetVisibility"
-      provides="bika.lims.interfaces.IATWidgetVisibility"
+      factory=".acquirefielddefaults.AcquireFieldDefaults"
+      provides="bika.lims.interfaces.IAcquireFieldDefaults"
       for="bika.lims.interfaces.IAnalysisRequest"
-      name="BatchClientFieldWV"
+      name="DefaultAquireFieldDefaults"
     />
 
     <adapter

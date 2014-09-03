@@ -505,6 +505,34 @@ class IATWidgetVisibility(Interface):
         """
 
 
+class IAcquireFieldDefaults(Interface):
+    """Register this adapter to define if and how the value for a field is acquired.
+
+    The fields of an AT object which provides this interface, may make use of
+    the "acquire" field attribute to request that their default value be calculated
+    from a matching field in an acquisition parent.
+
+        acquire=False,
+
+	If attribute is not specified or the value is False, no action is taken.
+
+	If value is True, then the object's ancestry is searched for a matching field,
+	who's value is returned.
+
+	If the value is a dictionary, then the bahaviour can be changed with these
+	key:value pairs:
+
+		'fieldname': string.
+			The name of the field on the parent.
+			Default=same fieldname as this field.
+
+    """
+
+    def __call__(context, field):
+        """This function must return the surrogate field value directly.
+        """
+
+
 class ISetupDataSetList(Interface):
 
     """Allow products to register distributed setup datasets (xlsx files).

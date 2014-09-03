@@ -51,7 +51,6 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         adapter = getAdapter(self.context.aq_parent, name='getContacts')
         return adapter()
 
-        #import pdb; pdb.set_trace()
     def partitioned_services(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         ps = []

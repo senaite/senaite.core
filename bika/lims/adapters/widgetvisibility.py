@@ -34,7 +34,7 @@ class WorkflowAwareWidgetVisibility(object):
 
     def __init__(self, context):
         self.context = context
-        self.sort = 100
+        self.sort = 500
 
     def __call__(self, context, mode, field, default):
         """
@@ -70,7 +70,7 @@ class SamplingWorkflowWidgetVisibility(object):
 
     def __init__(self, context):
         self.context = context
-        self.sort = 100
+        self.sort = 500
 
     def __call__(self, context, mode, field, default):
         sw_fields = ['Sampler', 'DateSampled']
@@ -91,22 +91,6 @@ class SamplingWorkflowWidgetVisibility(object):
                 state = 'visible'
         return state
 
-
-class BatchClientFieldWidgetVisibility(object):
-    """This will force the 'Client' field to 'visible' when in Batch context
-    """
-    implements(IATWidgetVisibility)
-
-    def __init__(self, context):
-        self.context = context
-        self.sort = 10
-
-    def __call__(self, context, mode, field, default):
-        state = default if default else 'visible'
-        fieldName = field.getName()
-        if fieldName == 'Client' and context.aq_parent.portal_type == 'Batch':
-            return 'edit'
-        return state
 
 class OptionalFieldsWidgetVisibility(object):
     """Remove 'hidden attributes' (fields in registry bika.lims.hiddenattributes).

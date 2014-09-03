@@ -43,4 +43,11 @@
       replacement=".Widget.isVisible"
       />
 
+  <monkey:patch
+      description="Allow field default value acquisition with IAcquireFieldDefaults"
+      class="Products.Archetypes.Schema.BasicSchema"
+      original="setDefaults"
+      replacement=".Schema.setDefaults"
+      />
+
 </configure>

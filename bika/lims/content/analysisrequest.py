@@ -1313,6 +1313,20 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
+    StringField('Sampler',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        acquire=True,
+        widget=StringWidget(visible=False)
+    ),
+    DateTimeField('DateSampled',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        acquire=True,
+        widget=StringWidget(visible=False)
+    ),
 )
 )
 
