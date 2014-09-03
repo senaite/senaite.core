@@ -34,6 +34,6 @@ def upgrade(tool):
     # Some catalog indexes were added or modified
     bsc = getToolByName(portal, 'bika_setup_catalog')
     bsc.addIndex('sortKey', 'FieldIndex')
-    bsc.clearFindAndRebuild()
+    bsc.manage_reindexIndex(ids=['sortKey',])
 
     return True
