@@ -162,6 +162,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         # action button submits here.
         objects = WorkflowAction._get_selected_items(self)
         transitioned = []
+        incomplete = []
         for obj_uid, obj in objects.items():
             part = obj
             # can't transition inactive items
@@ -181,6 +182,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             if Preserver and DatePreserved:
                 workflow.doActionFor(part, action)
                 transitioned.append(part.id)
+            else:
+                incomplete.append(part.id)
             part.reindexObject()
             part.aq_parent.reindexObject()
         message = None
@@ -195,6 +198,16 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         if not message:
             message = _('No changes made.')
             self.context.plone_utils.addPortalMessage(message, 'info')
+
+        if len(incomplete) > 1:
+            message = _('${items} are missing Preserver or Date Preserved',
+                        mapping={'items': safe_unicode(', '.join(incomplete))})
+            self.context.plone_utils.addPortalMessage(message, 'error')
+        elif len(incomplete) == 1:
+            message = _('${item} is missing Preserver or Preservation Date',
+                        mapping={'item': safe_unicode(', '.join(incomplete))})
+            self.context.plone_utils.addPortalMessage(message, 'error')
+
         self.destination_url = self.request.get_header("referer",
                                self.context.absolute_url())
         self.request.response.redirect(self.destination_url)
