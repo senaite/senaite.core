@@ -52,7 +52,7 @@
     <browser:page
       for="bika.lims.interfaces.IAnalysisRequestsFolder"
       name="base_view"
-      class="bika.lims.browser.analysisrequest.AnalysisRequestsView"
+      class="bika.lims.browser.analysisrequest.analysisrequests.AnalysisRequestsFolderView"
       permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

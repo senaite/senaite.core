@@ -343,7 +343,7 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary="BatchLabelVocabulary",
         accessor="getLabelNames",
         widget=MultiSelectionWidget(
-            label=_("Batch labels"),
+            label=_("Batch Labels"),
             format="checkbox",
         )
     ),

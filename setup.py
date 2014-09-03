@@ -1,21 +1,30 @@
+import os
 from setuptools import setup, find_packages
 
 version = '3.1.4.1'
 
+
+def read(*rnames):
+    return open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+
 setup(name='bika.lims',
       version=version,
       description="Bika LIMS",
-      long_description=open("README.md").read(),
+      long_description=read("README.rst") + \
+                       read("INSTALL.rst") + \
+                       "\n".join(["Bika Lab Systems",
+                                  "info@bikalabs.com",
+                                  "http://www.bikalabs.com"]),
       # Get more strings from
       # http://pypi.python.org/pypi?:action=list_classifiers
       classifiers=[
-      "Framework :: Plone",
-      "Programming Language :: Python",
-      "Development Status :: 5 - Production/Stable",
-      "Environment :: Web Environment",
-      "Intended Audience :: Information Technology",
-      "Intended Audience :: Science/Research",
-      "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+          "Framework :: Plone",
+          "Programming Language :: Python",
+          "Development Status :: 5 - Production/Stable",
+          "Environment :: Web Environment",
+          "Intended Audience :: Information Technology",
+          "Intended Audience :: Science/Research",
+          "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
       ],
       keywords='Bika Open Source LIMS',
       author='Bika Laboratory Systems',
@@ -60,4 +69,4 @@ setup(name='bika.lims',
       [z3c.autoinclude.plugin]
       target = plone
       """,
-      )
+)

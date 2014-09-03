@@ -1,3 +1,5 @@
+'use strict;'
+
 /**
  * Controller class for all site views
  */
@@ -319,7 +321,7 @@ function SiteView() {
                         var ver = data.info.version;
                         var date = data.releases[ver][0].upload_time;
                         var html = "<p class='title'>"+_("New Bika LIMS release available")+"</p><p>&nbsp;"+ver+"&nbsp;&nbsp;("+date+")<br/>";
-                        if (!bv.startsWith(ver)) {
+                        if (bv.length != ver.length || bv != ver) {
                             // Newer version in pypi!
                             html += _("Your current version is")+" "+bv+"</p>";
                             html += '<p>';

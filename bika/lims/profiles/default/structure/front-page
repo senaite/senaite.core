@@ -53,7 +53,7 @@ Content-Type: text/html
         <li><a class="external-link" href="http://lists.sourceforge.net/lists/listinfo/bika-users">Bika Users</a></li>
         <li><a class="external-link" href="http://lists.sourceforge.net/lists/listinfo/bika-developers">Bika Developers</a></li>
         </ul>
-        <p><br />Issue Tracker: <a class="external-link" href="https://github.com/bikalabs/Bika-LIMS/issues">http://jira.bikalabs.com/</a></p>
+        <p><br />Issue Tracker: <a class="external-link" href="http://jira.bikalabs.com/">http://jira.bikalabs.com/</a></p>
         <p>IRC:<a class="chatzilla-link" href="http://webchat.freenode.net?channels=bika" id="ch-url-anchor"> irc://freenode.net/#bika</a></p>
 
     </div>
