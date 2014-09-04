@@ -1181,7 +1181,7 @@ function AnalysisRequestAddView() {
                         alert('Error while calculating partitions: ' + data.message);
                     } else {
                         window.jsonapi_cache[cacheKey] = data;
-                        calc_parts_handler(column, data);
+                        calc_parts_handler(arnum, data);
                     }
                 }
             });
