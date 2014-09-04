@@ -79,7 +79,7 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
 
         if action == "sample":
             objects = AnalysisRequestWorkflowAction._get_selected_items(self)
-            transitioned = {'to_be_preserved':[], 'sample_due':[]}
+            transitioned = {'to_be_preserved':[], 'sample_due':[], 'sample_prep': []}
             for obj_uid, obj in objects.items():
                 if obj.portal_type == "AnalysisRequest":
                     ar = obj
@@ -124,12 +124,16 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                     doActionFor(ar, action)
                     transitioned[new_state].append(sample.Title())
 
+            # Messages depend on final resting state of transitioned objects
             message = None
             for state in transitioned:
                 tlist = transitioned[state]
                 if len(tlist) > 1:
                     if state == 'to_be_preserved':
                         message = _('${items} are waiting for preservation.',
+                                    mapping = {'items': ', '.join(tlist)})
+                    elif state == 'sample_prep':
+                        message = _('${items} require sample preparation.',
                                     mapping = {'items': ', '.join(tlist)})
                     else:
                         message = _('${items} are waiting to be received.',
@@ -138,6 +142,9 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
                 elif len(tlist) == 1:
                     if state == 'to_be_preserved':
                         message = _('${item} is waiting for preservation.',
+                                    mapping = {'item': ', '.join(tlist)})
+                    elif state == 'sample_prep':
+                        message = _('${item} requires sample preparation.',
                                     mapping = {'item': ', '.join(tlist)})
                     else:
                         message = _('${item} is waiting to be received.',
