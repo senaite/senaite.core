@@ -42,8 +42,7 @@ def AnalysisRequestWorkflowChain(ob, wftool):
     sampleprep_workflow = ob.getPreparationWorkflow()
     if sampleprep_workflow:
         chain.append(sampleprep_workflow)
-        return tuple(chain)
-    print 'a'
+    return tuple(chain)
 
 def SamplePrepTransitionEventHandler(instance, event):
     """Sample preparation is considered complete when the sampleprep workflow
