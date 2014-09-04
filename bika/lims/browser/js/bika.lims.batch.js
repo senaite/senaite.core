@@ -100,11 +100,9 @@ function BatchView() {
 		$("#Client").bind("unselected", client_field_modified);
 		// We do this once on page-load, also.
 		// We need a delay to be sure this code runs after the widget is configured.
-		if($("#Client_uid").val().length > 1){
-			setTimeout(function() {
-				applyComboFilter($("#Contact"), "getParentUID", $("#Client_uid").val());
-			}, 100)
-		}
+		setTimeout(function() {
+			applyComboFilter($("#Contact"), "getParentUID", $("#Client_uid").val());
+		}, 250)
 
     }
 }

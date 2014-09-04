@@ -1,3 +1,9 @@
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import json
+
+from Products.CMFPlone.interfaces import IWorkflowChain
+from Products.CMFPlone.workflow import ToolWorkflowChain
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims import PMF
@@ -8,20 +14,58 @@ from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import encode_header
 from bika.lims.utils import isActive
 from bika.lims.utils import tmpID
-from bika.lims.utils import to_utf8
 from bika.lims.workflow import doActionFor
 from DateTime import DateTime
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from email.Utils import formataddr
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode, _createObjectByType
-
-import json
 import plone
 import zope.event
+from zope.interface import implementer
+
+
+@implementer(IWorkflowChain)
+def AnalysisRequestWorkflowChain(ob, wftool):
+    """Responsible for inserting the optional sampling preparation workflow
+    into the workflow chain for AnalysisRequest instances.
+
+    This is only done if the AR is in 'sample_prep' state.
+    """
+    # use catalog to retrieve review_state: getInfoFor causes recursion loop
+    chain = list(ToolWorkflowChain(ob, wftool))
+    bc = getToolByName(ob, 'bika_catalog')
+    proxies = bc(UID=ob.UID())
+    if not proxies or proxies[0].review_state != 'sample_prep':
+        return chain
+    sampleprep_workflow = ob.getPreparationWorkflow()
+    if sampleprep_workflow:
+        chain.append(sampleprep_workflow)
+        return tuple(chain)
+    print 'a'
+
+def SamplePrepTransitionEventHandler(instance, event):
+    """Sample preparation is considered complete when the sampleprep workflow
+    reaches a state which has no exit transitions.
+
+    If this state's ID is the same as any AnalysisRequest primary workflow ID,
+    then the AnalysisRequest will be sent diretly to that state.
+
+    If the final state's ID is not found in the AR workflow, the AR will be
+    transitioned to 'sample_due'.
+    """
+    # creation doesn't have a 'transition'
+    if not event.transition:
+        return
+    if not event.new_state.getTransitions():
+        wftool = getToolByName(instance, 'portal_workflow')
+        ar_states = wftool.getWorkflowById('bika_ar_workflow').states.keys()
+        if event.new_state.id in ar_states:
+            dst_state = event.new_state.id
+        else:
+            dst_state = 'sample_due'
+        changeWorkflowState(instance, 'bika_ar_workflow', dst_state)
 
 
 class AnalysisRequestWorkflowAction(WorkflowAction):

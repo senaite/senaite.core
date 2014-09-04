@@ -69,6 +69,28 @@ View,N,N,Y,Y,N,N,N,Y,Y,Y,N,Y
 Modify portal content,N,N,Y,Y,N,N,N,Y,Y,Y,N,N
 ,,,,,,,,,,,,
 [State],,,,,,,,,,,,
+Id:,sample_due,,,,,,,,,,,
+Title:,Sample Due,,,,,,,,,,,
+Description:,,,,,,,,,,,,
+Transitions,"preserve, receive, sample_prep",,,,,,,,,,,
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler
+BIKA: Cancel and reinstate,N,N,Y,Y,N,N,N,N,Y,Y,N,N
+BIKA: Edit Field Results,N,N,Y,N,N,N,N,Y,Y,Y,N,Y
+BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit Sample,N,N,Y,N,N,N,N,Y,Y,Y,N,N
+BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Receive Sample,N,N,Y,N,N,N,N,N,Y,Y,N,N
+View,N,N,Y,Y,N,N,N,Y,Y,Y,N,Y
+Modify portal content,N,N,Y,Y,N,N,N,Y,Y,Y,N,N
+,,,,,,,,,,,,
+[State],,,,,,,,,,,,
+Id:,sample_prep,,,,,,,,,,,
+Title:,Sample Preparation,,,,,,,,,,,
+Description:,A sample preparation workflow is in progress,,,,,,,,,,,
+Transitions,,,,,,,,,,,,
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler
+,,,,,,,,,,,,
+[State],,,,,,,,,,,,
 Id:,sample_received,,,,,,,,,,,
 Title:,Sample received,,,,,,,,,,,
 Description:,,,,,,,,,,,,
@@ -81,21 +103,6 @@ BIKA: Edit Sample,N,N,Y,N,N,N,N,N,N,Y,N,N
 BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Receive Sample,N,N,N,N,N,N,N,N,N,N,N,N
 View,N,N,Y,Y,N,N,N,Y,Y,Y,N,N
-Modify portal content,N,N,Y,Y,N,N,N,Y,Y,Y,N,N
-,,,,,,,,,,,,
-[State],,,,,,,,,,,,
-Id:,sample_due,,,,,,,,,,,
-Title:,Sample Due,,,,,,,,,,,
-Description:,,,,,,,,,,,,
-Transitions,"preserve, receive",,,,,,,,,,,
-Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler
-BIKA: Cancel and reinstate,N,N,Y,Y,N,N,N,N,Y,Y,N,N
-BIKA: Edit Field Results,N,N,Y,N,N,N,N,Y,Y,Y,N,Y
-BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Edit Sample,N,N,Y,N,N,N,N,Y,Y,Y,N,N
-BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Receive Sample,N,N,Y,N,N,N,N,N,Y,Y,N,N
-View,N,N,Y,Y,N,N,N,Y,Y,Y,N,Y
 Modify portal content,N,N,Y,Y,N,N,N,Y,Y,Y,N,N
 ,,,,,,,,,,,,
 ,,,,,,,,,,,,
@@ -223,3 +230,11 @@ Title:,,,,,,,,,,,,
 Description:,to_be_preserved,,,,,,,,,,,
 Target state:,to_be_preserved,,,,,,,,,,,
 Trigger:,User,,,,,,,,,,,
+,,,,,,,,,,,,
+[Transition],,,,,,,,,,,,
+Id:,sample_prep,,,,,,,,,,,
+Title:Sample Preparation,,,,,,,,,,,,
+Description:,Sample Preparation,,,,,,,,,,,
+Target state:,sample_prep,,,,,,,,,,,
+Trigger:,Automatic,,,,,,,,,,,
+Guard expression:,python:here.guard_sampleprep_transition(),,,,,,,,,,,

@@ -46,6 +46,16 @@ when viewing cancelled/inactive objects """
                     'class': 'state-inactive',
                     'state': state,
                     'stateTitle': stateTitle, }
+        elif workflow.getInfoFor(self.context, 'sampleprep_review_state', False):
+            prep_wf_id = self.context.getPreparationWorkflow()
+            prep_wf = workflow.getWorkflowById(prep_wf_id)
+            prep_state = workflow.getInfoFor(self.context, 'sampleprep_review_state')
+            prep_title = prep_wf.states[prep_state].title
+            stateTitle = "%s (%s)" % (stateTitle, _(prep_title))
+            return {'id': 'plone-contentmenu-workflow',
+                    'class': 'state-sampleprep',
+                    'state': state,
+                    'stateTitle': stateTitle, }
         else:
             return {'id': 'plone-contentmenu-workflow',
                     'class': 'state-%s' % state,

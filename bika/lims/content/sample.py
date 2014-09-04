@@ -832,10 +832,12 @@ class Sample(BaseFolder, HistoryAwareMixin):
         """Prevent the receive transition from being available:
         - if object is cancelled
         - if any related ARs have field analyses with no result.
+        - if any related ARs have active Sample Preparation workflows
         """
         # Can't do anything to the object if it's cancelled
         if not isBasicTransitionAllowed(self):
             return False
+        workflow = getToolByName(self, 'portal_workflow')
         # check if any related ARs have field analyses with no result.
         for ar in self.getAnalysisRequests():
             field_analyses = ar.getAnalyses(getPointOfCapture='field',
@@ -843,6 +845,19 @@ class Sample(BaseFolder, HistoryAwareMixin):
             no_results = [a for a in field_analyses if a.getResult() == '']
             if no_results:
                 return False
+            ar_review_state = workflow.getInfoFor(ar, 'review_state')
+            if ar_review_state == "sample_prep":
+                return False
         return True
+
+    def guard_sampleprep_transition(self):
+        """Allow the sampleprep automatic transition to fire.
+        """
+        if not isBasicTransitionAllowed(self):
+            return False
+        for ar in self.getAnalysisRequests():
+            if ar.getPreparationWorkflow() is not None:
+                return True
+        return False
 
 atapi.registerType(Sample, PROJECTNAME)

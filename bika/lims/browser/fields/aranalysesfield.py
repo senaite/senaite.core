@@ -91,7 +91,7 @@ class ARAnalysesField(ObjectField):
         ar_state = workflow.getInfoFor(instance, 'review_state', '')
         assert ar_state in ('sample_registered', 'sampled',
                             'to_be_sampled', 'to_be_preserved',
-                            'sample_due', 'sample_received',
+                            'sample_due', 'sample_prep', 'sample_received',
                             'attachment_due', 'to_be_verified')
 
         bsc = getToolByName(instance, 'bika_setup_catalog')
