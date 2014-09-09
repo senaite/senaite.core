@@ -39,7 +39,7 @@ class InstrumentsView(BikaListingView):
             'Title': {'title': _('Instrument'),
                       'index': 'sortable_title'},
             'Type': {'title': _('Type'),
-                     'index': 'getType',
+                     'index': 'getInstrumentType',
                      'toggle': True},
             'Brand': {'title': _('Brand'),
                       'toggle': True},
