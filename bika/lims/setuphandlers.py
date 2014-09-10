@@ -751,7 +751,6 @@ class BikaGenerator:
 
         addIndex(bsc, 'getAccredited', 'FieldIndex')
         addIndex(bsc, 'getAnalyst', 'FieldIndex')
-        addIndex(bsc, 'getType', 'FieldIndex')
         addIndex(bsc, 'getInstrumentType', 'FieldIndex')
         addIndex(bsc, 'getBlank', 'FieldIndex')
         addIndex(bsc, 'getCalculationTitle', 'FieldIndex')
@@ -806,7 +805,6 @@ class BikaGenerator:
         addColumn(bsc, 'cancellation_state')
 
         addColumn(bsc, 'getAccredited')
-        addColumn(bsc, 'getType')
         addColumn(bsc, 'getInstrumentType')
         addColumn(bsc, 'getBlank')
         addColumn(bsc, 'getCalculationTitle')

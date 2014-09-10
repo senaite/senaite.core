@@ -332,7 +332,6 @@ class BikaListingView(BrowserView):
         if self.sort_on \
            and self.sort_on in self.columns.keys() \
            and self.columns[self.sort_on].get('index', None):
-#            import pdb;pdb.set_trace()
             idx = self.columns[self.sort_on].get('index', self.sort_on)
             self.contentFilter['sort_on'] = idx
         else:
