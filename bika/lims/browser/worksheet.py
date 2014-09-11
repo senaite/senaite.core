@@ -177,6 +177,8 @@ class WorksheetWorkflowAction(WorkflowAction):
                         analysis.setInstrument(instruments[uid])
                         instrument = analysis.getInstrument()
                         instrument.addAnalysis(analysis)
+                        if analysis.portal_type == 'ReferenceAnalysis':
+                            instrument.setDisposeUntilNextCalibrationTest(False)
 
             # Need to save the method?
             if uid in methods and analysis_active:
