@@ -1,6 +1,7 @@
 """Sample represents a physical sample submitted for testing
 """
 from AccessControl import ClassSecurityInfo
+from Products.CMFCore.WorkflowCore import WorkflowException
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t, getUsers
 from bika.lims.browser.widgets.datetimewidget import DateTimeWidget
@@ -279,6 +280,30 @@ schema = BikaSchema.copy() + Schema((
         write_permission=permissions.ModifyPortalContent,
         widget = DateTimeWidget(
             label=_("Sampling Date"),
+            visible={'edit': 'visible',
+                     'view': 'visible',
+                     'header_table': 'visible',
+                     'sample_registered': {'view': 'visible', 'edit': 'visible'},
+                     'to_be_sampled':     {'view': 'visible', 'edit': 'invisible'},
+                     'sampled':           {'view': 'visible', 'edit': 'invisible'},
+                     'to_be_preserved':   {'view': 'visible', 'edit': 'invisible'},
+                     'sample_due':        {'view': 'visible', 'edit': 'invisible'},
+                     'sample_received':   {'view': 'visible', 'edit': 'invisible'},
+                     'expired':           {'view': 'visible', 'edit': 'invisible'},
+                     'disposed':          {'view': 'visible', 'edit': 'invisible'},
+                     },
+            render_own_label=True,
+        ),
+    ),
+    StringField('PreparationWorkflow',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        vocabulary='getPreparationWorkflows',
+        acquire=True,
+        widget=SelectionWidget(
+            format="select",
+            label=_("Preparation Workflow"),
             visible={'edit': 'visible',
                      'view': 'visible',
                      'header_table': 'visible',
@@ -717,6 +742,19 @@ class Sample(BaseFolder, HistoryAwareMixin):
             return 0
         return last_ar_number
 
+    def getPreparationWorkflows(self):
+        """Return a list of sample preparation workflows.  These are identified
+        by scanning all workflow IDs for those beginning with "sampleprep".
+        """
+        wf = self.portal_workflow
+        ids = wf.getWorkflowIds()
+        sampleprep_ids = [wid for wid in ids if wid.startswith('sampleprep')]
+        prep_workflows = [['', ''],]
+        for workflow_id in sampleprep_ids:
+            workflow = wf.getWorkflowById(workflow_id)
+            prep_workflows.append([workflow_id, workflow.title])
+        return DisplayList(prep_workflows)
+
     def workflow_script_receive(self):
         workflow = getToolByName(self, 'portal_workflow')
         self.setDateReceived(DateTime())
@@ -850,14 +888,42 @@ class Sample(BaseFolder, HistoryAwareMixin):
                 return False
         return True
 
-    def guard_sampleprep_transition(self):
+    def guard_sample_prep_transition(self):
         """Allow the sampleprep automatic transition to fire.
         """
         if not isBasicTransitionAllowed(self):
             return False
-        for ar in self.getAnalysisRequests():
-            if ar.getPreparationWorkflow() is not None:
-                return True
+        if self.getPreparationWorkflow():
+            return True
         return False
+
+    def guard_sample_prep_complete_transition(self):
+        """ This relies on user created workflow, a very dodgy steed.
+        """
+        return False
+        wftool = getToolByName(self, 'portal_workflow')
+        # get sampleprep workflow name - allow transition if error.
+        sampleprep_wf_name = self.getPreparationWorkflow()
+        if not sampleprep_wf_name:
+            return True
+        # get sampleprep_review state: allow transition if error.
+        try:
+            sampleprep_review_state = wftool.getInfoFor(self, 'sampleprep_review_state')
+        except WorkflowException:
+            return True
+        if not sampleprep_review_state:
+            return True
+
+        # get sampleprep_workflow object - error = allow transition
+        try:
+            wftool.getWorkflowById(sampleprep_wf_name)
+        except WorkflowException:
+            return True
+
+        # get state from workflow - error = allow transition
+        # get possible exit transitions for state: error = allow transition
+        if len(transitions) > 0:
+            return False
+        return True
 
 atapi.registerType(Sample, PROJECTNAME)

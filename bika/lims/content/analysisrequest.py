@@ -126,6 +126,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'visible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
                      'sample_due':        {'view': 'visible', 'edit': 'visible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'visible'},
                      'sample_received':   {'view': 'visible', 'edit': 'visible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'visible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
@@ -165,6 +166,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'visible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
                      'sample_due':        {'view': 'visible', 'edit': 'visible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'visible'},
                      'sample_received':   {'view': 'visible', 'edit': 'visible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'visible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
@@ -204,6 +206,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'visible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
                      'sample_due':        {'view': 'visible', 'edit': 'visible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'visible'},
                      'sample_received':   {'view': 'visible', 'edit': 'visible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'visible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
@@ -270,6 +273,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'invisible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'invisible'},
                      'sample_due':        {'view': 'visible', 'edit': 'invisible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'invisible'},
                      'sample_received':   {'view': 'visible', 'edit': 'invisible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'invisible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'invisible'},
@@ -303,6 +307,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'visible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
                      'sample_due':        {'view': 'visible', 'edit': 'visible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'visible'},
                      'sample_received':   {'view': 'visible', 'edit': 'visible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'visible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
@@ -335,6 +340,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'visible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
                      'sample_due':        {'view': 'visible', 'edit': 'visible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'visible'},
                      'sample_received':   {'view': 'visible', 'edit': 'visible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'visible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
@@ -380,6 +386,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'invisible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'invisible'},
                      'sample_due':        {'view': 'visible', 'edit': 'invisible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'invisible'},
                      'sample_received':   {'view': 'visible', 'edit': 'invisible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'invisible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'invisible'},
@@ -415,6 +422,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'invisible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'invisible'},
                      'sample_due':        {'view': 'visible', 'edit': 'invisible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'invisible'},
                      'sample_received':   {'view': 'visible', 'edit': 'invisible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'invisible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'invisible'},
@@ -445,6 +453,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'invisible', 'edit': 'invisible'},
                      'to_be_preserved':   {'view': 'invisible', 'edit': 'invisible'},
                      'sample_due':        {'view': 'invisible', 'edit': 'invisible'},
+                     'sample_prep':       {'view': 'invisible', 'edit': 'invisible'},
                      'sample_received':   {'view': 'invisible', 'edit': 'invisible'},
                      'attachment_due':    {'view': 'invisible', 'edit': 'invisible'},
                      'to_be_verified':    {'view': 'invisible', 'edit': 'invisible'},
@@ -474,6 +483,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'invisible', 'edit': 'invisible'},
                      'to_be_preserved':   {'view': 'invisible', 'edit': 'invisible'},
                      'sample_due':        {'view': 'invisible', 'edit': 'invisible'},
+                     'sample_prep':       {'view': 'invisible', 'edit': 'invisible'},
                      'sample_received':   {'view': 'invisible', 'edit': 'invisible'},
                      'attachment_due':    {'view': 'invisible', 'edit': 'invisible'},
                      'to_be_verified':    {'view': 'invisible', 'edit': 'invisible'},
@@ -505,6 +515,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'invisible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'invisible'},
                      'sample_due':        {'view': 'visible', 'edit': 'invisible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'invisible'},
                      'sample_received':   {'view': 'visible', 'edit': 'invisible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'invisible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'invisible'},
@@ -537,6 +548,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'invisible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'invisible'},
                      'sample_due':        {'view': 'visible', 'edit': 'invisible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'invisible'},
                      'sample_received':   {'view': 'visible', 'edit': 'invisible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'invisible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'invisible'},
@@ -571,6 +583,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'invisible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'invisible'},
                      'sample_due':        {'view': 'visible', 'edit': 'invisible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'invisible'},
                      'sample_received':   {'view': 'visible', 'edit': 'invisible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'invisible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'invisible'},
@@ -606,6 +619,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'visible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
                      'sample_due':        {'view': 'visible', 'edit': 'visible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'visible'},
                      'sample_received':   {'view': 'visible', 'edit': 'visible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'visible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'invisible'},
@@ -650,6 +664,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'invisible', 'edit': 'invisible'},
                      'to_be_preserved':   {'view': 'invisible', 'edit': 'invisible'},
                      'sample_due':        {'view': 'invisible', 'edit': 'invisible'},
+                     'sample_prep':       {'view': 'invisible', 'edit': 'invisible'},
                      'sample_received':   {'view': 'invisible', 'edit': 'invisible'},
                      'attachment_due':    {'view': 'invisible', 'edit': 'invisible'},
                      'to_be_verified':    {'view': 'invisible', 'edit': 'invisible'},
@@ -685,6 +700,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'visible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
                      'sample_due':        {'view': 'visible', 'edit': 'visible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'visible'},
                      'sample_received':   {'view': 'visible', 'edit': 'visible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'visible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
@@ -719,6 +735,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'visible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
                      'sample_due':        {'view': 'visible', 'edit': 'visible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'visible'},
                      'sample_received':   {'view': 'visible', 'edit': 'visible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'visible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
@@ -751,6 +768,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'visible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
                      'sample_due':        {'view': 'visible', 'edit': 'visible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'visible'},
                      'sample_received':   {'view': 'visible', 'edit': 'visible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'visible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
@@ -782,6 +800,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'visible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
                      'sample_due':        {'view': 'visible', 'edit': 'visible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'visible'},
                      'sample_received':   {'view': 'visible', 'edit': 'visible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'visible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
@@ -812,6 +831,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'invisible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'invisible'},
                      'sample_due':        {'view': 'visible', 'edit': 'invisible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'invisible'},
                      'sample_received':   {'view': 'visible', 'edit': 'invisible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'invisible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'invisible'},
@@ -842,6 +862,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'visible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
                      'sample_due':        {'view': 'visible', 'edit': 'visible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'visible'},
                      'sample_received':   {'view': 'visible', 'edit': 'invisible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'invisible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'invisible'},
@@ -877,6 +898,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'visible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
                      'sample_due':        {'view': 'visible', 'edit': 'visible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'visible'},
                      'sample_received':   {'view': 'visible', 'edit': 'invisible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'invisible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'invisible'},
@@ -912,6 +934,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'invisible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'invisible'},
                      'sample_due':        {'view': 'visible', 'edit': 'invisible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'invisible'},
                      'sample_received':   {'view': 'visible', 'edit': 'invisible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'invisible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'invisible'},
@@ -944,6 +967,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'invisible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'invisible'},
                      'sample_due':        {'view': 'visible', 'edit': 'invisible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'invisible'},
                      'sample_received':   {'view': 'visible', 'edit': 'invisible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'invisible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'invisible'},
@@ -973,6 +997,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'visible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
                      'sample_due':        {'view': 'visible', 'edit': 'visible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'visible'},
                      'sample_received':   {'view': 'visible', 'edit': 'visible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'visible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
@@ -1002,6 +1027,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'visible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
                      'sample_due':        {'view': 'visible', 'edit': 'visible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'visible'},
                      'sample_received':   {'view': 'visible', 'edit': 'visible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'visible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
@@ -1031,6 +1057,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'visible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
                      'sample_due':        {'view': 'visible', 'edit': 'visible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'visible'},
                      'sample_received':   {'view': 'visible', 'edit': 'invisible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'invisible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'invisible'},
@@ -1090,6 +1117,7 @@ schema = BikaSchema.copy() + Schema((
         write_permission=permissions.ModifyPortalContent,
         widget=DateTimeWidget(
             label=_('Date Received'),
+            render_own_label=True,
             visible={'edit': 'visible',
                      'view': 'visible',
                      'header_table': 'visible',
@@ -1098,6 +1126,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'invisible', 'edit': 'invisible'},
                      'to_be_preserved':   {'view': 'invisible', 'edit': 'invisible'},
                      'sample_due':        {'view': 'invisible', 'edit': 'invisible'},
+                     'sample_prep':       {'view': 'invisible', 'edit': 'invisible'},
                      'sample_received':   {'view': 'visible', 'edit': 'invisible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'invisible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'invisible'},
@@ -1114,6 +1143,7 @@ schema = BikaSchema.copy() + Schema((
         write_permission=permissions.ModifyPortalContent,
         widget=DateTimeWidget(
             label=_('Date Published'),
+            render_own_label=True,
             visible={'edit': 'visible',
                      'view': 'visible',
                      'add': 'invisible',
@@ -1123,6 +1153,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'invisible', 'edit': 'invisible'},
                      'to_be_preserved':   {'view': 'invisible', 'edit': 'invisible'},
                      'sample_due':        {'view': 'invisible', 'edit': 'invisible'},
+                     'sample_prep':       {'view': 'invisible', 'edit': 'invisible'},
                      'sample_received':   {'view': 'invisible', 'edit': 'invisible'},
                      'attachment_due':    {'view': 'invisible', 'edit': 'invisible'},
                      'to_be_verified':    {'view': 'invisible', 'edit': 'invisible'},
@@ -1257,13 +1288,27 @@ schema = BikaSchema.copy() + Schema((
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
+        vocabulary='getPreparationWorkflows',
         acquire=True,
-        widget=StringWidget(
+        widget=SelectionWidget(
+            format="select",
             label=_("Preparation Workflow"),
-            visible={'edit': 'hidden',
+            visible={'edit': 'visible',
                      'view': 'visible',
-                     'add': 'hidden',
+                     'add': 'edit',
                      'header_table': 'visible',
+                     'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                     'to_be_sampled':     {'view': 'visible', 'edit': 'visible'},
+                     'sampled':           {'view': 'visible', 'edit': 'visible'},
+                     'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
+                     'sample_due':        {'view': 'visible', 'edit': 'visible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'invisible'},
+                     'sample_received':   {'view': 'visible', 'edit': 'invisible'},
+                     'attachment_due':    {'view': 'visible', 'edit': 'invisible'},
+                     'to_be_verified':    {'view': 'visible', 'edit': 'invisible'},
+                     'verified':          {'view': 'visible', 'edit': 'invisible'},
+                     'published':         {'view': 'visible', 'edit': 'invisible'},
+                     'invalid':           {'view': 'visible', 'edit': 'invisible'},
                      },
             render_own_label=True,
         ),
@@ -1291,6 +1336,7 @@ schema = BikaSchema.copy() + Schema((
                      'sampled':           {'view': 'visible', 'edit': 'visible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
                      'sample_due':        {'view': 'visible', 'edit': 'visible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'visible'},
                      'sample_received':   {'view': 'visible', 'edit': 'visible'},
                      'attachment_due':    {'view': 'visible', 'edit': 'visible'},
                      'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
@@ -1312,20 +1358,6 @@ schema = BikaSchema.copy() + Schema((
             sord='asc',
             showOn=True,
         ),
-    ),
-    StringField('Sampler',
-        mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
-        acquire=True,
-        widget=StringWidget(visible=False)
-    ),
-    DateTimeField('DateSampled',
-        mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
-        acquire=True,
-        widget=StringWidget(visible=False)
     ),
 )
 )
@@ -2052,12 +2084,26 @@ class AnalysisRequest(BaseFolder):
     def getSamplers(self):
         return getUsers(self, ['LabManager', 'Sampler'])
 
-    def guard_sampleprep_transition(self):
-        if not isBasicTransitionAllowed(self):
-            return False
-        if self.getPreparationWorkflow() is not None:
-            return True
-        return False
+    def getPreparationWorkflows(self):
+        """Return a list of sample preparation workflows.  These are identified
+        by scanning all workflow IDs for those beginning with "sampleprep".
+        """
+        wf = self.portal_workflow
+        ids = wf.getWorkflowIds()
+        sampleprep_ids = [wid for wid in ids if wid.startswith('sampleprep')]
+        prep_workflows = [['', ''],]
+        for workflow_id in sampleprep_ids:
+            workflow = wf.getWorkflowById(workflow_id)
+            prep_workflows.append([workflow_id, workflow.title])
+        return DisplayList(prep_workflows)
+
+    def guard_sample_prep_transition(self):
+        sample = self.getSample()
+        return sample.guard_sample_prep_transition()
+
+    def guard_sample_prep_complete_transition(self):
+        sample = self.getSample()
+        return sample.guard_sample_prep_complete_transition()
 
     def guard_unassign_transition(self):
         """Allow or disallow transition depending on our children's states

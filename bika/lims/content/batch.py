@@ -690,6 +690,15 @@ class Batch(ATFolder):
 
     def getSamplers(self):
         return getUsers(self, ['LabManager', 'Sampler'])
+        return users
+        return users
+
+    def AnalystVocabulary(self):
+        """Return a DisplayList with analysts from the Analysts field" \
+        """
+        analysts = self.getAnalysts()
+        analysts = [a for a in self.AnalystsVocabulary().items() if a[0] in analysts]
+        return analysts
 
     def getPreparationWorkflows(self):
         """Return a list of sample preparation workflows.  These are identified
@@ -697,9 +706,7 @@ class Batch(ATFolder):
         """
         wf = self.portal_workflow
         ids = wf.getWorkflowIds()
-
         sampleprep_ids = [wid for wid in ids if wid.startswith('sampleprep')]
-
         prep_workflows = [['', ''],]
         for workflow_id in sampleprep_ids:
             workflow = wf.getWorkflowById(workflow_id)

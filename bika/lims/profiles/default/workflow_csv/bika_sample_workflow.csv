@@ -72,7 +72,7 @@ Modify portal content,N,N,Y,Y,N,N,N,Y,Y,Y,N,N
 Id:,sample_due,,,,,,,,,,,
 Title:,Sample Due,,,,,,,,,,,
 Description:,,,,,,,,,,,,
-Transitions,"preserve, receive, sample_prep",,,,,,,,,,,
+Transitions,"preserve, receive",,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler
 BIKA: Cancel and reinstate,N,N,Y,Y,N,N,N,N,Y,Y,N,N
 BIKA: Edit Field Results,N,N,Y,N,N,N,N,Y,Y,Y,N,Y
@@ -84,17 +84,10 @@ View,N,N,Y,Y,N,N,N,Y,Y,Y,N,Y
 Modify portal content,N,N,Y,Y,N,N,N,Y,Y,Y,N,N
 ,,,,,,,,,,,,
 [State],,,,,,,,,,,,
-Id:,sample_prep,,,,,,,,,,,
-Title:,Sample Preparation,,,,,,,,,,,
-Description:,A sample preparation workflow is in progress,,,,,,,,,,,
-Transitions,,,,,,,,,,,,
-Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler
-,,,,,,,,,,,,
-[State],,,,,,,,,,,,
 Id:,sample_received,,,,,,,,,,,
 Title:,Sample received,,,,,,,,,,,
 Description:,,,,,,,,,,,,
-Transitions,expire,,,,,,,,,,,
+Transitions,"expire, sample_prep",,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler
 BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,Y,Y,N,N
 BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N
@@ -105,6 +98,12 @@ BIKA: Receive Sample,N,N,N,N,N,N,N,N,N,N,N,N
 View,N,N,Y,Y,N,N,N,Y,Y,Y,N,N
 Modify portal content,N,N,Y,Y,N,N,N,Y,Y,Y,N,N
 ,,,,,,,,,,,,
+[State],,,,,,,,,,,,
+Id:,sample_prep,,,,,,,,,,,
+Title:,Sample Preparation,,,,,,,,,,,
+Description:,A sample preparation workflow is in progress,,,,,,,,,,,
+Transitions,,,,,,,,,,,,
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler
 ,,,,,,,,,,,,
 [State],,,,,,,,,,,,
 Id:,expired,,,,,,,,,,,
@@ -237,4 +236,12 @@ Title:Sample Preparation,,,,,,,,,,,,
 Description:,Sample Preparation,,,,,,,,,,,
 Target state:,sample_prep,,,,,,,,,,,
 Trigger:,Automatic,,,,,,,,,,,
-Guard expression:,python:here.guard_sampleprep_transition(),,,,,,,,,,,
+Guard expression:,python:here.guard_sample_prep_transition(),,,,,,,,,,,
+,,,,,,,,,,,,
+[Transition],,,,,,,,,,,,
+Id:,sample_prep_complete,,,,,,,,,,,
+Title:Sample Preparation Complete,,,,,,,,,,,,
+Description:,Sample Preparation Complete,,,,,,,,,,,
+Target state:,sample_received,,,,,,,,,,,
+Trigger:,Automatic,,,,,,,,,,,
+Guard expression:,python:here.guard_sample_prep_complete_transition(),,,,,,,,,,,
