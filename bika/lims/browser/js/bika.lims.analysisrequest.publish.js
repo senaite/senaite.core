@@ -59,6 +59,8 @@ function AnalysisRequestPublishView() {
             })
             .always(function(data) {
                 var htmldata = data;
+                cssdata = $(htmldata).find('#report-style').html();
+                $('#report-style').html(cssdata);
                 htmldata = $(htmldata).find('#report').html();
                 $('#report').html(htmldata);
                 $('#report').animate({opacity:1}, 'slow');
