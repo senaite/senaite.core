@@ -561,6 +561,14 @@ function AnalysisRequestAddView() {
             $(e).attr("name", "ar."+arnum+"."+eid+"-listing");
             $(e).attr("fieldName", "ar."+arnum+"."+eid);
         };
+        elements = $(rel_tag+"[ar_add_arnum_widget]").find("select");
+        for (i = elements.length - 1; i >= 0; i--) {
+            e = elements[i];
+            arnum = $($(e).parents(rel_tag)).attr("arnum");
+            $(e).attr("id", "ar_"+arnum+"_"+e.id);
+            // not :ignore_empty, widgets each get submitted to their own form handlers
+            $(e).attr("name", "ar."+arnum+"."+$(e).attr("name")+":record");
+        };
     }
 
     // The columnar referencewidgets that we reconfigure use this as their

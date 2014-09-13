@@ -120,6 +120,70 @@ Contact = ReferenceField(
                  ],
     ),
 )
+CCContact = ReferenceField(
+    'CCContact',
+    required=0,
+    multiValued=True,
+    vocabulary_display_path_bound=sys.maxsize,
+    allowed_types=('Contact',),
+    relationship='BatchCCContact',
+    mode="rw",
+    read_permission=permissions.View,
+    write_permission=permissions.ModifyPortalContent,
+    widget=ReferenceWidget(
+        label=_("CC Contact"),
+        size=20,
+        helper_js=("bika_widgets/referencewidget.js",),
+        visible={'edit': 'visible',
+                 'view': 'visible',
+                 },
+        base_query={'inactive_state': 'active'},
+        showOn=True,
+        popup_width='400px',
+        colModel=[{'columnName': 'UID', 'hidden': True},
+                  {'columnName': 'Fullname', 'width': '50', 'label': _('Name')},
+                  {'columnName': 'EmailAddress', 'width': '50', 'label': _('Email Address')},
+                 ],
+    ),
+)
+CCEmails = StringField(
+    'CCEmails',
+    searchable=True,
+    required=0,
+    widget=LinesWidget(
+        label=_("CC Emails")
+    )
+)
+Analysts = LinesField(
+    'Analysts',
+    multiValued=True,
+    size=8,
+    mode="rw",
+    read_permission=permissions.View,
+    write_permission=permissions.ModifyPortalContent,
+    vocabulary='AnalystsVocabulary',
+    widget=MultiSelectionWidget(
+        format='select',
+        label=_("Analysts"),
+        visible={'edit': 'visible',
+                 'view': 'visible',
+                 },
+    ),
+)
+LeadAnalyst = StringField(
+    'LeadAnalyst',
+    mode="rw",
+    read_permission=permissions.View,
+    write_permission=permissions.ModifyPortalContent,
+    vocabulary="AnalystVocabulary",
+    widget=SelectionWidget(
+        format='select',
+        label=_("Lead Analyst"),
+        visible={'edit': 'visible',
+                 'view': 'visible',
+                 },
+    ),
+)
 ClientBatchID = StringField(
     'ClientBatchID',
     searchable=True,
@@ -128,9 +192,17 @@ ClientBatchID = StringField(
         label=_("Client Batch ID")
     )
 )
+ClientProjectName = StringField(
+    'ClientProjectName',
+    searchable=True,
+    required=0,
+    widget=StringWidget(
+        label=_("Client Project Name")
+    )
+)
 SamplePoint = ReferenceField(
     'SamplePoint',
-    schemata = "AnalysisRequest and Sample Defaults",
+    schemata = "AnalysisRequest and Sample Fields",
     required=0,
     allowed_types='SamplePoint',
     relationship='BatchSamplePoint',
@@ -152,7 +224,7 @@ SamplePoint = ReferenceField(
 )
 SampleType = ReferenceField(
     'SampleType',
-    schemata = "AnalysisRequest and Sample Defaults",
+    schemata = "AnalysisRequest and Sample Fields",
     required=0,
     allowed_types='SampleType',
     relationship='BatchSampleType',
@@ -174,7 +246,7 @@ SampleType = ReferenceField(
 )
 SampleMatrix = ReferenceField(
     'SampleMatrix',
-    schemata = "AnalysisRequest and Sample Defaults",
+    schemata = "AnalysisRequest and Sample Fields",
     required=False,
     allowed_types='SampleMatrix',
     relationship='BatchSampleMatrix',
@@ -194,7 +266,7 @@ SampleMatrix = ReferenceField(
 )
 Specification = ReferenceField(
     'Specification',
-    schemata = "AnalysisRequest and Sample Defaults",
+    schemata = "AnalysisRequest and Sample Fields",
     allowed_types='AnalysisSpec',
     relationship='BatchAnalysisSpec',
     mode="rw",
@@ -225,7 +297,7 @@ Specification = ReferenceField(
 )
 Template = ReferenceField(
     'Template',
-    schemata = "AnalysisRequest and Sample Defaults",
+    schemata = "AnalysisRequest and Sample Fields",
     allowed_types=('ARTemplate',),
     referenceClass=HoldingReference,
     relationship='BatchARTemplate',
@@ -245,7 +317,7 @@ Template = ReferenceField(
 )
 Profile = ReferenceField(
     'Profile',
-    schemata = "AnalysisRequest and Sample Defaults",
+    schemata = "AnalysisRequest and Sample Fields",
     allowed_types=('AnalysisProfile',),
     referenceClass=HoldingReference,
     relationship='BatchAnalysisProfile',
@@ -265,7 +337,7 @@ Profile = ReferenceField(
 )
 DefaultContainerType = ReferenceField(
     'DefaultContainerType',
-    schemata = "AnalysisRequest and Sample Defaults",
+    schemata = "AnalysisRequest and Sample Fields",
     allowed_types = ('ContainerType',),
     relationship = 'AnalysisRequestContainerType',
     referenceClass = HoldingReference,
@@ -286,7 +358,7 @@ DefaultContainerType = ReferenceField(
 )
 ClientOrderNumber = StringField(
     'ClientOrderNumber',
-    schemata = "AnalysisRequest and Sample Defaults",
+    schemata = "AnalysisRequest and Sample Fields",
     searchable=True,
     mode="rw",
     read_permission=permissions.View,
@@ -301,7 +373,7 @@ ClientOrderNumber = StringField(
 )
 ClientReference = StringField(
     'ClientReference',
-    schemata = "AnalysisRequest and Sample Defaults",
+    schemata = "AnalysisRequest and Sample Fields",
     searchable=True,
     mode="rw",
     read_permission=permissions.View,
@@ -314,19 +386,15 @@ ClientReference = StringField(
                  },
     ),
 )
-ContainerTemperature = FloatField(
+ContainerTemperature = StringField(
     'ContainerTemperature',
-    default_content_type='text/x-web-intelligent',
-    default_output_type="text/plain",
-    widget=DecimalWidget(
+    widget=StringWidget(
         label=_('Container Temperature'),
         description = _("The temperature of the sample container on arrival"),
     )
 )
 ContainerCondition = StringField(
     'ContainerCondition',
-    default_content_type='text/x-web-intelligent',
-    default_output_type="text/plain",
     widget=StringWidget(
         label=_('Container Condition'),
         description = _("The physical condition of the sample container on arrival"),
@@ -345,12 +413,21 @@ Remarks = TextField(
     'Remarks',
     searchable=True,
     default_content_type='text/x-web-intelligent',
-    allowable_content_types=('text/plain', ),
+    allowable_content_types = ('text/plain', ),
     default_output_type="text/plain",
     widget=TextAreaWidget(
         macro="bika_widgets/remarks",
         label=_('Remarks'),
         append_only=True,
+    )
+)
+ClientBatchComment = TextField(
+    'ClientBatchComment',
+    default_content_type='text/x-web-intelligent',
+    allowable_content_types = ('text/plain', ),
+    default_output_type="text/plain",
+    widget=TextAreaWidget(
+        label=_('Client Batch Comment'),
     )
 )
 InheritedObjects = ReferenceField(
@@ -366,7 +443,7 @@ InheritedObjects = ReferenceField(
 )
 Priority = ReferenceField(
     'Priority',
-    schemata = "AnalysisRequest and Sample Defaults",
+    schemata = "AnalysisRequest and Sample Fields",
     allowed_types=('ARPriority',),
     referenceClass=HoldingReference,
     relationship='BatchPriority',
@@ -396,7 +473,7 @@ Priority = ReferenceField(
 )
 SamplingDate = DateTimeField(
     'SamplingDate',
-    schemata = "AnalysisRequest and Sample Defaults",
+    schemata = "AnalysisRequest and Sample Fields",
     mode="rw",
     read_permission=permissions.View,
     write_permission=permissions.ModifyPortalContent,
@@ -410,7 +487,7 @@ SamplingDate = DateTimeField(
 )
 DateSampled = DateTimeField(
     'DateSampled',
-    schemata = "AnalysisRequest and Sample Defaults",
+    schemata = "AnalysisRequest and Sample Fields",
     mode="rw",
     read_permission=permissions.View,
     write_permission=permissions.ModifyPortalContent,
@@ -424,7 +501,7 @@ DateSampled = DateTimeField(
 )
 Sampler = StringField(
     'Sampler',
-    schemata = "AnalysisRequest and Sample Defaults",
+    schemata = "AnalysisRequest and Sample Fields",
     mode="rw",
     read_permission=permissions.View,
     write_permission=permissions.ModifyPortalContent,
@@ -439,7 +516,7 @@ Sampler = StringField(
 )
 PreparationWorkflow = StringField(
     'PreparationWorkflow',
-    schemata = "AnalysisRequest and Sample Defaults",
+    schemata = "AnalysisRequest and Sample Fields",
     mode="rw",
     read_permission=permissions.View,
     write_permission=permissions.ModifyPortalContent,
@@ -502,15 +579,154 @@ InheritedObjectsUI = InheritedObjectsUIField(
         },
     ),
 )
-
+SampleCount = ComputedField(
+    "SampleCount",
+    schemata = "AnalysisRequest and Sample Fields",
+    expression="python:here.getSampleCount()",
+    widget=ComputedWidget(
+        label = _("Sample Count"),
+    )
+)
+StorageLocation = ReferenceField(
+    'StorageLocation',
+    schemata = "AnalysisRequest and Sample Fields",
+    allowed_types='StorageLocation',
+    relationship='AnalysisRequestStorageLocation',
+    mode="rw",
+    read_permission=permissions.View,
+    write_permission=permissions.ModifyPortalContent,
+    widget=ReferenceWidget(
+        label=_("Storage Location"),
+        description=_("Location where sample is kept"),
+        size=20,
+        visible={'edit': 'visible',
+                 'view': 'visible',
+                 },
+        catalog_name='bika_setup_catalog',
+        base_query={'inactive_state': 'active'},
+        showOn=True,
+    ),
+)
+ReturnSampleToClient = BooleanField(
+    'ReturnSampleToClient',
+    schemata = "AnalysisRequest and Sample Fields",
+    widget=BooleanWidget(
+        label=_("Return Sample To Client"),
+    )
+)
+SampleTemperature = StringField(
+    'SampleTemperature',
+    schemata = "AnalysisRequest and Sample Fields",
+    widget=StringWidget(
+        label=_('Sample Temperature'),
+        description = _("The temperature of the individual samples"),
+    )
+)
+SampleCondition = ReferenceField(
+    'SampleCondition',
+    schemata = "AnalysisRequest and Sample Fields",
+    vocabulary_display_path_bound = sys.maxsize,
+    allowed_types = ('SampleCondition',),
+    relationship = 'BatchSampleCondition',
+    mode="rw",
+    read_permission=permissions.View,
+    write_permission=permissions.ModifyPortalContent,
+    widget=ReferenceWidget(
+        label=_("Sample Condition"),
+        description = _("The condition of the individual samples"),
+        visible={'edit': 'visible',
+                 'view': 'visible',
+                 },
+        catalog_name='bika_setup_catalog',
+        base_query={'inactive_state': 'active'},
+        showOn=True,
+    ),
+)
+SamplingDeviation = ReferenceField('SamplingDeviation',
+    vocabulary_display_path_bound = sys.maxsize,
+    schemata = "AnalysisRequest and Sample Fields",
+    allowed_types = ('SamplingDeviation',),
+    relationship = 'BatchSamplingDeviation',
+    referenceClass = HoldingReference,
+    mode="rw",
+    read_permission=permissions.View,
+    write_permission=permissions.ModifyPortalContent,
+    widget=ReferenceWidget(
+        label=_('Sampling Deviation'),
+        visible={'edit': 'visible',
+                 'view': 'visible',
+                 },
+        catalog_name='bika_setup_catalog',
+        base_query={'inactive_state': 'active'},
+        showOn=True,
+    ),
+)
+BioHazardous = BooleanField(
+    'BioHazardous',
+    schemata = "AnalysisRequest and Sample Fields",
+    widget=BooleanWidget(
+        label=_("BioHazardous"),
+    )
+)
+Instruments = ReferenceField(
+    'Instruments',
+    schemata = "AnalysisRequest and Sample Fields",
+    required = 0,
+    multiValued = True,
+    allowed_types = ('Instrument',),
+    relationship = 'BatchInstrument',
+    mode="rw",
+    read_permission=permissions.View,
+    write_permission=permissions.ModifyPortalContent,
+    vocabulary="getInstrumentsVocabulary",
+    widget=MultiSelectionWidget(
+        format='select',
+        size=10,
+        label=_("Instruments"),
+        description = _("Instruments available for analyses in this Batch"),
+        visible={'edit': 'visible',
+                 'view': 'visible',
+                 },
+    ),
+)
+Methods = ReferenceField(
+    'Methods',
+    schemata = "AnalysisRequest and Sample Fields",
+    required = 0,
+    multiValued = True,
+    allowed_types = ('Method',),
+    relationship = 'BatchMethods',
+    mode="rw",
+    read_permission=permissions.View,
+    write_permission=permissions.ModifyPortalContent,
+    vocabulary="getMethodsVocabulary",
+    widget=MultiSelectionWidget(
+        format='select',
+        size=10,
+        label=_("Methods"),
+        description = _("Methods available for analyses in this Batch"),
+        visible={'edit': 'visible',
+                 'view': 'visible',
+                 },
+    ),
+)
 
 schema = BikaFolderSchema.copy() + Schema((
     # Default
     BatchID,
     BatchDate,
+    #title
+    #description
     Client,
-    Contact,
     ClientBatchID,
+    ClientProjectName,
+    Contact,
+    CCContact,
+    CCEmails,
+    Analysts,
+    LeadAnalyst,
+    SamplePoint,
+    ClientBatchComment,
     BatchLabels,
     ContainerTemperature,
     ContainerCondition,
@@ -518,11 +734,19 @@ schema = BikaFolderSchema.copy() + Schema((
     InheritedObjectsUI,
     Remarks,
     # AR and Sample Defaults
+    BioHazardous,
+    SampleCount,
+    StorageLocation,
+    ReturnSampleToClient,
+    SampleTemperature,
+    SampleCondition,
+    SamplingDeviation,
     ClientOrderNumber,
     ClientReference,
+    Methods,
+    Instruments,
     Template,
     Profile,
-    SamplePoint,
     SampleType,
     SampleMatrix,
     Specification,
@@ -541,10 +765,8 @@ schema['title'].widget.description = _("If no Title value is entered, the Batch 
 schema['description'].required = False
 schema['description'].widget.visible = True
 
-# schema.moveField('ClientBatchID', before='description')
-# schema.moveField('BatchID', before='description')
-# schema.moveField('title', before='description')
-# schema.moveField('Client', after='title')
+schema.moveField('title', before='BatchDate')
+schema.moveField('description', after='title')
 
 
 class Batch(ATFolder):
@@ -601,17 +823,6 @@ class Batch(ATFolder):
         value = []
         for analysis in analyses:
             val = analysis.getServiceTitle()
-            if val not in value:
-                value.append(val)
-        return value
-
-    def getAnalysts(self):
-        analyses = []
-        for ar in self.getAnalysisRequests():
-            analyses += list(ar.getAnalyses(full_objects=True))
-        value = []
-        for analysis in analyses:
-            val = analysis.getAnalyst()
             if val not in value:
                 value.append(val)
         return value
@@ -689,9 +900,10 @@ class Batch(ATFolder):
             and canstatus == CancellationState.active
 
     def getSamplers(self):
-        return getUsers(self, ['LabManager', 'Sampler'])
-        return users
-        return users
+        return getUsers(self, ['Manager', 'LabManager', 'Sampler'], allow_empty=False)
+
+    def getAnalysts(self):
+        return getUsers(self, ['Manager', 'LabManager', 'Analyst'], allow_empty=False)
 
     def AnalystVocabulary(self):
         """Return a DisplayList with analysts from the Analysts field" \
@@ -699,6 +911,10 @@ class Batch(ATFolder):
         analysts = self.getAnalysts()
         analysts = [a for a in self.AnalystsVocabulary().items() if a[0] in analysts]
         return analysts
+
+    def AnalystsVocabulary(self):
+        users = getUsers(self, ['Manager', 'LabManager', 'Analyst'], allow_empty=False)
+        return users
 
     def getPreparationWorkflows(self):
         """Return a list of sample preparation workflows.  These are identified
@@ -712,6 +928,28 @@ class Batch(ATFolder):
             workflow = wf.getWorkflowById(workflow_id)
             prep_workflows.append([workflow_id, workflow.title])
         return DisplayList(prep_workflows)
+
+    def getSamples(self):
+        samples = []
+        for ar in self.getAnalysisRequests():
+            sample = ar.getSample()
+            if sample not in samples:
+                samples.append(sample)
+        return samples
+
+    def getSampleCount(self):
+        return len(self.getSamples())
+
+    def getInstrumentsVocabulary(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        proxies = bsc(portal_type="Instrument", inactive_review_state='active')
+        return DisplayList([(p.UID, p.title) for p in proxies])
+
+    def getMethodsVocabulary(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        proxies = bsc(portal_type="Method", inactive_review_state='active')
+        return DisplayList([(p.UID, p.title) for p in proxies])
+
 
 registerType(Batch, PROJECTNAME)
 

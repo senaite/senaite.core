@@ -94,7 +94,11 @@ function BatchView() {
 		function client_field_modified(){
 			$("#Contact").val('');
 			$("#Contact_uid").val('');
+			$("#CCContact").val('');
+			$("#CCContact_uid").val('');
+			$("#CCContact-listing > .reference_multi_item").remove();
 			applyComboFilter($("#Contact"), "getParentUID", $("#Client_uid").val());
+			applyComboFilter($("#CCContact"), "getParentUID", $("#Client_uid").val());
 		}
 		$("#Client").bind("selected", client_field_modified);
 		$("#Client").bind("unselected", client_field_modified);
@@ -102,7 +106,27 @@ function BatchView() {
 		// We need a delay to be sure this code runs after the widget is configured.
 		setTimeout(function() {
 			applyComboFilter($("#Contact"), "getParentUID", $("#Client_uid").val());
+			applyComboFilter($("#CCContact"), "getParentUID", $("#Client_uid").val());
 		}, 250)
+
+		$("#Analysts").change(function (event) {
+			$("#LeadAnalyst").empty();
+			$.each($("#Analysts > option").filter(":selected"), function (k, v) {
+				$("#LeadAnalyst").append('<option value="' + v.value + '">' + v.innerHTML + '</option>');
+			});
+		});
+
+		// can only have one of Profile or Template seleted
+		$("#Template").bind("selected", function(event){
+			$("#Profile").val("");
+			$("#Profile").attr("uid", "");
+			$("#Profile_uid").val("");
+		});
+		$("#Profile").bind("selected", function(event){
+			$("#Template").val("");
+			$("#Template").attr("uid", "");
+			$("#Template_uid").val("");
+		});
 
     }
 }
