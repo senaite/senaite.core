@@ -54,7 +54,7 @@
                 tal:attributes="
                     id python:'ar_%s_%s'%(arnum, field.getName());
                     name python:'ar.%s.%s:record'%(arnum, field.getName());
-                    value python:val.Title() if 'reference' in field.getType().lower() else val;"/>
+                    value python:val.Title() if val and 'reference' in field.getType().lower() else val;"/>
              <input
                 type="hidden"
 				tal:condition="python:val and 'reference' in field.getType().lower()"
