@@ -1582,9 +1582,8 @@ class AnalysisRequest(BaseFolder):
         """ Return the amount of analyses verified/total in the current AR """
         verified = 0
         total = 0
-        for analysis in self.objectValues('Analysis'):
-            workflow = getToolByName(analysis, 'portal_workflow')
-            review_state = workflow.getInfoFor(analysis, 'review_state', '')
+        for analysis in self.getAnalyses():
+            review_state = analysis.review_state
             if review_state in ['verified' ,'published']:
                 verified += 1
             if review_state not in 'retracted':

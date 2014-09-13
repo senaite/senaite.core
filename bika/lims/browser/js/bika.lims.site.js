@@ -263,6 +263,15 @@ function SiteView() {
                 });
         });
 
+        $('.numeric').live('paste', function(event){
+            // Wait (next cycle) for value popluation and replace commas.
+            var $self = $(this);
+            window.setTimeout(function() {
+                $self.val($self.val().replace(',','.'));
+            }, 0);
+        });
+
+
         $(".numeric").live("keypress", function(event) {
             var allowedKeys = [
                 8,   // backspace
@@ -273,6 +282,7 @@ function SiteView() {
                 37,  // left arrow
                 39,  // right arrow
                 46,  // delete - We don't support the del key in Opera because del == . == 46.
+                44,  // ,
                 60,  // <
                 62,  // >
                 45,  // -
@@ -285,6 +295,11 @@ function SiteView() {
             if (!event.which || // Control keys in most browsers. e.g. Firefox tab is 0
                 (48 <= event.which && event.which <= 57) || // Always 0 through 9
                 isAllowedKey) { // Opera assigns values for control keys.
+                // Wait (next cycle) for value popluation and replace commas.
+                var $self = $(this);
+                window.setTimeout(function() {
+                    $self.val($self.val().replace(',','.'));
+                }, 0);
                 return;
             } else {
                 event.preventDefault();

@@ -17,6 +17,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode, _createObjectByType
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
 from zope.component import getAdapters
 import glob, os, sys, traceback
 import App
@@ -69,6 +70,14 @@ class AnalysisRequestPublishView(BrowserView):
         out = []
         for template in templates:
             out.append({'id': template, 'title': template[:-3]})
+        for templates_resource in iterDirectoriesOfType('reports'):
+            prefix = templates_resource.__name__
+            templates = [tpl for tpl in templates_resource.listDirectory() if tpl.endswith('.pt')]
+            for template in templates:
+                out.append({
+                    'id': '{}:{}'.format(prefix, template),
+                    'title': '{} ({})'.format(template[:-3], prefix),
+                })
         return out
 
     def getAnalysisRequests(self):
@@ -102,8 +111,13 @@ class AnalysisRequestPublishView(BrowserView):
             the next ar to be processed. Uses the selected template
             specified in the request ('template' parameter)
         """
+        templates_dir = 'templates/reports'
         embedt = self.request.get('template', self._DEFAULT_TEMPLATE)
-        embed = ViewPageTemplateFile("templates/reports/%s" % embedt);
+        if embedt.find(':') >= 0:
+            prefix, template = embedt.split(':')
+            templates_dir = queryResourceDirectory('reports', prefix).directory
+            embedt = template
+        embed = ViewPageTemplateFile(os.path.join(templates_dir, embedt))
         reptemplate = ""
         try:
             reptemplate = embed(self)
@@ -121,13 +135,20 @@ class AnalysisRequestPublishView(BrowserView):
             for the current template, returns empty string
         """
         template = self.request.get('template', self._DEFAULT_TEMPLATE)
-        this_dir = os.path.dirname(os.path.abspath(__file__))
-        templates_dir = os.path.join(this_dir, 'templates/reports/')
-        path = '%s/%s.css' % (templates_dir, template[:-3])
         content = ''
-        with open(path, 'r') as content_file:
-            content = content_file.read()
-        return content;
+        if template.find(':') >= 0:
+            prefix, template = template.split(':')
+            resource = queryResourceDirectory('reports', prefix)
+            css = '{}.css'.format(template[:-3])
+            if css in resource.listDirectory():
+                content = resource.readFile(css)
+        else:
+            this_dir = os.path.dirname(os.path.abspath(__file__))
+            templates_dir = os.path.join(this_dir, 'templates/reports/')
+            path = '%s/%s.css' % (templates_dir, template[:-3])
+            with open(path, 'r') as content_file:
+                content = content_file.read()
+        return content
 
     def isQCAnalysesVisible(self):
         """ Returns if the QC Analyses must be displayed
