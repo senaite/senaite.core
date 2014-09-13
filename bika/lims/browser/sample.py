@@ -665,7 +665,7 @@ class SamplesView(BikaListingView):
 
             matrix = obj.getSampleMatrix()
             if matrix:
-                items[x]['SampleMatrix'] = matrix.getSampleMatrix()
+                items[x]['SampleMatrix'] = matrix.Title()
                 items[x]['replace']['SampleMatrix'] = "<a href='%s'>%s</a>" % \
                      (matrix.absolute_url(), items[x]['SampleMatrix'])
             else:
