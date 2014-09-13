@@ -61,7 +61,6 @@ setup(name='bika.lims',
               'robotsuite',
               'robotframework-selenium2library',
               'plone.app.robotframework',
-              'robotframework-debuglibrary',
           ]
       },
       entry_points="""
