@@ -27,6 +27,11 @@
     factory=".update.Update" />
 
   <utility
+    name="bika.lims.jsonapi.remove"
+    provides="plone.jsonapi.core.interfaces.IRouteProvider"
+    factory=".remove.Remove" />
+
+  <utility
     name="bika.lims.jsonapi.doactionfor"
     provides="plone.jsonapi.core.interfaces.IRouteProvider"
     factory=".doactionfor.doActionFor" />
