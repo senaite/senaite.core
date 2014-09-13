@@ -33,14 +33,17 @@ class Remove(object):
             "success": True,
             "error": False,
         }
-
+        
         data = uc(UID=_uid)
+        if not data:
+            raise BadRequest("No objects found")
+        
         for proxy in data:
             try:
-                parent = proxy.getObject().aq_parent()
+                parent = proxy.getObject().aq_parent
                 parent.manage_delObjects([proxy.id])
             except Exception as e:
                 savepoint.rollback()
-                msg = "Cannot delete '{0}' because ({2})".format(_uid, e.message)
+                msg = "Cannot delete '{0}' because ({1})".format(_uid, e.message)
                 raise BadRequest(msg)
         return ret
