@@ -94,7 +94,7 @@ class SamplingWorkflowWidgetVisibility(object):
         return state
 
 
-class BatchClientFieldWidgetVisibility(object):
+class BatchARAddFieldsWidgetVisibility(object):
     """This will force the 'Client' field to 'visible' when in Batch context
     """
     implements(IATWidgetVisibility)
@@ -106,8 +106,16 @@ class BatchClientFieldWidgetVisibility(object):
     def __call__(self, context, mode, field, default):
         state = default if default else 'visible'
         fieldName = field.getName()
-        if fieldName == 'Client' and context.aq_parent.portal_type == 'Batch':
-            return 'edit'
+        if mode == 'add':
+            # Client cannot be edited in ar_add if set on Batch.
+            if fieldName == 'Client' and context.aq_parent.portal_type == 'Batch':
+                if context.aq_parent.schema['Client'].get(context.aq_parent):
+                    return 'hidden'
+                else:
+                    return 'edit'
+            # Batch cannot be set if context is already batch.
+            if fieldName == 'Batch' and context.aq_parent.portal_type == 'Batch':
+                return 'hidden'
         return state
 
 class MainClientFieldWidgetVisibility(object):

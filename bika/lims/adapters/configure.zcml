@@ -12,10 +12,10 @@
     />
 
     <adapter
-      factory=".widgetvisibility.BatchClientFieldWidgetVisibility"
+      factory=".widgetvisibility.BatchARAddFieldsWidgetVisibility"
       provides="bika.lims.interfaces.IATWidgetVisibility"
       for="bika.lims.interfaces.IAnalysisRequest"
-      name="BatchClientFieldWV"
+      name="BatchARAddFieldsWidgetVisibility"
     />
     
     <adapter
