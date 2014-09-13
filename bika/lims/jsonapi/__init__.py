@@ -26,7 +26,9 @@ def get_include_fields(request):
     """
     include_fields = []
     rif = request.get("include_fields", "")
-    if "include_fields" in request:
+    if rif:
+        if type(rif) == list:
+            return rif
         include_fields = [x.strip()
                           for x in rif.split(",")
                           if x.strip()]
