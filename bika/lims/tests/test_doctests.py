@@ -13,6 +13,7 @@ DOCTESTS = [
     'bika.lims.browser.bika_listing',
     'bika.lims.jsonapi.create',
     'bika.lims.jsonapi.update',
+	'bika.lims.jsonapi.remove',
     'bika.lims.vocabularies',
 ]
 
