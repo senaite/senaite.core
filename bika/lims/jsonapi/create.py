@@ -194,6 +194,7 @@ class Create(object):
             for field in used_fields:
                 self.used(field)
             obj.reindexObject()
+            obj.aq_parent.reindexObject()
             event.notify(ObjectInitializedEvent(obj))
             obj.at_post_create_script()
         except:
