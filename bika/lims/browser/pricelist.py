@@ -24,7 +24,7 @@ class PricelistsView(BikaListingView):
         self.contentFilter = {'portal_type': 'Pricelist',
                               'sort_on': 'sortable_title'}
         self.context_actions = {}
-        self.title = _("Pricelists")
+        self.title = self.context.translate(_("Pricelists"))
         self.icon = self.portal_url + "/++resource++bika.lims.images/pricelist_big.png"
         self.description = ""
         self.show_sort_column = False

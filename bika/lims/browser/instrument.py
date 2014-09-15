@@ -44,7 +44,7 @@ class InstrumentMaintenanceView(BikaListingView):
         self.pagesize = 40
         self.form_id = "instrumentmaintenance"
         self.icon = "++resources++bika.lims.images/instrumentmaintenance_big.png"
-        self.title = _("Instrument Maintenance")
+        self.title = self.context.translate(_("Instrument Maintenance"))
         self.description = ""
 
         self.columns = {
@@ -144,7 +144,7 @@ class InstrumentCalibrationsView(BikaListingView):
         self.pagesize = 25
         self.form_id = "instrumentcalibrations"
         self.icon = "++resources++bika.lims.images/instrumentcalibration_big.png"
-        self.title = _("Instrument Calibrations")
+        self.title = self.context.translate(_("Instrument Calibrations"))
         self.description = ""
 
         self.columns = {
@@ -201,7 +201,7 @@ class InstrumentValidationsView(BikaListingView):
         self.pagesize = 25
         self.form_id = "instrumentvalidations"
         self.icon = "++resources++bika.lims.images/instrumentvalidation_big.png"
-        self.title = _("Instrument Validations")
+        self.title = self.context.translate(_("Instrument Validations"))
         self.description = ""
 
         self.columns = {
@@ -261,7 +261,7 @@ class InstrumentScheduleView(BikaListingView):
 
         self.form_id = "instrumentschedule"
         self.icon = "++resources++bika.lims.images/instrumentschedule_big.png"
-        self.title = _("Instrument Scheduled Tasks")
+        self.title = self.context.translate(_("Instrument Scheduled Tasks"))
         self.description = ""
 
         self.columns = {
@@ -340,7 +340,7 @@ class InstrumentReferenceAnalysesViewView(BrowserView):
     def __init__(self, context, request):
         super(InstrumentReferenceAnalysesViewView, self).__init__(context, request)
         self.icon = self.portal_url + "/++resource++bika.lims.images/referencesample_big.png"
-        self.title = _("Internal Calibration Tests")
+        self.title = self.context.translate(_("Internal Calibration Tests"))
         self.description = ""
         self._analysesview = None
 

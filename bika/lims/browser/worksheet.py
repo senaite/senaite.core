@@ -805,7 +805,7 @@ class AddAnalysesView(BikaListingView):
     def __init__(self, context, request):
         BikaListingView.__init__(self, context, request)
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
-        self.title = _("Add Analyses")
+        self.title = self.context.translate(_("Add Analyses"))
         self.description = ""
         self.catalog = "bika_analysis_catalog"
         self.context_actions = {}
@@ -1005,9 +1005,10 @@ class AddBlankView(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
-        self.title = _("Add Blank Reference")
-        self.description = _("Select services in the left column to locate "
-                             "reference samples. Select a reference by clicking it. ")
+        self.title = self.context.translate(_("Add Blank Reference"))
+        self.description = self.context.translate(_(
+                             "Select services in the left column to locate "
+                             "reference samples. Select a reference by clicking it. "))
 
     def __call__(self):
         if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
@@ -1062,9 +1063,10 @@ class AddControlView(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
-        self.title = _("Add Control Reference")
-        self.description = _("Select services in the left column to locate "
-                             "reference samples. Select a reference by clicking it. ")
+        self.title = self.context.translate(_("Add Control Reference"))
+        self.description = self.context.translate(_(
+                             "Select services in the left column to locate "
+                             "reference samples. Select a reference by clicking it. "))
     def __call__(self):
         if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
             self.request.response.redirect(self.context.absolute_url())
@@ -1118,8 +1120,8 @@ class AddDuplicateView(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
-        self.title = _("Add Duplicate")
-        self.description = _("Select a destinaton position and the AR to duplicate.")
+        self.title = self.context.translate(_("Add Duplicate"))
+        self.description = self.context.translate(_("Select a destinaton position and the AR to duplicate."))
 
     def __call__(self):
         if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):

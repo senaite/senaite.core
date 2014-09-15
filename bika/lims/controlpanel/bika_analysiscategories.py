@@ -25,7 +25,7 @@ class AnalysisCategoriesView(BikaListingView):
                                 {'url': 'createObject?type_name=AnalysisCategory',
                                  'icon': '++resource++bika.lims.images/add.png'}}
         self.icon = self.portal_url + "/++resource++bika.lims.images/category_big.png"
-        self.title = _("Analysis Categories")
+        self.title = self.context.translate(_("Analysis Categories"))
         self.description = ""
         self.show_sort_column = False
         self.show_select_row = False

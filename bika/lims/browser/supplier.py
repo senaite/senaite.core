@@ -27,7 +27,7 @@ class ReferenceSamplesView(BikaListingView):
     def __init__(self, context, request):
         super(ReferenceSamplesView, self).__init__(context, request)
         self.icon = self.portal_url + "/++resource++bika.lims.images/referencesample_big.png"
-        self.title = _("Reference Samples")
+        self.title = self.context.translate(_("Reference Samples"))
         self.catalog = 'bika_catalog'
         self.contentFilter = {'portal_type': 'ReferenceSample',
                               'sort_on': 'id',
@@ -174,7 +174,7 @@ class ContactsView(BikaListingView):
         self.show_select_column = True
         self.pagesize = 25
         self.icon = self.portal_url + "/++resource++bika.lims.images/contact_big.png"
-        self.title = _("Contacts")
+        self.title = self.context.translate(_("Contacts"))
 
         self.columns = {
             'getFullname': {'title': _('Full Name')},

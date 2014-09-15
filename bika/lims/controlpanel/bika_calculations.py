@@ -26,7 +26,7 @@ class CalculationsView(BikaListingView):
         self.context_actions = {_('Add'):
                                 {'url':'createObject?type_name=Calculation',
                                  'icon': '++resource++bika.lims.images/add.png'}}
-        self.title = _("Calculations")
+        self.title = self.context.translate(_("Calculations"))
         self.icon = self.portal_url + "/++resource++bika.lims.images/calculation_big.png"
         self.description = ""
         self.show_sort_column = False

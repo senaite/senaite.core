@@ -46,8 +46,8 @@ class ImportView(BrowserView):
         super(ImportView, self).__init__(context, request)
 
         self.icon = ""
-        self.title = _("Import")
-        self.description = _("Select a data interface")
+        self.title = self.context.translate(_("Import"))
+        self.description = self.context.translate(_("Select a data interface"))
 
         request.set('disable_border', 1)
 
