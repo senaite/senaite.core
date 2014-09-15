@@ -190,7 +190,7 @@ schema = BikaSchema.copy() + Schema((
     StringField('ShortTitle',
                 schemata="Description",
                 widget=StringWidget(
-                    label=_("Short title"),
+                    label = "Short title",
                     description=_(
                         "If text is entered here, it is used instead of the "
                         "title when the service is listed in column headings. "
@@ -200,7 +200,7 @@ schema = BikaSchema.copy() + Schema((
     StringField('Unit',
                 schemata="Description",
                 widget=StringWidget(
-                    label=_("Unit"),
+                    label = "Unit",
                     description=_(
                         "The measurement units for this analysis service' results, "
                         "e.g. mg/l, ppm, dB, mV, etc."),
@@ -209,7 +209,7 @@ schema = BikaSchema.copy() + Schema((
     IntegerField('Precision',
                  schemata="Analysis",
                  widget=IntegerWidget(
-                     label=_("Precision as number of decimals"),
+                     label = "Precision as number of decimals",
                      description=_(
                          "Define the number of decimals to be used for this result."),
                  ),
@@ -218,7 +218,7 @@ schema = BikaSchema.copy() + Schema((
                  schemata="Analysis",
                  default = 7,
                  widget=IntegerWidget(
-                     label=_("Exponential format precision"),
+                     label = "Exponential format precision",
                      description=_(
                          "Define the precision when converting values to exponent notation."),
                  ),
@@ -227,7 +227,7 @@ schema = BikaSchema.copy() + Schema((
                  schemata="Analysis",
                  default = 7,
                  widget=IntegerWidget(
-                     label=_("Exponential format precision"),
+                     label = "Exponential format precision",
                      description=_(
                          "Define the precision when converting values to exponent "
                          "notation.  The default is 7."),
@@ -237,8 +237,8 @@ schema = BikaSchema.copy() + Schema((
                  schemata="Analysis",
                  default=False,
                  widget=BooleanWidget(
-                     label=_("Report as Dry Matter"),
-                     description=_("These results can be reported as dry matter"),
+                     label = "Report as Dry Matter",
+                     description = "These results can be reported as dry matter",
                  ),
     ),
     StringField('AttachmentOption',
@@ -246,7 +246,7 @@ schema = BikaSchema.copy() + Schema((
                 default='p',
                 vocabulary=ATTACHMENT_OPTIONS,
                 widget=SelectionWidget(
-                    label=_("Attachment Option"),
+                    label = "Attachment Option",
                     description=_(
                         "Indicates whether file attachments, e.g. microscope images, "
                         "are required for this analysis and whether file upload function "
@@ -260,7 +260,7 @@ schema = BikaSchema.copy() + Schema((
                 searchable=True,
                 validators=('servicekeywordvalidator'),
                 widget=StringWidget(
-                    label=_("Analysis Keyword"),
+                    label = "Analysis Keyword",
                     description=_(
                         "The unique keyword used to identify the analysis service in "
                         "import files of bulk AR requests and results imports from instruments. "
@@ -277,9 +277,9 @@ schema = BikaSchema.copy() + Schema((
                  schemata="Method",
                  default=True,
                  widget=BooleanWidget(
-                     label=_("Allow manual entry of results"),
-                     description=_("Select if the results for this Analysis "
-                                   "Service can be set manually."),
+                     label = "Allow manual entry of results",
+                     description="Select if the results for this Analysis "
+                                   "Service can be set manually.",
                  )
     ),
     # Allow/Disallow instrument entry of results
@@ -291,9 +291,9 @@ schema = BikaSchema.copy() + Schema((
                  schemata="Method",
                  default=False,
                  widget=BooleanWidget(
-                     label=_("Allow instrument entry of results"),
-                     description=_("Select if the results for this Analysis "
-                                   "Service can be set using an Instrument."),
+                     label = "Allow instrument entry of results",
+                     description="Select if the results for this Analysis " + \
+                                   "Service can be set using an Instrument.",
                  )
     ),
     # Instruments associated to the AS
@@ -312,13 +312,13 @@ schema = BikaSchema.copy() + Schema((
                    relationship='AnalysisServiceInstruments',
                    referenceClass=HoldingReference,
                    widget=MultiSelectionWidget(
-                       label=_("Instruments"),
-                       description=_("More than one instrument can do an "
-                                     "Analysis Service. The instruments "
-                                     "selected here are displayed in the "
-                                     "Analysis Request creation view for its "
-                                     "selection when this Analysis Service is "
-                                     "selected."),
+                       label = "Instruments",
+                       description="More than one instrument can do an " + \
+                                     "Analysis Service. The instruments " + \
+                                     "selected here are displayed in the " + \
+                                     "Analysis Request creation view for its " + \
+                                     "selection when this Analysis Service is " + \
+                                     "selected.",
                    )
     ),
     # Default instrument to be used.
@@ -340,7 +340,7 @@ schema = BikaSchema.copy() + Schema((
                                referenceClass=HoldingReference,
                                widget=SelectionWidget(
                                    format='select',
-                                   label=_('Default Instrument')
+                                   label = "Default Instrument"
                                ),
     ),
     # Returns the Default's instrument title. If no default instrument
@@ -371,15 +371,15 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisServiceMethods',
         referenceClass = HoldingReference,
         widget = MultiSelectionWidget(
-            label = _("Methods"),
-            description = _("The Analysis Service can be performed by "
-                            "using more than one Method. The methods "
-                            "selected here are displayed in the "
-                            "Analysis Request creation view for its "
-                            "selection when this Analaysis Service "
-                            "is selected. Only methods with 'Allow "
-                            "manual entry of results' enabled are "
-                            "displayed."),
+            label = "Methods",
+            description = "The Analysis Service can be performed by " + \
+                            "using more than one Method. The methods " + \
+                            "selected here are displayed in the " + \
+                            "Analysis Request creation view for its " + \
+                            "selection when this Analaysis Service " + \
+                            "is selected. Only methods with 'Allow " + \
+                            "manual entry of results' enabled are " + \
+                            "displayed.",
         )
     ),
     # Default method to be used. This field is used in Analysis Service
@@ -403,11 +403,11 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = SelectionWidget(
             format='select',
-            label=_('Default Method'),
-            description=_("If 'Allow instrument entry of results' "
-                          "is selected, the method from the default instrument "
-                          "will be used. Otherwise, only the methods "
-                          "selected above will be displayed.")
+            label = "Default Method",
+            description="If 'Allow instrument entry of results' " + \
+                          "is selected, the method from the default instrument " + \
+                          "will be used. Otherwise, only the methods " + \
+                          "selected above will be displayed."
         ),
     ),
     # Allow/Disallow to set the calculation manually
@@ -419,11 +419,11 @@ schema = BikaSchema.copy() + Schema((
                  schemata="Method",
                  default=True,
                  widget=BooleanWidget(
-                     label=_("Use default calculation"),
-                     description=_("Select if the calculation to be used is the "
-                                   "calculation set by default in the default "
-                                   "method. If unselected, the calculation can "
-                                   "be selected manually"),
+                     label = "Use default calculation",
+                     description="Select if the calculation to be used is the " + \
+                                   "calculation set by default in the default " + \
+                                   "method. If unselected, the calculation can " + \
+                                   "be selected manually",
                  )
     ),
     # Default calculation to be used. This field is used in Analysis Service
@@ -444,11 +444,11 @@ schema = BikaSchema.copy() + Schema((
                    referenceClass=HoldingReference,
                    widget=SelectionWidget(
                        format='select',
-                       label=_('Default Calculation'),
-                       description=_("Default calculation to be used from the "
-                                     "default Method selected. The Calculation "
-                                     "for a method can be assigned in the Method "
-                                     "edit view."),
+                       label = "Default Calculation",
+                       description="Default calculation to be used from the " + \
+                                     "default Method selected. The Calculation " + \
+                                     "for a method can be assigned in the Method " + \
+                                     "edit view.",
                        catalog_name='bika_setup_catalog',
                        base_query={'inactive_state': 'active'},
                    ),
@@ -475,7 +475,7 @@ schema = BikaSchema.copy() + Schema((
                    referenceClass=HoldingReference,
                    widget=SelectionWidget(
                        format='select',
-                       label=_('Alternative Calculation'),
+                       label = "Alternative Calculation",
                        description=_(
                            "If required, select a calculation for the analysis here. "
                            "Calculations can be configured under the calculations item "
@@ -501,7 +501,7 @@ schema = BikaSchema.copy() + Schema((
     InterimFieldsField('InterimFields',
                        schemata='Method',
                        widget=RecordsWidget(
-                           label=_("Calculation Interim Fields"),
+                           label = "Calculation Interim Fields",
                            description=_(
                                "Values can be entered here which will override the defaults "
                                "specified in the Calculation Interim Fields."),
@@ -510,7 +510,7 @@ schema = BikaSchema.copy() + Schema((
     DurationField('MaxTimeAllowed',
                   schemata="Analysis",
                   widget=DurationWidget(
-                      label=_("Maximum turn-around time"),
+                      label = "Maximum turn-around time",
                       description=_(
                           "Maximum time allowed for completion of the analysis. "
                           "A late analysis alert is raised when this period elapses"),
@@ -519,7 +519,7 @@ schema = BikaSchema.copy() + Schema((
     FixedPointField('DuplicateVariation',
                     schemata="Method",
                     widget=DecimalWidget(
-                        label=_("Duplicate Variation %"),
+                        label = "Duplicate Variation %",
                         description=_(
                             "When the results of duplicate analyses on worksheets, "
                             "carried out on the same sample, differ with more than "
@@ -530,7 +530,7 @@ schema = BikaSchema.copy() + Schema((
                  schemata="Method",
                  default=False,
                  widget=BooleanWidget(
-                     label=_("Accredited"),
+                     label = "Accredited",
                      description=_(
                          "Check this box if the analysis service is included in the "
                          "laboratory's schedule of accredited analyses"),
@@ -543,7 +543,7 @@ schema = BikaSchema.copy() + Schema((
                 vocabulary=SERVICE_POINT_OF_CAPTURE,
                 widget=SelectionWidget(
                     format='flex',
-                    label=_("Point of Capture"),
+                    label = "Point of Capture",
                     description=_(
                         "The results of field analyses are captured during sampling "
                         "at the sample point, e.g. the temperature of a water sample "
@@ -561,7 +561,7 @@ schema = BikaSchema.copy() + Schema((
                    vocabulary='getAnalysisCategories',
                    widget=ReferenceWidget(
                        checkbox_bound=0,
-                       label=_("Analysis Category"),
+                       label = "Analysis Category",
                        description=_(
                            "The category the analysis service belongs to"),
                        catalog_name='bika_setup_catalog',
@@ -572,7 +572,7 @@ schema = BikaSchema.copy() + Schema((
                     schemata="Description",
                     default='0.00',
                     widget=DecimalWidget(
-                        label=_("Price (excluding VAT)"),
+                        label = "Price (excluding VAT)",
                     ),
     ),
     # read access permission
@@ -580,7 +580,7 @@ schema = BikaSchema.copy() + Schema((
                     schemata="Description",
                     default='0.00',
                     widget=DecimalWidget(
-                        label=_("Bulk price (excluding VAT)"),
+                        label = "Bulk price (excluding VAT)",
                         description=_(
                             "The price charged per analysis for clients who qualify for bulk discounts"),
                     ),
@@ -589,7 +589,7 @@ schema = BikaSchema.copy() + Schema((
                   schemata="Description",
                   expression='context.getVATAmount()',
                   widget=ComputedWidget(
-                      label=_("VAT"),
+                      label = "VAT",
                       visible={'edit': 'hidden', }
                   ),
     ),
@@ -597,7 +597,7 @@ schema = BikaSchema.copy() + Schema((
                   schemata="Description",
                   expression='context.getTotalPrice()',
                   widget=ComputedWidget(
-                      label=_("Total price"),
+                      label = "Total price",
                       visible={'edit': 'hidden', }
                   ),
     ),
@@ -605,8 +605,8 @@ schema = BikaSchema.copy() + Schema((
                     schemata="Description",
                     default_method='getDefaultVAT',
                     widget=DecimalWidget(
-                        label=_("VAT %"),
-                        description=_("Enter percentage value eg. 14.0"),
+                        label = "VAT %",
+                        description = "Enter percentage value eg. 14.0",
                     ),
     ),
     ComputedField('CategoryTitle',
@@ -631,8 +631,8 @@ schema = BikaSchema.copy() + Schema((
                    referenceClass=HoldingReference,
                    widget=ReferenceWidget(
                        checkbox_bound=0,
-                       label=_("Department"),
-                       description=_("The laboratory department"),
+                       label = "Department",
+                       description = "The laboratory department",
                        catalog_name='bika_setup_catalog',
                        base_query={'inactive_state': 'active'},
                    ),
@@ -663,7 +663,7 @@ schema = BikaSchema.copy() + Schema((
                                       'errorvalue': 'uncertainties_validator',
                  },
                  widget=RecordsWidget(
-                     label=_("Uncertainty"),
+                     label = "Uncertainty",
                      description=_(
                          "Specify the uncertainty value for a given range, e.g. for "
                          "results in a range with minimum of 0 and maximum of 10, "
@@ -691,7 +691,7 @@ schema = BikaSchema.copy() + Schema((
                                  'ResultText': 25,
                  },
                  widget=RecordsWidget(
-                     label=_("Result Options"),
+                     label = "Result Options",
                      description=_(
                          "Please list all options for the analysis result if you want to restrict "
                          "it to specific options only, e.g. 'Positive', 'Negative' and "
@@ -703,9 +703,9 @@ schema = BikaSchema.copy() + Schema((
                  default=False,
                  required=0,
                  widget=BooleanWidget(
-                     label=_('Separate Container'),
-                     description=_("Check this box to ensure a separate sample "
-                                   "container is used for this analysis service"),
+                     label = "Separate Container",
+                     description="Check this box to ensure a separate sample " + \
+                                   "container is used for this analysis service",
                  ),
     ),
     ReferenceField('Preservation',
@@ -718,11 +718,11 @@ schema = BikaSchema.copy() + Schema((
                    multiValued=0,
                    widget=ReferenceWidget(
                        checkbox_bound=0,
-                       label=_('Default Preservation'),
-                       description=_("Select a default preservation for this "
-                                     "analysis service. If the preservation depends on "
-                                     "the sample type combination, specify a preservation "
-                                     "per sample type in the table below"),
+                       label = "Default Preservation",
+                       description="Select a default preservation for this " + \
+                                     "analysis service. If the preservation depends on " + \
+                                     "the sample type combination, specify a preservation " + \
+                                     "per sample type in the table below",
                        catalog_name='bika_setup_catalog',
                        base_query={'inactive_state': 'active'},
                    ),
@@ -737,7 +737,7 @@ schema = BikaSchema.copy() + Schema((
                    multiValued=0,
                    widget=ReferenceWidget(
                        checkbox_bound=0,
-                       label=_('Default Container'),
+                       label = "Default Container",
                        description=_(
                            "Select the default container to be used for this "
                            "analysis service. If the container to be used "

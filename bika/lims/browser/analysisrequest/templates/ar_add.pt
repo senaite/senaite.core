@@ -103,18 +103,16 @@
             mode string:edit;">
             <th colspan="2" style="white-space:nowrap">
                 <label class="formQuestion">
-                <span tal:replace="python:widget.Label(here)"
-                      i18n:translate="" />
+                <span tal:replace="python:view.context.translate(widget.Label(here))"/>
                 <span class="fieldRequired"
                       tal:condition="field/required"
                       title="Required"
                       i18n:attributes="title title_required;">&nbsp;</span>
                  <em style="display:block"
                        class="discreet"
-                     tal:define="description python:widget.Description(here)"
+                     tal:define="description python:view.context.translate(widget.Description(here))"
                      tal:content="structure description"
-                     tal:attributes="id string:${fieldName}_help"
-                     i18n:translate="">Help </em>
+                     tal:attributes="id string:${fieldName}_help">Help </em>
                 </label>
 
            </th>

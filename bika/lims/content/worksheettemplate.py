@@ -26,12 +26,12 @@ schema = BikaSchema.copy() + Schema((
                            'control_ref': _('Reference'),
                            'dup': _('Duplicate Of')},
         widget = WorksheetTemplateLayoutWidget(
-            label = _("Worksheet Layout"),
-            description = _("Specify the size of the Worksheet, e.g. corresponding to a "
-                            "specific instrument's tray size. Then select an Analysis 'type' "
-                            "per Worksheet position. Where QC samples are selected, also select "
-                            "which Reference Sample should be used. If a duplicate analysis is "
-                            "selected, indicate which sample position it should be a duplicate of"),
+            label = "Worksheet Layout",
+            description = "Specify the size of the Worksheet, e.g. corresponding to a " + \
+                            "specific instrument's tray size. Then select an Analysis 'type' " + \
+                            "per Worksheet position. Where QC samples are selected, also select " + \
+                            "which Reference Sample should be used. If a duplicate analysis is " + \
+                            "selected, indicate which sample position it should be a duplicate of",
         )
     ),
     ReferenceField('Service',
@@ -42,8 +42,8 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'WorksheetTemplateAnalysisService',
         referenceClass = HoldingReference,
         widget = ServicesWidget(
-            label = _("Analysis Service"),
-            description = _("Select which Analyses should be included on the Worksheet"),
+            label = "Analysis Service",
+            description = "Select which Analyses should be included on the Worksheet",
         )
     ),
     ReferenceField('Instrument',
@@ -56,8 +56,8 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 0,
-            label = _("Instrument"),
-            description = _("Select the preferred instrument"),
+            label = "Instrument",
+            description = "Select the preferred instrument",
         ),
     ),
     ComputedField('InstrumentTitle',
