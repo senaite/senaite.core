@@ -16,15 +16,15 @@ schema = Organisation.schema.copy() + Schema((
         write_permission = ManageBika,
         widget = StringWidget(
             size = 60,
-            label = _("Lab URL"),
-            description = _("The Laboratory's web address"),
+            label = "Lab URL",
+            description = "The Laboratory's web address",
         ),
     ),
     IntegerField('Confidence',
         schemata = 'Accreditation',
         widget = IntegerWidget(
-            label = _("Confidence Level %"),
-            description = _("This value is reported at the bottom of all published results"),
+            label = "Confidence Level %",
+            description = "This value is reported at the bottom of all published results",
         ),
     ),
     BooleanField('LaboratoryAccredited',
@@ -32,49 +32,49 @@ schema = Organisation.schema.copy() + Schema((
         schemata = 'Accreditation',
         write_permission = ManageBika,
         widget = BooleanWidget(
-            label = _("Laboratory Accredited"),
-            description = _("Check this box if your laboratory is accredited"),
+            label = "Laboratory Accredited",
+            description = "Check this box if your laboratory is accredited",
         ),
     ),
     StringField('AccreditationBody',
         schemata = 'Accreditation',
         write_permission = ManageBika,
         widget = StringWidget(
-            label = _("Accreditation Body Abbreviation"),
-            description = _("E.g. SANAS, APLAC, etc."),
+            label = "Accreditation Body Abbreviation",
+            description = "E.g. SANAS, APLAC, etc.",
         ),
     ),
     StringField('AccreditationBodyURL',
         schemata = 'Accreditation',
         write_permission = ManageBika,
         widget = StringWidget(
-            label = _("Accreditation Body URL"),
-            description = _("Web address for the accreditation body"),
+            label = "Accreditation Body URL",
+            description = "Web address for the accreditation body",
         ),
     ),
     StringField('Accreditation',
         schemata = 'Accreditation',
         write_permission = ManageBika,
         widget = StringWidget(
-            label = _("Accreditation"),
-            description = _("The accreditation standard that applies, e.g. ISO 17025"),
+            label = "Accreditation",
+            description = "The accreditation standard that applies, e.g. ISO 17025",
         ),
     ),
     StringField('AccreditationReference',
         schemata = 'Accreditation',
         write_permission = ManageBika,
         widget = StringWidget(
-            label = _("Accreditation Reference"),
-            description = _("The reference code issued to the lab by the accreditation body"),
+            label = "Accreditation Reference",
+            description = "The reference code issued to the lab by the accreditation body",
         ),
     ),
     ImageField('AccreditationBodyLogo',
         schemata = 'Accreditation',
         widget = ImageWidget(
-            label = _("Accreditation Logo"),
-            description = _("Please upload the logo you are authorised to use on your "
-                            "website and results reports by your accreditation body. "
-                            "Maximum size is 175 x 175 pixels.")
+            label = "Accreditation Logo",
+            description = "Please upload the logo you are authorised to use on your " + \
+                            "website and results reports by your accreditation body. " + \
+                            "Maximum size is 175 x 175 pixels."
         ),
     ),
     TextField('AccreditationPageHeader',

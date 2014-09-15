@@ -7,7 +7,7 @@
                             widget python:field.widget;
                             errors python:{};
                             mode string:edit;">
-            <span tal:replace="python:widget.Label(here)"></span>
+            <span tal:replace="python:view.context.translate(widget.Label(here))"></span>
             <span class="fieldRequired"
                   tal:condition="field/required"
                   title="Required"
@@ -45,10 +45,9 @@
                         errors python:{};
                         mode string:edit;">
                 <label class="formQuestion"
-                          tal:define="description python:widget.Description(here)"
+                          tal:define="description python:view.context.translate(widget.Description(here))"
                           tal:attributes="title description">
-                    <span tal:replace="python:widget.Label(here)"
-                          i18n:translate=""/>
+                    <span tal:replace="python:view.context.translate(widget.Label(here))"/>
                     <span class="fieldRequired"
                           tal:condition="field/required"
                           title="Required"
@@ -56,10 +55,9 @@
                     <em tal:condition="nothing"
                         style="display:block"
                         class="discreet"
-                        tal:define="description python:widget.Description(here)"
+                        tal:define="description python:view.context.translate(widget.Description(here))"
                         tal:content="structure description"
-                        tal:attributes="id string:${fieldname}_help"
-                        i18n:translate="">Help </em>
+                        tal:attributes="id string:${fieldname}_help">Help </em>
                 </label>
             </td>
         </tal:loop>

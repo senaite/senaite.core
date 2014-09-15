@@ -20,10 +20,10 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'DepartmentLabContact',
         widget = ReferenceWidget(
             checkbox_bound = 0,
-            label = _("Manager"),
-            description = _("Select a manager from the available personnel configured under the "
-                            "'lab contacts' setup item. Departmental managers are referenced on "
-                            "analysis results reports containing analyses by their department."),
+            label = "Manager",
+            description = "Select a manager from the available personnel configured under the " + \
+                            "'lab contacts' setup item. Departmental managers are referenced on " + \
+                            "analysis results reports containing analyses by their department.",
         ),
     ),
     ComputedField('ManagerName',

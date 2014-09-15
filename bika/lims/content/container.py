@@ -24,25 +24,25 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 0,
-            label = _("Container Type"),
+            label = "Container Type",
         ),
     ),
     StringField('Capacity',
         required = 1,
         default = "0 ml",
         widget = StringWidget(
-            label = _("Capacity"),
-            description = _("Maximum possible size or volume of samples."),
+            label = "Capacity",
+            description = "Maximum possible size or volume of samples.",
         ),
     ),
     BooleanField('PrePreserved',
         validators = ('container_prepreservation_validator'),
         default = False,
         widget = BooleanWidget(
-            label = _("Pre-preserved"),
-            description = _("Check this box if this container is already preserved."
-                            "Setting this will short-circuit the preservation workflow "
-                            "for sample partitions stored in this container."),
+            label = "Pre-preserved",
+            description = "Check this box if this container is already preserved." + \
+                            "Setting this will short-circuit the preservation workflow " + \
+                            "for sample partitions stored in this container.",
         ),
     ),
     ReferenceField('Preservation',
@@ -54,9 +54,9 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 0,
-            label = _("Preservation"),
-            description = _("If this container is pre-preserved, then the preservation "
-                            "method could be selected here."),
+            label = "Preservation",
+            description = "If this container is pre-preserved, then the preservation " + \
+                            "method could be selected here.",
         ),
     ),
 ))

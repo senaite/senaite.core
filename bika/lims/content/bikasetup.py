@@ -54,8 +54,8 @@ schema = BikaFolderSchema.copy() + Schema((
         required = 1,
         default = 0,
         widget = IntegerWidget(
-            label = _("Password lifetime"),
-            description = _("The number of days before a password expires. 0 disables password expiry"),
+            label = "Password lifetime",
+            description = "The number of days before a password expires. 0 disables password expiry",
         )
     ),
     IntegerField('AutoLogOff',
@@ -63,9 +63,9 @@ schema = BikaFolderSchema.copy() + Schema((
         required = 1,
         default = 0,
         widget = IntegerWidget(
-            label = _("Automatic log-off"),
-            description = _("The number of minutes before a user is automatically logged off. "
-                            "0 disables automatic log-off"),
+            label = "Automatic log-off",
+            description = "The number of minutes before a user is automatically logged off. " + \
+                            "0 disables automatic log-off",
         )
     ),
     BooleanField(
@@ -73,7 +73,7 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Security",
         default=False,
         widget=BooleanWidget(
-            label=_("Allow Lab Clerks to create and edit clients"),
+            label = "Allow Lab Clerks to create and edit clients",
         )
     ),
     BooleanField(
@@ -81,8 +81,8 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Security",
         default=True,
         widget=BooleanWidget(
-            label=_("Allow access to worksheets only to assigned analysts"),
-            description=_("If unticked, analysts will have access to all worksheets.")
+            label = "Allow access to worksheets only to assigned analysts",
+            description = "If unticked, analysts will have access to all worksheets."
         )
     ),
     BooleanField(
@@ -90,12 +90,12 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Security",
         default=True,
         widget=BooleanWidget(
-            label=_("Only lab managers can create and manage worksheets"),
-            description=_("If unticked, analysts and lab clerks will "
-                          "be able to manage Worksheets, too. If the "
-                          "users have restricted access only to those "
-                          "worksheets for which they are assigned, "
-                          "this option will be ticked and readonly.")
+            label = "Only lab managers can create and manage worksheets",
+            description="If unticked, analysts and lab clerks will " + \
+                          "be able to manage Worksheets, too. If the " + \
+                          "users have restricted access only to those " + \
+                          "worksheets for which they are assigned, " + \
+                          "this option will be ticked and readonly."
         )
     ),
     BooleanField(
@@ -103,7 +103,7 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Security",
         default=True,
         widget=BooleanWidget(
-            label=_("Display an alert on new releases of Bika LIMS"),
+            label = "Display an alert on new releases of Bika LIMS",
         )
     ),
     BooleanField(
@@ -111,7 +111,7 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata="Accounting",
         default=True,
         widget=BooleanWidget(
-            label=_("Include and display pricing information"),
+            label = "Include and display pricing information",
         )
     ),
     StringField('Currency',
@@ -120,9 +120,8 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary = CURRENCIES,
         default = 'ZAR',
         widget = SelectionWidget(
-            label = _("Currency"),
-            description = _("Select the currency the site will use to display "
-                            "prices."),
+            label = "Currency",
+            description = "Select the currency the site will use to display prices.",
             format='select',
         )
     ),
@@ -132,8 +131,8 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary = 'getCountries',
         default = '',
         widget = SelectionWidget(
-            label = _("Country"),
-            description = _("Select the country the site will show by default"),
+            label = "Country",
+            description = "Select the country the site will show by default",
             format='select',
         )
     ),
@@ -141,19 +140,19 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata = "Accounting",
         default = '33.33',
         widget = DecimalWidget(
-            label = _("Member discount %"),
-            description = _("The discount percentage entered here, is applied to the prices for clients "
-                            "flagged as 'members', normally co-operative members or associates deserving "
-                            "of this discount"),
+            label = "Member discount %",
+            description = "The discount percentage entered here, is applied to the prices for clients " + \
+                            "flagged as 'members', normally co-operative members or associates deserving " + \
+                            "of this discount",
         )
     ),
     FixedPointField('VAT',
         schemata = "Accounting",
         default = '14.00',
         widget = DecimalWidget(
-            label = _("VAT %"),
-            description = _("Enter percentage value eg. 14.0. This percentage is applied system wide "
-                            "but can be overwrittem on individual items"),
+            label = "VAT %",
+            description = "Enter percentage value eg. 14.0. This percentage is applied system wide " + \
+                            "but can be overwrittem on individual items",
         )
     ),
     StringField('DecimalMark',
@@ -161,8 +160,8 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary=DECIMAL_MARKS,
         default = ".",
         widget = SelectionWidget(
-            label = _("Default decimal mark"),
-            description = _("Preferred decimal mark for reports."),
+            label = "Default decimal mark",
+            description = "Preferred decimal mark for reports.",
             format = 'select',
         )
     ),
@@ -171,20 +170,20 @@ schema = BikaFolderSchema.copy() + Schema((
         required = 1,
         default = 5,
         widget = IntegerWidget(
-            label = _("Minimum number of results for QC stats calculations"),
-            description = _("Using too few data points does not make statistical sense. "
-                            "Set an acceptable minimum number of results before QC statistics "
-                            "will be calculated and plotted"),
+            label = "Minimum number of results for QC stats calculations",
+            description = "Using too few data points does not make statistical sense. " + \
+                            "Set an acceptable minimum number of results before QC statistics " + \
+                            "will be calculated and plotted",
         )
     ),
     BooleanField('IncludePreviousFromBatch',
         schemata = "Results Reports",
         default = False,
         widget = BooleanWidget(
-            label = _("Include Previous Results From Batch"),
-            description = _("If there are previous results for a service in the "
-                            "same batch of Analysis Requests, they will be displayed "
-                            "in the report.")
+            label = "Include Previous Results From Batch",
+            description = "If there are previous results for a service in the " + \
+                            "same batch of Analysis Requests, they will be displayed " + \
+                            "in the report."
         )
     ),
     IntegerField('BatchEmail',
@@ -192,10 +191,10 @@ schema = BikaFolderSchema.copy() + Schema((
         required = 1,
         default = 5,
         widget = IntegerWidget(
-            label = _("Maximum columns per results email"),
-            description = _("Set the maximum number of analysis requests per results email. "
-                            "Too many columns per email are difficult to read for some clients "
-                            "who prefer fewer results per email"),
+            label = "Maximum columns per results email",
+            description = "Set the maximum number of analysis requests per results email. " + \
+                            "Too many columns per email are difficult to read for some clients " + \
+                            "who prefer fewer results per email",
         )
     ),
     TextField('ResultFooter',
@@ -205,8 +204,8 @@ schema = BikaFolderSchema.copy() + Schema((
         default_output_type="text/plain",
         default="",
         widget = TextAreaWidget(
-            label = _('Result Footer'),
-            description = _("This text will be appended to results reports."),
+            label = "Result Footer",
+            description = "This text will be appended to results reports.",
             append_only = False,
         ),
     ),
@@ -215,27 +214,27 @@ schema = BikaFolderSchema.copy() + Schema((
 ##        required = 1,
 ##        default = 4,
 ##        widget = IntegerWidget(
-##            label = _("Maximum columns per results fax"),
-##            description = _("Too many AR columns per fax will see the font size minimised and could "
-##                            "render faxes illegible. 4 ARs maximum per page is recommended"),
+##            label = "Maximum columns per results fax",
+##            description = "Too many AR columns per fax will see the font size minimised and could " + \
+##                            "render faxes illegible. 4 ARs maximum per page is recommended",
 ##        )
 ##    ),
 ##    StringField('SMSGatewayAddress',
 ##        schemata = "Results Reports",
 ##        required = 0,
 ##        widget = StringWidget(
-##            label = _("SMS Gateway Email Address"),
-##            description = _("The email to SMS gateway address. Either a complete email address, "
-##                            "or just the domain, e.g. '@2way.co.za', the contact's mobile phone "
-##                            "number will be prepended to"),
+##            label = "SMS Gateway Email Address",
+##            description = "The email to SMS gateway address. Either a complete email address, " + \
+##                            "or just the domain, e.g. '@2way.co.za', the contact's mobile phone " + \
+##                            "number will be prepended to",
 ##        )
 ##    ),
     BooleanField('SamplingWorkflowEnabled',
         schemata = "Analyses",
         default = False,
         widget = BooleanWidget(
-            label = _("Enable the Sampling workflow"),
-            description = _("Select this to activate the sample collection workflow steps.")
+            label = "Enable the Sampling workflow",
+            description = "Select this to activate the sample collection workflow steps."
         ),
     ),
     BooleanField(
@@ -243,24 +242,23 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata = "Analyses",
         default = True,
         widget = BooleanWidget(
-            label = _("Display individual sample partitions "),
-            description = _("Turn this on if you want to work with sample partitions")
+            label = "Display individual sample partitions ",
+            description = "Turn this on if you want to work with sample partitions"
         ),
     ),
     BooleanField('CategoriseAnalysisServices',
         schemata = "Analyses",
         default = False,
         widget = BooleanWidget(
-            label = _("Categorise analysis services"),
-            description = _("Group analysis services by category in the LIMS "
-                            "tables, helpful when the list is long")
+            label = "Categorise analysis services",
+            description = "Group analysis services by category in the LIMS tables, helpful when the list is long"
         ),
     ),
     BooleanField('EnableARSpecs',
         schemata = "Analyses",
         default = True,
         widget = BooleanWidget(
-            label = _("Enable AR Specifications"),
+            label = "Enable AR Specifications",
             description=_(
                 "Analysis specifications which are edited directly on the "
                 "Analysis Request."),
@@ -271,7 +269,7 @@ schema = BikaFolderSchema.copy() + Schema((
         default = 'ar_specs',
         vocabulary = DEFAULT_AR_SPECS,
         widget = SelectionWidget(
-            label = _("Default AR Specifications"),
+            label = "Default AR Specifications",
             description = _(
                 "Choose the default specifications used for all AR views "
                 "to display alerts and notifications.  These will also be "
@@ -285,18 +283,18 @@ schema = BikaFolderSchema.copy() + Schema((
         required = 1,
         default = 7,
         widget = IntegerWidget(
-        label = _("Exponential format threshold"),
-        description = _("Result values with at least this number of significant "
-                        "digits are displayed in scientific notation using the "
-                        "letter 'e' to indicate the exponent.  The precision can be "
-                        "configured in individual Analysis Services."),
+        label = "Exponential format threshold",
+        description = "Result values with at least this number of significant " + \
+                        "digits are displayed in scientific notation using the " + \
+                        "letter 'e' to indicate the exponent.  The precision can be " + \
+                        "configured in individual Analysis Services.",
         )
     ),
     BooleanField('EnableAnalysisRemarks',
         schemata = "Analyses",
         default = False,
         widget = BooleanWidget(
-            label = _("Add a remarks field to all analyses"),
+            label = "Add a remarks field to all analyses",
         ),
     ),
     ReferenceField('DryMatterService',
@@ -308,8 +306,8 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary = 'getAnalysisServices',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            label = _("Dry matter analysis"),
-            description = _("The analysis to be used for determining dry matter."),
+            label = "Dry matter analysis",
+            description = "The analysis to be used for determining dry matter.",
         )
     ),
     LinesField('ARImportOption',
@@ -317,10 +315,10 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary = ARIMPORT_OPTIONS,
         widget = MultiSelectionWidget(
             visible = False,
-            label = _("AR Import options"),
-            description = _("'Classic' indicates importing analysis requests per sample and "
-                            "analysis service selection. With 'Profiles', analysis profile keywords "
-                            "are used to select multiple analysis services together"),
+            label = "AR Import options",
+            description = "'Classic' indicates importing analysis requests per sample and " + \
+                            "analysis service selection. With 'Profiles', analysis profile keywords " + \
+                            "are used to select multiple analysis services together",
         )
     ),
     StringField('ARAttachmentOption',
@@ -328,10 +326,10 @@ schema = BikaFolderSchema.copy() + Schema((
         default = 'p',
         vocabulary = ATTACHMENT_OPTIONS,
         widget = SelectionWidget(
-            label = _("AR Attachment Option"),
-            description = _("The system wide default configuration to indicate "
-                            "whether file attachments are required, permitted or not "
-                            "per analysis request"),
+            label = "AR Attachment Option",
+            description = "The system wide default configuration to indicate " + \
+                            "whether file attachments are required, permitted or not " + \
+                            "per analysis request",
             format='select',
         )
     ),
@@ -340,10 +338,10 @@ schema = BikaFolderSchema.copy() + Schema((
         default = 'p',
         vocabulary = ATTACHMENT_OPTIONS,
         widget = SelectionWidget(
-            label = _("Analysis Attachment Option"),
-            description = _("Same as the above, but sets the default on analysis services. "
-                            "This setting can be set per individual analysis on its "
-                            "own configuration"),
+            label = "Analysis Attachment Option",
+            description = "Same as the above, but sets the default on analysis services. " + \
+                            "This setting can be set per individual analysis on its " + \
+                            "own configuration",
             format='select',
         )
     ),
@@ -352,10 +350,10 @@ schema = BikaFolderSchema.copy() + Schema((
         required = 1,
         default = {"days":30, "hours":0, "minutes":0},
         widget = DurationWidget(
-            label = _("Default sample retention period"),
-            description = _("The number of days before a sample expires and cannot be analysed "
-                            "any more. This setting can be overwritten per individual sample type "
-                            "in the sample types setup"),
+            label = "Default sample retention period",
+            description = "The number of days before a sample expires and cannot be analysed " + \
+                            "any more. This setting can be overwritten per individual sample type " + \
+                            "in the sample types setup",
         )
     ),
     StringField('AutoPrintLabels',
@@ -363,10 +361,10 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary = LABEL_AUTO_OPTIONS,
         widget = SelectionWidget(
             format = 'select',
-            label = _("Automatic label printing"),
-            description = _("Select 'Register' if you want labels to be automatically printed when "
-                            "new ARs or sample records are created. Select 'Receive' to print labels "
-                            "when ARs or Samples are received. Select 'None' to disable automatic printing"),
+            label = "Automatic label printing",
+            description = "Select 'Register' if you want labels to be automatically printed when " + \
+                            "new ARs or sample records are created. Select 'Receive' to print labels " + \
+                            "when ARs or Samples are received. Select 'None' to disable automatic printing",
         )
     ),
     StringField('AutoLabelSize',
@@ -374,8 +372,8 @@ schema = BikaFolderSchema.copy() + Schema((
         vocabulary = LABEL_AUTO_SIZES,
         widget = SelectionWidget(
             format = 'select',
-            label = _("Label sizes"),
-            description = _("Select the which label to print when automatic label printing is enabled"),
+            label = "Label sizes",
+            description = "Select the which label to print when automatic label printing is enabled",
         )
     ),
     PrefixesField('Prefixes',
@@ -394,14 +392,14 @@ schema = BikaFolderSchema.copy() + Schema((
                    ],
 #        fixedSize=8,
         widget=RecordsWidget(
-            label = _("Prefixes"),
-            description = _("Define the prefixes for the unique sequential IDs the system issues for "
-                            "objects. In the 'Padding' field, indicate with how many leading zeros the "
-                            "numbers must be padded. E.g. a prefix of WS for worksheets with padding of "
-                            "4, will see them numbered from WS-0001 to WS-9999. NB: Note that samples "
-                            "and analysis requests are prefixed with sample type abbreviations and are "
-                            "not configured in this table - their padding can be set in the specified "
-                            "fields below"),
+            label = "Prefixes",
+            description="Define the prefixes for the unique sequential IDs the system issues for " + \
+                        "objects. In the 'Padding' field, indicate with how many leading zeros the " + \
+                        "numbers must be padded. E.g. a prefix of WS for worksheets with padding of " + \
+                        "4, will see them numbered from WS-0001 to WS-9999. NB: Note that samples " + \
+                        "and analysis requests are prefixed with sample type abbreviations and are " + \
+                        "not configured in this table - their padding can be set in the specified " + \
+                        "fields below",
             allowDelete=False,
         )
     ),
@@ -409,8 +407,8 @@ schema = BikaFolderSchema.copy() + Schema((
         schemata = "ID Server",
         default = False,
         widget = BooleanWidget(
-            label = _("Include year in ID prefix"),
-            description = _("Adds a two-digit year after the ID prefix")
+            label = "Include year in ID prefix",
+            description = "Adds a two-digit year after the ID prefix"
         ),
     ),
     IntegerField('SampleIDPadding',
@@ -418,8 +416,8 @@ schema = BikaFolderSchema.copy() + Schema((
         required = 1,
         default = 4,
         widget = IntegerWidget(
-            label = _("Sample ID Padding"),
-            description = _("The length of the zero-padding for Sample IDs"),
+            label = "Sample ID Padding",
+            description = "The length of the zero-padding for Sample IDs",
         )
     ),
     IntegerField('ARIDPadding',
@@ -427,24 +425,24 @@ schema = BikaFolderSchema.copy() + Schema((
         required = 1,
         default = 2,
         widget = IntegerWidget(
-            label = _("AR ID Padding"),
-            description = _("The length of the zero-padding for the AR number in AR IDs"),
+            label = "AR ID Padding",
+            description = "The length of the zero-padding for the AR number in AR IDs",
         )
     ),
     BooleanField('ExternalIDServer',
         schemata = "ID Server",
         default = False,
         widget = BooleanWidget(
-            label = _("Use external ID server"),
-            description = _("Check this if you want to use a separate ID server. "
-                            "Prefixes are configurable separately in each Bika site")
+            label = "Use external ID server",
+            description = "Check this if you want to use a separate ID server. " + \
+                            "Prefixes are configurable separately in each Bika site"
         ),
     ),
     StringField('IDServerURL',
         schemata = "ID Server",
         widget = StringWidget(
-            label = _("ID Server URL"),
-            description = _("The full URL: http://URL/path:port")
+            label = "ID Server URL",
+            description = "The full URL: http://URL/path:port"
 
         ),
     ),
