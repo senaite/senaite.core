@@ -85,7 +85,7 @@ class BaseARImportsView(BikaListingView):
 
         self.icon = \
             self.portal_url + "/++resource++bika.lims.images/arimport_big.png"
-        self.title = _("Analysis Request Imports")
+        self.title = self.context.translate(_("Analysis Request Imports"))
         self.description = ""
 
 

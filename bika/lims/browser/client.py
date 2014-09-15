@@ -342,7 +342,7 @@ class ClientAnalysisProfilesView(BikaListingView):
         self.form_id = "analysisprofiles"
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/analysisprofile_big.png"
-        self.title = _("Analysis Profiles")
+        self.title = self.context.translate(_("Analysis Profiles"))
         self.description = ""
 
         self.columns = {
@@ -409,7 +409,7 @@ class ClientARTemplatesView(BikaListingView):
         self.pagesize = 50
         self.form_id = "artemplates"
         self.icon = self.portal_url + "/++resource++bika.lims.images/artemplate_big.png"
-        self.title = _("AR Templates")
+        self.title = self.context.translate(_("AR Templates"))
         self.description = ""
 
         self.columns = {
@@ -475,7 +475,7 @@ class ClientSamplePointsView(BikaListingView):
         self.pagesize = 50
         self.form_id = "SamplePoints"
         self.icon = self.portal_url + "/++resource++bika.lims.images/samplepoint_big.png"
-        self.title = _("Sample Points")
+        self.title = self.context.translate(_("Sample Points"))
         self.description = ""
 
         self.columns = {
@@ -545,7 +545,7 @@ class ClientAnalysisSpecsView(BikaListingView):
         self.form_id = "analysisspecs"
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/analysisspec_big.png"
-        self.title = _("Analysis Specifications")
+        self.title = self.context.translate(_("Analysis Specifications"))
 
         self.columns = {
             'Title': {'title': _('Title'),
@@ -645,7 +645,7 @@ class ClientAttachmentsView(BikaListingView):
         self.form_id = "attachments"
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/attachment_big.png"
-        self.title = _("Attachments")
+        self.title = self.context.translate(_("Attachments"))
         self.description = ""
 
         self.columns = {
@@ -747,7 +747,7 @@ class ClientContactsView(BikaListingView):
         self.form_id = "contacts"
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/client_contact_big.png"
-        self.title = _("Contacts")
+        self.title = self.context.translate(_("Contacts"))
         self.description = ""
 
         self.columns = {

@@ -25,7 +25,7 @@ class SampleConditionsView(BikaListingView):
             'url': 'createObject?type_name=SampleCondition',
             'icon': '++resource++bika.lims.images/add.png'
         }}
-        self.title = _("Sample Conditions")
+        self.title = self.context.translate(_("Sample Conditions"))
         self.icon = self.portal_url + "/++resource++bika.lims.images/samplecondition_big.png"
         self.description = ""
         self.show_sort_column = False

@@ -38,7 +38,7 @@ class AnalysisRequestPublishedResults(BikaListingView):
         self.pagesize = 50
         self.form_id = 'published_results'
         self.icon = self.portal_url + "/++resource++bika.lims.images/report_big.png"
-        self.title = _("Published results")
+        self.title = self.context.translate(_("Published results"))
         self.description = ""
         self.columns = {
             'Title': {'title': _('File')},

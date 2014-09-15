@@ -27,9 +27,10 @@ class ReferenceDefinitionsView(BikaListingView):
                                 {'url': 'createObject?type_name=ReferenceDefinition',
                                  'icon': '++resource++bika.lims.images/add.png'}}
         self.icon = self.portal_url + "/++resource++bika.lims.images/referencedefinition_big.png"
-        self.title = _("Reference Definitions")
-        self.description = _("ReferenceDefinition represents a Reference Definition "
-                             "or sample type used for quality control testing")
+        self.title = self.context.translate(_("Reference Definitions"))
+        self.description = self.context.translate(_(
+            "ReferenceDefinition represents a Reference Definition "
+            "or sample type used for quality control testing"))
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True

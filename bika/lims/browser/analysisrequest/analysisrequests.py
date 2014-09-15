@@ -50,7 +50,7 @@ class AnalysisRequestsView(BikaListingView):
         self.form_id = "analysisrequests"
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/analysisrequest_big.png"
-        self.title = _("Analysis Requests")
+        self.title = self.context.translate(_("Analysis Requests"))
         self.description = ""
 
         SamplingWorkflowEnabled = self.context.bika_setup.getSamplingWorkflowEnabled()

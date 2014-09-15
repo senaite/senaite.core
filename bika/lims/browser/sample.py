@@ -35,7 +35,7 @@ class SamplePartitionsView(BikaListingView):
     def __init__(self, context, request):
         super(SamplePartitionsView, self).__init__(context, request)
         self.context_actions = {}
-        self.title = _("Sample Partitions")
+        self.title = self.context.translate(_("Sample Partitions"))
         self.icon = self.portal_url + "/++resource++bika.lims.images/samplepartition_big.png"
         self.description = ""
         self.allow_edit = True
@@ -408,7 +408,7 @@ class SamplesView(BikaListingView):
             self.view_url = self.view_url + "/samples"
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/sample_big.png"
-        self.title = _("Samples")
+        self.title = self.context.translate(_("Samples"))
         self.description = ""
 
         SamplingWorkflowEnabled = self.context.bika_setup.getSamplingWorkflowEnabled()

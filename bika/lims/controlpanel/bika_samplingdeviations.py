@@ -29,7 +29,7 @@ class SamplingDeviationsView(BikaListingView):
             'url': 'createObject?type_name=SamplingDeviation',
             'icon': '++resource++bika.lims.images/add.png'
         }}
-        self.title = _("Sampling Deviations")
+        self.title = self.context.translate(_("Sampling Deviations"))
         self.icon = self.portal_url + "/++resource++bika.lims.images/samplingdeviation_big.png"
         self.description = ""
         self.show_sort_column = False

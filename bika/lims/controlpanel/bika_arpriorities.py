@@ -36,7 +36,7 @@ class ARPrioritiesView(BikaListingView):
 
         self.icon = \
             self.portal_url + "/++resource++bika.lims.images/arpriority_big.png"
-        self.title = _("Analysis Request Priorities")
+        self.title = self.context.translate(_("Analysis Request Priorities"))
         self.description = ""
 
         self.columns = {

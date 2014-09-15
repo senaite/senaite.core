@@ -107,7 +107,7 @@ class ReportHistoryView(BikaListingView):
         self.pagesize = 50
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/report_big.png"
-        self.title = _("Reports")
+        self.title = self.context.translate(_("Reports"))
         self.description = ""
 
         # this is set up in call where member is authenticated

@@ -31,7 +31,7 @@ class ProfilesView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = True
         self.icon = self.portal_url + "/++resource++bika.lims.images/analysisprofile_big.png"
-        self.title = _("Analysis Profiles")
+        self.title = self.context.translate(_("Analysis Profiles"))
         self.context_actions = {_('Add Profile'):
                                 {'url': 'createObject?type_name=AnalysisProfile',
                                  'icon': '++resource++bika.lims.images/add.png'}}
