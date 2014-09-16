@@ -40,12 +40,17 @@ class BatchBookView(BikaListingView):
                 'index': 'id',
                 'sortable': True,
             },
-            'Batch': {
-                'title': _('Batch'),
+
+            'SampleType': {
+                'title': _('Sample Type'),
                 'sortable': True,
             },
-            'Sub-group': {
-                'title': _('Sub-group'),
+            'SamplePoint': {
+                'title': _('Sample Point'),
+                'sortable': True,
+            },
+            'ClientOrderNumber': {
+                'title': _('Client Order Number'),
                 'sortable': True,
             },
             'created': {
@@ -64,8 +69,9 @@ class BatchBookView(BikaListingView):
              'title': _('All'),
              'contentFilter': {},
              'columns': ['AnalysisRequest',
-                         'Batch',
-                         'Sub-group',
+                         'ClientOrderNumber',
+                         'SampleType',
+                         'SamplePoint',
                          'created',
                          'state_title'],
              },
@@ -163,7 +169,6 @@ class BatchBookView(BikaListingView):
                 'replace': {
                     'Batch': batchlink,
                     'AnalysisRequest': arlink,
-                    'Sub-group': sub_title,
                 },
                 'before': {},
                 'after': {},
@@ -172,7 +177,9 @@ class BatchBookView(BikaListingView):
                 'state_class': 'state-active subgroup_{0}'.format(sub_class) if sub_class else 'state-active',
                 'allow_edit': [],
                 'Batch': '',
-                'Sub-group': '',
+                'SamplePoint': ar.getSamplePoint().Title() if ar.getSamplePoint() else '',
+                'SampleType': ar.getSampleType().Title() if ar.getSampleType() else '',
+                'ClientOrderNumber': ar.getClientOrderNumber(),
                 'AnalysisRequest': '',
                 'state_title': state_title,
             }
