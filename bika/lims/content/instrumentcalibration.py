@@ -29,8 +29,8 @@ schema = BikaSchema.copy() + Schema((
         with_time = 1,
         with_date = 1,
         widget = DateTimeWidget(
-            label = _("From"),
-            description = _("Date from which the instrument is under calibration"),
+            label = "From",
+            description = "Date from which the instrument is under calibration",
         ),
     ),
 
@@ -38,15 +38,15 @@ schema = BikaSchema.copy() + Schema((
         with_time = 1,
         with_date = 1,
         widget = DateTimeWidget(
-            label = _("To"),
-            description = _("Date until the instrument will not be available"),
+            label = "To",
+            description = "Date until the instrument will not be available",
         ),
     ),
 
     StringField('Calibrator',
         widget = StringWidget(
-            label = _("Calibrator"),
-            description = _("The analyst or agent responsible of the calibration"),
+            label = "Calibrator",
+            description = "The analyst or agent responsible of the calibration",
         )
     ),
 
@@ -55,8 +55,8 @@ schema = BikaSchema.copy() + Schema((
         allowed_content_types= ('text/plain', ),
         default_output_type="text/plain",
         widget = TextAreaWidget(
-            label = _("Considerations"),
-            description = _("Remarks to take into account before calibration"),
+            label = "Considerations",
+            description = "Remarks to take into account before calibration",
         ),
     ),
 
@@ -65,8 +65,8 @@ schema = BikaSchema.copy() + Schema((
         allowed_content_types= ('text/plain', ),
         default_output_type="text/plain",
         widget = TextAreaWidget(
-            label = _("Work Performed"),
-            description = _("Description of the actions made during the calibration"),
+            label = "Work Performed",
+            description = "Description of the actions made during the calibration",
         ),
     ),
 
@@ -75,7 +75,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_content_types= ('text/plain', ),
         default_output_type="text/plain",
         widget = TextAreaWidget(
-            label = _("Remarks"),
+            label = "Remarks",
         ),
     ),
 

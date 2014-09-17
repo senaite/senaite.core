@@ -50,7 +50,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisAnalysisService',
         referenceClass=HoldingReference,
         widget=ReferenceWidget(
-            label=_("Analysis Service"),
+            label = "Analysis Service",
         )
     ),
     HistoryAwareReferenceField('Calculation',
@@ -66,7 +66,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     InterimFieldsField('InterimFields',
         widget = BikaRecordsWidget(
-            label=_("Calculation Interim Fields"),
+            label = "Calculation Interim Fields",
         )
     ),
     StringField('Result',
@@ -83,29 +83,29 @@ schema = BikaSchema.copy() + Schema((
     ),
     DurationField('MaxTimeAllowed',
         widget = DurationWidget(
-            label=_("Maximum turn-around time"),
+            label = "Maximum turn-around time",
             description=_("Maximum time allowed for completion of the analysis. "
                             "A late analysis alert is raised when this period elapses"),
         ),
     ),
     DateTimeField('DateAnalysisPublished',
         widget = DateTimeWidget(
-            label=_("Date Published"),
+            label = "Date Published",
         ),
     ),
     DateTimeField('DueDate',
         widget = DateTimeWidget(
-            label=_("Due Date"),
+            label = "Due Date",
         ),
     ),
     IntegerField('Duration',
         widget = IntegerWidget(
-            label=_("Duration"),
+            label = "Duration",
         )
     ),
     IntegerField('Earliness',
         widget = IntegerWidget(
-            label=_("Earliness"),
+            label = "Earliness",
         )
     ),
     BooleanField('ReportDryMatter',
