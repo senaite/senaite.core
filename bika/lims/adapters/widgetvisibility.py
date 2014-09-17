@@ -103,6 +103,23 @@ class BatchClientFieldWidgetVisibility(object):
             return 'edit'
         return state
 
+class BatchARAdd_BatchFieldWidgetVisibility(object):
+    """This will force the 'Batch' field to 'hidden' in ar_add when the parent
+    context is a Batch.
+    """
+    implements(IATWidgetVisibility)
+
+    def __init__(self, context):
+        self.context = context
+        self.sort = 10
+
+    def __call__(self, context, mode, field, default):
+        state = default if default else 'visible'
+        fieldName = field.getName()
+        if fieldName == 'Batch' and context.aq_parent.portal_type == 'Batch':
+            return 'hidden'
+        return state
+
 class MainClientFieldWidgetVisibility(object):
     """This will force the 'Client' field to 'hidden' when in /analysisrequests
     context.

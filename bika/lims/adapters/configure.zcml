@@ -11,6 +11,14 @@
       name="MainClientFieldWV"
     />
 
+
+    <adapter
+      factory=".widgetvisibility.BatchARAdd_BatchFieldWidgetVisibility"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="BatchBatchFieldWV"
+    />
+
     <adapter
       factory=".widgetvisibility.BatchClientFieldWidgetVisibility"
       provides="bika.lims.interfaces.IATWidgetVisibility"
