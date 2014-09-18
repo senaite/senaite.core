@@ -284,18 +284,6 @@ class ClientAnalysisRequestsView(AnalysisRequestsView):
                         "AnalysisRequest/Request new analyses/ar_add",
                         'icon': '++resource++bika.lims.images/add.png'}
 
-            # in client context we can use a permission check for this transition
-            # in multi-client listings, we must rather check against user roles.
-            if mtool.checkPermission(ModifyPortalContent, self.context):
-                review_states = []
-                for review_state in self.review_states:
-                    review_state.get('custom_actions', []).extend(
-                        [{'id': 'copy_to_new',
-                          'title': _('Copy to new'),
-                          'url': 'workflow_action?action=copy_to_new'}, ])
-                    review_states.append(review_state)
-                self.review_states = review_states
-
         return super(ClientAnalysisRequestsView, self).__call__()
 
 class ClientBatchAnalysisRequestsView(ClientAnalysisRequestsView):
