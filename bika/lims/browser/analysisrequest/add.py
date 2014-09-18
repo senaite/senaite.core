@@ -216,13 +216,17 @@ class ajaxAnalysisRequestSubmit():
                 # Analyses, we handle that specially.
                 if k == 'Analyses':
                     continue
-                if "%s_uid" % k in values:
-                    v = values["%s_uid" % k]
-                    if v and "," in v:
-                        v = v.split(",")
-                    resolved_values[k] = values["%s_uid" % k]
-                else:
-                    resolved_values[k] = values[k]
+                # Insert the reference *_uid values instead of titles.
+                if "_uid" in k:
+                    v = values[k]
+                    v = v.split(",") if v and "," in v else v
+                    fname = k.replace("_uid", "")
+                    resolved_values[fname] = v
+                    continue
+                # we want to write the UIDs and ignore the title values
+                if k+"_uid" in values:
+                    continue
+                resolved_values[k] = values[k]
             # Get the analyses from the form data
             analyses = values["Analyses"]
             # Gather the specifications from the form data
