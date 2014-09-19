@@ -752,6 +752,7 @@ class BikaGenerator:
         addIndex(bsc, 'getAccredited', 'FieldIndex')
         addIndex(bsc, 'getAnalyst', 'FieldIndex')
         addIndex(bsc, 'getInstrumentType', 'FieldIndex')
+        addIndex(bsc, 'getInstrumentTypeName', 'FieldIndex')
         addIndex(bsc, 'getBlank', 'FieldIndex')
         addIndex(bsc, 'getCalculationTitle', 'FieldIndex')
         addIndex(bsc, 'getCalculationUID', 'FieldIndex')
@@ -806,6 +807,7 @@ class BikaGenerator:
 
         addColumn(bsc, 'getAccredited')
         addColumn(bsc, 'getInstrumentType')
+        addColumn(bsc, 'getInstrumentTypeName')
         addColumn(bsc, 'getBlank')
         addColumn(bsc, 'getCalculationTitle')
         addColumn(bsc, 'getCalculationUID')

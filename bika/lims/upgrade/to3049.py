@@ -9,10 +9,14 @@ def upgrade(tool):
     """ Sort by Type in instruments
     """
     portal = aq_parent(aq_inner(tool))
-
     bsc = getToolByName(portal, 'bika_setup_catalog', None)
-    bsc.addIndex('getInstrumentType', 'FieldIndex')
-    bsc.addColumn('getInstrumentType')
+
+    if 'getInstrumentType' not in bsc.indexes():
+        bsc.addIndex('getInstrumentType', 'FieldIndex')
+        bsc.addColumn('getInstrumentType')
+
+        bsc.addIndex('getInstrumentTypeName','FieldIndex')
+        bsc.addColumn('getInstrumentTypeName')
 
     #Del old "getType" Index, it's not used now.
     if 'getType' in bsc.indexes():
