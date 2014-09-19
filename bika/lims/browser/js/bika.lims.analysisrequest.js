@@ -13,7 +13,21 @@ function AnalysisRequestView() {
         $("#workflow-transition-prepublish").click(workflow_transition_prepublish);
         $("#workflow-transition-publish").click(workflow_transition_publish);
         $("#workflow-transition-republish").click(workflow_transition_republish);
+        $("#workflow-transition-receive").click(workflow_transition_receive);
 
+    }
+
+    function workflow_transition_receive(event) {
+        event.preventDefault();
+        var requestdata = {};
+        requestdata.workflow_action = "receive";
+        var requeststring = $.param(requestdata);
+        var href = window.location.href.split("?")[0]
+            .replace("/base_view", "")
+            .replace("/manage_results", "")
+            .replace("/workflow_action", "")
+            .replace("/view", "") + "/workflow_action?" + requeststring;
+        window.location.href = href;
     }
 
     function workflow_transition_prepublish(event){
@@ -26,6 +40,7 @@ function AnalysisRequestView() {
         var href = window.location.href.split("?")[0]
             .replace("/base_view", "")
             .replace("/manage_results", "")
+            .replace("/workflow_action", "")
             .replace("/view", "") + "/workflow_action?" + requeststring;
         window.location.href = href;
     }
@@ -40,6 +55,7 @@ function AnalysisRequestView() {
         var href = window.location.href.split("?")[0]
             .replace("/base_view", "")
             .replace("/manage_results", "")
+            .replace("/workflow_action", "")
             .replace("/view", "") + "/workflow_action?" + requeststring;
         window.location.href = href;
     }
@@ -54,6 +70,7 @@ function AnalysisRequestView() {
         var href = window.location.href.split("?")[0]
             .replace("/base_view", "")
             .replace("/manage_results", "")
+            .replace("/workflow_action", "")
             .replace("/view", "") + "/workflow_action?" + requeststring;
         window.location.href = href;
     }
