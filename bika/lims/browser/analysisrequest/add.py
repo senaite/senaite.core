@@ -229,21 +229,24 @@ class ajaxAnalysisRequestSubmit():
                 resolved_values[k] = values[k]
             # Get the analyses from the form data
             analyses = values["Analyses"]
+
             # Gather the specifications from the form data
             # no defaults are applied here - the defaults should already be
             # present in the form data
             specifications = {}
-            for analysis in analyses:
-                for service_uid in analyses:
-                    min_element_name = "ar.%s.min.%s"%(column, service_uid)
-                    max_element_name = "ar.%s.max.%s"%(column, service_uid)
-                    error_element_name = "ar.%s.error.%s"%(column, service_uid)
-                    if min_element_name in form:
-                        specifications[service_uid] = {
-                            "min": form[min_element_name],
-                            "max": form[max_element_name],
-                            "error": form[error_element_name]
-                        }
+            for service_uid in analyses:
+                min_element_name = "ar.%s.min.%s"%(column, service_uid)
+                max_element_name = "ar.%s.max.%s"%(column, service_uid)
+                error_element_name = "ar.%s.error.%s"%(column, service_uid)
+                service_keyword = bsc(UID=service_uid)[0].getKeyword
+                if min_element_name in form:
+                    specifications[service_keyword] = {
+                        "keyword": service_keyword,
+                        "uid": service_uid,
+                        "min": form[min_element_name],
+                        "max": form[max_element_name],
+                        "error": form[error_element_name]
+                    }
             # Selecting a template sets the hidden 'parts' field to template values.
             # Selecting a profile will allow ar_add.js to fill in the parts field.
             # The result is the same once we are here.
@@ -271,10 +274,10 @@ class ajaxAnalysisRequestSubmit():
                 client,
                 self.request,
                 resolved_values,
-                analyses,
-                partitions,
-                specifications,
-                prices
+                analyses=analyses,
+                partitions=partitions,
+                specifications=specifications,
+                prices=prices
             )
             # Add the created analysis request to the list
             ARs.append(ar.getId())
