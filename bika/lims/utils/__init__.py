@@ -438,3 +438,14 @@ def isAttributeHidden(classname, fieldname):
     return False
 
 
+def dicts_to_dict(dictionaries, key_subfieldname):
+    """Convert a list of dictionaries into a dictionary of dictionaries.
+
+    key_subfieldname must exist in each Record's subfields and have a value,
+    which will be used as the key for the new dictionary. If a key is duplicated,
+    the earlier value will be overwritten.
+    """
+    result = {}
+    for d in dictionaries:
+        result[d[key_subfieldname]] = d
+    return result
