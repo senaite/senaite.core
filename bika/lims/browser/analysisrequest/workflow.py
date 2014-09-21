@@ -380,7 +380,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
     def workflow_action_verify(self):
         # default bika_listing.py/WorkflowAction, but then go to view screen.
         self.destination_url = self.context.absolute_url()
-        WorkflowAction.__call__(self)
+        return self.workflow_action_default(action='verify', came_from='edit')
 
     def workflow_action_retract_ar(self):
         workflow = getToolByName(self.context, 'portal_workflow')
