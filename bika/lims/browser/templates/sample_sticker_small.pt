@@ -88,9 +88,9 @@
     anchor_self  python:('Client','AnalysisRequest', 'AnalysisRequestsFolder', 'Batch');
     ">
     <a tal:attributes="href python:context.aq_parent.absolute_url()" id='goback'
-        i18n:translate="" tal:condition="python:portal_type not in anchor_self">Back to list</a>
+        i18n:translate="" tal:condition="python:portal_type not in anchor_self">Go back</a>
     <a tal:attributes="href python:context.absolute_url()" id='goback'
-        i18n:translate="" tal:condition="python:portal_type in anchor_self">Back to list</a>
+        i18n:translate="" tal:condition="python:portal_type in anchor_self">Go back</a>
 </p>
 
 </body>

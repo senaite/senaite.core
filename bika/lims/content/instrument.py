@@ -170,6 +170,13 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
+    #Needed since InstrumentType is sorted by its own object, not by its name.
+    ComputedField('InstrumentTypeName',
+        expression = 'here.getInstrumentType().Title() if here.getInstrumentType() else ""',
+        widget = ComputedWidget(
+            visible=False,
+         ),
+    ),
 
 ))
 schema['description'].widget.visible = True
