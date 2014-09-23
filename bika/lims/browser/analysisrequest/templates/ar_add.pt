@@ -73,6 +73,10 @@
 <!-- And the current form partition configuration is stored here -->
 <input type="hidden" id="parts" name="parts" value="{}"/>
 
+<!-- The specs for each AR. -->
+<input type="hidden" id="specs" name="specs" value="{}"
+        tal:attributes="value python:modules['json'].dumps(dict([(x, {}) for x in range(view.col_count)]))"/>
+
 <!-- The system configured 'Dry Matter Service' -->
 <tal:i define="dms python:context.bika_setup.getDryMatterService()">
     <input type="hidden" id="getDryMatterService" name="getDryMatterService"
