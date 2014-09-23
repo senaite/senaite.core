@@ -5,6 +5,7 @@
 
   <include file="analysis.zcml"/>
   <include file="analysisservice.zcml"/>
+  <include file="analysisspec.zcml"/>
   <include file="attachment.zcml"/>
   <include file="batchfolder.zcml"/>
   <include file="bika_listing.zcml"/>
