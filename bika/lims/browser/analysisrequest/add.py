@@ -258,14 +258,15 @@ class ajaxAnalysisRequestSubmit():
             if specs:
                 specs = dicts_to_dict(specs, 'keyword')
             # Modify the spec with all manually entered values
-            import pdb, sys; pdb.Pdb(stdout=sys.__stdout__).set_trace()
             for service_uid in analyses:
                 min_element_name = "ar.%s.min.%s" % (column, service_uid)
                 max_element_name = "ar.%s.max.%s" % (column, service_uid)
                 error_element_name = "ar.%s.error.%s" % (column, service_uid)
                 service_keyword = bsc(UID=service_uid)[0].getKeyword
                 if min_element_name in form:
-                    specs[service_keyword]["min"] = form[min_element_name]
+                    if service_keyword not in specs:
+                        specs[service_keyword] = {}
+                    specs[service_keyword]["minspecs."] = form[min_element_name]
                     specs[service_keyword]["max"] = form[max_element_name]
                     specs[service_keyword]["error"] = form[error_element_name]
 
@@ -298,7 +299,7 @@ class ajaxAnalysisRequestSubmit():
                 resolved_values,
                 analyses=analyses,
                 partitions=partitions,
-                specifications=specs,
+                specifications=specs.values(),
                 prices=prices
             )
             # Add the created analysis request to the list
