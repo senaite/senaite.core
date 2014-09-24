@@ -106,7 +106,6 @@ class ARAnalysesField(ObjectField):
         new_specs = []
         rr = instance.getResultsRange()
         rr = rr if rr else []
-        rr = dicts_to_dict(rr)
         for r in rr:
             for s in specs:
                 if s['keyword'] == r['keyword']:
