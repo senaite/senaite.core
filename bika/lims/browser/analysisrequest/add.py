@@ -7,7 +7,7 @@ from bika.lims.browser.analysisrequest import AnalysisRequestViewView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.interfaces import IAnalysisRequestAddView
-from bika.lims.utils import getHiddenAttributesForClass
+from bika.lims.utils import getHiddenAttributesForClass, dicts_to_dict
 from bika.lims.utils import t
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest
@@ -46,7 +46,11 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
 
     def copy_to_new_specs(self):
         specs = {}
-        uids = self.request.get('copy_from', "").split(",")
+        copy_from = self.request.get('copy_from', "")
+        if not copy_from:
+            return {}
+        uids =  copy_from.split(",")
+
         n = 0
         for uid in uids:
             proxies = self.bika_catalog(UID=uid)
@@ -247,23 +251,24 @@ class ajaxAnalysisRequestSubmit():
             # Get the analyses from the form data
             analyses = values["Analyses"]
 
-            # Gather the specifications from the form data
-            # no defaults are applied here - the defaults should already be
-            # present in the form data
-            specifications = {}
+            # Gather the specifications from the form
+            specs = json.loads(form['copy_to_new_specs']).get(str(column), {})
+            if not specs:
+                specs = json.loads(form['specs']).get(str(column), {})
+            if specs:
+                specs = dicts_to_dict(specs, 'keyword')
+            # Modify the spec with all manually entered values
+            import pdb, sys; pdb.Pdb(stdout=sys.__stdout__).set_trace()
             for service_uid in analyses:
-                min_element_name = "ar.%s.min.%s"%(column, service_uid)
-                max_element_name = "ar.%s.max.%s"%(column, service_uid)
-                error_element_name = "ar.%s.error.%s"%(column, service_uid)
+                min_element_name = "ar.%s.min.%s" % (column, service_uid)
+                max_element_name = "ar.%s.max.%s" % (column, service_uid)
+                error_element_name = "ar.%s.error.%s" % (column, service_uid)
                 service_keyword = bsc(UID=service_uid)[0].getKeyword
                 if min_element_name in form:
-                    specifications[service_keyword] = {
-                        "keyword": service_keyword,
-                        "uid": service_uid,
-                        "min": form[min_element_name],
-                        "max": form[max_element_name],
-                        "error": form[error_element_name]
-                    }
+                    specs[service_keyword]["min"] = form[min_element_name]
+                    specs[service_keyword]["max"] = form[max_element_name]
+                    specs[service_keyword]["error"] = form[error_element_name]
+
             # Selecting a template sets the hidden 'parts' field to template values.
             # Selecting a profile will allow ar_add.js to fill in the parts field.
             # The result is the same once we are here.
@@ -293,7 +298,7 @@ class ajaxAnalysisRequestSubmit():
                 resolved_values,
                 analyses=analyses,
                 partitions=partitions,
-                specifications=specifications,
+                specifications=specs,
                 prices=prices
             )
             # Add the created analysis request to the list
