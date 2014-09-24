@@ -1,6 +1,6 @@
 from AccessControl import getSecurityManager
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.utils import t, dicts_to_dict
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.sample import SamplePartitionsView
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
@@ -100,6 +100,13 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
         self.parts = p.contents_table()
 
+    def get_spec_from_ar(self, ar, keyword):
+        empty = {"min": "", "max": "", "error": ""}
+        spec = ar.getResultsRange()
+        if spec:
+            return dicts_to_dict(spec, 'keyword').get(keyword, empty)
+        return empty
+
     def folderitems(self):
         self.categories = []
 
@@ -174,9 +181,8 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 part = analysis.getSamplePartition()
                 part = part and part or obj
                 items[x]['Partition'] = part.Title()
-                spec = analysis.specification \
-                    if hasattr(analysis, 'specification') \
-                    else {"min": "", "max": "", "error": ""}
+                spec = self.get_spec_from_ar(self.context,
+                                             analysis.getService().getKeyword())
                 items[x]["min"] = spec["min"]
                 items[x]["max"] = spec["max"]
                 items[x]["error"] = spec["error"]
