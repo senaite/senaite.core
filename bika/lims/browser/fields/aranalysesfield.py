@@ -102,7 +102,13 @@ class ARAnalysesField(ObjectField):
                             'sample_due', 'sample_received',
                             'attachment_due', 'to_be_verified')
 
-
+        # Modify existing AR specs with new form values for selected analyses
+        rr = instance.getResultsRange()
+        for i, spec in enumerate(specs):
+            for r in rr:
+                if spec['keyword'] == rr['keyword']:
+                    for k,v in specs[i].items():
+                        rr[k] = v
         instance.setResultsRange(specs)
 
         new_analyses = []
