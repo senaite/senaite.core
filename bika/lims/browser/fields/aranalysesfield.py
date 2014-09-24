@@ -102,14 +102,17 @@ class ARAnalysesField(ObjectField):
                             'sample_due', 'sample_received',
                             'attachment_due', 'to_be_verified')
 
-        # Modify existing AR specs with new form values for selected analyses
+        # Modify existing AR specs with new form values for selected analyses.
+        new_specs = []
         rr = instance.getResultsRange()
-        for i, spec in enumerate(specs):
-            for r in rr:
-                if spec['keyword'] == rr['keyword']:
-                    for k,v in specs[i].items():
-                        rr[k] = v
-        instance.setResultsRange(specs)
+        rr = rr if rr else []
+        rr = dicts_to_dict(rr)
+        for r in rr:
+            for s in specs:
+                if s['keyword'] == r['keyword']:
+                    r.update(s)
+            new_specs.append(r)
+        instance.setResultsRange(new_specs)
 
         new_analyses = []
         proxies = bsc(UID=service_uids)
