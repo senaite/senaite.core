@@ -913,9 +913,6 @@ class Analysis(BaseContent):
             SamplePartition=self.getSamplePartition())
         analysis.unmarkCreationFlag()
 
-        # We must bring the specification across manually.
-        analysis.specification = self.specification
-
         # zope.event.notify(ObjectInitializedEvent(analysis))
         changeWorkflowState(analysis,
                             "bika_analysis_workflow", "sample_received")
