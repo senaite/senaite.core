@@ -109,7 +109,8 @@ class WorksheetWorkflowAction(WorkflowAction):
         elif action == 'verify':
             # default bika_listing.py/WorkflowAction, but then go to view screen.
             self.destination_url = self.context.absolute_url()
-            WorkflowAction.__call__(self)
+            return self.workflow_action_default(action='verify',
+                                                came_from='edit')
         else:
             # default bika_listing.py/WorkflowAction for other transitions
             WorkflowAction.__call__(self)
