@@ -176,7 +176,7 @@ function AnalysisRequestAddView() {
 
 
 	function set_spec_hidden_value(arnum) {
-		// Get the spec for this column
+		// Get the spec for this column/
 		if($("#ar_" + arnum + "_Specification_uid").val() == "") {
 			return;
 		}
@@ -197,8 +197,17 @@ function AnalysisRequestAddView() {
 	}
 
 	function set_spec_field_values(arnum) {
+		/*
+		Specs are taken from the Specification element values (#specs).
+		If a spec is defined in copy_to_new_specs, it is used instead, and the
+		values in #specs have no effect.
+		*/
+		var copy_to_new_specs = $.parseJSON($("#copy_to_new_specs").val());
 		var specs = $.parseJSON($("#specs").val());
-		var rr = specs[arnum];
+		var rr = copy_to_new_specs[arnum];
+		if(rr == undefined || rr.length < 1){
+			rr = specs[arnum];
+		}
 		var min_name = "[name^='ar." + arnum + ".min']";
 		var max_name = "[name^='ar." + arnum + ".max']";
 		var error_name = "[name^='ar." + arnum + ".error']";
@@ -213,9 +222,9 @@ function AnalysisRequestAddView() {
 				var this_max = "[name='ar." + arnum + ".max." + rr[i].uid + "']";
 				var this_error = "[name='ar." + arnum + ".error." + rr[i].uid + "']";
 				if ($(this_min).length > 0) {
-					$(this_min).val(rr[i].min);
-					$(this_max).val(rr[i].max);
-					$(this_error).val(rr[i].error);
+					if($(this_min).val() != rr[i].min) { $(this_min).val(rr[i].min); }
+					if ($(this_max).val() != rr[i].max) { $(this_max).val(rr[i].max); }
+					if ($(this_error).val() != rr[i].error) { $(this_error).val(rr[i].error); }
 				}
 			}
 		}
@@ -1409,15 +1418,16 @@ function AnalysisRequestAddView() {
 		// fields which should not be completed from the source AR
 		var skip_fields = ['Sample', 'Sample_uid'];
 		// if the jsonapi read data did not include any objects, abort
-		if (data.objects.length < 1) {
-			// obviously, shouldn't happen
+		// obviously, shouldn't happen
+		if ((!data.success) || data.objects.length < 1) {
 			return;
 		}
 		var obj = data.objects[0];
 		// this is the column containing the elements we will write into
 		var col = window.bika.ar_copy_from_col;
 		// set field values from data into respective elements.  data does include
-		// *_uid entries for reference field values
+		// *_uid entries for reference field values, so the corrosponding *_uid
+		// hidden elements are written here
 		for (var fieldname in obj) {
 			if (!obj.hasOwnProperty(fieldname)) { continue; }
 			if (skip_fields.indexOf(fieldname) > -1) { continue; }
@@ -1427,6 +1437,7 @@ function AnalysisRequestAddView() {
 				$(el).val(fieldvalue);
 			}
 		}
+
 		var services = {};
 		var specs = {};
 		var poc_name, cat_uid, service_uid, service_uids;
@@ -1441,7 +1452,6 @@ function AnalysisRequestAddView() {
 				services[key] = [];
 			}
 			services[key].push(service_uid);
-			specs[service_uid] = analysis.specification;
 		}
 		for (key in services) {
 			if (!services.hasOwnProperty(key)) {

@@ -77,6 +77,11 @@
 <input type="hidden" id="specs" name="specs" value="{}"
         tal:attributes="value python:modules['json'].dumps(dict([(x, {}) for x in range(view.col_count)]))"/>
 
+<!-- The specs for each AR - this value is completed when using copy_to_new in this form.
+     The value in this field is blended with the 'Specification' found in the form. -->
+<input type="hidden" id="copy_to_new_specs" name="copy_to_new_specs" value="{}"
+        tal:attributes="value view/copy_to_new_specs"/>
+
 <!-- The system configured 'Dry Matter Service' -->
 <tal:i define="dms python:context.bika_setup.getDryMatterService()">
     <input type="hidden" id="getDryMatterService" name="getDryMatterService"

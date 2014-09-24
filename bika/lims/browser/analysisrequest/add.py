@@ -44,6 +44,23 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         self.request.set('disable_border', 1)
         return self.template()
 
+    def copy_to_new_specs(self):
+        specs = {}
+        uids = self.request.get('copy_from', "").split(",")
+        n = 0
+        for uid in uids:
+            proxies = self.bika_catalog(UID=uid)
+            rr = proxies[0].getObject().getResultsRange()
+            new_rr = []
+            for i, r in enumerate(rr):
+                s_uid = self.bika_setup_catalog(portal_type='AnalysisService',
+                                              getKeyword=r['keyword'])[0].UID
+                r['uid'] = s_uid
+                new_rr.append(r)
+            specs[n] = new_rr
+            n += 1
+        return json.dumps(specs)
+
     def getContacts(self):
         adapter = getAdapter(self.context.aq_parent, name='getContacts')
         return adapter()
