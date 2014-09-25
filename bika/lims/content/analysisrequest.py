@@ -1745,7 +1745,7 @@ class AnalysisRequest(BaseFolder):
 
         Value will be stored in ResultsRange field as list of dictionaries
         """
-        rr = []
+        rr = {}
         sample = self.getSample()
         if not sample:
             # portal_factory

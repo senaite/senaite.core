@@ -198,36 +198,41 @@ function AnalysisRequestAddView() {
 
 	function set_spec_field_values(arnum) {
 		/*
-		Specs are taken from the Specification element values (#specs).
-		If a spec is defined in copy_to_new_specs, it is used instead, and the
-		values in #specs have no effect.
-		*/
+		 Specs are taken from the Specification element values (#specs).
+		 If a spec is defined in copy_to_new_specs, it is used instead, and the
+		 values in #specs have no effect.
+		 */
 		var copy_to_new_specs = $.parseJSON($("#copy_to_new_specs").val());
 		var specs = $.parseJSON($("#specs").val());
 		var rr = copy_to_new_specs[arnum];
-		if(rr == undefined || rr.length < 1){
+		if (rr == undefined || rr.length < 1) {
 			rr = specs[arnum];
 		}
-		var min_name = "[name^='ar." + arnum + ".min']";
-		var max_name = "[name^='ar." + arnum + ".max']";
-		var error_name = "[name^='ar." + arnum + ".error']";
-		// empty all specification inputs.
-		$(min_name).val("");
-		$(max_name).val("");
-		$(error_name).val("");
 		// Set values for selected analyses
-		if(rr != undefined && rr.length > 0) {
-			for (var i = 0; i<rr.length; i++) {
+		if (rr != undefined && rr.length > 0) {
+			for (var i = 0; i < rr.length; i++) {
 				var this_min = "[name='ar." + arnum + ".min." + rr[i].uid + "']";
 				var this_max = "[name='ar." + arnum + ".max." + rr[i].uid + "']";
 				var this_error = "[name='ar." + arnum + ".error." + rr[i].uid + "']";
 				if ($(this_min).length > 0) {
-					if($(this_min).val() != rr[i].min) { $(this_min).val(rr[i].min); }
-					if ($(this_max).val() != rr[i].max) { $(this_max).val(rr[i].max); }
-					if ($(this_error).val() != rr[i].error) { $(this_error).val(rr[i].error); }
+					if ($(this_min).val() == "") {
+						$(this_min).val(rr[i].min);
+					}
+					if ($(this_max).val() == "") {
+						$(this_max).val(rr[i].max);
+					}
+					if ($(this_error).val() == "") {
+						$(this_error).val(rr[i].error);
+					}
 				}
 			}
 		}
+	}
+
+	function reset_spec_fields(arnum) {
+		$("[name^='ar." + arnum + ".min']").val("");
+		$("[name^='ar." + arnum + ".max']").val("");
+		$("[name^='ar." + arnum + ".error']").val("");
 	}
 
 	function toggle_spec_fields(element) {
@@ -496,6 +501,7 @@ function AnalysisRequestAddView() {
             unsetTemplate(column);
             setAnalysisProfile(column, $(this).val());
             calculate_parts(column);
+			reset_spec_fields(column);
             set_spec_field_values(column);
         }
 
@@ -503,6 +509,7 @@ function AnalysisRequestAddView() {
         if(fieldName == "Template"){
             setTemplate(column, $(this).val());
             set_spec_hidden_value(column);
+			reset_spec_fields(column);
 			set_spec_field_values(column);
 		}
 
@@ -561,6 +568,7 @@ function AnalysisRequestAddView() {
         // Selected a Specification
         if(fieldName == "Specification"){
             set_spec_hidden_value(column);
+			reset_spec_fields(column);
 			set_spec_field_values(column);
 		}
 
@@ -701,7 +709,6 @@ function AnalysisRequestAddView() {
             if ((!other_elem.prop("disabled")) && (other_elem.prop("checked") != first_val)) {
                 other_elem.prop("checked", first_val ? true : false);
                 toggle_spec_fields(other_elem);
-				set_spec_field_values(column);
                 affected_elements.push(other_elem);
             }
             if (first_val) {
@@ -794,6 +801,7 @@ function AnalysisRequestAddView() {
 
                     if(fieldName == "Specification"){
                         set_spec_hidden_value(col);
+						reset_spec_fields(column);
 						set_spec_field_values(col);
 					}
 
@@ -827,7 +835,6 @@ function AnalysisRequestAddView() {
                         var cb = $("input[value="+service_uid+"]").filter("[column='"+column+"']");
                         $(cb).prop("checked",true);
                         toggle_spec_fields(cb);
-						set_spec_field_values(column);
 					}
                 }
                 recalc_prices(column);
@@ -858,7 +865,6 @@ function AnalysisRequestAddView() {
                         var service_uid = selectedservices[i];
                         var e = $("input[value=" + service_uid + "]").filter("[column='" + column + "']");
                         toggle_spec_fields(e);
-						set_spec_field_values(column);
 					}
                 }
             });
@@ -962,7 +968,6 @@ function AnalysisRequestAddView() {
                     var e = $("input[column='"+key.col+"']").filter("#"+service_uid);
                     $(e).prop("checked",true);
                     toggle_spec_fields(e);
-					set_spec_field_values(column);
 				}
             } else {
                 // otherwise, toggleCat will take care of everything for us
@@ -1070,7 +1075,6 @@ function AnalysisRequestAddView() {
                                 cb = $("input[column='"+column+"']").filter("#"+service_uid);
                                 $(cb).prop("checked", false);
                                 toggle_spec_fields($(cb));
-								set_spec_field_values(column);
 								$(".partnr_"+service_uid).filter("[column='"+column+"']").empty();
                                 if ($(cb).val() == $("#getDryMatterService").val()) {
                                     $("#ar_"+column+"_ReportDryMatter").prop("checked",false);
@@ -1094,7 +1098,6 @@ function AnalysisRequestAddView() {
                                             cb = $("input[column='"+column+"']").filter("#"+service_uid);
                                             $(cb).prop("checked", false);
                                             toggle_spec_fields($(cb));
-											set_spec_field_values(column);
 											$(".partnr_"+service_uid).filter("[column='"+column+"']").empty();
                                             if ($(cb).val() == $("#getDryMatterService").val()) {
                                                 $("#ar_"+column+"_ReportDryMatter").prop("checked",false);
@@ -1106,7 +1109,6 @@ function AnalysisRequestAddView() {
                                     No:function(){
                                         $(element).prop("checked",true);
                                         toggle_spec_fields($(element));
-										set_spec_field_values(column);
 										$(this).dialog("close");
                                         $("#messagebox").remove();
                                     }
