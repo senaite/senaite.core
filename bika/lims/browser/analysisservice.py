@@ -222,5 +222,7 @@ class JSONReadExtender(object):
 
         for method in self.context.getAvailableMethods():
             for instrument in method.getInstruments():
-                data["MethodInstruments"][method.UID()] = \
-                    load_field_values(instrument, include_fields=[])
+                if method.UID() not in data["MethodInstruments"]:
+                    data["MethodInstruments"][method.UID()] = []
+                data["MethodInstruments"][method.UID()].append(
+                    load_field_values(instrument, include_fields=[]))
