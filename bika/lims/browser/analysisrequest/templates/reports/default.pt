@@ -67,10 +67,10 @@
         <tr>
             <td id="client-info">
                 <table>
-                    <tr><td id="client-contact" tal:content="contact/fullname"></td></tr>
+                    <tr tal:condition="python:contact.get('fullname','') != ''"><td id="client-contact" tal:content="contact/fullname"></td></tr>
                     <tr><td id="client-name" tal:content="client/name"></td></tr>
                     <tr><td id="client-address" tal:content="structure client/address"></td></tr>
-                    <tr>
+                    <tr tal:condition="python:contact.get('email','') != ''">
                         <td id="client-email">
                             <a tal:content="contact/email"
                                tal:attributes="url python:'mailto:%s' % contact['email'];"></a>
@@ -418,7 +418,7 @@
     <div i18n:translate="">This document shall not be reproduced except in full, without the written approval of <tal:block replace="laboratory/title" i18n:name="name_lab"/></div>
     <div tal:define="confidence_level laboratory/confidence"
          tal:condition="confidence_level" i18n:translate="">Test results are at a <tal:block replace="confidence_level" i18n:name="lab_confidence"/>% confidence level</div>
-    <div tal:condition="python:'email' in contact['pubpref']" i18n:translate="">Methods of analysis available by clicking on the 'Request' link</div>
+    <div tal:condition="python:contact.get('pubpref','') != '' and 'email' in contact['pubpref']" i18n:translate="">Methods of analysis available by clicking on the 'Request' link</div>
 </div>
 
 <div class="footer" tal:content="structure analysisrequest/footer"></div>
