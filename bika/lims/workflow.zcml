@@ -16,13 +16,4 @@
       handler="bika.lims.workflow.AfterTransitionEventHandler"
     />
 
-    <!-- Workflow action button clicked -->
-    <browser:page
-      for="bika.lims.interfaces.IBatch"
-      name="workflow_action"
-      class="bika.lims.browser.batch.workflow.BatchWorkflowAction"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
 </configure>

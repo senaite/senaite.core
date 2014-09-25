@@ -35,8 +35,6 @@ class BatchWorkflowAction(AnalysisRequestWorkflowAction):
         plone.protect.CheckAuthenticator(form)
         self.context = aq_inner(self.context)
         workflow = getToolByName(self.context, 'portal_workflow')
-        bc = getToolByName(self.context, 'bika_catalog')
-        #rc = getToolByName(self.context, REFERENCE_CATALOG)
         translate = self.context.translate
         checkPermission = self.context.portal_membership.checkPermission
 
@@ -56,7 +54,6 @@ class BatchWorkflowAction(AnalysisRequestWorkflowAction):
                                            self.context.absolute_url())
                 self.request.response.redirect(self.destination_url)
                 return
-        import pdb;pdb.set_trace()
         if action == "sample":
             objects = AnalysisRequestWorkflowAction._get_selected_items(self)
             transitioned = {'to_be_preserved':[], 'sample_due':[], 'sample_prep': []}
@@ -204,14 +201,17 @@ class BatchWorkflowAction(AnalysisRequestWorkflowAction):
             # We pass a list of AR objects to Publish.
             # it returns a list of AR IDs which were actually published.
             objects = AnalysisRequestWorkflowAction._get_selected_items(self)
-            its = []
-            for uid, obj in objects.items():
-                if isActive(obj):
-                    its.append(uid);
-            its = ",".join(its)
-            q = "/publish?items=" + its
-            dest = self.portal_url+"/analysisrequests" + q
-            self.request.response.redirect(dest)
+            if objects == {}:
+                pass
+            else:
+                its = []
+                for uid, obj in objects.items():
+                    if isActive(obj):
+                        its.append(uid);
+                        its = ",".join(its)
+                        q = "/publish?items=" + its
+                        dest = self.portal_url+"/analysisrequests" + q
+                        self.request.response.redirect(dest)
 
         else:
             AnalysisRequestWorkflowAction.__call__(self)
