@@ -28,13 +28,13 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <browser:page
+    <!--browser:page
       for="bika.lims.interfaces.IBatch"
       name="publish"
       class="bika.lims.browser.batch.publish.PublishView"
       permission="bika.lims.Publish"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+    /-->
 
     <browser:page
       for="bika.lims.interfaces.IBatch"

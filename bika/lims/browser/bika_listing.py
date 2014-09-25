@@ -127,6 +127,21 @@ class WorkflowAction:
         self.request.response.redirect(self.destination_url)
         return
 
+    def workflow_action_publish(self):
+        action, came_from = WorkflowAction._get_form_workflow_action(self)
+        if not isActive(self.context):
+            message = _('Item is inactive.')
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            self.request.response.redirect(self.context.absolute_url())
+            return
+        # AR publish preview
+        self.request.response.redirect(self.context.absolute_url() + "/publish")
+
+    def workflow_action_verify(self):
+        # default bika_listing.py/WorkflowAction, but then go to view screen.
+        self.destination_url = self.context.absolute_url()
+        return self.workflow_action_default(action='verify', came_from='edit')
+
     def submitTransition(self, action, came_from, items):
         """ Performs the action's transition for the specified items
             Returns (numtransitions, destination), where:
