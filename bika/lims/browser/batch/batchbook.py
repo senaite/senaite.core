@@ -1,9 +1,11 @@
 from operator import itemgetter
 from AccessControl import getSecurityManager
+from Products.CMFCore.permissions import ModifyPortalContent
 from Products.CMFPlone import PloneMessageFactory
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.permissions import EditResults, AddAnalysisRequest
+from bika.lims.permissions import EditResults, AddAnalysisRequest, \
+    ManageAnalysisRequests
 from Products.CMFCore.utils import getToolByName
 
 import re
@@ -40,12 +42,17 @@ class BatchBookView(BikaListingView):
                 'index': 'id',
                 'sortable': True,
             },
-            'Batch': {
-                'title': _('Batch'),
+
+            'SampleType': {
+                'title': _('Sample Type'),
                 'sortable': True,
             },
-            'Sub-group': {
-                'title': _('Sub-group'),
+            'SamplePoint': {
+                'title': _('Sample Point'),
+                'sortable': True,
+            },
+            'ClientOrderNumber': {
+                'title': _('Client Order Number'),
                 'sortable': True,
             },
             'created': {
@@ -64,30 +71,40 @@ class BatchBookView(BikaListingView):
              'title': _('All'),
              'contentFilter': {},
              'columns': ['AnalysisRequest',
-                         'Batch',
-                         'Sub-group',
+                         'ClientOrderNumber',
+                         'SampleType',
+                         'SamplePoint',
                          'created',
                          'state_title'],
              },
         ]
 
-    def __call__(self):
+    @property
+    def copy_to_new_allowed(self):
         mtool = getToolByName(self.context, 'portal_membership')
-        checkPermission = mtool.checkPermission
-        self.allow_edit = checkPermission("Modify portal content", self.context)
+        if mtool.checkPermission(ManageAnalysisRequests, self.context) \
+                or mtool.checkPermission(ModifyPortalContent, self.context) \
+                or mtool.checkPermission(AddAnalysisRequest, self.portal):
+            return True
+        return False
 
+    def __call__(self):
+        # Allow "Modify portal content" to see edit widgets
         mtool = getToolByName(self.context, 'portal_membership')
-        if mtool.checkPermission(AddAnalysisRequest, self.portal):
-            # This is permitted from the global permission above, AddAnalysisRequest.
+        self.allow_edit = mtool.checkPermission("Modify portal content", self.context)
+        # Allow certain users to duplicate ARs (Copy to new).
+        if self.copy_to_new_allowed:
             review_states = []
             for review_state in self.review_states:
-                review_state.get('custom_actions', []).extend(
+                custom_actions = review_state.get('custom_actions', [])
+                custom_actions.extend(
                     [{'id': 'copy_to_new',
                       'title': _('Copy to new'),
-                      'url': 'workflow_action?action=copy_to_new'}, ])
+                      'url': 'workflow_action?action=copy_to_new'},
+                     ])
+                review_state['custom_actions'] = custom_actions
                 review_states.append(review_state)
             self.review_states = review_states
-
         return super(BatchBookView, self).__call__()
 
     def folderitems(self):
@@ -163,7 +180,6 @@ class BatchBookView(BikaListingView):
                 'replace': {
                     'Batch': batchlink,
                     'AnalysisRequest': arlink,
-                    'Sub-group': sub_title,
                 },
                 'before': {},
                 'after': {},
@@ -172,7 +188,9 @@ class BatchBookView(BikaListingView):
                 'state_class': 'state-active subgroup_{0}'.format(sub_class) if sub_class else 'state-active',
                 'allow_edit': [],
                 'Batch': '',
-                'Sub-group': '',
+                'SamplePoint': ar.getSamplePoint().Title() if ar.getSamplePoint() else '',
+                'SampleType': ar.getSampleType().Title() if ar.getSampleType() else '',
+                'ClientOrderNumber': ar.getClientOrderNumber(),
                 'AnalysisRequest': '',
                 'state_title': state_title,
             }

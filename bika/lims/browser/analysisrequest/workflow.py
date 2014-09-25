@@ -256,13 +256,21 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         self.request.response.redirect(self.destination_url)
 
     def workflow_action_receive(self):
-        # default bika_listing.py/WorkflowAction, but then
-        # print automatic labels.
-        if 'receive' in self.context.bika_setup.getAutoPrintLabels():
+        action, came_from = WorkflowAction._get_form_workflow_action(self)
+        items = [self.context,] if came_from == 'workflow_action' \
+                else self._get_selected_items().values()
+        trans, dest = self.submitTransition(action, came_from, items)
+        if trans and 'receive' in self.context.bika_setup.getAutoPrintLabels():
+            transitioned = [item.id for item in items]
             size = self.context.bika_setup.getAutoLabelSize()
-            q = "/sticker?size=%s&items=%s" % (size, self.context.getId())
-            self.destination_url = self.context.absolute_url() + q
-        WorkflowAction.__call__(self)
+            q = "/sticker?size=%s&items=" % size
+            q += ",".join(transitioned)
+            self.request.response.redirect(self.context.absolute_url() + q)
+        elif trans:
+            message = PMF('Changes saved.')
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            self.destination_url = self.context.absolute_url()
+            self.request.response.redirect(self.destination_url)
 
     def workflow_action_submit(self):
         form = self.request.form
@@ -423,7 +431,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
     def workflow_action_verify(self):
         # default bika_listing.py/WorkflowAction, but then go to view screen.
         self.destination_url = self.context.absolute_url()
-        WorkflowAction.__call__(self)
+        return self.workflow_action_default(action='verify', came_from='edit')
 
     def workflow_action_retract_ar(self):
         workflow = getToolByName(self.context, 'portal_workflow')

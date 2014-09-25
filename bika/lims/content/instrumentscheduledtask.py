@@ -43,7 +43,7 @@ schema = BikaSchema.copy() + Schema((
         required=1,
         type='schedulecriteria',
         widget=ScheduleInputWidget(
-            label=_('Criteria'),
+            label = "Criteria",
         ),
     ),
 
@@ -52,8 +52,8 @@ schema = BikaSchema.copy() + Schema((
         allowed_content_types= ('text/plain', ),
         default_output_type="text/plain",
         widget = TextAreaWidget(
-            label = _("Considerations"),
-            description = _("Remarks to take into account before performing the task"),
+            label = "Considerations",
+            description = "Remarks to take into account before performing the task",
         ),
     ),
 ))

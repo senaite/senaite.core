@@ -26,21 +26,21 @@ schema = Organisation.schema.copy() + atapi.Schema((
         searchable = True,
         validators = ('uniquefieldvalidator', 'standard_id_validator'),
         widget = atapi.StringWidget(
-            label = _("Client ID"),
+            label = "Client ID",
         ),
     ),
     atapi.BooleanField('BulkDiscount',
         default = False,
         write_permission = ManageClients,
         widget = atapi.BooleanWidget(
-            label = _("Bulk discount applies"),
+            label = "Bulk discount applies",
         ),
     ),
     atapi.BooleanField('MemberDiscountApplies',
         default = False,
         write_permission = ManageClients,
         widget = atapi.BooleanWidget(
-            label = _("Member discount applies"),
+            label = "Member discount applies",
         ),
     ),
     atapi.LinesField('EmailSubject',
@@ -48,8 +48,8 @@ schema = Organisation.schema.copy() + atapi.Schema((
         default = ['ar', ],
         vocabulary = EMAIL_SUBJECT_OPTIONS,
         widget = atapi.MultiSelectionWidget(
-            description = _('Items to be included in email subject lines'),
-            label = _("Email subject line"),
+            description = "Items to be included in email subject lines",
+            label = "Email subject line",
         ),
     ),
     atapi.ReferenceField('DefaultCategories',
@@ -62,8 +62,8 @@ schema = Organisation.schema.copy() + atapi.Schema((
         relationship = 'ClientDefaultCategories',
         widget = atapi.ReferenceWidget(
             checkbox_bound = 0,
-            label = _("Default categories"),
-            description = _("Always expand the selected categories in client views"),
+            label = "Default categories",
+            description = "Always expand the selected categories in client views",
         ),
     ),
     atapi.ReferenceField('RestrictedCategories',
@@ -77,8 +77,8 @@ schema = Organisation.schema.copy() + atapi.Schema((
         relationship = 'ClientRestrictedCategories',
         widget = atapi.ReferenceWidget(
             checkbox_bound = 0,
-            label = _("Restrict categories"),
-            description = _("Show only selected categories in client views"),
+            label = "Restrict categories",
+            description = "Show only selected categories in client views",
         ),
     ),
     atapi.StringField('DefaultARSpecs',
@@ -86,8 +86,8 @@ schema = Organisation.schema.copy() + atapi.Schema((
         default = 'ar_specs',
         vocabulary = DEFAULT_AR_SPECS,
         widget = atapi.SelectionWidget(
-            label = _("Default AR Specifications"),
-            description = _("DefaultARSpecs_description"),
+            label = "Default AR Specifications",
+            description = "DefaultARSpecs_description",
             format='select',
         )
     ),
@@ -95,8 +95,8 @@ schema = Organisation.schema.copy() + atapi.Schema((
         schemata = "Preferences",
         default = True,
         widget = atapi.BooleanWidget(
-            label = _("Default decimal mark"),
-            description = _("The decimal mark selected in Bika Setup will be used."),
+            label = "Default decimal mark",
+            description = "The decimal mark selected in Bika Setup will be used.",
         )
     ),
     atapi.StringField('DecimalMark',
@@ -104,8 +104,8 @@ schema = Organisation.schema.copy() + atapi.Schema((
         vocabulary=DECIMAL_MARKS,
         default = ".",
         widget = atapi.SelectionWidget(
-            label = _("Custom decimal mark"),
-            description = _("Decimal mark to use in the reports from this Client."),
+            label = "Custom decimal mark",
+            description = "Decimal mark to use in the reports from this Client.",
             format = 'select',
         )
     ),

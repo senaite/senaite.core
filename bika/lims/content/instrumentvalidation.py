@@ -14,8 +14,8 @@ schema = BikaSchema.copy() + Schema((
         with_time = 1,
         with_date = 1,
         widget = DateTimeWidget(
-            label = _("From"),
-            description = _("Date from which the instrument is under validation"),
+            label = "From",
+            description = "Date from which the instrument is under validation",
         ),
     ),
 
@@ -23,15 +23,15 @@ schema = BikaSchema.copy() + Schema((
         with_time = 1,
         with_date = 1,
         widget = DateTimeWidget(
-            label = _("To"),
-            description = _("Date until the instrument will not be available"),
+            label = "To",
+            description = "Date until the instrument will not be available",
         ),
     ),
 
     StringField('Validator',
         widget = StringWidget(
-            label = _("Validator"),
-            description = _("The analyst responsible of the validation"),
+            label = "Validator",
+            description = "The analyst responsible of the validation",
         )
     ),
 
@@ -40,8 +40,8 @@ schema = BikaSchema.copy() + Schema((
         allowed_content_types= ('text/plain', ),
         default_output_type="text/plain",
         widget = TextAreaWidget(
-            label = _("Considerations"),
-            description = _("Remarks to take into account before validation"),
+            label = "Considerations",
+            description = "Remarks to take into account before validation",
         ),
     ),
 
@@ -50,8 +50,8 @@ schema = BikaSchema.copy() + Schema((
         allowed_content_types= ('text/plain', ),
         default_output_type="text/plain",
         widget = TextAreaWidget(
-            label = _("Work Performed"),
-            description = _("Description of the actions made during the validation"),
+            label = "Work Performed",
+            description = "Description of the actions made during the validation",
         ),
     ),
 
@@ -60,7 +60,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_content_types= ('text/plain', ),
         default_output_type="text/plain",
         widget = TextAreaWidget(
-            label = _("Remarks"),
+            label = "Remarks",
         ),
     ),
 

@@ -22,7 +22,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_content_types= ('text/plain'),
         default_output_type="text/plain",
         widget = TextAreaWidget(
-            label = _('Instructions'),
+            label = "Instructions",
             append_only = True,
         ),
     ),
@@ -33,8 +33,8 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('ARTemplate',),
         relationship = 'SRTemplateARTemplate',
         widget = SRTemplateARTemplatesWidget(
-            label = _("AR Templates"),
-            description = _("Select AR Templates to include"),
+            label = "AR Templates",
+            description = "Select AR Templates to include",
         )
     ),
 ),
