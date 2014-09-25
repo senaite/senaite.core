@@ -91,7 +91,7 @@
     <input type="hidden" value="[]" name="specs">
     <input id="item_data" type="hidden" value="[]" name="item_data">
     <input type="hidden" id="ResultsRange" name="ResultsRange"
-            tal:attributes="value view/context/getResultsRange"/>
+            tal:attributes="value view/getResultsRange"/>
 
     <span style="display:none"
         id="st_title"

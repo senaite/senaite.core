@@ -100,6 +100,9 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
         self.parts = p.contents_table()
 
+    def getResultsRange(self):
+        return json.dumps(dicts_to_dict(self.context.getResultsRange(), 'uid'))
+
     def get_spec_from_ar(self, ar, keyword):
         empty = {"min": "", "max": "", "error": ""}
         spec = ar.getResultsRange()
