@@ -2,7 +2,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.utils import t, dicts_to_dict
 from bika.lims.utils \
     import formatDateQuery, formatDateParms, isAttributeHidden
 from plone.app.layout.globals.interfaces import IViewView
@@ -136,17 +136,11 @@ class Report(BrowserView):
                     spec_dict = rr[keyword]
             else:
                 ar = analysis.aq_parent
-                ar_spec_obj = ar.getSpecification()
-                if ar_spec_obj:
-                    rr = ar_spec_obj.getResultsRangeDict()
-                    if keyword in rr:
-                        spec_dict = rr[keyword]
+                rr = dicts_to_dict(ar.getResultsRange(), 'keyword')
+                if keyword in rr:
+                    spec_dict = rr[keyword]
                 else:
-                    if hasattr(analysis, "specification") \
-                            and analysis.specification:
-                        spec_dict = analysis.specification
-                    else:
-                        continue
+                    continue
             if not spec_dict:
                 continue
             try:
