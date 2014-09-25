@@ -1,6 +1,8 @@
 next
-----
+---
 
+LIMS-1426: Batch AR list: The instructions for ARs from the batch list aren't working.
+LIMS-907: (Re-)publishing ex cases does not work
 LIMS-1374: Auto label printing does not happen for an AR drop-down receive
 LIMS-1395: front page issue tracker url
 LIMS-1402: If no date is chosen, it will never expire." not been accomplished.
