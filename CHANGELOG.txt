@@ -1,6 +1,7 @@
 next
 ----
 
+LIMS-1374: Auto label printing does not happen for an AR drop-down receive
 LIMS-1395: front page issue tracker url
 LIMS-1402: If no date is chosen, it will never expire." not been accomplished.
 LIMS-1377: Error when trying to publish after updating branch hotfix/next or develop

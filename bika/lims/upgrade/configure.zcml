@@ -480,4 +480,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Adding the possibility to sample instruments by type"
+        description=""
+        source="3048"
+        destination="3049"
+        handler="bika.lims.upgrade.to3049.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>

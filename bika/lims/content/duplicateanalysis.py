@@ -117,7 +117,7 @@ schema = schema.copy() + Schema((
     StringField(
         'ReferenceAnalysesGroupID',
         widget=StringWidget(
-            label=_("ReferenceAnalysesGroupID"),
+            label = "ReferenceAnalysesGroupID",
             visible=False,
         ),
     ),

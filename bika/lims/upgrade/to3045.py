@@ -25,7 +25,8 @@ def upgrade(tool):
     workflow = getToolByName(portal, 'portal_workflow')
     for wf_id in wf_ids:
         wf = workflow.getWorkflowById(wf_id)
-        rhdef = wf.variables['review_history']
-        rhdef.info_guard = None
+        if wf:
+            rhdef = wf.variables['review_history']
+            rhdef.info_guard = None
 
     return True

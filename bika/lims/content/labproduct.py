@@ -11,37 +11,37 @@ from zope.interface import implements
 schema = BikaSchema.copy() + Schema((
     StringField('Volume',
         widget = StringWidget(
-            label = _("Volume"),
+            label = "Volume",
         )
     ),
     StringField('Unit',
         widget = StringWidget(
-            label = _("Unit"),
+            label = "Unit",
         )
     ),
     FixedPointField('VAT',
         default_method = 'getDefaultVAT',
         widget = DecimalWidget(
-            label = _("VAT %"),
-            description = _("Enter percentage value eg. 14.0"),
+            label = "VAT %",
+            description = "Enter percentage value eg. 14.0",
         ),
     ),
     FixedPointField('Price',
         widget = DecimalWidget(
-            label = _("Price excluding VAT"),
+            label = "Price excluding VAT",
         )
     ),
     ComputedField('VATAmount',
         expression = 'context.getVATAmount()',
         widget = ComputedWidget(
-            label = _("VAT"),
+            label = "VAT",
             visible = {'edit':'hidden', }
         ),
     ),
     ComputedField('TotalPrice',
         expression = 'context.getTotalPrice()',
         widget = ComputedWidget(
-            label = _("Total price"),
+            label = "Total price",
             visible = {'edit':'hidden', }
         ),
     ),

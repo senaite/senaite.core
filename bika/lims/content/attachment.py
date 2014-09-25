@@ -23,7 +23,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     FileField('AttachmentFile',
         widget = FileWidget(
-            label = _("Attachment"),
+            label = "Attachment",
         ),
     ),
     ReferenceField('AttachmentType',
@@ -31,20 +31,20 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('AttachmentType',),
         relationship = 'AttachmentAttachmentType',
         widget = ReferenceWidget(
-            label = _("Attachment Type"),
+            label = "Attachment Type",
         ),
     ),
     StringField('AttachmentKeys',
         searchable = True,
         widget = StringWidget(
-            label = _("Attachment Keys"),
+            label = "Attachment Keys",
         ),
     ),
     DateTimeField('DateLoaded',
         required = 1,
         default_method = 'current_date',
         widget = DateTimeWidget(
-            label = _("Date Loaded"),
+            label = "Date Loaded",
         ),
     ),
     ComputedField('AttachmentTypeUID',

@@ -16,20 +16,20 @@ from zope.interface import implements
 schema = BikaSchema.copy() + Schema((
     FileField('ReportFile',
         widget = FileWidget(
-            label = _("Report"),
+            label = "Report",
         ),
     ),
     StringField('ReportType',
         widget = StringWidget(
-            label = _("Report Type"),
-            description = _("Report type"),
+            label = "Report Type",
+            description = "Report type",
         ),
     ),
     ReferenceField('Client',
         allowed_types = ('Client',),
         relationship = 'ReportClient',
         widget = ReferenceWidget(
-            label = _("Client"),
+            label = "Client",
         ),
     ),
     ComputedField('ClientUID',

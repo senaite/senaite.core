@@ -40,12 +40,15 @@ function AnalysisRequestAddView() {
         // Filter data by the selected client
         filterByClient();
 
+        // the copy_to_new button passes a copy_from request parameter
+		// which is a UID or comma separated list oif UIDs.
         var copy_from = window.location.href.split("copy_from=");
         if(copy_from.length > 1){
             copy_from = copy_from[1].split("&")[0];
             copy_from = copy_from.split(",");
             for (var arnum = 0; arnum < copy_from.length; arnum++) {
                 window.bika.ar_copy_from_col = arnum;
+				// XXX async.
                 $.ajaxSetup({async:false});
                 window.bika.lims.jsonapi_read({
                     catalog_name: "uid_catalog",
@@ -1743,66 +1746,62 @@ function AnalysisRequestAddView() {
         $(element).attr("search_query", "{}");
     }
 
-    function fill_column(data) {
-        // fields which should not be completed from the source AR.
-        var skip_fields = ['Sample', 'Sample_uid'];
-        if (data.objects.length > 0) {
-            var obj = data.objects[0];
-            var col = window.bika.ar_copy_from_col;
-			for (fieldname in obj) {
-                if (!obj.hasOwnProperty(fieldname)) {
-                    continue;
-                }
-                if (skip_fields.indexOf(fieldname) > -1) {
-                    continue;
-                }
-                var fieldvalue = obj[fieldname];
-                // First the primary field.  Usually visible, could be hidden.
-				var el = $("#ar_" + col + "_" + fieldname);
-                if (el.length > 0) {
-                    $(el).val(fieldvalue);
-                }
-				// Dealing with reference widget: *_uid hidden field.
-                var el = $("#ar_" + col + "_" + fieldname + "_uid");
-                if (el.length > 0) {
-                    $(el).val(fieldvalue);
-                }
-            }
-            var services = {};
-            var specs = {};
-            var poc_name, cat_uid, service_uid, service_uids;
-            var i, key;
-            for (i = obj.Analyses.length - 1; i >= 0; i--) {
-                var analysis = obj.Analyses[i];
-                cat_uid = analysis.CategoryUID;
-                service_uid = analysis.ServiceUID;
-                key = analysis.PointOfCapture + "__" + analysis.CategoryUID;
-                if (!(key in services)) {
-                    services[key] = [];
-                }
-                services[key].push(service_uid);
-                specs[service_uid] = analysis.specification;
-            }
-            for (key in services) {
-                if (!services.hasOwnProperty(key)) {
-                    continue;
-                }
-                poc_name = key.split("__")[0];
-                cat_uid = key.split("__")[1];
-                service_uids = services[key];
-                window.toggleCat(poc_name, cat_uid, col, service_uids, true);
-                for (i = 0; i < service_uids.length; i++) {
-                    service_uid = service_uids[i];
-                    var spec = specs[service_uid];
-                    if (spec) {
-                        $("[name^='ar." + col + ".min." + service_uid + "']").val(spec.min);
-                        $("[name^='ar." + col + ".max." + service_uid + "']").val(spec.max);
-                        $("[name^='ar." + col + ".error." + service_uid + "']").val(spec.error);
-                    }
-                }
-            }
-        }
-    }
+	function fill_column(data) {
+		// fields which should not be completed from the source AR
+		var skip_fields = ['Sample', 'Sample_uid'];
+		// if the jsonapi read data did not include any objects, abort
+		if (data.objects.length < 1) {
+			// obviously, shouldn't happen
+			return;
+		}
+		var obj = data.objects[0];
+		// this is the column containing the elements we will write into
+		var col = window.bika.ar_copy_from_col;
+		// set field values from data into respective elements.  data does include
+		// *_uid entries for reference field values
+		for (var fieldname in obj) {
+			if (!obj.hasOwnProperty(fieldname)) { continue; }
+			if (skip_fields.indexOf(fieldname) > -1) { continue; }
+			var fieldvalue = obj[fieldname];
+			var el = $("#ar_" + col + "_" + fieldname);
+			if (el.length > 0) {
+				$(el).val(fieldvalue);
+			}
+		}
+		var services = {};
+		var specs = {};
+		var poc_name, cat_uid, service_uid, service_uids;
+		var i, key;
+		for (i = obj.Analyses.length - 1; i >= 0; i--) {
+			var analysis = obj.Analyses[i];
+			cat_uid = analysis.CategoryUID;
+			service_uid = analysis.ServiceUID;
+			key = analysis.PointOfCapture + "__" + analysis.CategoryUID;
+			if (!(key in services)) {
+				services[key] = [];
+			}
+			services[key].push(service_uid);
+			specs[service_uid] = analysis.specification;
+		}
+		for (key in services) {
+			if (!services.hasOwnProperty(key)) {
+				continue;
+			}
+			poc_name = key.split("__")[0];
+			cat_uid = key.split("__")[1];
+			service_uids = services[key];
+			window.toggleCat(poc_name, cat_uid, col, service_uids, true);
+			for (i = 0; i < service_uids.length; i++) {
+				service_uid = service_uids[i];
+				var spec = specs[service_uid];
+				if (spec) {
+					$("[name^='ar." + col + ".min." + service_uid + "']").val(spec.min);
+					$("[name^='ar." + col + ".max." + service_uid + "']").val(spec.max);
+					$("[name^='ar." + col + ".error." + service_uid + "']").val(spec.error);
+				}
+			}
+		}
+	}
 
     function expand_default_categories() {
         $("th.prefill").click();
