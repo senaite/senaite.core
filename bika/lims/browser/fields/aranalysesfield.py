@@ -102,16 +102,20 @@ class ARAnalysesField(ObjectField):
                             'sample_due', 'sample_received',
                             'attachment_due', 'to_be_verified')
 
-        # Modify existing AR specs with new form values for selected analyses.
-        new_specs = []
+        # -  Modify existing AR specs with new form values for selected analyses.
+        # -  new analysis requests are also using this function, so ResultsRange
+        #    may be undefined.  in this case, specs= will contain the entire
+        #    AR spec.
         rr = instance.getResultsRange()
-        rr = rr if rr else []
-        for r in rr:
-            for s in specs:
+        for s in specs:
+            s_in_rr = False
+            for i, r in enumerate(rr):
                 if s['keyword'] == r['keyword']:
-                    r.update(s)
-            new_specs.append(r)
-        instance.setResultsRange(new_specs)
+                    rr[i].update(s)
+                    s_in_rr = True
+            if not s_in_rr:
+                rr.append(s)
+        instance.setResultsRange(rr)
 
         new_analyses = []
         proxies = bsc(UID=service_uids)
